@@ -1,14 +1,9 @@
-Date: Sun, 28 Mar 2021 10:52:48 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20210328085248.GB976@...1296...>
-References: <CAALvpZTo6VYxcLXtXXyMsUU-n3JRSOJ-62fny7Zfi28WSDYXmA@...278...>
- <b63128cc-14cf-b1a4-684d-4c3fcb291f04@...2181...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="aufv34C1tHTDo7r3"
-Content-Disposition: inline
-In-Reply-To: <b63128cc-14cf-b1a4-684d-4c3fcb291f04@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Stop using deprecated getpass()
+From: Arne Schwabe <arne@...1227...>
+Date: Sun, 28 Mar 2021 11:05:30 +0200
+Message-Id: <20210328090530.10653-1-arne@...1227...>
+In-Reply-To: <20210325000121.10331-1-arne@...1227...>
+References: <20210325000121.10331-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v2] Deprecate non TLS mode in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,67 +12,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: =?iso-8859-1?Q?T=F5ivo_Leedj=E4rv?= <toivol@...277...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---aufv34C1tHTDo7r3
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+The non-TLS mode is a relict from OpenVPN 1.x or 2.0. When tls mode was
+introduce the advantages of TLS over non-tls were small but tls mode
+evolved to include a lot more features. (NCP, multipeer, AEAD ciphers to name
+a few).
 
-Hi,
+Today VPN that use --secret are mainly used because of its relative easy to
+setup and requiring to setup a PKI. This shortcoming of TLS mode should be
+addressed now with the peer-fingerprint option.
 
-On Sun, Mar 28, 2021 at 01:52:51AM +0100, Antonio Quartulli wrote:
-> I believe termios.h should normally be available on any *nix system,
-> therefore it should be ok to switch to it.
+But the biggest reason to deprecate --secret is that the use of a fixed
+pre-shared key and lack of any of session key. No forward secrecy is
+possible and any VPN traffic can be decrypted later should the --secret
+by anyone who can get the session key. The cryptography overall used here
+was okay when --secret was introduced but is not acceptable by today's
+standard anymore.
 
-Well, on everything that is recent enough to have tun/tap and sockets,
-termios.h will exist.
+Patch V2: Improve commit message
+---
+ doc/man-sections/protocol-options.rst |  2 +-
+ src/openvpn/options.c                 | 12 +++++++++++-
+ 2 files changed, 12 insertions(+), 2 deletions(-)
 
-On the necessity for the patch, I have mixed feelings - I do not see
-any OS remove getpass() any time soon, as it would break applications...
+diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
+index e9d5d63d4..bb08fa3ef 100644
+--- a/doc/man-sections/protocol-options.rst
++++ b/doc/man-sections/protocol-options.rst
+@@ -226,7 +226,7 @@ configured in a compatible way between both the local and remote side.
+   disables cipher negotiation.
+ 
+ --secret args
+-  Enable Static Key encryption mode (non-TLS). Use pre-shared secret
++  **DEPRECATED** Enable Static Key encryption mode (non-TLS). Use pre-shared secret
+   ``file`` which was generated with ``--genkey``.
+ 
+   Valid syntaxes:
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 51bd56c2b..4ef8924f5 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -514,7 +514,7 @@ static const char usage_message[] =
+     "\n"
+     "Data Channel Encryption Options (must be compatible between peers):\n"
+     "(These options are meaningful for both Static Key & TLS-mode)\n"
+-    "--secret f [d]  : Enable Static Key encryption mode (non-TLS).\n"
++    "--secret f [d]  : (DEPRECATED) Enable Static Key encryption mode (non-TLS).\n"
+     "                  Use shared secret file f, generate with --genkey.\n"
+     "                  The optional d parameter controls key directionality.\n"
+     "                  If d is specified, use separate keys for each\n"
+@@ -2564,6 +2564,15 @@ options_postprocess_verify_ce(const struct options *options,
+         msg(M_USAGE, "specify only one of --tls-server, --tls-client, or --secret");
+     }
+ 
++    if (!options->tls_server || !options->tls_client)
++    {
++        msg(M_INFO, "DEPRECATION: No tls-client or tls-server option in "
++                    "configuration detected. OpenVPN 2.7 will remove the "
++                    "functionality to run a VPN without TLS. "
++                    "See the examples section in the manual page for "
++                    "examples of a similar quick setup with peer-fingerprint.");
++    }
++
+     if (options->ssl_flags & (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CERT_OPTIONAL))
+     {
+         msg(M_WARN, "WARNING: POTENTIALLY DANGEROUS OPTION "
+@@ -7862,6 +7871,7 @@ add_option(struct options *options,
+     }
+     else if (streq(p[0], "secret") && p[1] && !p[3])
+     {
++        msg(M_WARN, "DEPRECATED OPTION: The option --secret is deprecated.");
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INLINE);
+         options->shared_secret_file = p[1];
+         options->shared_secret_file_inline = is_inline;
+-- 
+2.30.1
 
-But I need to have a close look at the patch again - give that we already
-do the /dev/tty handling etc., it might effectively make the code easier.
-
-[..]
-> > +    {
-> > +        (void) tcsetattr(fileno(fp), TCSAFLUSH, &tty_save);
->=20
-> We should not need to cast to void - I don't think we have warnings set
-> for non-checked return values.
-
-Actually we should catch errors here and log them.  If tcsetattr() fails,=20
-the tty will be in a messed-up state - so we want to know that it happened,
-and possibly also the "why".
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---aufv34C1tHTDo7r3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJgYEPfAAoJEB2Cnv7KVigSfl0MAJvNzQmnVO3Vs6wr6Ryi4Yyq
-gWN6s//C/MYAF/oevIsLJlsxqNhgSSRGSl15c5M7duUebUQ/vWHIqKb1Kexv4GV6
-moEQ1tPesCySm3KoEODrUFdMZhstw9r8R+aVZmwZ4iShSWMoDTj79/lnLTLcbXzq
-iABeSWAncoPe9YGR+sIY9iMKZ2OOCL3LsoDij9wc29cIV0PVc/oHZ6ZpCHj4mS73
-IBQgNKqBycKlKA1SM0TCLKRK4vrQIYbeitjTeidMdSggWAUGvVfCyG810NhTRnRy
-saRgBn4ZdDMHf4n0NT5gWhjE/V4fqdhe6srXeodnJE3otnKg854Ja6IVF1XMRdci
-tQTymdLDpGCx6fpIJCJygaseqIrB3JKIpMKXIpZa4MdO9PTrTDDm0L860tC6Y4zG
-2MMrEoSI5Rg1G5rIAj2npMpZMrsGiHDKk1efcoLFZPfBoCeW1l+VqfN52/FIx9DV
-xuamBVdYTgLdx6vCIV/uZqZZJJrO1z8ug459TFhH9Q==
-=2e1I
------END PGP SIGNATURE-----
-
---aufv34C1tHTDo7r3--
 
