@@ -1,16 +1,7 @@
-Date: Sun, 28 Mar 2021 14:17:49 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20210328121749.GE976@...1296...>
-References: <CAALvpZTo6VYxcLXtXXyMsUU-n3JRSOJ-62fny7Zfi28WSDYXmA@...278...>
- <b63128cc-14cf-b1a4-684d-4c3fcb291f04@...2181...>
- <20210328085248.GB976@...1296...>
- <CAALvpZRVrgCb7JZVf=fkgJK73rk8WAHF+Hj_brQO=ww=_yuUMQ@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="iBFCiuOmVjpoRqk4"
-Content-Disposition: inline
-In-Reply-To: <CAALvpZRVrgCb7JZVf=fkgJK73rk8WAHF+Hj_brQO=ww=_yuUMQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Stop using deprecated getpass()
+From: Arne Schwabe <arne@...1227...>
+Date: Sun, 28 Mar 2021 14:22:55 +0200
+Message-Id: <20210328122255.29764-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Remove flexible array member autoconf check
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,81 +10,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?iso-8859-1?Q?T=F5ivo_Leedj=E4rv?= <toivol@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net, Antonio Quartulli <a@...2181...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---iBFCiuOmVjpoRqk4
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This is configure macro that tries out how to declare a variable array
+at the end of struct. This has been standardised in C99, so there is
+no more need for non C99 magic. See also this stackoverflow discussion:
 
-Hi,
+https://stackoverflow.com/questions/14643406/whats-the-need-of-array-with-zero-elements
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ config-msvc.h           |  1 -
+ m4/ax_emptyarray.m4     | 40 ----------------------------------------
+ src/openvpn/circ_list.h |  2 +-
+ src/openvpn/syshead.h   |  2 --
+ 4 files changed, 1 insertion(+), 44 deletions(-)
+ delete mode 100644 m4/ax_emptyarray.m4
 
-On Sun, Mar 28, 2021 at 02:03:37PM +0200, T=F5ivo Leedj=E4rv wrote:
-> The specific issue I ran into was getpass() having 8 character limit
-> on Solaris/illumos.
+diff --git a/config-msvc.h b/config-msvc.h
+index e430ca96f..0260927ce 100644
+--- a/config-msvc.h
++++ b/config-msvc.h
+@@ -119,7 +119,6 @@
+ #define inline __inline
+ #endif
+ 
+-#define EMPTY_ARRAY_SIZE 0
+ #define TARGET_WIN32 1
+ #define TARGET_ALIAS "Windows-MSVC"
+ 
+diff --git a/m4/ax_emptyarray.m4 b/m4/ax_emptyarray.m4
+deleted file mode 100644
+index c6781c179..000000000
+--- a/m4/ax_emptyarray.m4
++++ /dev/null
+@@ -1,40 +0,0 @@
+-dnl @synopsis AX_EMPTY_ARRAY
+-dnl
+-dnl Define EMPTY_ARRAY_SIZE to be either "0"
+-dnl or "" depending on which syntax the compiler
+-dnl prefers for empty arrays in structs.
+-dnl
+-dnl @version
+-dnl @author James Yonan <jim@...41...>
+-AC_DEFUN([AX_EMPTY_ARRAY], [
+-	AS_VAR_PUSHDEF([VAR],[ax_cv_c_empty_array])dnl
+-	AC_CACHE_CHECK(
+-		[for C compiler empty array size],
+-		[VAR],
+-		[AC_COMPILE_IFELSE(
+-			[AC_LANG_PROGRAM(
+-				,
+-				[[
+-struct { int foo; int bar[0]; } mystruct;
+-				]]
+-			)],
+-			[VAR=0],
+-			[AC_COMPILE_IFELSE(
+-				[AC_LANG_PROGRAM(
+-					,
+-					[[
+-struct { int foo; int bar[]; } mystruct;
+-					]]
+-				)],
+-				[VAR=],
+-				[AC_MSG_ERROR([C compiler is unable to creaty empty arrays])]
+-			)]
+-		)]
+-	)dnl
+-	AC_DEFINE_UNQUOTED(
+-		[EMPTY_ARRAY_SIZE],
+-		[$VAR],
+-		[Dimension to use for empty array declaration]
+-	)dnl
+-	AS_VAR_POPDEF([VAR])dnl
+-])
+diff --git a/src/openvpn/circ_list.h b/src/openvpn/circ_list.h
+index 23b42d2ab..ba9115eab 100644
+--- a/src/openvpn/circ_list.h
++++ b/src/openvpn/circ_list.h
+@@ -34,7 +34,7 @@
+         int x_size; \
+         int x_cap; \
+         int x_sizeof; \
+-        type x_list[EMPTY_ARRAY_SIZE]; \
++        type x_list[]; \
+     }
+ 
+ #define CIRC_LIST_PUSH(obj, item) \
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index 5ee9bf1e8..cf9714593 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -392,8 +392,6 @@ typedef int MIB_TCP_STATE;
+ #ifdef PEDANTIC
+ #undef HAVE_CPP_VARARG_MACRO_GCC
+ #undef HAVE_CPP_VARARG_MACRO_ISO
+-#undef EMPTY_ARRAY_SIZE
+-#define EMPTY_ARRAY_SIZE 1
+ #undef inline
+ #define inline
+ #endif
+-- 
+2.30.1
 
-Ah, thanks for that reminder.  That is, indeed, a strong argument (and
-who knows which other platforms might do this and we don't know about
-it yet).
-
-> If you don't mind the code being guarded by an #ifdef TARGET_SOLARIS
-> then a simple alternative patch would look something like this:
-> -        char *gp =3D getpass(prompt);
-> +#ifndef TARGET_SOLARIS
-> +        char *gp =3D getpass(prompt); /* On Solaris, returns up to 9 byt=
-es */
-> +#else
-> +        char *gp =3D getpassphrase(prompt); /* Returns up to 257 bytes */
-> +#endif
-
-No extra #ifdef please - let's go for a v2 of your patch, with the
-error checking.
-
-> > Actually we should catch errors here and log them.  If tcsetattr() fail=
-s,
-> > the tty will be in a messed-up state - so we want to know that it happe=
-ned,
-> > and possibly also the "why".
->=20
-> Right. What you have in mind, would that look like msg(M_ERR,
-> "...explanation...") or perhaps an M_WARN?
-
-msg(M_WARN | M_ERRNO, "tcsetattr() failed to restore tty settings")
-
-(or some other wording to that extent) should do.
-
-(Some parts of the code uses the M_* macros differently, but half of that=20
-is due to unclear documentation how they should be used, and lack of=20
-stringent commit regime :) )
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---iBFCiuOmVjpoRqk4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJgYHPsAAoJEB2Cnv7KVigSCOoMAJrjy8cNAm+QWyqT+sTnjFtT
-J7iLwaOoUYZ7Nyi5CjYBOaeMOE2m0XdRry0z5fYiEfxSflRkoKPS5P3ftKjusL8V
-8qDHaA+Iz0piTImso60jBulj7vUE+IsqXk2S3kKrZFQ9clZEh4CQQ8OtLwQ0PJc6
-Q9CWnqOEEP6Ph4km0YaMr3gy9OMrW3+z2QzE6b2N0ook87m+9CggD8Sj/3eOXzqM
-e4f4zYsbgCZMxEO6YrvKIKYGsmqnJpfL5FP03HzYMYC/d9okSK9FgOJH3lkukoIU
-X43ks5hsf8Do4rFdjpkhM9zBFhBfXFWDDc7G4YuHvoitm1HwiHlbui3nnTnEI6G9
-p+tNhSN5k2qkgfcbFaVM70FU1jhl7FXqMIK9K0j/43pGoL2gPj3pGghDPbiHqK4S
-kmUAuzOwADIq6ZDA1G1XLkETvDzBFinqY6Z79hBBPhCzZkmslDwhxXVHAH+nEoz4
-4QBS8dqhYe/5/zTvcwBaXTj+Wn938WgRUuOvB2PVVw==
-=1kZ6
------END PGP SIGNATURE-----
-
---iBFCiuOmVjpoRqk4--
 
