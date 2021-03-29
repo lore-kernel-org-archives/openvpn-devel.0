@@ -1,10 +1,7 @@
-From: =?UTF-8?q?T=C3=B5ivo=20Leedj=C3=A4rv?= <toivol@...277...>
-Date: Sun, 28 Mar 2021 17:11:51 +0000
-Message-Id: <20210328171151.12056-1-toivol@...277...>
-In-Reply-To: <20210328155748.GF976@...1296...>
-References: <20210328155748.GF976@...1296...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Stop using deprecated getpass()
+From: selva.nair@...277...
+Date: Mon, 29 Mar 2021 00:23:18 -0400
+Message-Id: <1616991798-7179-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH] Remove automatic service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,157 +14,593 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The getpass() function is present in SUSv2, but marked LEGACY. It is
-removed in POSIX.1-2001. Additionally, on Solaris getpass() returns
-maximum 9 bytes. This will make longer passwords fail with no
-possibility for user to know what is happening.
+From: Selva Nair <selva.nair@...277...>
 
-This patch removes usage of getpass() completely and replaces it with
-direct implementation of what getpass() does: opens tty (existing code),
-outputs the prompt (existing code), turns off echoing (new code), reads
-one line (existing code shared with echoed mode), restores tty state
-(new code) and closes tty (existing code).
+This has been replaced by openvpnserv2 since 2.4.0 and we have
+stopped setting up this service in the installer since 2.5.0.
 
-Patch v2: incorporate review feedback, incl. style fixes, merge
-          termios.h check in configure.ac with an existing
-          AC_CHECK_HEADERS, add error check and logging after
-          tcsettattr() when restoring tty settings
+Get rid of the unused code. The mechanics of supporting multiple
+services with the same executable is retained for possible future use.
 
-Signed-off-by: Tõivo Leedjärv <toivol@...277...>
+For backwards compatibility, the command line option -instance
+is unchanged as "-instance <name> id" although <name>="interactive"
+is the only supported value now.
+
+Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- configure.ac                  |  4 +--
- src/openvpn/console_builtin.c | 60 +++++++++++++++++++++--------------
- 2 files changed, 39 insertions(+), 25 deletions(-)
+ src/openvpnserv/Makefile.am |   1 -
+ src/openvpnserv/automatic.c | 434 --------------------------------------------
+ src/openvpnserv/service.c   |  46 +++--
+ src/openvpnserv/service.h   |   6 -
+ 4 files changed, 21 insertions(+), 466 deletions(-)
+ delete mode 100644 src/openvpnserv/automatic.c
 
-diff --git a/configure.ac b/configure.ac
-index 428bebed..6668bbcf 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -438,7 +438,7 @@ AC_CHECK_HEADERS([ \
- 	sys/time.h sys/ioctl.h sys/stat.h \
- 	sys/mman.h sys/file.h sys/wait.h \
- 	unistd.h signal.h libgen.h stropts.h \
--	syslog.h pwd.h grp.h \
-+	syslog.h pwd.h grp.h termios.h \
- 	sys/sockio.h sys/uio.h linux/sockios.h \
- 	linux/types.h poll.h sys/epoll.h err.h \
- ])
-@@ -652,7 +652,7 @@ AC_FUNC_FORK
+diff --git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.am
+index 5dc38c9..3e69125 100644
+--- a/src/openvpnserv/Makefile.am
++++ b/src/openvpnserv/Makefile.am
+@@ -31,7 +31,6 @@ endif
  
- AC_CHECK_FUNCS([ \
- 	daemon chroot getpwnam setuid nice system getpid dup dup2 \
--	getpass syslog openlog mlockall getrlimit getgrnam setgid \
-+	syslog openlog mlockall getrlimit getgrnam setgid \
- 	setgroups stat flock readv writev time gettimeofday \
- 	ctime memset vsnprintf strdup \
- 	setsid chdir putenv getpeername unlink \
-diff --git a/src/openvpn/console_builtin.c b/src/openvpn/console_builtin.c
-index 445928bf..22ac9f79 100644
---- a/src/openvpn/console_builtin.c
-+++ b/src/openvpn/console_builtin.c
-@@ -40,6 +40,10 @@
- #include "buffer.h"
- #include "misc.h"
- 
-+#ifdef HAVE_TERMIOS_H
-+#include <termios.h>
-+#endif
-+
- #ifdef _WIN32
- 
- #include "win32.h"
-@@ -138,7 +142,7 @@ get_console_input_win32(const char *prompt, const bool echo, char *input, const
- #endif   /* _WIN32 */
- 
- 
--#ifdef HAVE_GETPASS
-+#ifdef HAVE_TERMIOS_H
- 
- /**
-  * Open the current console TTY for read/write operations
-@@ -177,7 +181,7 @@ close_tty(FILE *fp)
-     }
- }
- 
--#endif   /* HAVE_GETPASS */
-+#endif   /* HAVE_TERMIOS_H */
- 
- 
- /**
-@@ -201,7 +205,9 @@ get_console_input(const char *prompt, const bool echo, char *input, const int ca
- 
- #if defined(_WIN32)
-     return get_console_input_win32(prompt, echo, input, capacity);
--#elif defined(HAVE_GETPASS)
-+#elif defined(HAVE_TERMIOS_H)
-+    bool restore_tty = false;
-+    struct termios tty_tmp, tty_save;
- 
-     /* did we --daemon'ize before asking for passwords?
-      * (in which case neither stdin or stderr are connected to a tty and
-@@ -220,33 +226,41 @@ get_console_input(const char *prompt, const bool echo, char *input, const int ca
-         close(fd);
-     }
- 
--    if (echo)
+ openvpnserv_SOURCES = \
+         common.c \
+-	automatic.c \
+ 	interactive.c \
+ 	service.c service.h \
+ 	validate.c validate.h \
+diff --git a/src/openvpnserv/automatic.c b/src/openvpnserv/automatic.c
+deleted file mode 100644
+index 0ba222a..0000000
+--- a/src/openvpnserv/automatic.c
++++ /dev/null
+@@ -1,434 +0,0 @@
+-/*
+- *  OpenVPN -- An application to securely tunnel IP networks
+- *             over a single TCP/UDP port, with support for SSL/TLS-based
+- *             session authentication and key exchange,
+- *             packet encryption, packet authentication, and
+- *             packet compression.
+- *
+- *  Copyright (C) 2002-2018 OpenVPN Inc <sales@...515...>
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License along
+- *  with this program; if not, write to the Free Software Foundation, Inc.,
+- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+- */
+-
+-/*
+- * This program allows one or more OpenVPN processes to be started
+- * as a service.  To build, you must get the service sample from the
+- * Platform SDK and replace Simple.c with this file.
+- *
+- * You should also apply service.patch to
+- * service.c and service.h from the Platform SDK service sample.
+- *
+- * This code is designed to be built with the mingw compiler.
+- */
+-
+-#include "service.h"
+-
+-#include <stdio.h>
+-#include <stdarg.h>
+-#include <stdbool.h>
+-#include <process.h>
+-
+-static SERVICE_STATUS_HANDLE service;
+-static SERVICE_STATUS status = { .dwServiceType = SERVICE_WIN32_SHARE_PROCESS };
+-
+-openvpn_service_t automatic_service = {
+-    automatic,
+-    TEXT(PACKAGE_NAME "ServiceLegacy"),
+-    TEXT(PACKAGE_NAME " Legacy Service"),
+-    TEXT(SERVICE_DEPENDENCIES),
+-    SERVICE_DEMAND_START
+-};
+-
+-struct security_attributes
+-{
+-    SECURITY_ATTRIBUTES sa;
+-    SECURITY_DESCRIPTOR sd;
+-};
+-
+-static HANDLE exit_event = NULL;
+-
+-/* clear an object */
+-#define CLEAR(x) memset(&(x), 0, sizeof(x))
+-
+-
+-bool
+-init_security_attributes_allow_all(struct security_attributes *obj)
+-{
+-    CLEAR(*obj);
+-
+-    obj->sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+-    obj->sa.lpSecurityDescriptor = &obj->sd;
+-    obj->sa.bInheritHandle = TRUE;
+-    if (!InitializeSecurityDescriptor(&obj->sd, SECURITY_DESCRIPTOR_REVISION))
 -    {
--        FILE *fp;
-+    FILE *fp = open_tty(true);
-+    fprintf(fp, "%s", prompt);
-+    fflush(fp);
-+    close_tty(fp);
- 
--        fp = open_tty(true);
--        fprintf(fp, "%s", prompt);
--        fflush(fp);
--        close_tty(fp);
-+    fp = open_tty(false);
- 
--        fp = open_tty(false);
--        if (fgets(input, capacity, fp) != NULL)
+-        return false;
+-    }
+-    if (!SetSecurityDescriptorDacl(&obj->sd, TRUE, NULL, FALSE))
+-    {
+-        return false;
+-    }
+-    return true;
+-}
+-
+-HANDLE
+-create_event(LPCTSTR name, bool allow_all, bool initial_state, bool manual_reset)
+-{
+-    if (allow_all)
+-    {
+-        struct security_attributes sa;
+-        if (!init_security_attributes_allow_all(&sa))
 -        {
--            chomp(input);
--            ret = true;
+-            return NULL;
 -        }
--        close_tty(fp);
-+    if (!echo && (tcgetattr(fileno(fp), &tty_tmp) == 0))
-+    {
-+        tty_save = tty_tmp;
-+        tty_tmp.c_lflag &= ~(ECHO | ECHOE | ECHOK | ECHONL | ISIG);
-+        restore_tty = (tcsetattr(fileno(fp), TCSAFLUSH, &tty_tmp) == 0);
-     }
+-        return CreateEvent(&sa.sa, (BOOL)manual_reset, (BOOL)initial_state, name);
+-    }
 -    else
-+
-+    if (fgets(input, capacity, fp) != NULL)
-+    {
-+        chomp(input);
-+        ret = true;
-+    }
-+
-+    if (restore_tty)
+-    {
+-        return CreateEvent(NULL, (BOOL)manual_reset, (BOOL)initial_state, name);
+-    }
+-}
+-
+-void
+-close_if_open(HANDLE h)
+-{
+-    if (h != NULL)
+-    {
+-        CloseHandle(h);
+-    }
+-}
+-
+-static bool
+-match(const WIN32_FIND_DATA *find, LPCTSTR ext)
+-{
+-    if (find->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+-    {
+-        return false;
+-    }
+-
+-    if (*ext == TEXT('\0'))
+-    {
+-        return true;
+-    }
+-
+-    /* find the pointer to that last '.' in filename and match ext against the rest */
+-
+-    const TCHAR *p = _tcsrchr(find->cFileName, TEXT('.'));
+-    return p && p != find->cFileName && _tcsicmp(p + 1, ext) == 0;
+-}
+-
+-/*
+- * Modify the extension on a filename.
+- */
+-static bool
+-modext(LPTSTR dest, size_t size, LPCTSTR src, LPCTSTR newext)
+-{
+-    size_t i;
+-
+-    if (size > 0 && (_tcslen(src) + 1) <= size)
+-    {
+-        _tcscpy_s(dest, size, src);
+-        dest [size - 1] = TEXT('\0');
+-        i = _tcslen(dest);
+-        while (i-- > 0)
+-        {
+-            if (dest[i] == TEXT('\\'))
+-            {
+-                break;
+-            }
+-            if (dest[i] == TEXT('.'))
+-            {
+-                dest[i] = TEXT('\0');
+-                break;
+-            }
+-        }
+-        if (_tcslen(dest) + _tcslen(newext) + 2 <= size)
+-        {
+-            _tcscat_s(dest, size, TEXT("."));
+-            _tcscat_s(dest, size, newext);
+-            return true;
+-        }
+-        dest[0] = TEXT('\0');
+-    }
+-    return false;
+-}
+-
+-static DWORD WINAPI
+-ServiceCtrlAutomatic(DWORD ctrl_code, DWORD event, LPVOID data, LPVOID ctx)
+-{
+-    SERVICE_STATUS *status = ctx;
+-    switch (ctrl_code)
+-    {
+-        case SERVICE_CONTROL_STOP:
+-            status->dwCurrentState = SERVICE_STOP_PENDING;
+-            ReportStatusToSCMgr(service, status);
+-            if (exit_event)
+-            {
+-                SetEvent(exit_event);
+-            }
+-            return NO_ERROR;
+-
+-        case SERVICE_CONTROL_INTERROGATE:
+-            return NO_ERROR;
+-
+-        default:
+-            return ERROR_CALL_NOT_IMPLEMENTED;
+-    }
+-}
+-
+-
+-VOID WINAPI
+-ServiceStartAutomaticOwn(DWORD dwArgc, LPTSTR *lpszArgv)
+-{
+-    status.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
+-    ServiceStartAutomatic(dwArgc, lpszArgv);
+-}
+-
+-
+-VOID WINAPI
+-ServiceStartAutomatic(DWORD dwArgc, LPTSTR *lpszArgv)
+-{
+-    DWORD error = NO_ERROR;
+-    settings_t settings;
+-    TCHAR event_name[256];
+-
+-    service = RegisterServiceCtrlHandlerEx(automatic_service.name, ServiceCtrlAutomatic, &status);
+-    if (!service)
+-    {
+-        return;
+-    }
+-
+-    status.dwCurrentState = SERVICE_START_PENDING;
+-    status.dwServiceSpecificExitCode = NO_ERROR;
+-    status.dwWin32ExitCode = NO_ERROR;
+-    status.dwWaitHint = 3000;
+-
+-    if (!ReportStatusToSCMgr(service, &status))
+-    {
+-        MsgToEventLog(M_ERR, TEXT("ReportStatusToSCMgr #1 failed"));
+-        goto finish;
+-    }
+-
+-    /*
+-     * Create our exit event
+-     * This event is initially created in the non-signaled
+-     * state.  It will transition to the signaled state when
+-     * we have received a terminate signal from the Service
+-     * Control Manager which will cause an asynchronous call
+-     * of ServiceStop below.
+-     */
+-
+-    openvpn_sntprintf(event_name, _countof(event_name), TEXT(PACKAGE "%s_exit_1"), service_instance);
+-    exit_event = create_event(event_name, false, false, true);
+-    if (!exit_event)
+-    {
+-        MsgToEventLog(M_ERR, TEXT("CreateEvent failed"));
+-        goto finish;
+-    }
+-
+-    /*
+-     * If exit event is already signaled, it means we were not
+-     * shut down properly.
+-     */
+-    if (WaitForSingleObject(exit_event, 0) != WAIT_TIMEOUT)
+-    {
+-        MsgToEventLog(M_ERR, TEXT("Exit event is already signaled -- we were not shut down properly"));
+-        goto finish;
+-    }
+-
+-    if (!ReportStatusToSCMgr(service, &status))
+-    {
+-        MsgToEventLog(M_ERR, TEXT("ReportStatusToSCMgr #2 failed"));
+-        goto finish;
+-    }
+-
+-    /*
+-     * Read info from registry in key HKLM\SOFTWARE\OpenVPN
+-     */
+-    error = GetOpenvpnSettings(&settings);
+-    if (error != ERROR_SUCCESS)
+-    {
+-        goto finish;
+-    }
+-
+-    /*
+-     * Instantiate an OpenVPN process for each configuration
+-     * file found.
+-     */
+-    {
+-        WIN32_FIND_DATA find_obj;
+-        HANDLE find_handle;
+-        BOOL more_files;
+-        TCHAR find_string[MAX_PATH];
+-
+-        openvpn_sntprintf(find_string, _countof(find_string), TEXT("%s\\*"), settings.config_dir);
+-
+-        find_handle = FindFirstFile(find_string, &find_obj);
+-        if (find_handle == INVALID_HANDLE_VALUE)
+-        {
+-            MsgToEventLog(M_ERR, TEXT("Cannot get configuration file list using: %s"), find_string);
+-            goto finish;
+-        }
+-
+-        /*
+-         * Loop over each config file
+-         */
+-        do
+-        {
+-            HANDLE log_handle = NULL;
+-            STARTUPINFO start_info;
+-            PROCESS_INFORMATION proc_info;
+-            struct security_attributes sa;
+-            TCHAR log_file[MAX_PATH];
+-            TCHAR log_path[MAX_PATH];
+-            TCHAR command_line[256];
+-
+-            CLEAR(start_info);
+-            CLEAR(proc_info);
+-            CLEAR(sa);
+-
+-            if (!ReportStatusToSCMgr(service, &status))
+-            {
+-                MsgToEventLog(M_ERR, TEXT("ReportStatusToSCMgr #3 failed"));
+-                FindClose(find_handle);
+-                goto finish;
+-            }
+-
+-            /* does file have the correct type and extension? */
+-            if (match(&find_obj, settings.ext_string))
+-            {
+-                /* get log file pathname */
+-                if (!modext(log_file, _countof(log_file), find_obj.cFileName, TEXT("log")))
+-                {
+-                    MsgToEventLog(M_ERR, TEXT("Cannot construct logfile name based on: %s"), find_obj.cFileName);
+-                    FindClose(find_handle);
+-                    goto finish;
+-                }
+-                openvpn_sntprintf(log_path, _countof(log_path),
+-                                  TEXT("%s\\%s"), settings.log_dir, log_file);
+-
+-                /* construct command line */
+-                openvpn_sntprintf(command_line, _countof(command_line), TEXT("openvpn --service \"" PACKAGE "%s_exit_1\" 1 --config \"%s\""),
+-                                  service_instance,
+-                                  find_obj.cFileName);
+-
+-                /* Make security attributes struct for logfile handle so it can
+-                 * be inherited. */
+-                if (!init_security_attributes_allow_all(&sa))
+-                {
+-                    error = MsgToEventLog(M_SYSERR, TEXT("InitializeSecurityDescriptor start_" PACKAGE " failed"));
+-                    goto finish;
+-                }
+-
+-                /* open logfile as stdout/stderr for soon-to-be-spawned subprocess */
+-                log_handle = CreateFile(log_path,
+-                                        GENERIC_WRITE,
+-                                        FILE_SHARE_READ,
+-                                        &sa.sa,
+-                                        settings.append ? OPEN_ALWAYS : CREATE_ALWAYS,
+-                                        FILE_ATTRIBUTE_NORMAL,
+-                                        NULL);
+-
+-                if (log_handle == INVALID_HANDLE_VALUE)
+-                {
+-                    error = MsgToEventLog(M_SYSERR, TEXT("Cannot open logfile: %s"), log_path);
+-                    FindClose(find_handle);
+-                    goto finish;
+-                }
+-
+-                /* append to logfile? */
+-                if (settings.append)
+-                {
+-                    if (SetFilePointer(log_handle, 0, NULL, FILE_END) == INVALID_SET_FILE_POINTER)
+-                    {
+-                        error = MsgToEventLog(M_SYSERR, TEXT("Cannot seek to end of logfile: %s"), log_path);
+-                        FindClose(find_handle);
+-                        goto finish;
+-                    }
+-                }
+-
+-                /* fill in STARTUPINFO struct */
+-                GetStartupInfo(&start_info);
+-                start_info.cb = sizeof(start_info);
+-                start_info.dwFlags = STARTF_USESTDHANDLES|STARTF_USESHOWWINDOW;
+-                start_info.wShowWindow = SW_HIDE;
+-                start_info.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+-                start_info.hStdOutput = start_info.hStdError = log_handle;
+-
+-                /* create an OpenVPN process for one config file */
+-                if (!CreateProcess(settings.exe_path,
+-                                   command_line,
+-                                   NULL,
+-                                   NULL,
+-                                   TRUE,
+-                                   settings.priority | CREATE_NEW_CONSOLE,
+-                                   NULL,
+-                                   settings.config_dir,
+-                                   &start_info,
+-                                   &proc_info))
+-                {
+-                    error = MsgToEventLog(M_SYSERR, TEXT("CreateProcess failed, exe='%s' cmdline='%s' dir='%s'"),
+-                                          settings.exe_path,
+-                                          command_line,
+-                                          settings.config_dir);
+-
+-                    FindClose(find_handle);
+-                    CloseHandle(log_handle);
+-                    goto finish;
+-                }
+-
+-                /* close unneeded handles */
+-                Sleep(1000); /* try to prevent race if we close logfile
+-                              * handle before child process DUPs it */
+-                if (!CloseHandle(proc_info.hProcess)
+-                    || !CloseHandle(proc_info.hThread)
+-                    || !CloseHandle(log_handle))
+-                {
+-                    error = MsgToEventLog(M_SYSERR, TEXT("CloseHandle failed"));
+-                    goto finish;
+-                }
+-            }
+-
+-            /* more files to process? */
+-            more_files = FindNextFile(find_handle, &find_obj);
+-
+-        } while (more_files);
+-
+-        FindClose(find_handle);
+-    }
+-
+-    /* we are now fully started */
+-    status.dwCurrentState = SERVICE_RUNNING;
+-    status.dwWaitHint = 0;
+-    if (!ReportStatusToSCMgr(service, &status))
+-    {
+-        MsgToEventLog(M_ERR, TEXT("ReportStatusToSCMgr SERVICE_RUNNING failed"));
+-        goto finish;
+-    }
+-
+-    /* wait for our shutdown signal */
+-    if (WaitForSingleObject(exit_event, INFINITE) != WAIT_OBJECT_0)
+-    {
+-        MsgToEventLog(M_ERR, TEXT("wait for shutdown signal failed"));
+-    }
+-
+-finish:
+-    if (exit_event)
+-    {
+-        CloseHandle(exit_event);
+-    }
+-
+-    status.dwCurrentState = SERVICE_STOPPED;
+-    status.dwWin32ExitCode = error;
+-    ReportStatusToSCMgr(service, &status);
+-}
+diff --git a/src/openvpnserv/service.c b/src/openvpnserv/service.c
+index 8101f83..9566f99 100644
+--- a/src/openvpnserv/service.c
++++ b/src/openvpnserv/service.c
+@@ -224,21 +224,14 @@ int
+ _tmain(int argc, TCHAR *argv[])
+ {
+     /*
+-     * Automatic + Interactive service (as a SERVICE_WIN32_SHARE_PROCESS)
++     * Interactive service (as a SERVICE_WIN32_SHARE_PROCESS)
+      * This is the default.
+      */
+     const SERVICE_TABLE_ENTRY dispatchTable_shared[] = {
+-        { automatic_service.name, ServiceStartAutomatic },
+         { interactive_service.name, ServiceStartInteractive },
+         { NULL, NULL }
+     };
+ 
+-    /* Automatic service only (as a SERVICE_WIN32_OWN_PROCESS) */
+-    const SERVICE_TABLE_ENTRY dispatchTable_automatic[] = {
+-        { TEXT(""), ServiceStartAutomaticOwn },
+-        { NULL, NULL }
+-    };
+-
+     /* Interactive service only (as a SERVICE_WIN32_OWN_PROCESS) */
+     const SERVICE_TABLE_ENTRY dispatchTable_interactive[] = {
+         { TEXT(""), ServiceStartInteractiveOwn },
+@@ -247,8 +240,7 @@ _tmain(int argc, TCHAR *argv[])
+ 
+     const SERVICE_TABLE_ENTRY *dispatchTable = dispatchTable_shared;
+ 
+-    openvpn_service[0] = automatic_service;
+-    openvpn_service[1] = interactive_service;
++    openvpn_service[interactive] = interactive_service;
+ 
+     for (int i = 1; i < argc; i++)
      {
--        char *gp = getpass(prompt);
--        if (gp)
-+        if (tcsetattr(fileno(fp), TCSAFLUSH, &tty_save) == -1)
-         {
--            strncpynt(input, gp, capacity);
--            secure_memzero(gp, strlen(gp));
--            ret = true;
-+            msg(M_WARN | M_ERRNO, "tcsetattr() failed to restore tty settings");
-         }
-+
-+        /* Echo the non-echoed newline */
-+        close_tty(fp);
-+        fp = open_tty(true);
-+        fprintf(fp, "\n");
-+        fflush(fp);
-     }
-+
-+    close_tty(fp);
- #else  /* if defined(_WIN32) */
-     msg(M_FATAL, "Sorry, but I can't get console input on this OS (%s)", prompt);
- #endif /* if defined(_WIN32) */
+@@ -264,29 +256,33 @@ _tmain(int argc, TCHAR *argv[])
+             }
+             else if (_tcsicmp(TEXT("start"), argv[i] + 1) == 0)
+             {
+-                BOOL is_auto = argc < i + 2 || _tcsicmp(TEXT("interactive"), argv[i + 1]) != 0;
+-                return CmdStartService(is_auto ? automatic : interactive);
++                return CmdStartService(interactive);
+             }
+             else if (argc > i + 2 && _tcsicmp(TEXT("instance"), argv[i] + 1) == 0)
+             {
+-                dispatchTable = _tcsicmp(TEXT("interactive"), argv[i + 1]) != 0 ?
+-                                dispatchTable_automatic :
+-                                dispatchTable_interactive;
+-
+-                service_instance = argv[i + 2];
+-                i += 2;
++                if (_tcsicmp(TEXT("interactive"), argv[i+1]) == 0)
++                {
++                    dispatchTable = dispatchTable_interactive;
++                    service_instance = argv[i + 2];
++                    i += 2;
++                }
++                else
++                {
++                    MsgToEventLog(M_ERR, L"Invalid argument to -instance <%s>. Service not started.", argv[i+1]);
++                    return 1;
++                }
+             }
+             else
+             {
+-                _tprintf(TEXT("%s -install        to install the services\n"), APPNAME);
+-                _tprintf(TEXT("%s -start <name>   to start a service (\"automatic\" or \"interactive\")\n"), APPNAME);
+-                _tprintf(TEXT("%s -remove         to remove the services\n"), APPNAME);
++                _tprintf(TEXT("%s -install        to install the interactive service\n"), APPNAME);
++                _tprintf(TEXT("%s -start [name]   to start the service (name = \"interactive\" is optional)\n"), APPNAME);
++                _tprintf(TEXT("%s -remove         to remove the service\n"), APPNAME);
+ 
+                 _tprintf(TEXT("\nService run-time parameters:\n"));
+-                _tprintf(TEXT("-instance <name> <id>\n")
+-                         TEXT("   Runs the service as an alternate instance. <name> can be \"automatic\" or\n")
+-                         TEXT("   \"interactive\". The service settings will be loaded from\n")
+-                         TEXT("   HKLM\\Software\\" PACKAGE_NAME "<id> registry key, and the interactive service will accept\n")
++                _tprintf(TEXT("-instance interactive <id>\n")
++                         TEXT("   Runs the service as an alternate instance.\n")
++                         TEXT("   The service settings will be loaded from\n")
++                         TEXT("   HKLM\\Software\\" PACKAGE_NAME "<id> registry key, and the service will accept\n")
+                          TEXT("   requests on \\\\.\\pipe\\" PACKAGE "<id>\\service named pipe.\n"));
+ 
+                 return 0;
+diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h
+index f5afe2f..32a721f 100644
+--- a/src/openvpnserv/service.h
++++ b/src/openvpnserv/service.h
+@@ -48,7 +48,6 @@
+ #define M_ERR     (MSG_FLAGS_ERROR)                    /* error */
+ 
+ typedef enum {
+-    automatic,
+     interactive,
+     _service_max
+ } openvpn_service_type;
+@@ -72,14 +71,9 @@ typedef struct {
+     BOOL append;
+ } settings_t;
+ 
+-extern openvpn_service_t automatic_service;
+ extern openvpn_service_t interactive_service;
+ extern LPCTSTR service_instance;
+ 
+-VOID WINAPI ServiceStartAutomaticOwn(DWORD argc, LPTSTR *argv);
+-
+-VOID WINAPI ServiceStartAutomatic(DWORD argc, LPTSTR *argv);
+-
+ VOID WINAPI ServiceStartInteractiveOwn(DWORD argc, LPTSTR *argv);
+ 
+ VOID WINAPI ServiceStartInteractive(DWORD argc, LPTSTR *argv);
 -- 
-2.26.2
+2.1.4
 
 
