@@ -1,14 +1,17 @@
+From: Antonio Quartulli <a@...2181...>
+References: <20201023113431.26691-1-arne@...1227...>
+ <20201023113431.26691-2-arne@...1227...>
+ <20201024194301.GB976@...1296...>
+ <c0f890fb-bd6c-1e76-7316-590c95bfb34e@...1227...>
+ <46c513d0-8b2f-d4db-427f-c8d39e8a659f@...2181...>
+ <fdbab89d-80ba-07da-eb91-b23e116232d3@...2181...>
+Message-ID: <2f797214-318b-fb3d-944c-3bf3101aa504@...2181...>
+Date: Tue, 30 Mar 2021 17:34:51 +0200
 MIME-Version: 1.0
-References: <CAAUX2SXSu=izbxjAiUNfuezsrv6NbQrrL7R7pQh8P4uumzQemw@...278...>
- <73707b45-c5fa-261e-2a7a-e7a03794c3ba@...1227...>
- <14d7cf12-9863-6d1d-1134-0f80dc498d2d@...2181...>
-In-Reply-To: <14d7cf12-9863-6d1d-1134-0f80dc498d2d@...2181...>
-From: Tony He <huangya90@...277...>
-Date: Tue, 30 Mar 2021 22:57:52 +0800
-Message-ID: <CAAUX2SX3zaRbFuP2n-GCj74YDtrkVVnA5PrtXzR=uCYCwAWK=A@...278...>
-Content-Type: multipart/alternative; boundary="000000000000b5a1f905bec23988"
-Subject: Re: [Openvpn-devel] [ovpn-dco] try to port to kernel 4.14.76,
- but can not join AF_NETLINK group
+In-Reply-To: <fdbab89d-80ba-07da-eb91-b23e116232d3@...2181...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 2/5] xmit_hold is only required for
+ port_share
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,126 +20,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Arne Schwabe <arne@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---000000000000b5a1f905bec23988
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Hi Antonio,
+On 25/03/2021 22:55, Antonio Quartulli wrote:
+> Hi,
+> 
+> On 25/03/2021 22:37, Antonio Quartulli wrote:
+>> Anybody can see why we need that for port-share?
+>> I'd rather try to understand the above and ditch this member entirely,
+>> if the answer is "we don't need it".
+> 
+> After more tests I indeed recovered the reason why this is needed with
+> port-share.
+> 
+> If we don't "hold back", upon connection the server will send its own
+> SERVER_HARD_RESET, regardless of the client having sent a
+> CLIENT_HARD_RESET or not.
+> 
+> This behaviour indeed breaks port-share because the non-OpenVPN
+> application on the other side will receive an unexpected packet and will
+> most likely kill the connection.
+> 
+> For this reason we need to hold any control channel packet until we have
+> confirmed that the first packet is indeed a CLIENT_HARD_RESET.
+> 
+> 
+> Regarding TCP, the only thing I can think about is that this flag helps
+> mimicking UDP: instead of sending the HARD_RESET right after a TCP
+> Connection is opened, the server will wait for the client packet first.
+> 
+> In UDP I presume this is standard behaviour as we have no connection
+> opening event.
+> 
+> My guess is that this behaviour may be useful to avoid race conditions
+> on the client where the SERVER_HARD_RESET is received when still unexpected?
+> 
 
-The issue is I used Arne's working dco branch, it fails to register
-AF_NETLINK group.
-Old code like:
-  int ret =3D nl_socket_add_memberships(dco->nl_sock, dco->ovpn_dco_mcast_i=
-d,
-                                        RTNLGRP_LINK, RTNLGRP_NOTIFY,
-RTNLGRP_NONE);
+As discussed on IRC we don't really need this "hold" behaviour in our
+protocol.
 
-I see Arne just pushed new code:
-int ret =3D nl_socket_add_membership(dco->nl_sock, dco->ovpn_dco_mcast_id);
+I may ask "why changing the current state though?", but I believe
+removing state variables from our code base (or some of its branches) is
+a good step towards simplification.
 
-Had a quick test, it's fine. I'm not sure why the old code in my X86-64 PC
-is OK while it
-doesn't work in this MIPS64 router. Maybe it's not related with the kernel
-version.
 
-Tony
+My last nitpick would be to change the commit message, since now we have
+clarified how this works:
 
-Antonio Quartulli <a@...2181...> =E4=BA=8E2021=E5=B9=B43=E6=9C=8830=E6=97=
-=A5=E5=91=A8=E4=BA=8C =E4=B8=8B=E5=8D=8810:37=E5=86=99=E9=81=93=EF=BC=9A
+----
+The xmit_hold flag is used to tell OpenVPN to not send any packet out
+before a RESET is received from the other peer upon new connection.
 
-> Hi Tony,
->
-> On 30/03/2021 12:23, Arne Schwabe wrote:
-> > Am 30.03.21 um 09:36 schrieb Tony He:
-> >> Hi Antonio, Arne,
-> >>
-> >> Sorry to bother you. I have a router based on Linux kernel
-> >> 4.14.76(4.14.x is LTS version). Because of some reasons,
-> >> it's hard to upgrade to v5.x to play ovpn-dco. So I am porting ovpn-dco
-> >> to 4.14.76 kernel. After some hacking, it's almost done.
-> >> Now it seems that  only one issue needs to be resolved. The issue is
-> >> openvpn 2.6 dco fails to join AF_NETLINK group.
-> >>
-> >
-> > Note that we currently do not intent to support or do active development
-> > on such old kernels.
-> >
->
-> Even if not currently on the roadmap, please let us know if you
-> encounter particular issues with this kernel. I'd be interested in
-> hearing about those, if any.
->
-> Regards,
->
->
->
-> --
-> Antonio Quartulli
-> OpenVPN Inc.
->
-> --
-> Antonio Quartulli
->
+The only real use case for setting this flag to true is when configuring
+OpenVPN with port-share (TCP).
 
---000000000000b5a1f905bec23988
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+The reason being that OpenVPN server should not send any packet until it
+is confirmed that the connection was established by an actual OpenVPN
+client. If the connection was established by a non-OpenVPN client,
+sending a RESET will mess up with the protocol sharing the port.
+----
 
-<div dir=3D"ltr"><div>Hi Antonio,</div><div><br></div><div>The issue is I u=
-sed Arne&#39;s working dco branch, it fails to register AF_NETLINK group.</=
-div><div>Old code like:</div><div>=C2=A0 int ret =3D nl_socket_add_membersh=
-ips(dco-&gt;nl_sock, dco-&gt;ovpn_dco_mcast_id,<br>=C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 RTNLGRP_LINK, RTNLGRP_NOTIFY, RTN=
-LGRP_NONE);</div><div><br></div><div>I see Arne just pushed new code:</div>=
-<div>int ret =3D nl_socket_add_membership(dco-&gt;nl_sock, dco-&gt;ovpn_dco=
-_mcast_id);</div><div><br></div><div>Had a quick test, it&#39;s fine. I&#39=
-;m not sure why the old code in my X86-64 PC is OK while it</div><div>doesn=
-&#39;t work in this MIPS64 router. Maybe it&#39;s not related with the kern=
-el version.</div><div><br></div><div>Tony<br></div><div><br></div><div clas=
-s=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">Antonio Quartulli &=
-lt;a@...2181...&gt; =E4=BA=8E2021=E5=B9=B43=E6=9C=8830=E6=97=A5=E5=91=A8=E4=
-=BA=8C =E4=B8=8B=E5=8D=8810:37=E5=86=99=E9=81=93=EF=BC=9A<br></div><blockqu=
-ote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px=
- solid rgb(204,204,204);padding-left:1ex">Hi Tony,<br>
-<br>
-On 30/03/2021 12:23, Arne Schwabe wrote:<br>
-&gt; Am 30.03.21 um 09:36 schrieb Tony He:<br>
-&gt;&gt; Hi Antonio, Arne,<br>
-&gt;&gt;<br>
-&gt;&gt; Sorry to bother you. I have a router based on Linux kernel<br>
-&gt;&gt; 4.14.76(4.14.x is LTS version). Because of some reasons,=C2=A0<br>
-&gt;&gt; it&#39;s hard to upgrade to v5.x to play ovpn-dco. So I am porting=
- ovpn-dco<br>
-&gt;&gt; to 4.14.76 kernel. After some hacking, it&#39;s almost done.<br>
-&gt;&gt; Now it seems that=C2=A0 only one issue needs to be resolved. The i=
-ssue is<br>
-&gt;&gt; openvpn 2.6 dco fails to join AF_NETLINK group.<br>
-&gt;&gt;<br>
-&gt; <br>
-&gt; Note that we currently do not intent to support or do active developme=
-nt<br>
-&gt; on such old kernels.<br>
-&gt; <br>
-<br>
-Even if not currently on the roadmap, please let us know if you<br>
-encounter particular issues with this kernel. I&#39;d be interested in<br>
-hearing about those, if any.<br>
-<br>
-Regards,<br>
-<br>
-<br>
-<br>
--- <br>
-Antonio Quartulli<br>
-OpenVPN Inc.<br>
-<br>
--- <br>
-Antonio Quartulli<br>
-</blockquote></div></div>
+* Basic TCP connection tests passed.
+* Compiled in my gitlab CI *WITH* issues:
 
---000000000000b5a1f905bec23988--
+MINGW32 both 32bit and 64bit failed:
+
+i686-w64-mingw32-gcc -DHAVE_CONFIG_H -I. -I../.. -I../../include
+-I../../include -I../../src/compat -DWIN32_LEAN_AND_MEAN
+-DNTDDI_VERSION=NTDDI_VISTA -D_WIN32_WINNT=_WIN32_WINNT_VISTA
+-I/builds/ordex986/openvpn/tap-windows-9.21.2/include
+-I/root/opt/include -I/root/opt/include  -I/root/opt/include
+-DPLUGIN_LIBDIR=\"/usr/local/lib/openvpn/plugins\" -municode -UUNICODE
+-Wall -Wno-unused-parameter -Wno-unused-function
+-Wno-stringop-truncation -g -O2 -std=c99 -MT lzo.o -MD -MP -MF
+.deps/lzo.Tpo -c -o lzo.o lzo.c
+In file included from buffer.h:28,
+                 from mtu.h:27,
+                 from win32.h:30,
+                 from init.c:36:
+init.c: In function 'do_open_tun':
+init.c:1809:62: warning: cast from pointer to integer of different size
+[-Wpointer-to-int-cast]
+     msg(D_ROUTE, "interactive service msg_channel=%" PRIu64, (unsigned
+long long) c->options.msg_channel);
+                                                              ^
+error.h:151:67: note: in definition of macro 'msg'
+ #define msg(flags, ...) do { if (msg_test(flags)) {x_msg((flags),
+__VA_ARGS__);} EXIT_FATAL(flags); } while (false)
+
+^~~~~~~~~~~
+init.c: In function 'do_init_crypto_tls':
+init.c:2889:19: error: 'const struct options' has no member named
+'port_share_host'
+         && options->port_share_host)
+                   ^~
+make[3]: *** [Makefile:743: init.o] Error 1
+
+
+The first part is a warning that we can ignore for the sake of this patch.
+
+The bottom part is the actual error.
+
+
+Cheers,
+
+-- 
+Antonio Quartulli
 
