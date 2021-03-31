@@ -1,8 +1,14 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed, 31 Mar 2021 17:55:08 +0200
-Message-Id: <20210331155508.19423-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Fix binary and used instead auth-token
- check instead of logical and
+Date: Wed, 31 Mar 2021 20:25:55 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20210331182555.GE976@...1296...>
+References: <E1lRfR7-0007jN-Go@...2479...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="1/OLoKNDcmqALr/E"
+Content-Disposition: inline
+In-Reply-To: <E1lRfR7-0007jN-Go@...2479...>
+Subject: Re: [Openvpn-devel] [PATCH 0/1] reliable: retransmit if 3 follow-up
+ ACKs are received
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,36 +17,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Max Fillinger <maximilian.fillinger@...2507...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-AUTH_TOKEN_HMAC_OK is 1, so the first term is always 0/1 and the bool
-from the second part is also 0/1, so the & does the same in this instance
-as &&.
+--1/OLoKNDcmqALr/E
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-In this specific case & instead && does not change behaviour but using
-&& is the intended semantic behaviour.
+Hi,
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/auth_token.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Wed, Mar 31, 2021 at 08:03:22PM +0200, Max Fillinger wrote:
+> This is my second attempt at sending this patch, this time without
+> mixing up commit message and cover letter, and from an account that
+> (I hope) doesn't hate mailing lists.
 
-diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
-index cc70c06c3..d571b686e 100644
---- a/src/openvpn/auth_token.c
-+++ b/src/openvpn/auth_token.c
-@@ -99,7 +99,7 @@ add_session_token_env(struct tls_session *session, struct tls_multi *multi,
-     /* We had a valid session id before */
-     const char *session_id_source;
-     if (multi->auth_token_state_flags & AUTH_TOKEN_HMAC_OK
--        &!(multi->auth_token_state_flags & AUTH_TOKEN_EXPIRED))
-+        && !(multi->auth_token_state_flags & AUTH_TOKEN_EXPIRED))
-     {
-         session_id_source = up->password;
-     }
--- 
-2.30.1
+It works :-)
 
+(I would have managed to merge the other patch as well - I have a=20
+pre-push hook now that refuses push if "openvpn-devel" is listed as
+Author... - and your patch had Steffan's "From:" anyway)
+
+Anyway, this is definitely interesting, but I did not have time to=20
+dig into understanding the reliable layer yet...
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--1/OLoKNDcmqALr/E
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJgZL6yAAoJEB2Cnv7KVigSQmEL/0VBPiwg40KOf9BPvpPPtPfb
+04frI8WV4nRKB7Lay22MM8UkPkml56tDmFDTrghxZBS1uIWDwc38dZgPu2A3IWiS
+Gh60hgS3N81v6Bvm/FmSvPMpb5dNyBFhmbuMgTQUyiF7OdHhcy5K0FIBsz8xuIf7
+QfPvtmxJK4z+0g/PDoLcGTynhK/ojZWNaP3mVmTzNOQU8srD+ZuBGQmGKRmR8/yI
+uAAyTJz5dthVW/lGiKuZFa9d7Z4R76U3YOFmxJ3G2kuGJ9Zq6ywT0VRh/PFU/4J8
+mo4bIka0kobV8bDqWgTSy7rSLns+FjpAzFMbASpIjaY8itT8cve5o48+teHbsrEp
+gjScByswK6CVXe4hjTCIndx+ktmylduY3sLe0AG2kdVSEUW397cDGLalBc+326TG
+J/5u06GPbfOyMsZ/cSOskVdz1FTE6rihsswZtByR3B6+sSc+tatDbV8Zu+qMlRMY
+xXzNiO2obADNMmtHyv3fE6r5qBKVMbVwYRNRdfGUyA==
+=JrvS
+-----END PGP SIGNATURE-----
+
+--1/OLoKNDcmqALr/E--
 
