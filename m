@@ -1,15 +1,15 @@
-Message-ID: <e1b4d7c5488de44c3b046eee386d9bec.squirrel@...2556...>
-In-Reply-To: <20210401062622.GG976@...1296...>
-References: <E1lRfR7-0007jN-Go@...2479...>
- <34084543aaf50252f6b2749cb0206d9e.squirrel@...2260...>
- <218595a3-086a-ae93-d4dc-bb1866c86290@...1227...>
- <6842604fe080c80b5c6d75255f695223.squirrel@...2556...>
- <20210401062622.GG976@...1296...>
-Date: Thu, 1 Apr 2021 08:28:33 +0200
-From: "Simon Matter" <simon.matter@...2249...>
+References: <CAAUX2SVQRn4zuDC947HE9M38nDNK1oNqyUv0GKeAw2dasHo62Q@...278...>
+ <ad7e8624-6f87-2874-9786-d5de521bc6a2@...2181...>
+ <f10fc09e-5d7b-c678-02f8-04f80f004b24@...2181...>
+ <CAAUX2SU9u8sdsN08ynDTVD15q+qP0yOF-RxMzF5hMRg-pFCWFg@...278...>
+ <CAAUX2SXiT1=-5HtKzQRay-R1zreT0_7QpEvjc40H3-0U2nqcAA@...278...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <d967fd98-6dd9-fe05-cac8-83fb022e4ea4@...2181...>
+Date: Thu, 1 Apr 2021 08:35:52 +0200
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 0/1] reliable: retransmit if 3 follow-up
- ACKs are received
+In-Reply-To: <CAAUX2SXiT1=-5HtKzQRay-R1zreT0_7QpEvjc40H3-0U2nqcAA@...278...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [ovpn-dco] sudden network disconnection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,39 +19,38 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: Tony He <huangya90@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Arne Schwabe <arne@...1227...>
 
-> Hi,
->
-> On Thu, Apr 01, 2021 at 08:20:48AM +0200, Simon Matter wrote:
->> > Yes. But it only affects the control channel. For data channel we
->> never
->> > do retransmits.
->>
->> OK, but it still could help in case of things like VoIP UDP over OpenVPN
->> UDP with lots of small packets going over the link with low package
->> loss?
->
-> No, because VoIP-over-OpenVPN would be "data channel".
->
-> It would help with "control channel handshake takes very long due to
-> packet
-> loss".
->
-> There's a different patchset floating around (I think it's a PR, actually)
-> that promises to add data-channel redundancy and being able to recover
-> some
-> amount of packet loss without retransmit.  Which I find very interesting,
-> but this has not been followed up due to "it's complex and nobody has
-> time"
-> reasons.
->
-> gert
+Hi Tony,
 
-Thanks for the explanation!
+On 01/04/2021 04:38, Tony He wrote:
+> Hi Antonio, Arne,
+> 
+> According to the dump, this issue is caused by fragment. If I set
+> link-mtu to 1472 in the condition of encryption "none", it's gone.
+> I also can reproduce the fragment in my Linux x86-64 PC and Linux VM .
+> They use kernel 5.4. Fragment affects the performance
+> in the low-end devices. It also consumes more CPU resource in low-end
+> and high-end devices.  If I'm not mistaken, we don't need
+> to set link-mtu without dco. Is this a bug? Can you reproduce? Do I
+> still need to upload my dump? If so, maybe I need to provide a link.
 
-Simon
+You told us what you did to fix, but you haven't fully explained what
+the "broken setup" is. We don't have your configs, so we can't say what
+is creating the issue in your scenario.
 
+What is the MTU on the DCO and on the transport interfaces when the
+problem shows us?
+
+DCO should automatically come up with a working MTU, unless instructed
+to do differently or unless the transport interface has non standard MTU.
+
+
+Regards,
+
+
+-- 
+Antonio Quartulli
 
