@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu,  1 Apr 2021 15:13:24 +0200
-Message-Id: <20210401131337.3684-2-arne@...1227...>
+Date: Thu,  1 Apr 2021 15:13:32 +0200
+Message-Id: <20210401131337.3684-10-arne@...1227...>
 In-Reply-To: <20210401131337.3684-1-arne@...1227...>
 References: <20210401131337.3684-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 01/14] Remove code for aligning non-swapped
- compression
+Subject: [Openvpn-devel] [PATCH 09/14] Move is_proto function to the
+ socket.h header
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,94 +17,130 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is an optimisation for memory alignment for lzo. Compression is
-deprecated so this optimisation is not very important anymore.
-
-Furthermore it is conditionally compiled on !defined(ENABLE_LZ4), which
-makes the code not compiled in by default anyway.
+These functions are small enough to be inlined and also avoids
+dependency on socket.c from unit_tests using those functions.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/comp.h |  6 ------
- src/openvpn/init.c | 31 -------------------------------
- src/openvpn/mtu.h  |  6 ------
- 3 files changed, 43 deletions(-)
+ src/openvpn/socket.c | 36 -------------------------------
+ src/openvpn/socket.h | 50 +++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 38 insertions(+), 48 deletions(-)
 
-diff --git a/src/openvpn/comp.h b/src/openvpn/comp.h
-index 5c0322ca6..5c9d77fe1 100644
---- a/src/openvpn/comp.h
-+++ b/src/openvpn/comp.h
-@@ -198,11 +198,5 @@ comp_non_stub_enabled(const struct compress_options *info)
-            && info->alg != COMP_ALG_UNDEF;
- }
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 0d9b793cd..6fed4b660 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -3101,42 +3101,6 @@ static const struct proto_names proto_names[] = {
+     {"tcp6",        "TCPv6", AF_INET6, PROTO_TCP},
+ };
  
--static inline bool
--comp_unswapped_prefix(const struct compress_options *info)
+-bool
+-proto_is_net(int proto)
 -{
--    return !(info->flags & COMP_F_SWAP);
+-    if (proto < 0 || proto >= PROTO_N)
+-    {
+-        ASSERT(0);
+-    }
+-    return proto != PROTO_NONE;
 -}
 -
- #endif /* USE_COMP */
- #endif /* ifndef OPENVPN_COMP_H */
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 132d47e4e..1a6015452 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -3082,37 +3082,6 @@ do_init_frame(struct context *c)
-     {
-         comp_add_to_extra_frame(&c->c2.frame);
- 
--#if !defined(ENABLE_LZ4)
--        /*
--         * Compression usage affects buffer alignment when non-swapped algs
--         * such as LZO is used.
--         * Newer algs like LZ4 and comp-stub with COMP_F_SWAP don't need
--         * any special alignment because of the control-byte swap approach.
--         * LZO alignment (on the other hand) is problematic because
--         * the presence of the control byte means that either the output of
--         * decryption must be written to an unaligned buffer, or the input
--         * to compression (or packet dispatch if packet is uncompressed)
--         * must be read from an unaligned buffer.
--         * This code tries to align the input to compression (or packet
--         * dispatch if packet is uncompressed) at the cost of requiring
--         * decryption output to be written to an unaligned buffer, so
--         * it's more of a tradeoff than an optimal solution and we don't
--         * include it when we are doing a modern build with LZ4.
--         * Strictly speaking, on the server it would be better to execute
--         * this code for every connection after we decide the compression
--         * method, but currently the frame code doesn't appear to be
--         * flexible enough for this, since the frame is already established
--         * before it is known which compression options will be pushed.
--         */
--        if (comp_unswapped_prefix(&c->options.comp) && CIPHER_ENABLED(c))
--        {
--            frame_add_to_align_adjust(&c->c2.frame, COMP_PREFIX_LEN);
--            frame_or_align_flags(&c->c2.frame,
--                                 FRAME_HEADROOM_MARKER_FRAGMENT
--                                 |FRAME_HEADROOM_MARKER_DECRYPT);
--        }
--#endif
--
- #ifdef ENABLE_FRAGMENT
-         comp_add_to_extra_frame(&c->c2.frame_fragment_omit); /* omit compression frame delta from final frame_fragment */
- #endif
-diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index 0c8bdf8ba..92cbe1874 100644
---- a/src/openvpn/mtu.h
-+++ b/src/openvpn/mtu.h
-@@ -300,12 +300,6 @@ frame_add_to_extra_buffer(struct frame *frame, const int increment)
-     frame->extra_buffer += increment;
- }
- 
--static inline void
--frame_add_to_align_adjust(struct frame *frame, const int increment)
+-bool
+-proto_is_dgram(int proto)
 -{
--    frame->align_adjust += increment;
+-    return proto_is_udp(proto);
 -}
 -
- static inline void
- frame_align_to_extra_frame(struct frame *frame)
+-bool
+-proto_is_udp(int proto)
+-{
+-    if (proto < 0 || proto >= PROTO_N)
+-    {
+-        ASSERT(0);
+-    }
+-    return proto == PROTO_UDP;
+-}
+-
+-bool
+-proto_is_tcp(int proto)
+-{
+-    if (proto < 0 || proto >= PROTO_N)
+-    {
+-        ASSERT(0);
+-    }
+-    return proto == PROTO_TCP_CLIENT || proto == PROTO_TCP_SERVER;
+-}
+-
+ int
+ ascii2proto(const char *proto_name)
  {
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 4099f6ea5..d58fda4d3 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -474,18 +474,6 @@ socket_descriptor_t socket_do_accept(socket_descriptor_t sd,
+                                      struct link_socket_actual *act,
+                                      const bool nowait);
+ 
+-/*
+- * proto related
+- */
+-bool proto_is_net(int proto);
+-
+-bool proto_is_dgram(int proto);
+-
+-bool proto_is_udp(int proto);
+-
+-bool proto_is_tcp(int proto);
+-
+-
+ #if UNIX_SOCK_SUPPORT
+ 
+ socket_descriptor_t create_socket_unix(void);
+@@ -572,6 +560,44 @@ enum proto_num {
+     PROTO_N
+ };
+ 
++static inline bool
++proto_is_net(int proto)
++{
++    ASSERT(proto >= 0 && proto < PROTO_N);
++    return proto != PROTO_NONE;
++}
++
++/**
++ * @brief Returns if the protocol being used is UDP
++ */
++static inline bool
++proto_is_udp(int proto)
++{
++    ASSERT(proto >= 0 && proto < PROTO_N);
++    return proto == PROTO_UDP;
++}
++
++/**
++ * @brief Return if the protocol is datagram (UDP)
++ *
++ */
++static inline bool
++proto_is_dgram(int proto)
++{
++    return proto_is_udp(proto);
++}
++
++/**
++  * @brief returns if the proto is a TCP variant (tcp-server, tcp-client or tcp)
++ */
++static inline bool
++proto_is_tcp(int proto)
++{
++    ASSERT(proto >= 0 && proto < PROTO_N);
++    return proto == PROTO_TCP_CLIENT || proto == PROTO_TCP_SERVER;
++}
++
++
+ int ascii2proto(const char *proto_name);
+ 
+ sa_family_t ascii2af(const char *proto_name);
 -- 
 2.30.1
 
