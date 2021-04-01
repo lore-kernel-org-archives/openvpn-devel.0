@@ -1,8 +1,11 @@
-From: Gert Doering <gert@...1296...>
-Date: Thu,  1 Apr 2021 10:29:34 +0200
-Message-Id: <20210401082934.29922-1-gert@...1296...>
+References: <20210401082934.29922-1-gert@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <5fef37b9-42b0-315c-5132-addc57aadd44@...2181...>
+Date: Thu, 1 Apr 2021 10:54:53 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Get rid of last PLUGIN_DEF_AUTH #ifdef
+In-Reply-To: <20210401082934.29922-1-gert@...1296...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Get rid of last PLUGIN_DEF_AUTH #ifdef
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,39 +14,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Commit 99d217b200 attempted to get rid of all #ifdef related to
---disable-def-auth but one of them managed to hide.  Remove.
+Hi,
 
-The effect of this is that the "openvpn_acf_...tmp" files get not
-removed after when an async auth plugin is in use.  This is can
-get very annoying on a busy server.
+On 01/04/2021 10:29, Gert Doering wrote:
+> Commit 99d217b200 attempted to get rid of all #ifdef related to
+> --disable-def-auth but one of them managed to hide.  Remove.
+> 
+> The effect of this is that the "openvpn_acf_...tmp" files get not
+> removed after when an async auth plugin is in use.  This is can
+> get very annoying on a busy server.
+> 
+> Trac: #1186
+> 
+> Signed-off-by: Gert Doering <gert@...1296...>
 
-Trac: #1186
+nice catch :-)
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/ssl.c | 2 --
- 1 file changed, 2 deletions(-)
+Another chapter for "why ifdefs can be problematic..even after we have
+tried to get rid of them".
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 893e5753..08222b5e 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -992,9 +992,7 @@ key_state_free(struct key_state *ks, bool clear)
- 
-     packet_id_free(&ks->crypto_options.packet_id);
- 
--#ifdef PLUGIN_DEF_AUTH
-     key_state_rm_auth_control_files(ks);
--#endif
- 
-     if (clear)
-     {
+Compile tested on my CI and tested in a setup not having def-auth in use
+to make sure it wouldn't create side effects.
+
+Acked-by: Antonio Quartulli <antonio@...515...>
+
+
 -- 
-2.26.2
-
+Antonio Quartulli
 
