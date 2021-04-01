@@ -1,13 +1,9 @@
-Message-ID: <6842604fe080c80b5c6d75255f695223.squirrel@...2556...>
-In-Reply-To: <218595a3-086a-ae93-d4dc-bb1866c86290@...1227...>
-References: <E1lRfR7-0007jN-Go@...2479...>
- <34084543aaf50252f6b2749cb0206d9e.squirrel@...2260...>
- <218595a3-086a-ae93-d4dc-bb1866c86290@...1227...>
-Date: Thu, 1 Apr 2021 08:20:48 +0200
-From: "Simon Matter" <simon.matter@...2249...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 0/1] reliable: retransmit if 3 follow-up
- ACKs are received
+Date: Thu, 1 Apr 2021 08:23:47 +0200 (CEST)
+Message-Id: <202104010623.1316NlV4076984@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210328171151.12056-1-toivol@...277...>
+References: <20210328171151.12056-1-toivol@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Stop using deprecated getpass()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,39 +13,39 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: Arne Schwabe <arne@...1227...>
-Cc: Max Fillinger <maximilian.fillinger@...2507...>, openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: toivol@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
->
-> Am 31.03.2021 um 21:39 schrieb Simon Matter:
->>> This is my second attempt at sending this patch, this time without
->>> mixing up commit message and cover letter, and from an account that
->>> (I hope) doesn't hate mailing lists.
->>>
->>> This patch changes reliable_send() to resend a packet if at least three
->>> later packets have been ACKed. This improves performance when there are
->>> small amounts of packet loss.
->>>
->>> The patch was originally written by Steffan Karger for OpenVPN-NL.
->>> I added some comments as suggested by Arne Schwabe.
->>>
->>> Steffan Karger (1):
->>>    reliable: retransmit if 3 follow-up ACKs are received
->>>
->> Hi Max,
->>
->> Just a shy question, am I right that this will work with UDP
->> connections?
->>
->> If so then I'm interested to test it.
->
-> Yes. But it only affects the control channel. For data channel we never
-> do retransmits.
+Your patch has been applied to the master branch.
 
-OK, but it still could help in case of things like VoIP UDP over OpenVPN
-UDP with lots of small packets going over the link with low package loss?
+I have compile-tested this across all our supported platforms to be
+sure that we do not hit undefined symbols (like, "ECHOK", which was
+unknown to me before) - but hat is all OK.  I have given it minimal
+testing on my corp VPN profile on Linux (works).
 
-Simon
+Interesting enough, my corp VPN "password" is 2FA + PIN, which makes
+it longer than 8 characters :-) - I've never used that from a Solaris
+*client*, otherwise I might have noticed the issue myself...
+
+Thanks for your work!
+
+commit 76ccc62d4884721b6ecc11078abef747ea60d8d0
+Author: Tõivo Leedjärv
+Date:   Sun Mar 28 17:11:51 2021 +0000
+
+     Stop using deprecated getpass()
+
+     Signed-off-by: Tõivo Leedjärv <toivol@...277...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20210328171151.12056-1-toivol@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21889.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
