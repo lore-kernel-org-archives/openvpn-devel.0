@@ -1,10 +1,10 @@
-Date: Thu, 1 Apr 2021 15:56:38 +0200 (CEST)
-Message-Id: <202104011356.131DucCi085185@...2054...>
+Date: Thu, 1 Apr 2021 16:09:05 +0200 (CEST)
+Message-Id: <202104011409.131E95Cq093291@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210401131337.3684-6-arne@...1227...>
-References: <20210401131337.3684-6-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove unused variable
- pass_config_info
+In-Reply-To: <20210401131337.3684-10-arne@...1227...>
+References: <20210401131337.3684-10-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Move is_proto function to the
+ socket.h header
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,20 +20,26 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"git grep" confirms.
+Moved and compacted somewhat, but "the same functions".
+
+Having a "proto_is_dgram()" sounds a bit silly since we're not doing
+"openvpn over IPX" or anything other dgram based, but who knows... maybe
+we'll grow IPX/SPX support and "proto_is_stream()" one day... :-)
+
+Client-side tested on Linux and FreeBSD, just to be sure.
 
 Your patch has been applied to the master branch.
 
-commit 9eb285f42f73bcfb270adbae527947951615df7d
+commit 72e1ecb5b5d282c591cc32bbd378efbebfb03918
 Author: Arne Schwabe
-Date:   Thu Apr 1 15:13:28 2021 +0200
+Date:   Thu Apr 1 15:13:32 2021 +0200
 
-     Remove unused variable pass_config_info
+     Move is_proto function to the socket.h header
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210401131337.3684-6-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21948.html
+     Message-Id: <20210401131337.3684-10-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21950.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
