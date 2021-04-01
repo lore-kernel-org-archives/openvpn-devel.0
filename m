@@ -1,10 +1,13 @@
-Date: Thu, 1 Apr 2021 16:09:05 +0200 (CEST)
-Message-Id: <202104011409.131E95Cq093291@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210401131337.3684-10-arne@...1227...>
-References: <20210401131337.3684-10-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Move is_proto function to the
- socket.h header
+From: Arne Schwabe <arne@...1227...>
+References: <20210401131337.3684-1-arne@...1227...>
+ <20210401131337.3684-12-arne@...1227...>
+Message-ID: <644fbcbe-a8a8-29c8-4627-52a4b68a60ab@...1227...>
+Date: Thu, 1 Apr 2021 19:27:43 +0200
+MIME-Version: 1.0
+In-Reply-To: <20210401131337.3684-12-arne@...1227...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH 11/14] Remove P2MP mode and check for
+ gettimeofday
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,39 +16,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Am 01.04.21 um 15:13 schrieb Arne Schwabe:
+> Using OpenVPN without P2MP support (pull, TLS) is unrealistic and
+> building a binary without it is not something we realistically want
+> to support anyway.
 
-Moved and compacted somewhat, but "the same functions".
+>      }
+> +    /* Check if we have forbidding options in the current mode */
+> +    if (dco_enabled( &mi->context.options)
 
-Having a "proto_is_dgram()" sounds a bit silly since we're not doing
-"openvpn over IPX" or anything other dgram based, but who knows... maybe
-we'll grow IPX/SPX support and "proto_is_stream()" one day... :-)
+Ignore this patch for now. Rebasing worked without conflicts but somehow
+still pull dco bits into it (rebase is sometimes magic ....)
 
-Client-side tested on Linux and FreeBSD, just to be sure.
-
-Your patch has been applied to the master branch.
-
-commit 72e1ecb5b5d282c591cc32bbd378efbebfb03918
-Author: Arne Schwabe
-Date:   Thu Apr 1 15:13:32 2021 +0200
-
-     Move is_proto function to the socket.h header
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210401131337.3684-10-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21950.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Arne
 
