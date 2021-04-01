@@ -7,12 +7,12 @@ References: <CAAUX2SVQRn4zuDC947HE9M38nDNK1oNqyUv0GKeAw2dasHo62Q@...278...>
  <20210401121014.GK976@...1296...>
  <962534bc-5687-0ffb-df63-0e968d6e68d1@...2181...>
  <20210401123701.GN976@...1296...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <32ed098e-30dd-caac-6791-dd2e96b7297a@...2181...>
-Date: Thu, 1 Apr 2021 14:42:00 +0200
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <4b4fa699-5a20-c5a2-c6bb-1658e7137e6c@...1227...>
+Date: Thu, 1 Apr 2021 14:45:49 +0200
 MIME-Version: 1.0
 In-Reply-To: <20210401123701.GN976@...1296...>
-Content-Language: en-US
+Content-Language: en-GB
 Subject: Re: [Openvpn-devel] [ovpn-dco] sudden network disconnection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -23,35 +23,41 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: Arne Schwabe <arne@...1227...>, Tony He <huangya90@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>, Antonio Quartulli <a@...2181...>
+Cc: Tony He <huangya90@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-
-On 01/04/2021 14:37, Gert Doering wrote:
+Am 01.04.21 um 14:37 schrieb Gert Doering:
+> Hi,
+> 
+> On Thu, Apr 01, 2021 at 02:16:25PM +0200, Antonio Quartulli wrote:
+>>> (Of course it makes lots of sense to defer this to iptables etc. on
+>>> all platforms that have DCO *and* a reasonable firewall layer... dco-win
+>>> will be interesting)
+>>
+>> Features that are not compatible with DCO are being documented in the
+>> code as we go.
+>>
+>> If you try to explicitly use one of those with DCO, openvpn2 will log a
+>> big warning and will tell you that it is switching to non-DCO mode to
+>> make sure your connection can work.
+> 
 > Which is actually interesting for mssfix, as that is "on by default",
 > so "all configs are incompatible with DCO", by that definition :-)
 
-hehe Arne can confirm, but I think defaults are adapted to what DCO
-expects, so mssfix is just disabled by default when DCO is on.
+Yes. With DCO we currently discovering that the OpenVPN way of doing
+things with MTU set to 1500, doing mssfix and hoping that this will
+clamp everything to 1450-overhead, while working quite well has a lot of
+problems compared to just setting a proper MTU in the first case.
 
-I can already hear the arguments that this will create some confusion,
-but it will be documented :-)
+Currently setting tun-mtu 1400 manually workaround these problems but we
+need to figure out a good way to solve this MTU mess. The current
+working idea is to allow MTU 1500 on receive but use a correct MTU on
+receive and on the interface (at least on platforms where you can
+receive larger packets than MTU).
 
-It's our chance to get rid of some "legacy".
+But currently we are just on the "we are aware of it" stage. And too
+busy with other things to actually tackle that too right now.
 
-> 
->> However, we will definitely make some larger doc explaining what we
->> decided that DCO should not do and what are possible alternatives.
-> 
-> *like*
-> 
-> gert
-> 
-
-Regards,
-
--- 
-Antonio Quartulli
+Arne
 
