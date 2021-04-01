@@ -1,18 +1,12 @@
+References: <20210401064431.20229-1-huangya90@...277...>
 From: Antonio Quartulli <a@...2181...>
-References: <CAAUX2SVQRn4zuDC947HE9M38nDNK1oNqyUv0GKeAw2dasHo62Q@...278...>
- <ad7e8624-6f87-2874-9786-d5de521bc6a2@...2181...>
- <f10fc09e-5d7b-c678-02f8-04f80f004b24@...2181...>
- <CAAUX2SU9u8sdsN08ynDTVD15q+qP0yOF-RxMzF5hMRg-pFCWFg@...278...>
- <CAAUX2SXiT1=-5HtKzQRay-R1zreT0_7QpEvjc40H3-0U2nqcAA@...278...>
- <d967fd98-6dd9-fe05-cac8-83fb022e4ea4@...2181...>
- <CAAUX2SVLseVOawC=m-Cs38jEjAtNcHzvHcUeDLpjTK6oYi1nvQ@...278...>
- <aa0abb28-9256-d2df-0426-e1beb8ac8f40@...2181...>
-Message-ID: <bc0ddb4a-4f48-e318-f354-8a929a258c87@...2181...>
-Date: Thu, 1 Apr 2021 09:29:44 +0200
+Message-ID: <52faba14-989e-cda6-d93a-939706aeb0cd@...2181...>
+Date: Thu, 1 Apr 2021 09:33:37 +0200
 MIME-Version: 1.0
-In-Reply-To: <aa0abb28-9256-d2df-0426-e1beb8ac8f40@...2181...>
+In-Reply-To: <20210401064431.20229-1-huangya90@...277...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [ovpn-dco] sudden network disconnection
+Subject: Re: [Openvpn-devel] [PATCH] ovpn-dco: ovpn-cli: properly set socket
+ options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,27 +18,60 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 To: Tony He <huangya90@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
+Thanks!
 
-
-On 01/04/2021 09:07, Antonio Quartulli wrote:
-> Tony, in the meantime, setting the link-mtu to something lower than 1500
-> is the proper workaround.
-
-Sorry I take this last sentence back.
-
-What I was talking all time long was the "tun-mtu".
-
-To fix the MTU issue when there is encapsulation, it's the tun-mtu that
-should be reduced (so that it can fit in the link-mtu after adding the
-protocol overhead).
-
-So the proper workaround should be to reduce the tun-mtu and avoid the
-default of 1500.
-
+Your patch has been applied with commit id:
+0048aac81c3e4dc3046121a7124da77233656e99
 
 Regards,
+
+On 01/04/2021 08:44, Tony He wrote:
+> Actully We can not set two options at the same time.
+> Old code:
+> 
+> setsockopt(s, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))
+> 
+> If you use strace to trace sys call, you will find only SO_REUSEPORT is
+> set:
+>> setsockopt(3, SOL_SOCKET, SO_REUSEPORT, [1], 4) = 0
+> 
+> This is because SD_REUSEADDR is 2(0x0010) and SR_REUSEPORT is 15(0x1111) defined in
+> /usr/include/asm-generic/socket.h in X86-64 platform.
+> 
+> We need to set them one by one. In other platforms, if you set mutli
+> options at the same time, you may encounter error "setsockopt: Protocol
+> not available". Refer to
+> https://stackoverflow.com/questions/58599070/socket-programming-setsockopt-protocol-not-available
+> 
+> Signed-off-by: Tony He <huangya90@...277...>
+> ---
+>  tests/ovpn-cli.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tests/ovpn-cli.c b/tests/ovpn-cli.c
+> index c1cf3b4..68d28b4 100644
+> --- a/tests/ovpn-cli.c
+> +++ b/tests/ovpn-cli.c
+> @@ -426,9 +426,14 @@ static int ovpn_socket(struct ovpn_ctx *ctx, sa_family_t family, int proto)
+>  	}
+>  
+>  	int opt = 1;
+> -	ret = setsockopt(s, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
+> +	ret = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+>  	if (ret < 0) {
+> -		perror("setsockopt");
+> +		perror("setsockopt for SO_REUSEADDR");
+> +		return ret;
+> +	}
+> +	ret = setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+> +	if (ret < 0) {
+> +		perror("setsockopt for SO_REUSEPORT");
+>  		return ret;
+>  	}
+>  
+> 
 
 -- 
 Antonio Quartulli
