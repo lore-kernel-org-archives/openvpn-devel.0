@@ -1,6 +1,6 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu,  1 Apr 2021 12:59:18 +0200
-Message-Id: <20210401105918.19396-1-arne@...1227...>
+Date: Thu,  1 Apr 2021 13:00:03 +0200
+Message-Id: <20210401110003.19689-1-arne@...1227...>
 Subject: [Openvpn-devel] [PATCH v3] Always disable TLS renegotiations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -43,8 +43,8 @@ Patch V3: Only disable renegotiation where the SSL_OP_NO_RENEGOTIATION
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
  src/openvpn/ssl_mbedtls.c | 4 ++++
- src/openvpn/ssl_openssl.c | 4 ++++
- 2 files changed, 8 insertions(+)
+ src/openvpn/ssl_openssl.c | 6 ++++++
+ 2 files changed, 10 insertions(+)
 
 diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
 index 4626e9838..8917fb188 100644
@@ -62,17 +62,19 @@ index 4626e9838..8917fb188 100644
      /* Disable record splitting (for now).  OpenVPN assumes records are sent
       * unfragmented, and changing that will require thorough review and
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index b85f95be1..1f14b5d2c 100644
+index b85f95be1..cb8ac7727 100644
 --- a/src/openvpn/ssl_openssl.c
 +++ b/src/openvpn/ssl_openssl.c
-@@ -320,6 +320,10 @@ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+@@ -320,6 +320,12 @@ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
      sslopt |= SSL_OP_CIPHER_SERVER_PREFERENCE;
  #endif
      sslopt |= SSL_OP_NO_COMPRESSION;
 +    /* Disable TLS renegotiations. OpenVPN's renegotiation creates new SSL
 +     * session and does not depend on this feature. And TLS renegotiations have
 +     * been problematic in the past */
++#ifdef SSL_OP_NO_RENEGOTIATION
 +    sslopt |= SSL_OP_NO_RENEGOTIATION;
++#endif
  
      SSL_CTX_set_options(ctx->ctx, sslopt);
  
