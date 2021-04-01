@@ -1,15 +1,7 @@
-References: <CAAUX2SVQRn4zuDC947HE9M38nDNK1oNqyUv0GKeAw2dasHo62Q@...278...>
- <ad7e8624-6f87-2874-9786-d5de521bc6a2@...2181...>
- <f10fc09e-5d7b-c678-02f8-04f80f004b24@...2181...>
- <CAAUX2SU9u8sdsN08ynDTVD15q+qP0yOF-RxMzF5hMRg-pFCWFg@...278...>
- <CAAUX2SXiT1=-5HtKzQRay-R1zreT0_7QpEvjc40H3-0U2nqcAA@...278...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <69feee58-499e-98c7-5fec-e78368198d4a@...1227...>
-Date: Thu, 1 Apr 2021 12:47:46 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAAUX2SXiT1=-5HtKzQRay-R1zreT0_7QpEvjc40H3-0U2nqcAA@...278...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [ovpn-dco] sudden network disconnection
+Date: Thu,  1 Apr 2021 12:59:18 +0200
+Message-Id: <20210401105918.19396-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v3] Always disable TLS renegotiations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,27 +12,71 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Tony He <huangya90@...277...>, Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Am 01.04.21 um 04:38 schrieb Tony He:
-> Hi Antonio, Arne,
-> 
-> According to the dump, this issue is caused by fragment. If I set
-> link-mtu to 1472 in the condition of encryption "none", it's gone.
-> I also can reproduce the fragment in my Linux x86-64 PC and Linux VM .
-> They use kernel 5.4. Fragment affects the performance
-> in the low-end devices. It also consumes more CPU resource in low-end
-> and high-end devices.  If I'm not mistaken, we don't need
-> to set link-mtu without dco. Is this a bug? Can you reproduce? Do I
-> still need to upload my dump? If so, maybe I need to provide a link.
+Renegotiations have been troublesome in the past and also the recent OpenSSL
+security problem (CVE-2021-3449) is only exploitable if TLS renegotiation
+is enabled.
 
-Yes that is expected. Use tun-mtu 1400. The mtu 1500 leading to
-fragmentation is a longstanding issue but ist almost entirely masked by
-mssfix being enabled by default. In your dco to dco setup you probably
-don't have mssfix on either side unless you explicitly added iptables
-rules for that.
+mbed TLS disables it by default and says in the documentation:
 
+Warning: It is recommended to always disable renegotation unless you know you
+need it and you know what you're doing. In the past, there have been
+several issues associated with renegotiation or a poor understanding of
+its properties.
 
-Arne
+TLS renegotiation can be used to restart a session with diffferent
+parameters (e.g. now with client certs). This somethign that OpenVPN does
+not use.
+
+For OpenSSL 1.0.2 the workaround to disable renegotiation is rather
+cumbersome. So we keep this to 1.1.1 only since 1.0.2 is on its way to
+deprecation anyway.
+
+Furthermore because of all these problems, also TLS 1.3 completely
+drops support for renegotiations.
+
+Patch V2: Improve commments and commit message
+Patch V3: Only disable renegotiation where the SSL_OP_NO_RENEGOTIATION
+          define is available. LibreSSL, wolfSSL and OpenSSL 1.0.2 are
+          lacking this macro.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/ssl_mbedtls.c | 4 ++++
+ src/openvpn/ssl_openssl.c | 4 ++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 4626e9838..8917fb188 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -1086,6 +1086,10 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
+     {
+         mbedtls_ssl_conf_curves(ks_ssl->ssl_config, ssl_ctx->groups);
+     }
++    /* Disable TLS renegotiations. OpenVPN's renegotiation creates new SSL
++     * session and does not depend on this feature. And TLS renegotiations have
++     * been problematic in the past */
++    mbedtls_ssl_conf_renegotiation(ks_ssl->ssl_config, MBEDTLS_SSL_RENEGOTIATION_DISABLED);
+ 
+     /* Disable record splitting (for now).  OpenVPN assumes records are sent
+      * unfragmented, and changing that will require thorough review and
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index b85f95be1..1f14b5d2c 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -320,6 +320,10 @@ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+     sslopt |= SSL_OP_CIPHER_SERVER_PREFERENCE;
+ #endif
+     sslopt |= SSL_OP_NO_COMPRESSION;
++    /* Disable TLS renegotiations. OpenVPN's renegotiation creates new SSL
++     * session and does not depend on this feature. And TLS renegotiations have
++     * been problematic in the past */
++    sslopt |= SSL_OP_NO_RENEGOTIATION;
+ 
+     SSL_CTX_set_options(ctx->ctx, sslopt);
+ 
+-- 
+2.30.1
+
 
