@@ -1,18 +1,14 @@
-From: Antonio Quartulli <a@...2181...>
-References: <20201023113431.26691-1-arne@...1227...>
- <20201023113431.26691-2-arne@...1227...>
- <20201024194301.GB976@...1296...>
- <c0f890fb-bd6c-1e76-7316-590c95bfb34e@...1227...>
- <46c513d0-8b2f-d4db-427f-c8d39e8a659f@...2181...>
- <fdbab89d-80ba-07da-eb91-b23e116232d3@...2181...>
- <2f797214-318b-fb3d-944c-3bf3101aa504@...2181...>
-Message-ID: <c204b43e-1bad-d0c3-c80e-46c423f2bc87@...2181...>
-Date: Thu, 1 Apr 2021 00:26:13 +0200
 MIME-Version: 1.0
-In-Reply-To: <2f797214-318b-fb3d-944c-3bf3101aa504@...2181...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 2/5] xmit_hold is only required for
- port_share
+References: <CAAUX2SVQRn4zuDC947HE9M38nDNK1oNqyUv0GKeAw2dasHo62Q@...278...>
+ <ad7e8624-6f87-2874-9786-d5de521bc6a2@...2181...>
+ <f10fc09e-5d7b-c678-02f8-04f80f004b24@...2181...>
+ <CAAUX2SU9u8sdsN08ynDTVD15q+qP0yOF-RxMzF5hMRg-pFCWFg@...278...>
+In-Reply-To: <CAAUX2SU9u8sdsN08ynDTVD15q+qP0yOF-RxMzF5hMRg-pFCWFg@...278...>
+From: Tony He <huangya90@...277...>
+Date: Thu, 1 Apr 2021 10:38:15 +0800
+Message-ID: <CAAUX2SXiT1=-5HtKzQRay-R1zreT0_7QpEvjc40H3-0U2nqcAA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000463a6205bee020a6"
+Subject: Re: [Openvpn-devel] [ovpn-dco] sudden network disconnection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,23 +17,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Arne Schwabe <arne@...1227...>
 
-Hi,
+--000000000000463a6205bee020a6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-As discussed with Arne in our latest meeting, this patch will be ignored
-for now.
-Hope was that the xmit_hold filed could be eventually removed, but it
-turned out it is actually needed.
+Hi Antonio, Arne,
 
-For this reason there is no real interest at this point to carry on this
-change.
+According to the dump, this issue is caused by fragment. If I set link-mtu
+to 1472 in the condition of encryption "none", it's gone.
+I also can reproduce the fragment in my Linux x86-64 PC and Linux VM . They
+use kernel 5.4. Fragment affects the performance
+in the low-end devices. It also consumes more CPU resource in low-end and
+high-end devices.  If I'm not mistaken, we don't need
+to set link-mtu without dco. Is this a bug? Can you reproduce? Do I still
+need to upload my dump? If so, maybe I need to provide a link.
 
-Regards,
+Tony
 
--- 
-Antonio Quartulli
+Tony He <huangya90@...277...> =E4=BA=8E2021=E5=B9=B43=E6=9C=8831=E6=97=A5=
+=E5=91=A8=E4=B8=89 =E4=B8=8B=E5=8D=8811:42=E5=86=99=E9=81=93=EF=BC=9A
+
+>
+>
+> Antonio Quartulli <a@...2181...> =E4=BA=8E2021=E5=B9=B43=E6=9C=8831=E6=97=
+=A5=E5=91=A8=E4=B8=89 =E4=B8=8B=E5=8D=882:32=E5=86=99=E9=81=93=EF=BC=9A
+>
+>> Hi,
+>>
+>> On 31/03/2021 08:29, Antonio Quartulli wrote:
+>> > A packet dump of the whole session may also help.
+>>
+>> Before taking the dump, I would switch to encryption "none", as it will
+>> help understanding what is going on at all levels. (Assuming the problem
+>> will still appear)
+>>
+> Some issue.  Will provide dump or more log when I am free.
+>
+> Tony
+>
+
+--000000000000463a6205bee020a6
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi Antonio, Arne,<div><br></div><div>According to the dump=
+, this issue is caused by fragment. If I set link-mtu to 1472 in the condit=
+ion of encryption &quot;none&quot;, it&#39;s gone.</div><div>I also can rep=
+roduce the fragment in my Linux x86-64 PC and Linux VM . They use kernel 5.=
+4. Fragment affects the performance</div><div>in the low-end devices. It al=
+so consumes more CPU resource in low-end and high-end devices.=C2=A0 If I&#=
+39;m not mistaken, we don&#39;t need</div><div>to set link-mtu without dco.=
+ Is this a bug? Can you reproduce? Do I still need to upload my dump? If so=
+, maybe I need to provide a link.</div><div><br></div><div>Tony</div></div>=
+<br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">Tony H=
+e &lt;<a href=3D"mailto:huangya90@...277...">huangya90@...277...</a>&gt; =
+=E4=BA=8E2021=E5=B9=B43=E6=9C=8831=E6=97=A5=E5=91=A8=E4=B8=89 =E4=B8=8B=E5=
+=8D=8811:42=E5=86=99=E9=81=93=EF=BC=9A<br></div><blockquote class=3D"gmail_=
+quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,=
+204);padding-left:1ex"><div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div=
+ class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">Antonio Quartu=
+lli &lt;a@...2181...&gt; =E4=BA=8E2021=E5=B9=B43=E6=9C=8831=E6=97=A5=E5=91=
+=A8=E4=B8=89 =E4=B8=8B=E5=8D=882:32=E5=86=99=E9=81=93=EF=BC=9A<br></div><bl=
+ockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-lef=
+t:1px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
+<br>
+On 31/03/2021 08:29, Antonio Quartulli wrote:<br>
+&gt; A packet dump of the whole session may also help.<br>
+<br>
+Before taking the dump, I would switch to encryption &quot;none&quot;, as i=
+t will<br>
+help understanding what is going on at all levels. (Assuming the problem<br>
+will still appear)<br></blockquote><div>Some issue.=C2=A0 Will provide dump=
+ or more log when I am free.</div><div><br></div><div>Tony=C2=A0 <br></div>=
+</div></div>
+</blockquote></div>
+
+--000000000000463a6205bee020a6--
 
