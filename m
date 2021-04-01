@@ -1,12 +1,13 @@
-References: <20210401064431.20229-1-huangya90@...277...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <52faba14-989e-cda6-d93a-939706aeb0cd@...2181...>
-Date: Thu, 1 Apr 2021 09:33:37 +0200
+Date: Thu, 1 Apr 2021 09:38:28 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20210401073828.GH976@...1296...>
+References: <20210322084331.94770-1-gert@...1296...>
 MIME-Version: 1.0
-In-Reply-To: <20210401064431.20229-1-huangya90@...277...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] ovpn-dco: ovpn-cli: properly set socket
- options
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="S6ZsHKYz287jOV7o"
+Content-Disposition: inline
+In-Reply-To: <20210322084331.94770-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Add LZ4 prerequisite building.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,64 +16,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Tony He <huangya90@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Thanks!
+--S6ZsHKYz287jOV7o
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied with commit id:
-0048aac81c3e4dc3046121a7124da77233656e99
+Hi,
 
-Regards,
+On Mon, Mar 22, 2021 at 09:43:31AM +0100, Gert Doering wrote:
+> commit 24596b258aa3a removed the bundled compat-lz4 from OpenVPN, thus
+> breaking windows/nsis builds with default config ("--enable-lz4").
+>=20
+> Add download URLs and build invocation.  Since LZ4 has no "configure"
+> script, we pass the appropriate CC=3D/LD=3D/WINDRES=3D statement to "make=
+".
+>=20
+> Only static library is installed, since static linking is easier here
+> than to extend NSIS to bundle lz4.dll (+ whatever else is needed).
 
-On 01/04/2021 08:44, Tony He wrote:
-> Actully We can not set two options at the same time.
-> Old code:
-> 
-> setsockopt(s, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))
-> 
-> If you use strace to trace sys call, you will find only SO_REUSEPORT is
-> set:
->> setsockopt(3, SOL_SOCKET, SO_REUSEPORT, [1], 4) = 0
-> 
-> This is because SD_REUSEADDR is 2(0x0010) and SR_REUSEPORT is 15(0x1111) defined in
-> /usr/include/asm-generic/socket.h in X86-64 platform.
-> 
-> We need to set them one by one. In other platforms, if you set mutli
-> options at the same time, you may encounter error "setsockopt: Protocol
-> not available". Refer to
-> https://stackoverflow.com/questions/58599070/socket-programming-setsockopt-protocol-not-available
-> 
-> Signed-off-by: Tony He <huangya90@...277...>
-> ---
->  tests/ovpn-cli.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tests/ovpn-cli.c b/tests/ovpn-cli.c
-> index c1cf3b4..68d28b4 100644
-> --- a/tests/ovpn-cli.c
-> +++ b/tests/ovpn-cli.c
-> @@ -426,9 +426,14 @@ static int ovpn_socket(struct ovpn_ctx *ctx, sa_family_t family, int proto)
->  	}
->  
->  	int opt = 1;
-> -	ret = setsockopt(s, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
-> +	ret = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
->  	if (ret < 0) {
-> -		perror("setsockopt");
-> +		perror("setsockopt for SO_REUSEADDR");
-> +		return ret;
-> +	}
-> +	ret = setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
-> +	if (ret < 0) {
-> +		perror("setsockopt for SO_REUSEPORT");
->  		return ret;
->  	}
->  
-> 
+Just for the record.  Samuli has turned this into a PR for openvpn-build,
+  https://github.com/OpenVPN/openvpn-build/pull/210=20
+which got tested & ACKed by Lev and just merged by me.
 
--- 
-Antonio Quartulli
+So closing this on patchwork as "Accepted".
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--S6ZsHKYz287jOV7o
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJgZXhzAAoJEB2Cnv7KVigS9M0MAJHgDADLEdRHSnvUAx6/brSl
+B+aiOA9oXfL7g6nwgr4nWtb9kUtJ95ujG0JZ/a1hMYqm7svLCu6bx+olECMccMst
+f1MtGwkGJFd/fwpYE30YWK1IHoHDZqPE1nU/KcJ6VORxYM3siyieL8V3HRrgvLHW
+5NxY/tk55gLbm2swalDghJLpKHEJy/uCL2Wh5+VpfZXjaCoYDu5T14wJSliPAox5
+L4qPCFU3gmTejdNrzN/WRDLXBoz+jgf4Wr3DwQm13zx5TnVcDCLKqBTAvfZl+I5B
+Jn/wqQgy40BN6ggdPkZ/DIUSVUrJPRpzDjeu0lhafZ8rNRib6cMsc3IeB9PUkdkI
+3brevgXC/MpwXrfomeGVZt8FYGmqpcNEWmpTo/Ykcs1tvOqvZgAna3nxqMITNqzQ
+/q7Xe5Z821x0YmJu8LI3v0gh+rD4yLe+JnYqOVuuybZM8F3T6ZDBNmbiF4PRTB1J
+8Bhsad8ej9/Equ45EMdPvKNoX8IYRI2usqhc9sthsA==
+=0z7W
+-----END PGP SIGNATURE-----
+
+--S6ZsHKYz287jOV7o--
 
