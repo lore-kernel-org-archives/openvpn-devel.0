@@ -1,15 +1,8 @@
-References: <CAAUX2SVQRn4zuDC947HE9M38nDNK1oNqyUv0GKeAw2dasHo62Q@...278...>
- <ad7e8624-6f87-2874-9786-d5de521bc6a2@...2181...>
- <f10fc09e-5d7b-c678-02f8-04f80f004b24@...2181...>
- <CAAUX2SU9u8sdsN08ynDTVD15q+qP0yOF-RxMzF5hMRg-pFCWFg@...278...>
- <CAAUX2SXiT1=-5HtKzQRay-R1zreT0_7QpEvjc40H3-0U2nqcAA@...278...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <d967fd98-6dd9-fe05-cac8-83fb022e4ea4@...2181...>
-Date: Thu, 1 Apr 2021 08:35:52 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAAUX2SXiT1=-5HtKzQRay-R1zreT0_7QpEvjc40H3-0U2nqcAA@...278...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [ovpn-dco] sudden network disconnection
+From: Tony He <huangya90@...277...>
+Date: Thu,  1 Apr 2021 14:44:31 +0800
+Message-Id: <20210401064431.20229-1-huangya90@...277...>
+Subject: [Openvpn-devel] [PATCH] ovpn-dco: ovpn-cli: properly set socket
+ options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,37 +13,53 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Tony He <huangya90@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Arne Schwabe <arne@...1227...>
+To: a@...2181...
+Cc: openvpn-devel@lists.sourceforge.net, Tony He <huangya90@...277...>
 
-Hi Tony,
+Actully We can not set two options at the same time.
+Old code:
 
-On 01/04/2021 04:38, Tony He wrote:
-> Hi Antonio, Arne,
-> 
-> According to the dump, this issue is caused by fragment. If I set
-> link-mtu to 1472 in the condition of encryption "none", it's gone.
-> I also can reproduce the fragment in my Linux x86-64 PC and Linux VM .
-> They use kernel 5.4. Fragment affects the performance
-> in the low-end devices. It also consumes more CPU resource in low-end
-> and high-end devices.  If I'm not mistaken, we don't need
-> to set link-mtu without dco. Is this a bug? Can you reproduce? Do I
-> still need to upload my dump? If so, maybe I need to provide a link.
+setsockopt(s, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))
 
-You told us what you did to fix, but you haven't fully explained what
-the "broken setup" is. We don't have your configs, so we can't say what
-is creating the issue in your scenario.
+If you use strace to trace sys call, you will find only SO_REUSEPORT is
+set:
+>setsockopt(3, SOL_SOCKET, SO_REUSEPORT, [1], 4) = 0
 
-What is the MTU on the DCO and on the transport interfaces when the
-problem shows us?
+This is because SD_REUSEADDR is 2(0x0010) and SR_REUSEPORT is 15(0x1111) defined in
+/usr/include/asm-generic/socket.h in X86-64 platform.
 
-DCO should automatically come up with a working MTU, unless instructed
-to do differently or unless the transport interface has non standard MTU.
+We need to set them one by one. In other platforms, if you set mutli
+options at the same time, you may encounter error "setsockopt: Protocol
+not available". Refer to
+https://stackoverflow.com/questions/58599070/socket-programming-setsockopt-protocol-not-available
 
+Signed-off-by: Tony He <huangya90@...277...>
+---
+ tests/ovpn-cli.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-Regards,
-
-
+diff --git a/tests/ovpn-cli.c b/tests/ovpn-cli.c
+index c1cf3b4..68d28b4 100644
+--- a/tests/ovpn-cli.c
++++ b/tests/ovpn-cli.c
+@@ -426,9 +426,14 @@ static int ovpn_socket(struct ovpn_ctx *ctx, sa_family_t family, int proto)
+ 	}
+ 
+ 	int opt = 1;
+-	ret = setsockopt(s, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
++	ret = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+ 	if (ret < 0) {
+-		perror("setsockopt");
++		perror("setsockopt for SO_REUSEADDR");
++		return ret;
++	}
++	ret = setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
++	if (ret < 0) {
++		perror("setsockopt for SO_REUSEPORT");
+ 		return ret;
+ 	}
+ 
 -- 
-Antonio Quartulli
+2.17.1
+
 
