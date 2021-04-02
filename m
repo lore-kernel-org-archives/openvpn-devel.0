@@ -1,9 +1,10 @@
+Date: Fri, 2 Apr 2021 20:16:02 +0200 (CEST)
+Message-Id: <202104021816.132IG2w4032861@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Fri,  2 Apr 2021 19:34:14 +0200
-Message-Id: <20210402173414.14216-1-gert@...1296...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix potential NULL ptr crash if compiled
- with DMALLOC
+In-Reply-To: <E1lRfW3-0001sy-VM@...2508...>
+References: <E1lRfW3-0001sy-VM@...2508...>
+Subject: [Openvpn-devel] [PATCH applied] Re: reliable: retransmit if 3
+ follow-up ACKs are received
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,34 +15,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-In the unlikely case that we are compiled with -DDMALLOC *and*
-malloc() returns NULL, there is an uncaught memset() which would
-crash then.  Remove the memset(), as the right the next operation
-after check_malloc_return() is a mempcy() which will overwrite
-the whole memory block anyway.
+Your patch has been applied to the master branch.
 
-Trac: #586
+I have never looked into this reliable stuff before, and do not have
+a test environment with a) significant amounts of control plane traffic,
+and b) "just the right amount" of packet loss.  So I've just stared at
+the code a bit (seems reasonable) and tested client side on Linux
+(works).
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/buffer.c | 1 -
- 1 file changed, 1 deletion(-)
+I do wonder a bit under which condition this could fire - with the
+larger control channel packets we introduced a few years ago, I do
+not see many scenarios where "more than 3 packets" could be in-flight
+at the same time...  inital TLS handshake with very large DH groups?
 
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index 48bf25d5..e7031a4f 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -706,7 +706,6 @@ string_alloc(const char *str, struct gc_arena *gc)
-              */
- #ifdef DMALLOC
-             ret = openvpn_dmalloc(file, line, n);
--            memset(ret, 0, n);
- #else
-             ret = calloc(1, n);
- #endif
--- 
-2.26.2
+commit 203afbe95ee324ec941e35399f6655dc4f669f12
+Author: Steffan Karger
+Date:   Wed Mar 31 20:03:23 2021 +0200
+
+     reliable: retransmit if 3 follow-up ACKs are received
+
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <E1lRfW3-0001sy-VM@...2508...>
+     URL: https://www.mail-archive.com/search?l=mid&q=E1lRfW3-0001sy-VM@...2508...
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
