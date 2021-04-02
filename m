@@ -1,10 +1,10 @@
-Date: Fri, 2 Apr 2021 16:59:18 +0200 (CEST)
-Message-Id: <202104021459.132ExIaO016257@...2054...>
+Date: Fri, 2 Apr 2021 17:13:55 +0200 (CEST)
+Message-Id: <202104021513.132FDtGY018338@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210401131337.3684-11-arne@...1227...>
-References: <20210401131337.3684-11-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove thread_mode field of
- multi_context
+In-Reply-To: <20210401131337.3684-13-arne@...1227...>
+References: <20210401131337.3684-13-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Extract multi_assign_peer_id
+ into its own function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,23 +20,22 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Stared at code (with "diff -w"), and since we're not doing threads and
-the only value that ever is used is MC_SINGLE_THREADED, which is "1",
-this effectively is not changing any code flow.  Lightly tested on 
-FreeBSD client.
+Simple enough :-) - I have not tested this very very thoroughly, but
+one of my server test instances has 3 parallel clients, so I could at
+least see that they do get assigned different IDs (and that it compiles).
 
 Your patch has been applied to the master branch.
 
-commit 18b4a8380ba3237e870e84b25edf3f6e15145296
+commit 9fe0b2c287609cefe79aec30ff33f7a65cafd684
 Author: Arne Schwabe
-Date:   Thu Apr 1 15:13:33 2021 +0200
+Date:   Thu Apr 1 15:13:35 2021 +0200
 
-     Remove thread_mode field of multi_context
+     Extract multi_assign_peer_id into its own function
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210401131337.3684-11-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21952.html
+     Message-Id: <20210401131337.3684-13-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21959.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
