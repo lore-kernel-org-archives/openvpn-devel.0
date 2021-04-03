@@ -1,16 +1,10 @@
-Message-ID: <ec1f603d169af78b5fdf0cbc3b6f4e52.squirrel@...2556...>
-In-Reply-To: <a0648ba0-41ed-5eef-4f36-d41bcb636823@...2181...>
-References: <20210402134529.27866-1-gert@...1296...>
- <b92f02afa4d8156edd55c2126ae6352c.squirrel@...2260...>
- <20210402185720.GS976@...1296...>
- <c76250866ae96447a3ec712f04b4b346.squirrel@...2260...>
- <458e1fb5-a725-781b-c048-4f0e07440c7b@...1227...>
- <1cf9fe7a309a622eb0ddd79a34dd3af4.squirrel@...2556...>
- <a0648ba0-41ed-5eef-4f36-d41bcb636823@...2181...>
-Date: Sat, 3 Apr 2021 11:18:00 +0200
-From: "Simon Matter" <simon.matter@...2249...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Fix 'compress migrate' for 2.2 clients.
+Date: Sat, 3 Apr 2021 11:29:05 +0200 (CEST)
+Message-Id: <202104030929.1339T5nA062277@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210328090530.10653-1-arne@...1227...>
+References: <20210328090530.10653-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Deprecate non TLS mode in
+ OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,46 +14,38 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: Antonio Quartulli <a@...2181...>
-Cc: Arne Schwabe <arne@...1227...>, Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-> Hi,
->
-> On 03/04/2021 10:32, Simon Matter wrote:
->> I'm not asking to enable it by default or even compile it by default.
->> I'm
->> only asking to keep the code in so those who know what they are doing
->> can
->> enable it as a compile time option or expert mode option or something
->> like
->> that.
->
-> If you ask everybody, they always knew what they were doing, even when
-> something went wrong.
->
-> If there is no real usecase for a feature, and this feature is known to
-> be a potential risk, it is our duty to make sure people will not shoot
-> themselves in the foot.
->
-> If you have a use case that you think can benefit big time by having
-> compression, please feel free to describe it in details. Therefore might
-> be saner ways to address it.
->
->
-> If somebody feels being expert enough and knows what he is doing more
-> than the others, he can still re-add the feature (i.e. by reverting any
-> patch that might be removing the code) and recompile OpenVPN. The beauty
-> of Open Source :-)
+Acked-by: Gert Doering <gert@...1296...>
 
-I knew such answers will come :-)
+The code change is simple enough to review.  My p2p tests now complain
+to me in large letters that I should not be doing this (but still work
+fine).
 
-But, back to security, why do you still allow OpenVPN being built on M$
-Windows then? That's the real place where people are comforted with snake
-oil and may be tempted to feel safe when using an OpenVPN tunnel but in
-reality are vulnerable. Isn't this much worse than leaving compression in
-as a compile time option?
+I have spent a bit of time on the commit message and I hope I made it 
+even more clear.
 
-Simon
+I have added a note to Changes.rst
+
+Your patch has been applied to the master branch.
+
+commit b72b5ff5e80135e85acc54b807797947528f1963
+Author: Arne Schwabe
+Date:   Sun Mar 28 11:05:30 2021 +0200
+
+     Deprecate non TLS mode in OpenVPN
+
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210328090530.10653-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21868.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
