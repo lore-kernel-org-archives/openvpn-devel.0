@@ -1,14 +1,10 @@
-References: <20201215164221.5995-1-arne@...1227...>
- <20210328120241.27605-1-arne@...1227...>
- <20210328120241.27605-2-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <eb557415-fe3e-c118-4663-d8fdbaa26827@...2181...>
-Date: Sat, 3 Apr 2021 15:30:37 +0200
-MIME-Version: 1.0
-In-Reply-To: <20210328120241.27605-2-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v2 2/2] Fix condition to generate
- session keys
+Date: Sat, 3 Apr 2021 15:43:58 +0200 (CEST)
+Message-Id: <202104031343.133Dhwcc090161@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210403123000.17688-1-arne@...1227...>
+References: <20210403123000.17688-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: log file descriptor in more
+ socket related error messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,99 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Acked-by: Gert Doering <gert@...1296...>
 
-On 28/03/2021 14:02, Arne Schwabe wrote:
-> When OpenVPN sees a new (SSL) connection via HARD_RESET or SOFT_RESET with
-> the same port/ip as an existing session, it will give it the slot of the
-> renegotiation session (TM_UNTRUSTED). And when the authentication
-> succeeds it will replace the current session. In the case of a SOFT_RESET
-> this a renegotiation and we will generated data channel keys at the of
-> key_method_2_write function as key-id > 0.
-> 
-> For a HARD RESET the key-id is 0. Since we already have gone through
-> connect stages and set context_auth to CAS_SUCCEEDED, we don't
-> call all the connect stages again, and therefore also never call
-> multi_client_generate_tls_keys for this session.
-> 
-> This commit changes postponing the key generation to be done only if
-> the multi_connect has not yet been finished.
-> 
-> Patch V2: Explain better in the commit message why this change is done.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+Changes make sense now :-) - only compile tested, I have no way to trigger
+these error messages in regular use.
 
-Thanks for the more exhaustive explanation.
+Your patch has been applied to the master branch.
 
-After a short discussion with Arne, I was able to easily replicate this
-bug and double check that this patch is indeed fixing it.
+commit 8ccce69dc1b7ffdb533939cf5e5d054c64e23617
+Author: Arne Schwabe
+Date:   Sat Apr 3 14:30:00 2021 +0200
 
-Code looks good, except for one line that is not indented properly.
-See below:
+     log file descriptor in more socket related error messages
 
-> ---
->  src/openvpn/ssl.c | 20 +++++++++++++-------
->  1 file changed, 13 insertions(+), 7 deletions(-)
-> 
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 893e5753d..0da558392 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -2240,7 +2240,8 @@ error:
->   * to the TLS control channel (cleartext).
->   */
->  static bool
-> -key_method_2_write(struct buffer *buf, struct tls_session *session)
-> +key_method_2_write(struct buffer *buf, struct tls_multi *multi,
-> +                   struct tls_session *session)
->  {
->      struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
->  
-> @@ -2331,12 +2332,17 @@ key_method_2_write(struct buffer *buf, struct tls_session *session)
->          goto error;
->      }
->  
-> -    /* Generate tunnel keys if we're a TLS server.
-> -     * If we're a p2mp server and IV_NCP >= 2 is negotiated, the first key
-> -     * generation is postponed until after the pull/push, so we can process pushed
-> -     * cipher directives.
-> +    /*
-> +     * Generate tunnel keys if we're a TLS server.
-> +     *
-> +     * If we're a p2mp server to allow NCP, the first key
-> +     * generation is postponed until after the connect script finished and the
-> +     * NCP options can be processed. Since that always happens at after connect
-> +     * script options are available the CAS_SUCCEEDED status is identical to
-> +     * NCP options are processed and we have no extra state for NCP finished.
->       */
-> -    if (session->opt->server && !(session->opt->mode == MODE_SERVER && ks->key_id <= 0))
-> +    if (session->opt->server && (session->opt->mode != MODE_SERVER
-> +            || multi->multi_state == CAS_SUCCEEDED))
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210403123000.17688-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22008.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Indentation is bogus here.
 
->      {
->          if (ks->authenticated > KS_AUTH_FALSE)
->          {
-> @@ -2826,7 +2832,7 @@ tls_process(struct tls_multi *multi,
->          if (!buf->len && ((ks->state == S_START && !session->opt->server)
->                            || (ks->state == S_GOT_KEY && session->opt->server)))
->          {
-> -            if (!key_method_2_write(buf, session))
-> +            if (!key_method_2_write(buf, multi, session))
->              {
->                  goto error;
->              }
-> 
+--
+kind regards,
 
-Other than that:
+Gert Doering
 
-Acked-by: Antonio Quartulli <antonio@...515...>
-
--- 
-Antonio Quartulli
 
