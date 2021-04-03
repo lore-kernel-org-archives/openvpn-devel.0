@@ -1,10 +1,18 @@
-Date: Sat, 3 Apr 2021 11:49:55 +0200 (CEST)
-Message-Id: <202104030949.1339ntpL084152@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210401123751.31756-1-arne@...1227...>
-References: <20210401123751.31756-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove deprecated option
- '--keysize'
+Message-ID: <e477a1210a2efee09ee2eaccb604e164.squirrel@...2556...>
+In-Reply-To: <9b3b2029-bb7d-ab1d-a69b-0d910565fad2@...2181...>
+References: <20210402134529.27866-1-gert@...1296...>
+ <b92f02afa4d8156edd55c2126ae6352c.squirrel@...2260...>
+ <20210402185720.GS976@...1296...>
+ <c76250866ae96447a3ec712f04b4b346.squirrel@...2260...>
+ <458e1fb5-a725-781b-c048-4f0e07440c7b@...1227...>
+ <1cf9fe7a309a622eb0ddd79a34dd3af4.squirrel@...2556...>
+ <a0648ba0-41ed-5eef-4f36-d41bcb636823@...2181...>
+ <ec1f603d169af78b5fdf0cbc3b6f4e52.squirrel@...2556...>
+ <9b3b2029-bb7d-ab1d-a69b-0d910565fad2@...2181...>
+Date: Sat, 3 Apr 2021 11:52:59 +0200
+From: "Simon Matter" <simon.matter@...2249...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH] Fix 'compress migrate' for 2.2 clients.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,34 +22,25 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
+To: Antonio Quartulli <a@...2181...>
+Cc: Arne Schwabe <arne@...1227...>, Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+> Hi,
+>
+> On 03/04/2021 11:18, Simon Matter wrote:
+>>> If you have a use case that you think can benefit big time by having
+>>> compression, please feel free to describe it in details. Therefore
+>>> might
+>>> be saner ways to address it.
+>>>
+>
+> It sounds like there is no answer to this?
+> Then why are we even discussing further?
 
-I had conflicts in init.c and options.c due to the previously-merged
-"TLS libraries without BF-CBC" patch, but that was trivially resolved
-(3 calls to "init_key_type()", remove the keysize option from all of
-them).  To be sure I didn't break anything, client-side tested with
-mbedtls and OpenSSL.
+It could be at least one feature to prevent people from moving over to
+WireGuard?
 
-commit 961db602592cf9021b116fd555a8b09577d04683
-Author: Arne Schwabe
-Date:   Thu Apr 1 14:37:51 2021 +0200
-
-     Remove deprecated option '--keysize'
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20210401123751.31756-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21943.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+Simon
 
 
