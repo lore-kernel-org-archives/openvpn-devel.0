@@ -1,6 +1,5 @@
-Date: Sat, 3 Apr 2021 11:56:40 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20210403095640.GW976@...1296...>
+Message-ID: <5f61a142d6c8fc91223af9b89cf2772b.squirrel@...2556...>
+In-Reply-To: <20210403095640.GW976@...1296...>
 References: <20210402134529.27866-1-gert@...1296...>
  <b92f02afa4d8156edd55c2126ae6352c.squirrel@...2260...>
  <20210402185720.GS976@...1296...>
@@ -11,11 +10,10 @@ References: <20210402134529.27866-1-gert@...1296...>
  <ec1f603d169af78b5fdf0cbc3b6f4e52.squirrel@...2556...>
  <9b3b2029-bb7d-ab1d-a69b-0d910565fad2@...2181...>
  <e477a1210a2efee09ee2eaccb604e164.squirrel@...2556...>
+ <20210403095640.GW976@...1296...>
+Date: Sat, 3 Apr 2021 12:06:41 +0200
+From: "Simon Matter" <simon.matter@...2249...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="z57goIx8GvGkKnvt"
-Content-Disposition: inline
-In-Reply-To: <e477a1210a2efee09ee2eaccb604e164.squirrel@...2556...>
 Subject: Re: [Openvpn-devel] [PATCH] Fix 'compress migrate' for 2.2 clients.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -25,62 +23,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Matter <simon.matter@...2249...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+To: Gert Doering <gert@...1296...>
 Cc: Antonio Quartulli <a@...2181...>, Arne Schwabe <arne@...1227...>, Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---z57goIx8GvGkKnvt
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+> Hi,
+>
+> On Sat, Apr 03, 2021 at 11:52:59AM +0200, Simon Matter wrote:
+>> > It sounds like there is no answer to this?
+>> > Then why are we even discussing further?
+>>
+>> It could be at least one feature to prevent people from moving over to
+>> WireGuard?
+>
+> Unless people can come up with real use cases why compression makes
+> sense for them, and just move over to wireguard "BECAUSE IT HAS NO
+> COMPRESSION EITHER, BUT YOU TOOK IT AWAY FROM ME!! STAMP FOOT!" this
+> is hardly a compelling argument.
 
-Hi,
+Our use case is simple, we don't want ANY application in our company to
+consume more WAN bandwidth than is absolutely needed. Of course we're
+using compression like in rsync where it's possible, but that's not
+possible everywhere and with every application. So we also try to catch
+those cases by using compression over the VPN links. In case there is no
+compressible data, it doesn't hurt much, but it can help a lot with
+compressible data.
 
-On Sat, Apr 03, 2021 at 11:52:59AM +0200, Simon Matter wrote:
-> > It sounds like there is no answer to this?
-> > Then why are we even discussing further?
->=20
-> It could be at least one feature to prevent people from moving over to
-> WireGuard?
+That's the only reason why OpenVPN was better for us.
 
-Unless people can come up with real use cases why compression makes
-sense for them, and just move over to wireguard "BECAUSE IT HAS NO
-COMPRESSION EITHER, BUT YOU TOOK IT AWAY FROM ME!! STAMP FOOT!" this
-is hardly a compelling argument.
+Simon
 
-Wireguard is a good protocol, and if what it can do for you is *enough*,
-it might be a better solution.
-
-OpenVPN solves a vastly larger problem space, so any comparision to
-wireguard based on features that wireguard doesn't have is a bit weird.
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---z57goIx8GvGkKnvt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJgaDvYAAoJEB2Cnv7KVigSC30L/3bAKtK44M6LCvbd7NEr9OEC
-Fh8RfG5BQMYezUqHdfxDnim5oYhJsxSdNV42gtkYluxTfVCZvnooIsaL3/S8TXNl
-7HNugOThddUXGNCsP91cm46vEBYJgPH5dOMDRdf1rCyTUdFdXWB9F1j2ruXoglPr
-EoTF86zEZj+ryRGfQ3xdS0Zq2+9dUmOVZZjPfLtvTNvdS65udKgdzJW1YQefQYdb
-8+w9CVSN995W/Zkuhlvw6zwMjDF6XhWWzOW3xbAkwh4bA6IC22zOSC+fdyFur8md
-epERkN48O/Tfa6jGf+/VFePJ5KMQY/Uiz9nubG1uV7xPvIQWiGfUWhuhhYtmlKXr
-iQwkDiuXTCvsi+YDMsMaqi2D/LHhG69y9bIf59I96DS+zAbWGz5CnzAUNmrwCaPq
-r4FgmXMU4JAtPdIDDn6K47EdR+2AkkV8JVmYEx5Lg6g3GW4dD5tCdd01ocFK+t2d
-GCsKHLfcm7289rM8A+v0dulr1107aNCogOcO7KkV+g==
-=1PeF
------END PGP SIGNATURE-----
-
---z57goIx8GvGkKnvt--
 
