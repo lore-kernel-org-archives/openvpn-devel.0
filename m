@@ -1,10 +1,22 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Sat,  3 Apr 2021 14:30:00 +0200
-Message-Id: <20210403123000.17688-1-arne@...1227...>
-In-Reply-To: <0210401131337.3684-14-arne@...1227...>
-References: <0210401131337.3684-14-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2] log file descriptor in more socket
- related error messages
+Message-ID: <704cc498609f9451a1af5010669452b4.squirrel@...2556...>
+In-Reply-To: <768c58ba-e87b-4e96-0403-61fece8297d0@...2181...>
+References: <20210402134529.27866-1-gert@...1296...>
+ <b92f02afa4d8156edd55c2126ae6352c.squirrel@...2260...>
+ <20210402185720.GS976@...1296...>
+ <c76250866ae96447a3ec712f04b4b346.squirrel@...2260...>
+ <458e1fb5-a725-781b-c048-4f0e07440c7b@...1227...>
+ <1cf9fe7a309a622eb0ddd79a34dd3af4.squirrel@...2556...>
+ <a0648ba0-41ed-5eef-4f36-d41bcb636823@...2181...>
+ <ec1f603d169af78b5fdf0cbc3b6f4e52.squirrel@...2556...>
+ <9b3b2029-bb7d-ab1d-a69b-0d910565fad2@...2181...>
+ <e477a1210a2efee09ee2eaccb604e164.squirrel@...2556...>
+ <20210403095640.GW976@...1296...>
+ <5f61a142d6c8fc91223af9b89cf2772b.squirrel@...2556...>
+ <768c58ba-e87b-4e96-0403-61fece8297d0@...2181...>
+Date: Sat, 3 Apr 2021 15:07:11 +0200
+From: "Simon Matter" <simon.matter@...2249...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH] Fix 'compress migrate' for 2.2 clients.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,76 +26,51 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
+To: Antonio Quartulli <a@...2181...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-This add the fd to the epoll event error message and the x_check_status
-message. This helps debugging when thing go wrong with event handling.
+> Hi,
+>
+> On 03/04/2021 12:06, Simon Matter wrote:
+>> Our use case is simple, we don't want ANY application in our company to
+>> consume more WAN bandwidth than is absolutely needed. Of course we're
+>> using compression like in rsync where it's possible, but that's not
+>> possible everywhere and with every application. So we also try to catch
+>> those cases by using compression over the VPN links. In case there is no
+>> compressible data, it doesn't hurt much, but it can help a lot with
+>> compressible data.
+>
+> Out of curiosity, would you be able to provide statistics of how much
+> you are saving and with which application protocol?
 
-Also add logging when ep_del fails to remove a socket from the structure.
-In constract to ep_ctl that has this as a FATAL message (M_ERR), we only
-log here since the code has been ignoring the status forever there might
-be corner cases where a FATAL message could trigger an unintened regression.
+No, I can not show applications but I can tell you it's from a huge number
+of different devices. There are thin clients but also a zoo of document
+printers, different label printer types, barcode scanning devices, payment
+terminals, DECT VoIP phones, alarm systems, lots of embedded systems,
+document scanners, video cameras and the list goes on. It's quite
+difficult to analyze every protocol and see how or if it can be compressed
+which is why it's nice to know things get at least compressed when running
+over the WAN links.
 
-PATCH v2: Fix wrong order of fd,code in printed message.
+Example status shows this:
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/error.c | 8 ++++----
- src/openvpn/event.c | 8 ++++++--
- 2 files changed, 10 insertions(+), 6 deletions(-)
+Apr  3 15:00:30 gw-X1 openvpn[1477]: pre-compress bytes,833300152
+Apr  3 15:00:30 gw-X1 openvpn[1477]: post-compress bytes,796650159
+Apr  3 15:00:30 gw-X1 openvpn[1477]: pre-decompress bytes,343572096
+Apr  3 15:00:30 gw-X1 openvpn[1477]: post-decompress bytes,510118472
 
-diff --git a/src/openvpn/error.c b/src/openvpn/error.c
-index e6f7ff0ff..93091fce8 100644
---- a/src/openvpn/error.c
-+++ b/src/openvpn/error.c
-@@ -690,15 +690,15 @@ x_check_status(int status,
-         {
-             if (extended_msg)
-             {
--                msg(x_cs_info_level, "%s %s [%s]: %s (code=%d)", description,
-+                msg(x_cs_info_level, "%s %s [%s]: %s (fd=%d,code=%d)", description,
-                     sock ? proto2ascii(sock->info.proto, sock->info.af, true) : "",
--                    extended_msg, strerror(my_errno), my_errno);
-+                    extended_msg, strerror(my_errno), sock ? sock->sd : -1, my_errno);
-             }
-             else
-             {
--                msg(x_cs_info_level, "%s %s: %s (code=%d)", description,
-+                msg(x_cs_info_level, "%s %s: %s (fd=%d,code=%d)", description,
-                     sock ? proto2ascii(sock->info.proto, sock->info.af, true) : "",
--                    strerror(my_errno), my_errno);
-+                    strerror(my_errno), sock ? sock->sd : -1, my_errno);
-             }
- 
-             if (x_cs_err_delay_ms)
-diff --git a/src/openvpn/event.c b/src/openvpn/event.c
-index 49dfa861c..14a25155c 100644
---- a/src/openvpn/event.c
-+++ b/src/openvpn/event.c
-@@ -555,7 +555,10 @@ ep_del(struct event_set *es, event_t event)
- 
-     ASSERT(!eps->fast);
-     CLEAR(ev);
--    epoll_ctl(eps->epfd, EPOLL_CTL_DEL, event, &ev);
-+    if (epoll_ctl(eps->epfd, EPOLL_CTL_DEL, event, &ev) < 0)
-+    {
-+        msg(M_WARN|M_ERRNO, "EVENT: epoll_ctl EPOLL_CTL_DEL failed, sd=%d", (int)event);
-+    }
- }
- 
- static void
-@@ -844,7 +847,8 @@ po_wait(struct event_set *es, const struct timeval *tv, struct event_set_return
-             }
-             else if (pfdp->revents)
-             {
--                msg(D_EVENT_ERRORS, "Error: poll: unknown revents=0x%04x", (unsigned int)pfdp->revents);
-+                msg(D_EVENT_ERRORS, "Error: poll: unknown revents=0x%04x for fd=%d",
-+                    (unsigned int)pfdp->revents, pfdp->fd);
-             }
-             ++pfdp;
-         }
--- 
-2.30.1
+Apr  3 15:00:09 gw-X2 openvpn[1502]: pre-compress bytes,3152837867
+Apr  3 15:00:09 gw-X2 openvpn[1502]: post-compress bytes,3142711232
+Apr  3 15:00:09 gw-X2 openvpn[1502]: pre-decompress bytes,3045691308
+Apr  3 15:00:09 gw-X2 openvpn[1502]: post-decompress bytes,4980566715
+
+It shows at least that it does something. It's clear that the gain is not
+so big but, this status doesn't show the negative effect that one stupid
+protocol can have on the connection. If there is one device doing lots of
+compressible traffic during half an hour per day, this can greatly disturb
+connectivity during the half an hour. That's half an hour too much.
+
+Simon
 
 
