@@ -1,22 +1,14 @@
-Message-ID: <704cc498609f9451a1af5010669452b4.squirrel@...2556...>
-In-Reply-To: <768c58ba-e87b-4e96-0403-61fece8297d0@...2181...>
-References: <20210402134529.27866-1-gert@...1296...>
- <b92f02afa4d8156edd55c2126ae6352c.squirrel@...2260...>
- <20210402185720.GS976@...1296...>
- <c76250866ae96447a3ec712f04b4b346.squirrel@...2260...>
- <458e1fb5-a725-781b-c048-4f0e07440c7b@...1227...>
- <1cf9fe7a309a622eb0ddd79a34dd3af4.squirrel@...2556...>
- <a0648ba0-41ed-5eef-4f36-d41bcb636823@...2181...>
- <ec1f603d169af78b5fdf0cbc3b6f4e52.squirrel@...2556...>
- <9b3b2029-bb7d-ab1d-a69b-0d910565fad2@...2181...>
- <e477a1210a2efee09ee2eaccb604e164.squirrel@...2556...>
- <20210403095640.GW976@...1296...>
- <5f61a142d6c8fc91223af9b89cf2772b.squirrel@...2556...>
- <768c58ba-e87b-4e96-0403-61fece8297d0@...2181...>
-Date: Sat, 3 Apr 2021 15:07:11 +0200
-From: "Simon Matter" <simon.matter@...2249...>
+References: <20201215164221.5995-1-arne@...1227...>
+ <20210328120241.27605-1-arne@...1227...>
+ <20210328120241.27605-2-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <eb557415-fe3e-c118-4663-d8fdbaa26827@...2181...>
+Date: Sat, 3 Apr 2021 15:30:37 +0200
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Fix 'compress migrate' for 2.2 clients.
+In-Reply-To: <20210328120241.27605-2-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v2 2/2] Fix condition to generate
+ session keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,52 +17,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: Antonio Quartulli <a@...2181...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-> Hi,
->
-> On 03/04/2021 12:06, Simon Matter wrote:
->> Our use case is simple, we don't want ANY application in our company to
->> consume more WAN bandwidth than is absolutely needed. Of course we're
->> using compression like in rsync where it's possible, but that's not
->> possible everywhere and with every application. So we also try to catch
->> those cases by using compression over the VPN links. In case there is no
->> compressible data, it doesn't hurt much, but it can help a lot with
->> compressible data.
->
-> Out of curiosity, would you be able to provide statistics of how much
-> you are saving and with which application protocol?
+Hi,
 
-No, I can not show applications but I can tell you it's from a huge number
-of different devices. There are thin clients but also a zoo of document
-printers, different label printer types, barcode scanning devices, payment
-terminals, DECT VoIP phones, alarm systems, lots of embedded systems,
-document scanners, video cameras and the list goes on. It's quite
-difficult to analyze every protocol and see how or if it can be compressed
-which is why it's nice to know things get at least compressed when running
-over the WAN links.
+On 28/03/2021 14:02, Arne Schwabe wrote:
+> When OpenVPN sees a new (SSL) connection via HARD_RESET or SOFT_RESET with
+> the same port/ip as an existing session, it will give it the slot of the
+> renegotiation session (TM_UNTRUSTED). And when the authentication
+> succeeds it will replace the current session. In the case of a SOFT_RESET
+> this a renegotiation and we will generated data channel keys at the of
+> key_method_2_write function as key-id > 0.
+> 
+> For a HARD RESET the key-id is 0. Since we already have gone through
+> connect stages and set context_auth to CAS_SUCCEEDED, we don't
+> call all the connect stages again, and therefore also never call
+> multi_client_generate_tls_keys for this session.
+> 
+> This commit changes postponing the key generation to be done only if
+> the multi_connect has not yet been finished.
+> 
+> Patch V2: Explain better in the commit message why this change is done.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Example status shows this:
+Thanks for the more exhaustive explanation.
 
-Apr  3 15:00:30 gw-X1 openvpn[1477]: pre-compress bytes,833300152
-Apr  3 15:00:30 gw-X1 openvpn[1477]: post-compress bytes,796650159
-Apr  3 15:00:30 gw-X1 openvpn[1477]: pre-decompress bytes,343572096
-Apr  3 15:00:30 gw-X1 openvpn[1477]: post-decompress bytes,510118472
+After a short discussion with Arne, I was able to easily replicate this
+bug and double check that this patch is indeed fixing it.
 
-Apr  3 15:00:09 gw-X2 openvpn[1502]: pre-compress bytes,3152837867
-Apr  3 15:00:09 gw-X2 openvpn[1502]: post-compress bytes,3142711232
-Apr  3 15:00:09 gw-X2 openvpn[1502]: pre-decompress bytes,3045691308
-Apr  3 15:00:09 gw-X2 openvpn[1502]: post-decompress bytes,4980566715
+Code looks good, except for one line that is not indented properly.
+See below:
 
-It shows at least that it does something. It's clear that the gain is not
-so big but, this status doesn't show the negative effect that one stupid
-protocol can have on the connection. If there is one device doing lots of
-compressible traffic during half an hour per day, this can greatly disturb
-connectivity during the half an hour. That's half an hour too much.
+> ---
+>  src/openvpn/ssl.c | 20 +++++++++++++-------
+>  1 file changed, 13 insertions(+), 7 deletions(-)
+> 
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index 893e5753d..0da558392 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -2240,7 +2240,8 @@ error:
+>   * to the TLS control channel (cleartext).
+>   */
+>  static bool
+> -key_method_2_write(struct buffer *buf, struct tls_session *session)
+> +key_method_2_write(struct buffer *buf, struct tls_multi *multi,
+> +                   struct tls_session *session)
+>  {
+>      struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
+>  
+> @@ -2331,12 +2332,17 @@ key_method_2_write(struct buffer *buf, struct tls_session *session)
+>          goto error;
+>      }
+>  
+> -    /* Generate tunnel keys if we're a TLS server.
+> -     * If we're a p2mp server and IV_NCP >= 2 is negotiated, the first key
+> -     * generation is postponed until after the pull/push, so we can process pushed
+> -     * cipher directives.
+> +    /*
+> +     * Generate tunnel keys if we're a TLS server.
+> +     *
+> +     * If we're a p2mp server to allow NCP, the first key
+> +     * generation is postponed until after the connect script finished and the
+> +     * NCP options can be processed. Since that always happens at after connect
+> +     * script options are available the CAS_SUCCEEDED status is identical to
+> +     * NCP options are processed and we have no extra state for NCP finished.
+>       */
+> -    if (session->opt->server && !(session->opt->mode == MODE_SERVER && ks->key_id <= 0))
+> +    if (session->opt->server && (session->opt->mode != MODE_SERVER
+> +            || multi->multi_state == CAS_SUCCEEDED))
 
-Simon
+Indentation is bogus here.
 
+>      {
+>          if (ks->authenticated > KS_AUTH_FALSE)
+>          {
+> @@ -2826,7 +2832,7 @@ tls_process(struct tls_multi *multi,
+>          if (!buf->len && ((ks->state == S_START && !session->opt->server)
+>                            || (ks->state == S_GOT_KEY && session->opt->server)))
+>          {
+> -            if (!key_method_2_write(buf, session))
+> +            if (!key_method_2_write(buf, multi, session))
+>              {
+>                  goto error;
+>              }
+> 
+
+Other than that:
+
+Acked-by: Antonio Quartulli <antonio@...515...>
+
+-- 
+Antonio Quartulli
 
