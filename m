@@ -1,13 +1,12 @@
-References: <20210402112403.6873-1-maximilian.fillinger@...2507...>
- <E1lSI8m-0000tY-FA@...2508...>
+References: <E1lSJph-0004I0-FL@...2479...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <d2ba0cf7-f0f9-29b5-8ddd-f649628470ed@...1227...>
-Date: Sat, 3 Apr 2021 14:08:53 +0200
+Message-ID: <8b081dd5-2c1d-c71b-8af0-d4c886e4260e@...1227...>
+Date: Sat, 3 Apr 2021 14:11:43 +0200
 MIME-Version: 1.0
-In-Reply-To: <E1lSI8m-0000tY-FA@...2508...>
+In-Reply-To: <E1lSJph-0004I0-FL@...2479...>
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 1/1] Let mbedtls_ssl_configs find
- reloaded CRLs
+Subject: Re: [Openvpn-devel] [PATCH] Change CTR DRBG update function call to
+ new mbedtls 2.16.0 API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,30 +18,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 To: Max Fillinger <maximilian.fillinger@...2507...>, openvpn-devel@lists.sourceforge.net
-Cc: Maximilian Fillinger <maximilian.fillinger@...1435...>
 
-
->  }
+Am 02.04.21 um 15:26 schrieb Max Fillinger:
+> From: Uipko Berghuis <uipko.berghuis@...1435...>
+> 
+> In mbedtls 2.16.0 mbedtls_ctr_drbg_update() changed to
+> mbedtls_ctr_drbg_update_ret(). Change the function name and handle
+> the new return value error code.
+> ---
+>  src/openvpn/ssl_mbedtls.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+> index 5d7af351..56e9f045 100644
+> --- a/src/openvpn/ssl_mbedtls.c
+> +++ b/src/openvpn/ssl_mbedtls.c
+> @@ -950,7 +950,10 @@ tls_ctx_personalise_random(struct tls_root_ctx *ctx)
 >  
->  void
-> +make_empty_crl(struct tls_root_ctx *ctx)
-> +{
-> +    if (ctx->crl == NULL)
-> +    {
-> +        ALLOC_OBJ_CLEAR(ctx->crl, mbedtls_x509_crl);
-> +    }
-> +    else
-> +    {
-> +        mbedtls_x509_crl_free(ctx->crl);
-> +    }
-> +}
-> +
+>          if (0 != memcmp(old_sha256_hash, sha256_hash, sizeof(sha256_hash)))
+>          {
+> -            mbedtls_ctr_drbg_update(cd_ctx, sha256_hash, 32);
+> +            if (!mbed_ok(mbedtls_ctr_drbg_update_ret(cd_ctx, sha256_hash, 32)))
+> +            {
+> +                msg(M_WARN, "WARNING: failed to personalise random, could not update CTR_DRBG");
+> +            }
+>              memcpy(old_sha256_hash, sha256_hash, sizeof(old_sha256_hash));
+>          }
+>      }
+> 
 
-This function is confsung me. This needs at least more documentation
-what it is doing as docstring etc. I would also expect to have
-mbedtls_x509_crl_init to init the struct and not just a malloc that set
-the whole structure to zero. And mbedtls_x509_crl_free does from its
-description doesn't guarantee that the object is left in a proper state.
+This change will break compilation with anything that is < 2.16.0.
 
 Arne
 
