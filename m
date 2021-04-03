@@ -1,13 +1,14 @@
-Date: Sat, 03 Apr 2021 00:43:07 +0000
+Date: Sat, 03 Apr 2021 00:50:02 +0000
 From: tincantech <tincantech@...2282...>
 Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <xx5pKKGcBoHPi9MbtLAvgrICRU1W-wlYkoZm0zYMwuQE_0aYiVbDhjCN78I5SxFx_vUBCgsbNrFnzb6UukrU330r8IUE-7IaRMdtILmOfSw=@protonmail.com>
-In-Reply-To: <b92f02afa4d8156edd55c2126ae6352c.squirrel@...2260...>
+Message-ID: <mSxZB00t9b4cABvzKPS4jac61QSkaLid-S0WFfxWVS5WwU7w3IGve-jSptVIuKqsFQBKfp9QOfiwqXL1UcfmuFXa1rObbF1JDM6738Grnbk=@protonmail.com>
+In-Reply-To: <xx5pKKGcBoHPi9MbtLAvgrICRU1W-wlYkoZm0zYMwuQE_0aYiVbDhjCN78I5SxFx_vUBCgsbNrFnzb6UukrU330r8IUE-7IaRMdtILmOfSw=@protonmail.com>
 References: <20210402134529.27866-1-gert@...1296...>
  <b92f02afa4d8156edd55c2126ae6352c.squirrel@...2260...>
+ <xx5pKKGcBoHPi9MbtLAvgrICRU1W-wlYkoZm0zYMwuQE_0aYiVbDhjCN78I5SxFx_vUBCgsbNrFnzb6UukrU330r8IUE-7IaRMdtILmOfSw=@protonmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="b1_Eep17LjG5oOdrRVvziGtLhkFVuWjpsOKQiehgA4iUlg"
+ boundary="b1_WGWfx1f8VpORxxcu2EyiefXrndq4Se22URwLAj6s0k"
 Subject: Re: [Openvpn-devel] [PATCH] Fix 'compress migrate' for 2.2 clients.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,12 +18,12 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Matter <simon.matter@...2249...>
-Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: tincantech <tincantech@...2282...>
+Cc: Simon Matter <simon.matter@...2249...>, Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
 
---b1_Eep17LjG5oOdrRVvziGtLhkFVuWjpsOKQiehgA4iUlg
+--b1_WGWfx1f8VpORxxcu2EyiefXrndq4Se22URwLAj6s0k
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -36,53 +37,38 @@ Sent with ProtonMail Secure Email.
 
 =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
 ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-On Friday, 2 April 2021 19:35, Simon Matter <simon.matter@...2249...> wrote:
+On Saturday, 3 April 2021 01:43, tincantech via Openvpn-devel <openvpn-deve=
+l@lists.sourceforge.net> wrote:
 
-> > Commit 8fa8a17528c001a introduces "compress migrate" to move old clients
-> > that have "compress" or "comp-lzo" in their config towards a connection
-> > without compression. This is done by looking at incoming OCC strings
-> > to see if the client has compression enabled, and at incoming IV_
-> > strings to see whether it can do "compress stub-v2" or needs to be sent
-> > "comp-lzo no".
+
 >
-> Hi,
->
-> What I'm still wondering is why is compression so dangerous with OpenVPN
-> but not so with things like SSH or SCP?
+> But i believe you need to have access to both the compressed VPN data
+> and the uncompressed https packets to exploit such an attack.
 >
 
-Simon, I believe the detail which you have over-looked is this:
+Edit:
+The attacker also needs to control the https website that the victim visits.
 
-A lot of people use openvpn as a client to VPN service providers believing
-things which are not true.  They then surf the web with over-confidence.
+It's a tall order .. but do you really want to argue with the sort of people
+that figured out how to do it ?
 
-In such a scenario, while pulling off such an attack on a compressed VPN
-stream may seem remote, when you have such a vast number of victims to
-potentially abuse, the temptation to do so and potential success rate
-increase dramatically.
+> Still, it was shown to be a genuine attack vector none-the-less.
+>
 
-But i believe you need to have access to both the compressed VPN data
-and the uncompressed https packets to exploit such an attack.
-
-Still, it was shown to be a genuine attack vector none-the-less.
-
---
-Regards
-R
 -----BEGIN PGP SIGNATURE-----
 Version: ProtonMail
 
-wsBzBAEBCAAGBQJgZ7oZACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ2Qzwf9GFUFmJrJv4ny2uvbLUWKHAGsFKsD12I5YeJLQArsAsP39w7k
-H4chac7T/XLA2nBYLxIizioc3fiFqPTrlyx2AdwIuTpWhqf4FuU+pXt9JhqJ
-spI6j907aSN/G1jDjWhzltrWrjhJg/a6VQvtuTzAcBx3h1AA3WwKvRCUVhm6
-r0/jqRpb5OhA05Ux6JG0uqlCfG5zTURSaFdjwhEotvHpuzg9IpzEIBx42dnU
-EgS+aoJPdxYSCldYbdwj9EWus1+MzNHd+JjZsxadqiGarC+I+r5q2fHC9bBA
-EPdlbWGIdPcASeB0edWSI9uOO18UBpuaOnU4aBN/SXQJE4wApq1wUQ=3D=3D
-=3DLhbH
+wsBzBAEBCAAGBQJgZ7usACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
+9muQuJ3yaAgAvefAvhIBj2izSl5JoOH2oPeCYunedXsrFOXjrvteC1GX/Hem
+gRpLgcjNjdhcWdfW8NCFhihozr1Hrb9cLIxmvNLw5zmAIf6DRtcPPaExsyYJ
+mDLXMFlKZmSoGc3Jh9hsXxFy5oEH2K2RtQxJevGciAHn6GSkPx0MrHLJlmCH
+EPhUThW+QpEq+NdqNUo9dPJe9ByUUrZ9c/eySjXG8Eo7hYSLu0AhoYUr/zY1
+OqpRNg3lsH6CRFkH7LV5cJEBGLF6qZLeAZ5x7UYGjWWR1pwI02AKknF5E9bW
+s+4P64TLyIVerUsewJ9EbzU4kI5abf+pammwmqBHFrPaI1foNUS/dA=3D=3D
+=3Ds7Ma
 -----END PGP SIGNATURE-----
 
---b1_Eep17LjG5oOdrRVvziGtLhkFVuWjpsOKQiehgA4iUlg
+--b1_WGWfx1f8VpORxxcu2EyiefXrndq4Se22URwLAj6s0k
 Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
@@ -121,14 +107,13 @@ Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
 dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
 Sy0tLS0tDQo=
 
---b1_Eep17LjG5oOdrRVvziGtLhkFVuWjpsOKQiehgA4iUlg
+--b1_WGWfx1f8VpORxxcu2EyiefXrndq4Se22URwLAj6s0k
 Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 
-sgOkDgryUUOkmNSzycoHnT7FeNOUJkkNO/tb7QWmNdlCUhjr/bYMlpA011coMoWcA/N+cTIfF71e
-yQQTXA==
+sgOkDgryUUOkfgOIM1ejxXeDw06hSnVKVvZUhpfDO8QmQ/SwMngHUs7pxzI+ai5NrkEGNilz3A==
 
---b1_Eep17LjG5oOdrRVvziGtLhkFVuWjpsOKQiehgA4iUlg--
+--b1_WGWfx1f8VpORxxcu2EyiefXrndq4Se22URwLAj6s0k--
 
 
