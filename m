@@ -1,10 +1,13 @@
-Date: Sat, 3 Apr 2021 13:48:39 +0200 (CEST)
-Message-Id: <202104031148.133BmdaD087893@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210317130312.8585-1-arne@...1227...>
-References: <20210317130312.8585-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Move auth deferred related
- members into its own struct
+References: <20201215164221.5995-1-arne@...1227...>
+ <20210328120241.27605-1-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <815fbe05-8734-75d6-bbe6-4b64ea08f1f2@...2181...>
+Date: Sat, 3 Apr 2021 14:02:49 +0200
+MIME-Version: 1.0
+In-Reply-To: <20210328120241.27605-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v2 1/2] Move context_auth from context_2
+ to tls_multi and name it multi_state
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,48 +16,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-As Antonio has already stated, this really only moves 3 structure 
-elements into their own substructure, and all functions working on 
-these elements are now passed a pointer to the substructure (so the
-next patch can then use two substructures to have individual files
-for "plugin" and "script" deferred auth).  
+On 28/03/2021 14:02, Arne Schwabe wrote:
+> context_2 and tls_multi have the same life cycle for TLS connections
+> but so this move does not affect behaviour of the variable.
+> 
+> OpenVPN TLS multi code has a grown a lot more complex and code that
+> handles multi objects needs to know the state that the object is in.
+> Since not all code has access to the context_2 struct, the code that
+> does not have access is often not checking the state directly but
+> checks other parts of multi that have been affected from a state
+> change.
+> 
+> This patch also renames it to multi_state as this variable represents t
+> he multi state machine status rather than just the state of the connect
+> authentication (more upcoming patches will move other states
+> into this variable).
+> 
+> Patch V2: also rename context_auth to multi_state, explain a bit why this
+>           change is done.
 
-I'm slightly worried about the "setenv" bits (using the same name in 
-all cases) but if the flow of events is linear enough ("create files, 
-start plugin, create other sets of files, start script") this should 
-not be a problem.
+Thanks a lot. Much better now!
 
-I have fixed the conflict caused by commit 997b006a26 on the fly 
-(trivial).
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Tested on the server test rig that found the "now auth fails" problem
-with the v4 patch.  All green so far :-)
+As explained in the commit message, this patch is really just a field
+move and it's expected to not change any behaviour. On top of that it is
+being moved between two objects sharing the same lifecycle.
 
-Your patch has been applied to the master branch.
+Basic tests pass.
+Compiled tested against my usual SSL libs zoo.
 
-commit c5fec838e749e4a1806a42c1f593f195c2d60b3b
-Author: Arne Schwabe
-Date:   Wed Mar 17 14:03:11 2021 +0100
-
-     Move auth deferred related members into its own struct
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210317130312.8585-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21671.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Antonio Quartulli <antonio@...515...>
 
 
---
-kind regards,
-
-Gert Doering
-
+-- 
+Antonio Quartulli
 
