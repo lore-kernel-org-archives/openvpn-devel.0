@@ -1,22 +1,10 @@
-References: <20210402134529.27866-1-gert@...1296...>
- <b92f02afa4d8156edd55c2126ae6352c.squirrel@...2260...>
- <20210402185720.GS976@...1296...>
- <c76250866ae96447a3ec712f04b4b346.squirrel@...2260...>
- <458e1fb5-a725-781b-c048-4f0e07440c7b@...1227...>
- <1cf9fe7a309a622eb0ddd79a34dd3af4.squirrel@...2556...>
- <a0648ba0-41ed-5eef-4f36-d41bcb636823@...2181...>
- <ec1f603d169af78b5fdf0cbc3b6f4e52.squirrel@...2556...>
- <9b3b2029-bb7d-ab1d-a69b-0d910565fad2@...2181...>
- <e477a1210a2efee09ee2eaccb604e164.squirrel@...2556...>
- <20210403095640.GW976@...1296...>
- <5f61a142d6c8fc91223af9b89cf2772b.squirrel@...2556...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <768c58ba-e87b-4e96-0403-61fece8297d0@...2181...>
-Date: Sat, 3 Apr 2021 13:10:04 +0200
-MIME-Version: 1.0
-In-Reply-To: <5f61a142d6c8fc91223af9b89cf2772b.squirrel@...2556...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Fix 'compress migrate' for 2.2 clients.
+Date: Sat, 3 Apr 2021 13:48:39 +0200 (CEST)
+Message-Id: <202104031148.133BmdaD087893@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210317130312.8585-1-arne@...1227...>
+References: <20210317130312.8585-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Move auth deferred related
+ members into its own struct
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,28 +13,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Simon Matter <simon.matter@...2249...>, Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Acked-by: Gert Doering <gert@...1296...>
 
-On 03/04/2021 12:06, Simon Matter wrote:
-> Our use case is simple, we don't want ANY application in our company to
-> consume more WAN bandwidth than is absolutely needed. Of course we're
-> using compression like in rsync where it's possible, but that's not
-> possible everywhere and with every application. So we also try to catch
-> those cases by using compression over the VPN links. In case there is no
-> compressible data, it doesn't hurt much, but it can help a lot with
-> compressible data.
+As Antonio has already stated, this really only moves 3 structure 
+elements into their own substructure, and all functions working on 
+these elements are now passed a pointer to the substructure (so the
+next patch can then use two substructures to have individual files
+for "plugin" and "script" deferred auth).  
 
-Out of curiosity, would you be able to provide statistics of how much
-you are saving and with which application protocol?
+I'm slightly worried about the "setenv" bits (using the same name in 
+all cases) but if the flow of events is linear enough ("create files, 
+start plugin, create other sets of files, start script") this should 
+not be a problem.
+
+I have fixed the conflict caused by commit 997b006a26 on the fly 
+(trivial).
+
+Tested on the server test rig that found the "now auth fails" problem
+with the v4 patch.  All green so far :-)
+
+Your patch has been applied to the master branch.
+
+commit c5fec838e749e4a1806a42c1f593f195c2d60b3b
+Author: Arne Schwabe
+Date:   Wed Mar 17 14:03:11 2021 +0100
+
+     Move auth deferred related members into its own struct
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210317130312.8585-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21671.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-Cheers,
+--
+kind regards,
 
--- 
-Antonio Quartulli
+Gert Doering
+
 
