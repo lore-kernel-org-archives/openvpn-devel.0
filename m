@@ -1,12 +1,12 @@
-References: <20210403172403.9452-1-selva.nair@...277...>
+References: <20210402173414.14216-1-gert@...1296...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <44f046fa-e1fd-6bb4-df4c-5de3d107dd0f@...2181...>
-Date: Sun, 4 Apr 2021 09:46:13 +0200
+Message-ID: <b33f4de6-bfe6-734d-3cc1-4c96d6bcc1ac@...2181...>
+Date: Sun, 4 Apr 2021 10:39:09 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210403172403.9452-1-selva.nair@...277...>
+In-Reply-To: <20210402173414.14216-1-gert@...1296...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] tun.c on WIN32: remove more unused
- variables
+Subject: Re: [Openvpn-devel] [PATCH] Fix potential NULL ptr crash if
+ compiled with DMALLOC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,70 +15,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 03/04/2021 19:24, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
+On 02/04/2021 19:34, Gert Doering wrote:
+> In the unlikely case that we are compiled with -DDMALLOC *and*
+> malloc() returns NULL, there is an uncaught memset() which would
+> crash then.  Remove the memset(), as the right the next operation
+> after check_malloc_return() is a mempcy() which will overwrite
+> the whole memory block anyway.
 > 
-> Fixes:
->   tun.c: In function ‘do_ifconfig_ipv4’:
->   tun.c:1217:17: warning: variable ‘ifconfig_remote_netmask’ set but not
->   used [-Wunused-but-set-variable]
->      const char *ifconfig_remote_netmask = NULL;
+> Trac: #586
 > 
->   tun.c:1213:10: warning: unused variable ‘tun’ [-Wunused-variable]
->      bool tun = is_tun_p2p(tt);
-> 
-> Signed-off-by: Selva Nair <selva.nair@...277...>
+> Signed-off-by: Gert Doering <gert@...1296...>
 > ---
->  src/openvpn/tun.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+>  src/openvpn/buffer.c | 1 -
+>  1 file changed, 1 deletion(-)
 > 
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index 6b7c8ef1..8ff825f4 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -1207,10 +1207,12 @@ static void
->  do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
->                   const struct env_set *es, openvpn_net_ctx_t *ctx)
-
-this function....it's an ifdef trap.
-
->  {
-> +#if !defined(_WIN32) && !defined(TARGET_ANDROID)
->      /*
->       * We only handle TUN/TAP devices here, not --dev null devices.
->       */
->      bool tun = is_tun_p2p(tt);
-> +#endif
->  
->  #if !defined(TARGET_LINUX)
->      const char *ifconfig_local = NULL;
-> @@ -1534,7 +1536,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
->          msg(M_INFO,
->              "******** NOTE:  Please manually set the IP/netmask of '%s' to %s/%s (if it is not already set)",
->              ifname, ifconfig_local,
-> -            print_in_addr_t(tt->adapter_netmask, 0, &gc));
-> +            ifconfig_remote_netmask);
-
-I think this should just go on the line above?
-It will still fit our 80 chars limit.
-
-
->      }
->      else if (tt->options.ip_win32_type == IPW32_SET_DHCP_MASQ || tt->options.ip_win32_type == IPW32_SET_ADAPTIVE)
->      {
+> diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+> index 48bf25d5..e7031a4f 100644
+> --- a/src/openvpn/buffer.c
+> +++ b/src/openvpn/buffer.c
+> @@ -706,7 +706,6 @@ string_alloc(const char *str, struct gc_arena *gc)
+>               */
+>  #ifdef DMALLOC
+>              ret = openvpn_dmalloc(file, line, n);
+> -            memset(ret, 0, n);
+>  #else
+>              ret = calloc(1, n);
+>  #endif
 > 
 
-Rest looks good.
+As discussed with Gert on IRC, we could rather add a "if (ret)" before
+doing memset.
+However the DMALLOC code path is barely tested at all and we don't want
+to introduce more changes than needed.
 
-Compile tested on linux and windows, but couldn't test android. Still I
-visually verified that this variable is indeed not used in windows and
-android blocks only (used in all other cases).
+So for now, we can live with this change.
 
 Acked-by: Antonio Quartulli <antonio@...515...>
 
