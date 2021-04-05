@@ -1,22 +1,8 @@
-References: <458e1fb5-a725-781b-c048-4f0e07440c7b@...1227...>
- <1cf9fe7a309a622eb0ddd79a34dd3af4.squirrel@...2556...>
- <a0648ba0-41ed-5eef-4f36-d41bcb636823@...2181...>
- <ec1f603d169af78b5fdf0cbc3b6f4e52.squirrel@...2556...>
- <9b3b2029-bb7d-ab1d-a69b-0d910565fad2@...2181...>
- <e477a1210a2efee09ee2eaccb604e164.squirrel@...2556...>
- <20210403095640.GW976@...1296...>
- <5f61a142d6c8fc91223af9b89cf2772b.squirrel@...2556...>
- <768c58ba-e87b-4e96-0403-61fece8297d0@...2181...>
- <704cc498609f9451a1af5010669452b4.squirrel@...2556...>
- <20210403165313.GY976@...1296...>
- <d4daa5b7f65017700e60369dc5ff1778.squirrel@...2556...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <f63feda0-a22b-4e01-ea3b-a2c6bcb0eaaf@...2181...>
-Date: Mon, 5 Apr 2021 09:59:20 +0200
+Date: Mon,  5 Apr 2021 10:00:05 +0200
+Message-Id: <20210405080007.1665-1-a@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <d4daa5b7f65017700e60369dc5ff1778.squirrel@...2556...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Fix 'compress migrate' for 2.2 clients.
+Subject: [Openvpn-devel] [PATCH 1/3] openssl: fix EVP_PKEY_CTX memory leak
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,66 +11,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Simon Matter <simon.matter@...2249...>, Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>
 
-Hi Simon
+From: Antonio Quartulli <antonio@...515...>
 
-On 05/04/2021 09:38, Simon Matter wrote:
->> Hi,
->>
->> On Sat, Apr 03, 2021 at 03:07:11PM +0200, Simon Matter wrote:
->>> Apr  3 15:00:30 gw-X1 openvpn[1477]: pre-compress bytes,833300152
->>> Apr  3 15:00:30 gw-X1 openvpn[1477]: post-compress bytes,796650159
->>> Apr  3 15:00:30 gw-X1 openvpn[1477]: pre-decompress bytes,343572096
->>> Apr  3 15:00:30 gw-X1 openvpn[1477]: post-decompress bytes,510118472
->>
->> This is indeed fairly significant - and if WAN circuits are full and/or
->> cost money per Gbyte, compression is still a win.
->>
->> I'm more of a compression fan than not :-) - so this will be interesting
->> discussions indeed.
-> 
-> Hi Gert,
-> 
-> Based on the answers I got on this list I'm afraid there won't be any
-> discussion and compression is gone. That's really sad as it is a useful
-> feature for many use cases as I was easily able to show.
-> 
+A context allocated with EVP_PKEY_CTX_new_id() must be ultimately free'd
+by Eng VP_PKEY_CTX_free(). Failing to do so will result in a memory leak.
 
+This bug was discovered using GCC with "-fsanitize=address".
 
-at the moment there is neither a patch nor a point on any meeting agenda
-about removing compression from the OpenVPN codebase.
+Signed-off-by: Antonio Quartulli <antonio@...515...>
+---
+ src/openvpn/crypto_openssl.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-Please don't hastily draw such conclusions.
-
-So far it was *you* opening this discussion about compression removal as
-OT of the patch in the subject. We only expressed our personal opinions
-about your statements.
-
-[note that this patch is not about removing compression, but only about
-helping those people who want to disable it]
-
-
-*If* somebody will feel the need to remove compression at all, such
-topic will definitely be discussed in an open community meeting first
-(everybody is welcome to join).
-
-Only then a a bunch of patches (for deprecation first and removal later)
-that will appear and at that point there will be even more room for
-discussion.
-
-
-Still, this is the process we take for almost every feature
-deprecation/removal, but nobody has started it for compression.
-
-
-Regards,
-
-
-
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index f3e86863..d54ca6d2 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -1125,37 +1125,41 @@ bool
+ ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret,
+              int secret_len, uint8_t *output, int output_len)
+ {
++    bool ret = false;
+     EVP_PKEY_CTX *pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_TLS1_PRF, NULL);
+     if (!EVP_PKEY_derive_init(pctx))
+     {
+-        return false;
++        goto out;
+     }
+ 
+     if (!EVP_PKEY_CTX_set_tls1_prf_md(pctx, EVP_md5_sha1()))
+     {
+-        return false;
++        goto out;
+     }
+ 
+     if (!EVP_PKEY_CTX_set1_tls1_prf_secret(pctx, secret, secret_len))
+     {
+-        return false;
++        goto out;
+     }
+ 
+     if (!EVP_PKEY_CTX_add1_tls1_prf_seed(pctx, seed, seed_len))
+     {
+-        return false;
++        goto out;
+     }
+ 
+     size_t out_len = output_len;
+     if (!EVP_PKEY_derive(pctx, output, &out_len))
+     {
+-        return false;
++        goto out;
+     }
+     if (out_len != output_len)
+     {
+-        return false;
++        goto out;
+     }
+-    return true;
++    ret = true;
++out:
++    EVP_PKEY_CTX_free(pctx);
++    return ret;
+ }
+ #else  /* if OPENSSL_VERSION_NUMBER >= 0x10100000L */
+ /*
 -- 
-Antonio Quartulli
+2.26.3
+
 
