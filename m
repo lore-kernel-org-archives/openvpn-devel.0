@@ -1,10 +1,10 @@
-Date: Mon, 5 Apr 2021 12:40:29 +0200 (CEST)
-Message-Id: <202104051040.135AeTli053960@...2054...>
+Date: Mon, 5 Apr 2021 13:53:08 +0200 (CEST)
+Message-Id: <202104051153.135Br8lo060460@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210405080007.1665-2-a@...2181...>
-References: <20210405080007.1665-2-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: openssl: avoid NULL pointer
- dereference
+In-Reply-To: <20210404110602.20374-1-arne@...1227...>
+References: <20210404110602.20374-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove conditionals compilation
+ for P2MP, ENABLE_SHAPER and TIME_BACKTRACK_PROTECTION
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <antonio@...515...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-According to OpenSSL documentation, this can indeed return NULL, 
-so catch it... (Note: as for 1/3, this code is only in master, so
-no need to backport to release/2.5)
+(As the original mail already claimed :-) )
+
+I have stared-at-diff and grepped for P2MP, SHAPER and BACKTRACK remains
+(no complaints).  Client-side tested, server-side tested in all combinations
+I have (p2mp, p2p), no surprises.  I did not test --shaper, but I am 
+reasonably convinced that the bits removed only the "if ENABLE_SHAPER is
+not defined", as for "TIME_BACKTRACK_PROTECTION".
+
+Out it goes, lots of #ifdefs and especially "#else" code variants that
+are hard to test gone.
 
 Your patch has been applied to the master branch.
 
-commit f3c7698957483e0ea0f14e712502d34c826c53ca
-Author: Antonio Quartulli
-Date:   Mon Apr 5 10:00:06 2021 +0200
+commit 725dda00f809e5d9768a1aa33c8e73f2e38d9a7e
+Author: Arne Schwabe
+Date:   Sun Apr 4 13:06:02 2021 +0200
 
-     openssl: avoid NULL pointer dereference
+     Remove conditionals compilation for P2MP, ENABLE_SHAPER and TIME_BACKTRACK_PROTECTION
 
-     Signed-off-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20210403184626.23067-1-arne@...1227...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210405080007.1665-2-a@...2181...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20210405080007.1665-2-a@...2181...
+     Message-Id: <20210404110602.20374-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22030.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
