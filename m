@@ -1,5 +1,3 @@
-Message-ID: <d4daa5b7f65017700e60369dc5ff1778.squirrel@...2556...>
-In-Reply-To: <20210403165313.GY976@...1296...>
 References: <458e1fb5-a725-781b-c048-4f0e07440c7b@...1227...>
  <1cf9fe7a309a622eb0ddd79a34dd3af4.squirrel@...2556...>
  <a0648ba0-41ed-5eef-4f36-d41bcb636823@...2181...>
@@ -11,9 +9,13 @@ References: <458e1fb5-a725-781b-c048-4f0e07440c7b@...1227...>
  <768c58ba-e87b-4e96-0403-61fece8297d0@...2181...>
  <704cc498609f9451a1af5010669452b4.squirrel@...2556...>
  <20210403165313.GY976@...1296...>
-Date: Mon, 5 Apr 2021 09:38:37 +0200
-From: "Simon Matter" <simon.matter@...2249...>
+ <d4daa5b7f65017700e60369dc5ff1778.squirrel@...2556...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <f63feda0-a22b-4e01-ea3b-a2c6bcb0eaaf@...2181...>
+Date: Mon, 5 Apr 2021 09:59:20 +0200
 MIME-Version: 1.0
+In-Reply-To: <d4daa5b7f65017700e60369dc5ff1778.squirrel@...2556...>
+Content-Language: en-US
 Subject: Re: [Openvpn-devel] [PATCH] Fix 'compress migrate' for 2.2 clients.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -23,32 +25,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: Antonio Quartulli <a@...2181...>, Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Simon Matter <simon.matter@...2249...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-> Hi,
->
-> On Sat, Apr 03, 2021 at 03:07:11PM +0200, Simon Matter wrote:
->> Apr  3 15:00:30 gw-X1 openvpn[1477]: pre-compress bytes,833300152
->> Apr  3 15:00:30 gw-X1 openvpn[1477]: post-compress bytes,796650159
->> Apr  3 15:00:30 gw-X1 openvpn[1477]: pre-decompress bytes,343572096
->> Apr  3 15:00:30 gw-X1 openvpn[1477]: post-decompress bytes,510118472
->
-> This is indeed fairly significant - and if WAN circuits are full and/or
-> cost money per Gbyte, compression is still a win.
->
-> I'm more of a compression fan than not :-) - so this will be interesting
-> discussions indeed.
+Hi Simon
 
-Hi Gert,
+On 05/04/2021 09:38, Simon Matter wrote:
+>> Hi,
+>>
+>> On Sat, Apr 03, 2021 at 03:07:11PM +0200, Simon Matter wrote:
+>>> Apr  3 15:00:30 gw-X1 openvpn[1477]: pre-compress bytes,833300152
+>>> Apr  3 15:00:30 gw-X1 openvpn[1477]: post-compress bytes,796650159
+>>> Apr  3 15:00:30 gw-X1 openvpn[1477]: pre-decompress bytes,343572096
+>>> Apr  3 15:00:30 gw-X1 openvpn[1477]: post-decompress bytes,510118472
+>>
+>> This is indeed fairly significant - and if WAN circuits are full and/or
+>> cost money per Gbyte, compression is still a win.
+>>
+>> I'm more of a compression fan than not :-) - so this will be interesting
+>> discussions indeed.
+> 
+> Hi Gert,
+> 
+> Based on the answers I got on this list I'm afraid there won't be any
+> discussion and compression is gone. That's really sad as it is a useful
+> feature for many use cases as I was easily able to show.
+> 
 
-Based on the answers I got on this list I'm afraid there won't be any
-discussion and compression is gone. That's really sad as it is a useful
-feature for many use cases as I was easily able to show.
+
+at the moment there is neither a patch nor a point on any meeting agenda
+about removing compression from the OpenVPN codebase.
+
+Please don't hastily draw such conclusions.
+
+So far it was *you* opening this discussion about compression removal as
+OT of the patch in the subject. We only expressed our personal opinions
+about your statements.
+
+[note that this patch is not about removing compression, but only about
+helping those people who want to disable it]
+
+
+*If* somebody will feel the need to remove compression at all, such
+topic will definitely be discussed in an open community meeting first
+(everybody is welcome to join).
+
+Only then a a bunch of patches (for deprecation first and removal later)
+that will appear and at that point there will be even more room for
+discussion.
+
+
+Still, this is the process we take for almost every feature
+deprecation/removal, but nobody has started it for compression.
+
 
 Regards,
-Simon
 
+
+
+-- 
+Antonio Quartulli
 
