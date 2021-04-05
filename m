@@ -1,10 +1,10 @@
-Date: Mon, 5 Apr 2021 12:40:24 +0200 (CEST)
-Message-Id: <202104051040.135AeOp2053948@...2054...>
+Date: Mon, 5 Apr 2021 12:40:29 +0200 (CEST)
+Message-Id: <202104051040.135AeTli053960@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210405080007.1665-1-a@...2181...>
-References: <20210405080007.1665-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: openssl: fix EVP_PKEY_CTX
- memory leak
+In-Reply-To: <20210405080007.1665-2-a@...2181...>
+References: <20210405080007.1665-2-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: openssl: avoid NULL pointer
+ dereference
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,21 +20,22 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Looks reasonable, matches coding style & OpenSSL documentation, and
-passes my client-side tests with OpenSSL 1.1.1
+According to OpenSSL documentation, this can indeed return NULL, 
+so catch it... (Note: as for 1/3, this code is only in master, so
+no need to backport to release/2.5)
 
 Your patch has been applied to the master branch.
 
-commit 24e58164b845614c2176bc6b2a939856fd830c53
+commit f3c7698957483e0ea0f14e712502d34c826c53ca
 Author: Antonio Quartulli
-Date:   Mon Apr 5 10:00:05 2021 +0200
+Date:   Mon Apr 5 10:00:06 2021 +0200
 
-     openssl: fix EVP_PKEY_CTX memory leak
+     openssl: avoid NULL pointer dereference
 
      Signed-off-by: Antonio Quartulli <antonio@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210405080007.1665-1-a@...2181...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20210405080007.1665-1-a@...2181...
+     Message-Id: <20210405080007.1665-2-a@...2181...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20210405080007.1665-2-a@...2181...
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
