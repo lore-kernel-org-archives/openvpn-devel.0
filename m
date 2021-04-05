@@ -1,20 +1,14 @@
-Message-ID: <a05d96546358214e20165fb51cab11d3.squirrel@...2556...>
-In-Reply-To: <20210405083413.GN976@...1296...>
-References: <9b3b2029-bb7d-ab1d-a69b-0d910565fad2@...2181...>
- <e477a1210a2efee09ee2eaccb604e164.squirrel@...2556...>
- <20210403095640.GW976@...1296...>
- <5f61a142d6c8fc91223af9b89cf2772b.squirrel@...2556...>
- <768c58ba-e87b-4e96-0403-61fece8297d0@...2181...>
- <704cc498609f9451a1af5010669452b4.squirrel@...2556...>
- <20210403165313.GY976@...1296...>
- <d4daa5b7f65017700e60369dc5ff1778.squirrel@...2556...>
- <f63feda0-a22b-4e01-ea3b-a2c6bcb0eaaf@...2181...>
- <63c5054ebcf20fceb7dba025f065b180.squirrel@...2556...>
- <20210405083413.GN976@...1296...>
-Date: Mon, 5 Apr 2021 10:48:17 +0200
-From: "Simon Matter" <simon.matter@...2249...>
+Date: Mon, 5 Apr 2021 12:38:56 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20210405103856.GO976@...1296...>
+References: <20210405080007.1665-1-a@...2181...>
+ <20210405080007.1665-3-a@...2181...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Fix 'compress migrate' for 2.2 clients.
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="0fC0yQYhV8hAN5cD"
+Content-Disposition: inline
+In-Reply-To: <20210405080007.1665-3-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 3/3] ssl: remove unneeded if block
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,62 +17,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <antonio@...515...>
+
+--0fC0yQYhV8hAN5cD
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: Antonio Quartulli <a@...2181...>, Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
 
-> Hi,
->
-> On Mon, Apr 05, 2021 at 10:16:07AM +0200, Simon Matter wrote:
->> Then I misunderstood what is written here?
->>
->> https://community.openvpn.net/openvpn/wiki/DeprecatedOptions#Option:--co=
-mpress
->>
->> "Compression is not recommended and is a feature users should avoid
->> using.
->> To signal this clearly, --comp-lzo and --compress are discouraged and
->> considered deprecated features. Beginning with 2.5, these options will
->> no
->> longer enable compression, just enable the compression framing to be
->> able
->> to receive compressed packets."
->>
->> That made me feel compression support in 2.5 is only on a compatibility
->> level.
->
-> This is half-correct, and half-incomplete.  Look at
->
->   --allow-compression yes
->
-> (new in 2.5).
->
-> Yes, 2.5 will no longer send compressed packets unless explicitly
-> permitted
-> by "allow-compression yes" - but the infrastructure is still there, and
-> still tested, but moved from "this is something everybody will want" to
-> "if you know what you are doing and why, you can still have it".
->
-> Regarding your other mail where you doubted that "there will be a
-> discussion"
-> - well, I can assure you that there are discussions about every feature we
-> take out of OpenVPN (and usually, mails to openvpn-devel and openvpn-users
-> to figure out who might still be using it).  Many of these discussions do
-> not happen on the list but on the #openvpn-devel and #openvpn-meeting
-> IRC channels - but Samuli is sending the meeting minutes to the -devel
-> list (and they are on the trac web page), so we try to make transparent
-> what we discuss and why.
->
->
-> As always, code is a balance between features, maintenance effort, bugs,
-> and security...
->
-> gert
+Hi,
 
-Ok, thanks for explaining.
+On Mon, Apr 05, 2021 at 10:00:07AM +0200, Antonio Quartulli wrote:
+>      /* compute PRF */
+> -    if (!ssl_tls1_PRF(BPTR(&seed), BLEN(&seed), secret, secret_len, outp=
+ut, output_len))
+> -    {
+> -        ret =3D false;
+> -    }
+> +    ret =3D ssl_tls1_PRF(BPTR(&seed), BLEN(&seed), secret, secret_len, o=
+utput,
+> +                       output_len);
 
-Regards,
-Simon
+If touching this, I would move the "bool ret" declaration to here as
+well.  Doesn't make sense to have a "bool ret =3D true" declaration 15
+lines further up if the first use is "assign it a new value", then.
 
+Thus,
+
++    bool ret =3D ssl_tls1_PRF(BPTR(&seed), BLEN(&seed), secret, secret_len,
++                            output, output_len);
+
+gert
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--0fC0yQYhV8hAN5cD
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJgaui/AAoJEB2Cnv7KVigSRykMAJf6vCxNc4Drzw2L1srxLBdd
+bzcGoi2g7KZJvJuhLB6ZtEsZ4RQL24x1ETXTAVEdPnk4yKZayKG3MjCZAFHAbF0Z
+p49NVg/QF6qgUVfw/AaoqX/aonVc2oHUbd7fvx3XJCdz26B9U5aPCxFIx7vHBGCo
+05j0A3FFty0klO0v6RJYVups+0MAHk2phlHrAZu683ZwZDmOYEMwqY1BL+vo+eLQ
+2SrbuGH9+e2VkygXGyUqnnMESnVgl6FggkkkfH5s9e1U2BohnrDKJ9vsJGk//sQY
+DuFsv+EwF0ij9fDY/202YrYEkdq2kEOUoGpmbHDMpYuXF8LonCWLpxJMX5QalUBA
+LIOob5rXWz7LLTZPv5QJT0JWPdDL0UIH0L58VSyx4IyqWsGXzk93f+dhFX59kFle
+QiV5+y+4FEJN3Hx0IUcLOciB7hOxXln61rpZ644ZLe1ImVByYRWI2bJOtHuwdIDi
+xC9PEoRq1NyS3NCvj8yds/Uk7terKI5saNZRlHg2fQ==
+=OEgn
+-----END PGP SIGNATURE-----
+
+--0fC0yQYhV8hAN5cD--
 
