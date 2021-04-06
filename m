@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue,  6 Apr 2021 18:25:17 +0200
-Message-Id: <20210406162518.4075-4-arne@...1227...>
+Date: Tue,  6 Apr 2021 18:25:15 +0200
+Message-Id: <20210406162518.4075-2-arne@...1227...>
 In-Reply-To: <20210406162518.4075-1-arne@...1227...>
 References: <20210406162518.4075-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 4/5] Use EVP_CTRL_AEAD_* instead
- EVP_CTRL_GCM_*
+Subject: [Openvpn-devel] [PATCH 2/5] Remove checks for uint* types that are
+ part of C99
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,53 +17,78 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Use the modern names instead of the old GCM specific ones. AEAD instead
-GCM makes especially sense when using Chacha20-Poly1305.
-
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/crypto_openssl.c | 4 ++--
- src/openvpn/openssl_compat.h | 5 +++++
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ compat.m4             | 18 ------------------
+ configure.ac          |  8 --------
+ src/openvpn/syshead.h |  4 +---
+ 3 files changed, 1 insertion(+), 29 deletions(-)
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index dc6b0fa71..f8b36bf85 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -792,7 +792,7 @@ cipher_ctx_iv_length(const EVP_CIPHER_CTX *ctx)
- int
- cipher_ctx_get_tag(EVP_CIPHER_CTX *ctx, uint8_t *tag_buf, int tag_size)
- {
--    return EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, tag_size, tag_buf);
-+    return EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_GET_TAG, tag_size, tag_buf);
- }
+diff --git a/compat.m4 b/compat.m4
+index 47650f6d3..8fa9abee1 100644
+--- a/compat.m4
++++ b/compat.m4
+@@ -46,24 +46,6 @@ ifdef(
+ 	,
+ 	[AC_DEFUN([AC_PROG_SED], [AC_CHECK_PROGS([SED], [sed])])]
+ )
+-ifdef(
+-	[AC_TYPE_INT8_T],
+-	,
+-	[
+-		AC_CHECK_HEADERS([inttypes.h stdint.h])
+-		test -z "${ac_cv_header_inttypes_h}${ac_cv_header_stdint_h}" && \
+-			AC_MSG_ERROR([Required inttypes.h stdint.h not found])
+-		
+-		AC_DEFUN([AC_TYPE_INT8_T], [])
+-		AC_DEFUN([AC_TYPE_INT16_T], [])
+-		AC_DEFUN([AC_TYPE_INT32_T], [])
+-		AC_DEFUN([AC_TYPE_INT64_T], [])
+-		AC_DEFUN([AC_TYPE_UINT8_T], [])
+-		AC_DEFUN([AC_TYPE_UINT16_T], [])
+-		AC_DEFUN([AC_TYPE_UINT32_T], [])
+-		AC_DEFUN([AC_TYPE_UINT64_T], [])
+-	]
+-)
+ ifdef(
+ 	[PKG_CHECK_VAR],
+ 	,
+diff --git a/configure.ac b/configure.ac
+index 23dac74f1..07a62ad8f 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -409,14 +409,6 @@ AC_TYPE_OFF_T
+ AC_TYPE_PID_T
+ AC_TYPE_SIZE_T
+ AC_TYPE_UID_T
+-AC_TYPE_INT8_T
+-AC_TYPE_INT16_T
+-AC_TYPE_INT32_T
+-AC_TYPE_INT64_T
+-AC_TYPE_UINT8_T
+-AC_TYPE_UINT16_T
+-AC_TYPE_UINT32_T
+-AC_TYPE_UINT64_T
+ AC_TYPE_SIGNAL
+ AX_TYPE_SOCKLEN_T
+ AC_CHECK_SIZEOF([unsigned int])
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index 16f5ab11f..bca71d5cf 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -118,11 +118,9 @@
+ #include <stdlib.h>
+ #endif
  
- int
-@@ -853,7 +853,7 @@ cipher_ctx_final_check_tag(EVP_CIPHER_CTX *ctx, uint8_t *dst, int *dst_len,
-                            uint8_t *tag, size_t tag_len)
- {
-     ASSERT(tag_len < SIZE_MAX);
--    if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, tag_len, tag))
-+    if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_TAG, tag_len, tag))
-     {
-         return 0;
-     }
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index eb6c9c906..ff024feff 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -46,6 +46,11 @@
- #include <openssl/ssl.h>
- #include <openssl/x509.h>
+-#ifdef HAVE_INTTYPES_H
++/* These headers belong to C99 and should be always be present */
+ #include <inttypes.h>
+-#elif defined(HAVE_STDINT_H)
+ #include <stdint.h>
+-#endif
  
-+#if (OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)) && !defined(ENABLE_CRYPTO_WOLFSSL)
-+#define EVP_CTRL_AEAD_SET_TAG EVP_CTRL_GCM_SET_TAG
-+#define EVP_CTRL_AEAD_GET_TAG EVP_CTRL_GCM_GET_TAG
-+#endif
-+
- #if !defined(HAVE_EVP_MD_CTX_RESET)
- /**
-  * Reset a message digest context
+ #ifdef HAVE_STDARG_H
+ #include <stdarg.h>
 -- 
 2.30.1
 
