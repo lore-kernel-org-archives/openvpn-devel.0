@@ -1,12 +1,13 @@
 References: <20210406162518.4075-1-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <d0c401d1-bad2-1cc5-43cf-dacc67cf7a92@...2181...>
-Date: Tue, 6 Apr 2021 23:14:14 +0200
+ <20210406162518.4075-5-arne@...1227...>
+ <59fa6949-300a-d13d-efb8-e3ba128ce6c2@...2181...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <a718243e-a26b-316c-cb13-a97a17d7de22@...1227...>
+Date: Wed, 7 Apr 2021 00:51:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210406162518.4075-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 1/5] Remove check for socket functions
- and Win XP compatbility code
+In-Reply-To: <59fa6949-300a-d13d-efb8-e3ba128ce6c2@...2181...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH 5/5] Remove OpenSSL configure checks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,29 +18,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
 
-On 06/04/2021 18:25, Arne Schwabe wrote:
-> While the check if all socket related functions are present sounds like
-> a good idea in theory, in reality it just adds time to configure runs.
+> I like the new approach a lot.
+> It definitely helps keeping track of "what compat code do we need? and
+> for which version?"
 > 
-> Our poll check on windows is currently only depending on sys/poll.h
-> non-existance. Make the check and comment more explicit.
+> Just one suggestion:
+> I think it would still be useful to add a comment on the #endif line to
+> explicitly say what if we are closing.
 > 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+> i.e:
+> 
+> #endif /* OPENSSL_VERSION_NUMBER < 0x10101000L &&
+> !defined(ENABLE_CRYPTO_WOLFSSL) */
+> 
+> That helps your brain when the corresponding #if is far away or you have
+> more than one nearby.
+> 
+>\
 
-This compiled fine on my various linux environments and also when using
-mingw32 (both 32 and 64 bits).
+Just running uncrustify on the file will just add that one comment
 
-However, I have no idea how this really impacts WindowsXP or other
-Windows versions.
+-#endif
++#endif /* if OPENSSL_VERSION_NUMBER < 0x10100000L &&
+!defined(ENABLE_CRYPTO_WOLFSSL) */
 
+So if that can be done at commit time that would avoid a V2 but I can
+also send a V2 with only that change if that is preferred.
 
-Cheers,
-
-
--- 
-Antonio Quartulli
+Arne
 
