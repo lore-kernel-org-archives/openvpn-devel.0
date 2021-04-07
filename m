@@ -1,13 +1,10 @@
-References: <20210406162518.4075-1-arne@...1227...>
- <20210406162518.4075-5-arne@...1227...>
- <59fa6949-300a-d13d-efb8-e3ba128ce6c2@...2181...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <a718243e-a26b-316c-cb13-a97a17d7de22@...1227...>
-Date: Wed, 7 Apr 2021 00:51:41 +0200
-MIME-Version: 1.0
-In-Reply-To: <59fa6949-300a-d13d-efb8-e3ba128ce6c2@...2181...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 5/5] Remove OpenSSL configure checks
+Date: Wed, 7 Apr 2021 09:07:35 +0200 (CEST)
+Message-Id: <202104070707.13777ZA8098806@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210406162518.4075-2-arne@...1227...>
+References: <20210406162518.4075-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove checks for uint* types
+ that are part of C99
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,37 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+Your patch has been applied to the master branch.
+
+I have stared at the patch a bit, and pushed it ot all the buildbots,
+which are "all green".  So that's the oldest stuff I care about...
+(and since we require a C99 compiler anyway, expecting C99 headers
+should be reasonable nowadays)
+
+commit 6287538039e2ba787c096272c65ec067e667d773
+Author: Arne Schwabe
+Date:   Tue Apr 6 18:25:15 2021 +0200
+
+     Remove checks for uint* types that are part of C99
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20210406162518.4075-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22049.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-> I like the new approach a lot.
-> It definitely helps keeping track of "what compat code do we need? and
-> for which version?"
-> 
-> Just one suggestion:
-> I think it would still be useful to add a comment on the #endif line to
-> explicitly say what if we are closing.
-> 
-> i.e:
-> 
-> #endif /* OPENSSL_VERSION_NUMBER < 0x10101000L &&
-> !defined(ENABLE_CRYPTO_WOLFSSL) */
-> 
-> That helps your brain when the corresponding #if is far away or you have
-> more than one nearby.
-> 
->\
+--
+kind regards,
 
-Just running uncrustify on the file will just add that one comment
+Gert Doering
 
--#endif
-+#endif /* if OPENSSL_VERSION_NUMBER < 0x10100000L &&
-!defined(ENABLE_CRYPTO_WOLFSSL) */
-
-So if that can be done at commit time that would avoid a V2 but I can
-also send a V2 with only that change if that is preferred.
-
-Arne
 
