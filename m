@@ -1,13 +1,13 @@
-References: <20200717171036.20687-1-davids@...515...>
- <6062d64c-14ef-0e0d-4e83-925b79b4900b@...1227...>
- <7030cf8b-d047-107d-21b8-f02c8a1338c9@...1227...>
+References: <20210407191554.25811-1-maximilian.fillinger@...2507...>
+ <E1lUDfq-000423-FN@...2487...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <77750051-9589-15db-34cb-3aacc8b69694@...2181...>
-Date: Wed, 7 Apr 2021 17:50:03 +0200
+Message-ID: <72fe8d0a-1732-3c25-3050-abc54c606e4d@...2181...>
+Date: Thu, 8 Apr 2021 00:40:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <7030cf8b-d047-107d-21b8-f02c8a1338c9@...1227...>
+In-Reply-To: <E1lUDfq-000423-FN@...2487...>
+Content-Type: multipart/mixed; boundary="------------076775E3F262E6FDDC910E94"
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Remove --no-replay
+Subject: Re: [Openvpn-devel] [PATCH 1/1] Rework mbedtls CRL handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,56 +16,117 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Max Fillinger <maximilian.fillinger@...2507...>, openvpn-devel@lists.sourceforge.net
+
+This is a multi-part message in MIME format.
+--------------076775E3F262E6FDDC910E94
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+Hi Max,
 
-On 26/07/2020 15:31, Arne Schwabe wrote:
-> Am 26.07.20 um 02:01 schrieb Arne Schwabe:
->> Am 17.07.20 um 19:10 schrieb David Sommerseth:
->>> The --no-replay feature is considered to be a security weakness, which
->>> was also highlighed during the OpenVPN 2.4 security audit [0].  This
->>> option was added to the DeprecatedOptions[1] list and has been reported
->>> as deprecated since OpenVPN 2.4.
->>
->> As a side note, removing this feature weakens the ability to use OpenVPN
->> is a pure tunnel without crypto (--auth none, --cipher none and
->> no-replay) since this removes the ability to disable replay proctection
->> when no authentication is enabled. (replay protection without auth is
->> silly as a attacker can just fake the replay id too.)
->>
->> Acked-By: Arne Schwabe
+On 07/04/2021 21:15, Max Fillinger wrote:
+> This commit fixes the following two issues:
 > 
-> I given that a bit of a thought. But we need to decide if we to support
-> unencrypted transport only session or not in future. If we do not want
-> to support them, then applying this patch is fine, otherwise we should
-> restrict disabling no-replay to --auth none and also --auth none to
-> --cipher none basically:
+> The config belonging to a mbedtls_ssl_ctx struct is not supposed to be
+> changed after mbedtls_ssl_setup() has been called. Previously, we
+> modified the CRL structure in place when a new CRL was loaded, but a
+> pointer to this struct appears in configs that are currently in use.
 > 
-> --cipher != none => auth none and no-replay forbidden
+> This commit uses reference counting to ensure that CRLs remain in memory
+> while the mbedtls_ssl_ctx struct and config remain.
 > 
-> --cipher == none => allows auth none and also no-replay
-> 
-> --cipher none and auth none, warn if no-replay is used that it does not
-> prevent replay attacks. But do not fail since we would break a lot of
-> setups.
 
-I work for the ministry of oversimplification and I think that removing
-user knobs is simply a good thing.
+To fix this issue, wouldn't be enough to reload the CRL *before* calling
+mbedtls_ssl_setup()?
+This way we know that a new ssl_ctx is always initialized with the
+latest CRL, rather than having the old one still around?
 
-Following the logic provided by Arne, how about removing the --no-reply
-knob and making this mechanism automatic?
+I have attached a proposal for your review. Please let me know what you
+think about it.
 
-* if cipher != none -> replay prevention is always enabled;
-* if cipher == none && auth == none -> replay prevention is disabled.
+As a side note: how did you notice this issue?
+
+> The other issue fixed by this commit is that, if OpenVPN failed to read
+> the CRL in init_ssl(), but succeeded in reading it later, it would not
+> actually use that CRL.
+
+Mh... I have tried to reproduce this issue, but I was not able to.
+Would you be able to provide me with the exact steps to hit this situation?
+
+What I tried was:
+1) create empty file crl.pem;
+2) start server with --crl-verify crl.pem;
+3) connect with client -> connection denied due to verification issue
+(VERIFY ERROR: CRL not loaded);
+4) I overwrote crl.pem with a real CRL (without restarting the server);
+5) I connected with my client and it worked;
+6) I connected with a certificate in the CRL -> connection denied.
 
 
-[allowing or disabling auth=none should be tackled saparately imho]
+Btw, Signed-off-by line is missing - a patch submitted for inclusion
+should always have one.
+
+
 
 Regards,
 
+
 -- 
 Antonio Quartulli
+
+--------------076775E3F262E6FDDC910E94
+Content-Type: text/x-patch; charset=UTF-8;
+ name="crl.diff"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="crl.diff"
+
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index d8662d00..eda7fae1 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -899,6 +899,17 @@ key_state_init(struct tls_session *session, struct k=
+ey_state *ks)
+=20
+     CLEAR(*ks);
+=20
++    /*
++     * Attempt CRL reload before any TLS operation. Won't be performed i=
+f
++     * the file was not modified since the last reload
++     */
++    if (session->opt->crl_file
++        && !(session->opt->ssl_flags & SSLF_CRL_VERIFY_DIR))
++    {
++        tls_ctx_reload_crl(&session->opt->ssl_ctx, session->opt->crl_fil=
+e,
++                           session->opt->crl_file_inline);
++    }
++
+     /*
+      * Build TLS object that reads/writes ciphertext
+      * to/from memory BIOs.
+@@ -2728,17 +2739,6 @@ tls_process(struct tls_multi *multi,
+             ks->state =3D S_START;
+             state_change =3D true;
+=20
+-            /*
+-             * Attempt CRL reload before TLS negotiation. Won't be perfo=
+rmed if
+-             * the file was not modified since the last reload
+-             */
+-            if (session->opt->crl_file
+-                && !(session->opt->ssl_flags & SSLF_CRL_VERIFY_DIR))
+-            {
+-                tls_ctx_reload_crl(&session->opt->ssl_ctx,
+-                                   session->opt->crl_file, session->opt-=
+>crl_file_inline);
+-            }
+-
+             /* New connection, remove any old X509 env variables */
+             tls_x509_clear_env(session->opt->es);
+=20
+
+--------------076775E3F262E6FDDC910E94--
 
