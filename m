@@ -1,10 +1,9 @@
-Date: Wed, 7 Apr 2021 09:07:31 +0200 (CEST)
-Message-Id: <202104070707.13777V68098798@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210406162518.4075-1-arne@...1227...>
-References: <20210406162518.4075-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove check for socket
- functions and Win XP compatbility code
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <1226b24c-ea68-6336-a320-1d065f9d3a13@...515...>
+Date: Wed, 7 Apr 2021 15:23:31 +0300
+MIME-Version: 1.0
+Content-Language: en-US
+Subject: [Openvpn-devel] Community meetings in April 2021
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,41 +12,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-Since Antonio did all the testing, I can take the blame :-) - we dropped
-support for Windows XP quite a while ago, and I think also for Vista -
-the "give me IPv6 routing info!" code new in 2.4 is not available on
-older Windows versions, but since they are all out of support anyway,
-we decided to "not care".
+Next community meetings have been scheduled to
 
-I have not *tested* the resulting MinGW-built Windows binary, but from
-looking at the actual changes I do not expect runtime errors - either
-it blows up at compilation/link time, or works.
+- Wed 14th April 2021 at 14:00 CET
+- Wed 21st April 2021 at 14:00 CET
+- Wed 28th April 2021 at 14:00 CET
 
-Your patch has been applied to the master branch.
+Please note the change of time (11:30 -> 14:00).
 
-commit 17f91332069b4adc317bf11cb4d710b00ee139c5
-Author: Arne Schwabe
-Date:   Tue Apr 6 18:25:14 2021 +0200
+The place is #openvpn-meeting IRC channel at Freenode. Meeting agendas
+and summaries are in here:
 
-     Remove check for socket functions and Win XP compatbility code
+<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210406162518.4075-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22052.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Samuli
 
