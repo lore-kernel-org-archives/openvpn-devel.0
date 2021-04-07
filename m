@@ -1,10 +1,10 @@
-Date: Wed, 7 Apr 2021 09:07:38 +0200 (CEST)
-Message-Id: <202104070707.13777cwY098810@...2054...>
+Date: Wed, 7 Apr 2021 09:07:31 +0200 (CEST)
+Message-Id: <202104070707.13777V68098798@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210406162518.4075-3-arne@...1227...>
-References: <20210406162518.4075-3-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove a number of checks for
- functions/headers that are always present
+In-Reply-To: <20210406162518.4075-1-arne@...1227...>
+References: <20210406162518.4075-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove check for socket
+ functions and Win XP compatbility code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,25 +20,28 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-I find these very reasonable changes (like, what, <stdio.h> or <ctype.h>,
-these have been around since K&R day 1...).  
+Since Antonio did all the testing, I can take the blame :-) - we dropped
+support for Windows XP quite a while ago, and I think also for Vista -
+the "give me IPv6 routing info!" code new in 2.4 is not available on
+older Windows versions, but since they are all out of support anyway,
+we decided to "not care".
 
-And Eurephia definitely needs dropping!
-
-The buildbot army agrees that these changes are fine :-)
+I have not *tested* the resulting MinGW-built Windows binary, but from
+looking at the actual changes I do not expect runtime errors - either
+it blows up at compilation/link time, or works.
 
 Your patch has been applied to the master branch.
 
-commit b8510baa25b9b6fad0fa373d414a4bbf1565acd0
+commit 17f91332069b4adc317bf11cb4d710b00ee139c5
 Author: Arne Schwabe
-Date:   Tue Apr 6 18:25:16 2021 +0200
+Date:   Tue Apr 6 18:25:14 2021 +0200
 
-     Remove a number of checks for functions/headers that are always present
+     Remove check for socket functions and Win XP compatbility code
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210406162518.4075-3-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22053.html
+     Message-Id: <20210406162518.4075-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22052.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
