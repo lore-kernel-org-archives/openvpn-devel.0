@@ -1,14 +1,8 @@
-References: <20210407191554.25811-1-maximilian.fillinger@...2507...>
- <E1lUDfq-000423-FN@...2487...>
- <72fe8d0a-1732-3c25-3050-abc54c606e4d@...2181...>
- <E1lURmY-0007Iz-Lc@...2608...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <872b5e93-bac0-54c6-016a-6ae85e6e2baa@...2181...>
-Date: Thu, 8 Apr 2021 14:37:34 +0200
-MIME-Version: 1.0
-In-Reply-To: <E1lURmY-0007Iz-Lc@...2608...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 1/1] Rework mbedtls CRL handling
+From: Arne Schwabe <arne@...1227...>
+Date: Thu,  8 Apr 2021 15:36:26 +0200
+Message-Id: <20210408133626.29232-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Ensure using const variables with
+ EVP_PKEY_get0_*
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,40 +11,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Maximilian Fillinger <maximilian.fillinger@...2507...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi Max,
+These functions return const pointers in OpenSSL 3.0.0alpha14, so
+our pointers should be also const to avoid casting the const away.
 
-I was starting to comment to the various points in this email, but I
-believe it was getting confusing.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/ssl_openssl.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Now that I have a better overview (thanks to your explanations!) I would
-suggest splitting the problem in smaller sub-problems to help our
-discussion.
-
-[Later it'd be very nice to have one patch per problem being fixed too]
-
-
-To the best of my understand we have the following problems that needs
-fixing:
-1) CRL being changed in-place, even though we may prefer not doing that;
-2) --chroot messing up paths in pre- and post-chroot operations;
-3) CRL not being used at all if OpenVPN failed to parse it during
-initialization;
-4) different CRL access/parsing errors handled differently.
-
-
-Is the summary above correct? or is any of my points wrong/lacking details?
-
-
-[If you prefer discussing on IRC, feel free to join #openvpn-devel on
-freenode]
-
-
-Regards,
-
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index cb8ac7727..a9bc342b0 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1248,12 +1248,11 @@ static int
+ tls_ctx_use_external_rsa_key(struct tls_root_ctx *ctx, EVP_PKEY *pkey)
+ {
+     RSA *rsa = NULL;
+-    RSA *pub_rsa;
+     RSA_METHOD *rsa_meth;
+ 
+     ASSERT(NULL != ctx);
+ 
+-    pub_rsa = EVP_PKEY_get0_RSA(pkey);
++    const RSA *pub_rsa = EVP_PKEY_get0_RSA(pkey);
+     ASSERT(NULL != pub_rsa);
+ 
+     /* allocate custom RSA method object */
+@@ -2031,7 +2030,7 @@ print_cert_details(X509 *cert, char *buf, size_t buflen)
+ #ifndef OPENSSL_NO_EC
+     if (typeid == EVP_PKEY_EC && EVP_PKEY_get0_EC_KEY(pkey) != NULL)
+     {
+-        EC_KEY *ec = EVP_PKEY_get0_EC_KEY(pkey);
++        const EC_KEY *ec = EVP_PKEY_get0_EC_KEY(pkey);
+         const EC_GROUP *group = EC_KEY_get0_group(ec);
+ 
+         int nid = EC_GROUP_get_curve_name(group);
 -- 
-Antonio Quartulli
+2.31.1
+
 
