@@ -1,9 +1,14 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Thu,  8 Apr 2021 14:00:29 +0200
-Message-Id: <20210408120029.19438-3-arne@...1227...>
-In-Reply-To: <20210408120029.19438-1-arne@...1227...>
-References: <20210408120029.19438-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 3/3] Allow all GCM ciphers
+References: <20210407191554.25811-1-maximilian.fillinger@...2507...>
+ <E1lUDfq-000423-FN@...2487...>
+ <72fe8d0a-1732-3c25-3050-abc54c606e4d@...2181...>
+ <E1lURmY-0007Iz-Lc@...2608...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <872b5e93-bac0-54c6-016a-6ae85e6e2baa@...2181...>
+Date: Thu, 8 Apr 2021 14:37:34 +0200
+MIME-Version: 1.0
+In-Reply-To: <E1lURmY-0007Iz-Lc@...2608...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 1/1] Rework mbedtls CRL handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,37 +17,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Maximilian Fillinger <maximilian.fillinger@...2507...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-OpenSSL also allows ARIA-GCM and that works well with our implementation
-While the handpicked list was needed for earlier OpenSSL versions (and
-is still needed for Chacha20-Poly1305), the API nowadays with OpenSSL
-1.0.2 and 1.1.x works as expected.
+Hi Max,
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/crypto_openssl.c | 5 +++++
- 1 file changed, 5 insertions(+)
+I was starting to comment to the various points in this email, but I
+believe it was getting confusing.
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index f8b36bf85..235d0c321 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -728,6 +728,11 @@ cipher_kt_mode_aead(const cipher_kt_t *cipher)
- {
-     if (cipher)
-     {
-+        if (EVP_CIPHER_mode(cipher) == OPENVPN_MODE_GCM)
-+        {
-+            return true;
-+        }
-+
-         switch (EVP_CIPHER_nid(cipher))
-         {
-             case NID_aes_128_gcm:
+Now that I have a better overview (thanks to your explanations!) I would
+suggest splitting the problem in smaller sub-problems to help our
+discussion.
+
+[Later it'd be very nice to have one patch per problem being fixed too]
+
+
+To the best of my understand we have the following problems that needs
+fixing:
+1) CRL being changed in-place, even though we may prefer not doing that;
+2) --chroot messing up paths in pre- and post-chroot operations;
+3) CRL not being used at all if OpenVPN failed to parse it during
+initialization;
+4) different CRL access/parsing errors handled differently.
+
+
+Is the summary above correct? or is any of my points wrong/lacking details?
+
+
+[If you prefer discussing on IRC, feel free to join #openvpn-devel on
+freenode]
+
+
+Regards,
+
 -- 
-2.31.1
-
+Antonio Quartulli
 
