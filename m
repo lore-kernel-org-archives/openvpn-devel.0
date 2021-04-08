@@ -1,8 +1,7 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu,  8 Apr 2021 15:36:26 +0200
-Message-Id: <20210408133626.29232-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Ensure using const variables with
- EVP_PKEY_get0_*
+Date: Thu,  8 Apr 2021 16:02:25 +0200
+Message-Id: <20210408140229.31824-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH 0/3] P2P NCP support patch set
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,41 +14,41 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-These functions return const pointers in OpenSSL 3.0.0alpha14, so
-our pointers should be also const to avoid casting the const away.
+Note: this patchset requires the "Move context_auth from context_2 
+to tls_multi and name it multi_state" patch to be applied first.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/ssl_openssl.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Our P2P mode is currently lacking in features compared to the
+P2MP mode. Especially EKM, DATA_v2 and NCP cannot be used with
+P2P mode. And the differences increase code complexity as we
+need to maintain two code paths. As we don't intend to
+deprecate P2P mode, this patchset implements NCP for P2P mode.
 
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index cb8ac7727..a9bc342b0 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -1248,12 +1248,11 @@ static int
- tls_ctx_use_external_rsa_key(struct tls_root_ctx *ctx, EVP_PKEY *pkey)
- {
-     RSA *rsa = NULL;
--    RSA *pub_rsa;
-     RSA_METHOD *rsa_meth;
- 
-     ASSERT(NULL != ctx);
- 
--    pub_rsa = EVP_PKEY_get0_RSA(pkey);
-+    const RSA *pub_rsa = EVP_PKEY_get0_RSA(pkey);
-     ASSERT(NULL != pub_rsa);
- 
-     /* allocate custom RSA method object */
-@@ -2031,7 +2030,7 @@ print_cert_details(X509 *cert, char *buf, size_t buflen)
- #ifndef OPENSSL_NO_EC
-     if (typeid == EVP_PKEY_EC && EVP_PKEY_get0_EC_KEY(pkey) != NULL)
-     {
--        EC_KEY *ec = EVP_PKEY_get0_EC_KEY(pkey);
-+        const EC_KEY *ec = EVP_PKEY_get0_EC_KEY(pkey);
-         const EC_GROUP *group = EC_KEY_get0_group(ec);
- 
-         int nid = EC_GROUP_get_curve_name(group);
+P2P NCP is lot less ambigous than normal NCP and will only
+be activated if both peers support it and avoids all the
+edge cases of different level of support for different
+versions.
+
+Arne Schwabe (3):
+  Change options->data_channel_use_ekm to flags
+  Remove --ncp-disable option
+  Support NCP in pure P2P VPN setups
+
+ Changes.rst                           |   4 +
+ doc/man-sections/protocol-options.rst |   8 +-
+ src/openvpn/init.c                    | 113 +++++++++++++----
+ src/openvpn/multi.c                   |   9 +-
+ src/openvpn/options.c                 |  48 ++-----
+ src/openvpn/options.h                 |   5 +-
+ src/openvpn/push.c                    |   2 +-
+ src/openvpn/ssl.c                     | 173 ++++++++++++++++++--------
+ src/openvpn/ssl.h                     |   5 +
+ src/openvpn/ssl_backend.h             |   1 +
+ src/openvpn/ssl_common.h              |  11 +-
+ src/openvpn/ssl_ncp.c                 | 149 +++++++++++++++++++++-
+ src/openvpn/ssl_ncp.h                 |  25 ++++
+ tests/unit_tests/openvpn/test_ncp.c   |  11 ++
+ 14 files changed, 426 insertions(+), 138 deletions(-)
+
 -- 
 2.31.1
 
