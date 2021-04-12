@@ -1,11 +1,12 @@
-References: <20210409162846.GT976@...1296...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <c9aa3222-63c1-ae68-c1b1-67b427010df2@...1227...>
-Date: Sat, 10 Apr 2021 01:42:29 +0200
+References: <E1lW0eX-00012w-9n@...2487...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <aa2d14ed-6872-e695-807a-e0924ceb998a@...2181...>
+Date: Mon, 12 Apr 2021 21:21:30 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210409162846.GT976@...1296...>
-Subject: Re: [Openvpn-devel] make --persist-key always-on and remove "off"
- code path
+In-Reply-To: <E1lW0eX-00012w-9n@...2487...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Fix build with mbedtls w/o SSL
+ renegotiation support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,43 +15,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Max Fillinger <maximilian.fillinger@...2507...>, openvpn-devel@lists.sourceforge.net
+
+Hi,
+
+On 12/04/2021 19:46, Max Fillinger wrote:
+> In mbedtls, support for SSL renegotiation can be disabled at
+> compile-time. However, OpenVPN cannot be built with such a library
+> because it calls mbedtls_ssl_conf_renegotiation() to disable this
+> feature at runtime. This function doesn't exist when mbedtls was built
+> without support for SSL renegotiation.
+> 
+> This commit fixes the build by ifdef'ing out the function call when
+> mbedtls was built without support for SSL renegotiation.
+> 
+> Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+
+Compile tested against mbedtls with and without this feature defined.
+Could see the error and it gets fixed when this patch is applied.
+
+By having a look at the mbedtls git history I could see this define
+exists since the library was under the polarssl namespace. Which means
+it is old enough for us to not worry about.
+
+Acked-by: Antonio Quartulli <antonio@...515...>
 
 
-Am 09.04.2021 um 18:28 schrieb Gert Doering:
-> Hi,
->
-> there was a big discussion on the IRC channel today about interactions
-> between "--chroot" and "--persist-key" and how and when stuff is reloaded
-> or not.
->
-> Now, we all seem to agree that OpenVPN has way too many obscure options,
-> so I propose to get rid of another one, namely --persist-key - and I
-> suggest to make it permanently-active ("load the keys at startup, and
-> then do not touch these files again").
->
-> Unless someone explains to me in simple words what the benefit is of
-> reloading the keys on every new outbound connection...  yes, you *could*
-> put in a new key/cert/CA set while OpenVPN is active, and then trigger
-> a SIGUSR1 restart, having it "seamlessly" move to new credentials...
->
-> But...
->
-> How many of you do that?  Instead of just calling "service openvpn restart"?
->
-> I do not use --persist-key, but I still restart my services after fiddling
-> with configs...
-
-I am also for removing persist-key option (and ignore it if still 
-present) and just always have the same behaviour. I can also not come up 
-with a valid scenario where setting/not setting this option is making a 
-real desirable difference.
-
-Arne
-
-
-
+-- 
+Antonio Quartulli
 
