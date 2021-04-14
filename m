@@ -1,15 +1,14 @@
-References: <20210406162518.4075-1-arne@...1227...>
- <20210406162518.4075-2-arne@...1227...>
- <f16a3c68-89c0-c9a9-5a36-272979b8e95e@...2181...>
- <20210406205120.GG976@...1296...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <f9b82849-f9b3-bf84-705b-e2ca34717409@...2080...>
-Date: Tue, 13 Apr 2021 14:46:45 +0200
+References: <20210412164545.11151-1-maximilian.fillinger@...2507...>
+ <E1lVzi7-00011Y-AY@...2479...>
+ <dcd5b87c-6a68-a191-dae9-cc35ecb99b65@...2181...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <8c219b3e-18e0-db0a-e9ae-25d279a5e8ba@...1227...>
+Date: Wed, 14 Apr 2021 11:29:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210406205120.GG976@...1296...>
+In-Reply-To: <dcd5b87c-6a68-a191-dae9-cc35ecb99b65@...2181...>
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 2/5] Remove checks for uint* types that
- are part of C99
+Subject: Re: [Openvpn-devel] [PATCH v2 1/2] In init_ssl,
+ open the correct CRL path pre-chroot
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,36 +17,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>, Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Antonio Quartulli <a@...2181...>, Max Fillinger <maximilian.fillinger@...2507...>, openvpn-devel@lists.sourceforge.net
 
-On 06/04/2021 22:51, Gert Doering wrote:
-> Hi,
+
 > 
-> On Tue, Apr 06, 2021 at 10:39:59PM +0200, Antonio Quartulli wrote:
->> Gert should be able to test on *more ancient things* that we still support.
+>> +        if (options->chroot_dir == NULL || in_chroot || options->crl_file_inline)
+>> +        {
+>> +            tls_ctx_reload_crl(new_ctx, options->crl_file, options->crl_file_inline);
+>> +        }
+>> +        else
+>> +        {
+>> +            struct gc_arena gc = gc_new();
+>> +            struct buffer crl_file_buf = prepend_chroot(options->chroot_dir, options->crl_file, &gc);
+>> +            tls_ctx_reload_crl(new_ctx, BSTR(&crl_file_buf), options->crl_file_inline);
+>> +            gc_free(&gc);
+>> +        }
 > 
-> Hardly :-) - David maintains the software museum.
-> 
-> My oldest machine is FreeBSD 7.4, which has been EOLed since like
-> ages, and even that one has <inttypes.h> and <stdint.h>...
+> Arne: any opinion on using c->c2.gc here? init_ssl() is invoked once per
+> instance and re-invoked upon SIGUSR1. I believe it is fine to use the
+> c2's gc?
+>
 
-FreeBSD 7.4 is the software museum [0] ;-)  RHEL-7.0 was released 15 
-months _after_ FreeBSD 7.4.  RHEL-7 is oldest the supported Linux distro 
-we officially support in OpenVPN, and it gets updates from Red Hat until 
-June 20204 [1].  RHEL-7 is fully C99 capable.
+I would prefer a local gc here. It is easier to see that the memory can
+be freed right now and we don't add this unecessary depenendency on c2.
+Also c2 is not clear on renegotiations, so we will collect one string
+per renegotiation here.
 
-[0] <https://endoflife.software/operating-systems/linux/FreeBSD>
-[1] 
-<https://endoflife.software/operating-systems/linux/red-hat-enterprise-linux-rhel#7>
-
-
--- 
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
+Arne
 
