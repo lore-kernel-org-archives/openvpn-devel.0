@@ -1,13 +1,12 @@
-References: <20210412164545.11151-1-maximilian.fillinger@...2507...>
- <E1lVziU-0007K9-3x@...2487...>
+References: <20210413122006.3960-1-themiron@...2010...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <4743b2e0-89bf-29f9-f406-867d35c9bb1d@...2181...>
-Date: Tue, 13 Apr 2021 21:46:16 +0200
+Message-ID: <09b9f169-d96a-eb25-be8b-e1c09d5dca00@...2181...>
+Date: Wed, 14 Apr 2021 23:23:07 +0200
 MIME-Version: 1.0
-In-Reply-To: <E1lVziU-0007K9-3x@...2487...>
+In-Reply-To: <20210413122006.3960-1-themiron@...2010...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v2 2/2] Abort if CRL file can't be
- stat-ed in init_ssl
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Fix IPv4 default gateway with
+ multiple route tables
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,112 +16,111 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Max Fillinger <maximilian.fillinger@...2507...>, openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: Vladislav Grishenko <themiron@...2010...>, openvpn-devel@lists.sourceforge.net
 
+Hi,
 
+On 13/04/2021 14:20, Vladislav Grishenko wrote:
+> Current default gateway selection for zero destignation address just
 
-On 12/04/2021 18:45, Max Fillinger wrote:
-> Now that the path for the CRL file is handled correctly when using
-> chroot, there's no good reason for the file to be inaccessible during
-> init_ssl().
+little typ0: destiGnation
+
+> dumps and parses all the routing tables. If any of non-main table
+> with default route comes first, wrong default gateway can be picked.
+> Since adding/removing routes currently handles only main table,
+> let's stick to RT_TABLE_MAIN while selecting default route too.
 > 
-> This commit ensures that the CRL file is accessed successfully at least
-> once, which fixes a bug where the mbedtls version of OpenVPN wouldn't
-> use a reloaded CRL if it initially failed to access the file.
-> 
-> In tls_process(), we stick with the previous behavior of logging a
-> warning and keeping the old CRL to ensure that the CRL file can be
-> updated on-the-fly.
-> 
-> Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+> Signed-off-by: Vladislav Grishenko <themiron@...2010...>
 > ---
->  src/openvpn/ssl.c | 21 ++++++++++++++++-----
->  1 file changed, 16 insertions(+), 5 deletions(-)
+>  src/openvpn/networking_sitnl.c | 18 +++++++++++++++++-
+>  1 file changed, 17 insertions(+), 1 deletion(-)
 > 
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 8782b140..a42b639c 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -539,10 +539,14 @@ tls_version_parse(const char *vstr, const char *extra)
->   * @param crl_file      The file name to load the CRL from, or
->   *                      "[[INLINE]]" in the case of inline files.
->   * @param crl_inline    A string containing the CRL
-> + * @param abort_on_err  If this is true, OpenVPN exits if it can't stat
-> + *                      the CRL file. If it is false, it will instead
-> + *                      log a warning and continue using the previously
-> + *                      loaded CRL.
->   */
->  static void
->  tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
-> -                   bool crl_file_inline)
-> +                   bool crl_file_inline, bool abort_on_err)
->  {
->      /* if something goes wrong with stat(), we'll store 0 as mtime */
->      platform_stat_t crl_stat = {0};
-> @@ -559,7 +563,14 @@ tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
+> diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
+> index 2bc70a50..56543648 100644
+> --- a/src/openvpn/networking_sitnl.c
+> +++ b/src/openvpn/networking_sitnl.c
+> @@ -426,6 +426,7 @@ typedef struct {
+>      inet_address_t gw;
+>      char iface[IFNAMSIZ];
+>      bool default_only;
+> +    unsigned int table;
+>  } route_res_t;
+>  
+>  static int
+> @@ -435,7 +436,7 @@ sitnl_route_save(struct nlmsghdr *n, void *arg)
+>      struct rtmsg *r = NLMSG_DATA(n);
+>      struct rtattr *rta = RTM_RTA(r);
+>      int len = n->nlmsg_len - NLMSG_LENGTH(sizeof(*r));
+> -    unsigned int ifindex = 0;
+> +    unsigned int table, ifindex = 0;
+>  
+>      /* filter-out non-zero dst prefixes */
+>      if (res->default_only && r->rtm_dst_len != 0)
+> @@ -443,6 +444,9 @@ sitnl_route_save(struct nlmsghdr *n, void *arg)
+>          return 1;
 >      }
->      else if (platform_stat(crl_file, &crl_stat) < 0)
+>  
+> +    /* route table, ignored with RTA_TABLE */
+> +    table = r->rtm_table;
+> +
+>      while (RTA_OK(rta, len))
 >      {
-> -        msg(M_WARN, "WARNING: Failed to stat CRL file, not (re)loading CRL.");
-> +        if (abort_on_err)
+>          switch (rta->rta_type)
+> @@ -460,11 +464,22 @@ sitnl_route_save(struct nlmsghdr *n, void *arg)
+>              case RTA_GATEWAY:
+>                  memcpy(&res->gw, RTA_DATA(rta), res->addr_size);
+>                  break;
+> +
+> +            /* route table */
+> +            case RTA_TABLE:
+> +                table = *(unsigned int *)RTA_DATA(rta);
+> +                break;
+>          }
+>  
+>          rta = RTA_NEXT(rta, len);
+>      }
+>  
+> +    /* filter-out zero dns prefixes from other tables */
 
-Do you think it would make sense to simply check:
+This comments seems off?
+I'd suggest something like:
 
-if (!ssl_ctx->crl_last_mtime)
-    abort
-else
-    warn
+/* filter out any route not coming from the selected table */
 
-?
+> +    if (res->table && res->table != table)
+> +    {
+> +        return 1;
 
-the last_mtime field should tell us if this is the first time we try
-initializing the CRL or not.
-And we want to abort only if the failure happens during the first
-initialization.
+Am I wrong or at this point we have already copied the GW to res->gw
+thus, the caller will believe we have a result?
 
-This way we avoid adding yet another state flag that has to be conveyed
-from the caller.
+IMHO we should save the GW pointer in a temporary variable and copy it
+only after this check has passed.
 
+As a side notw, could you please resend this patch based on release/2.5?
+We should start by fixing the bug there and then porting this patch to
+master.
 
 Regards,
 
-> +        {
-> +            msg(M_FATAL, "ERROR: Failed to stat CRL file during init_ssl, exiting.");
-> +        }
-> +        else
-> +        {
-> +            msg(M_WARN, "WARNING: Failed to stat CRL file, not (re)loading CRL.");
-> +        }
->          return;
->      }
->  
-> @@ -710,13 +721,13 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx, bool in_ch
->           * chroot directory to crl_file. */
->          if (options->chroot_dir == NULL || in_chroot || options->crl_file_inline)
->          {
-> -            tls_ctx_reload_crl(new_ctx, options->crl_file, options->crl_file_inline);
-> +            tls_ctx_reload_crl(new_ctx, options->crl_file, options->crl_file_inline, true);
->          }
->          else
->          {
->              struct gc_arena gc = gc_new();
->              struct buffer crl_file_buf = prepend_chroot(options->chroot_dir, options->crl_file, &gc);
-> -            tls_ctx_reload_crl(new_ctx, BSTR(&crl_file_buf), options->crl_file_inline);
-> +            tls_ctx_reload_crl(new_ctx, BSTR(&crl_file_buf), options->crl_file_inline, true);
->              gc_free(&gc);
->          }
->      }
-> @@ -2752,7 +2763,7 @@ tls_process(struct tls_multi *multi,
->                  && !(session->opt->ssl_flags & SSLF_CRL_VERIFY_DIR))
+> +    }
+> +
+>      if (!if_indextoname(ifindex, res->iface))
+>      {
+>          msg(M_WARN | M_ERRNO, "%s: rtnl: can't get ifname for index %d",
+> @@ -507,6 +522,7 @@ sitnl_route_best_gw(sa_family_t af_family, const inet_address_t *dst,
 >              {
->                  tls_ctx_reload_crl(&session->opt->ssl_ctx,
-> -                                   session->opt->crl_file, session->opt->crl_file_inline);
-> +                                   session->opt->crl_file, session->opt->crl_file_inline, false);
+>                  req.n.nlmsg_flags |= NLM_F_DUMP;
+>                  res.default_only = true;
+> +                res.table = RT_TABLE_MAIN;
 >              }
->  
->              /* New connection, remove any old X509 env variables */
+>              else
+>              {
 > 
+
+
+
 
 -- 
 Antonio Quartulli
