@@ -1,15 +1,9 @@
-References: <20210415230545.22317-1-themiron@...2010...>
- <20210416120708.1532-1-themiron@...2010...>
- <022e18d6-67ae-8975-9d41-49d19c41a0be@...2181...>
- <01ed01d732ce$ed39d100$c7ad7300$@yandex-team.ru>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <5544ff78-e0ef-927f-b581-dbd73282686f@...2181...>
-Date: Fri, 16 Apr 2021 17:01:24 +0200
-MIME-Version: 1.0
-In-Reply-To: <01ed01d732ce$ed39d100$c7ad7300$@yandex-team.ru>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3 1/2] Fix IPv4 default gateway with
- multiple route tables
+Date: Fri, 16 Apr 2021 18:56:58 +0200 (CEST)
+Message-Id: <202104161656.13GGuwfT016081@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210408120029.19438-1-arne@...1227...>
+References: <20210408120029.19438-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Always save/restore pull options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,58 +14,42 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Vladislav Grishenko <themiron@...2010...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Acked-by: Gert Doering <gert@...1296...>
 
-On 16/04/2021 16:43, Vladislav Grishenko wrote:
-> Hi,
-> 
->> However, to prevent the next casual reader from asking the same question,
->> wouldn't it make sense to change this comparison with:
->>
->> if (res->table != RT_TABLE_UNSPEC && res->table != table)
-> 
-> I don’t think it's necessary for following reasons:
-> 1. Readability. "if (res->table)" reads as "if filter table is set ". Changing it to "if (res->table != RT_TABLE_UNSPEC)" gives the same reading imho.
-> 2. RT_TABLE_UNSPEC was and will be always zero, because zillion of software incl. iproute2 depends on zeroed structs with 0 == UNSPEC
-> 3. Comparing with RT_TABLE_UNSPEC here will require additional code to explicitely init res.table with RT_TABLE_UNSPEC, which in fact is will be noop after CLEAR(res) and have little sense, since there's no chance to have RT_TABLE_UNSPEC != 0.
-> Anyway, if you still thinks it's required, I can do change.
+The code looks good, and the local test for the "pull" case works,
+unsurprisingly (as it does the very same things in that case).  It might
+trigger different behaviour for the "non pull" case - but then, it puts
+everything back to where it was before (if saved), so I do not expect
+surprises.  Client side testing and "break the things we know are
+broken on save/restore today" (compress etc) works as expected.
 
-No, it's ok. You are right that 0 is just assumed to be the UNSPEC
-filter (i.e. don't filter). Let's keep it as it is.
+This is a (fairly light) refactoring patch, but as it is prerequisite for 
+two further patches (and maybe more) that are actual bugfixes, I considered
+putting into 2.5 as well.  It does not want to go in (#ifdef P2MP, and
+conflicts with the NCP saving patch), so I'll backport the "compress"
+and "route-*gateway" patch manually.  Those are trivial enough.
 
-> 
->> Another question: why restricting the research to the MAIN table only for IPv4
->> and only when searching a default route?
-> 
-> For real dst, incl ::/128 we do the right thing - perform "ip route get" that will get real gateway for specified dst no matter what table or anything else is.
-> And we performs "ip route show" dump only to get gateway for "0.0.0.0" destination by a reason.
-> Getting default gateway for "0.0.0.0/0" destination is not logically possible at all, for example what is default gateway for this case:
-> 	0.0.0.0/1 via a.a.a.a
-> 	128.0.0.0/1 via b.b.b.b
-> Therefore for 0.0.0.0/0 case heuristic is used, if there's  a default route, if it's in main table and so on, that’s why only dumping needs it.
-> Any other - don't.
->  
->> Otherwise we are fixing this problem only for the ipv4/default search, but the
->> function remains "buggy" for the other cases.
-> 
-> Buggy here is searching default gateway for 0.0.0.0/0 itself. Other cases are right from the scratch :)
-> 
+Your patch has been applied to the master branch.
 
-Right. The problem I was seeing is simply that we are not providing all
-info to the kernel as we should.
-This requires further improvement later, but not as part of this fix :-)
+commit c1150e5b95b63a95ee4f157d8870d3214099d8a0
+Author: Arne Schwabe
+Date:   Thu Apr 8 14:00:27 2021 +0200
 
-So the patch is fine as it is, thanks!
+     Always save/restore pull options
 
-Acked-by: Antonio Quartulli <antonio@...515...>
-
-@Gert: this should go to 2.5 too. Thanks!
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210408120029.19438-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22079.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-Regards,
+--
+kind regards,
 
--- 
-Antonio Quartulli
+Gert Doering
+
 
