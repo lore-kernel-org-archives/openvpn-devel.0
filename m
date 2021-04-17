@@ -1,10 +1,8 @@
-Date: Sat, 17 Apr 2021 11:47:07 +0200 (CEST)
-Message-Id: <202104170947.13H9l78f000439@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210416133512.1176870-1-arne@...1227...>
-References: <20210416133512.1176870-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Also restore/save
- route-gatreway options in reconnects
+Date: Sat, 17 Apr 2021 12:05:44 +0200
+Message-Id: <20210417100544.5497-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Repair --secret depreciation warning.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,38 +13,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+commit 60f5889ae formally depreciated use of configs without either
+"tls-client" or "tls-server" - but got the booleans wrong.
 
-Stared-at-code (looks good) and subjected to the test rig that breaks
-(server with topology subnet, pushing route-gateway, SIGUSR1, advance
-to server that uses top net30, stuck route-gateway breaks route 
-installation).  Good :-)
+Fix.
 
-Backport to 2.5 was fairly trivial (rename pre_connect to pre_pull
-and adjust indent) - tested there as well, fixes that as well.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/options.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Your patch has been applied to the master branch and release/2.5.
-
-commit 57c8d220aab14b661bafd4fafc40c195326b8d8f (master)
-commit 7b594d4980f696583397a3b87e5c928acba17081 (release/2.5)
-Author: Arne Schwabe
-Date:   Fri Apr 16 15:35:12 2021 +0200
-
-     Also restore/save route-gateway options on SIGUSR1 reconnects
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210416133512.1176870-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22132.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 3dd22d52..ef854c76 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2541,7 +2541,7 @@ options_postprocess_verify_ce(const struct options *options,
+         msg(M_USAGE, "specify only one of --tls-server, --tls-client, or --secret");
+     }
+ 
+-    if (!options->tls_server || !options->tls_client)
++    if (!options->tls_server && !options->tls_client)
+     {
+         msg(M_INFO, "DEPRECATION: No tls-client or tls-server option in "
+                     "configuration detected. OpenVPN 2.7 will remove the "
+-- 
+2.26.3
 
 
