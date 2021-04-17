@@ -1,10 +1,10 @@
-Date: Sat, 17 Apr 2021 14:34:47 +0200 (CEST)
-Message-Id: <202104171234.13HCYl95011504@...2054...>
+Date: Sat, 17 Apr 2021 15:02:48 +0200 (CEST)
+Message-Id: <202104171302.13HD2mDk011972@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210417100544.5497-1-gert@...1296...>
-References: <20210417100544.5497-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Repair --secret deprecation
- warning.
+In-Reply-To: <20210415114541.1001644-1-arne@...1227...>
+References: <20210415114541.1001644-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove LibreSSL specific
+ defines not needed for modern LibreSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master branch.
+Getting rid of #ifdef is always good :-) - tested on OpenBSD 6.8 ("just
+to be sure"), works.
 
-Wording fixed as requested ("depreciation" is a valid term, but refers
-to "financial value diminishes over time")
+On OpenBSD 6.5, it fails at link time (LibreSSL 2.9.1, RSA_meth_set_pub_enc
+and other RSA_meth* functions missing).  So, no more support for that
+(already end-of-life) OpenBSD version.
 
-Tested, of course - now only the p2p test warns (as opposed to "all warn"),
-and that's to be expected :-)
+FreeBSD ports now has LibreSSL 3.2.5, so I assume it is not going to 
+break anything there (though I have not bothered to test).
 
-commit 85080921096fe60c6956b1e0a13fe6f9a3f93ab6 (master)
-Author: Gert Doering
-Date:   Sat Apr 17 12:05:44 2021 +0200
+Your patch has been applied to the master branch.
 
-     Repair --secret deprecation warning.
+commit 2c0ebe0f12c3d7598dd2f604a5a412b68b728ba9
+Author: Arne Schwabe
+Date:   Thu Apr 15 13:45:41 2021 +0200
 
-     Signed-off-by: Gert Doering <gert@...1296...>
+     Remove LibreSSL specific defines not needed for modern LibreSSL
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20210417100544.5497-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22139.html
+     Message-Id: <20210415114541.1001644-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22119.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
