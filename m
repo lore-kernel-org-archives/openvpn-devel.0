@@ -1,9 +1,10 @@
-Date: Fri, 16 Apr 2021 18:56:58 +0200 (CEST)
-Message-Id: <202104161656.13GGuwfT016081@...2054...>
+Date: Sat, 17 Apr 2021 10:44:49 +0200 (CEST)
+Message-Id: <202104170844.13H8in0A079591@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210408120029.19438-1-arne@...1227...>
-References: <20210408120029.19438-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Always save/restore pull options
+In-Reply-To: <20210408120029.19438-2-arne@...1227...>
+References: <20210408120029.19438-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Also restore/save compress
+ related options in reconnects
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,31 +20,32 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-The code looks good, and the local test for the "pull" case works,
-unsurprisingly (as it does the very same things in that case).  It might
-trigger different behaviour for the "non pull" case - but then, it puts
-everything back to where it was before (if saved), so I do not expect
-surprises.  Client side testing and "break the things we know are
-broken on save/restore today" (compress etc) works as expected.
-
-This is a (fairly light) refactoring patch, but as it is prerequisite for 
-two further patches (and maybe more) that are actual bugfixes, I considered
-putting into 2.5 as well.  It does not want to go in (#ifdef P2MP, and
-conflicts with the NCP saving patch), so I'll backport the "compress"
-and "route-*gateway" patch manually.  Those are trivial enough.
+Stared-at-code (looks good), client side tested with the usual parcours
+(good), and also tested with my two known-weird/broken test cases 
+for "compress not restored" (fixed!).
 
 Your patch has been applied to the master branch.
 
-commit c1150e5b95b63a95ee4f157d8870d3214099d8a0
-Author: Arne Schwabe
-Date:   Thu Apr 8 14:00:27 2021 +0200
+I tried to apply it to release/2.5, but the resulting binary did not
+behave - I can see that it restored the comp settings, but it does so
+*after* OCC handshake (so the OCC warning is still there) *and* it does
+not re-init compression - so the case "config has comp-lzo, server A
+pushes compress lz4, server B pushes nothing" (so it should do LZO)
+still fails.  I think I need one of the other patches that changes
+the "when are options saved/restored" as prerequisite here.
 
-     Always save/restore pull options
+Will come back...
+
+commit 2a414c3c79bba089183a517a2d355b5aaae0b4a4 (master)
+Author: Arne Schwabe
+Date:   Thu Apr 8 14:00:28 2021 +0200
+
+     Also restore/save compress related options in reconnects
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210408120029.19438-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22079.html
+     Message-Id: <20210408120029.19438-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22078.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
