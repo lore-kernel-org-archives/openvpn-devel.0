@@ -1,10 +1,15 @@
-Date: Sun, 18 Apr 2021 16:37:10 +0200 (CEST)
-Message-Id: <202104181437.13IEbAGP085763@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210416110955.1162574-1-arne@...1227...>
-References: <20210416110955.1162574-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add parsing of dhcp-option
- PROXY_HTTP
+References: <20210415230545.22317-1-themiron@...2010...>
+ <20210416120708.1532-1-themiron@...2010...>
+ <20210416120708.1532-2-themiron@...2010...>
+ <20210418141537.GA976@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <c139c4dc-6a42-b501-c1ce-de53c4caf19d@...2181...>
+Date: Sun, 18 Apr 2021 16:55:23 +0200
+MIME-Version: 1.0
+In-Reply-To: <20210418141537.GA976@...1296...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v3 2/2] Add basic support for multipath
+ gateway
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,43 +18,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, Vladislav Grishenko <themiron@...2010...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
-
-We discussed the feature-ACK part in the last community meeting - this
-is for (Android) clients "everything that runs while the VPN is active"
-should use an http proxy.  This is installed by the VPN API and "just
-passed through" through OpenVPN.
-
-The new code is all #ifdef TARGET_ANDROID, so if you say this is good,
-we're not to doubt it :-) (but it looks reasonably safe).  The argument
-count change is (unfortunately) necessary but also looks good.
-
-I have run a t_client test run, but that didn't excercise the DHCP
-code much.
-
-Your patch has been applied to the master branch.
-
-commit 8d109f68fd277b3e00ba7bef61a172b4130c35b8
-Author: Arne Schwabe
-Date:   Fri Apr 16 13:09:55 2021 +0200
-
-     Add parsing of dhcp-option PROXY_HTTP
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210416110955.1162574-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22129.html
-     Signed-off-by: Gert Doering <gert@...1296...>
 
 
---
-kind regards,
+On 18/04/2021 16:15, Gert Doering wrote:
+> Hi,
+> 
+> On Fri, Apr 16, 2021 at 05:07:08PM +0500, Vladislav Grishenko wrote:
+>> Load balancing setup over multiple upstreams may include multipath
+>> gateway route, which is not not supported by OpenVPN.
+>> Let's add basic support for that for selecting best route for zero
+>> destination address - use any one of nexthop addresses as a gateway,
+>> weights are not handled.
+> 
+> What happens with the current code when we encounter such a situation?
+> 
+> I assume it will "just not work" and find no gateway address?
 
-Gert Doering
+Yeah, nexthops groups are just not parsed. So if the default GW is
+configured this way, it will not be found.
 
+This said, it's very likely the main routing table will have a classic
+default route most of the time.
+
+Still, we want to handle nexthop groups somehow.
+
+Cheers,
+
+
+-- 
+Antonio Quartulli
 
