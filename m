@@ -1,12 +1,10 @@
-References: <20210408133626.29232-1-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <57f54ffd-4da5-376e-66f8-bd1628474903@...2181...>
-Date: Sun, 18 Apr 2021 21:20:08 +0200
-MIME-Version: 1.0
+Date: Sun, 18 Apr 2021 22:05:49 +0200 (CEST)
+Message-Id: <202104182005.13IK5nAO090761@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20210408133626.29232-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Ensure using const variables with
- EVP_PKEY_get0_*
+References: <20210408133626.29232-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Ensure using const variables
+ with EVP_PKEY_get0_*
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Your patch has been applied to the master branch.
 
-On 08/04/2021 15:36, Arne Schwabe wrote:
-> These functions return const pointers in OpenSSL 3.0.0alpha14, so
-> our pointers should be also const to avoid casting the const away.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+I have not tested this any further, but glance-at-code looks good.
 
+commit 6fc292d2ed008a53061ce953dea6ff1e692e6723
+Author: Arne Schwabe
+Date:   Thu Apr 8 15:36:26 2021 +0200
 
-Trivial change. No behaviour is expected to be modified by this.
+     Ensure using const variables with EVP_PKEY_get0_*
 
-This change improves implicit code documentation (thanks to the OpenSSL
-devs).
-
-Compiled tested against various LibreSSL/OpenSSL versions and none
-complained about the const.
-
-Acked-by: Antonio Quartulli <antonio@...515...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210408133626.29232-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22081.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
--- 
-Antonio Quartulli
+--
+kind regards,
+
+Gert Doering
+
 
