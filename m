@@ -1,10 +1,10 @@
-Date: Sun, 18 Apr 2021 16:19:19 +0200 (CEST)
-Message-Id: <202104181419.13IEJJET072842@...2054...>
+Date: Sun, 18 Apr 2021 16:37:10 +0200 (CEST)
+Message-Id: <202104181437.13IEbAGP085763@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210416120708.1532-1-themiron@...2010...>
-References: <20210416120708.1532-1-themiron@...2010...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix IPv4 default gateway with
- multiple route tables
+In-Reply-To: <20210416110955.1162574-1-arne@...1227...>
+References: <20210416110955.1162574-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add parsing of dhcp-option
+ PROXY_HTTP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Vladislav Grishenko <themiron@...2010...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Code looks reasonable (though I won't claim to understand the nuances
-of Netlink :-) ) - took me a bit to remember what is done here with
-the callback function for matching, but yeah, seems to do what it says
-on the lid.  Did some very basic testing on a system with just a single
-route table and nothing breaks :-)
+Acked-by: Gert Doering <gert@...1296...>
 
-Your patch has been applied to the master and release/2.5 branch (bugfix).
+We discussed the feature-ACK part in the last community meeting - this
+is for (Android) clients "everything that runs while the VPN is active"
+should use an http proxy.  This is installed by the VPN API and "just
+passed through" through OpenVPN.
 
-commit c7f95891a4a0aabb64e7d4f3200525c1a2fcf433 (master)
-commit 48ba0b059138dec7a94d2368375344d39c4e05e9 (release/2.5)
-Author: Vladislav Grishenko
-Date:   Fri Apr 16 17:07:07 2021 +0500
+The new code is all #ifdef TARGET_ANDROID, so if you say this is good,
+we're not to doubt it :-) (but it looks reasonably safe).  The argument
+count change is (unfortunately) necessary but also looks good.
 
-     Fix IPv4 default gateway with multiple route tables
+I have run a t_client test run, but that didn't excercise the DHCP
+code much.
 
-     Signed-off-by: Vladislav Grishenko <themiron@...2010...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20210416120708.1532-1-themiron@...2010...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22130.html
+Your patch has been applied to the master branch.
+
+commit 8d109f68fd277b3e00ba7bef61a172b4130c35b8
+Author: Arne Schwabe
+Date:   Fri Apr 16 13:09:55 2021 +0200
+
+     Add parsing of dhcp-option PROXY_HTTP
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210416110955.1162574-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22129.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
