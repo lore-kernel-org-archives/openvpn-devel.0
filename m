@@ -1,18 +1,13 @@
-Date: Sun, 18 Apr 2021 16:55:48 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20210418145548.GC976@...1296...>
-References: <20210415230545.22317-1-themiron@...2010...>
- <20210416120708.1532-1-themiron@...2010...>
- <20210416120708.1532-2-themiron@...2010...>
- <20210418141537.GA976@...1296...>
- <c139c4dc-6a42-b501-c1ce-de53c4caf19d@...2181...>
+References: <dcd5b87c-6a68-a191-dae9-cc35ecb99b65@...2181...>
+ <20210415091248.18149-1-maximilian.fillinger@...2507...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <64fd6c2d-91e6-a2dd-747d-cfde76275d1e@...2181...>
+Date: Sun, 18 Apr 2021 17:55:07 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="lLwWzDoQlFKZWrpj"
-Content-Disposition: inline
-In-Reply-To: <c139c4dc-6a42-b501-c1ce-de53c4caf19d@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v3 2/2] Add basic support for multipath
- gateway
+In-Reply-To: <20210415091248.18149-1-maximilian.fillinger@...2507...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v3 1/2] In init_ssl,
+ open the correct CRL path pre-chroot
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,48 +16,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Gert Doering <gert@...1296...>, Vladislav Grishenko <themiron@...2010...>, openvpn-devel@lists.sourceforge.net
-
---lLwWzDoQlFKZWrpj
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Max Fillinger <maximilian.fillinger@...2507...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Sun, Apr 18, 2021 at 04:55:23PM +0200, Antonio Quartulli wrote:
-> Still, we want to handle nexthop groups somehow.
+On 15/04/2021 11:12, Max Fillinger wrote:
+> When using the chroot option, the init_ssl function can be called before
+> entering the chroot or, when OpenVPN receives a SIGHUP, afterwards. This
+> commit ensures that OpenVPN tries to open the correct path for the CRL
+> file in either situation.
+> 
+> This commit does not address key and certificate files. For these, the
+> --persist-key option should be used.
+> 
+> Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
 
-Then it looks like this needs testing and an ACK :-)
+Compile tested against my zoo of SSL libraries and got no complaint.
+GitLab CI did not complain either.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+I reproduced the bug by having the file reachable by the option parser
+(chroot+crl_path), but unreachable by the first run of init_ssl() (no
+chroot included in the path here).
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---lLwWzDoQlFKZWrpj
-Content-Type: application/pgp-signature; name="signature.asc"
+I could see that this patch addresses this issue and prevent the first
+init_ssl() from failing.
 
------BEGIN PGP SIGNATURE-----
+Subsequent CRL reloads also work as expected.
 
-iQGcBAEBAgAGBQJgfEhzAAoJEB2Cnv7KVigS+VoL/jrTOMzNL+q4QdwsDI57/2/M
-bT5o8wgUsXmaU7TXAujRFRMTSsVO3u3GfLBRT40GOHkjFbJHkQjZPS5rAvFY2XT1
-0nDyoFGWpMOkeO8TEQnS2poHr58v04luJC+xewgzli9S3ySZnTbpJcVBYlWs/8RA
-0vdSP+uuuprORAmLLcJS+kF56mIeyvCqY828mKAelHxrn/IHVrBSXycaNBDI4phF
-PAJCn0BDBmKfcP1BCpzRyYis4t1YgHHWsUfvZ40ixgrQqtUxAvmKWoSGK87TElzY
-aYTraScHMu8+chJRnGXFTudaYbVLzi6e/7R7UrBL4T6E2z4dFD781unKe0F1ra41
-vklSwu1wcdjV6qhzN+YlTKfnwoED5RFgWB3RjsnPNVq5bX9UOfOWnQEeC610WTC2
-VrQYzX5/6q04CWmKcTgbR2WRWjz4Gwx+fY6imyDYzhlOiwGbjBnw5Z8eg3bn6icY
-AGxFWPy+bLq1LVoFAB8DxH3uW7VY7q2zVhiOeVMWoQ==
-=/iDV
------END PGP SIGNATURE-----
+Acked-by: Antonio Quartulli <antonio@...515...>
 
---lLwWzDoQlFKZWrpj--
+Being this a bugfix for chroot, it should be merged to 2.5 too, if possible.
+
+Regards,
+
+
+
+-- 
+Antonio Quartulli
 
