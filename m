@@ -1,14 +1,9 @@
-References: <20201215164221.5995-1-arne@...1227...>
- <20210328120241.27605-1-arne@...1227...>
- <20210418091148.GW976@...1296...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <482ccf86-da5d-38a0-b342-05d819d33d55@...1227...>
-Date: Sun, 18 Apr 2021 17:59:46 +0200
+Date: Sun, 18 Apr 2021 18:01:11 +0200
+Message-Id: <20210418160111.1494779-1-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <20210418091148.GW976@...1296...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v2 1/2] Move context_auth from context_2
- to tls_multi and name it multi_state
+Subject: [Openvpn-devel] [PATCH v3] Move context_auth from context_2 to
+ tls_multi and name it multi_state
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,105 +12,265 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Am 18.04.21 um 11:11 schrieb Gert Doering:
-> Hi,
-> 
-> I would have merged this now, but it breaks ENABLE_ASYNC_PUSH... and
-> while at it, I have more questions.
-> 
-> On Sun, Mar 28, 2021 at 02:02:40PM +0200, Arne Schwabe wrote:
-> [..]
->> Patch V2: also rename context_auth to multi_state, explain a bit why this
->>           change is done.
-> [..]
->> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
->> index 6f7a50048..e3890f395 100644
->> --- a/src/openvpn/forward.c
->> +++ b/src/openvpn/forward.c
->> @@ -544,7 +544,7 @@ encrypt_sign(struct context *c, bool comp_frag)
->>       * Drop non-TLS outgoing packet if client-connect script/plugin
->>       * has not yet succeeded.
->>       */
->> -    if (c->c2.context_auth != CAS_SUCCEEDED)
->> +    if (c->c2.tls_multi && c->c2.tls_multi->multi_state != CAS_SUCCEEDED)
->>      {
->>          c->c2.buf.len = 0;
->>      }
-> 
-> This code assumes that c2.tls_multi can be NULL, otherwise the check is
-> not needed.  OTOH, *if* it is NULL, I think we should actually drop the
-> packet, because then it's certainly not CAS_SUCCEEDED.  So maybe make
-> this:
-> 
->> +    if (!c->c2.tls_multi || c->c2.tls_multi->multi_state != CAS_SUCCEEDED)
-> 
-> (two instances in forward.c)
+context_2 and tls_multi have the same life cycle for TLS connections
+but so this move does not affect behaviour of the variable.
 
+OpenVPN TLS multi code has a grown a lot more complex and code that
+handles multi objects needs to know the state that the object is in.
+Since not all code has access to the context_2 struct, the code that
+does not have access is often not checking the state directly but
+checks other parts of multi that have been affected from a state
+change.
 
-Yes these are all "We always check multi_state unless we have no tls at
-all (!c->c2.tls_multi) then we skip all TLS related checks. I will add
-comments about this in the v3.
+This patch also renames it to multi_state as this variable represents t
+he multi state machine status rather than just the state of the connect
+authentication (more upcoming patches will move other states
+into this variable).
 
-> 
->>  #if defined(ENABLE_ASYNC_PUSH)
->> -            if (is_cas_pending(mi->context.c2.context_auth)
->> +            if (is_cas_pending(mi->context.c2.authenticated)
->>                  && mi->client_connect_defer_state.deferred_ret_file)
->>              {
->>                  add_inotify_file_watch(m, mi, m->top.c2.inotify_fd,
-> 
-> This was overlooked, and the second line should be
-> 
->> +            if (is_cas_pending(mi->context.c2.tls_multi->multi_state)
-> 
-> I think.  But this is a code change, so I'm not doing this on my own.
-> 
-> With this change, the code compiles and passes my server side torture
-> chamber...
+Patch V2: also rename context_auth to multi_state, explain a bit why this
+          change is done.
 
-Yes. That is the correct change.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/forward.c    | 10 ++++++----
+ src/openvpn/multi.c      | 26 +++++++++++++-------------
+ src/openvpn/openvpn.h    | 14 --------------
+ src/openvpn/push.c       |  6 +++---
+ src/openvpn/ssl_common.h | 14 ++++++++++++++
+ 5 files changed, 36 insertions(+), 34 deletions(-)
 
-
-> 
-> Test sets succeeded: 1 1a 1b 1c 1d 1e 2 2a 2b 2c 2g 2d 2e 2f 2z1 2z2 3 4 4a 4b 5 5a 5b 5c 5d 5v1 5v2 5v3 5w1 5w2 5w3 5w4 5x1 5x2 5x3 5x4 6 7 7x 7y 8 8a 9 9a.
-> Test sets failed: 1x 2w 2x 2y.
-> 
-> (The failed tests are all "MTU <-> NCP non-AEAD" related, so "as expected")
-> 
-> 
->> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
->> index 18d7c1e00..b43ffa364 100644
->> --- a/src/openvpn/push.c
->> +++ b/src/openvpn/push.c
->> @@ -854,14 +854,14 @@ process_incoming_push_request(struct context *c)
->>  {
->>      int ret = PUSH_MSG_ERROR;
->>  
->> -    if ((c->c2.tls_multi && tls_authentication_status(c->c2.tls_multi, 0) == TLS_AUTHENTICATION_FAILED)
->> -        || c->c2.context_auth == CAS_FAILED)
->> +    if (tls_authentication_status(c->c2.tls_multi, 0) == TLS_AUTHENTICATION_FAILED
->> +        || c->c2.tls_multi->multi_state == CAS_FAILED)
-> 
-> I wonder if the removal of the "if ((c->c2.tls_multi &&" part here is
-> safe.  Is this guaranteed to be non-null even for the p2p-tls case?
-
-Yes. TLS session all live in the multi structure. And client is already
-basically p2p tls mode.
-
-
-> I have added a case to the test rig for a "mode tls-server" server,
-> and client instances that run with "--client" or "--tls-client" - so,
-> asking for a PUSH or not.  These did not cause a server crash, so it
-> seems "it is not NULL".  But it would be nice to be sure, though :-)
-
-
-Yes. All control channel and multi related code always has multi defined.
-
-Arne
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 29b52b8dd..df96d0480 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -533,9 +533,10 @@ encrypt_sign(struct context *c, bool comp_frag)
+ 
+     /*
+      * Drop non-TLS outgoing packet if client-connect script/plugin
+-     * has not yet succeeded.
++     * has not yet succeeded. In non-TLS tls_multi mode is not defined
++     * and we always pass packets.
+      */
+-    if (c->c2.context_auth != CAS_SUCCEEDED)
++    if (c->c2.tls_multi && c->c2.tls_multi->multi_state != CAS_SUCCEEDED)
+     {
+         c->c2.buf.len = 0;
+     }
+@@ -967,9 +968,10 @@ process_incoming_link_part1(struct context *c, struct link_socket_info *lsi, boo
+ 
+         /*
+          * Drop non-TLS packet if client-connect script/plugin and cipher selection
+-         * has not yet succeeded.
++         * has not yet succeeded. In non-TLS mode tls_multi is not defined
++         * and we always pass packets.
+          */
+-        if (c->c2.context_auth != CAS_SUCCEEDED)
++        if (c->c2.tls_multi && c->c2.tls_multi->multi_state != CAS_SUCCEEDED)
+         {
+             c->c2.buf.len = 0;
+         }
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 7c9500f3e..4a769fecd 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -674,7 +674,7 @@ multi_close_instance(struct multi_context *m,
+ #ifdef ENABLE_MANAGEMENT
+     set_cc_config(mi, NULL);
+ #endif
+-    if (mi->context.c2.context_auth == CAS_SUCCEEDED)
++    if (mi->context.c2.tls_multi->multi_state == CAS_SUCCEEDED)
+     {
+         multi_client_disconnect_script(mi);
+     }
+@@ -775,7 +775,7 @@ multi_create_instance(struct multi_context *m, const struct mroute_addr *real)
+         goto err;
+     }
+ 
+-    mi->context.c2.context_auth = CAS_PENDING;
++    mi->context.c2.tls_multi->multi_state = CAS_PENDING;
+ 
+     if (hash_n_elements(m->hash) >= m->max_clients)
+     {
+@@ -2405,18 +2405,18 @@ multi_client_connect_late_setup(struct multi_context *m,
+     mi->reporting_addr_ipv6 = mi->context.c2.push_ifconfig_ipv6_local;
+ 
+     /* set context-level authentication flag */
+-    mi->context.c2.context_auth = CAS_SUCCEEDED;
++    mi->context.c2.tls_multi->multi_state = CAS_SUCCEEDED;
+ 
+     /* authentication complete, calculate dynamic client specific options */
+     if (!multi_client_set_protocol_options(&mi->context))
+     {
+-        mi->context.c2.context_auth = CAS_FAILED;
++        mi->context.c2.tls_multi->multi_state = CAS_FAILED;
+     }
+     /* Generate data channel keys only if setting protocol options
+      * has not failed */
+     else if (!multi_client_generate_tls_keys(&mi->context))
+     {
+-        mi->context.c2.context_auth = CAS_FAILED;
++        mi->context.c2.tls_multi->multi_state = CAS_FAILED;
+     }
+ 
+     /* send push reply if ready */
+@@ -2601,7 +2601,7 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
+ 
+     /* We are only called for the CAS_PENDING_x states, so we
+      * can ignore other states here */
+-    bool from_deferred = (mi->context.c2.context_auth != CAS_PENDING);
++    bool from_deferred = (mi->context.c2.tls_multi->multi_state != CAS_PENDING);
+ 
+     int *cur_handler_index = &mi->client_connect_defer_state.cur_handler_index;
+     unsigned int *option_types_found =
+@@ -2613,7 +2613,7 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
+         *cur_handler_index = 0;
+         *option_types_found = 0;
+         /* Initially we have no handler that has returned a result */
+-        mi->context.c2.context_auth = CAS_PENDING_DEFERRED;
++        mi->context.c2.tls_multi->multi_state = CAS_PENDING_DEFERRED;
+ 
+         multi_client_connect_early_setup(m, mi);
+     }
+@@ -2636,7 +2636,7 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
+                  * Remember that we already had at least one handler
+                  * returning a result should we go to into deferred state
+                  */
+-                mi->context.c2.context_auth = CAS_PENDING_DEFERRED_PARTIAL;
++                mi->context.c2.tls_multi->multi_state = CAS_PENDING_DEFERRED_PARTIAL;
+                 break;
+ 
+             case CC_RET_SKIPPED:
+@@ -2688,12 +2688,12 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
+     {
+         /* run the disconnect script if we had a connect script that
+          * did not fail */
+-        if (mi->context.c2.context_auth == CAS_PENDING_DEFERRED_PARTIAL)
++        if (mi->context.c2.tls_multi->multi_state == CAS_PENDING_DEFERRED_PARTIAL)
+         {
+             multi_client_disconnect_script(mi);
+         }
+ 
+-        mi->context.c2.context_auth = CAS_FAILED;
++        mi->context.c2.tls_multi->multi_state = CAS_FAILED;
+     }
+ 
+     /* increment number of current authenticated clients */
+@@ -2996,13 +2996,13 @@ multi_process_post(struct multi_context *m, struct multi_instance *mi, const uns
+         {
+             /* connection is "established" when SSL/TLS key negotiation succeeds
+              * and (if specified) auth user/pass succeeds */
+-            if (is_cas_pending(mi->context.c2.context_auth)
++            if (is_cas_pending(mi->context.c2.tls_multi->multi_state)
+                 && CONNECTION_ESTABLISHED(&mi->context))
+             {
+                 multi_connection_established(m, mi);
+             }
+ #if defined(ENABLE_ASYNC_PUSH)
+-            if (is_cas_pending(mi->context.c2.context_auth)
++            if (is_cas_pending(mi->context.c2.tls_multi->multi_state)
+                 && mi->client_connect_defer_state.deferred_ret_file)
+             {
+                 add_inotify_file_watch(m, mi, m->top.c2.inotify_fd,
+@@ -3962,7 +3962,7 @@ management_client_auth(void *arg,
+         {
+             if (auth)
+             {
+-                if (is_cas_pending(mi->context.c2.context_auth))
++                if (is_cas_pending(mi->context.c2.tls_multi->multi_state))
+                 {
+                     set_cc_config(mi, cc_config);
+                     cc_config_owned = false;
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 22d2447f6..a15ff08d1 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -205,17 +205,6 @@ struct context_1
+ };
+ 
+ 
+-/* client authentication state, CAS_SUCCEEDED must be 0 since
+- * non multi code path still checks this variable but does not initialise it
+- * so the code depends on zero initialisation */
+-enum client_connect_status {
+-    CAS_SUCCEEDED=0,
+-    CAS_PENDING,
+-    CAS_PENDING_DEFERRED,
+-    CAS_PENDING_DEFERRED_PARTIAL,   /**< at least handler succeeded, no result yet*/
+-    CAS_FAILED,
+-};
+-
+ static inline bool
+ is_cas_pending(enum client_connect_status cas)
+ {
+@@ -444,9 +433,6 @@ struct context_2
+     int push_ifconfig_ipv6_netbits;
+     struct in6_addr push_ifconfig_ipv6_remote;
+ 
+-
+-    enum client_connect_status context_auth;
+-
+     struct event_timeout push_request_interval;
+     time_t push_request_timeout;
+ 
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 47a67e503..15a9141ee 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -852,14 +852,14 @@ process_incoming_push_request(struct context *c)
+ {
+     int ret = PUSH_MSG_ERROR;
+ 
+-    if ((c->c2.tls_multi && tls_authentication_status(c->c2.tls_multi, 0) == TLS_AUTHENTICATION_FAILED)
+-        || c->c2.context_auth == CAS_FAILED)
++    if (tls_authentication_status(c->c2.tls_multi, 0) == TLS_AUTHENTICATION_FAILED
++        || c->c2.tls_multi->multi_state == CAS_FAILED)
+     {
+         const char *client_reason = tls_client_reason(c->c2.tls_multi);
+         send_auth_failed(c, client_reason);
+         ret = PUSH_MSG_AUTH_FAILURE;
+     }
+-    else if (c->c2.context_auth == CAS_SUCCEEDED)
++    else if (c->c2.tls_multi->multi_state == CAS_SUCCEEDED)
+     {
+         time_t now;
+ 
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index b2fa44e56..5b24623d4 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -488,6 +488,19 @@ struct tls_session
+  */
+ #define KEY_SCAN_SIZE 3
+ 
++
++/* client authentication state, CAS_SUCCEEDED must be 0 since
++ * non multi code path still checks this variable but does not initialise it
++ * so the code depends on zero initialisation */
++enum client_connect_status {
++    CAS_SUCCEEDED=0,
++    CAS_PENDING,
++    CAS_PENDING_DEFERRED,
++    CAS_PENDING_DEFERRED_PARTIAL,   /**< at least handler succeeded, no result yet*/
++    CAS_FAILED,
++};
++
++
+ /**
+  * Security parameter state for a single VPN tunnel.
+  * @ingroup control_processor
+@@ -523,6 +536,7 @@ struct tls_multi
+ 
+     int n_sessions;             /**< Number of sessions negotiated thus
+                                  *   far. */
++    enum client_connect_status multi_state;
+ 
+     /*
+      * Number of errors.
+-- 
+2.31.1
 
 
