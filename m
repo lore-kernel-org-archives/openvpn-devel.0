@@ -1,10 +1,13 @@
-Date: Tue, 20 Apr 2021 13:21:01 +0200 (CEST)
-Message-Id: <202104201121.13KBL1ul028874@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210415093454.18324-1-maximilian.fillinger@...2507...>
-References: <20210415093454.18324-1-maximilian.fillinger@...2507...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Abort if CRL file can't be
- stat-ed in ssl_init
+References: <20210408140229.31824-1-arne@...1227...>
+ <20210408140229.31824-2-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <604ed27d-c1e1-e862-f471-c3d15f05097b@...2181...>
+Date: Tue, 20 Apr 2021 18:14:48 +0200
+MIME-Version: 1.0
+In-Reply-To: <20210408140229.31824-2-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 1/3] Change
+ options->data_channel_use_ekm to flags
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +16,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Max Fillinger <maximilian.fillinger@...2507...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-The actual code change looks very magical to me, and shrunk dramatically
-between v1 and v3 of that code :-) - but if Antonio has tested this
-and ACKs it, who am I to complain.  I have compile-tested it, at least.
+Hi,
 
-Your patch has been applied to the master and release/2.5 branch (bugfix).
+On 08/04/2021 16:02, Arne Schwabe wrote:
+> Instead maintaining two different representation of the data channel
+> options in struct options and struct tls_options, use the same
+> flags variable that tls_options uses.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-commit 940619c88067d95a1c9865795624bc3822a89bd7 (master)
-commit 8a06459d0c969b083377b63be16e5da1245ce0ee (release/2.5)
-Author: Max Fillinger
-Date:   Thu Apr 15 11:34:54 2021 +0200
+It's a simple restyling, converting this flag to bitfield.
+I don't think there is much gain, but allows adding more flags in the
+future with little effort (and little chance to introduce bugs).
 
-     Abort if CRL file can't be stat-ed in ssl_init
+Passes my basic test (with the ekm being properly activated).
 
-     Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20210415093454.18324-1-maximilian.fillinger@...2507...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22118.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+GitLab CI compile rig is happy too.
 
+Acked-by: Antonio Quartulli <antonio@...515...>
 
---
-kind regards,
-
-Gert Doering
-
+-- 
+Antonio Quartulli
 
