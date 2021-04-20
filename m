@@ -1,10 +1,10 @@
-Date: Tue, 20 Apr 2021 12:27:54 +0200 (CEST)
-Message-Id: <202104201027.13KARsGN013068@...2054...>
+Date: Tue, 20 Apr 2021 12:28:32 +0200 (CEST)
+Message-Id: <202104201028.13KASWlO013077@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210418160111.1494779-1-arne@...1227...>
-References: <20210418160111.1494779-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Move context_auth from
- context_2 to tls_multi and name it multi_state
+In-Reply-To: <20210328120241.27605-2-arne@...1227...>
+References: <20210328120241.27605-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix condition to generate
+ session keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,37 +20,35 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Taking Antonio's ACK on v2, adding my own to v3.  This fixes the compile
-problems with ENABLE_ASYNC_PUSH and the extra comment about p2p / !multi
-is indeed very helpful to understand why this is *exactly* the way it
-is.  Thanks.  "v3 comment" added to the commit message, stray "t he" fixed.
+Adding my own ACK because it needed a bit of whack to go in, and due
+to my own testing.
 
-Subjected together with the 2/2 v2 patch (only hunk 2) to the server 
-torture chamber, and it passed nicely...
+The patch "as it is" applies to release/2.5 just fine, but conflicts with
+master because 2 of 3 hunks are already in, in a slightly different
+formatting.  So, master only received the middle hunk, and the 2.5 change
+was not done by cherrypicking but by directly applying the patch.
 
-Test sets succeeded: 1 1a 1b 1c 1d 1e 2 2a 2b 2c 2g 2d 2e 2f 2z1 2z2 3 4 4a 4b 5 5a 5b 5c 5d 5v1 5v2 5v3 5w1 5w2 5w3 5w4 5x1 5x2 5x3 5x4 6 7 7x 7y 8 8a 9 9a.
-
-
-Backport to 2.5 was done because it is required for the 2/2 bugfix. 
-2.5 looks sufficiently different in context and push.c that there
-were quite a few conflicts and one extra "context_auth" to adjust - but
-nothing that wasn't fairly straightforward to sort out.  2.5 of course
-subjected to the same tests...
+Tested master and release/2.5 on the server torture test bed, including
+the "client connects, renegotiates, disconnects, and starts anew from
+the same source port" test, which would yield a broken session and now
+works fine.
 
 Your patch has been applied to the master and release/2.5 branch.
 
-commit 0767d5b447044e4cdcfd198058aef1f85f63bbe6 (master)
-commit 145110101b70599cb9adcf4ed071856daac9c8af (release/2.5)
-Author: Arne Schwabe
-Date:   Sun Apr 18 18:01:11 2021 +0200
+I have added a reference to Trac #1316 to the commit message.
 
-     Move context_auth from context_2 to tls_multi and name it multi_state
+commit a005044be9ca77ee8a47cb65a603d0b1c41b99f4 (master)
+commit 227fbc117d58a87465804f7b2a5cd95ef1b94da6 (release/2.5)
+Author: Arne Schwabe
+Date:   Sun Mar 28 14:02:41 2021 +0200
+
+     Fix condition to generate session keys
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Antonio Quartulli <antonio@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210418160111.1494779-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22155.html
+     Message-Id: <20210328120241.27605-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21873.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
