@@ -1,10 +1,10 @@
-Date: Tue, 20 Apr 2021 13:13:48 +0200 (CEST)
-Message-Id: <202104201113.13KBDmgG021016@...2054...>
+Date: Tue, 20 Apr 2021 13:21:01 +0200 (CEST)
+Message-Id: <202104201121.13KBL1ul028874@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210415091248.18149-1-maximilian.fillinger@...2507...>
-References: <20210415091248.18149-1-maximilian.fillinger@...2507...>
-Subject: [Openvpn-devel] [PATCH applied] Re: In init_ssl,
- open the correct CRL path pre-chroot
+In-Reply-To: <20210415093454.18324-1-maximilian.fillinger@...2507...>
+References: <20210415093454.18324-1-maximilian.fillinger@...2507...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Abort if CRL file can't be
+ stat-ed in ssl_init
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,23 +18,23 @@ Content-Transfer-Encoding: 8bit
 To: Max Fillinger <maximilian.fillinger@...2507...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Looking at the code change looks reasonable.
-
-I have not tested this beyond a basic "it compiles with 2.5 as well" test.
+The actual code change looks very magical to me, and shrunk dramatically
+between v1 and v3 of that code :-) - but if Antonio has tested this
+and ACKs it, who am I to complain.  I have compile-tested it, at least.
 
 Your patch has been applied to the master and release/2.5 branch (bugfix).
 
-commit 21a0b2494e7f4f1c6325b2972743158acad4f394 (master)
-commit d91c14e815820d04c022677722f6f096b88770d6 (HEAD -> release/2.5)
+commit 940619c88067d95a1c9865795624bc3822a89bd7 (master)
+commit 8a06459d0c969b083377b63be16e5da1245ce0ee (release/2.5)
 Author: Max Fillinger
-Date:   Thu Apr 15 11:12:48 2021 +0200
+Date:   Thu Apr 15 11:34:54 2021 +0200
 
-     In init_ssl, open the correct CRL path pre-chroot
+     Abort if CRL file can't be stat-ed in ssl_init
 
      Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
      Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20210415091248.18149-1-maximilian.fillinger@...2507...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22117.html
+     Message-Id: <20210415093454.18324-1-maximilian.fillinger@...2507...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22118.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
