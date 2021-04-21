@@ -1,14 +1,12 @@
-References: <20210421134348.1950392-1-arne@...1227...>
- <20210421134348.1950392-5-arne@...1227...>
- <20210421203205.GF976@...1296...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <1478f050-1095-8183-5e01-3500c44cfd16@...1227...>
-Date: Thu, 22 Apr 2021 00:19:01 +0200
+References: <20210408140229.31824-1-arne@...1227...>
+ <20210408140229.31824-3-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <69386b79-eb17-bde1-0402-d04ffe786813@...2181...>
+Date: Thu, 22 Apr 2021 01:38:36 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210421203205.GF976@...1296...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 5/7] Remove support for blocking
- connect()
+In-Reply-To: <20210408140229.31824-3-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 2/3] Remove --ncp-disable option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,36 +15,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Am 21.04.21 um 22:32 schrieb Gert Doering:
-> Hi,
+Hi,
+
+On 08/04/2021 16:02, Arne Schwabe wrote:
+> NCP has proven to be stable and apart from the one VPN Provider doing
+> hacky things with homebrewed NCP we have not had any reports about
+> ncp-disable being required. Remove ncp-disable to simplify code paths.
 > 
-> On Wed, Apr 21, 2021 at 03:43:46PM +0200, Arne Schwabe wrote:
->> It is hard to imagine that we still have any supported OS that does
->> not support non-blocking connect while still supporting non-blocking
->> sockets in general.
-> [..]
->> diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
->> index f29c63c73..a964ffd35 100644
->> --- a/src/openvpn/syshead.h
->> +++ b/src/openvpn/syshead.h
->> @@ -155,10 +155,6 @@
->>  #include <poll.h>
->>  #endif
->>  
->> -#ifdef HAVE_SYS_EPOLL_H
->> -#include <sys/epoll.h>
->> -#endif
->> -
+> Note: This patch breaks client without --pull. The follow up patch
+> for P2P NCP will restore that. But to avoid all the NCP/non-NCP special
+> cases to be implemented in P2P. P2P will directly switch from always
+> non-NCP to always NCP.
 > 
-> Is that intentional?
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Managed to slip into wrong patch. I accidentally commited it with 5/7
-instead of 7/7.
+The patch looks good to me and passes my basic connectivity tests.
+Also I got no compile-time complain from any platform I could build on.
 
-Arne
+However, there is a comment that still talk about NCP being
+disabled/enabled. I think it should be changed too as we don't have the
+two cases anymore (the if-condition below is modified by this patch):
+
+src/openvpn/init.c:2726:        * as NCP-fallback or when NCP has been
+disabled or explicitly
+
+
+Cheers,
+
+
+-- 
+Antonio Quartulli
 
