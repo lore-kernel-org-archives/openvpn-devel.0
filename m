@@ -1,9 +1,8 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <ca34aa38-a88a-13ff-a66e-c30e6e61d871@...515...>
-Date: Wed, 21 Apr 2021 13:00:23 +0300
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 21 Apr 2021 14:34:15 +0200
+Message-Id: <20210421123415.1942917-1-arne@...1227...>
 MIME-Version: 1.0
-Content-Language: en-US
-Subject: [Openvpn-devel] OpenVPN 2.4.11 released
+Subject: [Openvpn-devel] [PATCH v2] Allow all GCM ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,31 +11,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-The OpenVPN community project team is proud to release OpenVPN 2.4.11.=20
-It fixes two related security vulnerabilities (CVE-2020-15078) which=20
-under very specific circumstances allow tricking a server using delayed=20
-authentication (plugin or management) into returning a PUSH_REPLY before=20
-the AUTH_FAILED message, which can possibly be used to gather=20
-information about a VPN setup. This release also includes other bug=20
-fixes and improvements. Updated OpenSSL and OpenVPN GUI are included in=20
-Windows installers.
+OpenSSL also allows ARIA-GCM and that works well with our implementation
+While the handpicked list was needed for earlier OpenSSL versions (and
+is still needed for Chacha20-Poly1305), the API nowadays with OpenSSL
+1.0.2 and 1.1.x works as expected.
 
-Source code and Windows installers can be downloaded from our download page:
+Patch V2: Remove special cases for AES-GCM ciphers.
 
-<https://openvpn.net/community-downloads/>
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/crypto_openssl.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-Debian and Ubuntu packages are available in the official apt repositories:
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index f8b36bf85..57731ed79 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -728,16 +728,17 @@ cipher_kt_mode_aead(const cipher_kt_t *cipher)
+ {
+     if (cipher)
+     {
+-        switch (EVP_CIPHER_nid(cipher))
++        if (EVP_CIPHER_mode(cipher) == OPENVPN_MODE_GCM)
+         {
+-            case NID_aes_128_gcm:
+-            case NID_aes_192_gcm:
+-            case NID_aes_256_gcm:
++            return true;
++        }
++
+ #ifdef NID_chacha20_poly1305
+-            case NID_chacha20_poly1305:
+-#endif
+-                return true;
++        if (EVP_CIPHER_nid(cipher) == NID_chacha20_poly1305)
++        {
++            return true;
+         }
++#endif
+     }
+ 
+     return false;
+-- 
+2.31.1
 
-<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 
