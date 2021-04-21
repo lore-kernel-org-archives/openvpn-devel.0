@@ -1,10 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 21 Apr 2021 15:43:43 +0200
-Message-Id: <20210421134348.1950392-2-arne@...1227...>
+Date: Wed, 21 Apr 2021 15:43:48 +0200
+Message-Id: <20210421134348.1950392-7-arne@...1227...>
 In-Reply-To: <20210421134348.1950392-1-arne@...1227...>
 References: <20210421134348.1950392-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/7] Move direct.h header where it is used
+Subject: [Openvpn-devel] [PATCH 7/7] Remove a number of platform specific
+ checks in configure.ac
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,62 +18,172 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The direct.h header provides only a handful of functions [1] of which
-we only use _wchdir. Directly included the direct.h file where it is
-used and remove autoconf magic around it.
-
-[1] https://docs.microsoft.com/en-us/previous-versions/visualstudio/visual-studio-2012/as5kw0ze(v=vs.110)?redirectedfrom=MSDN
+- Remove windows XP/old mingw compat code in socket.c
+- Use _WIN32 instead checking for existence of windows.h, winsock2.h
+  and ws2tcpip.h in autconf
+- Remove check for unlink. The last remaining use is a check inside
+  a Unix socket.
+- Even Windows has umask, so remove the check for it
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- configure.ac           | 2 +-
- src/openvpn/platform.c | 4 ++++
- src/openvpn/syshead.h  | 4 ----
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ configure.ac          | 11 +++++------
+ src/compat/compat.h   |  5 +----
+ src/openvpn/event.c   |  4 ++++
+ src/openvpn/socket.c  | 16 ----------------
+ src/openvpn/syshead.h |  6 ++----
+ 5 files changed, 12 insertions(+), 30 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index aaac65c3d..a67bf2595 100644
+index 3b4d3cbc7..94897c863 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -407,7 +407,7 @@ AX_TYPE_SOCKLEN_T
- AC_CHECK_SIZEOF([unsigned int])
- AC_CHECK_SIZEOF([unsigned long])
- AC_CHECK_HEADERS([ \
--	fcntl.h io.h direct.h \
-+	fcntl.h io.h \
- 	sys/types.h sys/socket.h \
+@@ -412,7 +412,6 @@ AC_CHECK_HEADERS([ \
  	unistd.h dlfcn.h \
  	netinet/in.h netinet/in_systm.h \
-diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
-index 45ee54541..c63c1d994 100644
---- a/src/openvpn/platform.c
-+++ b/src/openvpn/platform.c
-@@ -39,6 +39,10 @@
+ 	netinet/tcp.h arpa/inet.h netdb.h \
+-	windows.h winsock2.h ws2tcpip.h \
+ 	versionhelpers.h \
+ ])
+ AC_CHECK_HEADERS([ \
+@@ -438,13 +437,13 @@ SOCKET_INCLUDES="
+ #ifdef HAVE_NETINET_IN_H
+ #include <netinet/in.h>
+ #endif
+-#ifdef HAVE_WINDOWS_H
++#ifdef _WIN32
+ #include <windows.h>
+ #endif
+-#ifdef HAVE_WINSOCK2_H
++#ifdef _WIN32
+ #include <winsock2.h>
+ #endif
+-#ifdef HAVE_WS2TCPIP_H
++#ifdef _WIN32
+ #include <ws2tcpip.h>
+ #endif
+ #ifdef HAVE_NETINET_IN_SYSTM_H
+@@ -623,8 +622,8 @@ AC_CHECK_FUNCS([ \
+ 	daemon chroot getpwnam setuid nice system getpid dup dup2 \
+ 	syslog openlog mlockall getrlimit getgrnam setgid \
+ 	setgroups flock readv writev time gettimeofday \
+-	setsid chdir getpeername unlink \
+-	chsize ftruncate execve getpeereid umask basename dirname access \
++	setsid chdir getpeername \
++	chsize ftruncate execve getpeereid basename dirname access \
+ 	epoll_create strsep \
+ ])
  
- #include "platform.h"
+diff --git a/src/compat/compat.h b/src/compat/compat.h
+index 2bf48a5eb..026974a81 100644
+--- a/src/compat/compat.h
++++ b/src/compat/compat.h
+@@ -24,11 +24,8 @@
+ #ifndef COMPAT_H
+ #define COMPAT_H
  
-+#if _WIN32
-+#include <direct.h>
+-#ifdef HAVE_WINSOCK2_H
++#ifdef _WIN32
+ #include <winsock2.h>
+-#endif
+-
+-#ifdef HAVE_WS2TCPIP_H
+ #include <ws2tcpip.h>
+ #endif
+ 
+diff --git a/src/openvpn/event.c b/src/openvpn/event.c
+index 14a25155c..d766f8be8 100644
+--- a/src/openvpn/event.c
++++ b/src/openvpn/event.c
+@@ -35,6 +35,10 @@
+ #include "event.h"
+ #include "fdmisc.h"
+ 
++#if EPOLL
++#include <sys/epoll.h>
 +#endif
 +
- /* Redefine the top level directory of the filesystem
-  * to restrict access to files for security */
+ #include "memdbg.h"
+ 
+ /*
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 4e13c65e8..01c65b3e0 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1385,14 +1385,6 @@ socket_listen_accept(socket_descriptor_t sd,
+     return new_sd;
+ }
+ 
+-/* older mingw versions and WinXP do not have this define,
+- * but Vista and up support the functionality - just define it here
+- */
+-#ifdef _WIN32
+-#ifndef IPV6_V6ONLY
+-#define IPV6_V6ONLY 27
+-#endif
+-#endif
  void
+ socket_bind(socket_descriptor_t sd,
+             struct addrinfo *local,
+@@ -3905,10 +3897,7 @@ socket_bind_unix(socket_descriptor_t sd,
+                  const char *prefix)
+ {
+     struct gc_arena gc = gc_new();
+-
+-#ifdef HAVE_UMASK
+     const mode_t orig_umask = umask(0);
+-#endif
+ 
+     if (bind(sd, (struct sockaddr *) local, sizeof(struct sockaddr_un)))
+     {
+@@ -3919,10 +3908,7 @@ socket_bind_unix(socket_descriptor_t sd,
+             sockaddr_unix_name(local, "NULL"));
+     }
+ 
+-#ifdef HAVE_UMASK
+     umask(orig_umask);
+-#endif
+-
+     gc_free(&gc);
+ }
+ 
+@@ -3967,12 +3953,10 @@ void
+ socket_delete_unix(const struct sockaddr_un *local)
+ {
+     const char *name = sockaddr_unix_name(local, NULL);
+-#ifdef HAVE_UNLINK
+     if (name && strlen(name))
+     {
+         unlink(name);
+     }
+-#endif
+ }
+ 
+ bool
 diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 0b029c648..cb9bf7dc7 100644
+index 28ccca087..15de0b46d 100644
 --- a/src/openvpn/syshead.h
 +++ b/src/openvpn/syshead.h
 @@ -100,10 +100,6 @@
  #include <fcntl.h>
  #endif
  
--#ifdef HAVE_DIRECT_H
--#include <direct.h>
+-#ifdef HAVE_IO_H
+-#include <io.h>
 -#endif
 -
- #ifdef HAVE_IO_H
- #include <io.h>
+ #ifdef HAVE_SYS_FILE_H
+ #include <sys/file.h>
  #endif
+@@ -338,6 +334,8 @@ typedef int MIB_TCP_STATE;
+ #include <iphlpapi.h>
+ #include <wininet.h>
+ #include <shellapi.h>
++#include <io.h>
++
+ /* The following two headers are needed of PF_INET6 */
+ #include <winsock2.h>
+ #include <ws2tcpip.h>
 -- 
 2.31.1
 
