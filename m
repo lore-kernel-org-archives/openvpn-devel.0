@@ -1,9 +1,11 @@
+References: <20210421134348.1950392-1-arne@...1227...>
 From: Antonio Quartulli <a@...2181...>
-Date: Thu, 22 Apr 2021 01:49:08 +0200
-Message-Id: <20210421234908.12817-1-a@...2181...>
+Message-ID: <762719d6-d87a-5cc3-8c8e-c2108d4416f5@...2181...>
+Date: Thu, 22 Apr 2021 01:59:03 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] options: check for blanks in fingerprints
- and reject string if found
+In-Reply-To: <20210421134348.1950392-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 1/7] Remove --disable-multihome option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,53 +14,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...515...>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-From: Antonio Quartulli <antonio@...515...>
+Hi,
 
-A fingerprint is not expected to contains any blank (white space),
-howeveri, the parser routine will still attempt parsing the octect
-and ignore the space.
+On 21/04/2021 15:43, Arne Schwabe wrote:
+> With this change we always build multihome support if the operating
+> system supports it.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-This means that a fingerprint like
-5 :F0:A8:75:70:46:6E:0B:A2:31:53:88:0B:0E:8C:E4:8A:5E:BF:1E:08:16:16:41:63:2C:B5:F4:D2:73:9F:E5
-will be parsed successfully.
+Shouldn't these go too?
 
-Explcitly check for spaces in the various octects, before conversion,
-and error out if any is found.
+$ grep -rn MULTIHOME
+config-msvc.h:13:#define ENABLE_MULTIHOME 1
+configure.ac:1155:test "${enable_multihome}" = "yes" &&
+AC_DEFINE([ENABLE_MULTIHOME], [1], [Enable multi-homed UDP server
+capability])
 
-Signed-off-by: Antonio Quartulli <antonio@...515...>
----
- src/openvpn/options.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+Otherwise it looks good.
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 817a1533..264fe383 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1099,6 +1099,18 @@ parse_hash_fingerprint(const char *str, int nbytes, int msglevel, struct gc_aren
-         bs[0] = *cp++;
-         bs[1] = *cp++;
-         bs[2] = 0;
-+
-+        /* the format string "%x" passed to sscanf will ignore any space and
-+         * will still try to parse the other character. However, this is not
-+         * expected format for a fingerprint, therefore explcitly check for
-+         * blanks in the string and error out if any is found
-+         */
-+        if (bs[0] == ' ' || bs[1] == ' ')
-+        {
-+            msg(msglevel, "format error in hash fingerprint unexpected blank: %s",
-+                str);
-+        }
-+
-         byte = 0;
-         if (sscanf(bs, "%x", &byte) != 1)
-         {
+Regards,
+
+
 -- 
-2.26.3
-
+Antonio Quartulli
 
