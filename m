@@ -1,13 +1,13 @@
 References: <20210421134348.1950392-1-arne@...1227...>
- <20210421134348.1950392-2-arne@...1227...>
+ <20210421134348.1950392-3-arne@...1227...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <770ef286-442f-276c-c550-b21bfcb7ff58@...2181...>
-Date: Thu, 22 Apr 2021 02:03:44 +0200
+Message-ID: <386b8668-b399-f17e-7893-b72db21f8a0c@...2181...>
+Date: Thu, 22 Apr 2021 02:13:37 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210421134348.1950392-2-arne@...1227...>
+In-Reply-To: <20210421134348.1950392-3-arne@...1227...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 2/7] Move direct.h header where it is
- used
+Subject: Re: [Openvpn-devel] [PATCH 3/7] Remove always enabled
+ USE_64_BIT_COUNTERS define
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,21 +23,19 @@ To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 Hi,
 
 On 21/04/2021 15:43, Arne Schwabe wrote:
-> The direct.h header provides only a handful of functions [1] of which
-> we only use _wchdir. Directly included the direct.h file where it is
-> used and remove autoconf magic around it.
-> 
-> [1] https://docs.microsoft.com/en-us/previous-versions/visualstudio/visual-studio-2012/as5kw0ze(v=vs.110)?redirectedfrom=MSDN
+> Also change the types to use C99 uint64_t and its printf u64 define.
 > 
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Should this be removed too?
+This patch looks good and compiles on my test rig.
 
-config-msvc.h:33:#define HAVE_DIRECT_H 1
+As expected, it is basically removing a bunch of ifdefs always forced on
+the "true-branch".
 
+Since we recently confirmed that all our suppotred platforms also
+support C99, I don't expect breakages on any *BSD either.
 
-Regards,
-
+Acked-by: Antonio Quartulli <antonio@...515...>
 
 
 -- 
