@@ -1,9 +1,9 @@
-Date: Thu, 22 Apr 2021 16:34:05 +0200 (CEST)
-Message-Id: <202104221434.13MEY5D7083237@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210421134348.1950392-4-arne@...1227...>
-References: <20210421134348.1950392-4-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix a number of mingw warnings
+From: Arne Schwabe <arne@...1227...>
+Date: Thu, 22 Apr 2021 17:17:18 +0200
+Message-Id: <20210422151724.2132573-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 1/7] Move tls_select_primary_key into its
+ own function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,27 +14,101 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+tls_pre_encrypt mainly performs the task of selecting the primary
+encryption key but also performs other minor tasks. To allow only
+querying for the key that should be used for encryption extract this
+part of the function into its own function.
 
-commit 7890e51aab91b304045a0163462f334b8e5ae8e8
-Author: Arne Schwabe
-Date:   Wed Apr 21 15:43:45 2021 +0200
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/ssl.c | 36 +++++++++++++++++++++---------------
+ src/openvpn/ssl.h | 10 ++++++++++
+ 2 files changed, 31 insertions(+), 15 deletions(-)
 
-     Fix a number of mingw warnings
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20210421134348.1950392-4-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22176.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 3921b3ba9..3bc84e02c 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -3820,27 +3820,15 @@ error:
+     return false;
+ }
+ 
+-/* Choose the key with which to encrypt a data packet */
+-void
+-tls_pre_encrypt(struct tls_multi *multi,
+-                struct buffer *buf, struct crypto_options **opt)
++struct key_state *tls_select_encryption_key(struct tls_multi *multi)
+ {
+-    multi->save_ks = NULL;
+-    if (buf->len <= 0)
+-    {
+-        buf->len = 0;
+-        *opt = NULL;
+-        return;
+-    }
+-
+     struct key_state *ks_select = NULL;
+     for (int i = 0; i < KEY_SCAN_SIZE; ++i)
+     {
+         struct key_state *ks = get_key_scan(multi, i);
+         if (ks->state >= S_ACTIVE
+-            && (ks->authenticated == KS_AUTH_TRUE)
+-            && ks->crypto_options.key_ctx_bi.initialized
+-            )
++            && ks->authenticated == KS_AUTH_TRUE
++            && ks->crypto_options.key_ctx_bi.initialized)
+         {
+             if (!ks_select)
+             {
+@@ -3853,6 +3841,24 @@ tls_pre_encrypt(struct tls_multi *multi,
+             }
+         }
+     }
++    return ks_select;
++}
++
++
++/* Choose the key with which to encrypt a data packet */
++void
++tls_pre_encrypt(struct tls_multi *multi,
++                struct buffer *buf, struct crypto_options **opt)
++{
++    multi->save_ks = NULL;
++    if (buf->len <= 0)
++    {
++        buf->len = 0;
++        *opt = NULL;
++        return;
++    }
++
++    struct key_state *ks_select = tls_select_encryption_key(multi);
+ 
+     if (ks_select)
+     {
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 6369e8bf6..135c60732 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -372,6 +372,16 @@ bool tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
+ void tls_pre_encrypt(struct tls_multi *multi,
+                      struct buffer *buf, struct crypto_options **opt);
+ 
++/**
++ * Selects the primary encryption that should be used to encrypt data of an
++ * outgoing packet.
++ * @ingroup data_crypto
++ *
++ * If no key is found NULL is returned instead.
++ *
++ * @param multi - The TLS state for this packet's destination VPN tunnel.
++ */
++struct key_state *tls_select_encryption_key(struct tls_multi *multi);
+ 
+ /**
+  * Prepend a one-byte OpenVPN data channel P_DATA_V1 opcode to the packet.
+-- 
+2.31.1
 
 
