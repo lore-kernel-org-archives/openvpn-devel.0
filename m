@@ -1,16 +1,13 @@
-Date: Thu, 22 Apr 2021 10:35:19 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20210422083519.GK976@...1296...>
-References: <20210421134348.1950392-3-arne@...1227...>
- <202104220635.13M6ZkAh076717@...2054...>
- <YIEzcUAY95j2h9aa@...1296...>
+References: <20210421134348.1950392-1-arne@...1227...>
+ <20210421134348.1950392-4-arne@...1227...>
+ <b4147c3d-e538-941f-1b71-54740635f5b0@...2181...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <768cdbbb-1a54-d943-a0e5-8e511ec0244b@...1227...>
+Date: Thu, 22 Apr 2021 14:39:09 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="K1OROHni1/MzCA5+"
-Content-Disposition: inline
-In-Reply-To: <YIEzcUAY95j2h9aa@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Remove always enabled
- USE_64_BIT_COUNTERS define
+In-Reply-To: <b4147c3d-e538-941f-1b71-54740635f5b0@...2181...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH 4/7] Fix a number of mingw warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,76 +16,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---K1OROHni1/MzCA5+
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-Hi,
-
-On Thu, Apr 22, 2021 at 10:27:29AM +0200, Gert Doering wrote:
-> I have force-pushed 2.4 without that commit (no tags set, so no harm done)
-> and applied it to master, where it was intended to go
-
-Well.  I tried that (though I should have known better) and neither sf
-nor gitlab actually let me, and I think that's actually good :-)
-
-So, release/2.4 has a erroneous commit + a revert commit now.
-
-It hasn't been actually broken at any time (because the commit is okay),
-it was just against our approach to "which commits go where".
-
-$ git log release/2.4
-commit 5e272a0196f3a9ac9423397079779ac8bbdf6159 (HEAD)
-Author: Gert Doering <gert@...1296...>
-Date:   Thu Apr 22 10:26:12 2021 +0200
-
-    Revert "Remove always enabled USE_64_BIT_COUNTERS define"
-
-commit 1bdd09e7e019ac6d8fdc1b009bdec818b9183e76
-Author: Arne Schwabe <arne@...1227...>
-Date:   Wed Apr 21 15:43:44 2021 +0200
-
-    Remove always enabled USE_64_BIT_COUNTERS define
-=20=20=20=20=20=20=20=20
-commit 092734634796e9637920e029fea716afc146cd82 (tag: v2.4.11, vweb1/releas=
-e/2.4)
-Author: Gert Doering <gert@...1296...>
-Date:   Tue Apr 20 15:31:32 2021 +0200
-
-    Preparing release v2.4.11 (ChangeLog, version.m4, Changes.rst)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+>>  #ifndef _WIN32
+>> +    const char *device = tt->actual_name;
+> 
+> This variable is not used in all cases embraced by "ifndef _WIN32".
+> I.e. I think it is not used when any of the following is defined:
+> TARGET_OPENBSD
+> TARGET_NETBSD
+> TARGET_AIX
+> 
+> Therefore this change would fix *only* the warning on Windows.
+> Do we want to go this way? or should we rather rearrange the ifdefs a
+> bit so that we have a cleaner change/function?
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---K1OROHni1/MzCA5+
-Content-Type: application/pgp-signature; name="signature.asc"
+No all other platforms. The variable is used just 2 lines below it
+definition to set gateway_needed which is used by all platforms apart
+from _WIN32. So only WIN32 had this warning.
 
------BEGIN PGP SIGNATURE-----
+> 
+> 
+> 
+>>      if (r6->iface != NULL)              /* vpn server special route */
+>>      {
+>>          device = r6->iface;
+>> @@ -2713,7 +2713,7 @@ get_default_gateway_row(const MIB_IPFORWARDTABLE *routes)
+>>              const DWORD index = row->dwForwardIfIndex;
+>>              const DWORD metric = row->dwForwardMetric1;
+>>  
+>> -            dmsg(D_ROUTE_DEBUG, "GDGR: route[%d] %s/%s i=%d m=%d",
+>> +            dmsg(D_ROUTE_DEBUG, "GDGR: route[%lu] %s/%s i=%d m=%d",
+> 
+> shouldn't be enough to convert to %u ? (/me is not a DOWRD expert though)
 
-iQGcBAEBAgAGBQJggTVGAAoJEB2Cnv7KVigSRGQL/A3gDX0v+2SH2+Vibzh5AMO9
-NU6RaTuUUApkf5pwWYJWEw1BSQjEyp8I+GK9uSAqmD8BdaOn+9qyF2NaeuXLx4VC
-EsCLFJDmcP3A5zxb2FUcmAB2O23zDb+xyP3hdZ9l5N7Ir82EgQrChO8sh0pwPcJ/
-IcPNqQAqpe518jR/yBix6moY+bgFfyoYCmuNboXnvI2/VirPTDlA2z6rzN7+LVq0
-JEdAaFrtdGCCaCAKJGRVo12BZ5TS6d4BWzdHHsM2B52E+dPFV2bFm1KLazjixkyp
-r2btPu5rp+W3ntHIQFmCNzzCXEZjX33JOegbbQI8cubbgKriDIl/+ewcDWAfNOVj
-BQf6fpNUScz99NfmJ+ZzVkz7pE6HU+Ga2jkMutHiKmEwkkW910WVasrIivtd099m
-A596ql5DMy0/b2jEsENd7tP6jXe2dig5Aw3NSWdCMSGPktV7WgZtU3/OD1u89IDa
-qsAuFK3HMku2puO40X9Qknxce77CP89lY6HqHCa8oA==
-=9cq0
------END PGP SIGNATURE-----
+No. DWORD is a long unsigned int as mentioned in the commit message. It
+is 32 bit int since Windows always has long as 32 bit. It is a bit
+confusing when you are used to the long=64 bit :)
 
---K1OROHni1/MzCA5+--
+>> index 2c1b270dd..4ef34e4eb 100644
+>> --- a/src/openvpn/tun.c
+>> +++ b/src/openvpn/tun.c
+>> @@ -5606,7 +5606,7 @@ windows_set_mtu(const int iface_index, const short family,
+>>  
+>>      if (err != NO_ERROR)
+>>      {
+>> -        msg(M_WARN, "TUN: Setting %s mtu failed: %s [status=%u if_index=%d]",
+>> +        msg(M_WARN, "TUN: Setting %s mtu failed: %s [status=%lu if_index=%d]",
+> 
+> same question as above.
+> 
+
+Same answer :)
+
+Arne
 
