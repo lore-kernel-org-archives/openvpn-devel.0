@@ -1,10 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 22 Apr 2021 17:29:36 +0200
-Message-Id: <20210422152939.2134046-3-arne@...1227...>
+Date: Thu, 22 Apr 2021 17:29:38 +0200
+Message-Id: <20210422152939.2134046-5-arne@...1227...>
 In-Reply-To: <20210422152939.2134046-1-arne@...1227...>
 References: <20210422152939.2134046-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 3/6] Move direct.h header where it is used
+Subject: [Openvpn-devel] [PATCH v2 5/6] Replace OS_SPECIFIC_DIRSEP with
+ PATH_SEPARATOR
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,77 +18,98 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The direct.h header provides only a handful of functions [1] of which
-we only use _wchdir. Directly included the direct.h file where it is
-used and remove autoconf magic around it.
+We have two define that do exactly the same. Also move the check
+from configure.ac to syshead.h since it is really only checking
+for Windows.
 
-[1] https://docs.microsoft.com/en-us/previous-versions/visualstudio/visual-studio-2012/as5kw0ze(v=vs.110)?redirectedfrom=MSDN
-
-Patch V2: also remove from config-msvc.h
+Patch V2: Also remove from config-msvc.h
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- config-msvc.h          | 1 -
- configure.ac           | 2 +-
- src/openvpn/platform.c | 4 ++++
- src/openvpn/syshead.h  | 4 ----
- 4 files changed, 5 insertions(+), 6 deletions(-)
+ config-msvc.h            | 3 ---
+ configure.ac             | 8 --------
+ src/openvpn/platform.c   | 2 +-
+ src/openvpn/ssl_verify.c | 2 +-
+ src/openvpn/syshead.h    | 6 ++++--
+ 5 files changed, 6 insertions(+), 15 deletions(-)
 
 diff --git a/config-msvc.h b/config-msvc.h
-index 3750f0799..e73dd8c6f 100644
+index e73dd8c6f..979232282 100644
 --- a/config-msvc.h
 +++ b/config-msvc.h
-@@ -29,7 +29,6 @@
- #define HAVE_WINSOCK2_H 1
- #define HAVE_WS2TCPIP_H 1
- #define HAVE_IO_H 1
--#define HAVE_DIRECT_H 1
- #define HAVE_SYS_TYPES_H 1
- #define HAVE_SYS_STAT_H 1
- #define HAVE_LZO_LZO1X_H 1
+@@ -80,9 +80,6 @@
+ #define HAVE_EVP_CIPHER_CTX_RESET 1
+ #define HAVE_DIINSTALLDEVICE 1
+ 
+-#define PATH_SEPARATOR     '\\'
+-#define PATH_SEPARATOR_STR "\\"
+-
+ #ifndef __cplusplus
+ #define inline __inline
+ #endif
 diff --git a/configure.ac b/configure.ac
-index aaac65c3d..a67bf2595 100644
+index a67bf2595..3b4d3cbc7 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -407,7 +407,7 @@ AX_TYPE_SOCKLEN_T
- AC_CHECK_SIZEOF([unsigned int])
- AC_CHECK_SIZEOF([unsigned long])
- AC_CHECK_HEADERS([ \
--	fcntl.h io.h direct.h \
-+	fcntl.h io.h \
- 	sys/types.h sys/socket.h \
- 	unistd.h dlfcn.h \
- 	netinet/in.h netinet/in_systm.h \
+@@ -1133,14 +1133,6 @@ if test -n "${GIT}" -a -d "${srcdir}/.git"; then
+ fi
+ AC_MSG_RESULT([${GIT_CHECKOUT}])
+ 
+-if test -n "${SP_PLATFORM_WINDOWS}"; then
+-	AC_DEFINE_UNQUOTED([PATH_SEPARATOR], ['\\\\'], [Path separator]) #"
+-	AC_DEFINE_UNQUOTED([PATH_SEPARATOR_STR], ["\\\\"], [Path separator]) #"
+-else
+-	AC_DEFINE_UNQUOTED([PATH_SEPARATOR], ['/'], [Path separator])
+-	AC_DEFINE_UNQUOTED([PATH_SEPARATOR_STR], ["/"], [Path separator])
+-fi
+-
+ dnl enable --x509-username-field feature if requested
+ if test "${enable_x509_alt_username}" = "yes"; then
+ 	if test "${with_crypto_library}" = "mbedtls" ; then
 diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
-index 45ee54541..c63c1d994 100644
+index c63c1d994..bf7b1aa0a 100644
 --- a/src/openvpn/platform.c
 +++ b/src/openvpn/platform.c
-@@ -39,6 +39,10 @@
+@@ -486,7 +486,7 @@ platform_gen_path(const char *directory, const char *filename,
+         struct buffer out = alloc_buf_gc(outsize, gc);
+         char dirsep[2];
  
- #include "platform.h"
+-        dirsep[0] = OS_SPECIFIC_DIRSEP;
++        dirsep[0] = PATH_SEPARATOR;
+         dirsep[1] = '\0';
  
-+#if _WIN32
-+#include <direct.h>
-+#endif
-+
- /* Redefine the top level directory of the filesystem
-  * to restrict access to files for security */
- void
+         if (directory)
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 7608155cd..14aaf2bf7 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -616,7 +616,7 @@ verify_check_crl_dir(const char *crl_dir, openvpn_x509_cert_t *cert,
+         goto cleanup;
+     }
+ 
+-    if (!openvpn_snprintf(fn, sizeof(fn), "%s%c%s", crl_dir, OS_SPECIFIC_DIRSEP, serial))
++    if (!openvpn_snprintf(fn, sizeof(fn), "%s%c%s", crl_dir, PATH_SEPARATOR, serial))
+     {
+         msg(D_HANDSHAKE, "VERIFY CRL: filename overflow");
+         goto cleanup;
 diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 4650846fe..f29c63c73 100644
+index 3f2e563b7..bc628eac4 100644
 --- a/src/openvpn/syshead.h
 +++ b/src/openvpn/syshead.h
-@@ -100,10 +100,6 @@
- #include <fcntl.h>
+@@ -436,9 +436,11 @@ typedef unsigned short sa_family_t;
+  * Directory separation char
+  */
+ #ifdef _WIN32
+-#define OS_SPECIFIC_DIRSEP '\\'
++#define PATH_SEPARATOR '\\'
++#define PATH_SEPARATOR_STR "\\"
+ #else
+-#define OS_SPECIFIC_DIRSEP '/'
++#define PATH_SEPARATOR '/'
++#define PATH_SEPARATOR_STR "/"
  #endif
  
--#ifdef HAVE_DIRECT_H
--#include <direct.h>
--#endif
--
- #ifdef HAVE_IO_H
- #include <io.h>
- #endif
+ /*
 -- 
 2.31.1
 
