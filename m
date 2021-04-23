@@ -1,14 +1,12 @@
-Date: Fri, 23 Apr 2021 12:16:24 +0000
+Date: Fri, 23 Apr 2021 21:16:24 +0000
 From: tincantech <tincantech@...2282...>
 Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <cs3V6YWogR5xlLJlMXU86uQJ9o2kLYY-Wk48M39jut0c_pdxHDdC_D7fBtq-jCG1GyifsKeLwi0T75zJAR0cz55TFC2vVKqXS-4L32EFpT0=@protonmail.com>
-In-Reply-To: <77250543-ceda-b412-6ff5-8f5ef5f0b3a3@...2181...>
-References: <ZIKZwAKGvWmbJ-kO_eJLJtMC987pVCbt6uMCrILdSuhQ6AcV0SVrQMn1r2xab_2K8ncLE47H_VO9gZqAcCSP6HkcFWXOKTuXXqhRXETdFwU=@protonmail.com>
- <77250543-ceda-b412-6ff5-8f5ef5f0b3a3@...2181...>
+Message-ID: <lWKeg7hMQJWx-9HJ5gxCC_45xPEstWOXF7bEyDgQnhS1E03ExZzYKnpLUGyVbc0k0knjJPCtF5A3OEKS9LIPs0BJogJBgAz--IJCPRd0kR4=@protonmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="b1_rnDFTi2vBKWmTbesUO1Pmm5x3QGJibjdaxSRYk0QU"
-Subject: Re: [Openvpn-devel] --tls-crypt-v2-verify env $daemon_pid
+ boundary="b1_BG1C6KJY9wCU7HPkghmcaPv2Tb7Qzfn1BYVtipo49A"
+Subject: [Openvpn-devel] [openvpn-devel] Feature request - Include
+ daemon_pid in --tls-crypt-v2-verify env - V2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,12 +15,11 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: tincantech <tincantech@...2282...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
 
---b1_rnDFTi2vBKWmTbesUO1Pmm5x3QGJibjdaxSRYk0QU
+--b1_BG1C6KJY9wCU7HPkghmcaPv2Tb7Qzfn1BYVtipo49A
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -31,90 +28,103 @@ Hash: SHA256
 
 Hi,
 
-=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
-ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-On Friday, 23 April 2021 08:12, Antonio Quartulli <a@...2181...> wrote:
+I am requesting that daemon_pid be added to --tls-crypt-v2-verify env.
+Version 2
 
-> Hi,
->
-> On 22/04/2021 23:02, tincantech via Openvpn-devel wrote:
->
-> > hi,
-> > I am requesting that $daemon_pid be added to the --tls-crypt-v2-verify =
-environment.
->
-> The environment for --tls-crypt-v2-verify was designed to be extremely
-> minimal.
-> Anything concerning tls-crypt verification was designed to be as minimal
-> as possible.
->
-> Indeed, differently from other scripts, the env for tls-crypt-v2 is
-> created empty and then only a very few variables are added.
->
-> Anything that was deemed not necessary for the metadata verification was
-> not passed.
+Justification:
 
-I understand your reasoning, however, in the case of daemon_pid would you n=
-ot
-consider the process to be "more secure" if openvpn *does* provide the PID =
-in
-the environment, rather than have the script read the PID from a file?
+With the notable exception of --tls-crypt-v2-verify ..
+daemon_pid provides a verified process ID to All scripts. This ensures
+that scripts which are intended to pass data along to the following scripts
+have an index to which they can link that data.
 
-Having to configure openvpn to write the PID and then read the PID is two s=
-teps
-which can introduce user bound misconfiguration errors.
+Example:
 
+An example is presented in Easy-TLS:
+https://github.com/TinCanTech/easy-tls
 
->
-> I can imagine you have a usecase for daemon_pid, but I am sure more
-> people will have other arguments for other variables as well. Hence the
-> idea to design something extremely minimal and leave more complex logics
-> to following (post-auth) steps.
+This script passes hardware address from --tls-crypt-v2 key metadata along
+to --client-connect, where the pushed client variable IV_HWADDR can be
+matched against the fixed hardware address encrypted in the TLS Crypt V2
+key metadata.
 
-I reviewed all the other variables for inclusion viability and, with the
-exception of "untrusted_ip / untrusted_ip6", I came to the conclusion that
-the *only* variable which does come with a genuine security bonus is daemon=
-_pid.
-(As outlined in my previous comment)
+Security:
 
-As for untrusted_ip*, it definitely could be useful to --tls-crypt-v2-verify
-but I'm not asking for that here.  Perhaps on reading this other members wi=
-ll
-see how it can be of benefit to the scripts versatility..
-(The same goes for untrusted_port but that seems less useful over all)
+There are no known security concerns with regard to including the openvpn
+process ID (daemon_pid) in the --tls-crypt-v2-verify environment.
 
-I would also quote that old, old expression "Security through Obscurity"
-https://en.wikipedia.org/wiki/Security_through_obscurity
+Complexity:
 
->
-> > FTR: $daemon_pid is currently undocumented in all three manuals.
->
-> It'd be nice to have such documentation added :-)
+Ongoing support of the required code would be minimal to zero.
 
-I hope that your not suggesting that I provide documentation for something
-which you then refuse to allow me to use ? ;-)
+Code:
 
-Not only but also, "you give a little, you get a little" :D
+This patch is included for review purposes only.
 
-In conclusion, I request that OpenVPN review their earlier decision to be so
-*cruelly frugal* to --tls-crypt-v2-verify, on this one occasion.
+<git-formatted-patch>
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 7b5016d3..23d93a6c 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -537,6 +537,7 @@ tls_crypt_v2_verify_metadata(const struct tls_wrap_ctx =
+*ctx,
+=C2=A0=C2=A0=C2=A0=C2=A0 setenv_str(es, "script_type", "tls-crypt-v2-verify=
+");
+=C2=A0=C2=A0=C2=A0=C2=A0 setenv_str(es, "metadata_type", metadata_type_str);
+=C2=A0=C2=A0=C2=A0=C2=A0 setenv_str(es, "metadata_file", tmp_file);
++=C2=A0=C2=A0=C2=A0 setenv_int(es, "daemon_pid", platform_getpid());
 
-Thanks for your informed and collective consideration,
+=C2=A0=C2=A0=C2=A0=C2=A0 struct argv argv =3D argv_new();
+=C2=A0=C2=A0=C2=A0=C2=A0 argv_parse_cmd(&argv, opt->tls_crypt_v2_verify_scr=
+ipt);
+
+</git-formatted-patch>
+
+Conclusion:
+
+Due to the OS in use and other environmental factors, the *nix built-in var=
+iable PPID
+may not always be available. Without including $daemon_pid in the --tls-cry=
+pt-v2-verify
+environment, openvpn is forcing the user to unnecessarily configure --write=
+pid.=C2=A0
+
+The purpose of --writepid is to advertise the openvpn process ID to externa=
+l processes
+which do not have access to the internals of openvpn. By including daemon_p=
+id
+in the --tls-crypt-v2-verify environment all processes launched by openvpn =
+have access
+to this very useful identifier.
+
+Provided there are no genuine reasons to NAK this request, I will send a co=
+rrectly
+formatted patch.
+
+Addendum:
+
+I know this is something which helps me in the short term and I already hav=
+e a working
+alternative but I would like you to reconsider your previous decision. In m=
+y opinion All
+scripts launched by openvpn should have immediate access to daemon_pid.
+
+Thank you for your time and consideration,
 R
 -----BEGIN PGP SIGNATURE-----
 Version: ProtonMail
 
-wsBzBAEBCAAGBQJggrqWACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ1ZWwgAkgKYkbfa04CCrqu2pVYxYnt4bcRCvMV7qI8RM37PliG8b2Bx
-6qDPMUAZ1DwIL59WKYahtKOIVcp5gLXLoAlrfJy+FMRfJodnGT3iPz3no+Ew
-HWTsiwTXjUozGnD3fIviVfzbcXIb082WRzKP1/IpAtTztnBv6Aq6i5vLb/mJ
-Ghh/YJIDsaV012dz8qLX9oVbmd8SycfyhKa8E1IwlpkbHsJlqUYo/rxOeXTY
-1q4J07aNk1bwPAQU0bWbxf04ItLqeAnoWESnaTc6gWz4fXaRM3XiMuUDFzFl
-6FFRQeGkrJAdY2N/ZdAwcNSY3PDkFmu5MPBoaw6lmeBMMoFxG4S/kg=3D=3D
-=3DZBp4
+wsBzBAEBCAAGBQJggzkmACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
+9muQuJ0nVggAkf9tcCo7onTYoZ4WetX/6uePD2QzEYd8rHYbn1q6R8JvOqMi
+JrDIRIYZw06v/r4pyzq8tYUvS+1VBY9cPIm+v3uudOhZ/WUlyGw180u2tA+w
+eX+bx/AwA5FC4QGqgJlTEx9G5s0H5Ge2vSd1ChA52VjC5QZeorI/42nZpG2I
+Gg7vC0JH9rr9LqAzVNH9YfWff7vNKvXAPdmL9/itf3Eq6uFytGsD77KjZaq7
+RESDSO2cOnCyoVyktPhw64d77q6bCgFtl08CVQYJOTwg07cY+ZEWa3wRCEAb
+bcDj6eDNDHy8e9iMzie3yrIgZsRDCbGiXCyaLk2abZtpFsqX7rP6jA=3D=3D
+=3Dz4PC
 -----END PGP SIGNATURE-----
 
---b1_rnDFTi2vBKWmTbesUO1Pmm5x3QGJibjdaxSRYk0QU
+--b1_BG1C6KJY9wCU7HPkghmcaPv2Tb7Qzfn1BYVtipo49A
 Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
@@ -153,13 +163,13 @@ Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
 dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
 Sy0tLS0tDQo=
 
---b1_rnDFTi2vBKWmTbesUO1Pmm5x3QGJibjdaxSRYk0QU
+--b1_BG1C6KJY9wCU7HPkghmcaPv2Tb7Qzfn1BYVtipo49A
 Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 
-sOkDgryUUOkwDQCOiNWYEPvviBEtM96t9fU3LDud2Wd0FaTj9TBtKi++HFGD7TES
+s9OkDgryUUOkWZXp+n/shiJsEvhSBmzpGQDnNkOb6z/rGAWVgY8+SUF540smxdDWmg==
 
---b1_rnDFTi2vBKWmTbesUO1Pmm5x3QGJibjdaxSRYk0QU--
+--b1_BG1C6KJY9wCU7HPkghmcaPv2Tb7Qzfn1BYVtipo49A--
 
 
