@@ -1,9 +1,11 @@
+References: <ZIKZwAKGvWmbJ-kO_eJLJtMC987pVCbt6uMCrILdSuhQ6AcV0SVrQMn1r2xab_2K8ncLE47H_VO9gZqAcCSP6HkcFWXOKTuXXqhRXETdFwU=@protonmail.com>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <77250543-ceda-b412-6ff5-8f5ef5f0b3a3@...2181...>
+Date: Fri, 23 Apr 2021 09:12:29 +0200
 MIME-Version: 1.0
-From: W- WEi <wwei76922@...277...>
-Date: Sun, 25 Apr 2021 17:57:18 +0800
-Message-ID: <CAG9dV1rfxtqHJsJL8iX--H2gc05jC8YNNjDV5oSqNdfRYkovjA@...278...>
-Content-Type: multipart/alternative; boundary="000000000000c8377d05c0c90e34"
-Subject: [Openvpn-devel] (no subject)
+In-Reply-To: <ZIKZwAKGvWmbJ-kO_eJLJtMC987pVCbt6uMCrILdSuhQ6AcV0SVrQMn1r2xab_2K8ncLE47H_VO9gZqAcCSP6HkcFWXOKTuXXqhRXETdFwU=@protonmail.com>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] --tls-crypt-v2-verify env $daemon_pid
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,17 +14,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: tincantech <tincantech@...2282...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---000000000000c8377d05c0c90e34
-Content-Type: text/plain; charset="UTF-8"
+Hi,
 
-https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+On 22/04/2021 23:02, tincantech via Openvpn-devel wrote:
+> hi,
+> 
+> I am requesting that $daemon_pid be added to the --tls-crypt-v2-verify environment.
 
---000000000000c8377d05c0c90e34
-Content-Type: text/html; charset="UTF-8"
+The environment for --tls-crypt-v2-verify was designed to be extremely
+minimal.
+Anything concerning tls-crypt verification was designed to be as minimal
+as possible.
 
-<div dir="auto"><a href="https://lists.sourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a></div>
+Indeed, differently from other scripts, the env for tls-crypt-v2 is
+created empty and then only a very few variables are added.
 
---000000000000c8377d05c0c90e34--
+Anything that was deemed not necessary for the metadata verification was
+not passed.
+
+
+I can imagine you have a usecase for daemon_pid, but I am sure more
+people will have other arguments for other variables as well. Hence the
+idea to design something extremely minimal and leave more complex logics
+to following (post-auth) steps.
+
+
+> 
+> FTR: $daemon_pid is currently undocumented in all three manuals.
+
+It'd be nice to have such documentation added :-)
+
+Cheers,
+
+
+
+-- 
+Antonio Quartulli
 
