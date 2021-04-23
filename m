@@ -1,13 +1,13 @@
+Date: Fri, 23 Apr 2021 08:13:39 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20210423061339.GR976@...1296...>
+References: <ZIKZwAKGvWmbJ-kO_eJLJtMC987pVCbt6uMCrILdSuhQ6AcV0SVrQMn1r2xab_2K8ncLE47H_VO9gZqAcCSP6HkcFWXOKTuXXqhRXETdFwU=@protonmail.com>
 MIME-Version: 1.0
-References: <20210421080016.110-1-lstipakov@...277...>
- <CAKuzo_hxBKp8GahnETu6+DHM2q3U2edcUcqqfkzv3KdVFRCa-Q@...278...>
-In-Reply-To: <CAKuzo_hxBKp8GahnETu6+DHM2q3U2edcUcqqfkzv3KdVFRCa-Q@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sat, 24 Apr 2021 10:25:17 -0400
-Message-ID: <CAKuzo_jXNxJtN3wfydkD7zBNyzL4LRNiLLn0d-NJrYQFMa-i0w@...278...>
-Content-Type: multipart/alternative; boundary="0000000000007461b105c0b8af96"
-Subject: [Openvpn-devel] Fwd: [PATCH] tapctl: support for ovpn-dco Windows
- driver
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="Ba5PDGIzcHC57qat"
+Content-Disposition: inline
+In-Reply-To: <ZIKZwAKGvWmbJ-kO_eJLJtMC987pVCbt6uMCrILdSuhQ6AcV0SVrQMn1r2xab_2K8ncLE47H_VO9gZqAcCSP6HkcFWXOKTuXXqhRXETdFwU=@protonmail.com>
+Subject: Re: [Openvpn-devel] --tls-crypt-v2-verify env $daemon_pid
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,176 +16,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: tincantech <tincantech@...2282...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---0000000000007461b105c0b8af96
-Content-Type: text/plain; charset="UTF-8"
-
-(sourceforge seems to be refusing to accept mail from me.. sending again)
+--Ba5PDGIzcHC57qat
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Wed, Apr 21, 2021 at 4:02 AM Lev Stipakov <lstipakov@...277...> wrote:
+On Thu, Apr 22, 2021 at 09:02:30PM +0000, tincantech via Openvpn-devel wrot=
+e:
+> I am requesting that $daemon_pid be added to the --tls-crypt-v2-verify en=
+vironment.
 
-> From: Lev Stipakov <lev@...515...>
->
-> Make tapctl aware of ovpn-dco.
->
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->  src/tapctl/main.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
->
-> diff --git a/src/tapctl/main.c b/src/tapctl/main.c
-> index d5bc7290..3350bf1f 100644
-> --- a/src/tapctl/main.c
-> +++ b/src/tapctl/main.c
-> @@ -81,9 +81,9 @@ static const TCHAR usage_message_create[] =
->      TEXT("               specified, a default adapter name is chosen by
-> Windows.         \n")
->      TEXT("               Note: This name can also be specified as
-> OpenVPN's --dev-node   \n")
->      TEXT("               option.
->                \n")
-> -    TEXT("--hwid <hwid>  Adapter hardware ID. Default value is
-> root\\tap0901, which       \n")
-> -    TEXT("               describes tap-windows6 driver. To work with
-> wintun driver,      \n")
-> -    TEXT("               specify 'wintun'.
->                \n")
-> +    TEXT("--hwid <hwid>  Adapter hardware ID. Default value is
-> root\\tap0901, which      \n")
-> +    TEXT("               describes tap-windows6 driver. To work with
-> wintun or ovpn-dco  \n")
-> +    TEXT("               driver, specify 'wintun' or 'ovpn-dco'.
->                \n")
->      TEXT("\n")
->      TEXT("Output:\n")
->      TEXT("\n")
-> @@ -101,8 +101,8 @@ static const TCHAR usage_message_list[] =
->      TEXT("\n")
->      TEXT("Options:\n")
->      TEXT("\n")
-> -    TEXT("--hwid <hwid>  Adapter hardware ID. By default, root\\tap0901,
-> tap0901 and      \n")
-> -    TEXT("               wintun adapters are listed. Use this switch to
-> limit the list.  \n")
-> +    TEXT("--hwid <hwid>  Adapter hardware ID. By default, root\\tap0901,
-> tap0901, wintun and \n")
-> +    TEXT("               ovpn-dco adapters are listed. Use this switch to
-> limit the list.\n")
->      TEXT("\n")
->      TEXT("Output:\n")
->      TEXT("\n")
-> @@ -275,7 +275,8 @@ create_delete_adapter:
->          TCHAR szzHwId[0x100] =
->              TEXT("root\\") TEXT(TAP_WIN_COMPONENT_ID) TEXT("\0")
->              TEXT(TAP_WIN_COMPONENT_ID) TEXT("\0")
-> -            TEXT("Wintun\0");
-> +            TEXT("Wintun\0")
-> +            TEXT("ovpn-dco\0");
->
->          /* Parse options. */
->          for (int i = 2; i < argc; i++)
->
+What for?
 
-Looks good, assuming ovpn-dco is the correct hwid for the new driver.
+> FTR: $daemon_pid is currently undocumented in all three manuals.
 
-Acked-by: selva.nair@...277...
+It seems to be an obscure and not very useful feature.
 
---0000000000007461b105c0b8af96
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+"Programs that are called from OpenVPN" can find the OpenVPN pid trivially
+by calling getppid() (or $PPID in shell).
 
-<div dir=3D"ltr"><div class=3D"gmail_quote">(sourceforge seems to be refusi=
-ng to accept mail from me.. sending again)<br><br><div dir=3D"ltr"><div dir=
-=3D"ltr">Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"=
-gmail_attr">On Wed, Apr 21, 2021 at 4:02 AM Lev Stipakov &lt;<a href=3D"mai=
-lto:lstipakov@...277..." target=3D"_blank">lstipakov@...277...</a>&gt; wrot=
-e:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
-.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">From: Lev Sti=
-pakov &lt;<a href=3D"mailto:lev@...515..." target=3D"_blank">lev@...515...<=
-/a>&gt;<br>
-<br>
-Make tapctl aware of ovpn-dco.<br>
-<br>
-Signed-off-by: Lev Stipakov &lt;<a href=3D"mailto:lev@...515..." target=3D"=
-_blank">lev@...515...</a>&gt;<br>
----<br>
-=C2=A0src/tapctl/main.c | 13 +++++++------<br>
-=C2=A01 file changed, 7 insertions(+), 6 deletions(-)<br>
-<br>
-diff --git a/src/tapctl/main.c b/src/tapctl/main.c<br>
-index d5bc7290..3350bf1f 100644<br>
---- a/src/tapctl/main.c<br>
-+++ b/src/tapctl/main.c<br>
-@@ -81,9 +81,9 @@ static const TCHAR usage_message_create[] =3D<br>
-=C2=A0 =C2=A0 =C2=A0TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0specified, a default adapter name is chosen by Windows.=C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0\n&quot;)<br>
-=C2=A0 =C2=A0 =C2=A0TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0Note: This name can also be specified as OpenVPN&#39;s --dev-n=
-ode=C2=A0 =C2=A0\n&quot;)<br>
-=C2=A0 =C2=A0 =C2=A0TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0option.=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0\n=
-&quot;)<br>
--=C2=A0 =C2=A0 TEXT(&quot;--hwid &lt;hwid&gt;=C2=A0 Adapter hardware ID. De=
-fault value is root\\tap0901, which=C2=A0 =C2=A0 =C2=A0 =C2=A0\n&quot;)<br>
--=C2=A0 =C2=A0 TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0describes tap-windows6 driver. To work with wintun driver,=C2=A0 =C2=
-=A0 =C2=A0 \n&quot;)<br>
--=C2=A0 =C2=A0 TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0specify &#39;wintun&#39;.=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0\n&quot;)<br>
-+=C2=A0 =C2=A0 TEXT(&quot;--hwid &lt;hwid&gt;=C2=A0 Adapter hardware ID. De=
-fault value is root\\tap0901, which=C2=A0 =C2=A0 =C2=A0 \n&quot;)<br>
-+=C2=A0 =C2=A0 TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0describes tap-windows6 driver. To work with wintun or ovpn-dco=C2=A0 =
-\n&quot;)<br>
-+=C2=A0 =C2=A0 TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0driver, specify &#39;wintun&#39; or &#39;ovpn-dco&#39;.=C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0\n&quot;)<br>
-=C2=A0 =C2=A0 =C2=A0TEXT(&quot;\n&quot;)<br>
-=C2=A0 =C2=A0 =C2=A0TEXT(&quot;Output:\n&quot;)<br>
-=C2=A0 =C2=A0 =C2=A0TEXT(&quot;\n&quot;)<br>
-@@ -101,8 +101,8 @@ static const TCHAR usage_message_list[] =3D<br>
-=C2=A0 =C2=A0 =C2=A0TEXT(&quot;\n&quot;)<br>
-=C2=A0 =C2=A0 =C2=A0TEXT(&quot;Options:\n&quot;)<br>
-=C2=A0 =C2=A0 =C2=A0TEXT(&quot;\n&quot;)<br>
--=C2=A0 =C2=A0 TEXT(&quot;--hwid &lt;hwid&gt;=C2=A0 Adapter hardware ID. By=
- default, root\\tap0901, tap0901 and=C2=A0 =C2=A0 =C2=A0 \n&quot;)<br>
--=C2=A0 =C2=A0 TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0wintun adapters are listed. Use this switch to limit the list.=C2=A0 =
-\n&quot;)<br>
-+=C2=A0 =C2=A0 TEXT(&quot;--hwid &lt;hwid&gt;=C2=A0 Adapter hardware ID. By=
- default, root\\tap0901, tap0901, wintun and \n&quot;)<br>
-+=C2=A0 =C2=A0 TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0ovpn-dco adapters are listed. Use this switch to limit the list.\n&qu=
-ot;)<br>
-=C2=A0 =C2=A0 =C2=A0TEXT(&quot;\n&quot;)<br>
-=C2=A0 =C2=A0 =C2=A0TEXT(&quot;Output:\n&quot;)<br>
-=C2=A0 =C2=A0 =C2=A0TEXT(&quot;\n&quot;)<br>
-@@ -275,7 +275,8 @@ create_delete_adapter:<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0TCHAR szzHwId[0x100] =3D<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0TEXT(&quot;root\\&quot;) TE=
-XT(TAP_WIN_COMPONENT_ID) TEXT(&quot;\0&quot;)<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0TEXT(TAP_WIN_COMPONENT_ID) =
-TEXT(&quot;\0&quot;)<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 TEXT(&quot;Wintun\0&quot;);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 TEXT(&quot;Wintun\0&quot;)<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 TEXT(&quot;ovpn-dco\0&quot;);<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0/* Parse options. */<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0for (int i =3D 2; i &lt; argc; i++)<br></=
-blockquote><div><br></div><div>Looks good, assuming ovpn-dco is the correct=
- hwid for the new driver.</div><div><br></div><div>Acked-by: <a href=3D"mai=
-lto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a></div><=
-/div></div>
-</div></div>
+gert
 
---0000000000007461b105c0b8af96--
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--Ba5PDGIzcHC57qat
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJggmWSAAoJEB2Cnv7KVigS+BsL/jidqAcAVKtv6JeNihuBRMc5
+B0FAVSVCd/VxevbPFhwGsomJqUB9JXtOKtHQ4NvlpsGAcTEBotAk7HUii3br1cTz
+UC+qpttDLMwMg9YY5AwK9/p95mZAPdxTDc047O0gQ+TbDsAupAy4mhXjeZOxdN7e
+Efd/UA1AXoDA66rdL1ofEAsjZRp1JvjFPe7hrKjzkzn1ksWe+kuIP2HbhtAuTttX
+B7kk3Vodl0QLPsBedPXCVB+lWy+kaw3PXT02ONx7orV30ivvCMTfbsNFy8ezZl60
+g8HSa53pzLqUaKIvp4WzQrd+Bm1t9Tf1ZcBcGgLGAV2K41MW10JToZUg4GQbbOkn
+V+29/xlAtbaZ/RtHYrIBRZHo2tQz63cd20NuHYcBc6yVMAaNJMBExJFdoEr6Ju0K
+j3fSzVVjbnwreI4DFjAjxZUKoskt+YPERSGgneAYTLEdepzyCOxWOp36XVTukcz6
+pjoi22ubEaF570mY3npgOoNau9uKNp8WcwIp6wjxrg==
+=kV1Q
+-----END PGP SIGNATURE-----
+
+--Ba5PDGIzcHC57qat--
 
