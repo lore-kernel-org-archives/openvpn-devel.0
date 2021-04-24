@@ -1,11 +1,13 @@
-Date: Thu, 22 Apr 2021 21:02:30 +0000
-From: tincantech <tincantech@...2282...>
-Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <ZIKZwAKGvWmbJ-kO_eJLJtMC987pVCbt6uMCrILdSuhQ6AcV0SVrQMn1r2xab_2K8ncLE47H_VO9gZqAcCSP6HkcFWXOKTuXXqhRXETdFwU=@protonmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="b1_uWEQCFT7JqzuOVGrRgBcuvlkLrcaC2rHS3OOog62ENU"
-Subject: [Openvpn-devel]  --tls-crypt-v2-verify env $daemon_pid
+References: <20210421080016.110-1-lstipakov@...277...>
+ <CAKuzo_hxBKp8GahnETu6+DHM2q3U2edcUcqqfkzv3KdVFRCa-Q@...278...>
+In-Reply-To: <CAKuzo_hxBKp8GahnETu6+DHM2q3U2edcUcqqfkzv3KdVFRCa-Q@...278...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sat, 24 Apr 2021 10:25:17 -0400
+Message-ID: <CAKuzo_jXNxJtN3wfydkD7zBNyzL4LRNiLLn0d-NJrYQFMa-i0w@...278...>
+Content-Type: multipart/alternative; boundary="0000000000007461b105c0b8af96"
+Subject: [Openvpn-devel] Fwd: [PATCH] tapctl: support for ovpn-dco Windows
+ driver
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,85 +16,176 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
+--0000000000007461b105c0b8af96
+Content-Type: text/plain; charset="UTF-8"
 
---b1_uWEQCFT7JqzuOVGrRgBcuvlkLrcaC2rHS3OOog62ENU
-Content-Type: text/plain; charset="utf-8"
+(sourceforge seems to be refusing to accept mail from me.. sending again)
+
+Hi,
+
+On Wed, Apr 21, 2021 at 4:02 AM Lev Stipakov <lstipakov@...277...> wrote:
+
+> From: Lev Stipakov <lev@...515...>
+>
+> Make tapctl aware of ovpn-dco.
+>
+> Signed-off-by: Lev Stipakov <lev@...515...>
+> ---
+>  src/tapctl/main.c | 13 +++++++------
+>  1 file changed, 7 insertions(+), 6 deletions(-)
+>
+> diff --git a/src/tapctl/main.c b/src/tapctl/main.c
+> index d5bc7290..3350bf1f 100644
+> --- a/src/tapctl/main.c
+> +++ b/src/tapctl/main.c
+> @@ -81,9 +81,9 @@ static const TCHAR usage_message_create[] =
+>      TEXT("               specified, a default adapter name is chosen by
+> Windows.         \n")
+>      TEXT("               Note: This name can also be specified as
+> OpenVPN's --dev-node   \n")
+>      TEXT("               option.
+>                \n")
+> -    TEXT("--hwid <hwid>  Adapter hardware ID. Default value is
+> root\\tap0901, which       \n")
+> -    TEXT("               describes tap-windows6 driver. To work with
+> wintun driver,      \n")
+> -    TEXT("               specify 'wintun'.
+>                \n")
+> +    TEXT("--hwid <hwid>  Adapter hardware ID. Default value is
+> root\\tap0901, which      \n")
+> +    TEXT("               describes tap-windows6 driver. To work with
+> wintun or ovpn-dco  \n")
+> +    TEXT("               driver, specify 'wintun' or 'ovpn-dco'.
+>                \n")
+>      TEXT("\n")
+>      TEXT("Output:\n")
+>      TEXT("\n")
+> @@ -101,8 +101,8 @@ static const TCHAR usage_message_list[] =
+>      TEXT("\n")
+>      TEXT("Options:\n")
+>      TEXT("\n")
+> -    TEXT("--hwid <hwid>  Adapter hardware ID. By default, root\\tap0901,
+> tap0901 and      \n")
+> -    TEXT("               wintun adapters are listed. Use this switch to
+> limit the list.  \n")
+> +    TEXT("--hwid <hwid>  Adapter hardware ID. By default, root\\tap0901,
+> tap0901, wintun and \n")
+> +    TEXT("               ovpn-dco adapters are listed. Use this switch to
+> limit the list.\n")
+>      TEXT("\n")
+>      TEXT("Output:\n")
+>      TEXT("\n")
+> @@ -275,7 +275,8 @@ create_delete_adapter:
+>          TCHAR szzHwId[0x100] =
+>              TEXT("root\\") TEXT(TAP_WIN_COMPONENT_ID) TEXT("\0")
+>              TEXT(TAP_WIN_COMPONENT_ID) TEXT("\0")
+> -            TEXT("Wintun\0");
+> +            TEXT("Wintun\0")
+> +            TEXT("ovpn-dco\0");
+>
+>          /* Parse options. */
+>          for (int i = 2; i < argc; i++)
+>
+
+Looks good, assuming ovpn-dco is the correct hwid for the new driver.
+
+Acked-by: selva.nair@...277...
+
+--0000000000007461b105c0b8af96
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+<div dir=3D"ltr"><div class=3D"gmail_quote">(sourceforge seems to be refusi=
+ng to accept mail from me.. sending again)<br><br><div dir=3D"ltr"><div dir=
+=3D"ltr">Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"=
+gmail_attr">On Wed, Apr 21, 2021 at 4:02 AM Lev Stipakov &lt;<a href=3D"mai=
+lto:lstipakov@...277..." target=3D"_blank">lstipakov@...277...</a>&gt; wrot=
+e:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
+.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">From: Lev Sti=
+pakov &lt;<a href=3D"mailto:lev@...515..." target=3D"_blank">lev@...515...<=
+/a>&gt;<br>
+<br>
+Make tapctl aware of ovpn-dco.<br>
+<br>
+Signed-off-by: Lev Stipakov &lt;<a href=3D"mailto:lev@...515..." target=3D"=
+_blank">lev@...515...</a>&gt;<br>
+---<br>
+=C2=A0src/tapctl/main.c | 13 +++++++------<br>
+=C2=A01 file changed, 7 insertions(+), 6 deletions(-)<br>
+<br>
+diff --git a/src/tapctl/main.c b/src/tapctl/main.c<br>
+index d5bc7290..3350bf1f 100644<br>
+--- a/src/tapctl/main.c<br>
++++ b/src/tapctl/main.c<br>
+@@ -81,9 +81,9 @@ static const TCHAR usage_message_create[] =3D<br>
+=C2=A0 =C2=A0 =C2=A0TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0specified, a default adapter name is chosen by Windows.=C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0\n&quot;)<br>
+=C2=A0 =C2=A0 =C2=A0TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0Note: This name can also be specified as OpenVPN&#39;s --dev-n=
+ode=C2=A0 =C2=A0\n&quot;)<br>
+=C2=A0 =C2=A0 =C2=A0TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0option.=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0\n=
+&quot;)<br>
+-=C2=A0 =C2=A0 TEXT(&quot;--hwid &lt;hwid&gt;=C2=A0 Adapter hardware ID. De=
+fault value is root\\tap0901, which=C2=A0 =C2=A0 =C2=A0 =C2=A0\n&quot;)<br>
+-=C2=A0 =C2=A0 TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0describes tap-windows6 driver. To work with wintun driver,=C2=A0 =C2=
+=A0 =C2=A0 \n&quot;)<br>
+-=C2=A0 =C2=A0 TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0specify &#39;wintun&#39;.=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0\n&quot;)<br>
++=C2=A0 =C2=A0 TEXT(&quot;--hwid &lt;hwid&gt;=C2=A0 Adapter hardware ID. De=
+fault value is root\\tap0901, which=C2=A0 =C2=A0 =C2=A0 \n&quot;)<br>
++=C2=A0 =C2=A0 TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0describes tap-windows6 driver. To work with wintun or ovpn-dco=C2=A0 =
+\n&quot;)<br>
++=C2=A0 =C2=A0 TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0driver, specify &#39;wintun&#39; or &#39;ovpn-dco&#39;.=C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0\n&quot;)<br>
+=C2=A0 =C2=A0 =C2=A0TEXT(&quot;\n&quot;)<br>
+=C2=A0 =C2=A0 =C2=A0TEXT(&quot;Output:\n&quot;)<br>
+=C2=A0 =C2=A0 =C2=A0TEXT(&quot;\n&quot;)<br>
+@@ -101,8 +101,8 @@ static const TCHAR usage_message_list[] =3D<br>
+=C2=A0 =C2=A0 =C2=A0TEXT(&quot;\n&quot;)<br>
+=C2=A0 =C2=A0 =C2=A0TEXT(&quot;Options:\n&quot;)<br>
+=C2=A0 =C2=A0 =C2=A0TEXT(&quot;\n&quot;)<br>
+-=C2=A0 =C2=A0 TEXT(&quot;--hwid &lt;hwid&gt;=C2=A0 Adapter hardware ID. By=
+ default, root\\tap0901, tap0901 and=C2=A0 =C2=A0 =C2=A0 \n&quot;)<br>
+-=C2=A0 =C2=A0 TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0wintun adapters are listed. Use this switch to limit the list.=C2=A0 =
+\n&quot;)<br>
++=C2=A0 =C2=A0 TEXT(&quot;--hwid &lt;hwid&gt;=C2=A0 Adapter hardware ID. By=
+ default, root\\tap0901, tap0901, wintun and \n&quot;)<br>
++=C2=A0 =C2=A0 TEXT(&quot;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0ovpn-dco adapters are listed. Use this switch to limit the list.\n&qu=
+ot;)<br>
+=C2=A0 =C2=A0 =C2=A0TEXT(&quot;\n&quot;)<br>
+=C2=A0 =C2=A0 =C2=A0TEXT(&quot;Output:\n&quot;)<br>
+=C2=A0 =C2=A0 =C2=A0TEXT(&quot;\n&quot;)<br>
+@@ -275,7 +275,8 @@ create_delete_adapter:<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0TCHAR szzHwId[0x100] =3D<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0TEXT(&quot;root\\&quot;) TE=
+XT(TAP_WIN_COMPONENT_ID) TEXT(&quot;\0&quot;)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0TEXT(TAP_WIN_COMPONENT_ID) =
+TEXT(&quot;\0&quot;)<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 TEXT(&quot;Wintun\0&quot;);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 TEXT(&quot;Wintun\0&quot;)<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 TEXT(&quot;ovpn-dco\0&quot;);<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0/* Parse options. */<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0for (int i =3D 2; i &lt; argc; i++)<br></=
+blockquote><div><br></div><div>Looks good, assuming ovpn-dco is the correct=
+ hwid for the new driver.</div><div><br></div><div>Acked-by: <a href=3D"mai=
+lto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a></div><=
+/div></div>
+</div></div>
 
-hi,
-
-I am requesting that $daemon_pid be added to the --tls-crypt-v2-verify envi=
-ronment.
-
-FTR: $daemon_pid is currently undocumented in all three manuals.
-
-Thanks.
-R
------BEGIN PGP SIGNATURE-----
-Version: ProtonMail
-
-wsBzBAEBCAAGBQJggeRlACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ3+LQgAxSKGYd1ubfyiSdl4VMNrp+y97t03OLVhBntuUiYHTZUaQlKi
-33oQRxNY+ELuZUpK4ueMgeUPvG20kAB5zfpyT6imsYrze3hlbd9G6omflByh
-f0sAovrDSiegF8adNgdKCsGi8co7z2B3Ec0WWRnGLPPcZHQzIo8MlspYJ50l
-uf6EdEDZL96VQYHNDJ/RH6egj1+WZww+qk/VJsuiBTyxf/KlRNVbrC24/iM1
-gHS/3HqDvwgX675vIIDlB2ZzF0QiHCPZWYlWbPAU2GqEqpzN/qn7EDuPfrFB
-IY/g8y9+qH+AZmD7byeRSeLSiira84oBWX6OwGJOrmLPsam9ZVTmRg=3D=3D
-=3D+Hpt
------END PGP SIGNATURE-----
-
---b1_uWEQCFT7JqzuOVGrRgBcuvlkLrcaC2rHS3OOog62ENU
-Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
-
-LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tDQpWZXJzaW9uOiBPcGVuUEdQLmpz
-IHY0LjEwLjgNCkNvbW1lbnQ6IGh0dHBzOi8vb3BlbnBncGpzLm9yZw0KDQp4c0JOQkZ2d1NjY0JD
-QURPbUhFblFsTG1PakpSdEpMMmw1M01Md3dGVHk3WG5FcHMzYjFRMFV3V1lGQ3YNCkwyb05wMG5y
-ZEdsS0tESnE1MFkwOVNSK1VSWUJRbUttWTNFbXpweVVJS00vcmdvMVJ5dWJIcE1SSGJEcA0KN0pw
-OEx4a2ZmRkJWSmovdDVWTXBENmVNUjZhVWNpUWpnUkw4TlplNitUN3hmWFhYd1Y1aG9SZVozak8r
-DQp6SGk2U1I3eFR2R1hsYStNUXo2RUVwV25sYkx2ZzJvcnQ5S3NldVZqWXJxdlJNeGNkUDBvOWNa
-V0o1ZXANCkpObWdlQjZNNytPVzA4VTFTc1h0S3JwTFJjSTZ5S21WMzhqaHpQcjJaZ1A5cm1ybEVy
-Ui8xaXFRUUhYWQ0KbzgvMERmUHlGMG1IOXluUUlpTEUvbCtGWXU0cnNHOFZpS2x4aFhjemVQekF0
-TENqaUIwYTBtUlZBQkVCDQpBQUhOTnlKMGFXNWpZVzUwWldOb1FIQnliM1J2Ym0xaGFXd3VZMjl0
-SWlBOGRHbHVZMkZ1ZEdWamFFQncNCmNtOTBiMjV0WVdsc0xtTnZiVDdDd0g4RUVBRUlBQ2tGQWx2
-d1NjY0dDd2tIQ0FNQ0NSQlBsNXoyYTVDNA0KblFRVkNBb0NBeFlDQVFJWkFRSWJBd0llQVFBS0NS
-QlBsNXoyYTVDNG5RQkRCLzlaVW85Qk9YSlI2MU5tDQowMm9aLzhhUlhPOU5uVVNGdDZHTE9XY0RO
-dkFzNElKV01EVkVRZllhbmIrNDIxUU5kLzVkNkgxaVhGK2kNCjRMREswTTZhZ0MrZ3NORkpualBH
-SXR2UHRqN1d5anluWlJ4OEQ0MFBQWGlnZkhZdXcyb1J1MGxyK1AxcA0KMXFlVWU0TmJjcUl2OElJ
-dkx6MnpDbFlaT05nQXNRVmNOQUhpN1o0b3J0UTJpbzJCQVZqLzgxOUpQWU10DQp0SGdZODF3UzFW
-N3Y4R0RUWmc4b2FQaFhHZmFDNFRaRkd0WnIvYnliY3Fyc28zNWphUW1DNTR4TWJYcEYNCkFVcmMz
-dUdWT0grT2RHL0JXMmdjWXFwdlVGQnVrWHhDVUJZSFAyTmZYaE5mekd0OW5DMXVsTktZZVAxOQ0K
-VEdsT29yQk1ZSUFFSG9HeHZwYlVYZmJhTldDVXpzQk5CRnZ3U2NjQkNBQzlLeVZaUlM1YU1hRzVQ
-aTBuDQpmeDhhTm9zM2JZcDI0Nk10ZmFvS0JmVFFBcmQrR1pXK1duRnlKRWlTeUxkejByVXV0eUNB
-ZGY1bGdWSCsNCld2THZJbWlHclNyelZwTVQybkNTMDlMcUw1MFFqejhBN2dwNUgvaFF6dFo4aU55
-c0dEOU5PNDZPbkk3NQ0KOTBkSGZDclhqUVBTRnRGR3NUemdEeFFJaU11eno5RFI3QmVrS1BtdU9G
-SWhCZTllRVpxYnhjOFJXZVF0DQpoYTdpL0RySlRSTksxYU9BRFFGVnVWMS9BbTVUaEdQV0ZNL1lK
-VXlUWWhNVzB5ZVBoNDVPYld1UlFaa3MNCmwrYU9tNEwwS0dERFlsbS9GUXgvRU1DdWJ2bHp5L3p4
-RGRCNm5xRmloMnFacmZ5bW5pU09LYWpHMGpvVA0KcFpvei9Feis0ZkF0ZzZ5MFBzcE5SNmlkQUJF
-QkFBSEN3R2tFR0FFSUFCTUZBbHZ3U2NjSkVFK1huUFpyDQprTGlkQWhzTUFBb0pFRStYblBacmtM
-aWRSZTBIL2o1Q0lGSUF1Y3VhaUVNa0xrTktFQU81czd4NDdlTnkNCkdQZlpzbHlZK0hqekdVMGQw
-N01ra0dtVmtQVFZ6d3FWek5aYm55N1pBdjF6bFcwVXkweUhwMUFQcHlZdA0KOGJ1VXBwVEJxN2Q0
-N29neEVSWXp0L0xjMkw1YS9WS0ZOUmJoTjEvWFFtUGl6MkVsZTR0eWlwYlRhcGN5DQoremJ5ZnpB
-TUQxM2NJZFoxM2hUc05QMG9sZ0JoQXFVQVVVWXB4UmxrQUhlSitEdDNOYnpIUzRLUUs1MzgNCk5K
-L2w3YlhTS3NHcW9ZcUplWjhWTkJ4d1dXVWJ1RzRqanJoNDNNSVJnVVo1V3NQVVlWNkh4MDU2a01q
-Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
-dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
-Sy0tLS0tDQo=
-
---b1_uWEQCFT7JqzuOVGrRgBcuvlkLrcaC2rHS3OOog62ENU
-Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
-
-sGOkDgryUUOkIQrJqNigSE8u15eXTnMzKTDZBPLc+rVGyYJWgXK6C5Ilcw8B1hmPbTaSApo=
-
---b1_uWEQCFT7JqzuOVGrRgBcuvlkLrcaC2rHS3OOog62ENU--
-
+--0000000000007461b105c0b8af96--
 
