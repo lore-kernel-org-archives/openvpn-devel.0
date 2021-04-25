@@ -1,13 +1,10 @@
-Date: Fri, 23 Apr 2021 08:13:39 +0200
+Date: Sun, 25 Apr 2021 10:19:13 +0200 (CEST)
+Message-Id: <202104250819.13P8JDMv038694@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20210423061339.GR976@...1296...>
-References: <ZIKZwAKGvWmbJ-kO_eJLJtMC987pVCbt6uMCrILdSuhQ6AcV0SVrQMn1r2xab_2K8ncLE47H_VO9gZqAcCSP6HkcFWXOKTuXXqhRXETdFwU=@protonmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Ba5PDGIzcHC57qat"
-Content-Disposition: inline
-In-Reply-To: <ZIKZwAKGvWmbJ-kO_eJLJtMC987pVCbt6uMCrILdSuhQ6AcV0SVrQMn1r2xab_2K8ncLE47H_VO9gZqAcCSP6HkcFWXOKTuXXqhRXETdFwU=@protonmail.com>
-Subject: Re: [Openvpn-devel] --tls-crypt-v2-verify env $daemon_pid
+In-Reply-To: <20210421080016.110-1-lstipakov@...277...>
+References: <20210421080016.110-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: tapctl: support for ovpn-dco
+ Windows driver
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,58 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: tincantech <tincantech@...2282...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---Ba5PDGIzcHC57qat
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+I've not tested this further, just stared at the code a bit (looks good),
+and of course Selva's ACK :-) - and yeah, let's hope the mailing list
+will unblock soonish...
 
-Hi,
+Your patch has been applied to the master branch.
 
-On Thu, Apr 22, 2021 at 09:02:30PM +0000, tincantech via Openvpn-devel wrot=
-e:
-> I am requesting that $daemon_pid be added to the --tls-crypt-v2-verify en=
-vironment.
+commit 1e25f9792fc955ef4e333afb5259b3f669f62355
+Author: Lev Stipakov
+Date:   Wed Apr 21 11:00:16 2021 +0300
 
-What for?
+     tapctl: support for ovpn-dco Windows driver
 
-> FTR: $daemon_pid is currently undocumented in all three manuals.
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <20210421080016.110-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22165.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-It seems to be an obscure and not very useful feature.
 
-"Programs that are called from OpenVPN" can find the OpenVPN pid trivially
-by calling getppid() (or $PPID in shell).
+--
+kind regards,
 
-gert
+Gert Doering
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---Ba5PDGIzcHC57qat
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJggmWSAAoJEB2Cnv7KVigS+BsL/jidqAcAVKtv6JeNihuBRMc5
-B0FAVSVCd/VxevbPFhwGsomJqUB9JXtOKtHQ4NvlpsGAcTEBotAk7HUii3br1cTz
-UC+qpttDLMwMg9YY5AwK9/p95mZAPdxTDc047O0gQ+TbDsAupAy4mhXjeZOxdN7e
-Efd/UA1AXoDA66rdL1ofEAsjZRp1JvjFPe7hrKjzkzn1ksWe+kuIP2HbhtAuTttX
-B7kk3Vodl0QLPsBedPXCVB+lWy+kaw3PXT02ONx7orV30ivvCMTfbsNFy8ezZl60
-g8HSa53pzLqUaKIvp4WzQrd+Bm1t9Tf1ZcBcGgLGAV2K41MW10JToZUg4GQbbOkn
-V+29/xlAtbaZ/RtHYrIBRZHo2tQz63cd20NuHYcBc6yVMAaNJMBExJFdoEr6Ju0K
-j3fSzVVjbnwreI4DFjAjxZUKoskt+YPERSGgneAYTLEdepzyCOxWOp36XVTukcz6
-pjoi22ubEaF570mY3npgOoNau9uKNp8WcwIp6wjxrg==
-=kV1Q
------END PGP SIGNATURE-----
-
---Ba5PDGIzcHC57qat--
 
