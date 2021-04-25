@@ -1,17 +1,11 @@
-Date: Sun, 25 Apr 2021 22:52:20 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20210425205220.GA976@...1296...>
-References: <mailman.44934.1619368532.1299.openvpn-devel@lists.sourceforge.net>
- <CAHhAHvhNmyRKYuMA8b2cWgL9MvRbo62QPVh34AZLOyVKfcQ9Jw@...278...>
- <20210425172608.GY976@...1296...>
- <CAHhAHvhQmvtJvY0CBqCp_viU1wckZ61BQ5kEaHki8Mvy-nPJjQ@...278...>
+From: Antonio Quartulli <a@...2181...>
+Date: Mon, 26 Apr 2021 01:28:31 +0200
+Message-Id: <20210425232831.2611-1-a@...2181...>
+In-Reply-To: <20210401131337.3684-5-arne@...1227...>
+References: <20210401131337.3684-5-arne@...1227...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="oqPdk2VGBVXm4Qm+"
-Content-Disposition: inline
-In-Reply-To: <CAHhAHvhQmvtJvY0CBqCp_viU1wckZ61BQ5kEaHki8Mvy-nPJjQ@...278...>
-Subject: Re: [Openvpn-devel] Windows openvpnserv2 default reg values instead
- of crash
+Subject: [Openvpn-devel] [PATCH v2] Add documentation on
+ EVENT_READ/EVENT_WRITE constants
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,65 +14,122 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Christian Nilsson <nikize+ovpn@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Arne Schwabe <arne@...1227...>, Antonio Quartulli <antonio@...515...>
 
---oqPdk2VGBVXm4Qm+
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Arne Schwabe <arne@...1227...>
 
-Hi,
+Changes from v1:
+- fixed typ0s
+- extended comment
+- moved *_SHIFT definition to openvpn.h
+- made READ/WRITE events dependant on _SHIFT definition with a macro
 
-On Sun, Apr 25, 2021 at 08:06:27PM +0200, Christian Nilsson wrote:
-> On Sun, 25 Apr 2021 at 19:26, Gert Doering <gert@...1296...> wrote:
-> > On Sun, Apr 25, 2021 at 06:44:34PM +0200, Christian Nilsson wrote:
-> > > I have been wondering if there is any particular reason that
-> > > crashes in openvpnserv2 should be preferred over
-> > > having default values if missing from the registry?
-> >
-> > openvpnserv2 should never *crash*.
-[..]
->=20
-> Indeed debatable, hmm, but to be clear and avoid misunderstandings;
-> "Exception occured during OpenVPN service start: " ..
-> and rethrown exception that is not catched, so I still actually do
-> think that crash is the correct term here.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Signed-off-by: Antonio Quartulli <antonio@...515...>
+---
 
-So, yes.  It should never do that.
+Passed all compile tests on my GitLab CI. (including enabling/disabling
+mgmt and async push)
 
-(I did not investigate to see what sort of "unexpected exit" it did,
-just state this as a sort of governing principle - if it aborts, it
-should so with a clear error message, explaining what is wrong.  Not
-"uncaught exception" or "segmentation fault")
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+ src/openvpn/forward.c | 14 +++++++-----
+ src/openvpn/openvpn.h | 51 ++++++++++++++++++++++++++++++++++---------
+ 2 files changed, 49 insertions(+), 16 deletions(-)
 
-Gert Doering - Munich, Germany                             gert@...1296...
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index df96d048..e302d8e0 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1867,15 +1867,17 @@ io_wait_dowork(struct context *c, const unsigned int flags)
+     unsigned int tuntap = 0;
+     struct event_set_return esr[4];
+ 
+-    /* These shifts all depend on EVENT_READ and EVENT_WRITE */
+-    static int socket_shift = 0;   /* depends on SOCKET_READ and SOCKET_WRITE */
+-    static int tun_shift = 2;      /* depends on TUN_READ and TUN_WRITE */
+-    static int err_shift = 4;      /* depends on ES_ERROR */
++    /* These shifts all depend on EVENT_READ (=1) and EVENT_WRITE (=2)
++     * and are added to the shift. Check openvpn.h for more details.
++     */
++    static int socket_shift = SOCKET_SHIFT;
++    static int tun_shift = TUN_SHIFT;
++    static int err_shift = ERR_SHIFT;
+ #ifdef ENABLE_MANAGEMENT
+-    static int management_shift = 6; /* depends on MANAGEMENT_READ and MANAGEMENT_WRITE */
++    static int management_shift = MANAGEMENT_SHIFT;
+ #endif
+ #ifdef ENABLE_ASYNC_PUSH
+-    static int file_shift = 8;     /* listening inotify events */
++    static int file_shift = FILE_SHIFT;
+ #endif
+ 
+     /*
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index a15ff08d..02eede92 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -232,16 +232,47 @@ struct context_2
+     int event_set_max;
+     bool event_set_owned;
+ 
+-    /* event flags returned by io_wait */
+-#define SOCKET_READ       (1<<0)
+-#define SOCKET_WRITE      (1<<1)
+-#define TUN_READ          (1<<2)
+-#define TUN_WRITE         (1<<3)
+-#define ES_ERROR          (1<<4)
+-#define ES_TIMEOUT        (1<<5)
+-#define MANAGEMENT_READ  (1<<6)
+-#define MANAGEMENT_WRITE (1<<7)
+-#define FILE_CLOSED       (1<<8)
++    /* event flags returned by io_wait.
++     *
++     * All these events are defined as bits in a bitfield.
++     * Each event type owns two bits in the bitfield: one for the READ
++     * event and one for the WRITE event.
++     *
++     * For this reason, the specific event bit is calculated by adding
++     * the event type identifier (always a multiple of 2, as defined
++     * below) to 0 for READ and 1 for WRITE.
++     *
++     * E.g.
++     * MANAGEMENT_SHIFT = 6;  <---- event type identifier
++     * MANAGEMENT_READ = (1 << (6 + 0)),  <---- READ event
++     * MANAGEMENT_WRITE = (1 << (6 + 1))  <---- WRITE event
++     *
++     * 'error' and 'file_close' are special and use read/write for different
++     * signals.
++     */
++#define READ_SHIFT  0
++#define WRITE_SHIFT 1
++
++#define SHIFT(_name, _op)   (1 << (_name ## _SHIFT + _op ## _SHIFT))
++
++#define SOCKET_SHIFT        0
++#define SOCKET_READ         SHIFT(SOCKET, READ)
++#define SOCKET_WRITE        SHIFT(SOCKET, WRITE)
++#define TUN_SHIFT           2
++#define TUN_READ            SHIFT(TUN, READ)
++#define TUN_WRITE           SHIFT(TUN, WRITE)
++#define ERR_SHIFT           4
++#define ES_ERROR            SHIFT(ERR, READ)
++#define ES_TIMEOUT          SHIFT(ERR, WRITE)
++#ifdef ENABLE_MANAGEMENT
++#define MANAGEMENT_SHIFT    6
++#define MANAGEMENT_READ     SHIFT(MANAGEMENT, READ)
++#define MANAGEMENT_WRITE    SHIFT(MANAGEMENT, WRITE)
++#endif
++#ifdef ENABLE_ASYNC_PUSH
++#define FILE_SHIFT          8
++#define FILE_CLOSED         SHIFT(FILE, READ)
++#endif
+ 
+     unsigned int event_set_status;
+ 
+-- 
+2.26.3
 
---oqPdk2VGBVXm4Qm+
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJghdaEAAoJEB2Cnv7KVigSbaUL/09lO48evDGYaQbcBdcESGs7
-TOrttxYXPRODU0iOXsYSFs9Z0U27XNbyt/3d/b95UEyqtotdQoZjxBDWEYhNJzmQ
-F9fjH3tPzSEscCPN5BjQZQfB8VRO8EuAYWxLiETI7awP1jE49gmMDHSkufqKxNEr
-FN+ONzwYRRXZqYj0Dtmr/X3lDfrCXwodKMKkJvcqyWdu33zJRon7A4YKtKzZUGuA
-vMREFPJQPuGw2KyC6kEXe0Hf5OwZqIBJ9bnM3v43/lp5D2q2/IKzjQ1Ky87iTAuJ
-/v7jiorAANPzODOfRAjHjGzwVfkzoJ0sq0DlRBq2RK4Bg5SD4JbckoYQyIM9dL+h
-MaG7IyNzTRm97MFBSGFbOjS+kvs5nF31g8/UVAZq8Z0xQy2ppDmVenK/yRmEOjqj
-OB2GokV0vOMG4dgkVEWWINFahiN35EP6XjBoP+JqGsN+0G6s4c6I6uebGRJEfPpZ
-zLyH5QBK4oF8IjuKa8RQntXknck3yfJlxQjp7Dn1BA==
-=Qxl1
------END PGP SIGNATURE-----
-
---oqPdk2VGBVXm4Qm+--
 
