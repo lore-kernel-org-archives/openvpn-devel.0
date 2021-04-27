@@ -1,14 +1,10 @@
-Date: Tue, 27 Apr 2021 13:02:14 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20210427110214.GQ976@...1296...>
+Date: Tue, 27 Apr 2021 13:03:00 +0200
+Message-Id: <20210427110300.6911-1-gert@...1296...>
+In-Reply-To: <20210426174436.26210-1-gert@...1296...>
 References: <20210426174436.26210-1-gert@...1296...>
- <f08a95a9-1b87-ab19-6e9d-cac9c63c862a@...2181...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="CNseZIf+g+2irJvr"
-Content-Disposition: inline
-In-Reply-To: <f08a95a9-1b87-ab19-6e9d-cac9c63c862a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] rewrite parse_hash_fingerprint()
+Subject: [Openvpn-devel] [PATCH v2] rewrite parse_hash_fingerprint()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,130 +13,150 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---CNseZIf+g+2irJvr
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+The existing code was doing far too much work for too little
+gain - copying the string segment for scanf(), checking extra
+for spaces, making the result quite unreadable.
 
-Hi,
+Verify each segment with (short-circuited) isxdigit() checks,
+then feed directly to scanf(), which will stop parsing on ':'
+or end-of-string.
 
-On Mon, Apr 26, 2021 at 09:58:38PM +0200, Antonio Quartulli wrote:
-> > Rewrite error message to differenciate "hash too short" (including
-> differenciate -> differenTiate
+Rewrite error message to differentiate "hash too short" (including
+number of bytes read) and "hash too long" (it did not terminate when
+we had enough bytes).
 
-fixed.
+While at it, add an option printer for the resulting o->verify_hash
+list to show_settings().
 
-> > -    int i;
-> > +    int i=3D0;
->=20
-> spaces around the '=3D'
+v2:
+   fix typo in commit message
+   appease whitespace dragon
+   add printing of verify_hash_algo and verify_hash_depth
+   print correct hash length for SHA1 certs
+   fix incorrect assignment to options->verify_hash_algo in c3a7065d5
 
-fixed.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/options.c | 69 ++++++++++++++++++++++---------------------
+ 1 file changed, 36 insertions(+), 33 deletions(-)
 
-> > -        if (strlen(cp) < 2)
-> > +        /* valid segments consist of exactly two hex digits, then ':' =
-or EOS */
-> > +        if (!isxdigit(cp[0])
-> > +            || !isxdigit(cp[1])
->=20
-> since we have a limit of 80 chars per line, how about putting the two
-> conditions above on the same line?
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 2a5b1393..795a8fc7 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1082,56 +1082,43 @@ string_substitute(const char *src, int from, int to, struct gc_arena *gc)
+ static struct verify_hash_list *
+ parse_hash_fingerprint(const char *str, int nbytes, int msglevel, struct gc_arena *gc)
+ {
+-    int i;
++    int i = 0;
+     const char *cp = str;
+ 
+     struct verify_hash_list *ret;
+     ALLOC_OBJ_CLEAR_GC(ret, struct verify_hash_list, gc);
+ 
+-    char term = 1;
++    char term = 0;
+     int byte;
+-    char bs[3];
+ 
+-    for (i = 0; i < nbytes; ++i)
++    while (*cp && i < nbytes)
+     {
+-        if (strlen(cp) < 2)
++        /* valid segments consist of exactly two hex digits, then ':' or EOS */
++        if (!isxdigit(cp[0])
++            || !isxdigit(cp[1])
++            || (cp[2] != ':' && cp[2] != '\0')
++            || sscanf(cp, "%x", &byte) != 1)
+         {
+             msg(msglevel, "format error in hash fingerprint: %s", str);
++            break;
+         }
+-        bs[0] = *cp++;
+-        bs[1] = *cp++;
+-        bs[2] = 0;
+ 
+-        /* the format string "%x" passed to sscanf will ignore any space and
+-         * will still try to parse the other character. However, this is not
+-         * expected format for a fingerprint, therefore explictly check for
+-         * blanks in the string and error out if any is found
+-         */
+-        if (bs[0] == ' ' || bs[1] == ' ')
+-        {
+-            msg(msglevel, "format error in hash fingerprint unexpected blank: %s",
+-                str);
+-        }
++        ret->hash[i++] = (uint8_t)byte;
+ 
+-        byte = 0;
+-        if (sscanf(bs, "%x", &byte) != 1)
+-        {
+-            msg(msglevel, "format error in hash fingerprint hex byte: %s", str);
+-        }
+-        ret->hash[i] = (uint8_t)byte;
+-        term = *cp++;
+-        if (term != ':' && term != 0)
+-        {
+-            msg(msglevel, "format error in hash fingerprint delimiter: %s", str);
+-        }
+-        if (term == 0)
++        term = cp[2];
++        if (term == '\0')
+         {
+             break;
+         }
++        cp += 3;
+     }
+-    if (term != 0 || i != nbytes-1)
++    if (i < nbytes)
+     {
+-        msg(msglevel, "hash fingerprint is different length than expected (%d bytes): %s", nbytes, str);
++        msg(msglevel, "hash fingerprint is wrong length - expected %d bytes, got %d: %s", nbytes, i, str);
++    }
++    else if (term != '\0')
++    {
++        msg(msglevel, "hash fingerprint too long - expected only %d bytes: %s", nbytes, str);
+     }
+     return ret;
+ }
+@@ -1791,6 +1778,23 @@ show_settings(const struct options *o)
+         }
+     }
+     SHOW_STR(remote_cert_eku);
++    if (o->verify_hash)
++    {
++        SHOW_INT(verify_hash_algo);
++        SHOW_INT(verify_hash_depth);
++        struct gc_arena gc = gc_new();
++        struct verify_hash_list *hl = o->verify_hash;
++        int digest_len = (o->verify_hash_algo == MD_SHA1) ? SHA_DIGEST_LENGTH :
++                         SHA256_DIGEST_LENGTH;
++        while (hl)
++        {
++            char *s = format_hex_ex(hl->hash, digest_len, 0,
++                                    1, ":", &gc);
++            SHOW_PARM(verify_hash, s, "%s");
++            hl = hl->next;
++        }
++        gc_free(&gc);
++    }
+     SHOW_INT(ssl_flags);
+ 
+     SHOW_INT(tls_timeout);
+@@ -8190,7 +8194,6 @@ add_option(struct options *options,
+             if ((!p[2] && !is_inline) || (p[2] && streq(p[2], "SHA1")))
+             {
+                 options->verify_hash_algo = MD_SHA1;
+-                options->verify_hash_algo = SHA_DIGEST_LENGTH;
+                 digest_len = SHA_DIGEST_LENGTH;
+             }
+             else if (p[2] && !streq(p[2], "SHA256"))
+-- 
+2.26.3
 
-I tried, but found it "not easier to read".=20=20
-
-The way it is, it's really "3 lines for the 3 checks for the 3 bytes"
-(and then one check for "all of it"), so I find it more logical.
-
-> Regarding the format string, we concluded on IRC that %hhx is part of
-> C99 - why not using it here then?
-
-As I said there: C99 is a compiler standard, but %hhx is something the
-library has to provide.  I do not trust C libraries in that regard -
-imagine someone compiling OpenVPN with a nice and shiny C99 compiler
-and then linking with some stripped down C library for an embedded
-system, which doesn't do %hhx.  Interesting memory corruption, impossible
-to diagnose.
-
-Now, I have no idea whether uc-libc, musl, ... *do* support %hhx, but
-I do not see use of this as particular readability-enhancing while it
-carries a portability risk.  %x -> (int) works, everywhere.
-
-> > +        ret->hash[i++] =3D (uint8_t)byte;
->=20
-> This cast would go away if byte is declared as uint8_t and we use %hhx
-> in the sscanf().
-
-We could sscanf() to ret->hash[i] right away, then - but again, I
-do not think the extra step would be better for readability, and it
-does carry a risk.
-
-> > -        if (term =3D=3D 0)
-> > +        term =3D cp[2];
-> > +        if (term =3D=3D '\0')
->=20
-> do we really need "term" at al at this point?
-> we could directly use cp[2] in the if condition.
-
-If we exit the loop because we have reached (i =3D=3D nbytes), cp will
-point at the character "after the end-of-string" (because of cp +=3D3),
-so cp[2] is well into "undefined territory" land.
-
-> > +    if (i < nbytes)
-> >      {
-> > -        msg(msglevel, "hash fingerprint is different length than expec=
-ted (%d bytes): %s", nbytes, str);
-> > +        msg(msglevel, "hash fingerprint is wrong length - expected %d =
-bytes, got %d: %s", nbytes, i, str);
-> > +    }
-> > +    else if (term !=3D '\0')
->=20
-> same here: if we hit the else branch, it means that cp[0,1,2] are all
-> defined so we can again compare cp[2] to '\0'.
-
-Actually, no.  We hit this branch when we exit the loop due to
-(i=3D=3Dnbytes) after the cp +=3D3;  This happens if you have malformed
-input that is too long, so after having found "nbytes", term is ":",
-so cp +=3D 3, and then the loop ends.
-
-Pure OpenVPN style would be, of course, to do the cp +=3D 3 first
-(and alway), and then look at cp[-1], but no, I'm not going there.
-
-> Should we also print options->verify_hash_depth while at it?
-
-Done!
-
-v2 incoming...  including a bugfix to the original commit :)
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---CNseZIf+g+2irJvr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJgh+81AAoJEB2Cnv7KVigSY+4MAIVR5O/IpPMBkimXyroMYVki
-S6i0BhIglnYD64omFMFGAaJa9DG/0Broapl0hw2akH0QEvo+FOWis3opKG2jBbBT
-NWTCrTLT/ubvAuHIOKUjF+cjnvIOcEkvIELG+OG0BUEfeJ58UMOjLykS9t8mz2RO
-AAdHf9kBmY07YB8EZLAalJ5icoqxPlqPPTl4oarL066qiw6x5vM/+/bnS9fNV9qg
-zerp+WaYBlnB4hZWK+6IFAQNFYKKZGQ2eL/5MMuO3zIDMui7PJfBWbypNOoCpb8j
-nA1UZrrlTfIzGql3kw83cj9PoMcI5zQ29qt+M0lEyuZY+Q/g45Gz6GHbX9wf9NAc
-KaB8rMLIRQg3O4jel62kDTDttC8L1vR/MkXjm5JmX3NOfz1uhZhphnnqoKTwWioY
-ww8eEV5eXvb5FmRj/eoTzdzA3KA2ZYT96ZoNGdbgzHtCq3w6A/2I5no5Aww5nF1b
-GfcdlyJwWKw0NieHvNdbCkS5GiuD5WDJw2J7P82NQg==
-=0CR0
------END PGP SIGNATURE-----
-
---CNseZIf+g+2irJvr--
 
