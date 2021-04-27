@@ -1,14 +1,11 @@
-Date: Tue, 27 Apr 2021 19:27:28 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20210427172728.GS976@...1296...>
-References: <20210408140229.31824-1-arne@...1227...>
- <20210408140229.31824-5-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Date: Tue, 27 Apr 2021 21:13:14 +0200
+Message-Id: <20210427191314.21317-1-a@...2181...>
+In-Reply-To: <20210426152914.18314-1-a@...2181...>
+References: <20210426152914.18314-1-a@...2181...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="TGe9LcRTAdFssE+j"
-Content-Disposition: inline
-In-Reply-To: <20210408140229.31824-5-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 4/4] Implement deferred auth for scripts
+Subject: [Openvpn-devel] [PATCH v5] Add documentation on
+ EVENT_READ/EVENT_WRITE constants
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,64 +14,145 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>
 
---TGe9LcRTAdFssE+j
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Antonio Quartulli <antonio@...515...>
 
-Hi,
+Changes from v4:
+- get rid of the overly complex EVENT_SHIFT() macro
 
-On Thu, Apr 08, 2021 at 04:02:29PM +0200, Arne Schwabe wrote:
-> This patch also refactors the if condition that checks the result of
-> the authentication since that has become quite unreadable. It renames
-> s1/s2 and extracts some parts of the condition into individual variables
-> to make the condition better understandle
->=20
-> Patch v2: add refactoring of the if condition
-> Patch v4: fix documentation not mentioning method as 2nd line
-> Patch v5: fix deferred auth used by both plugin and script not working
-> Patch v6: Add missing async inotify for script deferred auth
+Changes from v3:
+- re-introduce READ/WRITE_SHIFT because they are different from EVENT_READ/WRITE
+- define also EVENT_READ/WRITE using READ/WRITE_SHIFT
 
-Just for the sake of the archives - this patch is a rebased re-send
-of the patch in
+Changes from v2:
+- moved event definitions to event.h
+- removed READ/WRITE_SHIFT and use EVENT_READ/WRITE
+- removed ifdefs around *_SHIFTS definitions in event.h
 
-  https://patchwork.openvpn.net/patch/1720/
+Changes from v1:
+- fixed typ0s
+- extended comment
+- moved *_SHIFT definition to openvpn.h
+- made READ/WRITE events dependant on _SHIFT definition with a macro
 
-(different from/to commit IDs, but otherwise 100% identical)
+Signed-off-by: Antonio Quartulli <antonio@...515...>
+---
+ src/openvpn/event.h   | 44 ++++++++++++++++++++++++++++++++++++++++---
+ src/openvpn/forward.c | 14 ++++++++------
+ src/openvpn/openvpn.h | 12 +-----------
+ 3 files changed, 50 insertions(+), 20 deletions(-)
 
-Someone already closed *this* one in patchwork, but I came across it=20
-today when working on the "patchset" this was sent with, and it confused
-me.  So, document, close.
+diff --git a/src/openvpn/event.h b/src/openvpn/event.h
+index 4af6371e..ce9c31a2 100644
+--- a/src/openvpn/event.h
++++ b/src/openvpn/event.h
+@@ -32,9 +32,47 @@
+  * rwflags passed to event_ctl and returned by
+  * struct event_set_return.
+  */
+-#define EVENT_UNDEF    4
+-#define EVENT_READ     (1<<0)
+-#define EVENT_WRITE    (1<<1)
++#define READ_SHIFT      0
++#define WRITE_SHIFT     1
++
++#define EVENT_UNDEF     4
++#define EVENT_READ      (1 << READ_SHIFT)
++#define EVENT_WRITE     (1 << WRITE_SHIFT)
++
++/* event flags returned by io_wait.
++ *
++ * All these events are defined as bits in a bitfield.
++ * Each event 'type' owns two bits in the bitfield: one for the READ
++ * event and one for the WRITE event.
++ *
++ * For this reason, the specific event bit is calculated by adding
++ * the event type identifier (always a multiple of 2, as defined
++ * below) to 0 for READ and 1 for WRITE.
++ *
++ * E.g.
++ * MANAGEMENT_SHIFT = 6;  <---- event type identifier
++ * MANAGEMENT_READ = (1 << (6 + 0)),  <---- READ event
++ * MANAGEMENT_WRITE = (1 << (6 + 1))  <---- WRITE event
++ *
++ * 'error' and 'file_close' are special and use read/write for different
++ * signals.
++ */
++
++#define SOCKET_SHIFT        0
++#define SOCKET_READ         (1 << (SOCKET_SHIFT + READ_SHIFT))
++#define SOCKET_WRITE        (1 << (SOCKET_SHIFT + WRITE_SHIFT))
++#define TUN_SHIFT           2
++#define TUN_READ            (1 << (TUN_SHIFT + READ_SHIFT))
++#define TUN_WRITE           (1 << (TUN_SHIFT + WRITE_SHIFT))
++#define ERR_SHIFT           4
++#define ES_ERROR            (1 << (ERR_SHIFT + READ_SHIFT))
++#define ES_TIMEOUT          (1 << (ERR_SHIFT + WRITE_SHIFT))
++#define MANAGEMENT_SHIFT    6
++#define MANAGEMENT_READ     (1 << (MANAGEMENT_SHIFT + READ_SHIFT))
++#define MANAGEMENT_WRITE    (1 << (MANAGEMENT_SHIFT + WRITE_SHIFT))
++#define FILE_SHIFT          8
++#define FILE_CLOSED         (1 << (FILE_SHIFT + READ_SHIFT))
++
+ /*
+  * Initialization flags passed to event_set_init
+  */
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index df96d048..e302d8e0 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1867,15 +1867,17 @@ io_wait_dowork(struct context *c, const unsigned int flags)
+     unsigned int tuntap = 0;
+     struct event_set_return esr[4];
+ 
+-    /* These shifts all depend on EVENT_READ and EVENT_WRITE */
+-    static int socket_shift = 0;   /* depends on SOCKET_READ and SOCKET_WRITE */
+-    static int tun_shift = 2;      /* depends on TUN_READ and TUN_WRITE */
+-    static int err_shift = 4;      /* depends on ES_ERROR */
++    /* These shifts all depend on EVENT_READ (=1) and EVENT_WRITE (=2)
++     * and are added to the shift. Check openvpn.h for more details.
++     */
++    static int socket_shift = SOCKET_SHIFT;
++    static int tun_shift = TUN_SHIFT;
++    static int err_shift = ERR_SHIFT;
+ #ifdef ENABLE_MANAGEMENT
+-    static int management_shift = 6; /* depends on MANAGEMENT_READ and MANAGEMENT_WRITE */
++    static int management_shift = MANAGEMENT_SHIFT;
+ #endif
+ #ifdef ENABLE_ASYNC_PUSH
+-    static int file_shift = 8;     /* listening inotify events */
++    static int file_shift = FILE_SHIFT;
+ #endif
+ 
+     /*
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index a15ff08d..6e4651cf 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -232,17 +232,7 @@ struct context_2
+     int event_set_max;
+     bool event_set_owned;
+ 
+-    /* event flags returned by io_wait */
+-#define SOCKET_READ       (1<<0)
+-#define SOCKET_WRITE      (1<<1)
+-#define TUN_READ          (1<<2)
+-#define TUN_WRITE         (1<<3)
+-#define ES_ERROR          (1<<4)
+-#define ES_TIMEOUT        (1<<5)
+-#define MANAGEMENT_READ  (1<<6)
+-#define MANAGEMENT_WRITE (1<<7)
+-#define FILE_CLOSED       (1<<8)
+-
++    /* bitmask for event status. Check event.h for possible values */
+     unsigned int event_set_status;
+ 
+     struct link_socket *link_socket;     /* socket used for TCP/UDP connection to remote */
+-- 
+2.26.3
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---TGe9LcRTAdFssE+j
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJgiEl/AAoJEB2Cnv7KVigS9fQL/174ZXZ9efcCoTpYYGTEsGxm
-zvsqqSSZDdNzuw2N1PiXEy4WlHRtBFy/J+biPJHeX67BpFdovuZVlSYWbeJxfEhG
-MHWEvsmTImXYNs9MyjL2O4evFLfEfxzDbaUBdy+ImEaSCfR9n2JQ0pz2aNVYvpN9
-0J0HnuF3onu6JfRfBYh12gwUIPcCGcWKvr+2s94IY7hA0lemJEIRlLVGDBuq0wT8
-kUmeor0ij0HUDzmO/TnefYBTOPkJlMHkTnm7B9e9fjJ7E4ue0SzQ1nBZJ2md4G/f
-E/CnreQf6xkU0qAU+WYxT7rdeSGrBzybVyXHbEd/tCakbnvZqGST6nP0P9Y3wWTJ
-+QKIdsiEGgxSg77mkeenhQZ5w5prA9E8cEM5OUZoZvdrpJedwTi9D/21z2JRXWeS
-ICS/01X+rFqE3yHEDps6AIJ8CITcSfcz7yMde06MrHqpPpU/GYhofQM6vCuXqJXP
-oCO+mphVSL0Ojw3f4pJPRPV8EmSQQL2nT3JJslKNzA==
-=g6ol
------END PGP SIGNATURE-----
-
---TGe9LcRTAdFssE+j--
 
