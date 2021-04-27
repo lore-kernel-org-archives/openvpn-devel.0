@@ -1,10 +1,12 @@
-Date: Tue, 27 Apr 2021 16:24:37 +0200 (CEST)
-Message-Id: <202104271424.13REObbW001735@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210408140229.31824-2-arne@...1227...>
-References: <20210408140229.31824-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Change
- options->data_channel_use_ekm to flags
+References: <20210426174436.26210-1-gert@...1296...>
+ <20210427110300.6911-1-gert@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <9a2b4fca-1076-3e54-905a-c4ae83d98540@...2181...>
+Date: Tue, 27 Apr 2021 16:40:02 +0200
+MIME-Version: 1.0
+In-Reply-To: <20210427110300.6911-1-gert@...1296...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v2] rewrite parse_hash_fingerprint()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +15,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Lightly stared at code and ran client-side tests that actually used
-EKM... which meant "upgrading the server the t_client tests talk to"
-(and all passes).
+Hi,
 
-Your patch has been applied to the master branch.
+On 27/04/2021 13:03, Gert Doering wrote:
+> The existing code was doing far too much work for too little
+> gain - copying the string segment for scanf(), checking extra
+> for spaces, making the result quite unreadable.
+> 
+> Verify each segment with (short-circuited) isxdigit() checks,
+> then feed directly to scanf(), which will stop parsing on ':'
+> or end-of-string.
+> 
+> Rewrite error message to differentiate "hash too short" (including
+> number of bytes read) and "hash too long" (it did not terminate when
+> we had enough bytes).
+> 
+> While at it, add an option printer for the resulting o->verify_hash
+> list to show_settings().
+> 
+> v2:
+>    fix typo in commit message
+>    appease whitespace dragon
+>    add printing of verify_hash_algo and verify_hash_depth
+>    print correct hash length for SHA1 certs
+>    fix incorrect assignment to options->verify_hash_algo in c3a7065d5
+> 
 
-commit 9c625f4a6633de05d030884cac779cb41a5060e1
-Author: Arne Schwabe
-Date:   Thu Apr 8 16:02:26 2021 +0200
+Thanks for the changes :)
 
-     Change options->data_channel_use_ekm to flags
+> Signed-off-by: Gert Doering <gert@...1296...>
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20210408140229.31824-2-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22084.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Patch looks good and does what it says. Couldn't break it in any way.
+
+Compile tests passed.
+
+Basic tests on various broken/non-broken hex strings passed too.
+
+Acked-by: Antonio Quartulli <antonio@...515...>
 
 
---
-kind regards,
+Regards,
 
-Gert Doering
 
+-- 
+Antonio Quartulli
 
