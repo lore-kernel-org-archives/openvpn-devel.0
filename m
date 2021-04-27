@@ -1,9 +1,10 @@
-Date: Tue, 27 Apr 2021 13:37:18 +0200 (CEST)
-Message-Id: <202104271137.13RBbIGx085566@...2054...>
+Date: Tue, 27 Apr 2021 16:24:37 +0200 (CEST)
+Message-Id: <202104271424.13REObbW001735@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210421123415.1942917-1-arne@...1227...>
-References: <20210421123415.1942917-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Allow all GCM ciphers
+In-Reply-To: <20210408140229.31824-2-arne@...1227...>
+References: <20210408140229.31824-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Change
+ options->data_channel_use_ekm to flags
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,25 +18,22 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Looks good to me, and passes regular client side tests :-) - I have 
-not actually tested the ARIA ciphers, but "they now show up in
---show-cipher mode".  Seems I'll need to add this to one of the
-server test cases and see what explodes...
-
-WolfSSL folks, please fix the incompatibility Antonio found :-)
+Lightly stared at code and ran client-side tests that actually used
+EKM... which meant "upgrading the server the t_client tests talk to"
+(and all passes).
 
 Your patch has been applied to the master branch.
 
-commit 0f168c9ac6c0be5145b5c19c6e79634edf158262
+commit 9c625f4a6633de05d030884cac779cb41a5060e1
 Author: Arne Schwabe
-Date:   Wed Apr 21 14:34:15 2021 +0200
+Date:   Thu Apr 8 16:02:26 2021 +0200
 
-     Allow all GCM ciphers
+     Change options->data_channel_use_ekm to flags
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210421123415.1942917-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22168.html
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20210408140229.31824-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22084.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
