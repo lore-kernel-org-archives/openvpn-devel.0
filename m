@@ -1,11 +1,13 @@
-Date: Wed, 28 Apr 2021 17:44:56 +0000
+Date: Wed, 28 Apr 2021 17:48:05 +0000
 From: tincantech <tincantech@...2282...>
 Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <faqABVK6MPd-XEqegwOnFrNPTR3Fts0q4aM_qBeygqdHuxVevbtQdjKUlX6VzMp5CxoOpeT_a2pqS4c7oEts2M_6TpGh1vcb7z7sc6BktlM=@protonmail.com>
+Message-ID: <EoiWIHf2Ww_u8MOvuJrlm1i0J7TmzYUtTUxUdEmfBAgiI5YgS8LwIsDXf48EX1Q3Lt-zREdDaBHxDZRQVZPhjDhaMnpWQSqhF_MxjLcfQzs=@protonmail.com>
+In-Reply-To: <faqABVK6MPd-XEqegwOnFrNPTR3Fts0q4aM_qBeygqdHuxVevbtQdjKUlX6VzMp5CxoOpeT_a2pqS4c7oEts2M_6TpGh1vcb7z7sc6BktlM=@protonmail.com>
+References: <faqABVK6MPd-XEqegwOnFrNPTR3Fts0q4aM_qBeygqdHuxVevbtQdjKUlX6VzMp5CxoOpeT_a2pqS4c7oEts2M_6TpGh1vcb7z7sc6BktlM=@protonmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="b1_uZkqHcIVOvuix9LlaQI7xJCDvqIC1vv7Qqmk7Gw7Zr8"
-Subject: [Openvpn-devel] [PATCH] Add daemon_pid to --tls-crypt-v2-verify
+ boundary="b1_fUVxZFPSAlhlcNrOez7nUM36ucKIUwi9GDf54Ov4o"
+Subject: Re: [Openvpn-devel] [PATCH] Add daemon_pid to --tls-crypt-v2-verify
  script environment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -19,65 +21,77 @@ To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
 
---b1_uZkqHcIVOvuix9LlaQI7xJCDvqIC1vv7Qqmk7Gw7Zr8
+--b1_fUVxZFPSAlhlcNrOez7nUM36ucKIUwi9GDf54Ov4o
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA256
 
-Openvpn process ID (daemon_pid) provides the most secure way for
-scripts to verify which process they were called by.
+Yeah, I forgot to apply and commit -- sorry.
 
-This patch adds daemon_poid to --tls-crypt-v2-verify environment.
-
-Tested on Linux and Windows.
-
-
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 7b5016d3..23d93a6c 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -537,6 +537,7 @@ tls_crypt_v2_verify_metadata(const struct tls_wrap_ctx =
-*ctx,
-     setenv_str(es, "script_type", "tls-crypt-v2-verify");
-     setenv_str(es, "metadata_type", metadata_type_str);
-     setenv_str(es, "metadata_file", tmp_file);
-+    setenv_int(es, "daemon_pid", platform_getpid());
-
-     struct argv argv =3D argv_new();
-     argv_parse_cmd(&argv, opt->tls_crypt_v2_verify_script);
+I guess I'll send again if this is an acceptable patch and my MTA didn't sc=
+rew it up ?
+Please let me know .. thanks
 
 
---
-git version 2.25.1
 
+=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
+ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
+On Wednesday, 28 April 2021 18:44, tincantech <tincantech@...2282...> wrote:
 
-I hope my MTA has not mangled this patch but I don't currently have access
-to an SMTP server port. If it is borken then please ignore this and I'll fi=
-nd
-another way.  Feel free to send other feedback.  eg: NAK + Reason.
-
-Thanks
-R
-
-#
+> Openvpn process ID (daemon_pid) provides the most secure way for
+> scripts to verify which process they were called by.
+>
+> This patch adds daemon_poid to --tls-crypt-v2-verify environment.
+>
+> Tested on Linux and Windows.
+>
+> diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+> index 7b5016d3..23d93a6c 100644
+> --- a/src/openvpn/tls_crypt.c
+> +++ b/src/openvpn/tls_crypt.c
+> @@ -537,6 +537,7 @@ tls_crypt_v2_verify_metadata(const struct tls_wrap_ct=
+x *ctx,
+> setenv_str(es, "script_type", "tls-crypt-v2-verify");
+> setenv_str(es, "metadata_type", metadata_type_str);
+> setenv_str(es, "metadata_file", tmp_file);
+>
+> -   setenv_int(es, "daemon_pid", platform_getpid());
+>
+>     struct argv argv =3D argv_new();
+>     argv_parse_cmd(&argv, opt->tls_crypt_v2_verify_script);
+>
+>
+> --
+>
+> git version 2.25.1
+>
+> I hope my MTA has not mangled this patch but I don't currently have access
+> to an SMTP server port. If it is borken then please ignore this and I'll =
+find
+> another way. Feel free to send other feedback. eg: NAK + Reason.
+>
+> Thanks
+> R
+>
+> =3D=3D
 
 
 -----BEGIN PGP SIGNATURE-----
 Version: ProtonMail
 
-wsBzBAEBCAAGBQJgiZ8TACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ3KTAf+OfRyvNNBqDTulTPHsULxhehPve6mgqsoovqlYomkFnIu20CJ
-497Yiqno7Nz49Wy2Ka5nu88sTptp0CdFg6QE2yytol1H8D0vFYwNwyIIS9eq
-d8pPa/sI0ga8DHSF5QjbvsTJusPolIjR4H7yXPFjrqMXlXYdRgof6IT+P3+G
-b/ev08nhPSjS0ZlciAPymW1wL5zsttDxSWU8vy/T6NYoq+QTaNfYgqNjlW8M
-BR48OSAc1aTPBzHeYW8MxOkm3Si9u2qS+hSSMgT0yS8EnvpCZn0vw+tOQ2Ey
-WR7RmdyoQRsJYANnlY4Pqe+c3h4tuWBK9UCJRnpgz/ytIog8V1VBjg=3D=3D
-=3DiX52
+wsBzBAEBCAAGBQJgiZ/PACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
+9muQuJ3hPwgAk3GKzcr76rPTac1/6NMQyP3wnWpXgsmbGCvr5zVcQRbAaSbL
+FwN+qB01aXx8ic7u1t9xoBA83WA5BOy/Nmecg/MmTK2hWapL954b2dEHubFt
+j9b1wqXX46Mcg55VSvSC2gc35bZB2wXLiKIAOGFgvmH84m18CCDSePaKywrf
+izC5B+Ew+M6zacf1IZU64DKJdLX8yzyQt9U3zI1egFj9mK7qzm3lY79zier0
+jkDQlijZrp6krAeBqlGmm1sMLERyQrCrJrCdbuEbrMbVPxbJOhYFpT8EWolE
+ta/OTF94IK2T8ErmNZsA3oSdXSuYriZM6gSxKqiMpSXuNjo3wKzrkg=3D=3D
+=3D57ff
 -----END PGP SIGNATURE-----
 
---b1_uZkqHcIVOvuix9LlaQI7xJCDvqIC1vv7Qqmk7Gw7Zr8
+--b1_fUVxZFPSAlhlcNrOez7nUM36ucKIUwi9GDf54Ov4o
 Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
@@ -116,13 +130,13 @@ Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
 dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
 Sy0tLS0tDQo=
 
---b1_uZkqHcIVOvuix9LlaQI7xJCDvqIC1vv7Qqmk7Gw7Zr8
+--b1_fUVxZFPSAlhlcNrOez7nUM36ucKIUwi9GDf54Ov4o
 Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 
-sOkDgryUUOkc+s0PX+yg9xnbCMNHLbm5Wwv/cjI7LwvuGifP48JAjCeirH8yQ2I=
+sOkDgryUUOkQocdt2DQiLuj2ep9JG+8pO2sBa7ETq35H5zxN/xHimAxNpGIYjQ5pG4sDixw=
 
---b1_uZkqHcIVOvuix9LlaQI7xJCDvqIC1vv7Qqmk7Gw7Zr8--
+--b1_fUVxZFPSAlhlcNrOez7nUM36ucKIUwi9GDf54Ov4o--
 
 
