@@ -1,11 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed, 28 Apr 2021 13:54:05 +0200
-Message-Id: <20210428115405.3080588-1-arne@...1227...>
-In-Reply-To: <20210422151724.2132573-1-arne@...1227...>
-References: <20210422151724.2132573-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 5/7] Extracting key_state deferred auth
- status update into function
+Date: Wed, 28 Apr 2021 14:08:09 +0200 (CEST)
+Message-Id: <202104281208.13SC89mD023099@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210407154951.13330-1-arne@...1227...>
+References: <20210407154951.13330-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Implement deferred auth for
+ scripts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,133 +15,65 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This extract the update of a deferred key status into into own
-function.
+Acked-by: Gert Doering <gert@...1296...>
 
-Patch v2: Do not ignore auth_deferred_expire. Minor format changes.
+I've taken Antonio's ACK on previous versions, plus add my own.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/ssl_verify.c | 91 ++++++++++++++++++++++++++--------------
- 1 file changed, 59 insertions(+), 32 deletions(-)
+v6 differs only minimally from v5 (in the addition of the inotify for
+the script auth control file), so ACKs and test results of v5 are valid.
 
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 6ace166de..d4c0bd3c7 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -1073,6 +1073,57 @@ key_state_test_auth_control_file(struct auth_deferred_status *ads, bool cached)
-     return ACF_DISABLED;
- }
- 
-+/**
-+ * This method takes a key_state and if updates the state
-+ * of the key if it is deferred.
-+ * @param cached    If auth control files should be tried to be opened or th
-+ *                  cached results should be used
-+ * @param ks        The key_state to update
-+ */
-+static void
-+update_key_auth_status(bool cached, struct key_state *ks)
-+{
-+    if (ks->authenticated == KS_AUTH_FALSE)
-+    {
-+        return;
-+    }
-+    else
-+    {
-+        enum auth_deferred_result auth_plugin = ACF_DISABLED;
-+        enum auth_deferred_result auth_script = ACF_DISABLED;
-+        enum auth_deferred_result auth_man = ACF_DISABLED;
-+        auth_plugin = key_state_test_auth_control_file(&ks->plugin_auth, cached);
-+        auth_script = key_state_test_auth_control_file(&ks->script_auth, cached);
-+#ifdef ENABLE_MANAGEMENT
-+        auth_man = man_def_auth_test(ks);
-+#endif
-+        ASSERT(auth_plugin < 4 && auth_script < 4 && auth_man < 4);
-+
-+        if (auth_plugin == ACF_FAILED || auth_script == ACF_FAILED
-+           || auth_man == ACF_FAILED)
-+        {
-+            ks->authenticated = KS_AUTH_FALSE;
-+            return;
-+        }
-+        else if (auth_plugin == ACF_PENDING || auth_script == ACF_PENDING
-+                 || auth_man == ACF_PENDING)
-+        {
-+            if (now > ks->auth_deferred_expire)
-+            {
-+                /* Window to authenticate the key has expired, mark
-+                 * the key as unauthenticated */
-+                ks->authenticated = KS_AUTH_FALSE;
-+            }
-+        }
-+        else
-+        {
-+            /* auth_plugin and auth_man are either ACF_DISABLED or ACF_SUCCEDED */
-+            ks->authenticated = KS_AUTH_TRUE;
-+        }
-+    }
-+}
-+
-+
- enum tls_auth_status
- tls_authentication_status(struct tls_multi *multi, const int latency)
- {
-@@ -1096,43 +1147,19 @@ tls_authentication_status(struct tls_multi *multi, const int latency)
-         if (TLS_AUTHENTICATED(multi, ks))
-         {
-             active++;
-+            update_key_auth_status(cached, ks);
-+
-             if (ks->authenticated == KS_AUTH_FALSE)
-             {
-                 failed_auth = true;
-             }
--            else
-+            else if (ks->authenticated == KS_AUTH_DEFERRED)
-             {
--                enum auth_deferred_result auth_plugin = ACF_DISABLED;
--                enum auth_deferred_result auth_script = ACF_DISABLED;
--                enum auth_deferred_result auth_man = ACF_DISABLED;
--                auth_plugin = key_state_test_auth_control_file(&ks->plugin_auth, cached);
--                auth_script = key_state_test_auth_control_file(&ks->script_auth, cached);
--#ifdef ENABLE_MANAGEMENT
--                auth_man = man_def_auth_test(ks);
--#endif
--                ASSERT(auth_plugin < 4 && auth_script < 4 && auth_man < 4);
--
--                if (auth_plugin == ACF_FAILED || auth_script == ACF_FAILED
--                   || auth_man == ACF_FAILED)
--                {
--                    ks->authenticated = KS_AUTH_FALSE;
--                    failed_auth = true;
--                }
--                else if (auth_plugin == ACF_PENDING
--                         || auth_script == ACF_PENDING
--                         || auth_man == ACF_PENDING)
--                {
--                    if (now < ks->auth_deferred_expire)
--                    {
--                        deferred = true;
--                    }
--                }
--                else
--                {
--                    /* auth_plugin and auth_man are either ACF_DISABLED or ACF_SUCCEDED */
--                    success = true;
--                    ks->authenticated = KS_AUTH_TRUE;
--                }
-+                deferred = true;
-+            }
-+            else if (ks->authenticated == KS_AUTH_TRUE)
-+            {
-+                success = true;
-             }
-         }
-     }
--- 
-2.31.1
+I have subjected this to the server side cabinet of horrors, with a
+mixture of plugin and scripts active, including a new test instance
+that does deferred and synchronous "auth-user-pass-verify script".
+
+It does not break any of the existing tests, especially not the "plugin 
+fails after delay while script auth succeeds right away", which broke 
+v3 or v4, and the new functionality also works.
+
+Staring at the code, it also looks fine now.  Rewriting all these
+"s1" and "s2" is really a good thing, though it makes the code take
+a bit more space.  But it was really hard to understand before.
+
+As discussed on IRC, I've reworded the comment in ssl_verify.c
+
+  /* auth_plugin and auth_man are either ACF_DISABLED or ACF_SUCCEEDED */
+
+to include "auth_script" and a bit of extra clarification.
+
+
+Further, as discussed on IRC, we noticed that this lost the hunk in
+ssl_verify.c / verify_user_pass_script() that does error handling in
+the case of "platform_create_temp_file() failed".  This is an unlikely
+case, but if you have a script that expects a file argument and just
+silently and occasionally get "no argument", this is bad - the old
+error handling was not right either (it reported the error, but
+still proceeded).  To get on with this patchset, we've decided to
+merge v6 anyway, and clean this in a followup patch.
+
+
+Your patch has been applied to the master branch.
+
+commit 28e6103096ae8ba0a4498da1625a61150a50e6c1
+Author: Arne Schwabe
+Date:   Wed Apr 7 17:49:51 2021 +0200
+
+     Implement deferred auth for scripts
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Tested-by: Antonio Quartulli <antonio@...515...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210407154951.13330-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22072.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
