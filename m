@@ -1,15 +1,9 @@
-References: <20210422151724.2132573-1-arne@...1227...>
- <20210422151724.2132573-2-arne@...1227...>
- <fbc426b7-66d0-451d-a306-df74644af09d@...2181...>
- <44b9012c-5884-f73a-7984-fe25668ef22a@...1227...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <415ef16c-c8bb-a85a-cc04-ff259b97f622@...2181...>
-Date: Wed, 28 Apr 2021 08:54:19 +0200
+Date: Wed, 28 Apr 2021 10:10:54 +0200
+Message-Id: <20210428081054.29081-1-a@...2181...>
 MIME-Version: 1.0
-In-Reply-To: <44b9012c-5884-f73a-7984-fe25668ef22a@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 2/7] Use functions to access key_state
- instead direct member access
+Subject: [Openvpn-devel] [PATCH] crypto: respect ECB argument type from
+ prototype
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,64 +12,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>
 
-Hi,
+From: Antonio Quartulli <antonio@...515...>
 
-On 27/04/2021 12:21, Arne Schwabe wrote:
-> 
->>  
->>> @@ -369,7 +369,7 @@ bool
->>>  send_auth_pending_messages(struct tls_multi *tls_multi, const char *extra,
->>>                             unsigned int timeout)
->>>  {
->>> -    struct key_state *ks = &tls_multi->session[TM_ACTIVE].key[KS_PRIMARY];
->>> +    struct key_state *ks = get_key_scan(tls_multi, 0);
->>
->> why not calling get_primary_key() here and in all other spots where we
->> ask for the 0th key in the scan?
->>
-> 
-> This function needs a non-const variant and get_primary_key returns a
-> const struct.
-> 
-> 
+Crypto backends are implementing the cipher_des_encrypt_ecb()
+function without fully respecting the type of the argumentis as described
+in the function prototype.
 
-Right, I missed that.
+All ECB arguments (key, input block and output block) are expected to
+be 8 bytes long, for this reason the prototype specifies the arguments
+as 3 arrays of 8 bytes in size.
 
->>> +/**  gets an item  of \c key_state objects in the
->>> + *   order they should be scanned by data
->>> + *   channel modules. */
->>> +static inline const struct key_state *
->>> +get_primary_key(const struct tls_multi *multi)
->>> +{
->>> +        return &multi->session[TM_ACTIVE].key[KS_PRIMARY];
->>> +}
->>
->> Why not implementing this as get_key_scan(multi, 0); ?
->>
-> 
-> That breaks the constness of the argument.
+Convert the implementations to also explicitly mention the size of the
+array they expect to receive in input.
 
-I have seen that there is only one place where we call get_primary_key()
-with a const argument and that is tls_test_payload_len().
+Fixes these warnings:
 
-However, I think what you came up with is still the easiest
-thing...unless somebody else comes up with a smarter idea.
+crypto_openssl.c:866:39: warning: argument 2 of type ‘unsigned char *’ declared as a pointer [-Warray-parameter=]
+  866 |                        unsigned char *src,
+      |                        ~~~~~~~~~~~~~~~^~~
+In file included from crypto.h:125,
+                 from crypto_openssl.c:42:
+crypto_backend.h:202:43: note: previously declared as an array ‘unsigned char[8]’
+  202 |                             unsigned char src[DES_KEY_LENGTH],
+      |                             ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+crypto_openssl.c:867:39: warning: argument 3 of type ‘unsigned char *’ declared as a pointer [-Warray-parameter=]
+  867 |                        unsigned char *dst)
+      |                        ~~~~~~~~~~~~~~~^~~
+In file included from crypto.h:125,
+                 from crypto_openssl.c:42:
+crypto_backend.h:203:43: note: previously declared as an array ‘unsigned char[8]’
+  203 |                             unsigned char dst[DES_KEY_LENGTH]);
+      |                             ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
 
-Maybe in the future we'll be able to clean this up further.
+Signed-off-by: Antonio Quartulli <antonio@...515...>
+---
+ src/openvpn/crypto_mbedtls.c | 4 ++--
+ src/openvpn/crypto_openssl.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-For me the patch looks good as it is.
-Compile rig is happy.
-Basic connectivity test and renegotiation test with OpenSSL passed.
-
-Acked-by: Antonio Quartulli <antonio@...515...>
-
-Regards,
-
-
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index f960d0ae..836e80ac 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -768,8 +768,8 @@ cipher_ctx_final_check_tag(mbedtls_cipher_context_t *ctx, uint8_t *dst,
+ 
+ void
+ cipher_des_encrypt_ecb(const unsigned char key[DES_KEY_LENGTH],
+-                       unsigned char *src,
+-                       unsigned char *dst)
++                       unsigned char src[DES_KEY_LENGTH],
++                       unsigned char dst[DES_KEY_LENGTH])
+ {
+     mbedtls_des_context ctx;
+ 
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index f8b36bf8..af7311ec 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -863,8 +863,8 @@ cipher_ctx_final_check_tag(EVP_CIPHER_CTX *ctx, uint8_t *dst, int *dst_len,
+ 
+ void
+ cipher_des_encrypt_ecb(const unsigned char key[DES_KEY_LENGTH],
+-                       unsigned char *src,
+-                       unsigned char *dst)
++                       unsigned char src[DES_KEY_LENGTH],
++                       unsigned char dst[DES_KEY_LENGTH])
+ {
+     DES_key_schedule sched;
+ 
 -- 
-Antonio Quartulli
+2.26.3
+
 
