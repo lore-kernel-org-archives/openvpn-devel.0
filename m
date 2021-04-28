@@ -1,12 +1,13 @@
-Date: Wed, 28 Apr 2021 17:48:05 +0000
+Date: Wed, 28 Apr 2021 18:03:33 +0000
 From: tincantech <tincantech@...2282...>
 Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <EoiWIHf2Ww_u8MOvuJrlm1i0J7TmzYUtTUxUdEmfBAgiI5YgS8LwIsDXf48EX1Q3Lt-zREdDaBHxDZRQVZPhjDhaMnpWQSqhF_MxjLcfQzs=@protonmail.com>
-In-Reply-To: <faqABVK6MPd-XEqegwOnFrNPTR3Fts0q4aM_qBeygqdHuxVevbtQdjKUlX6VzMp5CxoOpeT_a2pqS4c7oEts2M_6TpGh1vcb7z7sc6BktlM=@protonmail.com>
+Message-ID: <xwRKAXnZLS_XIcEqfoQnQMrXF_i5bo3xMuj0Bld0wsYiCjL0G18ZpN1AVzDRZLB4_7__Ftm6vmtj4035phk-vrFS_v7S2KGiRWPUB5YcPfc=@protonmail.com>
+In-Reply-To: <EoiWIHf2Ww_u8MOvuJrlm1i0J7TmzYUtTUxUdEmfBAgiI5YgS8LwIsDXf48EX1Q3Lt-zREdDaBHxDZRQVZPhjDhaMnpWQSqhF_MxjLcfQzs=@protonmail.com>
 References: <faqABVK6MPd-XEqegwOnFrNPTR3Fts0q4aM_qBeygqdHuxVevbtQdjKUlX6VzMp5CxoOpeT_a2pqS4c7oEts2M_6TpGh1vcb7z7sc6BktlM=@protonmail.com>
+ <EoiWIHf2Ww_u8MOvuJrlm1i0J7TmzYUtTUxUdEmfBAgiI5YgS8LwIsDXf48EX1Q3Lt-zREdDaBHxDZRQVZPhjDhaMnpWQSqhF_MxjLcfQzs=@protonmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="b1_fUVxZFPSAlhlcNrOez7nUM36ucKIUwi9GDf54Ov4o"
+ boundary="b1_ihoI8O7jPHKMyM05ubC35jStxEHdAMVpiY1A2RXwM"
 Subject: Re: [Openvpn-devel] [PATCH] Add daemon_pid to --tls-crypt-v2-verify
  script environment
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,81 +18,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: tincantech <tincantech@...2282...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
 
---b1_fUVxZFPSAlhlcNrOez7nUM36ucKIUwi9GDf54Ov4o
+--b1_ihoI8O7jPHKMyM05ubC35jStxEHdAMVpiY1A2RXwM
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA256
 
-Yeah, I forgot to apply and commit -- sorry.
+Looking closer, I can see that it was damaged in transit ..
 
-I guess I'll send again if this is an acceptable patch and my MTA didn't sc=
-rew it up ?
-Please let me know .. thanks
+Please let me know if you would be willing to accept my proposed patch and =
+then I will persist to find a way.
 
+If you will not accept the addition then please let me know.
+
+Thanks
+R
 
 
 =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
 ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-On Wednesday, 28 April 2021 18:44, tincantech <tincantech@...2282...> wrote:
+On Wednesday, 28 April 2021 18:48, tincantech via Openvpn-devel <openvpn-de=
+vel@lists.sourceforge.net> wrote:
 
-> Openvpn process ID (daemon_pid) provides the most secure way for
-> scripts to verify which process they were called by.
+> Yeah, I forgot to apply and commit -- sorry.
 >
-> This patch adds daemon_poid to --tls-crypt-v2-verify environment.
+> I guess I'll send again if this is an acceptable patch and my MTA didn't =
+screw it up ?
+> Please let me know .. thanks
 >
-> Tested on Linux and Windows.
+> =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original =
+Message =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
+> On Wednesday, 28 April 2021 18:44, tincantech tincantech@...2282... wrote:
 >
-> diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-> index 7b5016d3..23d93a6c 100644
-> --- a/src/openvpn/tls_crypt.c
-> +++ b/src/openvpn/tls_crypt.c
-> @@ -537,6 +537,7 @@ tls_crypt_v2_verify_metadata(const struct tls_wrap_ct=
-x *ctx,
-> setenv_str(es, "script_type", "tls-crypt-v2-verify");
-> setenv_str(es, "metadata_type", metadata_type_str);
-> setenv_str(es, "metadata_file", tmp_file);
->
-> -   setenv_int(es, "daemon_pid", platform_getpid());
->
->     struct argv argv =3D argv_new();
->     argv_parse_cmd(&argv, opt->tls_crypt_v2_verify_script);
->
->
-> --
->
-> git version 2.25.1
->
-> I hope my MTA has not mangled this patch but I don't currently have access
-> to an SMTP server port. If it is borken then please ignore this and I'll =
-find
-> another way. Feel free to send other feedback. eg: NAK + Reason.
->
-> Thanks
-> R
->
-> =3D=3D
+> > Openvpn process ID (daemon_pid) provides the most secure way for
+> > scripts to verify which process they were called by.
+> > This patch adds daemon_poid to --tls-crypt-v2-verify environment.
+> > Tested on Linux and Windows.
+> > diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+> > index 7b5016d3..23d93a6c 100644
+> > --- a/src/openvpn/tls_crypt.c
+> > +++ b/src/openvpn/tls_crypt.c
+> > @@ -537,6 +537,7 @@ tls_crypt_v2_verify_metadata(const struct tls_wrap_=
+ctx *ctx,
+> > setenv_str(es, "script_type", "tls-crypt-v2-verify");
+> > setenv_str(es, "metadata_type", metadata_type_str);
+> > setenv_str(es, "metadata_file", tmp_file);
+> >
+> > -   setenv_int(es, "daemon_pid", platform_getpid());
+> >     struct argv argv =3D argv_new();
+> >     argv_parse_cmd(&argv, opt->tls_crypt_v2_verify_script);
+> >
+> >
+> > --
+> > git version 2.25.1
+> > I hope my MTA has not mangled this patch but I don't currently have acc=
+ess
+> > to an SMTP server port. If it is borken then please ignore this and I'l=
+l find
+> > another way. Feel free to send other feedback. eg: NAK + Reason.
+> > Thanks
+> > R
+> > =3D=3D
 
 
 -----BEGIN PGP SIGNATURE-----
 Version: ProtonMail
 
-wsBzBAEBCAAGBQJgiZ/PACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ3hPwgAk3GKzcr76rPTac1/6NMQyP3wnWpXgsmbGCvr5zVcQRbAaSbL
-FwN+qB01aXx8ic7u1t9xoBA83WA5BOy/Nmecg/MmTK2hWapL954b2dEHubFt
-j9b1wqXX46Mcg55VSvSC2gc35bZB2wXLiKIAOGFgvmH84m18CCDSePaKywrf
-izC5B+Ew+M6zacf1IZU64DKJdLX8yzyQt9U3zI1egFj9mK7qzm3lY79zier0
-jkDQlijZrp6krAeBqlGmm1sMLERyQrCrJrCdbuEbrMbVPxbJOhYFpT8EWolE
-ta/OTF94IK2T8ErmNZsA3oSdXSuYriZM6gSxKqiMpSXuNjo3wKzrkg=3D=3D
-=3D57ff
+wsBzBAEBCAAGBQJgiaNiACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
+9muQuJ2FZwf/VduCykdRxUIXhDX1+owQ1wKB02tuhj/0ABu0GpK9VvyZCOx4
+0BKCaZB6VPWhV4sop4AAfm24LeyT80aST/W+PQ2N5bnfHvC5/Lm6anB+ck38
+K/6JkehHkyvuVdR1K2LiKdgtW9gAggdPYSn4WbKSlv+Q2HthmVZlg7/ADrZk
+RsRE6HYO/mNkTaLsuzkWczyH1z6ncAqg8ivZxcnOBfrjSRNJJMHsAzWzT7J7
+eitX50FT387SSbiBgP2PiVUnm5XIO/rT/yJhHTM9p8wISzzOfW/5hUovMnvx
+wP4er/eYwp1/JbErVDbzlpT0r33MQADbVQAxKJpg4l9m0GIzmlHGIw=3D=3D
+=3D0azE
 -----END PGP SIGNATURE-----
 
---b1_fUVxZFPSAlhlcNrOez7nUM36ucKIUwi9GDf54Ov4o
+--b1_ihoI8O7jPHKMyM05ubC35jStxEHdAMVpiY1A2RXwM
 Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
@@ -130,13 +139,14 @@ Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
 dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
 Sy0tLS0tDQo=
 
---b1_fUVxZFPSAlhlcNrOez7nUM36ucKIUwi9GDf54Ov4o
+--b1_ihoI8O7jPHKMyM05ubC35jStxEHdAMVpiY1A2RXwM
 Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 
-sOkDgryUUOkQocdt2DQiLuj2ep9JG+8pO2sBa7ETq35H5zxN/xHimAxNpGIYjQ5pG4sDixw=
+sbOkDgryUUOkT6r0VSCl4xQXsJVxv4rzM5ET3nzC7ByPdAOxSSHB8GitEoe4me3nPQbt1Ch0iWGW
+zyjg/Q==
 
---b1_fUVxZFPSAlhlcNrOez7nUM36ucKIUwi9GDf54Ov4o--
+--b1_ihoI8O7jPHKMyM05ubC35jStxEHdAMVpiY1A2RXwM--
 
 
