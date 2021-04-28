@@ -1,12 +1,11 @@
-References: <20210428081054.29081-1-a@...2181...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <4c53c755-225e-8561-e1f0-adec8c1d5c76@...1227...>
-Date: Wed, 28 Apr 2021 12:29:07 +0200
+Date: Wed, 28 Apr 2021 13:54:05 +0200
+Message-Id: <20210428115405.3080588-1-arne@...1227...>
+In-Reply-To: <20210422151724.2132573-1-arne@...1227...>
+References: <20210422151724.2132573-1-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <20210428081054.29081-1-a@...2181...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH] crypto: respect ECB argument type from
- prototype
+Subject: [Openvpn-devel] [PATCH v2 5/7] Extracting key_state deferred auth
+ status update into function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +14,135 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 28.04.21 um 10:10 schrieb Antonio Quartulli:
-> From: Antonio Quartulli <antonio@...515...>
-> 
-> Crypto backends are implementing the cipher_des_encrypt_ecb()
-> function without fully respecting the type of the argumentis as described
-> in the function prototype.
-> 
-> All ECB arguments (key, input block and output block) are expected to
-> be 8 bytes long, for this reason the prototype specifies the arguments
-> as 3 arrays of 8 bytes in size.
-> 
-> Convert the implementations to also explicitly mention the size of the
-> array they expect to receive in input.
->
+This extract the update of a deferred key status into into own
+function.
 
-Acked-By: Arne Schwabe <arne@...1227...>
+Patch v2: Do not ignore auth_deferred_expire. Minor format changes.
 
-In case someone wonders. We use *single* DES in ECB mode for NTLM. And
-this was found by GCC 11.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/ssl_verify.c | 91 ++++++++++++++++++++++++++--------------
+ 1 file changed, 59 insertions(+), 32 deletions(-)
 
-Arne
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 6ace166de..d4c0bd3c7 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -1073,6 +1073,57 @@ key_state_test_auth_control_file(struct auth_deferred_status *ads, bool cached)
+     return ACF_DISABLED;
+ }
+ 
++/**
++ * This method takes a key_state and if updates the state
++ * of the key if it is deferred.
++ * @param cached    If auth control files should be tried to be opened or th
++ *                  cached results should be used
++ * @param ks        The key_state to update
++ */
++static void
++update_key_auth_status(bool cached, struct key_state *ks)
++{
++    if (ks->authenticated == KS_AUTH_FALSE)
++    {
++        return;
++    }
++    else
++    {
++        enum auth_deferred_result auth_plugin = ACF_DISABLED;
++        enum auth_deferred_result auth_script = ACF_DISABLED;
++        enum auth_deferred_result auth_man = ACF_DISABLED;
++        auth_plugin = key_state_test_auth_control_file(&ks->plugin_auth, cached);
++        auth_script = key_state_test_auth_control_file(&ks->script_auth, cached);
++#ifdef ENABLE_MANAGEMENT
++        auth_man = man_def_auth_test(ks);
++#endif
++        ASSERT(auth_plugin < 4 && auth_script < 4 && auth_man < 4);
++
++        if (auth_plugin == ACF_FAILED || auth_script == ACF_FAILED
++           || auth_man == ACF_FAILED)
++        {
++            ks->authenticated = KS_AUTH_FALSE;
++            return;
++        }
++        else if (auth_plugin == ACF_PENDING || auth_script == ACF_PENDING
++                 || auth_man == ACF_PENDING)
++        {
++            if (now > ks->auth_deferred_expire)
++            {
++                /* Window to authenticate the key has expired, mark
++                 * the key as unauthenticated */
++                ks->authenticated = KS_AUTH_FALSE;
++            }
++        }
++        else
++        {
++            /* auth_plugin and auth_man are either ACF_DISABLED or ACF_SUCCEDED */
++            ks->authenticated = KS_AUTH_TRUE;
++        }
++    }
++}
++
++
+ enum tls_auth_status
+ tls_authentication_status(struct tls_multi *multi, const int latency)
+ {
+@@ -1096,43 +1147,19 @@ tls_authentication_status(struct tls_multi *multi, const int latency)
+         if (TLS_AUTHENTICATED(multi, ks))
+         {
+             active++;
++            update_key_auth_status(cached, ks);
++
+             if (ks->authenticated == KS_AUTH_FALSE)
+             {
+                 failed_auth = true;
+             }
+-            else
++            else if (ks->authenticated == KS_AUTH_DEFERRED)
+             {
+-                enum auth_deferred_result auth_plugin = ACF_DISABLED;
+-                enum auth_deferred_result auth_script = ACF_DISABLED;
+-                enum auth_deferred_result auth_man = ACF_DISABLED;
+-                auth_plugin = key_state_test_auth_control_file(&ks->plugin_auth, cached);
+-                auth_script = key_state_test_auth_control_file(&ks->script_auth, cached);
+-#ifdef ENABLE_MANAGEMENT
+-                auth_man = man_def_auth_test(ks);
+-#endif
+-                ASSERT(auth_plugin < 4 && auth_script < 4 && auth_man < 4);
+-
+-                if (auth_plugin == ACF_FAILED || auth_script == ACF_FAILED
+-                   || auth_man == ACF_FAILED)
+-                {
+-                    ks->authenticated = KS_AUTH_FALSE;
+-                    failed_auth = true;
+-                }
+-                else if (auth_plugin == ACF_PENDING
+-                         || auth_script == ACF_PENDING
+-                         || auth_man == ACF_PENDING)
+-                {
+-                    if (now < ks->auth_deferred_expire)
+-                    {
+-                        deferred = true;
+-                    }
+-                }
+-                else
+-                {
+-                    /* auth_plugin and auth_man are either ACF_DISABLED or ACF_SUCCEDED */
+-                    success = true;
+-                    ks->authenticated = KS_AUTH_TRUE;
+-                }
++                deferred = true;
++            }
++            else if (ks->authenticated == KS_AUTH_TRUE)
++            {
++                success = true;
+             }
+         }
+     }
+-- 
+2.31.1
+
 
