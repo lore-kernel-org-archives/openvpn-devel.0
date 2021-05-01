@@ -1,11 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Sat,  1 May 2021 15:06:40 +0200
-Message-Id: <20210501130640.9330-4-a@...2181...>
+Date: Sat,  1 May 2021 15:06:38 +0200
+Message-Id: <20210501130640.9330-2-a@...2181...>
 In-Reply-To: <20210501130640.9330-1-a@...2181...>
 References: <20210501130640.9330-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 3/3] windows: list all enum values in switch
- block
+Subject: [Openvpn-devel] [PATCH 1/3] windows: use appropriate and portable
+ format specifier for 64bit pointer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,43 +17,53 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...515...>
+Cc: Antonio Quartulli <antonio@...515...>, Antonio Quartulli <a@...2181...>
 
 From: Antonio Quartulli <antonio@...515...>
 
-A switch block in interactive.c is missing the _undo_type_max value
-of the neum set, thus triggering a compiler warning.
+To print a 64bit poiner, fprintf() must be provided with the appropriate
+format specifier.
 
-Due to the logic, this value cannot really be assigned to the variable
-being examinated, however, add the missing enum value to silence
-the warning.
+The most portable in this case is PRIx64, which is redefined accordingly
+on each platform. It comes from inttypes.h and it's the recommended way
+to print a 64bit long hex value.
 
-Fixes:
+Fixes various warnings of this type:
 
-interactive.c: In function ‘Undo’:
-interactive.c:1561:13: warning: enumeration value ‘_undo_type_max’ not handled in switch [-Wswitch]
- 1561 |             switch (type)
-      |             ^~~~~~
+event.c: In function ‘we_ctl’:
+event.c:235:24: warning: 'I' flag used with ‘%x’ gnu_printf format [-Wformat=]
+  235 |     dmsg(D_EVENT_WAIT, "WE_CTL n=%d ev=%p rwflags=0x%04x arg=" ptr_format,
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+error.h:151:68: note: in definition of macro ‘dmsg’
+  151 | #define dmsg(flags, ...) do { if (msg_test(flags)) {x_msg((flags), __VA_ARGS__);} EXIT_FATAL(flags); } while (false)
+      |                                                                    ^~~~~~~~~~~
+event.c:235:24: warning: format ‘%x’ expects argument of type ‘unsigned int’, but argument 6 has type ‘long long unsigned int’ [-Wformat=]
+  235 |     dmsg(D_EVENT_WAIT, "WE_CTL n=%d ev=%p rwflags=0x%04x arg=" ptr_format,
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+......
+  239 |          (ptr_type)arg);
+      |          ~~~~~~~~~~~~~
+      |          |
+      |          long long unsigned int
 
-Signed-off-by: Antonio Quartulli <antonio@...515...>
+Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpnserv/interactive.c | 3 +++
- 1 file changed, 3 insertions(+)
+ src/openvpn/common.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index ed83d2a3..efd0bc4f 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -1594,6 +1594,9 @@ Undo(undo_lists_t *lists)
-                                              interface_data->metric_v6);
-                     }
-                     break;
-+                case _undo_type_max:
-+                    /* unreachable */
-+                    break;
-             }
- 
-             /* Remove from the list and free memory */
+diff --git a/src/openvpn/common.h b/src/openvpn/common.h
+index 544fa238..6575bcb7 100644
+--- a/src/openvpn/common.h
++++ b/src/openvpn/common.h
+@@ -44,7 +44,7 @@ typedef int interval_t;
+  * Printf formats for special types
+  */
+ #ifdef _WIN64
+-#define ptr_format              "0x%I64x"
++#define ptr_format              "0x%016" PRIx64
+ #else
+ #define ptr_format              "0x%08lx"
+ #endif
 -- 
 2.26.3
 
