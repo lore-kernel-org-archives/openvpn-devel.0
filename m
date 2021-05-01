@@ -1,12 +1,12 @@
-From: Antonio Quartulli <a@...2181...>
 References: <20210422151724.2132573-1-arne@...1227...>
  <20210422151724.2132573-3-arne@...1227...>
  <41065455-7d6d-6b0e-007e-ef6d1391621f@...2181...>
-Message-ID: <ca3baa82-ab10-74ea-3782-f1a43b2be983@...2181...>
-Date: Sat, 1 May 2021 15:37:47 +0200
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <b5af5fe1-2e29-7ad8-42cf-1a3a159b785d@...1227...>
+Date: Sat, 1 May 2021 16:14:46 +0200
 MIME-Version: 1.0
 In-Reply-To: <41065455-7d6d-6b0e-007e-ef6d1391621f@...2181...>
-Content-Language: en-US
+Content-Language: en-GB
 Subject: Re: [Openvpn-devel] [PATCH 3/7] Return cached result in
  tls_authentication_status
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,12 +18,12 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
 
-On 01/05/2021 15:33, Antonio Quartulli wrote:
+> 
+> 
 >>      multi->tas_last = now;
 > 
 > I think keeping this line here is wrong.
@@ -38,13 +38,11 @@ On 01/05/2021 15:33, Antonio Quartulli wrote:
 > 
 > if (!cached)
 >     multi->tas_last = now;
+> 
+> Does it make sense?
+> In my tests this fixes the problem and deferred auth works again.
 
-I think it may even be better to move these two lines above right after
-having invoked key_state_test_auth_control_file() - unless there is some
-drawback that I can't see.
+Yes. It is. I am not sure how I missed that.
 
-Cheers,
-
--- 
-Antonio Quartulli
+Arne
 
