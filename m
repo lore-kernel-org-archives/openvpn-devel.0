@@ -1,13 +1,13 @@
-References: <20210501130640.9330-1-a@...2181...>
- <20210501130640.9330-4-a@...2181...>
+References: <20210426152914.18314-1-a@...2181...>
+ <20210427191314.21317-1-a@...2181...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <41aea59e-f3dd-4d84-b570-f88fa48da5ba@...1227...>
-Date: Sun, 2 May 2021 14:14:08 +0200
+Message-ID: <b34461ee-6c06-793e-6ae6-245348f212f2@...1227...>
+Date: Sun, 2 May 2021 14:28:42 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210501130640.9330-4-a@...2181...>
+In-Reply-To: <20210427191314.21317-1-a@...2181...>
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 3/3] windows: list all enum values in
- switch block
+Subject: Re: [Openvpn-devel] [PATCH v5] Add documentation on
+ EVENT_READ/EVENT_WRITE constants
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,29 +16,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <antonio@...515...>
 
-Am 01.05.21 um 15:06 schrieb Antonio Quartulli:
+Am 27.04.21 um 21:13 schrieb Antonio Quartulli:
 > From: Antonio Quartulli <antonio@...515...>
 > 
-> A switch block in interactive.c is missing the _undo_type_max value
-> of the neum set, thus triggering a compiler warning.
+> Changes from v4:
+> - get rid of the overly complex EVENT_SHIFT() macro
 > 
-> Due to the logic, this value cannot really be assigned to the variable
-> being examinated, however, add the missing enum value to silence
-> the warning.
+> Changes from v3:
+> - re-introduce READ/WRITE_SHIFT because they are different from EVENT_READ/WRITE
+> - define also EVENT_READ/WRITE using READ/WRITE_SHIFT
 > 
-> Fixes:
+> Changes from v2:
+> - moved event definitions to event.h
+> - removed READ/WRITE_SHIFT and use EVENT_READ/WRITE
+> - removed ifdefs around *_SHIFTS definitions in event.h
 > 
-> interactive.c: In function ‘Undo’:
-> interactive.c:1561:13: warning: enumeration value ‘_undo_type_max’ not handled in switch [-Wswitch]
->  1561 |             switch (type)
->       |             ^~~~~~
-> 
->
+> Changes from v1:
+> - fixed typ0s
+> - extended comment
+> - moved *_SHIFT definition to openvpn.h
+> - made READ/WRITE events dependant on _SHIFT definition with a macro
 
 Acked-By: Arne Schwabe <arne@...1227...>
+
+Arne
 
