@@ -1,13 +1,13 @@
 References: <20210501130640.9330-1-a@...2181...>
- <20210501130640.9330-2-a@...2181...>
+ <20210501130640.9330-3-a@...2181...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <dcf52106-3084-f220-c081-278ac9ccd593@...1227...>
-Date: Sun, 2 May 2021 14:14:09 +0200
+Message-ID: <487c3850-6f45-4764-6af9-9800ae375988@...1227...>
+Date: Sun, 2 May 2021 14:14:07 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210501130640.9330-2-a@...2181...>
+In-Reply-To: <20210501130640.9330-3-a@...2181...>
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 1/3] windows: use appropriate and
- portable format specifier for 64bit pointer
+Subject: Re: [Openvpn-devel] [PATCH 2/3] windows: define variable only where
+ used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,7 +16,7 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <antonio@...515...>
@@ -24,15 +24,42 @@ Cc: Antonio Quartulli <antonio@...515...>
 Am 01.05.21 um 15:06 schrieb Antonio Quartulli:
 > From: Antonio Quartulli <antonio@...515...>
 > 
-> To print a 64bit poiner, fprintf() must be provided with the appropriate
-> format specifier.
+> warn_used is a static variable but that is used only under certain
+> conditions. These conditions do not apply for Windows and therefore
+> mingw is spitting a warning for unused variable.
 > 
-> The most portable in this case is PRIx64, which is redefined accordingly
-> on each platform. It comes from inttypes.h and it's the recommended way
-> to print a 64bit long hex value.
-
-Yes. I checked at there seem to be no portable integer same size as
-pointer, so the ifdef with a 64 bit int is okay here.
+> Move variable declaration inside code block that uses it.
+> 
+> Fixes:
+> 
+> run_command.c: In function ‘openvpn_popen’:
+> run_command.c:236:17: warning: unused variable ‘warn_shown’ [-Wunused-variable]
+>   236 |     static bool warn_shown = false;
+>       |                 ^~~~~~~~~~
+> 
+> Signed-off-by: Antonio Quartulli <antonio@...515...>
+> ---
+>  src/openvpn/run_command.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/src/openvpn/run_command.c b/src/openvpn/run_command.c
+> index 34f95c5c..650876c1 100644
+> --- a/src/openvpn/run_command.c
+> +++ b/src/openvpn/run_command.c
+> @@ -233,11 +233,11 @@ openvpn_popen(const struct argv *a,  const struct env_set *es)
+>  {
+>      struct gc_arena gc = gc_new();
+>      int ret = -1;
+> -    static bool warn_shown = false;
+>  
+>      if (a && a->argv[0])
+>      {
+>  #if defined(ENABLE_FEATURE_EXECVE)
+> +        static bool warn_shown = false;
+>          if (script_security() >= SSEC_BUILT_IN)
+>          {
+>              const char *cmd = a->argv[0];
+> 
 
 Acked-By: Arne Schwabe <arne@...1227...>
 
