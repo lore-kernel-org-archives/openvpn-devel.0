@@ -1,10 +1,10 @@
-Date: Mon, 3 May 2021 08:53:43 +0200 (CEST)
-Message-Id: <202105030653.1436rhYu037621@...2054...>
+Date: Mon, 3 May 2021 08:53:56 +0200 (CEST)
+Message-Id: <202105030653.1436ruwD037634@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210422152939.2134046-1-arne@...1227...>
-References: <20210422152939.2134046-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Avoid failing_test unused
- warning in example_test
+In-Reply-To: <20210422152939.2134046-6-arne@...1227...>
+References: <20210422152939.2134046-6-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove a number of platform
+ specific checks in configure.ac
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,27 +20,20 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Acked-by: Gert Doering <gert@...1296...>
-
-This might break compilation of the example test on non-gcc/clang platforms.
-
-I do not have one at hand, though - my OpenSolaris box has no Sun CC, so
-is using gcc...  and on AIX, I do not compile the test suite anyway (no
-cmocka).  So this might come back one day as a patch with #ifdef GCC
-around the __attribute__
+Changes look good and have been tested on the Unix zoo and MinGW/Ubuntu 18.
 
 Your patch has been applied to the master branch.
 
-commit 7f600bd39d6e2b034e5a16f65bc639623ff96ae0
+commit ba49c9a7bf7dfeea181b5f18a921a5d29c9b10b3
 Author: Arne Schwabe
-Date:   Thu Apr 22 17:29:34 2021 +0200
+Date:   Thu Apr 22 17:29:39 2021 +0200
 
-     Avoid failing_test unused warning in example_test
+     Remove a number of platform specific checks in configure.ac
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210422152939.2134046-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22205.html
+     Message-Id: <20210422152939.2134046-6-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22201.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
