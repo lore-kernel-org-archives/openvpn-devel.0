@@ -1,10 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon,  3 May 2021 12:58:50 +0200
-Message-Id: <20210503105850.3903732-1-arne@...1227...>
-In-Reply-To: <20210503061454.GT976@...1296...>
-References: <20210503061454.GT976@...1296...>
+Date: Mon,  3 May 2021 13:40:43 +0200
+Message-Id: <20210503114043.3909319-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Remove support for blocking connect()
+Subject: [Openvpn-devel] [PATCH] Fix memory leak in misc unit test
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,77 +15,24 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-It is hard to imagine that we still have any supported OS that does
-not support non-blocking connect while still supporting non-blocking
-sockets in general.
-
-Patch V2: remove epoll.h removal that should have been in other patch.
-Patch V3: remove another instance in socket.c that I misseds in v1
-
+Detected-by: clang -fsanitize=address
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/socket.c  | 13 -------------
- src/openvpn/syshead.h |  7 -------
- 2 files changed, 20 deletions(-)
+ tests/unit_tests/openvpn/test_misc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 23b12560b..407e411c0 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -1451,7 +1451,6 @@ openvpn_connect(socket_descriptor_t sd,
-     protect_fd_nonlocal(sd, remote);
- #endif
+diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvpn/test_misc.c
+index 15f6cbff6..c3bea8fc8 100644
+--- a/tests/unit_tests/openvpn/test_misc.c
++++ b/tests/unit_tests/openvpn/test_misc.c
+@@ -70,6 +70,7 @@ test_compat_lzo_string(void **state)
+     /* 999 -> 1000, 3 to 4 chars */
+     assert_string_equal(output, "V4,dev-type tun,link-mtu 1000,tun-mtu 1400,proto UDPv4,auth SHA1,keysize 128,key-method 2,tls-server,comp-lzo");
  
--#ifdef CONNECT_NONBLOCK
-     set_nonblock(sd);
-     status = connect(sd, remote, af_addr_size(remote->sa_family));
-     if (status)
-@@ -1532,13 +1531,6 @@ openvpn_connect(socket_descriptor_t sd,
-             }
-         }
-     }
--#else  /* ifdef CONNECT_NONBLOCK */
--    status = connect(sd, remote, af_addr_size(remote->sa_family));
--    if (status)
--    {
--        status = openvpn_errno();
--    }
--#endif /* ifdef CONNECT_NONBLOCK */
++    gc_free(&gc);
+ };
  
-     return status;
- }
-@@ -1575,13 +1567,8 @@ socket_connect(socket_descriptor_t *sd,
-     struct gc_arena gc = gc_new();
-     int status;
- 
--#ifdef CONNECT_NONBLOCK
--    msg(M_INFO, "Attempting to establish TCP connection with %s [nonblock]",
--        print_sockaddr(dest, &gc));
--#else
-     msg(M_INFO, "Attempting to establish TCP connection with %s",
-         print_sockaddr(dest, &gc));
--#endif
- 
- #ifdef ENABLE_MANAGEMENT
-     if (management)
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 321e20f5b..a9680f72f 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -535,13 +535,6 @@ socket_defined(const socket_descriptor_t sd)
- #define EPOLL 0
- #endif
- 
--/*
-- * Is non-blocking connect() supported?
-- */
--#if defined(SOL_SOCKET) && defined(SO_ERROR) && defined(EINPROGRESS) && defined(ETIMEDOUT)
--#define CONNECT_NONBLOCK
--#endif
--
- /*
-  * Compression support
-  */
+ const struct CMUnitTest misc_tests[] = {
 -- 
 2.31.1
 
