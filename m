@@ -1,10 +1,10 @@
-Date: Mon, 3 May 2021 15:08:17 +0200 (CEST)
-Message-Id: <202105031308.143D8H9t051834@...2054...>
+Date: Mon, 3 May 2021 15:08:50 +0200 (CEST)
+Message-Id: <202105031308.143D8olh051855@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210503105638.3903379-1-arne@...1227...>
-References: <20210503105638.3903379-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove --disable-multihome
- option
+In-Reply-To: <20210503114043.3909319-1-arne@...1227...>
+References: <20210503114043.3909319-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix memory leak in misc unit
+ test
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,20 +20,20 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Stared-at, fed to the buildbots, all good.
+Stare-at-code confirms.  "What goes in needs to come out" :-)
 
 Your patch has been applied to the master branch.
 
-commit f17d529c6635eabba61a054b64603b573ad5dbeb
+commit 4a35d38efa74becf99ae9c6711f5c10c4b60f84b
 Author: Arne Schwabe
-Date:   Mon May 3 12:56:38 2021 +0200
+Date:   Mon May 3 13:40:43 2021 +0200
 
-     Remove --disable-multihome option
+     Fix memory leak in misc unit test
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210503105638.3903379-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22290.html
+     Message-Id: <20210503114043.3909319-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22292.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
