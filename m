@@ -1,10 +1,10 @@
-Date: Mon, 3 May 2021 08:53:47 +0200 (CEST)
-Message-Id: <202105030653.1436rlIh037626@...2054...>
+Date: Mon, 3 May 2021 08:53:43 +0200 (CEST)
+Message-Id: <202105030653.1436rhYu037621@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210422152939.2134046-3-arne@...1227...>
-References: <20210422152939.2134046-3-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Move direct.h header where it
- is used
+In-Reply-To: <20210422152939.2134046-1-arne@...1227...>
+References: <20210422152939.2134046-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Avoid failing_test unused
+ warning in example_test
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,22 +20,27 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-I seemed to remember having used <direct.h> before on "something not
-WIN32" - and yeah, this was part of the DOS compat layer on SCO Unix :-)
-.. which we certainly do not use.  So, makes sense.
+Acked-by: Gert Doering <gert@...1296...>
+
+This might break compilation of the example test on non-gcc/clang platforms.
+
+I do not have one at hand, though - my OpenSolaris box has no Sun CC, so
+is using gcc...  and on AIX, I do not compile the test suite anyway (no
+cmocka).  So this might come back one day as a patch with #ifdef GCC
+around the __attribute__
 
 Your patch has been applied to the master branch.
 
-commit 8c18d7c9323084d1b346ea303cf8cfd60d280e56
+commit 7f600bd39d6e2b034e5a16f65bc639623ff96ae0
 Author: Arne Schwabe
-Date:   Thu Apr 22 17:29:36 2021 +0200
+Date:   Thu Apr 22 17:29:34 2021 +0200
 
-     Move direct.h header where it is used
+     Avoid failing_test unused warning in example_test
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210422152939.2134046-3-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22202.html
+     Message-Id: <20210422152939.2134046-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22205.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
