@@ -1,16 +1,17 @@
-Date: Tue, 04 May 2021 20:36:33 +0000
+Date: Tue, 04 May 2021 21:49:30 +0000
 From: tincantech <tincantech@...2282...>
 Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <LhNv_-egdxJ-t4-p7n4xkG3OKUEmkAUqYmmHdFRuz_5s2Yav0qxsZMHCqPyGf97iYJNZSEZzRV3JsP27fQebPPw_mGxwE1jV1L-9B6tAH4c=@protonmail.com>
-In-Reply-To: <CAKuzo_jOFAP2j9rEz=7ZoZvk38a_qWCJHZnwVe=431xQJ3Th-A@...278...>
+Message-ID: <3XpZVanhpZyQo5q5SUl7MoIx4A9dPO081G38k78A85Qh8OGF6wcQD5Xx5GwHCiK56DlUKGO8VfN7uTKL08gmgl3enETQL9I03JJJGzPa-6A=@protonmail.com>
+In-Reply-To: <LhNv_-egdxJ-t4-p7n4xkG3OKUEmkAUqYmmHdFRuz_5s2Yav0qxsZMHCqPyGf97iYJNZSEZzRV3JsP27fQebPPw_mGxwE1jV1L-9B6tAH4c=@protonmail.com>
 References: <20210429171504.1081888-1-tincantech@...2282...>
  <0a188829-5a2c-362c-eb6f-61ffe657042d@...1227...>
  <_HUflzeIntsfJCr8BbPWvJqUE4YsZ4mnoeBBWWAWz5wXnrnJDSOgFNA8jXs4BX8W8rVR0-mttPOc8wCQ1Ou96EEB2a-ytMFQs33l9yGgwIU=@protonmail.com>
  <bQOH-0cnboEmpBYrhY8ZinjYni78M4fWH3z1_kKRQNVOA-LQOIomBj2wYz4yO1UfbHgSo5X__CZ_bC8sLGOs1USG_s0yXzJRgFbvVHfkTGs=@protonmail.com>
  <CAKuzo_jOFAP2j9rEz=7ZoZvk38a_qWCJHZnwVe=431xQJ3Th-A@...278...>
+ <LhNv_-egdxJ-t4-p7n4xkG3OKUEmkAUqYmmHdFRuz_5s2Yav0qxsZMHCqPyGf97iYJNZSEZzRV3JsP27fQebPPw_mGxwE1jV1L-9B6tAH4c=@protonmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="b1_3Z9IVfoijnQSd8a4tL8RyM1NgmjSL09ifL6AW0YpvA"
+ boundary="b1_PlKxkquDvqVbUMAU7ChLunjdBXU2fTr7FYvHPyHEao"
 Subject: Re: [Openvpn-devel] [PATCH] Add daemon_pid to --tls-crypt-v2-verify
  environment
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,72 +22,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: tincantech <tincantech@...2282...>
+Cc: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
 
---b1_3Z9IVfoijnQSd8a4tL8RyM1NgmjSL09ifL6AW0YpvA
+--b1_PlKxkquDvqVbUMAU7ChLunjdBXU2fTr7FYvHPyHEao
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA256
 
-Hi,
+
+
+
+Sent with ProtonMail Secure Email.
 
 =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
 ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-On Tuesday, 4 May 2021 20:41, Selva Nair <selva.nair@...277...> wrote:
+On Tuesday, 4 May 2021 21:36, tincantech via Openvpn-devel <openvpn-devel@...465...=
+ists.sourceforge.net> wrote:
 
-> On Tue, May 4, 2021 at 3:04 PM tincantech via Openvpn-devel
-> openvpn-devel@lists.sourceforge.net wrote:
+> Hi,
 >
-
-<snip>
-
-> > Due to the inordinate resistance this patch has received, consider this=
- my official
-> > withdrawal. I hereby NACK.
+> =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original =
+Message =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
+> On Tuesday, 4 May 2021 20:41, Selva Nair selva.nair@...277... wrote:
 >
-> Resistance is a good thing -- it means people are considering your
-> patch seriously and are asking questions in earnest.
+> > On Tue, May 4, 2021 at 3:04 PM tincantech via Openvpn-devel
+> > openvpn-devel@lists.sourceforge.net wrote:
 >
-> I've had patches that languished for years and finally merged,
-> without batting an eye.. Except for an occasional gentle nudge (say
-> once a year), and some patience.
+> <snip>
+>
+> > > Due to the inordinate resistance this patch has received, consider th=
+is my official
+> > > withdrawal. I hereby NACK.
+> >
+> > Resistance is a good thing -- it means people are considering your
+> > patch seriously and are asking questions in earnest.
 
-Selva, thanks for your guidance.
+<s>
 
-On this occasion I have been pushed to find a better way.
-Thanks to Gert for reminding me about PPID and pushing my code a little fur=
-ther,
-I now realise that I don't need daemon_pid from openvpn directly.
+And this resistance was indeed not futile.
 
-Withdrawing this patch seems the most appropriate way to minimize the time =
-wasted.
-
-Sometimes it's difficult to see your own mistakes but realisation is satisf=
-ying
-if and when you do "break on through" ;-)
-
-R
-
+I have discovered a flaw in my logic, which is so insidious, that it may
+bring my entire house of cards down .. I just F000M'^~,.ed myself .. arse!
 
 -----BEGIN PGP SIGNATURE-----
 Version: ProtonMail
 
-wsBzBAEBCAAGBQJgkbBPACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ0MYwgAuFchojIT/cnf0yppB9o/WxJRZHdFaEn9jyRO+PgMYNrAJeet
-QUqaCbUPZ0N5UdXnwuf5DTMYcStQpDyKnQyeB/dw0r23fmlSV69U1Vdx64+x
-kjfbxl3h3miJ5yRu62YnmSCtqtiC/ErrJ1bz68RglI/aeGD4g6nPkpoHhZ/O
-ix1zPxOpV+fnjEZtZfRCzNah+wa1vWyxF/UFpbIUe/pME6Y1pCGf4ZWGPFG8
-qVdxSU/GwMMIaQn+Kz+iwoZDzhbkkprHGwS/yvJkEBIXOf8SspnlOOH0gJ6J
-yFvxCBmaLeFUDoHhOy9JdL5toUN6hCtwu1wKPnUC3xN0IypeGdHtrQ=3D=3D
-=3Da9Jn
+wsBzBAEBCAAGBQJgkcFnACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
+9muQuJ3msAgAsoR4DghKD6z/et3JYXabmsGny+5/hu48E1FMXGUH5cB/cWpM
+5P+KL3Kr3D7MkemqbHvvapQQKn0DCA+Kt056fqQI8h9fc8vhJKLYAxFD4M8E
+b60H8+/K5bSwUxVkH4X6jW8m/HJ16q8fBrTSRDbZeJ4x1u1u0uxTk84WVhW2
+gjued3xLGhPlkBlufYayr6LytUXN5wDEJSKLgjeROl04NlvTlDc1VCu+QREw
+KnqXh1JBg9Lqo5ctmNtV6QZ8R5nx9G3cNqJ0joRQfN329H1Bp30S6iyvkBMV
+/7pgCyKQ1X38D5rXNcRL/4qP0YfcSkQ43zb2dur9LtQ/wFqepKwr4Q=3D=3D
+=3DIcL9
 -----END PGP SIGNATURE-----
 
---b1_3Z9IVfoijnQSd8a4tL8RyM1NgmjSL09ifL6AW0YpvA
+--b1_PlKxkquDvqVbUMAU7ChLunjdBXU2fTr7FYvHPyHEao
 Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
@@ -125,14 +121,13 @@ Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
 dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
 Sy0tLS0tDQo=
 
---b1_3Z9IVfoijnQSd8a4tL8RyM1NgmjSL09ifL6AW0YpvA
+--b1_PlKxkquDvqVbUMAU7ChLunjdBXU2fTr7FYvHPyHEao
 Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 
-sOOkDgryUUOkzOoONK0XB7eEdmA/A7i/Z/waMHRqSN2azBKkihZxDTKD+NKRi7FNjh/dgT20I/hI
-yOqY
+sgOkDgryUUOkxKeYYaRAz8VmI6pJEhyed5grWEmKm8rBjxKZR/CX1aQxSExb+JagytkAmW9qdVgV
 
---b1_3Z9IVfoijnQSd8a4tL8RyM1NgmjSL09ifL6AW0YpvA--
+--b1_PlKxkquDvqVbUMAU7ChLunjdBXU2fTr7FYvHPyHEao--
 
 
