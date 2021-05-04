@@ -1,13 +1,14 @@
-Date: Tue, 04 May 2021 12:43:29 +0000
+Date: Tue, 04 May 2021 19:02:28 +0000
 From: tincantech <tincantech@...2282...>
 Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <_HUflzeIntsfJCr8BbPWvJqUE4YsZ4mnoeBBWWAWz5wXnrnJDSOgFNA8jXs4BX8W8rVR0-mttPOc8wCQ1Ou96EEB2a-ytMFQs33l9yGgwIU=@protonmail.com>
-In-Reply-To: <0a188829-5a2c-362c-eb6f-61ffe657042d@...1227...>
+Message-ID: <bQOH-0cnboEmpBYrhY8ZinjYni78M4fWH3z1_kKRQNVOA-LQOIomBj2wYz4yO1UfbHgSo5X__CZ_bC8sLGOs1USG_s0yXzJRgFbvVHfkTGs=@protonmail.com>
+In-Reply-To: <_HUflzeIntsfJCr8BbPWvJqUE4YsZ4mnoeBBWWAWz5wXnrnJDSOgFNA8jXs4BX8W8rVR0-mttPOc8wCQ1Ou96EEB2a-ytMFQs33l9yGgwIU=@protonmail.com>
 References: <20210429171504.1081888-1-tincantech@...2282...>
  <0a188829-5a2c-362c-eb6f-61ffe657042d@...1227...>
+ <_HUflzeIntsfJCr8BbPWvJqUE4YsZ4mnoeBBWWAWz5wXnrnJDSOgFNA8jXs4BX8W8rVR0-mttPOc8wCQ1Ou96EEB2a-ytMFQs33l9yGgwIU=@protonmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="b1_wi9ZdIjSehtmY1PxG7yXv5ktUgPAEU5TfAZ2UubY"
+ boundary="b1_O8kJyJA427LBXYFs5DeApK5dTrRFDsJ1OmnfMpFfKCE"
 Subject: Re: [Openvpn-devel] [PATCH] Add daemon_pid to --tls-crypt-v2-verify
  environment
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,12 +19,12 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Richard T Bonhomme <stringvest88@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: tincantech <tincantech@...2282...>
+Cc: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
 
---b1_wi9ZdIjSehtmY1PxG7yXv5ktUgPAEU5TfAZ2UubY
+--b1_O8kJyJA427LBXYFs5DeApK5dTrRFDsJ1OmnfMpFfKCE
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,78 +35,91 @@ Hi,
 
 =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
 ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-On Tuesday, 4 May 2021 11:50, Arne Schwabe <arne@...1227...> wrote:
+On Tuesday, 4 May 2021 13:43, tincantech via Openvpn-devel <openvpn-devel@...465...=
+ists.sourceforge.net> wrote:
 
-> Am 29.04.21 um 19:15 schrieb Richard T Bonhomme:
+> Hi,
 >
-> > From: string vest stringvest88@...277...
-> > Under Windows, programmatically retrieving the parent process ID of
-> > the openvpn instance which called a script is practically impossible.
-> > The only sensible way, currently available, is to write a PID file.
-> > This patch adds a single integer variable, named daemon_pid, to the
-> > script environment. The value of which is set to the openvpn process
-> > ID that called the script.
-> > Providing this variable via the running openvpn process is more secure,
-> > faster and far less prone to user-error than using a PID file.
+> =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original =
+Message =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
+> On Tuesday, 4 May 2021 11:50, Arne Schwabe arne@...1227... wrote:
 >
-> Could you explain why you need the process ID of the daemon? I am trying
-> to figure out why that is needed. I also don't understand the secure in
-> this context. What are you protecting yourself against? You are not
-> protecting your script being called from a malicious program as that
-> could lookup the PID of openvpn and just set the daemon_id variable.
+> > Am 29.04.21 um 19:15 schrieb Richard T Bonhomme:
+> >
+> > > From: string vest stringvest88@...277...
+> > > Under Windows, programmatically retrieving the parent process ID of
+> > > the openvpn instance which called a script is practically impossible.
+> > > The only sensible way, currently available, is to write a PID file.
+> > > This patch adds a single integer variable, named daemon_pid, to the
+> > > script environment. The value of which is set to the openvpn process
+> > > ID that called the script.
+> > > Providing this variable via the running openvpn process is more secur=
+e,
+> > > faster and far less prone to user-error than using a PID file.
+> >
+> > Could you explain why you need the process ID of the daemon? I am trying
+> > to figure out why that is needed. I also don't understand the secure in
+> > this context. What are you protecting yourself against? You are not
+> > protecting your script being called from a malicious program as that
+> > could lookup the PID of openvpn and just set the daemon_id variable.
+>
+> The reason I am using the process ID is as follows:
+>
+> When --tls-crypt-v2-verify is executed, it saves a file named:
+> $(certificate_serial_number}.${daemon_pid}
+> with data from the TLS-Crypt-V2 key metadata field, which can then
+> be read by the following scripts: --tls-verify and --client-connect.
+>
+> The --tls-verify and --client-connect script have:
+> $(certificate_serial_number} -> ${tls_serial_hex_0} and ${daemon_pid},
+> in their environment and can guarantee to pick-up the correct data file.
+>
+> This is OK for one running server but when there are more than one server
+> instance running, using a PID file becomes messy and cumbersome.
+>
+> The "secure" in this sense is that, having openvpn provide the PID is much
+> more reliable than relying on multiple PID files.
+>
+> Also, while it is "trivial" for *nix to retrieve the Parent PID, under
+> Windows, programmatically doing this is not "trivial" at all:
+>
+> PID:
+> https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/findin=
+g-the-process-id
+> PPID:
+> https://stackoverflow.com/questions/7486717/finding-parent-process-id-on-=
+windows
+>
+> Therefore, barring any known security reasons for not providing the openv=
+pn PID
+> to all scripts which it executes, it makes more sense to have openvpn pro=
+vide
+> daemon_pid. The only script currently missing this data is --tls-crypt-v2=
+-verify
+> (And probably --learn-address but I have not tested that).
 >
 
-The reason I am using the process ID is as follows:
-
-When --tls-crypt-v2-verify is executed, it saves a file named:
-$(certificate_serial_number}.${daemon_pid}
-with data from the TLS-Crypt-V2 key metadata field, which can then
-be read by the following scripts: --tls-verify and --client-connect.
-
-The --tls-verify and --client-connect script have:
-$(certificate_serial_number} -> ${tls_serial_hex_0} and ${daemon_pid},
-in their environment and can guarantee to pick-up the correct data file.
-
-This is OK for one running server but when there are more than one server
-instance running, using a PID file becomes messy and cumbersome.
-
-The "secure" in this sense is that, having openvpn provide the PID is much
-more reliable than relying on multiple PID files.
-
-Also, while it is "trivial" for *nix to retrieve the Parent PID, under
-Windows, programmatically doing this is not "trivial" at all:
-
-PID:
-https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/finding-=
-the-process-id
-PPID:
-https://stackoverflow.com/questions/7486717/finding-parent-process-id-on-wi=
-ndows
-
-Therefore, barring any known security reasons for not providing the openvpn=
- PID
-to all scripts which it executes, it makes more sense to have openvpn provi=
-de
-daemon_pid.  The only script currently missing this data is --tls-crypt-v2-=
-verify
-(And probably --learn-address but I have not tested that).
+Due to the inordinate resistance this patch has received, consider this my =
+official
+withdrawal.  I hereby NACK.
 
 Thanks
 R
+
 -----BEGIN PGP SIGNATURE-----
 Version: ProtonMail
 
-wsBzBAEBCAAGBQJgkUFuACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ0Zcgf+MpbxgsNS/eKpPsbafA5Qmdotc1HoQuxp+4mlw+Fr7uGxJT1y
-cIAf5akt6ox+y/c0tOdFAPvczNirZh0j598TISFXbQtdEFG+budjBXK6peTc
-ZKTlxvUSzZNterBcnjmCYYsQBxUdWrsH65cb23nvJ6G9m3dgkAPnt8w8NLe/
-Z4/xHAElwU1kOoyGcpG4DMVQM55ikvXSmdDQx6BU8ksUueBHR4m3mMtkjFgq
-krvjr+ycEZNcOX5601dOgNZS0AIT8TFvdFPEvMIXrSKJsmXtFLIXhLckM+3v
-cUoV65+V3nQpdkJGumWHvCA1HB9nCSh75R8MdlD4mc0efaM2IiElog=3D=3D
-=3DKHtU
+wsBzBAEBCAAGBQJgkZoxACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
+9muQuJ1HTQf7BSnvVR9LHZTcPyn+1oHv71TOxIMuFqckmxmQk/PZDSU+yq0h
+OdjDWjSLLW/ZbQwS3Zcs09h50GEWBtUM5xoghAsBtUpGLCDMtvbU37JI/mMu
+IfSI04+afMqi3xSsu1N4NMlAhVJTg2u0wfB6i46/Ltf/gLr9a0w3IAR7z1l4
+Ykaxl5pBkNTZjuT6AtSVuVv8VUmr5+xQGWaUAxfPLIHeNeZGfCR7iJWd2L6L
+zcnM8j3lLfzz1Tx2Ry3asVU40G6kp826F2LvuBH2mSZQeFENR/74HtAG0yY9
+GcZg17oMkgBUmOZJzYupgrRwU1LFRGUIgk9ygS3Ew96M13C4lV90Sw=3D=3D
+=3D9B+C
 -----END PGP SIGNATURE-----
 
---b1_wi9ZdIjSehtmY1PxG7yXv5ktUgPAEU5TfAZ2UubY
+--b1_O8kJyJA427LBXYFs5DeApK5dTrRFDsJ1OmnfMpFfKCE
 Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
@@ -144,13 +158,13 @@ Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
 dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
 Sy0tLS0tDQo=
 
---b1_wi9ZdIjSehtmY1PxG7yXv5ktUgPAEU5TfAZ2UubY
+--b1_O8kJyJA427LBXYFs5DeApK5dTrRFDsJ1OmnfMpFfKCE
 Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 
-sAnOkDgryUUOk1zxZ+DJUHXM4qek9g9FJhEucttlgz0to95YlMNbnDK3E676GQkbWPxS7Ui8aKrQ
+s1OkDgryUUOkE1CtX2ZJa4lgvRSKtRyVAxl4o+X7AtW1dIJRXFln2Q==
 
---b1_wi9ZdIjSehtmY1PxG7yXv5ktUgPAEU5TfAZ2UubY--
+--b1_O8kJyJA427LBXYFs5DeApK5dTrRFDsJ1OmnfMpFfKCE--
 
 
