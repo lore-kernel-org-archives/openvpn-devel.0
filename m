@@ -1,9 +1,13 @@
+References: <20210422151724.2132573-1-arne@...1227...>
+ <20210503125335.3918335-1-arne@...1227...>
 From: Antonio Quartulli <a@...2181...>
-Date: Thu,  6 May 2021 01:12:55 +0200
-Message-Id: <20210505231255.1880-1-a@...2181...>
+Message-ID: <0e4dfb6e-66fe-bfe4-a588-551c88043d54@...2181...>
+Date: Thu, 6 May 2021 01:23:09 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] forward: get rid of useless declarations
- for actually static functions
+In-Reply-To: <20210503125335.3918335-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v2 3/7] Return cached result in
+ tls_authentication_status
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,233 +16,263 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...515...>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-From: Antonio Quartulli <antonio@...515...>
+Hi,
 
-A bunch of functions defined in forward.c and declared in forward.h
-are actually used only in forward.c.
+Something in this patch is not working as expected.
 
-For this very reason they don't need to be declared in forward.h at
-all and can be defined as static.
+I tested with master + this patch.
 
-Signed-off-by: Antonio Quartulli <antonio@...515...>
----
- src/openvpn/forward.c | 50 +++++++++++++++++++++----------------------
- src/openvpn/forward.h | 34 -----------------------------
- 2 files changed, 25 insertions(+), 59 deletions(-)
+When a client connects and inputs the wrong password, the server goes
+into a loop:
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index e302d8e0..270c03c0 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -54,7 +54,7 @@ counter_type link_write_bytes_global; /* GLOBAL */
- 
- #ifdef ENABLE_DEBUG
- 
--const char *
-+static const char *
- wait_status_string(struct context *c, struct gc_arena *gc)
- {
-     struct buffer out = alloc_buf_gc(64, gc);
-@@ -67,7 +67,7 @@ wait_status_string(struct context *c, struct gc_arena *gc)
-     return BSTR(&out);
- }
- 
--void
-+static void
- show_wait_status(struct context *c)
- {
-     struct gc_arena gc = gc_new();
-@@ -77,6 +77,19 @@ show_wait_status(struct context *c)
- 
- #endif /* ifdef ENABLE_DEBUG */
- 
-+static void
-+check_tls_errors_co(struct context *c)
-+{
-+    msg(D_STREAM_ERRORS, "Fatal TLS error (check_tls_errors_co), restarting");
-+    register_signal(c, c->c2.tls_exit_signal, "tls-error"); /* SOFT-SIGUSR1 -- TLS error */
-+}
-+
-+static void
-+check_tls_errors_nco(struct context *c)
-+{
-+    register_signal(c, c->c2.tls_exit_signal, "tls-error"); /* SOFT-SIGUSR1 -- TLS error */
-+}
-+
- /*
-  * TLS errors are fatal in TCP mode.
-  * Also check for --tls-exit trigger.
-@@ -138,7 +151,7 @@ context_reschedule_sec(struct context *c, int sec)
-  * traffic on the control-channel.
-  *
-  */
--void
-+static void
- check_tls(struct context *c)
- {
-     interval_t wakeup = BIG_TIMEOUT;
-@@ -176,24 +189,11 @@ check_tls(struct context *c)
-     }
- }
- 
--void
--check_tls_errors_co(struct context *c)
--{
--    msg(D_STREAM_ERRORS, "Fatal TLS error (check_tls_errors_co), restarting");
--    register_signal(c, c->c2.tls_exit_signal, "tls-error"); /* SOFT-SIGUSR1 -- TLS error */
--}
--
--void
--check_tls_errors_nco(struct context *c)
--{
--    register_signal(c, c->c2.tls_exit_signal, "tls-error"); /* SOFT-SIGUSR1 -- TLS error */
--}
--
- /*
-  * Handle incoming configuration
-  * messages on the control channel.
-  */
--void
-+static void
- check_incoming_control_channel(struct context *c)
- {
-     int len = tls_test_payload_len(c->c2.tls_multi);
-@@ -258,7 +258,7 @@ check_incoming_control_channel(struct context *c)
- /*
-  * Periodically resend PUSH_REQUEST until PUSH message received
-  */
--void
-+static void
- check_push_request(struct context *c)
- {
-     send_push_request(c);
-@@ -276,7 +276,7 @@ check_push_request(struct context *c)
-  * Note: The process_incoming_push_reply currently assumes that this function
-  * only sets up the pull request timer when pull is enabled.
-  */
--void
-+static void
- check_connection_established(struct context *c)
- {
- 
-@@ -370,7 +370,7 @@ check_add_routes_action(struct context *c, const bool errors)
-     initialization_sequence_completed(c, errors ? ISC_ERRORS : 0); /* client/p2p --route-delay was defined */
- }
- 
--void
-+static void
- check_add_routes(struct context *c)
- {
-     if (test_routes(c->c1.route_list, c->c1.tuntap))
-@@ -408,7 +408,7 @@ check_add_routes(struct context *c)
- /*
-  * Should we exit due to inactivity timeout?
-  */
--void
-+static void
- check_inactivity_timeout(struct context *c)
- {
-     msg(M_INFO, "Inactivity timeout (--inactive), exiting");
-@@ -423,7 +423,7 @@ get_server_poll_remaining_time(struct event_timeout *server_poll_timeout)
-     return max_int(0, remaining);
- }
- 
--void
-+static void
- check_server_poll_timeout(struct context *c)
- {
-     event_timeout_reset(&c->c2.server_poll_interval);
-@@ -453,7 +453,7 @@ schedule_exit(struct context *c, const int n_seconds, const int signal)
- /*
-  * Scheduled exit?
-  */
--void
-+static void
- check_scheduled_exit(struct context *c)
- {
-     register_signal(c, c->c2.scheduled_exit_signal, "delayed-exit");
-@@ -462,7 +462,7 @@ check_scheduled_exit(struct context *c)
- /*
-  * Should we write timer-triggered status file.
-  */
--void
-+static void
- check_status_file(struct context *c)
- {
-     if (c->c1.status_output)
-@@ -475,7 +475,7 @@ check_status_file(struct context *c)
- /*
-  * Should we deliver a datagram fragment to remote?
-  */
--void
-+static void
- check_fragment(struct context *c)
- {
-     struct link_socket_info *lsi = get_link_socket_info(c);
-diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index 2a67c144..5d7566cf 100644
---- a/src/openvpn/forward.h
-+++ b/src/openvpn/forward.h
-@@ -68,44 +68,12 @@ extern counter_type link_read_bytes_global;
- 
- extern counter_type link_write_bytes_global;
- 
--void check_tls(struct context *c);
--
--void check_tls_errors_co(struct context *c);
--
--void check_tls_errors_nco(struct context *c);
--
--void check_incoming_control_channel(struct context *c);
--
--void check_scheduled_exit(struct context *c);
--
--void check_push_request(struct context *c);
--
--#ifdef ENABLE_FRAGMENT
--void check_fragment(struct context *c);
--
--#endif /* ENABLE_FRAGMENT */
--
--void check_connection_established(struct context *c);
--
--void check_add_routes(struct context *c);
--
--void check_inactivity_timeout(struct context *c);
--
--void check_server_poll_timeout(struct context *c);
--
--void check_status_file(struct context *c);
--
- void io_wait_dowork(struct context *c, const unsigned int flags);
- 
- void pre_select(struct context *c);
- 
- void process_io(struct context *c);
- 
--const char *wait_status_string(struct context *c, struct gc_arena *gc);
--
--void show_wait_status(struct context *c);
--
--
- /**********************************************************************/
- /**
-  * Process a data channel packet that will be sent through a VPN tunnel.
-@@ -394,8 +362,6 @@ p2p_iow_flags(const struct context *c)
- static inline void
- io_wait(struct context *c, const unsigned int flags)
- {
--    void io_wait_dowork(struct context *c, const unsigned int flags);
--
-     if (c->c2.fast_io && (flags & (IOW_TO_TUN|IOW_TO_LINK|IOW_MBUF)))
-     {
-         /* fast path -- only for TUN/TAP/UDP writes */
+2021-05-06 00:50:46 10.10.10.2:1194 Delayed exit in 5 seconds
+2021-05-06 00:50:46 10.10.10.2:1194 SENT CONTROL [client]: 'AUTH_FAILED'
+(status=1)
+2021-05-06 00:50:46 10.10.10.2:1194 Delayed exit in 5 seconds
+2021-05-06 00:50:46 10.10.10.2:1194 SENT CONTROL [client]: 'AUTH_FAILED'
+(status=1)
+2021-05-06 00:50:46 10.10.10.2:1194 Delayed exit in 5 seconds
+2021-05-06 00:50:46 10.10.10.2:1194 SENT CONTROL [client]: 'AUTH_FAILED'
+(status=1)
+
+and goes on...
+
+Without this patch I don't see this problem.
+
+After adding some debug messages I saw that without this patch the
+return value of tls_authentication_status() in tls_multi_process() is
+*always* UNDEFINED, also after the auth failure.
+
+This said I stopped digging there because the bed is calling...
+
+Arne, maybe you can spot what's wrong?
+
+Regards,
+
+On 03/05/2021 14:53, Arne Schwabe wrote:
+> tls_authentication_status does caching to avoid file I/O more than
+> every TLS_MULTI_AUTH_STATUS_INTERVAL (10s) per connection. But
+> counter-intuitively it does not return the cached result but rather
+> TLS_AUTHENTICATION_UNDEFINED if the cache is not refreshed by the call.
+> 
+> This is workarounded by forcing a refresh in some areas of the code
+> (latency = 0).
+> 
+> This patch changes the behaviour by always returning the last known
+> status and only updating the file status when the i/o timeout for the
+> caches is reached.
+> 
+> The patch also changes the DEFINE enum into a real enum.
+> 
+> Patch v2: only update tas_cache_last_udpate when actually updating the cache.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  src/openvpn/multi.c      |  2 +-
+>  src/openvpn/push.c       |  3 ++-
+>  src/openvpn/ssl_common.h | 16 +++++++++---
+>  src/openvpn/ssl_verify.c | 53 ++++++++++++++++++++++------------------
+>  src/openvpn/ssl_verify.h |  3 +--
+>  5 files changed, 46 insertions(+), 31 deletions(-)
+> 
+> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+> index 666456da9..ab2270a58 100644
+> --- a/src/openvpn/multi.c
+> +++ b/src/openvpn/multi.c
+> @@ -2596,7 +2596,7 @@ static const multi_client_connect_handler client_connect_handlers[] = {
+>  static void
+>  multi_connection_established(struct multi_context *m, struct multi_instance *mi)
+>  {
+> -    if (tls_authentication_status(mi->context.c2.tls_multi, 0)
+> +    if (tls_authentication_status(mi->context.c2.tls_multi, TLS_MULTI_AUTH_STATUS_INTERVAL)
+>          != TLS_AUTHENTICATION_SUCCEEDED)
+>      {
+>          return;
+> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+> index fcafc5003..428efb68e 100644
+> --- a/src/openvpn/push.c
+> +++ b/src/openvpn/push.c
+> @@ -855,7 +855,8 @@ process_incoming_push_request(struct context *c)
+>  {
+>      int ret = PUSH_MSG_ERROR;
+>  
+> -    if (tls_authentication_status(c->c2.tls_multi, 0) == TLS_AUTHENTICATION_FAILED
+> +
+> +    if (tls_authentication_status(c->c2.tls_multi, TLS_MULTI_AUTH_STATUS_INTERVAL) == TLS_AUTHENTICATION_FAILED
+>          || c->c2.tls_multi->multi_state == CAS_FAILED)
+>      {
+>          const char *client_reason = tls_client_reason(c->c2.tls_multi);
+> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+> index 9c923f2a6..52488a163 100644
+> --- a/src/openvpn/ssl_common.h
+> +++ b/src/openvpn/ssl_common.h
+> @@ -152,6 +152,15 @@ struct auth_deferred_status
+>      unsigned int auth_control_status;
+>  };
+>  
+> +/* key_state_test_auth_control_file return values, these specify the
+> + * current status of a deferred authentication */
+> +enum auth_deferred_result {
+> +    ACF_PENDING,      /**< deferred auth still pending */
+> +    ACF_SUCCEEDED,    /**< deferred auth has suceeded */
+> +    ACF_DISABLED,     /**< deferred auth is not used */
+> +    ACF_FAILED        /**< deferred auth has failed */
+> +};
+> +
+>  /**
+>   * Security parameter state of one TLS and data channel %key session.
+>   * @ingroup control_processor
+> @@ -219,7 +228,7 @@ struct key_state
+>  
+>  #ifdef ENABLE_MANAGEMENT
+>      unsigned int mda_key_id;
+> -    unsigned int mda_status;
+> +    enum auth_deferred_result mda_status;
+>  #endif
+>      time_t acf_last_mod;
+>  
+> @@ -561,8 +570,9 @@ struct tls_multi
+>      char *locked_username;
+>      struct cert_hash_set *locked_cert_hash_set;
+>  
+> -    /* Time of last call to tls_authentication_status */
+> -    time_t tas_last;
+> +    /* Time of last when we updated the cached state of
+> +     * tls_authentication_status deferred files */
+> +    time_t tas_cache_last_update;
+>  
+>      /*
+>       * An error message to send to client on AUTH_FAILED
+> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+> index 34ee19caf..b1b01f777 100644
+> --- a/src/openvpn/ssl_verify.c
+> +++ b/src/openvpn/ssl_verify.c
+> @@ -845,13 +845,6 @@ cleanup:
+>  * user/password authentication.
+>  *************************************************************************** */
+>  
+> -/* key_state_test_auth_control_file return values,
+> - * NOTE: acf_merge indexing depends on these values */
+> -#define ACF_UNDEFINED 0
+> -#define ACF_SUCCEEDED 1
+> -#define ACF_DISABLED  2
+> -#define ACF_FAILED    3
+> -
+>  void
+>  auth_set_client_reason(struct tls_multi *multi, const char *client_reason)
+>  {
+> @@ -866,7 +859,7 @@ auth_set_client_reason(struct tls_multi *multi, const char *client_reason)
+>  
+>  #ifdef ENABLE_MANAGEMENT
+>  
+> -static inline unsigned int
+> +static inline enum auth_deferred_result
+>  man_def_auth_test(const struct key_state *ks)
+>  {
+>      if (management_enable_def_auth(management))
+> @@ -1041,13 +1034,23 @@ key_state_gen_auth_control_files(struct auth_deferred_status *ads,
+>      return (acf && apf);
+>  }
+>  
+> -static unsigned int
+> -key_state_test_auth_control_file(struct auth_deferred_status *ads)
+> +/**
+> + * Checks the control status from a file. The function will try to read
+> + * and update the cached status if the status is still pending and the paramter
+> + * cached  is false. The function returns the
+> + *
+> + *
+> + * @param ads       deferred status control structure
+> + * @param cached    Return only cached status
+> + * @return
+> + */
+> +static enum auth_deferred_result
+> +key_state_test_auth_control_file(struct auth_deferred_status *ads, bool cached)
+>  {
+>      if (ads->auth_control_file)
+>      {
+>          unsigned int ret = ads->auth_control_status;
+> -        if (ret == ACF_UNDEFINED)
+> +        if (ret == ACF_PENDING && !cached)
+>          {
+>              FILE *fp = fopen(ads->auth_control_file, "r");
+>              if (fp)
+> @@ -1084,11 +1087,7 @@ tls_authentication_status(struct tls_multi *multi, const int latency)
+>      /* at least one key already failed authentication */
+>      bool failed_auth = false;
+>  
+> -    if (latency && multi->tas_last + latency >= now)
+> -    {
+> -        return TLS_AUTHENTICATION_UNDEFINED;
+> -    }
+> -    multi->tas_last = now;
+> +    bool cached = multi->tas_cache_last_update + latency >= now;
+>  
+>      for (int i = 0; i < KEY_SCAN_SIZE; ++i)
+>      {
+> @@ -1102,11 +1101,11 @@ tls_authentication_status(struct tls_multi *multi, const int latency)
+>              }
+>              else
+>              {
+> -                unsigned int auth_plugin = ACF_DISABLED;
+> -                unsigned int auth_script = ACF_DISABLED;
+> -                unsigned int auth_man = ACF_DISABLED;
+> -                auth_plugin = key_state_test_auth_control_file(&ks->plugin_auth);
+> -                auth_script = key_state_test_auth_control_file(&ks->script_auth);
+> +                enum auth_deferred_result auth_plugin = ACF_DISABLED;
+> +                enum auth_deferred_result auth_script = ACF_DISABLED;
+> +                enum auth_deferred_result auth_man = ACF_DISABLED;
+> +                auth_plugin = key_state_test_auth_control_file(&ks->plugin_auth, cached);
+> +                auth_script = key_state_test_auth_control_file(&ks->script_auth, cached);
+>  #ifdef ENABLE_MANAGEMENT
+>                  auth_man = man_def_auth_test(ks);
+>  #endif
+> @@ -1118,9 +1117,9 @@ tls_authentication_status(struct tls_multi *multi, const int latency)
+>                      ks->authenticated = KS_AUTH_FALSE;
+>                      failed_auth = true;
+>                  }
+> -                else if (auth_plugin == ACF_UNDEFINED
+> -                         || auth_script == ACF_UNDEFINED
+> -                         || auth_man == ACF_UNDEFINED)
+> +                else if (auth_plugin == ACF_PENDING
+> +                         || auth_script == ACF_PENDING
+> +                         || auth_man == ACF_PENDING)
+>                  {
+>                      if (now < ks->auth_deferred_expire)
+>                      {
+> @@ -1140,6 +1139,12 @@ tls_authentication_status(struct tls_multi *multi, const int latency)
+>          }
+>      }
+>  
+> +    /* we did not rely on a cached result, remember the cache update time */
+> +    if (!cached)
+> +    {
+> +        multi->tas_cache_last_update = now;
+> +    }
+> +
+>  #if 0
+>      dmsg(D_TLS_ERRORS, "TAS: a=%d s=%d d=%d f=%d", active, success, deferred, failed_auth);
+>  #endif
+> diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h
+> index 8358fb986..06b88b568 100644
+> --- a/src/openvpn/ssl_verify.h
+> +++ b/src/openvpn/ssl_verify.h
+> @@ -69,8 +69,7 @@ enum tls_auth_status
+>  {
+>      TLS_AUTHENTICATION_SUCCEEDED=0,
+>      TLS_AUTHENTICATION_FAILED=1,
+> -    TLS_AUTHENTICATION_DEFERRED=2,
+> -    TLS_AUTHENTICATION_UNDEFINED=3
+> +    TLS_AUTHENTICATION_DEFERRED=2
+>  };
+>  
+>  /**
+> 
+
 -- 
-2.26.3
-
+Antonio Quartulli
 
