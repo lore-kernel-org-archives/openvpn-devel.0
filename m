@@ -1,17 +1,9 @@
-Date: Wed, 05 May 2021 22:00:37 +0000
-From: tincantech <tincantech@...2282...>
-Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <tu-jUfrw68jHsNHY4mkYfTk6lbF5HjbdUUgJihX0J0-32Lq2yks9rUPrsX7v4fEA5TTb4-fj6mfZXe_ERsXLiLBBiwBQpkA0_ozsihQxIKc=@protonmail.com>
-In-Reply-To: <635b6cff-1742-e69d-fe91-fc33a5495a7f@...1227...>
-References: <20210429171504.1081888-1-tincantech@...2282...>
- <0a188829-5a2c-362c-eb6f-61ffe657042d@...1227...>
- <_HUflzeIntsfJCr8BbPWvJqUE4YsZ4mnoeBBWWAWz5wXnrnJDSOgFNA8jXs4BX8W8rVR0-mttPOc8wCQ1Ou96EEB2a-ytMFQs33l9yGgwIU=@protonmail.com>
- <635b6cff-1742-e69d-fe91-fc33a5495a7f@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Date: Thu,  6 May 2021 01:12:55 +0200
+Message-Id: <20210505231255.1880-1-a@...2181...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="b1_1ZOY7QG1JFy7Jqg52ySHq7OpjyFVriInyWsfa5qQmU"
-Subject: Re: [Openvpn-devel] [PATCH] Add daemon_pid to --tls-crypt-v2-verify
- environment
+Subject: [Openvpn-devel] [PATCH] forward: get rid of useless declarations
+ for actually static functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,114 +12,233 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Richard T Bonhomme <stringvest88@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is a multi-part message in MIME format.
-
---b1_1ZOY7QG1JFy7Jqg52ySHq7OpjyFVriInyWsfa5qQmU
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+From: Antonio Quartulli <antonio@...515...>
 
-Hi,
+A bunch of functions defined in forward.c and declared in forward.h
+are actually used only in forward.c.
 
-=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
-ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-On Wednesday, 5 May 2021 08:51, Arne Schwabe <arne@...1227...> wrote:
+For this very reason they don't need to be declared in forward.h at
+all and can be defined as static.
 
-> > > Could you explain why you need the process ID of the daemon? I am try=
-ing
-> > > to figure out why that is needed. I also don't understand the secure =
-in
-> > > this context. What are you protecting yourself against? You are not
-> > > protecting your script being called from a malicious program as that
-> > > could lookup the PID of openvpn and just set the daemon_id variable.
-> >
-> > The reason I am using the process ID is as follows:
-> > When --tls-crypt-v2-verify is executed, it saves a file named:
-> > $(certificate_serial_number}.${daemon_pid}
-> > with data from the TLS-Crypt-V2 key metadata field, which can then
-> > be read by the following scripts: --tls-verify and --client-connect.
->
-> I can get behind the need of needing something daemon specific when
-> running multiple daemon that scripts/plugins need something simple to
-> identify a specific daemon. With management and a persistent connection
-> that is easier to implicitly assign an ID but for scripts daemon_pid
-> seems to be a good fit.
->
-> So if we make that a bit clear in the commit message this gets an ACK
-> from me.
->
+Signed-off-by: Antonio Quartulli <antonio@...515...>
+---
+ src/openvpn/forward.c | 50 +++++++++++++++++++++----------------------
+ src/openvpn/forward.h | 34 -----------------------------
+ 2 files changed, 25 insertions(+), 59 deletions(-)
 
-Arne,
-
-thanks for the feedback, I can resubmit with an improved commit message
-and corrected email if required.
-
-Thanks
-R
------BEGIN PGP SIGNATURE-----
-Version: ProtonMail
-
-wsBzBAEBCAAGBQJgkxVyACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ0PGggAtMnaL8kv8Z2xGvqMkSr+TO7kHLWl2OoYP+o+S18NpUpQrLn1
-1Yr0t2ZHjdho30l24iMsKGYAgtPwXfmNgNI+tjhb2p7URRNgkfaDDDUiTePL
-hfnZnjLdmjlCIurKNnCqFsVKj92C2jQbicLcCH+504a0TeTLGmWaCYQ3/QiE
-2I5CUJErNmjXrBRTeS5hB7FLSbYzbAs1AC5dU7uGSxjnhPrT1tx7An/GNAc6
-HJMMBhF1if98jvPRntG6zXLTC4nIFPEM73m9oyWyrwXPql0lD8hZJ08OnpxI
-YyfsH3KEFc3f6st2pmAen8o31zuDxARpYdhusqiLzqWW0WbCj1lt7A=3D=3D
-=3DClM7
------END PGP SIGNATURE-----
-
---b1_1ZOY7QG1JFy7Jqg52ySHq7OpjyFVriInyWsfa5qQmU
-Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
-
-LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tDQpWZXJzaW9uOiBPcGVuUEdQLmpz
-IHY0LjEwLjgNCkNvbW1lbnQ6IGh0dHBzOi8vb3BlbnBncGpzLm9yZw0KDQp4c0JOQkZ2d1NjY0JD
-QURPbUhFblFsTG1PakpSdEpMMmw1M01Md3dGVHk3WG5FcHMzYjFRMFV3V1lGQ3YNCkwyb05wMG5y
-ZEdsS0tESnE1MFkwOVNSK1VSWUJRbUttWTNFbXpweVVJS00vcmdvMVJ5dWJIcE1SSGJEcA0KN0pw
-OEx4a2ZmRkJWSmovdDVWTXBENmVNUjZhVWNpUWpnUkw4TlplNitUN3hmWFhYd1Y1aG9SZVozak8r
-DQp6SGk2U1I3eFR2R1hsYStNUXo2RUVwV25sYkx2ZzJvcnQ5S3NldVZqWXJxdlJNeGNkUDBvOWNa
-V0o1ZXANCkpObWdlQjZNNytPVzA4VTFTc1h0S3JwTFJjSTZ5S21WMzhqaHpQcjJaZ1A5cm1ybEVy
-Ui8xaXFRUUhYWQ0KbzgvMERmUHlGMG1IOXluUUlpTEUvbCtGWXU0cnNHOFZpS2x4aFhjemVQekF0
-TENqaUIwYTBtUlZBQkVCDQpBQUhOTnlKMGFXNWpZVzUwWldOb1FIQnliM1J2Ym0xaGFXd3VZMjl0
-SWlBOGRHbHVZMkZ1ZEdWamFFQncNCmNtOTBiMjV0WVdsc0xtTnZiVDdDd0g4RUVBRUlBQ2tGQWx2
-d1NjY0dDd2tIQ0FNQ0NSQlBsNXoyYTVDNA0KblFRVkNBb0NBeFlDQVFJWkFRSWJBd0llQVFBS0NS
-QlBsNXoyYTVDNG5RQkRCLzlaVW85Qk9YSlI2MU5tDQowMm9aLzhhUlhPOU5uVVNGdDZHTE9XY0RO
-dkFzNElKV01EVkVRZllhbmIrNDIxUU5kLzVkNkgxaVhGK2kNCjRMREswTTZhZ0MrZ3NORkpualBH
-SXR2UHRqN1d5anluWlJ4OEQ0MFBQWGlnZkhZdXcyb1J1MGxyK1AxcA0KMXFlVWU0TmJjcUl2OElJ
-dkx6MnpDbFlaT05nQXNRVmNOQUhpN1o0b3J0UTJpbzJCQVZqLzgxOUpQWU10DQp0SGdZODF3UzFW
-N3Y4R0RUWmc4b2FQaFhHZmFDNFRaRkd0WnIvYnliY3Fyc28zNWphUW1DNTR4TWJYcEYNCkFVcmMz
-dUdWT0grT2RHL0JXMmdjWXFwdlVGQnVrWHhDVUJZSFAyTmZYaE5mekd0OW5DMXVsTktZZVAxOQ0K
-VEdsT29yQk1ZSUFFSG9HeHZwYlVYZmJhTldDVXpzQk5CRnZ3U2NjQkNBQzlLeVZaUlM1YU1hRzVQ
-aTBuDQpmeDhhTm9zM2JZcDI0Nk10ZmFvS0JmVFFBcmQrR1pXK1duRnlKRWlTeUxkejByVXV0eUNB
-ZGY1bGdWSCsNCld2THZJbWlHclNyelZwTVQybkNTMDlMcUw1MFFqejhBN2dwNUgvaFF6dFo4aU55
-c0dEOU5PNDZPbkk3NQ0KOTBkSGZDclhqUVBTRnRGR3NUemdEeFFJaU11eno5RFI3QmVrS1BtdU9G
-SWhCZTllRVpxYnhjOFJXZVF0DQpoYTdpL0RySlRSTksxYU9BRFFGVnVWMS9BbTVUaEdQV0ZNL1lK
-VXlUWWhNVzB5ZVBoNDVPYld1UlFaa3MNCmwrYU9tNEwwS0dERFlsbS9GUXgvRU1DdWJ2bHp5L3p4
-RGRCNm5xRmloMnFacmZ5bW5pU09LYWpHMGpvVA0KcFpvei9Feis0ZkF0ZzZ5MFBzcE5SNmlkQUJF
-QkFBSEN3R2tFR0FFSUFCTUZBbHZ3U2NjSkVFK1huUFpyDQprTGlkQWhzTUFBb0pFRStYblBacmtM
-aWRSZTBIL2o1Q0lGSUF1Y3VhaUVNa0xrTktFQU81czd4NDdlTnkNCkdQZlpzbHlZK0hqekdVMGQw
-N01ra0dtVmtQVFZ6d3FWek5aYm55N1pBdjF6bFcwVXkweUhwMUFQcHlZdA0KOGJ1VXBwVEJxN2Q0
-N29neEVSWXp0L0xjMkw1YS9WS0ZOUmJoTjEvWFFtUGl6MkVsZTR0eWlwYlRhcGN5DQoremJ5ZnpB
-TUQxM2NJZFoxM2hUc05QMG9sZ0JoQXFVQVVVWXB4UmxrQUhlSitEdDNOYnpIUzRLUUs1MzgNCk5K
-L2w3YlhTS3NHcW9ZcUplWjhWTkJ4d1dXVWJ1RzRqanJoNDNNSVJnVVo1V3NQVVlWNkh4MDU2a01q
-Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
-dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
-Sy0tLS0tDQo=
-
---b1_1ZOY7QG1JFy7Jqg52ySHq7OpjyFVriInyWsfa5qQmU
-Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
-
-srOkDgryUUOkte40UaY+2NP7hofk9QMSNO+glUZrzpW3zy9h2c1LEx93Ei20aEc5yWtmw18=
-
---b1_1ZOY7QG1JFy7Jqg52ySHq7OpjyFVriInyWsfa5qQmU--
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index e302d8e0..270c03c0 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -54,7 +54,7 @@ counter_type link_write_bytes_global; /* GLOBAL */
+ 
+ #ifdef ENABLE_DEBUG
+ 
+-const char *
++static const char *
+ wait_status_string(struct context *c, struct gc_arena *gc)
+ {
+     struct buffer out = alloc_buf_gc(64, gc);
+@@ -67,7 +67,7 @@ wait_status_string(struct context *c, struct gc_arena *gc)
+     return BSTR(&out);
+ }
+ 
+-void
++static void
+ show_wait_status(struct context *c)
+ {
+     struct gc_arena gc = gc_new();
+@@ -77,6 +77,19 @@ show_wait_status(struct context *c)
+ 
+ #endif /* ifdef ENABLE_DEBUG */
+ 
++static void
++check_tls_errors_co(struct context *c)
++{
++    msg(D_STREAM_ERRORS, "Fatal TLS error (check_tls_errors_co), restarting");
++    register_signal(c, c->c2.tls_exit_signal, "tls-error"); /* SOFT-SIGUSR1 -- TLS error */
++}
++
++static void
++check_tls_errors_nco(struct context *c)
++{
++    register_signal(c, c->c2.tls_exit_signal, "tls-error"); /* SOFT-SIGUSR1 -- TLS error */
++}
++
+ /*
+  * TLS errors are fatal in TCP mode.
+  * Also check for --tls-exit trigger.
+@@ -138,7 +151,7 @@ context_reschedule_sec(struct context *c, int sec)
+  * traffic on the control-channel.
+  *
+  */
+-void
++static void
+ check_tls(struct context *c)
+ {
+     interval_t wakeup = BIG_TIMEOUT;
+@@ -176,24 +189,11 @@ check_tls(struct context *c)
+     }
+ }
+ 
+-void
+-check_tls_errors_co(struct context *c)
+-{
+-    msg(D_STREAM_ERRORS, "Fatal TLS error (check_tls_errors_co), restarting");
+-    register_signal(c, c->c2.tls_exit_signal, "tls-error"); /* SOFT-SIGUSR1 -- TLS error */
+-}
+-
+-void
+-check_tls_errors_nco(struct context *c)
+-{
+-    register_signal(c, c->c2.tls_exit_signal, "tls-error"); /* SOFT-SIGUSR1 -- TLS error */
+-}
+-
+ /*
+  * Handle incoming configuration
+  * messages on the control channel.
+  */
+-void
++static void
+ check_incoming_control_channel(struct context *c)
+ {
+     int len = tls_test_payload_len(c->c2.tls_multi);
+@@ -258,7 +258,7 @@ check_incoming_control_channel(struct context *c)
+ /*
+  * Periodically resend PUSH_REQUEST until PUSH message received
+  */
+-void
++static void
+ check_push_request(struct context *c)
+ {
+     send_push_request(c);
+@@ -276,7 +276,7 @@ check_push_request(struct context *c)
+  * Note: The process_incoming_push_reply currently assumes that this function
+  * only sets up the pull request timer when pull is enabled.
+  */
+-void
++static void
+ check_connection_established(struct context *c)
+ {
+ 
+@@ -370,7 +370,7 @@ check_add_routes_action(struct context *c, const bool errors)
+     initialization_sequence_completed(c, errors ? ISC_ERRORS : 0); /* client/p2p --route-delay was defined */
+ }
+ 
+-void
++static void
+ check_add_routes(struct context *c)
+ {
+     if (test_routes(c->c1.route_list, c->c1.tuntap))
+@@ -408,7 +408,7 @@ check_add_routes(struct context *c)
+ /*
+  * Should we exit due to inactivity timeout?
+  */
+-void
++static void
+ check_inactivity_timeout(struct context *c)
+ {
+     msg(M_INFO, "Inactivity timeout (--inactive), exiting");
+@@ -423,7 +423,7 @@ get_server_poll_remaining_time(struct event_timeout *server_poll_timeout)
+     return max_int(0, remaining);
+ }
+ 
+-void
++static void
+ check_server_poll_timeout(struct context *c)
+ {
+     event_timeout_reset(&c->c2.server_poll_interval);
+@@ -453,7 +453,7 @@ schedule_exit(struct context *c, const int n_seconds, const int signal)
+ /*
+  * Scheduled exit?
+  */
+-void
++static void
+ check_scheduled_exit(struct context *c)
+ {
+     register_signal(c, c->c2.scheduled_exit_signal, "delayed-exit");
+@@ -462,7 +462,7 @@ check_scheduled_exit(struct context *c)
+ /*
+  * Should we write timer-triggered status file.
+  */
+-void
++static void
+ check_status_file(struct context *c)
+ {
+     if (c->c1.status_output)
+@@ -475,7 +475,7 @@ check_status_file(struct context *c)
+ /*
+  * Should we deliver a datagram fragment to remote?
+  */
+-void
++static void
+ check_fragment(struct context *c)
+ {
+     struct link_socket_info *lsi = get_link_socket_info(c);
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index 2a67c144..5d7566cf 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -68,44 +68,12 @@ extern counter_type link_read_bytes_global;
+ 
+ extern counter_type link_write_bytes_global;
+ 
+-void check_tls(struct context *c);
+-
+-void check_tls_errors_co(struct context *c);
+-
+-void check_tls_errors_nco(struct context *c);
+-
+-void check_incoming_control_channel(struct context *c);
+-
+-void check_scheduled_exit(struct context *c);
+-
+-void check_push_request(struct context *c);
+-
+-#ifdef ENABLE_FRAGMENT
+-void check_fragment(struct context *c);
+-
+-#endif /* ENABLE_FRAGMENT */
+-
+-void check_connection_established(struct context *c);
+-
+-void check_add_routes(struct context *c);
+-
+-void check_inactivity_timeout(struct context *c);
+-
+-void check_server_poll_timeout(struct context *c);
+-
+-void check_status_file(struct context *c);
+-
+ void io_wait_dowork(struct context *c, const unsigned int flags);
+ 
+ void pre_select(struct context *c);
+ 
+ void process_io(struct context *c);
+ 
+-const char *wait_status_string(struct context *c, struct gc_arena *gc);
+-
+-void show_wait_status(struct context *c);
+-
+-
+ /**********************************************************************/
+ /**
+  * Process a data channel packet that will be sent through a VPN tunnel.
+@@ -394,8 +362,6 @@ p2p_iow_flags(const struct context *c)
+ static inline void
+ io_wait(struct context *c, const unsigned int flags)
+ {
+-    void io_wait_dowork(struct context *c, const unsigned int flags);
+-
+     if (c->c2.fast_io && (flags & (IOW_TO_TUN|IOW_TO_LINK|IOW_MBUF)))
+     {
+         /* fast path -- only for TUN/TAP/UDP writes */
+-- 
+2.26.3
 
 
