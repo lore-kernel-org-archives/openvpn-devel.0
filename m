@@ -1,11 +1,14 @@
+References: <20210429171504.1081888-1-tincantech@...2282...>
+ <0a188829-5a2c-362c-eb6f-61ffe657042d@...1227...>
+ <_HUflzeIntsfJCr8BbPWvJqUE4YsZ4mnoeBBWWAWz5wXnrnJDSOgFNA8jXs4BX8W8rVR0-mttPOc8wCQ1Ou96EEB2a-ytMFQs33l9yGgwIU=@protonmail.com>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <635b6cff-1742-e69d-fe91-fc33a5495a7f@...1227...>
+Date: Wed, 5 May 2021 09:51:43 +0200
 MIME-Version: 1.0
-References: <CAGyAFMUg4+nsVGpjFiEBiJf4nP7BqvhRv6GC7jXBp20ef49HZA@...278...>
-In-Reply-To: <CAGyAFMUg4+nsVGpjFiEBiJf4nP7BqvhRv6GC7jXBp20ef49HZA@...278...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 5 May 2021 10:36:04 +0300
-Message-ID: <CAGyAFMUgrb-asi-Tp+RwT1wLnEFUJwjywzbS6HYyM_AyrU==ow@...278...>
-Subject: [Openvpn-devel] Fwd: Introducing the OpenVPN Data Channel Offload
- Windows driver
+In-Reply-To: <_HUflzeIntsfJCr8BbPWvJqUE4YsZ4mnoeBBWWAWz5wXnrnJDSOgFNA8jXs4BX8W8rVR0-mttPOc8wCQ1Ou96EEB2a-ytMFQs33l9yGgwIU=@protonmail.com>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH] Add daemon_pid to --tls-crypt-v2-verify
+ environment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,65 +17,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>, openvpn-users@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: tincantech <tincantech@...2282...>
+Cc: Richard T Bonhomme <stringvest88@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hello all,
 
-I would like to announce a new version of "ovpn-dco-win"-enabled
-client. Here are some changes from the previous version:
+>> Could you explain why you need the process ID of the daemon? I am trying
+>> to figure out why that is needed. I also don't understand the secure in
+>> this context. What are you protecting yourself against? You are not
+>> protecting your script being called from a malicious program as that
+>> could lookup the PID of openvpn and just set the daemon_id variable.
+> 
+> 
+> The reason I am using the process ID is as follows:
+> 
+> When --tls-crypt-v2-verify is executed, it saves a file named:
+> $(certificate_serial_number}.${daemon_pid}
+> with data from the TLS-Crypt-V2 key metadata field, which can then
+> be read by the following scripts: --tls-verify and --client-connect.
+>
 
-1) MSI based installer. This makes upgrades from existing
-installations more smooth, since starting from version 2.5 openvpn has
-switched to MSI.
+I can get behind the need of needing something daemon specific when
+running multiple daemon that scripts/plugins need something simple to
+identify a specific daemon. With management and a persistent connection
+that is easier to implicitly assign an ID but for scripts daemon_pid
+seems to be a good fit.
 
-  - ovpn-dco-win driver is installed only on Windows 10 2004 and
-newer, on other versions the driver feature won't be even visible in
-installer dialog
+So if we make that a bit clear in the commit message this gets an ACK
+from me.
 
-  - (un)installer should correctly handle cases when ovpn-dco-win
-adapter is in use. It shuts down openvpn service and, if that doesn't
-help, prompts to
-reboot at the end of (un)installation
-
-  - driver is deleted from Windows driver store on uninstallation
-
-2) Fixes to the driver itself:
-
- - control packets from the previous VPN session could be delivered to
-a client which has started a new VPN session. This happened
-in rare cases when control packets were read by the driver from the
-network and the app hasn't issued read requests
-
- - crypto: when adding a new key, data channel packet-id hasn't been
-re-initialized. In some cases this caused VPN session to stop
-functioning
-after key renegotiation
-
-3) The client code is based on the latest version of Arne Schwabe's
-dco branch (https://github.com/schwabe/openvpn/tree/dco, commit
-ceefcaf),
-which, comparison the previous version, includes deferred
-authentication improvements, openvpn state machine refactoring and
-many other nice things.
-
-The signed installation package could be downloaded from
-https://build.openvpn.net/downloads/snapshots/OpenVPN-2.6-dco-win-preview-amd64.msi
-
-The driver repo is hosted here: https://github.com/openvpn/ovpn-dco-win
-
-As before, to enable ovpn-dco-win driver, add following options to the
-ovpn profile:
-
-    windows-driver ovpn-dco-win
-    tun-mtu 1428
-
-Please give it a try (since this is a feature preview, avoid
-installation on production systems) and report your feedback
-(especially performance improvements if you notice any) to help us get
-ovpn-dco-win into the next major release.
-
--- 
--Lev
+Arne
 
