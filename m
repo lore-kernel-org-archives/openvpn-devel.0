@@ -1,10 +1,17 @@
-Date: Wed, 5 May 2021 22:11:39 +0200 (CEST)
-Message-Id: <202105052011.145KBdE5098680@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20201002215146.31324-1-themiron@...2010...>
-References: <20201002215146.31324-1-themiron@...2010...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add CRL extractor script for
- --crl-verify dir mode
+Date: Wed, 05 May 2021 22:00:37 +0000
+From: tincantech <tincantech@...2282...>
+Reply-To: tincantech <tincantech@...2282...>
+Message-ID: <tu-jUfrw68jHsNHY4mkYfTk6lbF5HjbdUUgJihX0J0-32Lq2yks9rUPrsX7v4fEA5TTb4-fj6mfZXe_ERsXLiLBBiwBQpkA0_ozsihQxIKc=@protonmail.com>
+In-Reply-To: <635b6cff-1742-e69d-fe91-fc33a5495a7f@...1227...>
+References: <20210429171504.1081888-1-tincantech@...2282...>
+ <0a188829-5a2c-362c-eb6f-61ffe657042d@...1227...>
+ <_HUflzeIntsfJCr8BbPWvJqUE4YsZ4mnoeBBWWAWz5wXnrnJDSOgFNA8jXs4BX8W8rVR0-mttPOc8wCQ1Ou96EEB2a-ytMFQs33l9yGgwIU=@protonmail.com>
+ <635b6cff-1742-e69d-fe91-fc33a5495a7f@...1227...>
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="b1_1ZOY7QG1JFy7Jqg52ySHq7OpjyFVriInyWsfa5qQmU"
+Subject: Re: [Openvpn-devel] [PATCH] Add daemon_pid to --tls-crypt-v2-verify
+ environment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,44 +20,114 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Arne Schwabe <arne@...1227...>
+Cc: Richard T Bonhomme <stringvest88@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+This is a multi-part message in MIME format.
+
+--b1_1ZOY7QG1JFy7Jqg52ySHq7OpjyFVriInyWsfa5qQmU
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Vladislav Grishenko <themiron@...2010...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Gert Doering <gert@...1296...>
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
 
-We discussed this in the community meeting today, and came to the
-conclusion that this is a nice and helpful addition.  It could be
-argued that python is somewhat heavy to "run an openssl binary and
-do something with the result", but it's neither the first nor last
-python script in our repo, and "have a script" is better than "I could
-write one in shell" :-)
+Hi,
 
-I have not actually tested the script.  David has taken a look and
-said it looks reasonable.  Rules for contrib/ are not as strict as
-for "openvpn main source", so that's good enough.
+=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
+ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
+On Wednesday, 5 May 2021 08:51, Arne Schwabe <arne@...1227...> wrote:
 
-Thanks.
+> > > Could you explain why you need the process ID of the daemon? I am try=
+ing
+> > > to figure out why that is needed. I also don't understand the secure =
+in
+> > > this context. What are you protecting yourself against? You are not
+> > > protecting your script being called from a malicious program as that
+> > > could lookup the PID of openvpn and just set the daemon_id variable.
+> >
+> > The reason I am using the process ID is as follows:
+> > When --tls-crypt-v2-verify is executed, it saves a file named:
+> > $(certificate_serial_number}.${daemon_pid}
+> > with data from the TLS-Crypt-V2 key metadata field, which can then
+> > be read by the following scripts: --tls-verify and --client-connect.
+>
+> I can get behind the need of needing something daemon specific when
+> running multiple daemon that scripts/plugins need something simple to
+> identify a specific daemon. With management and a persistent connection
+> that is easier to implicitly assign an ID but for scripts daemon_pid
+> seems to be a good fit.
+>
+> So if we make that a bit clear in the commit message this gets an ACK
+> from me.
+>
 
-Your patch has been applied to the master branch.
+Arne,
 
-commit 4c2549ba5d8b1b449acc62a46692345710965647
-Author: Vladislav Grishenko
-Date:   Sat Oct 3 02:51:46 2020 +0500
+thanks for the feedback, I can resubmit with an improved commit message
+and corrected email if required.
 
-     Add CRL extractor script for --crl-verify dir mode
+Thanks
+R
+-----BEGIN PGP SIGNATURE-----
+Version: ProtonMail
 
-     Signed-off-by: Vladislav Grishenko <themiron@...2010...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20201002215146.31324-1-themiron@...2010...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21154.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+wsBzBAEBCAAGBQJgkxVyACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
+9muQuJ0PGggAtMnaL8kv8Z2xGvqMkSr+TO7kHLWl2OoYP+o+S18NpUpQrLn1
+1Yr0t2ZHjdho30l24iMsKGYAgtPwXfmNgNI+tjhb2p7URRNgkfaDDDUiTePL
+hfnZnjLdmjlCIurKNnCqFsVKj92C2jQbicLcCH+504a0TeTLGmWaCYQ3/QiE
+2I5CUJErNmjXrBRTeS5hB7FLSbYzbAs1AC5dU7uGSxjnhPrT1tx7An/GNAc6
+HJMMBhF1if98jvPRntG6zXLTC4nIFPEM73m9oyWyrwXPql0lD8hZJ08OnpxI
+YyfsH3KEFc3f6st2pmAen8o31zuDxARpYdhusqiLzqWW0WbCj1lt7A=3D=3D
+=3DClM7
+-----END PGP SIGNATURE-----
 
+--b1_1ZOY7QG1JFy7Jqg52ySHq7OpjyFVriInyWsfa5qQmU
+Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 
---
-kind regards,
+LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tDQpWZXJzaW9uOiBPcGVuUEdQLmpz
+IHY0LjEwLjgNCkNvbW1lbnQ6IGh0dHBzOi8vb3BlbnBncGpzLm9yZw0KDQp4c0JOQkZ2d1NjY0JD
+QURPbUhFblFsTG1PakpSdEpMMmw1M01Md3dGVHk3WG5FcHMzYjFRMFV3V1lGQ3YNCkwyb05wMG5y
+ZEdsS0tESnE1MFkwOVNSK1VSWUJRbUttWTNFbXpweVVJS00vcmdvMVJ5dWJIcE1SSGJEcA0KN0pw
+OEx4a2ZmRkJWSmovdDVWTXBENmVNUjZhVWNpUWpnUkw4TlplNitUN3hmWFhYd1Y1aG9SZVozak8r
+DQp6SGk2U1I3eFR2R1hsYStNUXo2RUVwV25sYkx2ZzJvcnQ5S3NldVZqWXJxdlJNeGNkUDBvOWNa
+V0o1ZXANCkpObWdlQjZNNytPVzA4VTFTc1h0S3JwTFJjSTZ5S21WMzhqaHpQcjJaZ1A5cm1ybEVy
+Ui8xaXFRUUhYWQ0KbzgvMERmUHlGMG1IOXluUUlpTEUvbCtGWXU0cnNHOFZpS2x4aFhjemVQekF0
+TENqaUIwYTBtUlZBQkVCDQpBQUhOTnlKMGFXNWpZVzUwWldOb1FIQnliM1J2Ym0xaGFXd3VZMjl0
+SWlBOGRHbHVZMkZ1ZEdWamFFQncNCmNtOTBiMjV0WVdsc0xtTnZiVDdDd0g4RUVBRUlBQ2tGQWx2
+d1NjY0dDd2tIQ0FNQ0NSQlBsNXoyYTVDNA0KblFRVkNBb0NBeFlDQVFJWkFRSWJBd0llQVFBS0NS
+QlBsNXoyYTVDNG5RQkRCLzlaVW85Qk9YSlI2MU5tDQowMm9aLzhhUlhPOU5uVVNGdDZHTE9XY0RO
+dkFzNElKV01EVkVRZllhbmIrNDIxUU5kLzVkNkgxaVhGK2kNCjRMREswTTZhZ0MrZ3NORkpualBH
+SXR2UHRqN1d5anluWlJ4OEQ0MFBQWGlnZkhZdXcyb1J1MGxyK1AxcA0KMXFlVWU0TmJjcUl2OElJ
+dkx6MnpDbFlaT05nQXNRVmNOQUhpN1o0b3J0UTJpbzJCQVZqLzgxOUpQWU10DQp0SGdZODF3UzFW
+N3Y4R0RUWmc4b2FQaFhHZmFDNFRaRkd0WnIvYnliY3Fyc28zNWphUW1DNTR4TWJYcEYNCkFVcmMz
+dUdWT0grT2RHL0JXMmdjWXFwdlVGQnVrWHhDVUJZSFAyTmZYaE5mekd0OW5DMXVsTktZZVAxOQ0K
+VEdsT29yQk1ZSUFFSG9HeHZwYlVYZmJhTldDVXpzQk5CRnZ3U2NjQkNBQzlLeVZaUlM1YU1hRzVQ
+aTBuDQpmeDhhTm9zM2JZcDI0Nk10ZmFvS0JmVFFBcmQrR1pXK1duRnlKRWlTeUxkejByVXV0eUNB
+ZGY1bGdWSCsNCld2THZJbWlHclNyelZwTVQybkNTMDlMcUw1MFFqejhBN2dwNUgvaFF6dFo4aU55
+c0dEOU5PNDZPbkk3NQ0KOTBkSGZDclhqUVBTRnRGR3NUemdEeFFJaU11eno5RFI3QmVrS1BtdU9G
+SWhCZTllRVpxYnhjOFJXZVF0DQpoYTdpL0RySlRSTksxYU9BRFFGVnVWMS9BbTVUaEdQV0ZNL1lK
+VXlUWWhNVzB5ZVBoNDVPYld1UlFaa3MNCmwrYU9tNEwwS0dERFlsbS9GUXgvRU1DdWJ2bHp5L3p4
+RGRCNm5xRmloMnFacmZ5bW5pU09LYWpHMGpvVA0KcFpvei9Feis0ZkF0ZzZ5MFBzcE5SNmlkQUJF
+QkFBSEN3R2tFR0FFSUFCTUZBbHZ3U2NjSkVFK1huUFpyDQprTGlkQWhzTUFBb0pFRStYblBacmtM
+aWRSZTBIL2o1Q0lGSUF1Y3VhaUVNa0xrTktFQU81czd4NDdlTnkNCkdQZlpzbHlZK0hqekdVMGQw
+N01ra0dtVmtQVFZ6d3FWek5aYm55N1pBdjF6bFcwVXkweUhwMUFQcHlZdA0KOGJ1VXBwVEJxN2Q0
+N29neEVSWXp0L0xjMkw1YS9WS0ZOUmJoTjEvWFFtUGl6MkVsZTR0eWlwYlRhcGN5DQoremJ5ZnpB
+TUQxM2NJZFoxM2hUc05QMG9sZ0JoQXFVQVVVWXB4UmxrQUhlSitEdDNOYnpIUzRLUUs1MzgNCk5K
+L2w3YlhTS3NHcW9ZcUplWjhWTkJ4d1dXVWJ1RzRqanJoNDNNSVJnVVo1V3NQVVlWNkh4MDU2a01q
+Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
+dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
+Sy0tLS0tDQo=
 
-Gert Doering
+--b1_1ZOY7QG1JFy7Jqg52ySHq7OpjyFVriInyWsfa5qQmU
+Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
+
+srOkDgryUUOkte40UaY+2NP7hofk9QMSNO+glUZrzpW3zy9h2c1LEx93Ei20aEc5yWtmw18=
+
+--b1_1ZOY7QG1JFy7Jqg52ySHq7OpjyFVriInyWsfa5qQmU--
 
 
