@@ -1,8 +1,11 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri,  7 May 2021 17:56:44 +0300
-Message-Id: <20210507145644.195-1-lstipakov@...277...>
+From: selva.nair@...277...
+Date: Sun,  9 May 2021 21:32:39 -0400
+Message-Id: <20210510013239.18087-1-selva.nair@...277...>
+In-Reply-To: <20210505051833.11271-1-selva.nair@...277...>
+References: <20210505051833.11271-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] msvc: add ARM64 configuration
+Subject: [Openvpn-devel] [PATCH v2] Allow PKCS#11 uri to be used as --cert
+ and --key file names
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,598 +17,527 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
+From: Selva Nair <selva.nair@...277...>
 
-While on it, bump msvc solution version.
+v2 changes
+  - do not allow so-path embedded in cert and key uri
+  - add --pkcs11-engine option to optionally specify the
+        engine and provider module to use
 
-Signed-off-by: Lev Stipakov <lev@...515...>
+If either --cert or --key is specified as a PKCS#11 uri, try to
+load the certificate and key from any accessible PKCS#11 device.
+This does not require linking with any pkcs11 library, but needs
+pkcs11 engine to be available on the target machine.
+
+In its simplest form, just have
+
+--cert 'pkcs11:id=%01'
+
+Either do not specify --key, or use the same uri for --key.
+Do not include type=cert or type=private in the uri
+as the same uri is used for both certificate and private key.
+
+That's all what is required if pkcs11 engine is installed in the
+right location and optionally set up to load any necessary provider
+libraries (e.g., via openssl.cnf or via PKCS11_MODULE_PATH).
+
+If both cert and key are specified, the last entry takes precedence
+and is used to locate both the certificate and key. Use of different
+uri's for the cert and key are not supported. Specifying --cert as
+a file and --key as a uri or vice versa is treated as a usage error.
+
+If the engine cannot be automatically loaded, or a custom engine object
+has to be loaded, the engine name or shared library may be specified
+using the newly added option
+
+   --pkcs11-engine engine [module_path]
+
+Here engine may the the engine-id that OpenSSL is configured to locate,
+or the path to a shared object. The optional 'module_path' specifies
+any provider module that must be loaded. It must be given as a path.
+Use full path or relative path for these shared objects based on the
+target system setup.
+
+Requires building with OpenSSL engine support although the pkcs11 or
+a compatible engine, and provider libraries are required only at
+run time.
+
+Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- .../msvc/msvc-generate/msvc-generate.vcxproj  | 44 ++++++++++++-
- openvpn.sln                                   | 30 ++++++++-
- src/compat/compat.vcxproj                     | 39 ++++++++++++
- src/openvpn/openvpn.vcxproj                   | 63 +++++++++++++++++++
- src/openvpnserv/openvpnserv.vcxproj           | 49 +++++++++++++++
- 5 files changed, 222 insertions(+), 3 deletions(-)
+ Changes.rst                      |   6 +
+ doc/man-sections/tls-options.rst |  31 ++++++
+ src/openvpn/options.c            |  68 +++++++++++-
+ src/openvpn/options.h            |   7 ++
+ src/openvpn/ssl.c                |  15 ++-
+ src/openvpn/ssl_backend.h        |  10 ++
+ src/openvpn/ssl_openssl.c        | 183 ++++++++++++++++++++++++++++++-
+ 7 files changed, 316 insertions(+), 4 deletions(-)
 
-diff --git a/build/msvc/msvc-generate/msvc-generate.vcxproj b/build/msvc/msvc-generate/msvc-generate.vcxproj
-index 72d310af..dd947f98 100644
---- a/build/msvc/msvc-generate/msvc-generate.vcxproj
-+++ b/build/msvc/msvc-generate/msvc-generate.vcxproj
-@@ -1,6 +1,10 @@
- ﻿<?xml version="1.0" encoding="utf-8"?>
- <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-   <ItemGroup Label="ProjectConfigurations">
-+    <ProjectConfiguration Include="Debug|ARM64">
-+      <Configuration>Debug</Configuration>
-+      <Platform>ARM64</Platform>
-+    </ProjectConfiguration>
-     <ProjectConfiguration Include="Debug|Win32">
-       <Configuration>Debug</Configuration>
-       <Platform>Win32</Platform>
-@@ -9,6 +13,10 @@
-       <Configuration>Debug</Configuration>
-       <Platform>x64</Platform>
-     </ProjectConfiguration>
-+    <ProjectConfiguration Include="Release|ARM64">
-+      <Configuration>Release</Configuration>
-+      <Platform>ARM64</Platform>
-+    </ProjectConfiguration>
-     <ProjectConfiguration Include="Release|Win32">
-       <Configuration>Release</Configuration>
-       <Platform>Win32</Platform>
-@@ -33,6 +41,10 @@
-     <ConfigurationType>Makefile</ConfigurationType>
-     <PlatformToolset>v141</PlatformToolset>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
-+    <ConfigurationType>Makefile</ConfigurationType>
-+    <PlatformToolset>v141</PlatformToolset>
-+  </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>Makefile</ConfigurationType>
-     <PlatformToolset>v141</PlatformToolset>
-@@ -41,6 +53,10 @@
-     <ConfigurationType>Makefile</ConfigurationType>
-     <PlatformToolset>v141</PlatformToolset>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
-+    <ConfigurationType>Makefile</ConfigurationType>
-+    <PlatformToolset>v141</PlatformToolset>
-+  </PropertyGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-   <ImportGroup Label="ExtensionSettings">
-   </ImportGroup>
-@@ -52,6 +68,10 @@
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-     <Import Project="..\..\..\src\compat\PropertySheet.props" />
-   </ImportGroup>
-+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="PropertySheets">
-+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-+    <Import Project="..\..\..\src\compat\PropertySheet.props" />
-+  </ImportGroup>
-   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-     <Import Project="..\..\..\src\compat\PropertySheet.props" />
-@@ -60,6 +80,10 @@
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-     <Import Project="..\..\..\src\compat\PropertySheet.props" />
-   </ImportGroup>
-+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="PropertySheets">
-+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-+    <Import Project="..\..\..\src\compat\PropertySheet.props" />
-+  </ImportGroup>
-   <PropertyGroup Label="UserMacros" />
-   <PropertyGroup>
-     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-@@ -67,42 +91,60 @@
-     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
-     <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">nmake -f Makefile.mak all</NMakeBuildCommandLine>
-     <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">nmake -f Makefile.mak all</NMakeBuildCommandLine>
-+    <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">nmake -f Makefile.mak all</NMakeBuildCommandLine>
-     <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">nmake -f Makefile.mak clean all</NMakeReBuildCommandLine>
-     <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">nmake -f Makefile.mak clean all</NMakeReBuildCommandLine>
-+    <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">nmake -f Makefile.mak clean all</NMakeReBuildCommandLine>
-     <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">nmake -f Makefile.mak clean</NMakeCleanCommandLine>
-     <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">nmake -f Makefile.mak clean</NMakeCleanCommandLine>
-+    <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">nmake -f Makefile.mak clean</NMakeCleanCommandLine>
-     <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">config-msvc-version.h</NMakeOutput>
-     <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">config-msvc-version.h</NMakeOutput>
-+    <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">config-msvc-version.h</NMakeOutput>
-     <NMakePreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-     <NMakePreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-+    <NMakePreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-     <NMakeIncludeSearchPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
-     <NMakeIncludeSearchPath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
-+    <NMakeIncludeSearchPath Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
-     <NMakeForcedIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
-     <NMakeForcedIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
-+    <NMakeForcedIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
-     <NMakeAssemblySearchPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
-     <NMakeAssemblySearchPath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
-+    <NMakeAssemblySearchPath Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
-     <NMakeForcedUsingAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAssemblies>
-     <NMakeForcedUsingAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAssemblies>
-+    <NMakeForcedUsingAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAssemblies>
-     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</OutDir>
-     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
-     <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake -f Makefile.mak all</NMakeBuildCommandLine>
-     <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">nmake -f Makefile.mak all</NMakeBuildCommandLine>
-+    <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">nmake -f Makefile.mak all</NMakeBuildCommandLine>
-     <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake -f Makefile.mak clean all</NMakeReBuildCommandLine>
-     <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">nmake -f Makefile.mak clean all</NMakeReBuildCommandLine>
-+    <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">nmake -f Makefile.mak clean all</NMakeReBuildCommandLine>
-     <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nmake -f Makefile.mak clean</NMakeCleanCommandLine>
-     <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|x64'">nmake -f Makefile.mak clean</NMakeCleanCommandLine>
-+    <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">nmake -f Makefile.mak clean</NMakeCleanCommandLine>
-     <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">config-msvc-version.h</NMakeOutput>
-     <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">config-msvc-version.h</NMakeOutput>
-+    <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">config-msvc-version.h</NMakeOutput>
-     <NMakePreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-     <NMakePreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-+    <NMakePreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-     <NMakeIncludeSearchPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
-     <NMakeIncludeSearchPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
-+    <NMakeIncludeSearchPath Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
-     <NMakeForcedIncludes Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
-     <NMakeForcedIncludes Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
-+    <NMakeForcedIncludes Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
-     <NMakeAssemblySearchPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
-     <NMakeAssemblySearchPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
-+    <NMakeAssemblySearchPath Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
-     <NMakeForcedUsingAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAssemblies>
-     <NMakeForcedUsingAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAssemblies>
-+    <NMakeForcedUsingAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAssemblies>
-   </PropertyGroup>
-   <ItemDefinitionGroup>
-   </ItemDefinitionGroup>
-@@ -113,4 +155,4 @@
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-   <ImportGroup Label="ExtensionTargets">
-   </ImportGroup>
--</Project>
-+</Project>
-\ No newline at end of file
-diff --git a/openvpn.sln b/openvpn.sln
-index 803f555d..3485bc94 100644
---- a/openvpn.sln
-+++ b/openvpn.sln
-@@ -1,7 +1,7 @@
- ﻿
- Microsoft Visual Studio Solution File, Format Version 12.00
--# Visual Studio 15
--VisualStudioVersion = 15.0.28010.2026
-+# Visual Studio Version 16
-+VisualStudioVersion = 16.0.31205.134
- MinimumVisualStudioVersion = 10.0.40219.1
- Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openvpnserv", "src\openvpnserv\openvpnserv.vcxproj", "{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}"
- EndProject
-@@ -17,56 +17,82 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openvpnmsica", "src\openvpn
- EndProject
- Global
- 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-+		Debug|ARM64 = Debug|ARM64
- 		Debug|Win32 = Debug|Win32
- 		Debug|x64 = Debug|x64
-+		Release|ARM64 = Release|ARM64
- 		Release|Win32 = Release|Win32
- 		Release|x64 = Release|x64
- 	EndGlobalSection
- 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-+		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|ARM64.ActiveCfg = Debug|ARM64
-+		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|ARM64.Build.0 = Debug|ARM64
- 		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|Win32.ActiveCfg = Debug|Win32
- 		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|Win32.Build.0 = Debug|Win32
- 		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|x64.ActiveCfg = Debug|x64
- 		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|x64.Build.0 = Debug|x64
-+		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|ARM64.ActiveCfg = Release|ARM64
-+		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|ARM64.Build.0 = Release|ARM64
- 		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|Win32.ActiveCfg = Release|Win32
- 		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|Win32.Build.0 = Release|Win32
- 		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|x64.ActiveCfg = Release|x64
- 		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|x64.Build.0 = Release|x64
-+		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|ARM64.ActiveCfg = Debug|ARM64
-+		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|ARM64.Build.0 = Debug|ARM64
- 		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|Win32.ActiveCfg = Debug|Win32
- 		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|Win32.Build.0 = Debug|Win32
- 		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|x64.ActiveCfg = Debug|x64
- 		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|x64.Build.0 = Debug|x64
-+		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|ARM64.ActiveCfg = Release|ARM64
-+		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|ARM64.Build.0 = Release|ARM64
- 		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|Win32.ActiveCfg = Release|Win32
- 		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|Win32.Build.0 = Release|Win32
- 		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|x64.ActiveCfg = Release|x64
- 		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|x64.Build.0 = Release|x64
-+		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|ARM64.ActiveCfg = Debug|ARM64
-+		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|ARM64.Build.0 = Debug|ARM64
- 		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|Win32.ActiveCfg = Debug|Win32
- 		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|Win32.Build.0 = Debug|Win32
- 		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|x64.ActiveCfg = Debug|x64
- 		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|x64.Build.0 = Debug|x64
-+		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|ARM64.ActiveCfg = Release|ARM64
-+		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|ARM64.Build.0 = Release|ARM64
- 		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|Win32.ActiveCfg = Release|Win32
- 		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|Win32.Build.0 = Release|Win32
- 		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|x64.ActiveCfg = Release|x64
- 		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|x64.Build.0 = Release|x64
-+		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|ARM64.ActiveCfg = Debug|ARM64
-+		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|ARM64.Build.0 = Debug|ARM64
- 		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|Win32.ActiveCfg = Debug|Win32
- 		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|Win32.Build.0 = Debug|Win32
- 		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|x64.ActiveCfg = Debug|x64
- 		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|x64.Build.0 = Debug|x64
-+		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|ARM64.ActiveCfg = Release|ARM64
-+		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|ARM64.Build.0 = Release|ARM64
- 		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|Win32.ActiveCfg = Release|Win32
- 		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|Win32.Build.0 = Release|Win32
- 		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|x64.ActiveCfg = Release|x64
- 		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|x64.Build.0 = Release|x64
-+		{A06436E7-D576-490D-8BA0-0751D920334A}.Debug|ARM64.ActiveCfg = Debug|ARM64
-+		{A06436E7-D576-490D-8BA0-0751D920334A}.Debug|ARM64.Build.0 = Debug|ARM64
- 		{A06436E7-D576-490D-8BA0-0751D920334A}.Debug|Win32.ActiveCfg = Debug|Win32
- 		{A06436E7-D576-490D-8BA0-0751D920334A}.Debug|Win32.Build.0 = Debug|Win32
- 		{A06436E7-D576-490D-8BA0-0751D920334A}.Debug|x64.ActiveCfg = Debug|x64
- 		{A06436E7-D576-490D-8BA0-0751D920334A}.Debug|x64.Build.0 = Debug|x64
-+		{A06436E7-D576-490D-8BA0-0751D920334A}.Release|ARM64.ActiveCfg = Release|ARM64
-+		{A06436E7-D576-490D-8BA0-0751D920334A}.Release|ARM64.Build.0 = Release|ARM64
- 		{A06436E7-D576-490D-8BA0-0751D920334A}.Release|Win32.ActiveCfg = Release|Win32
- 		{A06436E7-D576-490D-8BA0-0751D920334A}.Release|Win32.Build.0 = Release|Win32
- 		{A06436E7-D576-490D-8BA0-0751D920334A}.Release|x64.ActiveCfg = Release|x64
- 		{A06436E7-D576-490D-8BA0-0751D920334A}.Release|x64.Build.0 = Release|x64
-+		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|ARM64.ActiveCfg = Debug|ARM64
-+		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|ARM64.Build.0 = Debug|ARM64
- 		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|Win32.ActiveCfg = Debug|Win32
- 		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|Win32.Build.0 = Debug|Win32
- 		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|x64.ActiveCfg = Debug|x64
- 		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|x64.Build.0 = Debug|x64
-+		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Release|ARM64.ActiveCfg = Release|ARM64
-+		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Release|ARM64.Build.0 = Release|ARM64
- 		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Release|Win32.ActiveCfg = Release|Win32
- 		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Release|Win32.Build.0 = Release|Win32
- 		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Release|x64.ActiveCfg = Release|x64
-diff --git a/src/compat/compat.vcxproj b/src/compat/compat.vcxproj
-index b9dba0c4..1a11deb4 100644
---- a/src/compat/compat.vcxproj
-+++ b/src/compat/compat.vcxproj
-@@ -1,6 +1,10 @@
- ﻿<?xml version="1.0" encoding="utf-8"?>
- <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-   <ItemGroup Label="ProjectConfigurations">
-+    <ProjectConfiguration Include="Debug|ARM64">
-+      <Configuration>Debug</Configuration>
-+      <Platform>ARM64</Platform>
-+    </ProjectConfiguration>
-     <ProjectConfiguration Include="Debug|Win32">
-       <Configuration>Debug</Configuration>
-       <Platform>Win32</Platform>
-@@ -9,6 +13,10 @@
-       <Configuration>Debug</Configuration>
-       <Platform>x64</Platform>
-     </ProjectConfiguration>
-+    <ProjectConfiguration Include="Release|ARM64">
-+      <Configuration>Release</Configuration>
-+      <Platform>ARM64</Platform>
-+    </ProjectConfiguration>
-     <ProjectConfiguration Include="Release|Win32">
-       <Configuration>Release</Configuration>
-       <Platform>Win32</Platform>
-@@ -37,6 +45,12 @@
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-     <PlatformToolset>v142</PlatformToolset>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
-+    <ConfigurationType>StaticLibrary</ConfigurationType>
-+    <CharacterSet>MultiByte</CharacterSet>
-+    <WholeProgramOptimization>true</WholeProgramOptimization>
-+    <PlatformToolset>v142</PlatformToolset>
-+  </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>StaticLibrary</ConfigurationType>
-     <CharacterSet>MultiByte</CharacterSet>
-@@ -47,6 +61,11 @@
-     <CharacterSet>MultiByte</CharacterSet>
-     <PlatformToolset>v142</PlatformToolset>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
-+    <ConfigurationType>StaticLibrary</ConfigurationType>
-+    <CharacterSet>MultiByte</CharacterSet>
-+    <PlatformToolset>v142</PlatformToolset>
-+  </PropertyGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-   <ImportGroup Label="ExtensionSettings">
-   </ImportGroup>
-@@ -58,6 +77,10 @@
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-     <Import Project="Release.props" />
-   </ImportGroup>
-+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="PropertySheets">
-+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-+    <Import Project="Release.props" />
-+  </ImportGroup>
-   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-     <Import Project="Debug.props" />
-@@ -66,6 +89,10 @@
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-     <Import Project="Debug.props" />
-   </ImportGroup>
-+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="PropertySheets">
-+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-+    <Import Project="Debug.props" />
-+  </ImportGroup>
-   <PropertyGroup Label="UserMacros" />
-   <PropertyGroup>
-     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-@@ -82,6 +109,12 @@
-       <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-     </ClCompile>
-   </ItemDefinitionGroup>
-+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-+    <ClCompile>
-+      <AdditionalIncludeDirectories>$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-+      <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+    </ClCompile>
-+  </ItemDefinitionGroup>
-   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-     <ClCompile>
-       <AdditionalIncludeDirectories>$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-@@ -94,6 +127,12 @@
-       <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-     </ClCompile>
-   </ItemDefinitionGroup>
-+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-+    <ClCompile>
-+      <AdditionalIncludeDirectories>$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-+      <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+    </ClCompile>
-+  </ItemDefinitionGroup>
-   <ItemGroup>
-     <ClCompile Include="compat-basename.c" />
-     <ClCompile Include="compat-dirname.c" />
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index cf31940c..18272296 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -1,6 +1,10 @@
- ﻿<?xml version="1.0" encoding="utf-8"?>
- <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-   <ItemGroup Label="ProjectConfigurations">
-+    <ProjectConfiguration Include="Debug|ARM64">
-+      <Configuration>Debug</Configuration>
-+      <Platform>ARM64</Platform>
-+    </ProjectConfiguration>
-     <ProjectConfiguration Include="Debug|Win32">
-       <Configuration>Debug</Configuration>
-       <Platform>Win32</Platform>
-@@ -9,6 +13,10 @@
-       <Configuration>Debug</Configuration>
-       <Platform>x64</Platform>
-     </ProjectConfiguration>
-+    <ProjectConfiguration Include="Release|ARM64">
-+      <Configuration>Release</Configuration>
-+      <Platform>ARM64</Platform>
-+    </ProjectConfiguration>
-     <ProjectConfiguration Include="Release|Win32">
-       <Configuration>Release</Configuration>
-       <Platform>Win32</Platform>
-@@ -37,6 +45,12 @@
-     <CharacterSet>NotSet</CharacterSet>
-     <PlatformToolset>v142</PlatformToolset>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
-+    <ConfigurationType>Application</ConfigurationType>
-+    <WholeProgramOptimization>true</WholeProgramOptimization>
-+    <CharacterSet>NotSet</CharacterSet>
-+    <PlatformToolset>v142</PlatformToolset>
-+  </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <CharacterSet>NotSet</CharacterSet>
-@@ -47,6 +61,11 @@
-     <CharacterSet>NotSet</CharacterSet>
-     <PlatformToolset>v142</PlatformToolset>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
-+    <ConfigurationType>Application</ConfigurationType>
-+    <CharacterSet>NotSet</CharacterSet>
-+    <PlatformToolset>v142</PlatformToolset>
-+  </PropertyGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-   <ImportGroup Label="ExtensionSettings">
-   </ImportGroup>
-@@ -58,6 +77,10 @@
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-     <Import Project="..\compat\Release.props" />
-   </ImportGroup>
-+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="PropertySheets">
-+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-+    <Import Project="..\compat\Release.props" />
-+  </ImportGroup>
-   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-     <Import Project="..\compat\Debug.props" />
-@@ -66,6 +89,10 @@
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-     <Import Project="..\compat\Debug.props" />
-   </ImportGroup>
-+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="PropertySheets">
-+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-+    <Import Project="..\compat\Debug.props" />
-+  </ImportGroup>
-   <PropertyGroup Label="UserMacros" />
-   <PropertyGroup>
-     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-@@ -73,9 +100,15 @@
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-     <GenerateManifest>false</GenerateManifest>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-+    <GenerateManifest>false</GenerateManifest>
-+  </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-     <GenerateManifest>false</GenerateManifest>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-+    <GenerateManifest>false</GenerateManifest>
-+  </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-     <GenerateManifest>false</GenerateManifest>
-   </PropertyGroup>
-@@ -112,6 +145,21 @@
-       <SubSystem>Console</SubSystem>
-     </Link>
-   </ItemDefinitionGroup>
-+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-+    <ClCompile>
-+      <AdditionalIncludeDirectories>..\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-+      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
-+      <WarningLevel>Level2</WarningLevel>
-+      <TreatWarningAsError>true</TreatWarningAsError>
-+    </ClCompile>
-+    <ResourceCompile />
-+    <Link>
-+      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;libssl.lib;libcrypto.lib;lzo2.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-+      <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-+      <SubSystem>Console</SubSystem>
-+    </Link>
-+  </ItemDefinitionGroup>
-   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-     <ClCompile>
-       <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;$(OPENSSL_HOME)/include;$(LZO_HOME)/include;$(PKCS11H_HOME)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-@@ -142,6 +190,21 @@
-       <SubSystem>Console</SubSystem>
-     </Link>
-   </ItemDefinitionGroup>
-+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-+    <ClCompile>
-+      <AdditionalIncludeDirectories>..\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-+      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</UndefinePreprocessorDefinitions>
-+      <WarningLevel>Level2</WarningLevel>
-+      <TreatWarningAsError>true</TreatWarningAsError>
-+    </ClCompile>
-+    <ResourceCompile />
-+    <Link>
-+      <AdditionalDependencies>legacy_stdio_definitions.lib;Ncrypt.lib;libssl.lib;libcrypto.lib;lzo2.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-+      <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-+      <SubSystem>Console</SubSystem>
-+    </Link>
-+  </ItemDefinitionGroup>
-   <ItemGroup>
-     <ClCompile Include="argv.c" />
-     <ClCompile Include="auth_token.c" />
-diff --git a/src/openvpnserv/openvpnserv.vcxproj b/src/openvpnserv/openvpnserv.vcxproj
-index d0f210ad..ee7d52ea 100644
---- a/src/openvpnserv/openvpnserv.vcxproj
-+++ b/src/openvpnserv/openvpnserv.vcxproj
-@@ -1,6 +1,10 @@
- ﻿<?xml version="1.0" encoding="utf-8"?>
- <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-   <ItemGroup Label="ProjectConfigurations">
-+    <ProjectConfiguration Include="Debug|ARM64">
-+      <Configuration>Debug</Configuration>
-+      <Platform>ARM64</Platform>
-+    </ProjectConfiguration>
-     <ProjectConfiguration Include="Debug|Win32">
-       <Configuration>Debug</Configuration>
-       <Platform>Win32</Platform>
-@@ -9,6 +13,10 @@
-       <Configuration>Debug</Configuration>
-       <Platform>x64</Platform>
-     </ProjectConfiguration>
-+    <ProjectConfiguration Include="Release|ARM64">
-+      <Configuration>Release</Configuration>
-+      <Platform>ARM64</Platform>
-+    </ProjectConfiguration>
-     <ProjectConfiguration Include="Release|Win32">
-       <Configuration>Release</Configuration>
-       <Platform>Win32</Platform>
-@@ -37,6 +45,12 @@
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-     <PlatformToolset>v142</PlatformToolset>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
-+    <ConfigurationType>Application</ConfigurationType>
-+    <CharacterSet>Unicode</CharacterSet>
-+    <WholeProgramOptimization>true</WholeProgramOptimization>
-+    <PlatformToolset>v142</PlatformToolset>
-+  </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <CharacterSet>Unicode</CharacterSet>
-@@ -47,6 +61,11 @@
-     <CharacterSet>Unicode</CharacterSet>
-     <PlatformToolset>v142</PlatformToolset>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
-+    <ConfigurationType>Application</ConfigurationType>
-+    <CharacterSet>Unicode</CharacterSet>
-+    <PlatformToolset>v142</PlatformToolset>
-+  </PropertyGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-   <ImportGroup Label="ExtensionSettings">
-   </ImportGroup>
-@@ -58,6 +77,10 @@
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-     <Import Project="..\compat\Release.props" />
-   </ImportGroup>
-+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="PropertySheets">
-+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-+    <Import Project="..\compat\Release.props" />
-+  </ImportGroup>
-   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-     <Import Project="..\compat\Debug.props" />
-@@ -66,6 +89,10 @@
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-     <Import Project="..\compat\Debug.props" />
-   </ImportGroup>
-+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="PropertySheets">
-+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-+    <Import Project="..\compat\Debug.props" />
-+  </ImportGroup>
-   <PropertyGroup Label="UserMacros" />
-   <PropertyGroup>
-     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-@@ -92,6 +119,17 @@
-       <SubSystem>Console</SubSystem>
-     </Link>
-   </ItemDefinitionGroup>
-+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-+    <ClCompile>
-+      <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-+      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+    </ClCompile>
-+    <ResourceCompile />
-+    <Link>
-+      <AdditionalDependencies>legacy_stdio_definitions.lib;Userenv.lib;Iphlpapi.lib;ntdll.lib;Fwpuclnt.lib;Netapi32.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-+      <SubSystem>Console</SubSystem>
-+    </Link>
-+  </ItemDefinitionGroup>
-   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-     <ClCompile>
-       <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-@@ -114,6 +152,17 @@
-       <SubSystem>Console</SubSystem>
-     </Link>
-   </ItemDefinitionGroup>
-+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-+    <ClCompile>
-+      <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-+      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+    </ClCompile>
-+    <ResourceCompile />
-+    <Link>
-+      <AdditionalDependencies>legacy_stdio_definitions.lib;Userenv.lib;Iphlpapi.lib;ntdll.lib;Fwpuclnt.lib;Netapi32.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-+      <SubSystem>Console</SubSystem>
-+    </Link>
-+  </ItemDefinitionGroup>
-   <ItemGroup>
-     <ClCompile Include="common.c" />
-     <ClCompile Include="interactive.c" />
+diff --git a/Changes.rst b/Changes.rst
+index 9185b55f..19d311e3 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -4,6 +4,12 @@ Overview of changes in 2.6
+ 
+ New features
+ ------------
++Specification of private key and certificates as PKCS#11 URI
++    ``--cert`` and ``--key`` options can take RFC7512 PKCS#11
++    URI's pointing to certificate and key in a token. Both cert
++    and key must use the same URI. Requires OpenSSL with engine
++    support and pkcs11 (or compatible) engine installed.
++
+ Keying Material Exporters (RFC 5705) based key generation
+     As part of the cipher negotiation OpenVPN will automatically prefer
+     the RFC5705 based key material generation to the current custom
+diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
+index 00ea063a..7acfbdae 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -116,6 +116,20 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
+   authority functions, you must set up the files :code:`index.txt` (may be
+   empty) and :code:`serial` (initialize to :code:`01`).
+ 
++--cert pkcs11-uri
++  The local peer's certificate in a PKCS#11 token specified as a RFC 7512
++  uri with optional custom attributes described below. Cannot be used with
++  ``--key file``. ``--key`` must be left unspecified or point to the same
++  uri. All other requrements for the certificate described under
++  ``--cert file`` applies.
++
++  Requires OpenSSL with pkcs11 engine installed and configured. Also see
++  the option ``--pkcs11-engine``.
++
++  As the same uri is used for certificate and private key, do not include type
++  attribute (i.e., :code: `type=cert;` or :code: `type=private;` should not
++  be included)
++
+ --crl-verify args
+   Check peer certificate against a Certificate Revocation List.
+ 
+@@ -208,11 +222,28 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
+   generated when you built your peer's certificate (see ``--cert file``
+   above).
+ 
++--key pkcs11-uri
++  See ``--cert pkcs11-uri`` above.
++
+ --pkcs12 file
+   Specify a PKCS #12 file containing local private key, local certificate,
+   and root CA certificate. This option can be used instead of ``--ca``,
+   ``--cert``, and ``--key``.  Not available with mbed TLS.
+ 
++--pkcs11-engine engine-name [module-path]
++  Specifiy the pkcs11-engine and the provider module to load when
++  certificate and private key are given as a pkcs11 URI.
++
++  If the option is unspecified, and a pkcs11 URI is used for cert/key,
++  :code:`pkcs11` engine is loaded, if it can be automatically found by
++  OpenSSL.
++
++  If specified, the cert/key must be given as a pkcs11 URI.
++
++  The engine name could be a valid engine-id or path to a shared object.
++  The module-path should be the path to a shared object. Objects in
++  non-standard locations would need to be specified as full paths.
++
+ --remote-cert-eku oid
+   Require that peer certificate was signed with an explicit *extended key
+   usage*.
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index db460796..559782ec 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -531,6 +531,11 @@ static const char usage_message[] =
+     "                   nonce_secret_len=nsl.  Set alg=none to disable PRNG.\n"
+ #ifndef ENABLE_CRYPTO_MBEDTLS
+     "--engine [name] : Enable OpenSSL hardware crypto engine functionality.\n"
++#endif
++#ifdef HAVE_OPENSSL_ENGINE
++    "--pkcs11-engine name [module-path] : PKCS11 engine and provider module to use\n"
++    "                                     for cert and key specified as a pkcs11 URI.\n"
++    "                                     name could be an engine-id or a path.\n"
+ #endif
+     "--no-replay     : (DEPRECATED) Disable replay protection.\n"
+     "--mute-replay-warnings : Silence the output of replay warnings to log file.\n"
+@@ -915,6 +920,12 @@ struct pull_filter_list
+     struct pull_filter *tail;
+ };
+ 
++static bool
++is_pkcs11_uri(const char *uri)
++{
++    return (uri && !strncmp(uri, "pkcs11:", 7));
++}
++
+ static const char *
+ pull_filter_type_name(int type)
+ {
+@@ -2587,6 +2598,17 @@ options_postprocess_verify_ce(const struct options *options,
+ 
+     if (options->tls_server || options->tls_client)
+     {
++#ifdef HAVE_OPENSSL_ENGINE
++        if (is_pkcs11_uri(options->cert_file) != is_pkcs11_uri(options->priv_key_file))
++        {
++            msg(M_USAGE, "Use of PKCS#11 uri for --cert or --key and file name for the other is not supported");
++        }
++        else
++        if (options->pkcs11_engine && !is_pkcs11_uri(options->cert_file))
++        {
++            msg(M_USAGE, "Use of --pkcs11-engine expects --cert to be specified as a pkcs11: URI");
++        }
++#endif
+ #ifdef ENABLE_PKCS11
+         if (options->pkcs11_providers[0])
+         {
+@@ -3455,8 +3477,11 @@ options_postprocess_filechecks(struct options *options)
+     errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE,
+                                      options->ca_path, R_OK, "--capath");
+ 
+-    errs |= check_file_access_inline(options->cert_file_inline, CHKACC_FILE,
++    if (!is_pkcs11_uri(options->cert_file))
++    {
++        errs |= check_file_access_inline(options->cert_file_inline, CHKACC_FILE,
+                                      options->cert_file, R_OK, "--cert");
++    }
+ 
+     errs |= check_file_access_inline(options->extra_certs_file, CHKACC_FILE,
+                                      options->extra_certs_file, R_OK,
+@@ -3466,9 +3491,12 @@ options_postprocess_filechecks(struct options *options)
+     if (!(options->management_flags & MF_EXTERNAL_KEY))
+ #endif
+     {
+-        errs |= check_file_access_inline(options->priv_key_file_inline,
++        if (!is_pkcs11_uri(options->priv_key_file))
++        {
++            errs |= check_file_access_inline(options->priv_key_file_inline,
+                                          CHKACC_FILE|CHKACC_PRIVATE,
+                                          options->priv_key_file, R_OK, "--key");
++        }
+     }
+ 
+     errs |= check_file_access_inline(options->pkcs12_file_inline,
+@@ -8097,6 +8125,14 @@ add_option(struct options *options,
+         }
+     }
+ #endif /* ENABLE_CRYPTO_MBEDTLS */
++#ifdef HAVE_OPENSSL_ENGINE
++    else if (streq(p[0], "pkcs11-engine") && p[1] && !p[3])
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        options->pkcs11_engine = p[1];
++        options->pkcs11_engine_module = p[2]; /* may be NULL */
++    }
++#endif /* HAVE_OPENSSL_ENGINE */
+ #ifdef ENABLE_PREDICTION_RESISTANCE
+     else if (streq(p[0], "use-prediction-resistance") && !p[1])
+     {
+@@ -8156,6 +8192,20 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INLINE);
+         options->cert_file = p[1];
+         options->cert_file_inline = is_inline;
++        if (is_pkcs11_uri(p[1]))
++        {
++#ifndef HAVE_OPENSSL_ENGINE
++            msg(msglevel, "Use of PKCS11 uri as cert and key file names requires OpenSSL "
++                          "ENGINE support which is missing in this binary.")
++#else
++            options->priv_key_file = p[1];
++            options->cert_file_is_pkcs11_uri = true;
++        }
++        else
++        {
++            options->cert_file_is_pkcs11_uri = false;
++#endif /* HAVE_OPENSSL_ENGINE */
++        }
+     }
+     else if (streq(p[0], "extra-certs") && p[1] && !p[2])
+     {
+@@ -8238,6 +8288,20 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INLINE);
+         options->priv_key_file = p[1];
+         options->priv_key_file_inline = is_inline;
++        if (is_pkcs11_uri(p[1]))
++        {
++#ifndef HAVE_OPENSSL_ENGINE
++            msg(msglevel, "Use of PKCS11 uri as cert and key file names requires OpenSSL "
++                          "ENGINE support which is missing in this binary.")
++#else
++            options->cert_file = p[1];
++            options->cert_file_is_pkcs11_uri = true;
++        }
++        else
++        {
++            options->cert_file_is_pkcs11_uri = false;
++#endif /* HAVE_OPENSSL_ENGINE */
++        }
+     }
+     else if (streq(p[0], "tls-version-min") && p[1] && !p[3])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 41e84f7e..15567980 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -659,6 +659,13 @@ struct options
+ 
+     /* data channel crypto flags set by push/pull. Reuses the CO_* crypto_flags */
+     unsigned int data_channel_crypto_flags;
++
++#ifdef HAVE_OPENSSL_ENGINE
++    const char *pkcs11_engine;
++    const char *pkcs11_engine_module;
++    /* flag to indicate cert and key files are specified as pkcs11 uri */
++    bool cert_file_is_pkcs11_uri;
++#endif
+ };
+ 
+ #define streq(x, y) (!strcmp((x), (y)))
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index b16f6bcc..dedfe8ad 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -641,6 +641,19 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx, bool in_ch
+             goto err;
+         }
+     }
++#ifdef HAVE_OPENSSL_ENGINE
++    else if (options->cert_file_is_pkcs11_uri)
++    {
++        if (!tls_ctx_use_pkcs11_engine(new_ctx, options->cert_file,
++                                       options->pkcs11_engine,
++                                       options->pkcs11_engine_module))
++        {
++            msg(M_WARN, "Cannot load certificate \"%s\" using PKCS#11 engine",
++                options->cert_file);
++            goto err;
++        }
++    }
++#endif
+ #ifdef ENABLE_PKCS11
+     else if (options->pkcs11_providers[0])
+     {
+@@ -672,7 +685,7 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx, bool in_ch
+         tls_ctx_load_cert_file(new_ctx, options->cert_file, options->cert_file_inline);
+     }
+ 
+-    if (options->priv_key_file)
++    if (options->priv_key_file && !options->cert_file_is_pkcs11_uri)
+     {
+         if (0 != tls_ctx_load_priv_file(new_ctx, options->priv_key_file,
+                                         options->priv_key_file_inline))
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index c3d12e5b..556fc2c8 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -568,4 +568,14 @@ void get_highest_preference_tls_cipher(char *buf, int size);
+  */
+ const char *get_ssl_library_version(void);
+ 
++/**
++ * Load certificate and key into TLS context using pkcs11 engine
++ * @param ctx       TLS context
++ * @param cert_id   ceritificate and proivate key spec as pkcs11 URI
++ * @param engine    id or path of OpenSSL pkcs11 engine object (default: pkcs11)
++ * @param module    path of optional provider module to load with the engine
++ */
++int tls_ctx_use_pkcs11_engine(struct tls_root_ctx *tls_ctx, const char *cert_id,
++                          const char *engine, const char *module);
++
+ #endif /* SSL_BACKEND_H_ */
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 3120c51a..58fbde93 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -2251,4 +2251,185 @@ get_ssl_library_version(void)
+     return OpenSSL_version(OPENSSL_VERSION);
+ }
+ 
+-#endif /* defined(ENABLE_CRYPTO_OPENSSL) */
++#if HAVE_OPENSSL_ENGINE
++#include <openssl/ui.h>
++#include <openssl/engine.h>
++
++/* Call back method for user interface with pkcs11 engine
++ * used for PIN prompt and possibly token insertion request.
++ */
++static int
++ui_reader(UI *ui, UI_STRING *uis)
++{
++    struct user_pass token_pass;
++    int ret = 0;
++
++    const char *uri = UI_get0_user_data(ui);
++    const char *prompt = UI_get0_output_string(uis);
++
++    token_pass.defined = false;
++    token_pass.nocache = true;
++
++    switch(UI_get_string_type(uis))
++    {
++        case UIT_PROMPT:
++        case UIT_VERIFY:
++            if (get_user_pass(&token_pass, NULL, prompt,
++                GET_USER_PASS_MANAGEMENT|GET_USER_PASS_PASSWORD_ONLY
++                |GET_USER_PASS_NOFATAL))
++            {
++                ret = 1;
++                UI_set_result(ui, uis, token_pass.password);
++            }
++            break;
++       case UIT_BOOLEAN:
++            if (get_user_pass(&token_pass, NULL, UI_get0_output_string(uis),
++                GET_USER_PASS_MANAGEMENT|GET_USER_PASS_NEED_OK
++                |GET_USER_PASS_NOFATAL))
++            {
++                ret = (strcmp(token_pass.password, "ok") == 0);
++                UI_set_result(ui, uis, token_pass.password);
++            }
++       case UIT_INFO:
++            msg(M_INFO, "INFO prompt from token: <%s>", prompt);
++            break;
++       case UIT_ERROR:
++            msg(M_INFO, "ERROR prompt from token: <%s>", prompt);
++            break;
++       default:
++            break;
++    }
++
++    return ret;
++}
++
++static char *
++ui_prompt_constructor(UI *ui, const char *desc, const char *name)
++{
++    int len =  strlen(desc) + strlen(name) + 6;
++    char *s = malloc(len);
++    openvpn_snprintf(s, len, "%s for %s", desc, name);
++    return s;
++}
++
++static ENGINE *
++load_pkcs11_engine(const char *engine_id)
++{
++    ENGINE *e = ENGINE_by_id(engine_id);
++
++    if (e) {
++        return e;
++    }
++
++    /* try dynamic engine with engine-id as path to the engine shared object */
++    e = ENGINE_by_id("dynamic");
++    if (e)
++    {
++        if (!ENGINE_ctrl_cmd_string(e, "SO_PATH", engine_id, 0)
++            || !ENGINE_ctrl_cmd_string(e, "LOAD", NULL, 0))
++        {
++            ENGINE_free(e);
++            e = NULL;
++        }
++    }
++    if (!e)
++    {
++        msg(M_WARN, "PKCS11 engine <%s> not available", engine_id);
++    }
++    return e;
++}
++
++static ENGINE *
++setup_pkcs11_engine(const char *engine_id, const char *module_path, UI_METHOD *ui)
++{
++    if (!engine_id)
++    {
++        engine_id = "pkcs11";
++    }
++
++    msg(D_SHOW_PKCS11, "Loading pkcs11 engine <%s> with module <%s>",
++        engine_id, (module_path ? module_path : "unspecified"));
++
++    ENGINE *e = load_pkcs11_engine(engine_id);
++
++    if (e)
++    {
++	if (module_path)
++        {
++            ENGINE_ctrl_cmd_string(e, "MODULE_PATH", module_path, 0);
++        }
++        ENGINE_ctrl_cmd(e, "SET_USER_INTERFACE", 0, ui, NULL, 0);
++    }
++
++    return e;
++}
++
++/**
++ * Load certificate and key into TLS context using pkcs11 engine
++ * @param ctx       TLS context
++ * @param cert_id   ceritificate and proivate key spec as pkcs11 URI
++ * @param engine    id or path of OpenSSL pkcs11 engine object (default: pkcs11)
++ * @param module    path of optional provider module to load with the engine
++ */
++int
++tls_ctx_use_pkcs11_engine(struct tls_root_ctx *tls_ctx, const char *cert_id,
++                          const char *engine, const char *module)
++{
++    int ret = 0;
++    EVP_PKEY *pkey = NULL;
++
++    UI_METHOD *ui = UI_create_method("openvpn");
++    if (!ui)
++    {
++        msg(M_WARN, "Failed to setup UI callback for engine");
++        return ret;
++    }
++    UI_method_set_reader(ui, ui_reader);
++    UI_method_set_prompt_constructor(ui, ui_prompt_constructor);
++
++    struct
++    {
++        const char *cert_id;
++        X509* cert;
++    } params = {cert_id, NULL};
++
++    ENGINE *e = setup_pkcs11_engine(engine, module, ui);
++    if (!e || !ENGINE_init(e))
++    {
++        goto cleanup;
++    }
++    ENGINE_ctrl_cmd(e, "SET_CALLBACK_DATA", 0, (void *)cert_id, NULL, 0);
++
++    msg (D_SHOW_PKCS11, "Loading certificate <%s> using engine", params.cert_id);
++
++    if (!ENGINE_ctrl_cmd(e, "LOAD_CERT_CTRL", 0, &params, NULL, 0)
++        || !params.cert || !SSL_CTX_use_certificate(tls_ctx->ctx, params.cert))
++    {
++        msg (M_WARN, "Failed to load certificate <%s>", cert_id);
++        goto finish;
++    }
++
++    msg (D_SHOW_PKCS11, "Loading private key <%s> using engine", params.cert_id);
++
++    pkey = ENGINE_load_private_key(e, cert_id, ui, (void *)cert_id);
++    if (!pkey || !SSL_CTX_use_PrivateKey(tls_ctx->ctx, pkey))
++    {
++        msg (M_WARN, "Failed to set private key <%s> using engine", cert_id);
++        goto finish;
++    }
++    ret = 1;
++
++finish:
++    ENGINE_finish(e);
++
++cleanup:
++    ENGINE_free(e);
++    X509_free(params.cert);
++    UI_destroy_method(ui);
++
++    return ret;
++}
++
++#endif /* HAVE_OPENSSL_ENGINE */
++
++#endif /* ENABLE_CRYPTO_OPENSSL */
 -- 
-2.17.1
+2.20.1
 
 
