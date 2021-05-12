@@ -1,11 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 12 May 2021 15:15:10 +0200
-Message-Id: <20210512131511.1309914-9-arne@...1227...>
+Date: Wed, 12 May 2021 15:15:07 +0200
+Message-Id: <20210512131511.1309914-6-arne@...1227...>
 In-Reply-To: <20210512131511.1309914-1-arne@...1227...>
 References: <20210512131511.1309914-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 8/9] Document stub-v2 being basically an
- alias for no compression at all
+Subject: [Openvpn-devel] [PATCH 5/9] Add ifdef guards to unit test
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,27 +17,105 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+the unit tests do not compile under windows since they are missing
+the correct ifdef guards
+
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- doc/man-sections/protocol-options.rst | 5 +++++
- 1 file changed, 5 insertions(+)
+ tests/unit_tests/openvpn/test_argv.c       | 2 ++
+ tests/unit_tests/openvpn/test_auth_token.c | 2 ++
+ tests/unit_tests/openvpn/test_crypto.c     | 4 ++++
+ tests/unit_tests/openvpn/test_misc.c       | 2 ++
+ tests/unit_tests/openvpn/test_ncp.c        | 2 ++
+ tests/unit_tests/openvpn/test_tls_crypt.c  | 2 ++
+ 6 files changed, 14 insertions(+)
 
-diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
-index 4b6928c68..34d4255ee 100644
---- a/doc/man-sections/protocol-options.rst
-+++ b/doc/man-sections/protocol-options.rst
-@@ -96,6 +96,11 @@ configured in a compatible way between both the local and remote side.
-   other variants always add one extra framing byte compared to no
-   compression framing.
+diff --git a/tests/unit_tests/openvpn/test_argv.c b/tests/unit_tests/openvpn/test_argv.c
+index 3dc470a52..6ab9be53c 100644
+--- a/tests/unit_tests/openvpn/test_argv.c
++++ b/tests/unit_tests/openvpn/test_argv.c
+@@ -2,7 +2,9 @@
+ #include "syshead.h"
  
-+  Especially :code:`stub-v2` is essentially identical to no compression and
-+  no compression framing as its header indicates IP version 5 in a tun setup
-+  and can (ab)used to complete disable compression to clients. (See the
-+  :code:`migrate option below)
+ #include <stdio.h>
++#ifdef HAVE_UNISTD_H
+ #include <unistd.h>
++#endif
+ #include <stdlib.h>
+ #include <stdarg.h>
+ #include <string.h>
+diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/openvpn/test_auth_token.c
+index dbde86318..b0fbd6dec 100644
+--- a/tests/unit_tests/openvpn/test_auth_token.c
++++ b/tests/unit_tests/openvpn/test_auth_token.c
+@@ -30,7 +30,9 @@
+ #include "syshead.h"
+ 
+ #include <stdio.h>
++#ifdef HAVE_UNISTD_H
+ #include <unistd.h>
++#endif
+ #include <stdlib.h>
+ #include <stdarg.h>
+ #include <string.h>
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
+index af83da689..edbee2c95 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -30,7 +30,11 @@
+ #include "syshead.h"
+ 
+ #include <stdio.h>
 +
-   If the ``algorithm`` parameter is :code:`stub`, :code:`stub-v2` or empty,
-   compression will be turned off, but the packet framing for compression
-   will still be enabled, allowing a different setting to be pushed later.
++#ifdef HAVE_UNISTD_H
+ #include <unistd.h>
++#endif
++
+ #include <stdlib.h>
+ #include <stdarg.h>
+ #include <string.h>
+diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvpn/test_misc.c
+index c3bea8fc8..f09ad4ba0 100644
+--- a/tests/unit_tests/openvpn/test_misc.c
++++ b/tests/unit_tests/openvpn/test_misc.c
+@@ -30,7 +30,9 @@
+ #include "syshead.h"
+ 
+ #include <stdio.h>
++#ifdef HAVE_UNISTD_H
+ #include <unistd.h>
++#endif
+ #include <stdlib.h>
+ #include <stdarg.h>
+ #include <string.h>
+diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
+index 4077be5e8..5a886ca26 100644
+--- a/tests/unit_tests/openvpn/test_ncp.c
++++ b/tests/unit_tests/openvpn/test_ncp.c
+@@ -30,7 +30,9 @@
+ #include "syshead.h"
+ 
+ #include <stdio.h>
++#ifdef HAVE_UNISTD_H
+ #include <unistd.h>
++#endif
+ #include <stdlib.h>
+ #include <stdarg.h>
+ #include <string.h>
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
+index 218772e8b..15788aa2f 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -30,7 +30,9 @@
+ #include "syshead.h"
+ 
+ #include <stdio.h>
++#ifdef HAVE_UNISTD_H
+ #include <unistd.h>
++#endif
+ #include <stdlib.h>
+ #include <stdarg.h>
+ #include <string.h>
 -- 
 2.31.1
 
