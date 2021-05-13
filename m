@@ -1,13 +1,14 @@
-Date: Thu, 13 May 2021 21:48:52 +0000
+Date: Thu, 13 May 2021 21:54:40 +0000
 From: tincantech <tincantech@...2282...>
 Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <AAoNQJ8hje_YpG-e2TN2X_-zH6YoLvPujzpWicW_D13NeAysfWRNi89BMQDr-vld9FGAI7cbafIiFgYVYlnql_dE3kCWKQevVHV7tP1dTQ0=@protonmail.com>
-In-Reply-To: <20210512131511.1309914-10-arne@...1227...>
+Message-ID: <BMITUXqxXM9MjE-YOOdi8iqmlxPZiMYuaD5lvw5kR9YXo6_LnK0MbMVumz1JDotfxFBPagMNWkRHm3HBKu1fCcw8W6d_N_iOhvA-YHZetCs=@protonmail.com>
+In-Reply-To: <AAoNQJ8hje_YpG-e2TN2X_-zH6YoLvPujzpWicW_D13NeAysfWRNi89BMQDr-vld9FGAI7cbafIiFgYVYlnql_dE3kCWKQevVHV7tP1dTQ0=@protonmail.com>
 References: <20210512131511.1309914-1-arne@...1227...>
  <20210512131511.1309914-10-arne@...1227...>
+ <AAoNQJ8hje_YpG-e2TN2X_-zH6YoLvPujzpWicW_D13NeAysfWRNi89BMQDr-vld9FGAI7cbafIiFgYVYlnql_dE3kCWKQevVHV7tP1dTQ0=@protonmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="b1_VpbRFwHkXjx3LdMU5cggliM7PPzYvMTFndJ3Amd5ClQ"
+ boundary="b1_AI0oMD9Ok0Oy2dbyXd2b8uC5aZJoR0oj2LOc6JeKJE"
 Subject: Re: [Openvpn-devel] [PATCH 9/9] Add detailed man page section to
  setup a OpenVPN setup with peer-fingerprint
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,12 +19,12 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: tincantech <tincantech@...2282...>
+Cc: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
 
---b1_VpbRFwHkXjx3LdMU5cggliM7PPzYvMTFndJ3Amd5ClQ
+--b1_AI0oMD9Ok0Oy2dbyXd2b8uC5aZJoR0oj2LOc6JeKJE
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,392 +33,45 @@ Hash: SHA256
 
 Hi,
 
-I used sed to create my own reply ..
-
-comments inline.
-
+missed one..
 
 =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
 ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-On Wednesday, 12 May 2021 14:15, Arne Schwabe <arne@...1227...> wrote:
+On Thursday, 13 May 2021 22:48, tincantech via Openvpn-devel <openvpn-devel=
+@lists.sourceforge.net> wrote:
 
-
-> This is meant to give new users a quickstart for a useable OpenVPN
-> setup. Our own documentation is lacking in this regard and many often
-> tutorials that can be found online are often questionable in some
-> aspects.
+> Hi,
 >
-> Linking the invidiaul RST file on github also give a tutorial
-
-invidiaul -> individual
-
-
-> in a nicely formatted way.
+> I used sed to create my own reply ..
 >
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  Changes.rst                              |   4 +
->  doc/Makefile.am                          |   1 +
->  doc/man-sections/example-fingerprint.rst | 194 +++++++++++++++++++++++
->  3 files changed, 199 insertions(+)
->  create mode 100644 doc/man-sections/example-fingerprint.rst
+> comments inline.
 >
-> diff --git a/Changes.rst b/Changes.rst
-> index 9185b55f7..f1c739f99 100644
-> --- a/Changes.rst
-> +++ b/Changes.rst
-> @@ -25,6 +25,10 @@ Certificate pinning/verify peer fingerprint
->      fingerprint of the peer. The option takes use a number of allowed
->      SHA256 certificate fingerprints.
+> =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original =
+Message =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
+> On Wednesday, 12 May 2021 14:15, Arne Schwabe arne@...1227... wrote:
 >
-> +    See the man page section "Small OpenVPN setup with peer-fingerprint"
-> +    for a tutorial how to use this feature. This is also available online
+> > This is meant to give new users a quickstart for a useable OpenVPN
+> > setup. Our own documentation is lacking in this regard and many often
+> > tutorials that can be found online are often questionable in some
+> > aspects.
 
-tutorial how -> tutorial on how (just reads better)
-
-
-> +    under https://github.com/openvpn/openvpn/blob/master/doc/man-section=
-s/example-fingerprint.rst
-> +
->  TLS mode with self-signed certificates
->      When ``--peer-fingerprint`` is used, the ``--ca`` and ``--capath`` o=
-ption
->      become optional. This allows for small OpenVPN setups without settin=
-g up
-> diff --git a/doc/Makefile.am b/doc/Makefile.am
-> index e411f5f9d..e7022c085 100644
-> --- a/doc/Makefile.am
-> +++ b/doc/Makefile.am
-> @@ -25,6 +25,7 @@ dist_noinst_DATA =3D \
->  	man-sections/connection-profiles.rst \
->  	man-sections/encryption-options.rst \
->  	man-sections/examples.rst \
-> +	man-sections/examples.rst \
->  	man-sections/generic-options.rst \
->  	man-sections/inline-files.rst \
->  	man-sections/link-options.rst \
-> diff --git a/doc/man-sections/example-fingerprint.rst b/doc/man-sections/=
-example-fingerprint.rst
-> new file mode 100644
-> index 000000000..7d915aedb
-> --- /dev/null
-> +++ b/doc/man-sections/example-fingerprint.rst
-> @@ -0,0 +1,194 @@
-> +Small OpenVPN setup with peer-fingerprint
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +This section consists of instructions how to build a small OpenVPN setup=
- with the
-> +:code:`peer-fingerprint` option.
-
-Reword suggestion:
-
- This setup has the advantage to be easy to setup
-> +and should for most small lab and home setups without the need to setup =
-a PKI.
-
-Using Peer-fingerprint mode has the advantage of being easy to setup withou=
-t the need for a PKI.
-It is suitable for most small lab and home setups.
-
-
-> +For bigger scale setup setting up a PKI (e.g. via easy-rsa) is still rec=
-ommended.
-> +
-> +Both server and client configuration can of course be further modified t=
-o individualise the
-> +setup.
-
-individualise ? - This word is odd .. how about customise ?
-
-
-> +
-> +Server setup
-> +------------
-> +1. Install openvpn
-> +
-> +   Compile from source-code (see `INSTALL` file) or install via a distri=
-bution (apt/yum/ports)
-> +   or via installer (Windows).
-> +
-> +2. Generate a self-signed certificate for the server:
-> +   ::
-> +
-> +    openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -key=
-out serverkey.pem -out server.pem -nodes -sha256 -days 3650 -subj '/CN=3Dse=
-rver'
-
-Why not using .key and .crt as is the custom when files are created by Easy=
--RSA ?
-Also, it is simpler to understand what the file type is ..
-
-
-> +
-> +3. Generate SHA256 fingerprint of the server certificate
-> +
-> +   Use the OpenSSL command line utility to view the fingerprint of just
-> +   created certificate:
-> +   ::
-> +
-> +    openssl x509 -fingerprint -sha256 -in styx-win.pem -noout server.pem
-
-Why stix-win .. would it not be more suitable to use consistent names of fi=
-les ?
-
-Also, this command is incorrect, the server.pem causes openssl error:
-x509: Unknown parameter server.pem
-
-
-> +
-> +   This output something similar to:
-> +   ::
-> +
-> +     SHA256 Fingerprint=3D00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:f=
-f:00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff
-> +
-> +
-> +3. Write a server configuration (`server.conf`):
-> +::
-> +
-> +    # The server certificate we created in step 1
-> +    cert server.pem
-> +    key serverkey.pem
-> +
-> +    dh none
-> +    dev tun
-> +
-> +    # Listen on IPv6+IPv4 simultaneously
-> +    proto udp6
-
-I just want this to be verified because the manual reads that:
-udp6 will force only udp on IPv6, at least that is how I read it.
-
-
-> +
-> +    # The ip address the server will distribute
-> +    server 192.168.234.0 255.255.255.0
-> +    server-ipv6 fd00:6f76:706e::/64
-> +
-> +    # A tun-mtu of 1400 avoids problems of too big packets after VPN enc=
-apsulation
-> +    tun-mtu 1400
-> +
-> +    # The fingerprints of your clients. After adding/remvoing one here r=
-estart the
-
-remvoing -> removing
-
-
-> +    # server
-> +    <peer-fingerprint>
-> +    </peer-fingerprint>
-> +
-> +    # Notify clients when you restart the server to reconnect quickly
-> +    explicit-exit-notify 1
-> +
-> +    # Ping every 60s, restart if no data received for 5 minutes
-> +    keepalive 60 300
-
-I presume you are all sure that this is suitable for consumer grade routers.
-
-
-> +
-> +4. Add at least one client as described in the client section.
-> +
-> +5. Start the server.
-> +    - On systemd based distributions move `server.pem`, `serverkey.pem` =
-and
-> +      `server.conf` to :code:`/etc/openvpn/server` and start it via syst=
-emctl
-> +
-> +      ::
-> +
-> +          sudo mv server.conf server.pem /etc/openvpn
-
-destination folder should be /etc/openvpn/server and serverkey.pem is missi=
-ng.
-
-
-> +
-> +          sudo systemctl start openvpn-server@...185...
-> +
-> +Adding a client
-> +---------------
-> +1. Install OpenVPN
-> +
-> +2. Generate a self-signed certificate for the client. In this example th=
-e client
-> +   name is alice. Each client should have a unique name. Replace alice w=
-ith a
-> +   different name for each client.
-> +   ::
-> +
-> +      openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -n=
-odes -sha256 -days 3650 -subj '/CN=3Dalice'
-> +
-> +   This generate a certificate and a key for the client. The output of t=
-he command will look
-> +   something like this:
-> +   ::
-> +
-> +      -----BEGIN PRIVATE KEY-----
-> +      [base64 content]
-> +      -----END PRIVATE KEY-----
-> +      -----
-> +      -----BEGIN CERTIFICATE-----
-> +      [base 64 content]
-> +      -----END CERTIFICATE-----
-
-I presume here that the idea is to not save any client key/cert files
-and then inline them manually from the output ? It might make sense to
-add a comment to that effect.
-
-
-> +
-> +3. Create a new client configuration file. In this example we will name =
-the file
-> +   `alice.ovpn`:
-> +
-> +   ::
-> +
-> +      # The name of your server to connect to
-> +      remote yourserver.example.net
-> +      client
-> +      # use a random source port instead the fixed 1194
-> +      nobind
-> +
-> +      # Uncomment the following line if you want to route
-> +      # all traffic via the VPN
-> +      # redirect-gateway def1 ipv6
-> +
-> +      # To set a a DNS server
-> +      # dhcp-option DNS 192.168.234.1
-> +
-> +      <key>
-> +      -----BEGIN PRIVATE KEY-----
-> +      [Insert here the key created in step 2]
-> +      -----END PRIVATE KEY-----
-> +      </key>
-> +      <cert>
-> +      -----BEGIN CERTIFICATE-----
-> +      [Insert here the certificate created in step 2]
-> +      -----END CERTIFICATE-----
-> +      </cert>
-> +
-> +      # This the fingerprint of the server that we trust. We generated t=
-his fingerprint
-
-This *is* the fingerprint of the ...
-
-
-> +      # in step 2 of the server setup
-> +      peer-fingerprint 00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:0=
-0:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff
-> +
-> +      # The tun-mtu of the client should match the server MTU
-> +      tun-mtu 1400
-> +      dev tun
-> +
-> +
-> +4. Generate the fingerprint of the client certificate. For that we will
-> +   let OpenSSL read the client configuration file as the x509 command wi=
-ll
-> +   ignore anything that is not between the begin and end markers of the =
-certificate:
-> +
-> +   ::
-> +
-> +      openssl x509 -fingerprint -sha256 -noout -in ./focal-server-locked=
-.ovpn
-
-Another new file name ? And this is a server file not a client file .. conf=
-using.
-
-
-> +
-> +   This will again output something like
-> +   ::
-> +
-> +        SHA256 Fingerprint=3Dff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:1=
-1:00:ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00
-> +
-> +5. Edit the `server.conf` configuration file and add this new client
-> +   fingerprint as additional line  between :code:`<peer-fingerprint>`
-> +   and :code:`</peer-fingerprint>`
-> +
-> +   After adding *two* clients the part of configuration would look like =
-this:
-> +
-> +   ::
-> +
-> +      <peer-fingerprint>
-> +      ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00:ff:ee:dd:cc:bb:aa:=
-99:88:77:66:55:44:33:22:11:00
-> +      99:88:77:66:55:44:33:22:11:00:ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:=
-33:22:11:00:88:77:66:55:44:33
-> +      </peer-fingperint>
-> +
-> +6. (optional) if the client is an older client that does not support the
-> +   :code:`peer-fingerprint` (OpenVPN 2.5 and older, OpenVPN Connect 3.3
-> +   and older), the config can be modified to still work with those.
-> +
-> +   Remove the line starting with :code:`peer-fingerprint` line. Then
-
-Second 'line' is superfluous.
-
-
-> +   add a new :code:`<ca>` section at the end of the configuration file
-> +   with the contents of the :code:`server.pem` created in step 2 of the
-> +   server setup. The end of `alice.ovpn` file should like:
-> +
-> +   ::
-> +
-> +      [...]  # Beginning of the file skipped
-> +      </cert>
-> +
-> +      # The tun-mtu of the client should match the server MTU
-> +      tun-mtu 1400
-> +      dev tun
-> +
-> +      <ca>
-> +      [contents of the server.pem]
-> +      </ca>
-> +
-> +   Note that we put the :code:`<ca>` section after the :code:`<cert>` se=
-ction
-> +   to make the fingerprint generation from step 4 still work since it wi=
-ll
-> +   only use the first certificate its find.
-
-its find -> it finds (move the s)
-
-
-> +
-> +7. Import the file into the OpenVPN client or just use the
-> +   :code:`openvpn alice.ovpn` to start the VPN.
-> --
-> 2.31.1
->
->
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+many often tutorials -> many tutorials (extra 'often')
 
 
 -----BEGIN PGP SIGNATURE-----
 Version: ProtonMail
 
-wsBzBAEBCAAGBQJgnZ7BACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ06Qwf+KUQVSE5cElO0CD+IfIWRzSCXEeb6pjUXPi29iHn2ZEhwU60N
-SrDKGxB7SFEGG6RZsEN39Hky9yArMQneSbktQ8lr5P2+QuBdki3wySWvqabo
-6hakuOAXUCeCgj5I2X3BHv9Bz33toXD5JVyVwrrZ+bO5dBNE/Jtzycaa3HCg
-Hx2wY02RVIG6SHUAOJJv3LuRIt6pXvRO1BHXcrSy93tlBE1CHeZ+XGVjdj5W
-0R2VXrRToQQdJ3AjI4YkKgIaze9KSXNgfwE9IBB5gmYf4Nk3Gkej1OKSgVKs
-vwOZ0jwXIou0JiN8UHmVJEz4s/WfOwH2Zl2Hb6zmZmujOL5W8kI0Kg=3D=3D
-=3DRSkh
+wsBzBAEBCAAGBQJgnaAYACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
+9muQuJ0jjwgAygbBIeAgigR5msWnDad8NZboh62d7CDlMMEJGQBm5AU54R28
+IYQInLl4LoRx4oFiMQ6aDUzSbkc3dHwnPIDxhEJkh+Js36GOEOBEaOlnPCSq
+lZQEX0l3scOuBdgSXpqYQkysOySnyqxbiTPR+dVZ1h5PsFTMsSFSD/w93n5y
+v+pNi4zXy5fae07dJeQCRCermE+FeRwK8jdGVpUS6awE2q87pcZ7rAF6E13s
+T7WCEkvZt0baK/gInoa5Yv7EcodtJX02uL+A+zfLltg7rgZgrB+Fv7ld3LHo
+X1dHTBDBhCrGANJP/rRwL/D+zzrqCAdR+onSqaH6esaa/nfAAi2Asw=3D=3D
+=3DLDsm
 -----END PGP SIGNATURE-----
 
---b1_VpbRFwHkXjx3LdMU5cggliM7PPzYvMTFndJ3Amd5ClQ
+--b1_AI0oMD9Ok0Oy2dbyXd2b8uC5aZJoR0oj2LOc6JeKJE
 Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
@@ -456,14 +110,13 @@ Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
 dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
 Sy0tLS0tDQo=
 
---b1_VpbRFwHkXjx3LdMU5cggliM7PPzYvMTFndJ3Amd5ClQ
+--b1_AI0oMD9Ok0Oy2dbyXd2b8uC5aZJoR0oj2LOc6JeKJE
 Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 
-sOkDgryUUOkY3rf89/CwWpBEOQgPBySGiJuRhv2HSEQC8RTMrF3hrvbQ0l8jcSHnNuBzfDBZAewP
-FQ==
+sOkDgryUUOkAcTiwipC6O/MFVsyV44ZQ8UCuz1v+H8p74/2K7F5q+0DSWymXZdue4Olv
 
---b1_VpbRFwHkXjx3LdMU5cggliM7PPzYvMTFndJ3Amd5ClQ--
+--b1_AI0oMD9Ok0Oy2dbyXd2b8uC5aZJoR0oj2LOc6JeKJE--
 
 
