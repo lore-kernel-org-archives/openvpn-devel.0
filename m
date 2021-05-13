@@ -1,11 +1,13 @@
-From: Matthias May <matthias.may@...2610...>
-Message-ID: <c80d31ca-bee5-9194-c288-999754eb709a@...2610...>
-Date: Wed, 12 May 2021 22:02:30 +0200
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="y1EHmy1sJmweeDFHpL8yYzMAouJwefc3I"
+References: <20210422151724.2132573-1-arne@...1227...>
+ <20210501223545.3669495-1-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <0cf4ecd5-6c4c-87b1-4ed8-baa8a1346eca@...2181...>
+Date: Thu, 13 May 2021 22:03:58 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] PID is deleted unconditionally on exit
+In-Reply-To: <20210501223545.3669495-1-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Add connection_established as state in
+ tls_multi->context_auth
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,66 +16,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: gert@...1296..., openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
---y1EHmy1sJmweeDFHpL8yYzMAouJwefc3I
-Content-Type: multipart/mixed; boundary="7ao70Wi0KQKsLkIqhsTyopvKeIE8WlMe5";
- protected-headers="v1"
-From: Matthias May <matthias.may@...2610...>
-To: gert@...1296..., openvpn-devel@lists.sourceforge.net
-Message-ID: <c80d31ca-bee5-9194-c288-999754eb709a@...2610...>
-Subject: PID is deleted unconditionally on exit
+Hi,
 
---7ao70Wi0KQKsLkIqhsTyopvKeIE8WlMe5
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+On 02/05/2021 00:35, Arne Schwabe wrote:
+> the socket_info->connection_establish is set through
+> link_socket_set_outgoing_addr when we reach FULL_SYNC. This patch
+> introduces a new state in context_auth that replaces the
+> connection_established state for TLS connections. This make the state
+> machine easier to understand.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Hi Gert
+This change indeed is another step towards the TLS state machine
+simplification.
 
-We recently updated OpenVPN to 2.5.2 and found that the PID
-is since [1] unconditionally deleted when OpenVPN exits.
-This breaks OpenVPN in our init.
-We relied on this file to get the PID to be able to check if the process ac=
-tually started,
-or something went wrong during init, or to see if the process died sometime=
- later.
+It gives a better meaning to the various states, introducing a first
+concept of "order", with the first state being "offline" and the last
+state being "online".
 
-One could argue that the absence of the PID file is indication enough that =
-the process
-doesn't exist anymore, but that doesn't hold up when there are multiple ins=
-tances running.
+Acked-by: Antonio Quartulli <antonio@...515...>
 
-Once the process died we used the PID to look in the syslog for clues as to=
- why the process died,
-and present the user with an error message based on that.
+Compiled on my zoo and tested in my basic linux setup with auth and
+deferred-auth.
 
-Can you please revert this unconditional deletion of the file?
-Or do you see any alternative to get the PID of a process that
-exits immediately (case of misconfiguration)?
-
-BR
-Matthias
-
-[1] https://sourceforge.net/p/openvpn/mailman/message/37055147/
+Regards,
 
 
-
-
---7ao70Wi0KQKsLkIqhsTyopvKeIE8WlMe5--
-
---y1EHmy1sJmweeDFHpL8yYzMAouJwefc3I
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wnsEABYIACMWIQR34wKNh4Jxr+4dJ/3fdrYEUzwNvgUCYJw0VgUDAAAAAAAKCRDfdrYEUzwNvpVx
-AQDfsFmACf7r0YcFwLAwFMQXk2Kl0iV+r9chUTS/eQ2IkAEAs6VugLh4+5uXcGmAqV4SJEVW1jAn
-ecwpmt1WU51ZBAc=
-=x4gN
------END PGP SIGNATURE-----
-
---y1EHmy1sJmweeDFHpL8yYzMAouJwefc3I--
+-- 
+Antonio Quartulli
 
