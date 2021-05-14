@@ -1,10 +1,13 @@
-Date: Fri, 14 May 2021 15:10:23 +0200 (CEST)
-Message-Id: <202105141310.14EDANj1093449@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210512131511.1309914-7-arne@...1227...>
-References: <20210512131511.1309914-7-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add noreturn attribute for MSVC
- to assert_failed method.
+References: <20210512131511.1309914-1-arne@...1227...>
+ <20210512131511.1309914-10-arne@...1227...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <c21f848a-adb1-88b3-7d7f-b8fb3152f617@...2080...>
+Date: Fri, 14 May 2021 15:27:10 +0200
+MIME-Version: 1.0
+In-Reply-To: <20210512131511.1309914-10-arne@...1227...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH 9/9] Add detailed man page section to
+ setup a OpenVPN setup with peer-fingerprint
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,41 +16,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+On 12/05/2021 15:15, Arne Schwabe wrote:
+> This is meant to give new users a quickstart for a useable OpenVPN
+> setup. Our own documentation is lacking in this regard and many often
+> tutorials that can be found online are often questionable in some
+> aspects.
+> 
+> Linking the invidiaul RST file on github also give a tutorial
+> in a nicely formatted way.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>   Changes.rst                              |   4 +
+>   doc/Makefile.am                          |   1 +
+>   doc/man-sections/example-fingerprint.rst | 194 +++++++++++++++++++++++
+>   3 files changed, 199 insertions(+)
+>   create mode 100644 doc/man-sections/example-fingerprint.rst
+> 
+> diff --git a/Changes.rst b/Changes.rst
+> index 9185b55f7..f1c739f99 100644
+> --- a/Changes.rst
+> +++ b/Changes.rst
+> @@ -25,6 +25,10 @@ Certificate pinning/verify peer fingerprint
+>       fingerprint of the peer. The option takes use a number of allowed
+>       SHA256 certificate fingerprints.
+>   
+> +    See the man page section "Small OpenVPN setup with peer-fingerprint"
+> +    for a tutorial how to use this feature. This is also available online
+> +    under https://github.com/openvpn/openvpn/blob/master/doc/man-sections/example-fingerprint.rst
+> +
+>   TLS mode with self-signed certificates
+>       When ``--peer-fingerprint`` is used, the ``--ca`` and ``--capath`` option
+>       become optional. This allows for small OpenVPN setups without setting up
+> diff --git a/doc/Makefile.am b/doc/Makefile.am
+> index e411f5f9d..e7022c085 100644
+> --- a/doc/Makefile.am
+> +++ b/doc/Makefile.am
+> @@ -25,6 +25,7 @@ dist_noinst_DATA = \
+>   	man-sections/connection-profiles.rst \
+>   	man-sections/encryption-options.rst \
+>   	man-sections/examples.rst \
+> +	man-sections/examples.rst \
 
-I can't claim to understand the MSVC intricacies, but the explanation
-is good, and it shouldn't break non-MSVC compiles.  The dangling ";" 
-after an #endif is truly OpenVPN-style ugly, though...  we avoid
-it elsewhere by defining
+I suspect you intended to add doc/man-sections/example-fingerprint.rst 
+instead of adding examples.rst twice.
 
-  #define __attribute__(x)
+To make this file appear in the openvpn(8) man page, you also need to 
+include it from doc/openvpn.8.rst.
 
-for MSVC builds, but error.h is special... the code would benefit from
-a comment, though.
-
-Your patch has been applied to the master branch.
-
-commit ad2140e0337f99c183e732b61df03ae29bdec766
-Author: Arne Schwabe
-Date:   Wed May 12 15:15:08 2021 +0200
-
-     Add noreturn attribute for MSVC to assert_failed method.
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210512131511.1309914-7-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22344.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Maybe we should also consider moving all these configuration examples 
+out of the main openvpn(8) man page and into a openvpn-examples(7) man 
+page.  This can be done after this change, though.
 
 
---
+-- 
 kind regards,
 
-Gert Doering
+David Sommerseth
+OpenVPN Inc
 
 
