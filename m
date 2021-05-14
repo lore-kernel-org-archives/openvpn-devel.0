@@ -1,14 +1,10 @@
-References: <20210512131511.1309914-1-arne@...1227...>
- <20210512131511.1309914-10-arne@...1227...>
- <c21f848a-adb1-88b3-7d7f-b8fb3152f617@...2080...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <42ed2aef-ebca-073c-734a-3c7cc5d09a58@...1227...>
-Date: Fri, 14 May 2021 15:57:16 +0200
-MIME-Version: 1.0
-In-Reply-To: <c21f848a-adb1-88b3-7d7f-b8fb3152f617@...2080...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 9/9] Add detailed man page section to
- setup a OpenVPN setup with peer-fingerprint
+Date: Fri, 14 May 2021 16:09:53 +0200 (CEST)
+Message-Id: <202105141409.14EE9rIE094253@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210512131511.1309914-8-arne@...1227...>
+References: <20210512131511.1309914-8-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Move utility function from
+ win32.c to win32-util.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,31 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <openvpn@...2080...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+Acked-by: Gert Doering <gert@...1296...>
+
+Looks reasonable, no code changes, just moves.
+
+Subjected this to a "make distcheck" on linux (new files...), and to
+an Ubuntu18/MinGW cross build.  Both passed.
+
+Your patch has been applied to the master branch.
+
+commit 5a571fb0f68ce6961cddfa495af2cedf3ee0e216
+Author: Arne Schwabe
+Date:   Wed May 12 15:15:09 2021 +0200
+
+     Move utility function from win32.c to win32-util.c
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210512131511.1309914-8-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22348.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
->> +++ b/doc/Makefile.am
->> @@ -25,6 +25,7 @@ dist_noinst_DATA = \
->>       man-sections/connection-profiles.rst \
->>       man-sections/encryption-options.rst \
->>       man-sections/examples.rst \
->> +    man-sections/examples.rst \
-> 
-> I suspect you intended to add doc/man-sections/example-fingerprint.rst
-> instead of adding examples.rst twice.
-> 
-> To make this file appear in the openvpn(8) man page, you also need to
-> include it from doc/openvpn.8.rst.
-> 
-> Maybe we should also consider moving all these configuration examples
-> out of the main openvpn(8) man page and into a openvpn-examples(7) man
-> page.  This can be done after this change, though.
-> 
-> 
+--
+kind regards,
 
-We can also make that a patch before this patch in the patch set.
-However, I haven't looked at all the man page generation magic to
-understand how hard it would be to create an extra man page.
+Gert Doering
 
-Arne
 
