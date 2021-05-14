@@ -1,10 +1,10 @@
-Date: Fri, 14 May 2021 13:54:05 +0200 (CEST)
-Message-Id: <202105141154.14EBs5Zq079359@...2054...>
+Date: Fri, 14 May 2021 14:01:49 +0200 (CEST)
+Message-Id: <202105141201.14EC1nCX086140@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210512131511.1309914-5-arne@...1227...>
-References: <20210512131511.1309914-5-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add missing free_key_ctx for
- auth_token
+In-Reply-To: <20210512131511.1309914-2-arne@...1227...>
+References: <20210512131511.1309914-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove explicit struct iovec
+ check (HAVE_IOVEC)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,31 +18,22 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I won't claim to understand the lifetime of the various copies of
-c1.ks.auth_token_key made by code in init.c (to "to.auth_token_key"
-or "other contexts") - but it seems that these all are copying 
-c1.ks.ssl_ctx as well - and if that can be safely free()'ed, the
-other one should be fine, too.  I also checked that free_key_ctx()
-is safe to be used should we have no auth_token_key at all.
+Acked-by: Gert Doering <gert@...1296...>
 
-Your patch has been applied to the master and release/2.5 branch.
+"because it makes sense" - lightly compile tested.
 
-release/2.4 does not have the offending code (no key-based tokens).
+Your patch has been applied to the master branch.
 
-I have only compile-tested 2.5 and master ("it should be fine"),
-but if not, the server-side test rig will find it later today...
-
-commit fe39156a386bf0dbe79abe43717c84843830e3c0 (master)
-commit 6471fd2ab1d07ad24c2c92e7fbda6bd645dd84c8 (release/2.5)
+commit 92994e682fa5f27e0c5126f16bbfae7d582c4e9c
 Author: Arne Schwabe
-Date:   Wed May 12 15:15:06 2021 +0200
+Date:   Wed May 12 15:15:03 2021 +0200
 
-     Add missing free_key_ctx for auth_token
+     Remove explicit struct iovec check (HAVE_IOVEC)
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20210512131511.1309914-5-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22345.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210512131511.1309914-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22343.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
