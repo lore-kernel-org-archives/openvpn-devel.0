@@ -1,14 +1,14 @@
-References: <20200717171036.20687-1-davids@...515...>
- <6062d64c-14ef-0e0d-4e83-925b79b4900b@...1227...>
- <7030cf8b-d047-107d-21b8-f02c8a1338c9@...1227...>
- <77750051-9589-15db-34cb-3aacc8b69694@...2181...>
+References: <E1lSJph-0004I0-FL@...2479...>
+ <8b081dd5-2c1d-c71b-8af0-d4c886e4260e@...1227...>
+ <E1lTjOz-0003I1-MM@...2479...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <c120ccab-50b8-fc24-1edc-6229d2b75ac5@...1856...>
-Date: Sun, 16 May 2021 15:23:33 +0200
+Message-ID: <8d0af093-f901-e378-79e3-f377bbce5458@...1856...>
+Date: Sun, 16 May 2021 15:48:26 +0200
 MIME-Version: 1.0
-In-Reply-To: <77750051-9589-15db-34cb-3aacc8b69694@...2181...>
+In-Reply-To: <E1lTjOz-0003I1-MM@...2479...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Remove --no-replay
+Subject: Re: [Openvpn-devel] [PATCH] Change CTR DRBG update function call to
+ new mbedtls 2.16.0 API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,85 +18,62 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 07-04-2021 17:50, Antonio Quartulli wrote:
-> On 26/07/2020 15:31, Arne Schwabe wrote:
->> Am 26.07.20 um 02:01 schrieb Arne Schwabe:
->>> Am 17.07.20 um 19:10 schrieb David Sommerseth:
->>>> The --no-replay feature is considered to be a security weakness, which
->>>> was also highlighed during the OpenVPN 2.4 security audit [0].  This
->>>> option was added to the DeprecatedOptions[1] list and has been reported
->>>> as deprecated since OpenVPN 2.4.
+On 06-04-2021 12:55, Maximilian Fillinger wrote:
+>> Am 02.04.21 um 15:26 schrieb Max Fillinger:
+>>> From: Uipko Berghuis <uipko.berghuis@...1435...>
 >>>
->>> As a side note, removing this feature weakens the ability to use OpenVPN
->>> is a pure tunnel without crypto (--auth none, --cipher none and
->>> no-replay) since this removes the ability to disable replay proctection
->>> when no authentication is enabled. (replay protection without auth is
->>> silly as a attacker can just fake the replay id too.)
+>>> In mbedtls 2.16.0 mbedtls_ctr_drbg_update() changed to
+>>> mbedtls_ctr_drbg_update_ret(). Change the function name and handle the
+>>> new return value error code.
+>>> ---
+>>>  src/openvpn/ssl_mbedtls.c | 5 ++++-
+>>>  1 file changed, 4 insertions(+), 1 deletion(-)
 >>>
->>> Acked-By: Arne Schwabe
+>>> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+>>> index 5d7af351..56e9f045 100644
+>>> --- a/src/openvpn/ssl_mbedtls.c
+>>> +++ b/src/openvpn/ssl_mbedtls.c
+>>> @@ -950,7 +950,10 @@ tls_ctx_personalise_random(struct tls_root_ctx
+>>> *ctx)
+>>>
+>>>          if (0 != memcmp(old_sha256_hash, sha256_hash,
+>> sizeof(sha256_hash)))
+>>>          {
+>>> -            mbedtls_ctr_drbg_update(cd_ctx, sha256_hash, 32);
+>>> +            if (!mbed_ok(mbedtls_ctr_drbg_update_ret(cd_ctx,
+>> sha256_hash, 32)))
+>>> +            {
+>>> +                msg(M_WARN, "WARNING: failed to personalise random,
+>> could not update CTR_DRBG");
+>>> +            }
+>>>              memcpy(old_sha256_hash, sha256_hash,
+>> sizeof(old_sha256_hash));
+>>>          }
+>>>      }
+>>>
 >>
->> I given that a bit of a thought. But we need to decide if we to support
->> unencrypted transport only session or not in future. If we do not want
->> to support them, then applying this patch is fine, otherwise we should
->> restrict disabling no-replay to --auth none and also --auth none to
->> --cipher none basically:
->>
->> --cipher != none => auth none and no-replay forbidden
->>
->> --cipher == none => allows auth none and also no-replay
->>
->> --cipher none and auth none, warn if no-replay is used that it does not
->> prevent replay attacks. But do not fail since we would break a lot of
->> setups.
+>> This change will break compilation with anything that is < 2.16.0.
 > 
-> I work for the ministry of oversimplification and I think that removing
-> user knobs is simply a good thing.
-> 
-> Following the logic provided by Arne, how about removing the --no-reply
-> knob and making this mechanism automatic?
-> 
-> * if cipher != none -> replay prevention is always enabled;
-> * if cipher == none && auth == none -> replay prevention is disabled.
-> 
-> 
-> [allowing or disabling auth=none should be tackled saparately imho]
+> This function is deprecated in 2.16. I don't mind keeping this change to
+> OpenVPN-NL for now, but for future reference, what's the best solution
+> when a new version of mbedtls removes the function?
 
-Before getting into solutions, let me state a few facts:
+I'd say add a compat-wrapper, like we have many for openssl. Possibly in
+compat-mbedtls.h (mimicing the openssl code) or just in crypto_mbedtls.h
+if we don't have many. Something like (untested/"pseudo"code):
 
-1. Replay protection only really works when authentication is enabled.
-
-2. Our AEAD modes all require replay protection.
-
-3. Automatically disabling replay protection will cause a config
-backward compatibility break.
-
-
-Given 1, if we were to couple allowing --no-replay to some crypto
-settings, I would say it should be coupled to --auth none.
-
-Given 2, how clear is our timeline on sunsetting non-AEAD ciphers? That
-would automatically sunset --no-replay. (I've lost track a bit...)
-
-Point 3 should not really be a problem, because --no-replay has been
-deprecated since 2.4 (2017), and is an edge use-case anyway. But it
-should be a conscious decision.
-
-
-So, unless we're about to sunset non-AEAD ciphers soon (which would
-automatically solve the issue), I would suggest a small variation to
-Antonio's approach:
-
-Remove the option, and:
- * if auth != none -> replay prevention is always enabled;
- * if auth == none -> replay prevention is disabled.
-
-(Of course, considering that auth != none for AEAD cipher modes, even
-when --auth none is set.)
+#if MBEDTLS_VERSION < 2.16
+static inline int mbedtls_ctr_drbg_update_ret(ctx, h, len)
+{
+    mbedtls_ctr_drbg_update(ctx, h, len);
+    return 0;
+}
+#endif
 
 -Steffan
 
