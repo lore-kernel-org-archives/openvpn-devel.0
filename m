@@ -1,13 +1,14 @@
-Date: Mon, 17 May 2021 17:16:02 +0000
+Date: Mon, 17 May 2021 19:07:33 +0000
 From: tincantech <tincantech@...2282...>
 Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <n3em3mH7u7_P9kORtR7dx27nCUaNZq2XLdynQIYd83pPkPDqkp6FiZp4MNIYDy4fBNPbLX44Izq3gGNI9yz_sV8aofHdD0TjDdV00RQERHU=@protonmail.com>
-In-Reply-To: <20210512131511.1309914-10-arne@...1227...>
+Message-ID: <_Qa1MrEhja4PJPpRAazQUD71QQ4czLFCO3p06LajWvO1K9JkzxoFTfH68HPR53MYlPXgsWw77L4Qf3RhNmNLrPaek5HVk5L4L7K75JkFbpE=@protonmail.com>
+In-Reply-To: <n3em3mH7u7_P9kORtR7dx27nCUaNZq2XLdynQIYd83pPkPDqkp6FiZp4MNIYDy4fBNPbLX44Izq3gGNI9yz_sV8aofHdD0TjDdV00RQERHU=@protonmail.com>
 References: <20210512131511.1309914-1-arne@...1227...>
  <20210512131511.1309914-10-arne@...1227...>
+ <n3em3mH7u7_P9kORtR7dx27nCUaNZq2XLdynQIYd83pPkPDqkp6FiZp4MNIYDy4fBNPbLX44Izq3gGNI9yz_sV8aofHdD0TjDdV00RQERHU=@protonmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="b1_a1oEt7VGMwPgvLhn8sCKwogjSzOGZIwitFh70H5dUYY"
+ boundary="b1_fIv3gRwXcHJVMru1FEfTouiNi5DJS11fFFbPkaA"
 Subject: Re: [Openvpn-devel] [PATCH 9/9] Add detailed man page section to
  setup a OpenVPN setup with peer-fingerprint
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,12 +19,12 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: tincantech <tincantech@...2282...>
+Cc: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
 
---b1_a1oEt7VGMwPgvLhn8sCKwogjSzOGZIwitFh70H5dUYY
+--b1_fIv3gRwXcHJVMru1FEfTouiNi5DJS11fFFbPkaA
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,51 +35,42 @@ Hi,
 
 =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
 ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-On Wednesday, 12 May 2021 14:15, Arne Schwabe <arne@...1227...> wrote:
+On Monday, 17 May 2021 18:16, tincantech via Openvpn-devel <openvpn-devel@...465...=
+ists.sourceforge.net> wrote:
 
-> This is meant to give new users a quickstart for a useable OpenVPN
-> setup. Our own documentation is lacking in this regard and many often
-> tutorials that can be found online are often questionable in some
-> aspects.
+> Hi,
 >
+> =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original =
+Message =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
+> On Wednesday, 12 May 2021 14:15, Arne Schwabe arne@...1227... wrote:
+>
+> > This is meant to give new users a quickstart for a useable OpenVPN
+> > setup. Our own documentation is lacking in this regard and many often
+> > tutorials that can be found online are often questionable in some
+> > aspects.
 
-I believe Openvpn in standard mode (Full PKI) would reject an expired
-client certificate.
+I think it is also worth noting that, in it's current form, the
+documentation given does not provide for a --remote-cert-tls solution.
 
-Note: There is absolutely nothing in the manual to confirm this !
-https://build.openvpn.net/man/openvpn-2.5/openvpn.8.html
-On that page there are eight uses of the word 'expire' and they all
-relate to an expired auth-token, this could also probably be improved.
-
-However, Openvpn in peer-fingerprint mode allows an expired client
-certificate to connect.
-
-The client log *does* have a 'WARNING: Your certificate has expired!'
-The server log has nothing about an expired client certificate.
-And, as we all know, _who reads their log files_ anyway ?
-
-The issue here is that the server allows an expired client certificate
-to connect and there is no mention of this change in behaviour.
-
+I may be able to help with that but prefer to log it here first.
 
 Thanks
 R
 
-
 -----BEGIN PGP SIGNATURE-----
 Version: ProtonMail
 
-wsBzBAEBCAAGBQJgoqTPACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ18DQgAiFbKtIV3YXi4YG3qiN429AsLyGd8FR+ysy09aNB/FM9p/70E
-FgobM0x2waAWILLaNOgG/u3B8ocHa6ld0s2h0fJ7ef7FAdo4SRYbosyQFq+Q
-gcv5Z8AzivkOVbK2d9kP9T9HWd4BVOtduHKg/u/pwwQD7GUB4mM9HrztTzy8
-X+oG6197ZZnA9jLUE+wxShttgXf1PP9q39r7gJ798kt1P0zDrtN4gjSTLp5v
-JwdyxMLHnD5YdwqsW31Zu3AnYP+s12xXfq8dZtAP0JaY/qYt/FqU6t+3hNOB
-PLtXCdmr53wPdrkyUOHnzLcOoF2S3M9pDLZW1/JSowginVfUpRpUWQ=3D=3D
-=3Dkmta
+wsBzBAEBCAAGBQJgor7wACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
+9muQuJ3g5wf9EXijgq5+j38umqKpdwIeQQ1F78OeEPMi8/LAxyrGZlSJNvr+
+9OIDwj9ZBE1SOY80f2AGR5tXE7Czl1VT0S+CPcrVnaKadR5dfNB3HpVShOWY
+sFPvmjzY++U0Jmw6/vsV09SCigBv85DU2s+VYmwoBwgq08vc28WvKXPY6DJl
+PxmePhpVbsV/5uZAw+3MismpvPvw7hzDmEEKtZLeqduLFGx9l0D7Apeq+d1Q
+4348BdmeZFaIjk6sKBW45akIjxeLN3wejfp0hUFBYrITVs8ssQUbQUc9uDDu
+CdUxMwoeu5ZhVT7TN5Rh2iSjkFQjjsewTimGLuNr4dT+dUH3ypJvsQ=3D=3D
+=3Dql9l
 -----END PGP SIGNATURE-----
 
---b1_a1oEt7VGMwPgvLhn8sCKwogjSzOGZIwitFh70H5dUYY
+--b1_fIv3gRwXcHJVMru1FEfTouiNi5DJS11fFFbPkaA
 Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
@@ -117,13 +109,13 @@ Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
 dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
 Sy0tLS0tDQo=
 
---b1_a1oEt7VGMwPgvLhn8sCKwogjSzOGZIwitFh70H5dUYY
+--b1_fIv3gRwXcHJVMru1FEfTouiNi5DJS11fFFbPkaA
 Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 
-sOkDgryUUOkHrYcqdQme54hsY+X3CWfOwZhWR4uMUbQ271+t12zE0ZynaAutBzkcxotq2f/qYQ==
+sOkDgryUUOkjqMC6C76YSvVmCTCyUQYXbNJs2O+c8fQyNFruTRbbrMRv57wa8MpNvUSLOpU=
 
---b1_a1oEt7VGMwPgvLhn8sCKwogjSzOGZIwitFh70H5dUYY--
+--b1_fIv3gRwXcHJVMru1FEfTouiNi5DJS11fFFbPkaA--
 
 
