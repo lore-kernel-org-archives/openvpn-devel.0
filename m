@@ -1,15 +1,15 @@
-Date: Mon, 17 May 2021 15:43:43 +0000
+Date: Mon, 17 May 2021 17:16:02 +0000
 From: tincantech <tincantech@...2282...>
 Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <B_H5RfeOxAkA2frG3ndhrMDEDm4mPaJZ5r42OXGfUA1P1C8OLWaYvMuj_R5xmZK0SlI8gcledqO-qnk4xI9A_NBUHBGFHM_U2TWIT0V8P84=@protonmail.com>
-In-Reply-To: <20210517153133.GH976@...1296...>
-References: <TGB05j2zTgH3-jDRcHubPFmTAQrG1hHgF4XtWb8Ytc14RY1RFusKL-QJFkyzi6H849DfuoutjhVZfRkiqAhGyHs9lLnI5tnWKDpaOrRfQv8=@protonmail.com>
- <20210517153133.GH976@...1296...>
+Message-ID: <n3em3mH7u7_P9kORtR7dx27nCUaNZq2XLdynQIYd83pPkPDqkp6FiZp4MNIYDy4fBNPbLX44Izq3gGNI9yz_sV8aofHdD0TjDdV00RQERHU=@protonmail.com>
+In-Reply-To: <20210512131511.1309914-10-arne@...1227...>
+References: <20210512131511.1309914-1-arne@...1227...>
+ <20210512131511.1309914-10-arne@...1227...>
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="b1_Sa1AhSfpBBpcpGNAxltdiQhywGf7DW0IGeb7AUn6Wo"
-Subject: Re: [Openvpn-devel] Feature request - Allow comments inside
- <peer-fingerprint> markers
+ boundary="b1_a1oEt7VGMwPgvLhn8sCKwogjSzOGZIwitFh70H5dUYY"
+Subject: Re: [Openvpn-devel] [PATCH 9/9] Add detailed man page section to
+ setup a OpenVPN setup with peer-fingerprint
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,12 +18,12 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+To: Arne Schwabe <arne@...1227...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
 
---b1_Sa1AhSfpBBpcpGNAxltdiQhywGf7DW0IGeb7AUn6Wo
+--b1_a1oEt7VGMwPgvLhn8sCKwogjSzOGZIwitFh70H5dUYY
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,56 +34,51 @@ Hi,
 
 =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
 ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-On Monday, 17 May 2021 16:31, Gert Doering <gert@...1296...> wrote:
+On Wednesday, 12 May 2021 14:15, Arne Schwabe <arne@...1227...> wrote:
 
-> Hi,
->
-> On Mon, May 17, 2021 at 02:57:32PM +0000, tincantech via Openvpn-devel wr=
-ote:
->
-> > I think it would useful to allow comment inside the <peer-fingerprint> =
-markers.
->
-> I've run across this as well, and share that sentiment. It would be nice.
->
-> That said, I'm not sure how easy it is to implement (the inline-config
-> parser is used for all inline stuff, not only for peer-fingerprint).
+> This is meant to give new users a quickstart for a useable OpenVPN
+> setup. Our own documentation is lacking in this regard and many often
+> tutorials that can be found online are often questionable in some
+> aspects.
 >
 
-<snip due to protonmail>
+I believe Openvpn in standard mode (Full PKI) would reject an expired
+client certificate.
 
->
-> As a workaround, you can put "per user" peer-fingerprint lines into the
-> config:
+Note: There is absolutely nothing in the manual to confirm this !
+https://build.openvpn.net/man/openvpn-2.5/openvpn.8.html
+On that page there are eight uses of the word 'expire' and they all
+relate to an expired auth-token, this could also probably be improved.
 
-<snip due to protonmail>
+However, Openvpn in peer-fingerprint mode allows an expired client
+certificate to connect.
 
->
-> the config option - and the inline block - can appear multiple times.
->
+The client log *does* have a 'WARNING: Your certificate has expired!'
+The server log has nothing about an expired client certificate.
+And, as we all know, _who reads their log files_ anyway ?
 
-Ah nice, I should have thought of that myself !
+The issue here is that the server allows an expired client certificate
+to connect and there is no mention of this change in behaviour.
 
-I can't think of any other reason to allow comments in other inline sections
-and your work around is perfectly suitable for small setups, consider this
-resolved.
 
 Thanks
 R
+
+
 -----BEGIN PGP SIGNATURE-----
 Version: ProtonMail
 
-wsBzBAEBCAAGBQJgoo8lACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ36hQf+Iv76yenMrNbvyi32egQsvjGnIEEHekVr1YLjkm935asSF9NW
-7Pe0XsGhcbcVgupPPhYo+KsfX0wnAEmVClDSn6r2jZQ9r5/DFoBHP2fst7UA
-qPZs5EgLXcaNiBLI3gY6yxaxxrqCiAb4LEoHxdaO4sWGoYUnZxly3H/dkLgE
-NEdxTarhBYPd0Rr5hg0pXIsz+RTGo/Eb/fzqRN7HzZdgk3isVPhtzm0a3tJM
-YhPpa8KOuRh23u5/gVtLsGtKP3uyIA51RD22tv+NC6QOoV32+bvIbaXS+NfN
-tX2sfax7F/Tmhv6EhSWoUSe9GktQyczWGjAQF5Ajv9JkT4j1bTrgig=3D=3D
-=3DUr8w
+wsBzBAEBCAAGBQJgoqTPACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
+9muQuJ18DQgAiFbKtIV3YXi4YG3qiN429AsLyGd8FR+ysy09aNB/FM9p/70E
+FgobM0x2waAWILLaNOgG/u3B8ocHa6ld0s2h0fJ7ef7FAdo4SRYbosyQFq+Q
+gcv5Z8AzivkOVbK2d9kP9T9HWd4BVOtduHKg/u/pwwQD7GUB4mM9HrztTzy8
+X+oG6197ZZnA9jLUE+wxShttgXf1PP9q39r7gJ798kt1P0zDrtN4gjSTLp5v
+JwdyxMLHnD5YdwqsW31Zu3AnYP+s12xXfq8dZtAP0JaY/qYt/FqU6t+3hNOB
+PLtXCdmr53wPdrkyUOHnzLcOoF2S3M9pDLZW1/JSowginVfUpRpUWQ=3D=3D
+=3Dkmta
 -----END PGP SIGNATURE-----
 
---b1_Sa1AhSfpBBpcpGNAxltdiQhywGf7DW0IGeb7AUn6Wo
+--b1_a1oEt7VGMwPgvLhn8sCKwogjSzOGZIwitFh70H5dUYY
 Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
@@ -122,13 +117,13 @@ Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
 dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
 Sy0tLS0tDQo=
 
---b1_Sa1AhSfpBBpcpGNAxltdiQhywGf7DW0IGeb7AUn6Wo
+--b1_a1oEt7VGMwPgvLhn8sCKwogjSzOGZIwitFh70H5dUYY
 Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 
-sOkDgryUUOkrPIXljYDFe2Duw1AF2nS3ezFE5dx7d9HVeT+0usihS+MQJ6+iaBdaSWLZ0kem
+sOkDgryUUOkHrYcqdQme54hsY+X3CWfOwZhWR4uMUbQ271+t12zE0ZynaAutBzkcxotq2f/qYQ==
 
---b1_Sa1AhSfpBBpcpGNAxltdiQhywGf7DW0IGeb7AUn6Wo--
+--b1_a1oEt7VGMwPgvLhn8sCKwogjSzOGZIwitFh70H5dUYY--
 
 
