@@ -1,10 +1,12 @@
-Date: Wed, 19 May 2021 09:24:40 +0200 (CEST)
-Message-Id: <202105190724.14J7OeVr002698@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210511075739.158-1-lstipakov@...277...>
-References: <20210511075739.158-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: openvpnmsica: properly schedule
- reboot in the end of installation
+MIME-Version: 1.0
+References: <20210518143218.14520-1-gert@...1296...>
+ <20210519055808.11861-1-gert@...1296...>
+In-Reply-To: <20210519055808.11861-1-gert@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 19 May 2021 09:26:20 -0400
+Message-ID: <CAKuzo_iLd1QHHgozQV+=STtUz0=KwGmXapMVpAbWs+X1bNk2zg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Ignore leading whitespace and
+ comment lines for peer-fingerprint.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,40 +15,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-While I do not understand all the intricacies of MSI and WiX, the
-fact that Simon has approved the corresponding openvpn-build PR 215
-tells me that this one also should go forward.  I have stared a bit
-at the code, and it seems to be doing what the commit says :-)
+On Wed, May 19, 2021 at 1:58 AM Gert Doering <gert@...1296...> wrote:
+>
+> Inline peer-fingerprint blocks can benefit from a bit of structuring
+> by indentation or by putting comments ("# this is Alice's key").
+>
+> v2: accept ';' and '#' as comment delimiter.  Fix tab-indent.
+>
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  src/openvpn/options.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+>
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index db460796..037454f7 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -1145,8 +1145,13 @@ parse_hash_fingerprint_multiline(const char *str, int nbytes, int msglevel,
+>      const char *line;
+>      while ((line = strsep(&lines, "\n")))
+>      {
+> -        /* skip empty lines */
+> -        if (strlen(line) == 0)
+> +        /* ignore leading whitespace */
+> +        while(isspace(*line))
+> +        {
+> +            line++;
+> +        }
+> +        /* skip empty lines and comment lines */
+> +        if (strlen(line) == 0 || *line == '#' || *line = ';')
 
-I have not tested anything.
+We want ==  :)
 
-Your patch has been applied to the master and release/2.5 branch
-(bugfix).
-
-commit 2f0e3fe1c6c57dd3989951d167e94fe4debe5405 (master)
-commit 3ea57e0c46a922ac87295769283b7691e2dcbdd3 (release/2.5)
-Author: Lev Stipakov
-Date:   Tue May 11 10:57:39 2021 +0300
-
-     openvpnmsica: properly schedule reboot in the end of installation
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210511075739.158-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22335.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Selva
 
