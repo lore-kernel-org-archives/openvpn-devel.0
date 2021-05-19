@@ -1,12 +1,11 @@
-MIME-Version: 1.0
-References: <TGB05j2zTgH3-jDRcHubPFmTAQrG1hHgF4XtWb8Ytc14RY1RFusKL-QJFkyzi6H849DfuoutjhVZfRkiqAhGyHs9lLnI5tnWKDpaOrRfQv8=@protonmail.com>
- <20210518143218.14520-1-gert@...1296...>
+From: Gert Doering <gert@...1296...>
+Date: Wed, 19 May 2021 07:55:44 +0200
+Message-Id: <20210519055544.11676-1-gert@...1296...>
 In-Reply-To: <20210518143218.14520-1-gert@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 18 May 2021 19:23:44 -0400
-Message-ID: <CAKuzo_iXBS=w7A0wtb4XmWw0xmwQY4zEN+-On2ABkCNKQKBgMQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Ignore leading whitespace and comment
- lines for peer-fingerprint.
+References: <20210518143218.14520-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Ignore leading whitespace and comment lines
+ for peer-fingerprint.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,45 +14,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Inline peer-fingerprint blocks can benefit from a bit of structuring
+by indentation or by putting comments ("# this is Alice's key").
 
-On Tue, May 18, 2021 at 10:33 AM Gert Doering <gert@...1296...> wrote:
->
-> Inline peer-fingerprint blocks can benefit from a bit of structuring
-> by indentation or by putting comments ("# this is Alice's key").
->
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->  src/openvpn/options.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
->
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index db460796..cfc30193 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -1145,8 +1145,13 @@ parse_hash_fingerprint_multiline(const char *str, int nbytes, int msglevel,
->      const char *line;
->      while ((line = strsep(&lines, "\n")))
->      {
-> -        /* skip empty lines */
-> -        if (strlen(line) == 0)
-> +       /* ignore leading whitespace */
-> +       while(isspace(*line))
-> +       {
-> +           line++;
-> +       }
-> +        /* skip empty lines and comment lines */
-> +        if (strlen(line) == 0 || *line == '#')
+v2: accept ';' and '#' as comment delimiter.  Fix tab-indent.
 
-As we support two comment characters ('#' and ';'), would be better to
-do the same here too. One could relax the requirement of comment as
-the first character using parse_line(), but this looks generous
-enough.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/options.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-Selva
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index db460796..037454f7 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1145,8 +1145,13 @@ parse_hash_fingerprint_multiline(const char *str, int nbytes, int msglevel,
+     const char *line;
+     while ((line = strsep(&lines, "\n")))
+     {
+-        /* skip empty lines */
+-        if (strlen(line) == 0)
++        /* ignore leading whitespace */
++        while(isspace(*line))
++        {
++            line++;
++        }
++        /* skip empty lines and comment lines */
++        if (strlen(line) == 0 || *line == '#' || *line = ';')
+         {
+             continue;
+         }
+-- 
+2.26.3
+
 
