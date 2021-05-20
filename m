@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 20 May 2021 17:09:32 +0200
-Message-Id: <20210520150932.2565217-2-arne@...1227...>
-In-Reply-To: <20210520150932.2565217-1-arne@...1227...>
-References: <20210520150932.2565217-1-arne@...1227...>
+Date: Thu, 20 May 2021 17:11:42 +0200
+Message-Id: <20210520151148.2565578-3-arne@...1227...>
+In-Reply-To: <20210520151148.2565578-1-arne@...1227...>
+References: <20210520151148.2565578-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 2/2] Add detailed man page section to
- setup a OpenVPN setup with peer-fingerprint
+Subject: [Openvpn-devel] [PATCH v2 3/9] Add connection_established as state
+ in tls_multi->context_auth
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,265 +18,276 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is meant to give new users a quickstart for a useable OpenVPN
-setup. Our own documentation is lacking in this regard and many
-tutorials that can be found online are often questionable in some
-aspects.
+the socket_info->connection_establish is set through
+link_socket_set_outgoing_addr when we reach FULL_SYNC. This patch
+introduces a new state in context_auth that replaces the
+connection_established state for TLS connections. This make the state
+machine easier to understand.
 
-Linking the individaul RST file on github also give a tutorial
-in a nicely formatted way.
-
-Patch V2: Fix grammar/spelling mistakes (thanks ticantech), move
-          to openvpn-examples(5).
+Patch v2: fix p2p mode server without (without ncp)
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- Changes.rst                              |   4 +
- doc/Makefile.am                          |   1 +
- doc/man-sections/example-fingerprint.rst | 196 +++++++++++++++++++++++
- doc/openvpn-examples.5.rst               |   1 +
- 4 files changed, 202 insertions(+)
- create mode 100644 doc/man-sections/example-fingerprint.rst
+ src/openvpn/forward.c    |  6 +++---
+ src/openvpn/forward.h    | 13 ++++++++++++-
+ src/openvpn/multi.c      | 15 ++++++++-------
+ src/openvpn/occ.c        |  2 +-
+ src/openvpn/openvpn.h    |  4 +++-
+ src/openvpn/push.c       |  2 +-
+ src/openvpn/ssl.c        | 38 ++++++++++++++++++++++++++++----------
+ src/openvpn/ssl_common.h | 12 +++++++++---
+ 8 files changed, 65 insertions(+), 27 deletions(-)
 
-diff --git a/Changes.rst b/Changes.rst
-index 9185b55f7..5ac24307f 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -25,6 +25,10 @@ Certificate pinning/verify peer fingerprint
-     fingerprint of the peer. The option takes use a number of allowed
-     SHA256 certificate fingerprints.
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index e302d8e0a..692ca7271 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -280,7 +280,7 @@ void
+ check_connection_established(struct context *c)
+ {
  
-+    See the man page section "Small OpenVPN setup with peer-fingerprint"
-+    for a tutorial on how to use this feature. This is also available online
-+    under https://github.com/openvpn/openvpn/blob/master/doc/man-sections/example-fingerprint.rst
-+
- TLS mode with self-signed certificates
-     When ``--peer-fingerprint`` is used, the ``--ca`` and ``--capath`` option
-     become optional. This allows for small OpenVPN setups without setting up
-diff --git a/doc/Makefile.am b/doc/Makefile.am
-index 1dbbddf58..d86560174 100644
---- a/doc/Makefile.am
-+++ b/doc/Makefile.am
-@@ -25,6 +25,7 @@ dist_noinst_DATA = \
- 	man-sections/client-options.rst \
- 	man-sections/connection-profiles.rst \
- 	man-sections/encryption-options.rst \
-+	man-sections/example-fingerprint.rst \
- 	man-sections/examples.rst \
- 	man-sections/generic-options.rst \
- 	man-sections/inline-files.rst \
-diff --git a/doc/man-sections/example-fingerprint.rst b/doc/man-sections/example-fingerprint.rst
-new file mode 100644
-index 000000000..c91ca64b9
---- /dev/null
-+++ b/doc/man-sections/example-fingerprint.rst
-@@ -0,0 +1,196 @@
-+Small OpenVPN setup with peer-fingerprint
-+=========================================
-+This section consists of instructions how to build a small OpenVPN setup with the
-+:code:`peer-fingerprint` option. This has the advantage of being easy to setup
-+and should be suitable for most small lab and home setups without the need for a PKI.
-+For bigger scale setup setting up a PKI (e.g. via easy-rsa) is still recommended.
-+
-+Both server and client configuration can of be further modified to customise the
-+setup.
-+
-+Server setup
-+------------
-+1. Install openvpn
-+
-+   Compile from source-code (see `INSTALL` file) or install via a distribution (apt/yum/ports)
-+   or via installer (Windows).
-+
-+2. Generate a self-signed certificate for the server:
-+   ::
-+
-+    openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout serverkey.pem -out server.pem -nodes -sha256 -days 3650 -subj '/CN=server'
-+
-+3. Generate SHA256 fingerprint of the server certificate
-+
-+   Use the OpenSSL command line utility to view the fingerprint of just
-+   created certificate:
-+   ::
-+
-+    openssl x509 -fingerprint -sha256 -in server.pem -noout
-+
-+   This output something similar to:
-+   ::
-+
-+     SHA256 Fingerprint=00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff
-+
-+
-+3. Write a server configuration (`server.conf`):
-+::
-+
-+    # The server certificate we created in step 1
-+    cert server.pem
-+    key serverkey.pem
-+
-+    dh none
-+    dev tun
-+
-+    # Listen on IPv6+IPv4 simultaneously
-+    proto udp6
-+
-+    # The ip address the server will distribute
-+    server 192.168.234.0 255.255.255.0
-+    server-ipv6 fd00:6f76:706e::/64
-+
-+    # A tun-mtu of 1400 avoids problems of too big packets after VPN encapsulation
-+    tun-mtu 1400
-+
-+    # The fingerprints of your clients. After adding/removing one here restart the
-+    # server
-+    <peer-fingerprint>
-+    </peer-fingerprint>
-+
-+    # Notify clients when you restart the server to reconnect quickly
-+    explicit-exit-notify 1
-+
-+    # Ping every 60s, restart if no data received for 5 minutes
-+    keepalive 60 300
-+
-+4. Add at least one client as described in the client section.
-+
-+5. Start the server.
-+    - On systemd based distributions move `server.pem`, `serverkey.pem` and
-+      `server.conf` to :code:`/etc/openvpn/server` and start it via systemctl
-+
-+      ::
-+
-+          sudo mv server.conf serverkey.pem server.pem /etc/openvpn/server
-+
-+          sudo systemctl start openvpn-server@...185...
-+
-+Adding a client
-+---------------
-+1. Install OpenVPN
-+
-+2. Generate a self-signed certificate for the client. In this example the client
-+   name is alice. Each client should have a unique name. Replace alice with a
-+   different name for each client.
-+   ::
-+
-+      openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -nodes -sha256 -days 3650 -subj '/CN=alice'
-+
-+   This generate a certificate and a key for the client. The output of the command will look
-+   something like this:
-+   ::
-+
-+      -----BEGIN PRIVATE KEY-----
-+      [base64 content]
-+      -----END PRIVATE KEY-----
-+      -----
-+      -----BEGIN CERTIFICATE-----
-+      [base 64 content]
-+      -----END CERTIFICATE-----
-+
-+
-+3. Create a new client configuration file. In this example we will name the file
-+   `alice.ovpn`:
-+
-+   ::
-+
-+      # The name of your server to connect to
-+      remote yourserver.example.net
-+      client
-+      # use a random source port instead the fixed 1194
-+      nobind
-+
-+      # Uncomment the following line if you want to route
-+      # all traffic via the VPN
-+      # redirect-gateway def1 ipv6
-+
-+      # To set a a DNS server
-+      # dhcp-option DNS 192.168.234.1
-+
-+      <key>
-+      -----BEGIN PRIVATE KEY-----
-+      [Insert here the key created in step 2]
-+      -----END PRIVATE KEY-----
-+      </key>
-+      <cert>
-+      -----BEGIN CERTIFICATE-----
-+      [Insert here the certificate created in step 2]
-+      -----END CERTIFICATE-----
-+      </cert>
-+
-+      # This is the fingerprint of the server that we trust. We generated this fingerprint
-+      # in step 2 of the server setup
-+      peer-fingerprint 00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff
-+
-+      # The tun-mtu of the client should match the server MTU
-+      tun-mtu 1400
-+      dev tun
-+
-+
-+4. Generate the fingerprint of the client certificate. For that we will
-+   let OpenSSL read the client configuration file as the x509 command will
-+   ignore anything that is not between the begin and end markers of the certificate:
-+
-+   ::
-+
-+      openssl x509 -fingerprint -sha256 -noout -in alice.ovpn
-+
-+   This will again output something like
-+   ::
-+
-+        SHA256 Fingerprint=ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00:ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00
-+
-+5. Edit the `server.conf` configuration file and add this new client
-+   fingerprint as additional line  between :code:`<peer-fingerprint>`
-+   and :code:`</peer-fingerprint>`
-+
-+   After adding *two* clients the part of configuration would look like this:
-+
-+   ::
-+
-+      <peer-fingerprint>
-+      ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00:ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00
-+      99:88:77:66:55:44:33:22:11:00:ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00:88:77:66:55:44:33
-+      </peer-fingperint>
-+
-+6. (optional) if the client is an older client that does not support the
-+   :code:`peer-fingerprint` (e.g. OpenVPN 2.5 and older, OpenVPN Connect 3.3
-+   and older), the client config `alice.ovpn` can be modified to still work with
-+   these clients.
-+
-+   Remove the line starting with :code:`peer-fingerprint`. Then
-+   add a new :code:`<ca>` section at the end of the configuration file
-+   with the contents of the :code:`server.pem` created in step 2 of the
-+   server setup. The end of `alice.ovpn` file should like:
-+
-+   ::
-+
-+      [...]  # Beginning of the file skipped
-+      </cert>
-+
-+      # The tun-mtu of the client should match the server MTU
-+      tun-mtu 1400
-+      dev tun
-+
-+      <ca>
-+      [contents of the server.pem]
-+      </ca>
-+
-+   Note that we put the :code:`<ca>` section after the :code:`<cert>` section
-+   to make the fingerprint generation from step 4 still work since it will
-+   only use the first certificate it find.
-+
-+7. Import the file into the OpenVPN client or just use the
-+   :code:`openvpn alice.ovpn` to start the VPN.
-diff --git a/doc/openvpn-examples.5.rst b/doc/openvpn-examples.5.rst
-index 988b6027b..0e1b6c4f6 100644
---- a/doc/openvpn-examples.5.rst
-+++ b/doc/openvpn-examples.5.rst
-@@ -14,4 +14,5 @@ INTRODUCTION
+-    if (CONNECTION_ESTABLISHED(c))
++    if (connection_established(c))
+     {
+         /* if --pull was specified, send a push request to server */
+         if (c->c2.tls_multi && c->options.pull)
+@@ -536,7 +536,7 @@ encrypt_sign(struct context *c, bool comp_frag)
+      * has not yet succeeded. In non-TLS tls_multi mode is not defined
+      * and we always pass packets.
+      */
+-    if (c->c2.tls_multi && c->c2.tls_multi->multi_state != CAS_SUCCEEDED)
++    if (c->c2.tls_multi && c->c2.tls_multi->multi_state < CAS_CONNECT_DONE)
+     {
+         c->c2.buf.len = 0;
+     }
+@@ -971,7 +971,7 @@ process_incoming_link_part1(struct context *c, struct link_socket_info *lsi, boo
+          * has not yet succeeded. In non-TLS mode tls_multi is not defined
+          * and we always pass packets.
+          */
+-        if (c->c2.tls_multi && c->c2.tls_multi->multi_state != CAS_SUCCEEDED)
++        if (c->c2.tls_multi && c->c2.tls_multi->multi_state < CAS_CONNECT_DONE)
+         {
+             c->c2.buf.len = 0;
+         }
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index 2a67c1445..3461e6422 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -445,6 +445,17 @@ io_wait(struct context *c, const unsigned int flags)
+     }
+ }
  
- This man page gives a few simple examples to create OpenVPN setups and configuration files.
+-#define CONNECTION_ESTABLISHED(c) (get_link_socket_info(c)->connection_established)
++static inline bool
++connection_established(struct context *c)
++{
++    if (c->c2.tls_multi)
++    {
++        return c->c2.tls_multi->multi_state >= CAS_CONNECT_DONE;
++    }
++    else
++    {
++        return get_link_socket_info(c)->connection_established;
++    }
++}
  
-+.. include:: man-sections/example-fingerprint.rst
- .. include:: man-sections/examples.rst
+ #endif /* FORWARD_H */
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index def5dd40b..3f9710134 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -674,7 +674,8 @@ multi_close_instance(struct multi_context *m,
+ #ifdef ENABLE_MANAGEMENT
+     set_cc_config(mi, NULL);
+ #endif
+-    if (mi->context.c2.tls_multi->multi_state == CAS_SUCCEEDED)
++
++    if (mi->context.c2.tls_multi->multi_state >= CAS_CONNECT_DONE)
+     {
+         multi_client_disconnect_script(mi);
+     }
+@@ -775,7 +776,7 @@ multi_create_instance(struct multi_context *m, const struct mroute_addr *real)
+         goto err;
+     }
+ 
+-    mi->context.c2.tls_multi->multi_state = CAS_PENDING;
++    mi->context.c2.tls_multi->multi_state = CAS_NOT_CONNECTED;
+ 
+     if (hash_n_elements(m->hash) >= m->max_clients)
+     {
+@@ -2407,7 +2408,7 @@ multi_client_connect_late_setup(struct multi_context *m,
+     mi->reporting_addr_ipv6 = mi->context.c2.push_ifconfig_ipv6_local;
+ 
+     /* set context-level authentication flag */
+-    mi->context.c2.tls_multi->multi_state = CAS_SUCCEEDED;
++    mi->context.c2.tls_multi->multi_state = CAS_CONNECT_DONE;
+ 
+     /* authentication complete, calculate dynamic client specific options */
+     if (!multi_client_set_protocol_options(&mi->context))
+@@ -2649,9 +2650,9 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
+ 
+             case CC_RET_DEFERRED:
+                 /*
+-                 * we already set client_connect_status to DEFERRED_RESULT or
++                 * we already set multi_status to DEFERRED_RESULT or
+                  * DEFERRED_NO_RESULT. We just return
+-                 * from the function as having client_connect_status
++                 * from the function as having multi_status
+                  */
+                 return;
+ 
+@@ -3003,8 +3004,8 @@ multi_process_post(struct multi_context *m, struct multi_instance *mi, const uns
+         {
+             /* connection is "established" when SSL/TLS key negotiation succeeds
+              * and (if specified) auth user/pass succeeds */
+-            if (is_cas_pending(mi->context.c2.tls_multi->multi_state)
+-                && CONNECTION_ESTABLISHED(&mi->context))
++
++            if (is_cas_pending(mi->context.c2.tls_multi->multi_state))
+             {
+                 multi_connection_established(m, mi);
+             }
+diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c
+index 3ff351aa0..c169838e1 100644
+--- a/src/openvpn/occ.c
++++ b/src/openvpn/occ.c
+@@ -185,7 +185,7 @@ check_send_occ_req_dowork(struct context *c)
+ void
+ check_send_occ_load_test_dowork(struct context *c)
+ {
+-    if (CONNECTION_ESTABLISHED(c))
++    if (connection_established(c))
+     {
+         const struct mtu_load_test *entry;
+ 
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 6e4651cf5..2b74975fa 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -206,7 +206,7 @@ struct context_1
+ 
+ 
+ static inline bool
+-is_cas_pending(enum client_connect_status cas)
++is_cas_pending(enum multi_status cas)
+ {
+     return cas == CAS_PENDING || cas == CAS_PENDING_DEFERRED
+            || cas == CAS_PENDING_DEFERRED_PARTIAL;
+@@ -237,6 +237,8 @@ struct context_2
+ 
+     struct link_socket *link_socket;     /* socket used for TCP/UDP connection to remote */
+     bool link_socket_owned;
++
++    /** This variable is used instead link_socket->info for P2MP UDP childs */
+     struct link_socket_info *link_socket_info;
+     const struct link_socket *accept_from; /* possibly do accept() on a parent link_socket */
+ 
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 85f9488a5..2d621e472 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -867,7 +867,7 @@ process_incoming_push_request(struct context *c)
+         send_auth_failed(c, client_reason);
+         ret = PUSH_MSG_AUTH_FAILURE;
+     }
+-    else if (c->c2.tls_multi->multi_state == CAS_SUCCEEDED)
++    else if (c->c2.tls_multi->multi_state >= CAS_CONNECT_DONE)
+     {
+         time_t now;
+ 
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 7eb356ddf..9f3f83f16 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2381,19 +2381,22 @@ key_method_2_write(struct buffer *buf, struct tls_multi *multi, struct tls_sessi
+      * If we're a p2mp server to allow NCP, the first key
+      * generation is postponed until after the connect script finished and the
+      * NCP options can be processed. Since that always happens at after connect
+-     * script options are available the CAS_SUCCEEDED status is identical to
+-     * NCP options are processed and we have no extra state for NCP finished.
++     * script options are available the CAS_CONNECT_DONE status is identical to
++     * NCP options are processed and do not wait for NCP being finished.
+      */
+-    if (session->opt->server && (session->opt->mode != MODE_SERVER
+-            || multi->multi_state == CAS_SUCCEEDED))
++    if (ks->authenticated > KS_AUTH_FALSE && session->opt->server
++        && ((session->opt->mode == MODE_SERVER && multi->multi_state >= CAS_CONNECT_DONE)
++            || (session->opt->mode == MODE_POINT_TO_POINT && !session->opt->pull)))
+     {
+-        if (ks->authenticated > KS_AUTH_FALSE)
++        /* if key_id >= 1, is a renegotiation, so we use the already established
++         * parameters and do not need to delay anything. */
++
++        /* key-id == 0 and multi_state >= CAS_CONNECT_DONE is a special case of
++         * the server reusing the session of a reconnecting client. */
++        if (!tls_session_generate_data_channel_keys(session))
+         {
+-            if (!tls_session_generate_data_channel_keys(session))
+-            {
+-                msg(D_TLS_ERRORS, "TLS Error: server generate_key_expansion failed");
+-                goto error;
+-            }
++            msg(D_TLS_ERRORS, "TLS Error: server generate_key_expansion failed");
++            goto error;
+         }
+     }
+ 
+@@ -2801,6 +2804,21 @@ tls_process(struct tls_multi *multi,
+                 /* Set outgoing address for data channel packets */
+                 link_socket_set_outgoing_addr(to_link_socket_info, &ks->remote_addr, session->common_name, session->opt->es);
+ 
++                /* Check if we need to advance the tls_multi state machine */
++                if (multi->multi_state == CAS_NOT_CONNECTED)
++                {
++                    if (session->opt->mode == MODE_SERVER)
++                    {
++                        /* On a server we continue with running connect scripts next */
++                        multi->multi_state = CAS_PENDING;
++                    }
++                    else
++                    {
++                        /* Skip the connect script related states */
++                        multi->multi_state = CAS_CONNECT_DONE;
++                    }
++                }
++
+                 /* Flush any payload packets that were buffered before our state transitioned to S_ACTIVE */
+                 flush_payload_buffer(ks);
+ 
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 53325e556..8a65ab984 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -504,12 +504,18 @@ struct tls_session
+ /* client authentication state, CAS_SUCCEEDED must be 0 since
+  * non multi code path still checks this variable but does not initialise it
+  * so the code depends on zero initialisation */
+-enum client_connect_status {
+-    CAS_SUCCEEDED=0,
++
++/* CAS_NOT_CONNECTED is the initial state for every context. When the *first*
++ * tls_session reaches S_ACTIVE, this state machine moves to CAS_PENDING (server)
++ * or CAS_CONNECT_DONE (client/p2p) as clients skip the stages associated with
++ * connect scripts/plugins */
++enum multi_status {
++    CAS_NOT_CONNECTED,
+     CAS_PENDING,
+     CAS_PENDING_DEFERRED,
+     CAS_PENDING_DEFERRED_PARTIAL,   /**< at least handler succeeded, no result yet*/
+     CAS_FAILED,
++    CAS_CONNECT_DONE,
+ };
+ 
+ 
+@@ -548,7 +554,7 @@ struct tls_multi
+ 
+     int n_sessions;             /**< Number of sessions negotiated thus
+                                  *   far. */
+-    enum client_connect_status multi_state;
++    enum multi_status multi_state;
+ 
+     /*
+      * Number of errors.
 -- 
 2.31.1
 
