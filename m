@@ -1,15 +1,16 @@
-Date: Wed, 19 May 2021 23:54:08 +0000
+Date: Thu, 20 May 2021 00:13:17 +0000
 From: tincantech <tincantech@...2282...>
 Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <CC-0gkkt-UQgzydzj1_10jAEhFrwrZvCVy0S43DdCNychAnb9SGFY2jLdAAHNnZrnza5Uaj5r9NOn-FwsG6My4f8j8CJkVSsT89VJyjMF4M=@protonmail.com>
-In-Reply-To: <1468b026-4ad2-75a6-5f55-779378c79872@...1227...>
+Message-ID: <0pYx3XCRJwKxmfH3wmDjO678sklYXzudcUS2n1v_4jmPX1Uac9ku2D9AWnFr5NwV8zkH332grqlsLAtyHWUI97MfIzBX3y87Kr0QWJj_p-o=@protonmail.com>
+In-Reply-To: <CC-0gkkt-UQgzydzj1_10jAEhFrwrZvCVy0S43DdCNychAnb9SGFY2jLdAAHNnZrnza5Uaj5r9NOn-FwsG6My4f8j8CJkVSsT89VJyjMF4M=@protonmail.com>
 References: <20210512131511.1309914-1-arne@...1227...>
  <20210512131511.1309914-10-arne@...1227...>
  <AAoNQJ8hje_YpG-e2TN2X_-zH6YoLvPujzpWicW_D13NeAysfWRNi89BMQDr-vld9FGAI7cbafIiFgYVYlnql_dE3kCWKQevVHV7tP1dTQ0=@protonmail.com>
  <1468b026-4ad2-75a6-5f55-779378c79872@...1227...>
+ <CC-0gkkt-UQgzydzj1_10jAEhFrwrZvCVy0S43DdCNychAnb9SGFY2jLdAAHNnZrnza5Uaj5r9NOn-FwsG6My4f8j8CJkVSsT89VJyjMF4M=@protonmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="b1_zUM3OcdVM7pF3LuCobFSvwFxuRnOWCjEU3ImruWtumY"
+ boundary="b1_IG10oXx75gjPjdMAMMEiUxTxgvKwi1ItLu1cs97M"
 Subject: Re: [Openvpn-devel] [PATCH 9/9] Add detailed man page section to
  setup a OpenVPN setup with peer-fingerprint
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,12 +21,12 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: tincantech <tincantech@...2282...>
+Cc: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
 
---b1_zUM3OcdVM7pF3LuCobFSvwFxuRnOWCjEU3ImruWtumY
+--b1_IG10oXx75gjPjdMAMMEiUxTxgvKwi1ItLu1cs97M
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,108 +35,30 @@ Hash: SHA256
 
 Hi,
 
-=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
-ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-On Thursday, 20 May 2021 00:36, Arne Schwabe <arne@...1227...> wrote:
+just FYI
 
-> > I just want this to be verified because the manual reads that:
-> > udp6 will force only udp on IPv6, at least that is how I read it.
->
-> Not on the server side. It is one of the quirks that we need to fix at
-> some point. See the ipv6only option of --bind for more details
+I was also going to question the --tun-mtu 1400 setting but decided
+that was above my pay-grade.  I think it is probably a good long-term
+decision that will probably invade some of those less respectable blogs
+and be a good thing over-all.  I know, it is complicated !
 
-I actually checked this and believe it is a reasoanble decision.
-It works for me and I was not expecting it to do so.
-
-
->
-> > > -
-> > > -   The ip address the server will distribute
-> > >
-> > >     =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > >
-> > > -   server 192.168.234.0 255.255.255.0
-> > > -   server-ipv6 fd00:6f76:706e::/64
-> > > -
-> > > -   A tun-mtu of 1400 avoids problems of too big packets after VPN en=
-capsulation
-> > >
-> > >     =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
-> > >
-> > > -   tun-mtu 1400
-> > > -
-> > > -   The fingerprints of your clients. After adding/remvoing one here =
-restart the
-> > >
-> > >     =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
-> > >
-> >
-> > remvoing -> removing
-> >
-> > > -   server
-> > >
-> > >     =3D=3D=3D=3D=3D=3D=3D
-> > >
-> > > -   <peer-fingerprint>
-> > > -   </peer-fingerprint>
-> > > -
-> > > -   Notify clients when you restart the server to reconnect quickly
-> > >
-> > >     =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > >
-> > > -   explicit-exit-notify 1
-> > > -
-> > > -   Ping every 60s, restart if no data received for 5 minutes
-> > >
-> > >     =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > >
-> > > -   keepalive 60 300
-> >
-> > I presume you are all sure that this is suitable for consumer grade rou=
-ters.
->
-> I think 60 300 is a good starting point but we might later modify it if
-> this becomes a problem.
-
-OK.
-It is a big difference from the standard setting so I just wanted to call i=
-t here.
-
->
-> Thanks for spell/grammar checking it!
->
-> Arne
-
-No problem. Thanks for everything you've done too.
-
-Richard
-
+Cheers
+R
 
 -----BEGIN PGP SIGNATURE-----
 Version: ProtonMail
 
-wsBzBAEBCAAGBQJgpaUbACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ1iEQf9HSb9ReZSAve3LfzgDNo4hb0c1mGNWSNcIQudw8fdaYc8TfjU
-UD1MLdTM9CM5uuHEz3O29nyBPEjCUJS16bQ45lVtHzAbGcdzUEF9cn/gUsST
-7v/3aMeFM76YSDXnI3DrA6PtlqXoWJ7K+NC3tzXb7suF3Zy0Gi8AWgJhKD8q
-tXvHtXdGD9ohsZTF4yio8PWCW4n0UFPUTImndr/R8D6TRO5umhBDkmQ9fWx0
-3gPN6ln9FF2bE/gqG7Sj1s6uu5OLNqJ+aswet2B22DI/7CHlgQzFC38nuy5f
-CKFJ0eZnrQ8baDDOpOHlmLTarisRLcOP7rxT1qz5S6PWdGTP4+s/rg=3D=3D
-=3DVNul
+wsBzBAEBCAAGBQJgpamaACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
+9muQuJ3PVQgAju8gPugglio2RQ1Qr/fcXFyq7tAQEy/njizNTIDBEAE3E1tr
+J0gOsMMe1fQTDjen5DCtJEyq7pwIgMVKWw/kVP7DzOlTzC+oUb4avysoi3Ld
+pUFDmJdD2eP1Ls+Ylc9O2HDlK1q8n46mUjX5Fuv1+0UN/HFUb1d7z9IgRHTf
+0h+6f7dkn4z0QgFjY97esSKDu9x3ZZhhIfUPwPOUF4mLEQv+6PczpzAvm7eS
+oZRr/GNjSBq1dBzzWNi80v9cv31Uxz7VTuy3ntKp5k0n80W0b93tbG0xVcu7
+qi1ZCQh5VgFdh/35+7uwsJkpA9Eoc+ijFqV1+gz1+FekdRAmO1iCpA=3D=3D
+=3Drh5B
 -----END PGP SIGNATURE-----
 
---b1_zUM3OcdVM7pF3LuCobFSvwFxuRnOWCjEU3ImruWtumY
+--b1_IG10oXx75gjPjdMAMMEiUxTxgvKwi1ItLu1cs97M
 Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
@@ -174,13 +97,13 @@ Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
 dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
 Sy0tLS0tDQo=
 
---b1_zUM3OcdVM7pF3LuCobFSvwFxuRnOWCjEU3ImruWtumY
+--b1_IG10oXx75gjPjdMAMMEiUxTxgvKwi1ItLu1cs97M
 Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 
-sOkDgryUUOk2l+NmOxoGvOvLsS1TFjo44eYq/ZnIFl7eFclYX62LRolf99CBhaFH
+sOkDgryUUOkqlk57BWvel05lYiLY8IE2e54L210VG6L4pTJjuAlozIZVn7C9Ih4w+q8N
 
---b1_zUM3OcdVM7pF3LuCobFSvwFxuRnOWCjEU3ImruWtumY--
+--b1_IG10oXx75gjPjdMAMMEiUxTxgvKwi1ItLu1cs97M--
 
 
