@@ -1,9 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 20 May 2021 17:11:40 +0200
-Message-Id: <20210520151148.2565578-1-arne@...1227...>
+Date: Thu, 20 May 2021 17:11:46 +0200
+Message-Id: <20210520151148.2565578-7-arne@...1227...>
+In-Reply-To: <20210520151148.2565578-1-arne@...1227...>
+References: <20210520151148.2565578-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 1/9] Move auth_token_state from multi to
- key_state
+Subject: [Openvpn-devel] [PATCH v2 7/9] Move auth_token_state_flags to
+ tls_session and cleanup initial_token
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,379 +18,217 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The auth-token check is tied to the username/password that is coming
-via a specific SSL session, so keep the state also in the key_state
-structure.
+The usage of the auth_token_state_flags is tied to the authentication.
+The other authentication related flags and status are in the
+tls_session struct instead of the tls_multi struct. Move
+auth_token_state_flags to the right place.
 
-This also ensures the auth_token_state is always set to 0 on a new
-session since we clear the key_state object at the start of a new
-SSL session.
-
-This is a prerequisite patch to fix 2020-15078 in the following two
-commits.
-
-This also applies the changes to the auth_token_test.c. The change of
-tls_session to a pointer is necessary since before that we had tls_session
-not tied to the multi and had two tls_session used in the test. One
-implicitly in tls_multi and one explicit one. Merge these to one.
+This also changes that auth_token_initial is set when the token is
+initially generated instead when pushing the token. Even I don't know
+anymore why I did it in this way in the first place. Also use
+multi->auth_token_initial as source for the sesssion ID since it should
+now always be available.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/auth_token.c                   | 12 +--
- src/openvpn/ssl_common.h                   |  4 +-
- src/openvpn/ssl_verify.c                   |  8 +-
- tests/unit_tests/openvpn/test_auth_token.c | 91 +++++++++++-----------
- 4 files changed, 60 insertions(+), 55 deletions(-)
+ src/openvpn/auth_token.c                   | 28 +++++++++++++++-------
+ src/openvpn/push.c                         |  8 -------
+ src/openvpn/ssl_verify.c                   |  5 +++-
+ tests/unit_tests/openvpn/test_auth_token.c | 15 ++++++++----
+ 4 files changed, 35 insertions(+), 21 deletions(-)
 
 diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
-index d571b686e..0ea6d1832 100644
+index 0ea6d1832..60604e6e3 100644
 --- a/src/openvpn/auth_token.c
 +++ b/src/openvpn/auth_token.c
-@@ -57,6 +57,7 @@ add_session_token_env(struct tls_session *session, struct tls_multi *multi,
-         return;
-     }
- 
-+    int auth_token_state_flags = session->key[KS_PRIMARY].auth_token_state_flags;
- 
-     const char *state;
- 
-@@ -64,9 +65,9 @@ add_session_token_env(struct tls_session *session, struct tls_multi *multi,
-     {
-         state = "Initial";
-     }
--    else if (multi->auth_token_state_flags & AUTH_TOKEN_HMAC_OK)
-+    else if (auth_token_state_flags & AUTH_TOKEN_HMAC_OK)
-     {
--        switch (multi->auth_token_state_flags & (AUTH_TOKEN_VALID_EMPTYUSER|AUTH_TOKEN_EXPIRED))
-+        switch (auth_token_state_flags & (AUTH_TOKEN_VALID_EMPTYUSER|AUTH_TOKEN_EXPIRED))
+@@ -109,11 +109,11 @@ add_session_token_env(struct tls_session *session, struct tls_multi *multi,
+         /*
+          * No session before, generate a new session token for the new session
+          */
+-        if (!multi->auth_token)
++        if (!multi->auth_token_initial)
          {
-             case 0:
-                 state = "Authenticated";
-@@ -98,8 +99,8 @@ add_session_token_env(struct tls_session *session, struct tls_multi *multi,
- 
-     /* We had a valid session id before */
-     const char *session_id_source;
--    if (multi->auth_token_state_flags & AUTH_TOKEN_HMAC_OK
--        && !(multi->auth_token_state_flags & AUTH_TOKEN_EXPIRED))
-+    if (auth_token_state_flags & AUTH_TOKEN_HMAC_OK
-+        && !(auth_token_state_flags & AUTH_TOKEN_EXPIRED))
-     {
-         session_id_source = up->password;
+             generate_auth_token(up, multi);
+         }
+-        session_id_source = multi->auth_token;
++        session_id_source = multi->auth_token_initial;
      }
-@@ -236,7 +237,8 @@ generate_auth_token(const struct user_pass *up, struct tls_multi *multi)
-      * a new token with the empty username since we do not want to loose
-      * the information that the username cannot be trusted
-      */
--    if (multi->auth_token_state_flags & AUTH_TOKEN_VALID_EMPTYUSER)
-+    struct key_state *ks = &multi->session[TM_ACTIVE].key[KS_PRIMARY];
-+    if (ks->auth_token_state_flags & AUTH_TOKEN_VALID_EMPTYUSER)
+     /*
+      * In the auth-token the auth token is already base64 encoded
+@@ -184,7 +184,7 @@ generate_auth_token(const struct user_pass *up, struct tls_multi *multi)
+ 
+     uint8_t sessid[AUTH_TOKEN_SESSION_ID_LEN];
+ 
+-    if (multi->auth_token)
++    if (multi->auth_token_initial)
      {
-         hmac_ctx_update(ctx, (const uint8_t *) "", 0);
+         /* Just enough space to fit 8 bytes+ 1 extra to decode a non padded
+          * base64 string (multiple of 3 bytes). 9 bytes => 12 bytes base64
+@@ -192,13 +192,18 @@ generate_auth_token(const struct user_pass *up, struct tls_multi *multi)
+          */
+         char old_tstamp_decode[9];
+ 
++        /* Make a copy of the string to not modify multi->auth_token_initial */
++        char* initial_token_copy = string_alloc(multi->auth_token_initial, &gc);
++
+         /*
+          * reuse the same session id and timestamp and null terminate it at
+          * for base64 decode it only decodes the session id part of it
+          */
+-        char *old_sessid = multi->auth_token + strlen(SESSION_ID_PREFIX);
++        char *old_sessid =initial_token_copy + strlen(SESSION_ID_PREFIX);
+         char *old_tsamp_initial = old_sessid + AUTH_TOKEN_SESSION_ID_LEN*8/6;
+ 
++
++
+         old_tsamp_initial[12] = '\0';
+         ASSERT(openvpn_base64_decode(old_tsamp_initial, old_tstamp_decode, 9) == 9);
+ 
+@@ -212,10 +217,6 @@ generate_auth_token(const struct user_pass *up, struct tls_multi *multi)
+ 
+         old_tsamp_initial[0] = '\0';
+         ASSERT(openvpn_base64_decode(old_sessid, sessid, AUTH_TOKEN_SESSION_ID_LEN)==AUTH_TOKEN_SESSION_ID_LEN);
+-
+-
+-        /* free the auth-token, we will replace it with a new one */
+-        free(multi->auth_token);
      }
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 61cae7419..53325e556 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -182,6 +182,8 @@ enum auth_deferred_result {
- struct key_state
- {
-     int state;
-+    /** The state of the auth-token sent from the client */
-+    int auth_token_state_flags;
+     else if (!rand_bytes(sessid, AUTH_TOKEN_SESSION_ID_LEN))
+     {
+@@ -272,11 +273,22 @@ generate_auth_token(const struct user_pass *up, struct tls_multi *multi)
  
-     /**
-      * Key id for this key_state,  inherited from struct tls_session.
-@@ -598,8 +600,6 @@ struct tls_multi
-      * OpenVPN 3 clients sometimes wipes or replaces the username with a
-      * username hint from their config.
-      */
--    int auth_token_state_flags;
--    /**< The state of the auth-token sent from the client last time */
+     free(b64output);
  
-     /* For P_DATA_V2 */
-     uint32_t peer_id;
++    /* free the auth-token if defined, we will replace it with a new one */
++    free(multi->auth_token);
+     multi->auth_token = strdup((char *)BPTR(&session_token));
+ 
+     dmsg(D_SHOW_KEYS, "Generated token for client: %s (%s)",
+          multi->auth_token, up->username);
+ 
++    if (!multi->auth_token_initial)
++    {
++        /*
++         * Save the initial auth token for clients that ignore
++         * the updates to the token
++         */
++        multi->auth_token_initial = strdup(multi->auth_token);
++    }
++
+     gc_free(&gc);
+ }
+ 
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 2d621e472..98a9c3689 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -527,14 +527,6 @@ prepare_auth_token_push_reply(struct tls_multi *tls_multi, struct gc_arena *gc,
+         push_option_fmt(gc, push_list, M_USAGE,
+                         "auth-token %s",
+                         tls_multi->auth_token);
+-        if (!tls_multi->auth_token_initial)
+-        {
+-            /*
+-             * Save the initial auth token for clients that ignore
+-             * the updates to the token
+-             */
+-            tls_multi->auth_token_initial = strdup(tls_multi->auth_token);
+-        }
+     }
+ }
+ 
 diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 0b41eea2d..7992a6eb9 100644
+index 455a5cd1b..dfb475017 100644
 --- a/src/openvpn/ssl_verify.c
 +++ b/src/openvpn/ssl_verify.c
-@@ -1484,7 +1484,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+@@ -1512,6 +1512,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
       */
      if (session->opt->auth_token_generate && is_auth_token(up->password))
      {
--        multi->auth_token_state_flags = verify_auth_token(up, multi, session);
-+        ks->auth_token_state_flags = verify_auth_token(up, multi, session);
++
+         ks->auth_token_state_flags = verify_auth_token(up, multi, session);
          if (session->opt->auth_token_call_auth)
          {
-             /*
-@@ -1493,7 +1493,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-              * decide what to do with the result
-              */
-         }
--        else if (multi->auth_token_state_flags == AUTH_TOKEN_HMAC_OK)
-+        else if (ks->auth_token_state_flags == AUTH_TOKEN_HMAC_OK)
+@@ -1640,7 +1641,9 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+          * Otherwise the auth-token get pushed out as part of the "normal"
+          * push-reply
+          */
+-        if (multi->auth_token_initial)
++        bool initial_connect = session->key[KS_PRIMARY].key_id == 0;
++
++        if (multi->auth_token_initial && !initial_connect)
          {
              /*
-              * We do not want the EXPIRED or EMPTY USER flags here so check
-@@ -1592,8 +1592,8 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-              * the initial timestamp and session id can be extracted from it
-              */
-             if (!multi->auth_token
--                && (multi->auth_token_state_flags & AUTH_TOKEN_HMAC_OK)
--                && !(multi->auth_token_state_flags & AUTH_TOKEN_EXPIRED))
-+                && (ks->auth_token_state_flags & AUTH_TOKEN_HMAC_OK)
-+                && !(ks->auth_token_state_flags & AUTH_TOKEN_EXPIRED))
-             {
-                 multi->auth_token = strdup(up->password);
-             }
+              * We do not explicitly schedule the sending of the
 diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/openvpn/test_auth_token.c
-index dbde86318..69fc1f8c9 100644
+index 69fc1f8c9..161bc4499 100644
 --- a/tests/unit_tests/openvpn/test_auth_token.c
 +++ b/tests/unit_tests/openvpn/test_auth_token.c
-@@ -45,7 +45,7 @@ struct test_context {
-     struct tls_multi multi;
-     struct key_type kt;
-     struct user_pass up;
--    struct tls_session session;
-+    struct tls_session *session;
- };
+@@ -174,7 +174,10 @@ auth_token_test_timeout(void **state)
  
- /* Dummy functions that do nothing to mock the functionality */
-@@ -100,10 +100,11 @@ setup(void **state)
-     }
-     ctx->multi.opt.auth_token_generate = true;
-     ctx->multi.opt.auth_token_lifetime = 3000;
-+    ctx->session = &ctx->multi.session[TM_ACTIVE];
- 
--    ctx->session.opt = calloc(1, sizeof(struct tls_options));
--    ctx->session.opt->renegotiate_seconds = 120;
--    ctx->session.opt->auth_token_lifetime = 3000;
-+    ctx->session->opt = calloc(1, sizeof(struct tls_options));
-+    ctx->session->opt->renegotiate_seconds = 120;
-+    ctx->session->opt->auth_token_lifetime = 3000;
- 
-     strcpy(ctx->up.username, "test user name");
-     strcpy(ctx->up.password, "ignored");
-@@ -122,7 +123,7 @@ teardown(void **state)
-     free_key_ctx(&ctx->multi.opt.auth_token_key);
-     wipe_auth_token(&ctx->multi);
- 
--    free(ctx->session.opt);
-+    free(ctx->session->opt);
-     free(ctx);
- 
-     return 0;
-@@ -135,7 +136,7 @@ auth_token_basic_test(void **state)
- 
+     now = 100000;
      generate_auth_token(&ctx->up, &ctx->multi);
++
      strcpy(ctx->up.password, ctx->multi.auth_token);
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK);
- }
- 
-@@ -146,7 +147,7 @@ auth_token_fail_invalid_key(void **state)
- 
-     generate_auth_token(&ctx->up, &ctx->multi);
-     strcpy(ctx->up.password, ctx->multi.auth_token);
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK);
- 
-     /* Change auth-token key */
-@@ -155,13 +156,13 @@ auth_token_fail_invalid_key(void **state)
-     free_key_ctx(&ctx->multi.opt.auth_token_key);
-     init_key_ctx(&ctx->multi.opt.auth_token_key, &key, &ctx->kt, false, "TEST");
- 
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session), 0);
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session), 0);
- 
-     /* Load original test key again */
-     memset(&key, 0, sizeof(key));
-     free_key_ctx(&ctx->multi.opt.auth_token_key);
-     init_key_ctx(&ctx->multi.opt.auth_token_key, &key, &ctx->kt, false, "TEST");
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK);
- 
- }
-@@ -176,32 +177,32 @@ auth_token_test_timeout(void **state)
-     strcpy(ctx->up.password, ctx->multi.auth_token);
++    free(ctx->multi.auth_token_initial);
++    ctx->multi.auth_token_initial = NULL;
  
      /* No time has passed */
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK);
- 
-     /* Token before validity, should be rejected */
-     now = 100000 - 100;
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
- 
-     /* Token still in validity, should be accepted */
--    now = 100000 + 2*ctx->session.opt->renegotiate_seconds - 20;
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    now = 100000 + 2*ctx->session->opt->renegotiate_seconds - 20;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK);
- 
-     /* Token past validity, should be rejected */
--    now = 100000 + 2*ctx->session.opt->renegotiate_seconds + 20;
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    now = 100000 + 2*ctx->session->opt->renegotiate_seconds + 20;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
- 
-     /* Check if the mode for a client that never updates its token works */
-     ctx->multi.auth_token_initial = strdup(ctx->up.password);
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK);
- 
-     /* But not when we reached our timeout */
--    now = 100000 + ctx->session.opt->auth_token_lifetime + 1;
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    now = 100000 + ctx->session->opt->auth_token_lifetime + 1;
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
- 
-     free(ctx->multi.auth_token_initial);
-@@ -209,22 +210,22 @@ auth_token_test_timeout(void **state)
- 
-     /* regenerate the token util it hits the expiry */
-     now = 100000;
--    while (now < 100000 + ctx->session.opt->auth_token_lifetime + 1)
-+    while (now < 100000 + ctx->session->opt->auth_token_lifetime + 1)
-     {
--        assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+        assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                          AUTH_TOKEN_HMAC_OK);
-         generate_auth_token(&ctx->up, &ctx->multi);
-         strcpy(ctx->up.password, ctx->multi.auth_token);
--        now += ctx->session.opt->renegotiate_seconds;
-+        now += ctx->session->opt->renegotiate_seconds;
-     }
- 
- 
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
-     ctx->multi.opt.auth_token_lifetime = 0;
- 
-     /* Non expiring token should be fine */
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK);
- }
- 
-@@ -253,7 +254,7 @@ auth_token_test_known_keys(void **state)
-     assert_string_equal(now0key0, ctx->multi.auth_token);
- 
-     strcpy(ctx->up.password, ctx->multi.auth_token);
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK);
- }
- 
-@@ -277,25 +278,25 @@ auth_token_test_empty_user(void **state)
- 
-     generate_auth_token(&ctx->up, &ctx->multi);
-     strcpy(ctx->up.password, ctx->multi.auth_token);
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK);
- 
-     now = 100000;
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
-     strcpy(ctx->up.username, "test user name");
+     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
+@@ -244,10 +247,10 @@ auth_token_test_known_keys(void **state)
  
      now = 0;
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_VALID_EMPTYUSER);
+     /* Preload the session id so the same session id is used here */
+-    ctx->multi.auth_token = strdup(now0key0);
++    ctx->multi.auth_token_initial = strdup(now0key0);
  
-     strcpy(ctx->up.username, "test user name");
-     now = 100000;
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED|AUTH_TOKEN_VALID_EMPTYUSER);
+     /* Zero the hmac part to ensure we have a newly generated token */
+-    zerohmac(ctx->multi.auth_token);
++    zerohmac(ctx->multi.auth_token_initial);
  
-     zerohmac(ctx->up.password);
--    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session),
-+    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-                      0);
- }
+     generate_auth_token(&ctx->up, &ctx->multi);
  
-@@ -304,30 +305,32 @@ auth_token_test_env(void **state)
+@@ -305,13 +308,16 @@ auth_token_test_env(void **state)
  {
      struct test_context *ctx = (struct test_context *) *state;
  
--    ctx->multi.auth_token_state_flags = 0;
-+    struct key_state *ks = &ctx->multi.session[TM_ACTIVE].key[KS_PRIMARY];
-+    
-+    ks->auth_token_state_flags = 0;
++
+     struct key_state *ks = &ctx->multi.session[TM_ACTIVE].key[KS_PRIMARY];
+     
+     ks->auth_token_state_flags = 0;
++
      ctx->multi.auth_token = NULL;
--    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    add_session_token_env(ctx->session, &ctx->multi, &ctx->up);
+     add_session_token_env(ctx->session, &ctx->multi, &ctx->up);
      assert_string_equal(lastsesion_statevalue, "Initial");
  
--    ctx->multi.auth_token_state_flags = 0;
-+    ks->auth_token_state_flags = 0;
++
+     ks->auth_token_state_flags = 0;
      strcpy(ctx->up.password, now0key0);
--    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    add_session_token_env(ctx->session, &ctx->multi, &ctx->up);
-     assert_string_equal(lastsesion_statevalue, "Invalid");
+     add_session_token_env(ctx->session, &ctx->multi, &ctx->up);
+@@ -331,6 +337,7 @@ auth_token_test_env(void **state)
  
--    ctx->multi.auth_token_state_flags = AUTH_TOKEN_HMAC_OK;
--    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    ks->auth_token_state_flags = AUTH_TOKEN_HMAC_OK;
-+    add_session_token_env(ctx->session, &ctx->multi, &ctx->up);
-     assert_string_equal(lastsesion_statevalue, "Authenticated");
- 
--    ctx->multi.auth_token_state_flags = AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED;
--    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    ks->auth_token_state_flags = AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED;
-+    add_session_token_env(ctx->session, &ctx->multi, &ctx->up);
-     assert_string_equal(lastsesion_statevalue, "Expired");
- 
--    ctx->multi.auth_token_state_flags = AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_VALID_EMPTYUSER;
--    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    ks->auth_token_state_flags = AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_VALID_EMPTYUSER;
-+    add_session_token_env(ctx->session, &ctx->multi, &ctx->up);
-     assert_string_equal(lastsesion_statevalue, "AuthenticatedEmptyUser");
- 
--    ctx->multi.auth_token_state_flags = AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED|AUTH_TOKEN_VALID_EMPTYUSER;
--    add_session_token_env(&ctx->session, &ctx->multi, &ctx->up);
-+    ks->auth_token_state_flags = AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED|AUTH_TOKEN_VALID_EMPTYUSER;
-+    add_session_token_env(ctx->session, &ctx->multi, &ctx->up);
+     ks->auth_token_state_flags = AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED|AUTH_TOKEN_VALID_EMPTYUSER;
+     add_session_token_env(ctx->session, &ctx->multi, &ctx->up);
++
      assert_string_equal(lastsesion_statevalue, "ExpiredEmptyUser");
  }
  
-@@ -351,7 +354,7 @@ auth_token_test_random_keys(void **state)
-     assert_string_equal(random_token, ctx->multi.auth_token);
+@@ -341,13 +348,13 @@ auth_token_test_random_keys(void **state)
  
-     strcpy(ctx->up.password, ctx->multi.auth_token);
--    assert_true(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session));
-+    assert_true(verify_auth_token(&ctx->up, &ctx->multi, ctx->session));
- }
- 
- 
-@@ -363,11 +366,11 @@ auth_token_test_key_load(void **state)
-     free_key_ctx(&ctx->multi.opt.auth_token_key);
-     auth_token_init_secret(&ctx->multi.opt.auth_token_key, zeroinline, true);
-     strcpy(ctx->up.password, now0key0);
--    assert_true(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session));
-+    assert_true(verify_auth_token(&ctx->up, &ctx->multi, ctx->session));
+     now = 0x5c331e9c;
+     /* Preload the session id so the same session id is used here */
+-    ctx->multi.auth_token = strdup(random_token);
++    ctx->multi.auth_token_initial = strdup(random_token);
  
      free_key_ctx(&ctx->multi.opt.auth_token_key);
-     auth_token_init_secret(&ctx->multi.opt.auth_token_key, allx01inline, true);
--    assert_false(verify_auth_token(&ctx->up, &ctx->multi, &ctx->session));
-+    assert_false(verify_auth_token(&ctx->up, &ctx->multi, ctx->session));
- }
+     auth_token_init_secret(&ctx->multi.opt.auth_token_key, random_key, true);
  
- int
+     /* Zero the hmac part to ensure we have a newly generated token */
+-    zerohmac(ctx->multi.auth_token);
++    zerohmac(ctx->multi.auth_token_initial);
+ 
+     generate_auth_token(&ctx->up, &ctx->multi);
+ 
 -- 
 2.31.1
 
