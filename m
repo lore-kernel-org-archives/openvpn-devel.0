@@ -1,7 +1,9 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 20 May 2021 12:37:00 +0300
-Message-Id: <20210520093700.133-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH] openvpnmsica: add ovpn-dco custom actions
+From: Arne Schwabe <arne@...1227...>
+Date: Thu, 20 May 2021 17:09:31 +0200
+Message-Id: <20210520150932.2565217-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2 1/2] Move examples into
+ openvpn-examples(5) man page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,473 +15,131 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
-
-Add two custom actions to service ovpn-dco driver installation.
-
- - EvaluateDriver
-
-Runs under user privileges. Determines what action (install/uninstall)
-should be performed on ovpn-dco component.
-
- - ProcessDriver
-
-Runs under SYSTEM privileges. Performs driver (un)installation.
-During uninstall, all existing adapters with given hwid (ovpn-dco)
-are removed.
-
-The logic is inspired by custom actions from tap-windows6 installer
-(https://github.com/OpenVPN/tap-windows6/tree/master/msm).
-
-Signed-off-by: Lev Stipakov <lev@...515...>
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpnmsica/Makefile.am    |   2 +-
- src/openvpnmsica/openvpnmsica.c | 348 ++++++++++++++++++++++++++++++++
- src/openvpnmsica/openvpnmsica.h |  30 +++
- 3 files changed, 379 insertions(+), 1 deletion(-)
+ .gitignore                 |  2 ++
+ doc/Makefile.am            | 25 +++++++++++++++++++++----
+ doc/openvpn-examples.5.rst | 17 +++++++++++++++++
+ doc/openvpn.8.rst          |  2 +-
+ 4 files changed, 41 insertions(+), 5 deletions(-)
+ create mode 100644 doc/openvpn-examples.5.rst
 
-diff --git a/src/openvpnmsica/Makefile.am b/src/openvpnmsica/Makefile.am
-index 9d18854a..a5d9c170 100644
---- a/src/openvpnmsica/Makefile.am
-+++ b/src/openvpnmsica/Makefile.am
-@@ -42,7 +42,7 @@ libopenvpnmsica_la_CFLAGS = \
- 	-UNTDDI_VERSION -U_WIN32_WINNT \
- 	-D_WIN32_WINNT=_WIN32_WINNT_VISTA \
- 	-Wl,--kill-at
--libopenvpnmsica_la_LDFLAGS = -ladvapi32 -lole32 -lmsi -lsetupapi -liphlpapi -lshell32 -lshlwapi -lversion -no-undefined -avoid-version
-+libopenvpnmsica_la_LDFLAGS = -ladvapi32 -lole32 -lmsi -lsetupapi -liphlpapi -lshell32 -lshlwapi -lversion -lnewdev -no-undefined -avoid-version
+diff --git a/.gitignore b/.gitignore
+index 25d06235b..178076ede 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -49,6 +49,8 @@ version.sh
+ msvc-env-local.bat
+ config-msvc-local.h
+ config-msvc-version.h
++doc/openvpn-examples.5
++doc/openvpn-examples.5.html
+ doc/openvpn.8
+ doc/openvpn.8.html
+ /doc/doxygen/html/
+diff --git a/doc/Makefile.am b/doc/Makefile.am
+index e411f5f9d..1dbbddf58 100644
+--- a/doc/Makefile.am
++++ b/doc/Makefile.am
+@@ -20,6 +20,7 @@ dist_doc_DATA = \
+ dist_noinst_DATA = \
+ 	README.plugins interactive-service-notes.rst \
+ 	openvpn.8.rst \
++    openvpn-examples.5.rst \
+ 	man-sections/advanced-options.rst \
+ 	man-sections/client-options.rst \
+ 	man-sections/connection-profiles.rst \
+@@ -52,6 +53,14 @@ else
+ 	@echo "Missing python-docutils - skipping man page generation"
  endif
  
- libopenvpnmsica_la_SOURCES = \
-diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
-index 96652117..5e58b08e 100644
---- a/src/openvpnmsica/openvpnmsica.c
-+++ b/src/openvpnmsica/openvpnmsica.c
-@@ -43,6 +43,10 @@
- #include <stdbool.h>
- #include <stdlib.h>
- #include <tchar.h>
-+#include <setupapi.h>
-+#include <newdev.h>
-+#include <initguid.h>
-+#include <devguid.h>
++openvpn-examples.5 :
++if HAVE_PYDOCUTILS
++	$(RST2MAN) $(srcdir)/$@.rst > $@
++else
++	@echo "Missing python-docutils - skipping man page generation"
++endif
++
++
+ openvpn.8.html:
+ if HAVE_PYDOCUTILS
+ 	$(RST2HTML) $(srcdir)/openvpn.8.rst > $@
+@@ -59,13 +68,21 @@ else
+ 	@echo "Missing python-docutils - skipping man/html page generation"
+ endif
  
- #ifdef _MSC_VER
- #pragma comment(lib, "advapi32.lib")
-@@ -60,6 +64,12 @@
- #define MSICA_ADAPTER_TICK_SIZE (16*1024) /** Amount of tick space to reserve for one TAP/TUN adapter creation/deletition. */
++openvpn-examples.5.html:
++if HAVE_PYDOCUTILS
++	$(RST2HTML) $(srcdir)/openvpn-examples.5.rst > $@
++else
++	@echo "Missing python-docutils - skipping man/html page generation"
++endif
++
++
+ if HAVE_PYDOCUTILS
+-dist_noinst_DATA += openvpn.8
+-dist_html_DATA = openvpn.8.html
++dist_noinst_DATA += openvpn.8 openvpn-examples.5
++dist_html_DATA = openvpn.8.html openvpn-examples.5.html
  
- #define FILE_NEED_REBOOT        L".ovpn_need_reboot"
-+#define CMP_OVPN_DCO_INF_GUID   L"{4BE20469-2292-4AE2-B953-49AA0DA4165E}"
-+#define ACTION_ADD_DRIVER       L"AddDriver"
-+#define ACTION_DELETE_DRIVER    L"DeleteDriver"
-+#define ACTION_NOOP             L"Noop"
-+#define FILE_OVPN_DCO_INF       L"ovpn-dco.inf"
-+#define OVPN_DCO_HWID           L"ovpn-dco"
+ # Failsafe - do not delete these files unless we can recreate them
+ CLEANFILES = \
+-	 openvpn.8 openvpn.8.html
++	 openvpn.8 openvpn.8.html openvpn-examples.5 openvpn-examples.5.html
  
- /**
-  * Joins an argument sequence and sets it to the MSI property.
-@@ -422,6 +432,11 @@ FindSystemInfo(_In_ MSIHANDLE hInstall)
-         TEXT("Wintun") TEXT("\0"),
-         TEXT("WINTUNADAPTERS"),
-         TEXT("ACTIVEWINTUNADAPTERS"));
-+    find_adapters(
-+        hInstall,
-+        TEXT("ovpn-dco") TEXT("\0"),
-+        TEXT("OVPNDCOAPTERS"),
-+        TEXT("ACTIVEOVPNDCOADAPTERS"));
+ endif
  
-     if (bIsCoInitialized)
-     {
-@@ -1295,3 +1310,336 @@ CheckAndScheduleReboot(_In_ MSIHANDLE hInstall)
-     }
-     return ret;
- }
+@@ -74,4 +91,4 @@ else
+ dist_man_MANS = openvpn.8
+ endif
+ 
+-dist-hook : openvpn.8 openvpn.8.html
++dist-hook : openvpn.8 openvpn.8.html openvpn-examples.5 openvpn-examples.5.html
+diff --git a/doc/openvpn-examples.5.rst b/doc/openvpn-examples.5.rst
+new file mode 100644
+index 000000000..988b6027b
+--- /dev/null
++++ b/doc/openvpn-examples.5.rst
+@@ -0,0 +1,17 @@
++===============================
++ openvpn examples
++===============================
++-------------------------
++ Secure IP tunnel daemon
++-------------------------
 +
-+static BOOL
-+IsInstalling(_In_ INSTALLSTATE InstallState, _In_ INSTALLSTATE ActionState)
-+{
-+    return INSTALLSTATE_LOCAL == ActionState || INSTALLSTATE_SOURCE == ActionState ||
-+        (INSTALLSTATE_DEFAULT == ActionState &&
-+            (INSTALLSTATE_LOCAL == InstallState || INSTALLSTATE_SOURCE == InstallState));
-+}
++:Manual section: 5
++:Manual group: Configuration files
 +
-+static BOOL
-+IsReInstalling(_In_ INSTALLSTATE InstallState, _In_ INSTALLSTATE ActionState)
-+{
-+    return (INSTALLSTATE_LOCAL == ActionState || INSTALLSTATE_SOURCE == ActionState ||
-+        INSTALLSTATE_DEFAULT == ActionState) &&
-+        (INSTALLSTATE_LOCAL == InstallState || INSTALLSTATE_SOURCE == InstallState);
-+}
 +
-+static BOOL
-+IsUninstalling(_In_ INSTALLSTATE InstallState, _In_ INSTALLSTATE ActionState)
-+{
-+    return (INSTALLSTATE_ABSENT == ActionState || INSTALLSTATE_REMOVED == ActionState) &&
-+        (INSTALLSTATE_LOCAL == InstallState || INSTALLSTATE_SOURCE == InstallState);
-+}
++INTRODUCTION
++============
 +
-+static UINT
-+GetComponentNameById(_In_ MSIHANDLE hInstall, _In_ LPCTSTR componentId, _Out_ LPTSTR name, DWORD len)
-+{
-+    UINT ret = 0;
-+    MSIHANDLE record = 0;
-+    MSIHANDLE view = 0;
++This man page gives a few simple examples to create OpenVPN setups and configuration files.
 +
-+    name[len - 1] = '\0';
-+
-+    /* Open MSI database. */
-+    MSIHANDLE db = MsiGetActiveDatabase(hInstall);
-+    if (db == 0)
-+    {
-+        msg(M_NONFATAL, "%s: MsiGetActiveDatabase failed", __FUNCTION__);
-+        ret = ERROR_INVALID_HANDLE;
-+        goto cleanup;
-+    }
-+
-+    TCHAR cmd[0x400];
-+    _stprintf_s(cmd, _countof(cmd), L"SELECT `Component` FROM `Component` WHERE `ComponentId` = '%s'", componentId);
-+
-+    ret = MsiDatabaseOpenView(db, cmd, &view);
-+    if (ret != ERROR_SUCCESS)
-+    {
-+        goto cleanup;
-+    }
-+
-+    ret = MsiViewExecute(view, 0);
-+    if (ret != ERROR_SUCCESS)
-+    {
-+        goto cleanup;
-+    }
-+
-+    ret = MsiViewFetch(view, &record);
-+    if (ret != ERROR_SUCCESS)
-+    {
-+        goto cleanup;
-+    }
-+
-+    ret = MsiRecordGetString(record, 1, name, &len);
-+    if (ret != ERROR_SUCCESS)
-+    {
-+        goto cleanup;
-+    }
-+
-+cleanup:
-+    MsiCloseHandle(view);
-+    MsiCloseHandle(record);
-+    MsiCloseHandle(db);
-+
-+    return ret;
-+}
-+
-+UINT __stdcall
-+EvaluateDriver(_In_ MSIHANDLE hInstall)
-+{
-+#ifdef _MSC_VER
-+#pragma comment(linker, DLLEXP_EXPORT)
-+#endif
-+
-+    debug_popup(TEXT(__FUNCTION__));
-+
-+    UINT ret;
-+    BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
-+
-+    OPENVPNMSICA_SAVE_MSI_SESSION(hInstall);
-+
-+    WCHAR componentName[0x400];
-+    ret = GetComponentNameById(hInstall, CMP_OVPN_DCO_INF_GUID, componentName, _countof(componentName));
-+    if (ret != ERROR_SUCCESS)
-+    {
-+        goto cleanup;
-+    }
-+
-+    INSTALLSTATE InstallState, ActionState;
-+    ret = MsiGetComponentState(hInstall, componentName, &InstallState, &ActionState);
-+    if (ret != ERROR_SUCCESS)
-+    {
-+        goto cleanup;
-+    }
-+
-+    /* get user-specific temp path, to where we create reboot indication file */
-+    WCHAR tempPath[MAX_PATH];
-+    GetTempPath(MAX_PATH, tempPath);
-+
-+    WCHAR pathToInf[MAX_PATH];
-+    DWORD pathLen = _countof(pathToInf);
-+    ret = MsiGetProperty(hInstall, L"OVPNDCO", pathToInf, &pathLen);
-+    if (ret != ERROR_SUCCESS)
-+    {
-+        goto cleanup;
-+    }
-+
-+    TCHAR action[0x400];
-+    if ((IsReInstalling(InstallState, ActionState) || IsInstalling(InstallState, ActionState)))
-+    {
-+        _stprintf_s(action, _countof(action), L"%s|%s%s|%s", ACTION_ADD_DRIVER, pathToInf, FILE_OVPN_DCO_INF, tempPath);
-+    }
-+    else if (IsUninstalling(InstallState, ActionState))
-+    {
-+        _stprintf_s(action, _countof(action), L"%s|%s%s|%s", ACTION_DELETE_DRIVER, pathToInf, FILE_OVPN_DCO_INF, tempPath);
-+    }
-+    else
-+    {
-+        _stprintf_s(action, _countof(action), L"%s||", ACTION_NOOP);
-+    }
-+
-+    ret = MsiSetProperty(hInstall, L"OvpnDcoProcess", action);
-+
-+cleanup:
-+    if (bIsCoInitialized)
-+    {
-+        CoUninitialize();
-+    }
-+    return ret;
-+}
-+
-+static BOOL
-+GetPublishedDriverName(_In_z_ LPCWSTR hwid, _Out_writes_z_(len) LPWSTR publishedName, _In_ DWORD len)
-+{
-+    wcscpy_s(publishedName, len, L"");
-+
-+    HDEVINFO devInfoSet = SetupDiGetClassDevs(&GUID_DEVCLASS_NET, NULL, NULL, 0);
-+    if (!devInfoSet)
-+    {
-+        return FALSE;
-+    }
-+    BOOL res = FALSE;
-+    if (!SetupDiBuildDriverInfoList(devInfoSet, NULL, SPDIT_CLASSDRIVER))
-+    {
-+        goto cleanupDeviceInfoSet;
-+    }
-+    for (DWORD idx = 0;; ++idx)
-+    {
-+        SP_DRVINFO_DATA drvInfo = { .cbSize = sizeof(drvInfo) };
-+        if (!SetupDiEnumDriverInfo(devInfoSet, NULL, SPDIT_CLASSDRIVER, idx, &drvInfo))
-+        {
-+            if (GetLastError() == ERROR_NO_MORE_ITEMS)
-+            {
-+                break;
-+            }
-+            goto cleanupDriverInfoList;
-+        }
-+        DWORD size;
-+        if (SetupDiGetDriverInfoDetail(devInfoSet, NULL, &drvInfo, NULL, 0, &size) || GetLastError() != ERROR_INSUFFICIENT_BUFFER)
-+        {
-+            goto cleanupDriverInfoList;
-+        }
-+        PSP_DRVINFO_DETAIL_DATA drvDetails = calloc(1, size);
-+        if (!drvDetails)
-+        {
-+            goto cleanupDriverInfoList;
-+        }
-+        drvDetails->cbSize = sizeof(*drvDetails);
-+        if (!SetupDiGetDriverInfoDetail(devInfoSet, NULL, &drvInfo, drvDetails, size, &size))
-+        {
-+            free(drvDetails);
-+            goto cleanupDriverInfoList;
-+        }
-+        if (_tcscmp(hwid, drvDetails->HardwareID) == 0)
-+        {
-+            PathStripPath(drvDetails->InfFileName);
-+            _tcscpy_s(publishedName, len, drvDetails->InfFileName);
-+            res = TRUE;
-+            break;
-+        }
-+        free(drvDetails);
-+    }
-+
-+cleanupDriverInfoList:
-+    SetupDiDestroyDriverInfoList(devInfoSet, NULL, SPDIT_CLASSDRIVER);
-+cleanupDeviceInfoSet:
-+    SetupDiDestroyDeviceInfoList(devInfoSet);
-+    return res;
-+}
-+
-+static void
-+DeleteDriver(_In_z_ LPCWSTR pathToTmp)
-+{
-+    /* get list of adapters for hwid */
-+    struct tap_adapter_node* pAdapterList = NULL;
-+    DWORD ret = tap_list_adapters(NULL, OVPN_DCO_HWID, &pAdapterList);
-+    if (ret != ERROR_SUCCESS)
-+    {
-+        msg(M_NONFATAL, "%s", "Failed to get adapter list: %d", __FUNCTION__, ret);
-+    }
-+
-+    /* delete all adapters */
-+    BOOL rebootRequired = FALSE;
-+    for (struct tap_adapter_node* pAdapter = pAdapterList; pAdapter != NULL; pAdapter = pAdapter->pNext)
-+    {
-+        BOOL rebootForOneAdapter = FALSE;
-+        tap_delete_adapter(NULL, &pAdapter->guid, &rebootForOneAdapter);
-+        rebootRequired |= rebootForOneAdapter;
-+    }
-+
-+    /* delete driver */
-+    WCHAR publishedName[MAX_PATH] = { 0 };
-+    if (GetPublishedDriverName(OVPN_DCO_HWID, publishedName, _countof(publishedName)))
-+    {
-+        if (!SetupUninstallOEMInf(publishedName, 0, NULL))
-+        {
-+            msg(M_NONFATAL | M_ERRNO, "%s: SetupUninstallOEMInf(\"%" PRIsLPTSTR "\") failed", __FUNCTION__, publishedName);
-+        }
-+    }
-+    else
-+    {
-+        msg(M_NONFATAL | M_ERRNO, "%s: GetPublishedDriverName(\"%" PRIsLPTSTR "\") failed", __FUNCTION__, OVPN_DCO_HWID);
-+    }
-+
-+    if (rebootRequired)
-+    {
-+        CreateRebootFile(pathToTmp);
-+    }
-+
-+    ret = ERROR_SUCCESS;
-+}
-+
-+static UINT
-+AddDriver(_In_z_ LPCWSTR pathToInf, _In_z_ LPCWSTR pathToTmp)
-+{
-+    /* copy driver to driver store */
-+    if (!SetupCopyOEMInf(pathToInf, NULL, SPOST_PATH, 0, NULL, 0, NULL, NULL))
-+    {
-+        msg(M_NONFATAL | M_ERRNO, "%s: SetupCopyOEMInf(\"%" PRIsLPTSTR "\") failed", __FUNCTION__, pathToInf);
-+        return GetLastError();
-+    }
-+
-+    /* update driver for existing devices (if any) */
-+    BOOL rebootRequired = FALSE;
-+    if (!UpdateDriverForPlugAndPlayDevices(NULL, OVPN_DCO_HWID, pathToInf, INSTALLFLAG_NONINTERACTIVE | INSTALLFLAG_FORCE, &rebootRequired))
-+    {
-+        /* ERROR_NO_SUCH_DEVINST means that no devices exist, which is normal case - device (adapter) is created at later stage */
-+        if (GetLastError() != ERROR_NO_SUCH_DEVINST)
-+        {
-+            msg(M_NONFATAL | M_ERRNO, "%s: UpdateDriverForPlugAndPlayDevices(\"%" PRIsLPTSTR "\", \"%" PRIsLPTSTR "\") failed", __FUNCTION__, OVPN_DCO_HWID, pathToInf);
-+            return GetLastError();
-+        }
-+    }
-+    if (rebootRequired)
-+    {
-+        CreateRebootFile(pathToTmp);
-+    }
-+
-+    return ERROR_SUCCESS;
-+}
-+
-+UINT __stdcall
-+ProcessDriver(_In_ MSIHANDLE hInstall)
-+{
-+#ifdef _MSC_VER
-+#pragma comment(linker, DLLEXP_EXPORT)
-+#endif
-+
-+    debug_popup(TEXT(__FUNCTION__));
-+
-+    UINT ret = 0;
-+    BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
-+
-+    OPENVPNMSICA_SAVE_MSI_SESSION(hInstall);
-+
-+    LPTSTR customData = NULL;
-+    ret = msi_get_string(hInstall, L"CustomActionData", &customData);
-+    if (ret != ERROR_SUCCESS)
-+    {
-+        goto cleanup;
-+    }
-+
-+    int i = 0;
-+    WCHAR action[0x400] = { 0 };
-+    WCHAR pathToInf[MAX_PATH] = { 0 };
-+    WCHAR pathToTmp[MAX_PATH] = { 0 };
-+
-+    WCHAR* pos = NULL;
-+    WCHAR* token = wcstok_s(customData, L"|", &pos);
-+    /* action|path_to_inf_file|path_to_tmp_dir */
-+    while (token)
-+    {
-+        switch (i++)
-+        {
-+        case 0:
-+            wcscpy_s(action, _countof(action), token);
-+            break;
-+        case 1:
-+            wcscpy_s(pathToInf, _countof(pathToInf), token);
-+            break;
-+        case 2:
-+            wcscpy_s(pathToTmp, _countof(pathToTmp), token);
-+            break;
-+        }
-+        token = wcstok_s(NULL, L"|", &pos);
-+    }
-+
-+    if (wcscmp(action, ACTION_ADD_DRIVER) == 0)
-+    {
-+        AddDriver(pathToInf, pathToTmp);
-+    }
-+    else if (wcscmp(action, ACTION_DELETE_DRIVER) == 0)
-+    {
-+        DeleteDriver(pathToTmp);
-+    }
-+
-+cleanup:
-+    if (bIsCoInitialized)
-+    {
-+        CoUninitialize();
-+    }
-+    return ret;
-+}
-\ No newline at end of file
-diff --git a/src/openvpnmsica/openvpnmsica.h b/src/openvpnmsica/openvpnmsica.h
-index 5af68470..f82af4a4 100644
---- a/src/openvpnmsica/openvpnmsica.h
-+++ b/src/openvpnmsica/openvpnmsica.h
-@@ -88,6 +88,10 @@ extern "C" {
-  *   with semicolon delimited list of all installed adapter GUIDs and active adapter GUIDs
-  *   respectively.
-  *
-+ * - Finds existing ovpn-dco adapters and set OVPNDCOADAPTERS and ACTIVEOVPNDCOADAPTERS properties
-+ *   with semicolon delimited list of all installed adapter GUIDs and active adapter GUIDs
-+ *   respectively.
-+ *
-  * @param hInstall      Handle to the installation provided to the DLL custom action
-  *
-  * @return ERROR_SUCCESS on success; An error code otherwise
-@@ -147,6 +151,32 @@ DLLEXP_DECL UINT __stdcall
- ProcessDeferredAction(_In_ MSIHANDLE hInstall);
++.. include:: man-sections/examples.rst
+diff --git a/doc/openvpn.8.rst b/doc/openvpn.8.rst
+index db81274fa..995467478 100644
+--- a/doc/openvpn.8.rst
++++ b/doc/openvpn.8.rst
+@@ -86,7 +86,6 @@ placed in a configuration file.
+ .. include:: man-sections/connection-profiles.rst
+ .. include:: man-sections/inline-files.rst
+ .. include:: man-sections/signals.rst
+-.. include:: man-sections/examples.rst
  
  
-+/**
-+ * Check what operation shall be performed on ovpn-dco driver
-+ * and set data value (path to inf and user temp dir) for ProcessDriver action.
-+ *
-+ * @param hInstall      Handle to the installation provided to the DLL custom action
-+ *
-+ * @return ERROR_SUCCESS on success; An error code otherwise
-+ *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
-+ */
-+DLLEXP_DECL UINT __stdcall
-+EvaluateDriver(_In_ MSIHANDLE hInstall);
-+
-+
-+/**
-+ * Install or uninstall ovpn-dco driver, removing all adapters using that driver.
-+ * If reboot is required, creates reboot indication file in user's temp directory
-+ *
-+ * @param hInstall      Handle to the installation provided to the DLL custom action
-+ *
-+ * @return ERROR_SUCCESS on success; An error code otherwise
-+ *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
-+ */
-+DLLEXP_DECL UINT __stdcall
-+ProcessDriver(_In_ MSIHANDLE hInstall);
-+
-+
- /**
-  * Schedule reboot after installation if reboot
-  * indication file is found in user's temp directory
+ FAQ
+@@ -134,6 +133,7 @@ Report all bugs to the OpenVPN team info@...515...
+ SEE ALSO
+ ========
+ 
++``openvpn-examples``\(5),
+ ``dhcpcd``\(8),
+ ``ifconfig``\(8),
+ ``openssl``\(1),
 -- 
-2.23.0.windows.1
+2.31.1
 
 
