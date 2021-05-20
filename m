@@ -1,19 +1,7 @@
-Date: Thu, 20 May 2021 00:39:29 +0000
-From: tincantech <tincantech@...2282...>
-Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <Pk4Xi5F6EFpnKM4gFS_X90beUs5874T1VHaoQ6Li9nxClD5YVrEqD9whTO7_KNzpDUuplWYiZiM8D-yIZSE8jQO542C1X9pXV51giw2pRhA=@protonmail.com>
-In-Reply-To: <0pYx3XCRJwKxmfH3wmDjO678sklYXzudcUS2n1v_4jmPX1Uac9ku2D9AWnFr5NwV8zkH332grqlsLAtyHWUI97MfIzBX3y87Kr0QWJj_p-o=@protonmail.com>
-References: <20210512131511.1309914-1-arne@...1227...>
- <20210512131511.1309914-10-arne@...1227...>
- <AAoNQJ8hje_YpG-e2TN2X_-zH6YoLvPujzpWicW_D13NeAysfWRNi89BMQDr-vld9FGAI7cbafIiFgYVYlnql_dE3kCWKQevVHV7tP1dTQ0=@protonmail.com>
- <1468b026-4ad2-75a6-5f55-779378c79872@...1227...>
- <CC-0gkkt-UQgzydzj1_10jAEhFrwrZvCVy0S43DdCNychAnb9SGFY2jLdAAHNnZrnza5Uaj5r9NOn-FwsG6My4f8j8CJkVSsT89VJyjMF4M=@protonmail.com>
- <0pYx3XCRJwKxmfH3wmDjO678sklYXzudcUS2n1v_4jmPX1Uac9ku2D9AWnFr5NwV8zkH332grqlsLAtyHWUI97MfIzBX3y87Kr0QWJj_p-o=@protonmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="b1_Yxi6rAarGqrySkyx9XyXnrEg9nIwhXUDr3cuQy3aI"
-Subject: Re: [Openvpn-devel] [PATCH 9/9] Add detailed man page section to
- setup a OpenVPN setup with peer-fingerprint
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 20 May 2021 12:37:00 +0300
+Message-Id: <20210520093700.133-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] openvpnmsica: add ovpn-dco custom actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,100 +10,476 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: tincantech <tincantech@...2282...>
-Cc: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is a multi-part message in MIME format.
-
---b1_Yxi6rAarGqrySkyx9XyXnrEg9nIwhXUDr3cuQy3aI
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+From: Lev Stipakov <lev@...515...>
 
-Hi,
+Add two custom actions to service ovpn-dco driver installation.
 
-missed another one ..
+ - EvaluateDriver
 
-=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
-ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-On Thursday, 20 May 2021 01:13, tincantech <tincantech@...2282...> wrote:
+Runs under user privileges. Determines what action (install/uninstall)
+should be performed on ovpn-dco component.
 
-> Hi,
->
-> just FYI
->
-> I was also going to question the --tun-mtu 1400 setting but decided
-> that was above my pay-grade. I think it is probably a good long-term
-> decision that will probably invade some of those less respectable blogs
-> and be a good thing over-all. I know, it is complicated !
->
+ - ProcessDriver
 
-How would that effect the default --mssfix ?
+Runs under SYSTEM privileges. Performs driver (un)installation.
+During uninstall, all existing adapters with given hwid (ovpn-dco)
+are removed.
 
-Swings and roundabouts
-R
+The logic is inspired by custom actions from tap-windows6 installer
+(https://github.com/OpenVPN/tap-windows6/tree/master/msm).
 
------BEGIN PGP SIGNATURE-----
-Version: ProtonMail
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpnmsica/Makefile.am    |   2 +-
+ src/openvpnmsica/openvpnmsica.c | 348 ++++++++++++++++++++++++++++++++
+ src/openvpnmsica/openvpnmsica.h |  30 +++
+ 3 files changed, 379 insertions(+), 1 deletion(-)
 
-wsBzBAEBCAAGBQJgpa+8ACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ1f9Af/ZxK/IusDe82uZsnlZXlRAJElzyamWPA+Splu+nOoUVQhSjah
-eyc6YqM4+FNNP6dyZxVELT0RKC5p8c7KUEqFzay+2nflnwALDu9m5ak4WVyb
-EFmXPFctfu1myCdqZ70705DhfORainxI7tLrbzTwLMeZMH1xPJ9IszBE5wqb
-nUcBO1B3g+E01b/cF9GL6wHF32kW9BH5uc+0A1mb4/3+iO83VP3nUnKBm+sj
-pZUR4G3VpgLzyc1ymIkxQIxsas1f6M3r8qvBI+ol1F1YkZJXy76Piuh7I5rF
-0fYcm0jtxKmf/ETHPIQFL6J3N2zrar8+kazS0GRW9hPLPfqODXqqDQ=3D=3D
-=3DI3MI
------END PGP SIGNATURE-----
-
---b1_Yxi6rAarGqrySkyx9XyXnrEg9nIwhXUDr3cuQy3aI
-Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
-
-LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tDQpWZXJzaW9uOiBPcGVuUEdQLmpz
-IHY0LjEwLjgNCkNvbW1lbnQ6IGh0dHBzOi8vb3BlbnBncGpzLm9yZw0KDQp4c0JOQkZ2d1NjY0JD
-QURPbUhFblFsTG1PakpSdEpMMmw1M01Md3dGVHk3WG5FcHMzYjFRMFV3V1lGQ3YNCkwyb05wMG5y
-ZEdsS0tESnE1MFkwOVNSK1VSWUJRbUttWTNFbXpweVVJS00vcmdvMVJ5dWJIcE1SSGJEcA0KN0pw
-OEx4a2ZmRkJWSmovdDVWTXBENmVNUjZhVWNpUWpnUkw4TlplNitUN3hmWFhYd1Y1aG9SZVozak8r
-DQp6SGk2U1I3eFR2R1hsYStNUXo2RUVwV25sYkx2ZzJvcnQ5S3NldVZqWXJxdlJNeGNkUDBvOWNa
-V0o1ZXANCkpObWdlQjZNNytPVzA4VTFTc1h0S3JwTFJjSTZ5S21WMzhqaHpQcjJaZ1A5cm1ybEVy
-Ui8xaXFRUUhYWQ0KbzgvMERmUHlGMG1IOXluUUlpTEUvbCtGWXU0cnNHOFZpS2x4aFhjemVQekF0
-TENqaUIwYTBtUlZBQkVCDQpBQUhOTnlKMGFXNWpZVzUwWldOb1FIQnliM1J2Ym0xaGFXd3VZMjl0
-SWlBOGRHbHVZMkZ1ZEdWamFFQncNCmNtOTBiMjV0WVdsc0xtTnZiVDdDd0g4RUVBRUlBQ2tGQWx2
-d1NjY0dDd2tIQ0FNQ0NSQlBsNXoyYTVDNA0KblFRVkNBb0NBeFlDQVFJWkFRSWJBd0llQVFBS0NS
-QlBsNXoyYTVDNG5RQkRCLzlaVW85Qk9YSlI2MU5tDQowMm9aLzhhUlhPOU5uVVNGdDZHTE9XY0RO
-dkFzNElKV01EVkVRZllhbmIrNDIxUU5kLzVkNkgxaVhGK2kNCjRMREswTTZhZ0MrZ3NORkpualBH
-SXR2UHRqN1d5anluWlJ4OEQ0MFBQWGlnZkhZdXcyb1J1MGxyK1AxcA0KMXFlVWU0TmJjcUl2OElJ
-dkx6MnpDbFlaT05nQXNRVmNOQUhpN1o0b3J0UTJpbzJCQVZqLzgxOUpQWU10DQp0SGdZODF3UzFW
-N3Y4R0RUWmc4b2FQaFhHZmFDNFRaRkd0WnIvYnliY3Fyc28zNWphUW1DNTR4TWJYcEYNCkFVcmMz
-dUdWT0grT2RHL0JXMmdjWXFwdlVGQnVrWHhDVUJZSFAyTmZYaE5mekd0OW5DMXVsTktZZVAxOQ0K
-VEdsT29yQk1ZSUFFSG9HeHZwYlVYZmJhTldDVXpzQk5CRnZ3U2NjQkNBQzlLeVZaUlM1YU1hRzVQ
-aTBuDQpmeDhhTm9zM2JZcDI0Nk10ZmFvS0JmVFFBcmQrR1pXK1duRnlKRWlTeUxkejByVXV0eUNB
-ZGY1bGdWSCsNCld2THZJbWlHclNyelZwTVQybkNTMDlMcUw1MFFqejhBN2dwNUgvaFF6dFo4aU55
-c0dEOU5PNDZPbkk3NQ0KOTBkSGZDclhqUVBTRnRGR3NUemdEeFFJaU11eno5RFI3QmVrS1BtdU9G
-SWhCZTllRVpxYnhjOFJXZVF0DQpoYTdpL0RySlRSTksxYU9BRFFGVnVWMS9BbTVUaEdQV0ZNL1lK
-VXlUWWhNVzB5ZVBoNDVPYld1UlFaa3MNCmwrYU9tNEwwS0dERFlsbS9GUXgvRU1DdWJ2bHp5L3p4
-RGRCNm5xRmloMnFacmZ5bW5pU09LYWpHMGpvVA0KcFpvei9Feis0ZkF0ZzZ5MFBzcE5SNmlkQUJF
-QkFBSEN3R2tFR0FFSUFCTUZBbHZ3U2NjSkVFK1huUFpyDQprTGlkQWhzTUFBb0pFRStYblBacmtM
-aWRSZTBIL2o1Q0lGSUF1Y3VhaUVNa0xrTktFQU81czd4NDdlTnkNCkdQZlpzbHlZK0hqekdVMGQw
-N01ra0dtVmtQVFZ6d3FWek5aYm55N1pBdjF6bFcwVXkweUhwMUFQcHlZdA0KOGJ1VXBwVEJxN2Q0
-N29neEVSWXp0L0xjMkw1YS9WS0ZOUmJoTjEvWFFtUGl6MkVsZTR0eWlwYlRhcGN5DQoremJ5ZnpB
-TUQxM2NJZFoxM2hUc05QMG9sZ0JoQXFVQVVVWXB4UmxrQUhlSitEdDNOYnpIUzRLUUs1MzgNCk5K
-L2w3YlhTS3NHcW9ZcUplWjhWTkJ4d1dXVWJ1RzRqanJoNDNNSVJnVVo1V3NQVVlWNkh4MDU2a01q
-Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
-dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
-Sy0tLS0tDQo=
-
---b1_Yxi6rAarGqrySkyx9XyXnrEg9nIwhXUDr3cuQy3aI
-Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
-
-sOkDgryUUOkLuFKRGl7WZ0eHw8YlB1mfm19dVYfUSNBOpafTqEVGkIcK3lef9LvRPZz4
-
---b1_Yxi6rAarGqrySkyx9XyXnrEg9nIwhXUDr3cuQy3aI--
+diff --git a/src/openvpnmsica/Makefile.am b/src/openvpnmsica/Makefile.am
+index 9d18854a..a5d9c170 100644
+--- a/src/openvpnmsica/Makefile.am
++++ b/src/openvpnmsica/Makefile.am
+@@ -42,7 +42,7 @@ libopenvpnmsica_la_CFLAGS = \
+ 	-UNTDDI_VERSION -U_WIN32_WINNT \
+ 	-D_WIN32_WINNT=_WIN32_WINNT_VISTA \
+ 	-Wl,--kill-at
+-libopenvpnmsica_la_LDFLAGS = -ladvapi32 -lole32 -lmsi -lsetupapi -liphlpapi -lshell32 -lshlwapi -lversion -no-undefined -avoid-version
++libopenvpnmsica_la_LDFLAGS = -ladvapi32 -lole32 -lmsi -lsetupapi -liphlpapi -lshell32 -lshlwapi -lversion -lnewdev -no-undefined -avoid-version
+ endif
+ 
+ libopenvpnmsica_la_SOURCES = \
+diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
+index 96652117..5e58b08e 100644
+--- a/src/openvpnmsica/openvpnmsica.c
++++ b/src/openvpnmsica/openvpnmsica.c
+@@ -43,6 +43,10 @@
+ #include <stdbool.h>
+ #include <stdlib.h>
+ #include <tchar.h>
++#include <setupapi.h>
++#include <newdev.h>
++#include <initguid.h>
++#include <devguid.h>
+ 
+ #ifdef _MSC_VER
+ #pragma comment(lib, "advapi32.lib")
+@@ -60,6 +64,12 @@
+ #define MSICA_ADAPTER_TICK_SIZE (16*1024) /** Amount of tick space to reserve for one TAP/TUN adapter creation/deletition. */
+ 
+ #define FILE_NEED_REBOOT        L".ovpn_need_reboot"
++#define CMP_OVPN_DCO_INF_GUID   L"{4BE20469-2292-4AE2-B953-49AA0DA4165E}"
++#define ACTION_ADD_DRIVER       L"AddDriver"
++#define ACTION_DELETE_DRIVER    L"DeleteDriver"
++#define ACTION_NOOP             L"Noop"
++#define FILE_OVPN_DCO_INF       L"ovpn-dco.inf"
++#define OVPN_DCO_HWID           L"ovpn-dco"
+ 
+ /**
+  * Joins an argument sequence and sets it to the MSI property.
+@@ -422,6 +432,11 @@ FindSystemInfo(_In_ MSIHANDLE hInstall)
+         TEXT("Wintun") TEXT("\0"),
+         TEXT("WINTUNADAPTERS"),
+         TEXT("ACTIVEWINTUNADAPTERS"));
++    find_adapters(
++        hInstall,
++        TEXT("ovpn-dco") TEXT("\0"),
++        TEXT("OVPNDCOAPTERS"),
++        TEXT("ACTIVEOVPNDCOADAPTERS"));
+ 
+     if (bIsCoInitialized)
+     {
+@@ -1295,3 +1310,336 @@ CheckAndScheduleReboot(_In_ MSIHANDLE hInstall)
+     }
+     return ret;
+ }
++
++static BOOL
++IsInstalling(_In_ INSTALLSTATE InstallState, _In_ INSTALLSTATE ActionState)
++{
++    return INSTALLSTATE_LOCAL == ActionState || INSTALLSTATE_SOURCE == ActionState ||
++        (INSTALLSTATE_DEFAULT == ActionState &&
++            (INSTALLSTATE_LOCAL == InstallState || INSTALLSTATE_SOURCE == InstallState));
++}
++
++static BOOL
++IsReInstalling(_In_ INSTALLSTATE InstallState, _In_ INSTALLSTATE ActionState)
++{
++    return (INSTALLSTATE_LOCAL == ActionState || INSTALLSTATE_SOURCE == ActionState ||
++        INSTALLSTATE_DEFAULT == ActionState) &&
++        (INSTALLSTATE_LOCAL == InstallState || INSTALLSTATE_SOURCE == InstallState);
++}
++
++static BOOL
++IsUninstalling(_In_ INSTALLSTATE InstallState, _In_ INSTALLSTATE ActionState)
++{
++    return (INSTALLSTATE_ABSENT == ActionState || INSTALLSTATE_REMOVED == ActionState) &&
++        (INSTALLSTATE_LOCAL == InstallState || INSTALLSTATE_SOURCE == InstallState);
++}
++
++static UINT
++GetComponentNameById(_In_ MSIHANDLE hInstall, _In_ LPCTSTR componentId, _Out_ LPTSTR name, DWORD len)
++{
++    UINT ret = 0;
++    MSIHANDLE record = 0;
++    MSIHANDLE view = 0;
++
++    name[len - 1] = '\0';
++
++    /* Open MSI database. */
++    MSIHANDLE db = MsiGetActiveDatabase(hInstall);
++    if (db == 0)
++    {
++        msg(M_NONFATAL, "%s: MsiGetActiveDatabase failed", __FUNCTION__);
++        ret = ERROR_INVALID_HANDLE;
++        goto cleanup;
++    }
++
++    TCHAR cmd[0x400];
++    _stprintf_s(cmd, _countof(cmd), L"SELECT `Component` FROM `Component` WHERE `ComponentId` = '%s'", componentId);
++
++    ret = MsiDatabaseOpenView(db, cmd, &view);
++    if (ret != ERROR_SUCCESS)
++    {
++        goto cleanup;
++    }
++
++    ret = MsiViewExecute(view, 0);
++    if (ret != ERROR_SUCCESS)
++    {
++        goto cleanup;
++    }
++
++    ret = MsiViewFetch(view, &record);
++    if (ret != ERROR_SUCCESS)
++    {
++        goto cleanup;
++    }
++
++    ret = MsiRecordGetString(record, 1, name, &len);
++    if (ret != ERROR_SUCCESS)
++    {
++        goto cleanup;
++    }
++
++cleanup:
++    MsiCloseHandle(view);
++    MsiCloseHandle(record);
++    MsiCloseHandle(db);
++
++    return ret;
++}
++
++UINT __stdcall
++EvaluateDriver(_In_ MSIHANDLE hInstall)
++{
++#ifdef _MSC_VER
++#pragma comment(linker, DLLEXP_EXPORT)
++#endif
++
++    debug_popup(TEXT(__FUNCTION__));
++
++    UINT ret;
++    BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
++
++    OPENVPNMSICA_SAVE_MSI_SESSION(hInstall);
++
++    WCHAR componentName[0x400];
++    ret = GetComponentNameById(hInstall, CMP_OVPN_DCO_INF_GUID, componentName, _countof(componentName));
++    if (ret != ERROR_SUCCESS)
++    {
++        goto cleanup;
++    }
++
++    INSTALLSTATE InstallState, ActionState;
++    ret = MsiGetComponentState(hInstall, componentName, &InstallState, &ActionState);
++    if (ret != ERROR_SUCCESS)
++    {
++        goto cleanup;
++    }
++
++    /* get user-specific temp path, to where we create reboot indication file */
++    WCHAR tempPath[MAX_PATH];
++    GetTempPath(MAX_PATH, tempPath);
++
++    WCHAR pathToInf[MAX_PATH];
++    DWORD pathLen = _countof(pathToInf);
++    ret = MsiGetProperty(hInstall, L"OVPNDCO", pathToInf, &pathLen);
++    if (ret != ERROR_SUCCESS)
++    {
++        goto cleanup;
++    }
++
++    TCHAR action[0x400];
++    if ((IsReInstalling(InstallState, ActionState) || IsInstalling(InstallState, ActionState)))
++    {
++        _stprintf_s(action, _countof(action), L"%s|%s%s|%s", ACTION_ADD_DRIVER, pathToInf, FILE_OVPN_DCO_INF, tempPath);
++    }
++    else if (IsUninstalling(InstallState, ActionState))
++    {
++        _stprintf_s(action, _countof(action), L"%s|%s%s|%s", ACTION_DELETE_DRIVER, pathToInf, FILE_OVPN_DCO_INF, tempPath);
++    }
++    else
++    {
++        _stprintf_s(action, _countof(action), L"%s||", ACTION_NOOP);
++    }
++
++    ret = MsiSetProperty(hInstall, L"OvpnDcoProcess", action);
++
++cleanup:
++    if (bIsCoInitialized)
++    {
++        CoUninitialize();
++    }
++    return ret;
++}
++
++static BOOL
++GetPublishedDriverName(_In_z_ LPCWSTR hwid, _Out_writes_z_(len) LPWSTR publishedName, _In_ DWORD len)
++{
++    wcscpy_s(publishedName, len, L"");
++
++    HDEVINFO devInfoSet = SetupDiGetClassDevs(&GUID_DEVCLASS_NET, NULL, NULL, 0);
++    if (!devInfoSet)
++    {
++        return FALSE;
++    }
++    BOOL res = FALSE;
++    if (!SetupDiBuildDriverInfoList(devInfoSet, NULL, SPDIT_CLASSDRIVER))
++    {
++        goto cleanupDeviceInfoSet;
++    }
++    for (DWORD idx = 0;; ++idx)
++    {
++        SP_DRVINFO_DATA drvInfo = { .cbSize = sizeof(drvInfo) };
++        if (!SetupDiEnumDriverInfo(devInfoSet, NULL, SPDIT_CLASSDRIVER, idx, &drvInfo))
++        {
++            if (GetLastError() == ERROR_NO_MORE_ITEMS)
++            {
++                break;
++            }
++            goto cleanupDriverInfoList;
++        }
++        DWORD size;
++        if (SetupDiGetDriverInfoDetail(devInfoSet, NULL, &drvInfo, NULL, 0, &size) || GetLastError() != ERROR_INSUFFICIENT_BUFFER)
++        {
++            goto cleanupDriverInfoList;
++        }
++        PSP_DRVINFO_DETAIL_DATA drvDetails = calloc(1, size);
++        if (!drvDetails)
++        {
++            goto cleanupDriverInfoList;
++        }
++        drvDetails->cbSize = sizeof(*drvDetails);
++        if (!SetupDiGetDriverInfoDetail(devInfoSet, NULL, &drvInfo, drvDetails, size, &size))
++        {
++            free(drvDetails);
++            goto cleanupDriverInfoList;
++        }
++        if (_tcscmp(hwid, drvDetails->HardwareID) == 0)
++        {
++            PathStripPath(drvDetails->InfFileName);
++            _tcscpy_s(publishedName, len, drvDetails->InfFileName);
++            res = TRUE;
++            break;
++        }
++        free(drvDetails);
++    }
++
++cleanupDriverInfoList:
++    SetupDiDestroyDriverInfoList(devInfoSet, NULL, SPDIT_CLASSDRIVER);
++cleanupDeviceInfoSet:
++    SetupDiDestroyDeviceInfoList(devInfoSet);
++    return res;
++}
++
++static void
++DeleteDriver(_In_z_ LPCWSTR pathToTmp)
++{
++    /* get list of adapters for hwid */
++    struct tap_adapter_node* pAdapterList = NULL;
++    DWORD ret = tap_list_adapters(NULL, OVPN_DCO_HWID, &pAdapterList);
++    if (ret != ERROR_SUCCESS)
++    {
++        msg(M_NONFATAL, "%s", "Failed to get adapter list: %d", __FUNCTION__, ret);
++    }
++
++    /* delete all adapters */
++    BOOL rebootRequired = FALSE;
++    for (struct tap_adapter_node* pAdapter = pAdapterList; pAdapter != NULL; pAdapter = pAdapter->pNext)
++    {
++        BOOL rebootForOneAdapter = FALSE;
++        tap_delete_adapter(NULL, &pAdapter->guid, &rebootForOneAdapter);
++        rebootRequired |= rebootForOneAdapter;
++    }
++
++    /* delete driver */
++    WCHAR publishedName[MAX_PATH] = { 0 };
++    if (GetPublishedDriverName(OVPN_DCO_HWID, publishedName, _countof(publishedName)))
++    {
++        if (!SetupUninstallOEMInf(publishedName, 0, NULL))
++        {
++            msg(M_NONFATAL | M_ERRNO, "%s: SetupUninstallOEMInf(\"%" PRIsLPTSTR "\") failed", __FUNCTION__, publishedName);
++        }
++    }
++    else
++    {
++        msg(M_NONFATAL | M_ERRNO, "%s: GetPublishedDriverName(\"%" PRIsLPTSTR "\") failed", __FUNCTION__, OVPN_DCO_HWID);
++    }
++
++    if (rebootRequired)
++    {
++        CreateRebootFile(pathToTmp);
++    }
++
++    ret = ERROR_SUCCESS;
++}
++
++static UINT
++AddDriver(_In_z_ LPCWSTR pathToInf, _In_z_ LPCWSTR pathToTmp)
++{
++    /* copy driver to driver store */
++    if (!SetupCopyOEMInf(pathToInf, NULL, SPOST_PATH, 0, NULL, 0, NULL, NULL))
++    {
++        msg(M_NONFATAL | M_ERRNO, "%s: SetupCopyOEMInf(\"%" PRIsLPTSTR "\") failed", __FUNCTION__, pathToInf);
++        return GetLastError();
++    }
++
++    /* update driver for existing devices (if any) */
++    BOOL rebootRequired = FALSE;
++    if (!UpdateDriverForPlugAndPlayDevices(NULL, OVPN_DCO_HWID, pathToInf, INSTALLFLAG_NONINTERACTIVE | INSTALLFLAG_FORCE, &rebootRequired))
++    {
++        /* ERROR_NO_SUCH_DEVINST means that no devices exist, which is normal case - device (adapter) is created at later stage */
++        if (GetLastError() != ERROR_NO_SUCH_DEVINST)
++        {
++            msg(M_NONFATAL | M_ERRNO, "%s: UpdateDriverForPlugAndPlayDevices(\"%" PRIsLPTSTR "\", \"%" PRIsLPTSTR "\") failed", __FUNCTION__, OVPN_DCO_HWID, pathToInf);
++            return GetLastError();
++        }
++    }
++    if (rebootRequired)
++    {
++        CreateRebootFile(pathToTmp);
++    }
++
++    return ERROR_SUCCESS;
++}
++
++UINT __stdcall
++ProcessDriver(_In_ MSIHANDLE hInstall)
++{
++#ifdef _MSC_VER
++#pragma comment(linker, DLLEXP_EXPORT)
++#endif
++
++    debug_popup(TEXT(__FUNCTION__));
++
++    UINT ret = 0;
++    BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
++
++    OPENVPNMSICA_SAVE_MSI_SESSION(hInstall);
++
++    LPTSTR customData = NULL;
++    ret = msi_get_string(hInstall, L"CustomActionData", &customData);
++    if (ret != ERROR_SUCCESS)
++    {
++        goto cleanup;
++    }
++
++    int i = 0;
++    WCHAR action[0x400] = { 0 };
++    WCHAR pathToInf[MAX_PATH] = { 0 };
++    WCHAR pathToTmp[MAX_PATH] = { 0 };
++
++    WCHAR* pos = NULL;
++    WCHAR* token = wcstok_s(customData, L"|", &pos);
++    /* action|path_to_inf_file|path_to_tmp_dir */
++    while (token)
++    {
++        switch (i++)
++        {
++        case 0:
++            wcscpy_s(action, _countof(action), token);
++            break;
++        case 1:
++            wcscpy_s(pathToInf, _countof(pathToInf), token);
++            break;
++        case 2:
++            wcscpy_s(pathToTmp, _countof(pathToTmp), token);
++            break;
++        }
++        token = wcstok_s(NULL, L"|", &pos);
++    }
++
++    if (wcscmp(action, ACTION_ADD_DRIVER) == 0)
++    {
++        AddDriver(pathToInf, pathToTmp);
++    }
++    else if (wcscmp(action, ACTION_DELETE_DRIVER) == 0)
++    {
++        DeleteDriver(pathToTmp);
++    }
++
++cleanup:
++    if (bIsCoInitialized)
++    {
++        CoUninitialize();
++    }
++    return ret;
++}
+\ No newline at end of file
+diff --git a/src/openvpnmsica/openvpnmsica.h b/src/openvpnmsica/openvpnmsica.h
+index 5af68470..f82af4a4 100644
+--- a/src/openvpnmsica/openvpnmsica.h
++++ b/src/openvpnmsica/openvpnmsica.h
+@@ -88,6 +88,10 @@ extern "C" {
+  *   with semicolon delimited list of all installed adapter GUIDs and active adapter GUIDs
+  *   respectively.
+  *
++ * - Finds existing ovpn-dco adapters and set OVPNDCOADAPTERS and ACTIVEOVPNDCOADAPTERS properties
++ *   with semicolon delimited list of all installed adapter GUIDs and active adapter GUIDs
++ *   respectively.
++ *
+  * @param hInstall      Handle to the installation provided to the DLL custom action
+  *
+  * @return ERROR_SUCCESS on success; An error code otherwise
+@@ -147,6 +151,32 @@ DLLEXP_DECL UINT __stdcall
+ ProcessDeferredAction(_In_ MSIHANDLE hInstall);
+ 
+ 
++/**
++ * Check what operation shall be performed on ovpn-dco driver
++ * and set data value (path to inf and user temp dir) for ProcessDriver action.
++ *
++ * @param hInstall      Handle to the installation provided to the DLL custom action
++ *
++ * @return ERROR_SUCCESS on success; An error code otherwise
++ *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
++ */
++DLLEXP_DECL UINT __stdcall
++EvaluateDriver(_In_ MSIHANDLE hInstall);
++
++
++/**
++ * Install or uninstall ovpn-dco driver, removing all adapters using that driver.
++ * If reboot is required, creates reboot indication file in user's temp directory
++ *
++ * @param hInstall      Handle to the installation provided to the DLL custom action
++ *
++ * @return ERROR_SUCCESS on success; An error code otherwise
++ *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
++ */
++DLLEXP_DECL UINT __stdcall
++ProcessDriver(_In_ MSIHANDLE hInstall);
++
++
+ /**
+  * Schedule reboot after installation if reboot
+  * indication file is found in user's temp directory
+-- 
+2.23.0.windows.1
 
 
