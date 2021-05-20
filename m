@@ -1,15 +1,13 @@
-Date: Thu, 20 May 2021 19:49:19 +0000
-From: tincantech <tincantech@...2282...>
-Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <nehG6AKTksx4AeryA432f6vVe5OGFQSmkbS2TYGGS6MumnC0d8xRfGsZxR_uXmDN2b8Yfvt6zQX0fwG83sqvWlyuLsdneHWr-3Wz8vDc9Qw=@protonmail.com>
-In-Reply-To: <46a3a2a9-83a4-2fbe-2fd4-684a51c001f9@...1227...>
+MIME-Version: 1.0
 References: <20210520150932.2565217-1-arne@...1227...>
  <20210520150932.2565217-2-arne@...1227...>
  <CNUI9sxE2HOdFvol4LftF6DPWGfmpSUabfpLXMOJQXcFcL_bM-zvF9u3oX68guJWALVYyC13DWKt4-9cVq3c8KjneyoFY32pgNpNYCQmTIM=@protonmail.com>
  <46a3a2a9-83a4-2fbe-2fd4-684a51c001f9@...1227...>
-MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="b1_QEtKCm4BcXuVsh9o2zQnm6f4hQOJXADlUAwgtoyUVI"
+ <nehG6AKTksx4AeryA432f6vVe5OGFQSmkbS2TYGGS6MumnC0d8xRfGsZxR_uXmDN2b8Yfvt6zQX0fwG83sqvWlyuLsdneHWr-3Wz8vDc9Qw=@protonmail.com>
+In-Reply-To: <nehG6AKTksx4AeryA432f6vVe5OGFQSmkbS2TYGGS6MumnC0d8xRfGsZxR_uXmDN2b8Yfvt6zQX0fwG83sqvWlyuLsdneHWr-3Wz8vDc9Qw=@protonmail.com>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 20 May 2021 16:33:58 -0400
+Message-ID: <CAKuzo_gEZfiRiwEfE9dj3CjNRTpTX0sZfOX371SPAjVGxXximA@...278...>
 Subject: Re: [Openvpn-devel] [PATCH v2 2/2] Add detailed man page section to
  setup a OpenVPN setup with peer-fingerprint
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,106 +18,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is a multi-part message in MIME format.
-
---b1_QEtKCm4BcXuVsh9o2zQnm6f4hQOJXADlUAwgtoyUVI
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+To: tincantech <tincantech@...2282...>
+Cc: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
-ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
-On Thursday, 20 May 2021 19:30, Arne Schwabe <arne@...1227...> wrote:
-
-> Am 20.05.2021 um 18:56 schrieb tincantech:
+On Thu, May 20, 2021 at 3:50 PM tincantech via Openvpn-devel
+<openvpn-devel@lists.sourceforge.net> wrote:
 >
-> > Hi,
-> > again, I do not understand why openvpn choose to switch to .pem
-> > for this tutorial.=C2=A0 PEM -> Private Email, which this is not.
-> > You have a certificate and a key and every other openvpn tutorial
-> > on openvpn and probably the entire planet uses .crt and .key.
-> > This seems to be a poor decision in my opinion.
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA256
 >
-> pem as extension for keys is pretty common and specifies more the
-> encoding than the type. E.g. there is also the der encoding.
+> Hi,
 >
-> Arne
+> =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original =
+Message =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
+> On Thursday, 20 May 2021 19:30, Arne Schwabe <arne@...1227...> wrote:
+>
+> > Am 20.05.2021 um 18:56 schrieb tincantech:
+> >
+> > > Hi,
+> > > again, I do not understand why openvpn choose to switch to .pem
+> > > for this tutorial.  PEM -> Private Email, which this is not.
+> > > You have a certificate and a key and every other openvpn tutorial
+> > > on openvpn and probably the entire planet uses .crt and .key.
+> > > This seems to be a poor decision in my opinion.
+> >
+> > pem as extension for keys is pretty common and specifies more the
+> > encoding than the type. E.g. there is also the der encoding.
+> >
+> > Arne
+>
+> I accept the principle but openvpn *only* uses PEM-enc, that I know of.
+>
+> So, why switch to .pem when it has never been used before by openvpn?
+>
+> If you are all happy to let it go that way then so-be-it,
 
-I accept the principle but openvpn *only* uses PEM-enc, that I know of.
+I'm not sure I fully understand the discussion here, but we should
+stick with consistent extensions for cert and key files in
+documentation and examples. Currently we use the phrase "PEM certs" in
+one place and "in .pem format" elsewhere. "PEM encoded" or "PEM
+format" would be a better description. We use server.crt, server,key
+etc in some places, .pem in some other.
 
-So, why switch to .pem when it has never been used before by openvpn?
+OpenVPN doesn't care about the file extension of keys or certs as long
+as the content is PEM. In that sense, having .pem in examples may
+appear to be self-documenting but we have to be consistent. Use of
+.pem has the drawback that we can use the same filename for cert and
+key.
 
-If you are all happy to let it go that way then so-be-it,
+In practice I prefer .crt and .key as they are generally understood as
+PEM encoded, and allow the same filename stub to be used for both cert
+and key files: like server.crt and server.key while with pem it will
+have to be something like server-cert.pem and server-key.pem.
 
-Thanks
-R
+Also, fwiw, .pem is not recognized by Windows explorer, .crt is -- one
+could double click on the latter and load into the cert store, not so
+with .pem.
 
------BEGIN PGP SIGNATURE-----
-Version: ProtonMail
 
-wsBzBAEBCAAGBQJgpr0yACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ3AXgf9H+mL+H1aPZ/Gk0lTukZEP7FVXHkO2LBf49KA/YmoyhbHYAFf
-sICvASsTlkA0q3wuKYzXs8bspMGiebOeqcoJi7QvJSaAq4sDLvWopz/VmN96
-SmB33OnN/jYHQmKpk2qOMeZv6PyhFyjFb/3j1ymQ2zuYXh8osrSiiRHftwSx
-hXg8CMyXOA0THrK6H9mnxisLuss7uhVsclwTOSKMOnRj0NiEx5tFg1itn7+u
-YmRL/h2taDC6skHbF5PPfU1x/M6HtG05ZajAtNfh3bc0Zw4S7bRiEUc4+4qb
-f8GEEufo2WAg4CUwaCVJ9O5pSewk48OAScHGx9RMybvfZ1X6V5xnqA=3D=3D
-=3DEBa6
------END PGP SIGNATURE-----
-
---b1_QEtKCm4BcXuVsh9o2zQnm6f4hQOJXADlUAwgtoyUVI
-Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
-
-LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tDQpWZXJzaW9uOiBPcGVuUEdQLmpz
-IHY0LjEwLjgNCkNvbW1lbnQ6IGh0dHBzOi8vb3BlbnBncGpzLm9yZw0KDQp4c0JOQkZ2d1NjY0JD
-QURPbUhFblFsTG1PakpSdEpMMmw1M01Md3dGVHk3WG5FcHMzYjFRMFV3V1lGQ3YNCkwyb05wMG5y
-ZEdsS0tESnE1MFkwOVNSK1VSWUJRbUttWTNFbXpweVVJS00vcmdvMVJ5dWJIcE1SSGJEcA0KN0pw
-OEx4a2ZmRkJWSmovdDVWTXBENmVNUjZhVWNpUWpnUkw4TlplNitUN3hmWFhYd1Y1aG9SZVozak8r
-DQp6SGk2U1I3eFR2R1hsYStNUXo2RUVwV25sYkx2ZzJvcnQ5S3NldVZqWXJxdlJNeGNkUDBvOWNa
-V0o1ZXANCkpObWdlQjZNNytPVzA4VTFTc1h0S3JwTFJjSTZ5S21WMzhqaHpQcjJaZ1A5cm1ybEVy
-Ui8xaXFRUUhYWQ0KbzgvMERmUHlGMG1IOXluUUlpTEUvbCtGWXU0cnNHOFZpS2x4aFhjemVQekF0
-TENqaUIwYTBtUlZBQkVCDQpBQUhOTnlKMGFXNWpZVzUwWldOb1FIQnliM1J2Ym0xaGFXd3VZMjl0
-SWlBOGRHbHVZMkZ1ZEdWamFFQncNCmNtOTBiMjV0WVdsc0xtTnZiVDdDd0g4RUVBRUlBQ2tGQWx2
-d1NjY0dDd2tIQ0FNQ0NSQlBsNXoyYTVDNA0KblFRVkNBb0NBeFlDQVFJWkFRSWJBd0llQVFBS0NS
-QlBsNXoyYTVDNG5RQkRCLzlaVW85Qk9YSlI2MU5tDQowMm9aLzhhUlhPOU5uVVNGdDZHTE9XY0RO
-dkFzNElKV01EVkVRZllhbmIrNDIxUU5kLzVkNkgxaVhGK2kNCjRMREswTTZhZ0MrZ3NORkpualBH
-SXR2UHRqN1d5anluWlJ4OEQ0MFBQWGlnZkhZdXcyb1J1MGxyK1AxcA0KMXFlVWU0TmJjcUl2OElJ
-dkx6MnpDbFlaT05nQXNRVmNOQUhpN1o0b3J0UTJpbzJCQVZqLzgxOUpQWU10DQp0SGdZODF3UzFW
-N3Y4R0RUWmc4b2FQaFhHZmFDNFRaRkd0WnIvYnliY3Fyc28zNWphUW1DNTR4TWJYcEYNCkFVcmMz
-dUdWT0grT2RHL0JXMmdjWXFwdlVGQnVrWHhDVUJZSFAyTmZYaE5mekd0OW5DMXVsTktZZVAxOQ0K
-VEdsT29yQk1ZSUFFSG9HeHZwYlVYZmJhTldDVXpzQk5CRnZ3U2NjQkNBQzlLeVZaUlM1YU1hRzVQ
-aTBuDQpmeDhhTm9zM2JZcDI0Nk10ZmFvS0JmVFFBcmQrR1pXK1duRnlKRWlTeUxkejByVXV0eUNB
-ZGY1bGdWSCsNCld2THZJbWlHclNyelZwTVQybkNTMDlMcUw1MFFqejhBN2dwNUgvaFF6dFo4aU55
-c0dEOU5PNDZPbkk3NQ0KOTBkSGZDclhqUVBTRnRGR3NUemdEeFFJaU11eno5RFI3QmVrS1BtdU9G
-SWhCZTllRVpxYnhjOFJXZVF0DQpoYTdpL0RySlRSTksxYU9BRFFGVnVWMS9BbTVUaEdQV0ZNL1lK
-VXlUWWhNVzB5ZVBoNDVPYld1UlFaa3MNCmwrYU9tNEwwS0dERFlsbS9GUXgvRU1DdWJ2bHp5L3p4
-RGRCNm5xRmloMnFacmZ5bW5pU09LYWpHMGpvVA0KcFpvei9Feis0ZkF0ZzZ5MFBzcE5SNmlkQUJF
-QkFBSEN3R2tFR0FFSUFCTUZBbHZ3U2NjSkVFK1huUFpyDQprTGlkQWhzTUFBb0pFRStYblBacmtM
-aWRSZTBIL2o1Q0lGSUF1Y3VhaUVNa0xrTktFQU81czd4NDdlTnkNCkdQZlpzbHlZK0hqekdVMGQw
-N01ra0dtVmtQVFZ6d3FWek5aYm55N1pBdjF6bFcwVXkweUhwMUFQcHlZdA0KOGJ1VXBwVEJxN2Q0
-N29neEVSWXp0L0xjMkw1YS9WS0ZOUmJoTjEvWFFtUGl6MkVsZTR0eWlwYlRhcGN5DQoremJ5ZnpB
-TUQxM2NJZFoxM2hUc05QMG9sZ0JoQXFVQVVVWXB4UmxrQUhlSitEdDNOYnpIUzRLUUs1MzgNCk5K
-L2w3YlhTS3NHcW9ZcUplWjhWTkJ4d1dXVWJ1RzRqanJoNDNNSVJnVVo1V3NQVVlWNkh4MDU2a01q
-Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
-dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
-Sy0tLS0tDQo=
-
---b1_QEtKCm4BcXuVsh9o2zQnm6f4hQOJXADlUAwgtoyUVI
-Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
-
-s2OkDgryUUOkPAQNzu9u1oqIN2m1CMCw0AoiwKYzw3ZWBD0KyAdJ0FRyTUJ3OWwukWK21pKj
-
---b1_QEtKCm4BcXuVsh9o2zQnm6f4hQOJXADlUAwgtoyUVI--
-
+Selva
 
