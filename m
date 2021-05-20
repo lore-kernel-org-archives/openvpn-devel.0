@@ -1,16 +1,17 @@
-Date: Thu, 20 May 2021 00:13:17 +0000
+Date: Thu, 20 May 2021 00:39:29 +0000
 From: tincantech <tincantech@...2282...>
 Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <0pYx3XCRJwKxmfH3wmDjO678sklYXzudcUS2n1v_4jmPX1Uac9ku2D9AWnFr5NwV8zkH332grqlsLAtyHWUI97MfIzBX3y87Kr0QWJj_p-o=@protonmail.com>
-In-Reply-To: <CC-0gkkt-UQgzydzj1_10jAEhFrwrZvCVy0S43DdCNychAnb9SGFY2jLdAAHNnZrnza5Uaj5r9NOn-FwsG6My4f8j8CJkVSsT89VJyjMF4M=@protonmail.com>
+Message-ID: <Pk4Xi5F6EFpnKM4gFS_X90beUs5874T1VHaoQ6Li9nxClD5YVrEqD9whTO7_KNzpDUuplWYiZiM8D-yIZSE8jQO542C1X9pXV51giw2pRhA=@protonmail.com>
+In-Reply-To: <0pYx3XCRJwKxmfH3wmDjO678sklYXzudcUS2n1v_4jmPX1Uac9ku2D9AWnFr5NwV8zkH332grqlsLAtyHWUI97MfIzBX3y87Kr0QWJj_p-o=@protonmail.com>
 References: <20210512131511.1309914-1-arne@...1227...>
  <20210512131511.1309914-10-arne@...1227...>
  <AAoNQJ8hje_YpG-e2TN2X_-zH6YoLvPujzpWicW_D13NeAysfWRNi89BMQDr-vld9FGAI7cbafIiFgYVYlnql_dE3kCWKQevVHV7tP1dTQ0=@protonmail.com>
  <1468b026-4ad2-75a6-5f55-779378c79872@...1227...>
  <CC-0gkkt-UQgzydzj1_10jAEhFrwrZvCVy0S43DdCNychAnb9SGFY2jLdAAHNnZrnza5Uaj5r9NOn-FwsG6My4f8j8CJkVSsT89VJyjMF4M=@protonmail.com>
+ <0pYx3XCRJwKxmfH3wmDjO678sklYXzudcUS2n1v_4jmPX1Uac9ku2D9AWnFr5NwV8zkH332grqlsLAtyHWUI97MfIzBX3y87Kr0QWJj_p-o=@protonmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="b1_IG10oXx75gjPjdMAMMEiUxTxgvKwi1ItLu1cs97M"
+ boundary="b1_Yxi6rAarGqrySkyx9XyXnrEg9nIwhXUDr3cuQy3aI"
 Subject: Re: [Openvpn-devel] [PATCH 9/9] Add detailed man page section to
  setup a OpenVPN setup with peer-fingerprint
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -26,7 +27,7 @@ Cc: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openv
 
 This is a multi-part message in MIME format.
 
---b1_IG10oXx75gjPjdMAMMEiUxTxgvKwi1ItLu1cs97M
+--b1_Yxi6rAarGqrySkyx9XyXnrEg9nIwhXUDr3cuQy3aI
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -35,30 +36,41 @@ Hash: SHA256
 
 Hi,
 
-just FYI
+missed another one ..
 
-I was also going to question the --tun-mtu 1400 setting but decided
-that was above my pay-grade.  I think it is probably a good long-term
-decision that will probably invade some of those less respectable blogs
-and be a good thing over-all.  I know, it is complicated !
+=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
+ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
+On Thursday, 20 May 2021 01:13, tincantech <tincantech@...2282...> wrote:
 
-Cheers
+> Hi,
+>
+> just FYI
+>
+> I was also going to question the --tun-mtu 1400 setting but decided
+> that was above my pay-grade. I think it is probably a good long-term
+> decision that will probably invade some of those less respectable blogs
+> and be a good thing over-all. I know, it is complicated !
+>
+
+How would that effect the default --mssfix ?
+
+Swings and roundabouts
 R
 
 -----BEGIN PGP SIGNATURE-----
 Version: ProtonMail
 
-wsBzBAEBCAAGBQJgpamaACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ3PVQgAju8gPugglio2RQ1Qr/fcXFyq7tAQEy/njizNTIDBEAE3E1tr
-J0gOsMMe1fQTDjen5DCtJEyq7pwIgMVKWw/kVP7DzOlTzC+oUb4avysoi3Ld
-pUFDmJdD2eP1Ls+Ylc9O2HDlK1q8n46mUjX5Fuv1+0UN/HFUb1d7z9IgRHTf
-0h+6f7dkn4z0QgFjY97esSKDu9x3ZZhhIfUPwPOUF4mLEQv+6PczpzAvm7eS
-oZRr/GNjSBq1dBzzWNi80v9cv31Uxz7VTuy3ntKp5k0n80W0b93tbG0xVcu7
-qi1ZCQh5VgFdh/35+7uwsJkpA9Eoc+ijFqV1+gz1+FekdRAmO1iCpA=3D=3D
-=3Drh5B
+wsBzBAEBCAAGBQJgpa+8ACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
+9muQuJ1f9Af/ZxK/IusDe82uZsnlZXlRAJElzyamWPA+Splu+nOoUVQhSjah
+eyc6YqM4+FNNP6dyZxVELT0RKC5p8c7KUEqFzay+2nflnwALDu9m5ak4WVyb
+EFmXPFctfu1myCdqZ70705DhfORainxI7tLrbzTwLMeZMH1xPJ9IszBE5wqb
+nUcBO1B3g+E01b/cF9GL6wHF32kW9BH5uc+0A1mb4/3+iO83VP3nUnKBm+sj
+pZUR4G3VpgLzyc1ymIkxQIxsas1f6M3r8qvBI+ol1F1YkZJXy76Piuh7I5rF
+0fYcm0jtxKmf/ETHPIQFL6J3N2zrar8+kazS0GRW9hPLPfqODXqqDQ=3D=3D
+=3DI3MI
 -----END PGP SIGNATURE-----
 
---b1_IG10oXx75gjPjdMAMMEiUxTxgvKwi1ItLu1cs97M
+--b1_Yxi6rAarGqrySkyx9XyXnrEg9nIwhXUDr3cuQy3aI
 Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
@@ -97,13 +109,13 @@ Yg0KL2JZQmpJMFRFTXZIODE2MHVxekZYZUh2WXlVbHEwU2luRC9aOWlvSWU4UWRzSEdCRFVJUllZ
 dWIxcE84DQpxckN6Ulp4MG9OQT0NCj0vRGVhDQotLS0tLUVORCBQR1AgUFVCTElDIEtFWSBCTE9D
 Sy0tLS0tDQo=
 
---b1_IG10oXx75gjPjdMAMMEiUxTxgvKwi1ItLu1cs97M
+--b1_Yxi6rAarGqrySkyx9XyXnrEg9nIwhXUDr3cuQy3aI
 Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 
-sOkDgryUUOkqlk57BWvel05lYiLY8IE2e54L210VG6L4pTJjuAlozIZVn7C9Ih4w+q8N
+sOkDgryUUOkLuFKRGl7WZ0eHw8YlB1mfm19dVYfUSNBOpafTqEVGkIcK3lef9LvRPZz4
 
---b1_IG10oXx75gjPjdMAMMEiUxTxgvKwi1ItLu1cs97M--
+--b1_Yxi6rAarGqrySkyx9XyXnrEg9nIwhXUDr3cuQy3aI--
 
 
