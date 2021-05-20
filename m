@@ -1,11 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 20 May 2021 17:11:42 +0200
-Message-Id: <20210520151148.2565578-3-arne@...1227...>
+Date: Thu, 20 May 2021 17:11:47 +0200
+Message-Id: <20210520151148.2565578-8-arne@...1227...>
 In-Reply-To: <20210520151148.2565578-1-arne@...1227...>
 References: <20210520151148.2565578-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 3/9] Add connection_established as state
- in tls_multi->context_auth
+Subject: [Openvpn-devel] [PATCH v2 8/9] Remove --ncp-disable option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,276 +17,292 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-the socket_info->connection_establish is set through
-link_socket_set_outgoing_addr when we reach FULL_SYNC. This patch
-introduces a new state in context_auth that replaces the
-connection_established state for TLS connections. This make the state
-machine easier to understand.
+NCP has proven to be stable and apart from the one VPN Provider doing
+hacky things with homebrewed NCP we have not had any reports about
+ncp-disable being required. Remove ncp-disable to simplify code paths.
 
-Patch v2: fix p2p mode server without (without ncp)
+Note: This patch breaks client without --pull. The follow up patch
+for P2P NCP will restore that. But to avoid all the NCP/non-NCP special
+cases to be implemented in P2P. P2P will directly switch from always
+non-NCP to always NCP.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/forward.c    |  6 +++---
- src/openvpn/forward.h    | 13 ++++++++++++-
- src/openvpn/multi.c      | 15 ++++++++-------
- src/openvpn/occ.c        |  2 +-
- src/openvpn/openvpn.h    |  4 +++-
- src/openvpn/push.c       |  2 +-
- src/openvpn/ssl.c        | 38 ++++++++++++++++++++++++++++----------
- src/openvpn/ssl_common.h | 12 +++++++++---
- 8 files changed, 65 insertions(+), 27 deletions(-)
+ Changes.rst                           |  4 +++
+ doc/man-sections/protocol-options.rst |  8 ++----
+ src/openvpn/init.c                    | 17 ++++---------
+ src/openvpn/multi.c                   |  4 ---
+ src/openvpn/options.c                 | 36 +++------------------------
+ src/openvpn/options.h                 |  1 -
+ src/openvpn/ssl.c                     |  3 +--
+ src/openvpn/ssl_common.h              |  1 -
+ src/openvpn/ssl_ncp.c                 |  4 ---
+ 9 files changed, 16 insertions(+), 62 deletions(-)
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index e302d8e0a..692ca7271 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -280,7 +280,7 @@ void
- check_connection_established(struct context *c)
- {
+diff --git a/Changes.rst b/Changes.rst
+index 9185b55f7..e7ae6abed 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -57,6 +57,10 @@ Deprecated features
+     is considered "too complicated", using ``--peer-fingerprint`` makes
+     TLS mode about as easy as using ``--secret``.
  
--    if (CONNECTION_ESTABLISHED(c))
-+    if (connection_established(c))
++``ncp-disable`` has been removed
++    This option mainly served a role as debug option when NCP was first
++    introduced. It should now no longer be necessary.
++
+ Overview of changes in 2.5
+ ==========================
+ 
+diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
+index 34d4255ee..5ae780e1f 100644
+--- a/doc/man-sections/protocol-options.rst
++++ b/doc/man-sections/protocol-options.rst
+@@ -65,8 +65,8 @@ configured in a compatible way between both the local and remote side.
+   The default is :code:`BF-CBC`, an abbreviation for Blowfish in Cipher
+   Block Chaining mode. When cipher negotiation (NCP) is allowed,
+   OpenVPN 2.4 and newer on both client and server side will automatically
+-  upgrade to :code:`AES-256-GCM`.  See ``--data-ciphers`` and
+-  ``--ncp-disable`` for more details on NCP.
++  upgrade to :code:`AES-256-GCM`.  See ``--data-ciphers`` for more details
++  on NCP.
+ 
+   Using :code:`BF-CBC` is no longer recommended, because of its 64-bit
+   block size. This small block size allows attacks based on collisions, as
+@@ -235,10 +235,6 @@ configured in a compatible way between both the local and remote side.
+     have been configured with `--enable-small`
+     (typically used on routers or other embedded devices).
+ 
+---ncp-disable
+-  **DEPRECATED** Disable "Negotiable Crypto Parameters". This completely
+-  disables cipher negotiation.
+-
+ --secret args
+   **DEPRECATED** Enable Static Key encryption mode (non-TLS). Use pre-shared secret
+   ``file`` which was generated with ``--genkey``.
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 4335d4870..38abf9f3a 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2227,18 +2227,14 @@ pull_permission_mask(const struct context *c)
+         | OPT_P_EXPLICIT_NOTIFY
+         | OPT_P_ECHO
+         | OPT_P_PULL_MODE
+-        | OPT_P_PEER_ID;
++        | OPT_P_PEER_ID
++        | OPT_P_NCP;
+ 
+     if (!c->options.route_nopull)
      {
-         /* if --pull was specified, send a push request to server */
-         if (c->c2.tls_multi && c->options.pull)
-@@ -536,7 +536,7 @@ encrypt_sign(struct context *c, bool comp_frag)
-      * has not yet succeeded. In non-TLS tls_multi mode is not defined
-      * and we always pass packets.
-      */
--    if (c->c2.tls_multi && c->c2.tls_multi->multi_state != CAS_SUCCEEDED)
-+    if (c->c2.tls_multi && c->c2.tls_multi->multi_state < CAS_CONNECT_DONE)
-     {
-         c->c2.buf.len = 0;
+         flags |= (OPT_P_ROUTE | OPT_P_IPWIN32);
      }
-@@ -971,7 +971,7 @@ process_incoming_link_part1(struct context *c, struct link_socket_info *lsi, boo
-          * has not yet succeeded. In non-TLS mode tls_multi is not defined
-          * and we always pass packets.
-          */
--        if (c->c2.tls_multi && c->c2.tls_multi->multi_state != CAS_SUCCEEDED)
-+        if (c->c2.tls_multi && c->c2.tls_multi->multi_state < CAS_CONNECT_DONE)
-         {
-             c->c2.buf.len = 0;
-         }
-diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index 2a67c1445..3461e6422 100644
---- a/src/openvpn/forward.h
-+++ b/src/openvpn/forward.h
-@@ -445,6 +445,17 @@ io_wait(struct context *c, const unsigned int flags)
-     }
+ 
+-    if (c->options.ncp_enabled)
+-    {
+-        flags |= OPT_P_NCP;
+-    }
+-
+     return flags;
  }
  
--#define CONNECTION_ESTABLISHED(c) (get_link_socket_info(c)->connection_established)
-+static inline bool
-+connection_established(struct context *c)
-+{
-+    if (c->c2.tls_multi)
-+    {
-+        return c->c2.tls_multi->multi_state >= CAS_CONNECT_DONE;
-+    }
-+    else
-+    {
-+        return get_link_socket_info(c)->connection_established;
-+    }
-+}
- 
- #endif /* FORWARD_H */
+@@ -2720,8 +2716,6 @@ do_init_crypto_tls_c1(struct context *c)
+         *
+         * Therefore, the key structure has to be initialized when:
+         * - any non-BF-CBC cipher was selected; or
+-        * - BF-CBC is selected and NCP is disabled (explicit request to
+-        *   use the BF-CBC cipher); or
+         * - BF-CBC is selected, NCP is enabled and fallback is enabled
+         *   (BF-CBC will be the fallback).
+         * - BF-CBC is in data-ciphers and we negotiate to use BF-CBC:
+@@ -2731,12 +2725,12 @@ do_init_crypto_tls_c1(struct context *c)
+         * Note that BF-CBC will still be part of the OCC string to retain
+         * backwards compatibility with older clients.
+         */
+-        if (!streq(options->ciphername, "BF-CBC") || !options->ncp_enabled
+-            || (options->ncp_enabled && tls_item_in_cipher_list("BF-CBC", options->ncp_ciphers))
++        if (!streq(options->ciphername, "BF-CBC")
++            || tls_item_in_cipher_list("BF-CBC", options->ncp_ciphers)
+             || options->enable_ncp_fallback)
+         {
+             /* Do not warn if the if the cipher is used only in OCC */
+-            bool warn = !options->ncp_enabled || options->enable_ncp_fallback;
++            bool warn = options->enable_ncp_fallback;
+             init_key_type(&c->c1.ks.key_type, options->ciphername, options->authname,
+                           true, warn);
+         }
+@@ -2838,7 +2832,6 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+     to.tcp_mode = link_socket_proto_connection_oriented(options->ce.proto);
+     to.config_ciphername = c->options.ciphername;
+     to.config_ncp_ciphers = c->options.ncp_ciphers;
+-    to.ncp_enabled = options->ncp_enabled;
+     to.transition_window = options->transition_window;
+     to.handshake_window = options->handshake_window;
+     to.packet_timeout = options->tls_timeout;
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index def5dd40b..3f9710134 100644
+index 7cb9e86aa..2507108e2 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -674,7 +674,8 @@ multi_close_instance(struct multi_context *m,
- #ifdef ENABLE_MANAGEMENT
-     set_cc_config(mi, NULL);
+@@ -1791,10 +1791,6 @@ multi_client_set_protocol_options(struct context *c)
  #endif
--    if (mi->context.c2.tls_multi->multi_state == CAS_SUCCEEDED)
-+
-+    if (mi->context.c2.tls_multi->multi_state >= CAS_CONNECT_DONE)
+ 
+     /* Select cipher if client supports Negotiable Crypto Parameters */
+-    if (!o->ncp_enabled)
+-    {
+-        return true;
+-    }
+ 
+     /* if we have already created our key, we cannot *change* our own
+      * cipher -> so log the fact and push the "what we have now" cipher
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index fa3ee50d6..2f4ccaa09 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -526,7 +526,6 @@ static const char usage_message[] =
+     "                  (default=%s).\n"
+     "                  Set alg=none to disable encryption.\n"
+     "--data-ciphers list : List of ciphers that are allowed to be negotiated.\n"
+-    "--ncp-disable   : (DEPRECATED) Disable cipher negotiation.\n"
+     "--prng alg [nsl] : For PRNG, use digest algorithm alg, and\n"
+     "                   nonce_secret_len=nsl.  Set alg=none to disable PRNG.\n"
+ #ifndef ENABLE_CRYPTO_MBEDTLS
+@@ -843,7 +842,6 @@ init_options(struct options *o, const bool init_gc)
+     o->stale_routes_check_interval = 0;
+     o->ifconfig_pool_persist_refresh_freq = 600;
+     o->scheduled_exit_interval = 5;
+-    o->ncp_enabled = true;
+     o->ncp_ciphers = "AES-256-GCM:AES-128-GCM";
+     o->authname = "SHA1";
+     o->prng_hash = "SHA1";
+@@ -1719,7 +1717,6 @@ show_settings(const struct options *o)
+     SHOW_STR_INLINE(shared_secret_file);
+     SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, false, true), "%s");
+     SHOW_STR(ciphername);
+-    SHOW_BOOL(ncp_enabled);
+     SHOW_STR(ncp_ciphers);
+     SHOW_STR(authname);
+     SHOW_STR(prng_hash);
+@@ -3082,7 +3079,6 @@ options_postprocess_cipher(struct options *o)
+     if (!o->pull && !(o->mode == MODE_SERVER))
      {
-         multi_client_disconnect_script(mi);
-     }
-@@ -775,7 +776,7 @@ multi_create_instance(struct multi_context *m, const struct mroute_addr *real)
-         goto err;
-     }
+         /* we are in the classic P2P mode */
+-        o->ncp_enabled = false;
+         msg( M_WARN, "Cipher negotiation is disabled since neither "
+              "P2MP client nor server mode is enabled");
  
--    mi->context.c2.tls_multi->multi_state = CAS_PENDING;
-+    mi->context.c2.tls_multi->multi_state = CAS_NOT_CONNECTED;
- 
-     if (hash_n_elements(m->hash) >= m->max_clients)
+@@ -3099,18 +3095,6 @@ options_postprocess_cipher(struct options *o)
+     /* pull or P2MP mode */
+     if (!o->ciphername)
      {
-@@ -2407,7 +2408,7 @@ multi_client_connect_late_setup(struct multi_context *m,
-     mi->reporting_addr_ipv6 = mi->context.c2.push_ifconfig_ipv6_local;
+-        if (!o->ncp_enabled)
+-        {
+-            msg(M_USAGE, "--ncp-disable needs an explicit --cipher or "
+-                         "--data-ciphers-fallback config option");
+-        }
+-
+-        msg(M_WARN, "--cipher is not set. Previous OpenVPN version defaulted to "
+-            "BF-CBC as fallback when cipher negotiation failed in this case. "
+-            "If you need this fallback please add '--data-ciphers-fallback "
+-            "BF-CBC' to your configuration and/or add BF-CBC to "
+-            "--data-ciphers.");
+-
+         /* We still need to set the ciphername to BF-CBC since various other
+          * parts of OpenVPN assert that the ciphername is set */
+         o->ciphername = "BF-CBC";
+@@ -3152,13 +3136,10 @@ options_postprocess_mutate(struct options *o)
+     options_postprocess_cipher(o);
+     options_postprocess_mutate_invariant(o);
  
-     /* set context-level authentication flag */
--    mi->context.c2.tls_multi->multi_state = CAS_SUCCEEDED;
-+    mi->context.c2.tls_multi->multi_state = CAS_CONNECT_DONE;
+-    if (o->ncp_enabled)
++    o->ncp_ciphers = mutate_ncp_cipher_list(o->ncp_ciphers, &o->gc);
++    if (o->ncp_ciphers == NULL)
+     {
+-        o->ncp_ciphers = mutate_ncp_cipher_list(o->ncp_ciphers, &o->gc);
+-        if (o->ncp_ciphers == NULL)
+-        {
+-            msg(M_USAGE, "NCP cipher list contains unsupported ciphers or is too long.");
+-        }
++        msg(M_USAGE, "NCP cipher list contains unsupported ciphers or is too long.");
+     }
  
-     /* authentication complete, calculate dynamic client specific options */
-     if (!multi_client_set_protocol_options(&mi->context))
-@@ -2649,9 +2650,9 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
- 
-             case CC_RET_DEFERRED:
-                 /*
--                 * we already set client_connect_status to DEFERRED_RESULT or
-+                 * we already set multi_status to DEFERRED_RESULT or
-                  * DEFERRED_NO_RESULT. We just return
--                 * from the function as having client_connect_status
-+                 * from the function as having multi_status
-                  */
-                 return;
- 
-@@ -3003,8 +3004,8 @@ multi_process_post(struct multi_context *m, struct multi_instance *mi, const uns
+     if (o->remote_list && !o->connection_list)
+@@ -3908,8 +3889,7 @@ options_string(const struct options *o,
+         }
+         /* Only announce the cipher to our peer if we are willing to
+          * support it */
+-        if (p2p_nopull || !o->ncp_enabled
+-            || tls_item_in_cipher_list(ciphername, o->ncp_ciphers))
++        if (p2p_nopull || tls_item_in_cipher_list(ciphername, o->ncp_ciphers))
          {
-             /* connection is "established" when SSL/TLS key negotiation succeeds
-              * and (if specified) auth user/pass succeeds */
--            if (is_cas_pending(mi->context.c2.tls_multi->multi_state)
--                && CONNECTION_ESTABLISHED(&mi->context))
-+
-+            if (is_cas_pending(mi->context.c2.tls_multi->multi_state))
-             {
-                 multi_connection_established(m, mi);
-             }
-diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c
-index 3ff351aa0..c169838e1 100644
---- a/src/openvpn/occ.c
-+++ b/src/openvpn/occ.c
-@@ -185,7 +185,7 @@ check_send_occ_req_dowork(struct context *c)
- void
- check_send_occ_load_test_dowork(struct context *c)
- {
--    if (CONNECTION_ESTABLISHED(c))
-+    if (connection_established(c))
-     {
-         const struct mtu_load_test *entry;
- 
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 6e4651cf5..2b74975fa 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -206,7 +206,7 @@ struct context_1
- 
- 
- static inline bool
--is_cas_pending(enum client_connect_status cas)
-+is_cas_pending(enum multi_status cas)
- {
-     return cas == CAS_PENDING || cas == CAS_PENDING_DEFERRED
-            || cas == CAS_PENDING_DEFERRED_PARTIAL;
-@@ -237,6 +237,8 @@ struct context_2
- 
-     struct link_socket *link_socket;     /* socket used for TCP/UDP connection to remote */
-     bool link_socket_owned;
-+
-+    /** This variable is used instead link_socket->info for P2MP UDP childs */
-     struct link_socket_info *link_socket_info;
-     const struct link_socket *accept_from; /* possibly do accept() on a parent link_socket */
- 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 85f9488a5..2d621e472 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -867,7 +867,7 @@ process_incoming_push_request(struct context *c)
-         send_auth_failed(c, client_reason);
-         ret = PUSH_MSG_AUTH_FAILURE;
-     }
--    else if (c->c2.tls_multi->multi_state == CAS_SUCCEEDED)
-+    else if (c->c2.tls_multi->multi_state >= CAS_CONNECT_DONE)
-     {
-         time_t now;
- 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 7eb356ddf..9f3f83f16 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2381,19 +2381,22 @@ key_method_2_write(struct buffer *buf, struct tls_multi *multi, struct tls_sessi
-      * If we're a p2mp server to allow NCP, the first key
-      * generation is postponed until after the connect script finished and the
-      * NCP options can be processed. Since that always happens at after connect
--     * script options are available the CAS_SUCCEEDED status is identical to
--     * NCP options are processed and we have no extra state for NCP finished.
-+     * script options are available the CAS_CONNECT_DONE status is identical to
-+     * NCP options are processed and do not wait for NCP being finished.
-      */
--    if (session->opt->server && (session->opt->mode != MODE_SERVER
--            || multi->multi_state == CAS_SUCCEEDED))
-+    if (ks->authenticated > KS_AUTH_FALSE && session->opt->server
-+        && ((session->opt->mode == MODE_SERVER && multi->multi_state >= CAS_CONNECT_DONE)
-+            || (session->opt->mode == MODE_POINT_TO_POINT && !session->opt->pull)))
-     {
--        if (ks->authenticated > KS_AUTH_FALSE)
-+        /* if key_id >= 1, is a renegotiation, so we use the already established
-+         * parameters and do not need to delay anything. */
-+
-+        /* key-id == 0 and multi_state >= CAS_CONNECT_DONE is a special case of
-+         * the server reusing the session of a reconnecting client. */
-+        if (!tls_session_generate_data_channel_keys(session))
-         {
--            if (!tls_session_generate_data_channel_keys(session))
--            {
--                msg(D_TLS_ERRORS, "TLS Error: server generate_key_expansion failed");
--                goto error;
--            }
-+            msg(D_TLS_ERRORS, "TLS Error: server generate_key_expansion failed");
-+            goto error;
+             buf_printf(&out, ",cipher %s", ciphername);
+         }
+@@ -7994,14 +7974,6 @@ add_option(struct options *options,
+             msg(msglevel, "Unknown key-derivation method %s", p[1]);
          }
      }
+-    else if (streq(p[0], "ncp-disable") && !p[1])
+-    {
+-        VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INSTANCE);
+-        options->ncp_enabled = false;
+-        msg(M_WARN, "DEPRECATED OPTION: ncp-disable. Disabling "
+-            "cipher negotiation is a deprecated debug feature that "
+-            "will be removed in OpenVPN 2.6");
+-    }
+     else if (streq(p[0], "prng") && p[1] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 41e84f7e1..69897c5a7 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -512,7 +512,6 @@ struct options
+     const char *ciphername;
+     bool enable_ncp_fallback;      /**< If defined fall back to
+                                     * ciphername if NCP fails */
+-    bool ncp_enabled;
+     const char *ncp_ciphers;
+     const char *authname;
+     const char *prng_hash;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index b28d8edf8..dd6e462d0 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2187,8 +2187,7 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+         }
  
-@@ -2801,6 +2804,21 @@ tls_process(struct tls_multi *multi,
-                 /* Set outgoing address for data channel packets */
-                 link_socket_set_outgoing_addr(to_link_socket_info, &ks->remote_addr, session->common_name, session->opt->es);
- 
-+                /* Check if we need to advance the tls_multi state machine */
-+                if (multi->multi_state == CAS_NOT_CONNECTED)
-+                {
-+                    if (session->opt->mode == MODE_SERVER)
-+                    {
-+                        /* On a server we continue with running connect scripts next */
-+                        multi->multi_state = CAS_PENDING;
-+                    }
-+                    else
-+                    {
-+                        /* Skip the connect script related states */
-+                        multi->multi_state = CAS_CONNECT_DONE;
-+                    }
-+                }
-+
-                 /* Flush any payload packets that were buffered before our state transitioned to S_ACTIVE */
-                 flush_payload_buffer(ks);
- 
+         /* support for Negotiable Crypto Parameters */
+-        if (session->opt->ncp_enabled
+-            && (session->opt->mode == MODE_SERVER || session->opt->pull))
++        if (session->opt->mode == MODE_SERVER || session->opt->pull)
+         {
+             if (tls_item_in_cipher_list("AES-128-GCM", session->opt->config_ncp_ciphers)
+                 && tls_item_in_cipher_list("AES-256-GCM", session->opt->config_ncp_ciphers))
 diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 53325e556..8a65ab984 100644
+index 928e80929..43af51ee9 100644
 --- a/src/openvpn/ssl_common.h
 +++ b/src/openvpn/ssl_common.h
-@@ -504,12 +504,18 @@ struct tls_session
- /* client authentication state, CAS_SUCCEEDED must be 0 since
-  * non multi code path still checks this variable but does not initialise it
-  * so the code depends on zero initialisation */
--enum client_connect_status {
--    CAS_SUCCEEDED=0,
-+
-+/* CAS_NOT_CONNECTED is the initial state for every context. When the *first*
-+ * tls_session reaches S_ACTIVE, this state machine moves to CAS_PENDING (server)
-+ * or CAS_CONNECT_DONE (client/p2p) as clients skip the stages associated with
-+ * connect scripts/plugins */
-+enum multi_status {
-+    CAS_NOT_CONNECTED,
-     CAS_PENDING,
-     CAS_PENDING_DEFERRED,
-     CAS_PENDING_DEFERRED_PARTIAL,   /**< at least handler succeeded, no result yet*/
-     CAS_FAILED,
-+    CAS_CONNECT_DONE,
- };
+@@ -324,7 +324,6 @@ struct tls_options
  
+     const char *config_ciphername;
+     const char *config_ncp_ciphers;
+-    bool ncp_enabled;
  
-@@ -548,7 +554,7 @@ struct tls_multi
+     bool tls_crypt_v2;
+     const char *tls_crypt_v2_verify_script;
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index f02a3103c..722256b42 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -289,10 +289,6 @@ check_pull_client_ncp(struct context *c, const int found)
+         return true;
+     }
  
-     int n_sessions;             /**< Number of sessions negotiated thus
-                                  *   far. */
--    enum client_connect_status multi_state;
-+    enum multi_status multi_state;
- 
-     /*
-      * Number of errors.
+-    if (!c->options.ncp_enabled)
+-    {
+-        return true;
+-    }
+     /* If the server did not push a --cipher, we will switch to the
+      * remote cipher if it is in our ncp-ciphers list */
+     if(tls_poor_mans_ncp(&c->options, c->c2.tls_multi->remote_ciphername))
 -- 
 2.31.1
 
