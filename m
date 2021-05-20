@@ -1,9 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 20 May 2021 17:09:31 +0200
-Message-Id: <20210520150932.2565217-1-arne@...1227...>
+Date: Thu, 20 May 2021 17:09:32 +0200
+Message-Id: <20210520150932.2565217-2-arne@...1227...>
+In-Reply-To: <20210520150932.2565217-1-arne@...1227...>
+References: <20210520150932.2565217-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 1/2] Move examples into
- openvpn-examples(5) man page
+Subject: [Openvpn-devel] [PATCH v2 2/2] Add detailed man page section to
+ setup a OpenVPN setup with peer-fingerprint
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,129 +18,265 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+This is meant to give new users a quickstart for a useable OpenVPN
+setup. Our own documentation is lacking in this regard and many
+tutorials that can be found online are often questionable in some
+aspects.
+
+Linking the individaul RST file on github also give a tutorial
+in a nicely formatted way.
+
+Patch V2: Fix grammar/spelling mistakes (thanks ticantech), move
+          to openvpn-examples(5).
+
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- .gitignore                 |  2 ++
- doc/Makefile.am            | 25 +++++++++++++++++++++----
- doc/openvpn-examples.5.rst | 17 +++++++++++++++++
- doc/openvpn.8.rst          |  2 +-
- 4 files changed, 41 insertions(+), 5 deletions(-)
- create mode 100644 doc/openvpn-examples.5.rst
+ Changes.rst                              |   4 +
+ doc/Makefile.am                          |   1 +
+ doc/man-sections/example-fingerprint.rst | 196 +++++++++++++++++++++++
+ doc/openvpn-examples.5.rst               |   1 +
+ 4 files changed, 202 insertions(+)
+ create mode 100644 doc/man-sections/example-fingerprint.rst
 
-diff --git a/.gitignore b/.gitignore
-index 25d06235b..178076ede 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -49,6 +49,8 @@ version.sh
- msvc-env-local.bat
- config-msvc-local.h
- config-msvc-version.h
-+doc/openvpn-examples.5
-+doc/openvpn-examples.5.html
- doc/openvpn.8
- doc/openvpn.8.html
- /doc/doxygen/html/
+diff --git a/Changes.rst b/Changes.rst
+index 9185b55f7..5ac24307f 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -25,6 +25,10 @@ Certificate pinning/verify peer fingerprint
+     fingerprint of the peer. The option takes use a number of allowed
+     SHA256 certificate fingerprints.
+ 
++    See the man page section "Small OpenVPN setup with peer-fingerprint"
++    for a tutorial on how to use this feature. This is also available online
++    under https://github.com/openvpn/openvpn/blob/master/doc/man-sections/example-fingerprint.rst
++
+ TLS mode with self-signed certificates
+     When ``--peer-fingerprint`` is used, the ``--ca`` and ``--capath`` option
+     become optional. This allows for small OpenVPN setups without setting up
 diff --git a/doc/Makefile.am b/doc/Makefile.am
-index e411f5f9d..1dbbddf58 100644
+index 1dbbddf58..d86560174 100644
 --- a/doc/Makefile.am
 +++ b/doc/Makefile.am
-@@ -20,6 +20,7 @@ dist_doc_DATA = \
- dist_noinst_DATA = \
- 	README.plugins interactive-service-notes.rst \
- 	openvpn.8.rst \
-+    openvpn-examples.5.rst \
- 	man-sections/advanced-options.rst \
+@@ -25,6 +25,7 @@ dist_noinst_DATA = \
  	man-sections/client-options.rst \
  	man-sections/connection-profiles.rst \
-@@ -52,6 +53,14 @@ else
- 	@echo "Missing python-docutils - skipping man page generation"
- endif
- 
-+openvpn-examples.5 :
-+if HAVE_PYDOCUTILS
-+	$(RST2MAN) $(srcdir)/$@.rst > $@
-+else
-+	@echo "Missing python-docutils - skipping man page generation"
-+endif
-+
-+
- openvpn.8.html:
- if HAVE_PYDOCUTILS
- 	$(RST2HTML) $(srcdir)/openvpn.8.rst > $@
-@@ -59,13 +68,21 @@ else
- 	@echo "Missing python-docutils - skipping man/html page generation"
- endif
- 
-+openvpn-examples.5.html:
-+if HAVE_PYDOCUTILS
-+	$(RST2HTML) $(srcdir)/openvpn-examples.5.rst > $@
-+else
-+	@echo "Missing python-docutils - skipping man/html page generation"
-+endif
-+
-+
- if HAVE_PYDOCUTILS
--dist_noinst_DATA += openvpn.8
--dist_html_DATA = openvpn.8.html
-+dist_noinst_DATA += openvpn.8 openvpn-examples.5
-+dist_html_DATA = openvpn.8.html openvpn-examples.5.html
- 
- # Failsafe - do not delete these files unless we can recreate them
- CLEANFILES = \
--	 openvpn.8 openvpn.8.html
-+	 openvpn.8 openvpn.8.html openvpn-examples.5 openvpn-examples.5.html
- 
- endif
- 
-@@ -74,4 +91,4 @@ else
- dist_man_MANS = openvpn.8
- endif
- 
--dist-hook : openvpn.8 openvpn.8.html
-+dist-hook : openvpn.8 openvpn.8.html openvpn-examples.5 openvpn-examples.5.html
-diff --git a/doc/openvpn-examples.5.rst b/doc/openvpn-examples.5.rst
+ 	man-sections/encryption-options.rst \
++	man-sections/example-fingerprint.rst \
+ 	man-sections/examples.rst \
+ 	man-sections/generic-options.rst \
+ 	man-sections/inline-files.rst \
+diff --git a/doc/man-sections/example-fingerprint.rst b/doc/man-sections/example-fingerprint.rst
 new file mode 100644
-index 000000000..988b6027b
+index 000000000..c91ca64b9
 --- /dev/null
++++ b/doc/man-sections/example-fingerprint.rst
+@@ -0,0 +1,196 @@
++Small OpenVPN setup with peer-fingerprint
++=========================================
++This section consists of instructions how to build a small OpenVPN setup with the
++:code:`peer-fingerprint` option. This has the advantage of being easy to setup
++and should be suitable for most small lab and home setups without the need for a PKI.
++For bigger scale setup setting up a PKI (e.g. via easy-rsa) is still recommended.
++
++Both server and client configuration can of be further modified to customise the
++setup.
++
++Server setup
++------------
++1. Install openvpn
++
++   Compile from source-code (see `INSTALL` file) or install via a distribution (apt/yum/ports)
++   or via installer (Windows).
++
++2. Generate a self-signed certificate for the server:
++   ::
++
++    openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -keyout serverkey.pem -out server.pem -nodes -sha256 -days 3650 -subj '/CN=server'
++
++3. Generate SHA256 fingerprint of the server certificate
++
++   Use the OpenSSL command line utility to view the fingerprint of just
++   created certificate:
++   ::
++
++    openssl x509 -fingerprint -sha256 -in server.pem -noout
++
++   This output something similar to:
++   ::
++
++     SHA256 Fingerprint=00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff
++
++
++3. Write a server configuration (`server.conf`):
++::
++
++    # The server certificate we created in step 1
++    cert server.pem
++    key serverkey.pem
++
++    dh none
++    dev tun
++
++    # Listen on IPv6+IPv4 simultaneously
++    proto udp6
++
++    # The ip address the server will distribute
++    server 192.168.234.0 255.255.255.0
++    server-ipv6 fd00:6f76:706e::/64
++
++    # A tun-mtu of 1400 avoids problems of too big packets after VPN encapsulation
++    tun-mtu 1400
++
++    # The fingerprints of your clients. After adding/removing one here restart the
++    # server
++    <peer-fingerprint>
++    </peer-fingerprint>
++
++    # Notify clients when you restart the server to reconnect quickly
++    explicit-exit-notify 1
++
++    # Ping every 60s, restart if no data received for 5 minutes
++    keepalive 60 300
++
++4. Add at least one client as described in the client section.
++
++5. Start the server.
++    - On systemd based distributions move `server.pem`, `serverkey.pem` and
++      `server.conf` to :code:`/etc/openvpn/server` and start it via systemctl
++
++      ::
++
++          sudo mv server.conf serverkey.pem server.pem /etc/openvpn/server
++
++          sudo systemctl start openvpn-server@...185...
++
++Adding a client
++---------------
++1. Install OpenVPN
++
++2. Generate a self-signed certificate for the client. In this example the client
++   name is alice. Each client should have a unique name. Replace alice with a
++   different name for each client.
++   ::
++
++      openssl req -x509 -newkey ec:<(openssl ecparam -name secp384r1) -nodes -sha256 -days 3650 -subj '/CN=alice'
++
++   This generate a certificate and a key for the client. The output of the command will look
++   something like this:
++   ::
++
++      -----BEGIN PRIVATE KEY-----
++      [base64 content]
++      -----END PRIVATE KEY-----
++      -----
++      -----BEGIN CERTIFICATE-----
++      [base 64 content]
++      -----END CERTIFICATE-----
++
++
++3. Create a new client configuration file. In this example we will name the file
++   `alice.ovpn`:
++
++   ::
++
++      # The name of your server to connect to
++      remote yourserver.example.net
++      client
++      # use a random source port instead the fixed 1194
++      nobind
++
++      # Uncomment the following line if you want to route
++      # all traffic via the VPN
++      # redirect-gateway def1 ipv6
++
++      # To set a a DNS server
++      # dhcp-option DNS 192.168.234.1
++
++      <key>
++      -----BEGIN PRIVATE KEY-----
++      [Insert here the key created in step 2]
++      -----END PRIVATE KEY-----
++      </key>
++      <cert>
++      -----BEGIN CERTIFICATE-----
++      [Insert here the certificate created in step 2]
++      -----END CERTIFICATE-----
++      </cert>
++
++      # This is the fingerprint of the server that we trust. We generated this fingerprint
++      # in step 2 of the server setup
++      peer-fingerprint 00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff
++
++      # The tun-mtu of the client should match the server MTU
++      tun-mtu 1400
++      dev tun
++
++
++4. Generate the fingerprint of the client certificate. For that we will
++   let OpenSSL read the client configuration file as the x509 command will
++   ignore anything that is not between the begin and end markers of the certificate:
++
++   ::
++
++      openssl x509 -fingerprint -sha256 -noout -in alice.ovpn
++
++   This will again output something like
++   ::
++
++        SHA256 Fingerprint=ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00:ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00
++
++5. Edit the `server.conf` configuration file and add this new client
++   fingerprint as additional line  between :code:`<peer-fingerprint>`
++   and :code:`</peer-fingerprint>`
++
++   After adding *two* clients the part of configuration would look like this:
++
++   ::
++
++      <peer-fingerprint>
++      ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00:ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00
++      99:88:77:66:55:44:33:22:11:00:ff:ee:dd:cc:bb:aa:99:88:77:66:55:44:33:22:11:00:88:77:66:55:44:33
++      </peer-fingperint>
++
++6. (optional) if the client is an older client that does not support the
++   :code:`peer-fingerprint` (e.g. OpenVPN 2.5 and older, OpenVPN Connect 3.3
++   and older), the client config `alice.ovpn` can be modified to still work with
++   these clients.
++
++   Remove the line starting with :code:`peer-fingerprint`. Then
++   add a new :code:`<ca>` section at the end of the configuration file
++   with the contents of the :code:`server.pem` created in step 2 of the
++   server setup. The end of `alice.ovpn` file should like:
++
++   ::
++
++      [...]  # Beginning of the file skipped
++      </cert>
++
++      # The tun-mtu of the client should match the server MTU
++      tun-mtu 1400
++      dev tun
++
++      <ca>
++      [contents of the server.pem]
++      </ca>
++
++   Note that we put the :code:`<ca>` section after the :code:`<cert>` section
++   to make the fingerprint generation from step 4 still work since it will
++   only use the first certificate it find.
++
++7. Import the file into the OpenVPN client or just use the
++   :code:`openvpn alice.ovpn` to start the VPN.
+diff --git a/doc/openvpn-examples.5.rst b/doc/openvpn-examples.5.rst
+index 988b6027b..0e1b6c4f6 100644
+--- a/doc/openvpn-examples.5.rst
 +++ b/doc/openvpn-examples.5.rst
-@@ -0,0 +1,17 @@
-+===============================
-+ openvpn examples
-+===============================
-+-------------------------
-+ Secure IP tunnel daemon
-+-------------------------
-+
-+:Manual section: 5
-+:Manual group: Configuration files
-+
-+
-+INTRODUCTION
-+============
-+
-+This man page gives a few simple examples to create OpenVPN setups and configuration files.
-+
-+.. include:: man-sections/examples.rst
-diff --git a/doc/openvpn.8.rst b/doc/openvpn.8.rst
-index db81274fa..995467478 100644
---- a/doc/openvpn.8.rst
-+++ b/doc/openvpn.8.rst
-@@ -86,7 +86,6 @@ placed in a configuration file.
- .. include:: man-sections/connection-profiles.rst
- .. include:: man-sections/inline-files.rst
- .. include:: man-sections/signals.rst
--.. include:: man-sections/examples.rst
+@@ -14,4 +14,5 @@ INTRODUCTION
  
+ This man page gives a few simple examples to create OpenVPN setups and configuration files.
  
- FAQ
-@@ -134,6 +133,7 @@ Report all bugs to the OpenVPN team info@...515...
- SEE ALSO
- ========
- 
-+``openvpn-examples``\(5),
- ``dhcpcd``\(8),
- ``ifconfig``\(8),
- ``openssl``\(1),
++.. include:: man-sections/example-fingerprint.rst
+ .. include:: man-sections/examples.rst
 -- 
 2.31.1
 
