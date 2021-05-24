@@ -1,9 +1,13 @@
-From: selva.nair@...277...
-Date: Mon, 24 May 2021 14:45:06 -0400
-Message-Id: <20210524184506.20582-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Do not require CA when peer-fingerprint is
- used
+References: <r2Oc8HU_6LoYR_UE522CC5CcNVDyYxI_Hm8eiO-Fb-4aPwW5bsVWVIr8nTaZxFIbBT0duI74wOE_CObRLoLNgdkzwHN3ua1qMe9upZIuu98=@protonmail.com>
+ <CAKuzo_heOferug+BNyGaKc66_pD2AQO72PSAioGH+aTXux3jsQ@...278...>
+ <hygEYgyM5YzWlc1jNqaSj4Ubqzlf4AEvkNGT613wXXBbcjLPkZVen7yb0Uv6dxQPSYBV68VKNXAUc6JMmzIxVWH_u0U9DxaC6x42Zn4cG8A=@protonmail.com>
+In-Reply-To: <hygEYgyM5YzWlc1jNqaSj4Ubqzlf4AEvkNGT613wXXBbcjLPkZVen7yb0Uv6dxQPSYBV68VKNXAUc6JMmzIxVWH_u0U9DxaC6x42Zn4cG8A=@protonmail.com>
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 24 May 2021 14:50:37 -0400
+Message-ID: <CAKuzo_gXUgDYPQj2sGzen+CzdkGrDLKdbEOGSJWC6_n9t8QsOQ@...278...>
+Subject: Re: [Openvpn-devel] --tls-verify runs twice for a single cert in
+ Peer-fingerprint mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,106 +16,18 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: tincantech <tincantech@...2282...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Selva Nair <selva.nair@...277...>
+> Note: In the logs above, the script is executed *before* Openvpn/Openssl
+> verification, so exporting error-status to env for script seems unlikely.
 
-Fix --ca or --ca-path check when --pkcs11-id or --cryptoapicert
-is used with --peer-fingerprint.
+No so. The script is executed from a callback and the error from
+openssl is very much in there and should be exported to scripts, imo.
+This was not required in the past when we used to call the script only
+when openssl verify has succeeded.
 
-The multiple --ca or --capath checks are consolidated into a function
-
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/options.c | 44 ++++++++++++++++++++++---------------------
- 1 file changed, 23 insertions(+), 21 deletions(-)
-
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 5a6f37d7..8d417206 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2055,6 +2055,27 @@ connection_entry_preload_key(const char **key_file, bool *key_inline,
-     }
- }
- 
-+static void
-+check_ca_required(const struct options *options)
-+{
-+    if (options->verify_hash_no_ca
-+        || options->pkcs12_file
-+        || options->ca_file
-+#ifndef ENABLE_CRYPTO_MBEDTLS
-+        || options->ca_path
-+#endif
-+       )
-+    {
-+        return;
-+    }
-+
-+    msg(M_USAGE, "You must define CA file (--ca)"
-+#ifndef ENABLE_CRYPTO_MBEDTLS
-+        " or CA path (--capath)"
-+#endif
-+        " and/or peer fingeprint verification " "(--peer-fingerprint)");
-+}
-+
- static void
- options_postprocess_verify_ce(const struct options *options,
-                               const struct connection_entry *ce)
-@@ -2592,11 +2613,10 @@ options_postprocess_verify_ce(const struct options *options,
- 
-     if (options->tls_server || options->tls_client)
-     {
-+        check_ca_required(options);
- #ifdef ENABLE_PKCS11
-         if (options->pkcs11_providers[0])
-         {
--            notnull(options->ca_file, "CA file (--ca)");
--
-             if (options->pkcs11_id_management && options->pkcs11_id != NULL)
-             {
-                 msg(M_USAGE, "Parameter --pkcs11-id cannot be used when --pkcs11-id-management is also specified.");
-@@ -2657,10 +2677,6 @@ options_postprocess_verify_ce(const struct options *options,
- #ifdef ENABLE_CRYPTOAPI
-         if (options->cryptoapi_cert)
-         {
--            if ((!(options->ca_file)) && (!(options->ca_path)))
--            {
--                msg(M_USAGE, "You must define CA file (--ca) or CA path (--capath)");
--            }
-             if (options->cert_file)
-             {
-                 msg(M_USAGE, "Parameter --cert cannot be used when --cryptoapicert is also specified.");
-@@ -2718,25 +2734,11 @@ options_postprocess_verify_ce(const struct options *options,
-         else
-         {
- #ifdef ENABLE_CRYPTO_MBEDTLS
--            if (!(options->ca_file || options->verify_hash_no_ca))
--            {
--                msg(M_USAGE, "You must define CA file (--ca) and/or "
--                    "peer fingeprint verification "
--                    "(--peer-fingerprint)");
--            }
-             if (options->ca_path)
-             {
-                 msg(M_USAGE, "Parameter --capath cannot be used with the mbed TLS version version of OpenVPN.");
-             }
--#else  /* ifdef ENABLE_CRYPTO_MBEDTLS */
--            if ((!(options->ca_file)) && (!(options->ca_path))
--                && (!(options->verify_hash_no_ca)))
--            {
--                msg(M_USAGE, "You must define CA file (--ca) or CA path "
--                    "(--capath) and/or peer fingeprint verification "
--                    "(--peer-fingerprint)");
--            }
--#endif
-+#endif  /* ifdef ENABLE_CRYPTO_MBEDTLS */
-             if (pull)
-             {
- 
--- 
-2.20.1
-
+Selva
 
