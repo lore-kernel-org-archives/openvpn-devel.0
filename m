@@ -1,9 +1,13 @@
-From: Heiko Wundram <heiko.wundram@...2614...>
-Date: Tue, 25 May 2021 11:25:10 +0200
-Message-Id: <20210525092510.27517-1-heiko.wundram@...2614...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Implement Windows CA template match for
- Crypto-API selector
+References: <20210522033232.20548-1-selva.nair@...277...>
+ <20210522033232.20548-3-selva.nair@...277...>
+ <CAGyAFMXxsv7dcubA6QLr9G4onU+87N74_8_181fwup2Sm+Wb0A@...278...>
+In-Reply-To: <CAGyAFMXxsv7dcubA6QLr9G4onU+87N74_8_181fwup2Sm+Wb0A@...278...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 25 May 2021 11:38:16 -0400
+Message-ID: <CAKuzo_jgcJH_mA=Cry9oidB4k5=EqEkkPQeWhza9E4TROt+TLQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 3/3] Print format spec changes for
+ tapctl and openvpnmscia
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,188 +16,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-The certificate selection process for the Crypto API certificates
-is currently fixed to match on subject or identifier. Especially
-if certificates that are used for OpenVPN are managed by a Windows CA,
-it is appropriate to select the certificate to use by the template
-that it is generated from, especially on domain-joined clients which
-automatically acquire/renew the corresponding certificate.
+Hi,
 
-The attached match implements the match on TMPL: with either a template
-name (which is looked up through CryptFindOIDInfo) or by specifying the
-OID of the template directly, which then is matched against the
-corresponding X509 extensions specifying the template that the certificate
-was generated from.
+Thanks for the review.
 
-The logic requires to walk all certificates in the underlying store and
-to match the certificate extensions directly. The hook which is
-implemented in the certificate selection logic is generic to allow
-other Crypto-API certificate matches to also be implemented at some
-point in the future.
+On Tue, May 25, 2021 at 4:06 AM Lev Stipakov <lstipakov@...277...> wrote:
+>
+> Hi,
+>
+> I got compilation error:
 
-The logic to match the certificate template is taken from the
-implementation in the .NET core runtime, see Pal.Windows/FindPal.cs in
-in the implementation of System.Security.Cryptography.X509Certificates.
+Oops.. I did not test building with _DEBUG defined.
 
-Signed-off-by: Heiko Wundram <heiko.wundram@...2614...>
----
- src/openvpn/cryptoapi.c | 117 ++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 112 insertions(+), 5 deletions(-)
+>
+> 2>openvpnmsica.c
+> 2>C:\Users\lev\Projects\openvpn\src\openvpnmsica\openvpnmsica.c(140,1):
+> warning C4002: too many arguments for function-like macro invocation
+> 'TEXT'
+> 2>C:\Users\lev\Projects\openvpn\src\openvpnmsica\openvpnmsica.c(140,24):
+> error C2143: syntax error: missing ')' before ';'
+> 2>C:\Users\lev\Projects\openvpn\src\openvpnmsica\openvpnmsica.c(132,9):
+> warning C4473: 'swprintf_s' : not enough arguments passed for format
+> string
+> 2>C:\Users\lev\Projects\openvpn\src\openvpnmsica\openvpnmsica.c(132,9):
+> message : placeholders and their parameters expect 3 variadic
+> arguments, but 0 were provided
+> 2>C:\Users\lev\Projects\openvpn\src\openvpnmsica\openvpnmsica.c(132,9):
+> message : the missing variadic argument 1 is required by format string
+> '%ls'
+>
+> OTOH it is easily fixed by this change:
+>
+> diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
+> index a4008d8f..1fb35f86 100644
+> --- a/src/openvpnmsica/openvpnmsica.c
+> +++ b/src/openvpnmsica/openvpnmsica.c
+> @@ -129,7 +129,7 @@ _debug_popup(_In_z_ LPCTSTR szFunctionName)
+>      /* Compose the pop-up message. */
+>      _stprintf_s(
+>          szMessage, _countof(szMessage),
+> -        TEXT("The %") TEXT(PRIsLPTSTR) TEXT(" process (PID: %u) has
+> started to execute the %"
+> +        TEXT("The %") TEXT(PRIsLPTSTR) TEXT(" process (PID: %u) has
+> started to execute the %")
+>          TEXT(PRIsLPTSTR) TEXT(" custom action.\r\n")
+>          TEXT("\r\n")
+>          TEXT("If you would like to debug the custom action, attach a
+> debugger to this process and set breakpoints before dismissing this
+> dialog.\r\n")
 
-diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-index ded8c914..ee4c9014 100644
---- a/src/openvpn/cryptoapi.c
-+++ b/src/openvpn/cryptoapi.c
-@@ -732,6 +732,105 @@ err:
- 
- #endif /* OPENSSL_VERSION_NUMBER >= 1.1.0 */
- 
-+static void *
-+decode_object(struct gc_arena *gc, LPCSTR struct_type, const CRYPT_OBJID_BLOB *val, DWORD flags, DWORD *cb)
-+{
-+    /* get byte cound for decoding */
-+    BYTE *buf;
-+    if (!CryptDecodeObject(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, struct_type, val->pbData, val->cbData, flags, NULL, cb))
-+        return NULL;
-+
-+    /* do the actual decode */
-+    buf = gc_malloc(*cb, false, gc);
-+    if (!CryptDecodeObject(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, struct_type, val->pbData, val->cbData, flags, buf, cb))
-+        return NULL;
-+
-+    return buf;
-+}
-+
-+static const CRYPT_OID_INFO *
-+find_oid(DWORD keytype, const void *key, DWORD groupid, bool fallback)
-+{
-+    const CRYPT_OID_INFO *info = NULL;
-+    
-+    /* force resolve from local as first step */
-+    if (groupid != CRYPT_HASH_ALG_OID_GROUP_ID &&
-+        groupid != CRYPT_ENCRYPT_ALG_OID_GROUP_ID &&
-+        groupid != CRYPT_PUBKEY_ALG_OID_GROUP_ID &&
-+        groupid != CRYPT_SIGN_ALG_OID_GROUP_ID &&
-+        groupid != CRYPT_RDN_ATTR_OID_GROUP_ID &&
-+        groupid != CRYPT_EXT_OR_ATTR_OID_GROUP_ID &&
-+        groupid != CRYPT_KDF_OID_GROUP_ID)
-+    {
-+        info = CryptFindOIDInfo(keytype, (void*)key, groupid | CRYPT_OID_DISABLE_SEARCH_DS_FLAG);
-+    }
-+
-+    /* try proper resolve if not found yet, also including AD */
-+    if (!info)
-+    {
-+        info = CryptFindOIDInfo(keytype, (void*)key, groupid);
-+    }
-+
-+    /* fall back to all groups if not found yet and fallback requested */
-+    if (!info && fallback && groupid)
-+    {
-+        info = CryptFindOIDInfo(keytype, (void*)key, 0);
-+    }
-+
-+    return info;
-+}
-+
-+static bool
-+test_certificate_template(struct gc_arena *gc, const char *cert_prop, const CERT_CONTEXT *cert_ctx)
-+{
-+    const CERT_INFO *info = cert_ctx->pCertInfo;
-+    const CERT_EXTENSION *ext;
-+    DWORD cbext;
-+    void *pvext;
-+    const WCHAR *tmpl_name = wide_string(cert_prop, gc);
-+
-+    /* check for V1 extension (Windows 2K and below) */
-+    ext = CertFindExtension(szOID_ENROLL_CERTTYPE_EXTENSION, info->cExtension, info->rgExtension);
-+    if (ext)
-+    {
-+        pvext = decode_object(gc, X509_UNICODE_ANY_STRING, &ext->Value, 0, &cbext);
-+        if (pvext && cbext >= sizeof(CERT_NAME_VALUE))
-+        {
-+            const CERT_NAME_VALUE *nv = (const CERT_NAME_VALUE*)pvext;
-+            if (!_wcsicmp((const WCHAR*)nv->Value.pbData, tmpl_name))
-+            {
-+                /* data content matches extension name */
-+                return true;
-+            }
-+        }
-+    }
-+
-+    /* check for V2 extension (Windows 2003+) */
-+    ext = CertFindExtension(szOID_CERTIFICATE_TEMPLATE, info->cExtension, info->rgExtension);
-+    if (ext)
-+    {
-+        pvext = decode_object(gc, X509_CERTIFICATE_TEMPLATE, &ext->Value, 0, &cbext);
-+        if (pvext && cbext >= sizeof(CERT_TEMPLATE_EXT))
-+        {
-+            const CERT_TEMPLATE_EXT *cte = (const CERT_TEMPLATE_EXT*)pvext;
-+            const CRYPT_OID_INFO *tmpl_oid = find_oid(CRYPT_OID_INFO_NAME_KEY, tmpl_name, CRYPT_TEMPLATE_OID_GROUP_ID, true);
-+            if (tmpl_oid && !stricmp(tmpl_oid->pszOID, cte->pszObjId))
-+            {
-+                /* found OID match in extension against resolved key */
-+                return true;
-+            }
-+            else if (!tmpl_oid && !stricmp(cert_prop, cte->pszObjId))
-+            {
-+                /* found direct OID match with certificate property specified */
-+                return true;
-+            }
-+        }
-+    }
-+
-+    /* no extension found, exit */
-+    return false;
-+}
-+
- static const CERT_CONTEXT *
- find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
- {
-@@ -743,17 +842,25 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
-      * The first matching certificate that has not expired is returned.
-      */
-     const CERT_CONTEXT *rv = NULL;
--    DWORD find_type;
--    const void *find_param;
-+    DWORD find_type = CERT_FIND_ANY;
-+    const void *find_param = NULL;
-+    bool (*find_test)(struct gc_arena*, const char*, const CERT_CONTEXT*) = NULL;
-     unsigned char hash[255];
-     CRYPT_HASH_BLOB blob = {.cbData = 0, .pbData = hash};
-     struct gc_arena gc = gc_new();
- 
--    if (!strncmp(cert_prop, "SUBJ:", 5))
-+    if (!strncmp(cert_prop, "TMPL:", 5))
-+    {
-+        /* skip the tag */
-+        cert_prop += 5;
-+        find_test = &test_certificate_template;
-+    }
-+    else if (!strncmp(cert_prop, "SUBJ:", 5))
-     {
-         /* skip the tag */
--        find_param = wide_string(cert_prop + 5, &gc);
-+        cert_prop += 5;
-         find_type = CERT_FIND_SUBJECT_STR_W;
-+        find_param = wide_string(cert_prop, &gc);
-     }
-     else if (!strncmp(cert_prop, "THUMB:", 6))
-     {
-@@ -819,7 +926,7 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
-         {
-             validity = CertVerifyTimeValidity(NULL, rv->pCertInfo);
-         }
--        if (!rv || validity == 0)
-+        if (!rv || (validity == 0 && (!find_test || find_test(&gc, cert_prop, rv))))
-         {
-             break;
-         }
--- 
-2.20.1
+Will submit a v2 with this one and the space below.
 
+Selva
+
+>
+> A nit-pick:
+>
+> > -    _stprintf_s(szTitle, _countof(szTitle), TEXT("%s v%s"), szFunctionName, TEXT(PACKAGE_VERSION));
+> > +    _stprintf_s(szTitle, _countof(szTitle), TEXT("%") TEXT(PRIsLPTSTR) TEXT("v%") TEXT(PRIsLPTSTR),
+> > +               szFunctionName, TEXT(PACKAGE_VERSION));
+>
+> Otherwise looks good - compiled with MSVC and slightly tested. If Gert
+> can fix abovementioned thigs (add a parenthesis and a whitespace)
+> consider it as an ack.
 
