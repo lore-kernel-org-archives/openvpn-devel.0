@@ -1,9 +1,11 @@
-MIME-Version: 1.0
+From: Gehrkens.IT GmbH | Heiko Wundram <heiko.wundram@...2614...>
+Date: Wed, 26 May 2021 07:15:43 +0000
+Message-ID: <7ad638911b9c4581946c82fe768811c9@...2614...>
 References: <20210525092510.27517-1-heiko.wundram@...2614...>
-In-Reply-To: <20210525092510.27517-1-heiko.wundram@...2614...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 25 May 2021 16:42:30 -0400
-Message-ID: <CAKuzo_gESgnmaN8QUdnThR-qPcSxdW1Ursvw+vioZFYHTd04Dg@...278...>
+ <CAKuzo_gESgnmaN8QUdnThR-qPcSxdW1Ursvw+vioZFYHTd04Dg@...278...>
+In-Reply-To: <CAKuzo_gESgnmaN8QUdnThR-qPcSxdW1Ursvw+vioZFYHTd04Dg@...278...>
+Content-Language: de-DE
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH] Implement Windows CA template match for
  Crypto-API selector
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -14,241 +16,144 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Heiko Wundram <heiko.wundram@...2614...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-
-I'm not convinced of the utility of this. It could be marginally
-useful in some setups where all users are tied to a domain and
-choosing any certificate that matches a template is appropriate. I
-don't have a setup to test this.
-
-Here are some general comments anyway.
-
-On Tue, May 25, 2021 at 5:44 AM Heiko Wundram <heiko.wundram@...2614...> wrote:
->
-> The certificate selection process for the Crypto API certificates
-> is currently fixed to match on subject or identifier. Especially
-> if certificates that are used for OpenVPN are managed by a Windows CA,
-> it is appropriate to select the certificate to use by the template
-> that it is generated from, especially on domain-joined clients which
-> automatically acquire/renew the corresponding certificate.
->
-> The attached match implements the match on TMPL: with either a template
-> name (which is looked up through CryptFindOIDInfo) or by specifying the
-> OID of the template directly, which then is matched against the
-> corresponding X509 extensions specifying the template that the certificate
-> was generated from.
->
-> The logic requires to walk all certificates in the underlying store and
-> to match the certificate extensions directly. The hook which is
-> implemented in the certificate selection logic is generic to allow
-> other Crypto-API certificate matches to also be implemented at some
-> point in the future.
->
-> The logic to match the certificate template is taken from the
-> implementation in the .NET core runtime, see Pal.Windows/FindPal.cs in
-> in the implementation of System.Security.Cryptography.X509Certificates.
->
-> Signed-off-by: Heiko Wundram <heiko.wundram@...2614...>
-> ---
->  src/openvpn/cryptoapi.c | 117 ++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 112 insertions(+), 5 deletions(-)
->
-> diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-> index ded8c914..ee4c9014 100644
-> --- a/src/openvpn/cryptoapi.c
-> +++ b/src/openvpn/cryptoapi.c
-> @@ -732,6 +732,105 @@ err:
->
->  #endif /* OPENSSL_VERSION_NUMBER >= 1.1.0 */
->
-> +static void *
-> +decode_object(struct gc_arena *gc, LPCSTR struct_type, const CRYPT_OBJID_BLOB *val, DWORD flags, DWORD *cb)
-> +{
-> +    /* get byte cound for decoding */
-
-typo: count
-
-> +    BYTE *buf;
-> +    if (!CryptDecodeObject(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, struct_type, val->pbData, val->cbData, flags, NULL, cb))
-> +        return NULL;
-> +
-> +    /* do the actual decode */
-> +    buf = gc_malloc(*cb, false, gc);
-> +    if (!CryptDecodeObject(X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, struct_type, val->pbData, val->cbData, flags, buf, cb))
-> +        return NULL;
-> +
-> +    return buf;
-> +}
-> +
-> +static const CRYPT_OID_INFO *
-> +find_oid(DWORD keytype, const void *key, DWORD groupid, bool fallback)
-> +{
-> +    const CRYPT_OID_INFO *info = NULL;
-> +
-> +    /* force resolve from local as first step */
-> +    if (groupid != CRYPT_HASH_ALG_OID_GROUP_ID &&
-> +        groupid != CRYPT_ENCRYPT_ALG_OID_GROUP_ID &&
-> +        groupid != CRYPT_PUBKEY_ALG_OID_GROUP_ID &&
-> +        groupid != CRYPT_SIGN_ALG_OID_GROUP_ID &&
-> +        groupid != CRYPT_RDN_ATTR_OID_GROUP_ID &&
-> +        groupid != CRYPT_EXT_OR_ATTR_OID_GROUP_ID &&
-> +        groupid != CRYPT_KDF_OID_GROUP_ID)
-> +    {
-
-Why not do the local lookup for all grupids? Anyway you are falling
-back to domain-wide look up if this fails.
-
-> +        info = CryptFindOIDInfo(keytype, (void*)key, groupid | CRYPT_OID_DISABLE_SEARCH_DS_FLAG);
-> +    }
-> +
-> +    /* try proper resolve if not found yet, also including AD */
-> +    if (!info)
-> +    {
-> +        info = CryptFindOIDInfo(keytype, (void*)key, groupid);
-
-How long would this take to time out -- we try to avoid calling
-functions that need network access to the DC as that's often not
-available before the tunnel comes up.
-
-> +    }
-> +
-> +    /* fall back to all groups if not found yet and fallback requested */
-> +    if (!info && fallback && groupid)
-> +    {
-> +        info = CryptFindOIDInfo(keytype, (void*)key, 0);
-
-That could be a second network call. Why not combine the two into one call.
-
-> +    }
-> +
-> +    return info;
-> +}
-> +
-> +static bool
-> +test_certificate_template(struct gc_arena *gc, const char *cert_prop, const CERT_CONTEXT *cert_ctx)
-> +{
-
-As this is called from a loop for every certificate in the store until
-a match is found, passing in gc that will be released only after
-exiting the loop is wasteful memory use.
-
-Just create a new gc clear and clear it at exit. You are not using any
-buffers allocated here after return.
-
-> +    const CERT_INFO *info = cert_ctx->pCertInfo;
-> +    const CERT_EXTENSION *ext;
-> +    DWORD cbext;
-> +    void *pvext;
-> +    const WCHAR *tmpl_name = wide_string(cert_prop, gc);
-> +
-> +    /* check for V1 extension (Windows 2K and below) */
-> +    ext = CertFindExtension(szOID_ENROLL_CERTTYPE_EXTENSION, info->cExtension, info->rgExtension);
-> +    if (ext)
-> +    {
-> +        pvext = decode_object(gc, X509_UNICODE_ANY_STRING, &ext->Value, 0, &cbext);
-> +        if (pvext && cbext >= sizeof(CERT_NAME_VALUE))
-> +        {
-> +            const CERT_NAME_VALUE *nv = (const CERT_NAME_VALUE*)pvext;
-> +            if (!_wcsicmp((const WCHAR*)nv->Value.pbData, tmpl_name))
-
-Is it guaranteed that pbData is NULL terminated? (MS docs are unclear
-on this). We may have to add a safety check that the data length
-length is >= wcslen(tmpl_name).
-
-> +            {
-> +                /* data content matches extension name */
-> +                return true;
-> +            }
-> +        }
-> +    }
-> +
-> +    /* check for V2 extension (Windows 2003+) */
-> +    ext = CertFindExtension(szOID_CERTIFICATE_TEMPLATE, info->cExtension, info->rgExtension);
-> +    if (ext)
-> +    {
-> +        pvext = decode_object(gc, X509_CERTIFICATE_TEMPLATE, &ext->Value, 0, &cbext);
-> +        if (pvext && cbext >= sizeof(CERT_TEMPLATE_EXT))
-> +        {
-> +            const CERT_TEMPLATE_EXT *cte = (const CERT_TEMPLATE_EXT*)pvext;
-> +            const CRYPT_OID_INFO *tmpl_oid = find_oid(CRYPT_OID_INFO_NAME_KEY, tmpl_name, CRYPT_TEMPLATE_OID_GROUP_ID, true);
-> +            if (tmpl_oid && !stricmp(tmpl_oid->pszOID, cte->pszObjId))
-> +            {
-> +                /* found OID match in extension against resolved key */
-> +                return true;
-> +            }
-> +            else if (!tmpl_oid && !stricmp(cert_prop, cte->pszObjId))
-> +            {
-
-Why not test this first so that the call to find_oid could be avoided
-if this matches?
-
-> +                /* found direct OID match with certificate property specified */
-> +                return true;
-> +            }
-> +        }
-> +    }
-> +
-> +    /* no extension found, exit */
-> +    return false;
-> +}
-> +
->  static const CERT_CONTEXT *
->  find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
->  {
-> @@ -743,17 +842,25 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
->       * The first matching certificate that has not expired is returned.
->       */
->      const CERT_CONTEXT *rv = NULL;
-> -    DWORD find_type;
-> -    const void *find_param;
-> +    DWORD find_type = CERT_FIND_ANY;
-> +    const void *find_param = NULL;
-> +    bool (*find_test)(struct gc_arena*, const char*, const CERT_CONTEXT*) = NULL;
->      unsigned char hash[255];
->      CRYPT_HASH_BLOB blob = {.cbData = 0, .pbData = hash};
->      struct gc_arena gc = gc_new();
->
-> -    if (!strncmp(cert_prop, "SUBJ:", 5))
-> +    if (!strncmp(cert_prop, "TMPL:", 5))
-> +    {
-> +        /* skip the tag */
-> +        cert_prop += 5;
-> +        find_test = &test_certificate_template;
-> +    }
-> +    else if (!strncmp(cert_prop, "SUBJ:", 5))
->      {
->          /* skip the tag */
-> -        find_param = wide_string(cert_prop + 5, &gc);
-> +        cert_prop += 5;
->          find_type = CERT_FIND_SUBJECT_STR_W;
-> +        find_param = wide_string(cert_prop, &gc);
->      }
->      else if (!strncmp(cert_prop, "THUMB:", 6))
->      {
-> @@ -819,7 +926,7 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
->          {
->              validity = CertVerifyTimeValidity(NULL, rv->pCertInfo);
->          }
-> -        if (!rv || validity == 0)
-> +        if (!rv || (validity == 0 && (!find_test || find_test(&gc, cert_prop, rv))))
->          {
->              break;
->          }
-
-The warning log below this is meant to be printed only when the cert
-matches but validity period is off. But now it will print a warning
-for every certificate in the store until a match is found. That's not
-acceptable.
-
-There are some missing {} for if/else,  we prefer && at the start of
-line for multi-line conditions etc. See
-https://community.openvpn.net/openvpn/wiki/CodeStyle
-
-
-Selva
-
+SGVsbG8gU2VsdmEsDQoNCkknbGwgc2VuZCBhbiB1cGRhdGVkIHBhdGNoIHdydC4gc29tZSBvZiB5
+b3VyIG5vdGVzLCBmb3Igbm93IGp1c3QgYSBxdWljayByZXBseSB0byBzb21lIG9mIHRoZW06DQoN
+Cj4gSSdtIG5vdCBjb252aW5jZWQgb2YgdGhlIHV0aWxpdHkgb2YgdGhpcy4gSXQgY291bGQgYmUg
+bWFyZ2luYWxseSB1c2VmdWwgaW4gc29tZQ0KPiBzZXR1cHMgd2hlcmUgYWxsIHVzZXJzIGFyZSB0
+aWVkIHRvIGEgZG9tYWluIGFuZCBjaG9vc2luZyBhbnkgY2VydGlmaWNhdGUgdGhhdA0KPiBtYXRj
+aGVzIGEgdGVtcGxhdGUgaXMgYXBwcm9wcmlhdGUuIEkgZG9uJ3QgaGF2ZSBhIHNldHVwIHRvIHRl
+c3QgdGhpcy4NCg0KVGhhdCdzIG5vdCB0aGUgb25seSB1c2UgY2FzZS4gSSdtIGN1cnJlbnRseSBk
+ZXBsb3lpbmcgdGhpcyBwYXRjaCB0byBpbXBsZW1lbnQgYSBtYWNoaW5lIGFsd2F5cy1vbiBWUE4g
+KG1hY2hpbmVzIGF1dG9tYXRpY2FsbHkgcmVnaXN0ZXIgYSBzcGVjaWZpYyBjZXJ0aWZpY2F0ZSB0
+eXBlIHdoaWNoIGNvbnRhaW5zIHRoZSBtYWNoaW5lIG5hbWUgYXMgYSBTQU4sIHdoaWNoIGNhbiB0
+aGVuIGJlIHNlbGVjdGVkIHVzaW5nIHRoZSBUTVBMOiBsb2dpYyBhbmQgb24gdGhlIHNlcnZlciBz
+aWRlIHRoZSBjbGllbnQgY2VydGlmaWNhdGUgbG9va2VkIHVwIGluIGEgdGxzLXZlcmlmeSBzY3Jp
+cHQgdG8gY2hlY2sgd2hldGhlciB0aGUgbWFjaGluZSBhY2NvdW50IGlzIGFjdGl2ZSkuIFRoaXMg
+cGF0Y2ggYWxsb3dzIG1vdmluZyB0aGUgY2xpZW50IGNlcnRpZmljYXRlIHNlbGVjdGlvbiBvdXQg
+b2YgdGhlIGNvbmZpZ3VyYXRpb24gZmlsZSwgYXMgdGhlIHNlbGVjdG9yIGJhc2VkIG9uIHRlbXBs
+YXRlIElEIGlzIGFsd2F5cyBlcXVhbCBvbiBhbnkgY2xpZW50IChTVUJKIG9mIGNvdXJzZSBpc24n
+dCkgYW5kIGFzIHN1Y2ggY2FuIGJlIGVtYmVkZGVkIGFzIGEgcGxhaW4gLm92cG4gZmlsZSBpbiB0
+aGUgTVNJIHdoaWNoIGRlcGxveXMgdGhlIHNvZnR3YXJlLCB3aXRob3V0IGFueSBhZGRpdGlvbmFs
+IGNvbmZpZ3VyYXRpb24gcmVxdWlyZWQgb24gdGhlIHBhcnQgb2YgdGhlIGNsaWVudCwgYW5kIGVz
+cGVjaWFsbHkgcmVzaWxpZW50IHRvIGxhdGVyIHJlbmFtaW5nIG9mIHRoZSBjbGllbnQgaWYgdGhh
+dCBzaG91bGQgaGFwcGVuIChuZXcgY2VydGlmaWNhdGUgZGVwbG95ZWQgd2l0aCBjZXJ0dXRpbCAv
+cHVsc2UsIG5ldyBWUE4gY29ubmVjdGlvbiBmb3VuZCkuIFNhbWUgb2YgY291cnNlIGdvZXMgZm9y
+IHlvdXIgc2NlbmFyaW8gb2YgdXNlciBhdXRvLXJlZ2lzdGVyZWQgY2VydGlmaWNhdGVzLg0KDQo+
+ID4gK3N0YXRpYyBjb25zdCBDUllQVF9PSURfSU5GTyAqDQo+ID4gK2ZpbmRfb2lkKERXT1JEIGtl
+eXR5cGUsIGNvbnN0IHZvaWQgKmtleSwgRFdPUkQgZ3JvdXBpZCwgYm9vbA0KPiA+ICtmYWxsYmFj
+aykgew0KPiA+ICsgICAgY29uc3QgQ1JZUFRfT0lEX0lORk8gKmluZm8gPSBOVUxMOw0KPiA+ICsN
+Cj4gPiArICAgIC8qIGZvcmNlIHJlc29sdmUgZnJvbSBsb2NhbCBhcyBmaXJzdCBzdGVwICovDQo+
+ID4gKyAgICBpZiAoZ3JvdXBpZCAhPSBDUllQVF9IQVNIX0FMR19PSURfR1JPVVBfSUQgJiYNCj4g
+PiArICAgICAgICBncm91cGlkICE9IENSWVBUX0VOQ1JZUFRfQUxHX09JRF9HUk9VUF9JRCAmJg0K
+PiA+ICsgICAgICAgIGdyb3VwaWQgIT0gQ1JZUFRfUFVCS0VZX0FMR19PSURfR1JPVVBfSUQgJiYN
+Cj4gPiArICAgICAgICBncm91cGlkICE9IENSWVBUX1NJR05fQUxHX09JRF9HUk9VUF9JRCAmJg0K
+PiA+ICsgICAgICAgIGdyb3VwaWQgIT0gQ1JZUFRfUkROX0FUVFJfT0lEX0dST1VQX0lEICYmDQo+
+ID4gKyAgICAgICAgZ3JvdXBpZCAhPSBDUllQVF9FWFRfT1JfQVRUUl9PSURfR1JPVVBfSUQgJiYN
+Cj4gPiArICAgICAgICBncm91cGlkICE9IENSWVBUX0tERl9PSURfR1JPVVBfSUQpDQo+ID4gKyAg
+ICB7DQo+IA0KPiBXaHkgbm90IGRvIHRoZSBsb2NhbCBsb29rdXAgZm9yIGFsbCBncnVwaWRzPyBB
+bnl3YXkgeW91IGFyZSBmYWxsaW5nIGJhY2sgdG8NCj4gZG9tYWluLXdpZGUgbG9vayB1cCBpZiB0
+aGlzIGZhaWxzLg0KDQpTaW1wbHkgYmVjYXVzZSBNaWNyb3NvZnQgZG9lcyBpdCB0aGlzIHdheSBp
+biB0aGVpciBnZW5lcmljIHdyYXBwaW5nIG9mIENyeXB0RmluZE9JREluZm8gZm9yIGNlcnRpZmlj
+YXRlIHNlbGVjdGlvbiBoZWxwZXJzOiBodHRwczovL2dpdGh1Yi5jb20vZG90bmV0L3J1bnRpbWUv
+YmxvYi8wMWI3ZTczY2QzNzgxNDUyNjRhN2NiN2EwOTM2NWI0MWVkNDJiMjQwL3NyYy9saWJyYXJp
+ZXMvQ29tbW9uL3NyYy9JbnRlcm9wL1dpbmRvd3MvQ3J5cHQzMi9JbnRlcm9wLkZpbmRPaWRJbmZv
+LmNzI0w1MSBmZiAtIHRoZSBncm91cHMgZXhjbHVkZWQgaGVyZSB3aWxsIGFsd2F5cyBiZSBsb29r
+ZWQgdXAgbG9jYWxseSwgaW5kZXBlbmRlbnQgb2YgdGhlIENSWVBUX09JRF9ESVNBQkxFX1NFQVJD
+SF9GTEFHLCBzbyB0aGF0IHdlIGNhbiBzYXZlIG9uZSBjYWxsIGZvciB0aGVtLg0KDQo+ID4gKyAg
+ICAgICAgaW5mbyA9IENyeXB0RmluZE9JREluZm8oa2V5dHlwZSwgKHZvaWQqKWtleSwgZ3JvdXBp
+ZCB8DQo+IENSWVBUX09JRF9ESVNBQkxFX1NFQVJDSF9EU19GTEFHKTsNCj4gPiArICAgIH0NCj4g
+PiArDQo+ID4gKyAgICAvKiB0cnkgcHJvcGVyIHJlc29sdmUgaWYgbm90IGZvdW5kIHlldCwgYWxz
+byBpbmNsdWRpbmcgQUQgKi8NCj4gPiArICAgIGlmICghaW5mbykNCj4gPiArICAgIHsNCj4gPiAr
+ICAgICAgICBpbmZvID0gQ3J5cHRGaW5kT0lESW5mbyhrZXl0eXBlLCAodm9pZCopa2V5LCBncm91
+cGlkKTsNCj4gDQo+IEhvdyBsb25nIHdvdWxkIHRoaXMgdGFrZSB0byB0aW1lIG91dCAtLSB3ZSB0
+cnkgdG8gYXZvaWQgY2FsbGluZyBmdW5jdGlvbnMgdGhhdA0KPiBuZWVkIG5ldHdvcmsgYWNjZXNz
+IHRvIHRoZSBEQyBhcyB0aGF0J3Mgb2Z0ZW4gbm90IGF2YWlsYWJsZSBiZWZvcmUgdGhlIHR1bm5l
+bA0KPiBjb21lcyB1cC4NCg0KR29vZCBxdWVzdGlvbiB3aGljaCBJIGhhZG4ndCB0YWtlbiBpbnRv
+IGFjY291bnQgc28gZmFyOyBmcm9tIHdoYXQgSSd2ZSBzZWVuIG9uIG1hY2hpbmUgY2xpZW50cyBJ
+J3ZlIGRlcGxveWVkIHRoYXQgc2VsZWN0IHRoZWlyIGNlcnRpZmljYXRlIHVzaW5nIHRoaXMgbG9n
+aWMsIHRoZSB0aW1lb3V0IGlzIGFsbW9zdCBpbnN0YW50YW5lb3VzLCBpLmUuIENyeXB0RmluZE9J
+REluZm8gZG9lcyBub3QgZmluZCBhbiBvYmplY3QgZm9yIHRoZSBUTVBMOiBwYXJhbWV0ZXIgaWYg
+aXQgY2FuJ3QgcmVhY2ggdGhlIGRvbWFpbi4gT2YgY291cnNlLCB5b3VyIG5vdGUgZ2VuZXJhbGx5
+IGxpbWl0cyB0aGUgZnVuY3Rpb25hbGl0eSBvZiBhY3R1YWxseSB1c2luZyBDcnlwdEZpbmRPSURJ
+bmZvIHRvIHJlc29sdmUgYSBwcmludGFibGUgdGVtcGxhdGUgbmFtZSBmcm9tIGEgc3BlY2lmaWMg
+ZG9tYWluIHRvIGFuIE9JRCAod2hpY2ggaXMgdGhlbiBmb3VuZCBpbiB0aGUgYWN0dWFsIGNlcnRp
+ZmljYXRlKSwgYnV0IEkgd291bGRuJ3QgdGFrZSB0aGlzIG91dCBpZiBpdCBkb2Vzbid0IGludHJv
+ZHVjZSBhIGxvbmcgZGVsYXkgKHBvc3NpYmx5LCB0aGVyZSBhcmUgdHdvIHR1bm5lbHMgaW4gc29t
+ZSBjYXNlcywgd2hlcmUgYW4gaW5kZXBlbmRlbnQgdHVubmVsIHNldHMgdXAgcmVhY2hhYmlsaXR5
+IG9mIHRoZSBkb21haW4pLg0KDQo+ID4gKyAgICB9DQo+ID4gKw0KPiA+ICsgICAgLyogZmFsbCBi
+YWNrIHRvIGFsbCBncm91cHMgaWYgbm90IGZvdW5kIHlldCBhbmQgZmFsbGJhY2sgcmVxdWVzdGVk
+ICovDQo+ID4gKyAgICBpZiAoIWluZm8gJiYgZmFsbGJhY2sgJiYgZ3JvdXBpZCkNCj4gPiArICAg
+IHsNCj4gPiArICAgICAgICBpbmZvID0gQ3J5cHRGaW5kT0lESW5mbyhrZXl0eXBlLCAodm9pZCop
+a2V5LCAwKTsNCj4gDQo+IFRoYXQgY291bGQgYmUgYSBzZWNvbmQgbmV0d29yayBjYWxsLiBXaHkg
+bm90IGNvbWJpbmUgdGhlIHR3byBpbnRvIG9uZSBjYWxsLg0KDQpUaGUgZGlmZmVyZW5jZSBiZWlu
+ZyB0aGF0IHRoZSBmaXJzdCBjYWxsIG9ubHkgcmVzb2x2ZXMgdGhlIG5hbWUgdG8gT0lEIGZvciB0
+aGUgc3BlY2lmaWMgb2JqZWN0IHR5cGUgKGUuZy4sIGNlcnRpZmljYXRlIHRlbXBsYXRlKSBiZWlu
+ZyBwYXNzZWQsIHdoZXJlYXMgdGhpcyBjYWxsIHJlc29sdmVzIGl0IGZvciBhbnkgb2JqZWN0IHR5
+cGUuIE9mIGNvdXJzZSwgeW91IGFsd2F5cyBwcmVmZXIgdGhlIHNwZWNpZmljIG1hdGNoIGlmIHRo
+YXQncyBhdmFpbGFibGUsIGFuZCBvbmx5IGZhbGwgYmFjayB0byB0aGUgZ2VuZXJpYyBtYXRjaCBp
+ZiB0aGUgY2FsbGVyIGFjdHVhbGx5IHdhbnRzIHRvIHRyeSB0aGF0LiBJJ3ZlIGltcGxlbWVudGVk
+IHRoaXMgbWV0aG9kIG1vcmUgb3IgbGVzcyBlcXVhbCB0byB0aGUgaW1wbGVtZW50YXRpb24gaW4g
+dGhlIC5ORVQgZnJhbWV3b3JrLCBzaW1wbHkgdG8gZmFjaWxpdGF0ZSB1c2luZyBpdCBmb3IgYWRk
+aXRpb25hbCBjZXJ0aWZpY2F0ZSBtYXRjaGVzIHdoaWNoIG1pZ2h0IHdhbnQgdG8gYmUgaW1wbGVt
+ZW50ZWQ7IHRoZXJlIGFyZSBvdGhlciB1c2UgY2FzZXMgZm9yIENyeXB0RmluZE9JREluZm8gaW4g
+b3RoZXIgbWF0Y2ggaGVscGVycyB3aGVyZSB0aGlzIGxvZ2ljIGFjdHVhbGx5IG1ha2VzIHNlbnNl
+LiBJdCdzIGRlYmF0YWJsZSB3aGV0aGVyIHRoZSBmYWxsYmFjayB0byBhIGdlbmVyaWMgbWF0Y2gg
+YWN0dWFsbHkgbWFrZXMgc2Vuc2UgaW4gdGhlIGNhc2Ugb2YgY2VydGlmaWNhdGUgdGVtcGxhdGUg
+T0lEIG1hdGNoaW5nIChzZWUgdGhlIHVzZSBiZWxvdyksIGJ1dCBhdCBsZWFzdCB0aGUgLk5FVCBm
+cmFtZXdvcmsgaW1wbGVtZW50YXRpb24gZG9lcyB0aGlzOiBodHRwczovL2dpdGh1Yi5jb20vZG90
+bmV0L3J1bnRpbWUvYmxvYi8wMWI3ZTczY2QzNzgxNDUyNjRhN2NiN2EwOTM2NWI0MWVkNDJiMjQw
+L3NyYy9saWJyYXJpZXMvU3lzdGVtLlNlY3VyaXR5LkNyeXB0b2dyYXBoeS5YNTA5Q2VydGlmaWNh
+dGVzL3NyYy9JbnRlcm5hbC9DcnlwdG9ncmFwaHkvUGFsLldpbmRvd3MvRmluZFBhbC5jcyNMMTkw
+DQoNCj4gPiArICAgIC8qIGNoZWNrIGZvciBWMSBleHRlbnNpb24gKFdpbmRvd3MgMksgYW5kIGJl
+bG93KSAqLw0KPiA+ICsgICAgZXh0ID0gQ2VydEZpbmRFeHRlbnNpb24oc3pPSURfRU5ST0xMX0NF
+UlRUWVBFX0VYVEVOU0lPTiwgaW5mby0NCj4gPmNFeHRlbnNpb24sIGluZm8tPnJnRXh0ZW5zaW9u
+KTsNCj4gPiArICAgIGlmIChleHQpDQo+ID4gKyAgICB7DQo+ID4gKyAgICAgICAgcHZleHQgPSBk
+ZWNvZGVfb2JqZWN0KGdjLCBYNTA5X1VOSUNPREVfQU5ZX1NUUklORywgJmV4dC0+VmFsdWUsDQo+
+IDAsICZjYmV4dCk7DQo+ID4gKyAgICAgICAgaWYgKHB2ZXh0ICYmIGNiZXh0ID49IHNpemVvZihD
+RVJUX05BTUVfVkFMVUUpKQ0KPiA+ICsgICAgICAgIHsNCj4gPiArICAgICAgICAgICAgY29uc3Qg
+Q0VSVF9OQU1FX1ZBTFVFICpudiA9IChjb25zdCBDRVJUX05BTUVfVkFMVUUqKXB2ZXh0Ow0KPiA+
+ICsgICAgICAgICAgICBpZiAoIV93Y3NpY21wKChjb25zdCBXQ0hBUiopbnYtPlZhbHVlLnBiRGF0
+YSwgdG1wbF9uYW1lKSkNCj4gDQo+IElzIGl0IGd1YXJhbnRlZWQgdGhhdCBwYkRhdGEgaXMgTlVM
+TCB0ZXJtaW5hdGVkPyAoTVMgZG9jcyBhcmUgdW5jbGVhciBvbiB0aGlzKS4NCj4gV2UgbWF5IGhh
+dmUgdG8gYWRkIGEgc2FmZXR5IGNoZWNrIHRoYXQgdGhlIGRhdGEgbGVuZ3RoIGxlbmd0aCBpcyA+
+PQ0KPiB3Y3NsZW4odG1wbF9uYW1lKS4NCg0KWWVzLCB0aGF0J3MgZ3VhcmFudGVlZCwgYXQgbGVh
+c3QgYWNjb3JkaW5nIHRvIHRoZSBjb3JyZXNwb25kaW5nIHVzZSBpbiB0aGUgLk5FVCBmcmFtZXdv
+cms6IGh0dHBzOi8vZ2l0aHViLmNvbS9kb3RuZXQvcnVudGltZS9ibG9iLzAxYjdlNzNjZDM3ODE0
+NTI2NGE3Y2I3YTA5MzY1YjQxZWQ0MmIyNDAvc3JjL2xpYnJhcmllcy9TeXN0ZW0uU2VjdXJpdHku
+Q3J5cHRvZ3JhcGh5Llg1MDlDZXJ0aWZpY2F0ZXMvc3JjL0ludGVybmFsL0NyeXB0b2dyYXBoeS9Q
+YWwuV2luZG93cy9GaW5kUGFsLmNzI0wxNjUgLSBvZiBjb3Vyc2UgaXQgZG9lc24ndCBodXJ0IHRv
+IGhhdmUgYW4gYWRkaXRpb25hbCBjaGVjayBhbnl3YXkuDQoNCj4gPiArICAgICAgICAgICAgY29u
+c3QgQ1JZUFRfT0lEX0lORk8gKnRtcGxfb2lkID0NCj4gZmluZF9vaWQoQ1JZUFRfT0lEX0lORk9f
+TkFNRV9LRVksIHRtcGxfbmFtZSwNCj4gQ1JZUFRfVEVNUExBVEVfT0lEX0dST1VQX0lELCB0cnVl
+KTsNCj4gPiArICAgICAgICAgICAgaWYgKHRtcGxfb2lkICYmICFzdHJpY21wKHRtcGxfb2lkLT5w
+c3pPSUQsIGN0ZS0+cHN6T2JqSWQpKQ0KPiA+ICsgICAgICAgICAgICB7DQo+ID4gKyAgICAgICAg
+ICAgICAgICAvKiBmb3VuZCBPSUQgbWF0Y2ggaW4gZXh0ZW5zaW9uIGFnYWluc3QgcmVzb2x2ZWQg
+a2V5ICovDQo+ID4gKyAgICAgICAgICAgICAgICByZXR1cm4gdHJ1ZTsNCj4gPiArICAgICAgICAg
+ICAgfQ0KPiA+ICsgICAgICAgICAgICBlbHNlIGlmICghdG1wbF9vaWQgJiYgIXN0cmljbXAoY2Vy
+dF9wcm9wLCBjdGUtPnBzek9iaklkKSkNCj4gPiArICAgICAgICAgICAgew0KPiANCj4gV2h5IG5v
+dCB0ZXN0IHRoaXMgZmlyc3Qgc28gdGhhdCB0aGUgY2FsbCB0byBmaW5kX29pZCBjb3VsZCBiZSBh
+dm9pZGVkIGlmIHRoaXMNCj4gbWF0Y2hlcz8NCg0KRm9yIG9uZSwgYmVjYXVzZSB0aGUgbWF0Y2gg
+aW4gaHR0cHM6Ly9naXRodWIuY29tL2RvdG5ldC9ydW50aW1lL2Jsb2IvMDFiN2U3M2NkMzc4MTQ1
+MjY0YTdjYjdhMDkzNjViNDFlZDQyYjI0MC9zcmMvbGlicmFyaWVzL1N5c3RlbS5TZWN1cml0eS5D
+cnlwdG9ncmFwaHkuWDUwOUNlcnRpZmljYXRlcy9zcmMvSW50ZXJuYWwvQ3J5cHRvZ3JhcGh5L1Bh
+bC5XaW5kb3dzL0ZpbmRQYWwuY3MjTDE4NyBmZiBhbHNvIGRvZXMgaXQganVzdCB0aGlzIHdheSwg
+YW5kIHNlY29uZGx5LCBiZWNhdXNlIHRoaXMgd2F5IHRoZSBwcmVmZXJlbmNlIGlzIG9uIG1hdGNo
+aW5nIGEgdGVtcGxhdGUgbmFtZSAoaS5lLiwgaWYgYSBzdHJpbmcgcGFzc2VkIGNhbiBiZSBpbnRl
+cnByZXRlZCBhcyBhIHRlbXBsYXRlIG5hbWUgaW4gdGhlIGN1cnJlbnQgZG9tYWluLCBpdCB3aWxs
+IGJlLCBldmVuIGlmIGl0IGxvb2tzIGxpa2UgYW4gT0lEKSwgd2hlcmVhcyBvbmx5IHJlc29sdmlu
+ZyB3aGVuIHRoZSBPSUQgZG9lc24ndCBtYXRjaCBkaXJlY3RseSB3b3VsZCBwcmVmZXIgdGhlIGlu
+dGVycHJldGF0aW9uIGFzIGFuIE9JRC4gSXQncyBkZWJhdGFibGUgd2hldGhlciB0aGUgZm9ybWVy
+IG9yIHRoZSBsYXR0ZXIgaXMgcHJlZmVyZW50aWFsLCBJJ2QgYWxzbyBnbyB0byB0aGUgZm9ybWVy
+LCBqdXN0IGxpa2UgdGhlIC5ORVQgZnJhbWV3b3JrIGRvZXMsIGVzcGVjaWFsbHkgY29uc2lkZXJp
+bmcgdGhhdCB0aGUgIm9sZCIgWDUwOSBleHRlbnNpb24gY29udGFpbmluZyB0aGUgY2VydGlmaWNh
+dGUgdGVtcGxhdGUgcmVmZXJlbmNlIGFjdHVhbGx5IGNvbnRhaW5zIHRoZSBuYW1lLCBub3QgYW4g
+T0lEIChzZWUgdGhlIGZpcnN0IGNvbmRpdGlvbiksIHNvIHRoYXQgcG9zc2libHkgc29tZSBwZW9w
+bGUgYWN0dWFsbHkgZXhwZWN0IHRoZSBwYXJhbWV0ZXIgdG8gYmUgYSBuYW1lLg0KDQpGb3IgYWxs
+IHRoZSBvdGhlciBub3RlcywgdGhvc2UgYXJlIGNsZWFyOyBJJ2xsIGNyZWF0ZSBhIG5ldyBwYXRj
+aCB3aXRoIHRoZSBjaGFuZ2VzIGFwcGxpZWQuIFRoYW5rcyBmb3IgeW91ciBmZWVkYmFjayENCg0K
+LS0tIEhlaWtvLg0K
