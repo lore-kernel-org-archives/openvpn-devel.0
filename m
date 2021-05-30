@@ -1,12 +1,13 @@
-References: <20210529013516.767555-1-sergio@...2617...>
- <20210529071611.GB976@...1296...>
-From: sergio <sergio@...2617...>
-Message-ID: <4c700fc4-eb82-6767-0492-cbf2eaaad417@...2617...>
-Date: Sat, 29 May 2021 15:23:22 +0300
 MIME-Version: 1.0
-In-Reply-To: <20210529071611.GB976@...1296...>
-Content-Language: ru
-Subject: Re: [Openvpn-devel] [PATCH] resolvconf fails with -p
+References: <20210525173838.3969-1-selva.nair@...277...>
+ <202105270711.14R7BOiW072533@...2054...>
+ <CAKuzo_j8+Kp_89t=wxQMtNbav+FuDnzooh=Vt3FtTBUOH8WMng@...278...>
+ <20210529094423.GC976@...1296...>
+In-Reply-To: <20210529094423.GC976@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 30 May 2021 16:12:37 -0400
+Message-ID: <CAKuzo_j6pwqyv=mx2v+-_cFP94Rqzf1i6wjHiBY24R_-WPRQLQ@...278...>
+Subject: Re: [Openvpn-devel] RfD: Windows code, UNICODE and ansi
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,18 +16,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+Hi
 
-> Which platform does this fail on?  The fact that the -p is currently there
-> hints at "on some other platforms this works and is useful"...
+On Sat, May 29, 2021 at 5:44 AM Gert Doering <gert@...1296...> wrote:
+>
+> Hi,
+>
+> On Thu, May 27, 2021 at 11:40:59AM -0400, Selva Nair wrote:
+> > > (I do wonder if "support ansi builds" is really something we want, if
+> > > that makes the code so complicated - "always UNICODE" seems to be much
+> > > simpler.  What is the drawback of not supporting "ansi" builds?)
+> >
+> > I prefer to write all new Windows code as unicode without any dependency on
+> > the defines UNICODE and  _UNICODE --- i.e no TCHARs, explicit API calls,
+> > no _tprintfs.
+> >
+> > For old code, an easy option would be to retain the TCHARs, but assume
+> > we only build with UNICODE (TCHAR=WCHAR) and going forward don't care
+> > to support ANSI builds. As we did with the service.
+>
+> I'm not the person who writes and debugs most of the windows code, I just
+> see patches pass by, and some bits are "more readable" and others less
+> so :-)
+>
+> So my "vote" would be towards what you propose - always build unicode,
+> and for older code, assume (or force-#define) UNICODE.
+>
+> Plus, document this somewhere.  On our styleguide page, maybe?
 
-Debian bullseye & sid, v1.87
+I have added a section named "Windows specific" to the codestyle in
+the wiki. Not very polished -- please take a look and feel free to
+pull it apart.
 
+https://community.openvpn.net/openvpn/wiki/CodeStyle#Windowsspecific
 
-
--- 
-sergio.
+Selva
 
