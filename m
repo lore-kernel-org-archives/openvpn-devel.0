@@ -1,9 +1,10 @@
-Date: Wed, 2 Jun 2021 16:14:28 +0200 (CEST)
-Message-Id: <202106021414.152EESZD029786@...2054...>
+Date: Wed, 2 Jun 2021 19:56:13 +0200 (CEST)
+Message-Id: <202106021756.152HuD5r040043@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210602034253.19984-3-selva.nair@...277...>
-References: <20210602034253.19984-3-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix parsing of IV_SSO string
+In-Reply-To: <20210524184506.20582-1-selva.nair@...277...>
+References: <20210524184506.20582-1-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Do not require CA when
+ peer-fingerprint is used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,22 +18,21 @@ Content-Transfer-Encoding: 8bit
 To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I have not tested anything ("for the archives"), but the change makes
-sense, is not going to cause build failures anywhere :-) and Arne has
-ACKed it.
+Haven't tested much (t_client only), but the change looks good and cleans 
+up these multiple "the same but not the same" checks in a good way.
 
 Your patch has been applied to the master branch.
 
-commit 28240c4a6e9e8134d6a62822918436dbd62b7fde
+commit b7fe49c2f9fe967155960608a029041065c54916
 Author: Selva Nair
-Date:   Tue Jun 1 23:42:53 2021 -0400
+Date:   Mon May 24 14:45:06 2021 -0400
 
-     Fix parsing of IV_SSO string
+     Do not require CA when peer-fingerprint is used
 
      Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20210602034253.19984-3-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22474.html
+     Message-Id: <20210524184506.20582-1-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22443.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
