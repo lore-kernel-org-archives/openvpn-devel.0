@@ -1,10 +1,9 @@
-From: selva.nair@...277...
-Date: Tue,  1 Jun 2021 23:42:53 -0400
-Message-Id: <20210602034253.19984-3-selva.nair@...277...>
-In-Reply-To: <20210602034253.19984-1-selva.nair@...277...>
-References: <20210602034253.19984-1-selva.nair@...277...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <48241a88-28ce-5a08-6dc8-34423634f092@...515...>
+Date: Wed, 2 Jun 2021 10:45:38 +0300
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/2] Fix parsing of IV_SSO string
+Content-Language: en-US
+Subject: [Openvpn-devel] Community meetings in June 2021
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +12,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Selva Nair <selva.nair@...277...>
+Hi,
 
-Expect comma separated keywords
+Next community meetings have been scheduled to
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/ssl_verify.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+- Wed 2nd June 2021 at 14:00 CET
+- Wed 9th June 2021 at 14:00 CET
+- Wed 16th June 2021 at 14:00 CET
+- Wed 23rd June 2021 at 14:00 CET
+- Wed 30th June 2021 at 14:00 CET
 
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 0b41eea2..512b4f72 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -913,7 +913,7 @@ check_auth_pending_method(const char *peer_info, const char *method)
-             supported = true;
-             break;
-         }
--        client_method = strtok(NULL, ":");
-+        client_method = strtok(NULL, ",");
-     }
- 
-     gc_free(&gc);
--- 
-2.20.1
+The place is #openvpn-meeting IRC channel at libera.chat Meeting agendas
+and summaries are in here:
 
+<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
+
+Samuli
 
