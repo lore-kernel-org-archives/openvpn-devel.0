@@ -1,12 +1,11 @@
 References: <20210602034253.19984-1-selva.nair@...277...>
- <20210602034253.19984-3-selva.nair@...277...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <d9528414-8065-4a49-31f2-2aaa2f38e394@...1227...>
-Date: Wed, 2 Jun 2021 13:58:06 +0200
+Message-ID: <60d34cf1-ed54-8125-1209-a003aa778c7b@...1227...>
+Date: Wed, 2 Jun 2021 13:59:12 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210602034253.19984-3-selva.nair@...277...>
+In-Reply-To: <20210602034253.19984-1-selva.nair@...277...>
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Fix parsing of IV_SSO string
+Subject: Re: [Openvpn-devel] [PATCH 0/2] AUTH_PENDING docs and related
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,29 +21,23 @@ To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 Am 02.06.21 um 05:42 schrieb selva.nair@...277...:
 > From: Selva Nair <selva.nair@...277...>
 > 
-> Expect comma separated keywords
+> I couldn't figure out the details of how to use CR_TEXT or OPEN_URL
+> from the docs. This is an attempt to improve the documentation based
+> on my reading of the sources and some guess-work.
 > 
-> Signed-off-by: Selva Nair <selva.nair@...277...>
-> ---
->  src/openvpn/ssl_verify.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> I might have edited somethings wrongly. If so, please correct.
 > 
-> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-> index 0b41eea2..512b4f72 100644
-> --- a/src/openvpn/ssl_verify.c
-> +++ b/src/openvpn/ssl_verify.c
-> @@ -913,7 +913,7 @@ check_auth_pending_method(const char *peer_info, const char *method)
->              supported = true;
->              break;
->          }
-> -        client_method = strtok(NULL, ":");
-> +        client_method = strtok(NULL, ",");
->      }
->  
->      gc_free(&gc);
+> Also found a minor parsing bug that will trigger only if the
+> client announces more than two keywords in IV_SSO.
 > 
+> Question: is the IV_SSO the keyword for PROXY_URL named proxy_url
+> or proxyurl or url_proxy? I would ahve guessed "proxyurl" based on
+> crtext and openurl but have settled for proxy_url. If there is
+> no established convention as yet, I suggest proxyurl without
+> the _.
 
-Yes. Stupid copy&paste mistake from my side.
+So far proxyurl openurl_proxy or whatever we call it has not yet
+implemented anywhere yet. So we can still change the name.
 
-Acked-By: Arne Schwabe <arne@...1227...>
+Arne
 
