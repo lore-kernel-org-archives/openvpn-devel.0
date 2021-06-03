@@ -1,9 +1,9 @@
-From: selva.nair@...277...
-Date: Wed,  2 Jun 2021 15:47:39 -0400
-Message-Id: <20210602194739.29488-1-selva.nair@...277...>
+From: Matthias Andree <matthias.andree@...68...>
+Date: Thu,  3 Jun 2021 14:30:19 +0200
+Message-Id: <20210603123019.422644-1-matthias.andree@...68...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Apply the connect-retry backoff to only one
- side of a connection
+Subject: [Openvpn-devel] [PATCH] Fix SIGSEGV (NULL deref) receiving push
+ "echo"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,45 +13,39 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
+Cc: Matthias Andree <matthias.andree@...68...>, peo@...2618...
 
-From: Selva Nair <selva.nair@...277...>
+A server pushing "echo" without arguments can crash the client.
+In such a situation, the code in question receives p[1] =3D=3D NULL
+(which was CLEAR(p)'ed above), hands it strncmp, which then
+dereferences the null pointer.
 
-p2p connections with both ends backing off seldom succeed
-as their connection attempt durations becomes increasingly
-unlikely to overlap when the retry wait time is long.
+Original report and analysis here:
+https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=3D256331
 
-Avoid this by applying the backoff logic only on TCP clients
-or the tls_client side for UDP.
-
-Regression warning: shared secret setups are left out of the
-backoff logic.
-
-Trac #1010
-
-Signed-off-by: Selva Nair <selva.nair@...277...>
+Fixes: Trac #1409
+Reported-by: peo@...2618... (to FreeBSD)
+Signed-off-by: Matthias Andree <matthias.andree@...68...>
 ---
- src/openvpn/init.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ src/openvpn/options.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 49c74292..2889f355 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2423,8 +2423,9 @@ socket_restart_pause(struct context *c)
-         sec = 10;
-     }
- 
--    /* Slow down reconnection after 5 retries per remote -- for tcp only in client mode */
--    if (c->options.ce.proto != PROTO_TCP_SERVER)
-+    /* Slow down reconnection after 5 retries per remote -- for TCP client or UDP tls-client only */
-+    if (c->options.ce.proto == PROTO_TCP_CLIENT
-+        || (c->options.ce.proto == PROTO_UDP && c->options.tls_client))
-     {
-         backoff = (c->options.unsuccessful_attempts / c->options.connection_list->len) - 4;
-         if (backoff > 0)
--- 
-2.20.1
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 8d417206..a54bc562 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -5365,7 +5365,7 @@ add_option(struct options *options,
+         {
+             /* only message-related ECHO are logged, since other ECHOs
+              * can potentially include security-sensitive strings */
+-            if (strncmp(p[1], "msg", 3) =3D=3D 0)
++            if (p[1] && strncmp(p[1], "msg", 3) =3D=3D 0)
+             {
+                 msg(M_INFO, "%s:%s",
+                     pull_mode ? "ECHO-PULL" : "ECHO",
+--
+2.31.1
 
 
