@@ -1,10 +1,11 @@
-Date: Thu, 3 Jun 2021 16:38:33 +0200 (CEST)
-Message-Id: <202106031438.153EcXEU057766@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210603123019.422644-1-matthias.andree@...68...>
+MIME-Version: 1.0
 References: <20210603123019.422644-1-matthias.andree@...68...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix SIGSEGV (NULL deref)
- receiving push echo
+In-Reply-To: <20210603123019.422644-1-matthias.andree@...68...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 3 Jun 2021 12:51:07 -0400
+Message-ID: <CAKuzo_hhtAOFJKmpMfd3GqRfDFuJYu9hD5sRp9c7+HOYDcHi=w@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix SIGSEGV (NULL deref) receiving push
+ "echo"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +14,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 To: Matthias Andree <matthias.andree@...68...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, peo@...2618...
 
-Acked-by: Gert Doering <gert@...1296...>
+On Thu, Jun 3, 2021 at 8:32 AM Matthias Andree <matthias.andree@...68...> wrote:
+>
+> A server pushing "echo" without arguments can crash the client.
+> In such a situation, the code in question receives p[1] == NULL
+> (which was CLEAR(p)'ed above), hands it strncmp, which then
+> dereferences the null pointer.
+>
+> Original report and analysis here:
+> https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=256331
+>
+> Fixes: Trac #1409
+> Reported-by: peo@...2618... (to FreeBSD)
+> Signed-off-by: Matthias Andree <matthias.andree@...68...>
+> ---
+>  src/openvpn/options.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 8d417206..a54bc562 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -5365,7 +5365,7 @@ add_option(struct options *options,
+>          {
+>              /* only message-related ECHO are logged, since other ECHOs
+>               * can potentially include security-sensitive strings */
+> -            if (strncmp(p[1], "msg", 3) == 0)
+> +            if (p[1] && strncmp(p[1], "msg", 3) == 0)
+>              {
+>                  msg(M_INFO, "%s:%s",
+>                      pull_mode ? "ECHO-PULL" : "ECHO",
 
-This is obviously correct, and in hindsight a very obvious bug - we
-seemed to have focused too much on the documentation aspect of the
-commit introducing the bug, and not enough on the code change...
+Argh.. good to see already committed. I take all the blame for acking
+the original..
 
-Your patch has been applied to the master and release/2.5 branch.
-
-commit 0033811e0215af76f469d78912c95a2f59813454 (master).
-commit d6e21bed964109abaf4bf03a951dc2fc9b1d5c1f (release/2.5)
-Author: Matthias Andree
-Date:   Thu Jun 3 14:30:19 2021 +0200
-
-     Fix SIGSEGV (NULL deref) receiving push echo
-
-     Signed-off-by: Matthias Andree <matthias.andree@...68...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210603123019.422644-1-matthias.andree@...68...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22486.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+This may take the award for the easiest bug to reproduce: just run
+"openvpn --echo" no server, no config file required.
 
 
---
-kind regards,
 
-Gert Doering
-
+Selva
 
