@@ -1,11 +1,11 @@
+From: Arne Schwabe <arne@...1227...>
+Date: Fri,  4 Jun 2021 13:47:46 +0200
+Message-Id: <20210604114746.761950-1-arne@...1227...>
+In-Reply-To: <20210520151148.2565578-4-arne@...1227...>
+References: <20210520151148.2565578-4-arne@...1227...>
 MIME-Version: 1.0
-References: <20210603123019.422644-1-matthias.andree@...68...>
-In-Reply-To: <20210603123019.422644-1-matthias.andree@...68...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 3 Jun 2021 12:51:07 -0400
-Message-ID: <CAKuzo_hhtAOFJKmpMfd3GqRfDFuJYu9hD5sRp9c7+HOYDcHi=w@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix SIGSEGV (NULL deref) receiving push
- "echo"
+Subject: [Openvpn-devel] [PATCH v3 4/9] Make waiting on auth an explicit
+ state in the context state machine
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,49 +14,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Matthias Andree <matthias.andree@...68...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, peo@...2618...
+To: openvpn-devel@lists.sourceforge.net
 
-On Thu, Jun 3, 2021 at 8:32 AM Matthias Andree <matthias.andree@...68...> wrote:
->
-> A server pushing "echo" without arguments can crash the client.
-> In such a situation, the code in question receives p[1] == NULL
-> (which was CLEAR(p)'ed above), hands it strncmp, which then
-> dereferences the null pointer.
->
-> Original report and analysis here:
-> https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=256331
->
-> Fixes: Trac #1409
-> Reported-by: peo@...2618... (to FreeBSD)
-> Signed-off-by: Matthias Andree <matthias.andree@...68...>
-> ---
->  src/openvpn/options.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 8d417206..a54bc562 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -5365,7 +5365,7 @@ add_option(struct options *options,
->          {
->              /* only message-related ECHO are logged, since other ECHOs
->               * can potentially include security-sensitive strings */
-> -            if (strncmp(p[1], "msg", 3) == 0)
-> +            if (p[1] && strncmp(p[1], "msg", 3) == 0)
->              {
->                  msg(M_INFO, "%s:%s",
->                      pull_mode ? "ECHO-PULL" : "ECHO",
+Previously we relied on checking tls_authentication_status to check
+wether to determine if the context auth state is actually valid or not.
+This patch eliminates that check by introducing waiting on the
+authentication as extra state in the context auth, state machine.
 
-Argh.. good to see already committed. I take all the blame for acking
-the original..
+Patch v3: Fix ccd config from management being ignored
 
-This may take the award for the easiest bug to reproduce: just run
-"openvpn --echo" no server, no config file required.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/multi.c      | 7 +------
+ src/openvpn/ssl.c        | 9 ++++++++-
+ src/openvpn/ssl_common.h | 1 +
+ 3 files changed, 10 insertions(+), 7 deletions(-)
 
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 3f9710134..2cb71d851 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -2596,11 +2596,6 @@ static const multi_client_connect_handler client_connect_handlers[] = {
+ static void
+ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
+ {
+-    if (tls_authentication_status(mi->context.c2.tls_multi) != TLS_AUTHENTICATION_SUCCEEDED)
+-    {
+-        return;
+-    }
+-
+     /* We are only called for the CAS_PENDING_x states, so we
+      * can ignore other states here */
+     bool from_deferred = (mi->context.c2.tls_multi->multi_state != CAS_PENDING);
+@@ -3970,7 +3965,7 @@ management_client_auth(void *arg,
+         {
+             if (auth)
+             {
+-                if (is_cas_pending(mi->context.c2.tls_multi->multi_state))
++                if (mi->context.c2.tls_multi->multi_state == CAS_WAITING_AUTH)
+                 {
+                     set_cc_config(mi, cc_config);
+                     cc_config_owned = false;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 9f3f83f16..fd64b8d4e 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2810,7 +2810,7 @@ tls_process(struct tls_multi *multi,
+                     if (session->opt->mode == MODE_SERVER)
+                     {
+                         /* On a server we continue with running connect scripts next */
+-                        multi->multi_state = CAS_PENDING;
++                        multi->multi_state = CAS_WAITING_AUTH;
+                     }
+                     else
+                     {
+@@ -3136,6 +3136,13 @@ tls_multi_process(struct tls_multi *multi,
+ 
+     enum tls_auth_status tas = tls_authentication_status(multi);
+ 
++    /* If we have successfully authenticated and are still waiting for the authentication to finish
++     * move the state machine for the multi context forward */
++    if (multi->multi_state == CAS_WAITING_AUTH && tas == TLS_AUTHENTICATION_SUCCEEDED)
++    {
++        multi->multi_state = CAS_PENDING;
++    }
++
+     /*
+      * If lame duck session expires, kill it.
+      */
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 8a65ab984..66700bf68 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -511,6 +511,7 @@ struct tls_session
+  * connect scripts/plugins */
+ enum multi_status {
+     CAS_NOT_CONNECTED,
++    CAS_WAITING_AUTH,               /**< TLS connection established but deferred auth not finished */
+     CAS_PENDING,
+     CAS_PENDING_DEFERRED,
+     CAS_PENDING_DEFERRED_PARTIAL,   /**< at least handler succeeded, no result yet*/
+-- 
+2.31.1
 
-
-Selva
 
