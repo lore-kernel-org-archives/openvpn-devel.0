@@ -1,18 +1,16 @@
-Date: Mon, 7 Jun 2021 09:38:02 +0200
+Date: Mon, 7 Jun 2021 10:21:58 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20210607073802.GW976@...1296...>
-References: <20210513064416.212-1-lstipakov@...277...>
- <CAKuzo_hfQifKQGxX9zUNv861mjiiiPxJw+me-iPf_ZkgNJovvg@...278...>
- <CAGyAFMVsxv8fRFJD+zivivR9ugtJQoxCrf3_XF9f+eaetF8wyQ@...278...>
- <CAKuzo_jCE7zsxU64+20A28PuWoBDQawOHgGotiYJJ1XsyxsF_A@...278...>
- <CAGyAFMUGwv6r-xxjw0te4P-a8k2aJ0zxPmegZ5eDDbx7yLxZSQ@...278...>
+Message-ID: <20210607082158.GX976@...1296...>
+References: <20210507145644.195-1-lstipakov@...277...>
+ <202105101557.14AFvbud098718@...2054...>
+ <CAGyAFMUH0e-Uoxik+PfS03RUAyTSseCQUmjOKbTsu=SeD4Bhdg@...278...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="DKPFFISdOghEqT12"
+ protocol="application/pgp-signature"; boundary="XxL9RZ//6cExjA+q"
 Content-Disposition: inline
-In-Reply-To: <CAGyAFMUGwv6r-xxjw0te4P-a8k2aJ0zxPmegZ5eDDbx7yLxZSQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] contrib/vcpkg-ports: add pkcs11-helper
- port
+In-Reply-To: <CAGyAFMUH0e-Uoxik+PfS03RUAyTSseCQUmjOKbTsu=SeD4Bhdg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: msvc: add ARM64
+ configuration
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,36 +20,31 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Lev Stipakov <lstipakov@...277...>
-Cc: Selva Nair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: Gert Doering <gert@...1296...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---DKPFFISdOghEqT12
+--XxL9RZ//6cExjA+q
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Jun 07, 2021 at 10:34:36AM +0300, Lev Stipakov wrote:
->  3) do nothing and have those ports as part of openvpn repo. vcpkg
-> supports "ports-overlay" , so
-> I see nothing wrong or "hacky" with this approach. I see you point
-> about having dependencies build scripts
-> as part of openvpn repo. However in this case script is fairly trivial
-> and mostly consists of boilerplate code:
->=20
-> https://github.com/lstipakov/openvpn/blob/dco180521/contrib/vcpkg-ports/p=
-kcs11-helper/portfile.cmake
->=20
-> To my understanding this part of openvpn is fairly static, so I don't
-> expect much maintenance burden for it, if any. In any case I
-> volunteer to take care of it.
+On Fri, Jun 04, 2021 at 05:33:25PM +0300, Lev Stipakov wrote:
+> This can be applied to release/2.5 as well.
 
-For now, this sounds like the easiest way forward...
+And so it has been done
 
->  4) submit pkcs11-helper and ovpn-dco-win ports to vcpkg upstream and
-> then remove those from openvpn.
+commit 90770576baf4bd81545f19b531bae5fe37f69802 (HEAD -> release/2.5)
+Author: Lev Stipakov <lev@...515...>
+Date:   Fri May 7 17:56:44 2021 +0300
 
-... and when the dust has settled, move here...
+    msvc: add ARM64 configuration
+    (cherry picked from commit 8de7e643baefcb6a3000a3a89ae42ce1328a9a7d)
+
+no conflicts, applied smoothly.
+
+(Not tested either, but does not touch "openvpn code", just MSVC build
+environment)
 
 gert
 --=20
@@ -64,22 +57,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---DKPFFISdOghEqT12
+--XxL9RZ//6cExjA+q
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJgvczZAAoJEB2Cnv7KVigS7iQMAIJ4m/cCnvC6bo20xzEWkqLG
-6K8gzqRnDNJQJohsPHQRX/R9YnY0269iGtQSJOhqesQhSgOJVcucy+FsheGCw3CX
-p907rPoX0gQYcNvUxILrypEt8J8pRxXb7/Oz2T+VFptEO0vz3wuREy4DNKrbvPGg
-ZOX4ZfFL2cQZtFrl3Ouc5xZPF4UHlEuECFhpt7gA3Y2o6OGTuTVh1pnrOe9vyiNP
-a5P3kJep8yrgG7umgGHlB8Ug2EsvbDhEsj9QNRYLrd9GIRoZuR0pcp8ARW4FolI/
-L3ElCA56/3PeVlWO4REE+Pxm0lzG+2ngZdJ461+hovBZgSmQd8PpOSFwqSn/1grU
-uDCh3F/8NCWVCO50DrSnKcPISbUtGZt+IWKn+ModrR5DROorZ97i64GMIb5oslWT
-uhoUdAwzrVh9jFBnQResRjiqp9+FZjf6NfMojbxOSiId5KwHmHE6+okDfjMs5BlI
-kfEiU+9EsdyP5IKWS6tdS4kVDuq8gtfmFrT5Dv7tYQ==
-=Z131
+iQGcBAEBAgAGBQJgvdclAAoJEB2Cnv7KVigSX5AMAKzA59cRYlQ0sCtWycJE1OAq
+yxn7xqGzOZKkVcyyp/9Q63daz4dgxfK0mG0eVivG4zh268vfoNH9lxMQGl7bUAoO
+Ivhrsw8HsJhXzMWLzxSYDGgtIJeQJzQw7Dcie0hR7WE8hWvpS9DyB4kbA5Y5kUhO
+qyU1WPc86IrvS1k8r2/u0NThUZkfF86o/oOf3xtuA5D6PVFnsgXC2TZm8xkCx1c/
+SCMYbJ+7JxRblazIX6+ITUWIY0P7kCdqXxhFyyntFeR8+s19blcCfCA22bLi8so6
+e7chza/0PUNMcP2bXE4SOdMd+5GQh5RJYMnauV4wGIisyeoAKTNBKWYKUHsFROzm
+2Y/BddZWfGNM9/RPg6zSXwnK/XdwWoHOcJlIUnzrxaEAPpqU4csGyxxKud6nWjXB
+oGJr/W6aXna1HX66KtRZxTRfV5UVDLqbQcNp1BcRqj7RL2Wtb8RD4Z+ZXE91XqdU
+Fb/Re2x6T4Kv5C+UgoPOQIZSjgkwsvzQ9DBQIAS9cg==
+=bt+2
 -----END PGP SIGNATURE-----
 
---DKPFFISdOghEqT12--
+--XxL9RZ//6cExjA+q--
 
