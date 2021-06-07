@@ -1,16 +1,14 @@
-Date: Mon, 7 Jun 2021 10:21:58 +0200
+Date: Mon, 7 Jun 2021 10:27:29 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20210607082158.GX976@...1296...>
-References: <20210507145644.195-1-lstipakov@...277...>
- <202105101557.14AFvbud098718@...2054...>
- <CAGyAFMUH0e-Uoxik+PfS03RUAyTSseCQUmjOKbTsu=SeD4Bhdg@...278...>
+Message-ID: <20210607082729.GY976@...1296...>
+References: <20210604143125.4946-1-heiko.wundram@...2614...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="XxL9RZ//6cExjA+q"
+ protocol="application/pgp-signature"; boundary="6h8SQxV5EfeERWFC"
 Content-Disposition: inline
-In-Reply-To: <CAGyAFMUH0e-Uoxik+PfS03RUAyTSseCQUmjOKbTsu=SeD4Bhdg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: msvc: add ARM64
- configuration
+In-Reply-To: <20210604143125.4946-1-heiko.wundram@...2614...>
+Subject: Re: [Openvpn-devel] [PATCH] Implement Windows CA template match for
+ Crypto-API selector
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,32 +17,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: Gert Doering <gert@...1296...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Heiko Wundram <heiko.wundram@...2614...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---XxL9RZ//6cExjA+q
+--6h8SQxV5EfeERWFC
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Jun 04, 2021 at 05:33:25PM +0300, Lev Stipakov wrote:
-> This can be applied to release/2.5 as well.
+On Fri, Jun 04, 2021 at 04:31:25PM +0200, Heiko Wundram wrote:
+> The certificate selection process for the Crypto API certificates
+> is currently fixed to match on subject or identifier. Especially
+> if certificates that are used for OpenVPN are managed by a Windows CA,
+[..]
 
-And so it has been done
+Just for completeness - I assume that this is a v2 of the patch, and
+"something was changed".  Since we're all very lazy^Wbusy people, it
+would be good to include a list of v2 changes in the commit message,
+like this:
 
-commit 90770576baf4bd81545f19b531bae5fe37f69802 (HEAD -> release/2.5)
-Author: Lev Stipakov <lev@...515...>
-Date:   Fri May 7 17:56:44 2021 +0300
+v2:
+  - included suggestions about windows dunno things handling
+  - code restructuring in some_function()
 
-    msvc: add ARM64 configuration
-    (cherry picked from commit 8de7e643baefcb6a3000a3a89ae42ce1328a9a7d)
+and please use "git send-email -v2 ..." when sending it, so git can
+put a "v2" in the subject line, and patchwork can tell me "ah, this is
+the new version".
 
-no conflicts, applied smoothly.
+Re-sending the patch is not needed in this case, but it would be nice if
+you could send a quick list of changes in v2.
 
-(Not tested either, but does not touch "openvpn code", just MSVC build
-environment)
+thanks,
 
 gert
 --=20
@@ -57,22 +62,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---XxL9RZ//6cExjA+q
+--6h8SQxV5EfeERWFC
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJgvdclAAoJEB2Cnv7KVigSX5AMAKzA59cRYlQ0sCtWycJE1OAq
-yxn7xqGzOZKkVcyyp/9Q63daz4dgxfK0mG0eVivG4zh268vfoNH9lxMQGl7bUAoO
-Ivhrsw8HsJhXzMWLzxSYDGgtIJeQJzQw7Dcie0hR7WE8hWvpS9DyB4kbA5Y5kUhO
-qyU1WPc86IrvS1k8r2/u0NThUZkfF86o/oOf3xtuA5D6PVFnsgXC2TZm8xkCx1c/
-SCMYbJ+7JxRblazIX6+ITUWIY0P7kCdqXxhFyyntFeR8+s19blcCfCA22bLi8so6
-e7chza/0PUNMcP2bXE4SOdMd+5GQh5RJYMnauV4wGIisyeoAKTNBKWYKUHsFROzm
-2Y/BddZWfGNM9/RPg6zSXwnK/XdwWoHOcJlIUnzrxaEAPpqU4csGyxxKud6nWjXB
-oGJr/W6aXna1HX66KtRZxTRfV5UVDLqbQcNp1BcRqj7RL2Wtb8RD4Z+ZXE91XqdU
-Fb/Re2x6T4Kv5C+UgoPOQIZSjgkwsvzQ9DBQIAS9cg==
-=bt+2
+iQGcBAEBAgAGBQJgvdhxAAoJEB2Cnv7KVigSqDQL/2c7/KFI1FdjWs/iNBdscijk
+TyuEE2RJbP5o4XgFhNLSQnCSG2i2ON407F+GWHmAJ2NGNQ4uaku3Xwc1BB9CVYUW
+xsw78dvMaj8vqKNfSLHMp8oufHAJkvBq6YtTW4GeoQlzNSk5K/+f4qd+LJ24t21V
+Hh/yhS2BDLRS0vpbG9rHCeZhE4N4yHhPF67br6uP1vndgmls6nol6+I+Son3kfCJ
+KscaaikMnW8ci8hj/MUVwn1UppFRdG7pMPi8ayyxYfpx8q3IcjcXWdGTC5Hko9zT
+ewkXryDKRFZZWnn4SD9yvCEQ/yTSRksFRrD3uYAX9BOpHruaxG6rV8ow2CGHcJZY
+SYCxotM6fsfUxjvsBu+5TWRkU/M94YHELcBlXBJEY8Z1QJSIkDebB+yTTcNCp5yj
+X+SFrxaQLoR6aLK1B+Phjz4DztAKtR/A9vrXVU4N7fg6MmqY476ZeudiSXLR9wOa
+ghaRb+Afb2wsUiGL4v1W4GQikwBvkehJN0qm/Uf3IA==
+=Zn/o
 -----END PGP SIGNATURE-----
 
---XxL9RZ//6cExjA+q--
+--6h8SQxV5EfeERWFC--
 
