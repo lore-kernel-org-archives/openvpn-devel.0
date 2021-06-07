@@ -2,10 +2,11 @@ MIME-Version: 1.0
 References: <20210513064416.212-1-lstipakov@...277...>
  <CAKuzo_hfQifKQGxX9zUNv861mjiiiPxJw+me-iPf_ZkgNJovvg@...278...>
  <CAGyAFMVsxv8fRFJD+zivivR9ugtJQoxCrf3_XF9f+eaetF8wyQ@...278...>
-In-Reply-To: <CAGyAFMVsxv8fRFJD+zivivR9ugtJQoxCrf3_XF9f+eaetF8wyQ@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sat, 5 Jun 2021 12:18:50 -0400
-Message-ID: <CAKuzo_jCE7zsxU64+20A28PuWoBDQawOHgGotiYJJ1XsyxsF_A@...278...>
+ <CAKuzo_jCE7zsxU64+20A28PuWoBDQawOHgGotiYJJ1XsyxsF_A@...278...>
+In-Reply-To: <CAKuzo_jCE7zsxU64+20A28PuWoBDQawOHgGotiYJJ1XsyxsF_A@...278...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 7 Jun 2021 10:34:36 +0300
+Message-ID: <CAGyAFMUGwv6r-xxjw0te4P-a8k2aJ0zxPmegZ5eDDbx7yLxZSQ@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] contrib/vcpkg-ports: add pkcs11-helper
  port
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,71 +19,81 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On Sat, Jun 5, 2021 at 11:43 AM Lev Stipakov <lstipakov@...277...> wrote:
->
-> Hi,
->
-> > Part of the changes here -- especially that of config-win32-vc.h
-> > should go upstream to pkcs11-helper isn't it? In fact it may have to
-> > be added to config-win32-vc.h.in as the former is a generated file.
-> >
-> > Was it rejected upstream and we have to maintain this ourselves?
->
-> it was accepted to upstream:
->
-> https://github.com/OpenSC/pkcs11-helper/commit/1d33a743bc67cfeb62293bc75f1bf2949c8115bb
->
-> However the latest release 1.27 was tagged in November, 2020. Either
-> we switch to
-> using master or maintain this change ourselves until 1.28 is out.
+Hi,
 
-That's good to know. We can live with that I suppose.
-
-> Or politely ask Alon
-> to tag 1.28, for the sake of his good contributions to openvpn :)
+> It has a long (6 years and counting)  history and may never get merged...
 >
-> > Also the patch adding the RFC 7512 (pkcs11: URI) serialization is
-> > applied in openvpn-build as well. Adding a patch inside a patch
-> > already makes it so hard to read/review and keep current, and now
-> > having the same in two places would add to that burden.
+> https://github.com/OpenSC/pkcs11-helper/pull/4
 >
-> I agree. Does anybody know if that patch is required (on Windows),
-> why wasn't it merged (submitted?) to upstream and shall we try to
-> submit it to upstream now?
+> We could look into incorporating it into our own pkcs11 glue code
+> (pkcs11.c etc.). Not sure whether it really needs access to any
+> innards of pkcs11-helper.
 
-It has a long (6 years and counting)  history and may never get merged...
+Sounds reasonable. I don't know much about pkcs11 so let's wait for volunteers.
 
-https://github.com/OpenSC/pkcs11-helper/pull/4
+> At the same time, pkcs11-helper is a separate library so anything
+> required to build it doesn't belong to openvpn repo, does it? Ideally
+> native (msvc) build on Windows it should work like on Linux/Unix
+> platforms -- have all dependencies satisfied independently and then
+> just "configure" and build.
 
-We could look into incorporating it into our own pkcs11 glue code
-(pkcs11.c etc.). Not sure whether it really needs access to any
-innards of pkcs11-helper.
+I agree. In 2.6 we're going to have vcpkg manifest with the list of
+dependencies:
 
->
-> > Is there any real advantage of building openvpn.exe directly from here
-> > as opposed to from openvpn-build? Anyway, for Windows releases we need
-> > more than openvpn.exe.
->
-> IMO yes, at least from developers' perspective. While you need
-> openvpn-build to make installers,
-> it is not required (not when "standalone msvc build" patch is merged)
-> for openvpn Windows development.
->
-> pkcs11-helper is not a separate tool like, say, openvpn-gui or
-> EasyRSA, but a real dependency of
-> openvpn.exe, same as openssl. So I don't see reasons not to include it
-> into build process,
-> especially when it doesn't require much effort (and will require even
-> less with 1.28).
+https://github.com/schwabe/openvpn/blob/dco/vcpkg.json
 
-At the same time, pkcs11-helper is a separate library so anything
-required to build it doesn't belong to openvpn repo, does it? Ideally
-native (msvc) build on Windows it should work like on Linux/Unix
-platforms -- have all dependencies satisfied independently and then
-just "configure" and build. Too much to ask?
+"dependencies": [
+    "cmocka",
+    "lz4",
+    "openssl",
+    "lzo",
+    "tap-windows6",
+    "ovpn-dco-win"
+]
 
-Selva
+All those dependendencies (except ovpn-dco-win) have ports in vcpkg upstream,
+so we just list those and let vcpkg do the rest.
+
+Since pkcs11-helper (and ovpn-dco-win) have no support in vcpkg upstream,
+we have to maintain ports ourselves.
+
+We could:
+
+ 1)  move ports to openvpn-build. I don't think this is a good
+solution, because that would
+require Windows developers to clone another repo, which is needed for
+building installers.
+This looks like a wrong thing for me to do.
+
+ 2) move ports and the rest of Windows-specific stuff, such as
+openvpnmsica, into openvpn-windows
+repo. This is something to consider, assuming that this repo also
+would take care about MSI (and NSIS?)
+stuff and have openvpn as a submodule.
+
+ 3) do nothing and have those ports as part of openvpn repo. vcpkg
+supports "ports-overlay" , so
+I see nothing wrong or "hacky" with this approach. I see you point
+about having dependencies build scripts
+as part of openvpn repo. However in this case script is fairly trivial
+and mostly consists of boilerplate code:
+
+https://github.com/lstipakov/openvpn/blob/dco180521/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
+
+To my understanding this part of openvpn is fairly static, so I don't
+expect much maintenance burden for it, if any. In any case I
+volunteer to take care of it.
+
+ 4) submit pkcs11-helper and ovpn-dco-win ports to vcpkg upstream and
+then remove those from openvpn.
+
+We could do that after doing release with vcpkg as dependencies
+manager, so we'll have a good use case.
+I can volunteer for that.
+
+-- 
+-Lev
 
