@@ -1,8 +1,10 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Mon,  7 Jun 2021 21:26:02 +0300
-Message-Id: <20210607182602.273-1-lstipakov@...277...>
+Date: Mon,  7 Jun 2021 21:48:20 +0300
+Message-Id: <20210607184820.343-1-lstipakov@...277...>
+In-Reply-To: <20210607182602.273-1-lstipakov@...277...>
+References: <20210607182602.273-1-lstipakov@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] options.c: fix msvc build error
+Subject: [Openvpn-devel] [PATCH v2] options.c: fix msvc build error
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -30,11 +32,16 @@ Fix by moving #ifdef outside of msg().
 Reported-by: Samuli Seppänen <samuli@...515...>
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
+
+ v2:
+  - fix typo in "fingerprint"
+  - remove unneeded quotation marks 
+
  src/openvpn/options.c | 5 +++--
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 6bbe5c15..606e6903 100644
+index 6bbe5c15..a36d270e 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
 @@ -2067,11 +2067,12 @@ check_ca_required(const struct options *options)
@@ -47,7 +54,7 @@ index 6bbe5c15..606e6903 100644
          " or CA path (--capath)"
  #endif
 -        " and/or peer fingeprint verification " "(--peer-fingerprint)");
-+        " and/or peer fingeprint verification " "(--peer-fingerprint)";
++        " and/or peer fingerprint verification (--peer-fingerprint)";
 +    msg(M_USAGE, str);
  }
  
