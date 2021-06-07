@@ -1,10 +1,9 @@
-MIME-Version: 1.0
-References: <20210607182602.273-1-lstipakov@...277...>
-In-Reply-To: <20210607182602.273-1-lstipakov@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 7 Jun 2021 15:38:14 -0400
-Message-ID: <CAKuzo_hezzGWecLBxC8_t22fNU9x2VeEe_n1DnBdCvWLBJEaVA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] options.c: fix msvc build error
+Date: Mon, 7 Jun 2021 21:41:48 +0200 (CEST)
+Message-Id: <202106071941.157JfmTG054220@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210607184820.343-1-lstipakov@...277...>
+References: <20210607184820.343-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: options.c: fix msvc build error
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,55 +12,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, Jun 7, 2021 at 2:56 PM Lev Stipakov <lstipakov@...277...> wrote:
->
-> From: Lev Stipakov <lev@...515...>
->
-> Commit b7fe49c ("Do not require CA when peer-fingerprint is used") broke
-> msvc build by adding #ifdef within msg() macro call.
->
->     options.c(2074,1): error C2121: '#': invalid character: possibly the =
-result of a macro expansion
->     options.c(2074,1): error C2146: syntax error: missing ')' before iden=
-tifier 'ifndef'
->     options.c(2074,1): error C2059: syntax error: ')'
->
-> Fix by moving #ifdef outside of msg().
->
-> Reported-by: Samuli Sepp=C3=A4nen <samuli@...515...>
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->  src/openvpn/options.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 6bbe5c15..606e6903 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -2067,11 +2067,12 @@ check_ca_required(const struct options *options)
->          return;
->      }
->
-> -    msg(M_USAGE, "You must define CA file (--ca)"
-> +    const char* str =3D "You must define CA file (--ca)"
->  #ifndef ENABLE_CRYPTO_MBEDTLS
->          " or CA path (--capath)"
->  #endif
-> -        " and/or peer fingeprint verification " "(--peer-fingerprint)");
-> +        " and/or peer fingeprint verification " "(--peer-fingerprint)";
-> +    msg(M_USAGE, str);
->  }
+Acked-by: Gert Doering <gert@...1296...>
 
-I forgot msg was a macro... Surprisingly, gcc preprocessor can handle this.
+Yeah, windows... sorry for breaking MSVC again, thanks for fixing 
+the typo :-) - only compile-tested on FreeBSD.
 
-Let's also use this opportunity to fix the typo "fingeprint" and
-remove the unneeded " " before (--peer-fingerprint). If it could be
-done at commit time?
+(Adding Selva's ACK on v1, for good measure)
 
-Acked-by: selva.nair@...277...
+Your patch has been applied to the master branch.
+
+commit 88395a8307964ad48c3841c0b2fb60dce826ebf1
+Author: Lev Stipakov
+Date:   Mon Jun 7 21:48:20 2021 +0300
+
+     options.c: fix msvc build error
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Acked-by: selva.nair@...277...
+     Message-Id: <20210607184820.343-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22506.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
