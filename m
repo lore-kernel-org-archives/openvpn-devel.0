@@ -1,11 +1,9 @@
-References: <032a01d75c80$8ed10030$ac730090$@aronetics.com>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <2838a62b-367b-adbf-1f9c-577f9592ed0d@...2181...>
-Date: Tue, 8 Jun 2021 21:40:48 +0200
+From: Arne Schwabe <arne@...1227...>
+Date: Tue,  8 Jun 2021 21:43:30 +0200
+Message-Id: <20210608194330.1431202-1-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <032a01d75c80$8ed10030$ac730090$@aronetics.com>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] UNSUBSCRIBE
+Subject: [Openvpn-devel] [PATCH] Silence warning about format string in
+ check_ca_required
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,29 +12,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: John Aron <john@...2578...>, Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Please follow this URL to unsubscribe:
+clang does not like if the format argument of printf like function
+is not a string literal:
 
-https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+warning: format string is not a string literal (potentially insecure)
 
+Use "%s" as string literal to silence the warning.
 
-Regards,
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/options.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 8978955c3..5ecb7b7db 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2077,7 +2077,7 @@ check_ca_required(const struct options *options)
+         " or CA path (--capath)"
+ #endif
+         " and/or peer fingerprint verification (--peer-fingerprint)";
+-    msg(M_USAGE, str);
++    msg(M_USAGE, "%s", str);
+ }
+ 
+ static void
+-- 
+2.32.0
 
-On 08/06/2021 18:08, John Aron wrote:
-> =A0
->=20
->=20
->=20
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->=20
-
---=20
-Antonio Quartulli
 
