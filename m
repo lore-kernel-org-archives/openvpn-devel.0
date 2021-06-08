@@ -1,7 +1,9 @@
-From: Jeff <os.gv.ll@...277...>
-Date: Tue,  8 Jun 2021 09:32:50 +0800
-Message-Id: <1623115970-9186-1-git-send-email-os.gv.ll@...277...>
-Subject: [Openvpn-devel] [PATCH] duplicate function declaration.
+Date: Tue, 8 Jun 2021 08:09:37 +0200 (CEST)
+Message-Id: <202106080609.15869bAc065034@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1623115970-9186-1-git-send-email-os.gv.ll@...277...>
+References: <1623115970-9186-1-git-send-email-os.gv.ll@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: duplicate function declaration.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,36 +14,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Jeff <os.gv.ll@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
----
- src/openvpn/crypto_backend.h | 12 ------------
- 1 file changed, 12 deletions(-)
+Acked-by: Gert Doering <gert@...1296...>
 
-diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index 35cd918..af123d0 100644
---- a/src/openvpn/crypto_backend.h
-+++ b/src/openvpn/crypto_backend.h
-@@ -88,18 +88,6 @@ void crypto_init_dmalloc(void);
- 
- #endif /* DMALLOC */
- 
--/**
-- * Translate a data channel cipher name from the OpenVPN config file
-- * 'language' to the crypto library specific name.
-- */
--const char *translate_cipher_name_from_openvpn(const char *cipher_name);
--
--/**
-- * Translate a data channel cipher name from the crypto library specific name
-- * to the OpenVPN config file 'language'.
-- */
--const char *translate_cipher_name_from_openvpn(const char *cipher_name);
--
- void show_available_ciphers(void);
- 
- void show_available_digests(void);
--- 
-2.7.4
+Thanks.  Seems someone from the core team really loves this function!
+
+Your patch has been applied to the master branch.
+
+For the next patch, please take care of a few things
+
+ - do the git commit with "-s", to get the "signed-off-by:" line
+ - your git setup is missing a configured real name ("Jeff")
+
+commit 5ebbe100df98fc9e3774947a37aeca4c0d49d809
+Author: Jeff
+Date:   Tue Jun 8 09:32:50 2021 +0800
+
+     duplicate function declaration.
+
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1623115970-9186-1-git-send-email-os.gv.ll@...277...>
+     URL: https://www.mail-archive.com/search?l=mid&q=1623115970-9186-1-git-send-email-os.gv.ll@...277...
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
