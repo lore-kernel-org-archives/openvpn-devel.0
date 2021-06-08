@@ -1,8 +1,14 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Tue,  8 Jun 2021 17:24:34 +0200
-Message-Id: <20210608152434.1403999-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Add github actions
+References: <20210525092510.27517-1-heiko.wundram@...2614...>
+ <CAKuzo_gESgnmaN8QUdnThR-qPcSxdW1Ursvw+vioZFYHTd04Dg@...278...>
+ <7ad638911b9c4581946c82fe768811c9@...2614...>
+In-Reply-To: <7ad638911b9c4581946c82fe768811c9@...2614...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 8 Jun 2021 11:54:44 -0400
+Message-ID: <CAKuzo_hXhb6cR3RLROonZcx8eUPAyehOX19gA+OJFjTXbVAsqA@...278...>
+Content-Type: multipart/alternative; boundary="0000000000008eed7605c4432f05"
+Subject: Re: [Openvpn-devel] [PATCH] Implement Windows CA template match for
+ Crypto-API selector
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,244 +17,157 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: "Gehrkens.IT GmbH | Heiko Wundram" <heiko.wundram@...2614...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-dummy0 gives strange errors on the Ubuntu 16 runner on github actions because
-dummy already exist, so use a more unique ovpn-dummy0 name instead.
+--0000000000008eed7605c4432f05
+Content-Type: text/plain; charset="UTF-8"
 
-Github actions are a good alternative to travis-ci, which futrure is questionable
-at the moment without payment. The github actions also allows building on macOS
-and Windows (not included in this commit). The  matrix is a bit different
-than Coverity and uses different Ubuntu version with their native OpenSSL
-(1.0.2, 1.1.1)/mbed TLS instead of manually compiling different OpenSSL
-versions on just Ubuntu 20.04.
+Hi,
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- .github/workflows/build.yaml               | 184 +++++++++++++++++++++
- tests/t_net.sh                             |   2 +-
- tests/unit_tests/openvpn/test_networking.c |   2 +-
- 3 files changed, 186 insertions(+), 2 deletions(-)
- create mode 100644 .github/workflows/build.yaml
+>
+> > > +static const CRYPT_OID_INFO *
+> > > +find_oid(DWORD keytype, const void *key, DWORD groupid, bool
+> > > +fallback) {
+> > > +    const CRYPT_OID_INFO *info = NULL;
+> > > +
+> > > +    /* force resolve from local as first step */
+> > > +    if (groupid != CRYPT_HASH_ALG_OID_GROUP_ID &&
+> > > +        groupid != CRYPT_ENCRYPT_ALG_OID_GROUP_ID &&
+> > > +        groupid != CRYPT_PUBKEY_ALG_OID_GROUP_ID &&
+> > > +        groupid != CRYPT_SIGN_ALG_OID_GROUP_ID &&
+> > > +        groupid != CRYPT_RDN_ATTR_OID_GROUP_ID &&
+> > > +        groupid != CRYPT_EXT_OR_ATTR_OID_GROUP_ID &&
+> > > +        groupid != CRYPT_KDF_OID_GROUP_ID)
+> > > +    {
+> >
+> > Why not do the local lookup for all grupids? Anyway you are falling
+back to
+> > domain-wide look up if this fails.
+>
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-new file mode 100644
-index 000000000..7ff379802
---- /dev/null
-+++ b/.github/workflows/build.yaml
-@@ -0,0 +1,184 @@
-+# The name of our workflow
-+name: Build
-+on: [push, pull_request]
-+
-+jobs:
-+  mingw:
-+    strategy:
-+      matrix:
-+        include:
-+          - target: mingw64
-+            chost: x86_64-w64-mingw32
-+          - target: mingw
-+            chost: i686-w64-mingw32
-+
-+    runs-on: ubuntu-20.04
-+    env:
-+      MAKEFLAGS: -j3
-+      LZO_VERSION: "2.10"
-+      PKCS11_HELPER_VERSION: "1.26"
-+      OPENSSL_VERSION: "1.1.1j"
-+      TAP_WINDOWS_VERSION: "9.23.3"
-+      CHOST: ${{ matrix.chost }}
-+      TARGET: ${{ matrix.target }}
-+    steps:
-+      - name: Install dependencies
-+        run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip
-+      - name: Checkout ovpn-dco-win
-+        uses: actions/checkout@...2620...
-+        with:
-+          repository: OpenVPN/ovpn-dco-win
-+          path: ovpn-dco-win
-+      - name: Checkout OpenVPN
-+        uses: actions/checkout@...2620...
-+        with:
-+          path: openvpn
-+          
-+      - name: autoconf
-+        run: autoreconf -fvi
-+        working-directory: openvpn
-+
-+      - name: Cache dependencies
-+        id: cache
-+        uses: actions/cache@...2620...
-+        with:
-+          path: '~/mingw/'
-+          key: ${{ matrix.target }}-mingw-${{ env.LZO_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSION }}
-+
-+      # Repeating  if: steps.cache.outputs.cache-hit != 'true'
-+      # on every step for building dependencies is ugly but
-+      # I haven't found a better solution so far.
-+          
-+      - name: Download mingw depnendencies
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        run: |
-+          wget -c -P download-cache/ "https://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip"
-+          wget -c -P download-cache/ "https://www.oberhumer.com/opensource/lzo/download/lzo-${LZO_VERSION}.tar.gz"
-+          wget -c -P download-cache/ "https://github.com/OpenSC/pkcs11-helper/archive/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.gz"
-+          wget -c -P download-cache/ "https://www.openssl.org/source/old/1.1.1/openssl-${OPENSSL_VERSION}.tar.gz"
-+          tar zxf "download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.gz"
-+          tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
-+          tar zxf "download-cache/lzo-${LZO_VERSION}.tar.gz"
-+          unzip download-cache/tap-windows-${TAP_WINDOWS_VERSION}.zip
-+
-+      - name: Configure OpenSSL
-+        if: steps.cache.outputs.cache-hit != 'true'        
-+        run: ./Configure --cross-compile-prefix=${CHOST}- shared ${{ matrix.target }} no-capieng --prefix="${HOME}/mingw/opt" --openssldir="${HOME}/mingw/opt" -static-libgcc
-+        working-directory: "./openssl-1.1.1j"
-+        
-+      - name: Build OpenSSL
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        run: make
-+        working-directory: "./openssl-1.1.1j/"
-+
-+      - name: Install OpenSSL
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        run: make install
-+        working-directory: "./openssl-1.1.1j/"
-+        
-+      - name: autoreconf pkcs11-helper
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        run: autoreconf -iv
-+        working-directory: "./pkcs11-helper-pkcs11-helper-1.26"
-+
-+      - name: configure pkcs11-helper
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        run: OPENSSL_LIBS="-L${HOME}/mingw/opt/lib -lssl -lcrypto" OPENSSL_CFLAGS=-I$HOME/mingw/opt/include PKG_CONFIG_PATH=${HOME}/mingw/opt/lib/pkgconfig ./configure --host=${CHOST} --program-prefix='' --libdir=${HOME}/mingw/opt/lib --prefix=${HOME}/mingw/opt --build=x86_64-pc-linux-gnu --disable-crypto-engine-gnutls --disable-crypto-engine-nss --disable-crypto-engine-polarssl --disable-crypto-engine-mbedtls
-+        working-directory: "./pkcs11-helper-pkcs11-helper-1.26"
-+        
-+      - name: build pkcs11-helper
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        run: make all
-+        working-directory: "./pkcs11-helper-pkcs11-helper-1.26"
-+        
-+      - name: install pkcs11-helper
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        run: make install
-+        working-directory: "./pkcs11-helper-pkcs11-helper-1.26"
-+
-+      - name: Configure lzo
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        run: ./configure --host=${CHOST} --program-prefix='' --libdir=${HOME}/mingw/opt/lib --prefix=${HOME}/mingw/opt --build=x86_64-pc-linux-gnu
-+        working-directory: "./lzo-2.10"
-+        
-+      - name: build lzo
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        working-directory: "./lzo-2.10"
-+        run: make
-+        
-+      - name: install lzo
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        working-directory: "./lzo-2.10"
-+        run: make install
-+
-+      - name: copy tap-windows.h header
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        run: cp ./tap-windows-9.23.3/include/tap-windows.h ${HOME}/mingw/opt/include/
-+
-+      - name: configure OpenVPN
-+        run: PKG_CONFIG_PATH=${HOME}/mingw/opt/lib/pkgconfig DCO_SOURCEDIR=$(realpath ../ovpn-dco-win) LDFLAGS=-L$HOME/mingw/opt/lib CFLAGS=-I$HOME/mingw/opt/include OPENSSL_LIBS="-L${HOME}/opt/lib -lssl -lcrypto" OPENSSL_CFLAGS=-I$HOME/mingw/opt/include PREFIX=$HOME/mingw/opt LZO_CFLAGS=-I$HOME/mingw/opt/include LZO_LIBS="-L${HOME}/mingw/opt/lib -llzo2" ./configure  --host=${CHOST} --disable-lz4 --enable-dco
-+        working-directory: openvpn
-+                
-+      - name: build OpenVPN
-+        run: make -j3
-+        working-directory: openvpn
-+  
-+  ubuntu:
-+    strategy:
-+      matrix:
-+        os: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04]
-+        ssllib: [mbedtls, openssl]
-+
-+    runs-on: ${{matrix.os}}
-+    steps:
-+      - name: Install dependencies
-+        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf libmbedtls-dev
-+      - name: Checkout OpenVPN
-+        uses: actions/checkout@...2620...
-+      - name: autoconf
-+        run: autoreconf -fvi
-+      - name: configure --with-crypto-library=${{matrix.ssllib}}
-+        run: ./configure
-+      - name: make all
-+        run: make -j3
-+      - name: make check
-+        run: make check
-+          
-+  ubutun20-clang-asan:
-+    strategy:
-+      matrix:
-+        os: [ubuntu-16.04, ubuntu-18.04]
-+        ssllib: [mbedtls, openssl]
-+
-+    runs-on: ubuntu-20.04
-+    steps:
-+      - name: Install dependencies
-+        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automake autoconf libmbedtls-dev
-+      - name: Checkout OpenVPN
-+        uses: actions/checkout@...2620...
-+      - name: autoconf
-+        run: autoreconf -fvi
-+      - name: configure
-+        run: CFLAGS="-fsanitize=address -fno-omit-frame-pointer -O2" CC=clang ./configure --with-crypto-library=${{matrix.ssllib}}
-+      - name: make all
-+        run: make -j3
-+      - name: make check
-+        run: make check
-+
-+
-+  macos:
-+    runs-on: macos-latest
-+    steps:
-+      - name: Checkout OpenVPN
-+        uses: actions/checkout@...2620...
-+      - name: Install dependencies
-+        run: brew install openssl lzo lz4 man2html cmocka libtool automake autoconf
-+      - name: autoconf
-+        run: autoreconf -fvi
-+      - name: configure
-+        run: OPENSSL_CFLAGS=-I/usr/local/opt/openssl@...2560.../include  OPENSSL_LIBS="-L/usr/local/opt/openssl@...2560.../lib -lcrypto -lssl" ./configure
-+      - name: make all
-+        run: make -j4
-+      - name: make check
-+        run: make check
-+
-diff --git a/tests/t_net.sh b/tests/t_net.sh
-index 246ee07bd..f9dba4040 100755
---- a/tests/t_net.sh
-+++ b/tests/t_net.sh
-@@ -1,6 +1,6 @@
- #!/usr/bin/env bash
- 
--IFACE="dummy0"
-+IFACE="ovpn-dummy0"
- UNIT_TEST="./unit_tests/openvpn/networking_testdriver"
- MAX_TEST=${1:-7}
- 
-diff --git a/tests/unit_tests/openvpn/test_networking.c b/tests/unit_tests/openvpn/test_networking.c
-index e7c148f0e..9e9744f48 100644
---- a/tests/unit_tests/openvpn/test_networking.c
-+++ b/tests/unit_tests/openvpn/test_networking.c
-@@ -3,7 +3,7 @@
- #include "networking.h"
- 
- 
--static char *iface = "dummy0";
-+static char *iface = "ovpn-dummy0";
- 
- static int
- net__iface_up(bool up)
--- 
-2.32.0
+> > Simply because Microsoft does it this way in their generic wrapping of
+> CryptFindOIDInfo for certificate selection helpers:
+> https://github.com/dotnet/runtime/blob/01b7e73cd378145264a7cb7a09365b41ed42b240/src/libraries/Common/src/Interop/Windows/Crypt32/Interop.FindOidInfo.cs#L51
+> ff - the groups excluded here will always be looked up locally, independent
+> of the CRYPT_OID_DISABLE_SEARCH_FLAG, so that we can save one call for them.
 
+
+>
+> > > +        info = CryptFindOIDInfo(keytype, (void*)key, groupid |
+> > CRYPT_OID_DISABLE_SEARCH_DS_FLAG);
+
+You are misreading the usage in dotnet sources. Their reasoning is that for
+those listed algorithms AD will not be consulted and there is no need to
+explicitly add the DISABLE_SEARCH_FLAG. But adding it doesn't hurt and
+simplifies the code.
+
+So change the above to
+
+info = CryptFindOIDInfo(keytype, (void*)key,
+groupid|CRYPT_OID_DISABLE_SEARCH_DS_FLAG);
+
+with no if clause. That way we first search without querying the AD
+irrespective of the algorithm.
+
+> > > +    }
+> > > +
+> > > +    /* try proper resolve if not found yet, also including AD */
+> > > +    if (!info)
+> > > +    {
+> > > +        info = CryptFindOIDInfo(keytype, (void*)key, groupid);
+> >
+> > How long would this take to time out -- we try to avoid calling
+functions that
+> > need network access to the DC as that's often not available before the
+tunnel
+> > comes up.
+>
+> Good question which I hadn't taken into account so far; from what I've
+seen on machine clients I've deployed that select their certificate using
+this logic, the timeout is almost instantaneous, i.e. CryptFindOIDInfo does
+not find an object for the TMPL: parameter if it can't reach the domain. Of
+course, your note generally limits the functionality of actually using
+CryptFindOIDInfo to resolve a printable template name from a specific
+domain to an OID (which is then found in the actual certificate), but I
+wouldn't take this out if it doesn't introduce a long delay (possibly,
+there are two tunnels in some cases, where an independent tunnel sets up
+reachability of the domain).
+
+Actually there are reports out there that CryptFindOIDInfo can take a long
+while to timeout if AD is unreachable. To make things worse we are here
+querying the AD two times one with groupid and second time for all groups.
+But we can't do much about it except to add a caveat that anyone using
+template match should be aware of it.
+
+Please also update the man page (description of --cryptoapicert).
+
+Selva
+
+--0000000000008eed7605c4432f05
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi,<div><br>&gt;<br>&gt; &gt; &gt; +static const CRYPT_OID=
+_INFO *<br>&gt; &gt; &gt; +find_oid(DWORD keytype, const void *key, DWORD g=
+roupid, bool<br>&gt; &gt; &gt; +fallback) {<br>&gt; &gt; &gt; + =C2=A0 =C2=
+=A0const CRYPT_OID_INFO *info =3D NULL;<br>&gt; &gt; &gt; +<br>&gt; &gt; &g=
+t; + =C2=A0 =C2=A0/* force resolve from local as first step */<br>&gt; &gt;=
+ &gt; + =C2=A0 =C2=A0if (groupid !=3D CRYPT_HASH_ALG_OID_GROUP_ID &amp;&amp=
+;<br>&gt; &gt; &gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0groupid !=3D CRYPT_ENCRYPT=
+_ALG_OID_GROUP_ID &amp;&amp;<br>&gt; &gt; &gt; + =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0groupid !=3D CRYPT_PUBKEY_ALG_OID_GROUP_ID &amp;&amp;<br>&gt; &gt; &gt; =
++ =C2=A0 =C2=A0 =C2=A0 =C2=A0groupid !=3D CRYPT_SIGN_ALG_OID_GROUP_ID &amp;=
+&amp;<br>&gt; &gt; &gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0groupid !=3D CRYPT_RDN=
+_ATTR_OID_GROUP_ID &amp;&amp;<br>&gt; &gt; &gt; + =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0groupid !=3D CRYPT_EXT_OR_ATTR_OID_GROUP_ID &amp;&amp;<br>&gt; &gt; &gt;=
+ + =C2=A0 =C2=A0 =C2=A0 =C2=A0groupid !=3D CRYPT_KDF_OID_GROUP_ID)<br>&gt; =
+&gt; &gt; + =C2=A0 =C2=A0{<br>&gt; &gt;<br>&gt; &gt; Why not do the local l=
+ookup for all grupids? Anyway you are falling back to<br>&gt; &gt; domain-w=
+ide look up if this fails.<br>&gt;<br><blockquote class=3D"gmail_quote" sty=
+le=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);paddi=
+ng-left:1ex">&gt; Simply because Microsoft does it this way in their generi=
+c wrapping of CryptFindOIDInfo for certificate selection helpers: <a href=
+=3D"https://github.com/dotnet/runtime/blob/01b7e73cd378145264a7cb7a09365b41=
+ed42b240/src/libraries/Common/src/Interop/Windows/Crypt32/Interop.FindOidIn=
+fo.cs#L51">https://github.com/dotnet/runtime/blob/01b7e73cd378145264a7cb7a0=
+9365b41ed42b240/src/libraries/Common/src/Interop/Windows/Crypt32/Interop.Fi=
+ndOidInfo.cs#L51</a> ff - the groups excluded here will always be looked up=
+ locally, independent of the CRYPT_OID_DISABLE_SEARCH_FLAG, so that we can =
+save one call for them.</blockquote><br>&gt;<br>&gt; &gt; &gt; + =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0info =3D CryptFindOIDInfo(keytype, (void*)key, groupid |<b=
+r>&gt; &gt; CRYPT_OID_DISABLE_SEARCH_DS_FLAG);<br><br>You are misreading th=
+e usage in dotnet sources. Their reasoning is that for those listed algorit=
+hms AD will not be consulted and there is no need to explicitly add the DIS=
+ABLE_SEARCH_FLAG. But adding it doesn&#39;t hurt and simplifies the code.<b=
+r><br>So change=C2=A0the above to<br><br><div>info =3D CryptFindOIDInfo(key=
+type, (void*)key, groupid|CRYPT_OID_DISABLE_SEARCH_DS_FLAG);<br><br>with no=
+ if clause. That way we first search without querying the AD irrespective o=
+f the algorithm.<div><br>&gt; &gt; &gt; + =C2=A0 =C2=A0}<br>&gt; &gt; &gt; =
++<br>&gt; &gt; &gt; + =C2=A0 =C2=A0/* try proper resolve if not found yet, =
+also including AD */<br>&gt; &gt; &gt; + =C2=A0 =C2=A0if (!info)<br>&gt; &g=
+t; &gt; + =C2=A0 =C2=A0{<br>&gt; &gt; &gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0inf=
+o =3D CryptFindOIDInfo(keytype, (void*)key, groupid);<br>&gt; &gt;<br>&gt; =
+&gt; How long would this take to time out -- we try to avoid calling functi=
+ons that<br>&gt; &gt; need network access to the DC as that&#39;s often not=
+ available before the tunnel<br>&gt; &gt; comes up.<br>&gt;<br>&gt; Good qu=
+estion which I hadn&#39;t taken into account so far; from what I&#39;ve see=
+n on machine clients I&#39;ve deployed that select their certificate using =
+this logic, the timeout is almost instantaneous, i.e. CryptFindOIDInfo does=
+ not find an object for the TMPL: parameter if it can&#39;t reach the domai=
+n. Of course, your note generally limits the functionality of actually usin=
+g CryptFindOIDInfo to resolve a printable template name from a specific dom=
+ain to an OID (which is then found in the actual certificate), but I wouldn=
+&#39;t take this out if it doesn&#39;t introduce a long delay (possibly, th=
+ere are two tunnels in some cases, where an independent tunnel sets up reac=
+hability of the domain).</div><div><br></div><div>Actually there are report=
+s out there that CryptFindOIDInfo can take a long while to timeout if AD is=
+ unreachable. To make things worse we are here querying the AD two times on=
+e with groupid and second time for all groups. But we can&#39;t do much abo=
+ut it except to add a caveat=C2=A0that anyone using template match should b=
+e aware of it.=C2=A0</div><div><br></div></div><div>Please also update the =
+man page (description of --cryptoapicert).</div><div><br></div><div>Selva</=
+div></div></div>
+
+--0000000000008eed7605c4432f05--
 
