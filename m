@@ -1,9 +1,7 @@
-Date: Mon, 7 Jun 2021 21:41:48 +0200 (CEST)
-Message-Id: <202106071941.157JfmTG054220@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210607184820.343-1-lstipakov@...277...>
-References: <20210607184820.343-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: options.c: fix msvc build error
+From: Jeff <os.gv.ll@...277...>
+Date: Tue,  8 Jun 2021 09:32:50 +0800
+Message-Id: <1623115970-9186-1-git-send-email-os.gv.ll@...277...>
+Subject: [Openvpn-devel] [PATCH] duplicate function declaration.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,35 +12,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/crypto_backend.h | 12 ------------
+ 1 file changed, 12 deletions(-)
 
-Yeah, windows... sorry for breaking MSVC again, thanks for fixing 
-the typo :-) - only compile-tested on FreeBSD.
-
-(Adding Selva's ACK on v1, for good measure)
-
-Your patch has been applied to the master branch.
-
-commit 88395a8307964ad48c3841c0b2fb60dce826ebf1
-Author: Lev Stipakov
-Date:   Mon Jun 7 21:48:20 2021 +0300
-
-     options.c: fix msvc build error
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Acked-by: selva.nair@...277...
-     Message-Id: <20210607184820.343-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22506.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index 35cd918..af123d0 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -88,18 +88,6 @@ void crypto_init_dmalloc(void);
+ 
+ #endif /* DMALLOC */
+ 
+-/**
+- * Translate a data channel cipher name from the OpenVPN config file
+- * 'language' to the crypto library specific name.
+- */
+-const char *translate_cipher_name_from_openvpn(const char *cipher_name);
+-
+-/**
+- * Translate a data channel cipher name from the crypto library specific name
+- * to the OpenVPN config file 'language'.
+- */
+-const char *translate_cipher_name_from_openvpn(const char *cipher_name);
+-
+ void show_available_ciphers(void);
+ 
+ void show_available_digests(void);
+-- 
+2.7.4
 
 
