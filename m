@@ -1,11 +1,12 @@
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+References: <48241a88-28ce-5a08-6dc8-34423634f092@...515...>
+Message-ID: <fb9dda8a-2a32-cf19-737a-1d30541b12f1@...515...>
+Date: Wed, 9 Jun 2021 16:26:20 +0300
 MIME-Version: 1.0
-References: <20210608152434.1403999-1-arne@...1227...>
-In-Reply-To: <20210608152434.1403999-1-arne@...1227...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Wed, 9 Jun 2021 15:48:19 +0500
-Message-ID: <CAFHpkQEno2fXu2ZNufjQ6AQR4SYY-eExqOw7vZQWhXz8TOYPug@...278...>
-Content-Type: multipart/alternative; boundary="000000000000f1082305c453036c"
-Subject: Re: [Openvpn-devel] [PATCH] Add github actions
+In-Reply-To: <48241a88-28ce-5a08-6dc8-34423634f092@...515...>
+Content-Type: multipart/mixed; boundary="------------75ABEC39101799B9867945CD"
+Content-Language: en-US
+Subject: [Openvpn-devel] Summary of the community meeting (9th June 2021)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,649 +15,334 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000f1082305c453036c
-Content-Type: text/plain; charset="UTF-8"
+This is a multi-part message in MIME format.
+--------------75ABEC39101799B9867945CD
+Content-Type: text/plain; charset=iso-8859-15; format=flowed
+Content-Transfer-Encoding: 8bit
+
+Hi,
+
+Here's the summary of the IRC meeting.
+
+---
+
+COMMUNITY MEETING
+
+Place: #openvpn-meeting on libera.chat
+Date: Wed 9th June 2021
+Time: 14:00 CET (12:00 UTC)
+
+Planned meeting topics for this meeting were here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2021-06-09>
+
+Your local meeting time is easy to check from services such as
+
+<http://www.timeanddate.com/worldclock>
+
+SUMMARY
+
+cron2, dazo, d12fk, lev, mattock, plaisthos and syzzer participated in 
+this meeting.
+
+---
+
+Talked about patches aimed at OpenVPN 2.6. Ordex plans on reviewing nine 
+patches from plaisthos this week. Cron2 will test and merge a few 
+pending auth patches.
+
+---
+
+Agreed to try to release new OpenVPN 2.5.2 installers with ARM64 MSI 
+support next wednesday. Possibly this could become 2.5.3 release as well 
+as there's a crash bug in 2.5.2.
+
+The main blocker is that mattock's vagrantized MSVC build VM (=the 
+upcoming buildbot worker) does not work now because Microsoft's download 
+servers seem to be borked, preventing some Visual Studio components from 
+downloading. So, mattock is unable to build things with MSVC at the 
+moment. It used to work last Monday or so.
+
+Lev will try to build the MSVC build VM independently to rule out local 
+issues caused by mattock's laptop/internet connection (e.g. IPv6 blocked 
+at MS end).
+
+---
+
+Noted that copyright notices should be upgraded (to 2021). We have a 
+script to do it.
+
+---
+
+Noted that there's no IPv6 on openvpn.net domain yet. Invented some 
+novel ideas on how to make IPv6 a reality.
+
+---
+
+Mattock gave an update on Buildbot. The buildbot worker part is working 
+on the Windows Server 2019 VM now, but Visual Studio component 
+installation issues are blocking things (see above).
+
+---
+
+Mattock will create a Doodle poll for the hackathon (November 2021).
+
+--------------75ABEC39101799B9867945CD
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn_irc_meeting_chatlog_2021-06-09.txt"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="openvpn_irc_meeting_chatlog_2021-06-09.txt"
 
-=D0=B2=D1=82, 8 =D0=B8=D1=8E=D0=BD. 2021 =D0=B3. =D0=B2 20:26, Arne Schwabe=
- <arne@...1227...>:
+(14:58:39) mattock: hi
+(14:59:03) ordex: hoi
+(14:59:11) dazo: yeh!
+(14:59:26) lev__: hello
+(14:59:30) cron2: hey, you're all early
+(14:59:37) ***cron2 is still digesting
+(15:00:29) ordex: same here
+(15:00:50) lev__: video or chat?
+(15:00:51) dazo: Just a heads-up, I have another meeting at 15:00, so nee=
+d to part around 14:45
+(15:01:04) ***cron2 feels like chat today
+(15:01:09) ordex: chat chat
+(15:01:42) dazo: +1
+(15:02:22) d12fk: hi
+(15:02:42) mattock: chatchat
+(15:03:23) mattock: https://community.openvpn.net/openvpn/wiki/Topics-202=
+1-06-09
+(15:03:40) mattock: #1 sync up
+(15:04:03) syzzer_: hi!
+(15:04:24) cron2: yo!
+(15:05:21) cron2: I haven't seen much activity in "master/2.6" related pa=
+tches... ordex: what is your time planning?
+(15:05:41) ***cron2 is able to focus on things again: KIDS ARE IN SCHOOL.=
+  BOTH.  On the SAME DAY.
+(15:06:16) mattock: that's EXCELLENT news cron2! :D
+(15:07:47) ordex: cron2: this week I have the 9 patches v2 from plaisthos=
+=20
+(15:07:57) ordex: planning to et those reviewed within this week
+(15:08:00) ordex: *get
+(15:08:33) cron2: ordex: ok, that's a lot :-) - let's see how it works ou=
+t
+(15:08:43) cron2: I have one of the "pending auth" still on my test-and-m=
+erge list
+(15:08:47) cron2: (3, actually)
+(15:09:32) ordex: cron2: yeah it is, goal is to get them all checked, but=
+ let's see where we get :)
+(15:09:52) cron2: cool.  (Any word on where plaisthos is hiding?)
+(15:12:22) ordex: (somewhere)
+(15:12:55) plaisthos: here!
+(15:13:06) mattock: welcome!
+(15:13:09) ***d12fk waves vigorously
+(15:14:01) cron2: plaisthos: your agreement on the msg() patch is missing=
+ ("in here" is good enough)
+(15:14:11) plaisthos: Yeah, just apply it
+(15:14:22) plaisthos: I was just annoyed that my build failed because of =
+-Werror
+(15:14:57) ***ordex waves fist against lev__=20
+(15:15:26) lev__: well, I made it better - at last it compiles with msvc
+(15:15:30) lev__: *at least
+(15:16:04) ordex: hehe
+(15:16:05) plaisthos: not if you use msvc+clang
+(15:16:15) ordex: not sure -Werror is enabled by default
+(15:16:18) ordex: :p
+(15:18:14) ordex: anything else for the sync up /
+(15:18:15) ordex: ?
+(15:18:47) cron2: you can use msvc+clang?
+(15:18:56) lev__: lets to 2.5.2/3 arm64
+(15:18:59) lev__: *do
+(15:19:55) cron2: mattock, lev__: next week wednesday?
+(15:20:10) mattock: sounds doable
+(15:20:52) lev__: I would love to see a few patches (msvc standalone, pkc=
+s11-helper + arm64 in openvpn-build) merged
+(15:20:54) mattock: if there are not pending, important 2.5 changes then =
+2.5.2 installer release might be sufficient
+(15:21:05) cron2: there's a crashbug in 2.5.2 :-)
+(15:21:32) lev__: there are also some 2fa improvements in openvpn-gui
+(15:21:43) mattock: my main challenge now is that Visual Studio component=
+s fail to install because of upstream (Microsoft server) issues, so I don=
+'t have a build environment for MSVC
+(15:22:09) cron2: lev__: yeah, one of these build patches is on my radar.=
+  I'll ping you tomorrow/friday on what else is missing.
+(15:22:12) ***lev__ shrugs
+(15:22:20) lev__: cron2: sure, thanks
+(15:23:14) lev__: mattock: we could have AMI in ec2 under inc account for=
+ msvc release building
+(15:24:07) mattock: yeah, but that does not help if we can't at the momen=
+t install all the visual studio components we need
+(15:24:32) mattock: I can try building on an EC2 VM just to rule out the =
+possibility that my computer is somehow part of the problem
+(15:24:39) lev__: yeah
+(15:24:42) mattock: but I was able to install all the components yesterda=
+y or so
+(15:24:46) mattock: so it seems quite unlikely
+(15:25:09) mattock: anyhow
+(15:25:29) lev__: I just reinstalled build tools 2019
+(15:25:54) mattock: it would help if you could check out "dockerized_buil=
+dbot" branch in my fork of openvpn-vagrant
+(15:26:05) mattock: and try to "vagrant up buildbot-worker-windows-server=
+-2019"
+(15:26:33) mattock: that would show if the problem is at my end (somehow)=
+ or if it is at the MS end
+(15:26:52) lev__: I could try, I think
+(15:27:04) mattock: if you have vagrant+virtualbox installed it should wo=
+rk
+(15:27:06) cron2: mattock: it is always your computing infrastructure :-)=
 
-> dummy0 gives strange errors on the Ubuntu 16 runner on github actions
-> because
-> dummy already exist, so use a more unique ovpn-dummy0 name instead.
->
-> Github actions are a good alternative to travis-ci, which futrure is
-> questionable
-> at the moment without payment. The github actions also allows building on
-> macOS
->
+(15:27:30) mattock: the only thing I could potentially blame is IPv6
+(15:27:33) mattock: honestly
+(15:27:34) mattock: :D
+(15:28:03) mattock: I recently learned that with this particular internet=
+ connection I actually have public IPv6 connectivity, which of course bro=
+ke things for me which I needed to fix :D
+(15:28:27) cron2: fixing IPv6 is very good
+(15:28:31) mattock: yeah
+(15:28:47) mattock: quite often DNS gives an AAAA record and if firewalls=
+ and all that are not set up correctly then boom
+(15:28:49) mattock: like today
+(15:30:11) ordex: mah
+(15:30:20) ordex: discrimination against IPv6 is not allowed!!
+(15:30:29) cron2: why do you have outgoing firewall rules...?
+(15:30:41) cron2: and why would they disallow IPv6?
+(15:30:54) mattock: I don't have outgoing rules
+(15:30:55) cron2: there is something wrong in the company culture...
+(15:31:12) mattock: ip6tables was accidentally misconfigured
+(15:31:17) mattock: but this was not even openvpn inc. stuff
+(15:31:35) cron2: too much exposure to the openvpn inc IPv6 negativity, I=
+'m sure!
+(15:31:38) cron2: anyway
+(15:31:42) cron2: shall we aim for next wednesday?
+(15:31:47) mattock: more like "it seems to work, good enough"
+(15:32:02) mattock: yeah, works for me
+(15:32:38) cron2: so, anything else that should go into 2.5.3 (openvpn-bu=
+ild is noted)?
+(15:34:08) ordex: seems not
+(15:38:17) ordex: ipv6 on community?
+(15:39:27) cron2: yeah, please!
+(15:39:47) ordex: !
+(15:40:12) cron2: mattock disappeared after so much IPv6
+(15:40:25) cron2: so let's assume "nothing" and jump to the copyright thi=
+ng
+(15:40:39) cron2: dazo: can you send a patch for 2.5 and master to update=
+ copyright messages etc., once again?
+(15:41:07) mattock: no progress afaik
+(15:43:16) dazo: cron2: sure!
+(15:44:03) dazo: cron2: we do have a script checked in which does the job=
+ though ... dev-tools/update-copyright.sh
+(15:44:22) cron2: dazo: does it update the copyrigtht message printed at =
+"--version" too?
+(15:44:33) dazo: It should
+(15:45:18) cron2: yeah, these are all "2018" as well :)
+(15:47:01) cron2: please :-)
+(15:47:06) ordex: yeah
+(15:47:08) cron2: (seems we missed that before 2.5.0 release)
+(15:47:22) dazo: I'll send a patch when I'm back, need to go now
+(15:47:32) cron2: thanks
+(15:47:39) cron2: (that was all I wanted, so perfect on time)
+(15:47:47) cron2: last item: CR_TEXT
+(15:49:44) ordex: what is it ?
+(15:49:50) cron2: https://patchwork.openvpn.net/patch/1843/
+(15:49:52) vpnHelper: Title: [Openvpn-devel,1/2] Improve documentation of=
+ AUTH_PENDING related directives - Patchwork (at patchwork.openvpn.net)
+(15:50:16) cron2: that patch has an ACK, but a subsequent discussion abou=
+t CR_TEXT and "empty response"
+(15:50:27) cron2: and I'm not sure if it should go in "as is" or a v2 is =
+needed?
+(15:51:00) cron2: ah
+(15:51:02) cron2: no
+(15:51:16) cron2: it's actually "proxy_url" vs. "proxyurl"... and Selva n=
+ever got a reply on that question :-)
+(15:53:56) ordex: hm
+(15:54:04) cron2: plaisthos: this is in your field...
+(15:54:50) plaisthos: not used anywhere yet, so we can name what we want
+(15:54:54) plaisthos: should be cosistent
+(15:55:05) plaisthos: this is a bikeshed where I don't really have an opi=
+nion
+(15:55:23) cron2: it is your bikeshed after all, so you are entitled to h=
+ave one :-)
+(15:55:34) plaisthos: openurl_with_proxy_support is something I would obj=
+ect for being too long though
+(15:55:45) ordex: :D
+(15:56:14) cron2: (CR_TEXT was a parallel openvpn-gui thread which got al=
+ready sorted out and applied, I just lost track)
+(15:57:01) plaisthos: empty response is for something like "press magic b=
+utton on your phone to connect"
+(15:57:31) plaisthos: with old 2FA the empty response was mandatory to tr=
+igger the reconnect basically
+(15:57:52) plaisthos: for pending auth, the no real need anymore but spec=
+ifying how it should work is good
+(15:57:57) plaisthos: even if the server just ignores it=20
+(15:58:27) cron2: the client does not reconnect, it just sits there patie=
+ntly and waits for the server to tell it "now we're good!"
+(15:58:32) cron2: right?
+(15:58:55) plaisthos: yes, waits until it gets either a PUSH_REPLY or an =
+AUTH_FAILED
+(15:59:11) cron2: ok, I got that right :-)
+(15:59:19) cron2: now, proxy_url or proxyurl?  your decision, in=20
+(15:59:19) cron2: 3
+(15:59:21) cron2: 2
+(15:59:23) cron2: 1
+(15:59:26) cron2: now!
+(15:59:36) ordex: proxy_url !
+(15:59:49) plaisthos: although you can also directly connect the client a=
+nd use pending auth to just allow more ressources=20
+(16:00:03) cron2: ordex: wrong "you" :)
+(16:00:20) plaisthos: ordex seems to care more about the colour than I do=
+ :D
+(16:00:39) ordex: :D
+(16:01:19) cron2: so, proxy_url it is
+(16:03:38) cron2: and with that, we return to "IPv6 to community"... and =
+the meeting has to go on until this is answered in a satisfactory way!
+(16:06:07) ordex: mattock: !!
+(16:06:52) mattock: I already answered it
+(16:06:54) mattock: no progress afaics
+(16:08:10) mattock: buildbot vise: windows buildbot worker works (in the =
+sense that it is able to connect to buildmaster and could in theory do th=
+ings)
+(16:08:42) mattock: building the windows worker setup automation is mostl=
+y ready, but this Visual Studio 2019 component installation failure block=
+s things
+(16:08:46) mattock: could actually be IPv6 related
+(16:09:01) mattock: microsoft download servers might fail if reaching out=
+ ot them via IPv6
+(16:09:08) mattock: I need to disable IPv6 to see if that helps
+(16:09:16) cron2: "no progress" is not satisfactory, you need to meet on =
+and on... for ever...
+(16:09:36) mattock: well, things will happen naturally when they happen
+(16:09:50) mattock: occasional poking is the best I or ordex or anyone el=
+se can do
+(16:10:02) mattock: unless we resort to violence or something novel :D
+(16:11:18) mattock: anyhow
+(16:11:20) mattock: anything else?
+(16:11:30) ordex: :D
+(16:11:32) ordex: I guess this is it
+(16:11:33) mattock: bribery might be an option as well
+(16:11:36) mattock: :P
+(16:11:46) ordex: even though the answer was not satisfactory enough
+(16:12:11) cron2: bribery sounds good
+(16:12:25) cron2: you could bribe me, and if that is satisfactory, the me=
+eting can end :)
+(16:13:05) mattock: well, that's actually a novel idea
+(16:13:06) ordex: :)
+(16:13:26) mattock: perhaps bribing the person who is most afraid of IPv6=
+ at openvpn inc. could "grease the wheels"
+(16:13:33) mattock: oh
+(16:13:40) mattock: I'll create a doodle poll for the hackathon
+(16:13:45) mattock: after the summary is done
+(16:13:50) mattock: ok?
+(16:14:59) cron2: +1
+(16:15:21) ordex: cool
+(16:15:23) ordex: thanks mattock=20
+(16:15:29) cron2: taking openvpn inc money to bribe openvpn inc personell=
+ sounds like "pay people a bonus for their job (if well-done)" :-)
+(16:18:46) mattock: yeah, I think technically it would not be a bribe
+(16:18:59) mattock: hence: perfectly legal
+(16:19:23) mattock: writing the summary, assuming meeting has ended
+(16:20:19) ordex: :D
+(16:20:30) ordex: cron2: although it may work with some people
 
-we can remove most configurations from travis, except unique like s390x,
-ppc64le, ...
-
-
-
-> and Windows (not included in this commit). The  matrix is a bit different
-> than Coverity and uses different Ubuntu version with their native OpenSSL
-> (1.0.2, 1.1.1)/mbed TLS instead of manually compiling different OpenSSL
-> versions on just Ubuntu 20.04.
->
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  .github/workflows/build.yaml               | 184 +++++++++++++++++++++
->  tests/t_net.sh                             |   2 +-
->  tests/unit_tests/openvpn/test_networking.c |   2 +-
->  3 files changed, 186 insertions(+), 2 deletions(-)
->  create mode 100644 .github/workflows/build.yaml
->
-> diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-> new file mode 100644
-> index 000000000..7ff379802
-> --- /dev/null
-> +++ b/.github/workflows/build.yaml
-> @@ -0,0 +1,184 @@
-> +# The name of our workflow
-> +name: Build
-> +on: [push, pull_request]
-> +
-> +jobs:
-> +  mingw:
-> +    strategy:
-> +      matrix:
-> +        include:
-> +          - target: mingw64
-> +            chost: x86_64-w64-mingw32
-> +          - target: mingw
-> +            chost: i686-w64-mingw32
-> +
-> +    runs-on: ubuntu-20.04
-> +    env:
-> +      MAKEFLAGS: -j3
-> +      LZO_VERSION: "2.10"
-> +      PKCS11_HELPER_VERSION: "1.26"
-> +      OPENSSL_VERSION: "1.1.1j"
-> +      TAP_WINDOWS_VERSION: "9.23.3"
-> +      CHOST: ${{ matrix.chost }}
-> +      TARGET: ${{ matrix.target }}
-> +    steps:
-> +      - name: Install dependencies
-> +        run: sudo apt update && sudo apt install -y mingw-w64 libtool
-> automake autoconf man2html unzip
-> +      - name: Checkout ovpn-dco-win
-> +        uses: actions/checkout@...2620...
-> +        with:
-> +          repository: OpenVPN/ovpn-dco-win
-> +          path: ovpn-dco-win
-> +      - name: Checkout OpenVPN
-> +        uses: actions/checkout@...2620...
-> +        with:
-> +          path: openvpn
-> +
-> +      - name: autoconf
-> +        run: autoreconf -fvi
-> +        working-directory: openvpn
-> +
-> +      - name: Cache dependencies
-> +        id: cache
-> +        uses: actions/cache@...2620...
-> +        with:
-> +          path: '~/mingw/'
-> +          key: ${{ matrix.target }}-mingw-${{ env.LZO_VERSION }}-${{
-> env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSION }}
-> +
-> +      # Repeating  if: steps.cache.outputs.cache-hit !=3D 'true'
-> +      # on every step for building dependencies is ugly but
-> +      # I haven't found a better solution so far.
-> +
-> +      - name: Download mingw depnendencies
-> +        if: steps.cache.outputs.cache-hit !=3D 'true'
-> +        run: |
-> +          wget -c -P download-cache/ "
-> https://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VE=
-RSION}.zip
-> "
-> +          wget -c -P download-cache/ "
-> https://www.oberhumer.com/opensource/lzo/download/lzo-${LZO_VERSION}.tar.=
-gz
-> "
-> +          wget -c -P download-cache/ "
-> https://github.com/OpenSC/pkcs11-helper/archive/pkcs11-helper-${PKCS11_HE=
-LPER_VERSION}.tar.gz
-> "
-> +          wget -c -P download-cache/ "
-> https://www.openssl.org/source/old/1.1.1/openssl-${OPENSSL_VERSION}.tar.gz
-> "
-> +          tar zxf
-> "download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.gz"
-> +          tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
-> +          tar zxf "download-cache/lzo-${LZO_VERSION}.tar.gz"
-> +          unzip download-cache/tap-windows-${TAP_WINDOWS_VERSION}.zip
-> +
-> +      - name: Configure OpenSSL
-> +        if: steps.cache.outputs.cache-hit !=3D 'true'
-> +        run: ./Configure --cross-compile-prefix=3D${CHOST}- shared ${{
-> matrix.target }} no-capieng --prefix=3D"${HOME}/mingw/opt"
-> --openssldir=3D"${HOME}/mingw/opt" -static-libgcc
-> +        working-directory: "./openssl-1.1.1j"
-> +
-> +      - name: Build OpenSSL
-> +        if: steps.cache.outputs.cache-hit !=3D 'true'
-> +        run: make
-> +        working-directory: "./openssl-1.1.1j/"
-> +
-> +      - name: Install OpenSSL
-> +        if: steps.cache.outputs.cache-hit !=3D 'true'
-> +        run: make install
-> +        working-directory: "./openssl-1.1.1j/"
-> +
-> +      - name: autoreconf pkcs11-helper
-> +        if: steps.cache.outputs.cache-hit !=3D 'true'
-> +        run: autoreconf -iv
-> +        working-directory: "./pkcs11-helper-pkcs11-helper-1.26"
-> +
-> +      - name: configure pkcs11-helper
-> +        if: steps.cache.outputs.cache-hit !=3D 'true'
-> +        run: OPENSSL_LIBS=3D"-L${HOME}/mingw/opt/lib -lssl -lcrypto"
-> OPENSSL_CFLAGS=3D-I$HOME/mingw/opt/include
-> PKG_CONFIG_PATH=3D${HOME}/mingw/opt/lib/pkgconfig ./configure --host=3D${=
-CHOST}
-> --program-prefix=3D'' --libdir=3D${HOME}/mingw/opt/lib
-> --prefix=3D${HOME}/mingw/opt --build=3Dx86_64-pc-linux-gnu
-> --disable-crypto-engine-gnutls --disable-crypto-engine-nss
-> --disable-crypto-engine-polarssl --disable-crypto-engine-mbedtls
-> +        working-directory: "./pkcs11-helper-pkcs11-helper-1.26"
-> +
-> +      - name: build pkcs11-helper
-> +        if: steps.cache.outputs.cache-hit !=3D 'true'
-> +        run: make all
-> +        working-directory: "./pkcs11-helper-pkcs11-helper-1.26"
-> +
-> +      - name: install pkcs11-helper
-> +        if: steps.cache.outputs.cache-hit !=3D 'true'
-> +        run: make install
-> +        working-directory: "./pkcs11-helper-pkcs11-helper-1.26"
-> +
-> +      - name: Configure lzo
-> +        if: steps.cache.outputs.cache-hit !=3D 'true'
-> +        run: ./configure --host=3D${CHOST} --program-prefix=3D''
-> --libdir=3D${HOME}/mingw/opt/lib --prefix=3D${HOME}/mingw/opt
-> --build=3Dx86_64-pc-linux-gnu
-> +        working-directory: "./lzo-2.10"
-> +
-> +      - name: build lzo
-> +        if: steps.cache.outputs.cache-hit !=3D 'true'
-> +        working-directory: "./lzo-2.10"
-> +        run: make
-> +
-> +      - name: install lzo
-> +        if: steps.cache.outputs.cache-hit !=3D 'true'
-> +        working-directory: "./lzo-2.10"
-> +        run: make install
-> +
-> +      - name: copy tap-windows.h header
-> +        if: steps.cache.outputs.cache-hit !=3D 'true'
-> +        run: cp ./tap-windows-9.23.3/include/tap-windows.h
-> ${HOME}/mingw/opt/include/
-> +
-> +      - name: configure OpenVPN
-> +        run: PKG_CONFIG_PATH=3D${HOME}/mingw/opt/lib/pkgconfig
-> DCO_SOURCEDIR=3D$(realpath ../ovpn-dco-win) LDFLAGS=3D-L$HOME/mingw/opt/l=
-ib
-> CFLAGS=3D-I$HOME/mingw/opt/include OPENSSL_LIBS=3D"-L${HOME}/opt/lib -lssl
-> -lcrypto" OPENSSL_CFLAGS=3D-I$HOME/mingw/opt/include PREFIX=3D$HOME/mingw=
-/opt
-> LZO_CFLAGS=3D-I$HOME/mingw/opt/include LZO_LIBS=3D"-L${HOME}/mingw/opt/lib
-> -llzo2" ./configure  --host=3D${CHOST} --disable-lz4 --enable-dco
-> +        working-directory: openvpn
-> +
-> +      - name: build OpenVPN
-> +        run: make -j3
-> +        working-directory: openvpn
-> +
-> +  ubuntu:
-> +    strategy:
-> +      matrix:
-> +        os: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04]
-> +        ssllib: [mbedtls, openssl]
-> +
-> +    runs-on: ${{matrix.os}}
-> +    steps:
-> +      - name: Install dependencies
-> +        run: sudo apt update && sudo apt install -y liblzo2-dev
-> libpam0g-dev liblz4-dev linux-libc-dev man2html libcmocka-dev
-> python3-docutils libtool automake autoconf libmbedtls-dev
-> +      - name: Checkout OpenVPN
-> +        uses: actions/checkout@...2620...
-> +      - name: autoconf
-> +        run: autoreconf -fvi
-> +      - name: configure --with-crypto-library=3D${{matrix.ssllib}}
-> +        run: ./configure
-> +      - name: make all
-> +        run: make -j3
-> +      - name: make check
-> +        run: make check
-> +
-> +  ubutun20-clang-asan:
-> +    strategy:
-> +      matrix:
-> +        os: [ubuntu-16.04, ubuntu-18.04]
-> +        ssllib: [mbedtls, openssl]
-> +
-> +    runs-on: ubuntu-20.04
-> +    steps:
-> +      - name: Install dependencies
-> +        run: sudo apt update && sudo apt install -y liblzo2-dev
-> libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev
-> python3-docutils libtool automake autoconf libmbedtls-dev
-> +      - name: Checkout OpenVPN
-> +        uses: actions/checkout@...2620...
-> +      - name: autoconf
-> +        run: autoreconf -fvi
-> +      - name: configure
-> +        run: CFLAGS=3D"-fsanitize=3Daddress -fno-omit-frame-pointer -O2"
-> CC=3Dclang ./configure --with-crypto-library=3D${{matrix.ssllib}}
-> +      - name: make all
-> +        run: make -j3
-> +      - name: make check
-> +        run: make check
-> +
-> +
-> +  macos:
-> +    runs-on: macos-latest
-> +    steps:
-> +      - name: Checkout OpenVPN
-> +        uses: actions/checkout@...2620...
-> +      - name: Install dependencies
-> +        run: brew install openssl lzo lz4 man2html cmocka libtool
-> automake autoconf
-> +      - name: autoconf
-> +        run: autoreconf -fvi
-> +      - name: configure
-> +        run: OPENSSL_CFLAGS=3D-I/usr/local/opt/openssl@...2560.../include
-> OPENSSL_LIBS=3D"-L/usr/local/opt/openssl@...2560.../lib -lcrypto -lssl" .=
-/configure
-> +      - name: make all
-> +        run: make -j4
-> +      - name: make check
-> +        run: make check
-> +
-> diff --git a/tests/t_net.sh b/tests/t_net.sh
-> index 246ee07bd..f9dba4040 100755
-> --- a/tests/t_net.sh
-> +++ b/tests/t_net.sh
-> @@ -1,6 +1,6 @@
->  #!/usr/bin/env bash
->
-> -IFACE=3D"dummy0"
-> +IFACE=3D"ovpn-dummy0"
->  UNIT_TEST=3D"./unit_tests/openvpn/networking_testdriver"
->  MAX_TEST=3D${1:-7}
->
-> diff --git a/tests/unit_tests/openvpn/test_networking.c
-> b/tests/unit_tests/openvpn/test_networking.c
-> index e7c148f0e..9e9744f48 100644
-> --- a/tests/unit_tests/openvpn/test_networking.c
-> +++ b/tests/unit_tests/openvpn/test_networking.c
-> @@ -3,7 +3,7 @@
->  #include "networking.h"
->
->
-> -static char *iface =3D "dummy0";
-> +static char *iface =3D "ovpn-dummy0";
->
->  static int
->  net__iface_up(bool up)
-> --
-> 2.32.0
->
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
-
---000000000000f1082305c453036c
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
-<div dir=3D"ltr" class=3D"gmail_attr">=D0=B2=D1=82, 8 =D0=B8=D1=8E=D0=BD. 2=
-021 =D0=B3. =D0=B2 20:26, Arne Schwabe &lt;<a href=3D"mailto:arne@...2477...=
-.">arne@...1227...</a>&gt;:<br></div><blockquote class=3D"gmail_quote" styl=
-e=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);paddin=
-g-left:1ex">dummy0 gives strange errors on the Ubuntu 16 runner on github a=
-ctions because<br>
-dummy already exist, so use a more unique ovpn-dummy0 name instead.<br>
-<br>
-Github actions are a good alternative to travis-ci, which futrure is questi=
-onable<br>
-at the moment without payment. The github actions also allows building on m=
-acOS<br></blockquote><div><br></div><div>we can remove most configurations =
-from travis, except unique like s390x, ppc64le, ...</div><div><br></div><di=
-v>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px=
- 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
-and Windows (not included in this commit). The=C2=A0 matrix is a bit differ=
-ent<br>
-than Coverity and uses different Ubuntu version with their native OpenSSL<b=
-r>
-(1.0.2, 1.1.1)/mbed TLS instead of manually compiling different OpenSSL<br>
-versions on just Ubuntu 20.04.<br>
-<br>
-Signed-off-by: Arne Schwabe &lt;<a href=3D"mailto:arne@...1227..." target=
-=3D"_blank">arne@...1227...</a>&gt;<br>
----<br>
-=C2=A0.github/workflows/build.yaml=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0| 184 +++++++++++++++++++++<br>
-=C2=A0tests/t_net.sh=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0|=C2=A0 =C2=A02 +-<br>
-=C2=A0tests/unit_tests/openvpn/test_networking.c |=C2=A0 =C2=A02 +-<br>
-=C2=A03 files changed, 186 insertions(+), 2 deletions(-)<br>
-=C2=A0create mode 100644 .github/workflows/build.yaml<br>
-<br>
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml<br>
-new file mode 100644<br>
-index 000000000..7ff379802<br>
---- /dev/null<br>
-+++ b/.github/workflows/build.yaml<br>
-@@ -0,0 +1,184 @@<br>
-+# The name of our workflow<br>
-+name: Build<br>
-+on: [push, pull_request]<br>
-+<br>
-+jobs:<br>
-+=C2=A0 mingw:<br>
-+=C2=A0 =C2=A0 strategy:<br>
-+=C2=A0 =C2=A0 =C2=A0 matrix:<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 include:<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 - target: mingw64<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 chost: x86_64-w64-mingw32<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 - target: mingw<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 chost: i686-w64-mingw32<br>
-+<br>
-+=C2=A0 =C2=A0 runs-on: ubuntu-20.04<br>
-+=C2=A0 =C2=A0 env:<br>
-+=C2=A0 =C2=A0 =C2=A0 MAKEFLAGS: -j3<br>
-+=C2=A0 =C2=A0 =C2=A0 LZO_VERSION: &quot;2.10&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 PKCS11_HELPER_VERSION: &quot;1.26&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 OPENSSL_VERSION: &quot;1.1.1j&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 TAP_WINDOWS_VERSION: &quot;9.23.3&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 CHOST: ${{ matrix.chost }}<br>
-+=C2=A0 =C2=A0 =C2=A0 TARGET: ${{ matrix.target }}<br>
-+=C2=A0 =C2=A0 steps:<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: Install dependencies<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: sudo apt update &amp;&amp; sudo apt insta=
-ll -y mingw-w64 libtool automake autoconf man2html unzip<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: Checkout ovpn-dco-win<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 uses: actions/checkout@...2620...<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 with:<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 repository: OpenVPN/ovpn-dco-win<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 path: ovpn-dco-win<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: Checkout OpenVPN<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 uses: actions/checkout@...2620...<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 with:<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 path: openvpn<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 <br>
-+=C2=A0 =C2=A0 =C2=A0 - name: autoconf<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: autoreconf -fvi<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 working-directory: openvpn<br>
-+<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: Cache dependencies<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 id: cache<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 uses: actions/cache@...2620...<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 with:<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 path: &#39;~/mingw/&#39;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 key: ${{ matrix.target }}-mingw-${{ env=
-.LZO_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSIO=
-N }}<br>
-+<br>
-+=C2=A0 =C2=A0 =C2=A0 # Repeating=C2=A0 if: steps.cache.outputs.cache-hit !=
-=3D &#39;true&#39;<br>
-+=C2=A0 =C2=A0 =C2=A0 # on every step for building dependencies is ugly but=
-<br>
-+=C2=A0 =C2=A0 =C2=A0 # I haven&#39;t found a better solution so far.<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 <br>
-+=C2=A0 =C2=A0 =C2=A0 - name: Download mingw depnendencies<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if: steps.cache.outputs.cache-hit !=3D &#39;tr=
-ue&#39;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: |<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 wget -c -P download-cache/ &quot;<a hre=
-f=3D"https://build.openvpn.net/downloads/releases/tap-windows-$%7BTAP_WINDO=
-WS_VERSION%7D.zip" rel=3D"noreferrer" target=3D"_blank">https://build.openv=
-pn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip</a>&quot;<=
-br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 wget -c -P download-cache/ &quot;<a hre=
-f=3D"https://www.oberhumer.com/opensource/lzo/download/lzo-$%7BLZO_VERSION%=
-7D.tar.gz" rel=3D"noreferrer" target=3D"_blank">https://www.oberhumer.com/o=
-pensource/lzo/download/lzo-${LZO_VERSION}.tar.gz</a>&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 wget -c -P download-cache/ &quot;<a hre=
-f=3D"https://github.com/OpenSC/pkcs11-helper/archive/pkcs11-helper-$%7BPKCS=
-11_HELPER_VERSION%7D.tar.gz" rel=3D"noreferrer" target=3D"_blank">https://g=
-ithub.com/OpenSC/pkcs11-helper/archive/pkcs11-helper-${PKCS11_HELPER_VERSIO=
-N}.tar.gz</a>&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 wget -c -P download-cache/ &quot;<a hre=
-f=3D"https://www.openssl.org/source/old/1.1.1/openssl-$%7BOPENSSL_VERSION%7=
-D.tar.gz" rel=3D"noreferrer" target=3D"_blank">https://www.openssl.org/sour=
-ce/old/1.1.1/openssl-${OPENSSL_VERSION}.tar.gz</a>&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 tar zxf &quot;download-cache/pkcs11-hel=
-per-${PKCS11_HELPER_VERSION}.tar.gz&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 tar zxf &quot;download-cache/openssl-${=
-OPENSSL_VERSION}.tar.gz&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 tar zxf &quot;download-cache/lzo-${LZO_=
-VERSION}.tar.gz&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 unzip download-cache/tap-windows-${TAP_=
-WINDOWS_VERSION}.zip<br>
-+<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: Configure OpenSSL<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if: steps.cache.outputs.cache-hit !=3D &#39;tr=
-ue&#39;=C2=A0 =C2=A0 =C2=A0 =C2=A0 <br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: ./Configure --cross-compile-prefix=3D${CH=
-OST}- shared ${{ matrix.target }} no-capieng --prefix=3D&quot;${HOME}/mingw=
-/opt&quot; --openssldir=3D&quot;${HOME}/mingw/opt&quot; -static-libgcc<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 working-directory: &quot;./openssl-1.1.1j&quot=
-;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 <br>
-+=C2=A0 =C2=A0 =C2=A0 - name: Build OpenSSL<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if: steps.cache.outputs.cache-hit !=3D &#39;tr=
-ue&#39;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: make<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 working-directory: &quot;./openssl-1.1.1j/&quo=
-t;<br>
-+<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: Install OpenSSL<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if: steps.cache.outputs.cache-hit !=3D &#39;tr=
-ue&#39;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: make install<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 working-directory: &quot;./openssl-1.1.1j/&quo=
-t;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 <br>
-+=C2=A0 =C2=A0 =C2=A0 - name: autoreconf pkcs11-helper<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if: steps.cache.outputs.cache-hit !=3D &#39;tr=
-ue&#39;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: autoreconf -iv<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 working-directory: &quot;./pkcs11-helper-pkcs1=
-1-helper-1.26&quot;<br>
-+<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: configure pkcs11-helper<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if: steps.cache.outputs.cache-hit !=3D &#39;tr=
-ue&#39;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: OPENSSL_LIBS=3D&quot;-L${HOME}/mingw/opt/=
-lib -lssl -lcrypto&quot; OPENSSL_CFLAGS=3D-I$HOME/mingw/opt/include PKG_CON=
-FIG_PATH=3D${HOME}/mingw/opt/lib/pkgconfig ./configure --host=3D${CHOST} --=
-program-prefix=3D&#39;&#39; --libdir=3D${HOME}/mingw/opt/lib --prefix=3D${H=
-OME}/mingw/opt --build=3Dx86_64-pc-linux-gnu --disable-crypto-engine-gnutls=
- --disable-crypto-engine-nss --disable-crypto-engine-polarssl --disable-cry=
-pto-engine-mbedtls<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 working-directory: &quot;./pkcs11-helper-pkcs1=
-1-helper-1.26&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 <br>
-+=C2=A0 =C2=A0 =C2=A0 - name: build pkcs11-helper<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if: steps.cache.outputs.cache-hit !=3D &#39;tr=
-ue&#39;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: make all<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 working-directory: &quot;./pkcs11-helper-pkcs1=
-1-helper-1.26&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 <br>
-+=C2=A0 =C2=A0 =C2=A0 - name: install pkcs11-helper<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if: steps.cache.outputs.cache-hit !=3D &#39;tr=
-ue&#39;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: make install<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 working-directory: &quot;./pkcs11-helper-pkcs1=
-1-helper-1.26&quot;<br>
-+<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: Configure lzo<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if: steps.cache.outputs.cache-hit !=3D &#39;tr=
-ue&#39;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: ./configure --host=3D${CHOST} --program-p=
-refix=3D&#39;&#39; --libdir=3D${HOME}/mingw/opt/lib --prefix=3D${HOME}/ming=
-w/opt --build=3Dx86_64-pc-linux-gnu<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 working-directory: &quot;./lzo-2.10&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 <br>
-+=C2=A0 =C2=A0 =C2=A0 - name: build lzo<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if: steps.cache.outputs.cache-hit !=3D &#39;tr=
-ue&#39;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 working-directory: &quot;./lzo-2.10&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: make<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 <br>
-+=C2=A0 =C2=A0 =C2=A0 - name: install lzo<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if: steps.cache.outputs.cache-hit !=3D &#39;tr=
-ue&#39;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 working-directory: &quot;./lzo-2.10&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: make install<br>
-+<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: copy tap-windows.h header<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if: steps.cache.outputs.cache-hit !=3D &#39;tr=
-ue&#39;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: cp ./tap-windows-9.23.3/include/tap-windo=
-ws.h ${HOME}/mingw/opt/include/<br>
-+<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: configure OpenVPN<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: PKG_CONFIG_PATH=3D${HOME}/mingw/opt/lib/p=
-kgconfig DCO_SOURCEDIR=3D$(realpath ../ovpn-dco-win) LDFLAGS=3D-L$HOME/ming=
-w/opt/lib CFLAGS=3D-I$HOME/mingw/opt/include OPENSSL_LIBS=3D&quot;-L${HOME}=
-/opt/lib -lssl -lcrypto&quot; OPENSSL_CFLAGS=3D-I$HOME/mingw/opt/include PR=
-EFIX=3D$HOME/mingw/opt LZO_CFLAGS=3D-I$HOME/mingw/opt/include LZO_LIBS=3D&q=
-uot;-L${HOME}/mingw/opt/lib -llzo2&quot; ./configure=C2=A0 --host=3D${CHOST=
-} --disable-lz4 --enable-dco<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 working-directory: openvpn<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 <br>
-+=C2=A0 =C2=A0 =C2=A0 - name: build OpenVPN<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: make -j3<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 working-directory: openvpn<br>
-+=C2=A0 <br>
-+=C2=A0 ubuntu:<br>
-+=C2=A0 =C2=A0 strategy:<br>
-+=C2=A0 =C2=A0 =C2=A0 matrix:<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 os: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04]=
-<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 ssllib: [mbedtls, openssl]<br>
-+<br>
-+=C2=A0 =C2=A0 runs-on: ${{matrix.os}}<br>
-+=C2=A0 =C2=A0 steps:<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: Install dependencies<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: sudo apt update &amp;&amp; sudo apt insta=
-ll -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html libcmocka=
--dev python3-docutils libtool automake autoconf libmbedtls-dev<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: Checkout OpenVPN<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 uses: actions/checkout@...2620...<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: autoconf<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: autoreconf -fvi<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: configure --with-crypto-library=3D${{matrix.s=
-sllib}}<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: ./configure<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: make all<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: make -j3<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: make check<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: make check<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 <br>
-+=C2=A0 ubutun20-clang-asan:<br>
-+=C2=A0 =C2=A0 strategy:<br>
-+=C2=A0 =C2=A0 =C2=A0 matrix:<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 os: [ubuntu-16.04, ubuntu-18.04]<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 ssllib: [mbedtls, openssl]<br>
-+<br>
-+=C2=A0 =C2=A0 runs-on: ubuntu-20.04<br>
-+=C2=A0 =C2=A0 steps:<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: Install dependencies<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: sudo apt update &amp;&amp; sudo apt insta=
-ll -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang lib=
-cmocka-dev python3-docutils libtool automake autoconf libmbedtls-dev<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: Checkout OpenVPN<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 uses: actions/checkout@...2620...<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: autoconf<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: autoreconf -fvi<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: configure<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: CFLAGS=3D&quot;-fsanitize=3Daddress -fno-=
-omit-frame-pointer -O2&quot; CC=3Dclang ./configure --with-crypto-library=
-=3D${{matrix.ssllib}}<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: make all<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: make -j3<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: make check<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: make check<br>
-+<br>
-+<br>
-+=C2=A0 macos:<br>
-+=C2=A0 =C2=A0 runs-on: macos-latest<br>
-+=C2=A0 =C2=A0 steps:<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: Checkout OpenVPN<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 uses: actions/checkout@...2620...<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: Install dependencies<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: brew install openssl lzo lz4 man2html cmo=
-cka libtool automake autoconf<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: autoconf<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: autoreconf -fvi<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: configure<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: OPENSSL_CFLAGS=3D-I/usr/local/opt/openssl=
-@...2560.../include=C2=A0 OPENSSL_LIBS=3D&quot;-L/usr/local/opt/openssl@...493...=
-2560.../lib -lcrypto -lssl&quot; ./configure<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: make all<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: make -j4<br>
-+=C2=A0 =C2=A0 =C2=A0 - name: make check<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 run: make check<br>
-+<br>
-diff --git a/tests/t_net.sh b/tests/t_net.sh<br>
-index 246ee07bd..f9dba4040 100755<br>
---- a/tests/t_net.sh<br>
-+++ b/tests/t_net.sh<br>
-@@ -1,6 +1,6 @@<br>
-=C2=A0#!/usr/bin/env bash<br>
-<br>
--IFACE=3D&quot;dummy0&quot;<br>
-+IFACE=3D&quot;ovpn-dummy0&quot;<br>
-=C2=A0UNIT_TEST=3D&quot;./unit_tests/openvpn/networking_testdriver&quot;<br>
-=C2=A0MAX_TEST=3D${1:-7}<br>
-<br>
-diff --git a/tests/unit_tests/openvpn/test_networking.c b/tests/unit_tests/=
-openvpn/test_networking.c<br>
-index e7c148f0e..9e9744f48 100644<br>
---- a/tests/unit_tests/openvpn/test_networking.c<br>
-+++ b/tests/unit_tests/openvpn/test_networking.c<br>
-@@ -3,7 +3,7 @@<br>
-=C2=A0#include &quot;networking.h&quot;<br>
-<br>
-<br>
--static char *iface =3D &quot;dummy0&quot;;<br>
-+static char *iface =3D &quot;ovpn-dummy0&quot;;<br>
-<br>
-=C2=A0static int<br>
-=C2=A0net__iface_up(bool up)<br>
--- <br>
-2.32.0<br>
-<br>
-<br>
-<br>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
-nfo/openvpn-devel</a><br>
-</blockquote></div></div>
-
---000000000000f1082305c453036c--
+--------------75ABEC39101799B9867945CD--
 
