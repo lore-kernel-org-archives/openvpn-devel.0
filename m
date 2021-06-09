@@ -1,9 +1,13 @@
-Date: Wed, 9 Jun 2021 08:26:55 +0200 (CEST)
-Message-Id: <202106090626.1596QtTA086330@...2054...>
+Date: Wed, 9 Jun 2021 08:26:56 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210608152434.1403999-1-arne@...1227...>
+Message-ID: <20210609062656.GM976@...1296...>
 References: <20210608152434.1403999-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add github actions
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="sfFJ+71mmvzZlhKl"
+Content-Disposition: inline
+In-Reply-To: <20210608152434.1403999-1-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Add github actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,29 +16,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+--sfFJ+71mmvzZlhKl
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-commit b4f658dfb018dcb22962eaa8b45ddd45c55f3003
-Author: Arne Schwabe
-Date:   Tue Jun 8 17:24:34 2021 +0200
+Hi,
 
-     Add github actions
+On Tue, Jun 08, 2021 at 05:24:34PM +0200, Arne Schwabe wrote:
+> +    steps:
+> +      - name: Install dependencies
+> +        run: sudo apt update && sudo apt install -y mingw-w64 libtool au=
+tomake autoconf man2html unzip
+> +      - name: Checkout ovpn-dco-win
+> +        uses: actions/checkout@...2620...
+> +        with:
+> +          repository: OpenVPN/ovpn-dco-win
+> +          path: ovpn-dco-win
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20210608152434.1403999-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22511.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+I'm not totally happy with introducing a DCO dependency here while none
+of the related code is in the tree... but since this is transient and
+should not cause any issues (unless that repo disappears :-) ) it's
+okayish.
 
+gert
 
---
-kind regards,
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Gert Doering
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--sfFJ+71mmvzZlhKl
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJgwF8dAAoJEB2Cnv7KVigS1UYL/3hOWGitlusGmo0zG8vmiuUE
+8eAHGAG7kgw1/mMsJICMoWP/Wq1c8m28od/mPWXk4wUSPPp0xLSkV4HaoR6Pj6RL
+vUW9Ro1fKMIOXSTy80eNBpfBuElWeeHaWF6z8W8i208gfDpbQby2hmEm8XAo5Was
+JzwQmVc6X1/3uz9z1T+eDvEpjBGirTyIjfTVlfrYuHz9pQ8tRVInLQE5E80OGMhW
+RkqPZC95u2bjtfrGBoXxY6v1QjGYz6W9Ia7/AFF+IyU1GlB94RZrjeWzY1hhsH+1
+Kc5ttfXvIyYn6svliESPDtL1Ml5l764kfoWEQvLCY2pC6bOJw+tsv2Z9zF8ZCJWT
++saF2VPYJlMgziigH4tsv16w7FKD4Fq/QxSf/qTQJNtUcF7ElubIqf9oKctydPhH
+73cAEgmCE/QTqeCZlLLMLccEx5q5OzezDdiLsaywkFNpSGqJh39jnqGmdmSenWqj
+CXT3NWVqPC028HpIynstxBVvIPMcFHpQ0ZPjviUzKQ==
+=+qGm
+-----END PGP SIGNATURE-----
+
+--sfFJ+71mmvzZlhKl--
 
