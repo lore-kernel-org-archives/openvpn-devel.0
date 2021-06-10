@@ -1,13 +1,9 @@
+From: Arne Schwabe <arne@...1227...>
+Date: Thu, 10 Jun 2021 17:30:11 +0200
+Message-Id: <20210610153011.1730670-1-arne@...1227...>
 MIME-Version: 1.0
-References: <20210608194330.1431202-1-arne@...1227...>
- <20210609061532.12774-1-a@...2181...>
-In-Reply-To: <20210609061532.12774-1-a@...2181...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 9 Jun 2021 17:36:55 -0400
-Message-ID: <CAKuzo_jTZ8K1m61vKw=vK3ru6N91CAM3pejVdQgcAhXOJSN_-A@...278...>
-Content-Type: multipart/alternative; boundary="0000000000001a159c05c45c1614"
-Subject: Re: [Openvpn-devel] [PATCH v2] Silence warning about format string
- in check_ca_required
+Subject: [Openvpn-devel] [PATCH] Avoid resending reset reply more than once
+ per client packet
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,137 +12,281 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---0000000000001a159c05c45c1614
-Content-Type: text/plain; charset="UTF-8"
+For the second reply of a OpenVPN we have no completed the three
+way handshake yet and the client IP address is still untrusted.
+When retransmitting the reset packet multiple times when timing
+out for an ACK response to it, we send the packet multiple
+times to an untrusted IP which is nowadys considered bad in a
+protocol.
 
-Hi
+This patch fixes the problem by keeping normal original retry
+logic intact but adds a flags to initial packets that they are
+are held back to be retrasmitted until we have another packet
+from the client.
 
-On Wed, Jun 9, 2021 at 2:15 AM Antonio Quartulli <a@...2181...> wrote:
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/reliable.c | 52 +++++++++++++++++++++++++++++++-----------
+ src/openvpn/reliable.h | 36 +++++++++++++++++++++++------
+ src/openvpn/ssl.c      | 16 +++++++++++--
+ 3 files changed, 82 insertions(+), 22 deletions(-)
 
-> From: Arne Schwabe <arne@...1227...>
->
-> clang does not like if the format argument of printf like function
-> is not a string literal (or constant):
->
-> warning: format string is not a string literal (potentially insecure)
->
-> Make the format string constant to silence the warning.
->
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
->
-> Changes from v1:
-> * use const string instead of introducing "%s".
->
-> @Arne I anticipated this change because I "assumed" you would be ok with
-> it (patch is still yours), but feel free to comment of course.
->
->
->  src/openvpn/options.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 819979b1..086f7b6e 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -2069,7 +2069,7 @@ check_ca_required(const struct options *options)
->          return;
->      }
->
-> -    const char* str = "You must define CA file (--ca)"
-> +    const char* const str = "You must define CA file (--ca)"
->  #ifndef ENABLE_CRYPTO_MBEDTLS
->          " or CA path (--capath)"
->  #endif
-> --
-> 2.31.1
->
+diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
+index 15b90fbe4..da660023c 100644
+--- a/src/openvpn/reliable.c
++++ b/src/openvpn/reliable.c
+@@ -549,6 +549,13 @@ reliable_get_buf_sequenced(struct reliable *rel)
+     return NULL;
+ }
+ 
++static inline bool
++entry_ready_for_resend(const struct reliable_entry *e)
++{
++    return ((now >= e->next_try || e->n_acks >= N_ACK_RETRANSMIT)
++        && (!(e->flags & REL_FLAG_RESEND_INITIAL) || (e->flags & REL_FLAG_RESEND_ALLOW)));
++}
++
+ /* return true if reliable_send would return a non-NULL result */
+ bool
+ reliable_can_send(const struct reliable *rel)
+@@ -562,7 +569,7 @@ reliable_can_send(const struct reliable *rel)
+         if (e->active)
+         {
+             ++n_active;
+-            if (now >= e->next_try || e->n_acks >= N_ACK_RETRANSMIT)
++            if (entry_ready_for_resend(e))
+             {
+                 ++n_current;
+             }
+@@ -583,7 +590,6 @@ reliable_send(struct reliable *rel, int *opcode)
+ {
+     int i;
+     struct reliable_entry *best = NULL;
+-    const time_t local_now = now;
+ 
+     for (i = 0; i < rel->size; ++i)
+     {
+@@ -592,8 +598,7 @@ reliable_send(struct reliable *rel, int *opcode)
+         /* If N_ACK_RETRANSMIT later packets have received ACKs, we assume
+          * that the packet was lost and resend it even if the timeout has
+          * not expired yet. */
+-        if (e->active
+-            && (e->n_acks >= N_ACK_RETRANSMIT || local_now >= e->next_try))
++        if (e->active && entry_ready_for_resend(e))
+         {
+             if (!best || reliable_pid_min(e->packet_id, best->packet_id))
+             {
+@@ -605,17 +610,18 @@ reliable_send(struct reliable *rel, int *opcode)
+     {
+ #ifdef EXPONENTIAL_BACKOFF
+         /* exponential backoff */
+-        best->next_try = local_now + best->timeout;
++        best->next_try = now + best->timeout;
+         best->timeout *= 2;
+ #else
+         /* constant timeout, no backoff */
+-        best->next_try = local_now + best->timeout;
++        best->next_try = now + best->timeout;
+ #endif
+         best->n_acks = 0;
++        best->flags &= ~REL_FLAG_RESEND_ALLOW;
+         *opcode = best->opcode;
+         dmsg(D_REL_DEBUG, "ACK reliable_send ID " packet_id_format " (size=%d to=%d)",
+              (packet_id_print_type)best->packet_id, best->buf.len,
+-             (int)(best->next_try - local_now));
++             (int)(best->next_try - now));
+         return &best->buf;
+     }
+     return NULL;
+@@ -639,6 +645,22 @@ reliable_schedule_now(struct reliable *rel)
+     }
+ }
+ 
++
++void
++reliable_allow_reschedule_initial(struct reliable *rel)
++{
++    dmsg(D_REL_DEBUG, "ACK %s", __func__);
++    for (int i = 0; i < rel->size; ++i)
++    {
++        struct reliable_entry *e = &rel->array[i];
++        if (e->flags & REL_FLAG_RESEND_INITIAL)
++        {
++            e->flags |= REL_FLAG_RESEND_ALLOW;
++        }
++    }
++}
++
++
+ /* in how many seconds should we wake up to check for timeout */
+ /* if we return BIG_TIMEOUT, nothing to wait for */
+ interval_t
+@@ -647,21 +669,20 @@ reliable_send_timeout(const struct reliable *rel)
+     struct gc_arena gc = gc_new();
+     interval_t ret = BIG_TIMEOUT;
+     int i;
+-    const time_t local_now = now;
+ 
+     for (i = 0; i < rel->size; ++i)
+     {
+         const struct reliable_entry *e = &rel->array[i];
+         if (e->active)
+         {
+-            if (e->next_try <= local_now)
++            if (e->next_try <= now)
+             {
+                 ret = 0;
+                 break;
+             }
+             else
+             {
+-                ret = min_int(ret, e->next_try - local_now);
++                ret = min_int(ret, e->next_try - now);
+             }
+         }
+     }
+@@ -712,10 +733,10 @@ reliable_mark_active_incoming(struct reliable *rel, struct buffer *buf,
+  */
+ 
+ void
+-reliable_mark_active_outgoing(struct reliable *rel, struct buffer *buf, int opcode)
++reliable_mark_active_outgoing(struct reliable *rel, struct buffer *buf,
++                              int opcode, bool initial_response)
+ {
+-    int i;
+-    for (i = 0; i < rel->size; ++i)
++    for (int i = 0; i < rel->size; ++i)
+     {
+         struct reliable_entry *e = &rel->array[i];
+         if (buf == &e->buf)
+@@ -731,6 +752,11 @@ reliable_mark_active_outgoing(struct reliable *rel, struct buffer *buf, int opco
+             e->next_try = 0;
+             e->timeout = rel->initial_timeout;
+             dmsg(D_REL_DEBUG, "ACK mark active outgoing ID " packet_id_format, (packet_id_print_type)e->packet_id);
++
++            if (initial_response)
++            {
++                e->flags |= REL_FLAG_RESEND_INITIAL | REL_FLAG_RESEND_ALLOW;
++            }
+             return;
+         }
+     }
+diff --git a/src/openvpn/reliable.h b/src/openvpn/reliable.h
+index 97e6dce7e..902483685 100644
+--- a/src/openvpn/reliable.h
++++ b/src/openvpn/reliable.h
+@@ -66,19 +66,29 @@ struct reliable_ack
+     packet_id_type packet_id[RELIABLE_ACK_SIZE];
+ };
+ 
++
++/** Use logic for initial packet to resend. I.e. only allow to resend the
++ * packet if also the \c REL_FLAG_RESEND_ALLOW is set */
++#define REL_FLAG_RESEND_INITIAL     (1<<0)
++/** The peer has sent a packet, this allows resending of our reply */
++#define REL_FLAG_RESEND_ALLOW       (1<<1)
++
+ /**
+- * The structure in which the reliability layer stores a single incoming
+- * or outgoing packet.
+- */
++* The structure in which the reliability layer stores a single incoming
++* or outgoing packet.
++*/
+ struct reliable_entry
+ {
+     bool active;
+     interval_t timeout;
+     time_t next_try;
+     packet_id_type packet_id;
+-    size_t n_acks;  /* Number of acks received for packets with higher PID.
+-                     * Used for fast retransmission when there were at least
+-                     * N_ACK_RETRANSMIT. */
++    size_t n_acks;  /**< Number of acks received for packets with higher PID.
++                     *  Used for fast retransmission when there were at least
++                     *  N_ACK_RETRANSMIT. */
++    unsigned int flags; /**< flags to control resending to avoid
++                          * sending more responses than client's initial
++                          * packets to avoid amplification */
+     int opcode;
+     struct buffer buf;
+ };
+@@ -378,8 +388,12 @@ struct buffer *reliable_get_buf_output_sequenced(struct reliable *rel);
+  *     reliable_get_buf_output_sequenced() into which the packet has been
+  *     copied.
+  * @param opcode The packet's opcode.
++ * @param initial_response consider this packet an initial response to
++ *                         on a connection and apply non amplification
++ *                         retry rules
+  */
+-void reliable_mark_active_outgoing(struct reliable *rel, struct buffer *buf, int opcode);
++void reliable_mark_active_outgoing(struct reliable *rel, struct buffer *buf,
++                                   int opcode, bool initial_response);
+ 
+ /** @} name Functions for inserting outgoing packets */
+ 
+@@ -462,6 +476,14 @@ interval_t reliable_send_timeout(const struct reliable *rel);
+  */
+ void reliable_schedule_now(struct reliable *rel);
+ 
++/**
++ * Marks all packets that are currently held back to avoid amplification
++ * as ready to be resend with the normal resend/timers.
++ * @param rel The reliable structure of which the entries should be
++ *     modified.
++ */
++void reliable_allow_reschedule_initial(struct reliable *rel);
++
+ void reliable_debug_print(const struct reliable *rel, char *desc);
+ 
+ /* set sending timeout (after this time we send again until ACK) */
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 70b36779a..8a53817db 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2735,8 +2735,15 @@ tls_process(struct tls_multi *multi,
+                 ks->must_negotiate = now + session->opt->handshake_window;
+                 ks->auth_deferred_expire = now + auth_deferred_expire_window(session->opt);
+ 
++                /* session id defined serves here as a proxy for this is a
++                 * response to a reset from the other side or our initial
++                 * packet */
++                bool initial_reply = ks->initial_opcode != P_CONTROL_SOFT_RESET_V1
++                    && session_id_defined(&ks->session_id_remote);
++
+                 /* null buffer */
+-                reliable_mark_active_outgoing(ks->send_reliable, buf, ks->initial_opcode);
++                reliable_mark_active_outgoing(ks->send_reliable, buf,
++                                              ks->initial_opcode, initial_reply);
+                 INCR_GENERATED;
+ 
+                 ks->state = S_PRE_START;
+@@ -2972,7 +2979,7 @@ tls_process(struct tls_multi *multi,
+                 }
+                 if (status == 1)
+                 {
+-                    reliable_mark_active_outgoing(ks->send_reliable, buf, P_CONTROL_V1);
++                    reliable_mark_active_outgoing(ks->send_reliable, buf, P_CONTROL_V1, false);
+                     INCR_GENERATED;
+                     state_change = true;
+                     dmsg(D_TLS_DEBUG, "Outgoing Ciphertext -> Reliable");
+@@ -3652,6 +3659,11 @@ tls_pre_decrypt(struct tls_multi *multi,
+     /* Let our caller know we processed a control channel packet */
+     ret = true;
+ 
++    /* we we have a packet from the peer, allow another initial response
++     * to the packet, on the first packet the queue is empty so nothing
++     * happens */
++    reliable_allow_reschedule_initial(ks->send_reliable);
++
+     /*
+      * Set our remote address and remote session_id
+      */
+-- 
+2.32.0
 
-Changes from v1:
-> * use const string instead of introducing "%s".
-> @Arne I anticipated this change because I "assumed" you would be ok with
-> it (patch is still yours), but feel free to comment of course.
-
-
->
-In that spirit, assuming Antonio would have acked this had it been
-submitted by Arne, I'm ready to ack this on his behalf..
-
-Acked-by: <selva.nair@...277...> masquerading as "pick-your-name"
-
-Earnestly hoping these lines don't show up again in a patch for a very long
-time to come..
-
-Selva
-
---0000000000001a159c05c45c1614
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div>Hi</div><br><div class=3D"gmail_quote"><div dir=3D"lt=
-r" class=3D"gmail_attr">On Wed, Jun 9, 2021 at 2:15 AM Antonio Quartulli &l=
-t;a@...2181...&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=
-=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding=
--left:1ex">From: Arne Schwabe &lt;<a href=3D"mailto:arne@...1227..." target=
-=3D"_blank">arne@...1227...</a>&gt;<br>
-<br>
-clang does not like if the format argument of printf like function<br>
-is not a string literal (or constant):<br>
-<br>
-warning: format string is not a string literal (potentially insecure)<br>
-<br>
-Make the format string constant to silence the warning.<br>
-<br>
-Signed-off-by: Arne Schwabe &lt;<a href=3D"mailto:arne@...1227..." target=
-=3D"_blank">arne@...1227...</a>&gt;<br>
-Signed-off-by: Antonio Quartulli &lt;a@...2181...&gt;<br>
----<br>
-<br>
-Changes from v1:<br>
-* use const string instead of introducing &quot;%s&quot;.<br>
-<br>
-@Arne I anticipated this change because I &quot;assumed&quot; you would be =
-ok with<br>
-it (patch is still yours), but feel free to comment of course.<br>
-<br>
-<br>
-=C2=A0src/openvpn/options.c | 2 +-<br>
-=C2=A01 file changed, 1 insertion(+), 1 deletion(-)<br>
-<br>
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c<br>
-index 819979b1..086f7b6e 100644<br>
---- a/src/openvpn/options.c<br>
-+++ b/src/openvpn/options.c<br>
-@@ -2069,7 +2069,7 @@ check_ca_required(const struct options *options)<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return;<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
-<br>
--=C2=A0 =C2=A0 const char* str =3D &quot;You must define CA file (--ca)&quo=
-t;<br>
-+=C2=A0 =C2=A0 const char* const str =3D &quot;You must define CA file (--c=
-a)&quot;<br>
-=C2=A0#ifndef ENABLE_CRYPTO_MBEDTLS<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0&quot; or CA path (--capath)&quot;<br>
-=C2=A0#endif<br>
--- <br>
-2.31.1<br></blockquote><div><br></div><blockquote class=3D"gmail_quote" sty=
-le=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);paddi=
-ng-left:1ex">Changes from v1:<br>* use const string instead of introducing =
-&quot;%s&quot;.<br>@Arne I anticipated this change because I &quot;assumed&=
-quot; you would be ok with<br>it (patch is still yours), but feel free to c=
-omment of course.</blockquote><blockquote class=3D"gmail_quote" style=3D"ma=
-rgin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:=
-1ex"><br></blockquote><div><br></div><div>In that spirit, assuming Antonio =
-would have acked=C2=A0this had it been submitted by Arne, I&#39;m ready to =
-ack this on his behalf..</div><div><br></div><div>Acked-by: &lt;<a href=3D"=
-mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;=
- masquerading as &quot;pick-your-name&quot;</div><div><br></div><div>Earnes=
-tly hoping these lines don&#39;t show up again in a patch for a very long t=
-ime to come..</div><div><br></div><div>Selva</div></div></div>
-
---0000000000001a159c05c45c1614--
 
