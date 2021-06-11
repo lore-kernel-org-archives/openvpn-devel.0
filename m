@@ -1,12 +1,13 @@
 References: <20210520151148.2565578-1-arne@...1227...>
- <20210520151148.2565578-2-arne@...1227...>
+ <20210520151148.2565578-3-arne@...1227...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <9bb2def2-43ae-23f6-f6e0-dfd28ebc1362@...2181...>
-Date: Fri, 11 Jun 2021 02:41:12 +0200
+Message-ID: <8a521a85-b029-0fac-1d88-8afbe76ff13f@...2181...>
+Date: Fri, 11 Jun 2021 10:32:21 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210520151148.2565578-2-arne@...1227...>
+In-Reply-To: <20210520151148.2565578-3-arne@...1227...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v2 2/9] Implement auth-token-user
+Subject: Re: [Openvpn-devel] [PATCH v2 3/9] Add connection_established as
+ state in tls_multi->context_auth
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,44 +17,37 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
 On 20/05/2021 17:11, Arne Schwabe wrote:
-> When not using username and password (i.e. auth-user-pass) it can still make
-> to provide the client with an auth-token, e.g. for allowing a session to
-> continue after a reconnect without requiring 2FA again.
+> the socket_info->connection_establish is set through
+> link_socket_set_outgoing_addr when we reach FULL_SYNC. This patch
+> introduces a new state in context_auth that replaces the
+> connection_established state for TLS connections. This make the state
+> machine easier to understand.
 > 
-> However, without --auth-user-pass openvpn does not have a username and will
-> ignore any pushed auth-token command.
-> 
-> This patch adds support for auth-token-user to set the username that should
-> be used for auth-token
-> 
-> The spec of using auth-token-user base64-encoded-user are the ones that
-> OpenVPN3 already implements.
-> 
-> Patch V2: Improve style, fix comments and commit message
+> Patch v2: fix p2p mode server without (without ncp)
 > 
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 
-This patch hasn't changed since the last time it was on the mailing list
-(and I acked it), so the same goes for this copy.
+Compile zoo is happy.
 
-@Arne I have a new question though: what is expected to happen is the
---auth-token-user is specified in the global config?
+Performed various tests, including:
+* classic server/client
+* p2p+tls with ncp
+* p2p+tls without ncp
 
-Is the same user supposed to be used with every client?
-Or is it just ignored?
+All passed and renegotiation also worked as expected.
 
-I am testing this case and I don't see the user being pushed to the client.
-
-Cheers,
-
+The patch looks sane (already reviewed v1 and the added change makes
+sense) and it's a reasonable step forward towards making the state
+machine simpler to understand.
 
 
+Acked-by: Antonio Quartulli <antonio@...515...>
 -- 
 Antonio Quartulli
 
