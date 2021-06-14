@@ -1,13 +1,14 @@
-References: <20210520151148.2565578-4-arne@...1227...>
- <20210604143938.779193-1-arne@...1227...>
+References: <20210520151148.2565578-1-arne@...1227...>
+ <20210520151148.2565578-2-arne@...1227...>
+ <9bb2def2-43ae-23f6-f6e0-dfd28ebc1362@...2181...>
+ <fdcb6026-fe45-27f5-a25e-6479f26b9f9d@...1227...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <6e94d1dd-e5a7-7d22-4a9b-01d1cb49a2bb@...2181...>
-Date: Mon, 14 Jun 2021 02:29:12 +0200
+Message-ID: <0f353593-3f8a-e951-4c08-e9679f21b6af@...2181...>
+Date: Mon, 14 Jun 2021 02:30:32 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210604143938.779193-1-arne@...1227...>
+In-Reply-To: <fdcb6026-fe45-27f5-a25e-6479f26b9f9d@...1227...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v4 4/9] Make waiting on auth an explicit
- state in the context state machine
+Subject: Re: [Openvpn-devel] [PATCH v2 2/9] Implement auth-token-user
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,42 +18,57 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 04/06/2021 16:39, Arne Schwabe wrote:
-> Previously we relied on checking tls_authentication_status to check
-> wether to determine if the context auth state is actually valid or not.
-> This patch eliminates that check by introducing waiting on the
-> authentication as extra state in the context auth, state machine.
+On 11/06/2021 11:48, Arne Schwabe wrote:
+> Am 11.06.21 um 02:41 schrieb Antonio Quartulli:
+>> Hi,
+>>
+>> On 20/05/2021 17:11, Arne Schwabe wrote:
+>>> When not using username and password (i.e. auth-user-pass) it can still make
+>>> to provide the client with an auth-token, e.g. for allowing a session to
+>>> continue after a reconnect without requiring 2FA again.
+>>>
+>>> However, without --auth-user-pass openvpn does not have a username and will
+>>> ignore any pushed auth-token command.
+>>>
+>>> This patch adds support for auth-token-user to set the username that should
+>>> be used for auth-token
+>>>
+>>> The spec of using auth-token-user base64-encoded-user are the ones that
+>>> OpenVPN3 already implements.
+>>>
+>>> Patch V2: Improve style, fix comments and commit message
+>>>
+>>> Signed-off-by: Arne Schwabe <arne@...1227...>
+>>
+>> This patch hasn't changed since the last time it was on the mailing list
+>> (and I acked it), so the same goes for this copy.
+>>
+>> @Arne I have a new question though: what is expected to happen is the
+>> --auth-token-user is specified in the global config?
+>>
+>> Is the same user supposed to be used with every client?
+>> Or is it just ignored?
+>>
+>> I am testing this case and I don't see the user being pushed to the client.
+>>
 > 
-> Patch v3: Fix ccd config from management being ignored
-> Patch v4: Fix race condition, we need to accept the config from
->           management if we are in CAS_WAITING_AUTH or earlier states 
-> 	  and not just in CAS_WAITING_AUTH state
+> It is probably the same as with auth-token itself. OpenVPN will pick it
+> up and use it but most times it is not every useful as auth-token should
+> be pushed from the server. It is an artefact from how we parse things.
 > 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-This patch gets an ACK from me because all my tests have passed and I
-find the code reasonable.
+Makes sense - it is jus interpreted locally, but there is not much sense.
 
-My compile zoo was happy too.
-
-My tests included client/server, with auth, with deferred auth, p2p.
-
-I have not tested this patch using the mgmt interface.
-
+This said, the rest looks good.
 
 Acked-by: Antonio Quartulli <antonio@...515...>
 
-From now on, when Acking a patch I will imply that:
-* my GitLab CI is all green with this patch applied;
-* the patch compiled against mbedtls (various versions), openssl
-(various versions), libressl (various versions), wolfssl (master branch).
 
-This way I don't have to talk about my compile zoo every time :-)
 
 -- 
 Antonio Quartulli
