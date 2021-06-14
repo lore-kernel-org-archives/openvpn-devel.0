@@ -1,9 +1,13 @@
+References: <20210520151148.2565578-4-arne@...1227...>
+ <20210604143938.779193-1-arne@...1227...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <f40e6882-da83-ae0a-2230-ab1cbbe3d0c1@...2181...>
-Date: Mon, 14 Jun 2021 02:24:21 +0200
+Message-ID: <6e94d1dd-e5a7-7d22-4a9b-01d1cb49a2bb@...2181...>
+Date: Mon, 14 Jun 2021 02:29:12 +0200
 MIME-Version: 1.0
+In-Reply-To: <20210604143938.779193-1-arne@...1227...>
 Content-Language: en-US
-Subject: [Openvpn-devel] TLS Error: local/remote TLS keys are out of sync
+Subject: Re: [Openvpn-devel] [PATCH v4 4/9] Make waiting on auth an explicit
+ state in the context state machine
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,117 +17,42 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Hello,
+Hi,
 
-when using the master branch I get the following output on the server
-upon renegotiation, when using deferred auth:
+On 04/06/2021 16:39, Arne Schwabe wrote:
+> Previously we relied on checking tls_authentication_status to check
+> wether to determine if the context auth state is actually valid or not.
+> This patch eliminates that check by introducing waiting on the
+> authentication as extra state in the context auth, state machine.
+> 
+> Patch v3: Fix ccd config from management being ignored
+> Patch v4: Fix race condition, we need to accept the config from
+>           management if we are in CAS_WAITING_AUTH or earlier states 
+> 	  and not just in CAS_WAITING_AUTH state
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-2021-06-14 02:15:50 client/10.10.10.2:1194 TLS Error: local/remote TLS
-keys are out of sync: [AF_INET6]::ffff:10.10.10.2:1194 (received key id:
-6, known key ids:  [key#0 state=S_ACTIVE auth=KS_AUTH_DEFERRED id=6
-sid=bbb535c3 f49bfb24] [key#1 state=S_ACTIVE auth=KS_AUTH_TRUE id=5
-sid=bbb535c3 f49bfb24] [key#2 state=S_UNDEF auth=KS_AUTH_FALSE id=0
-sid=00000000 00000000])
-2021-06-14 02:15:51 client/10.10.10.2:1194 TLS Error: local/remote TLS
-keys are out of sync: [AF_INET6]::ffff:10.10.10.2:1194 (received key id:
-6, known key ids:  [key#0 state=S_ACTIVE auth=KS_AUTH_DEFERRED id=6
-sid=bbb535c3 f49bfb24] [key#1 state=S_ACTIVE auth=KS_AUTH_TRUE id=5
-sid=bbb535c3 f49bfb24] [key#2 state=S_UNDEF auth=KS_AUTH_FALSE id=0
-sid=00000000 00000000])
-2021-06-14 02:15:52 client/10.10.10.2:1194 TLS Error: local/remote TLS
-keys are out of sync: [AF_INET6]::ffff:10.10.10.2:1194 (received key id:
-6, known key ids:  [key#0 state=S_ACTIVE auth=KS_AUTH_DEFERRED id=6
-sid=bbb535c3 f49bfb24] [key#1 state=S_ACTIVE auth=KS_AUTH_TRUE id=5
-sid=bbb535c3 f49bfb24] [key#2 state=S_UNDEF auth=KS_AUTH_FALSE id=0
-sid=00000000 00000000])
-2021-06-14 02:15:53 client/10.10.10.2:1194 TLS Error: local/remote TLS
-keys are out of sync: [AF_INET6]::ffff:10.10.10.2:1194 (received key id:
-6, known key ids:  [key#0 state=S_ACTIVE auth=KS_AUTH_DEFERRED id=6
-sid=bbb535c3 f49bfb24] [key#1 state=S_ACTIVE auth=KS_AUTH_TRUE id=5
-sid=bbb535c3 f49bfb24] [key#2 state=S_UNDEF auth=KS_AUTH_FALSE id=0
-sid=00000000 00000000])
-2021-06-14 02:15:54 client/10.10.10.2:1194 TLS Error: local/remote TLS
-keys are out of sync: [AF_INET6]::ffff:10.10.10.2:1194 (received key id:
-6, known key ids:  [key#0 state=S_ACTIVE auth=KS_AUTH_DEFERRED id=6
-sid=bbb535c3 f49bfb24] [key#1 state=S_ACTIVE auth=KS_AUTH_TRUE id=5
-sid=bbb535c3 f49bfb24] [key#2 state=S_UNDEF auth=KS_AUTH_FALSE id=0
-sid=00000000 00000000])
-2021-06-14 02:15:55 client/10.10.10.2:1194 TLS Error: local/remote TLS
-keys are out of sync: [AF_INET6]::ffff:10.10.10.2:1194 (received key id:
-6, known key ids:  [key#0 state=S_ACTIVE auth=KS_AUTH_DEFERRED id=6
-sid=bbb535c3 f49bfb24] [key#1 state=S_ACTIVE auth=KS_AUTH_TRUE id=5
-sid=bbb535c3 f49bfb24] [key#2 state=S_UNDEF auth=KS_AUTH_FALSE id=0
-sid=00000000 00000000])
-2021-06-14 02:15:56 client/10.10.10.2:1194 TLS Error: local/remote TLS
-keys are out of sync: [AF_INET6]::ffff:10.10.10.2:1194 (received key id:
-6, known key ids:  [key#0 state=S_ACTIVE auth=KS_AUTH_DEFERRED id=6
-sid=bbb535c3 f49bfb24] [key#1 state=S_ACTIVE auth=KS_AUTH_TRUE id=5
-sid=bbb535c3 f49bfb24] [key#2 state=S_UNDEF auth=KS_AUTH_FALSE id=0
-sid=00000000 00000000])
+This patch gets an ACK from me because all my tests have passed and I
+find the code reasonable.
+
+My compile zoo was happy too.
+
+My tests included client/server, with auth, with deferred auth, p2p.
+
+I have not tested this patch using the mgmt interface.
 
 
-The situation gets fixed by itself in a bunch of seconds.
-I wonder if this has anything to do with the cached auth not increasing
-some state, while the key has been substituted.
+Acked-by: Antonio Quartulli <antonio@...515...>
 
+From now on, when Acking a patch I will imply that:
+* my GitLab CI is all green with this patch applied;
+* the patch compiled against mbedtls (various versions), openssl
+(various versions), libressl (various versions), wolfssl (master branch).
 
-It seems to be reproducible very easily.
-
-@Arne, ideas?
-
-I start the server this way:
-
-${OVPN} \
-	--server 10.10.0.0 255.255.255.0 \
-	--dev tun \
-	--cipher AES-256-GCM \
-	--peer-fingerprint ${FP} \
-	--cert ${CERT} --key ${KEY} \
-	--verb 3 --dh none --auth-user-pass-verify auth.sh via-env
---script-security 3
-
-and the client this way:
-
-${OVPN} --dev tun --client --remote 10.10.10.1 \
-	--cipher AES-256-GCM \
-	--peer-fingerprint ${FP} \
-	--cert ${CERT} --key ${KEY} --verb 3 --reneg-sec 20 --auth-user-pass
-
-auth.sh is the following:
-
-#!/bin/bash
-
-echo PASS=$password
-echo FILE=$auth_control_file
-(
-	sleep 5
-	if [ "$password" = "testyes" ]; then
-		echo SUCCESS
-		if [ -n "$auth_control_file" ]; then
-			echo 1 >$auth_control_file
-		fi
-		exit 0
-	fi
-
-	echo FAIL
-	if [ -n "$auth_control_file" ]; then
-		echo 0 >$auth_control_file
-	fi
-	exit 1
-)&
-exit 2
-
-
-I use this test setup since a while and I did not get any error like
-this in the past.
-
-If nobody has any idea I can try to bisect and see when this started.
-
-Regards,
-
+This way I don't have to talk about my compile zoo every time :-)
 
 -- 
 Antonio Quartulli
