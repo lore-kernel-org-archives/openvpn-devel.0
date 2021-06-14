@@ -3,12 +3,13 @@ References: <f40e6882-da83-ae0a-2230-ab1cbbe3d0c1@...2181...>
  <3ba00502-4919-b866-451f-0ae215e6a170@...2181...>
  <5a4c873d-5bc0-2852-0e9f-612031796919@...1227...>
  <24f1514f-c203-aebe-9e88-131cb7a6f594@...2181...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <835f099d-56ad-ee13-9c2b-431514402a71@...1227...>
-Date: Mon, 14 Jun 2021 15:58:58 +0200
+ <835f099d-56ad-ee13-9c2b-431514402a71@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <e7bc92b4-4d73-3eaa-6ea6-da2f1dfc6de3@...2181...>
+Date: Mon, 14 Jun 2021 16:21:55 +0200
 MIME-Version: 1.0
-In-Reply-To: <24f1514f-c203-aebe-9e88-131cb7a6f594@...2181...>
-Content-Language: en-GB
+In-Reply-To: <835f099d-56ad-ee13-9c2b-431514402a71@...1227...>
+Content-Language: en-US
 Subject: Re: [Openvpn-devel] TLS Error: local/remote TLS keys are out of sync
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -19,31 +20,42 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+Hi,
+
+On 14/06/2021 15:58, Arne Schwabe wrote:
+>> At this point I'd ask, why not re-moving/ignoring --hand-window entirely
+>> and live with the 60s default?
 > 
-> Ok, after clarifying in chat, I understood that the time needed by a
-> peer to elect a key as "usable" is defined by auth_deferred_expire_window().
 > 
-> If reneg-sec is smaller than hand-window (which is 60s by default) then
-> we can have this particular situation.
-> 
-> Now, we are assuming that hand-window is always the same on both peers
-> (client and server), but actually this value may also be customized and
-> mess everything up.
-> 
-> Changing hand-window on one peer only is not a good idea in any case.
-> 
-> At this point I'd ask, why not re-moving/ignoring --hand-window entirely
-> and live with the 60s default?
+> That is one of the many question why so many protocol things in OpenVPN
+> are finetunable in the first place. We can certainly add warnings when
+> setting these saying that this option should be only used for debugging.
+> And do the same for reneg-sec when set < 120 (or more accurately
+> 2*hand-window)
+
+When a knob is there, no matter if for debugging or not, people will
+just use it.
+It may break things, which may create rumors, which may create support
+overhead.
+
+IMHO going with well declared constant values (i.e. in a nicely
+commented header file), which can be easily tweaked by a developer
+before recompiling the OpenVPN, are more than enough for debugging
+(check [1] for an example).
+
+This way you clearly make the bar for shooting yourself in the foot high
+enough so that only skilled snipers can do that.
 
 
-That is one of the many question why so many protocol things in OpenVPN
-are finetunable in the first place. We can certainly add warnings when
-setting these saying that this option should be only used for debugging.
-And do the same for reneg-sec when set < 120 (or more accurately
-2*hand-window)
+Cheers,
 
-Arne
+[1]
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/batman-adv/main.h
+
+
+-- 
+Antonio Quartulli
 
