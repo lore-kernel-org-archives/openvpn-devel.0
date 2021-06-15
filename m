@@ -1,9 +1,9 @@
-Date: Tue, 15 Jun 2021 10:44:51 +0200 (CEST)
-Message-Id: <202106150844.15F8ip5d024687@...2054...>
+Date: Tue, 15 Jun 2021 11:02:45 +0200 (CEST)
+Message-Id: <202106150902.15F92jYH025067@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210609213231.22576-1-openvpn@...2080...>
-References: <20210609213231.22576-1-openvpn@...2080...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Update copyrights
+In-Reply-To: <20210514045704.686-1-lstipakov@...277...>
+References: <20210514045704.686-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: msvc: standalone building
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,38 +14,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Thanks.  Patch does what it says on the tin, and yeah, we seem to have
-forgotten that before releasing 2.5.0... maybe add a yearly reminder or so.
+I have no idea about all this MSVC building but Samuli has tested this,
+so it's supposedly working :-) - but it does not touch actual OpenVPN
+Code and "generally looks reasonable".
 
 Your patch has been applied to the master and release/2.5 branch
-(housekeeping).
+(we want this in release/2.5 to be able to do a 2.5.3 release with
+arm64 support).
 
-Cherrypicking to 2.5 was fairly straightforward, I just had to ignore
-those files that do not exist in 2.5 (git wants to add the file from
-"master" in that case).
+There is one bit that warrants looking twice - removal of 
+compat-inet_pton.c/ntop.c from compat.vcxproj.filters - in master,
+these files are gone, while they still exist in 2.5.  We do not *use*
+them in 2.5 on windows either, as all supported windows versions have 
+these functions now.  So this is good.
 
-For some reason unclear to me, the patch did not make it to the
-mail-archive.org archives (it did make patchwork, so it was circulated
-by the openvpn-devel list).  So the standard URL won't resolve - I have
-added a link to the sf.net archive which works.
+commit 56f775fe9dacab7804109e305d652057b0c7fd3c (master)
+commit 206d9665a80de997b0b74707ec880879617cba9a (release/2.5)
+Author: Lev Stipakov
+Date:   Fri May 14 07:57:04 2021 +0300
 
-commit 05271322e7b5f453fe9d85310e500d3460ac8ca4 (master)
-commit eaf447d708bde55a6f712e7ddb16a775a451959b (release/2.5)
-Author: David Sommerseth
-Date:   Wed Jun 9 23:32:30 2021 +0200
+     msvc: standalone building
 
-     Update copyrights
-
-     Signed-off-by: David Sommerseth <davids@...515...>
+     Signed-off-by: Lev Stipakov <lev@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210609213231.22576-1-openvpn@...2080...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20210609213231.22576-1-openvpn@...2080...
-     URL: https://sourceforge.net/p/openvpn/mailman/message/37299719/
+     Message-Id: <20210514045704.686-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22389.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
