@@ -1,16 +1,9 @@
-Date: Tue, 15 Jun 2021 17:00:02 +0200
+Date: Tue, 15 Jun 2021 20:14:03 +0200 (CEST)
+Message-Id: <202106151814.15FIE3uU047237@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20210615150002.GZ976@...1296...>
-References: <20210615125616.344-1-lstipakov@...277...>
- <202106151327.15FDRSdV029284@...2054...>
- <CAGyAFMXZF1KwRqF6Yu9wH9tNCfck9r3eJhHMqSCyOi6jKirtLw@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="oURhyWXLhvrTrouA"
-Content-Disposition: inline
-In-Reply-To: <CAGyAFMXZF1KwRqF6Yu9wH9tNCfck9r3eJhHMqSCyOi6jKirtLw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: GitHub actions: add MSVC
- build
+In-Reply-To: <20210520151148.2565578-2-arne@...1227...>
+References: <20210520151148.2565578-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Implement auth-token-user
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,53 +12,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: Gert Doering <gert@...1296...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---oURhyWXLhvrTrouA
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the master and release/2.5 branch 
+(long-term compat).
 
-Hi,
+I'm not exactly happy with this patch for a number of reasons, which is
+why I was a bit reluctant to merge it.  It does what it says on the lid,
+the code is safe, and it got ACKs.  So, merging.
 
-On Tue, Jun 15, 2021 at 05:31:02PM +0300, Lev Stipakov wrote:
-> > Where does it report compile errors to?
->=20
-> At the moment to GitHub Actions page
-> (https://github.com/OpenVPN/openvpn/actions). If needed we could
-> look into email notifications (and maybe IRC?).
+That said, this is sort of a special case for a special case that 
+seems to have come out of OpenVPN Inc product marketing (do 2FA outside 
+OpenVPN and then notice that this doesn't actually work) - and it makes
+the code even more complex by having this extra boolean to check in
+a number of places...  (a somewhat simpler approach could be to have
+a "default username" - <NOT-SET> or such - and use that if up is not
+defined)
 
-That would be cool indeed (e-mail and/or IRC :) ).
 
-gert
+Anyway.  I have tested the "does auth-token, on reneg, and token
+expiry still work?" bit fairly thoroughly - as this is code that took
+us quite a while to get right - and it seems to still work.  I have
+not tested actually pushing "auth-token-user bla", but I have been
+told Heiko and David have tested that path in earnest.
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+I have also taken the liberty to clean up the comments quite a bit
+(seems Richard did not like this patch and did not spell-check :-) ).
 
-Gert Doering - Munich, Germany                             gert@...1296...
+commit b398aa37ca309948b481401adf0074ea5589eb2d (master)
+commit d38d61111d08558e2f52cc9bcdc928ca9c4fca61 (release/2.5)
+Author: Arne Schwabe
+Date:   Thu May 20 17:11:41 2021 +0200
 
---oURhyWXLhvrTrouA
-Content-Type: application/pgp-signature; name="signature.asc"
+     Implement auth-token-user
 
------BEGIN PGP SIGNATURE-----
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20210520151148.2565578-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22417.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-iQGcBAEBAgAGBQJgyMBxAAoJEB2Cnv7KVigSGjoL/jHgUzk2RDaldDPSvm1U+s3F
-KN7A/RYqCl3bVZ/I36PZ8CbedjhaueBg+AuyYSTkuqRSL/s524ppanPhwDitKrto
-WgxDujbTJEW0mEYvVWOVPQRV9RB/XfECkzXEIjGlzS2XRXDDz+F7QQ7i8bEoLXMS
-u+9J5j+T2F2NxS0Jsl2/PQpk6xn9jBm39VO2rRJyVSRJhxk7u+ZePrJjnOH9Ug+O
-P2FkS2tSgXIl7iJZonvGsoaVAsmXyEut5PE/CC/YFreQx/S2+16I79Cjlq5e/Vtb
-C7wuPHubCAles89FQvf1mfpZ+/hhn5ECwwpO39ZixoTcBM6/MzOQsE0XGoT7ibkQ
-CigVve9BCt8eVnD7DYUWjQ5McllkVdtXckABnBD9gUr78CmUUbewYpei0TXWkdlU
-d0dDafMajHOGckCSgG7RkAs1OJvxQr9ZHiML08B8nL7TLFRPYBbDGeFC0vYyUoE2
-CctCwyhIhAyKTG0/WMDdqRmiFBmhjQmIsSYmsaL8Yg==
-=g8py
------END PGP SIGNATURE-----
 
---oURhyWXLhvrTrouA--
+--
+kind regards,
+
+Gert Doering
+
 
