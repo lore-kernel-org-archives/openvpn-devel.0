@@ -1,9 +1,10 @@
-Date: Tue, 15 Jun 2021 11:02:45 +0200 (CEST)
-Message-Id: <202106150902.15F92jYH025067@...2054...>
+Date: Tue, 15 Jun 2021 11:21:04 +0200 (CEST)
+Message-Id: <202106150921.15F9L47L025472@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210514045704.686-1-lstipakov@...277...>
-References: <20210514045704.686-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: msvc: standalone building
+In-Reply-To: <20210607104213.216-1-lstipakov@...277...>
+References: <20210607104213.216-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: contrib/vcpkg-ports: add
+ pkcs11-helper port
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,31 +20,28 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-I have no idea about all this MSVC building but Samuli has tested this,
-so it's supposedly working :-) - but it does not touch actual OpenVPN
-Code and "generally looks reasonable".
+The ACK is based on the discussion on the list for v1/v2 of the patch,
+and the agreement to go this way - do a local port including this 
+patch to pkcs11-helper, and as soon as upstream does a new release
+with the patch, we get rid of it again.
 
-Your patch has been applied to the master and release/2.5 branch
-(we want this in release/2.5 to be able to do a 2.5.3 release with
-arm64 support).
+This patch does not touch OpenVPN code, just build environment, and
+looks reasonable enough (though I have not tested it and have no idea
+if this is "best practice" or not).
 
-There is one bit that warrants looking twice - removal of 
-compat-inet_pton.c/ntop.c from compat.vcxproj.filters - in master,
-these files are gone, while they still exist in 2.5.  We do not *use*
-them in 2.5 on windows either, as all supported windows versions have 
-these functions now.  So this is good.
+Your patch has been applied to the master and release/2.5 branch.
 
-commit 56f775fe9dacab7804109e305d652057b0c7fd3c (master)
-commit 206d9665a80de997b0b74707ec880879617cba9a (release/2.5)
+commit 36b9aa0c1e40f3e4bd021b2fbd2a479ef148bc90 (master)
+commit 73fbeed493c6320e0e93fc7569c5c22e3fe9413e (release/2.5)
 Author: Lev Stipakov
-Date:   Fri May 14 07:57:04 2021 +0300
+Date:   Mon Jun 7 13:42:13 2021 +0300
 
-     msvc: standalone building
+     contrib/vcpkg-ports: add pkcs11-helper port
 
      Signed-off-by: Lev Stipakov <lev@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210514045704.686-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22389.html
+     Message-Id: <20210607104213.216-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22503.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
