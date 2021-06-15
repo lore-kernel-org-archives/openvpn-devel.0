@@ -1,10 +1,7 @@
-Date: Tue, 15 Jun 2021 13:55:31 +0200 (CEST)
-Message-Id: <202106151155.15FBtVem027824@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210602034253.19984-2-selva.nair@...277...>
-References: <20210602034253.19984-2-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Improve documentation of
- AUTH_PENDING related directives
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue, 15 Jun 2021 15:56:16 +0300
+Message-Id: <20210615125616.344-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] GitHub actions: add MSVC build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,39 +12,71 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Your patch has been applied to the master and release/2.5 branch.
+From: Lev Stipakov <lev@...515...>
 
-I have fixed the yoda speak as requested.  On the "proxy_url" question,
-the bikeshed painting committee had long and intense deliberations last
-week, and decided that nobody really feels like deciding whether to
-paint this blue or green... so I left the spelling "as it is", with "_".
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ .github/workflows/build.yaml | 46 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
 
-(Pulling this patch into 2.5 created an impressive conflict, as it
-pulls in the documentation part of 3f8fb2b2c1d6, which never made it
-to 2.5 - fixing this, we now have identical doc/management-notes.txt
-in release/2.5 and master.  If this is not correct due to missing code 
-capabilities, we might need to revisit 2.5 here)
-
-commit e0f860f4b38e60c2e1ce7b069f7c6c923c52e5ca (master)
-commit d6ec7547198584e6053a177fbc017ffb11c16071 (release/2.5)
-Author: Selva Nair
-Date:   Tue Jun 1 23:42:52 2021 -0400
-
-     Improve documentation of AUTH_PENDING related directives
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20210602034253.19984-2-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22475.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 410d6e1d..5d7dd37b 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -181,3 +181,49 @@ jobs:
+         run: make -j4
+       - name: make check
+         run: make check
++
++  msvc:
++      strategy:
++        matrix:
++          plat: [ARM64, Win32, x64]
++          include:
++            - plat: ARM64
++              triplet: arm64
++            - plat: Win32
++              triplet: x86
++            - plat: x64
++              triplet: x64
++
++      env:
++        BUILD_CONFIGURATION: Release
++        VCPKG_OVERLAY_PORTS: ${{ github.workspace }}/contrib/vcpkg-ports
++        VCPKG_OVERLAY_TRIPLETS: ${{ github.workspace }}/contrib/vcpkg-triplets
++
++      runs-on: windows-latest
++      steps:
++      - uses: actions/checkout@...2620...
++
++      - name: Add MSBuild to PATH
++        uses: microsoft/setup-msbuild@...2621...
++
++      - name: Restore artifacts, or run vcpkg, build and cache artifacts
++        uses: lukka/run-vcpkg@...2622...
++        with:
++          vcpkgArguments: 'openssl lz4 lzo pkcs11-helper tap-windows6'
++          vcpkgTriplet: '${{ matrix.triplet }}-windows-ovpn'
++          vcpkgGitCommitId: '7d472dd25830da92108eb76642c667aaa40512cb'
++          cleanAfterBuild: false
++
++      - name: Build
++        working-directory: ${{env.GITHUB_WORKSPACE}}
++        run: |
++          vcpkg integrate install
++          msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform="${{ matrix.plat }}" .
++
++      - name: Archive artifacts
++        uses: actions/upload-artifact@...2620...
++        with:
++          name: artifacts-${{ matrix.plat }}
++          path: |
++            ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.exe
++            ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.dll
+-- 
+2.23.0.windows.1
 
 
