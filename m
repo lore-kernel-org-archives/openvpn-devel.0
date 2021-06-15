@@ -1,14 +1,10 @@
-Date: Tue, 15 Jun 2021 13:55:32 +0200
+Date: Tue, 15 Jun 2021 13:55:31 +0200 (CEST)
+Message-Id: <202106151155.15FBtVem027824@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20210615115532.GX976@...1296...>
-References: <20210615104331.210-1-lstipakov@...277...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="5MyLFQdPHvZjGJU9"
-Content-Disposition: inline
-In-Reply-To: <20210615104331.210-1-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] vcpkg-ports: restore trailing
- whitespaces in .patch files
+In-Reply-To: <20210602034253.19984-2-selva.nair@...277...>
+References: <20210602034253.19984-2-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Improve documentation of
+ AUTH_PENDING related directives
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,78 +13,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---5MyLFQdPHvZjGJU9
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the master and release/2.5 branch.
 
-Hi,
+I have fixed the yoda speak as requested.  On the "proxy_url" question,
+the bikeshed painting committee had long and intense deliberations last
+week, and decided that nobody really feels like deciding whether to
+paint this blue or green... so I left the spelling "as it is", with "_".
 
-On Tue, Jun 15, 2021 at 01:43:31PM +0300, Lev Stipakov wrote:
-> From: Lev Stipakov <lev@...515...>
->=20
-> Commit 36b9aa "contrib/vcpkg-ports: add pkcs11-helper port"
-> has trimmed trailing white space in .patch files and thus corrupted them.
->=20
-> Restore trailing whitespaces to "uncorrupt" patches.
+(Pulling this patch into 2.5 created an impressive conflict, as it
+pulls in the documentation part of 3f8fb2b2c1d6, which never made it
+to 2.5 - fixing this, we now have identical doc/management-notes.txt
+in release/2.5 and master.  If this is not correct due to missing code 
+capabilities, we might need to revisit 2.5 here)
 
-Sorry on that.  My git defaults to "git am --whitespace=3Dfix", because
-half the patches I get have trailing whitespace somewhere - in your case,
-it messed up the embedded patch.
+commit e0f860f4b38e60c2e1ce7b069f7c6c923c52e5ca (master)
+commit d6ec7547198584e6053a177fbc017ffb11c16071 (release/2.5)
+Author: Selva Nair
+Date:   Tue Jun 1 23:42:52 2021 -0400
 
-Applying this one without my usual scripts, with "git am --whitespace=3Dnow=
-arn",
-and verifying that "git format-patch" really shows "trailing whitespace".
+     Improve documentation of AUTH_PENDING related directives
 
-Also, Lev verified that the resulting commit *really* works, before
-I push out another broken copy :-)
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20210602034253.19984-2-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22475.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Acked-By: Gert Doering <gert@...1296...>
 
-commit 742123498253e9a8aa0cbe12752e0e4a09b46f21 (master)
-commit 1601f79bc2c771976a68a708abd11fd024adc4dc (release/2.5)
-Author: Lev Stipakov <lev@...515...>
-Date:   Tue Jun 15 13:43:31 2021 +0300
+--
+kind regards,
 
-    vcpkg-ports: restore trailing whitespaces in .patch files
-=20=20=20=20
-    Signed-off-by: Lev Stipakov <lev@...515...>
-    Acked-By: Gert Doering <gert@...1296...>
-    Message-Id: <20210615104331.210-1-lstipakov@...277...>
-    URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/m=
-sg22553.html
-    Signed-off-by: Gert Doering <gert@...1296...>
+Gert Doering
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---5MyLFQdPHvZjGJU9
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJgyJUtAAoJEB2Cnv7KVigSl10L/itWrjphQ3sHjY4SzOyAi7ks
-+4x27WZ73ISCpxguNvUh+jdnSOIaDMSLllM0e2scOEsD410sjUq149+rTK03eiNu
-Dkfyvbhq7wY5GZq6kBjDM7/8veKC0trdwC/4Lhx5y1iRC7U6XBicrtAvOmYUqcB5
-DY7JMQmOjExw87ZWIIjpmHwIc+9GZJi/7Gs1qj/VRe3yw5prMZcTwHLgxtfwGNEX
-7ki+8GfWsnr1DH4/CoWHp4e7IMD8ts2vodhfN5R15oC9w4kpofl3Gl4dMmqkExpC
-Y/WKh24eFdSSQUxkI40w1F/2vIsSGUtY8qf0Q/wxF/md0B6JDk1EIbVtiw6/Vb94
-o1rMn6IE8BBCFN5B+NimpLUGNNn981YKd+lAgmWdeZK5PIbs2YCX8fZ10i4v7WVG
-KqCtgimA2gcwWUAA5uLr5LUg+SsQy4xcNQu52Q2kN2isri0OhKqgFg3Jr3liqTad
-sxE8BgPo8qOXxn8tpq4CPTtCvpb+1MR/bruHPaA8Qw==
-=e3bP
------END PGP SIGNATURE-----
-
---5MyLFQdPHvZjGJU9--
 
