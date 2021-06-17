@@ -1,9 +1,13 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <ee9a3ab9-ea03-1a8f-fac4-55ffc4080933@...515...>
-Date: Thu, 17 Jun 2021 17:42:38 +0300
 MIME-Version: 1.0
-Content-Language: en-US
-Subject: [Openvpn-devel] OpenVPN 2.5.3 released
+References: <20210617061027.140-1-lstipakov@...277...>
+ <20210617061226.244-1-lstipakov@...277...>
+In-Reply-To: <20210617061226.244-1-lstipakov@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 17 Jun 2021 11:25:02 -0400
+Message-ID: <CAKuzo_jCBkQA1FLYAFct1+=f=Vyjw8Mt1HxU+BKtR10Xx-MXQw@...278...>
+Content-Type: multipart/alternative; boundary="000000000000b8e04305c4f7d248"
+Subject: Re: [Openvpn-devel] [PATCH 1/2] crypto_openssl.c: disable explicit
+ initialization on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,150 +16,129 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
+
+--000000000000b8e04305c4f7d248
+Content-Type: text/plain; charset="UTF-8"
+
+Hi
+
+On Thu, Jun 17, 2021 at 2:13 AM Lev Stipakov <lstipakov@...277...> wrote:
+
+> From: Lev Stipakov <lev@...515...>
+>
+> Commit a4071b ("crypto_openssl: add initialization to pick up local
+> configuration")
+> added openssl initialization to load configuration file. However on Windows
+> this file is loaded from user-writable directory, such as c.\etc\ssl for
+> mingw builds
+> and (for example) c:\vcpkg\packages\openssl_x64-windows\openvpn.cnf for
+> vcpkg
+> builds. This could be a security risk.
+>
+> Since aforementioned commit implements a niche feature which anyway
+> should use CryptoAPI on Windows, make this code conditional.
+>
+> Signed-off-by: Lev Stipakov <lev@...515...>
+> ---
+>  src/openvpn/crypto_openssl.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+> index c571030b..603c67b0 100644
+> --- a/src/openvpn/crypto_openssl.c
+> +++ b/src/openvpn/crypto_openssl.c
+> @@ -154,11 +154,13 @@ crypto_init_lib_engine(const char *engine_name)
+>  void
+>  crypto_init_lib(void)
+>  {
+> +#ifndef _WIN32
+>  #if (OPENSSL_VERSION_NUMBER >= 0x10100000L)
+>      OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CONFIG, NULL);
+>  #else
+>      OPENSSL_config(NULL);
+>  #endif
+> +#endif /* _WIN32 */
+>      /*
+>       * If you build the OpenSSL library and OpenVPN with
+>       * CRYPTO_MDEBUG, you will get a listing of OpenSSL
+> --
+> 2.23.0.windows.1
+>
+
+This would make it impossible to use openssl.cnf on Windows, wouldn't it? I
+use configuraton file to restrict signature algorithms, for example. There
+are other uses like configuring engines.
+
+Instead of disabling, why not make the default path a restricted location
+within, say,  C:\Windows. The user can then override it using env variables.
+
+What path does OpenSSL Windows binaries described in OpensSL wiki use?   (
+https://wiki.openssl.org/index.php/Binaries)
+
+Selva
+
+--000000000000b8e04305c4f7d248
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
 
-The OpenVPN community project team is proud to release OpenVPN 2.5.3.=20
-Besides a number of small improvements and bug fixes, this release fixes=20
-a possible security issue with OpenSSL config autoloading on Windows=20
-(CVE-2021-3606). Updated OpenVPN GUI is also included in Windows installers.
+<div dir=3D"ltr"><div>Hi</div><br><div class=3D"gmail_quote"><div dir=3D"lt=
+r" class=3D"gmail_attr">On Thu, Jun 17, 2021 at 2:13 AM Lev Stipakov &lt;<a=
+ href=3D"mailto:lstipakov@...277...">lstipakov@...277...</a>&gt; wrote:<br>=
+</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;b=
+order-left:1px solid rgb(204,204,204);padding-left:1ex">From: Lev Stipakov =
+&lt;<a href=3D"mailto:lev@...515..." target=3D"_blank">lev@...515...</a>&gt=
+;<br>
+<br>
+Commit a4071b (&quot;crypto_openssl: add initialization to pick up local co=
+nfiguration&quot;)<br>
+added openssl initialization to load configuration file. However on Windows=
+<br>
+this file is loaded from user-writable directory, such as c.\etc\ssl for mi=
+ngw builds<br>
+and (for example) c:\vcpkg\packages\openssl_x64-windows\openvpn.cnf for vcp=
+kg<br>
+builds. This could be a security risk.<br>
+<br>
+Since aforementioned commit implements a niche feature which anyway<br>
+should use CryptoAPI on Windows, make this code conditional.<br>
+<br>
+Signed-off-by: Lev Stipakov &lt;<a href=3D"mailto:lev@...515..." target=3D"=
+_blank">lev@...515...</a>&gt;<br>
+---<br>
+=C2=A0src/openvpn/crypto_openssl.c | 2 ++<br>
+=C2=A01 file changed, 2 insertions(+)<br>
+<br>
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c<br>
+index c571030b..603c67b0 100644<br>
+--- a/src/openvpn/crypto_openssl.c<br>
++++ b/src/openvpn/crypto_openssl.c<br>
+@@ -154,11 +154,13 @@ crypto_init_lib_engine(const char *engine_name)<br>
+=C2=A0void<br>
+=C2=A0crypto_init_lib(void)<br>
+=C2=A0{<br>
++#ifndef _WIN32<br>
+=C2=A0#if (OPENSSL_VERSION_NUMBER &gt;=3D 0x10100000L)<br>
+=C2=A0 =C2=A0 =C2=A0OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CONFIG, NULL);<br>
+=C2=A0#else<br>
+=C2=A0 =C2=A0 =C2=A0OPENSSL_config(NULL);<br>
+=C2=A0#endif<br>
++#endif /* _WIN32 */<br>
+=C2=A0 =C2=A0 =C2=A0/*<br>
+=C2=A0 =C2=A0 =C2=A0 * If you build the OpenSSL library and OpenVPN with<br>
+=C2=A0 =C2=A0 =C2=A0 * CRYPTO_MDEBUG, you will get a listing of OpenSSL<br>
+-- <br>
+2.23.0.windows.1<br></blockquote><div><br></div><div>This would make it imp=
+ossible to use openssl.cnf on Windows, wouldn&#39;t it? I use configuraton=
+=C2=A0file to restrict signature algorithms, for example. There are other u=
+ses like configuring engines.</div><div><br></div><div>Instead of disabling=
+, why not make the default path a restricted location within, say,=C2=A0 C:=
+\Windows. The user can then override it using env variables.</div><div><br>=
+</div><div>What path does OpenSSL Windows binaries described in OpensSL wik=
+i use?=C2=A0 =C2=A0(<a href=3D"https://wiki.openssl.org/index.php/Binaries"=
+>https://wiki.openssl.org/index.php/Binaries</a>)</div><div><br></div><div>=
+Selva</div></div></div>
 
-Source code and Windows installers can be downloaded from our download page:
-
-<https://openvpn.net/community-downloads/>
-
-Debian and Ubuntu packages are available in the official apt repositories:
-
-<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
-
-On Red Hat derivatives we recommend using the Fedora Copr repository.
-
-<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release/>
-
----
-
-Overview of changes since OpenVPN 2.4
-
-   Faster connections
-
-     Connections setup is now much faster
-
-   Crypto specific changes
-
-     ChaCha20-Poly1305 cipher in the OpenVPN data channel
-       Requires OpenSSL 1.1.0 or newer)
-     Improved TLS 1.3 support when using OpenSSL 1.1.1 or newer
-     Client-specific tls-crypt keys (--tls-crypt-v2)
-     Improved Data channel cipher negotiation
-     Removal of BF-CBC support in default configuration (see below for
-possible incompatibilities)
-
-   Server-side improvements
-
-     HMAC based auth-token support for seamless reconnects to standalone
-       servers or a group of servers.
-     Asynchronous (deferred) authentication support for auth-pam plugin
-     Asynchronous (deferred) support for client-connect scripts and
-       plugins
-
-   Network-related changes
-
-     Support IPv4 configs with /31 netmasks now
-     802.1q VLAN support on TAP servers
-     IPv6-only tunnels
-     New option --block-ipv6 to reject all IPv6 packets (ICMPv6)
-
-   Linux-specific features
-
-     VRF support
-     Netlink integration (OpenVPN no longer needs to execute
-       ifconfig/route or ip commands)
-
-Windows-specific features
-
-     Wintun driver support, a faster alternative to tap-windows6
-     Setting tun/tap interface MTU
-     Setting DHCP search domain
-     Allow unicode search string in --cryptoapicert option
-     EasyRSA3, a modern take on OpenVPN CA management
-     MSI installer
-
----
-
-Important notices
-
-BF-CBC cipher is no longer the default
-
-Cipher handling for the data channel cipher has been significantly
-changed between OpenVPN 2.3/2.4 and v2.5, most notably there are no
-"default cipher BF-CBC" anymore because it is no longer considered a
-reasonable default. BF-CBC is still available, but it needs to be
-explicitly configured now.
-
-For connections between OpenVPN 2.4 and v2.5 clients and servers, both
-ends will be able  to negotiate a better cipher than BF-CBC. By default
-they will select one of the AES-GCM ciphers, but this can be influenced
-using the --data-ciphers setting.
-
-Connections between OpenVPN 2.3 and v2.5 that have no --cipher setting
-in the config (=3D defaulting to BF-CBC and not being negotiation-capable)
-must be updated. Unless BF-CBC is included in --data-ciphers or there is
-a "--cipher BF-CBC" in the OpenVPN 2.5 config, a v2.5 client or server
-will refuse to talk to a v2.3 server or client, because it has no common
-data channel cipher and negotiating a cipher is not possible. Generally,
-we recommend upgrading such setups to OpenVPN 2.4 or v2.5. If upgrading
-is not possible we recommend adding data-ciphers
-AES-256-GCM:AES-128-GCM:AES-128-CBC (for v2.5+) or cipher AES-128-CBC
-(v2.4.x and older) to the configuration of all clients and servers.
-
-If you really need to use an unsupported OpenVPN 2.3 (or even older)
-release and need to stay on BF-CBC (not recommended), the OpenVPN 2.5
-based client will need a config file change to re-enable BF-CBC.  But be
-warned that BF-CBC and other related weak ciphers will be removed in
-coming OpenVPN major releases.
-
-For full details see the Data channel cipher negotiation section on the
-man page.
-
-Connectivity to some VPN service provider may break
-
-Connecting with an OpenVPN 2.5 client to at least one commercial VPN
-service that
-implemented their own cipher negotiation method that always reports back
-that it is using BF-CBC to the client is broken in v2.5. This has always
-caused warning about mismatch ciphers. We have been in contact with some
-service providers and they are looking into it.  This is not something
-the OpenVPN community can fix. If your commercial VPN does not work with
-a v2.5 client, complain to the VPN service provider.
-
-More details on these new features as well as a list of deprecated
-features and user-visible changes are available in Changes.rst:
-
-<https://github.com/OpenVPN/openvpn/blob/release/2.5/Changes.rst>
-
----
-
-Linux packages are available from
-
-<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
-<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release/>
-
-Useful resources
-
-     Official documentation:
-<http://openvpn.net/index.php/open-source/documentation/howto.html>
-     Wiki: <https://community.openvpn.net/>
-     Easy RSA 3 HOWTO:
-<https://community.openvpn.net/openvpn/wiki/EasyRSA3-OpenVPN-Howto>
-     Forums: <https://forums.openvpn.net/>
-     User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
-     User IRC channel: #openvpn at irc.freenode.net
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+--000000000000b8e04305c4f7d248--
 
