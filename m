@@ -1,10 +1,10 @@
-Date: Thu, 17 Jun 2021 10:22:30 +0200 (CEST)
-Message-Id: <202106170822.15H8MUcX000184@...2054...>
+Date: Thu, 17 Jun 2021 16:01:49 +0200 (CEST)
+Message-Id: <202106171401.15HE1n7w005148@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210602194739.29488-1-selva.nair@...277...>
-References: <20210602194739.29488-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Apply the connect-retry backoff
- to only one side of a connection
+In-Reply-To: <20210617061259.297-1-lstipakov@...277...>
+References: <20210617061259.297-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: contrib/vcpkg-ports: add
+ openssl port with --no-autoload-config option set (CVE-2121-3606)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,43 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Thanks.  Change makes sense.  Code looks good.  
+Not pretty, but the best we can do today.
 
-Lightly tested on TCP/--client, UDP/--client, TCP/--tls-client, 
-UDP/--tls-client (same behaviour as without the patch).
+Your patch has been applied to the master and release/2.5 branch.
 
-Plus t_client test rig.
+commit 84d5079b0f40387317b348025c99097f7876807a (master)
+commit 92535b6a10865f7e6729f766dcf36e094b7f61d4 (release/2.5)
+Author: Lev Stipakov
+Date:   Thu Jun 17 09:12:59 2021 +0300
 
-Tested on p2p "server" according to #1384 (--ping-restart, --secret, 
---proto udp, no --remote) - could reproduce #1384 without the patch, 
-server does not go into backoff with the patch.  Consequently, this 
-will also affect a "p2p --secret client", as the only difference is 
-"is there a remote?" (but for such setups, this is likely the right
-thing to do - to avoid restart loops, just do not use --ping-restart
-in p2p mode, use --ping alone to keep NAT sessions open)
+     contrib/vcpkg-ports: add openssl port with --no-autoload-config option set (CVE-2121-3606)
 
-
-Your patch has been applied to the master, release/2.5 and release/2.4
-branch (bugfix).  Not sure we'll ever do another 2.4 release, but if
-we do, it's in :-)
-
-commit 063d55afeea723fc6df0af29a19df257a8ab6920 (master)
-commit d8dee82f1129ac6d3e4bcdc867726f5d64798dc7 (release/2.5)
-commit 7029cece844d9324aff687981b8b6c33b099db2d (release/2.4)
-Author: Selva Nair
-Date:   Wed Jun 2 15:47:39 2021 -0400
-
-     Apply the connect-retry backoff to only one side of a connection
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Signed-off-by: Lev Stipakov <lev@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210602194739.29488-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22485.html
+     Message-Id: <20210617061259.297-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22569.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
