@@ -1,8 +1,10 @@
 From: Gert Doering <gert@...1296...>
-Date: Fri, 18 Jun 2021 19:19:33 +0200
-Message-Id: <20210618171933.28985-1-gert@...1296...>
+Date: Fri, 18 Jun 2021 20:12:46 +0200
+Message-Id: <20210618181246.30769-1-gert@...1296...>
+In-Reply-To: <20210618171933.28985-1-gert@...1296...>
+References: <20210618171933.28985-1-gert@...1296...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Add error reporting to
+Subject: [Openvpn-devel] [PATCH v2] Add error reporting to
  get_console_input_win32().
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -25,16 +27,18 @@ Change this to print a M_WARN|M_ERRNO message.
 Also, change the function style to early-return style (= large diff, but
 most are indent changes only).
 
+v2: fix spurious "}" that was left over from change to early-return.
+
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
- src/openvpn/console_builtin.c | 96 ++++++++++++++++++-----------------
- 1 file changed, 50 insertions(+), 46 deletions(-)
+ src/openvpn/console_builtin.c | 95 ++++++++++++++++++-----------------
+ 1 file changed, 49 insertions(+), 46 deletions(-)
 
 diff --git a/src/openvpn/console_builtin.c b/src/openvpn/console_builtin.c
-index 3214cb5f..fedabade 100644
+index 3214cb5f..9bf36347 100644
 --- a/src/openvpn/console_builtin.c
 +++ b/src/openvpn/console_builtin.c
-@@ -75,66 +75,70 @@ get_console_input_win32(const char *prompt, const bool echo, char *input, const
+@@ -75,65 +75,68 @@ get_console_input_win32(const char *prompt, const bool echo, char *input, const
      in = GetStdHandle(STD_INPUT_HANDLE);
      err = get_orig_stderr();
  
@@ -142,15 +146,13 @@ index 3214cb5f..fedabade 100644
 +    if (is_console)
 +    {
 +        SetConsoleMode(in, flags_save);
-     }
++    }
 +    if (status && !win32_service_interrupt(&win32_signal))
 +    {
 +        return true;
-+    }
-+}
+     }
  
      return false;
- }
 -- 
 2.26.3
 
