@@ -1,16 +1,9 @@
-Date: Thu, 17 Jun 2021 17:45:05 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20210617154505.GZ976@...1296...>
-References: <20210617061027.140-1-lstipakov@...277...>
- <20210617061226.244-1-lstipakov@...277...>
- <CAKuzo_jCBkQA1FLYAFct1+=f=Vyjw8Mt1HxU+BKtR10Xx-MXQw@...278...>
+Date: Fri, 18 Jun 2021 19:19:33 +0200
+Message-Id: <20210618171933.28985-1-gert@...1296...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="vr3kw5i3+MSDHXmq"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_jCBkQA1FLYAFct1+=f=Vyjw8Mt1HxU+BKtR10Xx-MXQw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] crypto_openssl.c: disable explicit
- initialization on Windows
+Subject: [Openvpn-devel] [PATCH] Add error reporting to
+ get_console_input_win32().
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,63 +12,146 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Lev Stipakov <lstipakov@...277...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---vr3kw5i3+MSDHXmq
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+When the function setup fails due to invalid file handles, or because
+WriteFile(err, ...) fails (due to file handle corruption elsewhere),
+the function used to silently "return false"
 
-Hi,
+Change this to print a M_WARN|M_ERRNO message.
 
-On Thu, Jun 17, 2021 at 11:25:02AM -0400, Selva Nair wrote:
-> This would make it impossible to use openssl.cnf on Windows, wouldn't it?=
- I
-> use configuraton file to restrict signature algorithms, for example. There
-> are other uses like configuring engines.
+Also, change the function style to early-return style (= large diff, but
+most are indent changes only).
 
-Right.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/console_builtin.c | 96 ++++++++++++++++++-----------------
+ 1 file changed, 50 insertions(+), 46 deletions(-)
 
-> Instead of disabling, why not make the default path a restricted location
-> within, say,  C:\Windows. The user can then override it using env variabl=
-es.
+diff --git a/src/openvpn/console_builtin.c b/src/openvpn/console_builtin.c
+index 3214cb5f..fedabade 100644
+--- a/src/openvpn/console_builtin.c
++++ b/src/openvpn/console_builtin.c
+@@ -75,66 +75,70 @@ get_console_input_win32(const char *prompt, const bool echo, char *input, const
+     in = GetStdHandle(STD_INPUT_HANDLE);
+     err = get_orig_stderr();
+ 
+-    if (in != INVALID_HANDLE_VALUE
+-        && err != INVALID_HANDLE_VALUE
+-        && !win32_service_interrupt(&win32_signal)
+-        && WriteFile(err, prompt, strlen(prompt), &len, NULL))
++    if (in == INVALID_HANDLE_VALUE
++        || err == INVALID_HANDLE_VALUE
++        || win32_service_interrupt(&win32_signal)
++        || !WriteFile(err, prompt, strlen(prompt), &len, NULL))
+     {
+-        bool is_console = (GetFileType(in) == FILE_TYPE_CHAR);
+-        DWORD flags_save = 0;
+-        int status = 0;
+-        WCHAR *winput;
++        msg(M_WARN|M_ERRNO, "get_console_input_win32(): unexpected error");
++        return false;
++    }
+ 
+-        if (is_console)
+-        {
+-            if (GetConsoleMode(in, &flags_save))
+-            {
+-                DWORD flags = ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT;
+-                if (echo)
+-                {
+-                    flags |= ENABLE_ECHO_INPUT;
+-                }
+-                SetConsoleMode(in, flags);
+-            }
+-            else
+-            {
+-                is_console = 0;
+-            }
+-        }
++    bool is_console = (GetFileType(in) == FILE_TYPE_CHAR);
++    DWORD flags_save = 0;
++    int status = 0;
++    WCHAR *winput;
+ 
+-        if (is_console)
++    if (is_console)
++    {
++        if (GetConsoleMode(in, &flags_save))
+         {
+-            winput = malloc(capacity * sizeof(WCHAR));
+-            if (winput == NULL)
++            DWORD flags = ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT;
++            if (echo)
+             {
+-                return false;
++                flags |= ENABLE_ECHO_INPUT;
+             }
+-
+-            status = ReadConsoleW(in, winput, capacity, &len, NULL);
+-            WideCharToMultiByte(CP_UTF8, 0, winput, len, input, capacity, NULL, NULL);
+-            free(winput);
++            SetConsoleMode(in, flags);
+         }
+         else
+         {
+-            status = ReadFile(in, input, capacity, &len, NULL);
++            is_console = 0;
+         }
++    }
+ 
+-        string_null_terminate(input, (int)len, capacity);
+-        chomp(input);
+-
+-        if (!echo)
+-        {
+-            WriteFile(err, "\r\n", 2, &len, NULL);
+-        }
+-        if (is_console)
+-        {
+-            SetConsoleMode(in, flags_save);
+-        }
+-        if (status && !win32_service_interrupt(&win32_signal))
++    if (is_console)
++    {
++        winput = malloc(capacity * sizeof(WCHAR));
++        if (winput == NULL)
+         {
+-            return true;
++            return false;
+         }
++
++        status = ReadConsoleW(in, winput, capacity, &len, NULL);
++        WideCharToMultiByte(CP_UTF8, 0, winput, len, input, capacity, NULL, NULL);
++        free(winput);
++    }
++    else
++    {
++        status = ReadFile(in, input, capacity, &len, NULL);
++    }
++
++    string_null_terminate(input, (int)len, capacity);
++    chomp(input);
++
++    if (!echo)
++    {
++        WriteFile(err, "\r\n", 2, &len, NULL);
++    }
++    if (is_console)
++    {
++        SetConsoleMode(in, flags_save);
+     }
++    if (status && !win32_service_interrupt(&win32_signal))
++    {
++        return true;
++    }
++}
+ 
+     return false;
+ }
+-- 
+2.26.3
 
-This is what we tried to achieve, but Lev could not find a way to make
-the MSVC build behave wrt "new ETCDIR".  I have not personally investigated.
-
-So we decided to release 2.5.3 soonish, with "disable openssl.cnf" to=20
-cover the problem reported, and then see if we can get to a better fix=20
-incrementally (while a "secured" binary is out for users to run).
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---vr3kw5i3+MSDHXmq
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJgy24AAAoJEB2Cnv7KVigSCpgL/RjmIXGClazU8vDPT1Cf6Cbe
-ILr9Axa8EG4aGYzJi45WsDEBrYyqreSKj0z2oj8Np1Pi8Uo5cZueLj6brjdK6iRY
-ZLZF09JYD5LmZjokSWwXvXF2/zndC3fQwVCJvUYa3zb2ohbwuUWVUHQE+aDus+E8
-2EAE14nnYEQg1B33v4uuL/CPCu8IYMF9z4fgIhZf5RQfz/MGfvdJt0/zINcxazrY
-4VTEx7vqkgoJa0q4M28NFY2OSYsqZSYf1fMurPZVVGceKuZ8E4/rBvVRAS5BI61P
-I+w+L4zFl96fCErAFufpFfypy1c4o0zvovrfz2C62Z+aBYpvhWZDYSWgWm+Wf2G1
-Ujf3SoclWuO+J+uK+M9ZBEOiK9YkVqVhBf10ANr5TX9g0DXPA/vTx5hgR5JAtf3F
-pUo0xVSSOjzN7A0ftHdXAAIzkHaqAPX783X7HHG9zlI885r68Zq0uyJiDmcPJZ9O
-AicSSd7kZwZRR6GuV7D4I5/a/pAoZNUAlr/L/4+TFw==
-=eHKT
------END PGP SIGNATURE-----
-
---vr3kw5i3+MSDHXmq--
 
