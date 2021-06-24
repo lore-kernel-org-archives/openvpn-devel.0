@@ -1,10 +1,9 @@
-Date: Thu, 24 Jun 2021 13:21:55 +0200 (CEST)
-Message-Id: <202106241121.15OBLtjw072652@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210520151148.2565578-1-arne@...1227...>
-References: <20210520151148.2565578-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Move auth_token_state from
- multi to key_state
+From: Arne Schwabe <arne@...1227...>
+Date: Thu, 24 Jun 2021 15:08:40 +0200
+Message-Id: <20210624130840.2583433-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Ensure tls session is authenticated before
+ sending push reply
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,37 +14,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+We ensure here that the tls session is authenticated before sending
+a push_reply
 
-I did some stare-at-code and testing of my own, and most of this patch
-is fairly straightforward - it's only that long because the auth-token-test
-module is really extensive, and due to the pointer change, lots of lines
-change.
+This a part of to fix CVE-2020-15078 in the master branch.
+---
+ src/openvpn/push.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Also tested with the "renegotiate, then reconnect from same port" nuisance
-client, and that seems to be a bit worse now (this re-introduces "we send 
-a PUSH_REPLY right away on client-reconnect-same-port") but I understand 
-that this is fixed in 3/9+4/9 (and verified that it is).
-
-commit 716049923e3e70c3de938d6da5d05f529ec515b5
-Author: Arne Schwabe
-Date:   Thu May 20 17:11:40 2021 +0200
-
-     Move auth_token_state from multi to key_state
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20210520151148.2565578-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22415.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index b6f1252d2..b27f401e1 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -863,7 +863,8 @@ process_incoming_push_request(struct context *c)
+         send_auth_failed(c, client_reason);
+         ret = PUSH_MSG_AUTH_FAILURE;
+     }
+-    else if (c->c2.tls_multi->multi_state >= CAS_CONNECT_DONE)
++    else if (tls_authentication_status(c->c2.tls_multi) == TLS_AUTHENTICATION_SUCCEEDED
++        && c->c2.tls_multi->multi_state >= CAS_CONNECT_DONE)
+     {
+         time_t now;
+ 
+-- 
+2.32.0
 
 
