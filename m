@@ -1,10 +1,10 @@
-Date: Thu, 24 Jun 2021 17:25:40 +0200 (CEST)
-Message-Id: <202106241525.15OFPehD080592@...2054...>
+Date: Thu, 24 Jun 2021 17:30:02 +0200 (CEST)
+Message-Id: <202106241530.15OFU2wT080725@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210624130840.2583433-1-arne@...1227...>
-References: <20210624130840.2583433-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Ensure tls session is
- authenticated before sending push reply
+In-Reply-To: <20210618181246.30769-1-gert@...1296...>
+References: <20210618181246.30769-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add error reporting to
+ get_console_input_win32().
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +15,22 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Your patch has been applied to the master and release/2.5 branch (bugfix).
 
-For whatever reason, this particular code path escaped previous patches,
-so now it's fixed as well.  And verified - even with the previous 3 
-patches (and I was sure I had seen it fixed!) sometimes I hit the
-"PUSH_REPLY sent too fast" thing.  Now, gone.
+commit 8f283648d90799683d9e8f58ca4776ae1e893fd8 (master)
+commit b6012d80a198b5d7e8c2f399b92a1299c660a326 (release/2.5)
+Author: Gert Doering
+Date:   Fri Jun 18 20:12:46 2021 +0200
 
-Not tested on the client side (this is server-only code).
+     Add error reporting to get_console_input_win32().
 
-Server side test rig succeeded.  Since this is a fairly isolated
-change, verifying that PUSH_REQUEST/PUSH_REPLY still works was easy
-(but tested all of it, for good measure).
-
-Your patch has been applied to the master branch.
-
-commit 87c8c081d5a1ede46b3cb01e0c25a876441f074b
-Author: Arne Schwabe
-Date:   Thu Jun 24 15:08:40 2021 +0200
-
-     Ensure tls session is authenticated before sending push reply
-
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210624130840.2583433-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22587.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20210618181246.30769-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22577.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
