@@ -1,15 +1,9 @@
-Date: Thu, 24 Jun 2021 17:34:01 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20210624153401.GJ976@...1296...>
-References: <20210618155241.400-1-lstipakov@...277...>
- <20210624083918.106-1-lstipakov@...277...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="/3RRu44D4QS6o5hU"
-Content-Disposition: inline
-In-Reply-To: <20210624083918.106-1-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Fix console prompts with redirected
- log
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri, 25 Jun 2021 04:04:05 +0300
+Message-Id: <20210625010405.224-1-lstipakov@...277...>
+In-Reply-To: <20210624153401.GJ976@...1296...>
+References: <20210624153401.GJ976@...1296...>
+Subject: [Openvpn-devel] [PATCH v3] Fix console prompts with redirected log
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,67 +12,169 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
---/3RRu44D4QS6o5hU
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Lev Stipakov <lev@...515...>
 
-Hi,
+When openvpn nees to prompt user for a password
+(for example, to set management interface password),
+the prompt is written to standard error device.
 
-On Thu, Jun 24, 2021 at 11:39:18AM +0300, Lev Stipakov wrote:
-> From: Lev Stipakov <lev@...515...>
->=20
-> When openvpn nees to prompt user for a password
-> (for example, to set management interface password),
-> the prompt is written to standard error device.
->=20
-> When log is redirected to a file, that prompt is written
-> to that file and not to the "original" stderr. Moreover, on recent
-> Insider build (21390.2025) openvpn exits with fatal error
->=20
->   get_console_input_win32(): unexpected error: No such device or address =
-(errno=3D6)
+When log is redirected to a file, that prompt is written
+to that file and not to the "original" stderr. Moreover, on recent
+Insider build (21390.2025) openvpn exits with fatal error
 
-Feature-ACK, and tested your binary, which works nicely.
+  get_console_input_win32(): unexpected error: No such device or address
+  (errno=6)
 
-Can you rebase this on top of master?  I wanted my "improve error logging"
-patch in the tree, and of course it conflicts big time.
+while attempting to write that prompt.
 
-While I could fix these, I think having a v3 that applies nicely would
-be a cleaner approach...
+When redirecting stdout/stderr, we use _dup2() to associate stderr
+descriptor with a log file. This call closes file associated
+with stderr descriptor, which might explain why it has stopped
+working (original stderr is closed and WriteFile() fails) and on
+current versions it appears to work "by accident" - not failing
+but use redirected stderr instead of original one.
 
-thanks,
+Fix by creating new file descriptor with _dup() for stderr
+before redirect and use this descriptor for writing prompts.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+While on it, make code a bit more C99-ish by moving variables
+declaration from the beginning of the scope to the actual
+initialisation.
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ v3: rebase
 
---/3RRu44D4QS6o5hU
-Content-Type: application/pgp-signature; name="signature.asc"
+ v2: actually fix the prompt by displaying it in console
+instead of writing to log
 
------BEGIN PGP SIGNATURE-----
+ src/openvpn/console_builtin.c | 18 +++++++-----------
+ src/openvpn/error.c           | 28 +++++++---------------------
+ src/openvpn/error.h           |  4 ++--
+ 3 files changed, 16 insertions(+), 34 deletions(-)
 
-iQGcBAEBAgAGBQJg1KXoAAoJEB2Cnv7KVigSIzYMAIdl/4HIPCxXonDl6NqtTwG3
-HcyjqK5JUi4pOnyiXMtnxj05AnUXxj4Cf7vw1MkJume19mntdrWXhhMKezJLFJDp
-TdwZEjz8ezs8Y7T1j15QQ3uPKZU6wuMMZcmJ9MQtbVoI/o7GaUWhr/l6sStrz8G6
-sF8Hfhxg6+WTglrxmfg4SmHmHX9a2IMc6X364dNfkuhMF4LCxUwHyUbdZlOK8sFT
-/lwFjv2CZe434hsoXl/BoZxcaFIGicPUxEBBkwp8PD9sUOCSGDC+vkkCMo2SwLUp
-5w5o2Riy02Delnpv1L51/DdbW+KWPhCVvegcrEwiBXSaunSGtea9HGRMgyp8nJtj
-Nesy56u7MBvwbi7VBlJTVwxC8DaOa3I4w/sImKFC8pq0Ea1PjL18GE+aHSQn3mkD
-WreVwqhzdOM3xXJ4gwmw4/NRgzjBZ0b5BRWFDSNeC6zXWF0YQSXv3eKg4a0nXm8D
-YmGtd0vbYBM6u9hpZO2kdqD9/DH4qU9qmAkQ3tfLVg==
-=/Yit
------END PGP SIGNATURE-----
+diff --git a/src/openvpn/console_builtin.c b/src/openvpn/console_builtin.c
+index 9bf36347..06b8a77a 100644
+--- a/src/openvpn/console_builtin.c
++++ b/src/openvpn/console_builtin.c
+@@ -62,23 +62,17 @@
+ static bool
+ get_console_input_win32(const char *prompt, const bool echo, char *input, const int capacity)
+ {
+-    HANDLE in = INVALID_HANDLE_VALUE;
+-    HANDLE err = INVALID_HANDLE_VALUE;
+-    DWORD len = 0;
+-
+     ASSERT(prompt);
+     ASSERT(input);
+     ASSERT(capacity > 0);
+ 
+     input[0] = '\0';
+ 
+-    in = GetStdHandle(STD_INPUT_HANDLE);
+-    err = get_orig_stderr();
+-
+-    if (in == INVALID_HANDLE_VALUE
+-        || err == INVALID_HANDLE_VALUE
++    HANDLE in = GetStdHandle(STD_INPUT_HANDLE);
++    int orig_stderr = get_orig_stderr(); // guaranteed to be always valid
++    if ((in == INVALID_HANDLE_VALUE)
+         || win32_service_interrupt(&win32_signal)
+-        || !WriteFile(err, prompt, strlen(prompt), &len, NULL))
++        || (_write(orig_stderr, prompt, strlen(prompt)) == -1))
+     {
+         msg(M_WARN|M_ERRNO, "get_console_input_win32(): unexpected error");
+         return false;
+@@ -106,6 +100,8 @@ get_console_input_win32(const char *prompt, const bool echo, char *input, const
+         }
+     }
+ 
++    DWORD len = 0;
++
+     if (is_console)
+     {
+         winput = malloc(capacity * sizeof(WCHAR));
+@@ -128,7 +124,7 @@ get_console_input_win32(const char *prompt, const bool echo, char *input, const
+ 
+     if (!echo)
+     {
+-        WriteFile(err, "\r\n", 2, &len, NULL);
++        _write(orig_stderr, "\r\n", 2);
+     }
+     if (is_console)
+     {
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index b94d387c..eb82f9c7 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -491,22 +491,12 @@ close_syslog(void)
+ }
+ 
+ #ifdef _WIN32
++static int orig_stderr;
+ 
+-static HANDLE orig_stderr;
+-
+-HANDLE
+-get_orig_stderr(void)
++int get_orig_stderr()
+ {
+-    if (orig_stderr)
+-    {
+-        return orig_stderr;
+-    }
+-    else
+-    {
+-        return GetStdHandle(STD_ERROR_HANDLE);
+-    }
++    return orig_stderr ? orig_stderr : _fileno(stderr);
+ }
+-
+ #endif
+ 
+ void
+@@ -550,16 +540,12 @@ redirect_stdout_stderr(const char *file, bool append)
+         }
+ 
+         /* save original stderr for password prompts */
+-        orig_stderr = GetStdHandle(STD_ERROR_HANDLE);
+-
+-#if 0 /* seems not be necessary with stdout/stderr redirection below*/
+-        /* set up for redirection */
+-        if (!SetStdHandle(STD_OUTPUT_HANDLE, log_handle)
+-            || !SetStdHandle(STD_ERROR_HANDLE, log_handle))
++        orig_stderr = _dup(_fileno(stderr));
++        if (orig_stderr == -1)
+         {
+-            msg(M_ERR, "Error: cannot redirect stdout/stderr to --log file: %s", file);
++            msg(M_WARN | M_ERRNO, "Warning: cannot duplicate stderr, password prompts will appear in log file instead of console.");
++            orig_stderr = _fileno(stderr);
+         }
+-#endif
+ 
+         /* direct stdout/stderr to point to log_handle */
+         log_fd = _open_osfhandle((intptr_t)log_handle, _O_TEXT);
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+index f4528ef2..533354b3 100644
+--- a/src/openvpn/error.h
++++ b/src/openvpn/error.h
+@@ -256,8 +256,8 @@ void close_syslog(void);
+ void redirect_stdout_stderr(const char *file, bool append);
+ 
+ #ifdef _WIN32
+-/* get original stderr handle, even if redirected by --log/--log-append */
+-HANDLE get_orig_stderr(void);
++/* get original stderr fd, even if redirected by --log/--log-append */
++int get_orig_stderr(void);
+ 
+ #endif
+ 
+-- 
+2.23.0.windows.1
 
---/3RRu44D4QS6o5hU--
 
