@@ -1,10 +1,10 @@
-Date: Fri, 25 Jun 2021 17:37:13 +0200 (CEST)
-Message-Id: <202106251537.15PFbD4R002133@...2054...>
+Date: Fri, 25 Jun 2021 18:02:32 +0200 (CEST)
+Message-Id: <202106251602.15PG2W2L002548@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210520151148.2565578-5-arne@...1227...>
-References: <20210520151148.2565578-5-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Extracting key_state deferred
- auth status update into function
+In-Reply-To: <20210625010405.224-1-lstipakov@...277...>
+References: <20210625010405.224-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix console prompts with
+ redirected log
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,36 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Stared at the code - it's "just moving code", though the part about
-"where does the KS_AUTH_DEFERRED come from?" needs a bit more digging.
+Acked-by: Gert Doering <gert@...1296...>
 
-The new code is slightly ugly - it's the old if/else deep nesting 
-style, with early returns intermixed (but keeping the old else branch,
-so "yes, same code" is easier to see).  A followup patch might want to
-refactor this to "consistent early return style".
+Thanks for that.  Stared-at-code (looks good and much more "I understand
+how this works" than before :-) ).  Test built on ubuntu/mingw, but not
+actually tested the resulting binary - but I did test the openvpn.exe
+that Lev built with MSVC for amd64, and it is working nicely for all
+tested cases ("openvpn.exe --auth-user-pass --log file.txt --config ..."
+actually prompts now, which it didn't before - GUI and CLI tested,
+with and without auth-user-pass and passphrase prompts)
 
+Your patch has been applied to the master and release/2.5 branch (bugfix).
 
-Tested on the server side test rig (all OK), including deferred auth
-by plugin and by script.
+commit 480e4cc14ff34fac72406ab1dd66290a91cc09f0 (master)
+commit 86b247a40b919fa8e0a3de1c367087355bb10074 (release/2.5)
+Author: Lev Stipakov
+Date:   Fri Jun 25 04:04:05 2021 +0300
 
-I have adjusted the "now >= ks->auth_deferred_expire" clause as 
-instructed and agreed on IRC, and killed a blank line.
+     Fix console prompts with redirected log
 
-Your patch has been applied to the master branch.
-
-commit e55bedd4ea435f95d288e60691abc6e53b8bf014
-Author: Arne Schwabe
-Date:   Thu May 20 17:11:44 2021 +0200
-
-     Extracting key_state deferred auth status update into function
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20210520151148.2565578-5-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22420.html
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210625010405.224-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20210625010405.224-1-lstipakov@...277...
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
