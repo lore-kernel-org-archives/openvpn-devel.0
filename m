@@ -1,11 +1,13 @@
-Date: Wed, 30 Jun 2021 22:34:40 +0000
+Date: Wed, 30 Jun 2021 22:56:49 +0000
 From: tincantech <tincantech@...2282...>
 Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <zi-Vj2bRDxVU6FgVs0cJcBRxRwZ8B6q5EYNx4g1mHxOg0o5sQneGqWmwMQEwkZ_fcYxWkcTTYPZC7pXDJn6WZQBsS_RyBduPltGkRhsIX2M=@protonmail.com>
+Message-ID: <P_ZqTHMMD5zv_kUeNix7rzuNV00OT9o2LqrU8BdYhMVaq6j5vdLe5YKK3AS13531enQBYdltUJp8Ks7eNCm3xBBfnWo7t9GGHw526akJXwU=@protonmail.com>
+In-Reply-To: <zi-Vj2bRDxVU6FgVs0cJcBRxRwZ8B6q5EYNx4g1mHxOg0o5sQneGqWmwMQEwkZ_fcYxWkcTTYPZC7pXDJn6WZQBsS_RyBduPltGkRhsIX2M=@protonmail.com>
+References: <zi-Vj2bRDxVU6FgVs0cJcBRxRwZ8B6q5EYNx4g1mHxOg0o5sQneGqWmwMQEwkZ_fcYxWkcTTYPZC7pXDJn6WZQBsS_RyBduPltGkRhsIX2M=@protonmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="b1_y1jQBPyeiwmfYFDd4G1YjRF8U6M4ammpqUp3MdLwgU"
-Subject: [Openvpn-devel]  --tmp-dir and systemd PrivateTmp incompatibility
+ boundary="b1_xes3KZLDV9uHdyjUdNFNrKUE2eNcx551OrjVIGYZ0"
+Subject: Re: [Openvpn-devel] --tmp-dir and systemd PrivateTmp incompatibility
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,65 +16,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: tincantech <tincantech@...2282...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
 
---b1_y1jQBPyeiwmfYFDd4G1YjRF8U6M4ammpqUp3MdLwgU
+--b1_xes3KZLDV9uHdyjUdNFNrKUE2eNcx551OrjVIGYZ0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA256
 
-Hi,
+Hi
 
-the openvpn-server systemd unit file currently make use of PrivateTmp=3DTru=
-e,
-this denies the openvpn process access to /tmp (and /var/tmp).
+the problem is three fold:
+3.
+How would I then point scripts to the systemd assigned folder ?
+(Yet another env var: systemd_private_tmp)
 
-This setting also does not provide the systemd assigned location for tempor=
-ary
-files to the openvpn process.
+The most logical answer is "To take matters into my own hands"
+and specify my own temporary location but that does not sound
+like a "secure" approach generally .. which is the point of using
+systemd to "secure" things, in the first place.
 
-Thus the problem is two fold:
-1.
-It is not possible to pre-determine a temporary directory within the systemd
-PrivateTmp assigned folder within an openvpn config which needs to use --tm=
-p-dir
-2.
-Openvpn is forced to assign a non-standard temporary folder to --tmp-dir wh=
-ich
-lies outside of the systemd assigned private temporary folder.
-
-Not being familiar with lib-systemd, I do not know how to approach this pro=
-blem,
-the only "answer" I can see is something like an "alias" for systemd Privat=
-eTmp.
-
-EG:
-To use --tmp-dir within an openvpn config that uses the systemd assign temp=
-orary
-folder, the alias would be something like: 'tmp-dir systemd'
-
-Otherwise, what is the recommended way to use --tmp-dir under systemd ?
-
-Thanks
+stuck in a rabbit hole ..
 R
 -----BEGIN PGP SIGNATURE-----
 Version: ProtonMail
 
-wsBzBAEBCAAGBQJg3PFrACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ2uQwgAzLi4zvrOVV+N88FegTN6rzAT9/pvW/BDRSH5/SGISOlxs8sF
-nxWtQyAq1qgokSK1LrIudge/43b4xB2q++hjeZ+U+e7nW2GvyLONwc/FL2IX
-6lA6g1JLpQzhy+i4F4A6vFr2kdatPPy9LOFS5AZryvQXYFcF8+5vWmaWav4j
-mJ1IBgxwBEQSRglhlKaKwWNqOfVNfKBCpRq54a9EikQSoZbs5SADxp4d5VVE
-UbNnf3jkIXRgCsWPVzbP3llwiCwhnyQtN6MhwkRIUk3Q8iZifWzmu2ETMX4q
-wVB17Kc0WrDrd4lAmMl8wiKxRoZRYZf+8eG1yAWDIkbVdGjfCWLoew=3D=3D
-=3DI4w+
+wsBzBAEBCAAGBQJg3PaaACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
+9muQuJ2gSQgAj8sL20yh3H+lruv30ZyMG3l3sMd81FZdhMQpn1yGbFNqDeit
+geuooC8RIQ1636Sa4UD/TxEZy5e0gU0SfRcaX1+383cV33iFUXHCahMlVAO5
+/CDY7yCi+sXuacvR7TpoR6f3hB0zaF0P+XUNH/K0CUE76P1F1csFlGpvycCx
+6yjIIJo/fWx2VFS7FiPSwK3l2AreLKo8aQAjo/RWnY/AB6uKVbl/l9qKdhn0
+appzLGAzDRbjhpSunp20BtruVu0X5t2fxh6GYpkSy1V8cBI4EZkSu6IfKZpD
+olhzDOPswOFKNdwu5CUYIbRJ03lVInxJo/kb0z9rgcy29SKii8Eisw=3D=3D
+=3D1l7e
 -----END PGP SIGNATURE-----
 
---b1_y1jQBPyeiwmfYFDd4G1YjRF8U6M4ammpqUp3MdLwgU
+--b1_xes3KZLDV9uHdyjUdNFNrKUE2eNcx551OrjVIGYZ0
 Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
@@ -111,14 +94,13 @@ amINCi9iWUJqSTBURU12SDgxNjB1cXpGWGVIdll5VWxxMFNpbkQvWjlpb0llOFFkc0hHQkRVSVJZ
 WXViMXBPOA0KcXJDelJaeDBvTkE9DQo9L0RlYQ0KLS0tLS1FTkQgUEdQIFBVQkxJQyBLRVkgQkxP
 Q0stLS0tLQ0K
 
---b1_y1jQBPyeiwmfYFDd4G1YjRF8U6M4ammpqUp3MdLwgU
+--b1_xes3KZLDV9uHdyjUdNFNrKUE2eNcx551OrjVIGYZ0
 Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 
-skOkDgryUUOk47IMpP7HJknrIdz2MA6P+nwqLyMdepkFHtHTQsMlmJOX9TC/+xvwQ5s3UOPGOHN+
-zeaRftVuV72N
+sOkDgryUUOk27rcprGli5uTjXqZfZWcHp1m5Awr5LFJeQbIWOxWa2sVvjssuaWTr
 
---b1_y1jQBPyeiwmfYFDd4G1YjRF8U6M4ammpqUp3MdLwgU--
+--b1_xes3KZLDV9uHdyjUdNFNrKUE2eNcx551OrjVIGYZ0--
 
 
