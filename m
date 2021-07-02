@@ -1,10 +1,10 @@
-Date: Fri, 2 Jul 2021 14:15:28 +0200 (CEST)
-Message-Id: <202107021215.162CFS9k049661@...2054...>
+Date: Fri, 2 Jul 2021 14:17:46 +0200 (CEST)
+Message-Id: <202107021217.162CHk1o049744@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210630185134.144826-1-openvpn@...2080...>
-References: <20210630185134.144826-1-openvpn@...2080...>
-Subject: [Openvpn-devel] [PATCH applied] Re: doc: Use generic rules for
- man/html generation
+In-Reply-To: <20210701171458.8897-1-maximilian.fillinger@...2507...>
+References: <20210701171458.8897-1-maximilian.fillinger@...2507...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Update Fox e-mail address in
+ copyright notices
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
+To: Max Fillinger <maximilian.fillinger@...2507...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Tested on:
-  - Linux, with docutils, including "make distcheck" + tarball check
-  - FreeBSD 12, with no docutils, "make" succeeds, "distcheck" fails (ok)
-  - FreeBSD 13, with docutils, including "make distcheck"
+Steffan confirmed the new mail address (thanks) but did not check the 
+whole patch, so didn't ACK - I did, with "git diff -I @fox", which 
+shows "no other changes"
 
-Your patch has been applied to the master and release/2.5 branch 
-(no code change, eases our future maintenance).
+Your patch has been applied to the master and release/2.5 branch (long-term).
 
-commit 37cf98fa224a2ae5fc5cfa380bdb291e90d6413d (master)
-commit 18211f1ba3124bde05ca11c5111989acdb27f957 (release/2.5)
-Author: David Sommerseth
-Date:   Wed Jun 30 20:51:34 2021 +0200
+commit ccee09d1478aa69783926c208bfa235dcb055124 (master)
+commit ccee09d1478aa69783926c208bfa235dcb055124 (release/2.5)
+Author: Max Fillinger
+Date:   Thu Jul 1 19:14:58 2021 +0200
 
-     doc: Use generic rules for man/html generation
+     Update Fox e-mail address in copyright notices
 
-     Signed-off-by: David Sommerseth <davids@...515...>
+     Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210630185134.144826-1-openvpn@...2080...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22604.html
+     Message-Id: <20210701171458.8897-1-maximilian.fillinger@...2507...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22608.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
