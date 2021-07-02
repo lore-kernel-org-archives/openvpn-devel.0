@@ -1,10 +1,14 @@
-Date: Fri, 2 Jul 2021 12:06:21 +0200 (CEST)
-Message-Id: <202107021006.162A6LvP047768@...2054...>
+Date: Fri, 2 Jul 2021 12:11:02 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210520150932.2565217-1-arne@...1227...>
-References: <20210520150932.2565217-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Move examples into
- openvpn-examples(5) man page
+Message-ID: <20210702101102.GR976@...1296...>
+References: <20210701171458.8897-1-maximilian.fillinger@...2507...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="oOfcuPcLuudtHY86"
+Content-Disposition: inline
+In-Reply-To: <20210701171458.8897-1-maximilian.fillinger@...2507...>
+Subject: Re: [Openvpn-devel] [PATCH] Update Fox e-mail address in copyright
+ notices
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,42 +17,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Max Fillinger <maximilian.fillinger@...2507...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I have adjusted the tab, and added openvpn-examples.5 to dist_man_MANS,
-as instructed.
+--oOfcuPcLuudtHY86
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-I have run "make distcheck" on a machine with and without py-docutils
-(with docutils, it creates the openvpn-examples.5 page and packs it,
-without, it fails - at it must be) and verified that the generated 
-.5/.5.html files make it to the tarball.
+Hi,
 
-Since *this* patch is only about splitting the man pages (and does not
-concern itself with actual content which might depend on "is only in
-master") it makes sense to have it in 2.5 as well -> done.
+On Thu, Jul 01, 2021 at 07:14:58PM +0200, Max Fillinger wrote:
+> Replace openvpn@...1435... with openvpn@...2625...
+>=20
+> Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
 
-Your patch has been applied to the master branch.
+Generally speaking, this is fine, I just have a small issue with
+"who can reasonably ACK this".  Can you poke Steffan to approve this
+(as "he introduced a significant number of these", so he's a natural
+authority on "yes, this makes sense to change to the new corp mail")?
 
-commit 0c5380e906116b61ce9ed5310181291941b75227 (master)
-commit 11fe49e31afd9b05da751d60680e8d2254fd9cd6 (release/2.5)
-Author: Arne Schwabe
-Date:   Thu May 20 17:09:31 2021 +0200
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-     Move examples into openvpn-examples(5) man page
+Gert Doering - Munich, Germany                             gert@...1296...
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20210520150932.2565217-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22414.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+--oOfcuPcLuudtHY86
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
---
-kind regards,
+iQGcBAEBAgAGBQJg3uY1AAoJEB2Cnv7KVigSfZgMAJ8ZbRo1BhIwxsugPOWsZJcU
+0S+cXuPrYX2fDJhkN1QiADG4BPGH+t/q+cnkMRLxdtCnhDTAKpDbGAdoKCFfPawO
+FiRCtDDmGaGRN/AysR1PFHlfJKfE9OdLnRTAbHOLsvjyDdDhngZRdSyenswSwzBU
+jDgzxxmHT1czLe6nIoqhLDjVhHQxZtAtwVNIEY8fayaN7ns2JXO9aJlGOcrSzbku
+H6sjKoPF3g6xDJ69qWRkFEiObP/QFx1dxYhebFLpPrPMuEk1TXAN4jH0cuhijcXQ
+eWjO8dc4SPF/89Ee0RxyVzCb0tiTFGUfvxq84zVsBFnzMj7UQrVG6RmL/qFzZP/z
+1szA1aYnJ9nWH7XyMTEYptOAmnOTPuonBdlED8bhhtyuNhITwvQJwewTIlGV6+jl
+g6qXiu7S+gkkLpk//aWrIZ+UImGUuM/uyHacE5ngB21c8sYls3zarQOIgyMKLh9o
+dqjE8XtJu5KaLpaHSv8D/f2HBk8kOQSXrV/qt6gS0A==
+=gxq7
+-----END PGP SIGNATURE-----
 
-Gert Doering
-
+--oOfcuPcLuudtHY86--
 
