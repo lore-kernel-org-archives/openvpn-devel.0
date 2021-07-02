@@ -1,10 +1,12 @@
-Date: Fri, 2 Jul 2021 14:17:46 +0200 (CEST)
-Message-Id: <202107021217.162CHk1o049744@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210701171458.8897-1-maximilian.fillinger@...2507...>
+MIME-Version: 1.0
 References: <20210701171458.8897-1-maximilian.fillinger@...2507...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Update Fox e-mail address in
- copyright notices
+ <20210702101102.GR976@...1296...>
+In-Reply-To: <20210702101102.GR976@...1296...>
+From: Steffan Karger <steffan@...1856...>
+Date: Fri, 2 Jul 2021 13:59:38 +0200
+Message-ID: <CAA1Abx+5_hDc9tJ3R7cubSVv+H6sxvWUsgK-xPT_vykCzab+WA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Update Fox e-mail address in copyright
+ notices
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +15,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: Max Fillinger <maximilian.fillinger@...2507...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: Max Fillinger <maximilian.fillinger@...2507...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-Steffan confirmed the new mail address (thanks) but did not check the 
-whole patch, so didn't ACK - I did, with "git diff -I @fox", which 
-shows "no other changes"
+On Fri, 2 Jul 2021 at 12:12, Gert Doering <gert@...1296...> wrote:
+> On Thu, Jul 01, 2021 at 07:14:58PM +0200, Max Fillinger wrote:
+> > Replace openvpn@...1435... with openvpn@...2625...
+> >
+> > Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+>
+> Generally speaking, this is fine, I just have a small issue with
+> "who can reasonably ACK this".  Can you poke Steffan to approve this
+> (as "he introduced a significant number of these", so he's a natural
+> authority on "yes, this makes sense to change to the new corp mail")?
 
-Your patch has been applied to the master and release/2.5 branch (long-term).
+Yes, this makes sense to change to the new corp mail. :-)
 
-commit ccee09d1478aa69783926c208bfa235dcb055124 (master)
-commit ccee09d1478aa69783926c208bfa235dcb055124 (release/2.5)
-Author: Max Fillinger
-Date:   Thu Jul 1 19:14:58 2021 +0200
+Haven't looked in detail at the patch itself, but changing these to
+@foxcrypto.com is the right thing to do.
 
-     Update Fox e-mail address in copyright notices
-
-     Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210701171458.8897-1-maximilian.fillinger@...2507...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22608.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+-Steffan
 
