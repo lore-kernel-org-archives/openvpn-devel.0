@@ -1,9 +1,13 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <df2d69d5-d29e-8222-dbc3-88a78b14c149@...515...>
-Date: Tue, 6 Jul 2021 12:09:46 +0300
+References: <20210520151148.2565578-6-arne@...1227...>
+ <20210705133414.3102815-1-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <85a225b2-966a-d83b-1117-27433db7d7de@...2181...>
+Date: Tue, 6 Jul 2021 11:23:50 +0200
 MIME-Version: 1.0
+In-Reply-To: <20210705133414.3102815-1-arne@...1227...>
 Content-Language: en-US
-Subject: [Openvpn-devel] Community meetings in July 2021
+Subject: Re: [Openvpn-devel] [PATCH v3 6/9] Introduce S_GENERATED_KEYS state
+ and generate keys only when authenticated
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,24 +16,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=iso-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-Next community meetings have been scheduled to
+On 05/07/2021 15:34, Arne Schwabe wrote:
+> Since generating data channel keys does not happen when we have reach the
+> S_ACTIVE/S_GOT_KEY state anymore like it used to be before NCP, the
+> state that data channel keys deserves its own state in the TLS session
+> state machine.
+> 
+> The changes done by this commit are rather intrusive since they
+> move the key generation to a completely different place and also
+> rely on the state machine to decide if keys should be
+> generated rather than on the complicated conditions that were
+> implemented in the key_method_2_write/read methods.
+> 
+> A (intended) side effect of this change is that sessions that
+> are still in deferred state (ks->authenticated == KS_DEFERRED)
+> will not have data channel keys generated. This avoids corner
+> cases where a not fully authenticated sessions might leak data.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> 
+> Patch v2: rebased
+> 
+> Patch v3: fix crash in non TLS mode
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-- Wed 7th July 2021 at 14:00 CET
-- Wed 14th July 2021 at 14:00 CET
-- Wed 21st July 2021 at 14:00 CET
-- Wed 28th July 2021 at 14:00 CET
+Thanks for fixing the crash. I added the basic --secret test to my suite
+and I could indeed see the crash when using v2 of this patch.
 
-The place is #openvpn-meeting IRC channel at libera.chat Meeting agendas
-and summaries are in here:
+I can confirm that v3 is indeed fixing the crash.
+Classic client/server and p2p with TLS still works as expected.
 
-<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
+Deferred auth works too.
 
-Samuli
+
+Regards,
+
+
+
+-- 
+Antonio Quartulli
 
