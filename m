@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sun, 11 Jul 2021 16:10:11 +0200
-Message-Id: <20210711141011.3272289-1-arne@...1227...>
+Date: Tue, 13 Jul 2021 14:25:50 +0200
+Message-Id: <20210713122550.3310818-1-arne@...1227...>
 In-Reply-To: <20210520151148.2565578-7-arne@...1227...>
 References: <20210520151148.2565578-7-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] Cleanup handling of initial auth token
+Subject: [Openvpn-devel] [PATCH v5] Cleanup handling of initial auth token
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,10 @@ This changes that auth_token_initial is set when the token is
 initially generated instead when pushing the token. Even I do not know
 anymore why I did it in this way in the first place. Also use
 multi->auth_token_initial as source for the sesssion ID since it should
-now always be available.
+now always be available. Also set auth_token_initial directly to
+up->password once we verified that we have gotten a valid token from
+a client. This cleans ups the logic in generating the environment and
+makes the code flow clearer.
 
 Since the change makes auth_token_initial always available we need to add
 a check to only send a PUSH reply to update the token on renegotiations.
@@ -31,27 +34,33 @@ This commit also removes the workaround for old OpenVPN clients. These
 were only available as commercial OpenVPN Connect client and not in use
 anymore.
 
+Furthermore, introduce a check if the session ID has changed during a session.
+Even though this is still a valid authentication changing to a different auth
+token mid session is highly irregular and should never occur naturally.
+
 Patch V2: rebase.
 Patch V3: fix formatting, clarifying commit message, remove initial
           token workaround for old v3.
 Patch v4: move sending the auth-token for renegotiations to a sane place
           and trigger it when the TLS session reaches its fully authenticated
           state.
+Patch v5: Move also setting auth_token_inital from up->password to a more
+          logical place, general cleanups, add session id mismatch check
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
  doc/man-sections/server-options.rst        |  4 +-
- src/openvpn/auth_token.c                   | 58 ++++++++++++++++------
- src/openvpn/auth_token.h                   |  9 ++++
+ src/openvpn/auth_token.c                   | 76 +++++++++++++++++-----
+ src/openvpn/auth_token.h                   |  9 +++
  src/openvpn/push.c                         |  8 ---
- src/openvpn/ssl.c                          |  7 ++-
- src/openvpn/ssl_common.h                   |  8 +--
- src/openvpn/ssl_verify.c                   | 22 +-------
- tests/unit_tests/openvpn/test_auth_token.c |  7 ++-
- 8 files changed, 71 insertions(+), 52 deletions(-)
+ src/openvpn/ssl.c                          |  7 +-
+ src/openvpn/ssl_common.h                   |  8 ++-
+ src/openvpn/ssl_verify.c                   | 31 +++------
+ tests/unit_tests/openvpn/test_auth_token.c | 49 +++++++++++---
+ 8 files changed, 130 insertions(+), 62 deletions(-)
 
 diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
-index 047f2270f..1ab00e81b 100644
+index 715473353..f1d2ec317 100644
 --- a/doc/man-sections/server-options.rst
 +++ b/doc/man-sections/server-options.rst
 @@ -35,7 +35,7 @@ fast hardware. SSL/TLS authentication must be used in this mode.
@@ -73,7 +82,7 @@ index 047f2270f..1ab00e81b 100644
    This option postpones this decision to the external authentication
    methods and checks the validity of the account and do other checks.
 diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
-index 0ea6d1832..aa949ff09 100644
+index 0ea6d1832..6c1bec799 100644
 --- a/src/openvpn/auth_token.c
 +++ b/src/openvpn/auth_token.c
 @@ -109,11 +109,11 @@ add_session_token_env(struct tls_session *session, struct tls_multi *multi,
@@ -104,7 +113,7 @@ index 0ea6d1832..aa949ff09 100644
          char old_tstamp_decode[9];
  
 +        /* Make a copy of the string to not modify multi->auth_token_initial */
-+        char* initial_token_copy = string_alloc(multi->auth_token_initial, &gc);
++        char *initial_token_copy = string_alloc(multi->auth_token_initial, &gc);
 +
          /*
           * reuse the same session id and timestamp and null terminate it at
@@ -115,14 +124,16 @@ index 0ea6d1832..aa949ff09 100644
          char *old_tsamp_initial = old_sessid + AUTH_TOKEN_SESSION_ID_LEN*8/6;
  
          old_tsamp_initial[12] = '\0';
-@@ -212,10 +215,6 @@ generate_auth_token(const struct user_pass *up, struct tls_multi *multi)
+@@ -211,11 +214,7 @@ generate_auth_token(const struct user_pass *up, struct tls_multi *multi)
+         initial_timestamp = *tstamp_ptr;
  
          old_tsamp_initial[0] = '\0';
-         ASSERT(openvpn_base64_decode(old_sessid, sessid, AUTH_TOKEN_SESSION_ID_LEN)==AUTH_TOKEN_SESSION_ID_LEN);
+-        ASSERT(openvpn_base64_decode(old_sessid, sessid, AUTH_TOKEN_SESSION_ID_LEN)==AUTH_TOKEN_SESSION_ID_LEN);
 -
 -
 -        /* free the auth-token, we will replace it with a new one */
 -        free(multi->auth_token);
++        ASSERT(openvpn_base64_decode(old_sessid, sessid, AUTH_TOKEN_SESSION_ID_LEN) == AUTH_TOKEN_SESSION_ID_LEN);
      }
      else if (!rand_bytes(sessid, AUTH_TOKEN_SESSION_ID_LEN))
      {
@@ -149,6 +160,15 @@ index 0ea6d1832..aa949ff09 100644
      gc_free(&gc);
  }
  
+@@ -343,7 +353,7 @@ verify_auth_token(struct user_pass *up, struct tls_multi *multi,
+     }
+     else
+     {
+-        msg(M_WARN, "--auth-token-gen: HMAC on token from client failed (%s)",
++        msg(M_WARN, "--auth-gen-token: HMAC on token from client failed (%s)",
+             up->username);
+         return 0;
+     }
 @@ -353,13 +363,7 @@ verify_auth_token(struct user_pass *up, struct tls_multi *multi,
      bool in_renog_time = now >= timestamp
                           && now < timestamp + 2 * session->opt->renegotiate_seconds;
@@ -164,7 +184,28 @@ index 0ea6d1832..aa949ff09 100644
      {
          ret |= AUTH_TOKEN_EXPIRED;
      }
-@@ -408,3 +412,27 @@ wipe_auth_token(struct tls_multi *multi)
+@@ -383,7 +387,19 @@ verify_auth_token(struct user_pass *up, struct tls_multi *multi,
+     {
+         /* Tell client that the session token is expired */
+         auth_set_client_reason(multi, "SESSION: token expired");
+-        msg(M_INFO, "--auth-token-gen: auth-token from client expired");
++        msg(M_INFO, "--auth-gen-token: auth-token from client expired");
++    }
++
++    /* Check that we do have the same session ID in the token and the session
++     * did not change, this also compares the prefix and session part of the
++     * tokens, which should be identical if the session stayed the same */
++    if (multi->auth_token_initial
++        && memcmp_constant_time(multi->auth_token_initial, up->password,
++                                strlen(SESSION_ID_PREFIX) + AUTH_TOKEN_SESSION_ID_LEN * 8 / 6))
++    {
++        msg(M_WARN, "--auth-gen-token: session id in token changed (. Rejecting "
++                    "token.");
++        ret = 0;
+     }
+     return ret;
+ }
+@@ -408,3 +424,27 @@ wipe_auth_token(struct tls_multi *multi)
          multi->auth_token_initial = NULL;
      }
  }
@@ -281,10 +322,26 @@ index 43d6276be..5c261115c 100644
  #define  AUTH_TOKEN_HMAC_OK              (1<<0)
      /**< Auth-token sent from client has valid hmac */
 diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index bbb1878a3..6cc49c876 100644
+index bbb1878a3..e8cd87088 100644
 --- a/src/openvpn/ssl_verify.c
 +++ b/src/openvpn/ssl_verify.c
-@@ -1631,27 +1631,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+@@ -1512,6 +1512,15 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+     if (session->opt->auth_token_generate && is_auth_token(up->password))
+     {
+         ks->auth_token_state_flags = verify_auth_token(up, multi, session);
++
++        /* If this is the first time we see an auth-token in this session, save
++         * it as initial auth token so to continue using the same session ID
++         * and timestamp in updates */
++        if (!multi->auth_token_initial)
++        {
++            multi->auth_token_initial = strdup(up->password);
++        }
++
+         if (session->opt->auth_token_call_auth)
+         {
+             /*
+@@ -1631,27 +1640,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
               */
              generate_auth_token(up, multi);
          }
@@ -314,7 +371,7 @@ index bbb1878a3..6cc49c876 100644
              (ks->authenticated == KS_AUTH_DEFERRED) ? "deferred" : "succeeded",
              up->username,
 diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/openvpn/test_auth_token.c
-index 4030052e0..a504eed91 100644
+index 4030052e0..476f64b89 100644
 --- a/tests/unit_tests/openvpn/test_auth_token.c
 +++ b/tests/unit_tests/openvpn/test_auth_token.c
 @@ -174,7 +174,10 @@ auth_token_test_timeout(void **state)
@@ -328,7 +385,19 @@ index 4030052e0..a504eed91 100644
  
      /* No time has passed */
      assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
-@@ -244,10 +247,10 @@ auth_token_test_known_keys(void **state)
+@@ -195,11 +198,6 @@ auth_token_test_timeout(void **state)
+     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
+                      AUTH_TOKEN_HMAC_OK|AUTH_TOKEN_EXPIRED);
+ 
+-    /* Check if the mode for a client that never updates its token works */
+-    ctx->multi.auth_token_initial = strdup(ctx->up.password);
+-    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
+-                     AUTH_TOKEN_HMAC_OK);
+-
+     /* But not when we reached our timeout */
+     now = 100000 + ctx->session->opt->auth_token_lifetime + 1;
+     assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
+@@ -244,10 +242,10 @@ auth_token_test_known_keys(void **state)
  
      now = 0;
      /* Preload the session id so the same session id is used here */
@@ -341,6 +410,69 @@ index 4030052e0..a504eed91 100644
  
      generate_auth_token(&ctx->up, &ctx->multi);
  
+@@ -268,6 +266,38 @@ setenv_str(struct env_set *es, const char *name, const char *value)
+     }
+ }
+ 
++void
++auth_token_test_session_mismatch(void **state)
++{
++    struct test_context *ctx = (struct test_context *) *state;
++
++    /* Generate first auth token and check it is correct */
++    generate_auth_token(&ctx->up, &ctx->multi);
++    strcpy(ctx->up.password, ctx->multi.auth_token);
++    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
++                     AUTH_TOKEN_HMAC_OK);
++
++    char *token_sessiona = strdup(ctx->multi.auth_token);
++
++    /* Generate second token */
++    wipe_auth_token(&ctx->multi);
++
++    generate_auth_token(&ctx->up, &ctx->multi);
++    strcpy(ctx->up.password, ctx->multi.auth_token);
++    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session),
++                     AUTH_TOKEN_HMAC_OK);
++
++    assert_int_not_equal(0, memcmp(ctx->multi.auth_token_initial + strlen(SESSION_ID_PREFIX),
++                                   token_sessiona + strlen(SESSION_ID_PREFIX),
++                                   AUTH_TOKEN_SESSION_ID_LEN * 8 / 6));
++
++    /* The first token is valid but should trigger the invalid response since
++     * the session id is not the same */
++    strcpy(ctx->up.password, token_sessiona);
++    assert_int_equal(verify_auth_token(&ctx->up, &ctx->multi, ctx->session), 0);
++    free(token_sessiona);
++}
++
+ static void
+ auth_token_test_empty_user(void **state)
+ {
+@@ -341,13 +371,13 @@ auth_token_test_random_keys(void **state)
+ 
+     now = 0x5c331e9c;
+     /* Preload the session id so the same session id is used here */
+-    ctx->multi.auth_token = strdup(random_token);
++    ctx->multi.auth_token_initial = strdup(random_token);
+ 
+     free_key_ctx(&ctx->multi.opt.auth_token_key);
+     auth_token_init_secret(&ctx->multi.opt.auth_token_key, random_key, true);
+ 
+     /* Zero the hmac part to ensure we have a newly generated token */
+-    zerohmac(ctx->multi.auth_token);
++    zerohmac(ctx->multi.auth_token_initial);
+ 
+     generate_auth_token(&ctx->up, &ctx->multi);
+ 
+@@ -385,6 +415,7 @@ main(void)
+         cmocka_unit_test_setup_teardown(auth_token_test_random_keys, setup, teardown),
+         cmocka_unit_test_setup_teardown(auth_token_test_key_load, setup, teardown),
+         cmocka_unit_test_setup_teardown(auth_token_test_timeout, setup, teardown),
++        cmocka_unit_test_setup_teardown(auth_token_test_session_mismatch, setup, teardown)
+     };
+ 
+ #if defined(ENABLE_CRYPTO_OPENSSL)
 -- 
 2.32.0
 
