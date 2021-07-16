@@ -1,14 +1,9 @@
-Date: Thu, 15 Jul 2021 11:10:09 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20210715091009.GA976@...1296...>
-References: <20210714162533.10098-1-david@...2627...>
- <7b1e2246-8375-0369-1d27-6100cc03b872@...2181...>
+From: Arne Schwabe <arne@...1227...>
+Date: Fri, 16 Jul 2021 14:18:48 +0200
+Message-Id: <20210716121848.67888-1-arne@...1227...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="4JtcDDr0VxtSus1T"
-Content-Disposition: inline
-In-Reply-To: <7b1e2246-8375-0369-1d27-6100cc03b872@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix leaks in route.
+Subject: [Openvpn-devel] [PATCH] Introduce webauth auth pending method and
+ deprecate openurl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,58 +12,114 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: David Korczynski <david@...2627...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---4JtcDDr0VxtSus1T
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+The experience with openurl/OPEN_URL has shown that just sending
+a URL to a client is not enough and we often need different
+behaviour of the client depending on circumstances. Replace
+OPEN_URL with a more flexible WEBAUTH pending auth method.
 
-Hi,
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ doc/management-notes.txt    | 41 ++++++++++++++++++++++++++-----------
+ include/openvpn-plugin.h.in |  2 +-
+ 2 files changed, 30 insertions(+), 13 deletions(-)
 
-On Thu, Jul 15, 2021 at 08:47:13AM +0200, Antonio Quartulli wrote:
-> On 14/07/2021 18:25, David Korczynski wrote:
-> > Signed-off-by: David Korczynski <david@...2627...>
->=20
-> Some commit message is always good - just to give context to the reader
-> without the need to look at the rest of the code.
->=20
-> But if Gert is fine without it, I am fine too.
+diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+index c20344298..4572d967f 100644
+--- a/doc/management-notes.txt
++++ b/doc/management-notes.txt
+@@ -645,11 +645,11 @@ Before issuing a client-pending-auth to a client instead of a
+ client-auth/client-deny, the server should check the IV_SSO
+ environment variable for whether the method is supported. Currently
+ defined methods are crtext for challenge/response using text
+-(e.g., TOTP), openurl and proxy_url for opening a URL in the client to
+-continue authentication. A client supporting the first two methods would
+-set
++(e.g., TOTP), openurl (deprecated) and webauth for opening a URL in
++the client to continue authentication. A client supporting the last
++two methods would set
+ 
+-    setenv IV_SSO openurl,crtext
++    setenv IV_SSO webauth,crtext
+ 
+ The variable name IV_SSO is historic as AUTH_PENDING was first used
+ to signal single sign on support. To keep compatibility with existing
+@@ -668,33 +668,50 @@ notification as
+ where {EXTRA} is formatted as received from the server.
+ Currently defined formats for {EXTRA} are detailed below.
+ 
+-openurl
+-========
++webauth and openurl
++===================
+ For a web based extra authentication (like for
+ SSO/SAML) {EXTRA} should be
+ 
+     OPEN_URL:url
+ 
+-and client should ask the user to open the URL to continue.
++or
++
++    WEBAUTH:flags:url
++
++The OPEN_URL method is deprecated as it does not allow to send flags which
++proved to be needed to signal certain behaviour to the client.
++
++The client should ask the user to open the URL to continue.
+ 
+ The space in a control message is limited, so this url should be kept
+ short to avoid issues. If a longer url is required a URL that redirects
+-to the longer URL should be sent instead.
++to the longer URL should be sent instead. The total length is limited to 1024
++bytes which includes the INFO_PRE:WEBAUTH:flags.
++
++flags is a list of flags which are separated by commas. Currently defined
++flags are:
++
++- proxy     (see next pargraph)
++- hidden    start the webview in hidden mode (see openvpn3 webauth documentation)
++- external  Do not use an internal webview but use an external browser. Some
++            authentication providers refuse to work in an internal webview.
++
+ 
+ A complete documentation how URLs should be handled on the client is available
+ in the openvpn3 repository:
+ 
+ https://github.com/OpenVPN/openvpn3/blob/master/doc/webauth.md
+ 
+-proxy_url
+-========
+-This is a variant of openurl that allows opening a url via an
++webauth with proxy
++==================
++This is a variant of webauth that allows opening a url via an
+ HTTP proxy. It could be used to avoid issues with OpenVPN connection's
+ persist-tun that may cause the web server to be unreachable.
+ The client should announce proxy_url in its IV_SSO and parse the
+ PROXY_URL message. The format of {EXTRA} in this case is
+ 
+-    PROXY_URL:<proxy>:<proxy_port>:<proxyuser_base64>:<proxy_password_base64>:url
++    WEBAUTH:proxy=<proxy>;<proxy_port>;<proxyuser_base64>;<proxy_password_base64>,flags:url
+ 
+ The proxy should be a literal IPv4 address or IPv6 address enclosed in [] to avoid
+ ambiguity in parsing. A literal IP address is preferred as DNS might not be
+diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
+index 79969bf89..944294b22 100644
+--- a/include/openvpn-plugin.h.in
++++ b/include/openvpn-plugin.h.in
+@@ -578,7 +578,7 @@ OPENVPN_PLUGIN_DEF openvpn_plugin_handle_t OPENVPN_PLUGIN_FUNC(openvpn_plugin_op
+  * auth_pending_file is
+  * line 1: timeout in seconds
+  * line 2: Pending auth method the client needs to support (e.g. openurl)
+- * line 3: EXTRA (e.g. OPEN_URL:http://www.example.com)
++ * line 3: EXTRA (e.g. WEBAUTH::http://www.example.com)
+  *
+  * In addition the OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER and
+  * OPENVPN_PLUGIN_CLIENT_CONNECT_DEFER_V2 are called when OpenVPN tries to
+-- 
+2.32.0
 
-I am fine, in this case, as there is not really much to say here - maybe
-add the explanation "we assume that RT_DEFINED is always set, but still,
-if it is not, we must not leak memory".
-
-I'll merge later today :-)
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---4JtcDDr0VxtSus1T
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJg7/twAAoJEB2Cnv7KVigSkFAL/2jUPhoUmizvoJf5jbR5mD5z
-A5VwCN8iFSQRyCzvuAQIRUfKSX+iWYzVjpoXGlDqoOdu9rdralCMxS07BQ2RR0Wu
-XAeUxzTw6t0K1/gvLoicYoLsL6JbWwVB5yoXu1saUrIb02gIbUcOIIBdzMtvUhkj
-hs/Li0cUqybwAe+uFIZZuU1xrUUJDuCwe33BhCL+GBKARAzpFs+oA52Nu0gd/Kku
-q5MeiTqHXVMaVK8G+0CrRUwp6xHkA+DKEo7Y0K1tgcq4reCxbf6+UynjlHW8OMzo
-TWdokZU6i5/NvnxxHdAS0bBjzBLyW5Zq2KG1baqaYm9WysNcUlIJDohN0eNI07L6
-wVYbyBrXXwNhQmwddRA8KZMxiP1dRUBSBUVUCq0Udno16TXAGvRSJ4+BE25VJgPO
-viEUfdfrnTV2jYyU2r6g/hh0kQdxzYnJWnoBSfg+9/Tcljm6tOP/wHL2/WWH7YxR
-3wc2lqfG5qPd5nCKMllwofxbalZUzYv0pUipDnyxfg==
-=1t56
------END PGP SIGNATURE-----
-
---4JtcDDr0VxtSus1T--
 
