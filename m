@@ -1,10 +1,9 @@
-Date: Wed, 21 Jul 2021 15:24:12 +0200 (CEST)
-Message-Id: <202107211324.16LDOCiP072641@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210623183728.2565286-1-arne@...1227...>
-References: <20210623183728.2565286-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix tls-cert-profile broken on
- OpenSSL 1.1+
+From: Arne Schwabe <arne@...1227...>
+Date: Thu, 22 Jul 2021 18:24:09 +0200
+Message-Id: <20210722162409.231265-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Fix OpenVPN querying user/password if
+ auth-token with user expires
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,39 +14,58 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+The problematic behaviour happens when start a profile without
+auth-user-pass and connect to a server that pushes auth-token
+When the auth token expires OpenVPN asks for auth User and password
+again.
 
-The root cause is very obvious ("git grep HAVE_SSL_CTX_SET_SECURITY_LEVEL"),
-and the fix seems logical.  OpenSSL documentation confirms that this
-was "added in OpenSSL 1.1.0", so checking for 0x10100000L sounds like
-the right way to do (one could argue about >=, but 1.1.0a would already
-match)
+The problem is that the auth_user_pass_setup sets
+auth_user_pass_enabled = true; This function is called from two places.
+In ssl.c it is only called with an auth-token present or that
+variable already set. The other one is init_query_passwords.
 
-I have tested against 1.0.2 (builds, refuses the option) and 1.1.1k
-(builds and now accepts the option again, and being really strict
-with "preferred" or "suiteb", refuses my SHA1 test certs)
+Move setting auth_user_pass_enabled to the second place to ensure it is
+only set if we really want passwords.
+---
+ src/openvpn/init.c | 2 ++
+ src/openvpn/ssl.c  | 1 -
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-Your patch has been applied to the master branch.
-
-commit b66701e5e2ef194f33e2a8865a4abf4567466d83
-Author: Arne Schwabe
-Date:   Wed Jun 23 20:37:28 2021 +0200
-
-     Fix tls-cert-profile broken on OpenSSL 1.1+
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210623183728.2565286-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22584.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index a1401e805..f9083e69c 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -595,6 +595,7 @@ init_query_passwords(const struct context *c)
+     /* Auth user/pass input */
+     if (c->options.auth_user_pass_file)
+     {
++        auth_user_pass_enabled = true;
+ #ifdef ENABLE_MANAGEMENT
+         auth_user_pass_setup(c->options.auth_user_pass_file, &c->options.sc_info);
+ #else
+@@ -3116,6 +3117,7 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+     to.auth_token_generate = options->auth_token_generate;
+     to.auth_token_lifetime = options->auth_token_lifetime;
+     to.auth_token_call_auth = options->auth_token_call_auth;
++    to.auth_token_user_common_name = options->auth_token_user_common_name;
+     to.auth_token_key = c->c1.ks.auth_token_key;
+ 
+     to.x509_track = options->x509_track;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index aa8cb3b27..c2dc36019 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -396,7 +396,6 @@ static char *auth_challenge; /* GLOBAL */
+ void
+ auth_user_pass_setup(const char *auth_file, const struct static_challenge_info *sci)
+ {
+-    auth_user_pass_enabled = true;
+     if (!auth_user_pass.defined && !auth_token.defined)
+     {
+ #ifdef ENABLE_MANAGEMENT
+-- 
+2.32.0
 
 
