@@ -1,13 +1,10 @@
-From: Antonio Quartulli <a@...2181...>
-References: <20210722162409.231265-1-arne@...1227...>
- <e32ff2bb-1f98-ef3c-73c0-2b5d3214cba9@...2181...>
-Message-ID: <1603f923-cb49-a1de-9de1-b79aaf4c437c@...2181...>
-Date: Tue, 27 Jul 2021 15:44:38 +0200
-MIME-Version: 1.0
-In-Reply-To: <e32ff2bb-1f98-ef3c-73c0-2b5d3214cba9@...2181...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Fix OpenVPN querying user/password if
- auth-token with user expires
+Date: Tue, 27 Jul 2021 16:24:30 +0200 (CEST)
+Message-Id: <202107271424.16REOU3Y024343@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210714162533.10098-1-david@...2627...>
+References: <20210714162533.10098-1-david@...2627...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix argv leaks in add_route()
+ and add_route_ipv6()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,62 +15,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: David Korczynski <david@...2627...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Thanks for your patch.  I have not seriously tested (just a basic
+compile test) as it is "obviously correct" for that special case.
 
-On 27/07/2021 15:42, Antonio Quartulli wrote:
-> Hi,
-> 
-> On 22/07/2021 18:24, Arne Schwabe wrote:
->> The problematic behaviour happens when start a profile without
->> auth-user-pass and connect to a server that pushes auth-token
->> When the auth token expires OpenVPN asks for auth User and password
->> again.
->>
->> The problem is that the auth_user_pass_setup sets
->> auth_user_pass_enabled = true; This function is called from two places.
->> In ssl.c it is only called with an auth-token present or that
->> variable already set. The other one is init_query_passwords.
->>
->> Move setting auth_user_pass_enabled to the second place to ensure it is
->> only set if we really want passwords.
->> ---
->>  src/openvpn/init.c | 2 ++
->>  src/openvpn/ssl.c  | 1 -
->>  2 files changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
->> index a1401e805..f9083e69c 100644
->> --- a/src/openvpn/init.c
->> +++ b/src/openvpn/init.c
->> @@ -595,6 +595,7 @@ init_query_passwords(const struct context *c)
->>      /* Auth user/pass input */
->>      if (c->options.auth_user_pass_file)
->>      {
->> +        auth_user_pass_enabled = true;
->>  #ifdef ENABLE_MANAGEMENT
->>          auth_user_pass_setup(c->options.auth_user_pass_file, &c->options.sc_info);
-> 
-> init.c: In function ‘init_query_passwords’:
-> init.c:597:9: error: ‘auth_user_pass_enabled’ undeclared (first use in
-> this function); did you mean ‘auth_user_pass_setup’?
->   597 |         auth_user_pass_enabled = true;
->       |         ^~~~~~~~~~~~~~~~~~~~~~
->       |         auth_user_pass_setup
-> 
-> 
-> anything wrong with my master branch?
+I have extended the commit message a bit to explain why the change
+was done (this is what Antonio was talking about - "help the casual
+reader who wants to understand this change in +3 years").
 
-this reply was meant for PATCHv2.
+Your patch has been applied to the master, release/2.5 and release/2.4 
+branch (bugfixes get backported to all supported branches).
 
-Cheers,
+commit a11bea18b1c93b260352ec505db15be0ec9431ee (master)
+commit 5e88f131b55af96782532f3d1e086de4e17260fe (release/2.5)
+commit f2f64e058b819d07da9125824717e4bc4d8f9a9d (HEAD -> release/2.4)
+Author: David Korczynski
+Date:   Wed Jul 14 17:25:33 2021 +0100
+
+     Fix argv leaks in add_route() and add_route_ipv6()
+
+     Signed-off-by: David Korczynski <david@...2627...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20210714162533.10098-1-david@...2627...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22637.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-> 
-> 
-> 
+--
+kind regards,
 
--- 
-Antonio Quartulli
+Gert Doering
+
 
