@@ -1,17 +1,12 @@
-Date: Tue, 27 Jul 2021 18:03:14 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <YQAuQpoMQxz2Egb2@...1296...>
-References: <20210505051833.11271-1-selva.nair@...277...>
- <20210510013239.18087-1-selva.nair@...277...>
- <CAKuzo_jD=5R3KU5E-PgCaiN-osgZDre+q=MkZ_U+bmCTKGZjSQ@...278...>
- <efcc84ca-29db-a5ee-cf9b-520fae2958dd@...1800...>
+References: <20210727143741.29039-1-gert@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <4197f2e9-dcdb-d7f6-74ac-0a2f9400bcfe@...2181...>
+Date: Wed, 28 Jul 2021 10:40:01 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="f5ND9ka6NayG2rHJ"
-Content-Disposition: inline
-In-Reply-To: <efcc84ca-29db-a5ee-cf9b-520fae2958dd@...1800...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Allow PKCS#11 uri to be used as
- --cert and --key file names
+In-Reply-To: <20210727143741.29039-1-gert@...1296...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Use more C99 initialization in
+ add_route/add_route_ipv6().
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,52 +15,134 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: mike tancsa <mike@...1800...>
-Cc: Selva Nair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---f5ND9ka6NayG2rHJ
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Tue, Jul 27, 2021 at 11:18:53AM -0400, mike tancsa wrote:
-> That would be VERY handy to have for our use case
+On 27/07/2021 16:37, Gert Doering wrote:
+> This gets rid of a few #ifdef and also removes the need for
+> commit a11bea18b1c93 (argv is only initialized after the
+> early exit check on RT_DEFINED).
+> 
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  src/openvpn/route.c | 34 ++++++++++------------------------
+>  1 file changed, 10 insertions(+), 24 deletions(-)
+> 
+> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+> index e429e8c0..bec5d6ff 100644
+> --- a/src/openvpn/route.c
+> +++ b/src/openvpn/route.c
+> @@ -1570,32 +1570,24 @@ add_route(struct route_ipv4 *r,
+>            const struct env_set *es,
+>            openvpn_net_ctx_t *ctx)
+>  {
+> -    struct gc_arena gc;
+> -    struct argv argv = argv_new();
+> -#if !defined(TARGET_LINUX)
+> -    const char *network;
+> -#if !defined(TARGET_AIX)
+> -    const char *netmask;
+> -#endif
+> -    const char *gateway;
+> -#endif
+>      bool status = false;
+>      int is_local_route;
+>  
+>      if (!(r->flags & RT_DEFINED))
+>      {
+> -        argv_free(&argv);
+>          return;
+>      }
+> +    struct argv argv = argv_new();
+>  
 
-So could you *test* it?
+isn't it nicer to attach the two declarations and leave an empty line
+between them and the upper block? :-)
 
-I'm happy to stare at the code a bit, but have no test environment to
-verify that it actually works.  Thus, test reports by actual users are
-more than welcome.
+> +    struct gc_arena gc;
+>      gc_init(&gc);
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Since you are here, why not compressing these two lines in one:
 
-Gert Doering - Munich, Germany                             gert@...1296...
+   struct gc_arena gc = gc_new();
 
---f5ND9ka6NayG2rHJ
-Content-Type: application/pgp-signature; name="signature.asc"
+?
 
------BEGIN PGP SIGNATURE-----
+>  
+>  #if !defined(TARGET_LINUX)
+> -    network = print_in_addr_t(r->network, 0, &gc);
+> +    const char *network = print_in_addr_t(r->network, 0, &gc);
+>  #if !defined(TARGET_AIX)
+> -    netmask = print_in_addr_t(r->netmask, 0, &gc);
+> +    const char *netmask = print_in_addr_t(r->netmask, 0, &gc);
+>  #endif
+> -    gateway = print_in_addr_t(r->gateway, 0, &gc);
+> +    const char *gateway = print_in_addr_t(r->gateway, 0, &gc);
+>  #endif
+>  
+>      is_local_route = local_route(r->network, r->netmask, r->gateway, rgi);
+> @@ -1879,23 +1871,18 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
+>                 openvpn_net_ctx_t *ctx)
+>  {
+>      struct gc_arena gc;
 
-iQGcBAEBAgAGBQJhAC5CAAoJEB2Cnv7KVigS1mEL/2KpPIKUk5cfrtf9SxhyHqmg
-iQ/aGK56IKpr4bcubZ8UFDqy8TdmTxXIEJl6cifmom4IB7zWrQAeplPja93E+g1j
-wQE/6YFLwQVAt7vL9SU72Bjbxozz9o2NKKBTGcENaxv1d5DVWDsW0CsPOhJkjVzv
-CMocg3WA3dnDzmYDMtxw/E3nT2lJjDlVlLhTr/kod2kVguLtGLkp1kX9QBAk7Ihk
-nkdQGrK2XRACAMtj5UzycQIE8lQECJeWmPZQKNfekjbj51XOXkhMAMNAQ81dMQrV
-JojQIF/M0yK5k22qEoPMJl4+6vGUk3SOMhxagN7qXZRCY0sZscQnimBXcauOTmdq
-rqJ+rwnP3blC8tknrLn/rN6F/rn7f5CRnluGi654IPb2BB8wMjB7Omi11ysRsLV4
-NV5ODXsVCOm7C17P/IyRJZtLKc7TdIsUaAau+wa0xX/6oafM3u6GaY9KAXVS0Syd
-YQ3ah8ShqRaC8aeG/JWXuolREZ9NvltxULHEUz3ehw==
-=an9K
------END PGP SIGNATURE-----
+why not moving this gc declaration like you did above?
 
---f5ND9ka6NayG2rHJ--
+> -    struct argv argv = argv_new();
+>  
+> -    const char *network;
+> -    const char *gateway;
+>      bool status = false;
+>      const char *device = tt->actual_name;
+> -#if defined(TARGET_LINUX)
+> -    int metric;
+> -#endif
+>      bool gateway_needed = false;
+>  
+>      if (!(r6->flags & RT_DEFINED) )
+>      {
+> -        argv_free(&argv);
+>          return;
+>      }
+>  
+> +    struct argv argv = argv_new();
+> +
+>  #ifndef _WIN32
+>      if (r6->iface != NULL)              /* vpn server special route */
+>      {
+> @@ -1910,9 +1897,8 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
+>      gc_init(&gc);
+>  
+>      route_ipv6_clear_host_bits(r6);
+> -
+> -    network = print_in6_addr( r6->network, 0, &gc);
+> -    gateway = print_in6_addr( r6->gateway, 0, &gc);
+> +    const char *network = print_in6_addr( r6->network, 0, &gc);
+> +    const char *gateway = print_in6_addr( r6->gateway, 0, &gc);
+>  
+>  #if defined(TARGET_DARWIN)    \
+>      || defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)    \
+> @@ -1963,7 +1949,7 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
+>      }
+>  
+>  #if defined(TARGET_LINUX)
+> -    metric = -1;
+> +    int metric = -1;
+>      if ((r6->flags & RT_METRIC_DEFINED) && (r6->metric > 0))
+>      {
+>          metric = r6->metric;
+> 
+
+The rest looks good!
+
+I have compiled it on Linux and Windows, but I presume you've compiled
+it on other platforms as well.
+
+Regards,
+
+-- 
+Antonio Quartulli
 
