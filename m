@@ -1,10 +1,14 @@
-Date: Sun, 1 Aug 2021 19:49:32 +0200 (CEST)
-Message-Id: <202108011749.171HnWKH046175@...2054...>
+Date: Sun, 1 Aug 2021 19:55:58 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210728154922.568796-1-arne@...1227...>
-References: <20210728154922.568796-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add detailed man page section
- to setup a OpenVPN setup with peer-fingerprint
+Message-ID: <YQbgLkyyLs2lA/aj@...1296...>
+References: <E1lSJph-0004I0-JF@...2479...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="/klg1Zru/FbDpmZw"
+Content-Disposition: inline
+In-Reply-To: <E1lSJph-0004I0-JF@...2479...>
+Subject: Re: [Openvpn-devel] [PATCH] Change CTR DRBG update function call to
+ new mbedtls 2.16.0 API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,38 +17,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Max Fillinger <maximilian.fillinger@...2507...>
+Cc: openvpn-devel@lists.sourceforge.net, uipko.berghuis@...1435...
 
-Acked-by: Gert Doering <gert@...1296...>
+--/klg1Zru/FbDpmZw
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-I've taken David's ACK on v2, compared the changes to v3 (some of the
-nitpicks David has pointed out, .pem/.key/.crt changes, plus language
-changes by Richard), and added my own ACK based on that.
+Hi,
 
-Integrated Richard's "6 minor improvements" - thanks :-)
+On Fri, Apr 02, 2021 at 03:26:23PM +0200, Max Fillinger wrote:
+> From: Uipko Berghuis <uipko.berghuis@...1435...>
+>=20
+> In mbedtls 2.16.0 mbedtls_ctr_drbg_update() changed to
+> mbedtls_ctr_drbg_update_ret(). Change the function name and handle
+> the new return value error code.
 
-Your patch has been applied to the master branch.
+Going through patches in patchwork right now.
 
-commit f235b5efd6106ad4f899d6da899c617afc6ff9e9
-Author: Arne Schwabe
-Date:   Wed Jul 28 17:49:22 2021 +0200
-
-     Add detailed man page section to setup a OpenVPN setup with peer-fingerprint
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210728154922.568796-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22674.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+I'll put this one to "Changes Requested", as we need the extra compat
+wrapper for older mbedTLS versions, as Steffan suggested downthread.
 
 
---
-kind regards,
+Please amend, and send us a v2 :-)
 
-Gert Doering
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--/klg1Zru/FbDpmZw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJhBuAtAAoJEB2Cnv7KVigSg9IL/0q6YHzNUpr2RmELYUDlges+
+2aR5g9Cx5H912wInYezkWPxfgeqgHGscQK/uiirv14oeYWNOFyd3gIL6GWYYqiBe
+DrBLqSW4LVClJ+XRAg6j/ixjwFNfc6VXs6GIqNjgpI8o5t8P8wOp8CE/Ag7DmXBj
+6Rm9DTFUf3tLO0SssCJKXkiZNi2+q+b5I67J0HyYOyLRYpF/FJW80I1MRNo1Owql
+O0F46RMKohQHJpk8UdaoI2ymVEP4My8jLWuJf6xihtNHaYCbMBcwiYrDcWh/lRZd
+FJ7PWkKezYiEpHZXa7s5Dql2YrjJu4gL2U4u5LWZueGSOdAz+6kHzCRCRm0i+lt7
+/f5VL2WKG0IyhwdPoP+fWa7OcpYagknhm1o6NCMXQtapVL7uaSm8Y3yRkNyiG+6G
+2XkH0GMjZWEAGh+dYF+yFb9F7NhwARWBdEzC0b9jyL8fiuWv0NUYsNp9XXtTBj1f
+26fgIUxunKC/+Z7EA2eCuWlQWGpN4SxC3hkpwBrM+Q==
+=gEY3
+-----END PGP SIGNATURE-----
+
+--/klg1Zru/FbDpmZw--
 
