@@ -1,11 +1,14 @@
+Date: Mon, 2 Aug 2021 17:30:43 +0200
 From: Gert Doering <gert@...1296...>
-Date: Mon,  2 Aug 2021 17:26:19 +0200
-Message-Id: <20210802152619.30754-1-gert@...1296...>
-In-Reply-To: <20210727143741.29039-1-gert@...1296...>
-References: <20210727143741.29039-1-gert@...1296...>
+Message-ID: <YQgPowECDDVqaCKy@...1296...>
+References: <20210802115521.699150-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Use more C99 initialization in
- add_route/add_route_ipv6().
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="I4RUKU7soNUpj5+L"
+Content-Disposition: inline
+In-Reply-To: <20210802115521.699150-1-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Modernise OpenVPN defaults and
+ introduce '--compat-mode'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,117 +17,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This gets rid of a few #ifdef and also removes the need for
-commit a11bea18b1c93 (argv is only initialized after the
-early exit check on RT_DEFINED).
+--I4RUKU7soNUpj5+L
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-v2:
-  use gc_new(), group gc and argv init in both add_route*() functions
+Hi,
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/route.c | 40 +++++++++++-----------------------------
- 1 file changed, 11 insertions(+), 29 deletions(-)
+On Mon, Aug 02, 2021 at 01:55:21PM +0200, Arne Schwabe wrote:
+> +static void
+> +options_set_backwards_compatible_options(struct options *o)
+> +{
+> +    /* TLS min version is not set */
+> +    if ((o->ssl_flags & SSLF_TLS_VERSION_MIN_MASK) =3D=3D 0)
+> +    {
+> +        if (!need_compatibility(o, 203070))
+[..]
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index e429e8c0..2905e432 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1570,32 +1570,23 @@ add_route(struct route_ipv4 *r,
-           const struct env_set *es,
-           openvpn_net_ctx_t *ctx)
- {
--    struct gc_arena gc;
--    struct argv argv = argv_new();
--#if !defined(TARGET_LINUX)
--    const char *network;
--#if !defined(TARGET_AIX)
--    const char *netmask;
--#endif
--    const char *gateway;
--#endif
-     bool status = false;
-     int is_local_route;
- 
-     if (!(r->flags & RT_DEFINED))
-     {
--        argv_free(&argv);
-         return;
-     }
- 
--    gc_init(&gc);
-+    struct argv argv = argv_new();
-+    struct gc_arena gc = gc_new();
- 
- #if !defined(TARGET_LINUX)
--    network = print_in_addr_t(r->network, 0, &gc);
-+    const char *network = print_in_addr_t(r->network, 0, &gc);
- #if !defined(TARGET_AIX)
--    netmask = print_in_addr_t(r->netmask, 0, &gc);
-+    const char *netmask = print_in_addr_t(r->netmask, 0, &gc);
- #endif
--    gateway = print_in_addr_t(r->gateway, 0, &gc);
-+    const char *gateway = print_in_addr_t(r->gateway, 0, &gc);
- #endif
- 
-     is_local_route = local_route(r->network, r->netmask, r->gateway, rgi);
-@@ -1878,24 +1869,18 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-                unsigned int flags, const struct env_set *es,
-                openvpn_net_ctx_t *ctx)
- {
--    struct gc_arena gc;
--    struct argv argv = argv_new();
--
--    const char *network;
--    const char *gateway;
-     bool status = false;
-     const char *device = tt->actual_name;
--#if defined(TARGET_LINUX)
--    int metric;
--#endif
-     bool gateway_needed = false;
- 
-     if (!(r6->flags & RT_DEFINED) )
-     {
--        argv_free(&argv);
-         return;
-     }
- 
-+    struct argv argv = argv_new();
-+    struct gc_arena gc = gc_new();
-+
- #ifndef _WIN32
-     if (r6->iface != NULL)              /* vpn server special route */
-     {
-@@ -1907,12 +1892,9 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-     }
- #endif
- 
--    gc_init(&gc);
--
-     route_ipv6_clear_host_bits(r6);
--
--    network = print_in6_addr( r6->network, 0, &gc);
--    gateway = print_in6_addr( r6->gateway, 0, &gc);
-+    const char *network = print_in6_addr( r6->network, 0, &gc);
-+    const char *gateway = print_in6_addr( r6->gateway, 0, &gc);
- 
- #if defined(TARGET_DARWIN)    \
-     || defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)    \
-@@ -1963,7 +1945,7 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-     }
- 
- #if defined(TARGET_LINUX)
--    metric = -1;
-+    int metric = -1;
-     if ((r6->flags & RT_METRIC_DEFINED) && (r6->metric > 0))
-     {
-         metric = r6->metric;
--- 
-2.26.3
+> +    else if (streq(p[0], "compat-mode") && p[1] && !p[3])
+> +    {
+> +        unsigned int major, minor, patch;
+> +        if (!(sscanf(p[1], "%u.%u.%u", &major, &minor, &patch) =3D=3D 3))
+> +        {
+> +            msg(msglevel, "cannot parse version number for -compat-mode:=
+ %s", p[1]);
+> +            goto err;
+> +        }
+> +
+> +        options->backwards_compatible =3D major * 10000 + minor * 100 + =
+patch;
+> +    }
 
+I think the math is wrong here.
+
+If I try this out with "9.9.9", I arrive at 9*10000+9*100+9 =3D 90909, which
+is way below "203070".  So whatever you specify here will always cause
+"enable backwards compat before 2.3.7".
+
+Thus, NAK on v2...
+
+gert
+
+
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--I4RUKU7soNUpj5+L
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJhCA+iAAoJEB2Cnv7KVigSkFwMAKkgB3IYrBiu0fd0XVGX8cS+
+PLZLgBcVwOl1lgnILctI25DfJYpWlJP2IaXmWDe/wUvbP+Kw3Q0Jwi8DrVQOyLGh
+ooR4IXqubaLmd+G7n0hMAlwt4bTv2lvWbTiapfsX5Nf6MAA5Rl745jEKubDZRZ7I
+Gfm0/I82rgciqJ/32agR1YLTY/8R/ENL77Rlz3dMdd4MxTGQ4RCqVlaXGgD6va7T
+fpOIo708AaOl4YFRfe0K2kPDMpvXnnwD33LongDozn+y0Aijx7co6ZBq+hlNyLql
+AUgNyN03h8epKtHkVWbEBXZMqpqjfJRsjDBVsbef/Jkj9H4HXhBogamlp19SY6GC
+zUsfX5+xnB9lAXiy7hetGL6Fotz+d5EMJ8AntLYVwoaXQwVQVjU6RNXktZ9cDw+B
+J7K1BcRaU7wWCA8q3ER8Y/8JaO1a3yYBfOEvU4jIio+T/1qFJ7XSbZqV7C7zB4+I
+CpwvCMeamEFIMF1MClsi9OhfCnkacqD/ssHXlbDvmg==
+=dgaN
+-----END PGP SIGNATURE-----
+
+--I4RUKU7soNUpj5+L--
 
