@@ -1,13 +1,13 @@
-Date: Mon, 02 Aug 2021 15:00:33 +0000
+Date: Mon, 02 Aug 2021 15:20:54 +0000
 From: tincantech <tincantech@...2282...>
 Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <kBZw3TZ4dQWpNqiIuzI1zCgfjsSpFR8sq_ZyWAj29jHNBhzbeq13FORqnd3Vraxe7KvdzUL6cg1Lkcw6oNqrBCUwMZJWz6k5T61NBd59UXA=@protonmail.com>
-In-Reply-To: <20210802114628.698697-1-arne@...1227...>
-References: <20210802114628.698697-1-arne@...1227...>
+Message-ID: <TfelenTz3REGwsxaWQptNTjuDLkom1bK9ABp0Sn2y5oDLOkGK1e4WKFKeW1WtgyMzb8uh5Nh3N44XY-831oTtea3vXSzvyDjEUegl1Zh5jQ=@protonmail.com>
+In-Reply-To: <20210802115521.699150-1-arne@...1227...>
+References: <20210802115521.699150-1-arne@...1227...>
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="b1_kYpoTV75FwQSF3H2NhcmzRz5tvm90F1Cl80RGc4S0"
-Subject: Re: [Openvpn-devel] [PATCH] Modernise OpenVPN defaults and
+ boundary="b1_sbSpAxV9p6aq619GzDfd5HxbbtHySEzXaTGdxjX4"
+Subject: Re: [Openvpn-devel] [PATCH v2] Modernise OpenVPN defaults and
  introduce '--compat-mode'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -22,7 +22,7 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 This is a multi-part message in MIME format.
 
---b1_kYpoTV75FwQSF3H2NhcmzRz5tvm90F1Cl80RGc4S0
+--b1_sbSpAxV9p6aq619GzDfd5HxbbtHySEzXaTGdxjX4
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -31,25 +31,21 @@ Hash: SHA256
 
 Hi,
 
-12 minor corrections
-
-Sent with ProtonMail Secure Email.
+V2 - 13 minor correction ;-)
 
 =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
 ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
 
-On Monday, August 2nd, 2021 at 12:46, Arne Schwabe <arne@...1227...> wrote:
+On Monday, August 2nd, 2021 at 12:55, Arne Schwabe <arne@...1227...> wrote:
 
 > TLS 1.0 should be allowed anymore in a sensible default configuration. Bu=
 mp
+
+
+TLS 1.0 should *not* be allowed
+
+
 > the default to TLS 1.2
->
-
-
-TLS 1.0 should not be allowed -- Missing 'not'
-
-
->
 > Also modify --cipher not to be automatically appended and default
 > allow-compression to no. This also allows a default configuration to be
 > compatible with DCO.
@@ -68,6 +64,8 @@ mean -> means
 
 
 >
+> Patch v2: rebase
+>
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 > ---
 >  Changes.rst                          | 23 +++++++
@@ -77,7 +75,7 @@ mean -> means
 >  src/openvpn/options.h                | 17 +++++
 >  src/openvpn/ssl_ncp.c                | 13 ++++
 >  src/openvpn/ssl_ncp.h                |  8 +++
->  7 files changed, 163 insertions(+), 17 deletions(-)
+>  7 files changed, 165 insertions(+), 15 deletions(-)
 >
 > diff --git a/Changes.rst b/Changes.rst
 > index 0323a7f7a..cf3329486 100644
@@ -95,7 +93,7 @@ e users
 > +    an easy way to still connect to older servers.
 
 
-with an easy way - missing 'with' -- not important
+*with* an easy way -- not important
 
 
 > +
@@ -129,11 +127,7 @@ ion,
 by
 
 
-Maybe improved with:
-
 By default, OpenVPN 2.5 still allowed a server to enable compression
-
-Just reads a little easier
 
 
 > +    pushing compression related options.
@@ -156,16 +150,21 @@ ric-options.rst
 > +  This option provides a way to alter the default of OpenVPN to be more
 > +  compatible with the version ``version`` specified. All of the changes
 > +  this option does can also be achieved using invdivdiual configuration
+
+
+does -> makes
+
+invdivdiual - invdividual
+
+
 > +  option.
-
-
-All of the changes this option *makes* -- does -> makes
-
-invdivdiual -> individual
-
-
 > +
 > +  Note: Using this options sets reverts defaults to no longer recommended
+
+
+'sets' is out of place and unnecessary
+
+
 > +  values and should be avoided if possible.
 > +
 > +  The following table details what defaults are changed depending on the
@@ -203,7 +202,7 @@ o when we see a client with comp-lzo in occ */
 >
 >  /*
 > diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index b57e8ecc6..649389360 100644
+> index 63cda1e86..cd6d464a3 100644
 > --- a/src/openvpn/options.c
 > +++ b/src/openvpn/options.c
 > @@ -854,6 +854,7 @@ init_options(struct options *o, const bool init_gc)
@@ -214,24 +213,22 @@ o when we see a client with comp-lzo in occ */
 >      o->renegotiate_bytes =3D -1;
 >      o->renegotiate_seconds =3D 3600;
 >      o->renegotiate_seconds_min =3D -1;
-> @@ -3079,11 +3080,11 @@ options_postprocess_verify(const struct options *=
-o)
+> @@ -3079,8 +3080,12 @@ options_postprocess_verify(const struct options *o)
 >  static void
 >  options_postprocess_cipher(struct options *o)
 >  {
 > -    if (!o->pull && !(o->mode =3D=3D MODE_SERVER))
-> +    if (!o->pull && !(o->tls_server || o->tls_client))
+> +    if (!o->tls_server && !o->tls_client)
 >      {
->          /* we are in the classic P2P mode */
-> -        msg( M_WARN, "Cipher negotiation is disabled since neither "
-> -             "P2MP client nor server mode is enabled");
+> +        /* we are in the classic P2P mode */
 > +        msg( M_WARN, "Cipher negotiation is disabled since TLS "
 > +             "mode is not enabled");
->
+> +
 >          /* If the cipher is not set, use the old default of BF-CBC. We w=
 ill
 >           * warn that this is deprecated on cipher initialisation, no need
-> @@ -3101,26 +3102,68 @@ options_postprocess_cipher(struct options *o)
+>           * to warn here as well */
+> @@ -3101,26 +3106,68 @@ options_postprocess_cipher(struct options *o)
 >          /* We still need to set the ciphername to BF-CBC since various o=
 ther
 >           * parts of OpenVPN assert that the ciphername is set */
@@ -266,11 +263,7 @@ tion "
 > +            o->ciphername, o->ncp_ciphers);
 > +    }
 > +}
->
-> -        /* Append the --cipher to ncp_ciphers to allow it in NCP */
-> -        size_t newlen =3D strlen(o->ncp_ciphers) + 1 + strlen(o->ciphern=
-ame) + 1;
-> -        char *ncp_ciphers =3D gc_malloc(newlen, false, &o->gc);
+> +
 > +static void
 > +options_set_backwards_compatible_options(struct options *o)
 > +{
@@ -290,15 +283,15 @@ ame) + 1;
 > +        }
 > +    }
 >
-> -        ASSERT(openvpn_snprintf(ncp_ciphers, newlen, "%s:%s", o->ncp_cip=
-hers,
-> -                                o->ciphername));
-> -        o->ncp_ciphers =3D ncp_ciphers;
+> -        /* Append the --cipher to ncp_ciphers to allow it in NCP */
+> -        size_t newlen =3D strlen(o->ncp_ciphers) + 1 + strlen(o->ciphern=
+ame) + 1;
+> -        char *ncp_ciphers =3D gc_malloc(newlen, false, &o->gc);
 > +    /* Versions < 2.5.0 do need --cipher in the list of accepted ciphers.
 > +     * Version 2.4 might probably does not need it but NCP was not so
 
 
-'might' is out of place and not necessary.
+'might' is out of place and unnecessary
 
 
 > +     * good with 2.4 and ncp-disable might be more common on 2.4 peers.
@@ -307,9 +300,7 @@ hers,
 
 iif -> if
 
-I'm not sure about the ' --cipher is not explicitly (BF-CBC)' part ..
-
-May be the () are not required ?
+Brackets around (BFCBC) ?
 
 
 > +     * 100% correct backwards compatible behaviour but 2.5 already behav=
@@ -328,7 +319,11 @@ small and
 > +    {
 > +        o->enable_ncp_fallback =3D true;
 > +    }
-> +
+>
+> -        ASSERT(openvpn_snprintf(ncp_ciphers, newlen, "%s:%s", o->ncp_cip=
+hers,
+> -                                o->ciphername));
+> -        o->ncp_ciphers =3D ncp_ciphers;
 > +    /* Compression is deprecated and we do not want to announce support =
 for it
 > +     * by default anymore, additionally DCO breaks with with compression.
@@ -343,7 +338,7 @@ ONLY;
 >      }
 >  }
 >
-> @@ -3136,6 +3179,8 @@ options_postprocess_mutate(struct options *o)
+> @@ -3136,6 +3183,8 @@ options_postprocess_mutate(struct options *o)
 >      helper_keepalive(o);
 >      helper_tcp_nodelay(o);
 >
@@ -352,7 +347,7 @@ ONLY;
 >      options_postprocess_cipher(o);
 >      options_postprocess_mutate_invariant(o);
 >
-> @@ -3213,6 +3258,12 @@ options_postprocess_mutate(struct options *o)
+> @@ -3213,6 +3262,12 @@ options_postprocess_mutate(struct options *o)
 >       * when using --pull
 >       */
 >      pre_connect_save(o);
@@ -371,7 +366,7 @@ modernistation -> modernisation
 >  }
 >
 >  /*
-> @@ -6704,6 +6755,17 @@ add_option(struct options *options,
+> @@ -6704,6 +6759,17 @@ add_option(struct options *options,
 >              setenv_str(es, p[1], p[2] ? p[2] : "");
 >          }
 >      }
@@ -391,7 +386,7 @@ patch;
 >      else if (streq(p[0], "setenv-safe") && p[1] && !p[3])
 >      {
 >          VERIFY_PERMISSION(OPT_P_SETENV);
-> @@ -7701,6 +7763,7 @@ add_option(struct options *options,
+> @@ -7701,6 +7767,7 @@ add_option(struct options *options,
 >          else if (streq(p[1], "asym"))
 >          {
 >              options->comp.flags &=3D ~COMP_F_ALLOW_COMPRESS;
@@ -438,7 +433,7 @@ ersion;
 >
 >  /*
 > diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-> index 0258e6a72..5ea76640f 100644
+> index 6967e2bba..022a9dc3b 100644
 > --- a/src/openvpn/ssl_ncp.c
 > +++ b/src/openvpn/ssl_ncp.c
 > @@ -172,6 +172,19 @@ mutate_ncp_cipher_list(const char *list, struct gc_a=
@@ -464,10 +459,10 @@ rena *gc)
 >  tls_item_in_cipher_list(const char *item, const char *list)
 >  {
 > diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h
-> index 3fa68e262..2fc68fb53 100644
+> index 4a2601a2e..09ddeb28e 100644
 > --- a/src/openvpn/ssl_ncp.h
 > +++ b/src/openvpn/ssl_ncp.h
-> @@ -101,6 +101,14 @@ tls_peer_ncp_list(const char *peer_info, struct gc_a=
+> @@ -102,6 +102,14 @@ tls_peer_ncp_list(const char *peer_info, struct gc_a=
 rena *gc);
 >  char *
 >  mutate_ncp_cipher_list(const char *list, struct gc_arena *gc);
@@ -476,7 +471,7 @@ rena *gc);
 > + * Appends the cipher specified by the ciphernamer parameter to to
 
 
-ciphernamer -> ciphername - No 'r' on the end
+ciphernamer -> ciphername, drop the 'r'
 
 
 > + * the o->ncp_ciphers list.
@@ -503,20 +498,21 @@ iff -> if
 > Openvpn-devel mailing list
 > Openvpn-devel@lists.sourceforge.net
 > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
 -----BEGIN PGP SIGNATURE-----
 Version: ProtonMail
 
-wsBzBAEBCAAGBQJhCAh+ACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ3gdQgAmq1LvRmTWrYIthfKt84Dc16hdhc4dCRrZijYQFcxM7CL+M1U
-dMMJibxQc4Bv5RgbXn6gcix1rFN3hlOouqkHaxMXgrPn4s4d0E1Vrv4xruth
-oX8vFzMZH6FcG4MIyWqNUZEXXOXsbV+FnF9CMbZeFHWdRSram6Mp26+QFATU
-ejHUs0OvAHpvlU8szQXb7QTM1bc/rZsF3ureMKp5R6RYVWcnD/BEGN9x6M/a
-gnyNlUlfdQ9xtaLX1kC8RZYPieSjrpK+aa/d8xqX36AyGwk0smfv3cSFGqa3
-UZnCQ2WB/dZ7hhzpGGVXa4DLGjJBBDLLMrCaLcr4eI+YyQiUCYwPQQ=3D=3D
-=3D+rmR
+wsBzBAEBCAAGBQJhCA1CACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
+9muQuJ2EKAgAlgY56kyo6+hVDb9zB1t2aOB4xsaJ4TFV9USMdY+ooSL0+QTi
+hAdFKXxG7hqgmEicVsFirQ7ydLpfpmJNtK6rkh1O4eEvzqg1lwvxuZQ6Iv9g
+uOopYj5DZR0oIXPS62sFXTWX0kHeJMn7uihCOeVe2DvTC6jpsCHMZf3iIKqU
+ITgl7PEpeBWiatiWiDozIJMyMxy1xdJ/uy/DTZLH03DOUtrGzBnUnOzWD+0A
+Qw8+qey+BB/5duA+vhe0vocOq+9b/Qw5rI241QzCCNSPxBdOwa28YHy3cdgA
+BDZzhNlab8suog1FLtyTwQ3hGREjVbPlKw/ek/d49CK5PlE0pU+kOw=3D=3D
+=3DUDQ/
 -----END PGP SIGNATURE-----
 
---b1_kYpoTV75FwQSF3H2NhcmzRz5tvm90F1Cl80RGc4S0
+--b1_sbSpAxV9p6aq619GzDfd5HxbbtHySEzXaTGdxjX4
 Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
@@ -555,18 +551,18 @@ amINCi9iWUJqSTBURU12SDgxNjB1cXpGWGVIdll5VWxxMFNpbkQvWjlpb0llOFFkc0hHQkRVSVJZ
 WXViMXBPOA0KcXJDelJaeDBvTkE9DQo9L0RlYQ0KLS0tLS1FTkQgUEdQIFBVQkxJQyBLRVkgQkxP
 Q0stLS0tLQ0K
 
---b1_kYpoTV75FwQSF3H2NhcmzRz5tvm90F1Cl80RGc4S0
+--b1_sbSpAxV9p6aq619GzDfd5HxbbtHySEzXaTGdxjX4
 Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
 
-wsBzBAABCAAGBQJhCAh+ACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec9muQuJ3A6wf/fQR2
-tISww2C1mCNrfiXfmkCDflszCzrzueGCbhGj1Tr71yOcT8At/WKlIGFij+laCCt31LgDjNPZ/Rq1
-TXop46gpVOFuuXpP2qfVbWcSrOvTzdOgaWKac0349EWuzGK+AfTcpwh9aiYgEZSTFrZ/eIOvnX4w
-yCnXST0h9dNLmZqZ1nqdznYoG3c8BVR5wZmA/NlVy73+tGLg3piXD67pxfRdzBpQtmAx8umdp1VC
-nEg2Cs4/RpOlFaktzFtwuOxlB6E7NARLjEw76RIzpuCK9wAe5JQ+yWxFQqIKUJQyftIQKSb3lj0O
-xRM0AlZh60JjO2k3wb+9jpZj7OpdTcdxjA==
+wsBzBAABCAAGBQJhCA1CACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec9muQuJ2UdAgAuVT7
+poDoB/D9cdQt+if81Bujawbak9vcNzWJ84e4jINeUdnJQ1ap90GlBCi0wJUA+NLc39XclhL/JNvC
+enI791EaPsqtEvqWPZghK5Nvr5GTx9RsUt/s/IBN8JsuYIHcXIBDwAiAIm7v0aXdwfsxuUCBr7i8
+UzXbbx1JIJnn96xjaQZxCUmLeKZq1iRuxzFrDrUvBUXP0NATVETmKzDA80/sk68sye5uBQOJT/il
+mnmqiRzlxTxj2He2Pm1njn7Q5KKWkjFEKeq+5eCdCJFWcY7G5zU7YtcQ5zbF3sO1shB1E13JvzNb
+yZdd6rrGpEm2hJ0df0hZq+D1v9qpnfWesQ==
 
---b1_kYpoTV75FwQSF3H2NhcmzRz5tvm90F1Cl80RGc4S0--
+--b1_sbSpAxV9p6aq619GzDfd5HxbbtHySEzXaTGdxjX4--
 
 
