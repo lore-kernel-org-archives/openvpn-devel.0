@@ -1,8 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon,  2 Aug 2021 13:46:28 +0200
-Message-Id: <20210802114628.698697-1-arne@...1227...>
+Date: Mon,  2 Aug 2021 13:55:21 +0200
+Message-Id: <20210802115521.699150-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Modernise OpenVPN defaults and introduce
+Subject: [Openvpn-devel] [PATCH v2] Modernise OpenVPN defaults and introduce
  '--compat-mode'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -31,6 +31,8 @@ are still present. It will not implement options that are removed
 (e.g. --keysize), so it is meant a best effort option and not as
 a mean to provide 100% compatibility.
 
+Patch v2: rebase
+
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
  Changes.rst                          | 23 +++++++
@@ -40,7 +42,7 @@ Signed-off-by: Arne Schwabe <arne@...1227...>
  src/openvpn/options.h                | 17 +++++
  src/openvpn/ssl_ncp.c                | 13 ++++
  src/openvpn/ssl_ncp.h                |  8 +++
- 7 files changed, 163 insertions(+), 17 deletions(-)
+ 7 files changed, 165 insertions(+), 15 deletions(-)
 
 diff --git a/Changes.rst b/Changes.rst
 index 0323a7f7a..cf3329486 100644
@@ -128,7 +130,7 @@ index cd4f0e1a2..619a574e5 100644
  
  /*
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index b57e8ecc6..649389360 100644
+index 63cda1e86..cd6d464a3 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
 @@ -854,6 +854,7 @@ init_options(struct options *o, const bool init_gc)
@@ -139,22 +141,21 @@ index b57e8ecc6..649389360 100644
      o->renegotiate_bytes = -1;
      o->renegotiate_seconds = 3600;
      o->renegotiate_seconds_min = -1;
-@@ -3079,11 +3080,11 @@ options_postprocess_verify(const struct options *o)
+@@ -3079,8 +3080,12 @@ options_postprocess_verify(const struct options *o)
  static void
  options_postprocess_cipher(struct options *o)
  {
 -    if (!o->pull && !(o->mode == MODE_SERVER))
-+    if (!o->pull && !(o->tls_server || o->tls_client))
++    if (!o->tls_server && !o->tls_client)
      {
-         /* we are in the classic P2P mode */
--        msg( M_WARN, "Cipher negotiation is disabled since neither "
--             "P2MP client nor server mode is enabled");
++        /* we are in the classic P2P mode */
 +        msg( M_WARN, "Cipher negotiation is disabled since TLS "
 +             "mode is not enabled");
- 
++
          /* If the cipher is not set, use the old default of BF-CBC. We will
           * warn that this is deprecated on cipher initialisation, no need
-@@ -3101,26 +3102,68 @@ options_postprocess_cipher(struct options *o)
+          * to warn here as well */
+@@ -3101,26 +3106,68 @@ options_postprocess_cipher(struct options *o)
          /* We still need to set the ciphername to BF-CBC since various other
           * parts of OpenVPN assert that the ciphername is set */
          o->ciphername = "BF-CBC";
@@ -182,10 +183,7 @@ index b57e8ecc6..649389360 100644
 +            o->ciphername, o->ncp_ciphers);
 +    }
 +}
- 
--        /* Append the --cipher to ncp_ciphers to allow it in NCP */
--        size_t newlen = strlen(o->ncp_ciphers) + 1 + strlen(o->ciphername) + 1;
--        char *ncp_ciphers = gc_malloc(newlen, false, &o->gc);
++
 +static void
 +options_set_backwards_compatible_options(struct options *o)
 +{
@@ -204,9 +202,9 @@ index b57e8ecc6..649389360 100644
 +        }
 +    }
  
--        ASSERT(openvpn_snprintf(ncp_ciphers, newlen, "%s:%s", o->ncp_ciphers,
--                                o->ciphername));
--        o->ncp_ciphers = ncp_ciphers;
+-        /* Append the --cipher to ncp_ciphers to allow it in NCP */
+-        size_t newlen = strlen(o->ncp_ciphers) + 1 + strlen(o->ciphername) + 1;
+-        char *ncp_ciphers = gc_malloc(newlen, false, &o->gc);
 +    /* Versions < 2.5.0 do need --cipher in the list of accepted ciphers.
 +     * Version 2.4 might probably does not need it but NCP was not so
 +     * good with 2.4 and ncp-disable might be more common on 2.4 peers.
@@ -225,7 +223,10 @@ index b57e8ecc6..649389360 100644
 +    {
 +        o->enable_ncp_fallback = true;
 +    }
-+
+ 
+-        ASSERT(openvpn_snprintf(ncp_ciphers, newlen, "%s:%s", o->ncp_ciphers,
+-                                o->ciphername));
+-        o->ncp_ciphers = ncp_ciphers;
 +    /* Compression is deprecated and we do not want to announce support for it
 +     * by default anymore, additionally DCO breaks with with compression.
 +     * Disable compression by default starting with 2.6.0 if no other
@@ -237,7 +238,7 @@ index b57e8ecc6..649389360 100644
      }
  }
  
-@@ -3136,6 +3179,8 @@ options_postprocess_mutate(struct options *o)
+@@ -3136,6 +3183,8 @@ options_postprocess_mutate(struct options *o)
      helper_keepalive(o);
      helper_tcp_nodelay(o);
  
@@ -246,7 +247,7 @@ index b57e8ecc6..649389360 100644
      options_postprocess_cipher(o);
      options_postprocess_mutate_invariant(o);
  
-@@ -3213,6 +3258,12 @@ options_postprocess_mutate(struct options *o)
+@@ -3213,6 +3262,12 @@ options_postprocess_mutate(struct options *o)
       * when using --pull
       */
      pre_connect_save(o);
@@ -259,7 +260,7 @@ index b57e8ecc6..649389360 100644
  }
  
  /*
-@@ -6704,6 +6755,17 @@ add_option(struct options *options,
+@@ -6704,6 +6759,17 @@ add_option(struct options *options,
              setenv_str(es, p[1], p[2] ? p[2] : "");
          }
      }
@@ -277,7 +278,7 @@ index b57e8ecc6..649389360 100644
      else if (streq(p[0], "setenv-safe") && p[1] && !p[3])
      {
          VERIFY_PERMISSION(OPT_P_SETENV);
-@@ -7701,6 +7763,7 @@ add_option(struct options *options,
+@@ -7701,6 +7767,7 @@ add_option(struct options *options,
          else if (streq(p[1], "asym"))
          {
              options->comp.flags &= ~COMP_F_ALLOW_COMPRESS;
@@ -321,7 +322,7 @@ index b0e40cb7f..925083865 100644
  
  /*
 diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 0258e6a72..5ea76640f 100644
+index 6967e2bba..022a9dc3b 100644
 --- a/src/openvpn/ssl_ncp.c
 +++ b/src/openvpn/ssl_ncp.c
 @@ -172,6 +172,19 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
@@ -345,10 +346,10 @@ index 0258e6a72..5ea76640f 100644
  tls_item_in_cipher_list(const char *item, const char *list)
  {
 diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h
-index 3fa68e262..2fc68fb53 100644
+index 4a2601a2e..09ddeb28e 100644
 --- a/src/openvpn/ssl_ncp.h
 +++ b/src/openvpn/ssl_ncp.h
-@@ -101,6 +101,14 @@ tls_peer_ncp_list(const char *peer_info, struct gc_arena *gc);
+@@ -102,6 +102,14 @@ tls_peer_ncp_list(const char *peer_info, struct gc_arena *gc);
  char *
  mutate_ncp_cipher_list(const char *list, struct gc_arena *gc);
  
