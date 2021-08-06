@@ -1,13 +1,9 @@
-References: <cc7faf4a-5c6e-fe03-01c3-8446faddf4a9@...2318...>
- <YQz+yKSrysYMoxwS@...1296...>
-From: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>
-Message-ID: <d3a27282-083e-d5fc-8866-b92610345125@...2318...>
-Date: Fri, 6 Aug 2021 12:50:44 +0200
+From: Gert Doering <gert@...1296...>
+Date: Fri,  6 Aug 2021 13:01:14 +0200
+Message-Id: <20210806110114.21722-1-gert@...1296...>
 MIME-Version: 1.0
-In-Reply-To: <YQz+yKSrysYMoxwS@...1296...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] IPv6 client IP pool configuration issues
- (2.4/2.5)
+Subject: [Openvpn-devel] [PATCH] Make 2nd parameter to --ifconfig-ipv6 no
+ longer mandatory.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,59 +12,133 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On 06.08.21 11:20, Gert Doering wrote:
-> Hi,
+--ifconfig-ipv6 takes two parameters, "local ipv6 address / netbits"
+and "remote ipv6 address".
 
-Hi Gert,
+We only *need* a remote ipv6 address if we are in TAP mode, want to
+install --route-ipv6 routes, and neither --route-ipv6-gateway is set
+nor a gateway is included in the --route-ipv6 statement.
 
-> On Fri, Aug 06, 2021 at 10:38:36AM +0200, Fran=E7ois Kooman wrote:
->> However, it does not explain how it exactly would rewrite --server-ipv6
->> fd42::/112 to those three statements.
->>
->> --ifconfig-ipv6 fd42::1/112 <????>
->> --ifconfig-ipv6-pool fd42::1000/112
->> --push "tun-ipv6"
->=20
-> This should work.  And you can leave off the "push" bit :-)
+The documentation always implied "this is optional", but the option
+checking code and init_tun() always mandated it, with no good reason.
 
-Ah right, that is implicit now (OpenVPN >=3D 2.4): "All tun devices on all =
+Remove requirement, adjust help message.
 
-platforms are always considered to be IPv6 capable. The --tun-ipv6=20
-option is ignored (behaves like it is always on)."
+NOTE: on SOLARIS, this is actually required for "ifconfig", so this
+add a new #ifdef check to init_tun().  Sorry.
 
-> A random IP in that subnet, like "fd42::1/112 fd42::2" - this is a
-> somewhat unlucky artefact of the implementation of --ifconfig-ipv6,
-> which insists on having a "remote" even if that is not used in
-> many cases.
+Reported-By: François Kooman <fkooman@...2318...>
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/options.c | 27 +++++++++++++++++++--------
+ src/openvpn/tun.c     | 15 ++++++++++-----
+ 2 files changed, 29 insertions(+), 13 deletions(-)
 
-Right, I'll set it to the same IP as the tun0 device itself, i.e.=20
-fd42::1 if it can be random anyway ;-)
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 7e146db9..149e17de 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -185,8 +185,8 @@ static const char usage_message[] =
+     "                  addresses outside of the subnets used by either peer.\n"
+     "                  TAP: configure device to use IP address l as a local\n"
+     "                  endpoint and rn as a subnet mask.\n"
+-    "--ifconfig-ipv6 l r : configure device to use IPv6 address l as local\n"
+-    "                      endpoint (as a /64) and r as remote endpoint\n"
++    "--ifconfig-ipv6 l/nn [r] : configure device to use IPv6 address l as local\n"
++    "                      endpoint (as a /nn) and r as remote endpoint\n"
+     "--ifconfig-noexec : Don't actually execute ifconfig/netsh command, instead\n"
+     "                    pass --ifconfig parms by environment to scripts.\n"
+     "--ifconfig-nowarn : Don't warn if the --ifconfig option on this side of the\n"
+@@ -201,7 +201,7 @@ static const char usage_message[] =
+     "                  Add IPv6 route to routing table after connection\n"
+     "                  is established.  Multiple routes can be specified.\n"
+     "                  gateway default: taken from --route-ipv6-gateway or 'remote'\n"
+-    "                  in --ifconfig-ipv6\n"
++    "                  in --ifconfig-ipv6 (only required in TAP mode)\n"
+     "--route-gateway gw|'dhcp' : Specify a default gateway for use with --route.\n"
+     "--route-ipv6-gateway gw : Specify a default gateway for use with --route-ipv6.\n"
+     "--route-metric m : Specify a default metric for use with --route.\n"
+@@ -5600,13 +5600,12 @@ add_option(struct options *options,
+             goto err;
+         }
+     }
+-    else if (streq(p[0], "ifconfig-ipv6") && p[1] && p[2] && !p[3])
++    else if (streq(p[0], "ifconfig-ipv6") && p[1] && !p[3])
+     {
+         unsigned int netbits;
+ 
+         VERIFY_PERMISSION(OPT_P_UP);
+-        if (get_ipv6_addr( p[1], NULL, &netbits, msglevel )
+-            && ipv6_addr_safe( p[2] ) )
++        if (get_ipv6_addr( p[1], NULL, &netbits, msglevel ))
+         {
+             if (netbits < 64 || netbits > 124)
+             {
+@@ -5616,13 +5615,25 @@ add_option(struct options *options,
+ 
+             options->ifconfig_ipv6_local = get_ipv6_addr_no_netbits(p[1], &options->gc);
+             options->ifconfig_ipv6_netbits = netbits;
+-            options->ifconfig_ipv6_remote = p[2];
+         }
+         else
+         {
+-            msg(msglevel, "ifconfig-ipv6 parms '%s' and '%s' must be valid addresses", p[1], p[2]);
++            msg(msglevel, "ifconfig-ipv6 '%s' must be valid IPv6 address", p[1]);
+             goto err;
+         }
++
++        if (p[2])               /* "ipv6_remote" is optional */
++        {
++            if (ipv6_addr_safe(p[2]))
++            {
++                options->ifconfig_ipv6_remote = p[2];
++            }
++            else
++            {
++                msg(msglevel, "ifconfig-ipv6 '%s' must be valid IPv6 address", p[2]);
++                goto err;
++            }
++        }
+     }
+     else if (streq(p[0], "ifconfig-noexec") && !p[1])
+     {
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 28f803ec..1002054b 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -852,17 +852,22 @@ init_tun(const char *dev,        /* --dev option */
+         tt->did_ifconfig_setup = true;
+     }
+ 
+-    if (ifconfig_ipv6_local_parm && ifconfig_ipv6_remote_parm)
++    if (ifconfig_ipv6_local_parm)
+     {
+-
++#ifdef TARGET_SOLARIS
++        if (!ifconfig_ipv6_remote_parm ||
++            || inet_pton( AF_INET6, ifconfig_ipv6_remote_parm, &tt->remote_ipv6 ) != 1)
++        {
++            msg(M_FATAL, "init_tun: Solaris needs valid IPv6 address as second parameter to '--ifconfig-ipv6'");
++        }
++#endif
+         /*
+          * Convert arguments to binary IPv6 addresses.
+          */
+ 
+-        if (inet_pton( AF_INET6, ifconfig_ipv6_local_parm, &tt->local_ipv6 ) != 1
+-            || inet_pton( AF_INET6, ifconfig_ipv6_remote_parm, &tt->remote_ipv6 ) != 1)
++        if (inet_pton( AF_INET6, ifconfig_ipv6_local_parm, &tt->local_ipv6 ) != 1)
+         {
+-            msg( M_FATAL, "init_tun: problem converting IPv6 ifconfig addresses %s and %s to binary", ifconfig_ipv6_local_parm, ifconfig_ipv6_remote_parm );
++            msg(M_FATAL, "init_tun: problem converting IPv6 ifconfig address %s to binary", ifconfig_ipv6_local_parm);
+         }
+         tt->netbits_ipv6 = ifconfig_ipv6_netbits_parm;
+ 
+-- 
+2.26.3
 
-> Without having tested it, I would agree that this is what it is.
-
-Actually I did test it now properly and it does work!
-
-> (The reason it was changed from :1000 to ::2 is "small pool size" -
-> if you have only a /112 or smaller, starting from :1000 reduces the pool
-> size significantly.  If you use a /111 or bigger, it will actually stick
-> to the old behaviour - see helper.c, around line 200)
-
-Right, thanks for the explanation!
-
-> The log snippet is too short to give meaningful advice.  Please show
-> the "ifconfig" or "ip address" statements, and what (if anything) is
-> pushed to clients.
-
-I actually screwed up my iptables rules that made it break because of=20
-different pool configuration (duh). So stupid :-(
-
-Thanks for your reply and confirming it works like this! :-)
-
-Regards,
-Fran=E7ois
 
