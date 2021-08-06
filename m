@@ -1,9 +1,14 @@
-From: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>
-Message-ID: <cc7faf4a-5c6e-fe03-01c3-8446faddf4a9@...2318...>
-Date: Fri, 6 Aug 2021 10:38:36 +0200
+Date: Fri, 6 Aug 2021 11:20:08 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <YQz+yKSrysYMoxwS@...1296...>
+References: <cc7faf4a-5c6e-fe03-01c3-8446faddf4a9@...2318...>
 MIME-Version: 1.0
-Content-Language: en-US
-Subject: [Openvpn-devel] IPv6 client IP pool configuration issues (2.4/2.5)
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="pu7fZseA411u161s"
+Content-Disposition: inline
+In-Reply-To: <cc7faf4a-5c6e-fe03-01c3-8446faddf4a9@...2318...>
+Subject: Re: [Openvpn-devel] IPv6 client IP pool configuration issues
+ (2.4/2.5)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,106 +17,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: =?iso-8859-1?Q?Fran=E7ois?= Kooman <fkooman@...2318...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi all,
+--pu7fZseA411u161s
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Experimenting with OpenVPN 2.5 servers I noticed that issued IPv6 
-addresses to clients (pool) start at ::2 now instead of at ::1000 as was 
-the case for OpenVPN 2.4.
+Hi,
 
-As far as I can find, this is nowhere documented, neither that client 
-IPs issued would start at ::1000 in OpenVPN 2.4, nor that it changed to 
-::2 in OpenVPN 2.5.
+On Fri, Aug 06, 2021 at 10:38:36AM +0200, Fran=E7ois Kooman wrote:
+> However, it does not explain how it exactly would rewrite --server-ipv6=20
+> fd42::/112 to those three statements.
+>=20
+> --ifconfig-ipv6 fd42::1/112 <????>
+> --ifconfig-ipv6-pool fd42::1000/112
+> --push "tun-ipv6"
 
-In order to not have the issued IP addresses change when using OpenVPN 
-2.5 I was looking in how to fix this and (for now) always use ::1000 no 
-matter the version of OpenVPN on the server.
+This should work.  And you can leave off the "push" bit :-)
 
-It doesn't seem to be as simple as adding the --ifconfig-ipv6-pool 
-option to specify the pool when you are already using --server-ipv6.
+> What would the second parameter to --ifconfig-ipv6 be in this case?=20
 
-This doesn't work:
+A random IP in that subnet, like "fd42::1/112 fd42::2" - this is a
+somewhat unlucky artefact of the implementation of --ifconfig-ipv6,
+which insists on having a "remote" even if that is not used in=20
+many cases.
 
---server-ipv6 fd42::/112
---ifconfig-ipv6-pool fd42::1000/112
+It is required in tap mode, to have "something to point route-ipv6
+routes to" - default setting for --route-gateway-ipv6 - but since tun
+does not use next-hop IP addresses anyway, this is just stupid code.
 
-However the OpenVPN manpage explains:
+> 2021-08-06 10:21:30 us=3D717994   ifconfig_ipv6_netbits =3D 112
+> 2021-08-06 10:21:30 us=3D718149   ifconfig_ipv6_remote =3D 'fd42::2'
 
-"Convenience-function to enable a number of IPv6 related options at 
-once, namely --ifconfig-ipv6, --ifconfig-ipv6-pool and --push tun-ipv6."
+That should work :-)
 
-However, it does not explain how it exactly would rewrite --server-ipv6 
-fd42::/112 to those three statements.
+[..]
+> Would this mean the --server-ivp6 fd42::/112 expands to this?
+>=20
+> OpenVPN 2.4:
+>=20
+> --ifconfig-ipv6 fd42::1/112 fd42::2
+> --ifconfig-ipv6-pool fd42::1000/112
+> --push "tun-ipv6"
+>=20
+> OpenVPN 2.5:
+>=20
+> --ifconfig-ipv6 fd42::1/112 fd42::2
+> --ifconfig-ipv6-pool fd42::2/112
+> --push "tun-ipv6"
 
---ifconfig-ipv6 fd42::1/112 <????>
---ifconfig-ipv6-pool fd42::1000/112
---push "tun-ipv6"
+Without having tested it, I would agree that this is what it is.
 
-What would the second parameter to --ifconfig-ipv6 be in this case? 
-Looking through the server logging I see this (when using --server-ipv6):
+(The reason it was changed from :1000 to ::2 is "small pool size" -=20
+if you have only a /112 or smaller, starting from :1000 reduces the pool=20
+size significantly.  If you use a /111 or bigger, it will actually stick
+to the old behaviour - see helper.c, around line 200)
 
-2021-08-06 10:21:30 us=717290   bind_ipv6_only = DISABLED
-2021-08-06 10:21:30 us=717881   ifconfig_ipv6_local = 'fd42::1'
-2021-08-06 10:21:30 us=717994   ifconfig_ipv6_netbits = 112
-2021-08-06 10:21:30 us=718149   ifconfig_ipv6_remote = 'fd42::2'
-2021-08-06 10:21:30 us=720482   server_network_ipv6 = fd42::
-2021-08-06 10:21:30 us=720620   server_netbits_ipv6 = 112
-2021-08-06 10:21:30 us=720841   push_entry = 'redirect-gateway def1 ipv6'
-2021-08-06 10:21:30 us=721002   push_entry = 'tun-ipv6'
-2021-08-06 10:21:30 us=721195   ifconfig_ipv6_pool_defined = ENABLED
-2021-08-06 10:21:30 us=721265   ifconfig_ipv6_pool_base = fd42::2
-2021-08-06 10:21:30 us=721337   ifconfig_ipv6_pool_netbits = 112
-2021-08-06 10:21:30 us=721573   push_ifconfig_ipv6_defined = DISABLED
-2021-08-06 10:21:30 us=721658   push_ifconfig_ipv6_local = ::/0
-2021-08-06 10:21:30 us=721737   push_ifconfig_ipv6_remote = ::
-2021-08-06 10:21:30 us=729301 do_ifconfig, ipv4=1, ipv6=1
 
-The following line has something interesting:
+> it does not seem to work (no traffic over VPN), and the output of the log:
 
-2021-08-06 10:21:30 us=718149   ifconfig_ipv6_remote = 'fd42::2'
+The log snippet is too short to give meaningful advice.  Please show=20
+the "ifconfig" or "ip address" statements, and what (if anything) is
+pushed to clients.
 
-Would this mean the --server-ivp6 fd42::/112 expands to this?
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-OpenVPN 2.4:
+Gert Doering - Munich, Germany                             gert@...1296...
 
---ifconfig-ipv6 fd42::1/112 fd42::2
---ifconfig-ipv6-pool fd42::1000/112
---push "tun-ipv6"
+--pu7fZseA411u161s
+Content-Type: application/pgp-signature; name="signature.asc"
 
-OpenVPN 2.5:
+-----BEGIN PGP SIGNATURE-----
 
---ifconfig-ipv6 fd42::1/112 fd42::2
---ifconfig-ipv6-pool fd42::2/112
---push "tun-ipv6"
+iQGcBAEBAgAGBQJhDP7IAAoJEB2Cnv7KVigSCRAL/0NBoH5uKbktXQJ3ytODMcIE
+kB8tMFC8JYYy49Q+HMDGEHidAmfTEUz9cnGP4DLtp+GkWAAbuOhDR8LhHp/QaUU4
++tn1K3lxU9GoYVE0CTkgS2UkV7pnqM9mQyvq4KQD/IaWhPi8eJcFxVrePZNvhT0b
+BdAhufJ/tSBJj0CbOejuRE+1LW9fwxthnL/PPhODDNBPrAHURZDz+TL/ba+6szGs
+44V4pbGLOKEX2LSNM/3uWpydk5+dHXmBorf5gRx+8V69ABLtXik4KvDt0A29sIaB
+X43bcOoCiJtK8HCMBwSfqwT0Bw/7brOZT6MlHz05v12af5OeZ6B/t5wZzY5AuGRH
+voWpWyKvI2mvd1jOV2ZS1W6YI61XcOYRV/SKqByIqyGC1U19jQJNZq/tb5pVMaW0
+8m6AogcJQEF/EekeOO24OH2Mg15LL/vbNfnO1w/5kqiNdIKR07i+glH++cg9DpQ/
+xruvdFerbTrR5ms7RkbUYtZrYbvIG8LHMRk+kqpsEw==
+=ssdu
+-----END PGP SIGNATURE-----
 
-it does not seem to work (no traffic over VPN), and the output of the log:
-
-2021-08-06 10:30:13 us=355589   bind_ipv6_only = DISABLED
-2021-08-06 10:30:13 us=359889   ifconfig_ipv6_local = 'fd42::1'
-2021-08-06 10:30:13 us=360355   ifconfig_ipv6_netbits = 112
-2021-08-06 10:30:13 us=360500   ifconfig_ipv6_remote = 'fd42::2'
-2021-08-06 10:30:13 us=367238   server_network_ipv6 = ::
-2021-08-06 10:30:13 us=367761   server_netbits_ipv6 = 0
-2021-08-06 10:30:13 us=368027   push_entry = 'tun-ipv6'
-2021-08-06 10:30:13 us=368365   push_entry = 'redirect-gateway def1 ipv6'
-2021-08-06 10:30:13 us=368876   ifconfig_ipv6_pool_defined = ENABLED
-2021-08-06 10:30:13 us=369622   ifconfig_ipv6_pool_base = fd42::1000
-2021-08-06 10:30:13 us=369767   ifconfig_ipv6_pool_netbits = 112
-2021-08-06 10:30:13 us=370016   push_ifconfig_ipv6_defined = DISABLED
-2021-08-06 10:30:13 us=370086   push_ifconfig_ipv6_local = ::/0
-2021-08-06 10:30:13 us=370375   push_ifconfig_ipv6_remote = ::
-2021-08-06 10:30:13 us=379916 do_ifconfig, ipv4=1, ipv6=1
-
-Also in the config it seems to miss server_network_ipv6 and 
-server_netbits_ipv6. How to specify those?
-
-I feel I am missing something. Anyone knows what is going on here?
-
-Thanks!
-
-Regards,
-François
+--pu7fZseA411u161s--
 
