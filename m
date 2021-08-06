@@ -1,16 +1,15 @@
-Date: Fri, 6 Aug 2021 13:05:21 +0200
+Date: Fri, 6 Aug 2021 18:04:31 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <YQ0XccVw7HVc48nK@...1296...>
-References: <cc7faf4a-5c6e-fe03-01c3-8446faddf4a9@...2318...>
- <YQz+yKSrysYMoxwS@...1296...>
- <d3a27282-083e-d5fc-8866-b92610345125@...2318...>
+Message-ID: <YQ1dj9UHa5cdSPGn@...1296...>
+References: <20210716121848.67888-1-arne@...1227...>
+ <20210728124103.565145-1-arne@...1227...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="jST5mSEYh6T5T0fJ"
+ protocol="application/pgp-signature"; boundary="jm1JBR/p/u2jjFsw"
 Content-Disposition: inline
-In-Reply-To: <d3a27282-083e-d5fc-8866-b92610345125@...2318...>
-Subject: Re: [Openvpn-devel] IPv6 client IP pool configuration issues
- (2.4/2.5)
+In-Reply-To: <20210728124103.565145-1-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Introduce webauth auth pending
+ method and deprecate openurl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,65 +18,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?iso-8859-1?Q?Fran=E7ois?= Kooman <fkooman@...2318...>
-Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---jST5mSEYh6T5T0fJ
-Content-Type: text/plain; charset="iso-8859-1"
+--jm1JBR/p/u2jjFsw
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Aug 06, 2021 at 12:50:44PM +0200, Fran=E7ois Kooman wrote:
-> > On Fri, Aug 06, 2021 at 10:38:36AM +0200, Fran=E7ois Kooman wrote:
-> >> However, it does not explain how it exactly would rewrite --server-ipv6
-> >> fd42::/112 to those three statements.
-> >>
-> >> --ifconfig-ipv6 fd42::1/112 <????>
-> >> --ifconfig-ipv6-pool fd42::1000/112
-> >> --push "tun-ipv6"
-> >=20
-> > This should work.  And you can leave off the "push" bit :-)
+On Wed, Jul 28, 2021 at 02:41:03PM +0200, Arne Schwabe wrote:
+> The experience with openurl/OPEN_URL has shown that just sending
+> a URL to a client is not enough and we often need different
+> behaviour of the client depending on circumstances. Replace
+> OPEN_URL with a more flexible WEB_AUTH pending auth method.
 >=20
-> Ah right, that is implicit now (OpenVPN >=3D 2.4): "All tun devices on al=
-l=20
-> platforms are always considered to be IPv6 capable. The --tun-ipv6=20
-> option is ignored (behaves like it is always on)."
+> Patch v2: use WEB_AUTH instead WEBAUTH
+[..]
 
-Yep.  This is a very old option, which we still push in case a very old
-client connects.  But it's really obsolete :-)
+I think this is mostly ready, except for a small oversight:
 
-> > A random IP in that subnet, like "fd42::1/112 fd42::2" - this is a
-> > somewhat unlucky artefact of the implementation of --ifconfig-ipv6,
-> > which insists on having a "remote" even if that is not used in
-> > many cases.
->=20
-> Right, I'll set it to the same IP as the tun0 device itself, i.e.=20
-> fd42::1 if it can be random anyway ;-)
+> -proxy_url
+> -=3D=3D=3D=3D=3D=3D=3D=3D
+> -This is a variant of openurl that allows opening a url via an
+> +webauth with proxy
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +This is a variant of webauth that allows opening a url via an
+>  HTTP proxy. It could be used to avoid issues with OpenVPN connection's
+>  persist-tun that may cause the web server to be unreachable.
+>  The client should announce proxy_url in its IV_SSO and parse the
+>  PROXY_URL message. The format of {EXTRA} in this case is
 
-In tun mode, that is fine.  In TAP mode, you need a gateway for routes,
-but on the *server*, this needs a proper gateway address ("this client's
-IPv6 address") for routes to actually work, so it won't make a big
-difference there either :-)
+   ^^^^^^^^^ there is no PROXY_URL anymore, so this might read
 
+   ... and parse the "proxy=3D..." part of the "flags" section.  The format
+   of {EXTRA} in this case is:
 
-> > Without having tested it, I would agree that this is what it is.
-> Actually I did test it now properly and it does work!
-
-Now that was easy ;-)
-
-And - thanks for prompting me to go look and clean up that code.  I have
-sent a patch to the list that removes the requirement for the second
-parameter to --ifconfig-ipv6, and "it seems to still work for me".
-
-(So, in tun mode, no visible difference, and in tap mode, it will then
-refuse to install IPv6 routes unless --route-ipv6-gateway or a gateway
-parameter for --route-ipv6 is set up -> works as designed)
-
-@Antonio: on that one, I would really appreciate if you could do a
-"full" review, with all the "route_ipv6_list" etc related code paths,
-if I have overlooked a corner case.
+Or something like this.
 
 gert
 --=20
@@ -90,22 +68,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---jST5mSEYh6T5T0fJ
+--jm1JBR/p/u2jjFsw
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJhDRdxAAoJEB2Cnv7KVigS8ygMAIeDdBA8u7j21JZsvGHyRsAK
-tGPDJqBVtmtLgYjn5Ec18uWJKa85OgF6mOdZZfZxp41/Kg149utF0JjCXxRSdPQ4
-4kzvZF0c0dnDJZ+cPPsP7bEirJIcT8e4tq5Fu4OFLUBR5/MbAiwA15Jbjkf9SHVj
-NWOqjZSV8mZumO9/bJ8l7KYmIZPEORb7j/9iB1c5OsPwe0/OuZFRIkEhO0t9Z33l
-NFCwUI1Z3KNQi4QrM63cgTzamJ7CZrS4w/eklfYiPMzbkRcCfaLuEtiR54EK4Qz5
-b9673EIIaybc3LUD/1w/QHsLpcGSlEfQ60FuOalrmZ+kuSSNI11mXdTGRvl66NIb
-Iv1Xr1skHsRd440TyHEbpNYtqa4xdJqvouYJW217TgJyfKzoOKnT616RBZRuQC3G
-2BVSJVBuYwteeLJqlarbr+M8j5K8w7SomZVI6020NSQIMrveHNhDjuI4Ueb6tQkx
-9UA85ZI+ajgh6bvn9wGpVhj0mdbutADnJGUtj7apwQ==
-=j3m2
+iQGcBAEBAgAGBQJhDV2OAAoJEB2Cnv7KVigSzM4L/0j6nupEdDfvMtfaH8ivId9v
+4dXDiUewMYzqzfmBLK8OioBJSc2ee24w85YsOal3X6daSkv5GJAUCJOf+hrWJo81
+p71pk6+awLsTDt+81t3scTtP+4277g/Yjl/jqfL/cFYbnYjL4LX+qnipOeZnKQVH
+rBRssNGQ0zCfH8xFzeATx/kyZRVkt7AsL4RB1MIIPtxSjwXPvW6a6GkZNrDwGrMT
+wAwB6J2UJRUWkRJxO/LQAXVyV8xdSIrrnmUkErOguIO1ZTMJwPzGMCStVrzwiGWh
+pNnTVLhtlWj5vTqlTo0FGz+SK1SE240A55El+ZhFGGdafdAl8Rwxf6LeemfQx3JU
+4DkfwS4p5iARU6YTUCJRBguUNcfTI6GEXnPaTdn1g8uikbwBOe04n3BVQYiCL2lc
+KtIeh3/iIqyJWjJ+87yciOplr5Xx2coaVLN05Oz9tBsgPwaAaOCjfAcj5Xz2KSf9
+ECocvEuudDUs69Vq8L7BrnbJ8LWkoeTlya6RzccnSQ==
+=dNn7
 -----END PGP SIGNATURE-----
 
---jST5mSEYh6T5T0fJ--
+--jm1JBR/p/u2jjFsw--
 
