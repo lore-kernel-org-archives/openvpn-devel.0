@@ -1,11 +1,12 @@
-From: Maximilian Fillinger <maximilian.fillinger@...2507...>
-Date: Tue, 10 Aug 2021 10:17:18 +0000
-Message-ID: <cbc66884a8d04016bb73fb75c500f67c@...2507...>
 References: <20210810061644.20353-1-maximilian.fillinger@...2507...>
  <24434d68-f25e-1a86-0f26-259fbef3ae04@...1227...>
-In-Reply-To: <24434d68-f25e-1a86-0f26-259fbef3ae04@...1227...>
-Content-Language: en-US
+ <cbc66884a8d04016bb73fb75c500f67c@...2507...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <a1aef3e0-240c-3bb3-57c4-4b3e21976262@...1227...>
+Date: Tue, 10 Aug 2021 12:23:23 +0200
 MIME-Version: 1.0
+In-Reply-To: <cbc66884a8d04016bb73fb75c500f67c@...2507...>
+Content-Language: en-GB
 Subject: Re: [Openvpn-devel] [PATCH] Replace deprecated mbedtls DRBG update
  function
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,19 +17,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Maximilian Fillinger <maximilian.fillinger@...2507...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-PiBGcm9tOiBBcm5lIFNjaHdhYmUgW21haWx0bzphcm5lQC4uLjEyMjcuLi5dDQo+IFNlbnQ6IGRp
-bnNkYWcgMTAgYXVndXN0dXMgMjAyMSAxMjoxMg0KPiBUbzogTWF4aW1pbGlhbiBGaWxsaW5nZXIg
-PG1heGltaWxpYW4uZmlsbGluZ2VyQC4uLjI1MDcuLi4+OyBvcGVudnBuLQ0KPiBkZXZlbEBsaXN0
-cy5zb3VyY2Vmb3JnZS5uZXQNCj4gU3ViamVjdDogUmU6IFtPcGVudnBuLWRldmVsXSBbUEFUQ0hd
-IFJlcGxhY2UgZGVwcmVjYXRlZCBtYmVkdGxzIERSQkcNCj4gdXBkYXRlIGZ1bmN0aW9uDQo+IA0K
-PiBBbSAxMC4wOC4yMSB1bSAwODoxNiBzY2hyaWViIE1heCBGaWxsaW5nZXI6DQo+ID4gKyNpZiBN
-QkVEVExTX1ZFUlNJT05fTlVNQkVSIDwgMHgwMjEwMDAwMA0KPiANCj4gSXMgdGhhdCByZWFsbHkg
-Mi4xNj8gTG9va2luZyBhdCB0aGUgQVBJIGRvYw0KPiAoaHR0cHM6Ly90bHMubWJlZC5vcmcvYXBp
-L3ZlcnNpb25fOGguaHRtbCNhZGI0ZjU0ZWJiMzNmZDFhMjVlMmM0ZDQ0ODBjZjQNCj4gOTM2KQ0K
-PiBpdCBzb3VuZHMgbGlrZSB0aGVyZSBzaG91bGQgYmUgYSAxNiBpbiB0aGF0IG51bWJlci4NCg0K
-SXQncyBhIGhleGFkZWNpbWFsIDE2LiBWZXJzaW9uIDIuMjYuMCBmb3IgZXhhbXBsZSBkb2VzDQoN
-CiNkZWZpbmUgTUJFRFRMU19WRVJTSU9OX05VTUJFUiAgICAgICAgIDB4MDIxQTAwMDANCg==
+Am 10.08.21 um 12:17 schrieb Maximilian Fillinger:
+>> From: Arne Schwabe [mailto:arne@...1227...]
+>> Sent: dinsdag 10 augustus 2021 12:12
+>> To: Maximilian Fillinger <maximilian.fillinger@...2507...>; openvpn-
+>> devel@lists.sourceforge.net
+>> Subject: Re: [Openvpn-devel] [PATCH] Replace deprecated mbedtls DRBG
+>> update function
+>>
+>> Am 10.08.21 um 08:16 schrieb Max Fillinger:
+>>> +#if MBEDTLS_VERSION_NUMBER < 0x02100000
+>>
+>> Is that really 2.16? Looking at the API doc
+>> (https://tls.mbed.org/api/version_8h.html#adb4f54ebb33fd1a25e2c4d4480cf4
+>> 936)
+>> it sounds like there should be a 16 in that number.
+> 
+> It's a hexadecimal 16. Version 2.26.0 for example does
+> 
+> #define MBEDTLS_VERSION_NUMBER         0x021A0000
+> 
+Oh well that is confusing. Thanks for clearing that up.
+
+Arne
+
