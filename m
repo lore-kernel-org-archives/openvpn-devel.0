@@ -1,14 +1,12 @@
-From: Antonio Quartulli <a@...2181...>
-References: <20210125125628.30364-11-arne@...1227...>
- <20210518122635.2235658-1-arne@...1227...>
- <5585fe35-4770-60a0-8106-0782b28d6e4c@...2181...>
-Message-ID: <be1e8d03-4a4e-4db2-8247-80d60304ccda@...2181...>
-Date: Tue, 10 Aug 2021 12:03:28 +0200
+References: <20210810061644.20353-1-maximilian.fillinger@...2507...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <24434d68-f25e-1a86-0f26-259fbef3ae04@...1227...>
+Date: Tue, 10 Aug 2021 12:11:44 +0200
 MIME-Version: 1.0
-In-Reply-To: <5585fe35-4770-60a0-8106-0782b28d6e4c@...2181...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3] Implement --client-crresponse script
- options and plugin interface
+In-Reply-To: <20210810061644.20353-1-maximilian.fillinger@...2507...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH] Replace deprecated mbedtls DRBG update
+ function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,62 +16,15 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 7bit
+To: Max Fillinger <maximilian.fillinger@...2507...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+Am 10.08.21 um 08:16 schrieb Max Fillinger:
+> +#if MBEDTLS_VERSION_NUMBER < 0x02100000
 
-On 10/08/2021 11:38, Antonio Quartulli wrote:
-> Hi,
-> 
-> On 18/05/2021 14:26, Arne Schwabe wrote:
->> This is allows scripts and pluginsto parse/react to a CR_RESPONSE message
->>
->> Patch V2: doc fixes, do not put script under ENABLE_PLUGIN
->> Patch V3: rebase
->>
->> Signed-off-by: Arne Schwabe <arne@...1227...>
-> 
-> I have a high level question about this patch.
-> 
-> At the moment there is no trace of CR_RESPONSE or request in the
-> OpenVPN2 code.
-> 
-> To the best of my knowledge that's because this protocol is entirely
-> handled outside of OpenVPN using INFO_PRE and custom control messages.
-> 
-> With this patch we are aiming at moving a piece of this "external" logic
-> inside OpenVPN.
-> 
-> Question 1:
-> 
-> What is the benefit of moving the CR response handling inside OpenVPN,
-> if there is no code to generate the request? Maybe there are advantages
-> that are just assumed?
-> 
-> Question 2:
-> 
-> If we implement handling CR-RESPONSE, do we want to implement such
-> handling in the future with every custom control message that may be
-> sent by the management interface?
-> 
-> Question 3:
-> 
-> IMHO, this is a very good case where OpenVPN can be transparent and let
-> the upper layer deal with it (i.e. via mgmt interface), why changing that?
+Is that really 2.16? Looking at the API doc
+(https://tls.mbed.org/api/version_8h.html#adb4f54ebb33fd1a25e2c4d4480cf4936)
+it sounds like there should be a 16 in that number.
 
-
-I have to take this back.
-
-OpenVPN already has some logic to parse the CR_RESPONSE and react to it
-accordingly.
-
-Therefore my comments above are wrong.
-
-Please ignore my earlier message.
-
-Best Regards,
-
--- 
-Antonio Quartulli
+Arne
 
