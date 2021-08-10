@@ -1,10 +1,11 @@
+From: Antonio Quartulli <a@...2181...>
 References: <20210125125628.30364-11-arne@...1227...>
  <20210518122635.2235658-1-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <5585fe35-4770-60a0-8106-0782b28d6e4c@...2181...>
-Date: Tue, 10 Aug 2021 11:38:46 +0200
+ <5585fe35-4770-60a0-8106-0782b28d6e4c@...2181...>
+Message-ID: <be1e8d03-4a4e-4db2-8247-80d60304ccda@...2181...>
+Date: Tue, 10 Aug 2021 12:03:28 +0200
 MIME-Version: 1.0
-In-Reply-To: <20210518122635.2235658-1-arne@...1227...>
+In-Reply-To: <5585fe35-4770-60a0-8106-0782b28d6e4c@...2181...>
 Content-Language: en-US
 Subject: Re: [Openvpn-devel] [PATCH v3] Implement --client-crresponse script
  options and plugin interface
@@ -22,46 +23,56 @@ To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 18/05/2021 14:26, Arne Schwabe wrote:
-> This is allows scripts and pluginsto parse/react to a CR_RESPONSE message
+On 10/08/2021 11:38, Antonio Quartulli wrote:
+> Hi,
 > 
-> Patch V2: doc fixes, do not put script under ENABLE_PLUGIN
-> Patch V3: rebase
+> On 18/05/2021 14:26, Arne Schwabe wrote:
+>> This is allows scripts and pluginsto parse/react to a CR_RESPONSE message
+>>
+>> Patch V2: doc fixes, do not put script under ENABLE_PLUGIN
+>> Patch V3: rebase
+>>
+>> Signed-off-by: Arne Schwabe <arne@...1227...>
 > 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-
-I have a high level question about this patch.
-
-At the moment there is no trace of CR_RESPONSE or request in the
-OpenVPN2 code.
-
-To the best of my knowledge that's because this protocol is entirely
-handled outside of OpenVPN using INFO_PRE and custom control messages.
-
-With this patch we are aiming at moving a piece of this "external" logic
-inside OpenVPN.
-
-Question 1:
-
-What is the benefit of moving the CR response handling inside OpenVPN,
-if there is no code to generate the request? Maybe there are advantages
-that are just assumed?
-
-Question 2:
-
-If we implement handling CR-RESPONSE, do we want to implement such
-handling in the future with every custom control message that may be
-sent by the management interface?
-
-Question 3:
-
-IMHO, this is a very good case where OpenVPN can be transparent and let
-the upper layer deal with it (i.e. via mgmt interface), why changing that?
+> I have a high level question about this patch.
+> 
+> At the moment there is no trace of CR_RESPONSE or request in the
+> OpenVPN2 code.
+> 
+> To the best of my knowledge that's because this protocol is entirely
+> handled outside of OpenVPN using INFO_PRE and custom control messages.
+> 
+> With this patch we are aiming at moving a piece of this "external" logic
+> inside OpenVPN.
+> 
+> Question 1:
+> 
+> What is the benefit of moving the CR response handling inside OpenVPN,
+> if there is no code to generate the request? Maybe there are advantages
+> that are just assumed?
+> 
+> Question 2:
+> 
+> If we implement handling CR-RESPONSE, do we want to implement such
+> handling in the future with every custom control message that may be
+> sent by the management interface?
+> 
+> Question 3:
+> 
+> IMHO, this is a very good case where OpenVPN can be transparent and let
+> the upper layer deal with it (i.e. via mgmt interface), why changing that?
 
 
+I have to take this back.
+
+OpenVPN already has some logic to parse the CR_RESPONSE and react to it
+accordingly.
+
+Therefore my comments above are wrong.
+
+Please ignore my earlier message.
 
 Best Regards,
-
 
 -- 
 Antonio Quartulli
