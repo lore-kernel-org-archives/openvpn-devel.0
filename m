@@ -1,15 +1,12 @@
-Date: Wed, 11 Aug 2021 13:03:35 +0000
-From: tincantech <tincantech@...2282...>
-Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <0Pd7Zsu7ebJs6u2vGi5Uni2lD1cc5oRlv8A4BMTwjS7NYKojnTJyVztq8NetmXXy12MjM5mcr6xLuz5B-gvfTeZFwLIJjQOijmnPbnjwcL8=@protonmail.com>
-In-Reply-To: <ca592ce5-3123-35df-7533-f7dc79740cef@...2181...>
-References: <20210805180950.838612-1-arne@...1227...>
- <ca592ce5-3123-35df-7533-f7dc79740cef@...2181...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+References: <420f8ab2-24ed-e57d-cc83-1c3b4beaea92@...515...>
+Message-ID: <3d413b92-6e87-c52d-8738-1e2b209d96e2@...515...>
+Date: Wed, 11 Aug 2021 16:38:58 +0300
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="b1_1UL1JxcDXuhhCsriL5addSwdTGiLcJjGwcL6xnM9TE"
-Subject: Re: [Openvpn-devel] [PATCH v3] Modernise OpenVPN defaults and
- introduce '--compat-mode'
+In-Reply-To: <420f8ab2-24ed-e57d-cc83-1c3b4beaea92@...515...>
+Content-Type: multipart/mixed; boundary="------------4A58E33F3DB00FF3BA53E4E3"
+Content-Language: en-US
+Subject: [Openvpn-devel] Summary of the community meeting (11th August 2021)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,628 +15,412 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
-
---b1_1UL1JxcDXuhhCsriL5addSwdTGiLcJjGwcL6xnM9TE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+--------------4A58E33F3DB00FF3BA53E4E3
+Content-Type: text/plain; charset=iso-8859-15; format=flowed
+Content-Transfer-Encoding: 8bit
 
 Hi,
 
-a few more wrinkles to smooth out.
+Here's the summary of the IRC meeting.
 
+---
 
-Sent with ProtonMail Secure Email.
+COMMUNITY MEETING
 
-=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90 Original Me=
-ssage =E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90=E2=80=90
+Place: #openvpn-meeting on libera.chat
+Date: Wed 11th August 2021
+Time: 14:00 CET (12:00 UTC)
 
-On Wednesday, August 11th, 2021 at 08:29, Antonio Quartulli <a@...2181...> =
-wrote:
+Planned meeting topics for this meeting were here:
 
-> Hi,
->
-> On 05/08/2021 20:09, Arne Schwabe wrote:
-> > TLS 1.0 should not be allowed anymore in a sensible default configurati=
-on.
-> > Bump the default to TLS 1.2
-> > Also modify --cipher not to be automatically appended and default
-> > allow-compression to no. This also allows a default configuration to be
-> > compatible with DCO.
-> >
-> > Also introduce --compat-mode version to allow an easy way for UI/users
-> > to maximise compatibility to earlier versions at the cost of DCO and
-> > security.
-> >
-> > --compat-mode is only intended as an easier way to set options that
-> > are still present. It will not implement options that are removed
-> > (e.g. --keysize), so it is meant a best effort option and not as
-> > a mean to provide 100% compatibility.
+<https://community.openvpn.net/openvpn/wiki/Topics-2021-08-11>
 
+Your local meeting time is easy to check from services such as
 
-mean -> means
+<http://www.timeanddate.com/worldclock>
 
+SUMMARY
 
-> >
-> > Patch v2: rebase
-> > Patch v3: Fix version number off by a factor of 10
-> >
-> > Signed-off-by: Arne Schwabe <arne@...1227...>
-> > ---
-> >  Changes.rst                          | 23 +++++++
-> >  doc/man-sections/generic-options.rst | 21 ++++++
-> >  src/openvpn/comp.h                   |  1 +
-> >  src/openvpn/options.c                | 97 +++++++++++++++++++++++-----
-> >  src/openvpn/options.h                | 17 +++++
-> >  src/openvpn/ssl_ncp.c                | 13 ++++
-> >  src/openvpn/ssl_ncp.h                |  8 +++
-> >  7 files changed, 165 insertions(+), 15 deletions(-)
-> >
-> > diff --git a/Changes.rst b/Changes.rst
-> > index 0323a7f7a..56b4dd39c 100644
-> > --- a/Changes.rst
-> > +++ b/Changes.rst
-> > @@ -45,6 +45,12 @@ Pending auth support for plugins and scripts
-> >
-> >      See ``sample/sample-scripts/totpauth.py`` for an example.
-> >
-> > +Compatibility mode (``--compat-mode``)
-> > +    The modernisation of defaults can impact the compatibility of Open=
-VPN 2.6.0
-> > +    with older peers. The options ``--compat-mode`` allows UIs to prov=
-ide users
-> > +    with an easy way to still connect to older servers.
-> > +
-> > +
-> >  Deprecated features
-> >  -------------------
-> >  ``inetd`` has been removed
-> > @@ -65,6 +71,23 @@ Deprecated features
-> >      This option mainly served a role as debug option when NCP was first
-> >      introduced. It should now no longer be necessary.
-> >
-> > +TLS 1.0 and 1.1 are deprecated
-> > +    ``tls-version-min`` is set to 1.2 by default.  OpenVPN 2.6.0 defau=
-lts
-> > +    to a minimum TLS version of 1.2 as TLS 1.0 and 1.1 should be gener=
-ally
-> > +    avoided. Note that OpenVPN versions older than 2.3.7 use TLS 1.0 o=
-nly.
-> > +
-> > +``--cipher`` options is no longer included in ``--data-ciphers`` by de=
-fault
->
-> options -> argument ?
->
-> > +    Data cipher negotiation has been introduced in 2.4.0 and been sign=
-ificantly
-> > +    improved in 2.5.0. The implicit fallback to the cipher specified in
-> > +    ``--cipher`` has been removed.
-> > +
-> > +Compression no longer enabled by default
-> > +    Unless an explicit compression option is specified in the configur=
-ation,
-> > +    ``--allow-compression`` defaults to ``no`` in OpeNVPN 2.6.0.
-> > +    By default, OpenVPN 2.5 still allowed a server to enable compressi=
-on by
-> > +    pushing compression related options.
-> > +
-> > +
-> >  Overview of changes in 2.5
-> >  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D
-> >
-> > diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/ge=
-neric-options.rst
-> > index 203e35f57..739e845ac 100644
-> > --- a/doc/man-sections/generic-options.rst
-> > +++ b/doc/man-sections/generic-options.rst
-> > @@ -52,6 +52,27 @@ which mode OpenVPN is configured as.
-> >    BSDs implement a getrandom() or getentropy() syscall that removes the
-> >    need for /dev/urandom to be available.
-> >
-> > +--compat-mode version
-> > +  This option provides a way to alter the default of OpenVPN to be more
-> > +  compatible with the version ``version`` specified. All of the changes
-> > +  this option does can also be achieved using invdivdiual configuration
->
-> invdivdiual -> individual
+cron2, dazo, lev, mattock, MaxF, ordex, plaisthos and zx2c4 participated 
+in this meeting.
 
-does -> makes
+---
 
->
-> > +  option.
-> > +
-> > +  Note: Using this options sets reverts defaults to no longer recommen=
-ded
->
-> options -> option
->
-> sets reverts -> reverts
->
-> > +  values and should be avoided if possible.
-> > +
-> > +  The following table details what defaults are changed depending on t=
-he
-> > +  version specified.
-> > +
-> > +  - 2.5.x or lower: ``--allow-compression asym`` is automatically added
-> > +    to the configuration if no other compression options are present.
-> > +  - 2.4.x or lower: The cipher in ``--cipher`` is appended to
-> > +    ``--data-ciphers``
-> > +  - 2.3.x or lower: ``--data-cipher-fallback`` is automatically added =
-with
-> > +    the same cipher as ``--cipher``
-> > +  - 2.3.6 or lower: ``--tls-version-min 1.0`` is added to the configur=
-ation
-> > +    when ``--tls-version-min`` is not explicitly set.
-> > +
-> >  --config file
-> >    Load additional config options from ``file`` where each line corresp=
-onds
-> >    to one command line option, but with the leading '--' removed.
-> > diff --git a/src/openvpn/comp.h b/src/openvpn/comp.h
-> > index cd4f0e1a2..619a574e5 100644
-> > --- a/src/openvpn/comp.h
-> > +++ b/src/openvpn/comp.h
-> > @@ -59,6 +59,7 @@
-> >  #define COMP_F_ALLOW_STUB_ONLY      (1<<4) /* Only accept stub compres=
-sion, even with COMP_F_ADVERTISE_STUBS_ONLY
-> >                                              * we still accept other co=
-mpressions to be pushed */
-> >  #define COMP_F_MIGRATE              (1<<5) /* push stub-v2 or comp-lzo=
- no when we see a client with comp-lzo in occ */
-> > +#define COMP_F_ALLOW_ASYM           (1<<6) /* Compression was explicit=
-ly set to allow assymetric compression */
+Ordex has sent a patch to get rid of PF support in openvpn 2.6.
 
+---
 
-assymetric -> asymetric
+Talked about the pluggable transport patchset that was funded by Google 
+and implemented by Operator Foundation. Ordex is still in discussion 
+with the involved parties.
 
+---
 
-> >
-> >
-> >  /*
-> > diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> > index 63cda1e86..20c273063 100644
-> > --- a/src/openvpn/options.c
-> > +++ b/src/openvpn/options.c
-> > @@ -854,6 +854,7 @@ init_options(struct options *o, const bool init_gc)
-> >      o->use_prediction_resistance =3D false;
-> >  #endif
-> >      o->tls_timeout =3D 2;
-> > +    o->ssl_flags =3D (TLS_VER_1_2 << SSLF_TLS_VERSION_MIN_SHIFT);
-> >      o->renegotiate_bytes =3D -1;
-> >      o->renegotiate_seconds =3D 3600;
-> >      o->renegotiate_seconds_min =3D -1;
-> > @@ -3079,8 +3080,12 @@ options_postprocess_verify(const struct options =
-*o)
-> >  static void
-> >  options_postprocess_cipher(struct options *o)
-> >  {
-> > -    if (!o->pull && !(o->mode =3D=3D MODE_SERVER))
-> > +    if (!o->tls_server && !o->tls_client)
-> >      {
-> > +        /* we are in the classic P2P mode */
-> > +        msg( M_WARN, "Cipher negotiation is disabled since TLS "
->
-> no space after '('
->
-> > +             "mode is not enabled");
-> > +
-> >          /* If the cipher is not set, use the old default of BF-CBC. We=
- will
-> >           * warn that this is deprecated on cipher initialisation, no n=
-eed
-> >           * to warn here as well */
-> > @@ -3101,26 +3106,68 @@ options_postprocess_cipher(struct options *o)
-> >          /* We still need to set the ciphername to BF-CBC since various=
- other
-> >           * parts of OpenVPN assert that the ciphername is set */
-> >          o->ciphername =3D "BF-CBC";
-> > +
-> > +        msg(M_WARN, "Note: --cipher is not set. Previous OpenVPN versi=
-ons "
-> > +                    "defaulted to BF-CBC as fallback when cipher negot=
-iation "
-> > +                    "failed in this case. If you need this fallback pl=
-ease add "
-> > +                    "'--data-ciphers-fallback 'BF-CBC' to your configu=
-ration "
-> > +                    "and/or add BF-CBC to --data-ciphers.");
->
-> I wonder if we really need this message. Am I wrong or this message will
-> simply appear by default once people understand that --cipher is not
-> useful anymore?
->
-> If you think it is important for people that may get fooled by the new
-> behaviour, then I'd suggest to use M_INFO.
->
-> >      }
-> >      else if (!o->enable_ncp_fallback
-> >               && !tls_item_in_cipher_list(o->ciphername, o->ncp_ciphers=
-))
-> >      {
-> > -        msg(M_WARN, "DEPRECATED OPTION: --cipher set to '%s' but missi=
-ng in"
-> > -            " --data-ciphers (%s). Future OpenVPN version will "
-> > -            "ignore --cipher for cipher negotiations. "
-> > -            "Add '%s' to --data-ciphers or change --cipher '%s' to "
-> > -            "--data-ciphers-fallback '%s' to silence this warning.",
-> > -            o->ciphername, o->ncp_ciphers, o->ciphername,
-> > -            o->ciphername, o->ciphername);
-> > -        o->enable_ncp_fallback =3D true;
-> > +        msg(M_WARN, "DEPRECATED OPTION: --cipher set to '%s' but missi=
-ng in "
-> > +            "--data-ciphers (%s). OpenVPN ignores --cipher for cipher "
-> > +            "negotiations. ",
-> > +            o->ciphername, o->ncp_ciphers);
-> > +    }
-> > +}
-> > +
-> > +static void
-> > +options_set_backwards_compatible_options(struct options *o)
-> > +{
-> > +    /* TLS min version is not set */
-> > +    if ((o->ssl_flags & SSLF_TLS_VERSION_MIN_MASK) =3D=3D 0)
-> > +    {
-> > +        if (!need_compatibility(o, 20307))
-> > +        {
-> > +            /* 2.3.6 and earlier have TLS 1.0 only, set minimum to TLS=
- 1.0 */
-> > +            o->ssl_flags =3D (TLS_VER_1_0 << SSLF_TLS_VERSION_MIN_SHIF=
-T);
-> > +        }
-> > +        else
-> > +        {
-> > +            /* Use TLS 1.2 as proper default */
-> > +            o->ssl_flags =3D (TLS_VER_1_2 << SSLF_TLS_VERSION_MIN_SHIF=
-T);
-> > +        }
-> > +    }
-> >
-> > -        /* Append the --cipher to ncp_ciphers to allow it in NCP */
-> > -        size_t newlen =3D strlen(o->ncp_ciphers) + 1 + strlen(o->ciphe=
-rname) + 1;
-> > -        char *ncp_ciphers =3D gc_malloc(newlen, false, &o->gc);
-> > +    /* Versions < 2.5.0 do need --cipher in the list of accepted ciphe=
-rs.
-> > +     * Version 2.4 might probably does not need it but NCP was not so
+Talked about the new buildbot setup. Mattock attempted to start setting 
+up the production dockerized buildmaster, but lacked permissions to 
+create the EC2 instance (not being in ops anymore). He created an 
+internal ticket about this to get things moving forward.
 
+Mattock also published the buildbot work as a PR to openvpn-vagrant:
 
-might is not required here
+<https://github.com/OpenVPN/openvpn-vagrant/pull/18/>
 
+He also started adapting the MSI installer WiX source files to take the 
+results of new built-in msbuild buildsystem in OpenVPN as their source.
 
-> > +     * good with 2.4 and ncp-disable might be more common on 2.4 peers.
-> > +     * Only do this iif --cipher is not explicitly (BF-CBC). This is n=
-ot
+---
 
-iif -> if
+Talked about AutoHCR also known as HLK-CI. It is now testing 
+tap-windows6 pull requests automatically. Permissions are handled by a 
+separate "openvpn-ci" GitHub user created by mattock who has write 
+permissions to tap-windows6. Those permissions are, however, narrowed 
+down by providing the HLK-CI guys openvpn-ci's GitHub PAT ("personal 
+access token") that only grants "repo:status" permission. Tests results 
+are uploaded automatically to a Dropbox share.
 
-> > +     * 100% correct backwards compatible behaviour but 2.5 already beh=
-aved like
-> > +     * this */
-> > +    if (o->ciphername && need_compatibility(o, 20500)
-> > +        && !tls_item_in_cipher_list(o->ciphername, o->ncp_ciphers))
-> > +    {
-> > +        append_cipher_to_ncp_list(o, o->ciphername);
-> > +    }
-> > +
-> > +    /* Versions <=3D 2.3.0 additionally might be compiled with --enabl=
-e-small and
-> > +     * not have OCC strings required for "poor man's NCP" */
-> > +    if (o->ciphername &&  need_compatibility(o, 20400))
-> > +    {
-> > +        o->enable_ncp_fallback =3D true;
-> > +    }
-> >
-> > -        ASSERT(openvpn_snprintf(ncp_ciphers, newlen, "%s:%s", o->ncp_c=
-iphers,
-> > -                                o->ciphername));
-> > -        o->ncp_ciphers =3D ncp_ciphers;
-> > +    /* Compression is deprecated and we do not want to announce suppor=
-t for it
-> > +     * by default anymore, additionally DCO breaks with with compressi=
-on.
-> > +     * Disable compression by default starting with 2.6.0 if no other
-> > +     * compression related options have been explicitly set */
-> > +    if (!comp_non_stub_enabled(&o->comp) && !need_compatibility(o, 206=
-00)
-> > +        && (o->comp.flags =3D=3D 0))
-> > +    {
-> > +        o->comp.flags =3D COMP_F_ALLOW_STUB_ONLY|COMP_F_ADVERTISE_STUB=
-S_ONLY;
-> >      }
-> >  }
-> >
-> > @@ -3136,6 +3183,8 @@ options_postprocess_mutate(struct options *o)
-> >      helper_keepalive(o);
-> >      helper_tcp_nodelay(o);
-> >
-> > +    options_set_backwards_compatible_options(o);
-> > +
-> >      options_postprocess_cipher(o);
-> >      options_postprocess_mutate_invariant(o);
-> >
-> > @@ -3213,6 +3262,12 @@ options_postprocess_mutate(struct options *o)
-> >       * when using --pull
-> >       */
-> >      pre_connect_save(o);
-> > +
-> > +    /* Give a general warning at the end of initialisation that defaul=
-ts
-> > +     * have changed */
-> > +    msg(M_WARN, "Note that modernistation of defaults in OpenVPN 2.6 l=
-imits "
->
-> modernistation -> modernisation
->
-> > +                "compatibility with old versions. See Changes.rst and "
-> > +                "--compat-mode in the manual for details.");
-> >  }
-> >
-> >  /*
-> > @@ -6704,6 +6759,17 @@ add_option(struct options *options,
-> >              setenv_str(es, p[1], p[2] ? p[2] : "");
-> >          }
-> >      }
-> > +    else if (streq(p[0], "compat-mode") && p[1] && !p[3])
-> > +    {
-> > +        unsigned int major, minor, patch;
-> > +        if (!(sscanf(p[1], "%u.%u.%u", &major, &minor, &patch) =3D=3D =
-3))
-> > +        {
-> > +            msg(msglevel, "cannot parse version number for -compat-mod=
-e: %s", p[1]);
-> > +            goto err;
-> > +        }
-> > +
-> > +        options->backwards_compatible =3D major * 10000 + minor * 100 =
-+ patch;
-> > +    }
-> >      else if (streq(p[0], "setenv-safe") && p[1] && !p[3])
-> >      {
-> >          VERIFY_PERMISSION(OPT_P_SETENV);
-> > @@ -7701,6 +7767,7 @@ add_option(struct options *options,
-> >          else if (streq(p[1], "asym"))
-> >          {
-> >              options->comp.flags &=3D ~COMP_F_ALLOW_COMPRESS;
-> > +            options->comp.flags |=3D COMP_F_ALLOW_ASYM;
-> >          }
-> >          else if (streq(p[1], "yes"))
-> >          {
-> > diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-> > index b0e40cb7f..eb4e39f11 100644
-> > --- a/src/openvpn/options.h
-> > +++ b/src/openvpn/options.h
-> > @@ -225,6 +225,10 @@ struct options
-> >
-> >      /* enable forward compatibility for post-2.1 features */
-> >      bool forward_compatible;
-> > +    /** What version we should try to be compatible with as major * 10=
-000 +
-> > +      * minor * 100 + patch, e.g. 2.4.7 =3D> 20407 */
-> > +    unsigned int backwards_compatible;
-> > +
-> >      /* list of options that should be ignored even if unknown */
-> >      const char **ignore_unknown_option;
-> >
-> > @@ -660,6 +664,19 @@ struct options
-> >      unsigned int data_channel_crypto_flags;
-> >  };
-> >
-> > +/**
-> > + * Returns if we want 'backwards-compatible' to a certain version
->
-> Maybe better rephrased:
->
-> Returns if
->
-> > + * @param version   the first version does that *NOT* need the compati=
-bility
-> > + *                  e.g. 204000 for all versions <=3D 2.4.0
+Also noted that attempting to resolve all the issues found by HLK(-CI) 
+is probably not worth the effort, given that there are already better 
+drivers to replace it.
 
+---
 
-does that *NOT* need ???
+Lev gave an update on dco-win. He plans to look into doing crypto 
+directly on network buffers without copying, which should make it even 
+faster.
 
-that does not need ??? guessing ..
+---
 
+Talked about Wintun. Zx2c4 mentioned that many people would like to have 
+an updated version of Wintun included in OpenVPN. Wintun will continue 
+to be maintained despite the fact that a new driver will replace it in 
+Wireguard.
 
->
-> is there a 0 too many in the example (should be 20400?)? How about
-> making the format more explicit?
-> At the moment the example is the only thing trying to document the
-> version format.
->
->
-> On top of that, isn't the example wrong? The definition says "first
-> version that *NOT* need.." but the example says <=3D 2.4.0 ?
-> It probably should say "<2.4.0"
->
-> This said I think this is a bit confusing. See below:
->
-> > + * @return          compatibility should be enabled.
-> > + */
-> > +static inline bool
-> > +need_compatibility(const struct options *o, int version)
-> > +{
-> > +    return o->backwards_compatible !=3D 0 && o->backwards_compatible <=
- version;
->
-> How about changing this check to "backwards_compatible <=3D version" ?
->
-> This way the function meaning becomes "do we want to be compatible with
-> the version specified and older?"
->
->
-> > +}
-> > +
-> > +
-> >  #define streq(x, y) (!strcmp((x), (y)))
-> >
-> >  /*
-> > diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-> > index 6967e2bba..022a9dc3b 100644
-> > --- a/src/openvpn/ssl_ncp.c
-> > +++ b/src/openvpn/ssl_ncp.c
-> > @@ -172,6 +172,19 @@ mutate_ncp_cipher_list(const char *list, struct gc=
-_arena *gc)
-> >      return ret;
-> >  }
-> >
-> > +
-> > +void
-> > +append_cipher_to_ncp_list(struct options *o, const char *ciphername)
-> > +{
-> > +    /* Append the --cipher to ncp_ciphers to allow it in NCP */
-> > +    size_t newlen =3D strlen(o->ncp_ciphers) + 1 + strlen(ciphername) =
-+ 1;
-> > +    char *ncp_ciphers =3D gc_malloc(newlen, false, &o->gc);
-> > +
-> > +    ASSERT(openvpn_snprintf(ncp_ciphers, newlen, "%s:%s", o->ncp_ciphe=
-rs,
-> > +                            ciphername));
-> > +    o->ncp_ciphers =3D ncp_ciphers;
-> > +}
-> > +
-> >  bool
-> >  tls_item_in_cipher_list(const char *item, const char *list)
-> >  {
-> > diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h
-> > index 4a2601a2e..09ddeb28e 100644
-> > --- a/src/openvpn/ssl_ncp.h
-> > +++ b/src/openvpn/ssl_ncp.h
-> > @@ -102,6 +102,14 @@ tls_peer_ncp_list(const char *peer_info, struct gc=
-_arena *gc);
-> >  char *
-> >  mutate_ncp_cipher_list(const char *list, struct gc_arena *gc);
-> >
-> > +/**
-> > + * Appends the cipher specified by the ciphernamer parameter to to
+---
 
+Talked about profile import functionality for openvpn-gui:
 
-ciphernamer -> ciphername
+<https://github.com/OpenVPN/openvpn-gui/pull/436>
 
+Noted that while this approach is quite brutal, it is the only one that 
+seems to work reliably across all platforms.
 
-> > + * the o->ncp_ciphers list.
-> > + * @param o             options struct to modify. Its gc is also used
-> > + * @param ciphername    the ciphername to add
-> > + */
-> > +void append_cipher_to_ncp_list(struct options *o, const char *cipherna=
-me);
-> > +
-> >  /**
-> >   * Return true iff item is present in the colon-separated zero-termina=
-ted
-> >   * cipher list.
-> >
->
-> I think this patch, although not too big, may be better if split in piece=
-s.
->
-> IMHO the change to the default should be atomic and clearly motivated.
-> In a few months from now we will see this patch changing defaults and we
-> will have to remember why we wanted to do that.
->
-> The commit message explains what is happening, but not why.
->
-> Wouldn't it be better to have one patch of reach default behaviour being
-> charged with a concise but focused explanation as to why that default is
-> being changed?
->
-> After those patches, then another patch could come in implementing
-> compat-mode.
->
-> IMHO this would give the change history a very good cut. Anybody willing
-> to understand what happened can go back and check.
->
-> Thoughts?
->
->
-> Regards,
->
-> p.s. the code per se looks good at first glance.
->
-> --
-> Antonio Quartulli
->
->
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+-- 
 
------BEGIN PGP SIGNATURE-----
-Version: ProtonMail
+Full chatlog attached
 
-wsBzBAEBCAAGBQJhE8qOACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ2veAgAtOlgEGJ5zKH0YPIwck4s36FcJ1a68VlJQZGpBNGw/gdsm23w
-YtiLckbzCQ/d4EuIFx1CX5DOW1oSY+PUYVLVehYkDtHKfCqrBDjbr7r5Rap9
-B64mrZgTctr/Vfd9INDPR86Wn90/cDBfMsXNiHMAN25ZvHTlPSZEszmhBnkR
-eMDDF6OeWpVhLDIr940FDO2XllJMFZaHjguT+PGLMnImEkXBWkrxCi9Ob5Wk
-r5IVS6dPEV5i32g/Msh2O1+TEvuTmReNB7G0IGuuZiN4w795aEi+kTRW3j/g
-Ie3niYsZo/dMfavCSLexZ/cQ2FEUfUVdDWXNmR+fu7kfDGEJv49V2Q=3D=3D
-=3DdjIW
------END PGP SIGNATURE-----
+--------------4A58E33F3DB00FF3BA53E4E3
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn_irc_meeting_chatlog_2021-08-11.txt"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="openvpn_irc_meeting_chatlog_2021-08-11.txt"
 
---b1_1UL1JxcDXuhhCsriL5addSwdTGiLcJjGwcL6xnM9TE
-Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
+(15:01:14) MaxF: Hi!
+(15:01:19) mattock: hi!
+(15:03:37) lev___: hello
+(15:05:35) ordex: hi!
+(15:05:43) ordex: cron2_: dazo: plaisthos:=20
+(15:06:00) ordex: cron2_ will be a bit late
+(15:08:52) dazo: Hey!
+(15:09:00) cron2_: hy
+(15:09:16) ordex ha scelto come argomento: https://community.openvpn.net/=
+openvpn/wiki/Topics-2021-08-11
+(15:09:58) ordex: please be quiet !
+(15:10:11) ordex: it seems we're too much into summer mode
+(15:10:16) ordex: mattock: do something! :D
+(15:10:48) mattock: hi
+(15:10:51) mattock: sorry, got distracted
+(15:11:01) mattock: anyhow
+(15:11:24) mattock: https://community.openvpn.net/openvpn/wiki/Topics-202=
+1-08-11
+(15:11:28) mattock: sync up
+(15:11:51) ordex: more patches went in
+(15:12:02) ordex: I sent a patch to get rid of PF support in openvpn 2.6
+(15:12:06) ordex: as discussed
+(15:12:21) cron2_: yes!
+(15:13:08) ordex: <o/
+(15:13:54) ordex: for the transport-api I am still discussing with the in=
+volved parties what are the advantages of pushing for a merge, when an ex=
+ternal proxy seems to do the job already
+(15:14:06) plaisthos: sorry fore being late
+(15:14:14) ordex: and if there are advantages, who will offer 'community =
+mainteinance'
+(15:14:21) ordex: it's an ongoing discussion at the moment
+(15:14:21) cron2_: ordex: proxy will only do TCP mode, right?
+(15:14:34) plaisthos: the plugin api was also tcp only iirc
+(15:14:41) ordex: cron2_: I don't know what their "proxy" (they call it d=
+ispatcher) do=20
+(15:14:42) cron2_: well, if the proxy offers a SOCKS interface, it could =
+do UDP...
+(15:14:52) ordex: nono, it's not a proxy in the real sense
+(15:15:00) ordex: but rather a middleware implementing the obfuscation
+(15:15:14) ordex: I don't know the low level details, but it should be do=
+ing what the plugin in openvpn does
+(15:15:16) cron2_: yeah, but openvpn needs to talk to it, in some way
+(15:15:21) ordex: right
+(15:15:26) ordex: it could just be the remote
+(15:15:54) ordex: anyway, if this is a real problem I guess they will poi=
+nt it out once they will get back to me
+(15:15:54) cron2_: good point ("remote ::1 12345 udp")
+(15:16:05) ordex: right
+(15:17:02) d12fk ha abbandonato la stanza (quit: Quit: ZNC 1.7.2+deb3 - h=
+ttps://znc.in).
+(15:17:24) d12fk [~heiko@...2633...] =C3=A8 entrato nella stanza.
+(15:18:32) ordex: not much else to add to this topic for now
+(15:18:35) ordex: will keep you posted
+(15:19:58) mattock: ok
+(15:20:23) mattock: I can give a brief update as well
+(15:20:28) cron2_: 1
+(15:20:30) cron2_: +
+(15:21:09) mattock: I tried to start setting up the new production buildm=
+aster
+(15:21:29) cron2_: I saw your PR, but had no time to look more closely
+(15:21:33) mattock: however, I was immediately blocked by the fact that I=
+ did not have access to the terraform repository in which I should have a=
+dded the EC2 instance
+(15:21:46) mattock: so, I filed a ticket asking for permission to the rep=
+ository
+(15:21:53) mattock: did not yet check if I got an answer
+(15:22:03) mattock: meanwhile I created a PR for the dockerized buildbot =
+work
+(15:22:24) mattock: and started working on adapting WiX to consume the re=
+sults of the new msbuild buildsystem
+(15:22:44) cron2_: that sounds pretty cool
+(15:22:46) mattock: the PR is in a good shape afaics, but WiX is fighting=
+ back and does not provide much debugging info to figure out what is wron=
+g
+(15:23:06) mattock: in theory adapting the WiX source files is easy, ther=
+e's probably just some small glitch somewhere
+(15:23:41) mattock: anyhow, that's what I'll continue doing
+(15:23:54) ordex: may I dare to ask what is WiX?
+(15:24:14) mattock: yes, it is the tool that is used to compile WiX XML f=
+iles into MSI installer packages
+(15:24:27) mattock: so XML is the source and WiX makes it into an install=
+er
+(15:24:42) ordex: oh I see
+(15:24:43) ordex: cool
+(15:24:53) mattock: our official MSI installer are built using WiX
+(15:24:59) ordex: so to create the MSi we need to only maintain the XML f=
+ile ?
+(15:25:06) mattock: yes
+(15:25:10) ordex: oky, cool
+(15:25:34) mattock: also, if this was not mentioned before: the tap-windo=
+ws6 automatic HLK/HCK test thing is working
+(15:25:59) ordex: oh ok
+(15:26:12) cron2_: coool
+(15:26:30) cron2_: could you sort out the permission issues for the tap-w=
+indows6 repo?
+(15:26:42) mattock: the openvpn-ci user in github you see in tap-windows6=
+ repo permissions is for that purpose
+(15:26:49) mattock: yes
+(15:26:57) mattock: the openvpn-ci user was created by me
+(15:26:57) cron2_: so what permissions does it need?
+(15:27:02) mattock: ok, so
+(15:27:13) cron2_: they were asking for permissions last week, I gave the=
+m "triage" but did not want to give them "write"
+(15:27:14) mattock: openvpn-ci user has "write" access to tap-windows6 re=
+po
+(15:27:34) mattock: however, it gains the write access via GitHub PAT ("P=
+ersonal Access Token") which only grants "repo:status" permission
+(15:27:41) mattock: so basically the PAT narrows down the permissions
+(15:27:47) cron2_: aha!
+(15:27:57) mattock: and we (=3Dme) control the user + PAT, so they can't =
+write anything to the repo with the PAT
+(15:28:08) mattock: except change the "build failing/succeeding" thing
+(15:28:20) cron2_: this is good (and way beyond my understanding of githu=
+b things)
+(15:28:54) mattock: yes, it seems like a reasonable setup, even though us=
+ing personal access tokens for this seems unhygienic :)
+(15:29:04) mattock: but apparently that's the easiest (or only reasonable=
+?) way to do this
+(15:29:21) mattock: that's all from my end
+(15:29:59) cron2_: so what does this setup *do*?  Automatic WLK/HLK tests=
+ on each commit to tap-windows6, and feedback?
+(15:30:05) mattock: yes
+(15:30:17) mattock: it also puts all the test logs into a dropbox share
+(15:30:36) mattock: I think this is quite useful to spot regressions
+(15:30:48) mattock: the dco-win thing is still on the plate I think
+(15:30:55) mattock: testing dco-win with HLK/HCR
+(15:30:56) mattock: lev?
+(15:31:07) cron2_: so we need to commit something to tap6-windows to get =
+a HLK test result :)
+(15:31:10) cron2_: does it pass nowadays?
+(15:31:15) lev___: yeah I haven't heard for a while from those guys about=
+ dco-win
+(15:31:42) mattock: cron2: yes, exactly
+(15:31:47) mattock: it does not pass, but it never has
+(15:31:50) mattock: most of the things pass
+(15:31:58) mattock: so if more things start failing then that's a regress=
+ion
+(15:32:01) cron2_: ic
+(15:32:08) cron2_: does anyone understand what is failing and why?
+(15:32:11) mattock: it seemed like HLK-testing tap-windows6 was a quite d=
+ifficult corner-case
+(15:32:25) mattock: a driver that did not really fit into any preconceive=
+d category
+(15:32:36) mattock: no, I spend ages on getting most of the HLK tests pas=
+s
+(15:32:38) mattock: spent
+(15:32:51) mattock: I can't recall all the details, but those are documen=
+ted in the Wiki
+(15:32:58) lev___: for me HLK is a black box
+(15:33:06) cron2_: I do remember the shared pain
+(15:33:30) mattock: anyhow, once the perceived need to make the tests pas=
+s vanished, so did my efforts to make the tests pass :)
+(15:33:58) ordex: is there real interest in "improving tap-windows6" ?
+(15:34:07) mattock: probably not a huge amount
+(15:34:14) mattock: it works and is stable, even if slow
+(15:34:18) mattock: then we have dco-win
+(15:34:38) ordex: right
+(15:34:42) mattock: microsoft is also slowly getting rid of NDIS
+(15:35:11) mattock: I think at that point tap-windows6 will be beyond sal=
+vaging
+(15:35:38) ordex: yeah
+(15:35:51) mattock: lev: aren't you using a completely different framewor=
+k for dco-win?
+(15:36:03) lev___: NetAdapterCx
+(15:37:11) lev___: it is uses NDIS underneath, though, but that's how dri=
+ver development works in windows - new stuff is built on top of old stuff=
+ (WDF on top of WDM, for instance)
+(15:37:16) lev___: *it uses
+(15:37:59) lev___: "NetAdapterCx gives you the power and flexibility of W=
+DF and the networking performance of NDIS, and makes it easy to write a d=
+river for your NIC."
+(15:38:38) ordex: well, it won't go EoL with NDIS, no?
+(15:38:45) rob0 [~rob0@...1423.../support/rob0] =C3=A8 entrato nella stanza.=
 
-LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tDQpWZXJzaW9uOiBPcGVuUEdQLmpz
-IHY0LjEwLjEwDQpDb21tZW50OiBodHRwczovL29wZW5wZ3Bqcy5vcmcNCg0KeHNCTkJGdndTY2NC
-Q0FET21IRW5RbExtT2pKUnRKTDJsNTNNTHd3RlR5N1huRXBzM2IxUTBVd1dZRkN2DQpMMm9OcDBu
-cmRHbEtLREpxNTBZMDlTUitVUllCUW1LbVkzRW16cHlVSUtNL3JnbzFSeXViSHBNUkhiRHANCjdK
-cDhMeGtmZkZCVkpqL3Q1Vk1wRDZlTVI2YVVjaVFqZ1JMOE5aZTYrVDd4ZlhYWHdWNWhvUmVaM2pP
-Kw0KekhpNlNSN3hUdkdYbGErTVF6NkVFcFdubGJMdmcyb3J0OUtzZXVWallycXZSTXhjZFAwbzlj
-WldKNWVwDQpKTm1nZUI2TTcrT1cwOFUxU3NYdEtycExSY0k2eUttVjM4amh6UHIyWmdQOXJtcmxF
-clIvMWlxUVFIWFkNCm84LzBEZlB5RjBtSDl5blFJaUxFL2wrRll1NHJzRzhWaUtseGhYY3plUHpB
-dExDamlCMGEwbVJWQUJFQg0KQUFITk55SjBhVzVqWVc1MFpXTm9RSEJ5YjNSdmJtMWhhV3d1WTI5
-dElpQThkR2x1WTJGdWRHVmphRUJ3DQpjbTkwYjI1dFlXbHNMbU52YlQ3Q3dIOEVFQUVJQUNrRkFs
-dndTY2NHQ3drSENBTUNDUkJQbDV6MmE1QzQNCm5RUVZDQW9DQXhZQ0FRSVpBUUliQXdJZUFRQUtD
-UkJQbDV6MmE1QzRuUUJEQi85WlVvOUJPWEpSNjFObQ0KMDJvWi84YVJYTzlOblVTRnQ2R0xPV2NE
-TnZBczRJSldNRFZFUWZZYW5iKzQyMVFOZC81ZDZIMWlYRitpDQo0TERLME02YWdDK2dzTkZKbmpQ
-R0l0dlB0ajdXeWp5blpSeDhENDBQUFhpZ2ZIWXV3Mm9SdTBscitQMXANCjFxZVVlNE5iY3FJdjhJ
-SXZMejJ6Q2xZWk9OZ0FzUVZjTkFIaTdaNG9ydFEyaW8yQkFWai84MTlKUFlNdA0KdEhnWTgxd1Mx
-Vjd2OEdEVFpnOG9hUGhYR2ZhQzRUWkZHdFpyL2J5YmNxcnNvMzVqYVFtQzU0eE1iWHBGDQpBVXJj
-M3VHVk9IK09kRy9CVzJnY1lxcHZVRkJ1a1h4Q1VCWUhQMk5mWGhOZnpHdDluQzF1bE5LWWVQMTkN
-ClRHbE9vckJNWUlBRUhvR3h2cGJVWGZiYU5XQ1V6c0JOQkZ2d1NjY0JDQUM5S3lWWlJTNWFNYUc1
-UGkwbg0KZng4YU5vczNiWXAyNDZNdGZhb0tCZlRRQXJkK0daVytXbkZ5SkVpU3lMZHowclV1dHlD
-QWRmNWxnVkgrDQpXdkx2SW1pR3JTcnpWcE1UMm5DUzA5THFMNTBRano4QTdncDVIL2hRenRaOGlO
-eXNHRDlOTzQ2T25JNzUNCjkwZEhmQ3JYalFQU0Z0RkdzVHpnRHhRSWlNdXp6OURSN0Jla0tQbXVP
-RkloQmU5ZUVacWJ4YzhSV2VRdA0KaGE3aS9EckpUUk5LMWFPQURRRlZ1VjEvQW01VGhHUFdGTS9Z
-SlV5VFloTVcweWVQaDQ1T2JXdVJRWmtzDQpsK2FPbTRMMEtHRERZbG0vRlF4L0VNQ3Vidmx6eS96
-eERkQjZucUZpaDJxWnJmeW1uaVNPS2FqRzBqb1QNCnBab3ovRXorNGZBdGc2eTBQc3BOUjZpZEFC
-RUJBQUhDd0drRUdBRUlBQk1GQWx2d1NjY0pFRStYblBacg0Ka0xpZEFoc01BQW9KRUUrWG5QWnJr
-TGlkUmUwSC9qNUNJRklBdWN1YWlFTWtMa05LRUFPNXM3eDQ3ZU55DQpHUGZac2x5WStIanpHVTBk
-MDdNa2tHbVZrUFRWendxVnpOWmJueTdaQXYxemxXMFV5MHlIcDFBUHB5WXQNCjhidVVwcFRCcTdk
-NDdvZ3hFUll6dC9MYzJMNWEvVktGTlJiaE4xL1hRbVBpejJFbGU0dHlpcGJUYXBjeQ0KK3pieWZ6
-QU1EMTNjSWRaMTNoVHNOUDBvbGdCaEFxVUFVVVlweFJsa0FIZUorRHQzTmJ6SFM0S1FLNTM4DQpO
-Si9sN2JYU0tzR3FvWXFKZVo4Vk5CeHdXV1VidUc0ampyaDQzTUlSZ1VaNVdzUFVZVjZIeDA1NmtN
-amINCi9iWUJqSTBURU12SDgxNjB1cXpGWGVIdll5VWxxMFNpbkQvWjlpb0llOFFkc0hHQkRVSVJZ
-WXViMXBPOA0KcXJDelJaeDBvTkE9DQo9L0RlYQ0KLS0tLS1FTkQgUEdQIFBVQkxJQyBLRVkgQkxP
-Q0stLS0tLQ0K
+(15:39:09) cron2_: I'm not so sure NDIS will go EOL in the near future...=
+  especially if it's used by NetAdapterCx=20
+(15:39:29) cron2_: but maybe discouraged for new drivers
+(15:39:34) lev___: it won't, but the development focus is in NetAdapterCx=
 
---b1_1UL1JxcDXuhhCsriL5addSwdTGiLcJjGwcL6xnM9TE
-Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
+(15:39:47) ordex: makes sense
+(15:39:48) lev___: they're very good at compatibility
+(15:40:39) lev___: speaking of ovpn-dco, MaxF did a great job on reproduc=
+ible builds
+(15:41:16) ordex: cool
+(15:41:26) MaxF: thanks :)  I'll have a new pull request ready today for =
+more comments, and then I'll send it to the mailing list
+(15:41:57) ***cron2_ just merged MaxF's patch
+(15:43:09) MaxF: since ovpn-dco-win is only for Windows 10, what are the =
+plans for wintun? Do you stick with the old version?
+(15:44:14) lev___: so far, yes
+(15:44:22) cron2_: oh, I overlooked plaisthos' ACK ("we never have *two* =
+ACKs for a patch...") so only recorded ordex'.  Sorry.
+(15:44:31) ordex: ah!
+(15:44:34) ordex: <o/
+(15:46:18) lev___: win10 market share among windows was 78% in june
+(15:46:47) lev___: and with coming win11 windows7/8 share should drop
+(15:47:53) cron2_: orr... parallels wants 50 EUR for the update to the ne=
+xt version...
+(15:48:10) cron2_: can't wait for vmware on M1 and kick parallels again
+(15:48:46) lev___: for ovpn-dco I plan to look into doing crypto directly=
+ on network buffers without copying, which should make it even faster
+(15:50:03) lev___: is it already pretty fast, so as soon as plaisthos sen=
+ds his dco-win patches I'm going to review/test those=20
+(15:52:37) MaxF: interesting. So OpenVPN passes the AES key to the driver=
+, and then the driver does the symmetric crypto?
+(15:52:41) cron2_: yes
+(15:52:54) cron2_: same for dco-linux
+(15:53:01) cron2_: which we want to see patches for :)
+(15:53:13) ordex: it's the next train on the horizon
+(15:53:22) ordex: once we get rid of compat-mode and crresponse
+(15:55:00) plaisthos: MaxF: Jason already announced wireguard will eventu=
+ally no longer use wintun
+(15:55:45) cron2_: huh, what will wireguard use instead?
+(15:56:12) plaisthos: so I think for now both users of wintun (that *I* a=
+m aware of) still support the non DCO variant and sometime in the feature=
+, openvpn will concentrate ovpn-dco-win and wireguard on its WireguardNT
+(15:56:14) lev___: wireguard-nt
+(15:56:31) plaisthos: cron2_: WireguardNT, also an in kernel driver that =
+handles all the data in kernel
+(15:56:46) zx2c4: Wintun will continue to be maintained
+(15:56:48) plaisthos: might also do the control channel or not, haven't l=
+ook deeply at it
+(15:56:52) cron2_: ic
+(15:57:04) zx2c4: A lot of people would really appreciate if openvpn inco=
+rporated the latest
+(15:57:12) zx2c4: I get emails about that regularly
+(15:57:28) cron2_: why do they mail you, not us, for openvpn feature requ=
+ests?
+(15:57:50) rob0: "I switched to wg because openvpn ..."
+(15:58:16) cron2_: yeah, but *that* is usually not due to "old wintun" bu=
+t to openvpn being old and bloated and all that
+(15:58:31) zx2c4: cron2_: because your misuse of wintun causes issues tha=
+t then come to me
+(15:58:46) lev___: it is much more than updating version number, we would=
+ have to change the way we talk to the driver, update installer etc
+(15:59:07) zx2c4: Either strip it out or do it properly, id say
+(15:59:13) zx2c4: Its not hard to do it properly
+(15:59:28) zx2c4: Wintun.h is easy to intrgrate
+(15:59:59) zx2c4: Integrate (sorry, typing in my phone)
+(16:00:30) MaxF: what kind of issues are happening with wintun in openvpn=
+?
+(16:01:49) plaisthos: cron2_:=20
+(16:01:49) plaisthos: NAK to the proposed approach, because that would gi=
+ve us incompatible
+(16:01:49) plaisthos: (and unfixable-incompatible) versions in between.
+(16:02:12) cron2_: plaisthos: to what ordex proposed ("change all the def=
+aults first, and then bring in --compat-mode")
+(16:02:17) plaisthos: yeah
+(16:02:19) cron2_: yeah, maybe not "unfixable"
+(16:02:20) plaisthos: I know
+(16:02:32) plaisthos: compat-mode is only about easier fix
+(16:02:34) ordex: I replied already
+(16:02:48) plaisthos: so you could do compat-mode 2.3.0 or tls-version-mi=
+n 1.0
+(16:02:55) plaisthos: I am trying to understand the problem
+(16:03:14) ordex: plaisthos: the problem cron2_ raised is about changing =
+the default in patch 1 and then adding compat-mode in patch2
+(16:03:26) plaisthos: cron2_: or do you want to have setenv opt compat-mo=
+de 2.4 in your config and forget aboutr it
+(16:03:31) ordex: between patch1 and patch2 there would be incompatibilit=
+y
+(16:03:51) mattock: btw. 3 hours over the one hour mark
+(16:04:00) mattock: sorry
+(16:04:02) cron2_: 3 hours! damn!
+(16:04:03) mattock: 3 minutes :)
+(16:04:13) mattock: only one time unit can be in my head once
+(16:04:20) MaxF: time flies
+(16:04:47) ordex: lol
+(16:04:57) ordex: the compat-mode discussion can continue on the ml or on=
+ openvpn-devel
+(16:05:05) ***rob0 grabs the time flyswatter
+(16:05:08) cron2_: maybe we need to find a google docs and write a good c=
+ommit message together
+(16:05:09) ***lev___ is aggressively waiting for comments on https://gith=
+ub.com/OpenVPN/openvpn-gui/pull/436
+(16:05:31) ***lev___ looks at cron2_=20
+(16:05:31) rob0: (a rolled up Time Magaine)
+(16:05:36) ordex: cron2_: +1 we can use etherpad
+(16:06:03) plaisthos: I am not sure I mentioned it here
+(16:06:06) mattock: anything else we should cover in this meeting?
+(16:06:14) mattock: or just continue on #openvpn-devel?
+(16:06:29) ordex: not from me
+(16:06:33) cron2_: lev___: I said I'm not very much interested in that wa=
+y of doing things - I won't NAK it, but I am not eager to spend time revi=
+ewing it, when ordex is waiting with other stuff
+(16:06:35) plaisthos: but I am adding an openvpn://profile-file/https://u=
+rl/to/some/profile=20
+(16:06:51) cron2_: plaisthos: what is that?
+(16:07:13) plaisthos: basically "click on that in browser, client opens a=
+nd asks you if want to import that profile"
+(16:07:33) ordex: plaisthos: adding where exactly?
+(16:08:16) cron2_: plaisthos: I find this a more logical workflow, but te=
+chnically, not very nice either.  What is wrong with "just download the t=
+hing in the browser, with a mime-type that tells $OS 'this needs to go to=
+ the openvpn client for importing'?
+(16:08:23) cron2_: This works beautifully on iOS today
+(16:08:44) cron2_: so, no need for any http download logic in the client
+(16:11:12) cron2_: anyway
+(16:11:23) cron2_: I have another meeting rsn and need to prepare... so o=
+ff for the moment
+(16:11:55) mattock: I need to split as well
+(16:11:59) mattock: let's conclude this thing
+(16:12:04) mattock: I'll write the summary next
 
-wsBzBAABCAAGBQJhE8qOACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec9muQuJ31UAf+L9oz
-8rWucYRSwRewpPA9gfUHU4nggQo7ClGHtjRklt33IsE4Lr0LJxnAZILbWGrdmlIzF4Dqfq3EohmF
-9VOR4iVOX8fUyzQYAcLs1UVYkBsyFepbbYMrn39ur/tEroBwY8TgSa2/K58yTTJ87cjlUOBkenj3
-hi4dWo/9no06lr6KESXfJaVMiNpMy19UvSnaIULvLDSh0JbXiOcwBQdw4jmGlTzkKj4xKzXevrr2
-vYG1kQNxTrLPZ24i1nQb1a7+EhsG1QTULGhiz2yhOXFef72uv/VeC3DrCqOVwxgfXUNstBmxHvEs
-DkjiGfamwbE0L+5nbq0b0HAiu5b3V5/5sQ==
-
---b1_1UL1JxcDXuhhCsriL5addSwdTGiLcJjGwcL6xnM9TE--
-
+--------------4A58E33F3DB00FF3BA53E4E3--
 
