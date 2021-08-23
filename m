@@ -1,13 +1,10 @@
-MIME-Version: 1.0
+Date: Mon, 23 Aug 2021 20:31:35 +0200 (CEST)
+Message-Id: <202108231831.17NIVZ7s035279@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210822152820.7072-1-selva.nair@...277...>
 References: <20210822152820.7072-1-selva.nair@...277...>
- <YSNZgO94k0SPoRqf@...1296...>
-In-Reply-To: <YSNZgO94k0SPoRqf@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 23 Aug 2021 08:09:19 -0400
-Message-ID: <CAKuzo_h9hThwLgur+rJY99ogedZ=ncKU+WfR1nsPhCk2fBty2w@...278...>
-Content-Type: multipart/alternative; boundary="00000000000006d19a05ca38ecc2"
-Subject: Re: [Openvpn-devel] [PATCH] Minor doc correction: tls-crypt-v2 key
- generation
+Subject: [Openvpn-devel] [PATCH applied] Re: Minor doc correction:
+ tls-crypt-v2 key generation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,60 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---00000000000006d19a05ca38ecc2
-Content-Type: text/plain; charset="UTF-8"
+Documentation is good, correct documentation is better :-) - thanks.
 
-Hi,
+Your patch has been applied to the master and release/2.5 branch.
 
-On Mon, Aug 23, 2021 at 4:17 AM Gert Doering <gert@...1296...> wrote:
+commit 6ee1a272d9ce9b7863487146c3ce141a98f16773 (master)
+commit 96083a9150edd90a6641477d123324cf0885853e (release/2.5)
+Author: Selva Nair
+Date:   Sun Aug 22 11:28:20 2021 -0400
 
-> Hi,
->
-> On Sun, Aug 22, 2021 at 11:28:20AM -0400, selva.nair@...277... wrote:
-> > From: Selva Nair <selva.nair@...277...>
-> >
-> > Signed-off-by: Selva Nair <selva.nair@...277...>
-> > ---
-> >  doc/tls-crypt-v2.txt  | 4 ++--
-> >  src/openvpn/options.c | 2 +-
-> >  2 files changed, 3 insertions(+), 3 deletions(-)
->
-> I assume this is for master and 2.5?
->
+     Minor doc correction: tls-crypt-v2 key generation
 
-Yes, please. I forgot to indicate that in the submission.
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20210822152820.7072-1-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22747.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Selva
 
---00000000000006d19a05ca38ecc2
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--
+kind regards,
 
-<div dir=3D"ltr"><div dir=3D"ltr"><br></div>Hi,<div><br><div class=3D"gmail=
-_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Mon, Aug 23, 2021 at 4:17 =
-AM Gert Doering &lt;<a href=3D"mailto:gert@...1296...">gert@...1296...</a>&=
-gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0=
-px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Hi,<b=
-r>
-<br>
-On Sun, Aug 22, 2021 at 11:28:20AM -0400, <a href=3D"mailto:selva.nair@...1665...=
-77..." target=3D"_blank">selva.nair@...277...</a> wrote:<br>
-&gt; From: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." target=3D=
-"_blank">selva.nair@...277...</a>&gt;<br>
-&gt; <br>
-&gt; Signed-off-by: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." =
-target=3D"_blank">selva.nair@...277...</a>&gt;<br>
-&gt; ---<br>
-&gt;=C2=A0 doc/tls-crypt-v2.txt=C2=A0 | 4 ++--<br>
-&gt;=C2=A0 src/openvpn/options.c | 2 +-<br>
-&gt;=C2=A0 2 files changed, 3 insertions(+), 3 deletions(-)<br>
-<br>
-I assume this is for master and 2.5?<br></blockquote><div><br></div><div>Ye=
-s, please. I forgot to indicate that in the submission.</div><div><br></div=
-><div>Selva</div></div></div></div>
+Gert Doering
 
---00000000000006d19a05ca38ecc2--
 
