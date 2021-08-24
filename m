@@ -1,10 +1,7 @@
-Date: Mon, 23 Aug 2021 20:31:35 +0200 (CEST)
-Message-Id: <202108231831.17NIVZ7s035279@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210822152820.7072-1-selva.nair@...277...>
-References: <20210822152820.7072-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Minor doc correction:
- tls-crypt-v2 key generation
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue, 24 Aug 2021 12:10:58 +0300
+Message-Id: <20210824091058.93-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] Add building man page on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +12,48 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Documentation is good, correct documentation is better :-) - thanks.
+From: Lev Stipakov <lev@...515...>
 
-Your patch has been applied to the master and release/2.5 branch.
+Use rst2html to build html from rst. Ignore error -
+this is not fatal and affects only MSI build.
 
-commit 6ee1a272d9ce9b7863487146c3ce141a98f16773 (master)
-commit 96083a9150edd90a6641477d123324cf0885853e (release/2.5)
-Author: Selva Nair
-Date:   Sun Aug 22 11:28:20 2021 -0400
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ build/msvc/msvc-generate/Makefile.mak | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-     Minor doc correction: tls-crypt-v2 key generation
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20210822152820.7072-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22747.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/build/msvc/msvc-generate/Makefile.mak b/build/msvc/msvc-generate/Makefile.mak
+index 59fc9f0e..36c2618f 100644
+--- a/build/msvc/msvc-generate/Makefile.mak
++++ b/build/msvc/msvc-generate/Makefile.mak
+@@ -11,7 +11,10 @@ OUTPUT_PLUGIN=$(SOURCEBASE)/include/openvpn-plugin.h
+ INPUT_PLUGIN_CONFIG=version.m4.in
+ OUTPUT_PLUGIN_CONFIG=version.m4
+ 
+-all:	$(OUTPUT_MSVC_VER) $(OUTPUT_PLUGIN)
++INPUT_MAN=$(SOURCEBASE)/doc/openvpn.8.rst
++OUTPUT_MAN=$(SOURCEBASE)/doc/openvpn.8.html
++
++all:	$(OUTPUT_MSVC_VER) $(OUTPUT_PLUGIN) $(OUTPUT_MAN)
+ 
+ $(OUTPUT_MSVC_VER): $(INPUT_MSVC_VER) $(CONFIG)
+ 	cscript //nologo msvc-generate.js --config="$(CONFIG)" --input="$(INPUT_MSVC_VER)" --output="$(OUTPUT_MSVC_VER)"
+@@ -22,7 +25,11 @@ $(OUTPUT_PLUGIN_CONFIG): $(INPUT_PLUGIN_CONFIG)
+ $(OUTPUT_PLUGIN): $(INPUT_PLUGIN) $(OUTPUT_PLUGIN_CONFIG)
+ 	cscript //nologo msvc-generate.js --config="$(OUTPUT_PLUGIN_CONFIG)" --input="$(INPUT_PLUGIN)" --output="$(OUTPUT_PLUGIN)"
+ 
++$(OUTPUT_MAN): $(INPUT_MAN)
++	rst2html.py $(INPUT_MAN) $(OUTPUT_MAN) || echo "rst2html failed, expect problems with MSI build"
++
+ clean:
+ 	-del "$(OUTPUT_MSVC_VER)"
+ 	-del "$(OUTPUT_PLUGIN)"
+ 	-del "$(OUTPUT_PLUGIN_CONFIG)"
++	-del "$(OUTPUT_MAN)"
+-- 
+2.23.0.windows.1
 
 
