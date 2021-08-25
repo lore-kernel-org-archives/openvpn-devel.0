@@ -1,9 +1,9 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 25 Aug 2021 19:43:49 +0300
-Message-Id: <20210825164349.755-1-lstipakov@...277...>
-In-Reply-To: <241c7c18-7deb-3aff-e221-32d33ba5031e@...515...>
-References: <241c7c18-7deb-3aff-e221-32d33ba5031e@...515...>
-Subject: [Openvpn-devel] [PATCH v3] Add building man page on Windows
+Date: Wed, 25 Aug 2021 19:47:52 +0300
+Message-Id: <20210825164752.808-1-lstipakov@...277...>
+In-Reply-To: <20210825164349.755-1-lstipakov@...277...>
+References: <20210825164349.755-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH v4] Add building man page on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -27,12 +27,15 @@ and add html man page to artifacts.
 
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
+
+ v4:
+  - really replace "python3" with "python"
+
  v3:
   - replace "python3" with "python"
 
  v2:
   - change implementation to support GitHub Actions
-
 
  .github/workflows/build.yaml          | 9 +++++++++
  build/msvc/msvc-generate/Makefile.mak | 9 ++++++++-
@@ -63,7 +66,7 @@ index 5d7dd37b..4cb2f4cc 100644
              ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.dll
 +            doc/openvpn.8.html
 diff --git a/build/msvc/msvc-generate/Makefile.mak b/build/msvc/msvc-generate/Makefile.mak
-index 59fc9f0e..4924a6ce 100644
+index 59fc9f0e..6da859e3 100644
 --- a/build/msvc/msvc-generate/Makefile.mak
 +++ b/build/msvc/msvc-generate/Makefile.mak
 @@ -11,7 +11,10 @@ OUTPUT_PLUGIN=$(SOURCEBASE)/include/openvpn-plugin.h
@@ -83,7 +86,7 @@ index 59fc9f0e..4924a6ce 100644
  	cscript //nologo msvc-generate.js --config="$(OUTPUT_PLUGIN_CONFIG)" --input="$(INPUT_PLUGIN)" --output="$(OUTPUT_PLUGIN)"
  
 +$(OUTPUT_MAN): $(INPUT_MAN)
-+    -FOR /F %i IN ('where rst2html.py') DO python3 %i "$(INPUT_MAN)" "$(OUTPUT_MAN)"
++    -FOR /F %i IN ('where rst2html.py') DO python %i "$(INPUT_MAN)" "$(OUTPUT_MAN)"
 +
  clean:
  	-del "$(OUTPUT_MSVC_VER)"
