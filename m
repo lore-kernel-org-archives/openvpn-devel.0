@@ -1,12 +1,9 @@
-From: selva.nair@...277...
-Date: Wed, 25 Aug 2021 17:02:32 -0400
-Message-Id: <20210825210232.22509-3-selva.nair@...277...>
-In-Reply-To: <20210825210232.22509-1-selva.nair@...277...>
-References: <20210825040122.14244-1-selva.nair@...277...>
- <20210825210232.22509-1-selva.nair@...277...>
+From: Antonio Quartulli <a@...2181...>
+Date: Thu, 26 Aug 2021 08:17:25 +0200
+Message-Id: <20210826061725.22169-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 3/3] Use a template for "unsupported
- management commands" error
+Subject: [Openvpn-devel] [PATCH] route.c: pass the right parameter to
+ IN6_IS_ADDR_UNSPECIFIED
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,163 +15,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-From: Selva Nair <selva.nair@...277...>
+IN6_IS_ADDR_UNSPECIFIED on most systems is defined as a macro that
+expects a struct in6_addr* argument.
 
-The message
-"ERROR: The 'foo' commmand is not supported by current daemon mode"
-is repeatedly used in manage.c. Move it to a function for uniformity
-in messaging.
+In one instance we are passing the right address but using a wrong type.
+Fix this invocation by properly passing the right pointer.
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
+This issue might become more critical on systems implementing
+IN6_IS_ADDR_UNSPECIFIED as a function rather than a macro.
+
+Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/manage.c | 34 ++++++++++++++++++++--------------
- 1 file changed, 20 insertions(+), 14 deletions(-)
+ src/openvpn/route.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 214ea4be..7eff2dba 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -447,6 +447,12 @@ man_signal(struct management *man, const char *name)
-     }
- }
- 
-+static void
-+man_command_unsupported(const char *command_name)
-+{
-+    msg(M_CLIENT, "ERROR: The '%s' command is not supported by the current daemon mode", command_name);
-+}
-+
- static void
- man_status(struct management *man, const int version, struct status_output *so)
- {
-@@ -456,7 +462,7 @@ man_status(struct management *man, const int version, struct status_output *so)
-     }
-     else
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 2905e432..fd1125ef 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -3360,7 +3360,7 @@ get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
+     if (net_route_v6_best_gw(ctx, dest, &rgi6->gateway.addr_ipv6,
+                              rgi6->iface) == 0)
      {
--        msg(M_CLIENT, "ERROR: The 'status' command is not supported by the current daemon mode");
-+        man_command_unsupported("status");
-     }
- }
- 
-@@ -572,7 +578,7 @@ man_kill(struct management *man, const char *victim)
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The 'kill' command is not supported by the current daemon mode");
-+        man_command_unsupported("kill");
-     }
- 
-     gc_free(&gc);
-@@ -777,7 +783,7 @@ man_net(struct management *man)
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The 'net' command is not supported by the current daemon mode");
-+        man_command_unsupported("net");
-     }
- }
- 
-@@ -799,7 +805,7 @@ man_send_cc_message(struct management *man, const char *message, const char *par
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: This command is not supported by the current daemon mode");
-+        man_command_unsupported("cr-repsonse");
-     }
- }
- #ifdef ENABLE_PKCS11
-@@ -842,7 +848,7 @@ man_remote_entry_count(struct management *man)
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The remote-entry-count command is not supported by the current daemon mode");
-+        man_command_unsupported("remote-entry-count");
-     }
- }
- 
-@@ -865,7 +871,7 @@ man_remote_entry_get(struct management *man, unsigned int index)
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The remote-entry command is not supported by the current daemon mode");
-+        man_command_unsupported("remote-entry-get");
-     }
- 
-     free(remote);
-@@ -956,7 +962,7 @@ in_extra_dispatch(struct management *man)
-             }
-             else
-             {
--                msg(M_CLIENT, "ERROR: The client-auth command is not supported by the current daemon mode");
-+                man_command_unsupported("client-auth");
-             }
-             break;
- 
-@@ -980,7 +986,7 @@ in_extra_dispatch(struct management *man)
-             }
-             else
-             {
--                msg(M_CLIENT, "ERROR: The client-pf command is not supported by the current daemon mode");
-+                man_command_unsupported("client-pf");
-             }
-             break;
- 
-@@ -1065,7 +1071,7 @@ man_client_pending_auth(struct management *man, const char *cid_str,
-         }
-         else
+-        if (!IN6_IS_ADDR_UNSPECIFIED(rgi6->gateway.addr_ipv6.s6_addr))
++        if (!IN6_IS_ADDR_UNSPECIFIED(&rgi6->gateway.addr_ipv6))
          {
--            msg(M_CLIENT, "ERROR: The client-pending-auth command is not supported by the current daemon mode");
-+            man_command_unsupported("client-pending-auth");
+             rgi6->flags |= RGI_ADDR_DEFINED;
          }
-     }
- }
-@@ -1116,7 +1122,7 @@ man_client_deny(struct management *man, const char *cid_str, const char *kid_str
-         }
-         else
-         {
--            msg(M_CLIENT, "ERROR: The client-deny command is not supported by the current daemon mode");
-+            man_command_unsupported("client-deny");
-         }
-     }
- }
-@@ -1141,7 +1147,7 @@ man_client_kill(struct management *man, const char *cid_str, const char *kill_ms
-         }
-         else
-         {
--            msg(M_CLIENT, "ERROR: The client-kill command is not supported by the current daemon mode");
-+            man_command_unsupported("client-kill");
-         }
-     }
- }
-@@ -1156,7 +1162,7 @@ man_client_n_clients(struct management *man)
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The nclients command is not supported by the current daemon mode");
-+        man_command_unsupported("nclients");
-     }
- }
- 
-@@ -1280,7 +1286,7 @@ man_proxy(struct management *man, const char **p)
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The proxy command is not supported by the current daemon mode");
-+        man_command_unsupported("proxy");
-     }
- }
- 
-@@ -1301,7 +1307,7 @@ man_remote(struct management *man, const char **p)
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The remote command is not supported by the current daemon mode");
-+        man_command_unsupported("remote");
-     }
- }
- 
 -- 
-2.20.1
+2.31.1
 
 
