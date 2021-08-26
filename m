@@ -1,13 +1,12 @@
+References: <20210826061725.22169-1-a@...2181...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <82b343b9-63e7-d069-05ac-dea44a39f193@...1227...>
+Date: Thu, 26 Aug 2021 13:39:44 +0200
 MIME-Version: 1.0
-References: <20210826100221.1378-1-chipitsine@...277...>
- <CAGyAFMUg4FQmOQFP5-UXzjs1=VKUd=gsHajVv0n_XAG6=_sV3Q@...278...>
-In-Reply-To: <CAGyAFMUg4FQmOQFP5-UXzjs1=VKUd=gsHajVv0n_XAG6=_sV3Q@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Thu, 26 Aug 2021 16:36:20 +0500
-Message-ID: <CAFHpkQFPqhVrkNsEKfWXt+BDLqUcXk6jeLoHStvU3m6Uu3sZzA@...278...>
-Content-Type: multipart/alternative; boundary="00000000000063e70e05ca74c711"
-Subject: Re: [Openvpn-devel] [PATCH] CI: github actions: keep "pdb" in
- artifacts
+In-Reply-To: <20210826061725.22169-1-a@...2181...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH] route.c: pass the right parameter to
+ IN6_IS_ADDR_UNSPECIFIED
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,46 +15,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
---00000000000063e70e05ca74c711
-Content-Type: text/plain; charset="UTF-8"
+Am 26.08.21 um 08:17 schrieb Antonio Quartulli:
+> IN6_IS_ADDR_UNSPECIFIED on most systems is defined as a macro that
+> expects a struct in6_addr* argument.
+> 
+> In one instance we are passing the right address but using a wrong type.
+> Fix this invocation by properly passing the right pointer.
+> 
+> This issue might become more critical on systems implementing
+> IN6_IS_ADDR_UNSPECIFIED as a function rather than a macro.
 
-Sorry, I missed "signed off by". Please add during commit
+This happens if you try to compile openvpn with the Android NDK but
+without TARGET_ANDROID but with TARGET_LINUX.
 
-On Thu, Aug 26, 2021, 3:20 PM Lev Stipakov <lstipakov@...277...> wrote:
 
-> Patch is missing SOB line, but I guess this can be fixed by the
-> committer, if needed?
->
-> Checked https://github.com/chipitsine/openvpn/actions/runs/1108264158
-> so that PDBs are indeed stored as artifacts.
->
-> Acked-by: Lev Stipakov <lstipakov@...277...>
->
 
---00000000000063e70e05ca74c711
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+#define IN6_IS_ADDR_UNSPECIFIED(a) \
+  ((((a)->s6_addr32[0]) == 0) && \
+   (((a)->s6_addr32[1]) == 0) && \
+   (((a)->s6_addr32[2]) == 0) && \
+   (((a)->s6_addr32[3]) == 0))
 
-<div dir=3D"auto">Sorry, I missed &quot;signed off by&quot;. Please add dur=
-ing commit</div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gm=
-ail_attr">On Thu, Aug 26, 2021, 3:20 PM Lev Stipakov &lt;<a href=3D"mailto:=
-lstipakov@...277...">lstipakov@...277...</a>&gt; wrote:<br></div><blockquot=
-e class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc sol=
-id;padding-left:1ex">Patch is missing SOB line, but I guess this can be fix=
-ed by the<br>
-committer, if needed?<br>
-<br>
-Checked <a href=3D"https://github.com/chipitsine/openvpn/actions/runs/11082=
-64158" rel=3D"noreferrer noreferrer" target=3D"_blank">https://github.com/c=
-hipitsine/openvpn/actions/runs/1108264158</a><br>
-so that PDBs are indeed stored as artifacts.<br>
-<br>
-Acked-by: Lev Stipakov &lt;<a href=3D"mailto:lstipakov@...277..." target=3D=
-"_blank" rel=3D"noreferrer">lstipakov@...277...</a>&gt;<br>
-</blockquote></div>
 
---00000000000063e70e05ca74c711--
+So you get
+
+
+/Users/arne/oss/android-sdk-macosx/ndk/23.0.7599858/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include/netinet/in6.h:38:9:
+note: expanded from macro 'IN6_IS_ADDR_UNSPECIFIED'
+     (((a)->s6_addr32[1]) == 0) && \
+       ~~~^ ~~~~~~~~~
+
+/Users/arne/software/icsopenvpn/main/src/main/cpp/openvpn/src/openvpn/route.c:3375:14:
+error: member reference base type '__u8' (aka 'unsigned char') is not a
+structure or union
+          if (!IN6_IS_ADDR_UNSPECIFIED(rgi6->gateway.addr_ipv6.s6_addr))
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Acked-By: Arne Schwabe <arne@...1227...>
 
