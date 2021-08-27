@@ -1,9 +1,9 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri, 27 Aug 2021 16:48:07 +0200
-Message-Id: <20210827144807.27004-1-a@...2181...>
+Date: Fri, 27 Aug 2021 16:55:29 +0200
+Message-Id: <20210827145529.19867-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] configure: search also for rst2{man,
- html}.py
+Subject: [Openvpn-devel] [PATCH] man/protocol-options: add missing ending
+ metachar
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,34 +17,32 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>, David Sommerseth <davids@...515...>
 
-On some systems the rst2{man,html} executables may have a slightly
-different name, like rst2{man,html}.py.
+A code string terminating character (`) is missing, thus leading to the
+following warning:
 
-Add this name variation to the Generic Programs check.
+man-sections/protocol-options.rst:99: (WARNING/2) Inline interpreted text or phrase reference start-string without end-string.
 
-This specific variation is found on Gentoo Linux.
+Add missing char at the end of the code word.
 
 Cc: David Sommerseth <davids@...515...>
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- configure.ac | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ doc/man-sections/protocol-options.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/configure.ac b/configure.ac
-index 5d378962..7c2ead6a 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -362,8 +362,8 @@ AC_DEFINE_UNQUOTED([SYSTEMD_ASK_PASSWORD_PATH], ["$SYSTEMD_ASK_PASSWORD"], [Path
- #
- AC_ARG_VAR([RST2MAN], [path to rst2man utility])
- AC_ARG_VAR([RST2HTML], [path to rst2html utility])
--AC_CHECK_PROGS([RST2MAN], [rst2man])
--AC_CHECK_PROGS([RST2HTML], [rst2html])
-+AC_CHECK_PROGS([RST2MAN], [rst2man rst2man.py])
-+AC_CHECK_PROGS([RST2HTML], [rst2html rst2html.py])
- AM_CONDITIONAL([HAVE_PYDOCUTILS], [test "${RST2MAN}" -a "${RST2HTML}"])
+diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
+index 5ae780e1..05366011 100644
+--- a/doc/man-sections/protocol-options.rst
++++ b/doc/man-sections/protocol-options.rst
+@@ -99,7 +99,7 @@ configured in a compatible way between both the local and remote side.
+   Especially :code:`stub-v2` is essentially identical to no compression and
+   no compression framing as its header indicates IP version 5 in a tun setup
+   and can (ab)used to complete disable compression to clients. (See the
+-  :code:`migrate option below)
++  :code:`migrate option below`)
  
- # Set -std=c99 unless user already specified a -std=
+   If the ``algorithm`` parameter is :code:`stub`, :code:`stub-v2` or empty,
+   compression will be turned off, but the packet framing for compression
 -- 
 2.31.1
 
