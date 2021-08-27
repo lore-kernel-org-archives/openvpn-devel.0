@@ -1,8 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri, 27 Aug 2021 16:55:29 +0200
-Message-Id: <20210827145529.19867-1-a@...2181...>
+Date: Fri, 27 Aug 2021 16:56:56 +0200
+Message-Id: <20210827145656.21646-1-a@...2181...>
+In-Reply-To: <20210827145529.19867-1-a@...2181...>
+References: <20210827145529.19867-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] man/protocol-options: add missing ending
+Subject: [Openvpn-devel] [PATCH v2] man/protocol-options: add missing ending
  metachar
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -27,11 +29,15 @@ Add missing char at the end of the code word.
 Cc: David Sommerseth <davids@...515...>
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
+
+v2:
+- Add the ' right after "migrate"
+
  doc/man-sections/protocol-options.rst | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
-index 5ae780e1..05366011 100644
+index 5ae780e1..c701c563 100644
 --- a/doc/man-sections/protocol-options.rst
 +++ b/doc/man-sections/protocol-options.rst
 @@ -99,7 +99,7 @@ configured in a compatible way between both the local and remote side.
@@ -39,7 +45,7 @@ index 5ae780e1..05366011 100644
    no compression framing as its header indicates IP version 5 in a tun setup
    and can (ab)used to complete disable compression to clients. (See the
 -  :code:`migrate option below)
-+  :code:`migrate option below`)
++  :code:`migrate` option below)
  
    If the ``algorithm`` parameter is :code:`stub`, :code:`stub-v2` or empty,
    compression will be turned off, but the packet framing for compression
