@@ -1,13 +1,16 @@
-MIME-Version: 1.0
+Date: Sat, 28 Aug 2021 21:26:24 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <YSqN4PfCbeN4rmxQ@...1296...>
 References: <20210811095853.27870-1-a@...2181...>
  <20210827190014.12640-1-a@...2181...>
  <3e75a75e-2fc7-d6b4-fc46-63c146e4e875@...68...>
  <YSo52uB5tf9qUIQ5@...1296...>
-In-Reply-To: <YSo52uB5tf9qUIQ5@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sat, 28 Aug 2021 10:49:42 -0400
-Message-ID: <CAKuzo_gFArLosfU5t8x=3n-LFNZsMzVccuraBsfFrJewrAzu-g@...278...>
-Content-Type: multipart/alternative; boundary="000000000000ef52e405ca9fbe62"
+ <CAKuzo_gFArLosfU5t8x=3n-LFNZsMzVccuraBsfFrJewrAzu-g@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="NXT/XksA2kZn6X0I"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_gFArLosfU5t8x=3n-LFNZsMzVccuraBsfFrJewrAzu-g@...278...>
 Subject: Re: [Openvpn-devel] [PATCH v2] Remove support for PF (Packet Filter)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,45 +20,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: Matthias Andree <matthias.andree@...68...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>
+Cc: Gert Doering <gert@...1296...>, Matthias Andree <matthias.andree@...68...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000ef52e405ca9fbe62
-Content-Type: text/plain; charset="UTF-8"
-
-Hi
-
-On Sat, Aug 28, 2021 at 9:29 AM Gert Doering <gert@...1296...> wrote:
-
-> Hi,
->
-> On Sat, Aug 28, 2021 at 10:51:58AM +0200, Matthias Andree wrote:
-> > Do we need to maintain C89 compatibility these days?
->
-> No.  C99 is fully acceptable.
->
-
-But our coding style still has to be followed. That means /* */ comments
-only.
-
-Selva
-
---000000000000ef52e405ca9fbe62
-Content-Type: text/html; charset="UTF-8"
+--NXT/XksA2kZn6X0I
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr"><div>Hi</div><br><div class=3D"gmail_quote"><div dir=3D"lt=
-r" class=3D"gmail_attr">On Sat, Aug 28, 2021 at 9:29 AM Gert Doering &lt;<a=
- href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt; =
-wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0=
-px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
-<br>
-On Sat, Aug 28, 2021 at 10:51:58AM +0200, Matthias Andree wrote:<br>
-&gt; Do we need to maintain C89 compatibility these days?<br>
-<br>
-No.=C2=A0 C99 is fully acceptable.<br></blockquote><div><br></div><div>But =
-our coding style still has to be followed. That means /* */ comments only.<=
-/div><div><br></div><div>Selva</div></div></div>
+Hi,
 
---000000000000ef52e405ca9fbe62--
+On Sat, Aug 28, 2021 at 10:49:42AM -0400, Selva Nair wrote:
+> On Sat, Aug 28, 2021 at 9:29 AM Gert Doering <gert@...1296...> wrote:
+>=20
+> > On Sat, Aug 28, 2021 at 10:51:58AM +0200, Matthias Andree wrote:
+> > > Do we need to maintain C89 compatibility these days?
+> > No.  C99 is fully acceptable.
+>=20
+> But our coding style still has to be followed. That means /* */ comments
+> only.
+
+Ah.  Seems I misunderstood the reason for Matthias' question.
+
+Indeed, comments must be /* */ for coding style / consistency reasons,
+and for no other reason than we agreed to do it that way.  And not
+use tabs for indenting (which I personally find cumbersome as "vi"
+really loves to auto-tab stuff :-) ).
+
+And while the whitespace police can be really annoying at times, the
+overall readability of our code *has* improved quite a bit.
+
+gert
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--NXT/XksA2kZn6X0I
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJhKo3gAAoJEB2Cnv7KVigS3tsL/ibMcZMcjRx/56BvkrtUgvcz
+NsUUv8VIG1KhD/Z7gYfn2zgxw6qDcMpn5dU6PWDkN6iqdCA8ATuP5w/9GeHTHFXq
+D2RuAwtG40Ymz21QdXRljyBaj84FghK+cFnNYyXsctP5WzsaTjxMESmCboaA6kbg
+jayijNrtwA7mPpVISd23UH3nweYqM254GPMddJEiESRsuPeyJuAN9RsWMvogT+eU
+JFB4boCcnEl3REwBEOGGkdDPPssJEfiwSFVpm+A31tDJbOvd9iQxe/sUqgB4279l
+MqF1oUr79HLeQi0Bu4p4iIXOa9YCaofE2fM8pnL/JDdiVcGzA68AjAhABkflFMUU
+3hU6Rp7ckjjDdZb4E2y24svloMzJucIWP5HjE8bwPmA72VkTmy19h85DLD+OvMM4
+DQNsgUltB/27wf47+9KFilEzWOXJqcoRHowt/CjlJ/nREvflRKrpDd1N32dChDCX
+sIr5HyAbngVuWxFJqp0JyDspIJYeR2wPReTrYOoy8Q==
+=MO9p
+-----END PGP SIGNATURE-----
+
+--NXT/XksA2kZn6X0I--
 
