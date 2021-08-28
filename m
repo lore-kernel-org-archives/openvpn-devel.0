@@ -1,10 +1,10 @@
-Date: Sat, 28 Aug 2021 15:40:10 +0200 (CEST)
-Message-Id: <202108281340.17SDeApA033569@...2054...>
+Date: Sat, 28 Aug 2021 15:59:29 +0200 (CEST)
+Message-Id: <202108281359.17SDxTAR033912@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210826061725.22169-1-a@...2181...>
-References: <20210826061725.22169-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: route.c: pass the right
- parameter to IN6_IS_ADDR_UNSPECIFIED
+In-Reply-To: <20210827145656.21646-1-a@...2181...>
+References: <20210827145656.21646-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: man/protocol-options: add
+ missing ending metachar
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,23 +18,22 @@ Content-Transfer-Encoding: 8bit
 To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I have not tested this beyond "openvpn --show-gateway", and that one
-still works :-) - also, we've discussed this on IRC before.
+Acked-by: Gert Doering <gert@...1296...>
 
-Your patch has been applied to the master and release/2.5 branch (bugfix).
+"obviously correct" :-)
 
-2.4 does not contain the offending code.
+Your patch has been applied to the master branch.
 
-commit aa0e44e235f7bee0e12707b6899d00bad85195fc (master)
-commit 477781335cbca1aec69a372cbc18bf086155eea1 (release/2.5)
+commit 5a5d11a0dea51e709b44dfabc1ec97b5f3c5b222 (master)
 Author: Antonio Quartulli
-Date:   Thu Aug 26 08:17:25 2021 +0200
+Date:   Fri Aug 27 16:56:56 2021 +0200
 
-     route.c: pass the right parameter to IN6_IS_ADDR_UNSPECIFIED
+     man/protocol-options: add missing ending metachar
 
      Signed-off-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20210826061725.22169-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22767.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210827145656.21646-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22779.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
