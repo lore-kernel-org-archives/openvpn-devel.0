@@ -1,9 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri,  3 Sep 2021 18:11:12 +0200
-Message-Id: <20210903161113.30498-1-a@...2181...>
+Date: Fri,  3 Sep 2021 18:11:13 +0200
+Message-Id: <20210903161113.30498-2-a@...2181...>
+In-Reply-To: <20210903161113.30498-1-a@...2181...>
+References: <20210903161113.30498-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/2] networking: add and implement
- net_addr_ll_set() API
+Subject: [Openvpn-devel] [PATCH 2/2] set_lladdr: use networking API
+ net_addr_ll_set() on Linux
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,152 +19,128 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>, Jan Hugo Prins <jprins@...2634...>
 
-When running in TAP mode we may need to set the LL address of the
-interface, if requested by the user.
+Make sure that set_addr() uses the proper networking backend when
+setting the LL address of a TAP interface.
 
-This operation was overlooked when implementing the networking API and
-it still relies on iproute/net-tools being installed.
-
-Basically this means that when compiling OpenVPN on a system without
-iproute2/net-tools and the user uses the "lladdr" config directive,
-OpenVPN will fail to se the LL address of the interface.
-
-With this patch a new API is introduced and it is implemented for both
-SITNL and iproute2 backends.
+This operation was overlooked while implementing the networking APIs on
+the Linux platform.
 
 Reported-by: Jan Hugo Prins <jprins@...2634...>
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/misc.h                |  7 +++++++
- src/openvpn/networking.h          | 12 +++++++++++
- src/openvpn/networking_iproute2.c | 21 +++++++++++++++++++
- src/openvpn/networking_sitnl.c    | 35 +++++++++++++++++++++++++++++++
- 4 files changed, 75 insertions(+)
 
-diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-index c10529f7..e8d1a521 100644
---- a/src/openvpn/misc.h
-+++ b/src/openvpn/misc.h
-@@ -211,4 +211,11 @@ get_num_elements(const char *string, char delimiter);
- struct buffer
- prepend_dir(const char *dir, const char *path, struct gc_arena *gc);
+This patch (along with 1/2) has been tested on buildbots, but I couldn't
+run any specific test on any *BSD or Windows platform.
+
+Linux with both iproute2 and sitnl works as expected.
+
+
+ src/openvpn/init.c   |  5 +++--
+ src/openvpn/lladdr.c | 30 +++++++++++++-----------------
+ src/openvpn/lladdr.h |  3 ++-
+ 3 files changed, 18 insertions(+), 20 deletions(-)
+
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 386aee23..a17fe859 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1176,7 +1176,7 @@ do_persist_tuntap(const struct options *options, openvpn_net_ctx_t *ctx)
+                ctx);
+         if (options->persist_mode && options->lladdr)
+         {
+-            set_lladdr(options->dev, options->lladdr, NULL);
++            set_lladdr(ctx, options->dev, options->lladdr, NULL);
+         }
+         return true;
+ #else  /* ifdef ENABLE_FEATURE_TUN_PERSIST */
+@@ -1853,7 +1853,8 @@ do_open_tun(struct context *c)
+     /* set the hardware address */
+     if (c->options.lladdr)
+     {
+-        set_lladdr(c->c1.tuntap->actual_name, c->options.lladdr, c->c2.es);
++        set_lladdr(&c->net_ctx, c->c1.tuntap->actual_name, c->options.lladdr,
++                   c->c2.es);
+     }
  
-+#define _STRINGIFY(S) #S
-+#define MAC_FMT _STRINGIFY(%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx)
-+#define MAC_PRINT_ARG(_mac) _mac[0], _mac[1], _mac[2],  \
-+        _mac[3], _mac[4], _mac[5]
-+#define MAC_SCAN_ARG(_mac) &_mac[0], &_mac[1], &_mac[2], \
-+        &_mac[3], &_mac[4], &_mac[5]
-+
- #endif /* ifndef MISC_H */
-diff --git a/src/openvpn/networking.h b/src/openvpn/networking.h
-index 94f12617..d43979f0 100644
---- a/src/openvpn/networking.h
-+++ b/src/openvpn/networking.h
-@@ -103,6 +103,18 @@ int net_iface_up(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
- int net_iface_mtu_set(openvpn_net_ctx_t *ctx,
-                       const openvpn_net_iface_t *iface, uint32_t mtu);
+     /* do ifconfig */
+diff --git a/src/openvpn/lladdr.c b/src/openvpn/lladdr.c
+index 22857eb7..f12c146f 100644
+--- a/src/openvpn/lladdr.c
++++ b/src/openvpn/lladdr.c
+@@ -15,10 +15,9 @@
+ #include "lladdr.h"
  
-+/**
-+ * Set the Link Layer (Ethernet) address of the TAP interface
-+ *
-+ * @param ctx       the implementation specific context
-+ * @param iface     the interface to modify
-+ * @param addr      the new address to set (expected ETH_ALEN bytes (6))
-+ *
-+ * @return          0 on success, a negative error code otherwise
-+ */
-+int net_addr_ll_set(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
-+                    uint8_t *addr);
-+
- /**
-  * Add an IPv4 address to an interface
-  *
-diff --git a/src/openvpn/networking_iproute2.c b/src/openvpn/networking_iproute2.c
-index e4897e3b..c6623b19 100644
---- a/src/openvpn/networking_iproute2.c
-+++ b/src/openvpn/networking_iproute2.c
-@@ -93,6 +93,27 @@ net_iface_mtu_set(openvpn_net_ctx_t *ctx, const char *iface, uint32_t mtu)
-     return 0;
- }
- 
-+int
-+net_addr_ll_set(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
-+                uint8_t *addr)
-+{
-+    struct argv argv = argv_new();
-+    int ret = 0;
-+
-+    argv_printf(&argv,
-+                "%s link set addr " MAC_FMT " dev %s",
-+                iproute_path, MAC_PRINT_ARG(addr), iface);
-+
-+    argv_msg(M_INFO, &argv);
-+    if (!openvpn_execve_check(&argv, ctx->es, M_WARN,
-+                              "Linux ip link set addr failed"))
-+        ret = -1;
-+
-+    argv_free(&argv);
-+
-+    return ret;
-+}
-+
  int
- net_addr_v4_add(openvpn_net_ctx_t *ctx, const char *iface,
-                 const in_addr_t *addr, int prefixlen)
-diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
-index f0dda7a4..8610e1d2 100644
---- a/src/openvpn/networking_sitnl.c
-+++ b/src/openvpn/networking_sitnl.c
-@@ -30,6 +30,7 @@
+-set_lladdr(const char *ifname, const char *lladdr,
++set_lladdr(openvpn_net_ctx_t *ctx, const char *ifname, const char *lladdr,
+            const struct env_set *es)
+ {
+-    struct argv argv = argv_new();
+     int r;
  
- #include "errlevel.h"
- #include "buffer.h"
-+#include "misc.h"
- #include "networking.h"
+     if (!ifname || !lladdr)
+@@ -27,17 +26,13 @@ set_lladdr(const char *ifname, const char *lladdr,
+     }
  
- #include <errno.h>
-@@ -723,6 +724,40 @@ err:
-     return ret;
+ #if defined(TARGET_LINUX)
+-#ifdef ENABLE_IPROUTE
+-    argv_printf(&argv,
+-                "%s link set addr %s dev %s",
+-                iproute_path, lladdr, ifname);
+-#else
+-    argv_printf(&argv,
+-                "%s %s hw ether %s",
+-                IFCONFIG_PATH,
+-                ifname, lladdr);
+-#endif
+-#elif defined(TARGET_SOLARIS)
++    uint8_t addr[ETH_ALEN];
++
++    sscanf(lladdr, MAC_FMT, MAC_SCAN_ARG(addr));
++    r = net_addr_ll_set(ctx, ifname, addr) == 0;
++#else /* if defined(TARGET_LINUX) */
++    struct argv argv = argv_new();
++#if defined(TARGET_SOLARIS)
+     argv_printf(&argv,
+                 "%s %s ether %s",
+                 IFCONFIG_PATH,
+@@ -57,18 +52,19 @@ set_lladdr(const char *ifname, const char *lladdr,
+                 "%s %s ether %s",
+                 IFCONFIG_PATH,
+                 ifname, lladdr);
+-#else  /* if defined(TARGET_LINUX) */
++#else  /* if defined(TARGET_SOLARIS) */
+     msg(M_WARN, "Sorry, but I don't know how to configure link layer addresses on this operating system.");
+     return -1;
+-#endif /* if defined(TARGET_LINUX) */
+-
++#endif /* if defined(TARGET_SOLARIS) */
+     argv_msg(M_INFO, &argv);
+     r = openvpn_execve_check(&argv, es, M_WARN, "ERROR: Unable to set link layer address.");
++    argv_free(&argv);
++#endif /* if defined(TARGET_LINUX) */
++
+     if (r)
+     {
+         msg(M_INFO, "TUN/TAP link layer address set to %s", lladdr);
+     }
+ 
+-    argv_free(&argv);
+     return r;
  }
+diff --git a/src/openvpn/lladdr.h b/src/openvpn/lladdr.h
+index f6ea2b12..0c8b4164 100644
+--- a/src/openvpn/lladdr.h
++++ b/src/openvpn/lladdr.h
+@@ -3,6 +3,7 @@
+  */
  
-+int
-+net_addr_ll_set(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
-+                uint8_t *addr)
-+{
-+    struct sitnl_link_req req;
-+    int ifindex, ret = -1;
-+
-+    CLEAR(req);
-+
-+    ifindex = if_nametoindex(iface);
-+    if (ifindex == 0)
-+    {
-+        msg(M_WARN | M_ERRNO, "%s: rtnl: cannot get ifindex for %s", __func__,
-+            iface);
-+        return -1;
-+    }
-+
-+    req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.i));
-+    req.n.nlmsg_flags = NLM_F_REQUEST;
-+    req.n.nlmsg_type = RTM_NEWLINK;
-+
-+    req.i.ifi_family = AF_PACKET;
-+    req.i.ifi_index = ifindex;
-+
-+    SITNL_ADDATTR(&req.n, sizeof(req), IFLA_ADDRESS, addr, ETH_ALEN);
-+
-+    msg(M_INFO, "%s: lladdr " MAC_FMT " for %s", __func__, MAC_PRINT_ARG(addr),
-+        iface);
-+
-+    ret = sitnl_send(&req.n, 0, 0, NULL, NULL);
-+err:
-+    return ret;
-+}
-+
- static int
- sitnl_addr_set(int cmd, uint32_t flags, int ifindex, sa_family_t af_family,
-                const inet_address_t *local, const inet_address_t *remote,
+ #include "misc.h"
++#include "networking.h"
+ 
+-int set_lladdr(const char *ifname, const char *lladdr,
++int set_lladdr(openvpn_net_ctx_t *ctx, const char *ifname, const char *lladdr,
+                const struct env_set *es);
 -- 
 2.32.0
 
