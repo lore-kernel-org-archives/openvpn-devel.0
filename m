@@ -1,11 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Sat,  4 Sep 2021 11:56:26 +0200
-Message-Id: <20210904095629.6273-5-a@...2181...>
+Date: Sat,  4 Sep 2021 11:56:24 +0200
+Message-Id: <20210904095629.6273-3-a@...2181...>
 In-Reply-To: <20210904095629.6273-1-a@...2181...>
 References: <20210904095629.6273-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 4/7] do not include --cipher value in
- data-ciphers
+Subject: [Openvpn-devel] [PATCH 2/7] compat-mode: allow user to specify
+ version to be compatible with
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,157 +19,139 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>, Arne Schwabe <arne@...1227...>
 
-The --cipher option has been there since a while, but it became more and
-more confusing since the introduction of NCP (data cipher negotiation).
+This changes introduces the basic inbfrastructure required
+to allow the user to specify a specific OpenVPN version to be
+compatible with.
 
-The fallback cipher can now be specified via --data-cipher-fallback,
-while the list of accepted ciphers is specified via --data-ciphers.
+Following changes will modify defaults to more modern and safer
+values, while allowing backwards-compatible behaviour on demand.
 
---cipher can still be used for compatibility reasons, but won't affect
-the cipher negotiation.
+The backwards-compatible behaviour is intructed via the config
+knob '--compat-mode' implemented in this patch.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- Changes.rst                          |  5 ++++
- doc/man-sections/generic-options.rst |  2 ++
- src/openvpn/options.c                | 38 ++++++++++++++++------------
- src/openvpn/ssl_ncp.c                | 13 ++++++++++
- src/openvpn/ssl_ncp.h                |  8 ++++++
- 5 files changed, 50 insertions(+), 16 deletions(-)
+ Changes.rst                          |  6 +++++
+ doc/man-sections/generic-options.rst |  9 +++++++
+ src/openvpn/options.c                | 37 ++++++++++++++++++++++++++++
+ src/openvpn/options.h                |  4 +++
+ 4 files changed, 56 insertions(+)
 
 diff --git a/Changes.rst b/Changes.rst
-index 65b838b9..f803b760 100644
+index 0323a7f7..f55b0e3e 100644
 --- a/Changes.rst
 +++ b/Changes.rst
-@@ -71,6 +71,11 @@ Deprecated features
-     This option mainly served a role as debug option when NCP was first
-     introduced. It should now no longer be necessary.
+@@ -45,6 +45,12 @@ Pending auth support for plugins and scripts
  
-+``--cipher`` argument is no longer included in ``--data-ciphers`` by default
-+    Data cipher negotiation has been introduced in 2.4.0 and been significantly
-+    improved in 2.5.0. The implicit fallback to the cipher specified in
-+    ``--cipher`` has been removed.
+     See ``sample/sample-scripts/totpauth.py`` for an example.
+ 
++Compatibility mode (``--compat-mode``)
++    The modernisation of defaults can impact the compatibility of OpenVPN 2.6.0
++    with older peers. The options ``--compat-mode`` allows UIs to provide users
++    with an easy way to still connect to older servers.
 +
- Compression no longer enabled by default
-     Unless an explicit compression option is specified in the configuration,
-     ``--allow-compression`` defaults to ``no`` in OpeNVPN 2.6.0.
++
+ Deprecated features
+ -------------------
+ ``inetd`` has been removed
 diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
-index a8d24572..8b26cd1a 100644
+index db39f6e2..63c6227c 100644
 --- a/doc/man-sections/generic-options.rst
 +++ b/doc/man-sections/generic-options.rst
-@@ -66,6 +66,8 @@ which mode OpenVPN is configured as.
+@@ -52,6 +52,15 @@ which mode OpenVPN is configured as.
+   BSDs implement a getrandom() or getentropy() syscall that removes the
+   need for /dev/urandom to be available.
  
-   - 2.5.x or lower: ``--allow-compression asym`` is automatically added
-     to the configuration if no other compression options are present.
-+  - 2.4.x or lower: The cipher in ``--cipher`` is appended to
-+    ``--data-ciphers``
- 
++--compat-mode version
++  This option provides a way to alter the default of OpenVPN to be more
++  compatible with the version ``version`` specified. All of the changes
++  this option does can also be achieved using individual configuration
++  options.
++
++  Note: Using this option reverts defaults to no longer recommended
++  values and should be avoided if possible.
++
  --config file
    Load additional config options from ``file`` where each line corresponds
+   to one command line option, but with the leading '--' removed.
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 21c76a69..88ac5bed 100644
+index 0d6b85cf..4d971a56 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -3102,26 +3102,20 @@ options_postprocess_cipher(struct options *o)
-         /* We still need to set the ciphername to BF-CBC since various other
-          * parts of OpenVPN assert that the ciphername is set */
-         o->ciphername = "BF-CBC";
-+
-+        msg(M_INFO, "Note: --cipher is not set. OpenVPN versions before 2.6 "
-+                    "defaulted to BF-CBC as fallback when cipher negotiation "
-+                    "failed in this case. If you need this fallback please add "
-+                    "'--data-ciphers-fallback 'BF-CBC' to your configuration "
-+                    "and/or add BF-CBC to --data-ciphers.");
-     }
-     else if (!o->enable_ncp_fallback
-              && !tls_item_in_cipher_list(o->ciphername, o->ncp_ciphers))
-     {
--        msg(M_WARN, "DEPRECATED OPTION: --cipher set to '%s' but missing in"
--            " --data-ciphers (%s). Future OpenVPN version will "
--            "ignore --cipher for cipher negotiations. "
--            "Add '%s' to --data-ciphers or change --cipher '%s' to "
--            "--data-ciphers-fallback '%s' to silence this warning.",
--            o->ciphername, o->ncp_ciphers, o->ciphername,
--            o->ciphername, o->ciphername);
--        o->enable_ncp_fallback = true;
--
--        /* Append the --cipher to ncp_ciphers to allow it in NCP */
--        size_t newlen = strlen(o->ncp_ciphers) + 1 + strlen(o->ciphername) + 1;
--        char *ncp_ciphers = gc_malloc(newlen, false, &o->gc);
--
--        ASSERT(openvpn_snprintf(ncp_ciphers, newlen, "%s:%s", o->ncp_ciphers,
--                                o->ciphername));
--        o->ncp_ciphers = ncp_ciphers;
-+        msg(M_WARN, "DEPRECATED OPTION: --cipher set to '%s' but missing in "
-+            "--data-ciphers (%s). OpenVPN ignores --cipher for cipher "
-+            "negotiations. ",
-+            o->ciphername, o->ncp_ciphers);
+@@ -3125,6 +3125,29 @@ options_postprocess_cipher(struct options *o)
      }
  }
- 
-@@ -3146,6 +3140,18 @@ need_compatibility_before(const struct options *o, int version)
- static void
- options_set_backwards_compatible_options(struct options *o)
- {
-+    /* Versions < 2.5.0 do need --cipher in the list of accepted ciphers.
-+     * Version 2.4 might probably does not need it but NCP was not so
-+     * good with 2.4 and ncp-disable might be more common on 2.4 peers.
-+     * Only do this iif --cipher is not explicitly (BF-CBC). This is not
-+     * 100% correct backwards compatible behaviour but 2.5 already behaved like
-+     * this */
-+    if (o->ciphername && need_compatibility_before(o, 20500)
-+        && !tls_item_in_cipher_list(o->ciphername, o->ncp_ciphers))
-+    {
-+        append_cipher_to_ncp_list(o, o->ciphername);
-+    }
-+
-     /* Compression is deprecated and we do not want to announce support for it
-      * by default anymore, additionally DCO breaks with compression.
-      *
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 6967e2bb..022a9dc3 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -172,6 +172,19 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
-     return ret;
- }
- 
-+
-+void
-+append_cipher_to_ncp_list(struct options *o, const char *ciphername)
-+{
-+    /* Append the --cipher to ncp_ciphers to allow it in NCP */
-+    size_t newlen = strlen(o->ncp_ciphers) + 1 + strlen(ciphername) + 1;
-+    char *ncp_ciphers = gc_malloc(newlen, false, &o->gc);
-+
-+    ASSERT(openvpn_snprintf(ncp_ciphers, newlen, "%s:%s", o->ncp_ciphers,
-+                            ciphername));
-+    o->ncp_ciphers = ncp_ciphers;
-+}
-+
- bool
- tls_item_in_cipher_list(const char *item, const char *list)
- {
-diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h
-index 4a2601a2..09ddeb28 100644
---- a/src/openvpn/ssl_ncp.h
-+++ b/src/openvpn/ssl_ncp.h
-@@ -102,6 +102,14 @@ tls_peer_ncp_list(const char *peer_info, struct gc_arena *gc);
- char *
- mutate_ncp_cipher_list(const char *list, struct gc_arena *gc);
  
 +/**
-+ * Appends the cipher specified by the ciphernamer parameter to to
-+ * the o->ncp_ciphers list.
-+ * @param o             options struct to modify. Its gc is also used
-+ * @param ciphername    the ciphername to add
++ * Returns if we want 'backwards-compatibility' up to (but not included) a
++ * certain version
++ *
++ * @param version   the oldest version that does not compatibility
++ *                  e.g. 20400 for all versions < 2.4.0
++ * @return          whether compatibility should be enabled
 + */
-+void append_cipher_to_ncp_list(struct options *o, const char *ciphername);
++static bool
++need_compatibility_before(const struct options *o, int version)
++{
++    return o->backwards_compatible != 0 && o->backwards_compatible < version;
++}
 +
- /**
-  * Return true iff item is present in the colon-separated zero-terminated
-  * cipher list.
++/**
++ * Changes default values so that OpenVPN can be compatible with the user
++ * specified version
++ */
++static void
++options_set_backwards_compatible_options(struct options *o)
++{
++}
++
+ static void
+ options_postprocess_mutate(struct options *o)
+ {
+@@ -3137,6 +3160,8 @@ options_postprocess_mutate(struct options *o)
+     helper_keepalive(o);
+     helper_tcp_nodelay(o);
+ 
++    options_set_backwards_compatible_options(o);
++
+     options_postprocess_cipher(o);
+     options_postprocess_mutate_invariant(o);
+ 
+@@ -6698,6 +6723,18 @@ add_option(struct options *options,
+             setenv_str(es, p[1], p[2] ? p[2] : "");
+         }
+     }
++    else if (streq(p[0], "compat-mode") && p[1] && !p[3])
++    {
++        unsigned int major, minor, patch;
++        if (!(sscanf(p[1], "%u.%u.%u", &major, &minor, &patch) == 3))
++        {
++            msg(msglevel, "cannot parse version number for --compat-mode: %s",
++                p[1]);
++            goto err;
++        }
++
++        options->backwards_compatible = major * 10000 + minor * 100 + patch;
++    }
+     else if (streq(p[0], "setenv-safe") && p[1] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_SETENV);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index b0e40cb7..98c21a2a 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -225,6 +225,10 @@ struct options
+ 
+     /* enable forward compatibility for post-2.1 features */
+     bool forward_compatible;
++    /** What version we should try to be compatible with as major * 10000 +
++      * minor * 100 + patch, e.g. 2.4.7 => 20407 */
++    unsigned int backwards_compatible;
++
+     /* list of options that should be ignored even if unknown */
+     const char **ignore_unknown_option;
+ 
 -- 
 2.32.0
 
