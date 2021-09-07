@@ -1,14 +1,13 @@
-From: Arne Schwabe <arne@...1227...>
-References: <20210904095629.6273-1-a@...2181...>
- <20210904095629.6273-2-a@...2181...>
- <56febc9b-ca20-9b12-1a54-0f1a6c79cf8c@...1227...>
-Message-ID: <4b4333be-7257-ffeb-8f11-8ebfd2b9320d@...1227...>
-Date: Tue, 7 Sep 2021 13:10:02 +0200
+References: <20210818213354.687736-1-arne@...1227...>
+ <20210818213354.687736-2-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <56b5db50-c235-2288-a3c8-773049ce21ca@...2181...>
+Date: Tue, 7 Sep 2021 15:53:45 +0200
 MIME-Version: 1.0
-In-Reply-To: <56febc9b-ca20-9b12-1a54-0f1a6c79cf8c@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 1/7] simplify condition detecting pure
- P2P mode
+In-Reply-To: <20210818213354.687736-2-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Include Chacha20-Poly1305 into
+ default --data-ciphers when available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,36 +18,38 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
+Hi,
 
+On 18/08/2021 23:33, Arne Schwabe wrote:
+> Most TLS 1.3 libraries inlcude the Chacha20-Poly1305 based cipher suite
+> beside the AES-GCM based ones int he list of default ciphers suites.
+> Chacha20-Poly1305 is accepted as good alternative AEAD algorithm to the
+> AES-GCM algorithm by crypto community.
 > 
-> Yes. Makes sense. The change makes it is a lot more clear. I think it is
-> actually not equivalent but the new one is definitively the correct one.
->
+> Follow this and include Chacha20-Poly1305 by default in data-ciphers
+> when available. This makes picking Chacha20-Poly1305 easier as it only
+> requires to change server (by changing priority) or client side (removing
+> AES-GCM from data-ciphers) to change to Chacha20-Poly1305.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-I looked at the code again and I have to actually retract my ACK.
+Not sure why this is 2/2 as it seems unrelated to 1/2.
+Indeed I applied and reviewed this patch alone.
 
-The previous code means P2P mode with static key or P2P mode without
---pull while the new condition means only P2P mode with static key.
+It does what it says and imho it is pretty clean.
+
+Tested with a client that connects against a server having default
+ciphers. The client, if willing, can specify chacha20poly1305 only and
+connect with it.
+
+This is a sensible change which IMHO will make a lot of people happy.
+
+Acked-by: Antonio Quartulli <antonio@...515...>
 
 
-The code that follows for that section should be better commented:
 
-        if (!o->ciphername)
-        {
-            o->ciphername = "BF-CBC";
-        }
-        else
-        {
-            o->enable_ncp_fallback = true;
-        }
-        return;
-
-It basically condeses to having always a valid string in o->ciphername,
-which is then used in static key code (which ignores data-ciphers) or
-allowing falling back to the cipher explicitly set via --cipher if we
-are in TLS mode (with NCP) but not to the implicit BF-CBC.
-
-Arne
+-- 
+Antonio Quartulli
 
