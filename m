@@ -1,12 +1,9 @@
 From: selva.nair@...277...
-Date: Tue,  7 Sep 2021 18:31:26 -0400
-Message-Id: <20210907223126.8440-3-selva.nair@...277...>
-In-Reply-To: <20210907223126.8440-1-selva.nair@...277...>
-References: <20210825210232.22509-1-selva.nair@...277...>
- <20210907223126.8440-1-selva.nair@...277...>
+Date: Tue,  7 Sep 2021 18:36:14 -0400
+Message-Id: <20210907223614.8574-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 3/3] Use a template for "unsupported
- management commands" error
+Subject: [Openvpn-devel] [PATCH] Allow skipping multple remotes via
+ management interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,160 +18,115 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-The message
-"ERROR: The 'foo' commmand is not supported by current daemon mode"
-is repeatedly used in manage.c. Move it to a function for uniformity
-in messaging.
+The mamangement command "remote SKIP" is extended with an
+optional parameter 'count' > 0. If count is greater than
+number of connection entries (len), count % len is used.
+On going past the index of the last connection entry,
+counting is restarted from the first connection entry.
 
-v3, v3: no change
+Without this, use of management-query-remote from a UI is
+virtually impractical except when there are only a handful
+of remote entries. Skipping the entries one by one takes
+a long time when there are many entries to be skipped
+(~ 1 second per entry).  Use of "remote MOD" is not an
+option as change of protocol is not supported.
+
+Management clients can determine the availablity of this
+feature by checking that the management interface version
+is > 3. Older versions will ignore the count parameter and
+behave identically to using count = 1.
+
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/manage.c | 34 ++++++++++++++++++++--------------
- 1 file changed, 20 insertions(+), 14 deletions(-)
+ doc/management-notes.txt |  7 +++++++
+ src/openvpn/init.c       | 20 ++++++++++++++++----
+ src/openvpn/options.h    |  2 ++
+ 3 files changed, 25 insertions(+), 4 deletions(-)
 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index f2a51d6c..b75014c2 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -447,6 +447,12 @@ man_signal(struct management *man, const char *name)
-     }
- }
+diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+index 84e3d04b..ff0695a0 100644
+--- a/doc/management-notes.txt
++++ b/doc/management-notes.txt
+@@ -929,6 +929,13 @@ use this command:
  
-+static void
-+man_command_unsupported(const char *command_name)
-+{
-+    msg(M_CLIENT, "ERROR: The '%s' command is not supported by the current daemon mode", command_name);
-+}
+   remote SKIP
+ 
++Starting OpenVPN version 2.6 (management version > 3), skip
++multiple remotes using:
 +
- static void
- man_status(struct management *man, const int version, struct status_output *so)
- {
-@@ -456,7 +462,7 @@ man_status(struct management *man, const int version, struct status_output *so)
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The 'status' command is not supported by the current daemon mode");
-+        man_command_unsupported("status");
-     }
- }
++  remote SKIP n
++
++where n > 0 is the number of remotes to skip.
++
+ COMMAND -- proxy  (OpenVPN 2.3 or higher)
+ --------------------------------------------
  
-@@ -572,7 +578,7 @@ man_kill(struct management *man, const char *victim)
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The 'kill' command is not supported by the current daemon mode");
-+        man_command_unsupported("kill");
-     }
- 
-     gc_free(&gc);
-@@ -777,7 +783,7 @@ man_net(struct management *man)
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The 'net' command is not supported by the current daemon mode");
-+        man_command_unsupported("net");
-     }
- }
- 
-@@ -799,7 +805,7 @@ man_send_cc_message(struct management *man, const char *message, const char *par
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: This command is not supported by the current daemon mode");
-+        man_command_unsupported("cr-repsonse");
-     }
- }
- #ifdef ENABLE_PKCS11
-@@ -843,7 +849,7 @@ man_remote_entry_count(struct management *man)
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The remote-entry-count command is not supported by the current daemon mode");
-+        man_command_unsupported("remote-entry-count");
-     }
- }
- 
-@@ -884,7 +890,7 @@ man_remote_entry_get(struct management *man, const char *p1, const char *p2)
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The remote-entry command is not supported by the current daemon mode");
-+        man_command_unsupported("remote-entry-get");
-     }
- }
- 
-@@ -973,7 +979,7 @@ in_extra_dispatch(struct management *man)
-             }
-             else
-             {
--                msg(M_CLIENT, "ERROR: The client-auth command is not supported by the current daemon mode");
-+                man_command_unsupported("client-auth");
-             }
-             break;
- 
-@@ -997,7 +1003,7 @@ in_extra_dispatch(struct management *man)
-             }
-             else
-             {
--                msg(M_CLIENT, "ERROR: The client-pf command is not supported by the current daemon mode");
-+                man_command_unsupported("client-pf");
-             }
-             break;
- 
-@@ -1082,7 +1088,7 @@ man_client_pending_auth(struct management *man, const char *cid_str,
-         }
-         else
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 386aee23..73ce3bb1 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -348,6 +348,7 @@ management_callback_remote_cmd(void *arg, const char **p)
          {
--            msg(M_CLIENT, "ERROR: The client-pending-auth command is not supported by the current daemon mode");
-+            man_command_unsupported("client-pending-auth");
+             flags = CE_MAN_QUERY_REMOTE_SKIP;
+             ret = true;
++            c->options.ce_advance_count = (p[2]) ? atoi(p[2]) : 1;
          }
-     }
- }
-@@ -1133,7 +1139,7 @@ man_client_deny(struct management *man, const char *cid_str, const char *kid_str
-         }
-         else
+         else if (!strcmp(p[1], "MOD") && p[2] && p[3])
          {
--            msg(M_CLIENT, "ERROR: The client-deny command is not supported by the current daemon mode");
-+            man_command_unsupported("client-deny");
-         }
-     }
- }
-@@ -1158,7 +1164,7 @@ man_client_kill(struct management *man, const char *cid_str, const char *kill_ms
-         }
-         else
-         {
--            msg(M_CLIENT, "ERROR: The client-kill command is not supported by the current daemon mode");
-+            man_command_unsupported("client-kill");
-         }
-     }
- }
-@@ -1173,7 +1179,7 @@ man_client_n_clients(struct management *man)
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The nclients command is not supported by the current daemon mode");
-+        man_command_unsupported("nclients");
-     }
- }
+@@ -520,18 +521,28 @@ next_connection_entry(struct context *c)
+                         c->c1.link_socket_addr.remote_list;
+                 }
  
-@@ -1297,7 +1303,7 @@ man_proxy(struct management *man, const char **p)
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The proxy command is not supported by the current daemon mode");
-+        man_command_unsupported("proxy");
-     }
- }
++                int advance_count = 1;
++
++                /* If previous connection entry was skipped by management client
++                 * with a count to advance by, apply it.
++                 */
++                if (c->options.ce_advance_count > 0)
++                {
++                    advance_count = c->options.ce_advance_count;
++                }
++
+                 /*
+                  * Increase the number of connection attempts
+                  * If this is connect-retry-max * size(l)
+                  * OpenVPN will quit
+                  */
  
-@@ -1318,7 +1324,7 @@ man_remote(struct management *man, const char **p)
-     }
-     else
-     {
--        msg(M_CLIENT, "ERROR: The remote command is not supported by the current daemon mode");
-+        man_command_unsupported("remote");
-     }
- }
+-                c->options.unsuccessful_attempts++;
++                c->options.unsuccessful_attempts += advance_count;
++                l->current += advance_count;
  
+-                if (++l->current >= l->len)
++                if (l->current >= l->len)
+                 {
+-
+-                    l->current = 0;
++                    l->current %= l->len;
+                     if (++n_cycles >= 2)
+                     {
+                         msg(M_FATAL, "No usable connection profiles are present");
+@@ -540,6 +551,7 @@ next_connection_entry(struct context *c)
+             }
+         }
+ 
++        c->options.ce_advance_count = 1;
+         ce = l->array[l->current];
+ 
+         if (ce->flags & CE_DISABLED)
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index b0e40cb7..ea7ee96e 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -253,6 +253,8 @@ struct options
+     bool no_advance;
+     /* Counts the number of unsuccessful connection attempts */
+     unsigned int unsuccessful_attempts;
++    /* count of connection entries to advance by when no_advance is not set */
++    int ce_advance_count;
+ 
+ #if ENABLE_MANAGEMENT
+     struct http_proxy_options *http_proxy_override;
 -- 
 2.20.1
 
