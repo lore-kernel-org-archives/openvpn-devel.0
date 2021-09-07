@@ -1,12 +1,12 @@
 From: selva.nair@...277...
-Date: Tue,  7 Sep 2021 18:31:25 -0400
-Message-Id: <20210907223126.8440-2-selva.nair@...277...>
+Date: Tue,  7 Sep 2021 18:31:26 -0400
+Message-Id: <20210907223126.8440-3-selva.nair@...277...>
 In-Reply-To: <20210907223126.8440-1-selva.nair@...277...>
 References: <20210825210232.22509-1-selva.nair@...277...>
  <20210907223126.8440-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 2/3] Permit unlimited connection entries
- and remotes
+Subject: [Openvpn-devel] [PATCH v3 3/3] Use a template for "unsupported
+ management commands" error
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,118 +21,160 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-Currently we allow a max of 64 connection entries and remotes.
-A larger number would allow users with 100's of independent
-config files for different end points of same provider to
-consolidate them to connection entries.
+The message
+"ERROR: The 'foo' commmand is not supported by current daemon mode"
+is repeatedly used in manage.c. Move it to a function for uniformity
+in messaging.
 
-v2,v3: no change
-
+v3, v3: no change
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- Changes.rst           |  2 ++
- src/openvpn/options.c | 34 ++++++++++++++++++++++++++++------
- src/openvpn/options.h |  6 ++++--
- 3 files changed, 34 insertions(+), 8 deletions(-)
+ src/openvpn/manage.c | 34 ++++++++++++++++++++--------------
+ 1 file changed, 20 insertions(+), 14 deletions(-)
 
-diff --git a/Changes.rst b/Changes.rst
-index fa5d5ffa..9b1fb294 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -4,6 +4,8 @@ Overview of changes in 2.6
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index f2a51d6c..b75014c2 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -447,6 +447,12 @@ man_signal(struct management *man, const char *name)
+     }
+ }
  
- New features
- ------------
-+Support unlimited number of connection entries and remote entries
++static void
++man_command_unsupported(const char *command_name)
++{
++    msg(M_CLIENT, "ERROR: The '%s' command is not supported by the current daemon mode", command_name);
++}
 +
- New management commands to enumerate and list remote entries
-     Use ``remote-entry-count`` and ``remote-entry-get``
-     commands from the management interface to get the number of
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index f00b3019..38f97a39 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -888,6 +888,14 @@ init_options(struct options *o, const bool init_gc)
- void
- uninit_options(struct options *o)
+ static void
+ man_status(struct management *man, const int version, struct status_output *so)
  {
-+    if (o->connection_list) {
-+        free(o->connection_list->array);
-+        CLEAR(*o->connection_list);
-+    }
-+    if (o->remote_list) {
-+        free(o->remote_list->array);
-+        CLEAR(*o->remote_list);
-+    }
-     if (o->gc_owned)
-     {
-         gc_free(&o->gc);
-@@ -1946,10 +1954,17 @@ alloc_connection_entry(struct options *options, const int msglevel)
-     struct connection_list *l = alloc_connection_list_if_undef(options);
-     struct connection_entry *e;
- 
--    if (l->len >= CONNECTION_LIST_SIZE)
-+    if (l->len == l->capacity)
-     {
--        msg(msglevel, "Maximum number of 'connection' options (%d) exceeded", CONNECTION_LIST_SIZE);
--        return NULL;
-+        int capacity = l->capacity + CONNECTION_LIST_SIZE;
-+        struct connection_entry **ce = realloc(l->array, capacity*sizeof(struct connection_entry *));
-+        if (ce == NULL)
-+        {
-+            msg(msglevel, "Unable to process more connection options: out of memory. Number of entries = %d", l->len);
-+            return NULL;
-+        }
-+        l->array = ce;
-+        l->capacity = capacity;
+@@ -456,7 +462,7 @@ man_status(struct management *man, const int version, struct status_output *so)
      }
-     ALLOC_OBJ_GC(e, struct connection_entry, &options->gc);
-     l->array[l->len++] = e;
-@@ -1972,10 +1987,17 @@ alloc_remote_entry(struct options *options, const int msglevel)
-     struct remote_list *l = alloc_remote_list_if_undef(options);
-     struct remote_entry *e;
- 
--    if (l->len >= CONNECTION_LIST_SIZE)
-+    if (l->len == l->capacity)
+     else
      {
--        msg(msglevel, "Maximum number of 'remote' options (%d) exceeded", CONNECTION_LIST_SIZE);
--        return NULL;
-+        int capacity = l->capacity + CONNECTION_LIST_SIZE;
-+        struct remote_entry **re = realloc(l->array, capacity*sizeof(struct remote_entry *));
-+        if (re == NULL)
-+        {
-+            msg(msglevel, "Unable to process more remote options: out of memory. Number of entries = %d", l->len);
-+            return NULL;
-+        }
-+        l->array = re;
-+        l->capacity = capacity;
+-        msg(M_CLIENT, "ERROR: The 'status' command is not supported by the current daemon mode");
++        man_command_unsupported("status");
      }
-     ALLOC_OBJ_GC(e, struct remote_entry, &options->gc);
-     l->array[l->len++] = e;
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index b0e40cb7..98977d41 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -168,15 +168,17 @@ struct remote_entry
+ }
  
- struct connection_list
- {
-+    int capacity;
-     int len;
-     int current;
--    struct connection_entry *array[CONNECTION_LIST_SIZE];
-+    struct connection_entry **array;
- };
+@@ -572,7 +578,7 @@ man_kill(struct management *man, const char *victim)
+     }
+     else
+     {
+-        msg(M_CLIENT, "ERROR: The 'kill' command is not supported by the current daemon mode");
++        man_command_unsupported("kill");
+     }
  
- struct remote_list
- {
-+    int capacity;
-     int len;
--    struct remote_entry *array[CONNECTION_LIST_SIZE];
-+    struct remote_entry **array;
- };
+     gc_free(&gc);
+@@ -777,7 +783,7 @@ man_net(struct management *man)
+     }
+     else
+     {
+-        msg(M_CLIENT, "ERROR: The 'net' command is not supported by the current daemon mode");
++        man_command_unsupported("net");
+     }
+ }
  
- enum vlan_acceptable_frames
+@@ -799,7 +805,7 @@ man_send_cc_message(struct management *man, const char *message, const char *par
+     }
+     else
+     {
+-        msg(M_CLIENT, "ERROR: This command is not supported by the current daemon mode");
++        man_command_unsupported("cr-repsonse");
+     }
+ }
+ #ifdef ENABLE_PKCS11
+@@ -843,7 +849,7 @@ man_remote_entry_count(struct management *man)
+     }
+     else
+     {
+-        msg(M_CLIENT, "ERROR: The remote-entry-count command is not supported by the current daemon mode");
++        man_command_unsupported("remote-entry-count");
+     }
+ }
+ 
+@@ -884,7 +890,7 @@ man_remote_entry_get(struct management *man, const char *p1, const char *p2)
+     }
+     else
+     {
+-        msg(M_CLIENT, "ERROR: The remote-entry command is not supported by the current daemon mode");
++        man_command_unsupported("remote-entry-get");
+     }
+ }
+ 
+@@ -973,7 +979,7 @@ in_extra_dispatch(struct management *man)
+             }
+             else
+             {
+-                msg(M_CLIENT, "ERROR: The client-auth command is not supported by the current daemon mode");
++                man_command_unsupported("client-auth");
+             }
+             break;
+ 
+@@ -997,7 +1003,7 @@ in_extra_dispatch(struct management *man)
+             }
+             else
+             {
+-                msg(M_CLIENT, "ERROR: The client-pf command is not supported by the current daemon mode");
++                man_command_unsupported("client-pf");
+             }
+             break;
+ 
+@@ -1082,7 +1088,7 @@ man_client_pending_auth(struct management *man, const char *cid_str,
+         }
+         else
+         {
+-            msg(M_CLIENT, "ERROR: The client-pending-auth command is not supported by the current daemon mode");
++            man_command_unsupported("client-pending-auth");
+         }
+     }
+ }
+@@ -1133,7 +1139,7 @@ man_client_deny(struct management *man, const char *cid_str, const char *kid_str
+         }
+         else
+         {
+-            msg(M_CLIENT, "ERROR: The client-deny command is not supported by the current daemon mode");
++            man_command_unsupported("client-deny");
+         }
+     }
+ }
+@@ -1158,7 +1164,7 @@ man_client_kill(struct management *man, const char *cid_str, const char *kill_ms
+         }
+         else
+         {
+-            msg(M_CLIENT, "ERROR: The client-kill command is not supported by the current daemon mode");
++            man_command_unsupported("client-kill");
+         }
+     }
+ }
+@@ -1173,7 +1179,7 @@ man_client_n_clients(struct management *man)
+     }
+     else
+     {
+-        msg(M_CLIENT, "ERROR: The nclients command is not supported by the current daemon mode");
++        man_command_unsupported("nclients");
+     }
+ }
+ 
+@@ -1297,7 +1303,7 @@ man_proxy(struct management *man, const char **p)
+     }
+     else
+     {
+-        msg(M_CLIENT, "ERROR: The proxy command is not supported by the current daemon mode");
++        man_command_unsupported("proxy");
+     }
+ }
+ 
+@@ -1318,7 +1324,7 @@ man_remote(struct management *man, const char **p)
+     }
+     else
+     {
+-        msg(M_CLIENT, "ERROR: The remote command is not supported by the current daemon mode");
++        man_command_unsupported("remote");
+     }
+ }
+ 
 -- 
 2.20.1
 
