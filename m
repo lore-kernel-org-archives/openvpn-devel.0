@@ -1,9 +1,11 @@
-From: selva.nair@...277...
-Date: Tue,  7 Sep 2021 18:36:14 -0400
-Message-Id: <20210907223614.8574-1-selva.nair@...277...>
+From: Antonio Quartulli <a@...2181...>
+Date: Wed,  8 Sep 2021 09:26:06 +0200
+Message-Id: <20210908072606.5863-1-a@...2181...>
+In-Reply-To: <20210904095629.6273-3-a@...2181...>
+References: <20210904095629.6273-3-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Allow skipping multple remotes via
- management interface
+Subject: [Openvpn-devel] [PATCH v2 2/7] compat-mode: allow user to specify
+ version to be compatible with
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,119 +17,148 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>, Arne Schwabe <arne@...1227...>
 
-From: Selva Nair <selva.nair@...277...>
+This changes introduces the basic inbfrastructure required
+to allow the user to specify a specific OpenVPN version to be
+compatible with.
 
-The mamangement command "remote SKIP" is extended with an
-optional parameter 'count' > 0. If count is greater than
-number of connection entries (len), count % len is used.
-On going past the index of the last connection entry,
-counting is restarted from the first connection entry.
+Following changes will modify defaults to more modern and safer
+values, while allowing backwards-compatible behaviour on demand.
 
-Without this, use of management-query-remote from a UI is
-virtually impractical except when there are only a handful
-of remote entries. Skipping the entries one by one takes
-a long time when there are many entries to be skipped
-(~ 1 second per entry).  Use of "remote MOD" is not an
-option as change of protocol is not supported.
+The backwards-compatible behaviour is intructed via the config
+knob '--compat-mode' implemented in this patch.
 
-Management clients can determine the availablity of this
-feature by checking that the management interface version
-is > 3. Older versions will ignore the count parameter and
-behave identically to using count = 1.
-
-Signed-off-by: Selva Nair <selva.nair@...277...>
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- doc/management-notes.txt |  7 +++++++
- src/openvpn/init.c       | 20 ++++++++++++++++----
- src/openvpn/options.h    |  2 ++
- 3 files changed, 25 insertions(+), 4 deletions(-)
 
-diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index 84e3d04b..ff0695a0 100644
---- a/doc/management-notes.txt
-+++ b/doc/management-notes.txt
-@@ -929,6 +929,13 @@ use this command:
+Changes from v1:
+* fixed typ0 in comment
+* changed argument type from int to unsigned int for
+* need_compatibility_before() function
+
+ Changes.rst                          |  6 +++++
+ doc/man-sections/generic-options.rst |  9 +++++++
+ src/openvpn/options.c                | 37 ++++++++++++++++++++++++++++
+ src/openvpn/options.h                |  4 +++
+ 4 files changed, 56 insertions(+)
+
+diff --git a/Changes.rst b/Changes.rst
+index 637ed97a..7efb3493 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -45,6 +45,12 @@ Pending auth support for plugins and scripts
  
-   remote SKIP
+     See ``sample/sample-scripts/totpauth.py`` for an example.
  
-+Starting OpenVPN version 2.6 (management version > 3), skip
-+multiple remotes using:
++Compatibility mode (``--compat-mode``)
++    The modernisation of defaults can impact the compatibility of OpenVPN 2.6.0
++    with older peers. The options ``--compat-mode`` allows UIs to provide users
++    with an easy way to still connect to older servers.
 +
-+  remote SKIP n
 +
-+where n > 0 is the number of remotes to skip.
-+
- COMMAND -- proxy  (OpenVPN 2.3 or higher)
- --------------------------------------------
+ Deprecated features
+ -------------------
+ ``inetd`` has been removed
+diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
+index db39f6e2..63c6227c 100644
+--- a/doc/man-sections/generic-options.rst
++++ b/doc/man-sections/generic-options.rst
+@@ -52,6 +52,15 @@ which mode OpenVPN is configured as.
+   BSDs implement a getrandom() or getentropy() syscall that removes the
+   need for /dev/urandom to be available.
  
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 386aee23..73ce3bb1 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -348,6 +348,7 @@ management_callback_remote_cmd(void *arg, const char **p)
-         {
-             flags = CE_MAN_QUERY_REMOTE_SKIP;
-             ret = true;
-+            c->options.ce_advance_count = (p[2]) ? atoi(p[2]) : 1;
++--compat-mode version
++  This option provides a way to alter the default of OpenVPN to be more
++  compatible with the version ``version`` specified. All of the changes
++  this option does can also be achieved using individual configuration
++  options.
++
++  Note: Using this option reverts defaults to no longer recommended
++  values and should be avoided if possible.
++
+ --config file
+   Load additional config options from ``file`` where each line corresponds
+   to one command line option, but with the leading '--' removed.
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index e4a32f2a..57655164 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3147,6 +3147,29 @@ options_postprocess_cipher(struct options *o)
+     }
+ }
+ 
++/**
++ * Returns if we want 'backwards-compatibility' up to (but not included) a
++ * certain version
++ *
++ * @param version   the oldest version that does not requires compatibility
++ *                  e.g. 20400 requires compatibility for all versions < 2.4.0
++ * @return          whether compatibility should be enabled
++ */
++static bool
++need_compatibility_before(const struct options *o, unsigned int version)
++{
++    return o->backwards_compatible != 0 && o->backwards_compatible < version;
++}
++
++/**
++ * Changes default values so that OpenVPN can be compatible with the user
++ * specified version
++ */
++static void
++options_set_backwards_compatible_options(struct options *o)
++{
++}
++
+ static void
+ options_postprocess_mutate(struct options *o)
+ {
+@@ -3160,6 +3183,8 @@ options_postprocess_mutate(struct options *o)
+     helper_tcp_nodelay(o);
+ 
+     options_postprocess_setdefault_ncpciphers(o);
++    options_set_backwards_compatible_options(o);
++
+     options_postprocess_cipher(o);
+     options_postprocess_mutate_invariant(o);
+ 
+@@ -6721,6 +6746,18 @@ add_option(struct options *options,
+             setenv_str(es, p[1], p[2] ? p[2] : "");
          }
-         else if (!strcmp(p[1], "MOD") && p[2] && p[3])
-         {
-@@ -520,18 +521,28 @@ next_connection_entry(struct context *c)
-                         c->c1.link_socket_addr.remote_list;
-                 }
- 
-+                int advance_count = 1;
+     }
++    else if (streq(p[0], "compat-mode") && p[1] && !p[3])
++    {
++        unsigned int major, minor, patch;
++        if (!(sscanf(p[1], "%u.%u.%u", &major, &minor, &patch) == 3))
++        {
++            msg(msglevel, "cannot parse version number for --compat-mode: %s",
++                p[1]);
++            goto err;
++        }
 +
-+                /* If previous connection entry was skipped by management client
-+                 * with a count to advance by, apply it.
-+                 */
-+                if (c->options.ce_advance_count > 0)
-+                {
-+                    advance_count = c->options.ce_advance_count;
-+                }
-+
-                 /*
-                  * Increase the number of connection attempts
-                  * If this is connect-retry-max * size(l)
-                  * OpenVPN will quit
-                  */
- 
--                c->options.unsuccessful_attempts++;
-+                c->options.unsuccessful_attempts += advance_count;
-+                l->current += advance_count;
- 
--                if (++l->current >= l->len)
-+                if (l->current >= l->len)
-                 {
--
--                    l->current = 0;
-+                    l->current %= l->len;
-                     if (++n_cycles >= 2)
-                     {
-                         msg(M_FATAL, "No usable connection profiles are present");
-@@ -540,6 +551,7 @@ next_connection_entry(struct context *c)
-             }
-         }
- 
-+        c->options.ce_advance_count = 1;
-         ce = l->array[l->current];
- 
-         if (ce->flags & CE_DISABLED)
++        options->backwards_compatible = major * 10000 + minor * 100 + patch;
++    }
+     else if (streq(p[0], "setenv-safe") && p[1] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_SETENV);
 diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index b0e40cb7..ea7ee96e 100644
+index b0e40cb7..98c21a2a 100644
 --- a/src/openvpn/options.h
 +++ b/src/openvpn/options.h
-@@ -253,6 +253,8 @@ struct options
-     bool no_advance;
-     /* Counts the number of unsuccessful connection attempts */
-     unsigned int unsuccessful_attempts;
-+    /* count of connection entries to advance by when no_advance is not set */
-+    int ce_advance_count;
+@@ -225,6 +225,10 @@ struct options
  
- #if ENABLE_MANAGEMENT
-     struct http_proxy_options *http_proxy_override;
+     /* enable forward compatibility for post-2.1 features */
+     bool forward_compatible;
++    /** What version we should try to be compatible with as major * 10000 +
++      * minor * 100 + patch, e.g. 2.4.7 => 20407 */
++    unsigned int backwards_compatible;
++
+     /* list of options that should be ignored even if unknown */
+     const char **ignore_unknown_option;
+ 
 -- 
-2.20.1
+2.32.0
 
 
