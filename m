@@ -1,10 +1,10 @@
-Date: Fri, 10 Sep 2021 11:52:30 +0200 (CEST)
-Message-Id: <202109100952.18A9qUJn050335@...2054...>
+Date: Fri, 10 Sep 2021 11:54:49 +0200 (CEST)
+Message-Id: <202109100954.18A9snNu050445@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210818213354.687736-1-arne@...1227...>
-References: <20210818213354.687736-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Detect unusable ciphers on
- patched OpenSSL of RHEL/Centos
+In-Reply-To: <20210908142724.3391935-1-arne@...1227...>
+References: <20210908142724.3391935-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix Ubuntu spelling and
+ duplicate run in Github Actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,21 +18,21 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks for the test on CentOS 8.  I have skimmed the code, but since
-I have no FIPS enabled OpenSSL around, haven't tested anything.
+Acked-by: Gert Doering <gert@...1296...>
+
+"makes sense" :-)
 
 Your patch has been applied to the master branch.
 
-commit 8f25cefea15481cc0338bca40a89d96fbe745b9f
+commit 9c4e4751a1cbd90611e652a228884ef6953844a9
 Author: Arne Schwabe
-Date:   Wed Aug 18 23:33:53 2021 +0200
+Date:   Wed Sep 8 16:27:24 2021 +0200
 
-     Detect unusable ciphers on patched OpenSSL of RHEL/Centos
+     Fix Ubuntu spelling and duplicate run in Github Actions
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20210818213354.687736-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22746.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210908142724.3391935-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22822.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
