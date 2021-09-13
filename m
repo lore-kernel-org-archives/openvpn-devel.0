@@ -1,15 +1,14 @@
-Date: Mon, 13 Sep 2021 14:37:06 +0200
+Date: Mon, 13 Sep 2021 14:39:43 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <YT9F8nPtG1Xh2adu@...1296...>
+Message-ID: <YT9GjxtLencLAZlr@...1296...>
 References: <20210904095629.6273-1-a@...2181...>
- <20210904095629.6273-8-a@...2181...>
+ <20210904095629.6273-7-a@...2181...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="O/DZmLNgsodcXZxc"
+ protocol="application/pgp-signature"; boundary="CRhYpmpZ1jlHcxXl"
 Content-Disposition: inline
-In-Reply-To: <20210904095629.6273-8-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 7/7] add message about changing default
- values
+In-Reply-To: <20210904095629.6273-7-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 6/7] set TLS 1.2 as minimum by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,35 +20,46 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---O/DZmLNgsodcXZxc
+--CRhYpmpZ1jlHcxXl
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sat, Sep 04, 2021 at 11:56:29AM +0200, Antonio Quartulli wrote:
-> Add warning at startup to notify users about the change.
-[..]
-> +    /* Give a general warning at the end of initialisation that defaults
-> +     * have changed */
-> +    msg(M_WARN, "Note that modernisation of defaults in OpenVPN 2.6 limi=
-ts "
-> +                "compatibility with old versions. See Changes.rst and "
-> +                "--compat-mode in the manual for details.");
->  }
+On Sat, Sep 04, 2021 at 11:56:28AM +0200, Antonio Quartulli wrote:
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index f2fb6d64..6f6eb73d 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -850,6 +850,7 @@ init_options(struct options *o, const bool init_gc)
+>      o->use_prediction_resistance =3D false;
+>  #endif
+>      o->tls_timeout =3D 2;
+> +    o->ssl_flags =3D (TLS_VER_1_2 << SSLF_TLS_VERSION_MIN_SHIFT);
+>      o->renegotiate_bytes =3D -1;
+>      o->renegotiate_seconds =3D 3600;
+>      o->renegotiate_seconds_min =3D -1;
 
-I have my doubts if this is a good way forward.
+This code confuses me.  We now unconditionally initialize ssl_flags to
+"TLS_VER_1_2"...
 
-This warning will be printed on *every single startup* on OpenVPN now.
+> @@ -3140,6 +3141,21 @@ need_compatibility_before(const struct options *o,=
+ int version)
+>  static void
+>  options_set_backwards_compatible_options(struct options *o)
+>  {
+> +    /* TLS min version is not set */
+> +    if ((o->ssl_flags & SSLF_TLS_VERSION_MIN_MASK) =3D=3D 0)
+> +    {
 
-Is this useful?  Or will people just ignore it.  Like, "all of a sudden
-my Tunnelblick shows some giberrish in red at me, but the VPN is working,=20
-so let's just ignore all warnings now".
+... and then we check if that happens to be "0", so we can invoke the
+compat handler...
 
-I can see that we want to tell users, but every single time, forever?
+The first hunk looks wrong.
 
 gert
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -60,22 +70,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---O/DZmLNgsodcXZxc
+--CRhYpmpZ1jlHcxXl
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJhP0XyAAoJEB2Cnv7KVigS2mwMAI8L/l1a00addMfDH8OudlQI
-58teZrPvxVL57iKVHhKrP0QIFMccKLU61kQ+vUvYze7JhazqyjYmInSpzJeXYk7P
-jfOBfUT7CAGsF4myM352y38mAxYyjs7gsd0n/fn2koLOuHkIlkFJEqyTtbUulGdl
-3JuACL0VssEILRliXS+j8M9LV4s2stPOGf7AkgHlb654U2sld5NJsBOidTVajetg
-ClNe7FYCr3De0d22EkQm5HaZBh/MzJ2/D9Cfjb3nw/4CUYks1BUbVWuiJK0IitQj
-ktgj0ZxiBXPHmE5SsKEQ7iI1mWdLD8Gknqc6SiUku1++DB1LwjdG7C+9tqV06/MM
-Z29XkOSBvRpMEDgC0g56ZmPqBqO/fmIfvbmbK7aw3V9py6D44lGBG7w+YeikZ+X0
-BK/HniPGKg28Z3cUb0jWrlOVX8ECD9+1GQqae7u/ovpos5AfmEk2ACNMGlccdXTp
-aEOtYZwxU68ODsAJeEBEI/HMWIk2l1DtHQSEvWTCyw==
-=RhV9
+iQGcBAEBAgAGBQJhP0aPAAoJEB2Cnv7KVigSCM8MAJLZBg0Xux88ScFBclHW7k/K
+pvhhbsa0FbcR3Qs+RorC4j533AHUgn4RRAqKfi6HC8nzZX29JxSPr6pHWCJXVeUZ
+Q7BdjwQEZEz35h2K2JE0IV6N9z9J40z98HeaEP7mRxt1YlDF/U/rKOdouvb08bQC
+mz9j7MUccR4Ix59XdNIx1wfeZFwl4Hg4XC3lXBNFgg0vP4SjMvsXZor1YxSAoj7D
+Sir1FjGptlH8EacLcYdZMQS0/WroC1OZDVWGocmPlAImU35nQ9fUg9B0OAtUSr8H
+xci6oNtoVNoHf1JGFGIM1rW5b+Yn1ne357tgzt9vO/mjtzwVaqqaLbvt0cykqZY6
+UAYrD0vk7uFyZPFKdD2hfBEiH33FqxAIAbexKc5Jbg9U6B36pFvSmL2MMUZoxmk8
+zkgKk8RG5tX72RNYXa7dLs2imNbzAvC2rPCfSci2LqgmtNkyOmzaes9sQ3x/UitG
+RXttNWZFWyq0l5jHsGUhh5r1y23PYyJVM/9LPn0oQA==
+=7bar
 -----END PGP SIGNATURE-----
 
---O/DZmLNgsodcXZxc--
+--CRhYpmpZ1jlHcxXl--
 
