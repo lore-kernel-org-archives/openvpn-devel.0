@@ -1,13 +1,9 @@
-References: <20210904095629.6273-1-a@...2181...>
- <20210904095629.6273-5-a@...2181...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <e5238798-6b45-2261-7196-dbac57ac0888@...2181...>
-Date: Fri, 17 Sep 2021 11:53:43 +0200
+From: stringvest88@...277...
+Date: Fri, 17 Sep 2021 16:35:26 +0100
+Message-Id: <20210917153526.912375-1-tincantech@...2282...>
 MIME-Version: 1.0
-In-Reply-To: <20210904095629.6273-5-a@...2181...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 4/7] do not include --cipher value in
- data-ciphers
+Subject: [Openvpn-devel] [PATCH] Correct value for --client-disconnect env
+ variable common_name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,61 +12,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+From: Richard T Bonhomme <tincantech@...2282...>
 
-we discussed on IRC how to improve the Changes.rst and the manpage part
-about --cipher. Here is the result:
+A server configured with --client-disconnect and --username-as-common-name
+will pass the X509-CN not username, after the client has completed a
+renegotiation, to --client-disconnect.
 
+Explicitly set the environment variable common_name to the current value,
+which will be username in this case, prior to calling --client-disconnect.
 
-Changes.rst:
+Trac: #160
 
-    ``--cipher`` argument is no longer appended to ``--data-ciphers``
-    by default. Data cipher negotiation has been introduced in 2.4.0
-    and been significantly improved in 2.5.0. The implicit fallback
-    to the cipher specified in ``--cipher`` has been removed.
-    Effectively, ``--cipher`` is a no-op in TLS mode now, and will
-    only have an effect in pre-shared-key mode (``--secret``).
-    From now on ``--cipher`` should not be used in new configurations
-    for TLS mode.
-    Should backwards compatibility with older OpenVPN peers be
-    required, please see the ``--compat-mode`` instead.
+Signed-off-by: Richard T Bonhomme <tincantech@...2282...>
+---
+ src/openvpn/multi.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-manpage:
-
-
---cipher alg
-    This option should not be used any longer in TLS mode and still
-    exists for two reasons:
-        * compatibility with old configurations still carrying it
-          around;
-        * allow users connecting to OpenVPN peers older than 2.6.0
-          to have ``--cipher`` configured the same way as the remote
-          counterpart. This can avoid MTU/frame size warnings.
-    Before 2.4.0, this option was used to select the cipher to be
-    configured on the data channel, however, later versions usually
-    ignored this directive in favour of a negotiated cipher.
-    Starting with 2.6.0, this option is always ignored in TLS mode
-    when it comes to configuring the cipher and will only control the
-    cipher for ``--secret`` pre-shared-key mode (note: this mode is
-    deprecated strictly not recommended).
-
-    If you wish to specify the cipher to use on the data channel,
-    please see ``--data-ciphers`` (for regular negotiation) and
-    ``--data-ciphers-fallback`` (for a fallback option when the
-    negotiation cannot take place because the other peer is old or
-    has negotiation disabled).
-
-
-
-I hope the formatting will not be messed up.
-Gert offered to add this text to the patch while committing.
-
-Regards,
-
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 22357cfb..c72e8e95 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -557,6 +557,10 @@ setenv_stats(struct context *c)
+ static void
+ multi_client_disconnect_setenv(struct multi_instance *mi)
+ {
++    /* setenv client current common-name */
++    setenv_str(mi->context.c2.es, "common_name",
++               tls_common_name(mi->context.c2.tls_multi, true));
++
+     /* setenv client real IP address */
+     setenv_trusted(mi->context.c2.es, get_link_socket_info(&mi->context));
+ 
 -- 
-Antonio Quartulli
+2.25.1
+
 
