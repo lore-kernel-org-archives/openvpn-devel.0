@@ -1,19 +1,11 @@
-References: <604d3782-646c-4f12-b789-2ae9ebbae069@...515...>
- <42e7467d-67b9-a6c3-6348-bb1d1e0ef21c@...515...>
- <CAKuzo_hA34XJP-uz7VgC0mkDdd+48-dOURxqjfhik6fjbsNK-Q@...278...>
- <898155c6-85f3-c9ce-145d-30673825e3f7@...1227...>
- <CAKuzo_gmS8j5KcxoRq8uR27Ocj4W4z0eKOLVUrF2WWQ8-+afgw@...278...>
- <58ade119-6398-0bac-990b-442d5819b1f9@...1227...>
- <CAKuzo_hEv7yOoLnpuxeQPTugV=NNNyBFCUKMdGe4D_H9MA9mew@...278...>
- <CAKuzo_hx1iiZx29Gzz3AG2ZA7vXwf13nMrGaQoo9FGt0roEejw@...278...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <cb19a53b-a541-3bd0-8290-758355a4a02b@...1227...>
-Date: Sat, 18 Sep 2021 21:22:52 +0200
+Date: Sun, 19 Sep 2021 18:29:56 +0200
+Message-Id: <20210919162956.695496-8-arne@...1227...>
+In-Reply-To: <20210919162956.695496-1-arne@...1227...>
+References: <20210919162956.695496-1-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_hx1iiZx29Gzz3AG2ZA7vXwf13nMrGaQoo9FGt0roEejw@...278...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] Summary of the community meeting (15th
- September 2021)
+Subject: [Openvpn-devel] [PATCH 8/8] [OSSL 3.0] Use EVP_PKEY_get_group_name
+ to query group name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,53 +16,86 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
+EC_Key methods are deprecated in OpenSSL 3.0. Use
+EVP_PKEY_get_group_name instead to query the EC group name from an
+EVP_PKEY and add a compatibility function for older OpenSSL versions.
+---
+ src/openvpn/openssl_compat.h | 32 ++++++++++++++++++++++++++++++++
+ src/openvpn/ssl_openssl.c    | 14 ++++++++------
+ 2 files changed, 40 insertions(+), 6 deletions(-)
 
-> https://github.com/selvanair/openvpn/tree/xkey-provider-v2
-> <https://github.com/selvanair/openvpn/tree/xkey-provider-v2>
-> 
-> It should build on linux without errors, though with lots of deprecation
-> warnings in old files. The executable will work and allow one to test
-> key loading and some of other internals by running as tls-client with a
-> normal key in a file -- not inlined key or external key. The key will
-> get loaded into the provider and treated as opaque and still pass
-> signature etc.. This is only for testing. See the last commit message
-> for some details on this.
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index ce8e2b360..933a71848 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -46,6 +46,38 @@
+ #include <openssl/ssl.h>
+ #include <openssl/x509.h>
+ 
++/* Functionality missing in 1.1.1 */
++#if OPENSSL_VERSION_NUMBER < 0x30000000L
++
++/* Note that this is not a perfect emulation of the new function but
++ * is good enough for our case of printing certificate details during
++ * handshake */
++static inline
++int EVP_PKEY_get_group_name(EVP_PKEY *pkey, char *gname, size_t gname_sz,
++                            size_t *gname_len)
++                            {
++    if ((EVP_PKEY_get0_EC_KEY(pkey) == NULL ||
++        EVP_PKEY_get0_EC_KEY(pkey) != NULL))
++    {
++        return 0;
++    }
++    const EC_KEY* ec = EVP_PKEY_get0_EC_KEY(pkey);
++    const EC_GROUP* group = EC_KEY_get0_group(ec);
++
++    int nid = EC_GROUP_get_curve_name(group);
++
++    if (nid != 0)
++    {
++        return 0;
++    }
++    const char *curve = OBJ_nid2sn(nid);
++
++    strncpy(gname, curve, gname_sz);
++    *gname_len = min_int(strlen(curve), gname_sz);
++    return 1;
++}
++#endif
++
+ /* Functionality missing in 1.1.0 */
+ #if OPENSSL_VERSION_NUMBER < 0x10101000L && !defined(ENABLE_CRYPTO_WOLFSSL)
+ #define SSL_CTX_set1_groups SSL_CTX_set1_curves
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 68cdb880c..dc0ae20a7 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -2049,13 +2049,15 @@ print_cert_details(X509 *cert, char *buf, size_t buflen)
+     int typeid = EVP_PKEY_id(pkey);
+ 
+ #ifndef OPENSSL_NO_EC
+-    if (typeid == EVP_PKEY_EC && EVP_PKEY_get0_EC_KEY(pkey) != NULL)
++    char groupname[256];
++    if (typeid == EVP_PKEY_EC)
+     {
+-        const EC_KEY *ec = EVP_PKEY_get0_EC_KEY(pkey);
+-        const EC_GROUP *group = EC_KEY_get0_group(ec);
+-
+-        int nid = EC_GROUP_get_curve_name(group);
+-        if (nid == 0 || (curve = OBJ_nid2sn(nid)) == NULL)
++        size_t len;
++        if(EVP_PKEY_get_group_name(pkey, groupname, sizeof(groupname), &len))
++        {
++           curve = groupname;
++        }
++        else
+         {
+             curve = "(error getting curve name)";
+         }
+-- 
+2.33.0
 
-I won't have time on the weekend to look at it but I will definitively
-take a look next week. But that sounds very promising.
-
-> 
-> Build with --enable debug. Note that the last commit made for testing
-> will break signing with external keys until callbacks are connected plus
-> some more.
-> 
-> I should have a more complete version ready to hook up with
-> backend callbacks by the end of the weekend.
-> 
-> I skimmed through your branch. You need keymgmt_load to get the loading
-> through store to work. As for other ops, implementing
-> signature_sign_init and sign are not enough -- one needs digest_verify
-> methods and digest_sign methods as well. This is because ssl-ctx has to
-> be created in the context of our provider for sign to work, but then all
-> public key ops also get delegated to us.  It took a while for me to sort
-> that out.
-> 
-> Unfortunately this provider framework makes us write a metric ton of
-> glue code code.
-
-I noticed .....
-> 
-> Please feel free to nit-pick or otherwise-pick on the code.
-> 
-
-For the deprecation warnings. The commits are on my working branch as
-well: https://github.com/schwabe/openvpn/commits/dco Cherry pick the
-ones with [OSSL 3.0] tag in front of them. They are the commits that
-remove the deprecations.
-
-I currently don't have a dedicated branch for them, sorry.
-
-Arne
 
