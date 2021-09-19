@@ -1,11 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sun, 19 Sep 2021 18:29:50 +0200
-Message-Id: <20210919162956.695496-2-arne@...1227...>
-In-Reply-To: <20210919162956.695496-1-arne@...1227...>
-References: <20210919162956.695496-1-arne@...1227...>
+Date: Sun, 19 Sep 2021 18:29:49 +0200
+Message-Id: <20210919162956.695496-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/8] [OSSL 3.0] Disable engine support for
- OpenSSL 3.0
+Subject: [Openvpn-devel] [PATCH 1/8] [OSSL 3.0] Use new EVP_MAC API for HMAC
+ implementation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,71 +16,166 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Engine support is deprecated in OpenSSL 3.0. No longer use the deprecated API
-when running with OpenSSL 3.0
+The old API is deprecated in OpenSSL 3.0 and the new API does not yet
+exist in OpenSSL 1.1. Emulating the new API would be more complex than
+just having two implementations. So this switches to a new hmac
+implementation for OpenSSL 3.0.
 ---
- src/openvpn/crypto_openssl.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ src/openvpn/crypto_backend.h |  2 +-
+ src/openvpn/crypto_mbedtls.c |  2 +-
+ src/openvpn/crypto_openssl.c | 82 +++++++++++++++++++++++++++++++++++-
+ src/openvpn/crypto_openssl.h |  4 ++
+ 4 files changed, 86 insertions(+), 4 deletions(-)
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index f1b2d8b4a..34a564e46 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -67,7 +67,7 @@
- #warning Some OpenSSL HMAC message digests now support key lengths greater than MAX_HMAC_KEY_LENGTH -- consider increasing MAX_HMAC_KEY_LENGTH
- #endif
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index e9447f82f..e0bfdf585 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -643,7 +643,7 @@ void hmac_ctx_cleanup(hmac_ctx_t *ctx);
+  *
+  * @return              Size of the HMAC, or \0 if ctx is NULL.
+  */
+-int hmac_ctx_size(const hmac_ctx_t *ctx);
++int hmac_ctx_size(hmac_ctx_t *ctx);
  
--#if HAVE_OPENSSL_ENGINE
-+#if HAVE_OPENSSL_ENGINE && OPENSSL_VERSION_NUMBER < 0x30000000L
- #include <openssl/ui.h>
- #include <openssl/engine.h>
- 
-@@ -132,7 +132,7 @@ setup_engine(const char *engine)
- void
- crypto_init_lib_engine(const char *engine_name)
- {
--#if HAVE_OPENSSL_ENGINE
-+#if HAVE_OPENSSL_ENGINE && OPENSSL_VERSION_NUMBER < 0x30000000L
-     if (!engine_initialized)
-     {
-         ASSERT(engine_name);
-@@ -182,7 +182,7 @@ crypto_uninit_lib(void)
-     fclose(fp);
- #endif
- 
--#if HAVE_OPENSSL_ENGINE
-+#if HAVE_OPENSSL_ENGINE && OPENSSL_VERSION_NUMBER < 0x30000000L
-     if (engine_initialized)
-     {
-         ENGINE_cleanup();
-@@ -368,7 +368,8 @@ show_available_digests(void)
- void
- show_available_engines(void)
- {
--#if HAVE_OPENSSL_ENGINE /* Only defined for OpenSSL */
-+#if HAVE_OPENSSL_ENGINE && OPENSSL_VERSION_NUMBER < 0x30000000L
-+    /* Only defined for OpenSSL */
-     ENGINE *e;
- 
-     printf("OpenSSL Crypto Engines\n\n");
-@@ -1151,7 +1152,7 @@ memcmp_constant_time(const void *a, const void *b, size_t size)
-     return CRYPTO_memcmp(a, b, size);
+ /*
+  * Resets the given HMAC context, preserving the associated key information
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index c632849db..e2f5f4012 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -939,7 +939,7 @@ hmac_ctx_cleanup(mbedtls_md_context_t *ctx)
  }
  
--#if HAVE_OPENSSL_ENGINE
-+#if HAVE_OPENSSL_ENGINE && OPENSSL_VERSION_NUMBER < 0x30000000L
- static int
- ui_reader(UI *ui, UI_STRING *uis)
+ int
+-hmac_ctx_size(const mbedtls_md_context_t *ctx)
++hmac_ctx_size(mbedtls_md_context_t *ctx)
  {
-@@ -1175,7 +1176,7 @@ ui_reader(UI *ui, UI_STRING *uis)
- EVP_PKEY *
- engine_load_key(const char *file, SSL_CTX *ctx)
+     if (NULL == ctx)
+     {
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 419265a51..f1b2d8b4a 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -1001,7 +1001,7 @@ md_ctx_final(EVP_MD_CTX *ctx, uint8_t *dst)
+  * Generic HMAC functions
+  *
+  */
+-
++#if OPENSSL_VERSION_NUMBER < 0x30000000L
+ HMAC_CTX *
+ hmac_ctx_new(void)
  {
--#if HAVE_OPENSSL_ENGINE
-+#if HAVE_OPENSSL_ENGINE && OPENSSL_VERSION_NUMBER < 0x30000000L
-     UI_METHOD *ui;
-     EVP_PKEY *pkey;
+@@ -1039,7 +1039,7 @@ hmac_ctx_cleanup(HMAC_CTX *ctx)
+ }
  
+ int
+-hmac_ctx_size(const HMAC_CTX *ctx)
++hmac_ctx_size(HMAC_CTX *ctx)
+ {
+     return HMAC_size(ctx);
+ }
+@@ -1066,6 +1066,84 @@ hmac_ctx_final(HMAC_CTX *ctx, uint8_t *dst)
+ 
+     HMAC_Final(ctx, dst, &in_hmac_len);
+ }
++#else
++EVP_MAC_CTX *
++hmac_ctx_new(void)
++{
++    EVP_MAC *hmac = EVP_MAC_fetch(NULL, "HMAC", NULL);
++    EVP_MAC_CTX *ctx = EVP_MAC_CTX_new(hmac);
++    check_malloc_return(ctx);
++    return ctx;
++}
++
++void
++hmac_ctx_free(EVP_MAC_CTX *ctx)
++{
++    EVP_MAC_CTX_free(ctx);
++}
++
++void
++hmac_ctx_init(EVP_MAC_CTX *ctx, const uint8_t *key, int key_len,
++              const EVP_MD *kt)
++{
++    ASSERT(NULL != kt && NULL != ctx);
++
++    /* Lookup/setting of parameters in OpenSSL 3.0 are string based */
++    OSSL_PARAM params[2];
++
++    /* The OSSL_PARAM_construct_utf8_string needs a non const str but this
++     * only used for lookup so we cast (as OpenSSL also does internally)
++     * the constness away here */
++    params[0] = OSSL_PARAM_construct_utf8_string("digest",
++                                                 (char*) EVP_MD_get0_name(kt), 0);
++    params[1] = OSSL_PARAM_construct_end();
++
++    if (!EVP_MAC_init(ctx, key, key_len, params))
++    {
++        crypto_msg(M_FATAL, "EVP_MAC_init failed");
++    }
++
++    /* make sure we used a big enough key */
++    ASSERT(EVP_MAC_CTX_get_mac_size(ctx) <= key_len);
++}
++
++void
++hmac_ctx_cleanup(EVP_MAC_CTX *ctx)
++{
++    EVP_MAC_init(ctx, NULL, 0, NULL);
++}
++
++int
++hmac_ctx_size(EVP_MAC_CTX *ctx)
++{
++    return (int)EVP_MAC_CTX_get_mac_size(ctx);
++}
++
++void
++hmac_ctx_reset(EVP_MAC_CTX *ctx)
++{
++    if (!EVP_MAC_init(ctx, NULL, 0, NULL))
++    {
++        crypto_msg(M_FATAL, "EVP_MAC_init failed");
++    }
++}
++
++void
++hmac_ctx_update(EVP_MAC_CTX *ctx, const uint8_t *src, int src_len)
++{
++    EVP_MAC_update(ctx, src, src_len);
++}
++
++void
++hmac_ctx_final(EVP_MAC_CTX *ctx, uint8_t *dst)
++{
++    /* The calling code always gives us a buffer that has the size of our
++     * algorithm */
++    size_t in_hmac_len = EVP_MAC_CTX_get_mac_size(ctx);
++
++    EVP_MAC_final(ctx, dst, &in_hmac_len, in_hmac_len);
++}
++#endif
+ 
+ int
+ memcmp_constant_time(const void *a, const void *b, size_t size)
+diff --git a/src/openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h
+index 59a31aacf..bafb3a245 100644
+--- a/src/openvpn/crypto_openssl.h
++++ b/src/openvpn/crypto_openssl.h
+@@ -47,7 +47,11 @@ typedef EVP_CIPHER_CTX cipher_ctx_t;
+ typedef EVP_MD_CTX md_ctx_t;
+ 
+ /** Generic HMAC %context. */
++#if OPENSSL_VERSION_NUMBER < 0x30000000L
+ typedef HMAC_CTX hmac_ctx_t;
++#else
++typedef EVP_MAC_CTX hmac_ctx_t;
++#endif
+ 
+ /** Maximum length of an IV */
+ #define OPENVPN_MAX_IV_LENGTH   EVP_MAX_IV_LENGTH
 -- 
 2.33.0
 
