@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sun, 19 Sep 2021 18:29:51 +0200
-Message-Id: <20210919162956.695496-3-arne@...1227...>
+Date: Sun, 19 Sep 2021 18:29:53 +0200
+Message-Id: <20210919162956.695496-5-arne@...1227...>
 In-Reply-To: <20210919162956.695496-1-arne@...1227...>
 References: <20210919162956.695496-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 3/8] [OSSL 3.0] Implement DES ECB encrypt
- via EVP_CIPHER api
+Subject: [Openvpn-devel] [PATCH 5/8] [OSSL 3.0] Use EVP_PKEY based API for
+ loading DH keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,47 +18,60 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Even though DES is super outdated and also NTLM is super outdated,
-eliminating the warnings for OpenSSL 3.0 is still a step in the right
-direction and using the correct APIs.
+OpenSSL 3.0 replaces the DH API with a generic EVP_KEY based API to
+load DH parameters.
 ---
- src/openvpn/crypto_openssl.c | 22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+ src/openvpn/ssl_openssl.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 34a564e46..b4c59557b 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -880,10 +880,26 @@ cipher_des_encrypt_ecb(const unsigned char key[DES_KEY_LENGTH],
-                        unsigned char src[DES_KEY_LENGTH],
-                        unsigned char dst[DES_KEY_LENGTH])
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 241206fb2..d8ac25fbc 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -645,7 +645,6 @@ void
+ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
+                        bool dh_file_inline)
  {
--    DES_key_schedule sched;
-+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-+    if (!ctx)
-+    {
-+        crypto_msg(M_FATAL, "%s: EVP_CIPHER_CTX_new() failed", __func__);
-+    }
-+    if (!EVP_EncryptInit_ex(ctx, EVP_bf_ecb(), NULL, key, 0))
-+    {
-+        crypto_msg(M_FATAL, "%s: EVP_EncryptInit_ex() failed", __func__);
-+    }
+-    DH *dh;
+     BIO *bio;
  
--    DES_set_key_unchecked((DES_cblock *)key, &sched);
--    DES_ecb_encrypt((DES_cblock *)src, (DES_cblock *)dst, &sched, DES_ENCRYPT);
-+    int len;
-+    if(!EVP_EncryptUpdate(ctx, dst, &len, src, DES_KEY_LENGTH))
+     ASSERT(NULL != ctx);
+@@ -666,7 +665,26 @@ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
+         }
+     }
+ 
+-    dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL);
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++    EVP_PKEY *dh = PEM_read_bio_Parameters(bio, NULL);
++    BIO_free(bio);
++
++    if (!dh)
 +    {
-+        crypto_msg(M_FATAL, "%s: EVP_EncryptUpdate() failed", __func__);
++        crypto_msg(M_FATAL, "Cannot load DH parameters from %s",
++                   print_key_filename(dh_file, dh_file_inline));
++    }
++    if (!SSL_CTX_set0_tmp_dh_pkey(ctx->ctx, dh))
++    {
++        crypto_msg(M_FATAL, "SSL_CTX_set_tmp_dh");
 +    }
 +
-+    if (!EVP_EncryptFinal(ctx, dst + len, &len))
-+    {
-+        crypto_msg(M_FATAL, "%s: EVP_EncryptFinal() failed", __func__);
-+    }
++    msg(D_TLS_DEBUG_LOW, "Diffie-Hellman initialized with %d bit key",
++        8 * EVP_PKEY_get_size(dh));
++
++    EVP_PKEY_free(dh);
++#else
++    DH *dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL);
+     BIO_free(bio);
+ 
+     if (!dh)
+@@ -683,6 +701,7 @@ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
+         8 * DH_size(dh));
+ 
+     DH_free(dh);
++#endif
  }
  
- /*
+ void
 -- 
 2.33.0
 
