@@ -1,11 +1,13 @@
-From: selva.nair@...277...
-Date: Wed, 22 Sep 2021 17:12:52 -0400
-Message-Id: <20210922211254.7570-8-selva.nair@...277...>
-In-Reply-To: <20210922211254.7570-1-selva.nair@...277...>
-References: <20210922211254.7570-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 7/9] Enable signing via provider for
- management-external-key
+References: <20210922211254.7570-1-selva.nair@...277...>
+ <20210922211254.7570-4-selva.nair@...277...>
+In-Reply-To: <20210922211254.7570-4-selva.nair@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 22 Sep 2021 17:23:04 -0400
+Message-ID: <CAKuzo_j=_PHMgm1q7v+jQZaSRopt3kduQP8y_YOVhrNaiMXkWw@...278...>
+Content-Type: multipart/alternative; boundary="000000000000dd8a1805cc9c2983"
+Subject: Re: [Openvpn-devel] [PATCH 3/9] Implement keymgmt in the xkey
+ provider
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,128 +16,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Selva Nair <selva.nair@...277...>
+--000000000000dd8a1805cc9c2983
+Content-Type: text/plain; charset="UTF-8"
 
-- Add a function to set as sign_op during key import. The
-  function passes the signature request to management interface,
-  and returns the result to the provider.
+Hi,
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/xkey_common.h |  4 +++
- src/openvpn/xkey_helper.c | 68 +++++++++++++++++++++++++++++++++++++--
- 2 files changed, 69 insertions(+), 3 deletions(-)
+hmm.. there is some cruft in the commit message referring to a non-existent
+function, in case anyone reads it. The code itself is fine.
 
-diff --git a/src/openvpn/xkey_common.h b/src/openvpn/xkey_common.h
-index 751f18a0..6a00c382 100644
---- a/src/openvpn/xkey_common.h
-+++ b/src/openvpn/xkey_common.h
-@@ -35,6 +35,10 @@
-  */
- OSSL_provider_init_fn xkey_provider_init;
- 
-+#else
-+
-+#define OSSL_LIB_CTX void
-+
- #endif /* HAVE_XKEY_PROVIDER */
- 
- #define XKEY_PROV_PROPS "provider=ovpn.xkey"
-diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
-index aa9f23b8..c9e8d218 100644
---- a/src/openvpn/xkey_helper.c
-+++ b/src/openvpn/xkey_helper.c
-@@ -33,6 +33,8 @@
- #include "error.h"
- #include "buffer.h"
- #include "xkey_common.h"
-+#include "manage.h"
-+#include "base64.h"
- 
- #include <openssl/provider.h>
- #include <openssl/params.h>
-@@ -84,13 +86,73 @@ xkey_load_management_key(OSSL_LIB_CTX *libctx, EVP_PKEY *pubkey)
-     return pkey;
- }
- 
--/* not yet implemented */
-+/**
-+ * Signature callback for xkey_provider with management-external-key
-+ *
-+ * @param handle        Unused -- may be null
-+ * @param sig           On successful return signature is in sig.
-+ * @param siglen        On entry *siglen has length of buffer sig,
-+ *                      on successful return size of signature
-+ * @param tbs           hash to be signed
-+ * @param tbslen        len of data in dgst
-+ * @param sigalg        extra signature parameters
-+ *
-+ * @return              signature length or -1 on error.
-+ * For PKCS1 signature, the passed in hash is pure messaged digest
-+ * not encoded with digest info even for the TLS 1.1 MD5_SHA hashes.
-+ */
- int
- xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
-                      const unsigned char *tbs, size_t tbslen, XKEY_SIGALG alg)
- {
--    msg(M_FATAL, "FATAL ERROR: A sign callback for this key is not implemented.");
--    return 0;
-+    (void) unused;
-+    char alg_str[64];
-+
-+    if (!strcmp(alg.keytype, "EC"))
-+    {
-+        strncpynt(alg_str, "ECDSA", sizeof(alg_str));
-+    }
-+    /* else assume RSA key */
-+    else if (!strcmp(alg.padmode, "pkcs1"))
-+    {
-+        strncpynt(alg_str, "RSA_PKCS1_PADDING", sizeof(alg_str));
-+    }
-+    else if (!strcmp(alg.padmode, "none"))
-+    {
-+        strncpynt(alg_str, "RSA_NO_PADDING", sizeof(alg_str));
-+    }
-+    else if (!strcmp(alg.padmode, "pss"))
-+    {
-+        openvpn_snprintf(alg_str, sizeof(alg_str), "%s,hashalg=%s,saltlen=%s",
-+                       "RSA_PKCS1_PSS_PADDING", alg.mdname,alg.saltlen);
-+    }
-+    else {
-+        msg(M_NONFATAL, "Unsupported RSA padding mode in signature request<%s>",
-+            alg.padmode);
-+        return 0;
-+    }
-+    dmsg(D_LOW, "xkey management_sign: requesting sig with algorithm <%s>", alg_str);
-+
-+    char *in_b64 = NULL;
-+    char *out_b64 = NULL;
-+    int len = -1;
-+
-+    int bencret = openvpn_base64_encode(tbs, (int) tbslen, &in_b64);
-+
-+    if (management && bencret > 0)
-+    {
-+        out_b64 = management_query_pk_sig(management, in_b64, alg_str);
-+    }
-+    if (out_b64)
-+    {
-+        len = openvpn_base64_decode(out_b64, sig, (int) *siglen);
-+    }
-+    free(in_b64);
-+    free(out_b64);
-+
-+    *siglen = (len > 0) ? len : 0;
-+
-+    return (*siglen > 0);
- }
- 
- #endif /* HAVE_XKEY_PROVIDER */
--- 
-2.20.1
+On Wed, Sep 22, 2021 at 5:13 PM <selva.nair@...277...> wrote:
 
+> From: Selva Nair <selva.nair@...277...>
+>
+> A minimal set of functions for keymgmt are implemented.
+> No support for external key import as yet, only native
+> keys. Support for native keys is required as all public
+> key ops will get delegated to us once SSL_CTX is initialized
+> in our context. This will include digest-verify using
+> peer's public key.
+>
+> To test key import, use the normal --key operation,
+> change use_xkey_provider() to return true. The key
+>
+
+There is no use_xkey_provider() in the submitted version.
+
+Just use --cert and --key to test and exercise the code path.
+
+
+> will import correctly but signing will fail as there
+> is no signature interface in the provider yet.
+> (use enable-debug for the dmsg() chatter).
+>
+
+Selva
+
+--000000000000dd8a1805cc9c2983
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>Hi,</div><div><br></div><div>hmm.. there is some cruf=
+t in the commit message referring to a non-existent function, in case anyon=
+e reads it. The code itself is fine.</div><br><div class=3D"gmail_quote"><d=
+iv dir=3D"ltr" class=3D"gmail_attr">On Wed, Sep 22, 2021 at 5:13 PM &lt;<a =
+href=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...=
+</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:=
+0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">=
+From: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." target=3D"_bla=
+nk">selva.nair@...277...</a>&gt;<br>
+<br>
+A minimal set of functions for keymgmt are implemented.<br>
+No support for external key import as yet, only native<br>
+keys. Support for native keys is required as all public<br>
+key ops will get delegated to us once SSL_CTX is initialized<br>
+in our context. This will include digest-verify using<br>
+peer&#39;s public key.<br>
+<br>
+To test key import, use the normal --key operation,<br>
+change use_xkey_provider() to return true. The key<br></blockquote><div><br=
+></div><div>There is no use_xkey_provider() in the submitted version.</div>=
+<div><br></div><div>Just use --cert and --key to test and exercise the code=
+ path.</div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"mar=
+gin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1=
+ex">
+will import correctly but signing will fail as there<br>
+is no signature interface in the provider yet.<br>
+(use enable-debug for the dmsg() chatter).<br></blockquote><div><br></div><=
+div>Selva=C2=A0</div></div></div>
+
+--000000000000dd8a1805cc9c2983--
 
