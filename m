@@ -1,11 +1,11 @@
 From: selva.nair@...277...
-Date: Wed, 22 Sep 2021 17:12:54 -0400
-Message-Id: <20210922211254.7570-10-selva.nair@...277...>
+Date: Wed, 22 Sep 2021 17:12:51 -0400
+Message-Id: <20210922211254.7570-7-selva.nair@...277...>
 In-Reply-To: <20210922211254.7570-1-selva.nair@...277...>
 References: <20210922211254.7570-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 9/9] Allow management client to announce pss
- padding support
+Subject: [Openvpn-devel] [PATCH 6/9] A helper function to load key for
+ management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,110 +20,186 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-pk-sig request from management can currently indicate support
-for 'nopadding' or 'pkcs1i' signatures. Add 'pss' as an option
-to indicate that PSS signing requests are accepted.
+- A wrapper around the keymgmt import of xkey provider
 
-To match, extend the algorithm string in PK_SIGN request to
-include the following format:
+- When the provider is available, use this to set
+  SSL_CTX_use_PrivateKey for management-external-key
 
-- RSA_PKCS1_PSS_PADDING,hashlag=name,saltlen=[max|digest|auto]
-
-Here 'name' is the short common name of the hash algorithm.
-E.g., SHA1, SHA256 etc.
+sign_op is not implemented yet. This will error out while
+signing with --management-external-key. The next commit
+fixes that.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- doc/man-sections/management-options.rst |  8 +++++++-
- doc/management-notes.txt                | 15 +++++++++++----
- src/openvpn/manage.h                    |  1 +
- src/openvpn/options.c                   |  7 ++++++-
- 4 files changed, 25 insertions(+), 6 deletions(-)
+ src/openvpn/Makefile.am   |  1 +
+ src/openvpn/ssl_openssl.c | 10 ++++
+ src/openvpn/xkey_common.h | 11 +++++
+ src/openvpn/xkey_helper.c | 96 +++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 118 insertions(+)
+ create mode 100644 src/openvpn/xkey_helper.c
 
-diff --git a/doc/man-sections/management-options.rst b/doc/man-sections/management-options.rst
-index de0d47e7..b173a1ea 100644
---- a/doc/man-sections/management-options.rst
-+++ b/doc/man-sections/management-options.rst
-@@ -90,9 +90,15 @@ server and client mode operations.
-      management-external-key
-      management-external-key nopadding
-      management-external-key pkcs1
-+     management-external-key pss
-+
-+  or any combination like:
-+  ::
-+
-      management-external-key nopadding pkcs1
-+     management-external-key pkcs1 pss
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 432efe73..0331298b 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -129,6 +129,7 @@ openvpn_SOURCES = \
+ 	tun.c tun.h \
+ 	vlan.c vlan.h \
+ 	xkey_provider.c xkey_common.h \
++	xkey_helper.c \
+ 	win32.h win32.c \
+ 	win32-util.h win32-util.c \
+ 	cryptoapi.h cryptoapi.c
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 61256620..b9453653 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1450,6 +1450,14 @@ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
+     EVP_PKEY *pkey = X509_get0_pubkey(cert);
+     ASSERT(pkey); /* NULL before SSL_CTX_use_certificate() is called */
  
--  The optional parameters :code:`nopadding` and :code:`pkcs1` signal
-+  The optional parameters :code:`nopadding` :code:`pkcs1` and :code:`pss` signal
-   support for different padding algorithms. See
-   :code:`doc/mangement-notes.txt` for a complete description of this
-   feature.
-diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index 84e3d04b..27163239 100644
---- a/doc/management-notes.txt
-+++ b/doc/management-notes.txt
-@@ -1019,10 +1019,17 @@ can be indicated in the signing request only if the client version is > 2"
- 
- The currently defined padding algorithms are:
- 
-- - RSA_PKCS1_PADDING  -  PKCS1 padding and RSA signature
-- - RSA_NO_PADDING     -  No padding may be added for the signature
-- - ECDSA              -  EC signature.
--
-+ - RSA_PKCS1_PADDING            -  PKCS1 padding and RSA signature
-+ - RSA_NO_PADDING               -  No padding may be added for the signature
-+ - ECDSA                        -  EC signature.
-+ - RSA_PKCS1_PSS_PADDING,params -  RSA signature with PSS padding
-+
-+   params for PSS are specified as 'digest=name,saltlen=[max|digest|auto]'.
-+   The digest names are short common names such as SHA256, SHA224, etc.
-+   In the case of PKCS1, when the hash algorithm is not the legacy MD5-SHA1,
-+   the digest is encoded with DigestInfo header before presening to the
-+   management. This is identical to CKM_RSA_PKCS in cryptoki as well as
-+   what RSA_sign() provides.
- 
- COMMAND -- certificate (OpenVPN 2.4 or higher)
- ----------------------------------------------
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index 04dc98d1..5ed27c0c 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -339,6 +339,7 @@ struct management *management_init(void);
- #define MF_QUERY_REMOTE             (1<<13)
- #define MF_QUERY_PROXY              (1<<14)
- #define MF_EXTERNAL_CERT            (1<<15)
-+#define MF_EXTERNAL_KEY_PSSPAD      (1<<16)
- 
- bool management_open(struct management *man,
-                      const char *addr,
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 26305a90..6e71563f 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2213,7 +2213,8 @@ options_postprocess_verify_ce(const struct options *options,
- #if  defined(ENABLE_MANAGEMENT)
-     if ((tls_version_max() >= TLS_VER_1_3)
-         && (options->management_flags & MF_EXTERNAL_KEY)
--        && !(options->management_flags & (MF_EXTERNAL_KEY_NOPADDING))
-+        && !(options->management_flags & (MF_EXTERNAL_KEY_NOPADDING)
-+             || options->management_flags & (MF_EXTERNAL_KEY_PSSPAD))
-         )
++#ifdef HAVE_XKEY_PROVIDER
++    EVP_PKEY *privkey = xkey_load_management_key(NULL, pkey);
++    if (!privkey
++        || !SSL_CTX_use_PrivateKey(ctx->ctx, privkey))
++    {
++        goto cleanup;
++    }
++#else
+     if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA)
      {
-         msg(M_ERR, "management-external-key with OpenSSL 1.1.1 requires "
-@@ -5511,6 +5512,10 @@ add_option(struct options *options,
-             {
-                 options->management_flags |= MF_EXTERNAL_KEY_PKCS1PAD;
-             }
-+            else if (streq(p[j], "pss"))
-+            {
-+                options->management_flags |= MF_EXTERNAL_KEY_PSSPAD;
-+            }
-             else
-             {
-                 msg(msglevel, "Unknown management-external-key flag: %s", p[j]);
+         if (!tls_ctx_use_external_rsa_key(ctx, pkey))
+@@ -1478,6 +1486,8 @@ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
+     }
+ #endif /* OPENSSL_VERSION_NUMBER > 1.1.0 dev && !defined(OPENSSL_NO_EC) */
+ 
++#endif /* HAVE_XKEY_PROVIDER */
++
+     ret = 0;
+ cleanup:
+     if (ret)
+diff --git a/src/openvpn/xkey_common.h b/src/openvpn/xkey_common.h
+index 466b2b8d..751f18a0 100644
+--- a/src/openvpn/xkey_common.h
++++ b/src/openvpn/xkey_common.h
+@@ -82,4 +82,15 @@ typedef int (XKEY_EXTERNAL_SIGN_fn)(void *handle, unsigned char *sig, size_t *si
+  */
+ typedef void (XKEY_PRIVKEY_FREE_fn)(void *handle);
+ 
++/**
++ * Generate an encapsulated EVP_PKEY for management-external-key
++ *
++ * @param libctx library context in which xkey provider has been loaded
++ * @param pubkey corresponding pubkey in the default provider's context
++ *
++ * @returns a new EVP_PKEY in the provider's keymgmt context.
++ * The pubkey is up-refd if retained -- the caller can free it after return
++ */
++EVP_PKEY *xkey_load_management_key(OSSL_LIB_CTX *libctx, EVP_PKEY *pubkey);
++
+ #endif /* XKEY_PUBLIC_H_ */
+diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
+new file mode 100644
+index 00000000..aa9f23b8
+--- /dev/null
++++ b/src/openvpn/xkey_helper.c
+@@ -0,0 +1,96 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2021 Selva Nair <selva.nair@...277...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include <config.h>
++#elif defined(_MSC_VER)
++#include "config-msvc.h"
++#endif
++
++#ifdef HAVE_XKEY_PROVIDER
++
++#include "syshead.h"
++#include "error.h"
++#include "buffer.h"
++#include "xkey_common.h"
++
++#include <openssl/provider.h>
++#include <openssl/params.h>
++#include <openssl/core_dispatch.h>
++#include <openssl/core_object.h>
++#include <openssl/core_names.h>
++#include <openssl/store.h>
++#include <openssl/evp.h>
++#include <openssl/err.h>
++
++static const char *const props = XKEY_PROV_PROPS;
++
++XKEY_EXTERNAL_SIGN_fn xkey_management_sign;
++
++/**
++ * Load external key for signing via management interface.
++ * The public key must be passed in by the caller as we may not
++ * be able to get it from the management.
++ * Returns an EVP_PKEY object attached to xkey provider.
++ * Caller must free it when no longer needed.
++ */
++EVP_PKEY *
++xkey_load_management_key(OSSL_LIB_CTX *libctx, EVP_PKEY *pubkey)
++{
++    EVP_PKEY *pkey = NULL;
++    ASSERT(pubkey);
++
++    /* Management interface doesnt require any handle to be
++     * stored in the key. We use a dummy pointer as we do need a
++     * non-NULL value to indicate private key is avaialble.
++     */
++    void *dummy = & "dummy";
++
++    const char *origin = "management";
++    XKEY_EXTERNAL_SIGN_fn *sign_op = xkey_management_sign;
++
++    /* UTF8 string pointers in here are only read from, so cast is safe */
++    OSSL_PARAM params[] = {
++        {"origin", OSSL_PARAM_UTF8_STRING, (char *) origin, 0, 0},
++        {"pubkey", OSSL_PARAM_OCTET_STRING, &pubkey, sizeof(pubkey), 0},
++        {"handle", OSSL_PARAM_OCTET_PTR, &dummy, sizeof(dummy), 0},
++        {"sign_op", OSSL_PARAM_OCTET_PTR, (void **) &sign_op, sizeof(sign_op), 0},
++        {NULL, 0, NULL, 0, 0}};
++
++    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_from_pkey(libctx, pubkey, props);
++    EVP_PKEY_fromdata_init(ctx);
++    EVP_PKEY_fromdata(ctx, &pkey, EVP_PKEY_KEYPAIR, params);
++
++    return pkey;
++}
++
++/* not yet implemented */
++int
++xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
++                     const unsigned char *tbs, size_t tbslen, XKEY_SIGALG alg)
++{
++    msg(M_FATAL, "FATAL ERROR: A sign callback for this key is not implemented.");
++    return 0;
++}
++
++#endif /* HAVE_XKEY_PROVIDER */
 -- 
 2.20.1
 
