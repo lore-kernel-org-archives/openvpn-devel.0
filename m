@@ -1,15 +1,14 @@
-Date: Mon, 27 Sep 2021 11:52:29 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <YVGUXTJsm7BItkl8@...1296...>
-References: <20210825164752.808-1-lstipakov@...277...>
- <202109120926.18C9Q4or095004@...2054...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="yT785ZMJm24qNxaX"
-Content-Disposition: inline
-In-Reply-To: <202109120926.18C9Q4or095004@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add building man page on
- Windows
+References: <20210922095756.1929-1-chipitsine@...277...>
+ <4654662a-587a-ca90-6678-5c5ff71e9c66@...1227...>
+ <CAGyAFMWXBpvo-mxOkNsFrYR9oB9MVRcFEQ6SBs7rP0A6LeNu6Q@...278...>
+In-Reply-To: <CAGyAFMWXBpvo-mxOkNsFrYR9oB9MVRcFEQ6SBs7rP0A6LeNu6Q@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Mon, 27 Sep 2021 15:06:13 +0500
+Message-ID: <CAFHpkQECg=UVywGzXXBeA1V5R7M5zSr8QkCT=Mj7ThBFB5c+yg@...278...>
+Content-Type: multipart/alternative; boundary="000000000000e504e405ccf73fe9"
+Subject: Re: [Openvpn-devel] [PATCH v2] BUILD: enable CFG and Spectre
+ mitigation for MSVC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,69 +17,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>
+Cc: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---yT785ZMJm24qNxaX
-Content-Type: text/plain; charset="us-ascii"
+--000000000000e504e405ccf73fe9
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+I'll setup test stand similar to this one
+https://community.openvpn.net/openvpn/wiki/PerformanceTestingOpenVPN
+hopefully in next 1-2 weeks
 
-On Sun, Sep 12, 2021 at 11:26:04AM +0200, Gert Doering wrote:
-> Your patch has been applied to the master branch.
->=20
-> commit d814581a9375713a0a4d70f751f84e750a5d661a
-> Author: Lev Stipakov
-> Date:   Wed Aug 25 19:47:52 2021 +0300
->=20
->      Add building man page on Windows
+I also believe that spectre mitigation is neglectable, but it is good to
+have numbers
 
-... and pulled up to release/2.5
+=D0=BF=D0=BD, 27 =D1=81=D0=B5=D0=BD=D1=82. 2021 =D0=B3. =D0=B2 12:58, Lev S=
+tipakov <lstipakov@...277...>:
 
-commit 35c8281ef20de507dc08637bff02ce7895b48ec6 (HEAD -> release/2.5)
-Author: Lev Stipakov <lev@...515...>
-Date:   Wed Aug 25 19:47:52 2021 +0300
+> I didn't, but here
+>
+> https://devblogs.microsoft.com/cppblog/spectre-mitigations-in-msvc/
+>
+> it says that
+>
+> "On the MSVC team, we=E2=80=99ve reviewed information in detail and condu=
+cted
+> extensive tests, which showed the performance impact of the new
+> /Qspectre switch to be negligible."
+> --
+> -Lev
+>
 
-    Add building man page on Windows
+--000000000000e504e405ccf73fe9
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-    (cherry picked from commit d814581a9375713a0a4d70f751f84e750a5d661a)
+<div dir=3D"ltr"><div>I&#39;ll setup test stand similar to this one <a href=
+=3D"https://community.openvpn.net/openvpn/wiki/PerformanceTestingOpenVPN">h=
+ttps://community.openvpn.net/openvpn/wiki/PerformanceTestingOpenVPN</a></di=
+v><div>hopefully in next 1-2 weeks</div><div><br></div><div>I also believe =
+that spectre mitigation is neglectable, but it is good to have numbers<br><=
+/div></div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_a=
+ttr">=D0=BF=D0=BD, 27 =D1=81=D0=B5=D0=BD=D1=82. 2021 =D0=B3. =D0=B2 12:58, =
+Lev Stipakov &lt;<a href=3D"mailto:lstipakov@...277...">lstipakov@...277...=
+</a>&gt;:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0p=
+x 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">I didn=
+&#39;t, but here<br>
+<br>
+<a href=3D"https://devblogs.microsoft.com/cppblog/spectre-mitigations-in-ms=
+vc/" rel=3D"noreferrer" target=3D"_blank">https://devblogs.microsoft.com/cp=
+pblog/spectre-mitigations-in-msvc/</a><br>
+<br>
+it says that<br>
+<br>
+&quot;On the MSVC team, we=E2=80=99ve reviewed information in detail and co=
+nducted<br>
+extensive tests, which showed the performance impact of the new<br>
+/Qspectre switch to be negligible.&quot;<br>
+-- <br>
+-Lev<br>
+</blockquote></div>
 
-(one minor conflict due to the ".pdb" artefacts patch not being in 2.5,
-but that was trivially solved)
-
-
-I have not tested this myself, but Lev confirmed on IRC that it works
-with 2.5 as well.
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---yT785ZMJm24qNxaX
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJhUZRdAAoJEB2Cnv7KVigS17cMAIgPjX3Fa40IG6JM3QmBZurc
-oC7e95cn98kvZCcVh6kzx5zP+UKFBQThaF3U1JIoXBGKEi5ZP6nNaPvE8QX5bzA8
-UDqB4zIiaIABr46O2/QU0ZjfiOJFdqU2rFEuHuS8HD17hoTZOQlQV35WGlJAylEi
-U7g7DrjY801pUWud7WjGCUSH1xNwFl0B78ps+BYqkAJFJnzSCT+afNSRUBYa+cJC
-vlsbyEaO8kt6xzOnfmYSym4qxRJXIIuz53vTZTCvpMxPQutJhT13DD/RJr3KAuqO
-vDNNl4qL5QcTIGwYSkgHO4M3hJIRnZOVJPmA0L2IUTFLRhaF3rPAP8v7HPX6NDsP
-VW+5x70yIo5bAOqiXNCHbW0O02Mzf/QNu1yR1iWwIkF4H/FqGLVzrOtZz1tW+p2b
-bRKdmRjvtmk3UzJAcOs8jSfVAeDhVlIBY115TwV+Ljy8mHI8EOL2/AZAhJOe18qW
-LIrFKCF+ka3U3KcraTez9GrZ4Y5LT7OcTtrP0yyohw==
-=NUD5
------END PGP SIGNATURE-----
-
---yT785ZMJm24qNxaX--
+--000000000000e504e405ccf73fe9--
 
