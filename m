@@ -1,11 +1,9 @@
-MIME-Version: 1.0
+Date: Mon, 27 Sep 2021 10:13:37 +0200 (CEST)
+Message-Id: <202109270813.18R8DbWf061754@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210922095756.1929-1-chipitsine@...277...>
 References: <20210922095756.1929-1-chipitsine@...277...>
- <4654662a-587a-ca90-6678-5c5ff71e9c66@...1227...>
-In-Reply-To: <4654662a-587a-ca90-6678-5c5ff71e9c66@...1227...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 27 Sep 2021 10:58:15 +0300
-Message-ID: <CAGyAFMWXBpvo-mxOkNsFrYR9oB9MVRcFEQ6SBs7rP0A6LeNu6Q@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2] BUILD: enable CFG and Spectre
+Subject: [Openvpn-devel] [PATCH applied] Re: BUILD: enable CFG and Spectre
  mitigation for MSVC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -15,21 +13,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Arne Schwabe <arne@...1227...>
-Cc: Ilya Shipitsin <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Ilya Shipitsin <chipitsine@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-I didn't, but here
+Your patch has been applied to the master branch.
 
-https://devblogs.microsoft.com/cppblog/spectre-mitigations-in-msvc/
+commit e80e36d75538abff0661b21392f541d946be6d29
+Author: Ilya Shipitsin
+Date:   Wed Sep 22 14:57:55 2021 +0500
 
-it says that
+     BUILD: enable CFG and Spectre mitigation for MSVC
 
-"On the MSVC team, we=E2=80=99ve reviewed information in detail and conduct=
-ed
-extensive tests, which showed the performance impact of the new
-/Qspectre switch to be negligible."
---=20
--Lev
+     Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20210922095756.1929-1-chipitsine@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22870.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
