@@ -1,10 +1,10 @@
-Date: Wed, 29 Sep 2021 13:21:39 +0200 (CEST)
-Message-Id: <202109291121.18TBLdrH038680@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210903161113.30498-1-a@...2181...>
-References: <20210903161113.30498-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: networking: add and implement
- net_addr_ll_set() API
+From: Antonio Quartulli <a@...2181...>
+Date: Wed, 29 Sep 2021 13:59:05 +0200
+Message-Id: <20210929115905.1281-1-a@...2181...>
+In-Reply-To: <202109291121.18TBLdrH038680@...2054...>
+References: <202109291121.18TBLdrH038680@...2054...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] networking: add missing brackets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,47 +15,38 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Acked-by: Gert Doering <gert@...1296...>
+Our codestyle demands having brackets also around if-blocks made up
+by one line only.
 
-This basically does not give me much to test, as it just adds functions 
-that are not called yet.  Those look reasonable, and the result passes
-compilation on Linux and FreeBSD.
+In patch "networking: add and implement net_addr_ll_set() API" this
+rule was not respected and a new one-line-if-block was added with no
+brackets.
 
-I do not like the "MAC_FMT" bit very much - it looks like "yeah, I saw
-this in another project, and it looks cool", but it introduces an extra
-"what is it doing here?" for the two cases where it is used (and the
-extra _STRINGIFY() does not help make it easier to follow).  But we
-discussed this on IRC, and seems we need to disagree here...
+Fix this by adding the related brackets as needed.
 
-NOTE: I accidentially pushed out v1 of the patch, with the "wrong"
-brackets.  We'll sort this out.
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/networking_iproute2.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-NOTE2: this is a bugfix (omission), so it is intended to go to 
-release/2.5 as well - but with the wrong patch merged to master, I
-think I'll just get them all in, and then squash together the 3
-patches into a single one for 2.5.
-
-Your patch has been applied to the master branch.
-
-commit 98f524cbd58d24d09dee26160d7386d710c3564f
-Author: Antonio Quartulli
-Date:   Fri Sep 3 18:11:12 2021 +0200
-
-     networking: add and implement net_addr_ll_set() API
-
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20210903161113.30498-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22792.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/networking_iproute2.c b/src/openvpn/networking_iproute2.c
+index c6623b19..67b8894b 100644
+--- a/src/openvpn/networking_iproute2.c
++++ b/src/openvpn/networking_iproute2.c
+@@ -107,7 +107,9 @@ net_addr_ll_set(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
+     argv_msg(M_INFO, &argv);
+     if (!openvpn_execve_check(&argv, ctx->es, M_WARN,
+                               "Linux ip link set addr failed"))
++    {
+         ret = -1;
++    }
+ 
+     argv_free(&argv);
+ 
+-- 
+2.32.0
 
 
