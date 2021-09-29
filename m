@@ -1,10 +1,9 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Wed, 29 Sep 2021 13:59:05 +0200
-Message-Id: <20210929115905.1281-1-a@...2181...>
-In-Reply-To: <202109291121.18TBLdrH038680@...2054...>
-References: <202109291121.18TBLdrH038680@...2054...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] networking: add missing brackets
+Date: Wed, 29 Sep 2021 14:04:16 +0200 (CEST)
+Message-Id: <202109291204.18TC4GUp039410@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20210929115905.1281-1-a@...2181...>
+References: <20210929115905.1281-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: networking: add missing brackets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,38 +14,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Our codestyle demands having brackets also around if-blocks made up
-by one line only.
+Acked-by: Gert Doering <gert@...1296...>
 
-In patch "networking: add and implement net_addr_ll_set() API" this
-rule was not respected and a new one-line-if-block was added with no
-brackets.
+This is one of the more silly fixup patches, given that we already had
+a fixed v2 on the list - apologies.
 
-Fix this by adding the related brackets as needed.
+Your patch has been applied to the master branch.
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- src/openvpn/networking_iproute2.c | 2 ++
- 1 file changed, 2 insertions(+)
+I'll bring this to 2.5 as well, but squashed together with the "real" patch.
 
-diff --git a/src/openvpn/networking_iproute2.c b/src/openvpn/networking_iproute2.c
-index c6623b19..67b8894b 100644
---- a/src/openvpn/networking_iproute2.c
-+++ b/src/openvpn/networking_iproute2.c
-@@ -107,7 +107,9 @@ net_addr_ll_set(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
-     argv_msg(M_INFO, &argv);
-     if (!openvpn_execve_check(&argv, ctx->es, M_WARN,
-                               "Linux ip link set addr failed"))
-+    {
-         ret = -1;
-+    }
- 
-     argv_free(&argv);
- 
--- 
-2.32.0
+commit cb5d29461e6e734a2250b984b8423d39f7b9ddaa
+Author: Antonio Quartulli
+Date:   Wed Sep 29 13:59:05 2021 +0200
+
+     networking: add missing brackets
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20210929115905.1281-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22908.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
