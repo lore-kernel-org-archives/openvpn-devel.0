@@ -1,15 +1,9 @@
-Date: Wed, 6 Oct 2021 19:27:03 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <YV3cZ1kNpMCJSA/r@...1296...>
-References: <20211006090709.200-1-lstipakov@...277...>
- <CAFHpkQEfuk3+C5FL4st5GXxU0RNiYGH=dnDuVgyGUXdonRFepg@...278...>
- <CAGyAFMUWgLyW5PsoNT+ezQtA4x7W2vG4NUFSmbRR9FHDGH36HA@...278...>
+From: Arne Schwabe <arne@...1227...>
+Date: Wed,  6 Oct 2021 20:06:44 +0200
+Message-Id: <20211006180644.3081219-1-arne@...1227...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="p9HNGhNd5zA7jI0U"
-Content-Disposition: inline
-In-Reply-To: <CAGyAFMUWgLyW5PsoNT+ezQtA4x7W2vG4NUFSmbRR9FHDGH36HA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix loading PKCS12 files on Windows
+Subject: [Openvpn-devel] [PATCH] Default to --cipher BF-CBC if not set and
+ compat-mode < 2.4.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,56 +12,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: ???????? ?????????????? <chipitsine@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---p9HNGhNd5zA7jI0U
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+When we try to make a configuration compatible to a version earlier
+than 2.4.0 we probably need to have a --cipher configured since NCP
+is not available. In configuration where --cipher is not specified
+we default to BF-CBC to support these old clients.
 
-Hi,
+Note that with OpenSSL 3.0 you will also need to enable the legacy
+provider otherwise we bail out since BF-CBC is no longer supported.
 
-On Wed, Oct 06, 2021 at 03:40:55PM +0300, Lev Stipakov wrote:
-> > Does that mean that CFG and Spectre protection are already included?
->=20
-> Those are merged into the "master" branch, but not into "released". We
-> could probably include those into the next 2.5 release? Otherwise
-> they'll be part of 2.6.
+Also move the condition so BF-CBC gets included in the data-ciphers
+list.
 
-"You tell me".
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/options.c | 20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
-It was not relevant before as we did not build 2.5 with MSVC (except
-for ARM).
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index e82ff2e7b..035995d78 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3193,6 +3193,19 @@ options_set_backwards_compatible_options(struct options *o)
+         }
+     }
+ 
++    /* Versions < 2.4.0 additionally might be compiled with --enable-small and
++     * not have OCC strings required for "poor man's NCP" */
++    if (need_compatibility_before(o, 20400))
++    {
++        if (!o->ciphername)
++        {
++            /* If ciphername is not set default to BF-CBC when targeting these
++             * old versions that do not have NCP */
++            o->ciphername = "BF-CBC";
++        }
++        o->enable_ncp_fallback = true;
++    }
++    
+     /* Versions < 2.5.0 do need --cipher in the list of accepted ciphers.
+      * Version 2.4 might probably does not need it but NCP was not so
+      * good with 2.4 and ncp-disable might be more common on 2.4 peers.
+@@ -3205,13 +3218,6 @@ options_set_backwards_compatible_options(struct options *o)
+         append_cipher_to_ncp_list(o, o->ciphername);
+     }
+ 
+-    /* Versions < 2.4.0 additionally might be compiled with --enable-small and
+-     * not have OCC strings required for "poor man's NCP" */
+-    if (o->ciphername && need_compatibility_before(o, 20400))
+-    {
+-        o->enable_ncp_fallback = true;
+-    }
+-
+     /* Compression is deprecated and we do not want to announce support for it
+      * by default anymore, additionally DCO breaks with compression.
+      *
+-- 
+2.33.0
 
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---p9HNGhNd5zA7jI0U
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJhXdxnAAoJEB2Cnv7KVigStXkL/0PvreYphoB9uIHKqy6nsKyH
-0IwcFcVNj16CWgeYgn4QCZemRlkT7ndIhA79sMQZjGN/NUrL2cazDgo8EYNUboCy
-eWh/rPRpJfd9zwTgSt8dMFJvewP4R7ZjzDWapfI0CzaKNxpaS5BeiFIX1yeIm1/Q
-csvsor4j6IjLlYnL386efjVeGjcq8FCT1624CEZHJmOQCHskk4OvJqh1lCUhFlJb
-WJ0TpAvG997vEQcO99OleLzoCAT+S0n96sqmzjMfNPDSDZ+CoPG3qGAnPTRcX+lF
-zOI4v149Y7cWf3OwUxadMcuIrpErfEuulkQiuaU64An8a4v7V/+ajsFxeoedV+70
-MOxIBXR6huPcP0XXmlBG2dE1U137HbKH1/NmHM/SNDOM7AgHrBGUYaph//ZHsByV
-C8pAWaGy6+G5gcJIvOU+HTbU2ak1kksAzpD00wkvT3a7IVV2LI34i69ccM7UdEZs
-UetAkNqYCP4rCJvbyDrrXtRPWwzzEdMnqdcfI+dC/g==
-=t7VH
------END PGP SIGNATURE-----
-
---p9HNGhNd5zA7jI0U--
 
