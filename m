@@ -1,9 +1,13 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed,  6 Oct 2021 20:06:44 +0200
-Message-Id: <20211006180644.3081219-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Default to --cipher BF-CBC if not set and
- compat-mode < 2.4.0
+References: <20211006090709.200-1-lstipakov@...277...>
+ <CAFHpkQEfuk3+C5FL4st5GXxU0RNiYGH=dnDuVgyGUXdonRFepg@...278...>
+ <CAGyAFMUWgLyW5PsoNT+ezQtA4x7W2vG4NUFSmbRR9FHDGH36HA@...278...>
+ <YV3cZ1kNpMCJSA/r@...1296...>
+In-Reply-To: <YV3cZ1kNpMCJSA/r@...1296...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 7 Oct 2021 13:26:20 +0300
+Message-ID: <CAGyAFMXM4mEw6KxgwjEogNFyDRU9xqoxsvbWbyz5mNRKdK8=9w@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix loading PKCS12 files on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,65 +16,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: ???????? ?????????????? <chipitsine@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-When we try to make a configuration compatible to a version earlier
-than 2.4.0 we probably need to have a --cipher configured since NCP
-is not available. In configuration where --cipher is not specified
-we default to BF-CBC to support these old clients.
+Hi,
 
-Note that with OpenSSL 3.0 you will also need to enable the legacy
-provider otherwise we bail out since BF-CBC is no longer supported.
+> > Those are merged into the "master" branch, but not into "released". We
+> > could probably include those into the next 2.5 release? Otherwise
+> > they'll be part of 2.6.
+>
+> "You tell me".
 
-Also move the condition so BF-CBC gets included in the data-ciphers
-list.
+The probable performance impact should be a less issue for master,
+which in most cases will use dco on Windows.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/options.c | 20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+For 2.5, let's conduct performance tests first. Balancing security
+with performance tradeoffs is a difficult task.
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index e82ff2e7b..035995d78 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3193,6 +3193,19 @@ options_set_backwards_compatible_options(struct options *o)
-         }
-     }
- 
-+    /* Versions < 2.4.0 additionally might be compiled with --enable-small and
-+     * not have OCC strings required for "poor man's NCP" */
-+    if (need_compatibility_before(o, 20400))
-+    {
-+        if (!o->ciphername)
-+        {
-+            /* If ciphername is not set default to BF-CBC when targeting these
-+             * old versions that do not have NCP */
-+            o->ciphername = "BF-CBC";
-+        }
-+        o->enable_ncp_fallback = true;
-+    }
-+    
-     /* Versions < 2.5.0 do need --cipher in the list of accepted ciphers.
-      * Version 2.4 might probably does not need it but NCP was not so
-      * good with 2.4 and ncp-disable might be more common on 2.4 peers.
-@@ -3205,13 +3218,6 @@ options_set_backwards_compatible_options(struct options *o)
-         append_cipher_to_ncp_list(o, o->ciphername);
-     }
- 
--    /* Versions < 2.4.0 additionally might be compiled with --enable-small and
--     * not have OCC strings required for "poor man's NCP" */
--    if (o->ciphername && need_compatibility_before(o, 20400))
--    {
--        o->enable_ncp_fallback = true;
--    }
--
-     /* Compression is deprecated and we do not want to announce support for it
-      * by default anymore, additionally DCO breaks with compression.
-      *
 -- 
-2.33.0
-
+-Lev
 
