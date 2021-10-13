@@ -1,7 +1,7 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 14 Oct 2021 02:02:27 +0300
-Message-Id: <20211013230227.199-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH 1/3] msvc: fix product version display
+Date: Thu, 14 Oct 2021 02:04:17 +0300
+Message-Id: <20211013230417.252-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH 2/3] msvc: add missing header to project file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,29 +17,38 @@ Cc: Lev Stipakov <lev@...515...>
 
 From: Lev Stipakov <lev@...515...>
 
-PRODUCT_VERSION_PATCH, defined in version.m4, already includes dot (like ".4"),
-so no need to include it here.
-
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- config-msvc-version.h.in | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ src/openvpn/openvpn.vcxproj         | 1 +
+ src/openvpn/openvpn.vcxproj.filters | 3 +++
+ 2 files changed, 4 insertions(+)
 
-diff --git a/config-msvc-version.h.in b/config-msvc-version.h.in
-index 7977cb84..59ca654a 100644
---- a/config-msvc-version.h.in
-+++ b/config-msvc-version.h.in
-@@ -5,8 +5,8 @@
- #define PRODUCT_VERSION_MAJOR "@PRODUCT_VERSION_MAJOR@"
- #define PRODUCT_VERSION_MINOR "@PRODUCT_VERSION_MINOR@"
- #define PRODUCT_VERSION_PATCH "@PRODUCT_VERSION_PATCH@"
--#define PACKAGE_VERSION "@PRODUCT_VERSION_MAJOR@...220...@PRODUCT_VERSION_MINOR@...220...@PRODUCT_VERSION_PATCH@"
--#define PRODUCT_VERSION "@PRODUCT_VERSION_MAJOR@...220...@PRODUCT_VERSION_MINOR@...220...@PRODUCT_VERSION_PATCH@"
-+#define PACKAGE_VERSION "@PRODUCT_VERSION_MAJOR@...220...@PRODUCT_VERSION_MINOR@@PRODUCT_VERSION_PATCH@"
-+#define PRODUCT_VERSION "@PRODUCT_VERSION_MAJOR@...220...@PRODUCT_VERSION_MINOR@@PRODUCT_VERSION_PATCH@"
- #define PRODUCT_BUGREPORT "@PRODUCT_BUGREPORT@"
- #define OPENVPN_VERSION_RESOURCE @PRODUCT_VERSION_RESOURCE@
- #define TAP_WIN_COMPONENT_ID "@PRODUCT_TAP_WIN_COMPONENT_ID@"
+diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
+index 2144775f..a3350410 100644
+--- a/src/openvpn/openvpn.vcxproj
++++ b/src/openvpn/openvpn.vcxproj
+@@ -355,6 +355,7 @@
+     <ClInclude Include="multi.h" />
+     <ClInclude Include="ntlm.h" />
+     <ClInclude Include="occ.h" />
++    <ClInclude Include="openssl_compat.h" />
+     <ClInclude Include="openvpn.h" />
+     <ClInclude Include="options.h" />
+     <ClInclude Include="otime.h" />
+diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
+index cf5748c7..bbcbff34 100644
+--- a/src/openvpn/openvpn.vcxproj.filters
++++ b/src/openvpn/openvpn.vcxproj.filters
+@@ -509,6 +509,9 @@
+     <ClInclude Include="ssl_ncp.h">
+       <Filter>Header Files</Filter>
+     </ClInclude>
++    <ClInclude Include="openssl_compat.h">
++      <Filter>Header Files</Filter>
++    </ClInclude>
+   </ItemGroup>
+   <ItemGroup>
+     <ResourceCompile Include="openvpn_win32_resources.rc">
 -- 
 2.23.0.windows.1
 
