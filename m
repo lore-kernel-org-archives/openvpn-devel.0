@@ -1,10 +1,10 @@
-Date: Thu, 14 Oct 2021 16:31:08 +0200 (CEST)
-Message-Id: <202110141431.19EEV8ul059968@...2054...>
+Date: Thu, 14 Oct 2021 16:32:51 +0200 (CEST)
+Message-Id: <202110141432.19EEWpZA060059@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211013230227.199-1-lstipakov@...277...>
-References: <20211013230227.199-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: msvc: fix product version
- display
+In-Reply-To: <20211013230417.252-1-lstipakov@...277...>
+References: <20211013230417.252-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: msvc: add missing header to
+ project file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,24 +20,22 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"makes sense"
+I wasn't sure which branch - this looked generic - but it only applies
+to release/2.5 (and the whole sequence was sent from a "2.5" PoV).  If
+this is needed for master as well, please send a "master" version.
 
-Your patch has been applied to the master and release/2.5 branch.
+Your patch has been applied to the release/2.5 branch.
 
-(As a side note, why do we have PACKAGE_VERSION and PRODUCT_VERSION there
-that seem to be totally identical, but each one defined individually?)
-
-commit 23143667ff3368694191a57fea29b41d25c4b135 (master)
-commit d6a9bf5d77451571b8d4ba83f5a80f5e16f9174b (release/2.5)
+commit d20a23df38f0bd55b1b11beb9dc145f9e6db4cc7
 Author: Lev Stipakov
-Date:   Thu Oct 14 02:02:27 2021 +0300
+Date:   Thu Oct 14 02:04:17 2021 +0300
 
-     msvc: fix product version display
+     msvc: add missing header to project file
 
      Signed-off-by: Lev Stipakov <lev@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20211013230227.199-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22931.html
+     Message-Id: <20211013230417.252-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22932.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
