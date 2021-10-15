@@ -1,10 +1,8 @@
-Date: Fri, 15 Oct 2021 17:10:53 +0200 (CEST)
-Message-Id: <202110151510.19FFArpe087849@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211015043227.10679-1-selva.nair@...277...>
-References: <20211015043227.10679-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix the default tls-version-min
- setting
+From: selva.nair@...277...
+Date: Fri, 15 Oct 2021 13:53:30 -0400
+Message-Id: <20211015175330.15760-1-selva.nair@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Fix some more wrong defines in config-msvc.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,36 +13,54 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Arne beat me to it (I briefly looked at the patch yesterday when it
-came in, noted "it makes sense" and was distracted...).  So, yeah,
-thanks for fixing our oversights.
+From: Selva Nair <selva.nair@...277...>
 
-I have not tested (beyond "it compiles") but staring at the code 
-looks very reasonable.   The "|=" without masking out the corresponding
-bits is something I double-checked but it is safe, as we already know 
-"they are all 0".
+Not sure where these came from, but here goes:
 
-Your patch has been applied to the master branch.
+S_IRUSR = 0 --> _S_IREAD
+S_IWUSR = 0 --> _S_IWRITE
 
-commit 51be733ba236610dff6a1c361cf59172db97473a
-Author: Selva Nair
-Date:   Fri Oct 15 00:32:27 2021 -0400
+ENABLE_DEBUG is on, but I do not think we want it in production build.
+Changed to ENABLE_DEBUG 0
 
-     Fix the default tls-version-min setting
+S_IRGRP is not defined but seems to be used. I have added it, remove if
+not required.
+This define is based on mingw and matches MS docs on <filesystem>
+(https://docs.microsoft.com/en-us/cpp/standard-library/filesystem-enumerations?view=msvc-160)
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20211015043227.10679-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22939.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Should fix Trac #1430 but untested (I do not have a setup at hand for msvc build).
+---
+ config-msvc.h | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-
---
-kind regards,
-
-Gert Doering
+diff --git a/config-msvc.h b/config-msvc.h
+index b28d8742..301e7ebc 100644
+--- a/config-msvc.h
++++ b/config-msvc.h
+@@ -4,7 +4,7 @@
+ 
+ #define ENABLE_PF 1
+ #define ENABLE_CRYPTO_OPENSSL 1
+-#define ENABLE_DEBUG 1
++#define ENABLE_DEBUG 0
+ #define ENABLE_FRAGMENT 1
+ #define ENABLE_HTTP_PROXY 1
+ #define ENABLE_LZO 1
+@@ -67,8 +67,9 @@
+ #define in_addr_t uint32_t
+ #define ssize_t SSIZE_T
+ 
+-#define S_IRUSR 0
+-#define S_IWUSR 0
++#define S_IRUSR _S_IREAD
++#define S_IWUSR _S_IWRITE
++#define S_IRGRP (S_IRUSR >> 3)
+ #define R_OK 4
+ #define W_OK 2
+ #define X_OK 1
+-- 
+2.20.1
 
 
