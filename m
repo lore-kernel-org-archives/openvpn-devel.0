@@ -1,10 +1,8 @@
-Date: Tue, 19 Oct 2021 15:54:21 +0200 (CEST)
-Message-Id: <202110191354.19JDsLFd089266@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211015203847.465-1-lstipakov@...277...>
-References: <20211015203847.465-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: GitHub Actions: use latest
- working lukka/run-vcpkg
+From: Lev Stipakov <lstipakov@...277...>
+Date: Sat, 16 Oct 2021 00:31:15 +0300
+Message-Id: <20211015213115.516-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] GitHub Actions: use latest working
+ lukka/run-vcpkg
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,34 +13,40 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Acked-by: Gert Doering <gert@...1296...>
+From: Lev Stipakov <lev@...515...>
 
-This is 2.5 only - tested via GH in my repo, before pushing to the
-official repo.  I have no idea what it does, but it does not affect
-code... and it fixes the GH build errors we had before (so I can
-proceed with merging and test building Selva's win/EC patches).
+Latest lukka/run-vcpkg@...2637... seem to break non-manifest
+mode with custom triplets, so revert to latest working version.
 
-Your patch has been applied to the release/2.5 branch.
+While on it, bump vcpkg commit.
 
-commit db1a72cc8bc7e0a4d6c70e103febb97fe69949b2
-Author: Lev Stipakov
-Date:   Fri Oct 15 23:38:47 2021 +0300
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ .github/workflows/build.yaml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-     GitHub Actions: use latest working lukka/run-vcpkg
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20211015203847.465-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22959.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 514ae66b..abf32b14 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -215,11 +215,11 @@ jobs:
+         run: python -m pip install --upgrade pip rst2html
+ 
+       - name: Restore artifacts, or run vcpkg, build and cache artifacts
+-        uses: lukka/run-vcpkg@...2622...
++        uses: lukka/run-vcpkg@...2638...
+         with:
++          vcpkgGitCommitId: '71422c627264daedcbcd46f01f1ed0dcd8460f1b'
+           vcpkgArguments: 'openssl lz4 lzo pkcs11-helper tap-windows6'
+           vcpkgTriplet: '${{ matrix.triplet }}-windows-ovpn'
+-          vcpkgGitCommitId: '261c458af6e3eed5d099144aff95d2b5035f656b'
+           cleanAfterBuild: false
+ 
+       - name: Build
+-- 
+2.23.0.windows.1
 
 
