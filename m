@@ -1,8 +1,11 @@
 From: selva.nair@...277...
-Date: Fri, 15 Oct 2021 13:53:30 -0400
-Message-Id: <20211015175330.15760-1-selva.nair@...277...>
+Date: Fri, 15 Oct 2021 14:47:33 -0400
+Message-Id: <20211015184733.16988-1-selva.nair@...277...>
+In-Reply-To: <20211015175330.15760-1-selva.nair@...277...>
+References: <20211015175330.15760-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix some more wrong defines in config-msvc.h
+Subject: [Openvpn-devel] [PATCH for 2.5] Fix some more wrong defines in
+ config-msvc.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -31,24 +34,27 @@ This define is based on mingw and matches MS docs on <filesystem>
 (https://docs.microsoft.com/en-us/cpp/standard-library/filesystem-enumerations?view=msvc-160)
 
 Should fix Trac #1430 but untested (I do not have a setup at hand for msvc build).
+
+Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- config-msvc.h | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ config-msvc.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/config-msvc.h b/config-msvc.h
-index b28d8742..301e7ebc 100644
+index a39eeed8..9fc8d1cc 100644
 --- a/config-msvc.h
 +++ b/config-msvc.h
-@@ -4,7 +4,7 @@
- 
+@@ -5,8 +5,7 @@
+ #define ENABLE_DEF_AUTH 1
  #define ENABLE_PF 1
  #define ENABLE_CRYPTO_OPENSSL 1
 -#define ENABLE_DEBUG 1
+-#define ENABLE_EUREPHIA 1
 +#define ENABLE_DEBUG 0
  #define ENABLE_FRAGMENT 1
  #define ENABLE_HTTP_PROXY 1
  #define ENABLE_LZO 1
-@@ -67,8 +67,9 @@
+@@ -144,8 +143,9 @@
  #define in_addr_t uint32_t
  #define ssize_t SSIZE_T
  
