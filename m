@@ -1,10 +1,8 @@
-Date: Thu, 14 Oct 2021 16:36:19 +0200 (CEST)
-Message-Id: <202110141436.19EEaJNg060284@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211014010436.359-1-lstipakov@...277...>
-References: <20211014010436.359-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: config-msvc.h: fix
- OpenSSL-related defines
+From: selva.nair@...277...
+Date: Fri, 15 Oct 2021 00:32:27 -0400
+Message-Id: <20211015043227.10679-1-selva.nair@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Fix the "default" tls-version-min setting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +13,63 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+From: Selva Nair <selva.nair@...277...>
 
-This very much like it is "master only", and that's where it went :-)
+commit 968569f83b1561ea4dff5b8b1f0d7768e2a18e69
+defined TLS 1.2 as the minimum version if not set
+by user. But the patch introduced two errors:
 
-Your patch has been applied to the master branch.
+(i) ssl_flags is overwritten without regard to other
+    options set in the flags
+(ii) Any tls-version-max set by the user is not taken into
+     account.
+Makes it impossible to set tls-version-max without also setting
+tls-version-min along with loss of other bits set in ssl_flags.
 
-commit dd73b620f2bbb4ad9d3b9d43e5124911e48256f1
-Author: Lev Stipakov
-Date:   Thu Oct 14 04:04:36 2021 +0300
+Fix it.
 
-     config-msvc.h: fix OpenSSL-related defines
+The fix retains the original intent when possible, and tries to
+use the maximum possible value when it cannot be set to TLS 1.2
+without conflicting with user-specified tls-version-max, if any.
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20211014010436.359-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22934.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/options.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 763dd330..7f14c1f3 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3168,15 +3168,22 @@ options_set_backwards_compatible_options(struct options *o)
+     /* TLS min version is not set */
+     if ((o->ssl_flags & SSLF_TLS_VERSION_MIN_MASK) == 0)
+     {
++        int tls_ver_max = (o->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT)
++                          & SSLF_TLS_VERSION_MAX_MASK;
+         if (need_compatibility_before(o, 20307))
+         {
+             /* 2.3.6 and earlier have TLS 1.0 only, set minimum to TLS 1.0 */
+-            o->ssl_flags = (TLS_VER_1_0 << SSLF_TLS_VERSION_MIN_SHIFT);
++            o->ssl_flags |= (TLS_VER_1_0 << SSLF_TLS_VERSION_MIN_SHIFT);
+         }
+-        else
++        else if (tls_ver_max == 0 || tls_ver_max >= TLS_VER_1_2)
+         {
+             /* Use TLS 1.2 as proper default */
+-            o->ssl_flags = (TLS_VER_1_2 << SSLF_TLS_VERSION_MIN_SHIFT);
++            o->ssl_flags |= (TLS_VER_1_2 << SSLF_TLS_VERSION_MIN_SHIFT);
++        }
++        else
++        {
++            /* Maximize the minimum version */
++            o->ssl_flags |= (tls_ver_max << SSLF_TLS_VERSION_MIN_SHIFT);
+         }
+     }
+ 
+-- 
+2.20.1
 
 
