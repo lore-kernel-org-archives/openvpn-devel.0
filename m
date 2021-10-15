@@ -1,10 +1,11 @@
-From: selva.nair@...277...
-Date: Fri, 15 Oct 2021 14:47:33 -0400
-Message-Id: <20211015184733.16988-1-selva.nair@...277...>
-In-Reply-To: <20211015175330.15760-1-selva.nair@...277...>
-References: <20211015175330.15760-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH for 2.5] Fix some more wrong defines in
+References: <20211015175330.15760-1-selva.nair@...277...>
+In-Reply-To: <20211015175330.15760-1-selva.nair@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 15 Oct 2021 14:50:26 -0400
+Message-ID: <CAKuzo_h51X2SvZLOy2ZS5wjw8h2qZuQcc9tJN3M85XOXp4A5rg@...278...>
+Content-Type: multipart/alternative; boundary="0000000000002116c105ce68acfd"
+Subject: Re: [Openvpn-devel] [PATCH] Fix some more wrong defines in
  config-msvc.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,59 +15,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Selva Nair <selva.nair@...277...>
+--0000000000002116c105ce68acfd
+Content-Type: text/plain; charset="UTF-8"
 
-Not sure where these came from, but here goes:
+On Fri, Oct 15, 2021 at 1:53 PM <selva.nair@...277...> wrote:
 
-S_IRUSR = 0 --> _S_IREAD
-S_IWUSR = 0 --> _S_IWRITE
+> From: Selva Nair <selva.nair@...277...>
+>
+> Not sure where these came from, but here goes:
+>
+> S_IRUSR = 0 --> _S_IREAD
+> S_IWUSR = 0 --> _S_IWRITE
+>
+> ENABLE_DEBUG is on, but I do not think we want it in production build.
+> Changed to ENABLE_DEBUG 0
+>
+> S_IRGRP is not defined but seems to be used. I have added it, remove if
+> not required.
+> This define is based on mingw and matches MS docs on <filesystem>
+> (
+> https://docs.microsoft.com/en-us/cpp/standard-library/filesystem-enumerations?view=msvc-160
+> )
+>
+> Should fix Trac #1430 but untested (I do not have a setup at hand for msvc
+> build).
+>
 
-ENABLE_DEBUG is on, but I do not think we want it in production build.
-Changed to ENABLE_DEBUG 0
+The patch for master doesn't apply cleantly to 2.5. Please use the next one
+marked "for 2.5" on the release branch.
 
-S_IRGRP is not defined but seems to be used. I have added it, remove if
-not required.
-This define is based on mingw and matches MS docs on <filesystem>
-(https://docs.microsoft.com/en-us/cpp/standard-library/filesystem-enumerations?view=msvc-160)
+Selva
 
-Should fix Trac #1430 but untested (I do not have a setup at hand for msvc build).
+--0000000000002116c105ce68acfd
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- config-msvc.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+<div dir=3D"ltr"><div dir=3D"ltr"><br></div><div class=3D"gmail_quote"><div=
+ dir=3D"ltr" class=3D"gmail_attr">On Fri, Oct 15, 2021 at 1:53 PM &lt;<a hr=
+ef=3D"mailto:selva.nair@...277...">selva.nair@...277...</a>&gt; wrote:<br><=
+/div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bo=
+rder-left:1px solid rgb(204,204,204);padding-left:1ex">From: Selva Nair &lt=
+;<a href=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...1664...=
+7...</a>&gt;<br>
+<br>
+Not sure where these came from, but here goes:<br>
+<br>
+S_IRUSR =3D 0 --&gt; _S_IREAD<br>
+S_IWUSR =3D 0 --&gt; _S_IWRITE<br>
+<br>
+ENABLE_DEBUG is on, but I do not think we want it in production build.<br>
+Changed to ENABLE_DEBUG 0<br>
+<br>
+S_IRGRP is not defined but seems to be used. I have added it, remove if<br>
+not required.<br>
+This define is based on mingw and matches MS docs on &lt;filesystem&gt;<br>
+(<a href=3D"https://docs.microsoft.com/en-us/cpp/standard-library/filesyste=
+m-enumerations?view=3Dmsvc-160" rel=3D"noreferrer" target=3D"_blank">https:=
+//docs.microsoft.com/en-us/cpp/standard-library/filesystem-enumerations?vie=
+w=3Dmsvc-160</a>)<br>
+<br>
+Should fix Trac #1430 but untested (I do not have a setup at hand for msvc =
+build).<br></blockquote><div><br></div><div>The patch for master doesn&#39;=
+t apply cleantly to 2.5. Please use the next one marked &quot;for 2.5&quot;=
+ on the release branch.<div><br></div><div>Selva</div></div></div></div>
 
-diff --git a/config-msvc.h b/config-msvc.h
-index a39eeed8..9fc8d1cc 100644
---- a/config-msvc.h
-+++ b/config-msvc.h
-@@ -5,8 +5,7 @@
- #define ENABLE_DEF_AUTH 1
- #define ENABLE_PF 1
- #define ENABLE_CRYPTO_OPENSSL 1
--#define ENABLE_DEBUG 1
--#define ENABLE_EUREPHIA 1
-+#define ENABLE_DEBUG 0
- #define ENABLE_FRAGMENT 1
- #define ENABLE_HTTP_PROXY 1
- #define ENABLE_LZO 1
-@@ -144,8 +143,9 @@
- #define in_addr_t uint32_t
- #define ssize_t SSIZE_T
- 
--#define S_IRUSR 0
--#define S_IWUSR 0
-+#define S_IRUSR _S_IREAD
-+#define S_IWUSR _S_IWRITE
-+#define S_IRGRP (S_IRUSR >> 3)
- #define R_OK 4
- #define W_OK 2
- #define X_OK 1
--- 
-2.20.1
-
+--0000000000002116c105ce68acfd--
 
