@@ -1,12 +1,15 @@
-MIME-Version: 1.0
+Date: Mon, 18 Oct 2021 14:03:02 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <YW1idmuWmsKWHqYq@...1296...>
 References: <20211015175330.15760-1-selva.nair@...277...>
  <20211015184733.16988-1-selva.nair@...277...>
  <CAGyAFMWXUCG0iEw2S2L1O8R3_hjkae3hVEoKASZCH3A_EjvL1g@...278...>
-In-Reply-To: <CAGyAFMWXUCG0iEw2S2L1O8R3_hjkae3hVEoKASZCH3A_EjvL1g@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 18 Oct 2021 07:25:02 -0400
-Message-ID: <CAKuzo_iRmy4XhgYVXu0=Rij4SGqA_oQ7_va2gGfwPOU4gESthQ@...278...>
-Content-Type: multipart/alternative; boundary="000000000000c7538005ce9eccd2"
+ <CAKuzo_iRmy4XhgYVXu0=Rij4SGqA_oQ7_va2gGfwPOU4gESthQ@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="FyWDEcsF9ivyxpg8"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_iRmy4XhgYVXu0=Rij4SGqA_oQ7_va2gGfwPOU4gESthQ@...278...>
 Subject: Re: [Openvpn-devel] [PATCH for 2.5] Fix some more wrong defines in
  config-msvc.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,48 +20,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>
+Cc: Lev Stipakov <lstipakov@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000c7538005ce9eccd2
-Content-Type: text/plain; charset="UTF-8"
-
-Hi
-
-On Mon, Oct 18, 2021 at 3:56 AM Lev Stipakov <lstipakov@...277...> wrote:
-
-> Looks good (I commented already in 2.5 version) apart from
->
-> > -#define ENABLE_DEBUG 1
-> > +#define ENABLE_DEBUG 0
->
-> which doesn't undef it.
->
-
-Right, we check it using #ifdef, not #if.
-
-Gert: do you need a v2 or can you remove the line please?
-
-Selva
-
---000000000000c7538005ce9eccd2
-Content-Type: text/html; charset="UTF-8"
+--FyWDEcsF9ivyxpg8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr"><div>Hi</div><br><div class=3D"gmail_quote"><div dir=3D"lt=
-r" class=3D"gmail_attr">On Mon, Oct 18, 2021 at 3:56 AM Lev Stipakov &lt;<a=
- href=3D"mailto:lstipakov@...277...">lstipakov@...277...</a>&gt; wrote:<br>=
-</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;b=
-order-left:1px solid rgb(204,204,204);padding-left:1ex">Looks good (I comme=
-nted already in 2.5 version) apart from<br>
-<br>
-&gt; -#define ENABLE_DEBUG 1<br>
-&gt; +#define ENABLE_DEBUG 0<br>
-<br>
-which doesn&#39;t undef it.<br></blockquote><div><br></div><div>Right, we c=
-heck it using #ifdef, not #if.=C2=A0</div><div><br></div><div>Gert: do you =
-need a v2 or can you remove the line please?</div><div><br></div><div>Selva=
-</div></div></div>
+Hi,
 
---000000000000c7538005ce9eccd2--
+On Mon, Oct 18, 2021 at 07:25:02AM -0400, Selva Nair wrote:
+> Gert: do you need a v2 or can you remove the line please?
+
+I'll do it on the fly.  The intent is clear.
+
+gert
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--FyWDEcsF9ivyxpg8
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJhbWJ2AAoJEB2Cnv7KVigSk0QMAJYoqp6qBM+NcEmr2NaSb2hq
+GMlWCiiRocEIx/2E/IQ8RNBNVwQs//wlXwI+nf1ZWimWT/zmuIA4dLmjsImd9038
+CjTRYLc3IkqvHqwKbyAw9pW/JiGMYWNgn3Ht9EAO+lWj5ykarAvtohiVG6pDM+M1
+hBAJ5SsS+U+f1XjOj7dmMllHhldsxM1Br0ZygV9PzRFjf2uae+2nuke3mcaW56vU
+FxS96+kySnkXr2alAO5XOpEiVnbZGmM9uLZThtIrzuCLuQQ/C4J/9gML/D0NB+kq
+m2GXteEhQ4uoMdLnQo2x0orQ6Jktvuiz16PGKHFJa12FDxobpw4ZGM5vyGj2iKq5
+99VF7ujw2V+JndYRTBthngT7ioIxkeDHFvYYrCkO7hNYU8EVc6A9cu5vSKBRCBBw
+XoitZU3t3969caErE0PzAn3lHXNnTp/dXIh1Hh3k/5ks+oeur/ujRLm/dcaDpADS
+dSrz8JqdY8ziutyebEPYUbxSEI2jvOi1SI20xQEXAg==
+=KUHi
+-----END PGP SIGNATURE-----
+
+--FyWDEcsF9ivyxpg8--
 
