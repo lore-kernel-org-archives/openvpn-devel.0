@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:31:15 +0200
-Message-Id: <20211019183127.614175-10-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:31:17 +0200
+Message-Id: <20211019183127.614175-12-arne@...1227...>
 In-Reply-To: <20211019183127.614175-1-arne@...1227...>
 References: <20211019183127.614175-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 09/21] Refactor early initialisation and
- uninitialisation into methods
+Subject: [Openvpn-devel] [PATCH v3 11/21] [OSSL 3.0] USe EVP_MD_get0_name
+ instead EV_MD_name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,62 +18,41 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This put the early initialisation and uninitialisation that needs to
-happen between option parsing and post processing into small methods.
+Use the new name for the function as it indicates with
+get0 the ownership of the returned value
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/openvpn.c | 23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
+ src/openvpn/crypto_openssl.c | 2 +-
+ src/openvpn/openssl_compat.h | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
-index 0ac961429..f8e94509f 100644
---- a/src/openvpn/openvpn.c
-+++ b/src/openvpn/openvpn.c
-@@ -105,6 +105,20 @@ tunnel_point_to_point(struct context *c)
- 
- #undef PROCESS_SIGNAL_P2P
- 
-+void init_early(struct context *c)
-+{
-+    net_ctx_init(c, &(*c).net_ctx);
-+
-+    /* init verbosity and mute levels */
-+    init_verb_mute(c, IVM_LEVEL_1);
-+
-+}
-+
-+static void uninit_early(struct context *c)
-+{
-+    net_ctx_free(&(*c).net_ctx);
-+}
-+
- 
- /**************************************************************************/
- /**
-@@ -193,10 +207,9 @@ openvpn_main(int argc, char *argv[])
-             open_plugins(&c, true, OPENVPN_PLUGIN_INIT_PRE_CONFIG_PARSE);
- #endif
- 
--            net_ctx_init(&c, &c.net_ctx);
--
--            /* init verbosity and mute levels */
--            init_verb_mute(&c, IVM_LEVEL_1);
-+            /* Early initialisation that need to happen before option
-+             * post processing and other early startup but after parsing */
-+            init_early(&c);
- 
-             /* set dev options */
-             init_options_dev(&c.options);
-@@ -308,7 +321,7 @@ openvpn_main(int argc, char *argv[])
-             env_set_destroy(c.es);
-             uninit_options(&c.options);
-             gc_reset(&c.gc);
--            net_ctx_free(&c.net_ctx);
-+            uninit_early(&c);
-         }
-         while (c.sig->signal_received == SIGHUP);
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index b10bd7cd5..407ea4a7c 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -916,7 +916,7 @@ md_kt_name(const EVP_MD *kt)
+     {
+         return "[null-digest]";
      }
+-    return EVP_MD_name(kt);
++    return EVP_MD_get0_name(kt);
+ }
+ 
+ unsigned char
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index 0893bfbb2..2aa718a33 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -751,6 +751,8 @@ int EVP_PKEY_get_group_name(EVP_PKEY *pkey, char *gname, size_t gname_sz,
+ 
+ /** Mimics SSL_CTX_new_ex for OpenSSL < 3 */
+ #if OPENSSL_VERSION_NUMBER < 0x30000000L
++#define EVP_MD_get0_name EVP_MD_name
++
+ static inline SSL_CTX *
+ SSL_CTX_new_ex(void *libctx, const char *propq, const SSL_METHOD *method)
+ {
 -- 
 2.33.0
 
