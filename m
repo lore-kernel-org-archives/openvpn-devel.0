@@ -1,11 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:23:30 +0200
-Message-Id: <20211019182332.613155-26-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:23:26 +0200
+Message-Id: <20211019182332.613155-22-arne@...1227...>
 In-Reply-To: <20211019182332.613155-1-arne@...1227...>
 References: <20211019182332.613155-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 18/20] Fix error when BF-CBC is not
- available
+Subject: [Openvpn-devel] [PATCH v2 15/20] [OSSL 3.0] Do not allow CTS ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,30 +17,27 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Through the multiple iteration of allowing OpenVPN to run without
-BF-CBC we accidentially made a regression and still required BF-CBC.
-
-This patch fixes the code path and restores its intended function.
+We do not support CTS algorithms (cipher text stealing) algorithms.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/options.c | 3 +++
+ src/openvpn/crypto_openssl.c | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index ab7b00783..fe873944b 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3797,6 +3797,9 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index ab552efab..ac8287440 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -760,6 +760,9 @@ cipher_kt_mode_cbc(const cipher_kt_t *cipher)
+ {
+     return cipher && cipher_kt_mode(cipher) == OPENVPN_MODE_CBC
+            /* Exclude AEAD cipher modes, they require a different API */
++#ifdef EVP_CIPH_FLAG_CTS
++           && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_CTS)
++#endif
+            && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_AEAD_CIPHER);
+ }
  
-             /* overhead of BF-CBC: 64 bit block size, 64 bit IV size */
-             frame_add_to_extra_frame(&fake_frame, 64/8 + 64/8);
-+            /* set ciphername to none, so its size does get added in the fake_kt and
-+             * the cipher is not tried to be resolved */
-+            ciphername = "none";
-         }
- 
-         init_key_type(&fake_kt, ciphername, o->authname, true, false);
 -- 
 2.33.0
 
