@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:23:21 +0200
-Message-Id: <20211019182332.613155-17-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:23:12 +0200
+Message-Id: <20211019182332.613155-8-arne@...1227...>
 In-Reply-To: <20211019182332.613155-1-arne@...1227...>
 References: <20211019182332.613155-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 13/16] Add message when decoding PKCS12
- file fails.
+Subject: [Openvpn-devel] [PATCH v2 06/20] [OSSL 3.0] Deprecate --ecdh-curve
+ with OpenSSL 3.0 and adjust mbed TLS message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,33 +18,57 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Currently we never display the OpenSSL error stack when decoding a
-PCKS12 file fails. With LibreSSL defaulting to RC2-40-CBC, the failure
-might not be a wrong password but can actually be an unsupported
-encoding, seeing the error stack is really helpful (example from OpenSSL 3.0):
-
-error:0308010C:digital envelope routines:inner_evp_generic_fetch:unsupported:crypto/evp/evp_fetch.c:346:Global  default library context, Algorithm (RC2-40-CBC : 0), Properties ()
-
-to pinpoint the issue
+OpenSSL 3.0 deprecates SSL_CTX_set_tmp_ecdh() in favour of
+SSL_CTX_set1_groups(3). We already support the SSL_CTX_set1_groups
+using the --tls-groups. Adjust both mbed TLS and OpenSSL 3.0 to
+say that --ecdh-curve is ingored and --tls-groups should be used.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/ssl_openssl.c | 2 ++
- 1 file changed, 2 insertions(+)
+ src/openvpn/ssl_mbedtls.c |  5 +++--
+ src/openvpn/ssl_openssl.c | 12 +++++++++---
+ 2 files changed, 12 insertions(+), 5 deletions(-)
 
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index cea88f41e..e7c45c099 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -440,8 +440,9 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
+ {
+     if (NULL != curve_name)
+     {
+-        msg(M_WARN, "WARNING: mbed TLS builds do not support specifying an ECDH "
+-            "curve, using default curves.");
++        msg(M_WARN, "WARNING: mbed TLS builds do not support specifying an "
++            "ECDH curve with --ecdh-curve, using default curves. Use "
++            "--tls-groups to specify curves.");
+     }
+ }
+ 
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 8ec96e66c..d93292700 100644
+index a44d4f85c..92d8d0eeb 100644
 --- a/src/openvpn/ssl_openssl.c
 +++ b/src/openvpn/ssl_openssl.c
-@@ -831,6 +831,8 @@ tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char *pkcs12_file,
-         ca = NULL;
-         if (!PKCS12_parse(p12, password, &pkey, &cert, &ca))
-         {
-+            crypto_msg(M_WARN, "Decoding PKCS12 failed. Probably wrong password "
-+                               "or unsupported/legacy encryption");
- #ifdef ENABLE_MANAGEMENT
-             if (management && (ERR_GET_REASON(ERR_peek_error()) == PKCS12_R_MAC_VERIFY_FAILURE))
-             {
+@@ -709,10 +709,16 @@ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
+ }
+ 
+ void
+-tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
+-                         )
++tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name)
+ {
+-#ifndef OPENSSL_NO_EC
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++    if (curve_name != NULL)
++    {
++        msg(M_WARN, "WARNING: OpenSSL 3.0+ builds do not support specifying an "
++                    "ECDH curve with --ecdh-curve, using default curves. Use "
++                    "--tls-groups to specify groups.");
++    }
++#elif !defined(OPENSSL_NO_EC)
+     int nid = NID_undef;
+     EC_KEY *ecdh = NULL;
+     const char *sname = NULL;
 -- 
 2.33.0
 
