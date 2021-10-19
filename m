@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:23:06 +0200
-Message-Id: <20211019182332.613155-2-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:23:19 +0200
+Message-Id: <20211019182332.613155-15-arne@...1227...>
 In-Reply-To: <20211019182332.613155-1-arne@...1227...>
 References: <20211019182332.613155-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 01/20] [OSSL 3.0] Use new EVP_MAC API for
- HMAC implementation
+Subject: [Openvpn-devel] [PATCH v2 12/20] [OSSL 3.0] Allow loading of non
+ default providers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,189 +18,167 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The old API is deprecated in OpenSSL 3.0 and the new API does not yet
-exist in OpenSSL 1.1. Emulating the new API would be more complex than
-just having two implementations. So this switches to a new hmac
-implementation for OpenSSL 3.0.
-
-Unfortunately the new API does not have an easy to reset an HMAC, so we need
-to keep the key around to emulate a reset functionality.
+This allows OpenVPN to load non-default providers. This is mainly
+useful for loading the legacy provider with --provider legacy:default
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/crypto_backend.h |  2 +-
- src/openvpn/crypto_mbedtls.c |  2 +-
- src/openvpn/crypto_openssl.c | 96 +++++++++++++++++++++++++++++++++++-
- src/openvpn/crypto_openssl.h |  8 +++
- 4 files changed, 104 insertions(+), 4 deletions(-)
+ doc/man-sections/generic-options.rst | 10 ++++++++++
+ src/openvpn/crypto_backend.h         |  7 +++++++
+ src/openvpn/crypto_mbedtls.c         |  8 ++++++++
+ src/openvpn/crypto_openssl.c         | 29 ++++++++++++++++++++++++++++
+ src/openvpn/openvpn.c                |  4 ++++
+ src/openvpn/options.c                |  4 ++++
+ src/openvpn/options.h                |  1 +
+ 7 files changed, 63 insertions(+)
 
+diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
+index e6c1fe455..f5b8a9135 100644
+--- a/doc/man-sections/generic-options.rst
++++ b/doc/man-sections/generic-options.rst
+@@ -280,6 +280,16 @@ which mode OpenVPN is configured as.
+   This option solves the problem by persisting keys across :code:`SIGUSR1`
+   resets, so they don't need to be re-read.
+ 
++--provider providers
++  Load the : separated list of (OpenSSL) providers. This is mainly useful for
++  using an external provider for key management like tpm2-openssl or to load
++  the legacy provider with
++
++  ::
++
++      --provider "legacy:default"
++
++
+ --remap-usr1 signal
+   Control whether internally or externally generated :code:`SIGUSR1` signals
+   are remapped to :code:`SIGHUP` (restart without persisting state) or
 diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index e9447f82f..e0bfdf585 100644
+index cc897acf4..fa265e6c2 100644
 --- a/src/openvpn/crypto_backend.h
 +++ b/src/openvpn/crypto_backend.h
-@@ -643,7 +643,7 @@ void hmac_ctx_cleanup(hmac_ctx_t *ctx);
-  *
-  * @return              Size of the HMAC, or \0 if ctx is NULL.
+@@ -78,6 +78,13 @@ void crypto_clear_error(void);
   */
--int hmac_ctx_size(const hmac_ctx_t *ctx);
-+int hmac_ctx_size(hmac_ctx_t *ctx);
+ void crypto_init_lib_engine(const char *engine_name);
  
++
++/**
++ * Load the given (OpenSSL) providers
++ * @param providers list of providers to load, seperated by :
++ */
++void crypto_init_lib_provider(const char *providers);
++
+ #ifdef DMALLOC
  /*
-  * Resets the given HMAC context, preserving the associated key information
+  * OpenSSL memory debugging.  If dmalloc debugging is enabled, tell
 diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index c632849db..e2f5f4012 100644
+index 2f7f00d19..e6ed1ae99 100644
 --- a/src/openvpn/crypto_mbedtls.c
 +++ b/src/openvpn/crypto_mbedtls.c
-@@ -939,7 +939,7 @@ hmac_ctx_cleanup(mbedtls_md_context_t *ctx)
+@@ -70,6 +70,14 @@ crypto_init_lib_engine(const char *engine_name)
+         "available");
  }
  
- int
--hmac_ctx_size(const mbedtls_md_context_t *ctx)
-+hmac_ctx_size(mbedtls_md_context_t *ctx)
- {
-     if (NULL == ctx)
-     {
++void crypto_init_lib_provider(const char *providers)
++{
++    if (providers)
++    {
++        msg(M_WARN, "Note: mbed TLS provider functionality is not available");
++    }
++}
++
+ /*
+  *
+  * Functions related to the core crypto library
 diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 419265a51..1c800df7f 100644
+index 407ea4a7c..1900ccc1b 100644
 --- a/src/openvpn/crypto_openssl.c
 +++ b/src/openvpn/crypto_openssl.c
-@@ -1001,7 +1001,7 @@ md_ctx_final(EVP_MD_CTX *ctx, uint8_t *dst)
-  * Generic HMAC functions
+@@ -54,6 +54,9 @@
+ #if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && !defined(LIBRESSL_VERSION_NUMBER)
+ #include <openssl/kdf.h>
+ #endif
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++#include <openssl/provider.h>
++#endif
+ 
+ /*
+  * Check for key size creepage.
+@@ -145,6 +148,32 @@ crypto_init_lib_engine(const char *engine_name)
+ #endif
+ }
+ 
++void
++crypto_init_lib_provider(const char *providers)
++{
++    if (!providers)
++    {
++        return;
++    }
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++    struct gc_arena gc = gc_new();
++    char *tmp_providers = string_alloc(providers, &gc);
++
++    const char *provname;
++    while ((provname = strsep(&tmp_providers, ":")))
++    {
++        /* Load providers into the default (NULL) library context */
++        OSSL_PROVIDER* provider = OSSL_PROVIDER_load(NULL, provname);
++        if (!provider)
++        {
++            crypto_msg(M_FATAL, "failed to load provider '%s'", provname);
++        }
++    }
++#else  /* OPENSSL_VERSION_NUMBER >= 0x30000000L */
++    msg(M_WARN, "Note: OpenSSL hardware crypto engine functionality is not available");
++#endif
++}
++
+ /*
   *
-  */
--
-+#if OPENSSL_VERSION_NUMBER < 0x30000000L
- HMAC_CTX *
- hmac_ctx_new(void)
- {
-@@ -1039,7 +1039,7 @@ hmac_ctx_cleanup(HMAC_CTX *ctx)
+  * Functions related to the core crypto library
+diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
+index f8e94509f..3c9bcf885 100644
+--- a/src/openvpn/openvpn.c
++++ b/src/openvpn/openvpn.c
+@@ -112,6 +112,10 @@ void init_early(struct context *c)
+     /* init verbosity and mute levels */
+     init_verb_mute(c, IVM_LEVEL_1);
+ 
++    /* Initialise OpenVPN provider, this needs to be intialised this
++    * early since option post processing and also openssl info
++    * printing depends on it */
++    crypto_init_lib_provider((*c).options.providers);
  }
  
- int
--hmac_ctx_size(const HMAC_CTX *ctx)
-+hmac_ctx_size(HMAC_CTX *ctx)
- {
-     return HMAC_size(ctx);
- }
-@@ -1066,6 +1066,98 @@ hmac_ctx_final(HMAC_CTX *ctx, uint8_t *dst)
- 
-     HMAC_Final(ctx, dst, &in_hmac_len);
- }
-+#else
-+hmac_ctx_t *
-+hmac_ctx_new(void)
-+{
-+    hmac_ctx_t *ctx;
-+    ALLOC_OBJ_CLEAR(ctx, hmac_ctx_t);
-+    EVP_MAC *hmac = EVP_MAC_fetch(NULL, "HMAC", NULL);
-+    ctx->ctx = EVP_MAC_CTX_new(hmac);
-+    check_malloc_return(ctx->ctx);
-+    return ctx;
-+}
-+
-+void
-+hmac_ctx_free(hmac_ctx_t *ctx)
-+{
-+    EVP_MAC_CTX_free(ctx->ctx);
-+    secure_memzero(ctx, sizeof(hmac_ctx_t));
-+    free(ctx);
-+}
-+
-+void
-+hmac_ctx_init(hmac_ctx_t *ctx, const uint8_t *key, int key_len,
-+              const EVP_MD *kt)
-+{
-+    ASSERT(NULL != kt && NULL != ctx && ctx->ctx != NULL);
-+    ASSERT(key_len <= EVP_MAX_KEY_LENGTH);
-+
-+    /* We need to make a copy of the key since the OSSL parameters
-+     * only reference it */
-+    memcpy(ctx->key, key, key_len);
-+
-+    /* Lookup/setting of parameters in OpenSSL 3.0 are string based
-+     *
-+     * The OSSL_PARAM_construct_utf8_string needs a non const str but this
-+     * only used for lookup so we cast (as OpenSSL also does internally)
-+     * the constness away here.
-+     */
-+    ctx->params[0] = OSSL_PARAM_construct_utf8_string("digest",
-+                                                      (char *) EVP_MD_get0_name(kt), 0);
-+    ctx->params[1] = OSSL_PARAM_construct_octet_string("key",
-+                                                       ctx->key, key_len);
-+    ctx->params[2] = OSSL_PARAM_construct_end();
-+
-+    if (!EVP_MAC_init(ctx->ctx, NULL, 0, ctx->params))
+ static void uninit_early(struct context *c)
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index ed2dcd53d..ab7b00783 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -8178,6 +8178,10 @@ add_option(struct options *options,
+             options->engine = "auto";
+         }
+     }
++    else if (streq(p[0], "provider") && p[1] && !p[2])
 +    {
-+        crypto_msg(M_FATAL, "EVP_MAC_init failed");
++        options->providers = p[1];
 +    }
-+
-+    /* make sure we used a big enough key */
-+    ASSERT(EVP_MAC_CTX_get_mac_size(ctx->ctx) <= key_len);
-+}
-+
-+void
-+hmac_ctx_cleanup(hmac_ctx_t *ctx)
-+{
-+    EVP_MAC_init(ctx->ctx, NULL, 0, NULL);
-+}
-+
-+int
-+hmac_ctx_size(hmac_ctx_t *ctx)
-+{
-+    return (int)EVP_MAC_CTX_get_mac_size(ctx->ctx);
-+}
-+
-+void
-+hmac_ctx_reset(hmac_ctx_t *ctx)
-+{
-+    /* The OpenSSL MAC API lacks a reset method and passing NULL as params
-+     * does not reset it either, so use the params array to reinitialise it the
-+     * same way as before */
-+    if (!EVP_MAC_init(ctx->ctx, NULL, 0, ctx->params))
-+    {
-+        crypto_msg(M_FATAL, "EVP_MAC_init failed");
-+    }
-+}
-+
-+void
-+hmac_ctx_update(hmac_ctx_t *ctx, const uint8_t *src, int src_len)
-+{
-+    EVP_MAC_update(ctx->ctx, src, src_len);
-+}
-+
-+void
-+hmac_ctx_final(hmac_ctx_t *ctx, uint8_t *dst)
-+{
-+    /* The calling code always gives us a buffer that has the size of our
-+     * algorithm */
-+    size_t in_hmac_len = EVP_MAC_CTX_get_mac_size(ctx->ctx);
-+
-+    EVP_MAC_final(ctx->ctx, dst, &in_hmac_len, in_hmac_len);
-+}
-+#endif
- 
- int
- memcmp_constant_time(const void *a, const void *b, size_t size)
-diff --git a/src/openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h
-index 59a31aacf..e540a76b9 100644
---- a/src/openvpn/crypto_openssl.h
-+++ b/src/openvpn/crypto_openssl.h
-@@ -47,7 +47,15 @@ typedef EVP_CIPHER_CTX cipher_ctx_t;
- typedef EVP_MD_CTX md_ctx_t;
- 
- /** Generic HMAC %context. */
-+#if OPENSSL_VERSION_NUMBER < 0x30000000L
- typedef HMAC_CTX hmac_ctx_t;
-+#else
-+typedef struct {
-+    OSSL_PARAM params[3];
-+    uint8_t key[EVP_MAX_KEY_LENGTH];
-+    EVP_MAC_CTX *ctx;
-+} hmac_ctx_t;
-+#endif
- 
- /** Maximum length of an IV */
- #define OPENVPN_MAX_IV_LENGTH   EVP_MAX_IV_LENGTH
+ #endif /* ENABLE_CRYPTO_MBEDTLS */
+ #ifdef ENABLE_PREDICTION_RESISTANCE
+     else if (streq(p[0], "use-prediction-resistance") && !p[1])
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 98c21a2a8..6759f1950 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -521,6 +521,7 @@ struct options
+     const char *prng_hash;
+     int prng_nonce_secret_len;
+     const char *engine;
++    const char *providers;
+     bool replay;
+     bool mute_replay_warnings;
+     int replay_window;
 -- 
 2.33.0
 
