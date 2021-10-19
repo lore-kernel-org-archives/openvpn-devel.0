@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:31:16 +0200
-Message-Id: <20211019183127.614175-11-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:31:18 +0200
+Message-Id: <20211019183127.614175-13-arne@...1227...>
 In-Reply-To: <20211019183127.614175-1-arne@...1227...>
 References: <20211019183127.614175-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 10/21] [OSSL 3.0] Replace
- EVP_get_cipherbyname with EVP_CIPHER_fetch
+Subject: [Openvpn-devel] [PATCH v3 12/21] [OSSL 3.0] Allow loading of non
+ default providers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,77 +18,167 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-In OpenSSL 3.0 EVP_get_cipherbyname return a non NULL algorithm
-even if the algorithm is not avaialble with the currently available
-provider. Luckily EVP_get_cipherbyname can be used here as drop
-in replacement and returns only non NULL if the algorithm is actually
-currently supported.
+This allows OpenVPN to load non-default providers. This is mainly
+useful for loading the legacy provider with --provider legacy:default
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/crypto_openssl.c |  6 +++---
- src/openvpn/openssl_compat.h | 17 +++++++++++++++++
- 2 files changed, 20 insertions(+), 3 deletions(-)
+ doc/man-sections/generic-options.rst | 10 ++++++++++
+ src/openvpn/crypto_backend.h         |  7 +++++++
+ src/openvpn/crypto_mbedtls.c         |  8 ++++++++
+ src/openvpn/crypto_openssl.c         | 29 ++++++++++++++++++++++++++++
+ src/openvpn/openvpn.c                |  4 ++++
+ src/openvpn/options.c                |  4 ++++
+ src/openvpn/options.h                |  1 +
+ 7 files changed, 63 insertions(+)
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 93c85a836..b10bd7cd5 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -572,7 +572,7 @@ cipher_kt_get(const char *ciphername)
-     ASSERT(ciphername);
+diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
+index e6c1fe455..f5b8a9135 100644
+--- a/doc/man-sections/generic-options.rst
++++ b/doc/man-sections/generic-options.rst
+@@ -280,6 +280,16 @@ which mode OpenVPN is configured as.
+   This option solves the problem by persisting keys across :code:`SIGUSR1`
+   resets, so they don't need to be re-read.
  
-     ciphername = translate_cipher_name_from_openvpn(ciphername);
--    cipher = EVP_get_cipherbyname(ciphername);
-+    cipher = EVP_CIPHER_fetch(NULL, ciphername, NULL);
++--provider providers
++  Load the : separated list of (OpenSSL) providers. This is mainly useful for
++  using an external provider for key management like tpm2-openssl or to load
++  the legacy provider with
++
++  ::
++
++      --provider "legacy:default"
++
++
+ --remap-usr1 signal
+   Control whether internally or externally generated :code:`SIGUSR1` signals
+   are remapped to :code:`SIGHUP` (restart without persisting state) or
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index cc897acf4..fa265e6c2 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -78,6 +78,13 @@ void crypto_clear_error(void);
+  */
+ void crypto_init_lib_engine(const char *engine_name);
  
-     if (NULL == cipher)
-     {
-@@ -658,7 +658,7 @@ cipher_kt_block_size(const EVP_CIPHER *cipher)
- 
-     strcpy(mode_str, "-CBC");
- 
--    cbc_cipher = EVP_get_cipherbyname(translate_cipher_name_from_openvpn(name));
-+    cbc_cipher = EVP_CIPHER_fetch(NULL,translate_cipher_name_from_openvpn(name), NULL);
-     if (cbc_cipher)
-     {
-         block_size = EVP_CIPHER_block_size(cbc_cipher);
-@@ -894,7 +894,7 @@ md_kt_get(const char *digest)
- {
-     const EVP_MD *md = NULL;
-     ASSERT(digest);
--    md = EVP_get_digestbyname(digest);
-+    md = EVP_MD_fetch(NULL, digest, NULL);
-     if (!md)
-     {
-         crypto_msg(M_FATAL, "Message hash algorithm '%s' not found", digest);
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index dda47d76c..0893bfbb2 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -758,6 +758,23 @@ SSL_CTX_new_ex(void *libctx, const char *propq, const SSL_METHOD *method)
-     (void) propq;
-     return SSL_CTX_new(method);
++
++/**
++ * Load the given (OpenSSL) providers
++ * @param providers list of providers to load, seperated by :
++ */
++void crypto_init_lib_provider(const char *providers);
++
+ #ifdef DMALLOC
+ /*
+  * OpenSSL memory debugging.  If dmalloc debugging is enabled, tell
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index 2f7f00d19..e6ed1ae99 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -70,6 +70,14 @@ crypto_init_lib_engine(const char *engine_name)
+         "available");
  }
-+/* Mimics the functions but only when the default context without
-+ * options is chosen */
-+static inline const EVP_CIPHER *
-+EVP_CIPHER_fetch(void *ctx, const char *algorithm, const char *properties)
+ 
++void crypto_init_lib_provider(const char *providers)
 +{
-+    ASSERT(!ctx);
-+    ASSERT(!properties);
-+    return EVP_get_cipherbyname(algorithm);
++    if (providers)
++    {
++        msg(M_WARN, "Note: mbed TLS provider functionality is not available");
++    }
 +}
 +
-+static inline const EVP_MD*
-+EVP_MD_fetch(void *ctx, const char *algorithm, const char *properties)
-+{
-+    ASSERT(!ctx);
-+    ASSERT(!properties);
-+    return EVP_get_digestbyname(algorithm);
-+}
- #endif /* OPENSSL_VERSION_NUMBER < 0x30000000L */
+ /*
+  *
+  * Functions related to the core crypto library
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 407ea4a7c..1900ccc1b 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -54,6 +54,9 @@
+ #if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && !defined(LIBRESSL_VERSION_NUMBER)
+ #include <openssl/kdf.h>
+ #endif
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++#include <openssl/provider.h>
++#endif
  
- #endif /* OPENSSL_COMPAT_H_ */
+ /*
+  * Check for key size creepage.
+@@ -145,6 +148,32 @@ crypto_init_lib_engine(const char *engine_name)
+ #endif
+ }
+ 
++void
++crypto_init_lib_provider(const char *providers)
++{
++    if (!providers)
++    {
++        return;
++    }
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++    struct gc_arena gc = gc_new();
++    char *tmp_providers = string_alloc(providers, &gc);
++
++    const char *provname;
++    while ((provname = strsep(&tmp_providers, ":")))
++    {
++        /* Load providers into the default (NULL) library context */
++        OSSL_PROVIDER* provider = OSSL_PROVIDER_load(NULL, provname);
++        if (!provider)
++        {
++            crypto_msg(M_FATAL, "failed to load provider '%s'", provname);
++        }
++    }
++#else  /* OPENSSL_VERSION_NUMBER >= 0x30000000L */
++    msg(M_WARN, "Note: OpenSSL hardware crypto engine functionality is not available");
++#endif
++}
++
+ /*
+  *
+  * Functions related to the core crypto library
+diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
+index f8e94509f..3c9bcf885 100644
+--- a/src/openvpn/openvpn.c
++++ b/src/openvpn/openvpn.c
+@@ -112,6 +112,10 @@ void init_early(struct context *c)
+     /* init verbosity and mute levels */
+     init_verb_mute(c, IVM_LEVEL_1);
+ 
++    /* Initialise OpenVPN provider, this needs to be intialised this
++    * early since option post processing and also openssl info
++    * printing depends on it */
++    crypto_init_lib_provider((*c).options.providers);
+ }
+ 
+ static void uninit_early(struct context *c)
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index ed2dcd53d..ab7b00783 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -8178,6 +8178,10 @@ add_option(struct options *options,
+             options->engine = "auto";
+         }
+     }
++    else if (streq(p[0], "provider") && p[1] && !p[2])
++    {
++        options->providers = p[1];
++    }
+ #endif /* ENABLE_CRYPTO_MBEDTLS */
+ #ifdef ENABLE_PREDICTION_RESISTANCE
+     else if (streq(p[0], "use-prediction-resistance") && !p[1])
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 98c21a2a8..6759f1950 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -521,6 +521,7 @@ struct options
+     const char *prng_hash;
+     int prng_nonce_secret_len;
+     const char *engine;
++    const char *providers;
+     bool replay;
+     bool mute_replay_warnings;
+     int replay_window;
 -- 
 2.33.0
 
