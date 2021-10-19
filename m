@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:23:12 +0200
-Message-Id: <20211019182332.613155-8-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:23:25 +0200
+Message-Id: <20211019182332.613155-21-arne@...1227...>
 In-Reply-To: <20211019182332.613155-1-arne@...1227...>
 References: <20211019182332.613155-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 06/20] [OSSL 3.0] Deprecate --ecdh-curve
- with OpenSSL 3.0 and adjust mbed TLS message
+Subject: [Openvpn-devel] [PATCH v2 15/16] Fix error when BF-CBC is not
+ available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,57 +18,30 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-OpenSSL 3.0 deprecates SSL_CTX_set_tmp_ecdh() in favour of
-SSL_CTX_set1_groups(3). We already support the SSL_CTX_set1_groups
-using the --tls-groups. Adjust both mbed TLS and OpenSSL 3.0 to
-say that --ecdh-curve is ingored and --tls-groups should be used.
+Through the multiple iteration of allowing OpenVPN to run without
+BF-CBC we accidentially made a regression and still required BF-CBC.
+
+This patch fixes the code path and restores its intended function.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/ssl_mbedtls.c |  5 +++--
- src/openvpn/ssl_openssl.c | 12 +++++++++---
- 2 files changed, 12 insertions(+), 5 deletions(-)
+ src/openvpn/options.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index cea88f41e..e7c45c099 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -440,8 +440,9 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
- {
-     if (NULL != curve_name)
-     {
--        msg(M_WARN, "WARNING: mbed TLS builds do not support specifying an ECDH "
--            "curve, using default curves.");
-+        msg(M_WARN, "WARNING: mbed TLS builds do not support specifying an "
-+            "ECDH curve with --ecdh-curve, using default curves. Use "
-+            "--tls-groups to specify curves.");
-     }
- }
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index ab7b00783..fe873944b 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3797,6 +3797,9 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
  
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index a44d4f85c..92d8d0eeb 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -709,10 +709,16 @@ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
- }
+             /* overhead of BF-CBC: 64 bit block size, 64 bit IV size */
+             frame_add_to_extra_frame(&fake_frame, 64/8 + 64/8);
++            /* set ciphername to none, so its size does get added in the fake_kt and
++             * the cipher is not tried to be resolved */
++            ciphername = "none";
+         }
  
- void
--tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
--                         )
-+tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name)
- {
--#ifndef OPENSSL_NO_EC
-+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
-+    if (curve_name != NULL)
-+    {
-+        msg(M_WARN, "WARNING: OpenSSL 3.0+ builds do not support specifying an "
-+                    "ECDH curve with --ecdh-curve, using default curves. Use "
-+                    "--tls-groups to specify groups.");
-+    }
-+#elif !defined(OPENSSL_NO_EC)
-     int nid = NID_undef;
-     EC_KEY *ecdh = NULL;
-     const char *sname = NULL;
+         init_key_type(&fake_kt, ciphername, o->authname, true, false);
 -- 
 2.33.0
 
