@@ -1,12 +1,13 @@
 References: <20211019034118.28987-1-selva.nair@...277...>
+ <20211019034118.28987-2-selva.nair@...277...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <4d80604c-b112-c3d5-4f54-a07962e3f7fe@...1227...>
-Date: Tue, 19 Oct 2021 12:22:37 +0200
+Message-ID: <11ff0dad-e26e-358b-11d5-ecf855e29f4c@...1227...>
+Date: Tue, 19 Oct 2021 12:24:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <20211019034118.28987-1-selva.nair@...277...>
+In-Reply-To: <20211019034118.28987-2-selva.nair@...277...>
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH 1/3] Require Windows CNG keys for
- cryptoapicert
+Subject: Re: [Openvpn-devel] [PATCH 2/3] Remove error injection into OpenSSL
+ from cryptoapi.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,33 +23,30 @@ To: selva.nair@...277..., "openvpn-devel@lists.sourceforge.net" <openvpn-devel@l
 Am 19.10.21 um 05:41 schrieb selva.nair@...277...:
 > From: Selva Nair <selva.nair@...277...>
 > 
-> Some legacy tokens do not have drivers compatible with
-> Windows Cryptography Next generation API (CNG) and require
-> the old CAPI interface. These also do not support anything
-> but RSA_PKCS1 signatures with MD5+SHA1 digests, and can only
-> handle TLS 1.1 and older. Continuing to support these add
-> too much maintenance burden especially with newer version of
-> OpenSSL and has very little benefit.
+> There is no advantage in injecting/redirecting errors into OpenSSL
+> as we can, and we do, report these directly using our own logging
+> functions. This code probably originated from CAPI engine where
+> such usage made sense.
 > 
-> - Remove support for non CNG interface which also removes
->   support for such legacy tokens. Keys uploaded to Windows
->   certificate stores are not affected.
+> And, in cases when the error is within OpenSSL, guessing a
+> reason (like out of memory) and inserting it into the
+> OpenSSL error stack looks pointless.
 > 
-> - Remove support for OpenSSL versions < 1.1.1 in Windows
->   builds
+> As a bonus, the code gets leaner and a lot less cruft.
 > 
-> Note: TLS 1.0 and 1.1 is still supported. Only signing with legacy
-> tokens that have drivers incompatible with CNG is affected. These
-> can still be used with pkcs11-helper.
+> Some error messages are slightly edited and all near-fatal
+> errors are logged with M_NONFATAL and "Error in cryptoapicert:"
+> prefix.
 > 
-> Tested on Windows 10 with RSA and EC keys in store
+> Also remove some defines for mingw that we do not need.
 > 
+> Signed-off-by: Selva Nair <selva.nair@...277...>
+
 
 Acked-By: Arne Schwabe <arne@...1227...>
 
-I haven't tested it myself but the code change looks good and supporting
-keys that only support TLS 1.1 is indeed silly nowadays.
-
 Arne
+
+
 
 
