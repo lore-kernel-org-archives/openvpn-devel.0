@@ -1,6 +1,7 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Sat, 16 Oct 2021 00:31:15 +0300
-Message-Id: <20211015213115.516-1-lstipakov@...277...>
+Date: Tue, 19 Oct 2021 17:17:17 +0300
+Message-Id: <20211019141717.5496-1-lev@...515...>
+MIME-Version: 1.0
 Subject: [Openvpn-devel] [PATCH] GitHub Actions: use latest working
  lukka/run-vcpkg
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,8 +16,6 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Lev Stipakov <lev@...515...>
-
-From: Lev Stipakov <lev@...515...>
 
 Latest lukka/run-vcpkg@...2637... seem to break non-manifest
 mode with custom triplets, so revert to latest working version.
@@ -47,6 +46,6 @@ index 514ae66b..abf32b14 100644
  
        - name: Build
 -- 
-2.23.0.windows.1
+2.25.1
 
 
