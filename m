@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:23:18 +0200
-Message-Id: <20211019182332.613155-14-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:23:10 +0200
+Message-Id: <20211019182332.613155-6-arne@...1227...>
 In-Reply-To: <20211019182332.613155-1-arne@...1227...>
 References: <20211019182332.613155-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 11/20] [OSSL 3.0] USe EVP_MD_get0_name
- instead EV_MD_name
+Subject: [Openvpn-devel] [PATCH v2 04/20] [OSSL 3.0] Remove DES check with
+ OpenSSL 3.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,41 +18,41 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Use the new name for the function as it indicates with
-get0 the ownership of the returned value
+DES is very deprecated and accidently getting on the of the 16 insecure
+keys that OpenSSL checks is extremely unlikely so we no longer use the
+deprecated functions without replacement in OpenSSL 3.0.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/crypto_openssl.c | 2 +-
- src/openvpn/openssl_compat.h | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ src/openvpn/crypto_openssl.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index b10bd7cd5..407ea4a7c 100644
+index 021698f12..8db2ddd09 100644
 --- a/src/openvpn/crypto_openssl.c
 +++ b/src/openvpn/crypto_openssl.c
-@@ -916,7 +916,7 @@ md_kt_name(const EVP_MD *kt)
-     {
-         return "[null-digest]";
-     }
--    return EVP_MD_name(kt);
-+    return EVP_MD_get0_name(kt);
+@@ -521,6 +521,11 @@ key_des_num_cblocks(const EVP_CIPHER *kt)
+ bool
+ key_des_check(uint8_t *key, int key_len, int ndc)
+ {
++#if OPENSSL_VERSION_NUMBER < 0x30000000L
++    /* DES is deprecated and the method to even check the keys is deprecated
++     * in OpenSSL 3.0. Instead of checking for the 16 weak/semi-weak keys
++     * we just accept them in OpenSSL 3.0 since the risk of randomly getting
++     * these is pretty weak */
+     int i;
+     struct buffer b;
+ 
+@@ -553,6 +558,9 @@ key_des_check(uint8_t *key, int key_len, int ndc)
+ err:
+     ERR_clear_error();
+     return false;
++#else
++    return true;
++#endif
  }
  
- unsigned char
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index 0893bfbb2..2aa718a33 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -751,6 +751,8 @@ int EVP_PKEY_get_group_name(EVP_PKEY *pkey, char *gname, size_t gname_sz,
- 
- /** Mimics SSL_CTX_new_ex for OpenSSL < 3 */
- #if OPENSSL_VERSION_NUMBER < 0x30000000L
-+#define EVP_MD_get0_name EVP_MD_name
-+
- static inline SSL_CTX *
- SSL_CTX_new_ex(void *libctx, const char *propq, const SSL_METHOD *method)
- {
+ void
 -- 
 2.33.0
 
