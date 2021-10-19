@@ -1,8 +1,8 @@
-Date: Tue, 19 Oct 2021 11:41:34 +0200 (CEST)
-Message-Id: <202110190941.19J9fYfi084620@...2054...>
+Date: Tue, 19 Oct 2021 11:46:17 +0200 (CEST)
+Message-Id: <202110190946.19J9kHqs084764@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211015184733.16988-1-selva.nair@...277...>
-References: <20211015184733.16988-1-selva.nair@...277...>
+In-Reply-To: <20211015175330.15760-1-selva.nair@...277...>
+References: <20211015175330.15760-1-selva.nair@...277...>
 Subject: [Openvpn-devel] [PATCH applied] Re: Fix some more wrong defines in
  config-msvc.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,23 +18,20 @@ Content-Transfer-Encoding: 8bit
 To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks.
+Thanks.  As with the 2.5 patch, removed the DEBUG #define, and changed
+commit message to just refer to trac with "Trac: #1430"
 
-I have adjusted the commit message ("should fix Trac #1430") and removed
-the #define ENABLE_DEBUG 0, as instructed.
+Your patch has been applied to the master branch.
 
-Your patch has been applied to the release/2.5 branch.
-
-commit c699c0d85cf2028796cdb0592271f1167709e6ac
+commit 077445d0d82128dc90e50043546d4a2d8647eb9c
 Author: Selva Nair
-Date:   Fri Oct 15 14:47:33 2021 -0400
+Date:   Fri Oct 15 13:53:30 2021 -0400
 
      Fix some more wrong defines in config-msvc.h
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20211015184733.16988-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22943.html
+     Message-Id: <20211015175330.15760-1-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22942.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
