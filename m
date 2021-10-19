@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:31:11 +0200
-Message-Id: <20211019183127.614175-6-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:31:12 +0200
+Message-Id: <20211019183127.614175-7-arne@...1227...>
 In-Reply-To: <20211019183127.614175-1-arne@...1227...>
 References: <20211019183127.614175-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 05/21] [OSSL 3.0] Use EVP_PKEY based API
- for loading DH keys
+Subject: [Openvpn-devel] [PATCH v3 06/21] [OSSL 3.0] Deprecate --ecdh-curve
+ with OpenSSL 3.0 and adjust mbed TLS message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,62 +18,57 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-OpenSSL 3.0 replaces the DH API with a generic EVP_KEY based API to
-load DH parameters.
+OpenSSL 3.0 deprecates SSL_CTX_set_tmp_ecdh() in favour of
+SSL_CTX_set1_groups(3). We already support the SSL_CTX_set1_groups
+using the --tls-groups. Adjust both mbed TLS and OpenSSL 3.0 to
+say that --ecdh-curve is ingored and --tls-groups should be used.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/ssl_openssl.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+ src/openvpn/ssl_mbedtls.c |  5 +++--
+ src/openvpn/ssl_openssl.c | 12 +++++++++---
+ 2 files changed, 12 insertions(+), 5 deletions(-)
 
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index cea88f41e..e7c45c099 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -440,8 +440,9 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
+ {
+     if (NULL != curve_name)
+     {
+-        msg(M_WARN, "WARNING: mbed TLS builds do not support specifying an ECDH "
+-            "curve, using default curves.");
++        msg(M_WARN, "WARNING: mbed TLS builds do not support specifying an "
++            "ECDH curve with --ecdh-curve, using default curves. Use "
++            "--tls-groups to specify curves.");
+     }
+ }
+ 
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 9a7cb9c64..a44d4f85c 100644
+index a44d4f85c..92d8d0eeb 100644
 --- a/src/openvpn/ssl_openssl.c
 +++ b/src/openvpn/ssl_openssl.c
-@@ -649,7 +649,6 @@ void
- tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
-                        bool dh_file_inline)
- {
--    DH *dh;
-     BIO *bio;
- 
-     ASSERT(NULL != ctx);
-@@ -670,7 +669,26 @@ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
-         }
-     }
- 
--    dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL);
-+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
-+    EVP_PKEY *dh = PEM_read_bio_Parameters(bio, NULL);
-+    BIO_free(bio);
-+
-+    if (!dh)
-+    {
-+        crypto_msg(M_FATAL, "Cannot load DH parameters from %s",
-+                   print_key_filename(dh_file, dh_file_inline));
-+    }
-+    if (!SSL_CTX_set0_tmp_dh_pkey(ctx->ctx, dh))
-+    {
-+        crypto_msg(M_FATAL, "SSL_CTX_set_tmp_dh");
-+    }
-+
-+    msg(D_TLS_DEBUG_LOW, "Diffie-Hellman initialized with %d bit key",
-+        8 * EVP_PKEY_get_size(dh));
-+
-+    EVP_PKEY_free(dh);
-+#else
-+    DH *dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL);
-     BIO_free(bio);
- 
-     if (!dh)
-@@ -687,6 +705,7 @@ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
-         8 * DH_size(dh));
- 
-     DH_free(dh);
-+#endif
+@@ -709,10 +709,16 @@ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
  }
  
  void
+-tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
+-                         )
++tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name)
+ {
+-#ifndef OPENSSL_NO_EC
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++    if (curve_name != NULL)
++    {
++        msg(M_WARN, "WARNING: OpenSSL 3.0+ builds do not support specifying an "
++                    "ECDH curve with --ecdh-curve, using default curves. Use "
++                    "--tls-groups to specify groups.");
++    }
++#elif !defined(OPENSSL_NO_EC)
+     int nid = NID_undef;
+     EC_KEY *ecdh = NULL;
+     const char *sname = NULL;
 -- 
 2.33.0
 
