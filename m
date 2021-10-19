@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:23:09 +0200
-Message-Id: <20211019182332.613155-5-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:23:27 +0200
+Message-Id: <20211019182332.613155-23-arne@...1227...>
 In-Reply-To: <20211019182332.613155-1-arne@...1227...>
 References: <20211019182332.613155-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 03/20] [OSSL 3.0] Implement DES ECB
- encrypt via EVP_CIPHER api
+Subject: [Openvpn-devel] [PATCH v2 16/16] Add insecure tls-cert-profile
+ options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,49 +18,73 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Even though DES is super outdated and also NTLM is super outdated,
-eliminating the warnings for OpenSSL 3.0 is still a step in the right
-direction and using the correct APIs.
+The recent deprecation of SHA1 certificates in OpenSSL 3.0 makes it necessary
+to reallow them in certain deployments. Currently this works by using the
+hack of using tls-cipher "DEFAULT:@SECLEVEL=0". Add insecure as option to
+tls-cert-profile to allow setting a seclevel of 0.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/crypto_openssl.c | 22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+ doc/man-sections/tls-options.rst | 6 ++++++
+ src/openvpn/ssl_mbedtls.c        | 3 ++-
+ src/openvpn/ssl_openssl.c        | 6 +++++-
+ 3 files changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 1c800df7f..021698f12 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -879,10 +879,26 @@ cipher_des_encrypt_ecb(const unsigned char key[DES_KEY_LENGTH],
-                        unsigned char src[DES_KEY_LENGTH],
-                        unsigned char dst[DES_KEY_LENGTH])
- {
--    DES_key_schedule sched;
-+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-+    if (!ctx)
-+    {
-+        crypto_msg(M_FATAL, "%s: EVP_CIPHER_CTX_new() failed", __func__);
-+    }
-+    if (!EVP_EncryptInit_ex(ctx, EVP_bf_ecb(), NULL, key, 0))
-+    {
-+        crypto_msg(M_FATAL, "%s: EVP_EncryptInit_ex() failed", __func__);
-+    }
+diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
+index eaf38395d..ac5756034 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -373,6 +373,9 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
  
--    DES_set_key_unchecked((DES_cblock *)key, &sched);
--    DES_ecb_encrypt((DES_cblock *)src, (DES_cblock *)dst, &sched, DES_ENCRYPT);
-+    int len;
-+    if(!EVP_EncryptUpdate(ctx, dst, &len, src, DES_KEY_LENGTH))
-+    {
-+        crypto_msg(M_FATAL, "%s: EVP_EncryptUpdate() failed", __func__);
-+    }
+   The following profiles are supported:
+ 
++  :code:`insecure`
++      Identical for mbed TLS to `legacy`
 +
-+    if (!EVP_EncryptFinal(ctx, dst + len, &len))
-+    {
-+        crypto_msg(M_FATAL, "%s: EVP_EncryptFinal() failed", __func__);
-+    }
- }
+   :code:`legacy` (default)
+       SHA1 and newer, RSA 2048-bit+, any elliptic curve.
  
- /*
+@@ -385,6 +388,9 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
+   This option is only fully supported for mbed TLS builds. OpenSSL builds
+   use the following approximation:
+ 
++  :code:`insecure`
++      sets "security level 0"
++
+   :code:`legacy` (default)
+       sets "security level 1"
+ 
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index e7c45c099..acf4993fd 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -336,7 +336,8 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+ void
+ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
+ {
+-    if (!profile || 0 == strcmp(profile, "legacy"))
++    if (!profile || 0 == strcmp(profile, "legacy")
++        || 0 == strcmp(profile, "insecure"))
+     {
+         ctx->cert_profile = openvpn_x509_crt_profile_legacy;
+     }
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index d93292700..b29765daf 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -532,7 +532,11 @@ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
+      * callbacks that we could try to implement to achieve something similar.
+      * For now, use OpenSSL's security levels to achieve similar (but not equal)
+      * behaviour. */
+-    if (!profile || 0 == strcmp(profile, "legacy"))
++    if (!profile || 0 == strcmp(profile, "insecure"))
++    {
++        SSL_CTX_set_security_level(ctx->ctx, 0);
++    }
++    else if (!profile || 0 == strcmp(profile, "legacy"))
+     {
+         SSL_CTX_set_security_level(ctx->ctx, 1);
+     }
 -- 
 2.33.0
 
