@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:31:23 +0200
-Message-Id: <20211019183127.614175-18-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:31:25 +0200
+Message-Id: <20211019183127.614175-20-arne@...1227...>
 In-Reply-To: <20211019183127.614175-1-arne@...1227...>
 References: <20211019183127.614175-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 17/21] Add small unit test for testing
- HMAC
+Subject: [Openvpn-devel] [PATCH v3 19/21] Add insecure tls-cert-profile
+ options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,106 +18,73 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This just adds a very simple unit test to check that the HMAC
-implementation produces a well known hash.
+The recent deprecation of SHA1 certificates in OpenSSL 3.0 makes it necessary
+to reallow them in certain deployments. Currently this works by using the
+hack of using tls-cipher "DEFAULT:@SECLEVEL=0". Add insecure as option to
+tls-cert-profile to allow setting a seclevel of 0.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- tests/unit_tests/openvpn/test_crypto.c | 61 +++++++++++++++++++++++---
- 1 file changed, 54 insertions(+), 7 deletions(-)
+ doc/man-sections/tls-options.rst | 6 ++++++
+ src/openvpn/ssl_mbedtls.c        | 3 ++-
+ src/openvpn/ssl_openssl.c        | 6 +++++-
+ 3 files changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
-index 32063fc46..66f53a020 100644
---- a/tests/unit_tests/openvpn/test_crypto.c
-+++ b/tests/unit_tests/openvpn/test_crypto.c
-@@ -141,6 +141,11 @@ static uint8_t good_prf[32] = {0xd9, 0x8c, 0x85, 0x18, 0xc8, 0x5e, 0x94, 0x69,
-                                0x27, 0x91, 0x6a, 0xcf, 0xc2, 0xd5, 0x92, 0xfb,
-                                0xb1, 0x56, 0x7e, 0x4b, 0x4b, 0x14, 0x59, 0xe6,
-                                0xa9, 0x04, 0xac, 0x2d, 0xda, 0xb7, 0x2d, 0x67};
+diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
+index eaf38395d..ac5756034 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -373,6 +373,9 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
+ 
+   The following profiles are supported:
+ 
++  :code:`insecure`
++      Identical for mbed TLS to `legacy`
 +
-+static const char* ipsumlorem = "Lorem ipsum dolor sit amet, consectetur "
-+                                "adipisici elit, sed eiusmod tempor incidunt "
-+                                "ut labore et dolore magna aliqua.";
+   :code:`legacy` (default)
+       SHA1 and newer, RSA 2048-bit+, any elliptic curve.
+ 
+@@ -385,6 +388,9 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
+   This option is only fully supported for mbed TLS builds. OpenSSL builds
+   use the following approximation:
+ 
++  :code:`insecure`
++      sets "security level 0"
 +
- static void
- crypto_test_tls_prf(void **state)
+   :code:`legacy` (default)
+       sets "security level 1"
+ 
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index e7c45c099..acf4993fd 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -336,7 +336,8 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+ void
+ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
  {
-@@ -150,12 +155,6 @@ crypto_test_tls_prf(void **state)
-     const size_t seed_len = strlen(seedstr);
- 
- 
--
--
--    const char* ipsumlorem = "Lorem ipsum dolor sit amet, consectetur "
--                             "adipisici elit, sed eiusmod tempor incidunt ut "
--                             "labore et dolore magna aliqua.";
--
-     const unsigned char *secret = (const unsigned char *) ipsumlorem;
-     size_t secret_len = strlen((const char *)secret);
- 
-@@ -166,13 +165,61 @@ crypto_test_tls_prf(void **state)
-     assert_memory_equal(good_prf, out, sizeof(out));
- }
- 
-+static uint8_t testkey[20] = {0x0b, 0x00};
-+static uint8_t goodhash[20] = {0x58, 0xea, 0x5a, 0xf0, 0x42, 0x94, 0xe9, 0x17,
-+                               0xed, 0x84, 0xb9, 0xf0, 0x83, 0x30, 0x23, 0xae,
-+                               0x8b, 0xa7, 0x7e, 0xb8};
-+
-+static void
-+crypto_test_hmac(void **state)
-+{
-+    hmac_ctx_t *hmac = hmac_ctx_new();
-+    const md_kt_t *sha1 = md_kt_get("SHA1");
-+
-+    assert_int_equal(md_kt_size(sha1), 20);
-+
-+    uint8_t key[20];
-+    memcpy(key, testkey, sizeof(key));
-+
-+    hmac_ctx_init(hmac, key, 20, sha1);
-+    hmac_ctx_update(hmac, (const uint8_t *)ipsumlorem, (int) strlen(ipsumlorem));
-+    hmac_ctx_update(hmac, (const uint8_t *)ipsumlorem, (int) strlen(ipsumlorem));
-+
-+    uint8_t hash[20];
-+    hmac_ctx_final(hmac, hash);
-+
-+    assert_memory_equal(hash, goodhash, sizeof(hash));
-+    memset(hash, 0x00, sizeof(hash));
-+
-+    /* try again */
-+    hmac_ctx_reset(hmac);
-+    hmac_ctx_update(hmac, (const uint8_t *)ipsumlorem, (int) strlen(ipsumlorem));
-+    hmac_ctx_update(hmac, (const uint8_t *)ipsumlorem, (int) strlen(ipsumlorem));
-+    hmac_ctx_final(hmac, hash);
-+
-+    assert_memory_equal(hash, goodhash, sizeof(hash));
-+
-+    /* Fill our key with random data to ensure it is not used by hmac anymore */
-+    memset(key, 0x55, sizeof(key));
-+
-+    hmac_ctx_reset(hmac);
-+    hmac_ctx_update(hmac, (const uint8_t *)ipsumlorem, (int) strlen(ipsumlorem));
-+    hmac_ctx_update(hmac, (const uint8_t *)ipsumlorem, (int) strlen(ipsumlorem));
-+    hmac_ctx_final(hmac, hash);
-+
-+    assert_memory_equal(hash, goodhash, sizeof(hash));
-+    hmac_ctx_cleanup(hmac);
-+    hmac_ctx_free(hmac);
-+}
-+
- int
- main(void)
- {
-     const struct CMUnitTest tests[] = {
-         cmocka_unit_test(crypto_pem_encode_decode_loopback),
-         cmocka_unit_test(crypto_translate_cipher_names),
--        cmocka_unit_test(crypto_test_tls_prf)
-+        cmocka_unit_test(crypto_test_tls_prf),
-+        cmocka_unit_test(crypto_test_hmac)
-     };
- 
- #if defined(ENABLE_CRYPTO_OPENSSL)
+-    if (!profile || 0 == strcmp(profile, "legacy"))
++    if (!profile || 0 == strcmp(profile, "legacy")
++        || 0 == strcmp(profile, "insecure"))
+     {
+         ctx->cert_profile = openvpn_x509_crt_profile_legacy;
+     }
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index d93292700..b29765daf 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -532,7 +532,11 @@ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
+      * callbacks that we could try to implement to achieve something similar.
+      * For now, use OpenSSL's security levels to achieve similar (but not equal)
+      * behaviour. */
+-    if (!profile || 0 == strcmp(profile, "legacy"))
++    if (!profile || 0 == strcmp(profile, "insecure"))
++    {
++        SSL_CTX_set_security_level(ctx->ctx, 0);
++    }
++    else if (!profile || 0 == strcmp(profile, "legacy"))
+     {
+         SSL_CTX_set_security_level(ctx->ctx, 1);
+     }
 -- 
 2.33.0
 
