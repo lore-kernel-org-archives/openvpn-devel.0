@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:23:25 +0200
-Message-Id: <20211019182332.613155-21-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:23:28 +0200
+Message-Id: <20211019182332.613155-24-arne@...1227...>
 In-Reply-To: <20211019182332.613155-1-arne@...1227...>
 References: <20211019182332.613155-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 15/16] Fix error when BF-CBC is not
- available
+Subject: [Openvpn-devel] [PATCH v2 16/20] Add message when decoding PKCS12
+ file fails.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,30 +18,33 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Through the multiple iteration of allowing OpenVPN to run without
-BF-CBC we accidentially made a regression and still required BF-CBC.
+Currently we never display the OpenSSL error stack when decoding a
+PCKS12 file fails. With LibreSSL defaulting to RC2-40-CBC, the failure
+might not be a wrong password but can actually be an unsupported
+encoding, seeing the error stack is really helpful (example from OpenSSL 3.0):
 
-This patch fixes the code path and restores its intended function.
+error:0308010C:digital envelope routines:inner_evp_generic_fetch:unsupported:crypto/evp/evp_fetch.c:346:Global  default library context, Algorithm (RC2-40-CBC : 0), Properties ()
+
+to pinpoint the issue
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/options.c | 3 +++
- 1 file changed, 3 insertions(+)
+ src/openvpn/ssl_openssl.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index ab7b00783..fe873944b 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3797,6 +3797,9 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
- 
-             /* overhead of BF-CBC: 64 bit block size, 64 bit IV size */
-             frame_add_to_extra_frame(&fake_frame, 64/8 + 64/8);
-+            /* set ciphername to none, so its size does get added in the fake_kt and
-+             * the cipher is not tried to be resolved */
-+            ciphername = "none";
-         }
- 
-         init_key_type(&fake_kt, ciphername, o->authname, true, false);
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 8ec96e66c..d93292700 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -831,6 +831,8 @@ tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char *pkcs12_file,
+         ca = NULL;
+         if (!PKCS12_parse(p12, password, &pkey, &cert, &ca))
+         {
++            crypto_msg(M_WARN, "Decoding PKCS12 failed. Probably wrong password "
++                               "or unsupported/legacy encryption");
+ #ifdef ENABLE_MANAGEMENT
+             if (management && (ERR_GET_REASON(ERR_peek_error()) == PKCS12_R_MAC_VERIFY_FAILURE))
+             {
 -- 
 2.33.0
 
