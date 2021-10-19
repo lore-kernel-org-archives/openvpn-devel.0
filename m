@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:31:09 +0200
-Message-Id: <20211019183127.614175-4-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:31:14 +0200
+Message-Id: <20211019183127.614175-9-arne@...1227...>
 In-Reply-To: <20211019183127.614175-1-arne@...1227...>
 References: <20211019183127.614175-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 03/21] [OSSL 3.0] Implement DES ECB
- encrypt via EVP_CIPHER api
+Subject: [Openvpn-devel] [PATCH v3 08/21] [OSSL 3.0] Use
+ EVP_PKEY_get_group_name to query group name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,49 +18,93 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Even though DES is super outdated and also NTLM is super outdated,
-eliminating the warnings for OpenSSL 3.0 is still a step in the right
-direction and using the correct APIs.
+EC_Key methods are deprecated in OpenSSL 3.0. Use
+EVP_PKEY_get_group_name instead to query the EC group name from an
+EVP_PKEY and add a compatibility function for older OpenSSL versions.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/crypto_openssl.c | 22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+ src/openvpn/openssl_compat.h | 42 ++++++++++++++++++++++++++++++++++++
+ src/openvpn/ssl_openssl.c    | 14 ++++++------
+ 2 files changed, 50 insertions(+), 6 deletions(-)
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 1c800df7f..021698f12 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -879,10 +879,26 @@ cipher_des_encrypt_ecb(const unsigned char key[DES_KEY_LENGTH],
-                        unsigned char src[DES_KEY_LENGTH],
-                        unsigned char dst[DES_KEY_LENGTH])
- {
--    DES_key_schedule sched;
-+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-+    if (!ctx)
-+    {
-+        crypto_msg(M_FATAL, "%s: EVP_CIPHER_CTX_new() failed", __func__);
-+    }
-+    if (!EVP_EncryptInit_ex(ctx, EVP_bf_ecb(), NULL, key, 0))
-+    {
-+        crypto_msg(M_FATAL, "%s: EVP_EncryptInit_ex() failed", __func__);
-+    }
- 
--    DES_set_key_unchecked((DES_cblock *)key, &sched);
--    DES_ecb_encrypt((DES_cblock *)src, (DES_cblock *)dst, &sched, DES_ENCRYPT);
-+    int len;
-+    if(!EVP_EncryptUpdate(ctx, dst, &len, src, DES_KEY_LENGTH))
-+    {
-+        crypto_msg(M_FATAL, "%s: EVP_EncryptUpdate() failed", __func__);
-+    }
-+
-+    if (!EVP_EncryptFinal(ctx, dst + len, &len))
-+    {
-+        crypto_msg(M_FATAL, "%s: EVP_EncryptFinal() failed", __func__);
-+    }
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index ce8e2b360..dda47d76c 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -718,4 +718,46 @@ SSL_CTX_set_max_proto_version(SSL_CTX *ctx, long tls_ver_max)
+     return 1;
  }
+ #endif /* if OPENSSL_VERSION_NUMBER < 0x10100000L && !defined(ENABLE_CRYPTO_WOLFSSL) */
++
++/* Functionality missing in 1.1.1 */
++#if OPENSSL_VERSION_NUMBER < 0x30000000L && !defined(OPENSSL_NO_EC)
++
++/* Note that this is not a perfect emulation of the new function but
++ * is good enough for our case of printing certificate details during
++ * handshake */
++static inline
++int EVP_PKEY_get_group_name(EVP_PKEY *pkey, char *gname, size_t gname_sz,
++                            size_t *gname_len)
++{
++    const EC_KEY* ec = EVP_PKEY_get0_EC_KEY(pkey);
++    if (ec == NULL)
++    {
++        return 0;
++    }
++    const EC_GROUP* group = EC_KEY_get0_group(ec);
++    int nid = EC_GROUP_get_curve_name(group);
++
++    if (nid == 0)
++    {
++        return 0;
++    }
++    const char *curve = OBJ_nid2sn(nid);
++
++    strncpynt(gname, curve, gname_sz);
++    *gname_len = min_int(strlen(curve), gname_sz);
++    return 1;
++}
++#endif
++
++/** Mimics SSL_CTX_new_ex for OpenSSL < 3 */
++#if OPENSSL_VERSION_NUMBER < 0x30000000L
++static inline SSL_CTX *
++SSL_CTX_new_ex(void *libctx, const char *propq, const SSL_METHOD *method)
++{
++    (void) libctx;
++    (void) propq;
++    return SSL_CTX_new(method);
++}
++#endif /* OPENSSL_VERSION_NUMBER < 0x30000000L */
++
+ #endif /* OPENSSL_COMPAT_H_ */
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 92d8d0eeb..8ec96e66c 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -2053,13 +2053,15 @@ print_cert_details(X509 *cert, char *buf, size_t buflen)
+     int typeid = EVP_PKEY_id(pkey);
  
- /*
+ #ifndef OPENSSL_NO_EC
+-    if (typeid == EVP_PKEY_EC && EVP_PKEY_get0_EC_KEY(pkey) != NULL)
++    char groupname[256];
++    if (typeid == EVP_PKEY_EC)
+     {
+-        const EC_KEY *ec = EVP_PKEY_get0_EC_KEY(pkey);
+-        const EC_GROUP *group = EC_KEY_get0_group(ec);
+-
+-        int nid = EC_GROUP_get_curve_name(group);
+-        if (nid == 0 || (curve = OBJ_nid2sn(nid)) == NULL)
++        size_t len;
++        if(EVP_PKEY_get_group_name(pkey, groupname, sizeof(groupname), &len))
++        {
++           curve = groupname;
++        }
++        else
+         {
+             curve = "(error getting curve name)";
+         }
 -- 
 2.33.0
 
