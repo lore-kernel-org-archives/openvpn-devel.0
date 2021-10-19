@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:31:17 +0200
-Message-Id: <20211019183127.614175-12-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:31:19 +0200
+Message-Id: <20211019183127.614175-14-arne@...1227...>
 In-Reply-To: <20211019183127.614175-1-arne@...1227...>
 References: <20211019183127.614175-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 11/21] [OSSL 3.0] USe EVP_MD_get0_name
- instead EV_MD_name
+Subject: [Openvpn-devel] [PATCH v3 13/21] [OSSL 3.0] Remove dependency on
+ BF-CBC existance from test_ncp
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,41 +18,60 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Use the new name for the function as it indicates with
-get0 the ownership of the returned value
+The test_check_ncp_ciphers_list test assumed that BF-CBC is always
+available, which is no longer the case with OpenSSL 3.0. Rewrite the
+test to not rely on BF-CBC to be available.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/crypto_openssl.c | 2 +-
- src/openvpn/openssl_compat.h | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ tests/unit_tests/openvpn/test_ncp.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index b10bd7cd5..407ea4a7c 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -916,7 +916,7 @@ md_kt_name(const EVP_MD *kt)
-     {
-         return "[null-digest]";
-     }
--    return EVP_MD_name(kt);
-+    return EVP_MD_get0_name(kt);
- }
+diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
+index 613b5f1ba..a77afde17 100644
+--- a/tests/unit_tests/openvpn/test_ncp.c
++++ b/tests/unit_tests/openvpn/test_ncp.c
+@@ -41,6 +41,7 @@
+ /* Defines for use in the tests and the mock parse_line() */
  
- unsigned char
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index 0893bfbb2..2aa718a33 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -751,6 +751,8 @@ int EVP_PKEY_get_group_name(EVP_PKEY *pkey, char *gname, size_t gname_sz,
+ const char *bf_chacha = "BF-CBC:CHACHA20-POLY1305";
++const char *aes_chacha = "AES-128-CBC:CHACHA20-POLY1305";
+ const char *aes_ciphers = "AES-256-GCM:AES-128-GCM";
  
- /** Mimics SSL_CTX_new_ex for OpenSSL < 3 */
- #if OPENSSL_VERSION_NUMBER < 0x30000000L
-+#define EVP_MD_get0_name EVP_MD_name
-+
- static inline SSL_CTX *
- SSL_CTX_new_ex(void *libctx, const char *propq, const SSL_METHOD *method)
+ 
+@@ -59,6 +60,7 @@ test_check_ncp_ciphers_list(void **state)
  {
+     struct gc_arena gc = gc_new();
+     bool have_chacha = cipher_kt_get("CHACHA20-POLY1305");
++    bool have_blowfish= cipher_kt_get("BF-CBC");
+ 
+     assert_string_equal(mutate_ncp_cipher_list("none", &gc), "none");
+     assert_string_equal(mutate_ncp_cipher_list("AES-256-GCM:none", &gc),
+@@ -66,7 +68,12 @@ test_check_ncp_ciphers_list(void **state)
+ 
+     assert_string_equal(mutate_ncp_cipher_list(aes_ciphers, &gc), aes_ciphers);
+ 
+-    if (have_chacha)
++    if(have_chacha)
++    {
++        assert_string_equal(mutate_ncp_cipher_list(aes_chacha, &gc), aes_chacha);
++    }
++
++    if (have_chacha && have_blowfish)
+     {
+         assert_string_equal(mutate_ncp_cipher_list(bf_chacha, &gc), bf_chacha);
+         assert_string_equal(mutate_ncp_cipher_list("BF-CBC:CHACHA20-POLY1305", &gc),
+@@ -82,8 +89,8 @@ test_check_ncp_ciphers_list(void **state)
+     bool have_chacha_mixed_case = cipher_kt_get("ChaCha20-Poly1305");
+     if (have_chacha_mixed_case)
+     {
+-        assert_string_equal(mutate_ncp_cipher_list("BF-CBC:ChaCha20-Poly1305", &gc),
+-                            bf_chacha);
++        assert_string_equal(mutate_ncp_cipher_list("AES-128-CBC:ChaCha20-Poly1305", &gc),
++                            aes_chacha);
+     }
+ 
+     assert_ptr_equal(mutate_ncp_cipher_list("vollbit", &gc), NULL);
 -- 
 2.33.0
 
