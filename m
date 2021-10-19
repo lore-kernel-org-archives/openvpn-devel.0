@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:31:12 +0200
-Message-Id: <20211019183127.614175-7-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:31:08 +0200
+Message-Id: <20211019183127.614175-3-arne@...1227...>
 In-Reply-To: <20211019183127.614175-1-arne@...1227...>
 References: <20211019183127.614175-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 06/21] [OSSL 3.0] Deprecate --ecdh-curve
- with OpenSSL 3.0 and adjust mbed TLS message
+Subject: [Openvpn-devel] [PATCH v3 02/21] [OSSL 3.0] Add
+ --with-openssl-engine autoconf option (auto|yes|no)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,57 +18,113 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-OpenSSL 3.0 deprecates SSL_CTX_set_tmp_ecdh() in favour of
-SSL_CTX_set1_groups(3). We already support the SSL_CTX_set1_groups
-using the --tls-groups. Adjust both mbed TLS and OpenSSL 3.0 to
-say that --ecdh-curve is ingored and --tls-groups should be used.
+This allows to select engine support at configure time. For OpenSSL 1.1 the
+default is not changed and we detect if engine support is available.
+
+Engine support is deprecated in OpenSSL 3.0 and for OpenSSL 3.0 the default
+is to disable engine support as engine support is deprecated and generates
+compiler warnings which in turn also break -Werror.
+
+By using --with-openssl-engine=no or --with-openssl-engine=yes engine support
+can be forced on or off. If it is enabled but not detected an error will be
+thown.
+
+This commit cleans up the configurelogic a bit and removes the ENGINE_cleanup
+checks as we can just assume that it will be also available as macro or function
+if the other engine functions are available. Before the cleanup we would only
+check for the existance of engine.h if ENGINE_cleanup was not found.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/ssl_mbedtls.c |  5 +++--
- src/openvpn/ssl_openssl.c | 12 +++++++++---
- 2 files changed, 12 insertions(+), 5 deletions(-)
+ configure.ac | 68 +++++++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 51 insertions(+), 17 deletions(-)
 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index cea88f41e..e7c45c099 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -440,8 +440,9 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
- {
-     if (NULL != curve_name)
-     {
--        msg(M_WARN, "WARNING: mbed TLS builds do not support specifying an ECDH "
--            "curve, using default curves.");
-+        msg(M_WARN, "WARNING: mbed TLS builds do not support specifying an "
-+            "ECDH curve with --ecdh-curve, using default curves. Use "
-+            "--tls-groups to specify curves.");
-     }
- }
+diff --git a/configure.ac b/configure.ac
+index a37dc762f..31adb875b 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -267,6 +267,18 @@ AC_ARG_ENABLE(
+ 	[enable_wolfssl_options_h="yes"]
+ )
  
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index a44d4f85c..92d8d0eeb 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -709,10 +709,16 @@ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
- }
++AC_ARG_WITH(
++	[openssl-engine],
++	[AS_HELP_STRING([--with-openssl-engine], [enable engine support with OpenSSL. Default enabled for OpenSSL < 3.0, auto,yes,no @<:@default=auto@:>@])],
++	[
++		case "${withval}" in
++			auto|yes|no) ;;
++			*) AC_MSG_ERROR([bad value ${withval} for --with-engine]) ;;
++		esac
++	],
++	[with_openssl_engine="auto"]
++)
++
+ AC_ARG_VAR([PLUGINDIR], [Path of plug-in directory @<:@default=LIBDIR/openvpn/plugins@:>@])
+ if test -n "${PLUGINDIR}"; then
+ 	plugindir="${PLUGINDIR}"
+@@ -800,23 +812,45 @@ if test "${with_crypto_library}" = "openssl"; then
+ 				   [AC_MSG_ERROR([openssl check failed])]
+ 	)
  
- void
--tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
--                         )
-+tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name)
- {
--#ifndef OPENSSL_NO_EC
-+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
-+    if (curve_name != NULL)
-+    {
-+        msg(M_WARN, "WARNING: OpenSSL 3.0+ builds do not support specifying an "
-+                    "ECDH curve with --ecdh-curve, using default curves. Use "
-+                    "--tls-groups to specify groups.");
-+    }
-+#elif !defined(OPENSSL_NO_EC)
-     int nid = NID_undef;
-     EC_KEY *ecdh = NULL;
-     const char *sname = NULL;
+-	have_openssl_engine="yes"
+-	AC_CHECK_FUNCS(
+-		[ \
+-			ENGINE_load_builtin_engines \
+-			ENGINE_register_all_complete \
+-			ENGINE_cleanup \
+-		],
+-		,
+-		[have_openssl_engine="no"; break]
+-	)
+-	if test "${have_openssl_engine}" = "no"; then
+-		AC_CHECK_DECL( [ENGINE_cleanup], [have_openssl_engine="yes"],,
+-			[[
+-				#include <openssl/engine.h>
+-			]]
+-		)
+-	fi
++    if test "${with_openssl_engine}" = "auto"; then
++        AC_COMPILE_IFELSE(
++        			[AC_LANG_PROGRAM(
++        				[[
++        #include <openssl/opensslv.h>
++        				]],
++        				[[
++        /*	     Version encoding: MNNFFPPS - see opensslv.h for details */
++        #if OPENSSL_VERSION_NUMBER >= 0x30000000L
++        #error Engine supported disabled by default in OpenSSL 3.0+
++        #endif
++        				]]
++        			)],
++        			[have_openssl_engine="yes"],
++        			[have_openssl_engine="no"]
++        )
++        if test "${have_openssl_engine}" = "yes"; then
++            AC_CHECK_FUNCS(
++                [ \
++                    ENGINE_load_builtin_engines \
++                    ENGINE_register_all_complete \
++                ],
++                ,
++                [have_openssl_engine="no"; break]
++            )
++        fi
++    else
++        have_openssl_engine="${with_openssl_engine}"
++        if test "${have_openssl_engine}" = "yes"; then
++            AC_CHECK_FUNCS(
++                [ \
++                    ENGINE_load_builtin_engines \
++                    ENGINE_register_all_complete \
++                ],
++                ,
++                [AC_MSG_ERROR([OpenSSL engine support not found])]
++            )
++        fi
++    fi
+ 	if test "${have_openssl_engine}" = "yes"; then
+ 		AC_DEFINE([HAVE_OPENSSL_ENGINE], [1], [OpenSSL engine support available])
+ 	fi
 -- 
 2.33.0
 
