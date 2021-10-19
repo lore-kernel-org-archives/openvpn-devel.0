@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:23:24 +0200
-Message-Id: <20211019182332.613155-20-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:23:08 +0200
+Message-Id: <20211019182332.613155-4-arne@...1227...>
 In-Reply-To: <20211019182332.613155-1-arne@...1227...>
 References: <20211019182332.613155-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 14/20] [OSSL 3.0] Use
- TYPE_do_all_provided function for listing cipher/digest
+Subject: [Openvpn-devel] [PATCH v2 02/16] [OSSL 3.0] Disable engine support
+ for OpenSSL 3.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,175 +18,87 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-With OpenSSL 3.0 the use of nid values is deprecated and new algorithms
-do not even have NID values anymore.
-
-This also works nicely with providers now:
-
-   openvpn --provider legacy:default --show-ciphers
-
-shows more ciphers (e.g. BF-CBC) than just
-
-   openvpn --show-ciphers
-
-when compiled with OpenSSL 3.0
+Engine support is deprecated in OpenSSL 3.0. No longer use the deprecated API
+when running with OpenSSL 3.0
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/crypto_openssl.c | 95 +++++++++++++++++++++++-------------
- 1 file changed, 61 insertions(+), 34 deletions(-)
+ configure.ac                 |  2 ++
+ src/openvpn/crypto_openssl.c | 13 +++++++------
+ 2 files changed, 9 insertions(+), 6 deletions(-)
 
+diff --git a/configure.ac b/configure.ac
+index a37dc762f..0f9e203a4 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -813,7 +813,9 @@ if test "${with_crypto_library}" = "openssl"; then
+ 	if test "${have_openssl_engine}" = "no"; then
+ 		AC_CHECK_DECL( [ENGINE_cleanup], [have_openssl_engine="yes"],,
+ 			[[
++			    #if OPENSSL_VERSION_NUMBER < 0x30000000L
+ 				#include <openssl/engine.h>
++				#endif
+ 			]]
+ 		)
+ 	fi
 diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 1900ccc1b..ab552efab 100644
+index 1c800df7f..3a344f266 100644
 --- a/src/openvpn/crypto_openssl.c
 +++ b/src/openvpn/crypto_openssl.c
-@@ -311,86 +311,113 @@ cipher_name_cmp(const void *a, const void *b)
-     return strcmp(cipher_kt_name(*cipher_a), cipher_kt_name(*cipher_b));
- }
- 
-+struct collect_ciphers {
-+    /* If we ever exceed this, we must be more selective */
-+    const EVP_CIPHER *list[1000];
-+    size_t num;
-+};
-+
-+static void collect_ciphers(EVP_CIPHER *cipher, void *list)
-+{
-+    struct collect_ciphers* cipher_list = list;
-+    if (cipher_list->num == (sizeof(cipher_list->list)/sizeof(*cipher_list->list)))
-+    {
-+        msg(M_WARN, "WARNING: Too many ciphers, not showing all");
-+        return;
-+    }
-+
-+    if (cipher && (cipher_kt_mode_cbc(cipher)
-+#ifdef ENABLE_OFB_CFB_MODE
-+        || cipher_kt_mode_ofb_cfb(cipher)
-+#endif
-+        || cipher_kt_mode_aead(cipher)
-+    ))
-+    {
-+        cipher_list->list[cipher_list->num++] = cipher;
-+    }
-+}
-+
- void
- show_available_ciphers(void)
- {
--    int nid;
--    size_t i;
-+    struct collect_ciphers cipher_list = { 0 };
- 
--    /* If we ever exceed this, we must be more selective */
--    const EVP_CIPHER *cipher_list[1000];
--    size_t num_ciphers = 0;
- #ifndef ENABLE_SMALL
-     printf("The following ciphers and cipher modes are available for use\n"
-            "with " PACKAGE_NAME ".  Each cipher shown below may be used as a\n"
-            "parameter to the --data-ciphers (or --cipher) option. In static \n"
--           "key mode only CBC mode is allowed.\n\n");
-+           "key mode only CBC mode is allowed.\n");
-+    printf("See also openssl list -cipher-algorithms\n\n");
+@@ -67,7 +67,7 @@
+ #warning Some OpenSSL HMAC message digests now support key lengths greater than MAX_HMAC_KEY_LENGTH -- consider increasing MAX_HMAC_KEY_LENGTH
  #endif
  
--    for (nid = 0; nid < 10000; ++nid)
-+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
-+    EVP_CIPHER_do_all_provided(NULL, collect_ciphers, &cipher_list);
-+#else
-+    for (int nid = 0; nid < 10000; ++nid)
-     {
-         const EVP_CIPHER *cipher = EVP_get_cipherbynid(nid);
--        if (cipher && (cipher_kt_mode_cbc(cipher)
--#ifdef ENABLE_OFB_CFB_MODE
--                       || cipher_kt_mode_ofb_cfb(cipher)
--#endif
--                       || cipher_kt_mode_aead(cipher)
--                       ))
--        {
--            cipher_list[num_ciphers++] = cipher;
--        }
--        if (num_ciphers == (sizeof(cipher_list)/sizeof(*cipher_list)))
--        {
--            msg(M_WARN, "WARNING: Too many ciphers, not showing all");
--            break;
--        }
-+        /* We cast the const away so we can keep the function prototype
-+         * compatible with EVP_CIPHER_do_all_provided */
-+        collect_ciphers((EVP_CIPHER *)cipher, &cipher_list);
-     }
-+#endif
+-#if HAVE_OPENSSL_ENGINE
++#if HAVE_OPENSSL_ENGINE && OPENSSL_VERSION_NUMBER < 0x30000000L
+ #include <openssl/ui.h>
+ #include <openssl/engine.h>
  
-     /* cast to non-const to prevent warning */
--    qsort((EVP_CIPHER *)cipher_list, num_ciphers, sizeof(*cipher_list), cipher_name_cmp);
-+    qsort((EVP_CIPHER *)cipher_list.list, cipher_list.num, sizeof(*cipher_list.list), cipher_name_cmp);
- 
--    for (i = 0; i < num_ciphers; i++)
-+    for (size_t i = 0; i < cipher_list.num; i++)
-     {
--        if (!cipher_kt_insecure(cipher_list[i]))
-+        if (!cipher_kt_insecure(cipher_list.list[i]))
-         {
--            print_cipher(cipher_list[i]);
-+            print_cipher(cipher_list.list[i]);
-         }
-     }
- 
-     printf("\nThe following ciphers have a block size of less than 128 bits, \n"
-            "and are therefore deprecated.  Do not use unless you have to.\n\n");
--    for (i = 0; i < num_ciphers; i++)
-+    for (int i = 0; i < cipher_list.num; i++)
-     {
--        if (cipher_kt_insecure(cipher_list[i]))
-+        if (cipher_kt_insecure(cipher_list.list[i]))
-         {
--            print_cipher(cipher_list[i]);
-+            print_cipher(cipher_list.list[i]);
-         }
-     }
-     printf("\n");
- }
- 
+@@ -132,7 +132,7 @@ setup_engine(const char *engine)
  void
--show_available_digests(void)
-+print_digest(EVP_MD* digest, void* unused)
+ crypto_init_lib_engine(const char *engine_name)
  {
--    int nid;
-+    printf("%s %d bit digest size\n", EVP_MD_get0_name(digest),
-+           EVP_MD_size(digest) * 8);
-+}
- 
-+void
-+show_available_digests(void)
-+{
- #ifndef ENABLE_SMALL
-     printf("The following message digests are available for use with\n"
-            PACKAGE_NAME ".  A message digest is used in conjunction with\n"
-            "the HMAC function, to authenticate received packets.\n"
-            "You can specify a message digest as parameter to\n"
--           "the --auth option.\n\n");
-+           "the --auth option.\n");
-+    printf("See also openssl list -digest-algorithms\n\n");
+-#if HAVE_OPENSSL_ENGINE
++#if HAVE_OPENSSL_ENGINE && OPENSSL_VERSION_NUMBER < 0x30000000L
+     if (!engine_initialized)
+     {
+         ASSERT(engine_name);
+@@ -182,7 +182,7 @@ crypto_uninit_lib(void)
+     fclose(fp);
  #endif
  
--    for (nid = 0; nid < 10000; ++nid)
-+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
-+    EVP_MD_do_all_provided(NULL, print_digest, NULL);
-+#else
-+    for (int nid = 0; nid < 10000; ++nid)
+-#if HAVE_OPENSSL_ENGINE
++#if HAVE_OPENSSL_ENGINE && OPENSSL_VERSION_NUMBER < 0x30000000L
+     if (engine_initialized)
      {
-         const EVP_MD *digest = EVP_get_digestbynid(nid);
-         if (digest)
-         {
--            printf("%s %d bit digest size\n",
--                   OBJ_nid2sn(nid), EVP_MD_size(digest) * 8);
-+            /* We cast the const away so we can keep the function prototype
-+             * compatible with EVP_MD_do_all_provided */
-+            print_digest((EVP_MD *)digest, NULL);
-         }
-     }
-+#endif
-     printf("\n");
+         ENGINE_cleanup();
+@@ -368,7 +368,8 @@ show_available_digests(void)
+ void
+ show_available_engines(void)
+ {
+-#if HAVE_OPENSSL_ENGINE /* Only defined for OpenSSL */
++#if HAVE_OPENSSL_ENGINE && OPENSSL_VERSION_NUMBER < 0x30000000L
++    /* Only defined for OpenSSL */
+     ENGINE *e;
+ 
+     printf("OpenSSL Crypto Engines\n\n");
+@@ -1165,7 +1166,7 @@ memcmp_constant_time(const void *a, const void *b, size_t size)
+     return CRYPTO_memcmp(a, b, size);
  }
+ 
+-#if HAVE_OPENSSL_ENGINE
++#if HAVE_OPENSSL_ENGINE && OPENSSL_VERSION_NUMBER < 0x30000000L
+ static int
+ ui_reader(UI *ui, UI_STRING *uis)
+ {
+@@ -1189,7 +1190,7 @@ ui_reader(UI *ui, UI_STRING *uis)
+ EVP_PKEY *
+ engine_load_key(const char *file, SSL_CTX *ctx)
+ {
+-#if HAVE_OPENSSL_ENGINE
++#if HAVE_OPENSSL_ENGINE && OPENSSL_VERSION_NUMBER < 0x30000000L
+     UI_METHOD *ui;
+     EVP_PKEY *pkey;
  
 -- 
 2.33.0
