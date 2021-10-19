@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:31:24 +0200
-Message-Id: <20211019183127.614175-19-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:31:10 +0200
+Message-Id: <20211019183127.614175-5-arne@...1227...>
 In-Reply-To: <20211019183127.614175-1-arne@...1227...>
 References: <20211019183127.614175-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 18/21] Fix error when BF-CBC is not
- available
+Subject: [Openvpn-devel] [PATCH v3 04/21] [OSSL 3.0] Remove DES check with
+ OpenSSL 3.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,30 +18,41 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Through the multiple iteration of allowing OpenVPN to run without
-BF-CBC we accidentially made a regression and still required BF-CBC.
-
-This patch fixes the code path and restores its intended function.
+DES is very deprecated and accidently getting on the of the 16 insecure
+keys that OpenSSL checks is extremely unlikely so we no longer use the
+deprecated functions without replacement in OpenSSL 3.0.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/options.c | 3 +++
- 1 file changed, 3 insertions(+)
+ src/openvpn/crypto_openssl.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index ab7b00783..fe873944b 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3797,6 +3797,9 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 021698f12..8db2ddd09 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -521,6 +521,11 @@ key_des_num_cblocks(const EVP_CIPHER *kt)
+ bool
+ key_des_check(uint8_t *key, int key_len, int ndc)
+ {
++#if OPENSSL_VERSION_NUMBER < 0x30000000L
++    /* DES is deprecated and the method to even check the keys is deprecated
++     * in OpenSSL 3.0. Instead of checking for the 16 weak/semi-weak keys
++     * we just accept them in OpenSSL 3.0 since the risk of randomly getting
++     * these is pretty weak */
+     int i;
+     struct buffer b;
  
-             /* overhead of BF-CBC: 64 bit block size, 64 bit IV size */
-             frame_add_to_extra_frame(&fake_frame, 64/8 + 64/8);
-+            /* set ciphername to none, so its size does get added in the fake_kt and
-+             * the cipher is not tried to be resolved */
-+            ciphername = "none";
-         }
+@@ -553,6 +558,9 @@ key_des_check(uint8_t *key, int key_len, int ndc)
+ err:
+     ERR_clear_error();
+     return false;
++#else
++    return true;
++#endif
+ }
  
-         init_key_type(&fake_kt, ciphername, o->authname, true, false);
+ void
 -- 
 2.33.0
 
