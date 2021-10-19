@@ -1,10 +1,10 @@
-Date: Tue, 19 Oct 2021 17:08:20 +0200 (CEST)
-Message-Id: <202110191508.19JF8KBA090679@...2054...>
+Date: Tue, 19 Oct 2021 17:25:46 +0200 (CEST)
+Message-Id: <202110191525.19JFPko4091070@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211015213115.516-1-lstipakov@...277...>
-References: <20211015213115.516-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: GitHub Actions: use latest
- working lukka/run-vcpkg
+In-Reply-To: <20211019034118.28987-1-selva.nair@...277...>
+References: <20211019034118.28987-1-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Require Windows CNG keys for
+ cryptoapicert
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,25 +15,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
-
-Thanks.  Tested, makes GH actions for MSVC work again.
+I have not tested this, as I have no cryptoapi-environment around
+(and especially no "old tokens").  I have test built with GH Actions
+and it succeeded both on MSVC and MinGW :-)
 
 Your patch has been applied to the master branch.
 
-commit 93fadaa0268dbe81a8c7ad3e73b3d54a0cca8c9c
-Author: Lev Stipakov
-Date:   Sat Oct 16 00:31:15 2021 +0300
+commit 60c83cce885d2f89d0cc150b730b409538a59625
+Author: Selva Nair
+Date:   Mon Oct 18 23:41:16 2021 -0400
 
-     GitHub Actions: use latest working lukka/run-vcpkg
+     Require Windows CNG keys for cryptoapicert
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20211015213115.516-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20211015213115.516-1-lstipakov@...277...
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20211019034118.28987-1-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22953.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
