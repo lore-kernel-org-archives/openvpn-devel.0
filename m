@@ -1,10 +1,12 @@
-Date: Tue, 19 Oct 2021 11:46:17 +0200 (CEST)
-Message-Id: <202110190946.19J9kHqs084764@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211015175330.15760-1-selva.nair@...277...>
-References: <20211015175330.15760-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix some more wrong defines in
- config-msvc.h
+References: <20211019034118.28987-1-selva.nair@...277...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <4d80604c-b112-c3d5-4f54-a07962e3f7fe@...1227...>
+Date: Tue, 19 Oct 2021 12:22:37 +0200
+MIME-Version: 1.0
+In-Reply-To: <20211019034118.28987-1-selva.nair@...277...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH 1/3] Require Windows CNG keys for
+ cryptoapicert
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +15,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: selva.nair@...277..., "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Thanks.  As with the 2.5 patch, removed the DEBUG #define, and changed
-commit message to just refer to trac with "Trac: #1430"
+Am 19.10.21 um 05:41 schrieb selva.nair@...277...:
+> From: Selva Nair <selva.nair@...277...>
+> 
+> Some legacy tokens do not have drivers compatible with
+> Windows Cryptography Next generation API (CNG) and require
+> the old CAPI interface. These also do not support anything
+> but RSA_PKCS1 signatures with MD5+SHA1 digests, and can only
+> handle TLS 1.1 and older. Continuing to support these add
+> too much maintenance burden especially with newer version of
+> OpenSSL and has very little benefit.
+> 
+> - Remove support for non CNG interface which also removes
+>   support for such legacy tokens. Keys uploaded to Windows
+>   certificate stores are not affected.
+> 
+> - Remove support for OpenSSL versions < 1.1.1 in Windows
+>   builds
+> 
+> Note: TLS 1.0 and 1.1 is still supported. Only signing with legacy
+> tokens that have drivers incompatible with CNG is affected. These
+> can still be used with pkcs11-helper.
+> 
+> Tested on Windows 10 with RSA and EC keys in store
+> 
 
-Your patch has been applied to the master branch.
+Acked-By: Arne Schwabe <arne@...1227...>
 
-commit 077445d0d82128dc90e50043546d4a2d8647eb9c
-Author: Selva Nair
-Date:   Fri Oct 15 13:53:30 2021 -0400
+I haven't tested it myself but the code change looks good and supporting
+keys that only support TLS 1.1 is indeed silly nowadays.
 
-     Fix some more wrong defines in config-msvc.h
-
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20211015175330.15760-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22942.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+Arne
 
 
