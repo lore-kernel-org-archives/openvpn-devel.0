@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:23:32 +0200
-Message-Id: <20211019182332.613155-28-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:23:20 +0200
+Message-Id: <20211019182332.613155-16-arne@...1227...>
 In-Reply-To: <20211019182332.613155-1-arne@...1227...>
 References: <20211019182332.613155-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 20/20] Add macos OpenSSL 3.0 and ASAN
- builds
+Subject: [Openvpn-devel] [PATCH v2 12/16] [OSSL 3.0] Remove dependency on
+ BF-CBC existance from test_ncp
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,56 +18,60 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+The test_check_ncp_ciphers_list test assumed that BF-CBC is always
+available, which is no longer the case with OpenSSL 3.0. Rewrite the
+test to not rely on BF-CBC to be available.
+
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- .github/workflows/build.yaml | 28 +++++++++++++++++++++++++---
- 1 file changed, 25 insertions(+), 3 deletions(-)
+ tests/unit_tests/openvpn/test_ncp.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 514ae66b2..d39ea8bfa 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -168,15 +168,37 @@ jobs:
+diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
+index 613b5f1ba..a77afde17 100644
+--- a/tests/unit_tests/openvpn/test_ncp.c
++++ b/tests/unit_tests/openvpn/test_ncp.c
+@@ -41,6 +41,7 @@
+ /* Defines for use in the tests and the mock parse_line() */
  
-   macos:
-     runs-on: macos-latest
-+    strategy:
-+      fail-fast: false
-+      matrix:
-+        ossl: [ 1.1, 3 ]
-+        build: [ normal, asan ]
-+        include:
-+          - build: asan
-+            cflags: "-fsanitize=address -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
-+            ldflags: -fsanitize=address
-+            # Our build system ignores LDFLAGS for plugins
-+            configureflags: --disable-plugin-auth-pam  --disable-plugin-down-root 
-+          - build: normal
-+            cflags: "-O2 -g"
-+            ldflags: ""
-+            configureflags: ""
-+            
-+    name: "macOS - OpenSSL ${{matrix.ossl}} - ${{matrix.build}}"
-+    env:
-+      CFLAGS: ${{ matrix.cflags }}
-+      LDFLAGS: ${{ matrix.ldflags }}
-+      OPENSSL_CFLAGS: -I/usr/local/opt/openssl@${{matrix.ossl}}/include
-+      OPENSSL_LIBS: "-L/usr/local/opt/openssl@${{matrix.ossl}}/lib -lcrypto -lssl" 
-     steps:
-+      - name: Install dependencies
-+        run: brew install openssl@...2560... openssl@...1554... lzo lz4 man2html cmocka libtool automake autoconf
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2620...
--      - name: Install dependencies
--        run: brew install openssl lzo lz4 man2html cmocka libtool automake autoconf
-       - name: autoconf
-         run: autoreconf -fvi
-       - name: configure
--        run: OPENSSL_CFLAGS=-I/usr/local/opt/openssl@...2560.../include  OPENSSL_LIBS="-L/usr/local/opt/openssl@...2560.../lib -lcrypto -lssl" ./configure
-+        run: ./configure ${{matrix.configureflags}}
-       - name: make all
-         run: make -j4
-       - name: make check
+ const char *bf_chacha = "BF-CBC:CHACHA20-POLY1305";
++const char *aes_chacha = "AES-128-CBC:CHACHA20-POLY1305";
+ const char *aes_ciphers = "AES-256-GCM:AES-128-GCM";
+ 
+ 
+@@ -59,6 +60,7 @@ test_check_ncp_ciphers_list(void **state)
+ {
+     struct gc_arena gc = gc_new();
+     bool have_chacha = cipher_kt_get("CHACHA20-POLY1305");
++    bool have_blowfish= cipher_kt_get("BF-CBC");
+ 
+     assert_string_equal(mutate_ncp_cipher_list("none", &gc), "none");
+     assert_string_equal(mutate_ncp_cipher_list("AES-256-GCM:none", &gc),
+@@ -66,7 +68,12 @@ test_check_ncp_ciphers_list(void **state)
+ 
+     assert_string_equal(mutate_ncp_cipher_list(aes_ciphers, &gc), aes_ciphers);
+ 
+-    if (have_chacha)
++    if(have_chacha)
++    {
++        assert_string_equal(mutate_ncp_cipher_list(aes_chacha, &gc), aes_chacha);
++    }
++
++    if (have_chacha && have_blowfish)
+     {
+         assert_string_equal(mutate_ncp_cipher_list(bf_chacha, &gc), bf_chacha);
+         assert_string_equal(mutate_ncp_cipher_list("BF-CBC:CHACHA20-POLY1305", &gc),
+@@ -82,8 +89,8 @@ test_check_ncp_ciphers_list(void **state)
+     bool have_chacha_mixed_case = cipher_kt_get("ChaCha20-Poly1305");
+     if (have_chacha_mixed_case)
+     {
+-        assert_string_equal(mutate_ncp_cipher_list("BF-CBC:ChaCha20-Poly1305", &gc),
+-                            bf_chacha);
++        assert_string_equal(mutate_ncp_cipher_list("AES-128-CBC:ChaCha20-Poly1305", &gc),
++                            aes_chacha);
+     }
+ 
+     assert_ptr_equal(mutate_ncp_cipher_list("vollbit", &gc), NULL);
 -- 
 2.33.0
 
