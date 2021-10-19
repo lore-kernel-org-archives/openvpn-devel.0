@@ -1,9 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 19 Oct 2021 20:31:06 +0200
-Message-Id: <20211019183127.614175-1-arne@...1227...>
+Date: Tue, 19 Oct 2021 20:31:11 +0200
+Message-Id: <20211019183127.614175-6-arne@...1227...>
+In-Reply-To: <20211019183127.614175-1-arne@...1227...>
+References: <20211019183127.614175-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 00/21] OpenSSL 3.0 improvements for
- OpenVPN
+Subject: [Openvpn-devel] [PATCH v3 05/21] [OSSL 3.0] Use EVP_PKEY based API
+ for loading DH keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,64 +18,62 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This patchset removes almost all deprecation warnings from OpenVPN that
-related to OpenSSL 3.0. The patchset has already been tested with users
-and OpenSSL 3.0 as part of my OpenVPN for Android client.
+OpenSSL 3.0 replaces the DH API with a generic EVP_KEY based API to
+load DH parameters.
 
-Some patches also improve interaction with new features of OpenSSL 3.0,
-mainly with providers.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/ssl_openssl.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
-The patchset does not address using a provider to replace the
-RSA_method/EC_method. This is a separate patchset currently prepared by
-Selva.
-
-Arne Schwabe (21):
-  [OSSL 3.0] Use new EVP_MAC API for HMAC implementation
-  [OSSL 3.0] Add --with-openssl-engine autoconf option (auto|yes|no)
-  [OSSL 3.0] Implement DES ECB encrypt via EVP_CIPHER api
-  [OSSL 3.0] Remove DES check with OpenSSL 3.0
-  [OSSL 3.0] Use EVP_PKEY based API for loading DH keys
-  [OSSL 3.0] Deprecate --ecdh-curve with OpenSSL 3.0 and adjust mbed TLS
-    message
-  [OSSL 3.0] Remove DES key fixup code
-  [OSSL 3.0] Use EVP_PKEY_get_group_name to query group name
-  Refactor early initialisation and uninitialisation into methods
-  [OSSL 3.0] Replace EVP_get_cipherbyname with EVP_CIPHER_fetch
-  [OSSL 3.0] USe EVP_MD_get0_name instead EV_MD_name
-  [OSSL 3.0] Allow loading of non default providers
-  [OSSL 3.0] Remove dependency on BF-CBC existance from test_ncp
-  [OSSL 3.0] Use TYPE_do_all_provided function for listing cipher/digest
-  [OSSL 3.0] Do not allow CTS ciphers
-  Add message when decoding PKCS12 file fails.
-  Add small unit test for testing HMAC
-  Fix error when BF-CBC is not available
-  Add insecure tls-cert-profile options
-  Add macos OpenSSL 3.0 and ASAN builds
-  Always use 8192 bytes for ERR_BUF_SIZE
-
- .github/workflows/build.yaml           |  28 ++-
- configure.ac                           |  68 ++++--
- doc/man-sections/generic-options.rst   |  10 +
- doc/man-sections/tls-options.rst       |   6 +
- src/openvpn/crypto.c                   |  46 ----
- src/openvpn/crypto.h                   |   2 -
- src/openvpn/crypto_backend.h           |  18 +-
- src/openvpn/crypto_mbedtls.c           |  34 +--
- src/openvpn/crypto_openssl.c           | 288 +++++++++++++++++++------
- src/openvpn/crypto_openssl.h           |   8 +
- src/openvpn/error.h                    |   6 +-
- src/openvpn/ntlm.c                     |   1 -
- src/openvpn/openssl_compat.h           |  61 ++++++
- src/openvpn/openvpn.c                  |  27 ++-
- src/openvpn/options.c                  |   7 +
- src/openvpn/options.h                  |   1 +
- src/openvpn/ssl.c                      |  18 --
- src/openvpn/ssl_mbedtls.c              |   8 +-
- src/openvpn/ssl_openssl.c              |  57 +++--
- tests/unit_tests/openvpn/test_crypto.c |  61 +++++-
- tests/unit_tests/openvpn/test_ncp.c    |  13 +-
- 21 files changed, 541 insertions(+), 227 deletions(-)
-
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 9a7cb9c64..a44d4f85c 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -649,7 +649,6 @@ void
+ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
+                        bool dh_file_inline)
+ {
+-    DH *dh;
+     BIO *bio;
+ 
+     ASSERT(NULL != ctx);
+@@ -670,7 +669,26 @@ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
+         }
+     }
+ 
+-    dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL);
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++    EVP_PKEY *dh = PEM_read_bio_Parameters(bio, NULL);
++    BIO_free(bio);
++
++    if (!dh)
++    {
++        crypto_msg(M_FATAL, "Cannot load DH parameters from %s",
++                   print_key_filename(dh_file, dh_file_inline));
++    }
++    if (!SSL_CTX_set0_tmp_dh_pkey(ctx->ctx, dh))
++    {
++        crypto_msg(M_FATAL, "SSL_CTX_set_tmp_dh");
++    }
++
++    msg(D_TLS_DEBUG_LOW, "Diffie-Hellman initialized with %d bit key",
++        8 * EVP_PKEY_get_size(dh));
++
++    EVP_PKEY_free(dh);
++#else
++    DH *dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL);
+     BIO_free(bio);
+ 
+     if (!dh)
+@@ -687,6 +705,7 @@ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
+         8 * DH_size(dh));
+ 
+     DH_free(dh);
++#endif
+ }
+ 
+ void
 -- 
 2.33.0
 
