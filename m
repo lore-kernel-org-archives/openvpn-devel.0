@@ -1,13 +1,12 @@
-Message-ID: <bb4fb4ca-9fe9-3739-aa2e-3c9b0069a544@...2080...>
-Date: Wed, 20 Oct 2021 13:19:04 +0200
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+References: <74e6c803-a525-b738-6524-92354e5e9f14@...515...>
+Message-ID: <bb88fc1e-89e1-9e1e-f190-cd8186a61387@...515...>
+Date: Wed, 20 Oct 2021 16:51:01 +0300
 MIME-Version: 1.0
-Content-Language: en-GB
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------x8J4doneLVKNV1EUa0LCiiF8"
-Subject: [Openvpn-devel] OpenVPN 3 Linux client - v16 beta released
+In-Reply-To: <74e6c803-a525-b738-6524-92354e5e9f14@...515...>
+Content-Type: multipart/mixed; boundary="------------50BC1FFA7824500EDB6F6C03"
+Content-Language: en-US
+Subject: [Openvpn-devel] Summary of the community meeting (20th October 2021)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,230 +15,333 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------x8J4doneLVKNV1EUa0LCiiF8
-Content-Type: multipart/mixed; boundary="------------P9DIFeCdo6X0aRhOuwTdRzgz";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
-Message-ID: <bb4fb4ca-9fe9-3739-aa2e-3c9b0069a544@...2080...>
-Subject: OpenVPN 3 Linux client - v16 beta released
+This is a multi-part message in MIME format.
+--------------50BC1FFA7824500EDB6F6C03
+Content-Type: text/plain; charset=iso-8859-15; format=flowed
+Content-Transfer-Encoding: 8bit
 
---------------P9DIFeCdo6X0aRhOuwTdRzgz
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: base64
+Hi,
 
-SGksDQoNClRoZSBPcGVuVlBOIDMgTGludXggdjE2IChiZXRhKSBpcyBub3cgYXZhaWxhYmxlLiAg
-VGhpcyByZWxlYXNlIGlzDQptb3N0bHkgYSBidWctZml4IHJlbGVhc2Ugd2l0aCBzZXZlcmFsIGtu
-b3duIGlzc3VlcyByZXNvbHZlZA0KYW5kIGEgZmV3IG1pbm9yIGZlYXR1cmUgYWRkaXRpb25zLg0K
-DQpJbnN0cnVjdGlvbnMgaG93IHRvIGluc3RhbGwgT3BlblZQTiAzIExpbnV4IGNhbiBiZSBmb3Vu
-ZCBoZXJlOg0KPGh0dHBzOi8vY29tbXVuaXR5Lm9wZW52cG4ubmV0L29wZW52cG4vd2lraS9PcGVu
-VlBOM0xpbnV4Pg0KDQpOb3RpY2VhYmxlIGNoYW5nZXM6DQoNCiogQnVnOiBJbmNvbXBhdGlibGUg
-T0NDIHN0cmluZ3Mgc2VudCB0byBzZXJ2ZXINCg0KICAgVGhlIHYxNV9iZXRhIHJlbGVhc2UgdXBk
-YXRlZCB0aGUgT3BlblZQTiAzIENvcmUgbGlicmFyeQ0KICAgbGVhZGluZyB0byBhbiBpbmNvbXBh
-dGliaWxpdHkgZm9yIHNvbWUgdXNlcnMuICBUaGlzIGlzc3Vlcw0KICAgaGF2ZSBub3cgYmVlbiBy
-ZXNvbHZlZCBpbiBhIGxhdGVyIHVwZGF0ZSBvZiB0aGUgQ29yZSBsaWJyYXJ5Lg0KDQogICAtIE9D
-QyBzdHJpbmdzIHNlbnQgb3ZlciB0aGUgd2lyZSB0byB0aGUgc2VydmVyIGlzIG5vdyBhbHdheXMN
-CiAgICAgcHJlZml4ZWQgd2l0aCBUQ1B2NCBvciBVRFB2NC4NCiAgICAgPGh0dHBzOi8vZ2l0aHVi
-LmNvbS9PcGVuVlBOL29wZW52cG4zL2NvbW1pdC9kZWUxYjYyNWMzPg0KDQoqIEJ1ZzogRE5TIGNh
-Y2hpbmcgaXNzdWVzIGZvciBsb25nLXJ1bm5pbmcgVlBOIGNsaWVudCBzZXNzaW9ucw0KDQogICBC
-ZWZvcmUgdjE2X2JldGEsIHRoZSBjbGllbnQgd291bGQgZG8gYSBETlMgbG9va3VwIGJlZm9yZQ0K
-ICAgY29ubmVjdGluZyBhbmQgcHJlc2VydmUgdGhvc2UgbG9va3VwcyBpZiAtLXBlcnNpc3QtdHVu
-IHdhcw0KICAgdXNlZC4gIFRoaXMgd29ya3MgZmluZSB1bnRpbCB0aGUgY29uZmlndXJlZCBzZXJ2
-ZXJzIGNoYW5nZXMNCiAgIElQIGFkZHJlc3MgYW5kIG5vIGxvbmdlciBpcyByZWFjaGFibGUuICBU
-aGVuIHRoZSBjbGllbnQgd2lsbA0KICAgZ28gaW50byBhIHJlY29ubmVjdCBsb29wIHRyeWluZyB0
-byBjb25uZWN0LCBidXQgbm8gb3RoZXIgRE5TDQogICBsb29rdXBzIHdvdWxkIGJlIGRvbmUuICBU
-aGUgQ29yZSBsaWJyYXJ5IGhhcyBpbXBsZW1lbnRlZCBhbg0KICAgaW1wcm92ZWQgYXBwcm9hY2gg
-d2hpY2ggd2lsbCB0cmlnZ2VyIGEgbmV3IEROUyBsb29rdXAgaW4gY2FzZXMNCiAgIHdoZXJlIGl0
-IGNhbiBubyBsb25nZXIgZ2V0IGEgY29ubmVjdGlvbiBlc3RhYmxpc2hlZC4NCg0KICAgSW1wb3J0
-YW50IHJlbGF0ZWQgY2hhbmdlczoNCiAgIDxodHRwczovL2dpdGh1Yi5jb20vT3BlblZQTi9vcGVu
-dnBuMy9jb21taXQvZTM2NWM0NGIwODY1OD4NCiAgIDxodHRwczovL2dpdGh1Yi5jb20vT3BlblZQ
-Ti9vcGVudnBuMy9jb21taXQvMmUzNzc0YzA1OTcwNT4NCg0KICAgICBOT1RFOiBUaGlzIGlzIG5v
-dCBhIHBlcmZlY3Qgc29sdXRpb24uICBDbGllbnRzIG9uIG5ldHdvcmtzDQogICAgICAgICAgIHV0
-aWxpemluZyBOQVQ2NCBpcyBleHBlY3RlZCB0byBmYWlsIHdoZW4gY29ubmVjdGluZw0KICAgICAg
-ICAgICB0byBzZXJ2ZXIgb24gYW4gSVB2NCBhZGRyZXNzIHdoZXJlIGl0IGNoYW5nZXMgZHVyaW5n
-DQogICAgICAgICAgIHRoZSBydW50aW1lIG9mIHRoZSBjbGllbnQuICBUaGUgYmVzdCB3YXkgdG8g
-cmVzb2x2ZQ0KICAgICAgICAgICB0aGlzIGlzIHRvIG1ha2UgdGhlIHNlcnZlciBhdmFpbGFibGUg
-dmlhIElQdjYgYXMgd2VsbC4NCg0KKiBCdWc6IFB1c2hlZCBETlMgc2VhcmNoIGRvbWFpbnMgZGlk
-bid0IHdvcmsgd2VsbA0KDQogICBTZXZlcmFsIHJlcG9ydHMgaW5kaWNhdGVkIHRoYXQgcHVzaGlu
-ZyBET01BSU4gb3INCiAgIERPTUFJTi1TRUFSQ0ggZGlkbid0IGVuYWJsZSB0aGVtIGFzIHNlYXJj
-aCBkb21haW5zIHByb3Blcmx5DQogICB3aGVuIHVzaW5nIHN5c3RlbS1yZXNvbHZlZC4gIFRoaXMg
-aGFzIGJlZW4gZml4ZWQgYnkgbm90DQogICB0YWdnaW5nIGVhY2ggZG9tYWluIGFzIHJvdXRpbmcg
-ZG9tYWlucy4gIFRoaXMgbWF5IGZvciBzb21lDQogICB1c2VycyBjaGFuZ2UgdGhlIGxvb2t1cCBi
-ZWhhdmlvdXIgc28gYWxsIEROUyBxdWVyaWVzIGFyZSBzZW50DQogICB0byBtdWx0aXBsZSBETlMg
-c2VydmVycyBpbnN0ZWFkIG9mIGp1c3QgdGhlIFZQTiBwcm92aWRlZCBETlMNCiAgIHNlcnZlci4g
-IFdlIHdpbGwgaW52ZXN0aWdhdGUgZnVydGhlciBob3cgdG8gcmVkdWNlIHRoZXNlDQogICBzaWRl
-LWVmZmVjdHMgd2hlbiB1dGlsaXppbmcgc3lzdGVtZC1yZXNvbHZlZC4NCg0KKiBJbXByb3ZlbWVu
-dDogRG8gbm90IHVzZSBjb25uZWN0aW9uIHRpbWVvdXQgYnkgZGVmYXVsdA0KDQogICBCb3RoIHRo
-ZSAnb3BlbnZwbjMgc2Vzc2lvbi1zdGFydCcgYW5kICdvcGVudnBuMy1hdXRvbG9hZCcNCiAgIGhh
-ZCBhIHRpbWVvdXQgYmVoYXZpb3VyIHdoZXJlIGl0IHdvdWxkIHN0b3AgcnVubmluZyBpZiBpdA0K
-ICAgZGlkbid0IGdldCBhIGNvbm5lY3Rpb24gZXN0YWJsaXNoZWQgd2l0aGluIGFwcHJveC4gMzAg
-c2Vjb25kcy4NCiAgIElmIHRoZSBzZXJ2ZXIgaXMgdW5hdmFpbGFibGUgb3IgdGhlIGNsaWVudCBp
-cyBubyBhIG5ldHdvcmsNCiAgIHdpdGggdGVtcG9yYXJpbHkgY29ubmVjdGlvbiBpc3N1ZXMsIHRo
-aXMgaXMgYSBkcmF3YmFjay4NCg0KICAgVGhlIHNvbHV0aW9uIGlzIHRvIHJlbW92ZSB0aGUgY3Vy
-cmVudCB0aW1lb3V0IGJlaGF2aW91ci4gIFRoZQ0KICAgJ29wZW52cG4zIHNlc3Npb24tc3RhcnQn
-IGNvbW1hbmQgaGFzIGJlZW4gZXh0ZW5kZWQgd2l0aCBhDQogICAtLXRpbWVvdXQgYXJndW1lbnQg
-d2hpY2ggY2FuIGJlIHVzZWQgdG8gcmVzdG9yZSB0aGUgcHJldmlvdXMNCiAgIGJlaGF2aW91ci4N
-Cg0KKiBJbXByb3ZlbWVudDogb3BlbnZwbjMtYXMgbm93IHJlcXVpcmVzIHByb3Blcmx5IHNpZ25l
-ZCBodHRwcyBzZXJ2ZXINCiAgIGNlcnRpZmljYXRlcy4NCg0KICAgUHJpb3IgdmVyc2lvbnMgb2Yg
-b3BlbnZwbjMtYXMgZGlkbid0IHZlcmlmeSB0aGUgaHR0cHMgc2VydmVyDQogICBjZXJ0aWZpY2F0
-ZS4gIFRoaXMgaGFzIG5vdyBiZWVuIGZpeGVkLg0KDQoqIEltcHJvdmVtZW50OiBBZGQgYmV0dGVy
-IHN5c3RlbWQgaW50ZWdyYXRpb24gZm9yIHNlc3Npb25zDQoNCiAgIFRoaXMgcmVsZWFzZSBpbnRy
-b2R1Y2VzIGEgUHl0aG9uIGJhc2VkIHN5c3RlbWQgaW50ZWdyYXRpb24sDQogICB3aGljaCB3aWxs
-IHN0YXJ0IGEgcHJlLWltcG9ydGVkIChvcGVudnBuMyBjb25maWctaW1wb3J0KQ0KICAgY29uZmln
-dXJhdGlvbiBwcm9maWxlIHVzaW5nIHRoZSBvcGVudnBuMy1zZXNzaW9uc0AuLi4xNjg1Li4uDQog
-ICB1bml0IGZpbGUuICBUaGlzIGNhbiBhbHNvIGJlIHVzZWQgdG8gc3RhcnQgY29ubmVjdGlvbnMN
-CiAgIGF1dG9tYXRpY2FsbHkgZHVyaW5nIGJvb3QuDQoNCiAgIFRoZSBhZHZhbnRhZ2UgdGhpcyBo
-YXMgb3ZlciBvcGVudnBuMy1hdXRvbG9hZCBpcyB0aGF0IGl0DQogICBtYW5hZ2VzIFZQTiBzZXNz
-aW9ucyBvbi1ieS1vbmUsIHdoaWxlIG9wZW52cG4zLWF1dG9sb2FkIGp1c3QNCiAgIGxvYWRlZCBh
-bmQgc3RhcnRlZCBldmVyeXRoaW5nIGNvbmZpZ3VyZWQgd2l0aG91dCBhbnkgcmVhbA0KICAgc2Vz
-c2lvbiBtYW5hZ2VtZW50LiAgVXNpbmcgdGhlIG9wZW52cG4zLXNlc3Npb25zQC4uLjE2ODUuLi4s
-DQogICB0aGUgc2Vzc2lvbiBzdGF0dXMgaXMgbm93IGFsc28gYXZhaWxhYmxlIHZpYSAnc3lzdGVt
-Y3RsJyBhbmQNCiAgIGxvZyBldmVudHMgYXJlIGVhc2lseSBmb3VuZCB2aWEgJ2pvdXJuYWxjdGwn
-LiAgSWYgYSBzZXNzaW9uDQogICBpcyBzdG9wcGVkIHZpYSAnb3BlbnZwbjMgc2Vzc2lvbi1tYW5h
-Z2UnLCB0aGlzIGlzIGFsc28NCiAgIHJlZmxlY3RlZCBpbiAnc3lzdGVtY3RsJy4NCg0KICAgU2Vl
-IHRoZSBvcGVudnBuMy1zeXN0ZW1kKDgpIG1hbiBwYWdlIGZvciBkZXRhaWxzOg0KICAgPGh0dHBz
-Oi8vZ2l0aHViLmNvbS9PcGVuVlBOL29wZW52cG4zLWxpbnV4L2Jsb2IvbWFzdGVyL2RvY3MvbWFu
-L29wZW52cG4zLXN5c3RlbWQuOC5yc3Q+DQoNCiAgIFRoaXMgc3VwcG9ydCBpcyBub3QgY29tcGxl
-dGUgeWV0LCBhbmQgd2lsbCBiZSBleHRlbmRlZA0KICAgaW4gY29taW5nIHJlbGVhc2VzLg0KDQoq
-IEltcHJvdmVtZW50OiBTdXBwb3J0IGZvciB0aGUgbmV3ZXIgV0VCX0FVVEggcGVuZGluZyBhdXRo
-IG1ldGhvZA0KDQoqIEltcHJvdmVtZW50OiBFeHRlbmQgb3BlbnZwbjMtYWRtaW4gd2l0aCBhIHNl
-c3Npb25tZ3Itc2VydmljZSBjb21tYW5kLg0KDQogICBUaGlzIG5ldyBjb21tYW5kIGN1cnJlbnRs
-eSBvbmx5IHN1cHBvcnRzIGxpc3RpbmcNCiAgIGFsbCBydW5uaW5nIFZQTiBzZXNzaW9ucyBvbiB0
-aGUgaG9zdCBhbmQgbGlzdCB0aGUgb3duZXIgb2YNCiAgIGVhY2ggc2Vzc2lvbiBhcyB3ZWxsIGFz
-IHRoZSB0dW4vRENPIGludGVyZmFjZSBpbiB1c2UuDQoNCiAgIFNlZSB0aGUgb3BlbnZwbjMtYWRt
-aW4tc2Vzc2lvbm1nci1zZXJ2aWNlKDgpIG1hbiBwYWdlIGZvcg0KICAgZGV0YWlscy4NCiAgIDxo
-dHRwczovL2dpdGh1Yi5jb20vT3BlblZQTi9vcGVudnBuMy1saW51eC9ibG9iL21hc3Rlci9kb2Nz
-L21hbi9vcGVudnBuMy1hZG1pbi1zZXNzaW9ubWdyLXNlcnZpY2UuOC5yc3Q+DQoNCiogSW1wcm92
-ZW1lbnQ6IFB5dGhvbiBiYXNlZCBjb25maWd1cmF0aW9uIHBhcnNlciB1cGRhdGVzDQoNCiAgIFRo
-ZSBjb25maWd1cmF0aW9uIHBhcnNlciB1c2VkIGJ5IG9wZW52cG4yLCBvcGVudnBuMy1hdXRvbG9h
-ZA0KICAgYW5kIHRoZSBuZXcgb3BlbnZwbjMtc3lzdGVtZCBpbnRlZ3JhdGlvbiBub3cgaWdub3Jl
-cw0KICAgLS1uY3AtY2lwaGVycywgLS1kYXRhLWNpcGhlcnMgYW5kIC0tZGF0YS1jaXBoZXJzLWZh
-bGxiYWNrDQoNCiAgIFRoZXNlIG9wdGlvbnMgd2FzIGFkZGVkIGluIE9wZW5WUE4gMi40IGFuZCAy
-LjUgYXMgcGFydCB0bw0KICAgaGVscCBtaWdyYXRpb24gZnJvbSBwcmlvciBkZWZhdWx0IGNpcGhl
-cnMgdG8gYmV0dGVyIG9uZXMuDQogICBDb25uZWN0aW5nIHRvIHNvbWUgc2VydmVycyBjb3VsZCBu
-ZWVkIGEgbW9yZSBzcGVjaWZpYyBjaXBoZXINCiAgIHRvIGJlIHNldC4gIFRoaXMgaXMgYmVsaWV2
-ZWQgbm90IHRvIGJlIG5lZWRlZCBpbiBPcGVuVlBOIDMsDQogICBzbyBpbnN0ZWFkIHdlIGp1c3Qg
-aWdub3JlIHRoZXNlIG9wdGlvbnMgaWYgZm91bmQuDQoNCiogQnVpbGQ6IENvZGUgaGFzIGJlZW4g
-bWFkZSByZXByb2R1Y2libGUNCg0KICAgSXQgc2hvdWxkIG5vdyBiZSBwb3NzaWJsZSB0byByZWJ1
-aWxkIHRoZSBjb2RlIHdpdGggdXNpbmcgdGhlDQogICBzYW1lIGhvc3Qgb3IgaW1hZ2UgYW5kIGdl
-dCB0aGUgZXhhY3Qgc2FtZSBiaW5hcnkgb3V0cHV0LiAgVGhlDQogICBvbmx5IHN1cHBvcnRlZCBk
-aXN0cmlidXRpb24gbm90IGNhcGFibGUgb2YgYmVpbmcgcmVwcm9kdWNpYmxlDQogICBhdCB0aGUg
-bW9tZW50IGlzIHRoZSBDZW50T1MgNyBidWlsZHMuDQoNCg0KU3VwcG9ydGVkIExpbnV4IGRpc3Ry
-aWJ1dGlvbnM6DQogICAtIERlYmlhbiA5IChhbWQ2NCkgPDwgISEgTGFzdCB1cGRhdGUgZm9yIHRo
-aXMgcmVsZWFzZSAhIQ0KICAgLSBEZWJpYW4gMTAgKGFtZDY0LCBhcm02NCkNCiAgIC0gRGViaWFu
-IDExIChhbWQ2NCwgYXJtNjQpDQogICAtIENlbnRPUyA3ICh4ODZfNjQpDQogICAtIENlbnRPUyA4
-ICh4ODZfNjQsIGFhcmNoNjQpDQogICAtIEZlZG9yYSAzMywgMzQgYW5kIFJhd2hpZGUgKHg4Nl82
-NCwgYWFyY2g2NCwgczM5MHgpDQogICAtIFJlZCBIYXQgRW50ZXJwcmlzZSBMaW51eCA3ICh4ODZf
-NjQpDQogICAtIFJlZCBIYXQgRW50ZXJwcmlzZSBMaW51eCA4ICh4ODZfNjQsIGFhcmNoNjQpDQog
-ICAtIFVidW50dSAxOC4wNCwgMjAuMDQgYW5kIDIxLjA0IChhbWQ2NCwgYXJtNjQpDQoNClRoZSBu
-ZXh0IHJlbGVhc2Ugd2lsbCBhbHNvIGFkZCBVYnVudHUgMjEuMTAgc3VwcG9ydC4NCg0KVGhlIGFy
-bTY0IHN1cHBvcnQgb24gc2VsZWN0ZWQgRGViaWFuIGFuZCBVYnVudHUgcmVsZWFzZXMgYXJlDQpj
-dXJyZW50bHkgY29uc2lkZXJlZCBhIHRlY2gtcHJldmlldy4NCg0KVGhpcyB3aWxsIGFsc28gYmUg
-dGhlIGxhc3QgcmVsZWFzZSB3aGljaCBpbmNsdWRlcyBzdXBwb3J0IGZvciBEZWJpYW4gOS4NCkFz
-IG9mIHRoZSBuZXh0IHJlbGVhc2UgRGViaWFuIDEwIGFuZCBDZW50T1MgNy9SSEVMIDcgd2lsbCBi
-ZSB0aGUgb2xkZXN0DQpzdXBwb3J0ZWQgcmVsZWFzZXMuDQoNClRoZSBEYXRhIENoYW5uZWwgT2Zm
-bG9hZCAoRENPKSB0ZWNoLXByZXZpZXcgZmVhdHVyZSBpcyBzdXBwb3J0ZWQNCmluIHRoZXNlIGRp
-c3RyaWJ1dGlvbnM6DQoNCiAgIC0gQ2VudE9TIDgNCiAgIC0gRmVkb3JhIDMzLCAzNCBhbmQgUmF3
-aGlkZQ0KICAgLSBVYnVudHUgMjAuMDQgYW5kIDIxLjA0DQogICAtIFJlZCBIYXQgRW50ZXJwcmlz
-ZSBMaW51eCA4DQoNCldlIGhhdmUgbm90IHlldCBoYWQgYW55IGNoYW5jZXMgdG8gdGVzdCBEQ08g
-b24gRGViaWFuIDExIHlldC4NClVidW50dSAyMS4xMCB3aWxsIGFsc28gZ2V0IG92cG4tZGNvIHBh
-Y2thZ2VzLiAgVGhpcyB3b3JrIHdpbGwNCmJlIHBhcnQgb2YgdGhlIG5leHQgcmVsZWFzZS4NCg0K
-DQotLQ0Ka2luZCByZWdhcmRzLA0KDQpEYXZpZCBTb21tZXJzZXRoDQpPcGVuVlBOIEluYw0KDQoN
-Ci0tLS0gU291cmNlIHRhcmJhbGxzIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLQ0KKiBPcGVuVlBOIDMgTGludXggdjE2IGJldGENCg0KICAgPGh0dHBz
-Oi8vc3d1cGRhdGUub3BlbnZwbi5uZXQvY29tbXVuaXR5L3JlbGVhc2VzL29wZW52cG4zLWxpbnV4
-LTE2X2JldGEudGFyLnh6Pg0KICAgPGh0dHBzOi8vc3d1cGRhdGUub3BlbnZwbi5uZXQvY29tbXVu
-aXR5L3JlbGVhc2VzL29wZW52cG4zLWxpbnV4LTE2X2JldGEudGFyLnh6LmFzYz4NCg0KLS0tLSBT
-SEEyNTYgQ2hlY2tzdW1zIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tDQoNCjNjOGE0ZTI2ZmVjYTcyYTdkODg4NzQyNmM0OTZhMTQ4ZGY0NjA2Yjk2NTZm
-NzIwODQ4ODUzYzFmMTdhMDMwYTQgIG9wZW52cG4zLWxpbnV4LTE2X2JldGEudGFyLnh6DQo3YWEy
-YWU0NGU4YzdjZmNmNWI5MTI5MTA3YWI3ODQyYjk3YWQ2ZjAyNjM4NWM4ZTY1Yzc5MDQ1YmIxNTAw
-YzlhICBvcGVudnBuMy1saW51eC0xNl9iZXRhLnRhci54ei5hc2MNCg0KLS0tLSBnaXQgcmVmZXJl
-bmNlcyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-DQoNCmdpdCByZXBvc2l0b3JpZXM6DQogICAgIDxodHRwczovL2dpdGxhYi5jb20vb3BlbnZwbi9v
-cGVudnBuMy1saW51eD4NCiAgICAgPGh0dHBzOi8vZ2l0aHViLmNvbS9PcGVuVlBOL29wZW52cG4z
-LWxpbnV4Pg0KDQpnaXQgdGFnOiB2MTZfYmV0YQ0KZ2l0IGNvbW1pdDogNzEzYjM1ZTkwODQ4OTU3
-OWJmNTI0NmI1NzczNzM4ODA5MjNjZjZmZQ0KDQotLS0tIENoYW5nZXMgZnJvbSB2MTUgdG8gdjE2
-IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCg0KQXJuZSBTY2h3
-YWJlICgxKToNCiAgICAgICBJbXBsZW1lbnQgV0VCX0FVVEggYXV0aCBwZW5kaW5nIG1ldGhvZA0K
-DQpEYXZpZCBTb21tZXJzZXRoICgzOSk6DQogICAgICAgdmVuZG9yOiBVcGdyYWRlIHRvIGdvb2ds
-ZXRlc3QgMS4xMQ0KICAgICAgIHB5dGhvbjogSGFyZGVuIG9wZW52cG4zLWFzIEhUVFBTIGNvbm5l
-Y3QNCiAgICAgICBvdnBuM2NsaTogQWRkIC0tdGltZW91dCBzdXBwb3J0IHRvIHNlc3Npb24gY29u
-bmVjdCBvcGVyYXRpb25zDQogICAgICAgcHl0aG9uOiBSZW1vdmUgY29ubmVjdGlvbiBhdHRlbXB0
-IGNvdW50aW5nIGluIG9wZW52cG4zLWF1dG9sb2FkDQogICAgICAgcHl0aG9uOiBBZGQgU2Vzc2lv
-bk1hbmFnZXJFdmVudFR5cGUgY29uc3RhbnRzDQogICAgICAgcHl0aG9uOiBBZGQgU2Vzc2lvbk1h
-bmFnZXJFdmVudCBjYWxsYmFjaw0KICAgICAgIHN5c3RlbWQ6IEFkZCBzdXBwb3J0IGZvciBWUE4g
-c2Vzc2lvbiBtYW5hZ2VtZW50IHZpYSBzeXN0ZW1kDQogICAgICAgc2Vzc2lvbm1ncjogR3JhbW1h
-ciBmaXggaW4gYW4gZXJyb3IgbWVzc2FnZQ0KICAgICAgIHNlc3Npb25tZ3I6IFNwbGl0IG91dCBw
-dXJlIG1hbmFnZXIgZnVuY3Rpb25zIGZyb20gT3BlblZQTjNTZXNzaW9uUHJveHkNCiAgICAgICBw
-eXRob246IFVzZSBzdGQgbmFtZXNwYWNlIGV4cGxpY2l0bHkNCiAgICAgICBkYnVzOiBBZGQgREJ1
-c1Byb3h5OjpJbnRyb3NwZWN0KCkgbWV0aG9kDQogICAgICAgdGVzdHM6IE1ha2UgbmV0Y2ZnLXBy
-b3h5LXVuaXQgdGVzdCBhd2FyZSBvZiBvdGhlciBkZXZpY2VzDQogICAgICAgZGJ1cy9jcmVkczog
-QWRkIG5ldyBEQnVzQ3JlZGVudGlhbHM6OkNoZWNrQUNMX2FsbG93Um9vdCgpIG1ldGhvZA0KICAg
-ICAgIHNlc3Npb25tZ3I6IEdyYW50IHJvb3QgdXNlciBhY2Nlc3MgdG8gcmVhZCBhbGwgc2Vzc2lv
-biBwcm9wZXJ0aWVzDQogICAgICAgb3ZwbjNjbGkvYWRtaW46IEFkZCBzZXNzaW9ubWdyLXNlcnZp
-Y2UgY29tbWFuZA0KICAgICAgIGNvbW1vbjogRml4IGR1cGxpY2F0ZWQgaW1wb3J0cyBvZiBjb25m
-aWcuaA0KICAgICAgIHNlc3Npb25tZ3I6IFNpbXBsaWZ5IHRoZSBBQ0wgY2hlY2sgZm9yIHByb3Bl
-cnRpZXMNCiAgICAgICBjbGkvc2Vzc2lvbm1ncjogU2ltcGxpZnkgcHJvcGVydHkgZXh0cmFjdGlv
-bg0KICAgICAgIGNvcmU6IFVwZGF0ZSBPcGVuVlBOIDMgQ29yZSBsaWJyYXJ5IChETlMgY2FjaGUg
-Zml4KQ0KICAgICAgIGNvbW1vbjogSW1wcm92ZSB0aGUgT3B0aW9uVmFsdWVUeXBlOjpQcmVzZW50
-IGltcGxlbWVudGF0aW9uDQogICAgICAgY29tbW9uOiBFeHRlbmQgQ29uZmlndXJhdGlvbjo6Rmls
-ZSB3aXRoIGFuIFVuc2V0T3B0aW9uKCkgbWV0aG9kDQogICAgICAgY29tbW9uOiBDb25maWd1cmF0
-aW9uOjpGaWxlIC0gQWRkIGJhY2t3YXJkcyBjb21wYXQgcGFyc2luZyBmb3IgcHJlc2VudCBvcHRz
-DQogICAgICAgY2xpL2FkbWluOiBDYWxsIGluc3RlYWQgQ29uZmlnOjpGaWxlOjpVbnNldE9wdGlv
-bigpIG9uIC0tY29uZmlnLXVuc2V0DQogICAgICAgY29tbW9uOiBBZGQgcHJpdmF0ZSBQYXJzZWRB
-cmdzOjpyZW1vdmVfYXJnKCkgbWV0aG9kDQogICAgICAgY29tbW9uOiBTaW1wbGlmeSBQYXJzZWRB
-cmdzOjpJbXBvcnRDb25maWdGaWxlKCkNCiAgICAgICBjb21tb246IERvbid0IHRocm93IG9uIG1p
-c3Npbmcga2V5IGluIFBhcnNlZEFyZ3M6OkdldEFsbFZhbHVlcygpDQogICAgICAgY2xpL29wZW52
-cG4zOiBGaXggbWlzc2luZyBzcGFjZSBpbiBjb25maWctcmVtb3ZlIHdhcm5pbmcNCiAgICAgICBj
-bGkvY29uZmlnOiBGaXggaW5jb3JyZWN0IHNwZWxsaW5nDQogICAgICAgcHl0aG9uOiBIYW5kbGUg
-Q1RSTC1DIGluIG9wZW52cG4zLWFzIGdyYWNlZnVsbHkNCiAgICAgICBweXRob24vb3BlbnZwbjMt
-YXM6IEltcHJvdmUgcHJvZmlsZSBkb3dubG9hZCBlcnJvciBoYW5kbGluZw0KICAgICAgIHB5dGhv
-bi9vcGVudnBuMy1hczogRml4IGluY29ycmVjdCBleGNlcHRpb24gdHlwZQ0KICAgICAgIG92cG4z
-Y2xpOiBGaXggc2Vzc2lvbi1zdGFydCB3aXRoIGR5bmFtaWMgY2hhbGxlbmdlIGF1dGgNCiAgICAg
-ICBweXRob246IEZpeCBkeW4tY2hhbGxlbmdlIGF1dGggaW4gb3BlbnZwbjINCiAgICAgICBjbGkv
-c2Vzc2lvbjogTm90IGFsbCBjb25uZWN0aW9uIGZhaWx1cmVzIGFyZSB0aW1lb3V0IHJlbGF0ZWQN
-CiAgICAgICBjbGkvc2Vzc2lvbjogRml4IG5ldmVyIGVuZGluZyBzZXNzaW9uIHdpdGggZmFpbGVk
-IDJGQQ0KICAgICAgIGxvb2t1cDogQWRkIGVycm9yIGNoZWNraW5nIHRvIHN5c2NvbmYoKSBsb29r
-dXBzDQogICAgICAgY29tbW9uOiBGaXggdHlwbyB3aXRoIE1hY2hpbmVJRDo6U291cmNlVHlwZTo6
-Tk9ORQ0KICAgICAgIG5ldGNmZy9yZXNvbHZlZDogRG9uJ3QgY29uZmlndXJlIC0tZGhjcC1vcHRp
-b24gRE9NQUlOIGFzIHJvdXRpbmcgZG9tYWlucw0KICAgICAgIHB5dGhvbjogQWRkIC0tZGF0YS1j
-aXBoZXJzIGFuZCByZWxhdGVkIG9wdGlvbnMgdG8gdGhlIGlnbm9yZSBsaXN0Lg0KDQpGcmFuayBM
-aWNodGVuaGVsZCAoMyk6DQogICAgICAgYnVpbGQ6IG1ha2UgZ2VuLW9wZW52cG4yLWNvbXBsZXRp
-b24ucHkgb3V0cHV0IHJlcHJvZHVjaWJsZSBvbiBvbGQgUHl0aG9uDQogICAgICAgYnVpbGQ6IFVz
-ZSB0aW1lc3RhbXAgb2YgdGhlIGNvbnN0YW50LnB5IHNvdXJjZSBmaWxlDQogICAgICAgYnVpbGQ6
-IEF2b2lkIGdlbmVyYXRpbmcgYnJva2VuIGJhc2gtY29tcGxldGlvbiBmaWxlDQoNCkhlaWtvIEh1
-bmQgKDEpOg0KICAgICAgIG5ldGNmZzogTW92ZSBjaGVjayBmb3IgRENPIGF2YWlsYWJpbGl0eSB0
-byBOZXRDZmcNCiAgICAgICANCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCg0K
+Here's the summary of the IRC meeting.
 
---------------P9DIFeCdo6X0aRhOuwTdRzgz--
+---
 
---------------x8J4doneLVKNV1EUa0LCiiF8
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+COMMUNITY MEETING
 
------BEGIN PGP SIGNATURE-----
+Place: #openvpn-meeting on libera.chat
+Date: Wed 20th October 2021
+Time: 14:00 CET (12:00 UTC)
 
-iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmFv+ygACgkQhs+UTJZx
-/fLLFRAAvrw5YIO2qmGtOVGH+Ez6u5G4/PZC5qx8gH1tFHuoKeHya/8XQipRN1bt
-0HDW1bi9qcaZpZ9FqIU6d6Dm2aRDvabj05YC/2YlVNpu3rcc/g5CX5tPydjQwUQf
-W1dKYok4952/5uIaGCXrdCiMec+S0rCjC7hEBZQDN9K3BdeGMHzWn3tcbPa4riqV
-wvJgH7bKuTM3Tc5msFjy/9UQHvUvR1nGRk9Dko+x+j/Os19LlnsOe5Q2gVoUEuZL
-bS2Jvy7fI+D1f5c0Bw/y5c8p4vUeJ7yCYdnn4eljl+BbxRWTxu/Zj0bTqhcxWXAM
-EGO1CZkZOu8MxKCIlEXCDBQN1zGktVRyLzdD/eV59iIaznLwGJjn+j+4SkSOu8+z
-SMSfWf0SomVY4XfVeOYGv//8wmOCdAa5an0eR15bJBYdIUxnUQzsRMdkJzdbA8Br
-jgXXLZPrc19GPY5LO+FGi925BMdcjguhRf07UA3FOEazU4Tpp1xHob51PP2DwMUy
-z7p3VxDMlTzDsRJzAVDBcufH6hzZPLWVJIgjbzHGOqycaDzhey7jyYfczEflx45J
-ZR3fKp8KC+Qlol0LlcmRH472AOwF1y9zP89FZYta9UgcB1nBy823xScgqwis9Ylw
-hXr0dp4YkKlEk6L6GxizN2D3NE09XZ0sqiWAkEWf8w+JcUkOUHk=
-=6ODq
------END PGP SIGNATURE-----
+Planned meeting topics for this meeting were here:
 
---------------x8J4doneLVKNV1EUa0LCiiF8--
+<https://community.openvpn.net/openvpn/wiki/Topics-2021-10-20>
+
+Your local meeting time is easy to check from services such as
+
+<http://www.timeanddate.com/worldclock>
+
+SUMMARY
+
+cron2, dazo, d12fk, lev, mattock, MaxF, nariman, novaflash, plaisthos 
+and rob0 participated in this meeting.
+
+---
+
+Noted that there are about fifty openvpn_inc tickets in Trac that should 
+be cleaned up.
+
+---
+
+Talked about OpenVPN 2.5.4 I604 Windows installers. Mattock copied them 
+to build.openvpn.in, cron2 tested arm64 version and lev will test amd64. 
+If all is good mattock will push out this new installer release.
+
+---
+
+Talked about hackathon. COVID-19 situation in Munich seems reasonable so 
+we should be able to make it happen.
+
+---
+
+Talked about hackathon T-shirt design. Agreed that we can give fairly 
+free hands for the designed, with "OpenVPN 2021 hackathon in Munich at 
+QAware" as guidance. Mattock will ask a couple of design we can choose 
+from. Cron2 will get the T-shirts printed in Munich to cut off the 
+shipping time.
+
+Those hackathon participants who want a T-shirt should add their size to 
+the Hackathon attendee table in Trac:
+
+<https://community.openvpn.net/openvpn/wiki/Hackathon2021>
+
+---
+
+Talked about the OpenSSL patch flood. Noted that ordex is on paternal 
+leave and hence unable to ACK those. Agreed that ACKs and NACKs from 
+MaxF are good, because he has to live with the results.
+
+-- 
+
+Full chatlog attached
+
+--------------50BC1FFA7824500EDB6F6C03
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn_irc_meeting_chatlog_2021-10-20.txt"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="openvpn_irc_meeting_chatlog_2021-10-20.txt"
+
+(14:59:52) plaisthos: moin
+(14:59:55) mattock: hi
+(15:01:08) novaflash [~novaflash@...2592...] =C3=A8 e=
+ntrato nella stanza.
+(15:02:34) cron2: so, good afternoon, gentlemen
+(15:02:45) novaflash: hallo
+(15:03:43) cron2: ah, the openvpn_inc guy :-)
+(15:05:12) cron2: shall we start?
+(15:05:19) d12fk: aint we all inc guys?! =3D)
+(15:05:39) plaisthos: d12fk: there is a openvpn_inc account that novaflas=
+h manages
+(15:05:43) cron2: d12fk: be careful what you are asking for :-) - this is=
+ the user account that gets to clean up Corp tickets from trac...
+(15:05:53) mattock: yes
+(15:06:09) lev__: Hello
+(15:06:22) nariman: hi=20
+(15:06:25) MaxF [~MaxF@...2624...] =C3=A8 entra=
+to nella stanza.
+(15:06:30) mattock: let me check the status of windows installer build
+(15:06:39) d12fk: cron2: how do I delete things from IRC? =3D)
+(15:06:40) mattock: build was successful
+(15:06:47) mattock: 2.5.4-I604
+(15:06:48) novaflash: the openvpn_inc account is shared across company pe=
+eps - rob0 for example uses it
+(15:06:54) rob0: yup
+(15:07:14) novaflash: cron2: and yes we are terribly slow at cleaning up =
+trac tickets but it's being processed slowly
+(15:07:45) cron2: thanks
+(15:07:48) dazo: so .... we're slow because we're slow? :-P
+(15:08:12) cron2: I just noticed because I had a cleaning spree yesterday=
+, looking at the most recent 50-ish tickets, and noticed quite a few "ope=
+nvpn_inc" ones...
+(15:08:35) Pippin_ [Pippin_@...1423.../community/Pippin] =C3=A8 entrato nell=
+a stanza.
+(15:08:44) cron2: now, the *rest* of "the openvpn community" (with a few =
+notable exceptions) was even less active...
+(15:08:47) lev__: mattock: do we use OpenSSL 1.1.1l with the latest insta=
+ller?
+(15:08:56) cron2: lev__: thanks. I forgot.
+(15:09:06) cron2: (that was one of those tickets)
+(15:09:56) mattock: lev: not sure, but openssl port gets updated
+(15:10:12) mattock: I will scp over the MSI so that somebody can test
+(15:11:02) cron2: lev__: ah, that might have been due to 2.5 still buildi=
+ng with the "local openssl build" thingie
+(15:11:12) lev__: Oh right
+(15:13:00) mattock: copying
+(15:14:14) cron2: nice, so we already covered two agenda items (trac hygi=
+ene and 2.5.4 I604 re-release) :-)
+(15:14:52) mattock: lev: https://build.openvpn.net/downloads/releases/Ope=
+nVPN-2.5.4-I604-amd64.msi
+(15:14:57) mattock: if you happen to have time to test it
+(15:15:20) lev__: I will test Soininen
+(15:15:25) lev__: Soonish
+(15:17:09) mattock: testing Soini[nen] is also welcome
+(15:17:30) mattock: if the installer works ok I will release it this even=
+ing
+(15:18:45) mattock: I have an update on buildbot
+(15:18:48) lev__: And if it doesn=E2=80=99t?
+(15:18:52) mattock: then we do something
+(15:18:53) mattock: :)
+(15:19:16) dazo: do $magic
+(15:19:19) cron2: testing arm64
+(15:19:20) mattock: yep
+(15:19:21) cron2: 1.1.1l
+(15:19:21) cron2: good
+(15:19:28) mattock: so the build is working well
+(15:19:32) mattock: updates deps etc.
+(15:20:12) mattock: as for buildbot: we're getting closer to being able t=
+o start migrating and upgrading the community services, buildbot included=
+
+(15:20:34) mattock: the new services will live in a fresh environment
+(15:20:59) mattock: most of the work has been fighting policies and lack =
+of policies
+(15:21:08) mattock: technically it is not such a big deal
+(15:23:07) cron2: so arm64 passed a few basic connects, tcp/udp, password=
+
+(15:24:34) mattock: \o/
+(15:26:30) d12fk: hackathon then?
+(15:28:14) cron2: nothing new from my end.  Anything on your side?
+(15:28:47) d12fk: no, situation seems to be managable in .de and also in =
+muc
+(15:28:53) d12fk: *covid
+(15:28:56) cron2: yeah
+(15:29:10) cron2: numbers are not perfect, but not catastrophic either
+(15:29:39) lev__: amd64 seems to work (connected to corp vpn using wintun=
+)
+(15:29:41) novaflash: so far from what i can gather i don't have to do an=
+ything special when travelling from netherlands to germany. just have a d=
+eclaration of health and my QR codes for vaccination.
+(15:29:48) mattock: I'm able to book the flights now that I paid the cred=
+it card bill from my Creta trip :D
+(15:30:19) d12fk: I think I had spotted the netherlands on the high risk =
+countrys list
+(15:30:44) novaflash: hm i looked at information online yesterday and it =
+said netherlands was not high risk
+(15:31:06) d12fk: okay it changes often, last time I checked was a week a=
+go or so
+(15:31:21) dazo: maybe we should just reschedule and meet inside the airp=
+ort and find some available spots close to the gates ....
+(15:31:38) mattock: :)
+(15:31:51) rob0: haha
+(15:32:04) d12fk: dazo: close to gates?! who are you and what have you do=
+ne to david?
+(15:32:26) ***dazo tries to hide .....
+(15:33:17) novaflash: "Nederland is voor Duitsland geen coronarisicogebie=
+d. Als u de afgelopen 10 dagen alleen in Nederland was, dan hoeft u zich =
+niet v=C3=B3=C3=B3r vertrek te registreren en hoeft u bij aankomst ook ni=
+et in thuisquarantaine."
+(15:33:18) rob0: it's that chip he got in his vaccine
+(15:33:33) novaflash: that's dutch gobbledegook for "dutchie no problemo"=
+
+(15:34:36) cron2: just don't try to bring any smoke things... bavaria has=
+ no sense of humor
+(15:35:01) d12fk: novaflash: now I remember correctly, it was the ex-colo=
+nies overseas which were listed
+(15:35:12) novaflash: ah.. yeah that makes sense
+(15:35:16) dazo: :-D
+(15:35:18) novaflash: but they're like way out there
+(15:35:24) mattock: d12fk: you mean New York?
+(15:35:29) novaflash: there's not much risk of my being there accidentall=
+y
+(15:35:51) rob0: How many Bavarians does it take to change a light bulb? =
+ One.  Bavarians are hard working and efficient, and they have no need fo=
+r silly jokes.
+(15:36:11) novaflash: is that a joke? jokes are not allowed in Germany. i=
+n Germany, we do not laugh.
+(15:36:23) cron2: nah, that won't work... we are busy drinking beer, we h=
+ave no time for jokes...
+(15:37:02) mattock: I get the sense that there are few if any real topics=
+ left
+(15:37:09) novaflash: what's the status on t-shirts?
+(15:37:11) cron2: well
+(15:37:13) novaflash: the most important topic
+(15:37:13) cron2: that!
+(15:37:24) mattock: German sense of humour?
+(15:37:29) mattock: oh
+(15:37:29) cron2: T-Shirts
+(15:37:30) novaflash: because i was in a meeting with my colleague today =
+and he was wearing a sophos t-shirt still
+(15:37:30) mattock: of course
+(15:37:35) mattock: what design?
+(15:37:44) novaflash: and that was totally unacceptable so we need to bur=
+y him in openvpn t-shirts now
+(15:37:46) mattock: we need to discuss design or let the designer have fr=
+ee hands there
+(15:38:09) d12fk: novaflash: don't forget the ovpn socks
+(15:38:18) mattock: I will tell the designed "do your worst" if you have =
+no opinions
+(15:38:21) cron2: I'd like to see the date/city table on the back side ag=
+ain, and something nice on the front
+(15:38:24) novaflash: we're a little short on time, so probably we should=
+ just let the designer put something together ASAP and we can give it a y=
+ay or nay?
+(15:38:29) cron2: yep
+(15:38:50) novaflash: (designer literally puts the text "something nice" =
+on the front)
+(15:39:14) cron2: he can come up with 2-3 variants as well... like a bava=
+rian one with a beer stein + qaware logo, or just "PenVPN" (classic)
+(15:39:23) mattock: second question: is cron2 able to have the T-shirts p=
+rinted locally in Munich?
+(15:39:39) dazo: novaflash: he knows it's about openvpn ... so probably e=
+nd up with something like "something is nice with OpenVPN"
+(15:39:49) cron2: I should be able to get that done
+(15:39:52) mattock: ok
+(15:39:56) cron2: if I have something by monday
+(15:39:57) mattock: saves shipping time
+(15:39:59) mattock: ok
+(15:40:00) novaflash: OpenVPN. It's nice. (c)
+(15:40:20) mattock: would it be ok to have Qaware logo in there in every =
+shirt to keep things simple?
+(15:40:40) mattock: plus we need sizes
+(15:40:43) cron2: works for me - "munich, qaware, 2021" - this is "this p=
+articular hackathon"
+(15:40:56) novaflash: XL, i'm a big boy
+(15:41:04) cron2: please put those in the wiki
+(15:41:11) novaflash: ok
+(15:41:41) mattock: yes, all please share your body size in Trac
+(15:42:00) mattock: cron2: do you have a link to Qaware site?
+(15:42:03) cron2: qaware.de
+(15:42:08) mattock: we may need a high-quality logo from them as well
+(15:42:15) novaflash: i added a t-shirt size column to our 'who is coming=
+' thing
+(15:42:27) novaflash: seemed easiest place to put it
+(15:42:32) mattock: +1
+(15:42:32) cron2: +1
+(15:42:54) mattock: cron2: could ask for a proper logo from Qaware?
+(15:43:04) mattock: the one on the website seems tiny and won't print wel=
+l
+(15:45:24) mattock: btw. https://community.openvpn.net/openvpn/wiki/Hacka=
+thon2021
+(15:45:31) mattock: not linked to from the front page of Trac
+(15:45:32) cron2: mailed
+(15:45:57) rob0: I think there is a vector graphic of the keyhole logo, s=
+omewhere.
+(15:47:51) cron2: this said - I need to leave in 10 minutes.  Anything el=
+se on the Hackathon?
+(15:47:57) mattock: not from my end
+(15:48:02) novaflash: yes what snacks will people bring
+(15:48:07) mattock: rob0: you mean the (O)penVPN logo?
+(15:48:10) mattock: I have such a thing
+(15:48:15) rob0: yes, ok
+(15:48:21) novaflash: i will be bringing stroopwafels i think
+(15:48:21) cron2: novaflash: Bretzels, and Weisswurst (if you want)
+(15:48:32) novaflash: mmm food
+(15:49:34) mattock: chocolate probably, as usual
+(15:49:39) cron2: so who takes responsibility for the designer pushing?
+(15:50:03) mattock: me
+(15:50:18) mattock: OpenVPN hackathon 2021, space provider by QAware
+(15:50:34) mattock: couple of suggestions and we choose
+(15:50:37) cron2: +1
+(15:51:10) plaisthos: cron2: you want to probably also ask qaware if they=
+ also want shirts and if yes what sizes
+(15:51:29) cron2: I did, but that side thread got a bit stuck
+(15:51:40) plaisthos: ah okay
+(15:52:02) cron2: oh the 2.6 front... we could use some help with the Ope=
+nSSL 3.0.0 patch flood...
+(15:52:23) cron2: most of the "non crypto" patches in that patchset are e=
+asy enough, but I do not know enough about OpenSSL to do the rest
+(15:53:06) novaflash: it's too bad ordex is on paternity leave
+(15:54:39) mattock: cron2: also bring the pate thing you can put on top o=
+f bretzels
+(15:54:42) mattock: ober something
+(15:55:48) d12fk: obatzder? cheesy thingie?
+(15:55:50) mattock: yes
+(15:55:53) mattock: obatzder
+(15:55:53) MaxF: I've been looking at some of the OpenSSL patches. Don't =
+know if an ACK from me is good enough, though...
+(15:56:28) MaxF: I'm also not that deep into OpenSSL, so I don't know if =
+I can ACK all of them
+(15:56:34) cron2: MaxF: for me, it's good enough ("you and foxit will hav=
+e to live with the result if I merge it") :-)
+(15:56:50) cron2: NAKs are even more interesting :-)
+(15:57:24) cron2: I'm off, and hope for IPv6 to community in the meantime=
+ :-)
+(15:57:50) mattock: ok, let's conclude the thing
+(15:58:08) d12fk: hope dies last (German proverb)
+(15:58:18) novaflash ha abbandonato la stanza (quit: Quit: stroopwafels).=
+
+(15:59:37) mattock: "Everything is shit, except pee" (FInnish proverb)
+(16:00:03) mattock: we're not as philosophical as the Germans
+(16:00:22) d12fk: I like it, though
+(16:00:27) mattock: it is true as well
+(16:00:28) mattock: :D
+(16:00:40) mattock: that's a typical finnish pessimistic saying (modern o=
+ne, but still)
+(16:01:02) MaxF: don't praise the day before the evening
+(16:01:08) d12fk: I bet it sounds cool in Finnish
+(16:01:23) mattock: "Kaikki on paskaa paitsi kusi"
+(16:12:16) d12fk: so innocent =3D)
+
+--------------50BC1FFA7824500EDB6F6C03--
 
