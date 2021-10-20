@@ -1,13 +1,13 @@
 References: <20211019183127.614175-1-arne@...1227...>
- <20211019183127.614175-2-arne@...1227...>
+ <20211019183127.614175-3-arne@...1227...>
 From: Max Fillinger <maximilian.fillinger@...2507...>
-Message-ID: <2e5f0de8-1b32-34a6-9041-716526bd77d1@...2507...>
-Date: Wed, 20 Oct 2021 20:35:23 +0200
+Message-ID: <dafed1aa-b321-cfe3-d461-e3bf485e9fe1@...2507...>
+Date: Wed, 20 Oct 2021 21:07:59 +0200
 MIME-Version: 1.0
-In-Reply-To: <20211019183127.614175-2-arne@...1227...>
+In-Reply-To: <20211019183127.614175-3-arne@...1227...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3 01/21] [OSSL 3.0] Use new EVP_MAC API
- for HMAC implementation
+Subject: Re: [Openvpn-devel] [PATCH v3 02/21] [OSSL 3.0] Add
+ --with-openssl-engine autoconf option (auto|yes|no)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,25 +17,73 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
 On 19/10/2021 20:31, Arne Schwabe wrote:
-> The old API is deprecated in OpenSSL 3.0 and the new API does not yet
-> exist in OpenSSL 1.1. Emulating the new API would be more complex than
-> just having two implementations. So this switches to a new hmac
-> implementation for OpenSSL 3.0.
+> This allows to select engine support at configure time. For OpenSSL 1.1 the
+> default is not changed and we detect if engine support is available.
 > 
-> Unfortunately the new API does not have an easy to reset an HMAC, so we need
-> to keep the key around to emulate a reset functionality.
+> Engine support is deprecated in OpenSSL 3.0 and for OpenSSL 3.0 the default
+> is to disable engine support as engine support is deprecated and generates
+> compiler warnings which in turn also break -Werror.
+> 
+> By using --with-openssl-engine=no or --with-openssl-engine=yes engine support
+> can be forced on or off. If it is enabled but not detected an error will be
+> thown.
+> 
+> This commit cleans up the configurelogic a bit and removes the ENGINE_cleanup
+> checks as we can just assume that it will be also available as macro or function
+> if the other engine functions are available. Before the cleanup we would only
+> check for the existance of engine.h if ENGINE_cleanup was not found.
 > 
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
+Looks good to me. My one nitpick is that the part below uses a mix of 
+spaces and tabs for indentation. But the entire file doesn't seem 
+terribly consistent about that.
 
-Looked at the code, compiled with OpenSSL 3.1.0 and 1.1.1, and ran 
---test-crypto for both.
-
-Small typo in commit message: "does not have an easy to reset", probably 
-should be "easy way to reset".
+> +    if test "${with_openssl_engine}" = "auto"; then
+> +        AC_COMPILE_IFELSE(
+> +        			[AC_LANG_PROGRAM(
+> +        				[[
+> +        #include <openssl/opensslv.h>
+> +        				]],
+> +        				[[
+> +        /*	     Version encoding: MNNFFPPS - see opensslv.h for details */
+> +        #if OPENSSL_VERSION_NUMBER >= 0x30000000L
+> +        #error Engine supported disabled by default in OpenSSL 3.0+
+> +        #endif
+> +        				]]
+> +        			)],
+> +        			[have_openssl_engine="yes"],
+> +        			[have_openssl_engine="no"]
+> +        )
+> +        if test "${have_openssl_engine}" = "yes"; then
+> +            AC_CHECK_FUNCS(
+> +                [ \
+> +                    ENGINE_load_builtin_engines \
+> +                    ENGINE_register_all_complete \
+> +                ],
+> +                ,
+> +                [have_openssl_engine="no"; break]
+> +            )
+> +        fi
+> +    else
+> +        have_openssl_engine="${with_openssl_engine}"
+> +        if test "${have_openssl_engine}" = "yes"; then
+> +            AC_CHECK_FUNCS(
+> +                [ \
+> +                    ENGINE_load_builtin_engines \
+> +                    ENGINE_register_all_complete \
+> +                ],
+> +                ,
+> +                [AC_MSG_ERROR([OpenSSL engine support not found])]
+> +            )
+> +        fi
+> +    fi
+>   	if test "${have_openssl_engine}" = "yes"; then
+>   		AC_DEFINE([HAVE_OPENSSL_ENGINE], [1], [OpenSSL engine support available])
+>   	fi
+> 
 
