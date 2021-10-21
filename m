@@ -1,10 +1,10 @@
-Date: Thu, 21 Oct 2021 15:59:20 +0200 (CEST)
-Message-Id: <202110211359.19LDxKDx052264@...2054...>
+Date: Thu, 21 Oct 2021 16:11:40 +0200 (CEST)
+Message-Id: <202110211411.19LEBekg052628@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211019183127.614175-6-arne@...1227...>
-References: <20211019183127.614175-6-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Use EVP_PKEY based API for
- loading DH keys
+In-Reply-To: <20211019183127.614175-5-arne@...1227...>
+References: <20211019183127.614175-5-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove DES check with OpenSSL
+ 3.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,21 +18,23 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Have no OpenSSL 3.0 based test environment yet - so, trusting MaxF's
-tests here.  Just did compile + client test on 1.1.1
+Acked-by: Gert Doering <gert@...1296...>
+
+Taking MaxF review into account, moving the comment as suggested, and
+changing "risk ... is ... weak" to "low".
 
 Your patch has been applied to the master branch.
 
-commit 658c72e6e651437943f46a975751109759abd858
+commit d67658feeab4742b9b6f57806ba8e93c8eec75b8
 Author: Arne Schwabe
-Date:   Tue Oct 19 20:31:11 2021 +0200
+Date:   Tue Oct 19 20:31:10 2021 +0200
 
-     Use EVP_PKEY based API for loading DH keys
+     Remove DES check with OpenSSL 3.0
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
-     Message-Id: <20211019183127.614175-6-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23015.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20211019183127.614175-5-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23004.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
