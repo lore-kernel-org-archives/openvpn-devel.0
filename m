@@ -1,14 +1,13 @@
 References: <20211019183127.614175-1-arne@...1227...>
- <20211019183127.614175-4-arne@...1227...>
- <CAKuzo_jOdVxYE4OOA+cjXCpi0PkgQqt_WHGtZT0X0vdAkJ7MXw@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <110a6779-421f-6fe3-d1d5-530658e45555@...1227...>
-Date: Thu, 21 Oct 2021 11:42:48 +0200
+ <20211019183127.614175-6-arne@...1227...>
+From: Max Fillinger <maximilian.fillinger@...2507...>
+Message-ID: <c77e595a-b65d-fc4d-ce09-aa63977ac9b2@...2507...>
+Date: Thu, 21 Oct 2021 11:45:34 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_jOdVxYE4OOA+cjXCpi0PkgQqt_WHGtZT0X0vdAkJ7MXw@...278...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v3 03/21] [OSSL 3.0] Implement DES ECB
- encrypt via EVP_CIPHER api
+In-Reply-To: <20211019183127.614175-6-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v3 05/21] [OSSL 3.0] Use EVP_PKEY based
+ API for loading DH keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,25 +16,18 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
+On 19/10/2021 20:31, Arne Schwabe wrote:
+> OpenSSL 3.0 replaces the DH API with a generic EVP_KEY based API to
+> load DH parameters.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-> 
-> 
-> Apart from the wrong cipher type that Max pointed out, this call will
-> fail in OpenSSL 3.0 unless legacy is loaded, right? Causing a run-time
-> error in that case sounds good to me but a helpful error message like
-> legacy provider may be required or even a check whether legacy is loaded
-> and error out appropriately would be helpful.
-> 
-> PS: can't we just get rid of the use of DES altogether?
-> 
+Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
 
-As Gert pointed out that NTLM depends on it. We can trick a bit here
-with DES-EDE and three times the same key but yes it should have a
-better error message.
-
-Arne
+Looked at the patch, compiled with OpenSSL 3.1.0, tested that I can get 
+a server and client to talk to each other on localhost.
 
