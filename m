@@ -1,10 +1,10 @@
-Date: Thu, 21 Oct 2021 08:24:46 +0200 (CEST)
-Message-Id: <202110210624.19L6Okf0035545@...2054...>
+Date: Thu, 21 Oct 2021 08:30:55 +0200 (CEST)
+Message-Id: <202110210630.19L6UtsF042283@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211019183127.614175-17-arne@...1227...>
-References: <20211019183127.614175-17-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add message when decoding
- PKCS12 file fails.
+In-Reply-To: <20211019183127.614175-18-arne@...1227...>
+References: <20211019183127.614175-18-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add small unit test for testing
+ HMAC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,27 +20,34 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"That was an easy one" :-) - error reporting is always useful, and
-the code change is trivial enough.  Tested with "wrong password" only,
-which now prints:
+Unit tests are good :-) - tested with OpenSSL 1.1.1 and mbedTLS builds
 
-2021-10-21 08:24:01 OpenSSL: error:23076071:PKCS12 routines:PKCS12_parse:mac verify failure
-2021-10-21 08:24:01 OpenSSL: error:23076071:PKCS12 routines:PKCS12_parse:mac verify failure
-2021-10-21 08:24:01 Decoding PKCS12 failed. Probably wrong password or unsupported/legacy encryption
-2021-10-21 08:24:01 SIGUSR1[soft,private-key-password-failure] received, process restarting
+[==========] Running 4 test(s).
+[ RUN      ] crypto_pem_encode_decode_loopback
+[       OK ] crypto_pem_encode_decode_loopback
+[ RUN      ] crypto_translate_cipher_names
+[       OK ] crypto_translate_cipher_names
+[ RUN      ] crypto_test_tls_prf
+[       OK ] crypto_test_tls_prf
+[ RUN      ] crypto_test_hmac
+[       OK ] crypto_test_hmac
+[==========] 4 test(s) run.
+[  PASSED  ] 4 test(s).
+PASS: crypto_testdriver
+
 
 Your patch has been applied to the master branch.
 
-commit 6ac4e63c577986ec11eae3519fe8516e8ca8ac0f
+commit bf079db4888381791308e08b1de9b87670a72c95
 Author: Arne Schwabe
-Date:   Tue Oct 19 20:31:22 2021 +0200
+Date:   Tue Oct 19 20:31:23 2021 +0200
 
-     Add message when decoding PKCS12 file fails.
+     Add small unit test for testing HMAC
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20211019183127.614175-17-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23017.html
+     Message-Id: <20211019183127.614175-18-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23012.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
