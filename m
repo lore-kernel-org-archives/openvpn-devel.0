@@ -1,13 +1,13 @@
 MIME-Version: 1.0
 References: <20211019183127.614175-1-arne@...1227...>
- <20211019183127.614175-22-arne@...1227...>
-In-Reply-To: <20211019183127.614175-22-arne@...1227...>
+ <20211019183127.614175-4-arne@...1227...>
+In-Reply-To: <20211019183127.614175-4-arne@...1227...>
 From: Selva Nair <selva.nair@...277...>
-Date: Wed, 20 Oct 2021 18:08:06 -0400
-Message-ID: <CAKuzo_gMDkpBHresSESzGcZLGQJofu_FMNz_A8NPhYJk9T_buQ@...278...>
-Content-Type: multipart/alternative; boundary="000000000000447d9b05ced00482"
-Subject: Re: [Openvpn-devel] [PATCH v3 21/21] Always use 8192 bytes for
- ERR_BUF_SIZE
+Date: Thu, 21 Oct 2021 01:09:14 -0400
+Message-ID: <CAKuzo_jOdVxYE4OOA+cjXCpi0PkgQqt_WHGtZT0X0vdAkJ7MXw@...278...>
+Content-Type: multipart/alternative; boundary="0000000000004f750c05ced5e62e"
+Subject: Re: [Openvpn-devel] [PATCH v3 03/21] [OSSL 3.0] Implement DES ECB
+ encrypt via EVP_CIPHER api
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,60 +19,95 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000447d9b05ced00482
+--0000000000004f750c05ced5e62e
 Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
 On Tue, Oct 19, 2021 at 2:32 PM Arne Schwabe <arne@...1227...> wrote:
 
-> The signature messages required by external key managed also break
-> the 1280 limit. To also avoid this surprise of different behaviour
-> with PKCS11 enabled/disable, always use the larger size.
+> Even though DES is super outdated and also NTLM is super outdated,
+> eliminating the warnings for OpenSSL 3.0 is still a step in the right
+> direction and using the correct APIs.
+>
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  src/openvpn/crypto_openssl.c | 22 +++++++++++++++++++---
+>  1 file changed, 19 insertions(+), 3 deletions(-)
+>
+> diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+> index 1c800df7f..021698f12 100644
+> --- a/src/openvpn/crypto_openssl.c
+> +++ b/src/openvpn/crypto_openssl.c
+> @@ -879,10 +879,26 @@ cipher_des_encrypt_ecb(const unsigned char
+> key[DES_KEY_LENGTH],
+>                         unsigned char src[DES_KEY_LENGTH],
+>                         unsigned char dst[DES_KEY_LENGTH])
+>  {
+> -    DES_key_schedule sched;
+> +    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+> +    if (!ctx)
+> +    {
+> +        crypto_msg(M_FATAL, "%s: EVP_CIPHER_CTX_new() failed", __func__);
+> +    }
+> +    if (!EVP_EncryptInit_ex(ctx, EVP_bf_ecb(), NULL, key, 0))
 >
 
-This may be enough in most cases, but to be safer, shall we increase it to
-10240? I have seen up to 6 K handshake messages when undigested messages
-are to be passed to the management interface and that's already 8K with
-base64 overhead.
+Apart from the wrong cipher type that Max pointed out, this call will fail
+in OpenSSL 3.0 unless legacy is loaded, right? Causing a run-time error in
+that case sounds good to me but a helpful error message like legacy
+provider may be required or even a check whether legacy is loaded and error
+out appropriately would be helpful.
 
-That said, I think we need a better solution. As it stands it's a bit silly
-that we keep allocating required buffers dynamically at the origination
-point, a number of places in manage.c, all the way up to x_msg_va() in
-error.c where it gets silently truncated to a hard-coded size.
-
-Can we use the return value of vsnprintf() in x_msg_va() to determine the
-size of the buffer required? Not sure whether that is reliable on all
-platforms. Only the size of m1 has to be determined as m2 has a
-more-or-less predictable overhead on top of that.
+PS: can't we just get rid of the use of DES altogether?
 
 Selva
 
---000000000000447d9b05ced00482
+--0000000000004f750c05ced5e62e
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <div dir=3D"ltr"><div>Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"l=
 tr" class=3D"gmail_attr">On Tue, Oct 19, 2021 at 2:32 PM Arne Schwabe &lt;<=
-a href=3D"mailto:arne@...1227...">arne@...1227...</a>&gt; wrote:<br></div><=
-blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-l=
-eft:1px solid rgb(204,204,204);padding-left:1ex">The signature messages req=
-uired by external key managed also break<br>
-the 1280 limit. To also avoid this surprise of different behaviour<br>
-with PKCS11 enabled/disable, always use the larger size.<br></blockquote><d=
-iv><br></div><div>This may be enough in most cases, but to be safer, shall =
-we increase it to 10240? I have seen up to 6 K handshake=C2=A0messages when=
- undigested messages are to be passed to the management interface and that&=
-#39;s already 8K with base64 overhead.</div><div><br></div><div>That said, =
-I think we need a better solution. As it stands it&#39;s a bit silly that w=
-e keep allocating required buffers dynamically at the origination point, a =
-number of=C2=A0places in manage.c, all the way up to=C2=A0x_msg_va() in err=
-or.c where it gets silently truncated to a hard-coded size.=C2=A0</div><div=
-><br></div><div>Can we use the return value of vsnprintf() in x_msg_va() to=
- determine the size of the buffer required? Not sure whether that is reliab=
-le on all platforms. Only the size of m1 has to be determined as m2 has a m=
-ore-or-less predictable overhead on top of that.</div><div><br></div><div>S=
-elva</div></div></div>
+a href=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1227...</a>&gt;=
+ wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px =
+0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Even tho=
+ugh DES is super outdated and also NTLM is super outdated,<br>
+eliminating the warnings for OpenSSL 3.0 is still a step in the right<br>
+direction and using the correct APIs.<br>
+<br>
+Signed-off-by: Arne Schwabe &lt;<a href=3D"mailto:arne@...1227..." target=
+=3D"_blank">arne@...1227...</a>&gt;<br>
+---<br>
+=C2=A0src/openvpn/crypto_openssl.c | 22 +++++++++++++++++++---<br>
+=C2=A01 file changed, 19 insertions(+), 3 deletions(-)<br>
+<br>
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c<br>
+index 1c800df7f..021698f12 100644<br>
+--- a/src/openvpn/crypto_openssl.c<br>
++++ b/src/openvpn/crypto_openssl.c<br>
+@@ -879,10 +879,26 @@ cipher_des_encrypt_ecb(const unsigned char key[DES_KE=
+Y_LENGTH],<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 unsigned char src[DES_KEY_LENGTH],<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 unsigned char dst[DES_KEY_LENGTH])<br>
+=C2=A0{<br>
+-=C2=A0 =C2=A0 DES_key_schedule sched;<br>
++=C2=A0 =C2=A0 EVP_CIPHER_CTX *ctx =3D EVP_CIPHER_CTX_new();<br>
++=C2=A0 =C2=A0 if (!ctx)<br>
++=C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 crypto_msg(M_FATAL, &quot;%s: EVP_CIPHER_CTX_n=
+ew() failed&quot;, __func__);<br>
++=C2=A0 =C2=A0 }<br>
++=C2=A0 =C2=A0 if (!EVP_EncryptInit_ex(ctx, EVP_bf_ecb(), NULL, key, 0))<br=
+></blockquote><div><br></div><div>Apart from the wrong cipher type that Max=
+ pointed out, this call will fail in OpenSSL 3.0 unless legacy is loaded, r=
+ight? Causing a run-time error in that case sounds good=C2=A0to me but a he=
+lpful error message like legacy provider may be required or even a check wh=
+ether legacy is loaded and error out appropriately would be helpful.</div><=
+div><br></div><div>PS: can&#39;t we just get rid of the use of DES altogeth=
+er?</div><div><br></div><div>Selva</div></div></div>
 
---000000000000447d9b05ced00482--
+--0000000000004f750c05ced5e62e--
 
