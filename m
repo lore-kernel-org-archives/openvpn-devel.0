@@ -1,8 +1,13 @@
-From: <maximilian.fillinger@...2507...>
-Date: Thu, 21 Oct 2021 13:50:37 +0200
-Message-ID: <20211021115037.27056-1-maximilian.fillinger@...2507...>
+References: <20211019183127.614175-1-arne@...1227...>
+ <20211019183127.614175-7-arne@...1227...>
+From: Max Fillinger <maximilian.fillinger@...2507...>
+Message-ID: <6e515ad3-2858-c210-6c90-f91808f014a2@...2507...>
+Date: Thu, 21 Oct 2021 14:37:09 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix build with compression disabled
+In-Reply-To: <20211019183127.614175-7-arne@...1227...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v3 06/21] [OSSL 3.0] Deprecate
+ --ecdh-curve with OpenSSL 3.0 and adjust mbed TLS message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,43 +16,20 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Max Fillinger <maximilian.fillinger@...2507...>
+On 19/10/2021 20:31, Arne Schwabe wrote:
+> OpenSSL 3.0 deprecates SSL_CTX_set_tmp_ecdh() in favour of
+> SSL_CTX_set1_groups(3). We already support the SSL_CTX_set1_groups
+> using the --tls-groups. Adjust both mbed TLS and OpenSSL 3.0 to
+> say that --ecdh-curve is ingored and --tls-groups should be used.
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-When building with both --disable-lz4 and --disable-lzo, the function
-comp_non_stub_enabled and various flags are not defined. One of the
-places where it is used in options.c was not put behind an #ifdef, which
-caused compilation to fail.
+Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
 
-Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
----
- src/openvpn/options.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index ed2dcd53..4a5db8a6 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3205,6 +3205,7 @@ options_set_backwards_compatible_options(struct options *o)
-         o->enable_ncp_fallback = true;
-     }
- 
-+#ifdef USE_COMP
-     /* Compression is deprecated and we do not want to announce support for it
-      * by default anymore, additionally DCO breaks with compression.
-      *
-@@ -3215,6 +3216,7 @@ options_set_backwards_compatible_options(struct options *o)
-     {
-         o->comp.flags = COMP_F_ALLOW_STUB_ONLY|COMP_F_ADVERTISE_STUBS_ONLY;
-     }
-+#endif
- }
- 
- static void
--- 
-2.11.0
-
+Not much to say here. It compiles and I can see the warning when I use 
+the option.
 
