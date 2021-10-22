@@ -1,13 +1,9 @@
-References: <20211019183127.614175-1-arne@...1227...>
- <20211019183127.614175-8-arne@...1227...>
-From: Max Fillinger <maximilian.fillinger@...2507...>
-Message-ID: <b28b48c8-5e21-b628-b992-187f0fe52402@...2507...>
-Date: Fri, 22 Oct 2021 19:08:28 +0200
-MIME-Version: 1.0
+Date: Fri, 22 Oct 2021 19:43:35 +0200 (CEST)
+Message-Id: <202110221743.19MHhZRK084314@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20211019183127.614175-8-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3 07/21] [OSSL 3.0] Remove DES key
- fixup code
+References: <20211019183127.614175-8-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove DES key fixup code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,22 +12,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 19/10/2021 20:31, Arne Schwabe wrote:
-> This code mainly sets the parity bits in the DES keys. As mbed TLS and
-> OpenSSL already ignore these bits in the DES key and since DES is
-> deprecated, remove this special DES code that is not even needed by
-> the libraries.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+Looks reasonable, passes client side tests (with 1.1.1 only, lazy) :-)
 
-Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
+It might bite up for NTLM (as I see it's used there as well, and that
+is the only place where we really continue to need DES).  Seems I need
+to set up a NTLM proxy auth environment to test this...
 
-Makes sense, why should we care about the parity bits when no-one else does?
+Your patch has been applied to the master branch.
 
-Compiled and ran --test-crypto for DES/DES3 with OpenSSL 3.1.0, 1.1.1 
-and mbedtls 2.26.
+commit e23c152aa58f533a224df4bc3d433e2be967f64b
+Author: Arne Schwabe
+Date:   Tue Oct 19 20:31:13 2021 +0200
+
+     Remove DES key fixup code
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
+     Message-Id: <20211019183127.614175-8-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23014.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
