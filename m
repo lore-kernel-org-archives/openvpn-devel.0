@@ -1,17 +1,11 @@
+From: selva.nair@...277...
+Date: Fri, 22 Oct 2021 20:07:06 -0400
+Message-Id: <20211023000706.25016-2-selva.nair@...277...>
+In-Reply-To: <20211023000706.25016-1-selva.nair@...277...>
+References: <20211023000706.25016-1-selva.nair@...277...>
 MIME-Version: 1.0
-References: <20211019183127.614175-1-arne@...1227...>
- <20211019183127.614175-13-arne@...1227...>
- <CAKuzo_h6zwNySb7iu=bFGduxH7jB2OT_2TopZ0gYdYPmpRTO=g@...278...>
- <5554b1a1-02ec-a0af-c045-58aa999ed66f@...1227...>
- <CAKuzo_i+eN4Juj70S3v25wHwJepW69MGPEONHN=D1pQbSBK7PA@...278...>
- <5aaca5a3-2087-6e1c-2284-5919111456a8@...1227...>
-In-Reply-To: <5aaca5a3-2087-6e1c-2284-5919111456a8@...1227...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 22 Oct 2021 16:38:35 -0400
-Message-ID: <CAKuzo_iHebV3tY_JcMVei9vtQthD5SOJ_CMXTG_PEQ1HWmLwGQ@...278...>
-Content-Type: multipart/alternative; boundary="000000000000c6468e05cef6ff7b"
-Subject: Re: [Openvpn-devel] [PATCH v3 12/21] [OSSL 3.0] Allow loading of
- non default providers
+Subject: [Openvpn-devel] [PATCH for 2.5] Ensure the current common_name is
+ in the environment for scripts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,43 +14,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---000000000000c6468e05cef6ff7b
-Content-Type: text/plain; charset="UTF-8"
+From: Selva Nair <selva.nair@...277...>
 
-Hi
+When username-as-common-name is in effect, the common_name
+is "CN" from the certificate for auth-user-pass-verify. It gets
+changed to "username" after successful authentication. This
+changed value gets into the env when client-connect script is
+called.
 
-No. I am actually against loading legacy on demand or loading the
-> default provider if --provider is not specified. Often there are system
-> wide security defaults in place and I don't think OpenVPN should
-> override them unless explicitly instructed to do so.
->
+However, "common_name" goes through the cycle of being
+"CN", then "username" during every reauth (renegotiation).
+As the client-connect script is not called during reneg, the changed
+value never gets back into the env. The end result is that the
+disconnect script gets "common_name=<CN>" instead of the username.
+Unless no reneg steps have happened before disconnect.
+(For a more detailed analysis see
+https://community.openvpn.net/openvpn/ticket/1434#comment:12)
 
-Okay, that adds some clarity :)
+Fix by adding common_name to env whenever it changes.
 
-In that case let the system default + explicit options take control. If
-that breaks anything or causes an error, we can try our best to print a
-helpful error message.
+Trac: #1434
+Very likely applies to #160 as well, but that's too old and
+some of the relevant code path has evolved since then.
 
-Selva
+Same as for 2.6 except for the context change due to PF.
 
---000000000000c6468e05cef6ff7b
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/ssl_verify.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-<div dir=3D"ltr"><div>Hi</div><div><br></div><div class=3D"gmail_quote"><bl=
-ockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-lef=
-t:1px solid rgb(204,204,204);padding-left:1ex">
-No. I am actually against loading legacy on demand or loading the<br>
-default provider if --provider is not specified. Often there are system<br>
-wide security defaults in place and I don&#39;t think OpenVPN should<br>
-override them unless explicitly instructed to do so.<br></blockquote><div><=
-br></div><div>Okay, that adds some clarity :)=C2=A0</div><div><br></div><di=
-v>In that case let the system default + explicit=C2=A0options take control.=
- If that breaks anything or causes an error, we can try our best to print a=
- helpful error message.</div><div><br></div><div>Selva</div></div></div>
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 4f3b61d6..0ccd43d0 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -116,6 +116,8 @@ set_common_name(struct tls_session *session, const char *common_name)
+         }
+ #endif
+     }
++    /* update common name in env */
++    setenv_str(session->opt->es, "common_name", common_name);
+ }
+ 
+ /*
+-- 
+2.30.2
 
---000000000000c6468e05cef6ff7b--
 
