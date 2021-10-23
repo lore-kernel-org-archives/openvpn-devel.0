@@ -1,10 +1,8 @@
 From: selva.nair@...277...
-Date: Fri, 22 Oct 2021 20:07:06 -0400
-Message-Id: <20211023000706.25016-2-selva.nair@...277...>
-In-Reply-To: <20211023000706.25016-1-selva.nair@...277...>
-References: <20211023000706.25016-1-selva.nair@...277...>
+Date: Fri, 22 Oct 2021 20:07:05 -0400
+Message-Id: <20211023000706.25016-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH for 2.5] Ensure the current common_name is
+Subject: [Openvpn-devel] [PATCH for 2.6] Ensure the current common_name is
  in the environment for scripts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -41,20 +39,18 @@ Trac: #1434
 Very likely applies to #160 as well, but that's too old and
 some of the relevant code path has evolved since then.
 
-Same as for 2.6 except for the context change due to PF.
-
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
  src/openvpn/ssl_verify.c | 2 ++
  1 file changed, 2 insertions(+)
 
 diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 4f3b61d6..0ccd43d0 100644
+index b745b3c7..8dbbf5f5 100644
 --- a/src/openvpn/ssl_verify.c
 +++ b/src/openvpn/ssl_verify.c
-@@ -116,6 +116,8 @@ set_common_name(struct tls_session *session, const char *common_name)
-         }
- #endif
+@@ -101,6 +101,8 @@ set_common_name(struct tls_session *session, const char *common_name)
+         /* FIXME: Last alloc will never be freed */
+         session->common_name = string_alloc(common_name, NULL);
      }
 +    /* update common name in env */
 +    setenv_str(session->opt->es, "common_name", common_name);
