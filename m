@@ -1,8 +1,8 @@
-Date: Sat, 23 Oct 2021 17:44:22 +0200 (CEST)
-Message-Id: <202110231544.19NFiM73007609@...2054...>
+Date: Sat, 23 Oct 2021 17:48:12 +0200 (CEST)
+Message-Id: <202110231548.19NFmCqQ007757@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211023000706.25016-1-selva.nair@...277...>
-References: <20211023000706.25016-1-selva.nair@...277...>
+In-Reply-To: <20211023000706.25016-2-selva.nair@...277...>
+References: <20211023000706.25016-2-selva.nair@...277...>
 Subject: [Openvpn-devel] [PATCH applied] Re: Ensure the current common_name
  is in the environment for scripts
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,25 +20,21 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Thanks for finding a better theory how to fix this :-) - and then 
-finding the single-line "so obvious" place to fix this, without caring
-about all our convolutions in changing common_name.
+Thanks, again :-)
 
-(And thanks to Richard for getting so upset with this bug that he
-found nice and reliable ways to test bug and fix)
+Your patch has been applied to the release/2.5 and release/2.4 branches.
 
-Your patch has been applied to the master branch.
-
-commit fa5ab2438ad2d8a12eaf43e2cdd8b4294299c175
+commit a2412bf4a6bb6ac7a6f26128d00fe81b0fa4a18e (release/2.5)
+commit 644bcb87e76f0c56ec5b6cb205771a00fc28e598 (release/2.4)
 Author: Selva Nair
-Date:   Fri Oct 22 20:07:05 2021 -0400
+Date:   Fri Oct 22 20:07:06 2021 -0400
 
      Ensure the current common_name is in the environment for scripts
 
      Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20211023000706.25016-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23051.html
+     Message-Id: <20211023000706.25016-2-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23050.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
