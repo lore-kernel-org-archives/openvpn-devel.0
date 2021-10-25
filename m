@@ -1,13 +1,8 @@
-References: <20211019183127.614175-1-arne@...1227...>
- <20211019183127.614175-10-arne@...1227...>
 From: Max Fillinger <maximilian.fillinger@...2507...>
-Message-ID: <d1800122-6aaa-3b92-afc7-120d7628fb24@...2507...>
-Date: Mon, 25 Oct 2021 13:52:04 +0200
+Date: Mon, 25 Oct 2021 16:53:14 +0200
+Message-ID: <20211025145314.23009-1-maximilian.fillinger@...2507...>
 MIME-Version: 1.0
-In-Reply-To: <20211019183127.614175-10-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3 09/21] Refactor early initialisation
- and uninitialisation into methods
+Subject: [Openvpn-devel] [PATCH] Don't manually free DH params in OpenSSL 3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,19 +11,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-On 19/10/2021 20:31, Arne Schwabe wrote:
-> This put the early initialisation and uninitialisation that needs to
-> happen between option parsing and post processing into small methods.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+When the EVP_PKEY object with the Diffie-Hellman parameters is passed
+to SSL_CTX_set0_tmp_dh_pkey, it does not create a copy but stores the
+pointer in the SSL_CTX. Therefore, we should not free it.
 
-Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
+The EVP_PKEY will be freed automatically when we free the SSL_CTX.
 
-It's easy to see that this does not change the behavior. Compiled and 
-tested with OpenSSL 3 only because it doesn't actually touch any OpenSSL 
-code.
+Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+---
+ src/openvpn/ssl_openssl.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 2414fc5e..6f2d6d57 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -685,8 +685,6 @@ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
+ 
+     msg(D_TLS_DEBUG_LOW, "Diffie-Hellman initialized with %d bit key",
+         8 * EVP_PKEY_get_size(dh));
+-
+-    EVP_PKEY_free(dh);
+ #else
+     DH *dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL);
+     BIO_free(bio);
+-- 
+2.11.0
+
 
