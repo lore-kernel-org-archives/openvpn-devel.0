@@ -1,13 +1,10 @@
-References: <20211019183127.614175-1-arne@...1227...>
- <20211019183127.614175-11-arne@...1227...>
-From: Max Fillinger <maximilian.fillinger@...2507...>
-Message-ID: <108c949a-f5e9-d8c4-d468-ca888813cd8e@...2507...>
-Date: Mon, 25 Oct 2021 17:55:10 +0200
-MIME-Version: 1.0
-In-Reply-To: <20211019183127.614175-11-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3 10/21] [OSSL 3.0] Replace
- EVP_get_cipherbyname with EVP_CIPHER_fetch
+Date: Mon, 25 Oct 2021 17:59:42 +0200 (CEST)
+Message-Id: <202110251559.19PFxgRm061720@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20211025145314.23009-1-maximilian.fillinger@...2507...>
+References: <20211025145314.23009-1-maximilian.fillinger@...2507...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Don't manually free DH params
+ in OpenSSL 3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,26 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Max Fillinger <maximilian.fillinger@...2507...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 19/10/2021 20:31, Arne Schwabe wrote:
-> In OpenSSL 3.0 EVP_get_cipherbyname return a non NULL algorithm
-> even if the algorithm is not avaialble with the currently available
-> provider. Luckily EVP_get_cipherbyname can be used here as drop
-> in replacement and returns only non NULL if the algorithm is actually
-> currently supported.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+Great find.  
 
-Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
+I had this trac ticket (1436) about weird hanging/looping on signal exit, 
+inside openssl cleanup, and your patch fixes this :-)
 
-Looks good to me!
+Your patch has been applied to the master branch.
 
-Some small errors in the commit message:
+commit 4daed27f28f6bb3033e659328fe80322a8f4b5e1
+Author: Max Fillinger
+Date:   Mon Oct 25 16:53:14 2021 +0200
 
-"return a non Null algorithm": Should be "may return", I think.
+     Don't manually free DH params in OpenSSL 3
 
-second "EVP_get_cipherbyname" should be "EVP_CIPHER_fetch".
+     Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+     Message-Id: <20211025145314.23009-1-maximilian.fillinger@...2507...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20211025145314.23009-1-maximilian.fillinger@...2507...
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
