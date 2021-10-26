@@ -1,14 +1,13 @@
 References: <20211019183127.614175-1-arne@...1227...>
- <20211019183127.614175-16-arne@...1227...>
- <011c5f85-6e10-fd33-2806-07265445d034@...2507...>
+ <20211019183127.614175-15-arne@...1227...>
 From: Max Fillinger <maximilian.fillinger@...2507...>
-Message-ID: <b8960fe7-a037-faff-db54-fa30a2776d56@...2507...>
-Date: Tue, 26 Oct 2021 18:41:33 +0200
+Message-ID: <1717c64a-b237-9b5f-0278-830048d0e74d@...2507...>
+Date: Tue, 26 Oct 2021 16:37:28 +0200
 MIME-Version: 1.0
-In-Reply-To: <011c5f85-6e10-fd33-2806-07265445d034@...2507...>
+In-Reply-To: <20211019183127.614175-15-arne@...1227...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v3 15/21] [OSSL 3.0] Do not allow CTS
- ciphers
+Subject: Re: [Openvpn-devel] [PATCH v3 14/21] [OSSL 3.0] Use
+ TYPE_do_all_provided function for listing cipher/digest
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,47 +16,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-On 26/10/2021 17:27, Max Fillinger wrote:
-> On 19/10/2021 20:31, Arne Schwabe wrote:
->> We do not support CTS algorithms (cipher text stealing) algorithms.
->>
->> Signed-off-by: Arne Schwabe <arne@...1227...>
->> ---
->>   src/openvpn/crypto_openssl.c | 3 +++
->>   1 file changed, 3 insertions(+)
->>
->> diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
->> index ab552efab..ac8287440 100644
->> --- a/src/openvpn/crypto_openssl.c
->> +++ b/src/openvpn/crypto_openssl.c
->> @@ -760,6 +760,9 @@ cipher_kt_mode_cbc(const cipher_kt_t *cipher)
->>   {
->>       return cipher && cipher_kt_mode(cipher) == OPENVPN_MODE_CBC
->>              /* Exclude AEAD cipher modes, they require a different 
->> API */
->> +#ifdef EVP_CIPH_FLAG_CTS
->> +           && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_CTS)
->> +#endif
->>              && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_AEAD_CIPHER);
->>   }
->>
+On 19/10/2021 20:31, Arne Schwabe wrote:
+> With OpenSSL 3.0 the use of nid values is deprecated and new algorithms
+> do not even have NID values anymore.
 > 
-> Together with the previous patch, this makes the tests work. One thing 
-> I'm unsure about is that this check is only done for CBC mode. 
-> Cipher-text stealing can be used in *any* block cipher mode (even CTR, 
-> though that would be amazingly pointless).
+> This also works nicely with providers now:
 > 
-> I compiled OpenVPN with support for OFB and CFB modes and didn't see any 
-> CTS in the --show-ciphers output. But do we know for sure that there's 
-> no supported version or configuration of OpenSSL that uses cipher-text 
-> stealing in non-CBC modes?
+>     openvpn --provider legacy:default --show-ciphers
+> 
+> shows more ciphers (e.g. BF-CBC) than just
+> 
+>     openvpn --show-ciphers
+> 
+> when compiled with OpenSSL 3.0
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Disregard that. I keep forgetting how OFB and CFB work. They don't need 
-any padding so ciphertext stealing would be pointless here.
+Looks good, and the tests work with OpenSSL 3 and OpenSSL 1.1.1 when I 
+also apply the "Do not allow CTS ciphers" patch.
 
-Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
+One nitpick:
+
+> +struct collect_ciphers {
+> +    /* If we ever exceed this, we must be more selective */
+> +    const EVP_CIPHER *list[1000];
+> +    size_t num;
+> +};
+> +
+> +static void collect_ciphers(EVP_CIPHER *cipher, void *list)
+> +{
+> +    struct collect_ciphers* cipher_list = list;
+> +    if (cipher_list->num == (sizeof(cipher_list->list)/sizeof(*cipher_list->list)))
+> +    {
+> +        msg(M_WARN, "WARNING: Too many ciphers, not showing all");
+> +        return;
+> +    }
+
+I think it would be more readable to use a const (or a #define) for the 
+length of the cipher list array, instead of using sizeof.
 
