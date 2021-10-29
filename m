@@ -1,10 +1,12 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 29 Oct 2021 13:24:07 +0200
-Message-Id: <20211029112407.2004234-1-arne@...1227...>
-In-Reply-To: <20211019183127.614175-1-arne@...1227...>
+Date: Fri, 29 Oct 2021 13:11:09 +0200
+Message-Id: <20211029111109.2003101-2-arne@...1227...>
+In-Reply-To: <20211029111109.2003101-1-arne@...1227...>
 References: <20211019183127.614175-1-arne@...1227...>
+ <20211029111109.2003101-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] Add insecure tls-cert-profile options
+Subject: [Openvpn-devel] [PATCH v4] [OSSL 3.0] Use EVP_PKEY_get_group_name
+ to query group name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,73 +19,90 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The recent deprecation of SHA1 certificates in OpenSSL 3.0 makes it necessary
-to reallow them in certain deployments. Currently this works by using the
-hack of using tls-cipher "DEFAULT:@SECLEVEL=0". Add insecure as option to
-tls-cert-profile to allow setting a seclevel of 0.
+EC_Key methods are deprecated in OpenSSL 3.0. Use
+EVP_PKEY_get_group_name instead to query the EC group name from an
+EVP_PKEY and add a compatibility function for older OpenSSL versions.
 
-Patch v4: fix default accidentially changed to insecure
+Patch v4: adjust compatibility function and remove accidently included fragment
+          of unrelated patch.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- doc/man-sections/tls-options.rst | 6 ++++++
- src/openvpn/ssl_mbedtls.c        | 3 ++-
- src/openvpn/ssl_openssl.c        | 4 ++++
- 3 files changed, 12 insertions(+), 1 deletion(-)
+ src/openvpn/openssl_compat.h | 36 ++++++++++++++++++++++++++++++++++++
+ src/openvpn/ssl_openssl.c    | 14 ++++++++------
+ 2 files changed, 44 insertions(+), 6 deletions(-)
 
-diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
-index eaf38395d..ac5756034 100644
---- a/doc/man-sections/tls-options.rst
-+++ b/doc/man-sections/tls-options.rst
-@@ -373,6 +373,9 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
- 
-   The following profiles are supported:
- 
-+  :code:`insecure`
-+      Identical for mbed TLS to `legacy`
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index ce8e2b360..3951d9aca 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -718,4 +718,40 @@ SSL_CTX_set_max_proto_version(SSL_CTX *ctx, long tls_ver_max)
+     return 1;
+ }
+ #endif /* if OPENSSL_VERSION_NUMBER < 0x10100000L && !defined(ENABLE_CRYPTO_WOLFSSL) */
 +
-   :code:`legacy` (default)
-       SHA1 and newer, RSA 2048-bit+, any elliptic curve.
- 
-@@ -385,6 +388,9 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
-   This option is only fully supported for mbed TLS builds. OpenSSL builds
-   use the following approximation:
- 
-+  :code:`insecure`
-+      sets "security level 0"
++/* Functionality missing in 1.1.1 */
++#if OPENSSL_VERSION_NUMBER < 0x30000000L && !defined(OPENSSL_NO_EC)
 +
-   :code:`legacy` (default)
-       sets "security level 1"
- 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index e7c45c099..acf4993fd 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -336,7 +336,8 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
- void
- tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
- {
--    if (!profile || 0 == strcmp(profile, "legacy"))
-+    if (!profile || 0 == strcmp(profile, "legacy")
-+        || 0 == strcmp(profile, "insecure"))
-     {
-         ctx->cert_profile = openvpn_x509_crt_profile_legacy;
-     }
++/* Note that this is not a perfect emulation of the new function but
++ * is good enough for our case of printing certificate details during
++ * handshake */
++static inline
++int EVP_PKEY_get_group_name(EVP_PKEY *pkey, char *gname, size_t gname_sz,
++                            size_t *gname_len)
++{
++    const EC_KEY* ec = EVP_PKEY_get0_EC_KEY(pkey);
++    if (ec == NULL)
++    {
++        return 0;
++    }
++    const EC_GROUP* group = EC_KEY_get0_group(ec);
++    int nid = EC_GROUP_get_curve_name(group);
++
++    if (nid == 0)
++    {
++        return 0;
++    }
++    const char *curve = OBJ_nid2sn(nid);
++    if (!curve)
++    {
++        curve = "(error fetching curve name)";
++    }
++
++    strncpynt(gname, curve, gname_sz);
++
++    /* strncpynt ensures null termination so just strlen is fine here */
++    *gname_len = strlen(curve);
++    return 1;
++}
++#endif
+ #endif /* OPENSSL_COMPAT_H_ */
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 25ff50375..61cfd7ccf 100644
+index 6f2d6d57a..25ff50375 100644
 --- a/src/openvpn/ssl_openssl.c
 +++ b/src/openvpn/ssl_openssl.c
-@@ -536,6 +536,10 @@ tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
+@@ -2053,13 +2053,15 @@ print_cert_details(X509 *cert, char *buf, size_t buflen)
+     int typeid = EVP_PKEY_id(pkey);
+ 
+ #ifndef OPENSSL_NO_EC
+-    if (typeid == EVP_PKEY_EC && EVP_PKEY_get0_EC_KEY(pkey) != NULL)
++    char groupname[256];
++    if (typeid == EVP_PKEY_EC)
      {
-         SSL_CTX_set_security_level(ctx->ctx, 1);
-     }
-+    else if (0 == strcmp(profile, "insecure"))
-+    {
-+        SSL_CTX_set_security_level(ctx->ctx, 0);
-+    }
-     else if (0 == strcmp(profile, "preferred"))
-     {
-         SSL_CTX_set_security_level(ctx->ctx, 2);
+-        const EC_KEY *ec = EVP_PKEY_get0_EC_KEY(pkey);
+-        const EC_GROUP *group = EC_KEY_get0_group(ec);
+-
+-        int nid = EC_GROUP_get_curve_name(group);
+-        if (nid == 0 || (curve = OBJ_nid2sn(nid)) == NULL)
++        size_t len;
++        if(EVP_PKEY_get_group_name(pkey, groupname, sizeof(groupname), &len))
++        {
++           curve = groupname;
++        }
++        else
+         {
+             curve = "(error getting curve name)";
+         }
 -- 
 2.33.0
 
