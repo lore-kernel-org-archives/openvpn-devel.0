@@ -1,12 +1,9 @@
-References: <20211019183127.614175-1-arne@...1227...>
- <20211029112407.2004234-1-arne@...1227...>
-From: Max Fillinger <maximilian.fillinger@...2507...>
-Message-ID: <77930ac8-7e67-85ed-9d06-39eb4172fba7@...2507...>
-Date: Fri, 29 Oct 2021 15:25:24 +0200
+From: selva.nair@...277...
+Date: Sat, 30 Oct 2021 14:57:56 -0400
+Message-Id: <20211030185756.1831-1-selva.nair@...277...>
 MIME-Version: 1.0
-In-Reply-To: <20211029112407.2004234-1-arne@...1227...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v4] Add insecure tls-cert-profile options
+Subject: [Openvpn-devel] [PATCH] Avoid memory leak in hmac_ctx_new (OpenSSL
+ 3.0 only)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,22 +12,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-On 29/10/2021 13:24, Arne Schwabe wrote:
-> The recent deprecation of SHA1 certificates in OpenSSL 3.0 makes it necessary
-> to reallow them in certain deployments. Currently this works by using the
-> hack of using tls-cipher "DEFAULT:@SECLEVEL=0". Add insecure as option to
-> tls-cert-profile to allow setting a seclevel of 0.
-> 
-> Patch v4: fix default accidentially changed to insecure
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+From: Selva Nair <selva.nair@...277...>
 
-Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
+In OpenSSL 3.0, fetched algorithms must be freed
+(down referenced). In this case, though EVP_MAC_CTX_new()
+keeps a reference to 'hmac', it up-refs it. So we have to free
+it here before return.
 
-With OpenSSL 3, OpenVPN accepts certs signed with SHA1 if and only if
-"--tls-cert-profile insecure" is used.
+(Tested using an enable-asan build).
+
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/crypto_openssl.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 6b18551e..9d823add 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -1063,6 +1063,9 @@ hmac_ctx_new(void)
+     EVP_MAC *hmac = EVP_MAC_fetch(NULL, "HMAC", NULL);
+     ctx->ctx = EVP_MAC_CTX_new(hmac);
+     check_malloc_return(ctx->ctx);
++
++    EVP_MAC_free(hmac);
++
+     return ctx;
+ }
+ 
+-- 
+2.30.2
+
 
