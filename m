@@ -1,10 +1,10 @@
-Date: Mon, 1 Nov 2021 20:52:28 +0100 (CET)
-Message-Id: <202111011952.1A1JqSCY078237@...2054...>
+Date: Mon, 1 Nov 2021 21:00:10 +0100 (CET)
+Message-Id: <202111012000.1A1K0Ax1084409@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211019165053.26345-1-selva.nair@...277...>
-References: <20211019165053.26345-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Require EC key support in
- Windows builds
+In-Reply-To: <20211019183127.614175-12-arne@...1227...>
+References: <20211019183127.614175-12-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Use EVP_MD_get0_name instead
+ EV_MD_name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Some context massaging required (ssl_compat context, 08, v3->v4, ...)
 
-No idea what took me so long - the patch file was saved to the right
-place for "next: ack, merge, push" but then something got in the way.
+1.1.1 builds & passes "make check" just fine.
 
-But now :-) - thanks.
+3.0.0 shows the same failures as before (ncp_testdriver, t_lpback.sh),
+which means "nothing new broke", so this change seems to be good enough.
 
-Your patch has been applied to the release/2.5 branch.
+Your patch has been applied to the master branch.
 
-commit 6bb4edf4f778128672f405c0e33c3c785afcc479
-Author: Selva Nair
-Date:   Tue Oct 19 12:50:53 2021 -0400
+commit 5a112250745b69a3ca2f3e00aed9ea02b2e717bb
+Author: Arne Schwabe
+Date:   Tue Oct 19 20:31:17 2021 +0200
 
-     Require EC key support in Windows builds
+     Use EVP_MD_get0_name instead EV_MD_name
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20211019165053.26345-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22968.html
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
+     Message-Id: <20211019183127.614175-12-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23016.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
