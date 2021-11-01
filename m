@@ -1,10 +1,10 @@
-Date: Mon, 1 Nov 2021 21:00:10 +0100 (CET)
-Message-Id: <202111012000.1A1K0Ax1084409@...2054...>
+Date: Mon, 1 Nov 2021 21:10:21 +0100 (CET)
+Message-Id: <202111012010.1A1KALvS086567@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211019183127.614175-12-arne@...1227...>
-References: <20211019183127.614175-12-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Use EVP_MD_get0_name instead
- EV_MD_name
+In-Reply-To: <20211019183127.614175-14-arne@...1227...>
+References: <20211019183127.614175-14-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove dependency on BF-CBC
+ existance from test_ncp
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,25 +18,24 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Some context massaging required (ssl_compat context, 08, v3->v4, ...)
+I can confirm that this fixes ncp_testdriver for 3.0.0 builds,
+which is what it says :-) (and 1.1.1 builds still succeed).
 
-1.1.1 builds & passes "make check" just fine.
-
-3.0.0 shows the same failures as before (ncp_testdriver, t_lpback.sh),
-which means "nothing new broke", so this change seems to be good enough.
+Took me a bit to understand the new if/else clauses, but after a while
+it started making sense :-)
 
 Your patch has been applied to the master branch.
 
-commit 5a112250745b69a3ca2f3e00aed9ea02b2e717bb
+commit c07f95f3cacdf7c877762db8d1a3f7cf0a4a4675
 Author: Arne Schwabe
-Date:   Tue Oct 19 20:31:17 2021 +0200
+Date:   Tue Oct 19 20:31:19 2021 +0200
 
-     Use EVP_MD_get0_name instead EV_MD_name
+     Remove dependency on BF-CBC existance from test_ncp
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
-     Message-Id: <20211019183127.614175-12-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23016.html
+     Message-Id: <20211019183127.614175-14-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23003.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
