@@ -1,15 +1,8 @@
-From: Arne Schwabe <arne@...1227...>
-References: <20211019183127.614175-1-arne@...1227...>
- <20211019183127.614175-11-arne@...1227...>
- <CAKuzo_ikOZgK1oJ_-p9Y46MQ__6u2SD4ctJp-CotW3fEfufz-g@...278...>
- <cafcb35e-0595-8d48-43eb-9515832dabdb@...1227...>
-Message-ID: <d9f9d48c-c9e6-5516-0e0e-95c96dcf14a2@...1227...>
-Date: Mon, 1 Nov 2021 23:18:22 +0100
+From: selva.nair@...277...
+Date: Tue,  2 Nov 2021 00:23:14 -0400
+Message-Id: <20211102042314.19113-1-selva.nair@...277...>
 MIME-Version: 1.0
-In-Reply-To: <cafcb35e-0595-8d48-43eb-9515832dabdb@...1227...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [PATCH v3 10/21] [OSSL 3.0] Replace
- EVP_get_cipherbyname with EVP_CIPHER_fetch
+Subject: [Openvpn-devel] [PATCH] Fix tls-version-min default once again
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,23 +13,38 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
+From: Selva Nair <selva.nair@...277...>
 
->>
->> One option is to continue using get_cipherbyname() but add a helper call
->> for OpenSSL 3.0 to check algorithm availability. Say,
->> EVP_CIPHER_available() that fetches, checks the result and frees --- 
->> to be used on top of the existing code.
-> 
-> That is an option but will break as soon as we have the first cipher
-> that is no longer defined with EVP_ORIG_GLOBAL compatibility definition.
-> I need to check how much work it is to teach OpenVPN to free the cipher
-> and md.
+commit 51be733ba236610dff6a1c361cf59172db97473a
+claimed to correct this but did not do it properly.
+(my fault). The check whether tls-version-min is set
+by the user or not was still wrong.
 
-I looked at this and I think the best option is to change API to use
-strings rather than EVP_CIPHER in the "public" API of the ssl library
-implementation. That will simplify the code rather than to complicate it.
+Hope this fixes it for good.
 
-Arne
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/options.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 4a5db8a6..6b15d898 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3165,7 +3165,9 @@ static void
+ options_set_backwards_compatible_options(struct options *o)
+ {
+     /* TLS min version is not set */
+-    if ((o->ssl_flags & SSLF_TLS_VERSION_MIN_MASK) == 0)
++    int tls_ver_min = (o->ssl_flags >> SSLF_TLS_VERSION_MIN_SHIFT)
++                          & SSLF_TLS_VERSION_MIN_MASK;
++    if (tls_ver_min == 0)
+     {
+         int tls_ver_max = (o->ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT)
+                           & SSLF_TLS_VERSION_MAX_MASK;
+-- 
+2.30.2
+
 
