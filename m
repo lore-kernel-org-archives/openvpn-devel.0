@@ -1,10 +1,11 @@
-Date: Fri, 5 Nov 2021 17:03:21 +0100 (CET)
-Message-Id: <202111051603.1A5G3LIe086560@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211029112407.2004234-1-arne@...1227...>
-References: <20211029112407.2004234-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add insecure tls-cert-profile
- options
+From: Arne Schwabe <arne@...1227...>
+Date: Fri,  5 Nov 2021 17:13:02 +0100
+Message-Id: <20211105161302.2916786-1-arne@...1227...>
+In-Reply-To: <20211019183127.614175-1-arne@...1227...>
+References: <20211019183127.614175-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v4] Refactor early initialisation and
+ uninitialisation into methods
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +16,65 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-(Client-side) tested with 1.1.1 and 3.0.0.
+This put the early initialisation and uninitialisation that needs to
+happen between option parsing and post processing into small methods.
 
-Without options, my sha1 certificates still fail for the 3.0.0 build,
-and *with* "tls-cert-profile insecure" it works.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/openvpn.c | 23 ++++++++++++++++++-----
+ 1 file changed, 18 insertions(+), 5 deletions(-)
 
-Your patch has been applied to the master branch.
-
-commit 23efeb7a0bd9e0a6d997ae6e77e0e04170da3e67
-Author: Arne Schwabe
-Date:   Fri Oct 29 13:24:07 2021 +0200
-
-     Add insecure tls-cert-profile options
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
-     Message-Id: <20211029112407.2004234-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23076.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
+index 0ac961429..05b5dc2d0 100644
+--- a/src/openvpn/openvpn.c
++++ b/src/openvpn/openvpn.c
+@@ -105,6 +105,20 @@ tunnel_point_to_point(struct context *c)
+ 
+ #undef PROCESS_SIGNAL_P2P
+ 
++void init_early(struct context *c)
++{
++    net_ctx_init(c, c->net_ctx);
++
++    /* init verbosity and mute levels */
++    init_verb_mute(c, IVM_LEVEL_1);
++
++}
++
++static void uninit_early(struct context *c)
++{
++    net_ctx_free(&c->net_ctx);
++}
++
+ 
+ /**************************************************************************/
+ /**
+@@ -193,10 +207,9 @@ openvpn_main(int argc, char *argv[])
+             open_plugins(&c, true, OPENVPN_PLUGIN_INIT_PRE_CONFIG_PARSE);
+ #endif
+ 
+-            net_ctx_init(&c, &c.net_ctx);
+-
+-            /* init verbosity and mute levels */
+-            init_verb_mute(&c, IVM_LEVEL_1);
++            /* Early initialisation that need to happen before option
++             * post processing and other early startup but after parsing */
++            init_early(&c);
+ 
+             /* set dev options */
+             init_options_dev(&c.options);
+@@ -308,7 +321,7 @@ openvpn_main(int argc, char *argv[])
+             env_set_destroy(c.es);
+             uninit_options(&c.options);
+             gc_reset(&c.gc);
+-            net_ctx_free(&c.net_ctx);
++            uninit_early(&c);
+         }
+         while (c.sig->signal_received == SIGHUP);
+     }
+-- 
+2.33.0
 
 
