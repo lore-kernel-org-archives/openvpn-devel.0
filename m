@@ -1,9 +1,9 @@
-From: Richard T Bonhomme <stringvest88@...277...>
-Date: Wed,  3 Nov 2021 21:18:20 +0000
-Message-Id: <20211103211820.1147661-1-tincantech@...2282...>
+From: Arne Schwabe <arne@...1227...>
+Date: Fri,  5 Nov 2021 15:50:56 +0100
+Message-Id: <20211105145056.2907568-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] doc openvpn.8: Use free open-source
- dynamic-DNS provider URL
+Subject: [Openvpn-devel] [PATCH] [OSSL 3.0] Fix function name in DH error
+ message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,27 +16,27 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Branch: release/2.4
+This was noticed by Steffan.
 
-Signed-off-by: Richard T Bonhomme <tincantech@...2282...>
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- doc/openvpn.8 | 2 +-
+ src/openvpn/ssl_openssl.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index a694e187..598d5fce 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -1571,7 +1571,7 @@ This option is useful in cases
- where the remote peer has a dynamic IP address and
- a low\-TTL DNS name is used to track the IP address using
- a service such as
--.I http://dyndns.org/
-+.I https://www.nsupdate.info/
- + a dynamic DNS client such
- as
- .B ddclient.
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 61cfd7ccf..ab9a8f347 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -684,7 +684,7 @@ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
+     }
+     if (!SSL_CTX_set0_tmp_dh_pkey(ctx->ctx, dh))
+     {
+-        crypto_msg(M_FATAL, "SSL_CTX_set_tmp_dh");
++        crypto_msg(M_FATAL, "SSL_CTX_set0_tmp_dh_pkey");
+     }
+ 
+     msg(D_TLS_DEBUG_LOW, "Diffie-Hellman initialized with %d bit key",
 -- 
-2.25.1
+2.33.0
 
 
