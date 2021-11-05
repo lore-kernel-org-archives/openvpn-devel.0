@@ -1,10 +1,10 @@
-Date: Fri, 5 Nov 2021 16:17:27 +0100 (CET)
-Message-Id: <202111051517.1A5FHRdS085687@...2054...>
+Date: Fri, 5 Nov 2021 17:03:21 +0100 (CET)
+Message-Id: <202111051603.1A5G3LIe086560@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211030185756.1831-1-selva.nair@...277...>
-References: <20211030185756.1831-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Avoid memory leak in
- hmac_ctx_new (OpenSSL 3.0 only)
+In-Reply-To: <20211029112407.2004234-1-arne@...1227...>
+References: <20211029112407.2004234-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add insecure tls-cert-profile
+ options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,25 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I have not done "real" testing, just "compile and make check" on 
-ossl 3.0.0 - but if you and Arne agree, this is definitely good enough 
-for me :-)
+(Client-side) tested with 1.1.1 and 3.0.0.
+
+Without options, my sha1 certificates still fail for the 3.0.0 build,
+and *with* "tls-cert-profile insecure" it works.
 
 Your patch has been applied to the master branch.
 
-commit 31e200f807033ac27566bf37a8d9d32820600a83
-Author: Selva Nair
-Date:   Sat Oct 30 14:57:56 2021 -0400
+commit 23efeb7a0bd9e0a6d997ae6e77e0e04170da3e67
+Author: Arne Schwabe
+Date:   Fri Oct 29 13:24:07 2021 +0200
 
-     Avoid memory leak in hmac_ctx_new (OpenSSL 3.0 only)
+     Add insecure tls-cert-profile options
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20211030185756.1831-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23080.html
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
+     Message-Id: <20211029112407.2004234-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23076.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
