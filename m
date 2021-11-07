@@ -1,9 +1,10 @@
-Date: Sun, 7 Nov 2021 20:25:59 +0100 (CET)
-Message-Id: <202111071925.1A7JPx43050745@...2054...>
+Date: Sun, 7 Nov 2021 20:36:14 +0100 (CET)
+Message-Id: <202111071936.1A7JaEZE052246@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211107090138.3150187-1-arne@...1227...>
-References: <20211107090138.3150187-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Completely remove DES checks
+In-Reply-To: <20211106180055.3073072-1-arne@...1227...>
+References: <20211106180055.3073072-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Refactor early initialisation
+ and uninitialisation into methods
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,25 +18,28 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch looks good, explanation makes sense, logical continuation of 
-the process started with the "removal for 3.0.0".  All DES keys are
-weak :-)
+Took us long enough for such a "simple" refactoring task... pesky 
+language, this "C" stuff :-)
 
-Lightly tested with OpenSSL 1.1.1 and mbedTLS builds (no actual *use*
-of DES, though, besides "make check").
+Thanks, Antonio, for verifying the sitnl stuff.
+
+(GCC on Linux actually found and errored on the v4 bit with the missing
+"&", I just did not look at the compile result because I saw the mismatch
+in the diff earlier... now, no more warnings, and success on Linux/sitnl
+with the v5 patch)
 
 Your patch has been applied to the master branch.
 
-commit 1325cf1198f78ccd8ab74394bb2e9b13f410ef20
+commit 97056dbf936b01b367a66ea78cca3dadc41bdf64
 Author: Arne Schwabe
-Date:   Sun Nov 7 10:01:38 2021 +0100
+Date:   Sat Nov 6 19:00:55 2021 +0100
 
-     Completely remove DES checks
+     Refactor early initialisation and uninitialisation into methods
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
-     Message-Id: <20211107090138.3150187-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23115.html
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20211106180055.3073072-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23110.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
