@@ -1,8 +1,9 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Sun,  7 Nov 2021 19:38:05 +0100
-Message-Id: <20211107183805.8357-1-frank@...2641...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] README.down-root: Fix plugin module name
+Date: Sun, 7 Nov 2021 20:10:41 +0100 (CET)
+Message-Id: <202111071910.1A7JAf6S044079@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20211107090147.3150261-1-arne@...1227...>
+References: <20211107090147.3150261-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove custom PRNG function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,44 +14,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: =?UTF-8?q?Ville=20Skytt=C3=A4?= <ville.skytta@...124...>, Frank Lichtenheld <frank@...2641...>
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Ville Skyttä <ville.skytta@...124...>
+Applied as instructed (textual change to Changes.rst, whitespace fix).
 
-The module name is openvpn-plugin-down-root.so, not openvpn-down-root.so.
+This is a surprisingly large patch :-)
 
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
- src/plugins/down-root/README.down-root | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Lightly tested on Linux / OpenSSL.
 
-As part of an initative to clean up the Github PR submissions, submitting
-this patch to the mailing list for inclusion. Looks obviously correct to
-me.
-PR: https://github.com/OpenVPN/openvpn/pull/98
+Your patch has been applied to the master branch.
 
-diff --git a/src/plugins/down-root/README.down-root b/src/plugins/down-root/README.down-root
-index d337ffe9..98a3ee63 100644
---- a/src/plugins/down-root/README.down-root
-+++ b/src/plugins/down-root/README.down-root
-@@ -16,13 +16,13 @@ run in the same execution environment as the up script.
- BUILD
- 
- Build this module with the "make" command.  The plugin
--module will be named openvpn-down-root.so
-+module will be named openvpn-plugin-down-root.so
- 
- USAGE
- 
- To use this module, add to your OpenVPN config file:
- 
--  plugin openvpn-down-root.so "command ..."
-+  plugin openvpn-plugin-down-root.so "command ..."
- 
- CAVEATS
- 
--- 
-2.30.2
+commit a2f6604d55ea34c33668cab632928a2da2ae11f1
+Author: Arne Schwabe
+Date:   Sun Nov 7 10:01:47 2021 +0100
+
+     Remove custom PRNG function
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Steffan Karger <steffan@...1856...>
+     Message-Id: <20211107090147.3150261-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23116.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
