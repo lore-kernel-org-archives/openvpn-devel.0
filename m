@@ -1,8 +1,8 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Sun,  7 Nov 2021 19:12:52 +0100
-Message-Id: <20211107181252.17045-1-frank@...2641...>
+Date: Sun,  7 Nov 2021 19:38:05 +0100
+Message-Id: <20211107183805.8357-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Updated URLs in README
+Subject: [Openvpn-devel] [PATCH] README.down-root: Fix plugin module name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,69 +14,42 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Peppernrino <pepperandrino@...277...>, Frank Lichtenheld <frank@...2641...>
+Cc: =?UTF-8?q?Ville=20Skytt=C3=A4?= <ville.skytta@...124...>, Frank Lichtenheld <frank@...2641...>
 
-From: Peppernrino <pepperandrino@...277...>
+From: Ville Skyttä <ville.skytta@...124...>
 
-Updated to current links, and added SSL to all.
-Changed tap-windows to reflect NDIS 6 repository shift.
+The module name is openvpn-plugin-down-root.so, not openvpn-down-root.so.
 
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
- README | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ src/plugins/down-root/README.down-root | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 As part of an initative to clean up the Github PR submissions, submitting
-this patch to the mailing list for inclusion. I know David didn't like
-the manual URL but it is still better than the current one that goes to
-a completely wrong document.
-PR: https://github.com/OpenVPN/openvpn/pull/114
+this patch to the mailing list for inclusion. Looks obviously correct to
+me.
+PR: https://github.com/OpenVPN/openvpn/pull/98
 
-diff --git a/README b/README
-index b75a568e..2a953be7 100644
---- a/README
-+++ b/README
-@@ -9,7 +9,7 @@ as published by the Free Software Foundation.
+diff --git a/src/plugins/down-root/README.down-root b/src/plugins/down-root/README.down-root
+index d337ffe9..98a3ee63 100644
+--- a/src/plugins/down-root/README.down-root
++++ b/src/plugins/down-root/README.down-root
+@@ -16,13 +16,13 @@ run in the same execution environment as the up script.
+ BUILD
  
- To get the latest release of OpenVPN, go to:
+ Build this module with the "make" command.  The plugin
+-module will be named openvpn-down-root.so
++module will be named openvpn-plugin-down-root.so
  
--	https://openvpn.net/index.php/download/community-downloads.html
-+	https://openvpn.net/community-downloads/
+ USAGE
  
- To Build and Install,
+ To use this module, add to your OpenVPN config file:
  
-@@ -24,10 +24,10 @@ or see the file INSTALL for more info.
- *************************************************************************
+-  plugin openvpn-down-root.so "command ..."
++  plugin openvpn-plugin-down-root.so "command ..."
  
- For detailed information on OpenVPN, including examples, see the man page
--  http://openvpn.net/man.html
-+  https://openvpn.net/community-resources/reference-manual-for-openvpn-2-4/
+ CAVEATS
  
- For a sample VPN configuration, see
--  http://openvpn.net/howto.html
-+  https://openvpn.net/community-resources/how-to/
- 
- To report an issue, see
-   https://community.openvpn.net/openvpn/report
-@@ -56,15 +56,15 @@ Other Files & Directories:
- * sample/sample-config-files/
- 
-   A collection of OpenVPN config files and scripts from
--  the HOWTO at http://openvpn.net/howto.html
-+  the HOWTO at https://openvpn.net/community-resources/how-to/
- 
- *************************************************************************
- 
--Note that easy-rsa and tap-windows are now maintained in their own subprojects.
-+Note that easy-rsa and tap-windows6 are now maintained in their own subprojects.
- Their source code is available here:
- 
-   https://github.com/OpenVPN/easy-rsa
--  https://github.com/OpenVPN/tap-windows
-+  https://github.com/OpenVPN/tap-windows6
- 
- The old cross-compilation environment (domake-win) and the Python-based
- buildsystem have been replaced with openvpn-build:
 -- 
 2.30.2
 
