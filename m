@@ -1,11 +1,11 @@
-Date: Sun, 7 Nov 2021 14:55:42 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <YYfa3rAEKJKQ4RpK@...1296...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="BDMJjjHIY8vHtOEw"
-Content-Disposition: inline
-Subject: [Openvpn-devel] NTLMv1, NTLMv2 HTTP proxy support?
+References: <CAKuzo_gHxUQfam=J8uKtMAL2ma_Vu0zZcOBMgGHy4BtcQ5panw@...278...>
+In-Reply-To: <CAKuzo_gHxUQfam=J8uKtMAL2ma_Vu0zZcOBMgGHy4BtcQ5panw@...278...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Sun, 7 Nov 2021 15:14:28 +0100
+Message-ID: <CAGyAFMXvP0iwEiE-G4-d6P4ANSRpr9w-tF++VDL-amgrmPmGuQ@...278...>
+Subject: Re: [Openvpn-devel] OpenSSL build on Windows: OPENSSLDIR and
+ MODULESDIR
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,56 +14,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---BDMJjjHIY8vHtOEw
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi,
 
-Hi Community,
+We agreed during the hackathon that we are going to ship a 2.6 Windows
+client with OpenSSL 3.0. Apart from merging relevant patches, there
+are few (small) blocks:
 
-OpenVPN supports HTTP proxies that require NTLM authentication,
-supporting NTLMv1 and NTLMv2 protocols.
+ - vcpkg hasn't yet added OpenSSL 3.0 to official repo, but there is a
+PR https://github.com/microsoft/vcpkg/pull/20428 This shouldn't be a
+problem for us, since we could just have this port in openvpn repo,
+like we do with pkcs11-helper.
 
-This is old code, which was written in the dark ages, is not currently=20
-unit/client tested, and uses DES which got deprecated in OpenSSL 3.0.0...
+ - The latest release of pkcs11-helper doesn't build with openssl3,
+but things are progressing -
+https://github.com/OpenSC/pkcs11-helper/issues/42. We would also have
+to make sure that our vcpkg port for pkcs11-helper builds with
+openssl3.
 
-That said, if people still *use* it, we are likely to keep it - otherwise
-it might just become lost :-)
+Once OpenSSL 3.0 support is somewhat settled, we could look into
+configuration file loading. I haven't checked vcpkg scripts, but in
+the best case scenario we won't have to do anything and just rely on
+readonly values you've mentioned.
 
-So - if you use HTTP proxy in OpenVPN, and that proxy authenticates=20
-against a Windows AD domain, and you use NTLMv1 or NTLMv2 authentication,
-please speak up and tell us about your use case!
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---BDMJjjHIY8vHtOEw
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJhh9reAAoJEB2Cnv7KVigS144L+wVwVj7Ov52wHer9Fj6u6MhD
-B8T/CJva3IgG0XPrvJiQAmJfOIi9HuXCji+zHi9uojTj6bxh7t0e12dhfckyZ2kV
-EIYJCgZVwRoD3Vi4JE/CQeCYXPHRC39wTA14WKDMFaamwQq2IapK0k+ySJXN7Hp8
-xnBklaGB9eteC4318PkQmHrdG9EsyHU82XJbzQqhPiVwIx60f+0GB6LwcN9xnnpb
-MJQV7/agrNW66tp30DJprc4SAXfNRT1BsphD8qQRb2FA5J3bDBQwxYiQom/vhuUh
-xXCMHAYekHILQrBqXkWs1l2F7GmqqEZcm8Ey4sOJahsKGuZFE68TaeGSyWgtmWKH
-vadoj027/md3TwqAlCbsTnGRQpin/F41GrAnyfbhBexDLBdzuyLYneWSV/aG9HnQ
-VhD8c/vLldJrELFSk/xx9sz3NXIEAf8dQsukBBqdBaLZDzAi3dwB5pLQh41VyQYT
-U/9McYgiIDeI/KK/JoygD6VeJlZA/qQcfRLc0QWlLg==
-=cJlr
------END PGP SIGNATURE-----
-
---BDMJjjHIY8vHtOEw--
+--
+-Lev
 
