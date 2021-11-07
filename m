@@ -1,10 +1,9 @@
-Date: Sun, 7 Nov 2021 20:36:14 +0100 (CET)
-Message-Id: <202111071936.1A7JaEZE052246@...2054...>
+Date: Sun, 7 Nov 2021 22:04:46 +0100 (CET)
+Message-Id: <202111072104.1A7L4kBt053701@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211106180055.3073072-1-arne@...1227...>
-References: <20211106180055.3073072-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Refactor early initialisation
- and uninitialisation into methods
+In-Reply-To: <20211107160508.3935-1-maximilian.fillinger@...2507...>
+References: <20211107160508.3935-1-maximilian.fillinger@...2507...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove unused havege.h header
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +14,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Max Fillinger <maximilian.fillinger@...2507...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Took us long enough for such a "simple" refactoring task... pesky 
-language, this "C" stuff :-)
+Acked-by: Gert Doering <gert@...1296...>
 
-Thanks, Antonio, for verifying the sitnl stuff.
-
-(GCC on Linux actually found and errored on the v4 bit with the missing
-"&", I just did not look at the compile result because I saw the mismatch
-in the diff earlier... now, no more warnings, and success on Linux/sitnl
-with the v5 patch)
+That seems to be an easy one - all definitions in that file have
+"havege" in their name, and "git grep havege" does not show any uses
+of them.  Out it goes!
 
 Your patch has been applied to the master branch.
 
-commit 97056dbf936b01b367a66ea78cca3dadc41bdf64
-Author: Arne Schwabe
-Date:   Sat Nov 6 19:00:55 2021 +0100
+commit d6d4feb4ddd0f23c3816878ff88b49b37379e31b
+Author: Max Fillinger
+Date:   Sun Nov 7 17:05:08 2021 +0100
 
-     Refactor early initialisation and uninitialisation into methods
+     Remove unused havege.h header
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20211106180055.3073072-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23110.html
+     Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20211107160508.3935-1-maximilian.fillinger@...2507...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23126.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
