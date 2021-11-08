@@ -1,9 +1,8 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <2cbc4ca6-81d5-2cde-2e64-a3b7440bcccd@...515...>
-Date: Wed, 10 Nov 2021 12:36:43 +0200
-MIME-Version: 1.0
-Content-Language: en-US
-Subject: [Openvpn-devel] Community meetings in November 2021
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon,  8 Nov 2021 15:53:14 +0200
+Message-Id: <20211108135314.148-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] tun: improve DHCP server address
+ calculation for small subnets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,22 +11,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=iso-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Hi,
+From: Lev Stipakov <lev@...515...>
 
-Next community meetings have been scheduled to
+When /30 subnet is pushed (like in the case of OpenVPN Cloud),
+DHCP server address is calculated to be the same as local address,
+which causes collision and therefore connection is not established.
 
-- Wed 10th November 2021 at 14:00 CET
-- Wed 17th October 2021 at 14:00 CET
-- Wed 24th October 2021 at 14:00 CET
+To fix that, use openvpn3 approach, which sets DHCP server
+address to a network address for small subnets
 
-The place is #openvpn-meeting IRC channel at libera.chat Meeting agendas
-and summaries are in here:
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/tun.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 28f803ec..994e3751 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -6363,7 +6363,9 @@ tuntap_dhcp_mask(const struct tuntap *tt, const char *device_guid)
+             }
+             else
+             {
+-                ep[2] = dhcp_masq_addr(tt->local, tt->remote_netmask, -1);
++                int prefix_len = netmask_to_netbits2(tt->adapter_netmask);
++                /* use network address as DHCP server for small subnets, otherwise last address before broadcast */
++                ep[2] = dhcp_masq_addr(tt->local, tt->remote_netmask, prefix_len < 28 ? -1 : 0);
+             }
+         }
+         else
+-- 
+2.23.0.windows.1
 
-Samuli
 
