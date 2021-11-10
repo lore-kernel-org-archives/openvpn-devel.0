@@ -1,12 +1,10 @@
-Date: Wed, 10 Nov 2021 12:36:09 +0100 (CET)
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <764146725.499610.1636544169460@...2642...>
-In-Reply-To: <CAAYFXLmcybkvkw0RJ5gPVhkxrYKRr4XkdPUJwB4Cm--jQjdXKQ@...278...>
-References: <CAAYFXLmcybkvkw0RJ5gPVhkxrYKRr4XkdPUJwB4Cm--jQjdXKQ@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; 
- boundary="----=_Part_499609_728115443.1636544169459"
-Subject: Re: [Openvpn-devel] [PATCH] boolean short-circuit auth upon failure
+Date: Wed, 10 Nov 2021 14:47:04 +0100 (CET)
+Message-Id: <202111101347.1AADl4hR038291@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20211109144811.3426928-1-arne@...1227...>
+References: <20211109144811.3426928-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Use TYPE_do_all_provided
+ function for listing cipher/digest
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,90 +13,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Pete Nelson <petiepooo@...277...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-------=_Part_499609_728115443.1636544169459
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Acked-by: Gert Doering <gert@...1296...>
 
+This is "v3 with the SIZE() change", and this change looks good.  Max
+has already stated "looks good and works", but wanted the sizeof() 
+change which is now in - so taking his pre-review, adding my own testing
+(makes the "cipher" part of "make check" finally succeed with 3.0, 
+yay :-) )
 
-> Pete Nelson <petiepooo@...277...> hat am 09.11.2021 20:47 geschrieben:
-> 
-> 
-> When evaluating authentication plugins, stop further evaluation
-> once the first failure is detected.
-> 
-Since plugin_call is only a thin wrapper around plugin_call_ssl I think this would short-circuit ALL plugin calls. Doesn't sound like you intended that.
+The "load providers" part is not in, so I couldn't test
 
-Regards,
-  Frank
+  openvpn --provider legacy:default --show-ciphers
+
+yet... will come back.
+
+Your patch has been applied to the master branch.
+
+commit ab3f32b9069c31d1724d906b38549ab683c0d97b
+Author: Arne Schwabe
+Date:   Tue Nov 9 15:48:11 2021 +0100
+
+     Use TYPE_do_all_provided function for listing cipher/digest
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20211109144811.3426928-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23142.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
 
 --
-  Frank Lichtenheld
+kind regards,
 
+Gert Doering
 
-
-------=_Part_499609_728115443.1636544169459
-MIME-Version: 1.0
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-
-<!doctype html>
-<html>
- <head> 
-  <meta charset="UTF-8"> 
- </head>
- <body>
-  <div class="default-style">
-   <br>
-  </div>
-  <blockquote type="cite">
-   <div>
-    Pete Nelson &lt;petiepooo@...277...&gt; hat am 09.11.2021 20:47 geschrieben:
-   </div>
-   <div>
-    <br>
-   </div>
-   <div>
-    <br>
-   </div>
-   <div dir="ltr">
-    When evaluating authentication plugins, stop further evaluation
-    <br>once the first failure is detected.
-    <br>
-   </div>
-  </blockquote>
-  <div class="io-ox-signature">
-   <div class="default-style">
-    Since plugin_call is only a thin wrapper around plugin_call_ssl I think this would short-circuit ALL plugin calls. Doesn't sound like you intended that.
-    <br>
-   </div>
-   <div class="default-style">
-    <br>
-   </div>
-   <div class="default-style">
-    Regards,
-    <br>
-   </div>
-   <div class="default-style">
-    &nbsp; Frank
-    <br>
-   </div>
-   <div class="default-style">
-    <br>
-   </div>
-   <div class="default-style">
-    --
-   </div>
-   <div class="default-style">
-    &nbsp; Frank Lichtenheld
-   </div>
-   <div class="default-style">
-    <br>
-   </div>
-  </div>
- </body>
-</html>
-------=_Part_499609_728115443.1636544169459--
 
