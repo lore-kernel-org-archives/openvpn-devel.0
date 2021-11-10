@@ -1,10 +1,10 @@
-Date: Wed, 10 Nov 2021 14:47:04 +0100 (CET)
-Message-Id: <202111101347.1AADl4hR038291@...2054...>
+Date: Wed, 10 Nov 2021 16:53:53 +0100 (CET)
+Message-Id: <202111101553.1AAFrrgx040575@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211109144811.3426928-1-arne@...1227...>
-References: <20211109144811.3426928-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Use TYPE_do_all_provided
- function for listing cipher/digest
+In-Reply-To: <20211019183127.614175-21-arne@...1227...>
+References: <20211019183127.614175-21-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add macos OpenSSL 3.0 and ASAN
+ builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,30 +20,22 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-This is "v3 with the SIZE() change", and this change looks good.  Max
-has already stated "looks good and works", but wanted the sizeof() 
-change which is now in - so taking his pre-review, adding my own testing
-(makes the "cipher" part of "make check" finally succeed with 3.0, 
-yay :-) )
-
-The "load providers" part is not in, so I couldn't test
-
-  openvpn --provider legacy:default --show-ciphers
-
-yet... will come back.
+Since most of the bits and pieces are in now, and "make check" succeeds
+(unless doing t_client tests with BF-CBC), we can reasonably add this
+to the build matrix.  No code change, just GH action.
 
 Your patch has been applied to the master branch.
 
-commit ab3f32b9069c31d1724d906b38549ab683c0d97b
+commit 96f27a29cd4c95dadc16f3ba22876742f426d1c2
 Author: Arne Schwabe
-Date:   Tue Nov 9 15:48:11 2021 +0100
+Date:   Tue Oct 19 20:31:26 2021 +0200
 
-     Use TYPE_do_all_provided function for listing cipher/digest
+     Add macos OpenSSL 3.0 and ASAN builds
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20211109144811.3426928-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23142.html
+     Message-Id: <20211019183127.614175-21-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23018.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
