@@ -1,10 +1,15 @@
+Date: Thu, 11 Nov 2021 17:39:47 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <YY1HU85OwqH442H+@greenie.muc.de>
+References: <CAGyAFMVbX1m_LhB=rV1Kh0uqpjfgCy6WP9t1o2bLTT+dO-L9Gg@...278...>
+ <20211109015927.311-1-lstipakov@...277...>
 MIME-Version: 1.0
-From: Pete Nelson <petiepooo@...277...>
-Date: Thu, 11 Nov 2021 15:00:19 +0000
-Message-ID: <CAAYFXLmG9AGFUwyCaY2=pNZgV2X_kjG7Ba=8=OfQwayZP2wGpQ@...278...>
-Content-Type: multipart/alternative; boundary="00000000000085942a05d0849a1d"
-Subject: [Openvpn-devel] [PATCH v2] boolean short-circuit plugins upon
- failure
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="JwuQWDk71vYDJf78"
+Content-Disposition: inline
+In-Reply-To: <20211109015927.311-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Use network address for emulated DHCP
+ server as a default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,121 +18,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
 
---00000000000085942a05d0849a1d
-Content-Type: text/plain; charset="UTF-8"
+--JwuQWDk71vYDJf78
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-When evaluating authentication plugins, stop further evaluation
-once the first failure is detected.
+Hi,
 
-implementation notes: refactoring from a switch-case to an
-if-else block allows the break statement to break out of the
-outer for loop without additional control variables.  Also,
-moving the pr->n setting to within the loop keeps the value
-correct if one does break out early.
+On Tue, Nov 09, 2021 at 03:59:27AM +0200, Lev Stipakov wrote:
+> For subnet topology use "offset 0" as default for
+> calculating DHCP server address, which makes it equal
+> to the network address.
 
-v2: add check for auth plugin before breaking loop
+I assume this has been tested across all windows platforms, including
+Windows 7?
 
-Signed-off-by: Peter Nelson <petiepooo@...277...>
----
- src/openvpn/plugin.c | 28 +++++++++++++---------------
- 1 file changed, 13 insertions(+), 15 deletions(-)
+On the patch itself, the code change looks good, I just need confirmation
+about actual testing (with /30 and larger netmasks) across the variety
+of platforms we support.
 
-diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
-index d5704e07..02b17378 100644
---- a/src/openvpn/plugin.c
-+++ b/src/openvpn/plugin.c
-@@ -818,26 +818,24 @@ plugin_call_ssl(const struct plugin_list *pl,
-                                                 certdepth,
-                                                 current_cert
-                                                 );
--            switch (status)
-+            if (pr)
-             {
--                case OPENVPN_PLUGIN_FUNC_SUCCESS:
--                    break;
--
--                case OPENVPN_PLUGIN_FUNC_DEFERRED:
--                    deferred = true;
--                    break;
--
--                default:
--                    error = true;
-+                pr->n = i + 1;
-+            }
-+            if (status == OPENVPN_PLUGIN_FUNC_DEFERRED)
-+            {
-+                deferred = true;
-+            }
-+            else if (status != OPENVPN_PLUGIN_FUNC_SUCCESS)
-+            {
-+                error = true;
-+                if (type == OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY)
-+                {
-                     break;
-+                }
-             }
-         }
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
--        if (pr)
--        {
--            pr->n = i;
--        }
--
-         gc_free(&gc);
+Gert Doering - Munich, Germany                             gert@...1296...
 
-         if (error)
--- 
-2.17.1
+--JwuQWDk71vYDJf78
+Content-Type: application/pgp-signature; name="signature.asc"
 
---00000000000085942a05d0849a1d
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: base64
+-----BEGIN PGP SIGNATURE-----
 
-PGRpdiBkaXI9Imx0ciI+V2hlbiBldmFsdWF0aW5nIGF1dGhlbnRpY2F0aW9uIHBsdWdpbnMsIHN0
-b3AgZnVydGhlciBldmFsdWF0aW9uPGJyPm9uY2UgdGhlIGZpcnN0IGZhaWx1cmUgaXMgZGV0ZWN0
-ZWQuPGJyPjxicj5pbXBsZW1lbnRhdGlvbiBub3RlczogcmVmYWN0b3JpbmcgZnJvbSBhIHN3aXRj
-aC1jYXNlIHRvIGFuPGJyPmlmLWVsc2UgYmxvY2sgYWxsb3dzIHRoZSBicmVhayBzdGF0ZW1lbnQg
-dG8gYnJlYWsgb3V0IG9mIHRoZTxicj48ZGl2Pm91dGVyIGZvciBsb29wIHdpdGhvdXQgYWRkaXRp
-b25hbCBjb250cm9sIHZhcmlhYmxlcy7CoCBBbHNvLDwvZGl2PjxkaXY+bW92aW5nIHRoZSBwci0m
-Z3Q7biBzZXR0aW5nIHRvIHdpdGhpbiB0aGUgbG9vcCBrZWVwcyB0aGUgdmFsdWU8L2Rpdj48ZGl2
-PmNvcnJlY3QgaWYgb25lIGRvZXMgYnJlYWsgb3V0IGVhcmx5Ljxicj48L2Rpdj48YnI+djI6IGFk
-ZCBjaGVjayBmb3IgYXV0aCBwbHVnaW4gYmVmb3JlIGJyZWFraW5nIGxvb3A8YnI+PGJyPlNpZ25l
-ZC1vZmYtYnk6IFBldGVyIE5lbHNvbiAmbHQ7PGEgaHJlZj0ibWFpbHRvOnBldGllcG9vb0AuLi4y
-NzcuLi4iPnBldGllcG9vb0AuLi4yNzcuLi48L2E+Jmd0Ozxicj4tLS08YnI+wqBzcmMvb3BlbnZw
-bi9wbHVnaW4uYyB8IDI4ICsrKysrKysrKysrKystLS0tLS0tLS0tLS0tLS08YnI+wqAxIGZpbGUg
-Y2hhbmdlZCwgMTMgaW5zZXJ0aW9ucygrKSwgMTUgZGVsZXRpb25zKC0pPGJyPjxicj5kaWZmIC0t
-Z2l0IGEvc3JjL29wZW52cG4vcGx1Z2luLmMgYi9zcmMvb3BlbnZwbi9wbHVnaW4uYzxicj5pbmRl
-eCBkNTcwNGUwNy4uMDJiMTczNzggMTAwNjQ0PGJyPi0tLSBhL3NyYy9vcGVudnBuL3BsdWdpbi5j
-PGJyPisrKyBiL3NyYy9vcGVudnBuL3BsdWdpbi5jPGJyPkBAIC04MTgsMjYgKzgxOCwyNCBAQCBw
-bHVnaW5fY2FsbF9zc2woY29uc3Qgc3RydWN0IHBsdWdpbl9saXN0ICpwbCw8YnI+wqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqBjZXJ0ZGVwdGgsPGJyPsKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgY3VycmVudF9jZXJ0PGJyPsKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgKTs8YnI+LSDCoCDCoCDCoCDCoCDCoCDCoHN3aXRjaCAoc3RhdHVzKTxi
-cj4rIMKgIMKgIMKgIMKgIMKgIMKgaWYgKHByKTxicj7CoCDCoCDCoCDCoCDCoCDCoCDCoHs8YnI+
-LSDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoGNhc2UgT1BFTlZQTl9QTFVHSU5fRlVOQ19TVUNDRVNT
-Ojxicj4tIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgYnJlYWs7PGJyPi08YnI+LSDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoGNhc2UgT1BFTlZQTl9QTFVHSU5fRlVOQ19ERUZFUlJFRDo8YnI+
-LSDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoGRlZmVycmVkID0gdHJ1ZTs8YnI+LSDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoGJyZWFrOzxicj4tPGJyPi0gwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqBkZWZhdWx0Ojxicj4tIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgZXJyb3Ig
-PSB0cnVlOzxicj4rIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgcHItJmd0O24gPSBpICsgMTs8YnI+
-KyDCoCDCoCDCoCDCoCDCoCDCoH08YnI+KyDCoCDCoCDCoCDCoCDCoCDCoGlmIChzdGF0dXMgPT0g
-T1BFTlZQTl9QTFVHSU5fRlVOQ19ERUZFUlJFRCk8YnI+KyDCoCDCoCDCoCDCoCDCoCDCoHs8YnI+
-KyDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoGRlZmVycmVkID0gdHJ1ZTs8YnI+KyDCoCDCoCDCoCDC
-oCDCoCDCoH08YnI+KyDCoCDCoCDCoCDCoCDCoCDCoGVsc2UgaWYgKHN0YXR1cyAhPSBPUEVOVlBO
-X1BMVUdJTl9GVU5DX1NVQ0NFU1MpPGJyPisgwqAgwqAgwqAgwqAgwqAgwqB7PGJyPisgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqBlcnJvciA9IHRydWU7PGJyPisgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqBpZiAodHlwZSA9PSBPUEVOVlBOX1BMVUdJTl9BVVRIX1VTRVJfUEFTU19WRVJJRlkpPGJyPisg
-wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqB7PGJyPsKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgYnJlYWs7PGJyPisgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqB9PGJyPsKgIMKgIMKgIMKgIMKg
-IMKgIMKgfTxicj7CoCDCoCDCoCDCoCDCoH08YnI+wqA8YnI+LSDCoCDCoCDCoCDCoGlmIChwcik8
-YnI+LSDCoCDCoCDCoCDCoHs8YnI+LSDCoCDCoCDCoCDCoCDCoCDCoHByLSZndDtuID0gaTs8YnI+
-LSDCoCDCoCDCoCDCoH08YnI+LTxicj7CoCDCoCDCoCDCoCDCoGdjX2ZyZWUoJmFtcDtnYyk7PGJy
-PsKgPGJyPsKgIMKgIMKgIMKgIMKgaWYgKGVycm9yKTxicj4tLSA8YnI+Mi4xNy4xPC9kaXY+DQo=
+iQGcBAEBAgAGBQJhjUdTAAoJEB2Cnv7KVigS8ggL/jexQPJ8cgwbkwPrK75D0geA
+pVBQLtHKCYM3jpqwKWAiu8p/saEo5SRrIPQIbnN9hzbZIVVieowAEKX0e8xBbr9/
+RKJjoeW1n31qAsg4vgfiWqfZ5XvKlB76DwYi6+hsP3Mu7ksc4FUgyE18lfKbx4u7
+vt4zUl7UoyvRwtWr83TzWmuAL0p7xhSHiYSdYXO2nNbEK/oRVsTLgczoMSs0pUIK
+OWUShMPl4H399V8J35kWjcy9SeWZgp5ySBiXqN8Q69nYJ53l82H5JpuTSA8oBzpx
+lUre3TFCyzUVpQsbj5u+ZuWGmx9m4hpXWc7BQwMB1VY34zXhj2E6dNCbX1ZJA2V+
+rvYQhZBfpI16MT2SMTRafOTabDdCEhmVTFtNgNEINIw8GkueDGB8KZmwBf37Y9Ne
+GUOuXJI8UJxkRSAbNmEvHYUOcP2bkOweuC/wSwirmml1Z7+X9iDg1jjNIVOQTiKg
+iMxfF10f/y7gpDxiHOSB3St5d6ZQch2SaOPvdJGx8Q==
+=xAXC
+-----END PGP SIGNATURE-----
 
---00000000000085942a05d0849a1d--
+--JwuQWDk71vYDJf78--
 
