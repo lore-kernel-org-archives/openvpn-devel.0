@@ -1,12 +1,13 @@
+References: <YYfa3rAEKJKQ4RpK@...1296...>
+ <CAFChrgKoORqRzTsDx8GJy-V+WyDaMsVAw=oDsXvaHhnomH9Bhw@...278...>
+From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <c7fb6804-3e3d-b341-e207-754c468792bd@...1147...>
+Date: Thu, 11 Nov 2021 09:36:23 +0100
 MIME-Version: 1.0
-References: <20211108135314.148-1-lstipakov@...277...>
- <CAKuzo_jCzuJ3xvwAdM_YHz6Zu-kHr19kZV-vmvP3k1_2UAE+hw@...278...>
-In-Reply-To: <CAKuzo_jCzuJ3xvwAdM_YHz6Zu-kHr19kZV-vmvP3k1_2UAE+hw@...278...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 11 Nov 2021 10:38:40 +0200
-Message-ID: <CAGyAFMVbX1m_LhB=rV1Kh0uqpjfgCy6WP9t1o2bLTT+dO-L9Gg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] tun: improve DHCP server address
- calculation for small subnets
+In-Reply-To: <CAFChrgKoORqRzTsDx8GJy-V+WyDaMsVAw=oDsXvaHhnomH9Bhw@...278...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [Openvpn-users] NTLMv1,
+ NTLMv2 HTTP proxy support?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,45 +16,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Jason Haar <jason_haar@...1490...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+Hi Jason,
 
-> Why not just use 0 offset always? Perpetuating this dance of 0 offset in =
-some cases, -1 otherwise is not a way forward. Also see my patch from 2015 =
-that never got any traction. I have lost touch with the context, so, I'm no=
-t sure whether this addresses the same (apart from code changes) or somethi=
-ng related.
+On 09/11/21 09:37, Jason Haar wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA256
 >
-> https://sourceforge.net/p/openvpn/mailman/openvpn-devel/thread/1449454660=
--20050-1-git-send-email-selva.nair%40gmail.com/#msg34674818
+> How about ditching the NTLM and adding HTTPS proxy support instead? ;-)
+> Does the privacy aspect of talking to proxies "properly" of course (Basic
+> is fine over HTTPS)
 >
-> Also: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/ms=
-g13413.html and other messages in that thread.
+> (and accidentally makes openvpn-over-TCP look like real TLS traffic too...)
 
-Thanks for pointing me out to this, obviously I missed your original
-patch and that discussion.
+this was also discussed at the OpenVPN Hackathon last weekend; I have 
+code laying around for it
+   https://github.com/jjkeijser/connect-proxy/
+which allows you to run a separate HTTPS proxy and then connect OpenVPN 
+to it using  127.0.0.1:<some port>
 
-I don't know why there is an offset in the first place for both
-openvpn2 and openvpn3, there is probably some reason for it? I wanted
-to be on the safe side and use a network address for some cases only
-(small subnet). If you think it is safe to always use 0, let's do that
-- I can send V2.
+This needs to be integrated into OpenVPN in some form - I think we 
+decided to use the (delayed-then-forgotten) transport obfuscation plugin 
+for this. We talked about it a few years ago, but it was never fully 
+implemented.
 
-I tried to apply your patch but it doesn't apply anymore - tun.c has
-changed a lot since 2015.
+@Gert, list:  who was working on this and who still has the code for the 
+transport obfuscation plugin ?  would be a good clean-up project to move 
+all proxy (socks, http AND https) code into this plugin.
 
-What comes to discussion about getting rid of the offset option -
-since the syntax is like this:
+cheers,
 
-  --ip-win32 dynamic [offset] [lease-time]
+JJK
 
-we cannot just remove [offset] since we might break configurations
-which set [lease-time].
+> On 2021-11-07 at 13:55, gert@...1296... wrote:
+>> Hi Community,
+>>
+>> OpenVPN supports HTTP proxies that require NTLM authentication,
+>> supporting NTLMv1 and NTLMv2 protocols.
+>>
+>> This is old code, which was written in the dark ages, is not currently
+>> unit/client tested, and uses DES which got deprecated in OpenSSL 3.0.0...
+>>
+>> That said, if people still *use* it, we are likely to keep it - otherwise
+>> it might just become lost :-)
+>>
+>> So - if you use HTTP proxy in OpenVPN, and that proxy authenticates
+>> against a Windows AD domain, and you use NTLMv1 or NTLMv2 authentication,
+>> please speak up and tell us about your use case!
+>>
 
---=20
--Lev
 
