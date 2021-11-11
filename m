@@ -1,10 +1,11 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Tue,  9 Nov 2021 03:59:27 +0200
-Message-Id: <20211109015927.311-1-lstipakov@...277...>
-In-Reply-To: <CAGyAFMVbX1m_LhB=rV1Kh0uqpjfgCy6WP9t1o2bLTT+dO-L9Gg@...278...>
-References: <CAGyAFMVbX1m_LhB=rV1Kh0uqpjfgCy6WP9t1o2bLTT+dO-L9Gg@...278...>
-Subject: [Openvpn-devel] [PATCH] Use network address for emulated DHCP
- server as a default
+From: Arne Schwabe <arne@...1227...>
+Date: Thu, 11 Nov 2021 14:00:50 +0100
+Message-Id: <20211111130051.3674331-1-arne@...1227...>
+In-Reply-To: <20210520151148.2565578-7-arne@...1227...>
+References: <20210520151148.2565578-7-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v4] [OSSL 3.0] Allow loading of non default
+ providers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,91 +17,264 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
+This allows OpenVPN to load non-default providers. This is mainly
+useful for loading the legacy provider with --provider legacy default
 
-This is the rebase of original Selva Nair's patch
-which hasn't been merged:
+Patch v4: use spaces to seperate providers, unload providers.
 
-  https://sourceforge.net/p/openvpn/mailman/message/34674818/
-
-and documentation change to reflect code changes, which
-is basically a revert of another Selva's patch (which got merged):
-
-  https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13387.html
-
-For subnet topology use "offset 0" as default for
-calculating DHCP server address, which makes it equal
-to the network address.
-
-There is no know reason why non-zero default offset
-is needed. Besides, offset -1 breaks subnet /30 case,
-which in some cases is pushed by OpenVPN Cloud product.
-
-Signed-off-by: Lev Stipakov <lev@...515...>
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- doc/man-sections/windows-options.rst | 2 +-
- src/openvpn/helper.c                 | 4 ++--
- src/openvpn/tun.c                    | 9 +--------
- 3 files changed, 4 insertions(+), 11 deletions(-)
+ doc/man-sections/generic-options.rst | 10 ++++++++++
+ src/openvpn/crypto_backend.h         | 14 +++++++++++++
+ src/openvpn/crypto_mbedtls.c         | 13 ++++++++++++
+ src/openvpn/crypto_mbedtls.h         |  3 +++
+ src/openvpn/crypto_openssl.c         | 30 ++++++++++++++++++++++++++++
+ src/openvpn/crypto_openssl.h         |  9 +++++++++
+ src/openvpn/openvpn.c                | 13 ++++++++++++
+ src/openvpn/options.c                |  7 +++++++
+ src/openvpn/options.h                |  9 +++++++++
+ 9 files changed, 108 insertions(+)
 
-diff --git a/doc/man-sections/windows-options.rst b/doc/man-sections/windows-options.rst
-index eacb9af8..c389fbc4 100644
---- a/doc/man-sections/windows-options.rst
-+++ b/doc/man-sections/windows-options.rst
-@@ -93,7 +93,7 @@ Windows-Specific Options
-         server to masquerade as if it were coming from the remote endpoint.
+diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
+index e6c1fe455..f5b8a9135 100644
+--- a/doc/man-sections/generic-options.rst
++++ b/doc/man-sections/generic-options.rst
+@@ -280,6 +280,16 @@ which mode OpenVPN is configured as.
+   This option solves the problem by persisting keys across :code:`SIGUSR1`
+   resets, so they don't need to be re-read.
  
-         The optional offset parameter is an integer which is > :code:`-256`
--        and < :code:`256` and which defaults to -1. If offset is positive,
-+        and < :code:`256` and which defaults to 0. If offset is positive,
-         the DHCP server will masquerade as the IP address at network
-         address + offset. If offset is negative, the DHCP server will
-         masquerade as the IP address at broadcast address + offset.
-diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
-index 032a71e8..4ac1cf8e 100644
---- a/src/openvpn/helper.c
-+++ b/src/openvpn/helper.c
-@@ -237,7 +237,7 @@ helper_client_server(struct options *o)
-      * if tap OR (tun AND topology == subnet):
-      *   ifconfig 10.8.0.1 255.255.255.0
-      *   if !nopool:
--     *     ifconfig-pool 10.8.0.2 10.8.0.253 255.255.255.0
-+     *     ifconfig-pool 10.8.0.2 10.8.0.254 255.255.255.0
-      *   push "route-gateway 10.8.0.1"
-      *   if route-gateway unset:
-      *     route-gateway 10.8.0.2
-@@ -340,7 +340,7 @@ helper_client_server(struct options *o)
-                 {
-                     o->ifconfig_pool_defined = true;
-                     o->ifconfig_pool_start = o->server_network + 2;
--                    o->ifconfig_pool_end = (o->server_network | ~o->server_netmask) - 2;
-+                    o->ifconfig_pool_end = (o->server_network | ~o->server_netmask) - 1;
-                     ifconfig_pool_verify_range(M_USAGE, o->ifconfig_pool_start, o->ifconfig_pool_end);
-                 }
-                 o->ifconfig_pool_netmask = o->server_netmask;
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 28f803ec..75d5eaf7 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -6357,14 +6357,7 @@ tuntap_dhcp_mask(const struct tuntap *tt, const char *device_guid)
-     {
-         if (tt->topology == TOP_SUBNET)
-         {
--            if (tt->options.dhcp_masq_custom_offset)
--            {
--                ep[2] = dhcp_masq_addr(tt->local, tt->remote_netmask, tt->options.dhcp_masq_offset);
--            }
--            else
--            {
--                ep[2] = dhcp_masq_addr(tt->local, tt->remote_netmask, -1);
--            }
-+            ep[2] = dhcp_masq_addr(tt->local, tt->remote_netmask, tt->options.dhcp_masq_custom_offset ? tt->options.dhcp_masq_offset : 0);
++--provider providers
++  Load the : separated list of (OpenSSL) providers. This is mainly useful for
++  using an external provider for key management like tpm2-openssl or to load
++  the legacy provider with
++
++  ::
++
++      --provider "legacy:default"
++
++
+ --remap-usr1 signal
+   Control whether internally or externally generated :code:`SIGUSR1` signals
+   are remapped to :code:`SIGHUP` (restart without persisting state) or
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index 5aab3e1b7..40984c559 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -78,6 +78,20 @@ void crypto_clear_error(void);
+  */
+ void crypto_init_lib_engine(const char *engine_name);
+ 
++
++/**
++ * Load the given (OpenSSL) providers
++ * @param provider name of providers to load
++ * @return reference to the loaded provider
++ */
++provider_t *crypto_load_provider(const char *provider);
++
++/**
++ * Unloads the given (OpneSSL) provider
++ * @param provider pointer to the provider to unload
++ */
++void crypto_unload_provider(const char* provname, provider_t *provider);
++
+ #ifdef DMALLOC
+ /*
+  * OpenSSL memory debugging.  If dmalloc debugging is enabled, tell
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index 08b9e004f..39dbf38a5 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -69,6 +69,19 @@ crypto_init_lib_engine(const char *engine_name)
+         "available");
+ }
+ 
++provider_t *crypto_load_provider(const char *provider)
++{
++    if (provider)
++    {
++        msg(M_WARN, "Note: mbed TLS provider functionality is not available");
++    }
++    return NULL;
++}
++
++void crypto_unload_provider(const char* provname, provider_t *provider)
++{
++}
++
+ /*
+  *
+  * Functions related to the core crypto library
+diff --git a/src/openvpn/crypto_mbedtls.h b/src/openvpn/crypto_mbedtls.h
+index 019de01d1..758ab1b40 100644
+--- a/src/openvpn/crypto_mbedtls.h
++++ b/src/openvpn/crypto_mbedtls.h
+@@ -48,6 +48,9 @@ typedef mbedtls_md_context_t md_ctx_t;
+ /** Generic HMAC %context. */
+ typedef mbedtls_md_context_t hmac_ctx_t;
+ 
++/* Use a dummy type for the provider */
++typedef void provider_t;
++
+ /** Maximum length of an IV */
+ #define OPENVPN_MAX_IV_LENGTH   MBEDTLS_MAX_IV_LENGTH
+ 
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index cc1d62210..ab38d6e5c 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -54,6 +54,9 @@
+ #if (OPENSSL_VERSION_NUMBER >= 0x10100000L) && !defined(LIBRESSL_VERSION_NUMBER)
+ #include <openssl/kdf.h>
+ #endif
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++#include <openssl/provider.h>
++#endif
+ 
+ #if defined(_WIN32) && defined(OPENSSL_NO_EC)
+ #error Windows build with OPENSSL_NO_EC: disabling EC key is not supported.
+@@ -149,6 +152,33 @@ crypto_init_lib_engine(const char *engine_name)
+ #endif
+ }
+ 
++provider_t *
++crypto_load_provider(const char *provider)
++{
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++    /* Load providers into the default (NULL) library context */
++    OSSL_PROVIDER* prov = OSSL_PROVIDER_load(NULL, provider);
++    if (!prov)
++    {
++        crypto_msg(M_FATAL, "failed to load provider '%s'", provider);
++    }
++    return prov;
++#else  /* OPENSSL_VERSION_NUMBER >= 0x30000000L */
++    msg(M_WARN, "Note: OpenSSL hardware crypto engine functionality is not available");
++    return NULL;
++#endif
++}
++
++void crypto_unload_provider(const char* provname, provider_t *provider)
++{
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++    if (!OSSL_PROVIDER_unload(provider))
++    {
++        crypto_msg(M_FATAL, "failed to undload provider '%s'", provname);
++    }
++#endif
++}
++
+ /*
+  *
+  * Functions related to the core crypto library
+diff --git a/src/openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h
+index e540a76b9..446f08508 100644
+--- a/src/openvpn/crypto_openssl.h
++++ b/src/openvpn/crypto_openssl.h
+@@ -33,6 +33,10 @@
+ #include <openssl/hmac.h>
+ #include <openssl/md5.h>
+ #include <openssl/sha.h>
++#if OPENSSL_VERSION_NUMBER >= 0x30000000L
++#include <openssl/provider.h>
++#endif
++
+ 
+ /** Generic cipher key type %context. */
+ typedef EVP_CIPHER cipher_kt_t;
+@@ -49,12 +53,17 @@ typedef EVP_MD_CTX md_ctx_t;
+ /** Generic HMAC %context. */
+ #if OPENSSL_VERSION_NUMBER < 0x30000000L
+ typedef HMAC_CTX hmac_ctx_t;
++
++/* Use a dummy type for the provider */
++typedef void provider_t;
+ #else
+ typedef struct {
+     OSSL_PARAM params[3];
+     uint8_t key[EVP_MAX_KEY_LENGTH];
+     EVP_MAC_CTX *ctx;
+ } hmac_ctx_t;
++
++typedef OSSL_PROVIDER provider_t;
+ #endif
+ 
+ /** Maximum length of an IV */
+diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
+index da06f59c2..095d448b0 100644
+--- a/src/openvpn/openvpn.c
++++ b/src/openvpn/openvpn.c
+@@ -112,10 +112,23 @@ void init_early(struct context *c)
+     /* init verbosity and mute levels */
+     init_verb_mute(c, IVM_LEVEL_1);
+ 
++    /* Initialise OpenVPN provider, this needs to be initialised this
++    * early since option post-processing and also openssl info
++    * printing depends on it */
++    for (int j=1; j < MAX_PARMS && c->options.providers.names[j]; j++)
++    {
++        c->options.providers.providers[j] =
++            crypto_load_provider(c->options.providers.names[j]);
++    }
+ }
+ 
+ static void uninit_early(struct context *c)
+ {
++    for (int j=1; j < MAX_PARMS && c->options.providers.providers[j]; j++)
++    {
++        crypto_unload_provider(c->options.providers.names[j],
++                               c->options.providers.providers[j]);
++    }
+     net_ctx_free(&c->net_ctx);
+ }
+ 
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index b5d65d293..87062d58d 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -8157,6 +8157,13 @@ add_option(struct options *options,
+             options->engine = "auto";
          }
-         else
-         {
+     }
++    else if (streq(p[0], "provider") && p[1])
++    {
++        for (size_t j = 1; j < MAX_PARMS && p[j] != NULL;j++)
++        {
++            options->providers.names[j] = p[j];
++        }
++    }
+ #endif /* ENABLE_CRYPTO_MBEDTLS */
+ #ifdef ENABLE_PREDICTION_RESISTANCE
+     else if (streq(p[0], "use-prediction-resistance") && !p[1])
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 20b34ed4e..d4f41cd71 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -179,6 +179,14 @@ struct remote_list
+     struct remote_entry *array[CONNECTION_LIST_SIZE];
+ };
+ 
++struct provider_list
++{
++    /* Names of the providers */
++    const char *names[MAX_PARMS];
++    /* Pointers to the loaded providers to unload them */
++    provider_t *providers[MAX_PARMS];
++};
++
+ enum vlan_acceptable_frames
+ {
+     VLAN_ONLY_TAGGED,
+@@ -519,6 +527,7 @@ struct options
+     const char *ncp_ciphers;
+     const char *authname;
+     const char *engine;
++    struct provider_list providers;
+     bool replay;
+     bool mute_replay_warnings;
+     int replay_window;
 -- 
-2.23.0.windows.1
+2.33.0
 
 
