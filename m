@@ -1,10 +1,9 @@
-Date: Fri, 12 Nov 2021 17:08:49 +0100 (CET)
-Message-Id: <202111121608.1ACG8njk095596@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211109015927.311-1-lstipakov@...277...>
-References: <20211109015927.311-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Use network address for
- emulated DHCP server as a default
+From: Arne Schwabe <arne@...1227...>
+Date: Sun, 14 Nov 2021 14:03:11 +0100
+Message-Id: <20211114130311.4043536-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Move IV_TCPNL from
+ comp_generate_peer_info_string to push_peer_info
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,42 +14,45 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+This IV variable has nothing to do with compression and should not
+depend if OpenVPN is compiled with USE_COMP. So move it to the
+other generic IV variables.
 
-Not sure, really, why this did not get enough traction 5 years ago... so
-thanks for pushing it :-) - and I understand that Selva did not want to
-ACK it.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/comp.c | 1 -
+ src/openvpn/ssl.c  | 3 +++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-I have not tested it, just stared a bit at the code (fine) and test
-compiled on MinGW (also fine).
-
-Getting rid of the if() statement in tun.c is okay, though the 
-resulting line is violating our line length... this is a big ugly.
-(Also, just passing in "tt->options.dhcp_masq_offset" always (as it 
-defaults to "0") would do the job fine now...)
-
-Your patch has been applied to the master and release/2.5 branch.
-
-commit 7df6583d76fc2ff485186ede75f00c9b7dc3e42c (master)
-commit 93e4f286b906391a21697e44a02a00b871b977ba (release/2.5)
-Author: Lev Stipakov
-Date:   Tue Nov 9 03:59:27 2021 +0200
-
-     Use network address for emulated DHCP server as a default
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20211109015927.311-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23156.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/comp.c b/src/openvpn/comp.c
+index 72b1511ea..ad49b00b9 100644
+--- a/src/openvpn/comp.c
++++ b/src/openvpn/comp.c
+@@ -169,7 +169,6 @@ comp_generate_peer_info_string(const struct compress_options *opt, struct buffer
+         }
+         buf_printf(out, "IV_COMP_STUB=1\n");
+         buf_printf(out, "IV_COMP_STUBv2=1\n");
+-        buf_printf(out, "IV_TCPNL=1\n");
+     }
+ }
+ 
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 7a09272c8..4d107016a 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2184,6 +2184,9 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+ #elif defined(_WIN32)
+         buf_printf(&out, "IV_PLAT=win\n");
+ #endif
++        /* Announce that we do not require strict sequence numbers with
++         * TCP. (TCP non-linear) */
++        buf_printf(&out, "IV_TCPNL=1\n");
+     }
+ 
+     /* These are the IV variable that are sent to peers in p2p mode */
+-- 
+2.33.0
 
 
