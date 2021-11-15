@@ -1,9 +1,10 @@
-MIME-Version: 1.0
+Date: Mon, 15 Nov 2021 14:11:18 +0100
+From: Ruben Herold <ruben@...1302...>
+Message-ID: <20211115131118.GC29441@...2643...>
 References: <20211115115309.GA29441@...2643...>
-In-Reply-To: <20211115115309.GA29441@...2643...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 15 Nov 2021 14:45:53 +0200
-Message-ID: <CAGyAFMWRiAKE_P-9CKkGqma2Br27Xv5eC+eS9OeVy-VfGxVn+w@...278...>
+ <CAGyAFMWRiAKE_P-9CKkGqma2Br27Xv5eC+eS9OeVy-VfGxVn+w@...278...>
+MIME-Version: 1.0
+In-Reply-To: <CAGyAFMWRiAKE_P-9CKkGqma2Br27Xv5eC+eS9OeVy-VfGxVn+w@...278...>
 Subject: Re: [Openvpn-devel] Start openvpn gui before windows login
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -13,31 +14,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Ruben Herold <ruben@...1302...>
+Content-Disposition: inline
+To: Lev Stipakov <lstipakov@...277...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+On Mon, Nov 15, 2021 at 02:45:53PM +0200, Lev Stipakov wrote:
+ Hi,
+ 
+ 
+> Things might have changed since then, but our priorities now are
+> releasing 2.6 with the new dco/dco-win drivers, which significantly
+> improve performance. We might have a look at UWP VPN after that again.
 
-A few years back we made a Proof-of-Concept with OpenVPN 3 and Windows
-UWP API. Performance-wise it was on tap-windows6 level (which is not
-impressive), there were some issues with UDP transport (which were
-solved by MSFT later) and usability related to UWP app model - for
-example application might be "paused" when it is not on the
-foreground, which means inability to send ping packets and disconnect.
+Cause from the screenshoots it looks like they have found a way to start
+their own gui during login so that the user can use MFA and so on. Or do
+they really do all their vpn stuff via UWP?
 
-Things might have changed since then, but our priorities now are
-releasing 2.6 with the new dco/dco-win drivers, which significantly
-improve performance. We might have a look at UWP VPN after that again.
+I'm not very deep in this Windows stuff, so it can be that I'm on the
+complete wrong way.
 
-Are you sure your problem cannot be solved with openvpn service?
+ 
+> Are you sure your problem cannot be solved with openvpn service?
+> 
+> See, for example,
+> https://openvpn.net/community-resources/running-openvpn-as-a-windows-service/
+> Also this discussion might be relevant:
+> https://github.com/OpenVPN/openvpn-gui/issues/77
+> 
+We are using user/pass auth against AD and MFA so this is not possible. 
 
-See, for example,
-https://openvpn.net/community-resources/running-openvpn-as-a-windows-service/
-Also this discussion might be relevant:
-https://github.com/OpenVPN/openvpn-gui/issues/77
-
---
--Lev
+            Ruben
+-- 
+Ruben Herold 
+ruben@...1302...
 
