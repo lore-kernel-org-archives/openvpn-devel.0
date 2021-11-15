@@ -1,9 +1,10 @@
-Date: Mon, 15 Nov 2021 12:53:09 +0100
-From: Ruben Herold <ruben@...1302...>
-Message-ID: <20211115115309.GA29441@...2643...>
-Reply-To: Ruben Herold <ruben@...1302...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Start openvpn gui before windows login
+References: <20211115115309.GA29441@...2643...>
+In-Reply-To: <20211115115309.GA29441@...2643...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 15 Nov 2021 14:45:53 +0200
+Message-ID: <CAGyAFMWRiAKE_P-9CKkGqma2Br27Xv5eC+eS9OeVy-VfGxVn+w@...278...>
+Subject: Re: [Openvpn-devel] Start openvpn gui before windows login
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,57 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: Ruben Herold <ruben@...1302...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+Hi,
 
-        hi,
+A few years back we made a Proof-of-Concept with OpenVPN 3 and Windows
+UWP API. Performance-wise it was on tap-windows6 level (which is not
+impressive), there were some issues with UDP transport (which were
+solved by MSFT later) and usability related to UWP app model - for
+example application might be "paused" when it is not on the
+foreground, which means inability to send ping packets and disconnect.
 
-at our company we run into problems with domain joined windows notebooks
-during lock downs. We realized that there is no way to start openvpn gui 
-before windows login to connect to the company network.
+Things might have changed since then, but our priorities now are
+releasing 2.6 with the new dco/dco-win drivers, which significantly
+improve performance. We might have a look at UWP VPN after that again.
 
-I asks our support contact at MS an got the information that this is
-only possible via: Universal Windows Platform (UWP) VPN plug-ins.
+Are you sure your problem cannot be solved with openvpn service?
 
-It should be possible to add external vpn clients like cisco anyconnect:
+See, for example,
+https://openvpn.net/community-resources/running-openvpn-as-a-windows-service/
+Also this discussion might be relevant:
+https://github.com/OpenVPN/openvpn-gui/issues/77
 
-https://docs.microsoft.com/en-us/windows/security/identity-protection/vpn/vpn-connection-type
-
-"There are a number of Universal Windows Platform VPN applications, such
-as Pulse Secure, Cisco AnyConnect, F5 Access, Sonicwall Mobile Connect,
-and Check Point Capsule. If you want to use a UWP VPN plug-in, work with
-your vendor for any custom settings needed to configure your VPN
-solution."
-
-As seen on the screenshoot at:
-
-https://remote-learning.arizona.edu/campus-technology-how-tos/vpn-start-before-logon
-
-It looks like they only start their client gui. 
-
-The only documentation I could get so far is:
-
-https://docs.microsoft.com/en-us/uwp/api/Windows.Networking.Vpn?view=winrt-22000
-and this could be an example:
-
-https://github.com/ysc3839/UWPToyVpn
-
-I'm not a developer so I can't proof. But I have some contacts at MS to
-ask for more informations if needed. 
-
-I think this could be a very usefull extension to openvpn. 
-
-
-            Thx
-
-                ruben
-
-
-
--- 
-Ruben Herold 
-ruben@...1302...
+--
+-Lev
 
