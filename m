@@ -1,8 +1,8 @@
 From: Richard T Bonhomme <stringvest88@...277...>
-Date: Tue, 16 Nov 2021 14:49:07 +0000
-Message-Id: <20211116144907.630587-1-tincantech@...2282...>
+Date: Tue, 16 Nov 2021 15:08:23 +0000
+Message-Id: <20211116150823.631970-1-tincantech@...2282...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Log message: Replace NCP ciphers with
+Subject: [Openvpn-devel] [PATCH] Log messages: Replace NCP with
  --data-ciphers (NFC)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -22,7 +22,7 @@ Signed-off-by: Richard T Bonhomme <tincantech@...2282...>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 4a5db8a6..7822f21e 100644
+index 4a5db8a6..fdac4732 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
 @@ -3240,7 +3240,7 @@ options_postprocess_mutate(struct options *o)
@@ -30,7 +30,7 @@ index 4a5db8a6..7822f21e 100644
      if (o->ncp_ciphers == NULL)
      {
 -        msg(M_USAGE, "NCP cipher list contains unsupported ciphers or is too long.");
-+        msg(M_USAGE, "--data-cipher list contains unsupported ciphers or is too long.");
++        msg(M_USAGE, "--data-ciphers list contains unsupported ciphers or is too long.");
      }
  
      if (o->remote_list && !o->connection_list)
