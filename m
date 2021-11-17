@@ -1,10 +1,9 @@
-Date: Tue, 16 Nov 2021 19:20:44 +0100 (CET)
-Message-Id: <202111161820.1AGIKijM010625@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211116150823.631970-1-tincantech@...2282...>
-References: <20211116150823.631970-1-tincantech@...2282...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Log messages: Replace NCP with
- --data-ciphers (NFC)
+Date: Wed, 17 Nov 2021 07:44:42 +0100
+Message-Id: <20211117064442.15899-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Include --push-remove in the output of
+ --help.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +14,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Richard T Bonhomme <stringvest88@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+"push-remove" has been in OpenVPN since 2.4, but managed to stay hidden
+from the "--help" output.  Add.
 
-"Makes sense" (point the user to the actual option that caused this).
+Reported-by: mike tancsa <mike@...1800...>
 
-Your patch has been applied to the master branch.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/options.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-commit ba176023901fa537898271a5c0de21653225c431
-Author: Richard T Bonhomme
-Date:   Tue Nov 16 15:08:23 2021 +0000
-
-     Log messages: Replace NCP with --data-ciphers (NFC)
-
-     Signed-off-by: Richard T Bonhomme <tincantech@...2282...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20211116150823.631970-1-tincantech@...2282...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23191.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index a167a08a..cc3d9fa0 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -409,6 +409,8 @@ static const char usage_message[] =
+     "                  execution.  Peer must specify --pull in its config file.\n"
+     "--push-reset    : Don't inherit global push list for specific\n"
+     "                  client instance.\n"
++    "--push-remove opt : Remove options matching 'opt' from the push list for\n"
++    "                  a specific client instance.\n"
+     "--ifconfig-pool start-IP end-IP [netmask] : Set aside a pool of subnets\n"
+     "                  to be dynamically allocated to connecting clients.\n"
+     "--ifconfig-pool-persist file [seconds] : Persist/unpersist ifconfig-pool\n"
+-- 
+2.26.3
 
 
