@@ -1,15 +1,13 @@
-Date: Wed, 17 Nov 2021 12:45:07 +0100
+Date: Wed, 17 Nov 2021 12:53:16 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <YZTrQ/YBrCznIiIh@...1296...>
-References: <20211109144811.3426928-1-arne@...1227...>
- <202111101347.1AADl4hR038291@...2054...>
+Message-ID: <YZTtLKL5CcLxVWH9@...1296...>
+References: <20211103202014.1121244-1-tincantech@...2282...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="qPZr8NJq7l8Npuhp"
+ protocol="application/pgp-signature"; boundary="xuCphwr7x0uQo7To"
 Content-Disposition: inline
-In-Reply-To: <202111101347.1AADl4hR038291@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Use TYPE_do_all_provided
- function for listing cipher/digest
+In-Reply-To: <20211103202014.1121244-1-tincantech@...2282...>
+Subject: Re: [Openvpn-devel] (no subject)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,35 +16,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+To: Richard T Bonhomme <stringvest88@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---qPZr8NJq7l8Npuhp
+--xuCphwr7x0uQo7To
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Wed, Nov 10, 2021 at 02:47:04PM +0100, Gert Doering wrote:
-> Acked-by: Gert Doering <gert@...1296...>
->=20
-> This is "v3 with the SIZE() change", and this change looks good.  Max
-> has already stated "looks good and works", but wanted the sizeof()=20
-> change which is now in - so taking his pre-review, adding my own testing
-> (makes the "cipher" part of "make check" finally succeed with 3.0,=20
-> yay :-) )
->=20
-> The "load providers" part is not in, so I couldn't test
->=20
->   openvpn --provider legacy:default --show-ciphers
->=20
-> yet... will come back.
+On Wed, Nov 03, 2021 at 08:20:13PM +0000, Richard T Bonhomme wrote:
+> Trac: 1417
 
-As promised, I'm back.  "It works".
+For future patches, please include the Trac-ID in the commit message,
+at the end, like this
 
-For giggles, look at "openvpn --providers legacy --show-cipher"...=20
-(on a 3.0 build, of course) :-)
+--------------------
+I fixed a totally important problem here!
+
+Trac: #1417
+Signed-off-by: ...
+--------------------
+
+Sending this (or any other "should go to the commit message" thigns) as an=
+=20
+extra mail implies "hey, Gert, please do this work for me".  Sometimes I=20
+do, sometimes I get grumpy and let the whitespace dragon eat your patch=20
+instead...
+
+The expectations for "regular" committers are higher than for "first-timers=
+",
+and you slowly move towards the other category now... :-)
 
 gert
 
@@ -60,22 +61,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---qPZr8NJq7l8Npuhp
+--xuCphwr7x0uQo7To
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJhlOtDAAoJEB2Cnv7KVigSjTgL/3u32OtJzp4f93/Z/pBfq6Ut
-q0ho1N2zRKMVOxQpmrXPAv+h9KHh94B5j4wp8/PZBbyGwHt238qQCVDireGNysr6
-hR68XvompYbfyd4CR0GaVQopOl062Ins6ZZYV6/5BvfNzhJHHfFqLLOCI8l4jvW9
-DEu2F2PGVGMv5Cl1yPcIe6RQnoNk9IxElKQTV4S4XKuPW2x9UVhabb1Ua3hdTCOY
-eKMJtTyqDDZlQJ4iQuH/dsz2MvGwNW9B9oWzg8ApPKtLgMajFHWbX4D3Gh9kUjEa
-0ssYtY3eoNCUFoCRqxtiMGaiC7tzY/xkoz2j9e25+WDos+/O/hC6mhkhAJZRvhSA
-rcIBPEWfoeJtMhxiRzJC4PgGdZQzkAzsN4k7rqlI9cR4GKbOdmMm7jJnUB0iS1TD
-7HP87RgGBPShD9sJqhaSObfoNtOMtY7OsWuJ1Wa0eiIutxj+HFdVxJvyWbPh3JIf
-sQmv8B0FbdUIL4e/7lcrZvi77SZyKR8eLibJWJylPw==
-=Uwee
+iQGcBAEBAgAGBQJhlO0rAAoJEB2Cnv7KVigSaKoL/1l5p8RUgFROOvy4EBW92pTT
+6wKpitARxgxqLOaS3Lc4/pSiFyn82864lP09JiHSk3CwnKlEVJKW5luPIxIDINrm
+hzqA3ZF+xBgktgPPPGdjJOTUHNbfxdyDOfHnS6Bdd/Gt1WRxobvFRbNtNiLhL/Hh
+bcR02zAaA/d8osK/zMhTbxvkvGppmZaL3ZmKPbCjGKxLTuVan/r/jEdZQ2QKulkx
+RczV2B3918leCZe6ZIkXXcSahHAaxDNU+yzMcUzFKDQc9Iy0/doL+6C18U+JqumB
+K8XoDheq8jwKXFkbrADDHN+iN13GQykZ0BDhJgDJ0ayAFYBPRCaYA6LcHNoOG+no
+1g6hYrvLlJlbd/t5iXrgL63QPkvbGbteLoUYyGeGJY4z33D6WGtG5u+hWmohvDU2
+nQadWCUBogpc1Qtelgu/g+bBUy86M3gfTFSWxqbTRHQ6tRgOBzl7JdcUAC+duXlm
++6xfmNItWjnr8oZBbRTdOFX81/6wpkpNZRBA6q1xzA==
+=D/r9
 -----END PGP SIGNATURE-----
 
---qPZr8NJq7l8Npuhp--
+--xuCphwr7x0uQo7To--
 
