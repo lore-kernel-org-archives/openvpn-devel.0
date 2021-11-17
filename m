@@ -1,9 +1,9 @@
-Date: Wed, 17 Nov 2021 12:55:21 +0100 (CET)
-Message-Id: <202111171155.1AHBtL7w030542@...2054...>
+Date: Wed, 17 Nov 2021 12:56:31 +0100 (CET)
+Message-Id: <202111171156.1AHBuVnU030601@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211103202014.1121244-2-tincantech@...2282...>
-References: <20211103202014.1121244-2-tincantech@...2282...>
-Subject: [Openvpn-devel] [PATCH applied] Re: doc link-options.rst: Use free
+In-Reply-To: <20211103211820.1147661-1-tincantech@...2282...>
+References: <20211103211820.1147661-1-tincantech@...2282...>
+Subject: [Openvpn-devel] [PATCH applied] Re: doc openvpn.8: Use free
  open-source dynamic-DNS provider URL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -20,23 +20,21 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-This looks like a useful service / project, and dyndns.org really went
-downhill - so if we endorse something, it should be free and open, so
-"yes".
+Same change as for master and 2.5, but the content is elsewhere in 
+this branch -> so, separate patch needed.  Thanks.
 
-Your patch has been applied to the master and release/2.5 branch.
+Your patch has been applied to the release/2.4 branch.
 
-commit 2c2e13d9ecdd1364c6a05ad77cea2840c015aa56 (master)
-commit b309f7ea16864e7876d02031015bb1eeba9e539a (release/2.5)
+commit fa17baf7c4552ba88ccf97dd2220cce897337b13
 Author: Richard T Bonhomme
-Date:   Wed Nov 3 20:20:14 2021 +0000
+Date:   Wed Nov 3 21:18:20 2021 +0000
 
-     doc link-options.rst: Use free open-source dynamic-DNS provider URL
+     doc openvpn.8: Use free open-source dynamic-DNS provider URL
 
      Signed-off-by: Richard T Bonhomme <tincantech@...2282...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20211103202014.1121244-2-tincantech@...2282...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23095.html
+     Message-Id: <20211103211820.1147661-1-tincantech@...2282...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23096.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
