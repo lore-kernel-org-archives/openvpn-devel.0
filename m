@@ -1,8 +1,13 @@
-From: Max Fillinger <maximilian.fillinger@...2507...>
-Date: Wed, 17 Nov 2021 18:54:24 +0100
-Message-ID: <20211117175424.17195-1-maximilian.fillinger@...2507...>
+Date: Wed, 17 Nov 2021 19:48:24 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <YZVOeK0S7+TOLfyN@...1296...>
+References: <20211117175424.17195-1-maximilian.fillinger@...2507...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Don't "undo" ifconfig when given
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="2JAFpU0S+Wa28Duk"
+Content-Disposition: inline
+In-Reply-To: <20211117175424.17195-1-maximilian.fillinger@...2507...>
+Subject: Re: [Openvpn-devel] [PATCH] Don't "undo" ifconfig when given
  --ifconfig-noexec
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -12,64 +17,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Max Fillinger <maximilian.fillinger@...2507...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-When running with --ifconfig-noexec on Linux, OpenVPN may still delete
-the ip address from the tun interface on exit, because it tries to undo
-the ifconfig that did not actually happen.
+--2JAFpU0S+Wa28Duk
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This commit reintroduces the did_ifconfig member to struct tuntap so
-that we can check if ifconfig was actually done before trying to undo
-it. It's behind an #ifdef because it's only used on Linux, and that was
-the reason why it was removed before.
+Hi,
 
-Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
----
- src/openvpn/tun.c | 6 +++++-
- src/openvpn/tun.h | 3 +++
- 2 files changed, 8 insertions(+), 1 deletion(-)
+On Wed, Nov 17, 2021 at 06:54:24PM +0100, Max Fillinger wrote:
+> When running with --ifconfig-noexec on Linux, OpenVPN may still delete
+> the ip address from the tun interface on exit, because it tries to undo
+> the ifconfig that did not actually happen.
+>=20
+> This commit reintroduces the did_ifconfig member to struct tuntap so
+> that we can check if ifconfig was actually done before trying to undo
+> it. It's behind an #ifdef because it's only used on Linux, and that was
+> the reason why it was removed before.
+>=20
+> Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 75d5eaf7..32e739fc 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1601,6 +1601,10 @@ do_ifconfig(struct tuntap *tt, const char *ifname, int tun_mtu,
-         do_ifconfig_ipv6(tt, ifname, tun_mtu, es, ctx);
-     }
- 
-+#ifdef TARGET_LINUX
-+    tt->did_ifconfig = true;
-+#endif
-+
-     /* release resources potentially allocated during interface setup */
-     net_ctx_free(ctx);
- }
-@@ -2190,7 +2194,7 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
- {
-     ASSERT(tt);
- 
--    if (tt->type != DEV_TYPE_NULL)
-+    if (tt->type != DEV_TYPE_NULL && tt->did_ifconfig)
-     {
-         if (tt->did_ifconfig_setup)
-         {
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index aa1e47b5..1f579e34 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -162,6 +162,9 @@ struct tuntap
- 
-     bool did_ifconfig_setup;
-     bool did_ifconfig_ipv6_setup;
-+#ifdef TARGET_LINUX
-+    bool did_ifconfig;
-+#endif
- 
-     bool persistent_if;         /* if existed before, keep on program end */
- 
--- 
-2.20.1
+I'm sure that this will work, but I wonder why we need to do this
+in such a complicated way - the code here is
 
+close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+...
+        if (tt->did_ifconfig_setup)
+        {
+            undo_ifconfig_ipv4(tt, ctx);
+        }
+=20
+        if (tt->did_ifconfig_ipv6_setup)
+        {
+            undo_ifconfig_ipv6(tt, ctx);
+        }
+
+... so why is "did_ifconfig_setup" true, if ifconfig wasn't done?
+
+Or, phrased differently, what is did_ifconfig_setup used for, across
+the code, and can we just "not set it to true" if ifconfig-noexec
+is in effect?  Or does it have nasty side effects?
+
+gert
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--2JAFpU0S+Wa28Duk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJhlU54AAoJEB2Cnv7KVigS5gUL/Rrdbc/vU4nVPqLmdDbM8bud
+HgCoWdU8IoXXvhK6K9dyySp2Z2HgqycZFW9ezh47OzTJbTiU5uZ4z9OwlF/IPG3A
+cYZzuxowgM2SJaEYm8IJQCCs2+LbqHD10B3wl6iarw76emnAPKxRkVHaWq2XH2jw
+8i2pNdZnueMuJLXnS75Sc/4YRg2w/Sy8/buLm0lDI6pAG2x/uZ2No4k8vCA6H4zk
+okgXoRAnrgGdijfpJ1ScS3z9Z2DOE9pVohHBX0H2npEFFhOj12joXDh4dihEApyv
+KC1tEIFp6kuVGLvILdJ33WGNp5UCw5v400KqjmSUgQMjruYgrgfD6sdgTU6tk85t
+ToN8To6CQSQ3zeyHWdUu9fOBtvVMH5aOwl0E/Zpuyv5Jqi40d/oCH0gtOfTV/bjP
+STFchFoZOxgoAy/hx7cauEUkelipqw8D6GPnocAS4U2HbptMyVBFN798YcjUDN2H
+FgtTB/q0tilGQu4kxWJR+LLe9gbkRLix7dPMsKUztg==
+=M48k
+-----END PGP SIGNATURE-----
+
+--2JAFpU0S+Wa28Duk--
 
