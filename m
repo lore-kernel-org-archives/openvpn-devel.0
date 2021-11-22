@@ -1,8 +1,9 @@
 From: Gert Doering <gert@...1296...>
-Date: Mon, 22 Nov 2021 12:40:18 +0100
-Message-Id: <20211122114018.4708-1-gert@...1296...>
+Date: Mon, 22 Nov 2021 12:41:04 +0100
+Message-Id: <20211122114104.4814-1-gert@...1296...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Update IRC information in CONTRIBUTING.rst
+Subject: [Openvpn-devel] [PATCH] doc/man (vpn-network-options): fix
+ foreign_option_{n} typo
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,32 +19,28 @@ Cc: Todd Zullinger <tmz@...1936...>
 
 From: Todd Zullinger <tmz@...1936...>
 
-The developer IRC channel is now on libera.chat.  Update
-CONTRIBUTING.rst to match the wiki.
+In 2da29362 (Improve the documentation for --dhcp-option, 2020-08-16),
+`foreign_option_{n}` became plural between the first and second versions
+of the patch.  Correct it.
 
 Signed-off-by: Todd Zullinger <tmz@...1936...>
 ---
- CONTRIBUTING.rst | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ doc/man-sections/vpn-network-options.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/CONTRIBUTING.rst b/CONTRIBUTING.rst
-index f87293ca..db47f397 100644
---- a/CONTRIBUTING.rst
-+++ b/CONTRIBUTING.rst
-@@ -19,10 +19,10 @@ git-format-patch or sent using git-send-email. Try to split large patches into
- small, atomic pieces to make reviews easier.
+diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
+index 8c1c02dc..5b2f8470 100644
+--- a/doc/man-sections/vpn-network-options.rst
++++ b/doc/man-sections/vpn-network-options.rst
+@@ -107,7 +107,7 @@ routing.
+   ``OpenVPN for Android`` client also handles them internally.
  
- If you want quick feedback on a patch before sending it to openvpn-devel mailing
--list, you can visit the #openvpn-devel channel on irc.freenode.net. Note that
--you need to be logged in to Freenode to join the channel:
-+list, you can visit the #openvpn-devel channel on irc.libera.chat. Note that
-+you need to be logged in to Libera to join the channel:
- 
--- http://freenode.net/faq.shtml#nicksetup
-+- https://libera.chat/guides/registration
- 
- More detailed contribution instructions are available here:
- 
+   On all other platforms these options are only saved in the client's
+-  environment under the name :code:`foreign_options_{n}` before the
++  environment under the name :code:`foreign_option_{n}` before the
+   ``--up`` script is called. A plugin or an ``--up`` script must be used to
+   pick up and interpret these as required. Many Linux distributions include
+   such scripts and some third-party user interfaces such as tunnelblick also
 -- 
 2.26.3
 
