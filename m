@@ -1,13 +1,14 @@
+Date: Mon, 22 Nov 2021 09:22:45 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <YZtTVZDWtTEecS/v@...1296...>
+References: <20211117035321.249-1-lstipakov@...277...>
 MIME-Version: 1.0
-References: <YZf4ch72IZYhz5Tb@...1296...>
- <BF86C1C6-216E-4D87-9D88-B5D03F84159D@...277...>
-In-Reply-To: <BF86C1C6-216E-4D87-9D88-B5D03F84159D@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 19 Nov 2021 16:27:35 -0500
-Message-ID: <CAKuzo_hrpBxCT8NDosi9AbMKFCpGkCF-cE_qYVtuL3Nh-C-pCw@...278...>
-Content-Type: multipart/alternative; boundary="00000000000089e73005d12af226"
-Subject: Re: [Openvpn-devel] OpenSSL build on Windows: OPENSSLDIR and
- MODULESDIR
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="9uYvVGavsmIFaek3"
+Content-Disposition: inline
+In-Reply-To: <20211117035321.249-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH master+release/2.5] Tune down verbosity
+ for suspected retransmits
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,49 +18,59 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Lev Stipakov <lstipakov@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
 
---00000000000089e73005d12af226
-Content-Type: text/plain; charset="UTF-8"
+--9uYvVGavsmIFaek3
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Fri, Nov 19, 2021 at 3:04 PM <lstipakov@...277...> wrote:
+On Wed, Nov 17, 2021 at 05:53:21AM +0200, Lev Stipakov wrote:
+> OpenVPN 3, however, doesn't change packet-id on retransmission,
+> which triggers replay protection and causes level 1 nonfatal errors
+> in logs.
+>=20
+> When replay protection sees the packet with the same timestamp
+> and packet-id as previously received one, this is likely retransmission
+> from OpenVPN 3. To not to scare users, tune verbosity down in this case.
 
-> Ok, my idea was to fix only config loading dir. Apparently this is not
-> enough, so I=E2=80=99ll look into ENGINESDIR too.
+Wouldn't "fix this in OpenVPN 3, instead of hiding the warning in 2.x"
+be a better approach?
 
+This complicates 2.x code, which is complicated enough...
 
-What we need is a proper build that can be safely distributed. Whatever
-that takes. My understanding is that if we have to get with prefix and
-OPENSSLDIR set to values recommended by OpenSSL on Windows or something
-appropriate for our own use and still safe.
+(If merged at all, this would not match our criteria for release/2.5=20
+either - it's neither a bugfix, nor a long-term compatibility thing)
 
-Default location of configs, engine dlls, modules etc. depend on those two
-definitions -- we can't leave them at arbitrary values that are not write
-protected or unusable.
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Selva
+Gert Doering - Munich, Germany                             gert@...1296...
 
---00000000000089e73005d12af226
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--9uYvVGavsmIFaek3
+Content-Type: application/pgp-signature; name="signature.asc"
 
-<div dir=3D"ltr"><div>Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"l=
-tr" class=3D"gmail_attr">On Fri, Nov 19, 2021 at 3:04 PM &lt;<a href=3D"mai=
-lto:lstipakov@...277...">lstipakov@...277...</a>&gt; wrote:<br></div><block=
-quote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1=
-px solid rgb(204,204,204);padding-left:1ex">Ok, my idea was to fix only con=
-fig loading dir. Apparently this is not enough, so I=E2=80=99ll look into E=
-NGINESDIR too.</blockquote><div><br></div><div>What we need is a proper bui=
-ld that can be safely distributed. Whatever that takes. My understanding is=
- that if we have to get with prefix and OPENSSLDIR set to values recommende=
-d by OpenSSL on Windows or something appropriate for our own use and still =
-safe.=C2=A0</div><div><br></div><div>Default=C2=A0location of configs, engi=
-ne dlls, modules etc. depend on those two definitions -- we can&#39;t leave=
- them at arbitrary values that are not write protected or unusable.</div><d=
-iv><br></div><div>Selva</div></div></div>
+-----BEGIN PGP SIGNATURE-----
 
---00000000000089e73005d12af226--
+iQGcBAEBAgAGBQJhm1NVAAoJEB2Cnv7KVigSHi0L/1qo/7EWrAG1w0a5OrqjLeJC
+qR5dJM286PGjbO3iuJjZkH1fH/GAjsFFCEPH7pLpQ3XL2l8RRxtYUFAzPQNXos3a
+/vRWbUshC7/LZrFlDi8cpsyA7jzfpEv1qodDlxZFZTcnCktr3X6FxEgfNkteM/pE
+KJ+1+cfI4TSOEPgrEoSRsPW8co3JRE4wIsCNQEy9u0e31gH5P7DqH46dIrhUAKdo
+gA12XO+l0u7r+lbTioeZr1HGUulGyLI3l0eFuL9KToqlMHUgrh1yfGUekUpdroKj
+2epHEiw2QPMyMarGlzGPkGSXMmc7uu9v8t1BaulX3dp+nVBhj9RgQxWalQcE2QRI
+MHrFdbN9xHiFbAcf4OolkjN0wS3WyY+7ey7GnAfkDMzt5pHmNrnGuxYUrve4u4bC
+VOjlzlSGWJEj+W+AWBmHG3BeujnP+s2jyJViHsN9FpLCbYDPB6FqoLEhaF+/Izjn
+OCPTXawQz268PNUjyX0T4Uq8tfKEJ8+Glc+i8PB5vg==
+=UfXo
+-----END PGP SIGNATURE-----
+
+--9uYvVGavsmIFaek3--
 
