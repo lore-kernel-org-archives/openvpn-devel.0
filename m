@@ -1,22 +1,8 @@
-Date: Tue, 23 Nov 2021 07:52:19 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <YZyPoyofdC4M1CqU@...1296...>
-References: <YZf4ch72IZYhz5Tb@...1296...>
- <BF86C1C6-216E-4D87-9D88-B5D03F84159D@...277...>
- <CAKuzo_hrpBxCT8NDosi9AbMKFCpGkCF-cE_qYVtuL3Nh-C-pCw@...278...>
- <CAGyAFMUHqDObKdOPD37T-Qau+CXyb-oCQu-NLHYtJKnwhse80g@...278...>
- <CAKuzo_hv8H6zRbvCx_g680TNhHEvoP=OvB_FbGOZAy=jmHvPvQ@...278...>
- <CAGyAFMXpBRGHsTZQjRsr2ByoGx2G2isoqUwaZnwYX6NWWwZBpA@...278...>
- <CAKuzo_ggddGKgDewDWbjv3pNGAC-SK0dmD+Ay-c2HOHcVX5psA@...278...>
- <YZwNiBRC+V/E9OeI@...1296...>
- <CAKuzo_jicUu50x-CxGYE2DJjW0pwf06DCfMkhFn5vKz1AHCrcA@...278...>
+From: =?UTF-8?q?Fran=C3=A7ois=20Kooman?= <fkooman@...2318...>
+Date: Tue, 23 Nov 2021 09:37:58 +0100
+Message-Id: <20211123083758.15933-1-fkooman@...2318...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="ED1yeTBXu8l2QlxZ"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_jicUu50x-CxGYE2DJjW0pwf06DCfMkhFn5vKz1AHCrcA@...278...>
-Subject: Re: [Openvpn-devel] OpenSSL build on Windows: OPENSSLDIR and
- MODULESDIR
+Subject: [Openvpn-devel] [PATCH] implement net_gateway_ipv6 for --route-ipv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,71 +11,145 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>, Lev Stipakov <lstipakov@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---ED1yeTBXu8l2QlxZ
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+fix for #1161
 
-Hi,
+Signed-off-by: François Kooman <fkooman@...2318...>
+---
+ src/openvpn/options.c |  2 +-
+ src/openvpn/route.c   | 67 +++++++++++++++++++++++++++++++++++++++++--
+ src/openvpn/route.h   |  1 +
+ 3 files changed, 67 insertions(+), 3 deletions(-)
 
-On Mon, Nov 22, 2021 at 04:55:40PM -0500, Selva Nair wrote:
-> > (Also, the PR isn't exactly proceeding smoothly... no idea why the
-> > vcpkg maintainer does not want to see why Lev's PR is an improvement
-> > of the situation)
->=20
-> I didn't realize there is a pushback for the patch..May be he needs to see
-> https://github.com/openssl/openssl/issues/9520,
-> CVE-2019-5443 <https://nvd.nist.gov/vuln/detail/CVE-2019-5443> and our own
-> CVE?
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index cc3d9fa0..3d530d7a 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -6558,7 +6558,7 @@ add_option(struct options *options,
+                 msg(msglevel, "route-ipv6 parameter network/IP '%s' must be a valid address", p[1]);
+                 goto err;
+             }
+-            if (p[2] && !ipv6_addr_safe(p[2]))
++            if (p[2] && !ipv6_addr_safe(p[2]) && !ipv6_is_special_addr(p[2]))
+             {
+                 msg(msglevel, "route-ipv6 parameter gateway '%s' must be a valid address", p[2]);
+                 goto err;
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index fd1125ef..bd62b99a 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -287,6 +287,38 @@ get_special_addr(const struct route_list *rl,
+     return false;
+ }
+ 
++static bool
++ipv6_get_special_addr(const struct route_ipv6_list *rl,
++                 const char *string,
++                 struct in6_addr *out,
++                 bool *status)
++{
++    if (status)
++    {
++        *status = true;
++    }
++    if (!strcmp(string, "net_gateway_ipv6"))
++    {
++        if (rl)
++        {
++            if (rl->rgi6.flags & RGI_ADDR_DEFINED)
++            {
++                *out = rl->rgi6.gateway.addr_ipv6;
++            }
++            else
++            {
++                msg(M_INFO, PACKAGE_NAME " ROUTE: net_gateway_ipv6 undefined -- unable to get default gateway from system");
++                if (status)
++                {
++                    *status = false;
++                }
++            }
++        }
++        return true;
++    }
++    return false;
++}
++
+ bool
+ is_special_addr(const char *addr_str)
+ {
+@@ -300,6 +332,19 @@ is_special_addr(const char *addr_str)
+     }
+ }
+ 
++bool
++ipv6_is_special_addr(const char *addr_str)
++{
++    if (addr_str)
++    {
++        return ipv6_get_special_addr(NULL, addr_str, NULL, NULL);
++    }
++    else
++    {
++        return false;
++    }
++}
++
+ static bool
+ init_route(struct route_ipv4 *r,
+            struct addrinfo **network_list,
+@@ -438,6 +483,7 @@ init_route_ipv6(struct route_ipv6 *r6,
+                 const struct route_ipv6_option *r6o,
+                 const struct route_ipv6_list *rl6 )
+ {
++    bool status;
+     CLEAR(*r6);
+ 
+     if (!get_ipv6_addr( r6o->prefix, &r6->network, &r6->netbits, M_WARN ))
+@@ -448,9 +494,26 @@ init_route_ipv6(struct route_ipv6 *r6,
+     /* gateway */
+     if (is_route_parm_defined(r6o->gateway))
+     {
+-        if (inet_pton( AF_INET6, r6o->gateway, &r6->gateway ) != 1)
++        if (ipv6_get_special_addr(rl6, r6o->gateway, &r6->gateway, &status))
+         {
+-            msg( M_WARN, PACKAGE_NAME "ROUTE6: cannot parse gateway spec '%s'", r6o->gateway );
++            r6->metric = 1;
++#ifdef _WIN32
++            r6->adapter_index = rl6->rgi6.adapter_index;
++#else
++            r6->iface = rl6->rgi6.iface;
++#endif
++            r6->flags = RT_DEFINED | RT_METRIC_DEFINED;
++        }
++        else
++        {
++            if (inet_pton( AF_INET6, r6o->gateway, &r6->gateway ) != 1)
++            {
++                msg( M_WARN, PACKAGE_NAME "ROUTE6: cannot parse gateway spec '%s'", r6o->gateway );
++            }
++        }
++        if (!status)
++        {
++            goto fail;
+         }
+     }
+     else if (rl6->spec_flags & RTSA_REMOTE_ENDPOINT)
+diff --git a/src/openvpn/route.h b/src/openvpn/route.h
+index dc448c74..bbb8d2f8 100644
+--- a/src/openvpn/route.h
++++ b/src/openvpn/route.h
+@@ -320,6 +320,7 @@ void setenv_routes(struct env_set *es, const struct route_list *rl);
+ void setenv_routes_ipv6(struct env_set *es, const struct route_ipv6_list *rl6);
+ 
+ bool is_special_addr(const char *addr_str);
++bool ipv6_is_special_addr(const char *addr_str);
+ 
+ void get_default_gateway(struct route_gateway_info *rgi,
+                          openvpn_net_ctx_t *ctx);
+-- 
+2.33.1
 
-Not sure why.  Maybe it helps if you add another "pro" voice, with these
-references?
-
-But on the other hand, he's right about "what if a user installs $program
-to a different location?" - thus:
-
-> I have a patch setting OPENSSL_CONF etc using SetEnvironmentVariableW() b=
-ut
-> it needs more testing especially for OPENSSL_ENGINES and OPENSSL_MODULES =
-in
-> 3.0.
-> Is _putenv preferred?
-
-... this one sounds like a better way forward.
-
-I have no opinion on _putenv() vs. SetEnvironmentVariableW() - this is
-Windows API stuff, so whatever MS thinks we should be using...
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---ED1yeTBXu8l2QlxZ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJhnI+jAAoJEB2Cnv7KVigSoH0MAI9jSDwEhNR4KD8SZ78CDRKE
-vdQvWPNzXJRezt7R6AQAZm3IcTr+osoFGVBAcxF8j1+H6Cc2ABzmKV37+Ilwccyx
-Myr52YExUTcMlgoXWdxAZox8Mg00qOM8YHjAeslqcpWSsmnxdovrbPha+agfgmrm
-RcqVbFoN6m3srBH9UtVzoRsjTQQII66zoNQcH+QTPuvLA6vGOpXOk0t9/ubaHA1B
-HbayabCZhV9WzoEDT2HBZ2pyEcojwRx0U9Njl+wMXLa5K9zgGylKXs2xIfqToC3h
-15lfy9rpsj+XQhxPBGaVni/QsLNc807R0oYajLzOM9+xyz1oTtsRE1eEDNF5Luh4
-rIwv6r8l8BesnzrRRE94r0NxE+V70zNxd5lEOAMDDt5168oAL9n6ZLwLw5iZsmW9
-8q+cZCgt4MzMUKD+rLiK1laqfCc881WTihJslktDyK3cKLyPyBCtyQJ2wGdbouOe
-YNNZok3fKNmlBWbZ5ljJy3WJ9F5tqswG8FmheLNxUA==
-=kP+N
------END PGP SIGNATURE-----
-
---ED1yeTBXu8l2QlxZ--
 
