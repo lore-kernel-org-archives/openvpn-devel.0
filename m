@@ -1,14 +1,18 @@
+Date: Wed, 24 Nov 2021 16:40:55 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <YZ5dB7Im0c61YEsA@...1296...>
+References: <20210922095756.1929-1-chipitsine@...277...>
+ <4654662a-587a-ca90-6678-5c5ff71e9c66@...1227...>
+ <CAGyAFMWXBpvo-mxOkNsFrYR9oB9MVRcFEQ6SBs7rP0A6LeNu6Q@...278...>
+ <CAFHpkQECg=UVywGzXXBeA1V5R7M5zSr8QkCT=Mj7ThBFB5c+yg@...278...>
+ <CAGyAFMVXK16xNkBDbsb_VTC9qrYSAWTxnc=iOXOzUBGH_LqPhw@...278...>
 MIME-Version: 1.0
-References: <20211119015548.687-1-lstipakov@...277...>
- <202111241005.1AOA5Os7011522@...2054...>
- <CAGyAFMWf57YwLvvDERYmUv4427amuAkHro5c4vMHP-7huLoxaA@...278...>
-In-Reply-To: <CAGyAFMWf57YwLvvDERYmUv4427amuAkHro5c4vMHP-7huLoxaA@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 24 Nov 2021 09:53:52 -0500
-Message-ID: <CAKuzo_gAuKviVbFDJ6UUahnqXW1C8eLsBCDLvAR_Cz8fzd_ZGQ@...278...>
-Content-Type: multipart/alternative; boundary="000000000000ad53d805d18a0769"
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Load OpenSSL config on
- Windows from trusted location
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="kujcsmDfSJ3jGDAb"
+Content-Disposition: inline
+In-Reply-To: <CAGyAFMVXK16xNkBDbsb_VTC9qrYSAWTxnc=iOXOzUBGH_LqPhw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2] BUILD: enable CFG and Spectre
+ mitigation for MSVC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,49 +22,67 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Lev Stipakov <lstipakov@...277...>
-Cc: Gert Doering <gert@...1296...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: ???????? ?????????????? <chipitsine@...277...>, Gert Doering <gert@...1296...>, Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---000000000000ad53d805d18a0769
-Content-Type: text/plain; charset="UTF-8"
+--kujcsmDfSJ3jGDAb
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Wed, Nov 24, 2021 at 9:28 AM Lev Stipakov <lstipakov@...277...> wrote:
+On Wed, Nov 24, 2021 at 04:21:38PM +0200, Lev Stipakov wrote:
+> Since we're preparing the next 2.5 release, let's take this in. The
+> performance numbers, reported in different thread, look good.
 
-> Do we need this fix in openvpn-gui? It only (?) uses openssl to change
-> private key password, could this functionality be affected by config?
->
+Yes, sir!
 
-I do not know.. We do not call any functions that would lead to a config
-loading, so probably not required. Automatic crypto initialization does not
-load the config, nor does an explicit call to OPENSSL_init_crypto() unless
-instructed to. OPENSSL_init_ssl() loads the config unless explicitly
-disabled, but we do not use it in the GUI.
+commit dab73f90983c929645c74f1c1c045e175d5ca2b6 (HEAD -> release/2.5)
+Author: Ilya Shipitsin <chipitsine@...277...>
+Date:   Wed Sep 22 14:57:55 2021 +0500
 
-However, to be on the safe side, we could set these env vars if not already
-set by the user.
+    BUILD: enable CFG and Spectre mitigation for MSVC
+=20=20=20=20
+    found by BinSkim
+=20=20=20=20
+    Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
+    Acked-by: Lev Stipakov <lstipakov@...277...>
+    Message-Id: <20210922095756.1929-1-chipitsine@...277...>
+    URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/m=
+sg22870.html
+    Signed-off-by: Gert Doering <gert@...1296...>
+    (cherry picked from commit e80e36d75538abff0661b21392f541d946be6d29)
 
-Selva
 
---000000000000ad53d805d18a0769
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+... totally untested, but this is all MSVC build stuff, not code change...
 
-<div dir=3D"ltr"><div>Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"l=
-tr" class=3D"gmail_attr">On Wed, Nov 24, 2021 at 9:28 AM Lev Stipakov &lt;<=
-a href=3D"mailto:lstipakov@...277..." target=3D"_blank">lstipakov@...277...=
-</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:=
-0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">=
-Do we need this fix in openvpn-gui? It only (?) uses openssl to change<br>
-private key password, could this functionality be affected by config?<br></=
-blockquote><div><br></div><div>I do not know.. We do not call any functions=
- that would lead to a config loading, so probably not required. Automatic c=
-rypto initialization does not load the config, nor does an explicit call to=
- OPENSSL_init_crypto() unless instructed to. OPENSSL_init_ssl() loads the c=
-onfig unless explicitly disabled, but we do not use it in the GUI.=C2=A0</d=
-iv><div><br></div><div>However, to be on the safe side, we could set these =
-env vars if not already set by the user.=C2=A0</div><div><br></div><div>Sel=
-va</div></div></div>
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
---000000000000ad53d805d18a0769--
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--kujcsmDfSJ3jGDAb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJhnl0HAAoJEB2Cnv7KVigSTWEMAKtG+PymtVQEmryfUSbAMRdn
+/2ObSzVSU2L083YG4Drgofzy6wXamEKIus1PhlKpJ+rblnZGSC2fFzZJdWm8tSPF
+eO0hulj6slqOYujjW88ShH2sbfGaA6leppwiwxz0GaNN2nnXwjD5pAeGvnwNG9B9
+pa1pWZp6WWu3q7sauKNffv3rjjhwWl9qQ7nqb4lqENsGxI/gY/3djVtW1JFvopfz
+NSBcOBSHwZxj5OzhEPeIT3HA1/gZh4hqSD9F/g3UXDiyBUCMGNx/wvPZX5GT+lln
+dLhAl0LtMYySYf1J7SX4CcMjFtbF2YlgmEqK48XFEqn7gSWGtXpDLT+pmEP6Abz5
+Hkjk59I13+PE3nAgt62ZT8xMm60bd8xGDtj/iRrpnDtch9vBAfIKifXPOjuyNsUv
+pMrsU1yuBf3pbqLQtaSod3mXMQD9hNJfYeteoIxeg+VOJCicVELjUKngVA90LXeD
+RUOJGZzMV2XYe5GVRki9H6WqETZwl2SJH/CYfDyA5g==
+=zDI0
+-----END PGP SIGNATURE-----
+
+--kujcsmDfSJ3jGDAb--
 
