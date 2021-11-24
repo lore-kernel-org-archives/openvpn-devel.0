@@ -1,8 +1,10 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 24 Nov 2021 18:03:47 +0200
-Message-Id: <20211124160347.1245-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH] ring_buffer.h: fix GCC warning about unused
- function
+Date: Wed, 24 Nov 2021 17:22:23 +0100 (CET)
+Message-Id: <202111241622.1AOGMNsf017889@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20211124160347.1245-1-lstipakov@...277...>
+References: <20211124160347.1245-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: ring_buffer.h: fix GCC warning
+ about unused function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,40 +15,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+Acked-by: Gert Doering <gert@...1296...>
 
-With register_ring_buffers() being declared as "static" in header file,
-all translation units, which include that header, got a copy of that function.
-This causes GCC warning
+Thanks.  (Found while looking at the compiler warnings reviewing
+the OpenSSL config loading patch).  Test built on MinGW, warnings gone.
 
-  warning: "register_ring_buffers" defined but not used [-Wunused-function]
+Your patch has been applied to the master branch.
 
-when compiling C files which include header, but don't use function.
+commit 71371f04afa6eba3ea02a67590a70e018cf203e5 (master)
+commit 36b3129d47a6dbfcd43ff4773c69618a28eb48bc (release/2.5)
+Author: Lev Stipakov
+Date:   Wed Nov 24 18:03:47 2021 +0200
 
-Add "inline" keyword to silence this warning.
+     ring_buffer.h: fix GCC warning about unused function
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- src/openvpn/ring_buffer.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20211124160347.1245-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23260.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-diff --git a/src/openvpn/ring_buffer.h b/src/openvpn/ring_buffer.h
-index 77579e3f..9661ceb3 100644
---- a/src/openvpn/ring_buffer.h
-+++ b/src/openvpn/ring_buffer.h
-@@ -94,7 +94,7 @@ struct TUN_PACKET
-  *                            that data has been written to receive ring
-  * @return                    true if registration is successful, false otherwise - use GetLastError()
-  */
--static bool
-+static inline bool
- register_ring_buffers(HANDLE device,
-                       struct tun_ring *send_ring,
-                       struct tun_ring *receive_ring,
--- 
-2.23.0.windows.1
+
+--
+kind regards,
+
+Gert Doering
 
 
