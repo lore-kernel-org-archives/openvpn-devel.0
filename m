@@ -1,8 +1,10 @@
-MIME-Version: 1.0
-From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 24 Nov 2021 12:03:37 +0200
-Message-ID: <CAGyAFMUGzo9HUF9WyhYen04_K2f-29ME86oF+VBxqftoMp2Z5w@...278...>
-Subject: [Openvpn-devel] Dropping vcpkg overlay triplets
+Date: Wed, 24 Nov 2021 11:05:24 +0100 (CET)
+Message-Id: <202111241005.1AOA5Os7011522@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20211119015548.687-1-lstipakov@...277...>
+References: <20211119015548.687-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Load OpenSSL config on Windows
+ from trusted location
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,31 +13,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Your patch has been applied to the master and release/2.5 branch
+(I consider this a bugfix since the "do not load config!" CVE patch
+unintendedly broke functionality for people)
 
-In our codebase we have vcpkg overlay triplets:
+As instructed I have changed "* " to " *" according to style :-), and
+removed the double declaration in buffer.h - the latter is something
+on the edge of "can I do that at commit time?" but in this case it's
+"the very same declaration", "tun.c and win32.c do include win32.h",
+so easy enough.
 
-  openvpn\contrib\vcpkg-triplets
-    arm64-windows-ovpn.cmake
-    x64-windows-ovpn.cmake
-    x86-windows-ovpn.cmake
+I did not change the "static" bit.
 
-They exist only to support static linking of lz4. All other libraries
-(lzo, libss, libcrypto, libpkcs11-helper) are linked dynamically. The
-reason for static linking in MSVC is to maintain compatibility with
-the generic build system, which links lz4 statically.
+I have not tested this "for real", just did a test compile of master
+and release/2.5 on MinGW.  But the code change looks good, and it does
+not break compilation, even with my changes :-)
 
-Since we don't use the generic build system for building releases, we
-could drop --enable-lz4 option support from it and link lz4 in MSVC
-dynamically. This would allow us to simplify the MSVC build system,
-get rid of custom triples and remove some code.
+Added the trac reference to #1296 (thanks Lev for digging it up).
 
-Thoughts?
+commit 23e6aaef149bd31a7e80af28ee1e3658d2810d4f (master)
+commit f911b3f69b0a8296918a06d02eb5144bb4cd8a06 (release/2.5)
+Author: Lev Stipakov
+Date:   Fri Nov 19 03:55:48 2021 +0200
 
--- 
--Lev
+     Load OpenSSL config on Windows from trusted location
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <20211119015548.687-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23248.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
