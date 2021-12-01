@@ -1,10 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed,  1 Dec 2021 19:07:24 +0100
-Message-Id: <20211201180727.2496903-6-arne@...1227...>
+Date: Wed,  1 Dec 2021 19:07:21 +0100
+Message-Id: <20211201180727.2496903-3-arne@...1227...>
 In-Reply-To: <20211201180727.2496903-1-arne@...1227...>
 References: <20211201180727.2496903-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 6/9] Remove key_type->hmac_length
+Subject: [Openvpn-devel] [PATCH 3/9] Remove cipher_ctx_get_cipher_kt and
+ replace with direct context calls
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,348 +18,376 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This field is only set once with md_kt_size and then only read. Remove this
-field and replace the read accesses with md_kt_size.
+We currently have a number of calls that fetch the cipher_kt from a
+cipher_ctx to then do a query on the cipher_kt. Directly fetching the
+desired property from the context is cleaner and helps for using the
+proper APIs with OpenSSL 3.0 and mbed TLS 3.0
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/auth_token.c               |  2 --
- src/openvpn/crypto.c                   | 35 +++++++++++++++-----------
- src/openvpn/crypto.h                   |  1 -
- src/openvpn/crypto_backend.h           |  4 +--
- src/openvpn/crypto_mbedtls.c           | 14 ++++++++---
- src/openvpn/crypto_openssl.c           |  8 +++---
- src/openvpn/init.c                     |  2 --
- src/openvpn/ntlm.c                     |  8 +++---
- src/openvpn/openvpn.h                  |  2 +-
- src/openvpn/tls_crypt.c                |  2 --
- tests/unit_tests/openvpn/test_crypto.c |  2 +-
- 11 files changed, 42 insertions(+), 38 deletions(-)
+ src/openvpn/crypto.c         | 36 ++++++++---------------
+ src/openvpn/crypto_backend.h | 29 ++++++++++++++----
+ src/openvpn/crypto_mbedtls.c | 21 +++++++++++--
+ src/openvpn/crypto_openssl.c | 57 ++++++++++++++++++++++++++++++++++--
+ src/openvpn/openssl_compat.h |  1 +
+ src/openvpn/ssl.c            |  8 ++---
+ src/openvpn/ssl_ncp.c        | 18 +++++-------
+ 7 files changed, 119 insertions(+), 51 deletions(-)
 
-diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
-index c6c37ea86..5d5cea7f6 100644
---- a/src/openvpn/auth_token.c
-+++ b/src/openvpn/auth_token.c
-@@ -44,8 +44,6 @@ auth_token_kt(void)
-         return (struct key_type) { 0 };
-     }
- 
--    kt.hmac_length = md_kt_size(kt.digest);
--
-     return kt;
- }
- 
 diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index c85a75319..fd730668f 100644
+index 270d83c56..27ed1402c 100644
 --- a/src/openvpn/crypto.c
 +++ b/src/openvpn/crypto.c
-@@ -693,7 +693,7 @@ crypto_adjust_frame_parameters(struct frame *frame,
-         crypto_overhead += cipher_kt_block_size(kt->cipher);
-     }
+@@ -68,12 +68,10 @@ openvpn_encrypt_aead(struct buffer *buf, struct buffer work,
+     int outlen = 0;
+     const struct key_ctx *ctx = &opt->key_ctx_bi.encrypt;
+     uint8_t *mac_out = NULL;
+-    const cipher_kt_t *cipher_kt = cipher_ctx_get_cipher_kt(ctx->cipher);
+     const int mac_len = OPENVPN_AEAD_TAG_LENGTH;
  
--    crypto_overhead += kt->hmac_length;
-+    crypto_overhead += md_kt_size(kt->digest);
+     /* IV, packet-ID and implicit IV required for this mode. */
+     ASSERT(ctx->cipher);
+-    ASSERT(cipher_kt_mode_aead(cipher_kt));
+     ASSERT(packet_id_initialized(&opt->packet_id));
  
-     frame_add_to_extra_frame(frame, crypto_overhead);
- 
-@@ -780,9 +780,9 @@ init_key_type(struct key_type *kt, const char *ciphername,
-         if (!aead_cipher) /* Ignore auth for AEAD ciphers */
+     gc_init(&gc);
+@@ -171,7 +169,6 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
          {
-             kt->digest = md_kt_get(authname);
--            kt->hmac_length = md_kt_size(kt->digest);
-+            int hmac_length = md_kt_size(kt->digest);
+             uint8_t iv_buf[OPENVPN_MAX_IV_LENGTH] = {0};
+             const int iv_size = cipher_ctx_iv_length(ctx->cipher);
+-            const cipher_kt_t *cipher_kt = cipher_ctx_get_cipher_kt(ctx->cipher);
+             int outlen;
  
--            if (OPENVPN_MAX_HMAC_SIZE < kt->hmac_length)
-+            if (OPENVPN_MAX_HMAC_SIZE < hmac_length)
-             {
-                 msg(M_FATAL, "HMAC '%s' not allowed: digest size too big.", authname);
+             /* Reserve space for HMAC */
+@@ -182,7 +179,7 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
+                 hmac_start = BEND(&work);
              }
-@@ -828,17 +828,17 @@ init_key_ctx(struct key_ctx *ctx, const struct key *key,
-              cipher_kt_iv_size(kt->cipher));
-         warn_insecure_key_type(ciphername, kt->cipher);
-     }
--    if (kt->digest && kt->hmac_length > 0)
-+    if (kt->digest)
-     {
-         ctx->hmac = hmac_ctx_new();
--        hmac_ctx_init(ctx->hmac, key->hmac, kt->hmac_length, kt->digest);
-+        hmac_ctx_init(ctx->hmac, key->hmac, kt->digest);
  
-         msg(D_HANDSHAKE,
-             "%s: Using %d bit message hash '%s' for HMAC authentication",
-             prefix, md_kt_size(kt->digest) * 8, md_kt_name(kt->digest));
- 
-         dmsg(D_SHOW_KEYS, "%s: HMAC KEY: %s", prefix,
--             format_hex(key->hmac, kt->hmac_length, 0, &gc));
-+             format_hex(key->hmac, md_kt_size(kt->digest), 0, &gc));
- 
-         dmsg(D_CRYPTO_DEBUG, "%s: HMAC size=%d block_size=%d",
-              prefix,
-@@ -958,9 +958,11 @@ generate_key_random(struct key *key, const struct key_type *kt)
-         {
-             cipher_len = cipher_kt_key_size(kt->cipher);
- 
--            if (kt->digest && kt->hmac_length > 0 && kt->hmac_length <= hmac_len)
-+            int kt_hmac_length = md_kt_size(kt->digest);
-+
-+            if (kt->digest && kt_hmac_length > 0 && kt_hmac_length <= hmac_len)
+-            if (cipher_kt_mode_cbc(cipher_kt))
++            if (cipher_ctx_mode_cbc(ctx->cipher))
              {
--                hmac_len = kt->hmac_length;
-+                hmac_len = kt_hmac_length;
+                 /* generate pseudo-random IV */
+                 prng_bytes(iv_buf, iv_size);
+@@ -197,7 +194,7 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
+                     goto err;
+                 }
              }
+-            else if (cipher_kt_mode_ofb_cfb(cipher_kt))
++            else if (cipher_ctx_mode_ofb_cfb(ctx->cipher))
+             {
+                 struct buffer b;
+ 
+@@ -245,7 +242,7 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
+             ASSERT(buf_inc_len(&work, outlen));
+ 
+             /* For all CBC mode ciphers, check the last block is complete */
+-            ASSERT(cipher_kt_mode(cipher_kt) != OPENVPN_MODE_CBC
++            ASSERT(cipher_ctx_mode(ctx->cipher) != OPENVPN_MODE_CBC
+                    || outlen == iv_size);
          }
-         if (!rand_bytes(key->cipher, cipher_len)
-@@ -993,13 +995,13 @@ key2_print(const struct key2 *k,
-          format_hex(k->keys[0].cipher, cipher_kt_key_size(kt->cipher), 0, &gc));
-     dmsg(D_SHOW_KEY_SOURCE, "%s (hmac): %s",
-          prefix0,
--         format_hex(k->keys[0].hmac, kt->hmac_length, 0, &gc));
-+         format_hex(k->keys[0].hmac, md_kt_size(kt->digest), 0, &gc));
-     dmsg(D_SHOW_KEY_SOURCE, "%s (cipher): %s",
-          prefix1,
-          format_hex(k->keys[1].cipher, cipher_kt_key_size(kt->cipher), 0, &gc));
-     dmsg(D_SHOW_KEY_SOURCE, "%s (hmac): %s",
-          prefix1,
--         format_hex(k->keys[1].hmac, kt->hmac_length, 0, &gc));
-+         format_hex(k->keys[1].hmac, md_kt_size(kt->digest), 0, &gc));
-     gc_free(&gc);
- }
- 
-@@ -1527,14 +1529,17 @@ write_key(const struct key *key, const struct key_type *kt,
-           struct buffer *buf)
+         else                            /* No Encryption */
+@@ -301,10 +298,7 @@ openvpn_encrypt(struct buffer *buf, struct buffer work,
  {
-     ASSERT(cipher_kt_key_size(kt->cipher) <= MAX_CIPHER_KEY_LENGTH
--           && kt->hmac_length <= MAX_HMAC_KEY_LENGTH);
-+           && md_kt_size(kt->digest) <= MAX_HMAC_KEY_LENGTH);
+     if (buf->len > 0 && opt)
+     {
+-        const cipher_kt_t *cipher_kt =
+-            cipher_ctx_get_cipher_kt(opt->key_ctx_bi.encrypt.cipher);
+-
+-        if (cipher_kt_mode_aead(cipher_kt))
++        if (cipher_ctx_mode_aead(opt->key_ctx_bi.encrypt.cipher))
+         {
+             openvpn_encrypt_aead(buf, work, opt);
+         }
+@@ -360,7 +354,6 @@ openvpn_decrypt_aead(struct buffer *buf, struct buffer work,
+     static const char error_prefix[] = "AEAD Decrypt error";
+     struct packet_id_net pin = { 0 };
+     const struct key_ctx *ctx = &opt->key_ctx_bi.decrypt;
+-    const cipher_kt_t *cipher_kt = cipher_ctx_get_cipher_kt(ctx->cipher);
+     uint8_t *tag_ptr = NULL;
+     int outlen;
+     struct gc_arena gc;
+@@ -371,7 +364,6 @@ openvpn_decrypt_aead(struct buffer *buf, struct buffer work,
+     ASSERT(frame);
+     ASSERT(buf->len > 0);
+     ASSERT(ctx->cipher);
+-    ASSERT(cipher_kt_mode_aead(cipher_kt));
  
-     const uint8_t cipher_length = cipher_kt_key_size(kt->cipher);
-     if (!buf_write(buf, &cipher_length, 1))
-     {
-         return false;
-     }
--    if (!buf_write(buf, &kt->hmac_length, 1))
-+
-+    uint8_t hmac_length = md_kt_size(kt->digest);
-+
-+    if (!buf_write(buf, &hmac_length, 1))
-     {
-         return false;
-     }
-@@ -1542,7 +1547,7 @@ write_key(const struct key *key, const struct key_type *kt,
-     {
-         return false;
-     }
--    if (!buf_write(buf, key->hmac, kt->hmac_length))
-+    if (!buf_write(buf, key->hmac, hmac_length))
-     {
-         return false;
-     }
-@@ -1572,7 +1577,7 @@ read_key(struct key *key, const struct key_type *kt, struct buffer *buf)
-         goto read_err;
-     }
+     dmsg(D_PACKET_CONTENT, "DECRYPT FROM: %s",
+          format_hex(BPTR(buf), BLEN(buf), 80, &gc));
+@@ -537,7 +529,6 @@ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
+         if (ctx->cipher)
+         {
+             const int iv_size = cipher_ctx_iv_length(ctx->cipher);
+-            const cipher_kt_t *cipher_kt = cipher_ctx_get_cipher_kt(ctx->cipher);
+             uint8_t iv_buf[OPENVPN_MAX_IV_LENGTH] = { 0 };
+             int outlen;
  
--    if (cipher_length != cipher_kt_key_size(kt->cipher) || hmac_length != kt->hmac_length)
-+    if (cipher_length != cipher_kt_key_size(kt->cipher) || hmac_length != md_kt_size(kt->digest))
-     {
-         goto key_len_err;
-     }
-@@ -1595,7 +1600,7 @@ read_err:
- key_len_err:
-     msg(D_TLS_ERRORS,
-         "TLS Error: key length mismatch, local cipher/hmac %d/%d, remote cipher/hmac %d/%d",
--        cipher_kt_key_size(kt->cipher), kt->hmac_length, cipher_length, hmac_length);
-+        cipher_kt_key_size(kt->cipher), md_kt_size(kt->digest), cipher_length, hmac_length);
-     return 0;
- }
+@@ -589,7 +580,7 @@ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
  
-diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index 8998a74f9..1e2ca3cb0 100644
---- a/src/openvpn/crypto.h
-+++ b/src/openvpn/crypto.h
-@@ -138,7 +138,6 @@ struct sha256_digest {
-  */
- struct key_type
- {
--    uint8_t hmac_length;        /**< HMAC length, in bytes */
-     const cipher_kt_t *cipher;  /**< Cipher static parameters */
-     const md_kt_t *digest;      /**< Message digest static parameters */
- };
+             /* Get packet ID from plaintext buffer or IV, depending on cipher mode */
+             {
+-                if (cipher_kt_mode_cbc(cipher_kt))
++                if (cipher_ctx_mode_cbc(ctx->cipher))
+                 {
+                     if (packet_id_initialized(&opt->packet_id))
+                     {
+@@ -600,7 +591,7 @@ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
+                         have_pin = true;
+                     }
+                 }
+-                else if (cipher_kt_mode_ofb_cfb(cipher_kt))
++                else if (cipher_ctx_mode_ofb_cfb(ctx->cipher))
+                 {
+                     struct buffer b;
+ 
+@@ -660,8 +651,7 @@ openvpn_decrypt(struct buffer *buf, struct buffer work,
+ 
+     if (buf->len > 0 && opt)
+     {
+-        const struct key_ctx *ctx = &opt->key_ctx_bi.decrypt;
+-        if (cipher_kt_mode_aead(cipher_ctx_get_cipher_kt(ctx->cipher)))
++        if (cipher_ctx_mode_aead(opt->key_ctx_bi.decrypt.cipher))
+         {
+             ret = openvpn_decrypt_aead(buf, work, opt, frame, ad_start);
+         }
+@@ -1036,14 +1026,12 @@ test_crypto(struct crypto_options *co, struct frame *frame)
+ 
+     /* init implicit IV */
+     {
+-        const cipher_kt_t *cipher =
+-            cipher_ctx_get_cipher_kt(co->key_ctx_bi.encrypt.cipher);
+-
+-        if (cipher_kt_mode_aead(cipher))
++        cipher_ctx_t *cipher = co->key_ctx_bi.encrypt.cipher;
++        if (cipher_ctx_mode_aead(cipher))
+         {
+-            size_t impl_iv_len = cipher_kt_iv_size(cipher) - sizeof(packet_id_type);
+-            ASSERT(cipher_kt_iv_size(cipher) <= OPENVPN_MAX_IV_LENGTH);
+-            ASSERT(cipher_kt_iv_size(cipher) >= OPENVPN_AEAD_MIN_IV_LEN);
++            size_t impl_iv_len = cipher_ctx_iv_length(cipher) - sizeof(packet_id_type);
++            ASSERT(cipher_ctx_iv_length(cipher) <= OPENVPN_MAX_IV_LENGTH);
++            ASSERT(cipher_ctx_iv_length(cipher) >= OPENVPN_AEAD_MIN_IV_LEN);
+ 
+             /* Generate dummy implicit IV */
+             ASSERT(rand_bytes(co->key_ctx_bi.encrypt.implicit_iv,
 diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index d4dd93c3a..cc3e40400 100644
+index 7c1f123e4..925d1db37 100644
 --- a/src/openvpn/crypto_backend.h
 +++ b/src/openvpn/crypto_backend.h
-@@ -616,12 +616,10 @@ void hmac_ctx_free(hmac_ctx_t *ctx);
+@@ -338,7 +338,7 @@ void cipher_ctx_init(cipher_ctx_t *ctx, const uint8_t *key, int key_len,
+  * @param ctx           The cipher's context
   *
-  * @param ctx           HMAC context to initialise
-  * @param key           The key to use for the HMAC
-- * @param key_len       The key length to use
-  * @param kt            Static message digest parameters
-  *
+  * @return              Size of the IV, in bytes, or \c 0 if the cipher does not
+- *                      use an IV or ctx was NULL.
++ *                      use an IV.
   */
--void hmac_ctx_init(hmac_ctx_t *ctx, const uint8_t *key, int key_length,
--                   const md_kt_t *kt);
-+void hmac_ctx_init(hmac_ctx_t *ctx, const uint8_t *key, const md_kt_t *kt);
+ int cipher_ctx_iv_length(const cipher_ctx_t *ctx);
  
- /*
-  * Free the given HMAC context.
+@@ -371,14 +371,31 @@ int cipher_ctx_block_size(const cipher_ctx_t *ctx);
+ int cipher_ctx_mode(const cipher_ctx_t *ctx);
+ 
+ /**
+- * Returns the static cipher parameters for this context.
++ * Check if the supplied cipher is a supported CBC mode cipher.
++ *
++ * @param ctx           Cipher's context. May not be NULL.
++ *
++ * @return              true iff the cipher is a CBC mode cipher.
++ */
++bool cipher_ctx_mode_cbc(const cipher_ctx_t *ctx);
++
++/**
++ * Check if the supplied cipher is a supported OFB or CFB mode cipher.
++ *
++ * @param ctx           Cipher's context. May not be NULL.
++ *
++ * @return              true iff the cipher is a OFB or CFB mode cipher.
++ */
++bool cipher_ctx_mode_ofb_cfb(const cipher_ctx_t *ctx);
++
++/**
++ * Check if the supplied cipher is a supported AEAD mode cipher.
+  *
+- * @param ctx           Cipher's context.
++ * @param ctx           Cipher's context. May not be NULL.
+  *
+- * @return              Static cipher parameters for the supplied context, or
+- *                      NULL if unable to determine cipher parameters.
++ * @return              true iff the cipher is a AEAD mode cipher.
+  */
+-const cipher_kt_t *cipher_ctx_get_cipher_kt(const cipher_ctx_t *ctx);
++bool cipher_ctx_mode_aead(const cipher_ctx_t *ctx);
+ 
+ /**
+  * Resets the given cipher context, setting the IV to the specified value.
 diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index feb97bc94..8acf0e184 100644
+index 893a4ab02..566baadde 100644
 --- a/src/openvpn/crypto_mbedtls.c
 +++ b/src/openvpn/crypto_mbedtls.c
-@@ -867,12 +867,13 @@ hmac_ctx_free(mbedtls_md_context_t *ctx)
+@@ -591,10 +591,25 @@ cipher_ctx_mode(const mbedtls_cipher_context_t *ctx)
+     return cipher_kt_mode(ctx->cipher_info);
  }
  
- void
--hmac_ctx_init(mbedtls_md_context_t *ctx, const uint8_t *key, int key_len,
-+hmac_ctx_init(mbedtls_md_context_t *ctx, const uint8_t *key,
-               const mbedtls_md_info_t *kt)
+-const cipher_kt_t *
+-cipher_ctx_get_cipher_kt(const cipher_ctx_t *ctx)
++bool cipher_ctx_mode_cbc(const cipher_ctx_t *ctx)
  {
-     ASSERT(NULL != kt && NULL != ctx);
- 
-     mbedtls_md_init(ctx);
-+    int key_len = mbedtls_md_get_size(kt);
-     ASSERT(0 == mbedtls_md_setup(ctx, kt, 1));
-     ASSERT(0 == mbedtls_md_hmac_starts(ctx, key, key_len));
- 
-@@ -978,8 +979,15 @@ tls1_P_hash(const md_kt_t *md_kt, const uint8_t *sec, int sec_len,
-     int chunk = md_kt_size(md_kt);
-     unsigned int A1_len = md_kt_size(md_kt);
- 
--    hmac_ctx_init(ctx, sec, sec_len, md_kt);
--    hmac_ctx_init(ctx_tmp, sec, sec_len, md_kt);
-+    /* This is the only place where we init an HMAC with a key that is not
-+     * equal to its size, therefore we init the hmac ctx manually here */
-+    mbedtls_md_init(ctx);
-+    ASSERT(0 == mbedtls_md_setup(ctx, md_kt, 1));
-+    ASSERT(0 == mbedtls_md_hmac_starts(ctx, sec, sec_len));
+-    return ctx ? ctx->cipher_info : NULL;
++    return ctx && cipher_ctx_mode(ctx) == OPENVPN_MODE_CBC;
++}
 +
-+    mbedtls_md_init(ctx_tmp);
-+    ASSERT(0 == mbedtls_md_setup(ctx_tmp, md_kt, 1));
-+    ASSERT(0 == mbedtls_md_hmac_starts(ctx_tmp, sec, sec_len));
++
++bool cipher_ctx_mode_ofb_cfb(const cipher_ctx_t *ctx)
++{
++    return ctx && (cipher_ctx_mode(ctx) == OPENVPN_MODE_OFB
++        || cipher_ctx_mode(ctx) == OPENVPN_MODE_CFB);
++}
++
++bool cipher_ctx_mode_aead(const cipher_ctx_t *ctx)
++{
++    return ctx && (cipher_ctx_mode(ctx) == OPENVPN_MODE_GCM
++#ifdef MBEDTLS_CHACHAPOLY_C
++        || cipher_ctx_mode(ctx) == MBEDTLS_MODE_CHACHAPOLY
++#endif
++    );
+ }
  
-     hmac_ctx_update(ctx,seed,seed_len);
-     hmac_ctx_final(ctx, A1);
+ int
 diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 8b53b2ce8..e28e2f43a 100644
+index 3044ea944..9d6c7c807 100644
 --- a/src/openvpn/crypto_openssl.c
 +++ b/src/openvpn/crypto_openssl.c
-@@ -1079,11 +1079,11 @@ hmac_ctx_free(HMAC_CTX *ctx)
+@@ -797,10 +797,61 @@ cipher_ctx_mode(const EVP_CIPHER_CTX *ctx)
+     return EVP_CIPHER_CTX_mode(ctx);
  }
  
- void
--hmac_ctx_init(HMAC_CTX *ctx, const uint8_t *key, int key_len,
--              const EVP_MD *kt)
-+hmac_ctx_init(HMAC_CTX *ctx, const uint8_t *key, const EVP_MD *kt)
+-const cipher_kt_t *
+-cipher_ctx_get_cipher_kt(const cipher_ctx_t *ctx)
++
++bool
++cipher_ctx_mode_cbc(const cipher_ctx_t *ctx)
++{
++    if (!ctx)
++    {
++        return false;
++    }
++
++    int flags = EVP_CIPHER_CTX_flags(ctx);
++    int mode = EVP_CIPHER_CTX_mode(ctx);
++
++    return mode == EVP_CIPH_CBC_MODE
++        /* Exclude AEAD cipher modes, they require a different API */
++#ifdef EVP_CIPH_FLAG_CTS
++        && !(flags & EVP_CIPH_FLAG_CTS)
++#endif
++        && !(flags & EVP_CIPH_FLAG_AEAD_CIPHER);
++}
++
++bool
++cipher_ctx_mode_ofb_cfb(const cipher_ctx_t *ctx)
++{
++    if (!ctx)
++    {
++        return false;
++    }
++
++    int mode = EVP_CIPHER_CTX_get_mode(ctx);
++
++    return (mode == EVP_CIPH_OFB_MODE || mode == EVP_CIPH_CFB_MODE)
++        /* Exclude AEAD cipher modes, they require a different API */
++        && !(EVP_CIPHER_CTX_flags(ctx) & EVP_CIPH_FLAG_AEAD_CIPHER);
++}
++
++bool
++cipher_ctx_mode_aead(const cipher_ctx_t *ctx)
  {
-     ASSERT(NULL != kt && NULL != ctx);
- 
-+    int key_len = EVP_MD_size(kt);
-     HMAC_CTX_reset(ctx);
-     if (!HMAC_Init_ex(ctx, key, key_len, kt, NULL))
-     {
-@@ -1152,10 +1152,10 @@ hmac_ctx_free(hmac_ctx_t *ctx)
+-    return ctx ? EVP_CIPHER_CTX_cipher(ctx) : NULL;
++    if (ctx)
++    {
++        int flags = EVP_CIPHER_CTX_flags(ctx);
++        if (flags & EVP_CIPH_FLAG_AEAD_CIPHER)
++        {
++            return true;
++        }
++
++#if defined(NID_chacha20_poly1305) && OPENSSL_VERSION_NUMBER < 0x30000000L
++        if (EVP_CIPHER_CTX_nid(ctx) == NID_chacha20_poly1305)
++        {
++            return true;
++        }
++#endif
++    }
++
++    return false;
  }
  
- void
--hmac_ctx_init(hmac_ctx_t *ctx, const uint8_t *key, int key_len,
--              const EVP_MD *kt)
-+hmac_ctx_init(hmac_ctx_t *ctx, const uint8_t *key, const EVP_MD *kt)
- {
-     ASSERT(NULL != kt && NULL != ctx && ctx->ctx != NULL);
-+    int key_len = EVP_MD_size(kt);
-     ASSERT(key_len <= EVP_MAX_KEY_LENGTH);
  
-     /* We need to make a copy of the key since the OSSL parameters
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 0645a08df..4fee7f49f 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2661,8 +2661,6 @@ do_init_tls_wrap_key(struct context *c)
-         if (!streq(options->authname, "none"))
-         {
-             c->c1.ks.tls_auth_key_type.digest = md_kt_get(options->authname);
--            c->c1.ks.tls_auth_key_type.hmac_length =
--                md_kt_size(c->c1.ks.tls_auth_key_type.digest);
-         }
-         else
-         {
-diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
-index 28e68ded5..8fc9fbd6a 100644
---- a/src/openvpn/ntlm.c
-+++ b/src/openvpn/ntlm.c
-@@ -81,13 +81,13 @@ gen_md4_hash(const uint8_t *data, int data_len, uint8_t *result)
- }
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index cbd7fd1d2..54fd5d60f 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -757,6 +757,7 @@ int EVP_PKEY_get_group_name(EVP_PKEY *pkey, char *gname, size_t gname_sz,
  
+ #if OPENSSL_VERSION_NUMBER < 0x30000000L
+ #define EVP_MD_get0_name EVP_MD_name
++#define EVP_CIPHER_CTX_get_mode EVP_CIPHER_CTX_mode
+ 
+ /* Mimics the functions but only when the default context without
+  * options is chosen */
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index ad3e08274..3de229e39 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1803,14 +1803,12 @@ exit:
  static void
--gen_hmac_md5(const uint8_t *data, int data_len, const uint8_t *key, int key_len,
-+gen_hmac_md5(const uint8_t *data, int data_len, const uint8_t *key,
-              uint8_t *result)
+ key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_len)
  {
-     const md_kt_t *md5_kt = md_kt_get("MD5");
-     hmac_ctx_t *hmac_ctx = hmac_ctx_new();
- 
--    hmac_ctx_init(hmac_ctx, key, key_len, md5_kt);
-+    hmac_ctx_init(hmac_ctx, key, md5_kt);
-     hmac_ctx_update(hmac_ctx, data, data_len);
-     hmac_ctx_final(hmac_ctx, result);
-     hmac_ctx_cleanup(hmac_ctx);
-@@ -287,7 +287,7 @@ ntlm_phase_3(const struct http_proxy_info *p, const char *phase_2,
-         }
-         unicodize(userdomain_u, userdomain);
-         gen_hmac_md5((uint8_t *)userdomain_u, 2 * strlen(userdomain), md4_hash,
--                     MD5_DIGEST_LENGTH, ntlmv2_hash);
-+                     ntlmv2_hash);
- 
-         /* NTLMv2 Blob */
-         memset(ntlmv2_blob, 0, 128);                        /* Clear blob buffer */
-@@ -352,7 +352,7 @@ ntlm_phase_3(const struct http_proxy_info *p, const char *phase_2,
- 
-         /* hmac-md5 */
-         gen_hmac_md5(&ntlmv2_response[8], ntlmv2_blob_size + 8, ntlmv2_hash,
--                     MD5_DIGEST_LENGTH, ntlmv2_hmacmd5);
-+                     ntlmv2_hmacmd5);
- 
-         /* Add hmac-md5 result to the blob.
-          * Note: This overwrites challenge previously written at
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index df6bc9df2..84477837e 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -526,7 +526,7 @@ struct context
- #define PROTO_DUMP(buf, gc) protocol_dump((buf), \
-                                           PROTO_DUMP_FLAGS   \
-                                           |(c->c2.tls_multi ? PD_TLS : 0)   \
--                                          |(c->options.tls_auth_file ? c->c1.ks.key_type.hmac_length : 0), \
-+                                          |(c->options.tls_auth_file ? md_kt_size(c->c1.ks.key_type.digest) : 0), \
-                                           gc)
- 
- #define CIPHER_ENABLED(c) (c->c1.ks.key_type.cipher != NULL)
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 8403363e2..80ed9684e 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -65,8 +65,6 @@ tls_crypt_kt(void)
-         return (struct key_type) { 0 };
-     }
- 
--    kt.hmac_length = md_kt_size(kt.digest);
+-    const cipher_kt_t *cipher_kt = cipher_ctx_get_cipher_kt(ctx->cipher);
 -
-     return kt;
- }
+     /* Only use implicit IV in AEAD cipher mode, where HMAC key is not used */
+-    if (cipher_kt_mode_aead(cipher_kt))
++    if (cipher_ctx_mode_aead(ctx->cipher))
+     {
+         size_t impl_iv_len = 0;
+-        ASSERT(cipher_kt_iv_size(cipher_kt) >= OPENVPN_AEAD_MIN_IV_LEN);
+-        impl_iv_len = cipher_kt_iv_size(cipher_kt) - sizeof(packet_id_type);
++        ASSERT(cipher_ctx_iv_length(ctx->cipher) >= OPENVPN_AEAD_MIN_IV_LEN);
++        impl_iv_len = cipher_ctx_iv_length(ctx->cipher) - sizeof(packet_id_type);
+         ASSERT(impl_iv_len <= OPENVPN_MAX_IV_LENGTH);
+         ASSERT(impl_iv_len <= key_len);
+         memcpy(ctx->implicit_iv, key, impl_iv_len);
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index b0b248aae..e5cfbd180 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -466,19 +466,17 @@ p2p_mode_ncp(struct tls_multi *multi, struct tls_session *session)
+     if (!common_cipher)
+     {
+         struct buffer out = alloc_buf_gc(128, &gc);
+-        struct key_state *ks = get_key_scan(multi, KS_PRIMARY);
++        const cipher_kt_t *cipher = session->opt->key_type.cipher;
  
-diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
-index d3ce2d6f5..42632c72b 100644
---- a/tests/unit_tests/openvpn/test_crypto.c
-+++ b/tests/unit_tests/openvpn/test_crypto.c
-@@ -181,7 +181,7 @@ crypto_test_hmac(void **state)
-     uint8_t key[20];
-     memcpy(key, testkey, sizeof(key));
+-        const cipher_ctx_t *ctx = ks->crypto_options.key_ctx_bi.encrypt.cipher;
+-        const cipher_kt_t *cipher = cipher_ctx_get_cipher_kt(ctx);
+-        const char *fallback_name = cipher_kt_name(cipher);
++        /* at this point we do not really know if our fallback is
++         * not enabled or if we use 'none' cipher as fallback, so
++         * keep this ambiguity here and print fallback-cipher: none
++         */
  
--    hmac_ctx_init(hmac, key, 20, sha1);
-+    hmac_ctx_init(hmac, key, sha1);
-     hmac_ctx_update(hmac, (const uint8_t *)ipsumlorem, (int) strlen(ipsumlorem));
-     hmac_ctx_update(hmac, (const uint8_t *)ipsumlorem, (int) strlen(ipsumlorem));
+-        if (!cipher)
++        const char *fallback_name = "none";
++        if (cipher)
+         {
+-            /* at this point we do not really know if our fallback is
+-             * not enabled or if we use 'none' cipher as fallback, so
+-             * keep this ambiguity here and print fallback-cipher: none
+-             */
+-            fallback_name = "none";
++            fallback_name = cipher_kt_name(cipher);
+         }
  
+         buf_printf(&out, "(not negotiated, fallback-cipher: %s)", fallback_name);
 -- 
 2.33.0
 
