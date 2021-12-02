@@ -1,8 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu,  2 Dec 2021 13:54:55 +0100
-Message-Id: <20211202125455.2593763-1-arne@...1227...>
+Date: Thu,  2 Dec 2021 14:51:24 +0100
+Message-Id: <20211202135124.2598645-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Make --nobind default for --pull
+Subject: [Openvpn-devel] [PATCH] Adjust cipher-negotiation.rst with
+ compat-mode changes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,53 +16,38 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Currently we default to local binding with udp. But the majority of
-configuration files actually uses --nobind in the configuration to
-change the default for --client. And client protocols should normally
-use a random source port. This changes the default. Local binding with
---client can still be done using --bind.
----
- Changes.rst           |  3 ++-
- src/openvpn/options.c | 11 ++++-------
- 2 files changed, 6 insertions(+), 8 deletions(-)
+This explains that 2.6 will ignore --cipher without --compat-mode and
+restructures the whole paragraph to better readable.
 
-diff --git a/Changes.rst b/Changes.rst
-index c1a04deed..95bebc4ab 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -120,7 +120,8 @@ PF (Packet Filtering) support has been removed
- User-visible Changes
- --------------------
- - CHACHA20-POLY1305 is included in the default of ``--data-ciphers`` when available.
--- Option ``--prng`` is ignored as we rely on the SSL library radnom generator.
-+- Option ``--prng`` is ignored as we rely on the SSL library random number generator.
-+- Option ``--nobind`` is default when ``--client`` or ``--pull`` is used in the configuration
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ doc/man-sections/cipher-negotiation.rst | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/doc/man-sections/cipher-negotiation.rst b/doc/man-sections/cipher-negotiation.rst
+index 423b5ab6a..6e872962a 100644
+--- a/doc/man-sections/cipher-negotiation.rst
++++ b/doc/man-sections/cipher-negotiation.rst
+@@ -15,12 +15,15 @@ with a AUTH_FAILED message (as seen in client log):
  
- Overview of changes in 2.5
- ==========================
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 312efb36c..3aaad7bc8 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2859,14 +2859,11 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
-         }
-     }
+     AUTH: Received control message: AUTH_FAILED,Data channel cipher negotiation failed (no shared cipher)
  
--    if (ce->proto == PROTO_TCP_CLIENT && !ce->local
--        && !ce->local_port_defined && !ce->bind_defined)
--    {
--        ce->bind_local = false;
--    }
+-OpenVPN 2.5 will only allow the ciphers specified in ``--data-ciphers``. To ensure
+-backwards compatibility also if a cipher is specified using the ``--cipher`` option
+-it is automatically added to this list. If both options are unset the default is
+-:code:`AES-256-GCM:AES-128-GCM`. In 2.6 and later the default is changed to
++OpenVPN 2.5 and higher will only allow the ciphers specified in ``--data-ciphers``.
++ If ``--data-ciphers`` is not set the default is :code:`AES-256-GCM:AES-128-GCM`.
++In 2.6 and later the default is changed to
+ :code:`AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305` when Chacha20-Poly1305 is available.
  
--    if (ce->proto == PROTO_UDP && ce->socks_proxy_server && !ce->local
--        && !ce->local_port_defined && !ce->bind_defined)
-+    bool need_bind = ce->local || ce->local_port_defined || ce->bind_defined;
-+    bool uses_socks = ce->proto == PROTO_UDP && ce->socks_proxy_server;
++For backwards compatibility OpenVPN 2.6.0 and later with ``--compat-mode 2.4.x``
++(or lower) or OpenVPN 2.5.x will automatically add a cipher specified using the
++``--cipher`` option to this list.
 +
-+    if (!need_bind && (ce->proto == PROTO_TCP_CLIENT || uses_socks || o->pull))
-     {
-         ce->bind_local = false;
-     }
+ OpenVPN 2.4 clients
+ -------------------
+ The negotiation support in OpenVPN 2.4 was the first iteration of the implementation
 -- 
 2.33.0
 
