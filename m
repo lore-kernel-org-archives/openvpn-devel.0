@@ -1,9 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Thu,  2 Dec 2021 14:51:24 +0100
-Message-Id: <20211202135124.2598645-1-arne@...1227...>
+Date: Fri, 3 Dec 2021 17:18:59 +0100 (CET)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <2116536034.296245.1638548339523@...2642...>
+In-Reply-To: <20211202125455.2593763-1-arne@...1227...>
+References: <20211202125455.2593763-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Adjust cipher-negotiation.rst with
- compat-mode changes
+Subject: Re: [Openvpn-devel] [PATCH] Make --nobind default for --pull
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,43 +13,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-This explains that 2.6 will ignore --cipher without --compat-mode and
-restructures the whole paragraph to better readable.
+> Arne Schwabe <arne@...1227...> hat am 02.12.2021 13:54 geschrieben:
+>  
+> -    if (ce->proto == PROTO_TCP_CLIENT && !ce->local
+> -        && !ce->local_port_defined && !ce->bind_defined)
+> -    {
+> -        ce->bind_local = false;
+> -    }
+>  
+> -    if (ce->proto == PROTO_UDP && ce->socks_proxy_server && !ce->local
+> -        && !ce->local_port_defined && !ce->bind_defined)
+> +    bool need_bind = ce->local || ce->local_port_defined || ce->bind_defined;
+> +    bool uses_socks = ce->proto == PROTO_UDP && ce->socks_proxy_server;
+> +
+> +    if (!need_bind && (ce->proto == PROTO_TCP_CLIENT || uses_socks || o->pull))
+>      {
+>          ce->bind_local = false;
+>      }
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- doc/man-sections/cipher-negotiation.rst | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+The refactoring makes it very hard to see what the actual change is. Maybe it would be better to split this in two commits?
 
-diff --git a/doc/man-sections/cipher-negotiation.rst b/doc/man-sections/cipher-negotiation.rst
-index 423b5ab6a..6e872962a 100644
---- a/doc/man-sections/cipher-negotiation.rst
-+++ b/doc/man-sections/cipher-negotiation.rst
-@@ -15,12 +15,15 @@ with a AUTH_FAILED message (as seen in client log):
- 
-     AUTH: Received control message: AUTH_FAILED,Data channel cipher negotiation failed (no shared cipher)
- 
--OpenVPN 2.5 will only allow the ciphers specified in ``--data-ciphers``. To ensure
--backwards compatibility also if a cipher is specified using the ``--cipher`` option
--it is automatically added to this list. If both options are unset the default is
--:code:`AES-256-GCM:AES-128-GCM`. In 2.6 and later the default is changed to
-+OpenVPN 2.5 and higher will only allow the ciphers specified in ``--data-ciphers``.
-+ If ``--data-ciphers`` is not set the default is :code:`AES-256-GCM:AES-128-GCM`.
-+In 2.6 and later the default is changed to
- :code:`AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305` when Chacha20-Poly1305 is available.
- 
-+For backwards compatibility OpenVPN 2.6.0 and later with ``--compat-mode 2.4.x``
-+(or lower) or OpenVPN 2.5.x will automatically add a cipher specified using the
-+``--cipher`` option to this list.
-+
- OpenVPN 2.4 clients
- -------------------
- The negotiation support in OpenVPN 2.4 was the first iteration of the implementation
--- 
-2.33.0
+The only actual change in behavior is the "|| o->pull", right?
 
+Regards,
+  Frank
+
+--
+Frank Lichtenheld
 
