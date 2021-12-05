@@ -1,17 +1,10 @@
-Date: Sun, 5 Dec 2021 12:40:08 +0100
+Date: Sun, 5 Dec 2021 13:46:47 +0100 (CET)
+Message-Id: <202112051246.1B5CklO4070567@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <YaylGFdqxlCPwJNc@...1296...>
-References: <20211202125455.2593763-1-arne@...1227...>
- <2116536034.296245.1638548339523@...2642...>
- <eeacddfd-0819-0afb-4767-0dcc011f8c11@...1227...>
- <YaySTbKDclfC6PWL@...1296...>
- <1302542561.460963.1638703016633@...2642...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Z0GcCKu7NYMsdAaE"
-Content-Disposition: inline
-In-Reply-To: <1302542561.460963.1638703016633@...2642...>
-Subject: Re: [Openvpn-devel] [PATCH] Make --nobind default for --pull
+In-Reply-To: <20211201092002.162-1-lstipakov@...277...>
+References: <20211201092002.162-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: ssh_openssl.h: remove unused
+ declaration
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,64 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Frank Lichtenheld <frank@...2641...>
-Cc: Gert Doering <gert@...1296...>, Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---Z0GcCKu7NYMsdAaE
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Acked-by: Gert Doering <gert@...1296...>
 
-Hi,
+"easy enough".  "Git grep" confirms.
 
-On Sun, Dec 05, 2021 at 12:16:56PM +0100, Frank Lichtenheld wrote:
-> > I need to think a bit more into "what conditions is this checking, exac=
-tly,
-> > and why?" - but with refactoring, I'd have to do that thinking twice :-)
->=20
-> I disagree. If you had one patch that does refactoring but does not inten=
-d any functional change,
-> and one patch that just adds "|| o->pull", the general understanding of e=
-ach patch would require
-> much less time and thinking.=20
+Your patch has been applied to the master and release/2.5 branch.
 
-True, but the second patch would not be correct, then :-) - as it
-actually adds more conditions than just "o->pull".  The original code
-does not check for socks.
+commit b939fdcfb669bdd57b33e70fd2a2718fcfa626c9 (master)
+commit c237d49ec52241edb6b1a839baae04bdb37f8bd0 (release/2.5)
+Author: Lev Stipakov
+Date:   Wed Dec 1 11:20:02 2021 +0200
 
-I am not exactly happy with the *new* code, as it is still too convoluted
-for my coffee level ("if (!bind_needed && conditions) set bind_local=3Dfals=
-e",
-what are these conditions?  why?) but I do not think an intermediate=20
-patch will make these particular conditional contortions easier...
+     ssh_openssl.h: remove unused declaration
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20211201092002.162-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23269.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---Z0GcCKu7NYMsdAaE
-Content-Type: application/pgp-signature; name="signature.asc"
+--
+kind regards,
 
------BEGIN PGP SIGNATURE-----
+Gert Doering
 
-iQGcBAEBAgAGBQJhrKUYAAoJEB2Cnv7KVigSq4cMAJFNMZYWgfA4/SIoQ3BWJV4F
-1Pf26ic816YLI82IH0HGl9169PV3hZARgZ69ja1vSWLhl+DnRWAMF0jmt7ePZQua
-3sfYnKT43FI67lfRsCBepWYVZCbTe2EgniN9oNEdFZuzT3xdtkRLoCjpYAS0wcQW
-aw+dYy9znggtbKf1vvWYquJzBhLNRvtXUKEDlZdQN8G5WLM9Kzs3uKTYP5ywrxNU
-0T0aqhyGm6NcUwKdzWSX3y5BUDIFG4ekzjRH8QRbJtDat9eaXTlKr8lhlkpCq+sn
-KmvkF5Sd6hqsF8gR4SXfvrgeOLQc+MORaGycr4kNVn2diQLKmdN/a+P6thQ4PvYq
-Y0sTb58AHEZmQrqWdTn1erf0CcShF577yacBpdM8BdPq0bF7ppVE7jWFfa+v3BPj
-TjUYWuqoVe8FjxDH2WPL76eTr9V8UsHFdCr8N5NxUy/63RNqJN0yVqzZgY6cuyXr
-WvfTakAhsxhZxCq54EtLXIfQFAw78jUhDdVoYSZ3Lg==
-=CL+2
------END PGP SIGNATURE-----
-
---Z0GcCKu7NYMsdAaE--
 
