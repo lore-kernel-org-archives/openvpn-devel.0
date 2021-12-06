@@ -1,11 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon,  6 Dec 2021 01:57:40 +0100
-Message-Id: <20211206005740.3072232-1-arne@...1227...>
-In-Reply-To: <20211201180727.2496903-1-arne@...1227...>
-References: <20211201180727.2496903-1-arne@...1227...>
+Date: Mon,  6 Dec 2021 02:00:07 +0100
+Message-Id: <20211206010007.3072528-1-arne@...1227...>
+In-Reply-To: <20211202125455.2593763-1-arne@...1227...>
+References: <20211202125455.2593763-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 1/9] Implement optional cipher in
- --data-ciphers prefixed with ?
+Subject: [Openvpn-devel] [PATCH v2] Make --nobind default for --pull
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,65 +17,66 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This allows to use the same configuration multiple platforms/ssl libraries
-and include optional algorithms that are not available on all platforms
+Currently we default to local binding with udp. But the majority of
+configuration files actually uses --nobind in the configuration to
+change the default for --client. And client protocols should normally
+use a random source port. This changes the default. Local binding with
+--client can still be done using --bind.
 
-For example "AES-256-GCM:AES-128-GCM:?CHACHA20-POLY1305" can be used to
-emulate the default behaviour of OpenVPN 2.6.
+This commit refactors the current code to be more easy to add to understand
+and adds the the o->pull condition as additional option to opt into setting
+local binding to false.
 
-Patch v2: fix error_found reset by optional cipher, fix typo in Changes.rst
+Patch v2: add more commments
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/ssl_ncp.c               | 8 ++++++--
- tests/unit_tests/openvpn/test_ncp.c | 3 +++
- 2 files changed, 9 insertions(+), 2 deletions(-)
+ Changes.rst           |  3 ++-
+ src/openvpn/options.c | 16 +++++++++-------
+ 2 files changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 2f1df1c52..2561daab2 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -134,7 +134,7 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
-         {
-             const char* optstr = optional ? "optional ": "";
-             msg(M_WARN, "Unsupported %scipher in --data-ciphers: %s", optstr, token);
--            error_found = !optional;
-+            error_found = error_found || !optional;
-         }
-         else
-         {
-@@ -448,6 +448,10 @@ p2p_ncp_set_options(struct tls_multi *multi, struct tls_session *session)
+diff --git a/Changes.rst b/Changes.rst
+index e83dda023..b7d7f2054 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -120,7 +120,8 @@ PF (Packet Filtering) support has been removed
+ User-visible Changes
+ --------------------
+ - CHACHA20-POLY1305 is included in the default of ``--data-ciphers`` when available.
+-- Option ``--prng`` is ignored as we rely on the SSL library radnom generator.
++- Option ``--prng`` is ignored as we rely on the SSL library random number generator.
++- Option ``--nobind`` is default when ``--client`` or ``--pull`` is used in the configuration
  
+ Overview of changes in 2.5
+ ==========================
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 312efb36c..39cf3e99a 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2859,14 +2859,16 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
          }
      }
-+    if (iv_proto_peer & IV_PROTO_RENOG_DYN_TLSCRYPT)
-+    {
-+        session->opt->crypto_flags |= CO_USE_DYN_TLSCRYPT_RENOG;
-+    }
- #endif
- }
  
-@@ -491,4 +495,4 @@ p2p_mode_ncp(struct tls_multi *multi, struct tls_session *session)
-         multi->use_peer_id, multi->peer_id, common_cipher);
- 
-     gc_free(&gc);
--}
-\ No newline at end of file
-+}
-diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
-index faf09a36c..6702133ad 100644
---- a/tests/unit_tests/openvpn/test_ncp.c
-+++ b/tests/unit_tests/openvpn/test_ncp.c
-@@ -95,6 +95,9 @@ test_check_ncp_ciphers_list(void **state)
-     /* All unsupported should still yield an empty list */
-     assert_ptr_equal(mutate_ncp_cipher_list("?kugelfisch:?grasshopper", &gc), NULL);
- 
-+    /* If the last is optional, previous invalid ciphers should be ignored */
-+    assert_ptr_equal(mutate_ncp_cipher_list("Vollbit:Littlebit:AES-256-CBC:BF-CBC:?nixbit", &gc), NULL);
+-    if (ce->proto == PROTO_TCP_CLIENT && !ce->local
+-        && !ce->local_port_defined && !ce->bind_defined)
+-    {
+-        ce->bind_local = false;
+-    }
++    /* an option is present that requires local bind to enabled */
++    bool need_bind = ce->local || ce->local_port_defined || ce->bind_defined;
 +
-     /* For testing that with OpenSSL 1.1.0+ that also accepts ciphers in
-      * a different spelling the normalised cipher output is the same */
-     bool have_chacha_mixed_case = cipher_kt_get("ChaCha20-Poly1305");
++    /* socks proxy is enabled */
++    bool uses_socks = ce->proto == PROTO_UDP && ce->socks_proxy_server;
+ 
+-    if (ce->proto == PROTO_UDP && ce->socks_proxy_server && !ce->local
+-        && !ce->local_port_defined && !ce->bind_defined)
++    /* If binding is not forced by an explicit options and we have (at least)
++     * one of --tcp-client, --pull (or --client), or socks we do not bind
++     * locally to have "normal" IP client behaviour of a random source port */
++    if (!need_bind && (ce->proto == PROTO_TCP_CLIENT || uses_socks || o->pull))
+     {
+         ce->bind_local = false;
+     }
 -- 
 2.33.0
 
