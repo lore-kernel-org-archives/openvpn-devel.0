@@ -1,11 +1,9 @@
-Date: Mon, 6 Dec 2021 13:30:43 +0100 (CET)
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <1262628405.421906.1638793843153@...2642...>
-In-Reply-To: <20211206010007.3072528-1-arne@...1227...>
-References: <20211202125455.2593763-1-arne@...1227...>
- <20211206010007.3072528-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v2] Make --nobind default for --pull
+Date: Mon, 6 Dec 2021 13:38:42 +0100 (CET)
+Message-Id: <202112061238.1B6Ccg5l030194@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20211201180727.2496903-6-arne@...1227...>
+References: <20211201180727.2496903-6-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove key_type->hmac_length
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,32 +12,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-By: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
 
-> Arne Schwabe <arne@...1227...> hat am 06.12.2021 02:00 geschrieben:
-> 
-> Patch v2: add more commments
+Fairly straightforward, as was 5/9...  except for the tls1_P_hash(),
+but comparing old/new code paths & reading the comment helps :-)
 
-I feel they help a lot :)
+Client-side and server-side (= more coverage wrt "old peer = old PRF")
+tested.
 
-> +    /* If binding is not forced by an explicit options and we have (at least)
+Your patch has been applied to the master branch.
 
-typo: "options" should be "option". Or "an" is wrong.
+commit 459d9669d1b5ca110107306762625a4fb5650c58
+Author: Arne Schwabe
+Date:   Wed Dec 1 19:07:24 2021 +0100
 
-> +     * one of --tcp-client, --pull (or --client), or socks we do not bind
-> +     * locally to have "normal" IP client behaviour of a random source port */
-> +    if (!need_bind && (ce->proto == PROTO_TCP_CLIENT || uses_socks || o->pull))
->      {
->          ce->bind_local = false;
->      }
+     Remove key_type->hmac_length
 
-Regards,
-  Frank
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20211201180727.2496903-6-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23274.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
 
 --
-Frank Lichtenheld
+kind regards,
+
+Gert Doering
+
 
