@@ -1,10 +1,9 @@
-Date: Mon, 6 Dec 2021 17:44:21 +0100 (CET)
-Message-Id: <202112061644.1B6GiLlt041453@...2054...>
+Date: Mon, 6 Dec 2021 18:27:45 +0100 (CET)
+Message-Id: <202112061727.1B6HRjvc044474@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211206150852.3142891-1-arne@...1227...>
-References: <20211206150852.3142891-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix handling an optional
- invalid cipher at the end of data-ciphers
+In-Reply-To: <20211206010007.3072528-1-arne@...1227...>
+References: <20211206010007.3072528-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Make --nobind default for --pull
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,31 +17,27 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Your patch has been applied to the master branch.  Thanks for the
+extra comments, with these, I can understand what's going on
+without maximum coffee level :-)
 
-Sorry for the chaos.  This indeed fixes the behaviour I saw on "1/9 v1"
-(and it adds a test case!).  Thanks.
+Tested locally (my t_client tests all set --nobind, so this was
+not spectacularily enlightening... ran a few cases manually to
+see what would happen.  Does the job. --bind still binds, --lport still
+binds, "default --client" does not bind).
 
-2021-12-06 17:43:08 Unsupported optional cipher in --data-ciphers: Vollbit
-2021-12-06 17:43:08 Unsupported optional cipher in --data-ciphers: Littlebit
-2021-12-06 17:43:08 Unsupported cipher in --data-ciphers: nixbit
-Options error: --data-ciphers list contains unsupported ciphers or is too long.
+Comment adjusted as instructed ("an explicit option", no "s").
 
-(and vice versa, all combinations of optional/non-optional unsupported
-do what one would expect now)
-
-Your patch has been applied to the master branch.
-
-commit 868433857fbf8d71515ac0ffecb98eae893515dc
+commit de02c828f5aa3fbaca78918d4392b48b47547770 (master)
 Author: Arne Schwabe
-Date:   Mon Dec 6 16:08:52 2021 +0100
+Date:   Mon Dec 6 02:00:07 2021 +0100
 
-     Fix handling an optional invalid cipher at the end of data-ciphers
+     Make --nobind default for --pull
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20211206150852.3142891-1-arne@...1227...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20211206150852.3142891-1-arne@...1227...
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20211206010007.3072528-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23303.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
