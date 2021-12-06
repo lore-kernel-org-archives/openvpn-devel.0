@@ -1,15 +1,10 @@
-Date: Mon, 6 Dec 2021 08:06:09 +0100
+Date: Mon, 6 Dec 2021 09:59:14 +0100 (CET)
+Message-Id: <202112060859.1B68xEuq020316@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <Ya22Yc1Z85eJ6u55@...1296...>
-References: <20211201180727.2496903-1-arne@...1227...>
- <20211206005740.3072232-1-arne@...1227...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="r390sa7DqEY80bru"
-Content-Disposition: inline
-In-Reply-To: <20211206005740.3072232-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v2 1/9] Implement optional cipher in
- --data-ciphers prefixed with ?
+In-Reply-To: <20211201180727.2496903-3-arne@...1227...>
+References: <20211201180727.2496903-3-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove cipher_ctx_get_cipher_kt
+ and replace with direct context calls
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,122 +13,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---r390sa7DqEY80bru
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Acked-by: Gert Doering <gert@...1296...>
 
-Hi,
+Change makes sense, resulting code passes t_client tests (with and
+without AES ciphers), on OpenSSL 1.1 and mbedTLS builds.  
 
-On Mon, Dec 06, 2021 at 01:57:40AM +0100, Arne Schwabe wrote:
-> This allows to use the same configuration multiple platforms/ssl libraries
-> and include optional algorithms that are not available on all platforms
->=20
-> For example "AES-256-GCM:AES-128-GCM:?CHACHA20-POLY1305" can be used to
-> emulate the default behaviour of OpenVPN 2.6.
->=20
-> Patch v2: fix error_found reset by optional cipher, fix typo in Changes.r=
-st
->=20
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-[..]
-> diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-> index 2f1df1c52..2561daab2 100644
-> --- a/src/openvpn/ssl_ncp.c
-> +++ b/src/openvpn/ssl_ncp.c
-> @@ -134,7 +134,7 @@ mutate_ncp_cipher_list(const char *list, struct gc_ar=
-ena *gc)
->          {
->              const char* optstr =3D optional ? "optional ": "";
->              msg(M_WARN, "Unsupported %scipher in --data-ciphers: %s", op=
-tstr, token);
-> -            error_found =3D !optional;
-> +            error_found =3D error_found || !optional;
->          }
+Thanks for the explanation wrt the ASSERT() calls - indeed, if the 
+caller already checks the cipher itself, no need to double-check it 
+in the called function.
 
-This looks good now, but the rest of the patch got merge-conflicted
-to death, I'm afraid.  The actual "optional" part got lost (token++)...
+Reviewing the change to crypto_backend.h I noticed that the comments
+seem to be "german invalid grammar" according to what I remember from 
+school...
 
->          else
->          {
-> @@ -448,6 +448,10 @@ p2p_ncp_set_options(struct tls_multi *multi, struct =
-tls_session *session)
->=20=20
->          }
->      }
-> +    if (iv_proto_peer & IV_PROTO_RENOG_DYN_TLSCRYPT)
-> +    {
-> +        session->opt->crypto_flags |=3D CO_USE_DYN_TLSCRYPT_RENOG;
-> +    }
->  #endif
->  }
++ * @param ctx           Cipher's context. May not be NULL.
 
-... and this is unrelated...
+shouldn't that be "Must not be NULL" for "NULL is not allowed" here?
+(There are many more of these, so it's not *this* patch introducing
+the error - so, not changing these on the fly)
 
-> @@ -491,4 +495,4 @@ p2p_mode_ncp(struct tls_multi *multi, struct tls_sess=
-ion *session)
->          multi->use_peer_id, multi->peer_id, common_cipher);
->=20=20
->      gc_free(&gc);
-> -}
-> \ No newline at end of file
-> +}
 
-As is this.
+Another observation: cipher_ctx_mode_cbc() and cipher_ctx_mode_ofb_cfb()
+seem to want the same thing ("no AEAD, no EVP_CIPH_FLAG_CTS") but 
+do it in different ways - this looks a bit weird.
 
-> diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openv=
-pn/test_ncp.c
-> index faf09a36c..6702133ad 100644
-> --- a/tests/unit_tests/openvpn/test_ncp.c
-> +++ b/tests/unit_tests/openvpn/test_ncp.c
-> @@ -95,6 +95,9 @@ test_check_ncp_ciphers_list(void **state)
->      /* All unsupported should still yield an empty list */
->      assert_ptr_equal(mutate_ncp_cipher_list("?kugelfisch:?grasshopper", =
-&gc), NULL);
->=20=20
-> +    /* If the last is optional, previous invalid ciphers should be ignor=
-ed */
-> +    assert_ptr_equal(mutate_ncp_cipher_list("Vollbit:Littlebit:AES-256-C=
-BC:BF-CBC:?nixbit", &gc), NULL);
-> +
->      /* For testing that with OpenSSL 1.1.0+ that also accepts ciphers in
->       * a different spelling the normalised cipher output is the same */
->      bool have_chacha_mixed_case =3D cipher_kt_get("ChaCha20-Poly1305");
+And then, cipher_ctx_mode_aead() does not use "early return" on
+if (!ctx)... which is inconsistent to the previous two.
 
-This one also seems to be "an extra change on top of 1/9 v1" (grasshopper),
-not "1/9 v2".
+And *then*, _cbc() use EVP_CIPHER_CTX_get_mode(), while _ofb_cfb()
+uses EVP_CIPHER_CTX_mode(), which seems to be the 3.0 <-> 1.1 variants,
+and we do have a compat call...
 
-gert
+Could these be unified in a followup patch, please?
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Your patch has been applied to the master branch.
 
---r390sa7DqEY80bru
-Content-Type: application/pgp-signature; name="signature.asc"
+commit 0b1c721e4f19c84ea35a2e266c3913eb893355ec
+Author: Arne Schwabe
+Date:   Wed Dec 1 19:07:21 2021 +0100
 
------BEGIN PGP SIGNATURE-----
+     Remove cipher_ctx_get_cipher_kt and replace with direct context calls
 
-iQGcBAEBAgAGBQJhrbZhAAoJEB2Cnv7KVigS7hQMAJmnj1tCYxXgh4IG+S5xy8VO
-Jn7Ffy4MksUzrpeGIghlslMUWW1cglqMaflm96Cw1hab63CjGQ2RdTSpiHzxN5it
-+RlybC3HY3sRxEm3Zfu1EidcICB/l3xMgNx726Zg36M+o+12kpEJeIN1lshR4nxA
-2gcjkvPUvWwVh+IcoHqf870PTwDxqSvgRjLbTT/cqfb5kBqJgb07CBmomtUN+oYc
-JohFEP8wNFG+OV7r6o+xqT2G4IciY+GFl/oewbLhmzpGnWfTmvxz+7+F488LTPla
-c+xBaGCIhvgfdnVWPmSNxdwob9PNZbznQT0MymGJYg7VhIbbjteDcRkRfOp9VICV
-JgcptwYpMEzWezBnpQy2+F20pGQN3GOWMgC0KKan6cJgVXSa7U6Oqt3sHniW4X6U
-XjsovrpHHUwHkC4lgiZYnK/vI2NojHexMmCTIWWVId43eWdEMIVhKr9n7q0DrAbf
-GrM8M9ZZqmm8ilRItxnBn+K6qU4QxNoA8hCOcdimFg==
-=JNbx
------END PGP SIGNATURE-----
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20211201180727.2496903-3-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23278.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---r390sa7DqEY80bru--
+
+--
+kind regards,
+
+Gert Doering
+
 
