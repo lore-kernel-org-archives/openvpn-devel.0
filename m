@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue,  7 Dec 2021 18:02:02 +0100
-Message-Id: <20211207170211.3275837-13-arne@...1227...>
+Date: Tue,  7 Dec 2021 18:01:57 +0100
+Message-Id: <20211207170211.3275837-8-arne@...1227...>
 In-Reply-To: <20211207170211.3275837-1-arne@...1227...>
 References: <20211207170211.3275837-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 12/21] Fix datagram_overhead and assorted
- functions
+Subject: [Openvpn-devel] [PATCH 07/21] Add helper functions to calculate
+ header/payload sizes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,124 +18,276 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This function is supposed to calculate the overhead of the protocol
-header (IP/IPv6 + TCP/UDP). But at some point the index that used
-to index the array proto_overhead and the associated PROTO_N went
-completely out of sync. This fixed the function and related caller
-to again calculate the overhead as intended.
-
-Note that IPv6 mapped IPv4 addresses still have the wrong overhead calculated
-as they treated as IPv6 addresses (0:0:0:0:0:ffff::/96)
+These functions are intended to lay the groundwork to later replace
+the distributed frame calculations and centralise the calculation in
+one place.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/forward.c | 10 ++++++----
- src/openvpn/socket.c  | 16 +++-------------
- src/openvpn/socket.h  | 17 ++++++-----------
- 3 files changed, 15 insertions(+), 28 deletions(-)
+ src/openvpn/crypto.c | 55 ++++++++++++++++++++++++++++++
+ src/openvpn/crypto.h | 18 ++++++++++
+ src/openvpn/mtu.c    | 80 ++++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/mtu.h    | 54 ++++++++++++++++++++++++++++++
+ 4 files changed, 207 insertions(+)
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index c971c6bdb..6de6b4d49 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -480,10 +480,10 @@ check_fragment(struct context *c)
-     struct link_socket_info *lsi = get_link_socket_info(c);
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index cd791ab8a..249c4212d 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -667,6 +667,61 @@ openvpn_decrypt(struct buffer *buf, struct buffer work,
+     return ret;
+ }
  
-     /* OS MTU Hint? */
--    if (lsi->mtu_changed)
-+    if (lsi->mtu_changed && lsi->lsa)
-     {
-         frame_adjust_path_mtu(&c->c2.frame_fragment, c->c2.link_socket->mtu,
--                              c->options.ce.proto);
-+                              lsi->lsa->actual.dest.addr.sa.sa_family, lsi->proto);
-         lsi->mtu_changed = false;
-     }
++unsigned int
++calculate_crypto_overhead(const struct key_type *kt,
++                          bool packet_id,
++                          bool packet_id_long_form,
++                          unsigned int payload_size,
++                          bool occ)
++{
++    unsigned int crypto_overhead = 0;
++
++    /* No encryption */
++    if (packet_id)
++    {
++        crypto_overhead += packet_id_size(packet_id_long_form);
++    }
++
++    if (cipher_kt_mode_aead(kt->cipher))
++    {
++        /* For AEAD ciphers, we basically use a stream cipher/CTR for
++         * the encryption, so no overhead apart from the extra bytes
++         * we add */
++        crypto_overhead += cipher_kt_tag_size(kt->cipher);
++
++        if (occ)
++        {
++            /* the frame calculation of old clients adds these to the link-mtu
++             * even though they are not part of the actual packet */
++            crypto_overhead += cipher_kt_iv_size(kt->cipher);
++            crypto_overhead += cipher_kt_block_size(kt->cipher);
++        }
++    }
++    else
++    {
++        if (cipher_defined(kt->cipher))
++        {
++            /* CBC, OFB or CFB mode */
++            /* This is a worst case upper bound of needing to add
++             * a full extra block for padding when the payload
++             * is exactly a multiple of the block size */
++            if (occ || (cipher_kt_mode_cbc(kt->cipher) &&
++                (payload_size % cipher_kt_block_size(kt->cipher) == 0)))
++            {
++                crypto_overhead += cipher_kt_block_size(kt->cipher);
++            }
++            /* IV is always added (no-iv has been removed a while ago) */
++            crypto_overhead += cipher_kt_iv_size(kt->cipher);
++        }
++        if (md_defined(kt->digest))
++        {
++            crypto_overhead += md_kt_size(kt->digest);
++        }
++    }
++
++    return crypto_overhead;
++}
++
+ void
+ crypto_adjust_frame_parameters(struct frame *frame,
+                                const struct key_type *kt,
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index ad3543c1c..5a67b7ac1 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -415,6 +415,24 @@ void crypto_adjust_frame_parameters(struct frame *frame,
+                                     bool packet_id,
+                                     bool packet_id_long_form);
  
-@@ -1565,8 +1565,10 @@ process_outgoing_link(struct context *c)
-              */
-             if (c->options.shaper)
-             {
--                shaper_wrote_bytes(&c->c2.shaper, BLEN(&c->c2.to_link)
--                                   + datagram_overhead(c->options.ce.proto));
-+                int overhead = datagram_overhead(c->c2.to_link_addr->dest.addr.sa.sa_family,
-+                                                 c->options.ce.proto);
-+                shaper_wrote_bytes(&c->c2.shaper,
-+                                   BLEN(&c->c2.to_link) + overhead);
-             }
++/** Calculate the maximum overhead that our encryption has
++ * on a packet. This does not include needed additional buffer size
++ *
++ * @param kt            Struct with the crypto algorithm to use
++ * @param packet_id     Whether packet_id is used
++ * @param packet_id_long_form Whether the packet id has the long form
++ * @param payload_size   payload size, only used if occ is false
++ * @param occ           if true calculates the overhead for crypto in the same
++ *                      incorrect way as all previous OpenVPN versions did, to
++ *                      end up with identical numbers for OCC compatibility
++ */
++unsigned int
++calculate_crypto_overhead(const struct key_type *kt,
++                           bool packet_id,
++                           bool packet_id_long_form,
++                           unsigned int payload_size,
++                           bool occ);
++
+ /** Return the worst-case OpenVPN crypto overhead (in bytes) */
+ unsigned int crypto_max_overhead(void);
  
-             /*
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index df7367469..93d2e61ec 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -44,17 +44,6 @@
+diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
+index 0ab716d7a..25b943722 100644
+--- a/src/openvpn/mtu.c
++++ b/src/openvpn/mtu.c
+@@ -35,6 +35,7 @@
+ #include "integer.h"
+ #include "mtu.h"
+ #include "options.h"
++#include "crypto.h"
  
  #include "memdbg.h"
  
--const int proto_overhead[] = { /* indexed by PROTO_x */
--    0,
--    IPv4_UDP_HEADER_SIZE, /* IPv4 */
--    IPv4_TCP_HEADER_SIZE,
--    IPv4_TCP_HEADER_SIZE,
--    IPv6_UDP_HEADER_SIZE, /* IPv6 */
--    IPv6_TCP_HEADER_SIZE,
--    IPv6_TCP_HEADER_SIZE,
--    IPv6_TCP_HEADER_SIZE,
--};
--
- /*
-  * Convert sockflags/getaddr_flags into getaddr_flags
-  */
-@@ -1660,9 +1649,10 @@ socket_frame_init(const struct frame *frame, struct link_socket *sock)
-  * to us by the OS.
-  */
- void
--frame_adjust_path_mtu(struct frame *frame, int pmtu, int proto)
-+frame_adjust_path_mtu(struct frame *frame, int pmtu, sa_family_t af, int proto)
- {
--    frame_set_mtu_dynamic(frame, pmtu - datagram_overhead(proto), SET_MTU_UPPER_BOUND);
-+    frame_set_mtu_dynamic(frame, pmtu - datagram_overhead(af, proto),
-+                          SET_MTU_UPPER_BOUND);
+@@ -51,6 +52,85 @@ alloc_buf_sock_tun(struct buffer *buf,
+     ASSERT(buf_safe(buf, 0));
  }
  
- static void
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index cc1e0c366..936ef2623 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -300,7 +300,7 @@ void do_preresolve(struct context *c);
- 
- void socket_adjust_frame_parameters(struct frame *frame, int proto);
- 
--void frame_adjust_path_mtu(struct frame *frame, int pmtu, int proto);
-+void frame_adjust_path_mtu(struct frame *frame, int pmtu, sa_family_t af, int proto);
- 
- void link_socket_close(struct link_socket *sock);
- 
-@@ -579,18 +579,13 @@ const char *addr_family_name(int af);
- /*
-  * Overhead added to packets by various protocols.
-  */
--#define IPv4_UDP_HEADER_SIZE              28
--#define IPv4_TCP_HEADER_SIZE              40
--#define IPv6_UDP_HEADER_SIZE              48
--#define IPv6_TCP_HEADER_SIZE              60
--
--extern const int proto_overhead[];
--
- static inline int
--datagram_overhead(int proto)
-+datagram_overhead(sa_family_t af, int proto)
- {
--    ASSERT(proto >= 0 && proto < PROTO_N);
--    return proto_overhead [proto];
-+    int overhead = 0;
-+    overhead += (proto == PROTO_UDP) ? 8 : 20;
-+    overhead += (af == AF_INET) ? 20 : 40;
++size_t
++frame_calculate_protocol_header_size(const struct key_type *kt,
++                                     const struct options *options,
++                                     unsigned int payload_size,
++                                     bool occ)
++{
++    /* Sum of all the overhead that reduces the usable packet size */
++    size_t header_size = 0;
++
++    /* A socks proxy adds 10 byte of extra header to each packet */
++    if (options->ce.socks_proxy_server && proto_is_udp(options->ce.proto))
++    {
++        header_size += 10;
++    }
++
++    /* TCP stream based packets have a 16 bit length field */
++    if (proto_is_tcp(options->ce.proto))
++    {
++        header_size += 2;
++    }
++
++    /* Add the opcode and peerid */
++    header_size += options->use_peer_id ? 4 : 1;
++
++    /* Add the crypto overhead */
++    bool packet_id = options->replay;
++    bool packet_id_long_form = !tlsmode || cipher_kt_mode_ofb_cfb(kt->cipher);
++
++    /* For figuring out the crypto overhead, we need to use the real payload
++     * including all extra headers that also get encrypted */
++    header_size += calculate_crypto_overhead(kt, packet_id,
++                                             packet_id_long_form,
++                                             payload_size, occ);
++    return header_size;
++}
++
++
++size_t
++frame_calculate_payload_overhead(const struct frame *frame,
++                                 const struct options *options,
++                                 bool extra_tun)
++{
++    size_t overhead = 0;
++
++    /* This is the overhead of tap device that is not included in the MTU itself
++     * i.e. Ethernet header that we still need to transmit as part of the
++     * payload*/
++    if (extra_tun)
++    {
++        overhead += frame->extra_tun;
++    }
++
++#if defined(USE_COMP)
++    /* v1 Compression schemes add 1 byte header. V2 only adds a header when it
++     * does not increase the packet length. We ignore the unlikely escaping
++     * for tap here */
++    if (options->comp.alg == COMP_ALG_LZ4 || options->comp.alg == COMP_ALG_STUB
++        || options->comp.alg == COMP_ALG_LZO)
++    {
++        overhead += 1;
++    }
++#endif
++#if defined(ENABLE_FRAGMENT)
++    if (options->ce.fragment)
++    {
++        overhead += 4;
++    }
++#endif
 +    return overhead;
- }
++}
++
++size_t
++frame_calculate_payload_size(const struct frame *frame, const struct options *options)
++{
++    size_t payload_size = options->ce.tun_mtu;
++    payload_size += frame_calculate_payload_overhead(frame, options, true);
++    return payload_size;
++}
++
+ void
+ frame_finalize(struct frame *frame,
+                bool link_mtu_defined,
+diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
+index c1148c317..5ad0931fd 100644
+--- a/src/openvpn/mtu.h
++++ b/src/openvpn/mtu.h
+@@ -221,6 +221,60 @@ void set_mtu_discover_type(socket_descriptor_t sd, int mtu_type, sa_family_t pro
  
+ int translate_mtu_discover_type_name(const char *name);
+ 
++/**
++ * Calculates the size of the payload according to tun-mtu and tap overhead.
++ * This also includes compression and fragmentation overhead if they are
++ * enabled.
++ *
++ * *  [IP][UDP][OPENVPN PROTOCOL HEADER][ **PAYLOAD incl compression header** ]
++ * @param frame
++ * @param options
++ * @return
++ */
++size_t
++frame_calculate_payload_size(const struct frame *frame,
++                             const struct options *options);
++
++/**
++ * Calculates the size of the payload overhead according to tun-mtu and
++ * tap overhead. This all the overhead that is considered part of the payload
++ * itself. The compression and fragmentation header and extra header from tap
++ * are considered part of this overhead that increases the payload larger than
++ * tun-mtu.
++ *
++ * *  [IP][UDP][OPENVPN PROTOCOL HEADER][ **PAYLOAD incl compression header** ]
++ * @param frame
++ * @param options
++ * @param extra_tun
++ * @return
++ */
++size_t
++frame_calculate_payload_overhead(const struct frame *frame,
++                                 const struct options *options,
++                                 bool extra_tun);
++
++/* forward declaration of key_type */
++struct key_type;
++
++/**
++ * Calculates the size of the OpenVPN protocol header. This includes
++ * the crypto IV/tag/HMAC but does not include the IP encapsulation
++ *
++ *
++ *  [IP][UDP][ **OPENVPN PROTOCOL HEADER**][PAYLOAD incl compression header]
++ *
++ * @param kt            the key_type to use to calculate the crypto overhead
++ * @param options       the options struct to be used to calculate
++ * @param payload_size  the payload size, ignored if occ is true
++ * @param occ           if the calculation should be done for occ compatibility
++ * @return              size of the overhead in bytes
++ */
++size_t
++frame_calculate_protocol_header_size(const struct key_type *kt,
++                                     const struct options *options,
++                                     unsigned int payload_size,
++                                     bool occ);
++
  /*
+  * frame_set_mtu_dynamic and flags
+  */
 -- 
 2.33.0
 
