@@ -1,10 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue,  7 Dec 2021 18:01:59 +0100
-Message-Id: <20211207170211.3275837-10-arne@...1227...>
+Date: Tue,  7 Dec 2021 18:01:53 +0100
+Message-Id: <20211207170211.3275837-4-arne@...1227...>
 In-Reply-To: <20211207170211.3275837-1-arne@...1227...>
 References: <20211207170211.3275837-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 09/21] Rework occ link-mtu calculation
+Subject: [Openvpn-devel] [PATCH 03/21] Remove align_adjust frame code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,365 +17,231 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Use the functions that directly compute the link mtu instead relying on the
-frame logic.
+The align_adjust variable was only set to a non-zero value when
+no cipher was used for the data channel. Since we no longer want to
+optimise non encrypted data channel traffic, remove this optimisation
+and simplify the code.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/mtu.c                      |  50 +++++++++-
- src/openvpn/mtu.h                      |  11 +++
- src/openvpn/options.c                  |  51 ----------
- tests/unit_tests/openvpn/Makefile.am   |   6 +-
- tests/unit_tests/openvpn/test_crypto.c | 128 ++++++++++++++++++++++++-
- tests/unit_tests/openvpn/test_misc.c   |   1 +
- 6 files changed, 192 insertions(+), 55 deletions(-)
+ src/openvpn/crypto.c   |  4 ++--
+ src/openvpn/forward.c  |  2 +-
+ src/openvpn/fragment.c |  2 +-
+ src/openvpn/init.c     | 13 -------------
+ src/openvpn/mtu.c      |  9 ++-------
+ src/openvpn/mtu.h      | 38 ++++++++------------------------------
+ src/openvpn/socket.c   |  3 +--
+ src/openvpn/win32.c    |  2 +-
+ 8 files changed, 16 insertions(+), 57 deletions(-)
 
-diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index e7ff477cd..c7f69bb2a 100644
---- a/src/openvpn/mtu.c
-+++ b/src/openvpn/mtu.c
-@@ -61,6 +61,8 @@ frame_calculate_protocol_header_size(const struct key_type *kt,
-     /* Sum of all the overhead that reduces the usable packet size */
-     size_t header_size = 0;
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 36f880433..cd791ab8a 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -370,7 +370,7 @@ openvpn_decrypt_aead(struct buffer *buf, struct buffer work,
  
-+    bool tlsmode = options->tls_server || options->tls_client;
-+
-     /* A socks proxy adds 10 byte of extra header to each packet */
-     if (options->ce.socks_proxy_server && proto_is_udp(options->ce.proto))
-     {
-@@ -74,7 +76,10 @@ frame_calculate_protocol_header_size(const struct key_type *kt,
+     ASSERT(ad_start >= buf->data && ad_start <= BPTR(buf));
+ 
+-    ASSERT(buf_init(&work, FRAME_HEADROOM_ADJ(frame, FRAME_HEADROOM_MARKER_DECRYPT)));
++    ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
+ 
+     /* IV and Packet ID required for this mode */
+     ASSERT(packet_id_initialized(&opt->packet_id));
+@@ -533,7 +533,7 @@ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
+             int outlen;
+ 
+             /* initialize work buffer with FRAME_HEADROOM bytes of prepend capacity */
+-            ASSERT(buf_init(&work, FRAME_HEADROOM_ADJ(frame, FRAME_HEADROOM_MARKER_DECRYPT)));
++            ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
+ 
+             /* read the IV from the packet */
+             if (buf->len < iv_size)
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 41ef12e30..29efcd3b9 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -803,7 +803,7 @@ read_incoming_link(struct context *c)
+     perf_push(PERF_READ_IN_LINK);
+ 
+     c->c2.buf = c->c2.buffers->read_link_buf;
+-    ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM_ADJ(&c->c2.frame, FRAME_HEADROOM_MARKER_READ_LINK)));
++    ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM(&c->c2.frame)));
+ 
+     status = link_socket_read(c->c2.link_socket,
+                               &c->c2.buf,
+diff --git a/src/openvpn/fragment.c b/src/openvpn/fragment.c
+index aba611fa0..6f8fb4476 100644
+--- a/src/openvpn/fragment.c
++++ b/src/openvpn/fragment.c
+@@ -214,7 +214,7 @@ fragment_incoming(struct fragment_master *f, struct buffer *buf,
+                 frag->defined = true;
+                 frag->max_frag_size = size;
+                 frag->map = 0;
+-                ASSERT(buf_init(&frag->buf, FRAME_HEADROOM_ADJ(frame, FRAME_HEADROOM_MARKER_FRAGMENT)));
++                ASSERT(buf_init(&frag->buf, FRAME_HEADROOM(frame)));
+             }
+ 
+             /* copy the data to fragment buffer */
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index f8a13fdfa..0009bcb72 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2461,19 +2461,6 @@ frame_finalize_options(struct context *c, const struct options *o)
+         o = &c->options;
      }
  
-     /* Add the opcode and peerid */
--    header_size += options->use_peer_id ? 4 : 1;
-+    if (tlsmode)
-+    {
-+        header_size += options->use_peer_id ? 4 : 1;
-+    }
- 
-     /* Add the crypto overhead */
-     bool packet_id = options->replay;
-@@ -131,6 +136,49 @@ frame_calculate_payload_size(const struct frame *frame, const struct options *op
-     return payload_size;
- }
- 
-+size_t
-+calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
-+{
-+    unsigned int payload = frame_calculate_payload_size(frame, o);
-+
-+    /* neither --secret nor TLS mode */
-+    if (!o->tls_client && !o->tls_server && !o->shared_secret_file)
-+    {
-+        return payload;
-+    }
-+
-+    struct key_type occ_kt;
-+
-+    /* o->ciphername might be BF-CBC even though the underlying SSL library
-+     * does not support it. For this reason we workaround this corner case
-+     * by pretending to have no encryption enabled and by manually adding
-+     * the required packet overhead to the MTU computation.
-+     */
-+    const char* ciphername = o->ciphername;
-+
-+    unsigned int overhead = 0;
-+
-+    if (strcmp(o->ciphername, "BF-CBC") == 0)
-+    {
-+        /* none has no overhead, so use this to later add only --auth
-+         * overhead */
-+
-+        /* overhead of BF-CBC: 64 bit block size, 64 bit IV size */
-+        overhead += 64/8 + 64/8;
-+        /* set ciphername to none, so its size does get added in the
-+         * fake_kt and the cipher is not tried to be resolved */
-+        ciphername = "none";
-+    }
-+
-+    /* We pass tlsmode always true here since as we do not need to check if
-+     * the ciphers are actually valid for non tls in occ calucation */
-+    init_key_type(&occ_kt, ciphername, o->authname, true, false);
-+
-+    overhead += frame_calculate_protocol_header_size(&occ_kt, o, 0, true);
-+
-+    return payload + overhead;
-+}
-+
+-    /*
+-     * Set adjustment factor for buffer alignment when no
+-     * cipher is used.
+-     */
+-    if (!cipher_defined(c->c1.ks.key_type.cipher))
+-    {
+-        frame_align_to_extra_frame(&c->c2.frame);
+-        frame_or_align_flags(&c->c2.frame,
+-                             FRAME_HEADROOM_MARKER_FRAGMENT
+-                             |FRAME_HEADROOM_MARKER_READ_LINK
+-                             |FRAME_HEADROOM_MARKER_READ_STREAM);
+-    }
+-
+     frame_add_to_extra_buffer(&c->c2.frame, PAYLOAD_ALIGN);
+     frame_finalize(&c->c2.frame,
+                    o->ce.link_mtu_defined,
+diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
+index e4143e267..0ab716d7a 100644
+--- a/src/openvpn/mtu.c
++++ b/src/openvpn/mtu.c
+@@ -42,12 +42,11 @@
  void
- frame_finalize(struct frame *frame,
-                bool link_mtu_defined,
+ alloc_buf_sock_tun(struct buffer *buf,
+                    const struct frame *frame,
+-                   const bool tuntap_buffer,
+-                   const unsigned int align_mask)
++                   const bool tuntap_buffer)
+ {
+     /* allocate buffer for overlapped I/O */
+     *buf = alloc_buf(BUF_SIZE(frame));
+-    ASSERT(buf_init(buf, FRAME_HEADROOM_ADJ(frame, align_mask)));
++    ASSERT(buf_init(buf, FRAME_HEADROOM(frame)));
+     buf->len = tuntap_buffer ? MAX_RW_SIZE_TUN(frame) : MAX_RW_SIZE_LINK(frame);
+     ASSERT(buf_safe(buf, 0));
+ }
+@@ -153,10 +152,6 @@ frame_print(const struct frame *frame,
+     buf_printf(&out, " EB:%d", frame->extra_buffer);
+     buf_printf(&out, " ET:%d", frame->extra_tun);
+     buf_printf(&out, " EL:%d", frame->extra_link);
+-    if (frame->align_flags && frame->align_adjust)
+-    {
+-        buf_printf(&out, " AF:%u/%d", frame->align_flags, frame->align_adjust);
+-    }
+     buf_printf(&out, " ]");
+ 
+     msg(level, "%s", out.data);
 diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index ae83d3e7a..f60138607 100644
+index 7b18b3621..72a9e515b 100644
 --- a/src/openvpn/mtu.h
 +++ b/src/openvpn/mtu.h
-@@ -280,6 +280,17 @@ frame_calculate_protocol_header_size(const struct key_type *kt,
-                                      unsigned int payload_size,
-                                      bool occ);
+@@ -121,17 +121,10 @@ struct frame {
  
-+/**
-+ * Calculate the link-mtu to advertise to our peer.  The actual value is not
-+ * relevant, because we will possibly perform data channel cipher negotiation
-+ * after this, but older clients will log warnings if we do not supply them the
-+ * value they expect.  This assumes that the traditional cipher/auth directives
-+ * in the config match the config of the peer.
-+ */
-+size_t
-+calc_options_string_link_mtu(const struct options *options,
-+                             const struct frame *frame);
-+
- /*
-  * frame_set_mtu_dynamic and flags
+     int extra_link;             /**< Maximum number of bytes in excess of
+                                  *   external network interface's MTU that
+-                                 *   might be read from or written to it. */
+-
+-    /*
+-     * Alignment control
+-     */
+-#define FRAME_HEADROOM_MARKER_DECRYPT     (1<<0)
+-#define FRAME_HEADROOM_MARKER_FRAGMENT    (1<<1)
+-#define FRAME_HEADROOM_MARKER_READ_LINK   (1<<2)
+-#define FRAME_HEADROOM_MARKER_READ_STREAM (1<<3)
+-    unsigned int align_flags;
+-    int align_adjust;
++                                 *   might be read from or written to it.
++                                 *
++                                 *   Used by peer-id (3) and
++                                 *   socks UDP (10) */
+ };
+ 
+ /* Forward declarations, to prevent includes */
+@@ -184,8 +177,7 @@ struct options;
+  * Control buffer headroom allocations to allow for efficient prepending.
   */
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index c1663b264..441855c7d 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3764,57 +3764,6 @@ pre_connect_restore(struct options *o, struct gc_arena *gc)
-     o->data_channel_crypto_flags = 0;
- }
+ #define FRAME_HEADROOM_BASE(f)     (TUN_LINK_DELTA(f) + (f)->extra_buffer + (f)->extra_link)
+-#define FRAME_HEADROOM(f)          frame_headroom(f, 0)
+-#define FRAME_HEADROOM_ADJ(f, fm)  frame_headroom(f, fm)
++#define FRAME_HEADROOM(f)          frame_headroom(f)
  
--/**
-- * Calculate the link-mtu to advertise to our peer.  The actual value is not
-- * relevant, because we will possibly perform data channel cipher negotiation
-- * after this, but older clients will log warnings if we do not supply them the
-- * value they expect.  This assumes that the traditional cipher/auth directives
-- * in the config match the config of the peer.
-- */
--static size_t
--calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
--{
--    size_t link_mtu = EXPANDED_SIZE(frame);
--
--    if (o->pull || o->mode == MODE_SERVER)
--    {
--        struct frame fake_frame = *frame;
--        struct key_type fake_kt;
--
--        frame_remove_from_extra_frame(&fake_frame, crypto_max_overhead());
--
--
--        /* o->ciphername might be BF-CBC even though the underlying SSL library
--         * does not support it. For this reason we workaround this corner case
--         * by pretending to have no encryption enabled and by manually adding
--         * the required packet overhead to the MTU computation.
--         */
--        const char* ciphername = o->ciphername;
--
--        if (strcmp(o->ciphername, "BF-CBC") == 0)
--        {
--            /* none has no overhead, so use this to later add only --auth
--             * overhead */
--
--            /* overhead of BF-CBC: 64 bit block size, 64 bit IV size */
--            frame_add_to_extra_frame(&fake_frame, 64/8 + 64/8);
--            /* set ciphername to none, so its size does get added in the
--             * fake_kt and the cipher is not tried to be resolved */
--            ciphername = "none";
--        }
--
--        init_key_type(&fake_kt, ciphername, o->authname, true, false);
--
--        crypto_adjust_frame_parameters(&fake_frame, &fake_kt, o->replay,
--                                       cipher_kt_mode_ofb_cfb(fake_kt.cipher));
--        frame_finalize(&fake_frame, o->ce.link_mtu_defined, o->ce.link_mtu,
--                       o->ce.tun_mtu_defined, o->ce.tun_mtu);
--        msg(D_MTU_DEBUG, "%s: link-mtu %u -> %d", __func__, (unsigned int) link_mtu,
--            EXPANDED_SIZE(&fake_frame));
--        link_mtu = EXPANDED_SIZE(&fake_frame);
--    }
--    return link_mtu;
--}
  /*
-  * Build an options string to represent data channel encryption options.
-  * This string must match exactly between peers.  The keysize is checked
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index 44b77cc5d..f681b353c 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -46,7 +46,9 @@ crypto_testdriver_SOURCES = test_crypto.c mock_msg.c mock_msg.h \
- 	$(openvpn_srcdir)/crypto_openssl.c \
- 	$(openvpn_srcdir)/otime.c \
- 	$(openvpn_srcdir)/packet_id.c \
--	$(openvpn_srcdir)/platform.c
-+	$(openvpn_srcdir)/platform.c \
-+	$(openvpn_srcdir)/mtu.c \
-+	$(openvpn_srcdir)/mss.c
+  * Max size of a buffer used to build a packet for output to
+@@ -227,8 +219,7 @@ void frame_set_mtu_dynamic(struct frame *frame, int mtu, unsigned int flags);
+  */
+ void alloc_buf_sock_tun(struct buffer *buf,
+                         const struct frame *frame,
+-                        const bool tuntap_buffer,
+-                        const unsigned int align_mask);
++                        const bool tuntap_buffer);
  
- packet_id_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
-@@ -137,4 +139,4 @@ misc_testdriver_SOURCES = test_misc.c mock_msg.c \
-     mock_get_random.c \
- 	$(openvpn_srcdir)/buffer.c \
- 	$(openvpn_srcdir)/ssl_util.c \
--	$(openvpn_srcdir)/platform.c
-\ No newline at end of file
-+	$(openvpn_srcdir)/platform.c
-diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
-index 51672f9b2..19ce174ea 100644
---- a/tests/unit_tests/openvpn/test_crypto.c
-+++ b/tests/unit_tests/openvpn/test_crypto.c
-@@ -37,6 +37,7 @@
- #include <cmocka.h>
- 
- #include "crypto.h"
-+#include "options.h"
- #include "ssl_backend.h"
- 
- #include "mock_msg.h"
-@@ -234,6 +235,130 @@ test_des_encrypt(void **state)
-     free(src2);
+ /** Set the --mssfix option. */
+ void frame_init_mssfix(struct frame *frame, const struct options *options);
+@@ -252,11 +243,10 @@ const char *format_extended_socket_error(int fd, int *mtu, struct gc_arena *gc);
+  * headroom and alignment issues.
+  */
+ static inline int
+-frame_headroom(const struct frame *f, const unsigned int flag_mask)
++frame_headroom(const struct frame *f)
+ {
+     const int offset = FRAME_HEADROOM_BASE(f);
+-    const int adjust = (flag_mask & f->align_flags) ? f->align_adjust : 0;
+-    const int delta = ((PAYLOAD_ALIGN << 24) - (offset + adjust)) & (PAYLOAD_ALIGN - 1);
++    const int delta = ((PAYLOAD_ALIGN << 24) - offset) & (PAYLOAD_ALIGN - 1);
+     return offset + delta;
  }
  
-+/* This test is in test_crypto as it calls into the functions that calculate
-+ * the crypto overhead */
-+static void
-+test_occ_mtu_calculation(void **state)
-+{
-+    struct gc_arena gc = gc_new();
-+
-+    struct frame f = { 0 };
-+    struct options o = { 0 };
-+    size_t linkmtu;
-+
-+    /* common defaults */
-+    o.ce.tun_mtu = 1400;
-+    o.replay = true;
-+    o.ce.proto = PROTO_UDP;
-+
-+    /* No crypto at all */
-+    o.ciphername = "none";
-+    o.authname = "none";
-+    linkmtu = calc_options_string_link_mtu(&o, &f);
-+    assert_int_equal(linkmtu, 1400);
-+
-+    /* Static key OCC examples */
-+    o.shared_secret_file = "not null";
-+
-+    /* secret, auth none, cipher none */
-+    o.ciphername = "none";
-+    o.authname = "none";
-+    linkmtu = calc_options_string_link_mtu(&o, &f);
-+    assert_int_equal(linkmtu, 1408);
-+
-+    /* secret, cipher AES-128-CBC, auth none */
-+    o.ciphername = "AES-128-CBC";
-+    o.authname = "none";
-+    linkmtu = calc_options_string_link_mtu(&o, &f);
-+    assert_int_equal(linkmtu, 1440);
-+
-+    /* secret, cipher none, auth SHA256 */
-+    o.ciphername = "none";
-+    o.authname = "SHA256";
-+    linkmtu = calc_options_string_link_mtu(&o, &f);
-+    assert_int_equal(linkmtu, 1440);
-+
-+    /* --secret, cipher BF-CBC, auth SHA1 */
-+    o.ciphername = "BF-CBC";
-+    o.authname = "SHA1";
-+    linkmtu = calc_options_string_link_mtu(&o, &f);
-+    assert_int_equal(linkmtu, 1444);
-+
-+    /* --secret, cipher BF-CBC, auth SHA1, tcp-client */
-+    o.ce.proto = PROTO_TCP_CLIENT;
-+    linkmtu = calc_options_string_link_mtu(&o, &f);
-+    assert_int_equal(linkmtu, 1446);
-+
-+    o.ce.proto = PROTO_UDP;
-+
-+    /* --secret, comp-lzo yes, cipher BF-CBC, auth SHA1 */
-+    o.comp.alg = COMP_ALG_LZO;
-+    linkmtu = calc_options_string_link_mtu(&o, &f);
-+    assert_int_equal(linkmtu, 1445);
-+
-+    /* --secret, comp-lzo yes, cipher BF-CBC, auth SHA1, fragment 1200 */
-+    o.ce.fragment = 1200;
-+    linkmtu = calc_options_string_link_mtu(&o, &f);
-+    assert_int_equal(linkmtu, 1449);
-+
-+    o.comp.alg = COMP_ALG_UNDEF;
-+    o.ce.fragment = 0;
-+
-+    /* TLS mode */
-+    o.shared_secret_file = NULL;
-+    o.tls_client = true;
-+    o.pull = true;
-+
-+    /* tls client, cipher AES-128-CBC, auth SHA1, tls-auth*/
-+    o.authname = "SHA1";
-+    o.ciphername = "AES-128-CBC";
-+    o.tls_auth_file = "dummy";
-+
-+    linkmtu = calc_options_string_link_mtu(&o, &f);
-+    assert_int_equal(linkmtu, 1457);
-+
-+    /* tls client, cipher AES-128-CBC, auth SHA1 */
-+    o.tls_auth_file = NULL;
-+
-+    linkmtu = calc_options_string_link_mtu(&o, &f);
-+    assert_int_equal(linkmtu, 1457);
-+
-+    /* tls client, cipher none, auth none */
-+    o.authname = "none";
-+    o.ciphername = "none";
-+
-+    linkmtu = calc_options_string_link_mtu(&o, &f);
-+    assert_int_equal(linkmtu, 1405);
-+
-+    /* tls client, auth none, cipher none, no-replay */
-+    o.replay = false;
-+
-+    linkmtu = calc_options_string_link_mtu(&o, &f);
-+    assert_int_equal(linkmtu, 1401);
-+
-+
-+    o.replay = true;
-+
-+    /* tls client, auth SHA1, cipher AES-256-GCM */
-+    o.authname = "SHA1";
-+    o.ciphername = "AES-256-GCM";
-+    linkmtu = calc_options_string_link_mtu(&o, &f);
-+    assert_int_equal(linkmtu, 1449);
-+
-+
-+    /* tls client, auth SHA1, cipher AES-256-GCM, fragment, comp-lzo yes */
-+    o.comp.alg = COMP_ALG_LZO;
-+    o.ce.fragment = 1200;
-+    linkmtu = calc_options_string_link_mtu(&o, &f);
-+    assert_int_equal(linkmtu, 1454);
-+
-+    /* tls client, auth SHA1, cipher AES-256-GCM, fragment, comp-lzo yes, socks */
-+    o.ce.socks_proxy_server = "socks.example.com";
-+    linkmtu = calc_options_string_link_mtu(&o, &f);
-+    assert_int_equal(linkmtu, 1464);
-+
-+    gc_free(&gc);
-+}
+@@ -300,18 +290,6 @@ frame_add_to_extra_buffer(struct frame *frame, const int increment)
+     frame->extra_buffer += increment;
+ }
  
- int
- main(void)
-@@ -243,7 +368,8 @@ main(void)
-         cmocka_unit_test(crypto_translate_cipher_names),
-         cmocka_unit_test(crypto_test_tls_prf),
-         cmocka_unit_test(crypto_test_hmac),
--        cmocka_unit_test(test_des_encrypt)
-+        cmocka_unit_test(test_des_encrypt),
-+        cmocka_unit_test(test_occ_mtu_calculation)
-     };
+-static inline void
+-frame_align_to_extra_frame(struct frame *frame)
+-{
+-    frame->align_adjust = frame->extra_frame + frame->extra_link;
+-}
+-
+-static inline void
+-frame_or_align_flags(struct frame *frame, const unsigned int flag_mask)
+-{
+-    frame->align_flags |= flag_mask;
+-}
+-
+ static inline bool
+ frame_defined(const struct frame *frame)
+ {
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 72062cd08..df7367469 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1645,8 +1645,7 @@ socket_frame_init(const struct frame *frame, struct link_socket *sock)
+ #else
+         alloc_buf_sock_tun(&sock->stream_buf_data,
+                            frame,
+-                           false,
+-                           FRAME_HEADROOM_MARKER_READ_STREAM);
++                           false);
  
- #if defined(ENABLE_CRYPTO_OPENSSL)
-diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvpn/test_misc.c
-index 70f726d0f..867fa1bb5 100644
---- a/tests/unit_tests/openvpn/test_misc.c
-+++ b/tests/unit_tests/openvpn/test_misc.c
-@@ -37,6 +37,7 @@
- #include <cmocka.h>
+         stream_buf_init(&sock->stream_buf,
+                         &sock->stream_buf_data,
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index fd1246cde..1dc1c5e77 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -186,7 +186,7 @@ overlapped_io_init(struct overlapped_io *o,
+     }
  
- #include "ssl_util.h"
-+#include "options.h"
+     /* allocate buffer for overlapped I/O */
+-    alloc_buf_sock_tun(&o->buf_init, frame, tuntap_buffer, 0);
++    alloc_buf_sock_tun(&o->buf_init, frame, tuntap_buffer);
+ }
  
- static void
- test_compat_lzo_string(void **state)
+ void
 -- 
 2.33.0
 
