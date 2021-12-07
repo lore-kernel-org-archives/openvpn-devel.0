@@ -1,10 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue,  7 Dec 2021 18:01:56 +0100
-Message-Id: <20211207170211.3275837-7-arne@...1227...>
+Date: Tue,  7 Dec 2021 18:02:09 +0100
+Message-Id: <20211207170211.3275837-20-arne@...1227...>
 In-Reply-To: <20211207170211.3275837-1-arne@...1227...>
 References: <20211207170211.3275837-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 06/21] Remove post_open_mtu code
+Subject: [Openvpn-devel] [PATCH 19/21] Replace TUN_MTU_SIZE with
+ frame->tun_mtu
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,79 +18,121 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This code is probably from a time when we could not set the MTU on
-the Windows tap6 driver. Nowadays we can set the MTU on this device,
-so this code is a noop now.
+This always uses the configured MTU size instead relying on the calculated
+MTU size.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/init.c | 10 ----------
- src/openvpn/ssl.c  |  2 +-
- src/openvpn/tun.c  |  1 -
- src/openvpn/tun.h  |  4 ----
- 4 files changed, 1 insertion(+), 16 deletions(-)
+ src/openvpn/forward.c |  2 +-
+ src/openvpn/init.c    | 16 ++++++++--------
+ src/openvpn/mtu.h     |  5 -----
+ 3 files changed, 9 insertions(+), 14 deletions(-)
 
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 3f362e95d..5f8361d3e 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1379,7 +1379,7 @@ ipv6_send_icmp_unreachable(struct context *c, struct buffer *buf, bool client)
+      * packet
+      */
+     int max_payload_size = min_int(MAX_ICMPV6LEN,
+-                                   TUN_MTU_SIZE(&c->c2.frame) - icmpheader_len);
++                                   c->c2.frame.tun_mtu - icmpheader_len);
+     int payload_len = min_int(max_payload_size, BLEN(&inputipbuf));
+ 
+     pip6out.payload_len = htons(sizeof(struct openvpn_icmp6hdr) + payload_len);
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 0009bcb72..85d664ad6 100644
+index 9d9dfe96a..a8717c92a 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -1809,16 +1809,6 @@ do_open_tun(struct context *c)
-                  c->c1.tuntap, c->plugins, c->c2.es, &c->net_ctx);
+@@ -1735,7 +1735,7 @@ do_open_tun(struct context *c)
+                                              c->options.dev_type,
+                                              c->options.dev_node,
+                                              &gc);
+-        do_ifconfig(c->c1.tuntap, guess, TUN_MTU_SIZE(&c->c2.frame), c->c2.es,
++        do_ifconfig(c->c1.tuntap, guess, c->c2.frame.tun_mtu, c->c2.es,
+                     &c->net_ctx);
      }
  
--    /*
--     * Did tun/tap driver give us an MTU?
--     */
--    if (c->c1.tuntap->post_open_mtu)
--    {
--        frame_set_mtu_dynamic(&c->c2.frame,
--                              c->c1.tuntap->post_open_mtu,
--                              SET_MTU_TUN | SET_MTU_UPPER_BOUND);
--    }
--
-     ret = true;
-     static_context = c;
- #ifndef TARGET_ANDROID
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 8cbb129d2..303e3fe8f 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1897,7 +1897,7 @@ tls_session_update_crypto_params_do_work(struct tls_session *session,
-     frame_print(frame, D_MTU_INFO, "Data Channel MTU parms");
- 
-     /*
--     * mssfix uses data channel framing, which at this point contains
-+     * mssfix uses data channel framing, which at this poipnt contains
-      * actual overhead. Fragmentation logic uses frame_fragment, which
-      * still contains worst case overhead. Replace it with actual overhead
-      * to prevent unneeded fragmentation.
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 75d5eaf7b..12bdd2005 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -6071,7 +6071,6 @@ tuntap_get_mtu(struct tuntap *tt)
-                         &mtu, sizeof(mtu),
-                         &mtu, sizeof(mtu), &len, NULL))
+@@ -1766,7 +1766,7 @@ do_open_tun(struct context *c)
+         && ifconfig_order() == IFCONFIG_AFTER_TUN_OPEN)
      {
--        tt->post_open_mtu = (int)mtu;
-         msg(D_MTU_INFO, "TAP-Windows MTU=%d", (int)mtu);
+         do_ifconfig(c->c1.tuntap, c->c1.tuntap->actual_name,
+-                    TUN_MTU_SIZE(&c->c2.frame), c->c2.es, &c->net_ctx);
++                    c->c2.frame.tun_mtu, c->c2.es, &c->net_ctx);
+     }
+ 
+     /* run the up script */
+@@ -1778,7 +1778,7 @@ do_open_tun(struct context *c)
+                 c->c1.tuntap->adapter_index,
+ #endif
+                 dev_type_string(c->options.dev, c->options.dev_type),
+-                TUN_MTU_SIZE(&c->c2.frame),
++                c->c2.frame.tun_mtu,
+                 print_in_addr_t(c->c1.tuntap->local, IA_EMPTY_IF_UNDEF, &gc),
+                 print_in_addr_t(c->c1.tuntap->remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
+                 "init",
+@@ -1827,7 +1827,7 @@ else
+                     c->c1.tuntap->adapter_index,
+ #endif
+                     dev_type_string(c->options.dev, c->options.dev_type),
+-                    TUN_MTU_SIZE(&c->c2.frame),
++                    c->c2.frame.tun_mtu,
+                     print_in_addr_t(c->c1.tuntap->local, IA_EMPTY_IF_UNDEF, &gc),
+                     print_in_addr_t(c->c1.tuntap->remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
+                     "restart",
+@@ -1906,7 +1906,7 @@ do_close_tun(struct context *c, bool force)
+                             adapter_index,
+ #endif
+                             NULL,
+-                            TUN_MTU_SIZE(&c->c2.frame),
++                            c->c2.frame.tun_mtu,
+                             print_in_addr_t(local, IA_EMPTY_IF_UNDEF, &gc),
+                             print_in_addr_t(remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
+                             "init",
+@@ -1936,7 +1936,7 @@ do_close_tun(struct context *c, bool force)
+                         adapter_index,
+ #endif
+                         NULL,
+-                        TUN_MTU_SIZE(&c->c2.frame),
++                        c->c2.frame.tun_mtu,
+                         print_in_addr_t(local, IA_EMPTY_IF_UNDEF, &gc),
+                         print_in_addr_t(remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
+                         "init",
+@@ -1974,7 +1974,7 @@ do_close_tun(struct context *c, bool force)
+                             adapter_index,
+ #endif
+                             NULL,
+-                            TUN_MTU_SIZE(&c->c2.frame),
++                            c->c2.frame.tun_mtu,
+                             print_in_addr_t(local, IA_EMPTY_IF_UNDEF, &gc),
+                             print_in_addr_t(remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
+                             "restart",
+@@ -2154,7 +2154,7 @@ void adjust_mtu_peerid(struct context *c)
+     {
+         msg(M_WARN, "OPTIONS IMPORT: WARNING: peer-id set, but link-mtu"
+                     " fixed by config - reducing tun-mtu to %d, expect"
+-                    " MTU problems", TUN_MTU_SIZE(&c->c2.frame));
++                    " MTU problems", c->c2.frame.tun_mtu);
      }
  }
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index aa1e47b5a..d4657537c 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -214,10 +214,6 @@ struct tuntap
- #endif
-     /* used for printing status info only */
-     unsigned int rwflags_debug;
--
--    /* Some TUN/TAP drivers like to be ioctled for mtu
--     * after open */
--    int post_open_mtu;
- };
  
- static inline bool
+diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
+index 1c479c9f5..b7c12b968 100644
+--- a/src/openvpn/mtu.h
++++ b/src/openvpn/mtu.h
+@@ -181,11 +181,6 @@ struct options;
+  */
+ #define TUN_LINK_DELTA(f)        ((f)->extra_frame + (f)->extra_tun)
+ 
+-/*
+- * This is the size to "ifconfig" the tun or tap device.
+- */
+-#define TUN_MTU_SIZE(f)          ((f)->link_mtu - TUN_LINK_DELTA(f))
+-
+ /*
+  * This is the maximum packet size that we need to be able to
+  * read from or write to a tun or tap device.  For example,
 -- 
 2.33.0
 
