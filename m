@@ -1,11 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue,  7 Dec 2021 18:01:55 +0100
-Message-Id: <20211207170211.3275837-6-arne@...1227...>
+Date: Tue,  7 Dec 2021 18:02:08 +0100
+Message-Id: <20211207170211.3275837-19-arne@...1227...>
 In-Reply-To: <20211207170211.3275837-1-arne@...1227...>
 References: <20211207170211.3275837-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 05/21] Document frame related function and
- variables a bit more
+Subject: [Openvpn-devel] [PATCH 18/21] Remove extra_link from frame
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,70 +17,153 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+The previous commits removed any reads from this variable. So we can
+now safely remove it.
+
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/mtu.h | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
+ src/openvpn/init.c  | 19 -------------------
+ src/openvpn/mtu.c   |  1 -
+ src/openvpn/mtu.h   | 13 -------------
+ src/openvpn/socks.c | 11 +----------
+ src/openvpn/socks.h |  2 --
+ src/openvpn/ssl.c   |  1 -
+ 6 files changed, 1 insertion(+), 46 deletions(-)
 
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 72ffbfdfc..9d9dfe96a 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -3099,14 +3099,6 @@ do_init_frame(struct context *c)
+     }
+ #endif /* USE_COMP */
+ 
+-    /*
+-     * Adjust frame size for UDP Socks support.
+-     */
+-    if (c->options.ce.socks_proxy_server)
+-    {
+-        socks_adjust_frame_parameters(&c->c2.frame, c->options.ce.proto);
+-    }
+-
+     /*
+      * Adjust frame size based on the --tun-mtu-extra parameter.
+      */
+@@ -3139,17 +3131,6 @@ do_init_frame(struct context *c)
+ #endif
+ #endif /* USE_COMP */
+ 
+-    /* packets with peer-id (P_DATA_V2) need 3 extra bytes in frame (on client)
+-     * and need link_mtu+3 bytes on socket reception (on server).
+-     *
+-     * accommodate receive path in f->extra_link, which has the side effect of
+-     * also increasing send buffers (BUF_SIZE() macro), which need to be
+-     * allocated big enough before receiving peer-id option from server.
+-     *
+-     * f->extra_frame is adjusted when peer-id option is push-received
+-     */
+-    frame_add_to_extra_link(&c->c2.frame, 3);
+-
+ #ifdef ENABLE_FRAGMENT
+     /*
+      * Set frame parameter for fragment code.  This is necessary because
+diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
+index 62a66c8fd..9ca58c1f0 100644
+--- a/src/openvpn/mtu.c
++++ b/src/openvpn/mtu.c
+@@ -215,7 +215,6 @@ frame_print(const struct frame *frame,
+     buf_printf(&out, " EF:%d", frame->extra_frame);
+     buf_printf(&out, " EB:%d", frame->extra_buffer);
+     buf_printf(&out, " ET:%d", frame->extra_tun);
+-    buf_printf(&out, " EL:%d", frame->extra_link);
+     buf_printf(&out, " ]");
+ 
+     msg(level, "%s", out.data);
 diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index 72a9e515b..c1148c317 100644
+index 06a00b5bb..1c479c9f5 100644
 --- a/src/openvpn/mtu.h
 +++ b/src/openvpn/mtu.h
-@@ -28,7 +28,7 @@
+@@ -163,13 +163,6 @@ struct frame {
+                                  *   which defaults to 0 for tun and 32
+                                  *   (\c TAP_MTU_EXTRA_DEFAULT) for tap.
+                                  *   */
+-
+-    int extra_link;             /**< Maximum number of bytes in excess of
+-                                 *   external network interface's MTU that
+-                                 *   might be read from or written to it.
+-                                 *
+-                                 *   Used by peer-id (3) and
+-                                 *   socks UDP (10) */
+ };
  
- /*
-  *
-- * Packet maninipulation routes such as encrypt, decrypt, compress, decompress
-+ * Packet manipulation routes such as encrypt, decrypt, compress, decompress
-  * are passed a frame buffer that looks like this:
-  *
-  *    [extra_frame bytes] [mtu bytes] [extra_frame_bytes] [compression overflow bytes]
-@@ -117,7 +117,12 @@ struct frame {
-     int extra_tun;              /**< Maximum number of bytes in excess of
-                                  *   the tun/tap MTU that might be read
-                                  *   from or written to the virtual
--                                 *   tun/tap network interface. */
-+                                 *   tun/tap network interface.
-+                                 *
-+                                 *   Only set with the option --tun-mtu-extra
-+                                 *   which defaults to 0 for tun and 32
-+                                 *   (\c TAP_MTU_EXTRA_DEFAULT) for tap.
-+                                 *   */
- 
-     int extra_link;             /**< Maximum number of bytes in excess of
-                                  *   external network interface's MTU that
-@@ -177,11 +182,22 @@ struct options;
-  * Control buffer headroom allocations to allow for efficient prepending.
-  */
- #define FRAME_HEADROOM_BASE(f)     (TUN_LINK_DELTA(f) + (f)->extra_buffer + (f)->extra_link)
-+/* Same as FRAME_HEADROOM_BASE but rounded up to next multiple of PAYLOAD_ALIGN */
- #define FRAME_HEADROOM(f)          frame_headroom(f)
- 
- /*
-  * Max size of a buffer used to build a packet for output to
-  * the TCP/UDP port.
-+ *
-+ * the FRAME_HEADROOM_BASE(f) * 2 should not be necessary but it looks that at
-+ * some point in the past we seem to have lost the information what parts of
-+ * the extra space we need to have before the data and which we need after
-+ * the data. So we ensure we have the FRAME_HEADROOM before and after the
-+ * actual data.
-+ *
-+ * Most of our code only prepends headers but compression needs the extra bytes
-+ * *after* the data as compressed data might end up larger than the original
-+ * data (and max compression overhead is part of extra_buffer)
-  */
- #define BUF_SIZE(f)              (TUN_MTU_SIZE(f) + FRAME_HEADROOM_BASE(f) * 2)
- 
-@@ -246,6 +262,8 @@ static inline int
- frame_headroom(const struct frame *f)
- {
-     const int offset = FRAME_HEADROOM_BASE(f);
-+    /* These two lines just pad offset to next multiple of PAYLOAD_ALIGN in
-+     * a complicated and confusing way */
-     const int delta = ((PAYLOAD_ALIGN << 24) - offset) & (PAYLOAD_ALIGN - 1);
-     return offset + delta;
+ /* Forward declarations, to prevent includes */
+@@ -359,12 +352,6 @@ frame_add_to_extra_tun(struct frame *frame, const int increment)
+     frame->extra_tun += increment;
  }
+ 
+-static inline void
+-frame_add_to_extra_link(struct frame *frame, const int increment)
+-{
+-    frame->extra_link += increment;
+-}
+-
+ static inline void
+ frame_add_to_extra_buffer(struct frame *frame, const int increment)
+ {
+diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
+index 27a583313..6935e761a 100644
+--- a/src/openvpn/socks.c
++++ b/src/openvpn/socks.c
+@@ -49,15 +49,6 @@
+ 
+ #define UP_TYPE_SOCKS           "SOCKS Proxy"
+ 
+-void
+-socks_adjust_frame_parameters(struct frame *frame, int proto)
+-{
+-    if (proto == PROTO_UDP)
+-    {
+-        frame_add_to_extra_link(frame, 10);
+-    }
+-}
+-
+ struct socks_proxy_info *
+ socks_proxy_new(const char *server,
+                 const char *port,
+@@ -610,7 +601,7 @@ socks_process_outgoing_udp(struct buffer *buf,
+     /*
+      * Get a 10 byte subset buffer prepended to buf --
+      * we expect these bytes will be here because
+-     * we allocated frame space in socks_adjust_frame_parameters.
++     * we always allocate space for these bytes
+      */
+     struct buffer head = buf_sub(buf, 10, true);
+ 
+diff --git a/src/openvpn/socks.h b/src/openvpn/socks.h
+index 9bda2e808..4ab30f55f 100644
+--- a/src/openvpn/socks.h
++++ b/src/openvpn/socks.h
+@@ -42,8 +42,6 @@ struct socks_proxy_info {
+     char authfile[256];
+ };
+ 
+-void socks_adjust_frame_parameters(struct frame *frame, int proto);
+-
+ struct socks_proxy_info *socks_proxy_new(const char *server,
+                                          const char *port,
+                                          const char *authfile);
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 79a5660bd..d55ffcdd2 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -322,7 +322,6 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
+ 
+     /* inherit link MTU and extra_link from data channel */
+     frame->link_mtu = data_channel_frame->link_mtu;
+-    frame->extra_link = data_channel_frame->extra_link;
+ 
+     /* set extra_frame */
+     tls_adjust_frame_parameters(frame);
 -- 
 2.33.0
 
