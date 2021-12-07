@@ -1,11 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue,  7 Dec 2021 18:02:05 +0100
-Message-Id: <20211207170211.3275837-16-arne@...1227...>
+Date: Tue,  7 Dec 2021 18:01:56 +0100
+Message-Id: <20211207170211.3275837-7-arne@...1227...>
 In-Reply-To: <20211207170211.3275837-1-arne@...1227...>
 References: <20211207170211.3275837-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 15/21] Update fragment and mssfix related
- warnings
+Subject: [Openvpn-devel] [PATCH 06/21] Remove post_open_mtu code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,42 +17,79 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The warning that fragment/mssfix needs also tun-mtu set to 1500 makes
-little sense. Remove it completely. Instead warn if there are incosistencies
-between --fragment and mssfix.
+This code is probably from a time when we could not set the MTU on
+the Windows tap6 driver. Nowadays we can set the MTU on this device,
+so this code is a noop now.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/init.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ src/openvpn/init.c | 10 ----------
+ src/openvpn/ssl.c  |  2 +-
+ src/openvpn/tun.c  |  1 -
+ src/openvpn/tun.h  |  4 ----
+ 4 files changed, 1 insertion(+), 16 deletions(-)
 
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 31ae250bc..4f08e560a 100644
+index 0009bcb72..85d664ad6 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -3183,12 +3183,17 @@ do_init_frame(struct context *c)
- #endif
- 
- #ifdef ENABLE_FRAGMENT
--    if ((c->options.ce.mssfix || c->options.ce.fragment)
--        && TUN_MTU_SIZE(&c->c2.frame_fragment) != ETHERNET_MTU)
-+    if (c->options.ce.fragment > 0 && c->options.ce.mssfix > c->options.ce.fragment)
-     {
--        msg(M_WARN,
--            "WARNING: normally if you use --mssfix and/or --fragment, you should also set --tun-mtu %d (currently it is %d)",
--            ETHERNET_MTU, TUN_MTU_SIZE(&c->c2.frame_fragment));
-+        msg(M_WARN, "WARNING: if you use --mssfix and --fragment, you should "
-+                    "set --fragment (%d) larger than --mssfix (%d)",
-+                    c->options.ce.fragment, c->options.ce.mssfix);
-+    }
-+    if (c->options.ce.fragment > 0 && c->options.ce.mssfix > 0
-+        && c->options.ce.fragment_encap != c->options.ce.mssfix_encap)
-+    {
-+        msg(M_WARN, "WARNING: if you use --mssfix and --fragment, you should "
-+                    "use the mtu for both or none.");
+@@ -1809,16 +1809,6 @@ do_open_tun(struct context *c)
+                  c->c1.tuntap, c->plugins, c->c2.es, &c->net_ctx);
      }
- #endif
+ 
+-    /*
+-     * Did tun/tap driver give us an MTU?
+-     */
+-    if (c->c1.tuntap->post_open_mtu)
+-    {
+-        frame_set_mtu_dynamic(&c->c2.frame,
+-                              c->c1.tuntap->post_open_mtu,
+-                              SET_MTU_TUN | SET_MTU_UPPER_BOUND);
+-    }
+-
+     ret = true;
+     static_context = c;
+ #ifndef TARGET_ANDROID
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 8cbb129d2..303e3fe8f 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1897,7 +1897,7 @@ tls_session_update_crypto_params_do_work(struct tls_session *session,
+     frame_print(frame, D_MTU_INFO, "Data Channel MTU parms");
+ 
+     /*
+-     * mssfix uses data channel framing, which at this point contains
++     * mssfix uses data channel framing, which at this poipnt contains
+      * actual overhead. Fragmentation logic uses frame_fragment, which
+      * still contains worst case overhead. Replace it with actual overhead
+      * to prevent unneeded fragmentation.
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 75d5eaf7b..12bdd2005 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -6071,7 +6071,6 @@ tuntap_get_mtu(struct tuntap *tt)
+                         &mtu, sizeof(mtu),
+                         &mtu, sizeof(mtu), &len, NULL))
+     {
+-        tt->post_open_mtu = (int)mtu;
+         msg(D_MTU_INFO, "TAP-Windows MTU=%d", (int)mtu);
+     }
  }
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index aa1e47b5a..d4657537c 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -214,10 +214,6 @@ struct tuntap
+ #endif
+     /* used for printing status info only */
+     unsigned int rwflags_debug;
+-
+-    /* Some TUN/TAP drivers like to be ioctled for mtu
+-     * after open */
+-    int post_open_mtu;
+ };
+ 
+ static inline bool
 -- 
 2.33.0
 
