@@ -1,10 +1,9 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Tue,  7 Dec 2021 13:11:37 +0100
-Message-Id: <20211207121137.3221-9-a@...2181...>
-In-Reply-To: <20211207121137.3221-1-a@...2181...>
-References: <20211207121137.3221-1-a@...2181...>
+From: Gert Doering <gert@...1296...>
+Date: Tue,  7 Dec 2021 14:04:36 +0100
+Message-Id: <20211207130436.22187-1-gert@...1296...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [RFC 8/8] ovpn-dco: force user to set DCO_INCLUDEDIR
+Subject: [Openvpn-devel] [PATCH] Move '--push-peer-info' documentation from
+ 'server' to 'client options'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,83 +15,179 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
+While --push-peer-info can be configured on the server, it's not really
+intended for that, and it ended in the "SERVER OPTIONS" section by
+mishap.  Fix that.
+
+Reported-by: Stella Ashburne <rewefie@...1278...>
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
- configure.ac | 32 ++++++++++----------------------
- 1 file changed, 10 insertions(+), 22 deletions(-)
+ doc/man-sections/client-options.rst | 69 +++++++++++++++++++++++++++++
+ doc/man-sections/server-options.rst | 69 -----------------------------
+ 2 files changed, 69 insertions(+), 69 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index b6ecb23a..1911f24e 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -777,29 +777,22 @@ PKG_CHECK_MODULES(
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
+index c5b7ad96..92a02e28 100644
+--- a/doc/man-sections/client-options.rst
++++ b/doc/man-sections/client-options.rst
+@@ -251,6 +251,75 @@ configuration.
+   next remote succeeds. To silently ignore an option pushed by the server,
+   use :code:`ignore`.
  
- if test "$enable_dco" = "yes"; then
- dnl
--dnl  Configure path for the ovpn-dco kernel module source directory.
-+dnl  Configure path for the ovpn-dco header directory.
- dnl
--dnl  This is similar to the core librariy, there is an embedded
--dnl  version in this tree which will be used by default.  The
--dnl  git checkout inside the ovpn-dco/ directory is managed via git
--dnl  submodule.
--dnl
--	AC_ARG_VAR([DCO_SOURCEDIR], [Alternative ovpn-dco kernel module source directory])
--	if test -z "${DCO_SOURCEDIR}"; then
--		case "$host" in
--			*-mingw*) DCO_SOURCEDIR="${srcdir}/../ovpn-dco-win";;
--			*) DCO_SOURCEDIR="${srcdir}/../ovpn-dco";;
--		esac
-+	AC_ARG_VAR([DCO_INCLUDEDIR], [ovpn-dco header directory (where to find ovpn-dco.h)])
-+	if test -z "${DCO_INCLUDEDIR}"; then
-+		AC_MSG_ERROR([You must specify DCO_INCLUDEDIR when using --enable-dco.])
++--push-peer-info
++  Push additional information about the client to server. The following
++  data is always pushed to the server:
 +
- 	fi
--	AC_MSG_NOTICE([Using ovpn-dco source directory: ${DCO_SOURCEDIR}])
--	AC_SUBST([DCO_SOURCEDIR])
++  :code:`IV_VER=<version>`
++        The client OpenVPN version
 +
-+	AC_MSG_NOTICE([Using ovpn-dco header directory: ${DCO_INCLUDEDIR}])
-+	DCO_CFLAGS="-I${DCO_INCLUDEDIR}"
++  :code:`IV_PLAT=[linux|solaris|openbsd|mac|netbsd|freebsd|win]`
++        The client OS platform
++
++  :code:`IV_LZO_STUB=1`
++        If client was built with LZO stub capability
++
++  :code:`IV_LZ4=1`
++        If the client supports LZ4 compressions.
++
++  :code:`IV_PROTO`
++    Details about protocol extensions that the peer supports. The
++    variable is a bitfield and the bits are defined as follows
++    (starting a bit 0 for the first (unused) bit:
++
++    - bit 1: The peer supports peer-id floating mechanism
++    - bit 2: The client expects a push-reply and the server may
++      send this reply without waiting for a push-request first.
++    - bit 3: The client is capable of doing key derivation using
++      RFC5705 key material exporter.
++    - bit 4: The client is capable of accepting additional arguments
++      to the `AUTH_PENDING` message.
++
++  :code:`IV_NCP=2`
++        Negotiable ciphers, client supports ``--cipher`` pushed by
++        the server, a value of 2 or greater indicates client supports
++        *AES-GCM-128* and *AES-GCM-256*.
++
++  :code:`IV_CIPHERS=<ncp-ciphers>`
++        The client announces the list of supported ciphers configured with the
++        ``--data-ciphers`` option to the server.
++
++  :code:`IV_GUI_VER=<gui_id> <version>`
++        The UI version of a UI if one is running, for example
++        :code:`de.blinkt.openvpn 0.5.47` for the Android app.
++
++  :code:`IV_SSO=[crtext,][openurl,][proxy_url]`
++        Additional authentication methods supported by the client.
++        This may be set by the client UI/GUI using ``--setenv``
++
++  When ``--push-peer-info`` is enabled the additional information consists
++  of the following data:
++
++  :code:`IV_HWADDR=<string>`
++        This is intended to be a unique and persistent ID of the client.
++        The string value can be any readable ASCII string up to 64 bytes.
++        OpenVPN 2.x and some other implementations use the MAC address of
++        the client's interface used to reach the default gateway. If this
++        string is generated by the client, it should be consistent and
++        preserved across independent session and preferably
++        re-installations and upgrades.
++
++  :code:`IV_SSL=<version string>`
++        The ssl version used by the client, e.g.
++        :code:`OpenSSL 1.0.2f 28 Jan 2016`.
++
++  :code:`IV_PLAT_VER=x.y`
++        The version of the operating system, e.g. 6.1 for Windows 7.
++
++  :code:`UV_<name>=<value>`
++        Client environment variables whose names start with
++        :code:`UV_`
++
+ --remote args
+   Remote host name or IP address, port and protocol.
  
- 	case "$host" in
- 		*-*-linux*)
- dnl
- dnl Include generic netlink library used to talk to ovpn-dco
- dnl
--			saved_CFLAGS="${CFLAGS}"
- 			PKG_CHECK_MODULES(
- 				[LIBNL_GENL],
- 				[libnl-genl-3.0 >= 3.2.29],
-@@ -807,16 +800,12 @@ dnl
- 				[AC_MSG_ERROR([libnl-genl-3.0 package not found or too old. Is the development package and pkg-config installed? Must be version 3.4.0 or newer])]
- 			)
+diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
+index f1d2ec31..8a030294 100644
+--- a/doc/man-sections/server-options.rst
++++ b/doc/man-sections/server-options.rst
+@@ -418,75 +418,6 @@ fast hardware. SSL/TLS authentication must be used in this mode.
+   ``--echo``, ``--comp-lzo``, ``--socket-flags``, ``--sndbuf``,
+   ``--rcvbuf``
  
--			DCO_CFLAGS="-I${DCO_SOURCEDIR}/include/uapi ${LIBNL_GENL_CFLAGS}"
+---push-peer-info
+-  Push additional information about the client to server. The following
+-  data is always pushed to the server:
 -
--			CFLAGS="${CFLAGS} ${DCO_CFLAGS}"
-+			CFLAGS="${CFLAGS} ${DCO_CFLAGS} ${LIBNL_GENL_CFLAGS}"
- 			AC_CHECK_HEADERS(
- 				[linux/ovpn_dco.h],
- 				,
--				[AC_MSG_ERROR([linux/ovpn_dco.h is missing (use DCO_SOURCE to set path to it, CFLAGS=${CFLAGS})])]
-+				[AC_MSG_ERROR([linux/ovpn_dco.h couldn't be found (use DCO_INCLUDEDIR to set the path to it, CFLAGS=${CFLAGS})])]
- 			)
--			CFLAGS=${saved_CFLAGS}
+-  :code:`IV_VER=<version>`
+-        The client OpenVPN version
 -
- 			OPTIONAL_DCO_LIBS="${LIBNL_GENL_LIBS}"
- 
- 			AC_DEFINE(ENABLE_LINUXDCO, 1, [Enable linux data channel offload])
-@@ -1407,7 +1396,6 @@ AC_SUBST([OPTIONAL_PKCS11_HELPER_CFLAGS])
- AC_SUBST([OPTIONAL_PKCS11_HELPER_LIBS])
- AC_SUBST([OPTIONAL_INOTIFY_CFLAGS])
- AC_SUBST([OPTIONAL_INOTIFY_LIBS])
--AC_SUBST([OPTIONAL_DCO_CFLAGS])
- AC_SUBST([OPTIONAL_DCO_LIBS])
- 
- AC_SUBST([PLUGIN_AUTH_PAM_CFLAGS])
+-  :code:`IV_PLAT=[linux|solaris|openbsd|mac|netbsd|freebsd|win]`
+-        The client OS platform
+-
+-  :code:`IV_LZO_STUB=1`
+-        If client was built with LZO stub capability
+-
+-  :code:`IV_LZ4=1`
+-        If the client supports LZ4 compressions.
+-
+-  :code:`IV_PROTO`
+-    Details about protocol extensions that the peer supports. The
+-    variable is a bitfield and the bits are defined as follows
+-    (starting a bit 0 for the first (unused) bit:
+-
+-    - bit 1: The peer supports peer-id floating mechanism
+-    - bit 2: The client expects a push-reply and the server may
+-      send this reply without waiting for a push-request first.
+-    - bit 3: The client is capable of doing key derivation using
+-      RFC5705 key material exporter.
+-    - bit 4: The client is capable of accepting additional arguments
+-      to the `AUTH_PENDING` message.
+-
+-  :code:`IV_NCP=2`
+-        Negotiable ciphers, client supports ``--cipher`` pushed by
+-        the server, a value of 2 or greater indicates client supports
+-        *AES-GCM-128* and *AES-GCM-256*.
+-
+-  :code:`IV_CIPHERS=<ncp-ciphers>`
+-        The client announces the list of supported ciphers configured with the
+-        ``--data-ciphers`` option to the server.
+-
+-  :code:`IV_GUI_VER=<gui_id> <version>`
+-        The UI version of a UI if one is running, for example
+-        :code:`de.blinkt.openvpn 0.5.47` for the Android app.
+-
+-  :code:`IV_SSO=[crtext,][openurl,][proxy_url]`
+-        Additional authentication methods supported by the client.
+-        This may be set by the client UI/GUI using ``--setenv``
+-
+-  When ``--push-peer-info`` is enabled the additional information consists
+-  of the following data:
+-
+-  :code:`IV_HWADDR=<string>`
+-        This is intended to be a unique and persistent ID of the client.
+-        The string value can be any readable ASCII string up to 64 bytes.
+-        OpenVPN 2.x and some other implementations use the MAC address of
+-        the client's interface used to reach the default gateway. If this
+-        string is generated by the client, it should be consistent and
+-        preserved across independent session and preferably
+-        re-installations and upgrades.
+-
+-  :code:`IV_SSL=<version string>`
+-        The ssl version used by the client, e.g.
+-        :code:`OpenSSL 1.0.2f 28 Jan 2016`.
+-
+-  :code:`IV_PLAT_VER=x.y`
+-        The version of the operating system, e.g. 6.1 for Windows 7.
+-
+-  :code:`UV_<name>=<value>`
+-        Client environment variables whose names start with
+-        :code:`UV_`
+-
+ --push-remove opt
+   Selectively remove all ``--push`` options matching "opt" from the option
+   list for a client. ``opt`` is matched as a substring against the whole
 -- 
-2.32.0
+2.26.3
 
 
