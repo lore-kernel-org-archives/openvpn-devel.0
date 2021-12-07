@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue,  7 Dec 2021 18:02:09 +0100
-Message-Id: <20211207170211.3275837-20-arne@...1227...>
+Date: Tue,  7 Dec 2021 18:01:55 +0100
+Message-Id: <20211207170211.3275837-6-arne@...1227...>
 In-Reply-To: <20211207170211.3275837-1-arne@...1227...>
 References: <20211207170211.3275837-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 19/21] Replace TUN_MTU_SIZE with
- frame->tun_mtu
+Subject: [Openvpn-devel] [PATCH 05/21] Document frame related function and
+ variables a bit more
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,121 +18,70 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This always uses the configured MTU size instead relying on the calculated
-MTU size.
-
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/forward.c |  2 +-
- src/openvpn/init.c    | 16 ++++++++--------
- src/openvpn/mtu.h     |  5 -----
- 3 files changed, 9 insertions(+), 14 deletions(-)
+ src/openvpn/mtu.h | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 3f362e95d..5f8361d3e 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1379,7 +1379,7 @@ ipv6_send_icmp_unreachable(struct context *c, struct buffer *buf, bool client)
-      * packet
-      */
-     int max_payload_size = min_int(MAX_ICMPV6LEN,
--                                   TUN_MTU_SIZE(&c->c2.frame) - icmpheader_len);
-+                                   c->c2.frame.tun_mtu - icmpheader_len);
-     int payload_len = min_int(max_payload_size, BLEN(&inputipbuf));
- 
-     pip6out.payload_len = htons(sizeof(struct openvpn_icmp6hdr) + payload_len);
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 9d9dfe96a..a8717c92a 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1735,7 +1735,7 @@ do_open_tun(struct context *c)
-                                              c->options.dev_type,
-                                              c->options.dev_node,
-                                              &gc);
--        do_ifconfig(c->c1.tuntap, guess, TUN_MTU_SIZE(&c->c2.frame), c->c2.es,
-+        do_ifconfig(c->c1.tuntap, guess, c->c2.frame.tun_mtu, c->c2.es,
-                     &c->net_ctx);
-     }
- 
-@@ -1766,7 +1766,7 @@ do_open_tun(struct context *c)
-         && ifconfig_order() == IFCONFIG_AFTER_TUN_OPEN)
-     {
-         do_ifconfig(c->c1.tuntap, c->c1.tuntap->actual_name,
--                    TUN_MTU_SIZE(&c->c2.frame), c->c2.es, &c->net_ctx);
-+                    c->c2.frame.tun_mtu, c->c2.es, &c->net_ctx);
-     }
- 
-     /* run the up script */
-@@ -1778,7 +1778,7 @@ do_open_tun(struct context *c)
-                 c->c1.tuntap->adapter_index,
- #endif
-                 dev_type_string(c->options.dev, c->options.dev_type),
--                TUN_MTU_SIZE(&c->c2.frame),
-+                c->c2.frame.tun_mtu,
-                 print_in_addr_t(c->c1.tuntap->local, IA_EMPTY_IF_UNDEF, &gc),
-                 print_in_addr_t(c->c1.tuntap->remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
-                 "init",
-@@ -1827,7 +1827,7 @@ else
-                     c->c1.tuntap->adapter_index,
- #endif
-                     dev_type_string(c->options.dev, c->options.dev_type),
--                    TUN_MTU_SIZE(&c->c2.frame),
-+                    c->c2.frame.tun_mtu,
-                     print_in_addr_t(c->c1.tuntap->local, IA_EMPTY_IF_UNDEF, &gc),
-                     print_in_addr_t(c->c1.tuntap->remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
-                     "restart",
-@@ -1906,7 +1906,7 @@ do_close_tun(struct context *c, bool force)
-                             adapter_index,
- #endif
-                             NULL,
--                            TUN_MTU_SIZE(&c->c2.frame),
-+                            c->c2.frame.tun_mtu,
-                             print_in_addr_t(local, IA_EMPTY_IF_UNDEF, &gc),
-                             print_in_addr_t(remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
-                             "init",
-@@ -1936,7 +1936,7 @@ do_close_tun(struct context *c, bool force)
-                         adapter_index,
- #endif
-                         NULL,
--                        TUN_MTU_SIZE(&c->c2.frame),
-+                        c->c2.frame.tun_mtu,
-                         print_in_addr_t(local, IA_EMPTY_IF_UNDEF, &gc),
-                         print_in_addr_t(remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
-                         "init",
-@@ -1974,7 +1974,7 @@ do_close_tun(struct context *c, bool force)
-                             adapter_index,
- #endif
-                             NULL,
--                            TUN_MTU_SIZE(&c->c2.frame),
-+                            c->c2.frame.tun_mtu,
-                             print_in_addr_t(local, IA_EMPTY_IF_UNDEF, &gc),
-                             print_in_addr_t(remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
-                             "restart",
-@@ -2154,7 +2154,7 @@ void adjust_mtu_peerid(struct context *c)
-     {
-         msg(M_WARN, "OPTIONS IMPORT: WARNING: peer-id set, but link-mtu"
-                     " fixed by config - reducing tun-mtu to %d, expect"
--                    " MTU problems", TUN_MTU_SIZE(&c->c2.frame));
-+                    " MTU problems", c->c2.frame.tun_mtu);
-     }
- }
- 
 diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index 1c479c9f5..b7c12b968 100644
+index 72a9e515b..c1148c317 100644
 --- a/src/openvpn/mtu.h
 +++ b/src/openvpn/mtu.h
-@@ -181,11 +181,6 @@ struct options;
-  */
- #define TUN_LINK_DELTA(f)        ((f)->extra_frame + (f)->extra_tun)
+@@ -28,7 +28,7 @@
  
--/*
-- * This is the size to "ifconfig" the tun or tap device.
-- */
--#define TUN_MTU_SIZE(f)          ((f)->link_mtu - TUN_LINK_DELTA(f))
--
  /*
-  * This is the maximum packet size that we need to be able to
-  * read from or write to a tun or tap device.  For example,
+  *
+- * Packet maninipulation routes such as encrypt, decrypt, compress, decompress
++ * Packet manipulation routes such as encrypt, decrypt, compress, decompress
+  * are passed a frame buffer that looks like this:
+  *
+  *    [extra_frame bytes] [mtu bytes] [extra_frame_bytes] [compression overflow bytes]
+@@ -117,7 +117,12 @@ struct frame {
+     int extra_tun;              /**< Maximum number of bytes in excess of
+                                  *   the tun/tap MTU that might be read
+                                  *   from or written to the virtual
+-                                 *   tun/tap network interface. */
++                                 *   tun/tap network interface.
++                                 *
++                                 *   Only set with the option --tun-mtu-extra
++                                 *   which defaults to 0 for tun and 32
++                                 *   (\c TAP_MTU_EXTRA_DEFAULT) for tap.
++                                 *   */
+ 
+     int extra_link;             /**< Maximum number of bytes in excess of
+                                  *   external network interface's MTU that
+@@ -177,11 +182,22 @@ struct options;
+  * Control buffer headroom allocations to allow for efficient prepending.
+  */
+ #define FRAME_HEADROOM_BASE(f)     (TUN_LINK_DELTA(f) + (f)->extra_buffer + (f)->extra_link)
++/* Same as FRAME_HEADROOM_BASE but rounded up to next multiple of PAYLOAD_ALIGN */
+ #define FRAME_HEADROOM(f)          frame_headroom(f)
+ 
+ /*
+  * Max size of a buffer used to build a packet for output to
+  * the TCP/UDP port.
++ *
++ * the FRAME_HEADROOM_BASE(f) * 2 should not be necessary but it looks that at
++ * some point in the past we seem to have lost the information what parts of
++ * the extra space we need to have before the data and which we need after
++ * the data. So we ensure we have the FRAME_HEADROOM before and after the
++ * actual data.
++ *
++ * Most of our code only prepends headers but compression needs the extra bytes
++ * *after* the data as compressed data might end up larger than the original
++ * data (and max compression overhead is part of extra_buffer)
+  */
+ #define BUF_SIZE(f)              (TUN_MTU_SIZE(f) + FRAME_HEADROOM_BASE(f) * 2)
+ 
+@@ -246,6 +262,8 @@ static inline int
+ frame_headroom(const struct frame *f)
+ {
+     const int offset = FRAME_HEADROOM_BASE(f);
++    /* These two lines just pad offset to next multiple of PAYLOAD_ALIGN in
++     * a complicated and confusing way */
+     const int delta = ((PAYLOAD_ALIGN << 24) - offset) & (PAYLOAD_ALIGN - 1);
+     return offset + delta;
+ }
 -- 
 2.33.0
 
