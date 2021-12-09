@@ -1,13 +1,9 @@
-Date: Thu, 9 Dec 2021 17:08:37 +0100 (CET)
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <276512336.758552.1639066117011@...2642...>
-In-Reply-To: <150254504.743723.1639057792357@...2642...>
-References: <20211207170211.3275837-1-arne@...1227...>
- <20211207170211.3275837-14-arne@...1227...>
- <150254504.743723.1639057792357@...2642...>
+Date: Thu,  9 Dec 2021 18:11:36 +0100
+Message-Id: <20211209171138.8589-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 13/21] Implement optional mtu parameter
- for mssfix
+Subject: [Openvpn-devel] [PATCH 1/3] doc/Makefile: rebuild rst docs if input
+ files change
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,38 +12,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-> Frank Lichtenheld <frank@...2641...> hat am 09.12.2021 14:49 geschrieben:
-> > Arne Schwabe <arne@...1227...> hat am 07.12.2021 18:02 geschrieben:
-> > diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
-> > index b1ae4e75a..f41c0c4f1 100644
-> > --- a/doc/man-sections/link-options.rst
-> > +++ b/doc/man-sections/link-options.rst
-> > @@ -110,19 +110,25 @@ the local and the remote host.
-> >    (:code:`p2p`). OpenVPN 2.0 introduces a new mode (:code:`server`) which
-> >    implements a multi-client server capability.
-> >  
-> > ---mssfix max
-> > +--mssfix max [mtu]
-> 
-> If you want to denote optional paramters (which I think makes sense, but is not
-> consistently done in the documentation so far), then I think it needs to be
-> --mssfix [max [mtu]]
+For now the dependencies are statically defined, which
+should be fine and is still a much better solution than
+to have no dependencies.
 
-It turns out that the reason we do not use [] in the option list is that it breaks the
-rst formatting. Option lists do not seem to have any support for formatting optional
-arguments (see https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#option-lists).
-I have verified that this visibly breaks the formatting, both for HTML and man page
-output.
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ doc/Makefile.am | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
 
-This seems to be the reason that many options use a generic "args" and then specify the
-actual syntax in the description block instead.
+diff --git a/doc/Makefile.am b/doc/Makefile.am
+index 1a67f7b5..a31b8097 100644
+--- a/doc/Makefile.am
++++ b/doc/Makefile.am
+@@ -23,16 +23,11 @@ build_html_pages = openvpn.8.html openvpn-examples.5.html
+ dist_doc_DATA = \
+ 	management-notes.txt gui-notes.txt
+ 
+-dist_noinst_DATA = \
+-	README.plugins interactive-service-notes.rst \
+-	openvpn.8.rst \
+-	openvpn-examples.5.rst \
++openvpn_sections = \
+ 	man-sections/advanced-options.rst \
+ 	man-sections/client-options.rst \
+ 	man-sections/connection-profiles.rst \
+ 	man-sections/encryption-options.rst \
+-	man-sections/example-fingerprint.rst \
+-	man-sections/examples.rst \
+ 	man-sections/generic-options.rst \
+ 	man-sections/inline-files.rst \
+ 	man-sections/link-options.rst \
+@@ -53,6 +48,20 @@ dist_noinst_DATA = \
+ 	man-sections/vpn-network-options.rst \
+ 	man-sections/windows-options.rst
+ 
++openvpn_examples_sections = \
++	man-sections/example-fingerprint.rst \
++	man-sections/examples.rst
++
++dist_noinst_DATA = \
++	README.plugins interactive-service-notes.rst \
++	openvpn.8.rst \
++	openvpn-examples.5.rst \
++	$(openvpn_sections) \
++	$(openvpn_examples_sections)
++
++# dependencies
++openvpn.8 openvpn.8.html: $(openvpn_sections)
++openvpn-examples.5 openvpn-examples.5.html: $(openvpn_examples_sections)
+ 
+ ######  GENERIC  RULES  ##########
+ 
+-- 
+2.30.2
 
-Regards,
-  Frank
---
-Frank Lichtenheld
 
