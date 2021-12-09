@@ -1,11 +1,10 @@
-Date: Thu, 9 Dec 2021 11:47:03 +0100 (CET)
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <392549583.725462.1639046823523@...2642...>
-In-Reply-To: <20211207170211.3275837-7-arne@...1227...>
-References: <20211207170211.3275837-1-arne@...1227...>
- <20211207170211.3275837-7-arne@...1227...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 06/21] Remove post_open_mtu code
+Date: Thu, 9 Dec 2021 12:22:58 +0100 (CET)
+Message-Id: <202112091122.1B9BMwEl032419@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20211208170614.3404821-1-arne@...1227...>
+References: <20211208170614.3404821-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add
+ argv_insert_head__empty_argv__head_only to argv tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,28 +13,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+Acked-by: Gert Doering <gert@...1296...>
+
+Having unit tests is good.  Actually running them is better :-) - found
+at testing the latest MaxF patch on 2.5...
+
+Your patch has been applied to the master and release/2.5 branch.
+
+commit cc39fc7f3bddc6567507406cf8a389418e101bf8 (master)
+commit 555a74419478ea24aa353698a8706b4b2ed43916 (release/2.5)
+Author: Arne Schwabe
+Date:   Wed Dec 8 18:06:14 2021 +0100
+
+     Add argv_insert_head__empty_argv__head_only to argv tests
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20211208170614.3404821-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23359.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-
-> Arne Schwabe <arne@...1227...> hat am 07.12.2021 18:01 geschrieben:
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 8cbb129d2..303e3fe8f 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -1897,7 +1897,7 @@ tls_session_update_crypto_params_do_work(struct tls_session *session,
->      frame_print(frame, D_MTU_INFO, "Data Channel MTU parms");
->  
->      /*
-> -     * mssfix uses data channel framing, which at this point contains
-> +     * mssfix uses data channel framing, which at this poipnt contains
-
-Spurious change
-
-Regards,
-  Frank
 --
-Frank Lichtenheld
+kind regards,
+
+Gert Doering
+
 
