@@ -1,12 +1,11 @@
-Date: Fri, 10 Dec 2021 17:10:25 +0100 (CET)
+Date: Fri, 10 Dec 2021 17:17:30 +0100 (CET)
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <349475353.849108.1639152625293@...2642...>
-In-Reply-To: <20211207170211.3275837-6-arne@...1227...>
+Message-ID: <1582627291.849748.1639153050584@...2642...>
+In-Reply-To: <20211207170211.3275837-7-arne@...1227...>
 References: <20211207170211.3275837-1-arne@...1227...>
- <20211207170211.3275837-6-arne@...1227...>
+ <20211207170211.3275837-7-arne@...1227...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 05/21] Document frame related function
- and variables a bit more
+Subject: Re: [Openvpn-devel] [PATCH 06/21] Remove post_open_mtu code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,29 +18,28 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Acked-by: Frank Lichtenheld <frank@...2641...>
-
 > Arne Schwabe <arne@...1227...> hat am 07.12.2021 18:01 geschrieben:
-> @@ -246,6 +262,8 @@ static inline int
->  frame_headroom(const struct frame *f)
->  {
->      const int offset = FRAME_HEADROOM_BASE(f);
-> +    /* These two lines just pad offset to next multiple of PAYLOAD_ALIGN in
-> +     * a complicated and confusing way */
->      const int delta = ((PAYLOAD_ALIGN << 24) - offset) & (PAYLOAD_ALIGN - 1);
+> This code is probably from a time when we could not set the MTU on
+> the Windows tap6 driver. Nowadays we can set the MTU on this device,
+> so this code is a noop now.
+[...]
+> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+> index 75d5eaf7b..12bdd2005 100644
+> --- a/src/openvpn/tun.c
+> +++ b/src/openvpn/tun.c
+> @@ -6071,7 +6071,6 @@ tuntap_get_mtu(struct tuntap *tt)
+>                          &mtu, sizeof(mtu),
+>                          &mtu, sizeof(mtu), &len, NULL))
+>      {
+> -        tt->post_open_mtu = (int)mtu;
+>          msg(D_MTU_INFO, "TAP-Windows MTU=%d", (int)mtu);
+>      }
+>  }
 
-The 24 is completely arbitrary, right? As long as the result is always bigger than
-offset, you can use any other number.
-I wonder whether it might be possible to replace it with something slightly less
-confusing (IMHO, anyway), like 
-
-delta = (PAYLOAD_ALIGN - (offset % PAYLOAD_ALIGN)) & (PAYLOAD_ALIGN - 1);
-
-But my C-foo is not strong enough to judge potential corner cases.
+This change makes no sense to me. Why would you not remove the complete tuntap_get_mtu call? If the whole point was to get the MTU, and now it will be the one we set, why even to the ioctl at all?
 
 Regards,
   Frank
-
 --
 Frank Lichtenheld
 
