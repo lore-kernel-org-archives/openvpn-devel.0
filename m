@@ -1,11 +1,10 @@
-Date: Fri, 10 Dec 2021 11:58:23 +0100 (CET)
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <361815933.818902.1639133903440@...2642...>
+Date: Fri, 10 Dec 2021 12:05:21 +0100 (CET)
+Message-Id: <202112101105.1BAB5LiC062064@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20211207130436.22187-1-gert@...1296...>
 References: <20211207130436.22187-1-gert@...1296...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Move '--push-peer-info' documentation
- from 'server' to 'client options'
+Subject: [Openvpn-devel] [PATCH applied] Re: Move '--push-peer-info'
+ documentation from 'server' to 'client options'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,27 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-By: Frank Lichtenheld <frank@...2641...>
+Patch has been applied to the master and release/2.5 branch (doc fix).
 
-Looks like an obvious improvement to me.
+commit 883cd6f4031ef9920580f0862594acbb45e4b0b8 (master)
+commit c7a1e51496ea563aac9b2d525ad744a53b247bd4 (HEAD -> release/2.5)
+Author: Gert Doering
+Date:   Tue Dec 7 14:04:36 2021 +0100
 
-> Gert Doering <gert@...1296...> hat am 07.12.2021 14:04 geschrieben:
-> 
->  
-> While --push-peer-info can be configured on the server, it's not really
-> intended for that, and it ended in the "SERVER OPTIONS" section by
-> mishap.  Fix that.
-> 
-> Reported-by: Stella Ashburne <rewefie@...1278...>
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->  doc/man-sections/client-options.rst | 69 +++++++++++++++++++++++++++++
->  doc/man-sections/server-options.rst | 69 -----------------------------
->  2 files changed, 69 insertions(+), 69 deletions(-)
+     Move '--push-peer-info' documentation from 'server' to 'client options'
+
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20211207130436.22187-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23325.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
 --
-Frank Lichtenheld
+kind regards,
+
+Gert Doering
+
 
