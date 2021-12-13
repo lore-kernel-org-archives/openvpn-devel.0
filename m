@@ -1,11 +1,13 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon, 13 Dec 2021 16:25:29 +0100
-Message-Id: <20211213152529.3995394-1-arne@...1227...>
-In-Reply-To: <0211202135124.2598645-1-arne@...1227...>
-References: <0211202135124.2598645-1-arne@...1227...>
+Message-ID: <447e0a7c-a60d-1085-12d1-64c3ebc8c589@...1227...>
+Date: Mon, 13 Dec 2021 16:39:13 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Adjust cipher-negotiation.rst with
- compat-mode changes
+Content-Language: en-GB
+References: <20211207170211.3275837-1-arne@...1227...>
+ <20211207170211.3275837-7-arne@...1227...>
+ <1582627291.849748.1639153050584@...2642...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <1582627291.849748.1639153050584@...2642...>
+Subject: Re: [Openvpn-devel] [PATCH 06/21] Remove post_open_mtu code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,54 +16,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Frank Lichtenheld <frank@...2641...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This explains that 2.6 will ignore --cipher without --compat-mode and
-restructures the whole paragraph to better readable.
+Am 10.12.21 um 17:17 schrieb Frank Lichtenheld:
+>> Arne Schwabe <arne@...1227...> hat am 07.12.2021 18:01 geschrieben:
+>> This code is probably from a time when we could not set the MTU on
+>> the Windows tap6 driver. Nowadays we can set the MTU on this device,
+>> so this code is a noop now.
+> [...]
+>> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+>> index 75d5eaf7b..12bdd2005 100644
+>> --- a/src/openvpn/tun.c
+>> +++ b/src/openvpn/tun.c
+>> @@ -6071,7 +6071,6 @@ tuntap_get_mtu(struct tuntap *tt)
+>>                           &mtu, sizeof(mtu),
+>>                           &mtu, sizeof(mtu), &len, NULL))
+>>       {
+>> -        tt->post_open_mtu = (int)mtu;
+>>           msg(D_MTU_INFO, "TAP-Windows MTU=%d", (int)mtu);
+>>       }
+>>   }
+> 
+> This change makes no sense to me. Why would you not remove the complete tuntap_get_mtu call? If the whole point was to get the MTU, and now it will be the one we set, why even to the ioctl at all?
 
-Patch V2: Adjust grammar, use consistently "and later"
+I wanted to keep the message that is currently printed at verb 1. If we 
+decide that the message can be removed I can remove the calling of the 
+ioctl as well.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- doc/man-sections/cipher-negotiation.rst | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
-
-diff --git a/doc/man-sections/cipher-negotiation.rst b/doc/man-sections/cipher-negotiation.rst
-index 423b5ab6a..efa4c6c94 100644
---- a/doc/man-sections/cipher-negotiation.rst
-+++ b/doc/man-sections/cipher-negotiation.rst
-@@ -5,7 +5,7 @@ OpenVPN 2.4 and higher have the capability to negotiate the data cipher that
- is used to encrypt data packets. This section describes the mechanism in more detail and the
- different backwards compatibility mechanism with older server and clients.
- 
--OpenVPN 2.5 and higher behaviour
-+OpenVPN 2.5 and later behaviour
- --------------------------------
- When both client and server are at least running OpenVPN 2.5, that the order of
- the ciphers of the server's ``--data-ciphers`` is used to pick the the data cipher.
-@@ -15,12 +15,15 @@ with a AUTH_FAILED message (as seen in client log):
- 
-     AUTH: Received control message: AUTH_FAILED,Data channel cipher negotiation failed (no shared cipher)
- 
--OpenVPN 2.5 will only allow the ciphers specified in ``--data-ciphers``. To ensure
--backwards compatibility also if a cipher is specified using the ``--cipher`` option
--it is automatically added to this list. If both options are unset the default is
--:code:`AES-256-GCM:AES-128-GCM`. In 2.6 and later the default is changed to
-+OpenVPN 2.5 and later will only allow the ciphers specified in ``--data-ciphers``.
-+ If ``--data-ciphers`` is not set the default is :code:`AES-256-GCM:AES-128-GCM`.
-+In 2.6 and later the default is changed to
- :code:`AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305` when Chacha20-Poly1305 is available.
- 
-+For backwards compatibility OpenVPN 2.6 and later with ``--compat-mode 2.4.x``
-+(or lower) and OpenVPN 2.5 will automatically add a cipher specified using the
-+``--cipher`` option to this list.
-+
- OpenVPN 2.4 clients
- -------------------
- The negotiation support in OpenVPN 2.4 was the first iteration of the implementation
--- 
-2.33.0
-
+Arne
 
