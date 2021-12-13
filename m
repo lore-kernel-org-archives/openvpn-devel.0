@@ -1,12 +1,8 @@
-Date: Mon, 13 Dec 2021 16:57:31 +0100 (CET)
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <918074241.1231712.1639411051056@...2642...>
-In-Reply-To: <20211213152529.3995394-1-arne@...1227...>
-References: <0211202135124.2598645-1-arne@...1227...>
- <20211213152529.3995394-1-arne@...1227...>
+Date: Mon, 13 Dec 2021 17:28:41 +0100
+Message-Id: <20211213162841.15763-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v2] Adjust cipher-negotiation.rst with
- compat-mode changes
+Subject: [Openvpn-devel] [PATCH] Make build deterministic, remove __DATE__
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +11,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-By: Frank Lichtenheld <frank@...2641...>
+The information provided by this is minimal
+and it makes it more difficult to provide
+deterministic builds. There are work-arounds
+for that but I think it is easier to just remove
+it completely.
 
-Still think it is a bit clunky, especially the "OpenVPN 2.6 and later with
-``--compat-mode 2.4.x`` (or lower)", but I couldn't come up with anything
-substantially better.
+Allows the build to pass with -Wdate-time -Werror.
 
-Regards,
-  Frank
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ src/openvpn/options.c | 1 -
+ src/tapctl/main.c     | 1 -
+ 2 files changed, 2 deletions(-)
 
-> Arne Schwabe <arne@...1227...> hat am 13.12.2021 16:25 geschrieben:
-> 
->  
-> This explains that 2.6 will ignore --cipher without --compat-mode and
-> restructures the whole paragraph to better readable.
-> 
-> Patch V2: Adjust grammar, use consistently "and later"
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index ac13412a..79f453d4 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -105,7 +105,6 @@ const char title_string[] =
+ #endif
+ #endif
+     " [AEAD]"
+-    " built on " __DATE__
+ ;
+ 
+ #ifndef ENABLE_SMALL
+diff --git a/src/tapctl/main.c b/src/tapctl/main.c
+index a3d3966a..d60df275 100644
+--- a/src/tapctl/main.c
++++ b/src/tapctl/main.c
+@@ -44,7 +44,6 @@
+ 
+ const TCHAR title_string[] =
+     TEXT(PACKAGE_NAME) TEXT(" ") TEXT(PACKAGE_VERSION)
+-    TEXT(" built on ") TEXT(__DATE__)
+ ;
+ 
+ static const TCHAR usage_message[] =
+-- 
+2.30.2
 
---
-Frank Lichtenheld
 
