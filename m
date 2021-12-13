@@ -1,8 +1,8 @@
-Date: Mon, 13 Dec 2021 18:40:56 +0100 (CET)
-Message-Id: <202112131740.1BDHeuUu080404@...2054...>
+Date: Mon, 13 Dec 2021 18:41:04 +0100 (CET)
+Message-Id: <202112131741.1BDHf4ec080420@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211210130651.3623725-1-arne@...1227...>
-References: <20211210130651.3623725-1-arne@...1227...>
+In-Reply-To: <20211213150654.3993358-1-arne@...1227...>
+References: <20211213150654.3993358-1-arne@...1227...>
 Subject: [Openvpn-devel] [PATCH applied] Re: Remove cipher_kt_t and change
  type to const char* in API
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,38 +20,62 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Thanks to Selva for the v2 review, and thanks for the timely v3.
+Thanks to Selva for the v2 review, and thanks for the timely v3 + v4.
 
-I have tested this more thoroughly this time...
+I have tested this most thoroughly this time...
 
- - Linux, mbedTLS 2.27.0   (light client side tests, full server side tests)
-   [LOTSA FAIL!]
- - Linux, OpenSSL 1.1.1l   (full client + server side tests)  XXX
- - Linux, OpenSSL 3.0.0    (full client side tests)  XXX
- - FreeBSD, OpenSSL 1.1.1h (fairly thorough client side tests) -> 
-	FAIL t_lpback.sh ("Segmentation fault")
- - FreeBSD, mbedTLS 2.26.0 (fairly thorough client side tests) -> 
-	FAIL t_lpback.sh ("Segmentation fault")
+ - Linux, OpenSSL 1.1.1l   (full client + server side tests) -> OK
+ - Linux, mbedTLS 2.27.0   (full client + server side tests) -> ????
+ - Linux, OpenSSL 3.0.0    (full client side tests)          -> OK
+ - FreeBSD, OpenSSL 1.1.1h  (fairly thorough client side tests) -> OK
+ - FreeBSD, mbedTLS 2.16.11 (fairly thorough client side tests) -> 
 
-and everything went well.  Plus, stare-at code, which also looks good
-(Selva's points addressed).
+and everything went well.
+
+Plus, stare-at code, which also looks good (Selva's points addressed).
 
 I have not fixed the "TYPE* x" vs. "TYPE *x" this round, as it will
 lead to extra rounds of conflicts with the later patchsets.  We have
-agreed on IRC to do an uncrustify run when the "frame" (/21) set is in.
+agreed on IRC to do an uncrustify run when the "frame" set (xx/21) is in.
+
+Some observations and request for a followup patch:
+
+ - crypto_mbedtls/cipher_ctx_init() has a sequence of events that need
+   swapping
+
++    const mbedtls_cipher_info_t *kt = cipher_get(ciphername);
++    int key_len = kt->key_bitlen/8;
++
++    ASSERT(kt);
+
+   ... if kt is NULL, it won't reach the ASSERT()...
+   (this is unlikely to happen, so not a showstopper today, but still)
+
+ - crypto_openssl.c has functions that do not check the return value
+   of cipher_get() (e.g. cipher_kt_iv_size()) and some that do
+   (e.g. cipher_kt_block_size()) - is this intentional, due to "it is
+   ok to pass NULL to EVP_CIPHER_iv_length()", or an oversight?
+
+ - cipher_kt_mode_cbc(), cipher_kt_mode_ofb_cfb() and cipher_kt_mode_aead()
+   do very similar things - except that the coding style of the third
+   is totally different...
+
+ - cipher_ctx_init() ASSERTs on ciphername & ctx, but not on *kt
+   - intentional and guaranteed safe?
+
 
 Your patch has been applied to the master branch.
 
-commit 39058d50a9d6e534bd67f845035bb7ee452f073c
+commit ce2954a0ca3f352df8d1492f5a2f2f809d309918
 Author: Arne Schwabe
-Date:   Fri Dec 10 14:06:51 2021 +0100
+Date:   Mon Dec 13 16:06:53 2021 +0100
 
      Remove cipher_kt_t and change type to const char* in API
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20211210130651.3623725-1-arne@...1227...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20211210130651.3623725-1-arne@...1227...
+     Message-Id: <20211213150654.3993358-1-arne@...1227...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20211213150654.3993358-1-arne@...1227...
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
