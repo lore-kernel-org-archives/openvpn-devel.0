@@ -1,11 +1,9 @@
-Message-ID: <54f9e8bc-d53d-094b-f125-850b45dd0037@...1227...>
-Date: Mon, 13 Dec 2021 15:09:34 +0100
-MIME-Version: 1.0
-Content-Language: en-GB
-References: <20211213135253.212-1-lstipakov@...277...>
-From: Arne Schwabe <arne@...1227...>
+Date: Mon, 13 Dec 2021 15:39:36 +0100 (CET)
+Message-Id: <202112131439.1BDEda8p058013@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20211213135253.212-1-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH master] config-msvc.h: indicate key
+References: <20211213135253.212-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: config-msvc.h: indicate key
  material export support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -15,21 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 13.12.21 um 14:52 schrieb Lev Stipakov:
-> From: Lev Stipakov <lev@...515...>
-> 
-> MSVC build uses OpenSSL from vcpkg, which at the moment
-> is 1.1.1l. Key material export was added to 1.1.1, so it is safe
-> to indicate its support unconditionally.
-> 
-> This enables Windows releases to benefit from tls-ekm
-> data channel keys derivation.
-> 
+Have not tested anything, but this seems to make sense.
 
-Acked-By: Arne Schwabe <arne@...1227...>
+Your patch has been applied to the master branch.
+
+commit b031495ff9f0281459fb8ca06240b9a32c50c5c9
+Author: Lev Stipakov
+Date:   Mon Dec 13 15:52:53 2021 +0200
+
+     config-msvc.h: indicate key material export support
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20211213135253.212-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23394.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
