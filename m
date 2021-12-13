@@ -1,14 +1,10 @@
-Message-ID: <4e050aa9-bc75-87b1-9402-b2778ed5a929@...1227...>
-Date: Mon, 13 Dec 2021 17:31:23 +0100
-MIME-Version: 1.0
-Content-Language: en-GB
-References: <20211207170211.3275837-1-arne@...1227...>
- <20211207170211.3275837-9-arne@...1227...>
- <660636853.1203153.1639398941899@...2642...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <660636853.1203153.1639398941899@...2642...>
-Subject: Re: [Openvpn-devel] [PATCH 08/21] Decouple MSS fix calculation from
- frame calculation
+Date: Mon, 13 Dec 2021 18:40:56 +0100 (CET)
+Message-Id: <202112131740.1BDHeuUu080404@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20211210130651.3623725-1-arne@...1227...>
+References: <20211210130651.3623725-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove cipher_kt_t and change
+ type to const char* in API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,39 +13,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Frank Lichtenheld <frank@...2641...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 13.12.21 um 13:35 schrieb Frank Lichtenheld:
-> 
->> Arne Schwabe <arne@...1227...> hat am 07.12.2021 18:01 geschrieben:
-> [...]
->> diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
->> index aa5b68ce9..56dea0292 100644
->> --- a/src/openvpn/mss.c
->> +++ b/src/openvpn/mss.c
-> [...]
->> @@ -204,3 +206,41 @@ mss_fixup_dowork(struct buffer *buf, uint16_t maxmss)
->>           }
->>       }
->>   }
->> +
->> +void
->> +frame_calculate_mssfix(struct frame *frame, struct key_type *kt,
->> +                       const struct options *options)
->> +{
->> +    if (options->ce.mssfix == 0)
->> +    {
->> +        return;
->> +    }
-> 
-> Wouldn't an ASSERT be better here? This essentially should never happen because ce.mssfix is initialized
-> to MSSFIX_DEFAULT, anyway. If you handle this without an error here it looks like this will just explode
-> later in mss_fixup_dowork. An ASSERT might be easier and cleaner.
+Acked-by: Gert Doering <gert@...1296...>
 
---mssfix 0 can be used to disable MSSFIX but I broke that in this patch. 
-So basically that test is testing if mssfix is enabled.
+Thanks to Selva for the v2 review, and thanks for the timely v3.
 
-Arne
+I have tested this more thoroughly this time...
+
+ - Linux, mbedTLS 2.27.0   (light client side tests, full server side tests)
+   [LOTSA FAIL!]
+ - Linux, OpenSSL 1.1.1l   (full client + server side tests)  XXX
+ - Linux, OpenSSL 3.0.0    (full client side tests)  XXX
+ - FreeBSD, OpenSSL 1.1.1h (fairly thorough client side tests) -> 
+	FAIL t_lpback.sh ("Segmentation fault")
+ - FreeBSD, mbedTLS 2.26.0 (fairly thorough client side tests) -> 
+	FAIL t_lpback.sh ("Segmentation fault")
+
+and everything went well.  Plus, stare-at code, which also looks good
+(Selva's points addressed).
+
+I have not fixed the "TYPE* x" vs. "TYPE *x" this round, as it will
+lead to extra rounds of conflicts with the later patchsets.  We have
+agreed on IRC to do an uncrustify run when the "frame" (/21) set is in.
+
+Your patch has been applied to the master branch.
+
+commit 39058d50a9d6e534bd67f845035bb7ee452f073c
+Author: Arne Schwabe
+Date:   Fri Dec 10 14:06:51 2021 +0100
+
+     Remove cipher_kt_t and change type to const char* in API
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20211210130651.3623725-1-arne@...1227...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20211210130651.3623725-1-arne@...1227...
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
