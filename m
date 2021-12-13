@@ -1,12 +1,12 @@
-Message-ID: <643653a7-09d8-9df9-2378-c5f2bff89843@...2181...>
-Date: Mon, 13 Dec 2021 10:15:07 +0100
+Date: Mon, 13 Dec 2021 13:35:41 +0100 (CET)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <660636853.1203153.1639398941899@...2642...>
+In-Reply-To: <20211207170211.3275837-9-arne@...1227...>
+References: <20211207170211.3275837-1-arne@...1227...>
+ <20211207170211.3275837-9-arne@...1227...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20211207121137.3221-1-a@...2181...>
- <CAGyAFMVNJAALnsO0RAbo7s+pQ01=w6D4Y1JpHmdSzuquscq6TA@...278...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <CAGyAFMVNJAALnsO0RAbo7s+pQ01=w6D4Y1JpHmdSzuquscq6TA@...278...>
-Subject: Re: [Openvpn-devel] [RFC 0/8] Introduce ovpn-dco(-win) support
+Subject: Re: [Openvpn-devel] [PATCH 08/21] Decouple MSS fix calculation from
+ frame calculation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +15,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
-Hi,
-
-On 08/12/2021 08:49, Lev Stipakov wrote:
-> All those fixes are in my repo and GitHub Actions are green:
-> https://github.com/lstipakov/openvpn/actions/runs/1551278629
-> 
-
-Thanks for providing these fixes, Lev.
-
-I have squashed all your new patches and I have also applied some minor 
-corrections to make sure everything would still build.
-
-Now GH Actions are all green again.
-
-Thanks a lot.
-
-Best Regards,
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 
--- 
-Antonio Quartulli
+> Arne Schwabe <arne@...1227...> hat am 07.12.2021 18:01 geschrieben:
+[...]
+> diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
+> index aa5b68ce9..56dea0292 100644
+> --- a/src/openvpn/mss.c
+> +++ b/src/openvpn/mss.c
+[...]
+> @@ -204,3 +206,41 @@ mss_fixup_dowork(struct buffer *buf, uint16_t maxmss)
+>          }
+>      }
+>  }
+> +
+> +void
+> +frame_calculate_mssfix(struct frame *frame, struct key_type *kt,
+> +                       const struct options *options)
+> +{
+> +    if (options->ce.mssfix == 0)
+> +    {
+> +        return;
+> +    }
+
+Wouldn't an ASSERT be better here? This essentially should never happen because ce.mssfix is initialized
+to MSSFIX_DEFAULT, anyway. If you handle this without an error here it looks like this will just explode
+later in mss_fixup_dowork. An ASSERT might be easier and cleaner.
+
+> +    unsigned int payload_size;
+> +    unsigned int overhead;
+> +
+> +
+> +    payload_size = frame_calculate_payload_size(frame, options);
+> +
+> +    overhead = frame_calculate_protocol_header_size(kt, options,
+> +                                                    payload_size, false);
+> +
+> +    /* Calculate the number of bytes that the payload differs from the payload
+> +     * MTU. This are fragment/compression/ethernet headers */
+> +    unsigned payload_overhead = frame_calculate_payload_overhead(frame, options, true);
+> +
+> +    /* We are in a "liberal" position with respect to MSS,
+> +     * i.e. we assume that MSS can be calculated from MTU
+> +     * by subtracting out only the IP and TCP header sizes
+> +     * without options.
+> +     *
+> +     * (RFC 879, section 7). */
+> +
+> +    /* Add 20 bytes for the IPv4 header and TCP header of the payload,
+> +     * the mssfix routes will add 20 extra if payload is IPv6 */
+> +    overhead += 20 + 20;
+> +
+> +    /* Calculate the maximum MSS value from the max link layer size specified
+> +     * by ce.mssfix */
+> +    frame->mss_fix = options->ce.mssfix - overhead - payload_overhead;
+> +}
+> \ No newline at end of file
+
+Regards,
+--
+Frank Lichtenheld
 
