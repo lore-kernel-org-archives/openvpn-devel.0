@@ -1,7 +1,7 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 13 Dec 2021 15:52:53 +0200
-Message-Id: <20211213135253.212-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH master] config-msvc.h: indicate key material
+Date: Mon, 13 Dec 2021 15:58:14 +0200
+Message-Id: <20211213135814.265-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH 2.5] config-msvc.h: indicate key material
  export support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -27,21 +27,22 @@ data channel keys derivation.
 
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- config-msvc.h | 1 +
- 1 file changed, 1 insertion(+)
+ config-msvc.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/config-msvc.h b/config-msvc.h
-index 0ae38482..b08beb52 100644
+index a624f97d..e7479c86 100644
 --- a/config-msvc.h
 +++ b/config-msvc.h
-@@ -40,6 +40,7 @@
- #define HAVE_IN_PKTINFO 1
+@@ -113,6 +113,8 @@
+ #define HAVE_EC_GROUP_ORDER_BITS 1
+ #define HAVE_EVP_CIPHER_CTX_RESET 1
  
- #define HAVE_OPENSSL_ENGINE 1
 +#define HAVE_EXPORT_KEYING_MATERIAL 1
- 
++
  #define HAVE_DIINSTALLDEVICE 1
  
+ #define PATH_SEPARATOR     '\\'
 -- 
 2.23.0.windows.1
 
