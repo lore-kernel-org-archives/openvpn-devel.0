@@ -1,11 +1,12 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 13 Dec 2021 16:06:53 +0100
-Message-Id: <20211213150654.3993358-1-arne@...1227...>
-In-Reply-To: <20211201180727.2496903-1-arne@...1227...>
+Date: Mon, 13 Dec 2021 16:06:54 +0100
+Message-Id: <20211213150654.3993358-2-arne@...1227...>
+In-Reply-To: <20211213150654.3993358-1-arne@...1227...>
 References: <20211201180727.2496903-1-arne@...1227...>
+ <20211213150654.3993358-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4 7/9] Remove cipher_kt_t and change type
- to const char* in API
+Subject: [Openvpn-devel] [PATCH v2 8/9] Remove md_kt_t and change cyrpto API
+ to use const char*
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,1223 +19,696 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Make the external crypto consumer oblivious to the internal cipher
-type that both mbed TLS and OpenSSL use. This change is mainly done
-so the cipher type that is used can be stay a const type but instead
-of an SSL library type, we now use a simple string to identify a
-cipher. This has the disadvantages that we do a cipher lookup every
-time a function is called that needs to query properties of a cipher.
-But none of these queries are in a critical path.
+As with the removal of cipher_kt_t, this is allows better support of
+OpenSSL 3.0 and mbed TLS 3.0
 
-This patch also fixes the memory leaks introduced by the
-EVP_fetch_cipher commit by always freeing the EVP_CIPHER.
-
-This also changes kt->cipher to be always defined with the name of
-the cipher. This only affects the "none" cipher cipher which was
-previously represented by kt->cipher to be NULL.
-
-Patch v2: rebase on master
-
-Patch v3: fix errors with mbed TLS without having md_kt to const char * patch
-          also applied, fix logic inversion in tls_crypt_tk
-
-Patch v4: fix issue if cipher does not get changed by NCP that null cipher is
-          then used
+Patch v2: rebase
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/auth_token.c               |   2 +-
- src/openvpn/crypto.c                   |  32 ++---
- src/openvpn/crypto.h                   |   4 +-
- src/openvpn/crypto_backend.h           |  77 ++++++------
- src/openvpn/crypto_mbedtls.c           |  85 ++++++++-----
- src/openvpn/crypto_mbedtls.h           |   3 -
- src/openvpn/crypto_openssl.c           | 157 ++++++++++++++++++-------
- src/openvpn/crypto_openssl.h           |  13 +-
- src/openvpn/init.c                     |  20 ++--
- src/openvpn/openssl_compat.h           |   7 ++
- src/openvpn/openvpn.h                  |   2 -
- src/openvpn/options.c                  |   9 +-
- src/openvpn/ssl.c                      |   4 +-
- src/openvpn/ssl_ncp.c                  |  24 ++--
- src/openvpn/tls_crypt.c                |   4 +-
- tests/unit_tests/openvpn/test_crypto.c |   4 +-
- tests/unit_tests/openvpn/test_ncp.c    |   6 +-
- 17 files changed, 282 insertions(+), 171 deletions(-)
+ src/openvpn/auth_token.c               |  2 +-
+ src/openvpn/crypto.c                   | 15 ++++--
+ src/openvpn/crypto.h                   |  2 +-
+ src/openvpn/crypto_backend.h           | 46 +++++++++++-------
+ src/openvpn/crypto_mbedtls.c           | 39 ++++++++++------
+ src/openvpn/crypto_openssl.c           | 65 +++++++++++++++++---------
+ src/openvpn/crypto_openssl.h           |  5 +-
+ src/openvpn/httpdigest.c               | 10 ++--
+ src/openvpn/init.c                     |  9 ++--
+ src/openvpn/ntlm.c                     |  6 +--
+ src/openvpn/openssl_compat.h           |  7 +++
+ src/openvpn/push.c                     |  2 +-
+ src/openvpn/ssl_mbedtls.c              |  3 +-
+ src/openvpn/tls_crypt.c                |  4 +-
+ tests/unit_tests/openvpn/test_crypto.c |  5 +-
+ 15 files changed, 132 insertions(+), 88 deletions(-)
 
 diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
-index 5d5cea7f6..5c947004e 100644
+index 5c947004e..e88754640 100644
 --- a/src/openvpn/auth_token.c
 +++ b/src/openvpn/auth_token.c
-@@ -35,7 +35,7 @@ auth_token_kt(void)
- {
+@@ -36,7 +36,7 @@ auth_token_kt(void)
      struct key_type kt = { 0 };
      /* We do not encrypt our session tokens */
--    kt.cipher = NULL;
-+    kt.cipher = "none";
-     kt.digest = md_kt_get("SHA256");
+     kt.cipher = "none";
+-    kt.digest = md_kt_get("SHA256");
++    kt.digest = "SHA256";
  
      if (!kt.digest)
+     {
 diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index a63a26195..0b47dec44 100644
+index 0b47dec44..36f880433 100644
 --- a/src/openvpn/crypto.c
 +++ b/src/openvpn/crypto.c
-@@ -680,7 +680,7 @@ crypto_adjust_frame_parameters(struct frame *frame,
-         crypto_overhead += packet_id_size(packet_id_long_form);
+@@ -693,7 +693,10 @@ crypto_adjust_frame_parameters(struct frame *frame,
+         crypto_overhead += cipher_kt_block_size(kt->cipher);
      }
  
--    if (kt->cipher)
-+    if (cipher_defined(kt->cipher))
-     {
-         crypto_overhead += cipher_kt_iv_size(kt->cipher);
+-    crypto_overhead += md_kt_size(kt->digest);
++    if (md_defined(kt->digest))
++    {
++        crypto_overhead += md_kt_size(kt->digest);
++    }
  
-@@ -710,16 +710,16 @@ crypto_max_overhead(void)
- }
+     frame_add_to_extra_frame(frame, crypto_overhead);
  
- static void
--warn_insecure_key_type(const char *ciphername, const cipher_kt_t *cipher)
-+warn_insecure_key_type(const char *ciphername)
- {
--    if (cipher_kt_insecure(cipher))
-+    if (cipher_kt_insecure(ciphername))
-     {
-         msg(M_WARN, "WARNING: INSECURE cipher (%s) with block size less than 128"
-             " bit (%d bit).  This allows attacks like SWEET32.  Mitigate by "
-             "using a --cipher with a larger block size (e.g. AES-256-CBC). "
-             "Support for these insecure ciphers will be removed in "
-             "OpenVPN 2.6.",
--            ciphername, cipher_kt_block_size(cipher)*8);
-+            ciphername, cipher_kt_block_size(ciphername)*8);
+@@ -775,11 +778,15 @@ init_key_type(struct key_type *kt, const char *ciphername,
+                 "PLEASE DO RECONSIDER THIS SETTING!");
+         }
      }
- }
- 
-@@ -736,10 +736,10 @@ init_key_type(struct key_type *kt, const char *ciphername,
-     ASSERT(authname);
- 
-     CLEAR(*kt);
-+    kt->cipher = ciphername;
-     if (strcmp(ciphername, "none") != 0)
++    kt->digest = authname;
+     if (strcmp(authname, "none") != 0)
      {
--        kt->cipher = cipher_kt_get(ciphername);
--        if (!kt->cipher)
-+        if (!cipher_valid(ciphername))
+-        if (!aead_cipher) /* Ignore auth for AEAD ciphers */
++        if (aead_cipher) /* Ignore auth for AEAD ciphers */
++        {
++            kt->digest = "none";
++        }
++        else
          {
-             msg(M_FATAL, "Cipher %s not supported", ciphername);
-         }
-@@ -762,7 +762,7 @@ init_key_type(struct key_type *kt, const char *ciphername,
-         }
-         if (warn)
-         {
--            warn_insecure_key_type(ciphername, kt->cipher);
-+            warn_insecure_key_type(ciphername);
-         }
-     }
-     else
-@@ -809,7 +809,7 @@ init_key_ctx(struct key_ctx *ctx, const struct key *key,
- {
-     struct gc_arena gc = gc_new();
-     CLEAR(*ctx);
--    if (kt->cipher)
-+    if (cipher_defined(kt->cipher))
-     {
+-            kt->digest = md_kt_get(authname);
+             int hmac_length = md_kt_size(kt->digest);
  
-         ctx->cipher = cipher_ctx_new();
-@@ -824,7 +824,7 @@ init_key_ctx(struct key_ctx *ctx, const struct key *key,
-         dmsg(D_CRYPTO_DEBUG, "%s: CIPHER block_size=%d iv_size=%d",
-              prefix, cipher_kt_block_size(kt->cipher),
+             if (OPENVPN_MAX_HMAC_SIZE < hmac_length)
+@@ -826,7 +833,7 @@ init_key_ctx(struct key_ctx *ctx, const struct key *key,
               cipher_kt_iv_size(kt->cipher));
--        warn_insecure_key_type(ciphername, kt->cipher);
-+        warn_insecure_key_type(ciphername);
+         warn_insecure_key_type(ciphername);
      }
-     if (kt->digest)
+-    if (kt->digest)
++    if (md_defined(kt->digest))
      {
-@@ -912,7 +912,7 @@ key_is_zero(struct key *key, const struct key_type *kt)
- bool
- check_key(struct key *key, const struct key_type *kt)
- {
--    if (kt->cipher)
-+    if (cipher_defined(kt->cipher))
-     {
-         /*
-          * Check for zero key
-@@ -1622,22 +1622,22 @@ get_random(void)
- }
- 
- void
--print_cipher(const cipher_kt_t *cipher)
-+print_cipher(const char *ciphername)
- {
-     printf("%s  (%d bit key, ",
--           cipher_kt_name(cipher),
--           cipher_kt_key_size(cipher) * 8);
-+           cipher_kt_name(ciphername),
-+           cipher_kt_key_size(ciphername) * 8);
- 
--    if (cipher_kt_block_size(cipher) == 1)
-+    if (cipher_kt_block_size(ciphername) == 1)
-     {
-         printf("stream cipher");
-     }
-     else
-     {
--        printf("%d bit block", cipher_kt_block_size(cipher) * 8);
-+        printf("%d bit block", cipher_kt_block_size(ciphername) * 8);
-     }
- 
--    if (!cipher_kt_mode_cbc(cipher))
-+    if (!cipher_kt_mode_cbc(ciphername))
-     {
-         printf(", TLS client/server mode only");
-     }
+         ctx->hmac = hmac_ctx_new();
+         hmac_ctx_init(ctx->hmac, key->hmac, kt->digest);
 diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index 1e2ca3cb0..af94b0eb5 100644
+index af94b0eb5..ad3543c1c 100644
 --- a/src/openvpn/crypto.h
 +++ b/src/openvpn/crypto.h
-@@ -138,7 +138,7 @@ struct sha256_digest {
-  */
+@@ -139,7 +139,7 @@ struct sha256_digest {
  struct key_type
  {
--    const cipher_kt_t *cipher;  /**< Cipher static parameters */
-+    const char *cipher;         /**< const name of the cipher */
-     const md_kt_t *digest;      /**< Message digest static parameters */
+     const char *cipher;         /**< const name of the cipher */
+-    const md_kt_t *digest;      /**< Message digest static parameters */
++    const char *digest;         /**< Message digest static parameters */
  };
  
-@@ -473,7 +473,7 @@ void prng_bytes(uint8_t *output, int len);
- long int get_random(void);
- 
- /** Print a cipher list entry */
--void print_cipher(const cipher_kt_t *cipher);
-+void print_cipher(const char *cipher);
- 
- void test_crypto(struct crypto_options *co, struct frame *f);
- 
+ /**
 diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index cc3e40400..e3da5c957 100644
+index e3da5c957..cf2cd1562 100644
 --- a/src/openvpn/crypto_backend.h
 +++ b/src/openvpn/crypto_backend.h
-@@ -188,114 +188,115 @@ void cipher_des_encrypt_ecb(const unsigned char key[DES_KEY_LENGTH],
- #define MAX_CIPHER_KEY_LENGTH 64
+@@ -485,36 +485,45 @@ int cipher_ctx_final_check_tag(cipher_ctx_t *ctx, uint8_t *dst, int *dst_len,
+ #define MAX_HMAC_KEY_LENGTH 64
  
  /**
-- * Return cipher parameters, based on the given cipher name. The
+- * Return message digest parameters, based on the given digest name. The
 - * contents of these parameters are library-specific, and can be used to
-- * initialise encryption/decryption.
-+ * Returns if the cipher is valid, based on the given cipher name.
-  *
-- * @param ciphername    Name of the cipher to retrieve parameters for (e.g.
-+ * @param ciphername    Name of the cipher to check for validity (e.g.
-  *                      \c AES-128-CBC). Will be translated to the library name
-  *                      from the openvpn config name if needed.
-  *
-- * @return              A statically allocated structure containing parameters
-- *                      for the given cipher, or NULL if no matching parameters
-- *                      were found.
-+ * @return              if the cipher is valid
-  */
--const cipher_kt_t *cipher_kt_get(const char *ciphername);
-+bool cipher_valid(const char *ciphername);
- 
- /**
-- * Retrieve a string describing the cipher (e.g. \c AES-128-CBC).
+- * initialise HMAC or message digest operations.
 + * Checks if the cipher is defined and is not the null (none) cipher
-+ *
-+ * @param ciphername    Name of the cipher to check if it is defined, may not
-+ *                      be NULL
-+ * @return              The cipher is defined and not the null (none) cipher
+  *
+- * @param digest        Name of the digest to retrieve parameters for (e.g.
+- *                      \c MD5).
++ * @param mdname    Name of the digest
++ * @return
 + */
-+static inline bool cipher_defined(const char *ciphername)
++static inline bool md_defined(const char* mdname)
 +{
-+    ASSERT(ciphername);
-+    return strcmp(ciphername, "none") != 0;
++    return strcmp(mdname, "none") != 0;
 +}
++
 +
 +/**
-+ * Retrieve a normalised string describing the cipher (e.g. \c AES-128-CBC).
-  * The returned name is normalised to the OpenVPN config name in case the
-  * name differs from the name used by the crypto library.
++ * Return if a message digest parameters is valid given the name of the digest.
++ *
++ * @param digest        Name of the digest to verify, e.g. \c MD5).
   *
-- * Returns [null-cipher] in case the cipher_kt is NULL.
-+ * Returns [null-cipher] in case the ciphername is none. NULL if the cipher
-+ * is not valid.
-  *
-- * @param cipher_kt     Static cipher parameters
-+ * @param ciphername     Name of the cipher
-  *
-  * @return a statically allocated string describing the cipher.
+  * @return              A statically allocated structure containing parameters
+  *                      for the given message digest.
   */
--const char *cipher_kt_name(const cipher_kt_t *cipher_kt);
-+const char *cipher_kt_name(const char *ciphername);
+-const md_kt_t *md_kt_get(const char *digest);
++bool md_valid(const char *digest);
  
  /**
-  * Returns the size of keys used by the cipher, in bytes. If the cipher has a
-  * variable key size, return the default key size.
+  * Retrieve a string describing the digest digest (e.g. \c SHA1).
   *
-- * @param cipher_kt     Static cipher parameters
-+ * @param ciphername    Cipher name to lookup
+- * @param kt            Static message digest parameters
++ * @param mdname        Message digest name
   *
-  * @return              (Default) size of keys used by the cipher, in bytes.
+  * @return              Statically allocated string describing the message
+  *                      digest.
   */
--int cipher_kt_key_size(const cipher_kt_t *cipher_kt);
-+int cipher_kt_key_size(const char *ciphername);
+-const char *md_kt_name(const md_kt_t *kt);
++const char *md_kt_name(const char *mdname);
  
  /**
-  * Returns the size of the IV used by the cipher, in bytes, or 0 if no IV is
-  * used.
+  * Returns the size of the message digest, in bytes.
   *
-- * @param cipher_kt     Static cipher parameters
-+ * @param ciphername    cipher name to lookup
+- * @param kt            Static message digest parameters
++ * @param mdname        Message digest name
   *
-  * @return              Size of the IV, in bytes, or 0 if the cipher does not
-  *                      use an IV.
+  * @return              Message digest size, in bytes, or 0 if ctx was NULL.
   */
--int cipher_kt_iv_size(const cipher_kt_t *cipher_kt);
-+int cipher_kt_iv_size(const char *ciphername);
+-unsigned char md_kt_size(const md_kt_t *kt);
++unsigned char md_kt_size(const char *mdname);
  
- /**
-  * Returns the block size of the cipher, in bytes.
+ 
+ /*
+@@ -523,17 +532,17 @@ unsigned char md_kt_size(const md_kt_t *kt);
   *
-- * @param cipher_kt     Static cipher parameters
-+ * @param ciphername    cipher name
-  *
-  * @return              Block size, in bytes.
   */
--int cipher_kt_block_size(const cipher_kt_t *cipher_kt);
-+int cipher_kt_block_size(const char *ciphername);
  
- /**
-  * Returns the MAC tag size of the cipher, in bytes.
+-/*
++/**
+  * Calculates the message digest for the given buffer.
   *
-- * @param ctx           Static cipher parameters.
-+ * @param ciphername    Name of the cipher
+- * @param kt            Static message digest parameters
++ * @param mdname        message digest name
+  * @param src           Buffer to digest. May not be NULL.
+  * @param src_len       The length of the incoming buffer.
+  * @param dst           Buffer to write the message digest to. May not be NULL.
   *
-  * @return              Tag size in bytes, or 0 if the tag size could not be
-  *                      determined.
+  * @return              \c 1 on success, \c 0 on failure
   */
--int cipher_kt_tag_size(const cipher_kt_t *cipher_kt);
-+int cipher_kt_tag_size(const char *ciphername);
+-int md_full(const md_kt_t *kt, const uint8_t *src, int src_len, uint8_t *dst);
++int md_full(const char *mdname, const uint8_t *src, int src_len, uint8_t *dst);
  
- /**
-  * Returns true if we consider this cipher to be insecure.
+ /*
+  * Allocate a new message digest context
+@@ -549,13 +558,13 @@ md_ctx_t *md_ctx_new(void);
   */
--bool cipher_kt_insecure(const cipher_kt_t *cipher);
-+bool cipher_kt_insecure(const char *ciphername);
+ void md_ctx_free(md_ctx_t *ctx);
  
--/**
-- * Returns the mode that the cipher runs in.
-- *
-- * @param cipher_kt     Static cipher parameters. May not be NULL.
-- *
-- * @return              Cipher mode, either \c OPENVPN_MODE_CBC, \c
-- *                      OPENVPN_MODE_OFB or \c OPENVPN_MODE_CFB
-- */
--int cipher_kt_mode(const cipher_kt_t *cipher_kt);
- 
- /**
-  * Check if the supplied cipher is a supported CBC mode cipher.
+-/*
++/**
+  * Initialises the given message digest context.
   *
-- * @param cipher        Static cipher parameters.
-+ * @param ciphername    cipher name
-  *
-  * @return              true iff the cipher is a CBC mode cipher.
+  * @param ctx           Message digest context
+- * @param kt            Static message digest parameters
++ * @param mdname        Message digest name
   */
--bool cipher_kt_mode_cbc(const cipher_kt_t *cipher);
-+bool cipher_kt_mode_cbc(const char *ciphername);
+-void md_ctx_init(md_ctx_t *ctx, const md_kt_t *kt);
++void md_ctx_init(md_ctx_t *ctx, const char *mdname);
  
- /**
-  * Check if the supplied cipher is a supported OFB or CFB mode cipher.
+ /*
+  * Free the given message digest context.
+@@ -617,10 +626,11 @@ void hmac_ctx_free(hmac_ctx_t *ctx);
   *
-- * @param cipher        Static cipher parameters.
-+ * @param ciphername    cipher name
+  * @param ctx           HMAC context to initialise
+  * @param key           The key to use for the HMAC
+- * @param kt            Static message digest parameters
++ * @param mdname        message digest name
   *
-  * @return              true iff the cipher is a OFB or CFB mode cipher.
   */
--bool cipher_kt_mode_ofb_cfb(const cipher_kt_t *cipher);
-+bool cipher_kt_mode_ofb_cfb(const char *ciphername);
+-void hmac_ctx_init(hmac_ctx_t *ctx, const uint8_t *key, const md_kt_t *kt);
++void hmac_ctx_init(hmac_ctx_t *ctx, const uint8_t *key, const char *mdname);
++
  
- /**
-  * Check if the supplied cipher is a supported AEAD mode cipher.
-  *
-- * @param cipher        Static cipher parameters.
-+ * @param ciphername    name of the cipher
-  *
-  * @return              true iff the cipher is a AEAD mode cipher.
-  */
--bool cipher_kt_mode_aead(const cipher_kt_t *cipher);
-+bool cipher_kt_mode_aead(const char *ciphername);
- 
- 
- /**
-@@ -323,12 +324,12 @@ void cipher_ctx_free(cipher_ctx_t *ctx);
-  *
-  * @param ctx           Cipher context. May not be NULL
-  * @param key           Buffer containing the key to use
-- * @param kt            Static cipher parameters to use
-+ * @param ciphername    Ciphername of the cipher to use
-  * @param enc           Whether to encrypt or decrypt (either
-  *                      \c MBEDTLS_OP_ENCRYPT or \c MBEDTLS_OP_DECRYPT).
-  */
- void cipher_ctx_init(cipher_ctx_t *ctx, const uint8_t *key,
--                     const cipher_kt_t *kt, int enc);
-+                     const char *cipername, int enc);
- 
- /**
-  * Returns the size of the IV used by the cipher, in bytes, or 0 if no IV is
+ /*
+  * Free the given HMAC context.
 diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index 8acf0e184..c3e18a1bc 100644
+index c3e18a1bc..dc654086d 100644
 --- a/src/openvpn/crypto_mbedtls.c
 +++ b/src/openvpn/crypto_mbedtls.c
-@@ -169,11 +169,11 @@ show_available_ciphers(void)
- 
-     while (*ciphers != 0)
-     {
--        const cipher_kt_t *info = mbedtls_cipher_info_from_type(*ciphers);
--        if (info && !cipher_kt_insecure(info)
--            && (cipher_kt_mode_aead(info) || cipher_kt_mode_cbc(info)))
-+        const mbedtls_cipher_info_t *info = mbedtls_cipher_info_from_type(*ciphers);
-+        if (info && !cipher_kt_insecure(info->name)
-+            && (cipher_kt_mode_aead(info->name) || cipher_kt_mode_cbc(info->name)))
-         {
--            print_cipher(info);
-+            print_cipher(info->name);
-         }
-         ciphers++;
-     }
-@@ -183,11 +183,11 @@ show_available_ciphers(void)
-     ciphers = mbedtls_cipher_list();
-     while (*ciphers != 0)
-     {
--        const cipher_kt_t *info = mbedtls_cipher_info_from_type(*ciphers);
--        if (info && cipher_kt_insecure(info)
--            && (cipher_kt_mode_aead(info) || cipher_kt_mode_cbc(info)))
-+        const mbedtls_cipher_info_t *info = mbedtls_cipher_info_from_type(*ciphers);
-+        if (info && cipher_kt_insecure(info->name)
-+            && (cipher_kt_mode_aead(info->name) || cipher_kt_mode_cbc(info->name)))
-         {
--            print_cipher(info);
-+            print_cipher(info->name);
-         }
-         ciphers++;
-     }
-@@ -390,17 +390,22 @@ rand_bytes(uint8_t *output, int len)
-  * Generic cipher key type functions
-  *
+@@ -757,8 +757,8 @@ cipher_des_encrypt_ecb(const unsigned char key[DES_KEY_LENGTH],
   */
--
--
--const mbedtls_cipher_info_t *
--cipher_kt_get(const char *ciphername)
-+static const mbedtls_cipher_info_t *
-+cipher_get(const char* ciphername)
- {
--    const mbedtls_cipher_info_t *cipher = NULL;
--
-     ASSERT(ciphername);
  
-+    const mbedtls_cipher_info_t *cipher = NULL;
-+
-     ciphername = translate_cipher_name_from_openvpn(ciphername);
-     cipher = mbedtls_cipher_info_from_string(ciphername);
-+    return cipher;
+ 
+-const mbedtls_md_info_t *
+-md_kt_get(const char *digest)
++static const mbedtls_md_info_t *
++md_get(const char *digest)
+ {
+     const mbedtls_md_info_t *md = NULL;
+     ASSERT(digest);
+@@ -778,19 +778,28 @@ md_kt_get(const char *digest)
+     return md;
+ }
+ 
++bool
++md_valid(const char *digest)
++{
++    const mbedtls_md_info_t *md  = mbedtls_md_info_from_string(digest);
++    return md != NULL;
 +}
 +
-+bool
-+cipher_valid(const char *ciphername)
-+{
-+    const mbedtls_cipher_info_t *cipher = cipher_get(ciphername);
- 
-     if (NULL == cipher)
-     {
-@@ -416,12 +421,13 @@ cipher_kt_get(const char *ciphername)
-         return NULL;
-     }
- 
--    return cipher;
-+    return cipher != NULL;
- }
- 
  const char *
--cipher_kt_name(const mbedtls_cipher_info_t *cipher_kt)
-+cipher_kt_name(const char *ciphername)
+-md_kt_name(const mbedtls_md_info_t *kt)
++md_kt_name(const char *mdname)
  {
-+    const mbedtls_cipher_info_t *cipher_kt = cipher_get(ciphername);
-     if (NULL == cipher_kt)
+-    if (NULL == kt)
++    if (!strcmp("none", mdname))
      {
-         return "[null-cipher]";
-@@ -431,8 +437,10 @@ cipher_kt_name(const mbedtls_cipher_info_t *cipher_kt)
+         return "[null-digest]";
+     }
++    const mbedtls_md_info_t *kt = md_get(mdname);
+     return mbedtls_md_get_name(kt);
  }
  
- int
--cipher_kt_key_size(const mbedtls_cipher_info_t *cipher_kt)
-+cipher_kt_key_size(const char *ciphername)
+ unsigned char
+-md_kt_size(const mbedtls_md_info_t *kt)
++md_kt_size(const char *mdname)
  {
-+    const mbedtls_cipher_info_t *cipher_kt = cipher_get(ciphername);
-+
-     if (NULL == cipher_kt)
++    const mbedtls_md_info_t *kt = md_get(mdname);
+     if (NULL == kt)
      {
          return 0;
-@@ -442,8 +450,10 @@ cipher_kt_key_size(const mbedtls_cipher_info_t *cipher_kt)
- }
- 
- int
--cipher_kt_iv_size(const mbedtls_cipher_info_t *cipher_kt)
-+cipher_kt_iv_size(const char *ciphername)
- {
-+    const mbedtls_cipher_info_t *cipher_kt = cipher_get(ciphername);
-+
-     if (NULL == cipher_kt)
-     {
-         return 0;
-@@ -452,8 +462,9 @@ cipher_kt_iv_size(const mbedtls_cipher_info_t *cipher_kt)
- }
- 
- int
--cipher_kt_block_size(const mbedtls_cipher_info_t *cipher_kt)
-+cipher_kt_block_size(const char *ciphername)
- {
-+    const mbedtls_cipher_info_t *cipher_kt = cipher_get(ciphername);
-     if (NULL == cipher_kt)
-     {
-         return 0;
-@@ -462,9 +473,9 @@ cipher_kt_block_size(const mbedtls_cipher_info_t *cipher_kt)
- }
- 
- int
--cipher_kt_tag_size(const mbedtls_cipher_info_t *cipher_kt)
-+cipher_kt_tag_size(const char *ciphername)
- {
--    if (cipher_kt && cipher_kt_mode_aead(cipher_kt))
-+    if (cipher_kt_mode_aead(ciphername))
-     {
-         return OPENVPN_AEAD_TAG_LENGTH;
-     }
-@@ -472,16 +483,22 @@ cipher_kt_tag_size(const mbedtls_cipher_info_t *cipher_kt)
- }
- 
- bool
--cipher_kt_insecure(const mbedtls_cipher_info_t *cipher_kt)
-+cipher_kt_insecure(const char *ciphername)
- {
--    return !(cipher_kt_block_size(cipher_kt) >= 128 / 8
-+    const mbedtls_cipher_info_t *cipher_kt = cipher_get(ciphername);
-+    if (!cipher_kt)
-+    {
-+        return true;
-+    }
-+
-+    return !(cipher_kt_block_size(ciphername) >= 128 / 8
- #ifdef MBEDTLS_CHACHAPOLY_C
-              || cipher_kt->type == MBEDTLS_CIPHER_CHACHA20_POLY1305
- #endif
-              );
- }
- 
--int
-+static int
- cipher_kt_mode(const mbedtls_cipher_info_t *cipher_kt)
- {
-     ASSERT(NULL != cipher_kt);
-@@ -489,21 +506,24 @@ cipher_kt_mode(const mbedtls_cipher_info_t *cipher_kt)
- }
- 
- bool
--cipher_kt_mode_cbc(const cipher_kt_t *cipher)
-+cipher_kt_mode_cbc(const char *ciphername)
- {
-+    const mbedtls_cipher_info_t *cipher = cipher_get(ciphername);
-     return cipher && cipher_kt_mode(cipher) == OPENVPN_MODE_CBC;
- }
- 
- bool
--cipher_kt_mode_ofb_cfb(const cipher_kt_t *cipher)
-+cipher_kt_mode_ofb_cfb(const char *ciphername)
- {
-+    const mbedtls_cipher_info_t *cipher = cipher_get(ciphername);
-     return cipher && (cipher_kt_mode(cipher) == OPENVPN_MODE_OFB
-                       || cipher_kt_mode(cipher) == OPENVPN_MODE_CFB);
- }
- 
- bool
--cipher_kt_mode_aead(const cipher_kt_t *cipher)
-+cipher_kt_mode_aead(const char *ciphername)
- {
-+    const mbedtls_cipher_info_t *cipher = cipher_get(ciphername);
-     return cipher && (cipher_kt_mode(cipher) == OPENVPN_MODE_GCM
- #ifdef MBEDTLS_CHACHAPOLY_C
-                       || cipher_kt_mode(cipher) == MBEDTLS_MODE_CHACHAPOLY
-@@ -535,13 +555,16 @@ cipher_ctx_free(mbedtls_cipher_context_t *ctx)
- 
- void
- cipher_ctx_init(mbedtls_cipher_context_t *ctx, const uint8_t *key,
--                const mbedtls_cipher_info_t *kt, const mbedtls_operation_t operation)
-+                const char *ciphername, const mbedtls_operation_t operation)
- {
--    ASSERT(NULL != kt && NULL != ctx);
--    int key_len = cipher_kt_key_size(kt);
--
-+    ASSERT(NULL != ciphername && NULL != ctx);
-     CLEAR(*ctx);
- 
-+    const mbedtls_cipher_info_t *kt = cipher_get(ciphername);
-+    int key_len = kt->key_bitlen/8;
-+
-+    ASSERT(kt);
-+
-     if (!mbed_ok(mbedtls_cipher_setup(ctx, kt)))
-     {
-         msg(M_FATAL, "mbed TLS cipher context init #1");
-diff --git a/src/openvpn/crypto_mbedtls.h b/src/openvpn/crypto_mbedtls.h
-index b2e9eceab..b9d03f2f9 100644
---- a/src/openvpn/crypto_mbedtls.h
-+++ b/src/openvpn/crypto_mbedtls.h
-@@ -33,9 +33,6 @@
- #include <mbedtls/md.h>
- #include <mbedtls/ctr_drbg.h>
- 
--/** Generic cipher key type %context. */
--typedef mbedtls_cipher_info_t cipher_kt_t;
--
- /** Generic message digest key type %context. */
- typedef mbedtls_md_info_t md_kt_t;
- 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index e28e2f43a..01893e2f9 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -311,7 +311,7 @@ cipher_name_cmp(const void *a, const void *b)
-     const EVP_CIPHER *const *cipher_a = a;
-     const EVP_CIPHER *const *cipher_b = b;
- 
--    return strcmp(cipher_kt_name(*cipher_a), cipher_kt_name(*cipher_b));
-+    return strcmp(EVP_CIPHER_get0_name(*cipher_a), EVP_CIPHER_get0_name(*cipher_b));
- }
- 
- struct collect_ciphers {
-@@ -322,6 +322,10 @@ struct collect_ciphers {
- 
- static void collect_ciphers(EVP_CIPHER *cipher, void *list)
- {
-+    if (!cipher)
-+    {
-+        return;
-+    }
-     struct collect_ciphers* cipher_list = list;
-     if (cipher_list->num == SIZE(cipher_list->list))
-     {
-@@ -329,11 +333,13 @@ static void collect_ciphers(EVP_CIPHER *cipher, void *list)
-         return;
-     }
- 
--    if (cipher && (cipher_kt_mode_cbc(cipher)
-+    const char *ciphername = EVP_CIPHER_get0_name(cipher);
-+
-+    if (ciphername && (cipher_kt_mode_cbc(ciphername)
- #ifdef ENABLE_OFB_CFB_MODE
--        || cipher_kt_mode_ofb_cfb(cipher)
-+        || cipher_kt_mode_ofb_cfb(ciphername)
- #endif
--        || cipher_kt_mode_aead(cipher)
-+        || cipher_kt_mode_aead(ciphername)
-     ))
-     {
-         cipher_list->list[cipher_list->num++] = cipher;
-@@ -361,7 +367,7 @@ show_available_ciphers(void)
-         const EVP_CIPHER *cipher = EVP_get_cipherbynid(nid);
-         /* We cast the const away so we can keep the function prototype
-          * compatible with EVP_CIPHER_do_all_provided */
--        collect_ciphers((EVP_CIPHER *)cipher, &cipher_list);
-+        collect_ciphers((EVP_CIPHER *) cipher, &cipher_list);
-     }
- #endif
- 
-@@ -370,9 +376,9 @@ show_available_ciphers(void)
- 
-     for (size_t i = 0; i < cipher_list.num; i++)
-     {
--        if (!cipher_kt_insecure(cipher_list.list[i]))
-+        if (!cipher_kt_insecure(EVP_CIPHER_get0_name(cipher_list.list[i])))
-         {
--            print_cipher(cipher_list.list[i]);
-+            print_cipher(EVP_CIPHER_get0_name(cipher_list.list[i]));
-         }
-     }
- 
-@@ -380,9 +386,9 @@ show_available_ciphers(void)
-            "and are therefore deprecated.  Do not use unless you have to.\n\n");
-     for (int i = 0; i < cipher_list.num; i++)
-     {
--        if (cipher_kt_insecure(cipher_list.list[i]))
-+        if (cipher_kt_insecure(EVP_CIPHER_get0_name(cipher_list.list[i])))
-         {
--            print_cipher(cipher_list.list[i]);
-+            print_cipher(EVP_CIPHER_get0_name(cipher_list.list[i]));
-         }
-     }
-     printf("\n");
-@@ -556,11 +562,10 @@ rand_bytes(uint8_t *output, int len)
-  *
+@@ -805,8 +814,9 @@ md_kt_size(const mbedtls_md_info_t *kt)
   */
  
--
--const EVP_CIPHER *
--cipher_kt_get(const char *ciphername)
-+static evp_cipher_type *
-+cipher_get(const char *ciphername)
+ int
+-md_full(const md_kt_t *kt, const uint8_t *src, int src_len, uint8_t *dst)
++md_full(const char *mdname, const uint8_t *src, int src_len, uint8_t *dst)
  {
--    const EVP_CIPHER *cipher = NULL;
-+    evp_cipher_type *cipher = NULL;
- 
-     ASSERT(ciphername);
- 
-@@ -569,7 +574,6 @@ cipher_kt_get(const char *ciphername)
- 
-     if (NULL == cipher)
-     {
--        crypto_msg(D_LOW, "Cipher algorithm '%s' not found", ciphername);
-         return NULL;
-     }
- 
-@@ -596,32 +600,67 @@ cipher_kt_get(const char *ciphername)
-     return cipher;
++    const mbedtls_md_info_t *kt = md_get(mdname);
+     return 0 == mbedtls_md(kt, src, src_len, dst);
  }
  
-+bool cipher_valid(const char *ciphername)
+@@ -825,8 +835,9 @@ md_ctx_free(mbedtls_md_context_t *ctx)
+ }
+ 
+ void
+-md_ctx_init(mbedtls_md_context_t *ctx, const mbedtls_md_info_t *kt)
++md_ctx_init(mbedtls_md_context_t *ctx, const char *mdname)
+ {
++    const mbedtls_md_info_t *kt = md_get(mdname);
+     ASSERT(NULL != ctx && NULL != kt);
+ 
+     mbedtls_md_init(ctx);
+@@ -890,9 +901,9 @@ hmac_ctx_free(mbedtls_md_context_t *ctx)
+ }
+ 
+ void
+-hmac_ctx_init(mbedtls_md_context_t *ctx, const uint8_t *key,
+-              const mbedtls_md_info_t *kt)
++hmac_ctx_init(mbedtls_md_context_t *ctx, const uint8_t *key, const char *mdname)
+ {
++    const mbedtls_md_info_t *kt = md_get(mdname);
+     ASSERT(NULL != kt && NULL != ctx);
+ 
+     mbedtls_md_init(ctx);
+@@ -980,7 +991,7 @@ ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret,
+  * @param olen          Length of the output buffer
+  */
+ static void
+-tls1_P_hash(const md_kt_t *md_kt, const uint8_t *sec, int sec_len,
++tls1_P_hash(const mbedtls_md_info_t *md_kt, const uint8_t *sec, int sec_len,
+             const uint8_t *seed, int seed_len, uint8_t *out, int olen)
+ {
+     struct gc_arena gc = gc_new();
+@@ -999,8 +1010,8 @@ tls1_P_hash(const md_kt_t *md_kt, const uint8_t *sec, int sec_len,
+     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash sec: %s", format_hex(sec, sec_len, 0, &gc));
+     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash seed: %s", format_hex(seed, seed_len, 0, &gc));
+ 
+-    int chunk = md_kt_size(md_kt);
+-    unsigned int A1_len = md_kt_size(md_kt);
++    int chunk = mbedtls_md_get_size(md_kt);
++    unsigned int A1_len = mbedtls_md_get_size(md_kt);
+ 
+     /* This is the only place where we init an HMAC with a key that is not
+      * equal to its size, therefore we init the hmac ctx manually here */
+@@ -1071,8 +1082,8 @@ ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec,
+              int slen, uint8_t *out1, int olen)
+ {
+     struct gc_arena gc = gc_new();
+-    const md_kt_t *md5 = md_kt_get("MD5");
+-    const md_kt_t *sha1 = md_kt_get("SHA1");
++    const md_kt_t *md5 = md_get("MD5");
++    const md_kt_t *sha1 = md_get("SHA1");
+ 
+     uint8_t *out2 = (uint8_t *)gc_malloc(olen, false, &gc);
+ 
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 01893e2f9..35fb00524 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -1027,10 +1027,10 @@ cipher_des_encrypt_ecb(const unsigned char key[DES_KEY_LENGTH],
+  */
+ 
+ 
+-const EVP_MD *
+-md_kt_get(const char *digest)
++static evp_md_type *
++md_get(const char *digest)
+ {
+-    const EVP_MD *md = NULL;
++    evp_md_type *md = NULL;
+     ASSERT(digest);
+     md = EVP_MD_fetch(NULL, digest, NULL);
+     if (!md)
+@@ -1047,20 +1047,36 @@ md_kt_get(const char *digest)
+     return md;
+ }
+ 
++
++bool
++md_valid(const char *digest)
 +{
-+    evp_cipher_type *cipher = cipher_get(ciphername);
-+    bool valid = (cipher != NULL);
-+    if (!valid)
-+    {
-+        crypto_msg(D_LOW, "Cipher algorithm '%s' not found", ciphername);
-+    }
-+    EVP_CIPHER_free(cipher);
++    evp_md_type *md = EVP_MD_fetch(NULL, digest, NULL);
++    bool valid = (md != NULL);
++    EVP_MD_free(md);
 +    return valid;
 +}
 +
-+bool cipher_var_key_size(const char *ciphername)
-+{
-+    evp_cipher_type *cipher = cipher_get(ciphername);
-+    bool ret = EVP_CIPHER_flags(cipher) & EVP_CIPH_VARIABLE_LENGTH;
-+    EVP_CIPHER_free(cipher);
-+    return ret;
-+}
-+
-+
  const char *
--cipher_kt_name(const EVP_CIPHER *cipher_kt)
-+cipher_kt_name(const char *ciphername)
+-md_kt_name(const EVP_MD *kt)
++md_kt_name(const char *mdname)
  {
--    if (NULL == cipher_kt)
-+    ASSERT(ciphername);
-+    if (strcmp("none", ciphername) == 0)
+-    if (NULL == kt)
++    if (!strcmp("none", mdname))
      {
-         return "[null-cipher]";
+         return "[null-digest]";
      }
- 
-+    evp_cipher_type *cipher_kt = cipher_get(ciphername);
-+    if (!cipher_kt)
-+    {
-+        return NULL;
-+    }
-+
-     const char *name = EVP_CIPHER_name(cipher_kt);
-+    EVP_CIPHER_free(cipher_kt);
-     return translate_cipher_name_to_openvpn(name);
+-    return EVP_MD_get0_name(kt);
++    evp_md_type *kt = md_get(mdname);
++    const char *name = EVP_MD_get0_name(kt);
++    EVP_MD_free(kt);
++    return name;
  }
  
- int
--cipher_kt_key_size(const EVP_CIPHER *cipher_kt)
-+cipher_kt_key_size(const char *ciphername)
+ unsigned char
+-md_kt_size(const EVP_MD *kt)
++md_kt_size(const char *mdname)
  {
--    return EVP_CIPHER_key_length(cipher_kt);
-+    evp_cipher_type *cipher = cipher_get(ciphername);
-+    int size = EVP_CIPHER_key_length(cipher);
-+    EVP_CIPHER_free(cipher);
+-    return (unsigned char)EVP_MD_size(kt);
++    evp_md_type *kt = md_get(mdname);
++    unsigned char size =  (unsigned char)EVP_MD_size(kt);
++    EVP_MD_free(kt);
 +    return size;
  }
  
- int
--cipher_kt_iv_size(const EVP_CIPHER *cipher_kt)
-+cipher_kt_iv_size(const char *ciphername)
- {
--    return EVP_CIPHER_iv_length(cipher_kt);
-+    evp_cipher_type *cipher = cipher_get(ciphername);
-+    int ivsize = EVP_CIPHER_iv_length(cipher);
-+    EVP_CIPHER_free(cipher);
-+    return ivsize;
- }
+ 
+@@ -1071,11 +1087,14 @@ md_kt_size(const EVP_MD *kt)
+  */
  
  int
--cipher_kt_block_size(const EVP_CIPHER *cipher)
-+cipher_kt_block_size(const char *ciphername)
+-md_full(const EVP_MD *kt, const uint8_t *src, int src_len, uint8_t *dst)
++md_full(const char *mdname, const uint8_t *src, int src_len, uint8_t *dst)
  {
-     /*
-      * OpenSSL reports OFB/CFB/GCM cipher block sizes as '1 byte'.  To work
-@@ -632,7 +671,12 @@ cipher_kt_block_size(const EVP_CIPHER *cipher)
-     char *name = NULL;
-     char *mode_str = NULL;
-     const char *orig_name = NULL;
--    const EVP_CIPHER *cbc_cipher = NULL;
-+    evp_cipher_type *cbc_cipher = NULL;
-+    evp_cipher_type *cipher = cipher_get(ciphername);
-+    if (!cipher)
-+    {
-+        return 0;
-+    }
+     unsigned int in_md_len = 0;
++    evp_md_type *kt = md_get(mdname);
  
-     int block_size = EVP_CIPHER_block_size(cipher);
- 
-@@ -651,21 +695,23 @@ cipher_kt_block_size(const EVP_CIPHER *cipher)
- 
-     strcpy(mode_str, "-CBC");
- 
--    cbc_cipher = EVP_CIPHER_fetch(NULL,translate_cipher_name_from_openvpn(name), NULL);
-+    cbc_cipher = EVP_CIPHER_fetch(NULL, translate_cipher_name_from_openvpn(name), NULL);
-     if (cbc_cipher)
-     {
-         block_size = EVP_CIPHER_block_size(cbc_cipher);
-     }
- 
- cleanup:
-+    EVP_CIPHER_free(cbc_cipher);
-+    EVP_CIPHER_free(cipher);
-     free(name);
-     return block_size;
- }
- 
- int
--cipher_kt_tag_size(const EVP_CIPHER *cipher_kt)
-+cipher_kt_tag_size(const char *ciphername)
- {
--    if (cipher_kt_mode_aead(cipher_kt))
-+    if (cipher_kt_mode_aead(ciphername))
-     {
-         return OPENVPN_AEAD_TAG_LENGTH;
-     }
-@@ -676,13 +722,26 @@ cipher_kt_tag_size(const EVP_CIPHER *cipher_kt)
- }
- 
- bool
--cipher_kt_insecure(const EVP_CIPHER *cipher)
-+cipher_kt_insecure(const char *ciphername)
- {
--    return !(cipher_kt_block_size(cipher) >= 128 / 8
-+
-+    if (cipher_kt_block_size(ciphername) >= 128 / 8)
-+    {
-+        return false;
-+    }
- #ifdef NID_chacha20_poly1305
--             || EVP_CIPHER_nid(cipher) == NID_chacha20_poly1305
-+    evp_cipher_type *cipher = cipher_get(ciphername);
-+    if (cipher)
-+    {
-+        bool ischachapoly = (EVP_CIPHER_nid(cipher) == NID_chacha20_poly1305);
-+        EVP_CIPHER_free(cipher);
-+        if (ischachapoly)
-+        {
-+            return false;
-+        }
-+    }
- #endif
--             );
-+    return true;
- }
- 
- int
-@@ -693,44 +752,56 @@ cipher_kt_mode(const EVP_CIPHER *cipher_kt)
- }
- 
- bool
--cipher_kt_mode_cbc(const cipher_kt_t *cipher)
-+cipher_kt_mode_cbc(const char *ciphername)
- {
--    return cipher && cipher_kt_mode(cipher) == OPENVPN_MODE_CBC
-+    evp_cipher_type *cipher = cipher_get(ciphername);
-+
-+    bool ret = cipher && (cipher_kt_mode(cipher) == OPENVPN_MODE_CBC
-            /* Exclude AEAD cipher modes, they require a different API */
- #ifdef EVP_CIPH_FLAG_CTS
-            && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_CTS)
- #endif
--           && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_AEAD_CIPHER);
-+           && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_AEAD_CIPHER));
-+    EVP_CIPHER_free(cipher);
+-    return EVP_Digest(src, src_len, dst, &in_md_len, kt, NULL);
++    int ret = EVP_Digest(src, src_len, dst, &in_md_len, kt, NULL);
++    EVP_MD_free(kt);
 +    return ret;
  }
  
- bool
--cipher_kt_mode_ofb_cfb(const cipher_kt_t *cipher)
-+cipher_kt_mode_ofb_cfb(const char *ciphername)
- {
--    return cipher && (cipher_kt_mode(cipher) == OPENVPN_MODE_OFB
-+    evp_cipher_type *cipher = cipher_get(ciphername);
-+    bool ofb_cfb = cipher && (cipher_kt_mode(cipher) == OPENVPN_MODE_OFB
-                       || cipher_kt_mode(cipher) == OPENVPN_MODE_CFB)
--           /* Exclude AEAD cipher modes, they require a different API */
--           && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_AEAD_CIPHER);
-+                      /* Exclude AEAD cipher modes, they require a different API */
-+                      && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_AEAD_CIPHER);
-+    EVP_CIPHER_free(cipher);
-+    return ofb_cfb;
+ EVP_MD_CTX *
+@@ -1093,8 +1112,9 @@ md_ctx_free(EVP_MD_CTX *ctx)
  }
- 
- bool
--cipher_kt_mode_aead(const cipher_kt_t *cipher)
-+cipher_kt_mode_aead(const char *ciphername)
- {
-+    bool isaead = false;
-+
-+    evp_cipher_type *cipher = cipher_get(ciphername);
-     if (cipher)
-     {
-         if (EVP_CIPHER_mode(cipher) == OPENVPN_MODE_GCM)
-         {
--            return true;
-+            isaead = true;
-         }
- 
- #ifdef NID_chacha20_poly1305
-         if (EVP_CIPHER_nid(cipher) == NID_chacha20_poly1305)
-         {
--            return true;
-+            isaead =  true;
-         }
- #endif
-     }
- 
--    return false;
-+    EVP_CIPHER_free(cipher);
-+
-+    return isaead;
- }
- 
- /*
-@@ -755,9 +826,10 @@ cipher_ctx_free(EVP_CIPHER_CTX *ctx)
  
  void
- cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key,
--                const EVP_CIPHER *kt, int enc)
-+                const char *ciphername, int enc)
+-md_ctx_init(EVP_MD_CTX *ctx, const EVP_MD *kt)
++md_ctx_init(EVP_MD_CTX *ctx, const char *mdname)
  {
--    ASSERT(NULL != kt && NULL != ctx);
-+    ASSERT(NULL != ciphername && NULL != ctx);
-+    evp_cipher_type *kt = cipher_get(ciphername);
++    evp_md_type *kt = md_get(mdname);
+     ASSERT(NULL != ctx && NULL != kt);
  
-     EVP_CIPHER_CTX_reset(ctx);
-     if (!EVP_CipherInit(ctx, kt, NULL, NULL, enc))
-@@ -769,6 +841,7 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, const uint8_t *key,
-         crypto_msg(M_FATAL, "EVP cipher init #2");
+     EVP_MD_CTX_init(ctx);
+@@ -1102,6 +1122,7 @@ md_ctx_init(EVP_MD_CTX *ctx, const EVP_MD *kt)
+     {
+         crypto_msg(M_FATAL, "EVP_DigestInit failed");
+     }
++    EVP_MD_free(kt);
+ }
+ 
+ void
+@@ -1152,8 +1173,9 @@ hmac_ctx_free(HMAC_CTX *ctx)
+ }
+ 
+ void
+-hmac_ctx_init(HMAC_CTX *ctx, const uint8_t *key, const EVP_MD *kt)
++hmac_ctx_init(HMAC_CTX *ctx, const uint8_t *key, const char *mdname)
+ {
++    evp_md_type *kt = md_get(mdname);
+     ASSERT(NULL != kt && NULL != ctx);
+ 
+     int key_len = EVP_MD_size(kt);
+@@ -1225,15 +1247,14 @@ hmac_ctx_free(hmac_ctx_t *ctx)
+ }
+ 
+ void
+-hmac_ctx_init(hmac_ctx_t *ctx, const uint8_t *key, const EVP_MD *kt)
++hmac_ctx_init(hmac_ctx_t *ctx, const uint8_t *key, const char *mdname)
+ {
++    evp_md_type *kt = md_get(mdname);
+     ASSERT(NULL != kt && NULL != ctx && ctx->ctx != NULL);
+-    int key_len = EVP_MD_size(kt);
+-    ASSERT(key_len <= EVP_MAX_KEY_LENGTH);
+ 
+     /* We need to make a copy of the key since the OSSL parameters
+      * only reference it */
+-    memcpy(ctx->key, key, key_len);
++    memcpy(ctx->key, key, EVP_MD_size(kt));
+ 
+     /* Lookup/setting of parameters in OpenSSL 3.0 are string based
+      *
+@@ -1244,7 +1265,7 @@ hmac_ctx_init(hmac_ctx_t *ctx, const uint8_t *key, const EVP_MD *kt)
+     ctx->params[0] = OSSL_PARAM_construct_utf8_string("digest",
+                                                       (char *) EVP_MD_get0_name(kt), 0);
+     ctx->params[1] = OSSL_PARAM_construct_octet_string("key",
+-                                                       ctx->key, key_len);
++                                                       ctx->key, EVP_MD_size(kt));
+     ctx->params[2] = OSSL_PARAM_construct_end();
+ 
+     if (!EVP_MAC_init(ctx->ctx, NULL, 0, ctx->params))
+@@ -1252,8 +1273,7 @@ hmac_ctx_init(hmac_ctx_t *ctx, const uint8_t *key, const EVP_MD *kt)
+         crypto_msg(M_FATAL, "EVP_MAC_init failed");
      }
  
-+    EVP_CIPHER_free(kt);
-     /* make sure we used a big enough key */
-     ASSERT(EVP_CIPHER_CTX_key_length(ctx) <= EVP_CIPHER_key_length(kt));
+-    /* make sure we used a big enough key */
+-    ASSERT(EVP_MAC_CTX_get_mac_size(ctx->ctx) <= key_len);
++    EVP_MD_free(kt);
  }
+ 
+ void
+@@ -1528,7 +1548,6 @@ err:
+     return ret;
+ }
+ 
+-
+ /*
+  * Use the TLS PRF function for generating data channel keys.
+  * This code is based on the OpenSSL library.
+@@ -1554,9 +1573,9 @@ ssl_tls1_PRF(const uint8_t *label, int label_len, const uint8_t *sec,
+ {
+     bool ret = true;
+     struct gc_arena gc = gc_new();
+-    /* For some reason our md_kt_get("MD5") fails otherwise in the unit test */
+-    const md_kt_t *md5 = EVP_md5();
+-    const md_kt_t *sha1 = EVP_sha1();
++    /* For some reason our md_get("MD5") fails otherwise in the unit test */
++    const EVP_MD *md5 = EVP_md5();
++    const EVP_MD *sha1 = EVP_sha1();
+ 
+     uint8_t *out2 = (uint8_t *)gc_malloc(olen, false, &gc);
+ 
 diff --git a/src/openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h
-index 6eb16a906..3371d07e7 100644
+index 3371d07e7..a47831110 100644
 --- a/src/openvpn/crypto_openssl.h
 +++ b/src/openvpn/crypto_openssl.h
-@@ -37,10 +37,6 @@
+@@ -37,9 +37,6 @@
  #include <openssl/provider.h>
  #endif
  
+-/** Generic message digest key type %context. */
+-typedef EVP_MD md_kt_t;
 -
--/** Generic cipher key type %context. */
--typedef EVP_CIPHER cipher_kt_t;
--
- /** Generic message digest key type %context. */
- typedef EVP_MD md_kt_t;
+ /** Generic cipher %context. */
+ typedef EVP_CIPHER_CTX cipher_ctx_t;
  
-@@ -66,6 +62,15 @@ typedef struct {
- typedef OSSL_PROVIDER provider_t;
+@@ -67,8 +64,10 @@ typedef OSSL_PROVIDER provider_t;
+  * and lower returns a const type, needing a const type */
+ #if OPENSSL_VERSION_NUMBER < 0x30000000L
+ typedef const EVP_CIPHER evp_cipher_type;
++typedef const EVP_MD evp_md_type;
+ #else
+ typedef EVP_CIPHER evp_cipher_type;
++typedef EVP_MD evp_md_type;
  #endif
  
-+/* In OpenSSL 3.0 the method that returns EVP_CIPHER, the cipher needs to be
-+ * freed afterwards, thus needing a non-const type. In constrast OpenSSL 1.1.1
-+ * and lower returns a const type, needing a const type */
-+#if OPENSSL_VERSION_NUMBER < 0x30000000L
-+typedef const EVP_CIPHER evp_cipher_type;
-+#else
-+typedef EVP_CIPHER evp_cipher_type;
-+#endif
-+
  /** Maximum length of an IV */
- #define OPENVPN_MAX_IV_LENGTH   EVP_MAX_IV_LENGTH
+diff --git a/src/openvpn/httpdigest.c b/src/openvpn/httpdigest.c
+index 26b0ed1a7..9b886f6a7 100644
+--- a/src/openvpn/httpdigest.c
++++ b/src/openvpn/httpdigest.c
+@@ -81,9 +81,8 @@ DigestCalcHA1(
+ {
+     HASH HA1;
+     md_ctx_t *md5_ctx = md_ctx_new();
+-    const md_kt_t *md5_kt = md_kt_get("MD5");
  
+-    md_ctx_init(md5_ctx, md5_kt);
++    md_ctx_init(md5_ctx, "MD5");
+     md_ctx_update(md5_ctx, (const uint8_t *) pszUserName, strlen(pszUserName));
+     md_ctx_update(md5_ctx, (const uint8_t *) ":", 1);
+     md_ctx_update(md5_ctx, (const uint8_t *) pszRealm, strlen(pszRealm));
+@@ -92,7 +91,7 @@ DigestCalcHA1(
+     md_ctx_final(md5_ctx, HA1);
+     if (pszAlg && strcasecmp(pszAlg, "md5-sess") == 0)
+     {
+-        md_ctx_init(md5_ctx, md5_kt);
++        md_ctx_init(md5_ctx, "MD5");
+         md_ctx_update(md5_ctx, HA1, HASHLEN);
+         md_ctx_update(md5_ctx, (const uint8_t *) ":", 1);
+         md_ctx_update(md5_ctx, (const uint8_t *) pszNonce, strlen(pszNonce));
+@@ -124,10 +123,9 @@ DigestCalcResponse(
+     HASHHEX HA2Hex;
+ 
+     md_ctx_t *md5_ctx = md_ctx_new();
+-    const md_kt_t *md5_kt = md_kt_get("MD5");
+ 
+     /* calculate H(A2) */
+-    md_ctx_init(md5_ctx, md5_kt);
++    md_ctx_init(md5_ctx, "MD5");
+     md_ctx_update(md5_ctx, (const uint8_t *) pszMethod, strlen(pszMethod));
+     md_ctx_update(md5_ctx, (const uint8_t *) ":", 1);
+     md_ctx_update(md5_ctx, (const uint8_t *) pszDigestUri, strlen(pszDigestUri));
+@@ -140,7 +138,7 @@ DigestCalcResponse(
+     CvtHex(HA2, HA2Hex);
+ 
+     /* calculate response */
+-    md_ctx_init(md5_ctx, md5_kt);
++    md_ctx_init(md5_ctx, "MD5");
+     md_ctx_update(md5_ctx, HA1, HASHHEXLEN);
+     md_ctx_update(md5_ctx, (const uint8_t *) ":", 1);
+     md_ctx_update(md5_ctx, (const uint8_t *) pszNonce, strlen(pszNonce));
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 4fee7f49f..bb9dce778 100644
+index bb9dce778..624b70878 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -2529,7 +2529,7 @@ frame_finalize_options(struct context *c, const struct options *o)
-      * Set adjustment factor for buffer alignment when no
-      * cipher is used.
-      */
--    if (!CIPHER_ENABLED(c))
-+    if (!cipher_defined(c->c1.ks.key_type.cipher))
+@@ -2658,12 +2658,9 @@ do_init_tls_wrap_key(struct context *c)
      {
-         frame_align_to_extra_frame(&c->c2.frame);
-         frame_or_align_flags(&c->c2.frame,
-@@ -2660,6 +2660,7 @@ do_init_tls_wrap_key(struct context *c)
+         /* Initialize key_type for tls-auth with auth only */
          CLEAR(c->c1.ks.tls_auth_key_type);
-         if (!streq(options->authname, "none"))
+-        if (!streq(options->authname, "none"))
+-        {
+-            c->c1.ks.tls_auth_key_type.cipher = "none";
+-            c->c1.ks.tls_auth_key_type.digest = md_kt_get(options->authname);
+-        }
+-        else
++        c->c1.ks.tls_auth_key_type.cipher = "none";
++        c->c1.ks.tls_auth_key_type.digest = options->authname;
++        if (!md_valid(options->authname))
          {
-+            c->c1.ks.tls_auth_key_type.cipher = "none";
-             c->c1.ks.tls_auth_key_type.digest = md_kt_get(options->authname);
-         }
-         else
-@@ -2762,16 +2763,19 @@ do_init_crypto_tls_c1(struct context *c)
-         * Note that BF-CBC will still be part of the OCC string to retain
-         * backwards compatibility with older clients.
-         */
--        if (!streq(options->ciphername, "BF-CBC")
--            || tls_item_in_cipher_list("BF-CBC", options->ncp_ciphers)
--            || options->enable_ncp_fallback)
-+        const char* ciphername = options->ciphername;
-+        if (streq(options->ciphername, "BF-CBC")
-+            && !tls_item_in_cipher_list("BF-CBC", options->ncp_ciphers)
-+            && !options->enable_ncp_fallback)
-         {
--            /* Do not warn if the if the cipher is used only in OCC */
--            bool warn = options->enable_ncp_fallback;
--            init_key_type(&c->c1.ks.key_type, options->ciphername, options->authname,
--                          true, warn);
-+            ciphername = "none";
-         }
+             msg(M_FATAL, "ERROR: tls-auth enabled, but no valid --auth "
+                 "algorithm specified ('%s')", options->authname);
+diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
+index 8fc9fbd6a..72c13130a 100644
+--- a/src/openvpn/ntlm.c
++++ b/src/openvpn/ntlm.c
+@@ -73,10 +73,9 @@ static void
+ gen_md4_hash(const uint8_t *data, int data_len, uint8_t *result)
+ {
+     /* result is 16 byte md4 hash */
+-    const md_kt_t *md4_kt = md_kt_get("MD4");
+     uint8_t md[MD4_DIGEST_LENGTH];
  
-+        /* Do not warn if the cipher is used only in OCC */
-+        bool warn = options->enable_ncp_fallback;
-+        init_key_type(&c->c1.ks.key_type, ciphername, options->authname,
-+                      true, warn);
-+
-         /* initialize tls-auth/crypt/crypt-v2 key */
-         do_init_tls_wrap_key(c);
+-    md_full(md4_kt, data, data_len, md);
++    md_full("MD4", data, data_len, md);
+     memcpy(result, md, MD4_DIGEST_LENGTH);
+ }
  
+@@ -84,10 +83,9 @@ static void
+ gen_hmac_md5(const uint8_t *data, int data_len, const uint8_t *key,
+              uint8_t *result)
+ {
+-    const md_kt_t *md5_kt = md_kt_get("MD5");
+     hmac_ctx_t *hmac_ctx = hmac_ctx_new();
+ 
+-    hmac_ctx_init(hmac_ctx, key, md5_kt);
++    hmac_ctx_init(hmac_ctx, key, "MD5");
+     hmac_ctx_update(hmac_ctx, data, data_len);
+     hmac_ctx_final(hmac_ctx, result);
+     hmac_ctx_cleanup(hmac_ctx);
 diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index 54fd5d60f..dcc210c79 100644
+index dcc210c79..7a323be52 100644
 --- a/src/openvpn/openssl_compat.h
 +++ b/src/openvpn/openssl_compat.h
-@@ -757,6 +757,7 @@ int EVP_PKEY_get_group_name(EVP_PKEY *pkey, char *gname, size_t gname_sz,
- 
- #if OPENSSL_VERSION_NUMBER < 0x30000000L
- #define EVP_MD_get0_name EVP_MD_name
-+#define EVP_CIPHER_get0_name EVP_CIPHER_name
- #define EVP_CIPHER_CTX_get_mode EVP_CIPHER_CTX_mode
- 
- /* Mimics the functions but only when the default context without
-@@ -776,6 +777,12 @@ EVP_MD_fetch(void *ctx, const char *algorithm, const char *properties)
-     ASSERT(!properties);
-     return EVP_get_digestbyname(algorithm);
+@@ -783,6 +783,13 @@ EVP_CIPHER_free(const EVP_CIPHER *cipher)
+ {
+     /* OpenSSL 1.1.1 and lower use only const EVP_CIPHER, nothing to free */
  }
 +
 +static inline void
-+EVP_CIPHER_free(const EVP_CIPHER *cipher)
++EVP_MD_free(const EVP_MD *md)
 +{
-+    /* OpenSSL 1.1.1 and lower use only const EVP_CIPHER, nothing to free */
++    /* OpenSSL 1.1.1 and lower use only const EVP_MD, nothing to free */
 +}
++
  #endif /* OPENSSL_VERSION_NUMBER < 0x30000000L */
  
  #endif /* OPENSSL_COMPAT_H_ */
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 84477837e..aff63aef1 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -529,8 +529,6 @@ struct context
-                                           |(c->options.tls_auth_file ? md_kt_size(c->c1.ks.key_type.digest) : 0), \
-                                           gc)
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 53cb7ca6f..f9343b42e 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -926,7 +926,7 @@ process_incoming_push_reply(struct context *c,
+         if (!c->c2.pulled_options_digest_init_done)
+         {
+             c->c2.pulled_options_state = md_ctx_new();
+-            md_ctx_init(c->c2.pulled_options_state, md_kt_get("SHA256"));
++            md_ctx_init(c->c2.pulled_options_state, "SHA256");
+             c->c2.pulled_options_digest_init_done = true;
+         }
+         if (apply_push_options(&c->options,
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 946058017..5624c5142 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -958,10 +958,9 @@ tls_ctx_personalise_random(struct tls_root_ctx *ctx)
  
--#define CIPHER_ENABLED(c) (c->c1.ks.key_type.cipher != NULL)
--
- /* this represents "disabled peer-id" */
- #define MAX_PEER_ID 0xFFFFFF
- 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index ac13412a4..b840b767b 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3084,7 +3084,7 @@ options_postprocess_setdefault_ncpciphers(struct options *o)
-         /* custom --data-ciphers set, keep list */
-         return;
-     }
--    else if (cipher_kt_get("CHACHA20-POLY1305"))
-+    else if (cipher_valid("CHACHA20-POLY1305"))
+     if (NULL != ctx->crt_chain)
      {
-         o->ncp_ciphers = "AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
-     }
-@@ -3979,7 +3979,7 @@ options_string(const struct options *o,
-         /* Skip resolving BF-CBC to allow SSL libraries without BF-CBC
-          * to work here in the default configuration */
-         const char *ciphername = o->ciphername;
--        int keysize;
-+        int keysize = 0;
+-        const md_kt_t *sha256_kt = md_kt_get("SHA256");
+         mbedtls_x509_crt *cert = ctx->crt_chain;
  
-         if (strcmp(o->ciphername, "BF-CBC") == 0)
+-        if (!md_full(sha256_kt, cert->tbs.p, cert->tbs.len, sha256_hash))
++        if (!md_full("SHA256", cert->tbs.p, cert->tbs.len, sha256_hash))
          {
-@@ -3990,7 +3990,10 @@ options_string(const struct options *o,
-         {
-             init_key_type(&kt, o->ciphername, o->authname, true, false);
-             ciphername = cipher_kt_name(kt.cipher);
--            keysize = cipher_kt_key_size(kt.cipher) * 8;
-+            if (cipher_defined(o->ciphername))
-+            {
-+                keysize = cipher_kt_key_size(kt.cipher) * 8;
-+            }
+             msg(M_WARN, "WARNING: failed to personalise random");
          }
-         /* Only announce the cipher to our peer if we are willing to
-          * support it */
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 81b2a1afd..05096ee0a 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -281,9 +281,9 @@ tls_get_cipher_name_pair(const char *cipher_name, size_t len)
-  *                      May *not* be NULL.
-  */
- static void
--tls_limit_reneg_bytes(const cipher_kt_t *cipher, int *reneg_bytes)
-+tls_limit_reneg_bytes(const char *ciphername, int *reneg_bytes)
- {
--    if (cipher && cipher_kt_insecure(cipher))
-+    if (cipher_kt_insecure(ciphername))
-     {
-         if (*reneg_bytes == -1) /* Not user-specified */
-         {
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 4b95406e9..ce82e8951 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -105,8 +105,7 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
-     while (token)
-     {
-         /*
--         * Going through a roundtrip by using cipher_kt_get/cipher_kt_name
--         * (and translate_cipher_name_from_openvpn/
-+         * Going cipher_kt_name (and translate_cipher_name_from_openvpn/
-          * translate_cipher_name_to_openvpn) also normalises the cipher name,
-          * e.g. replacing AeS-128-gCm with AES-128-GCM
-          *
-@@ -114,15 +113,16 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
-          * OpenVPN will only warn if they are not found (and remove them from
-          * the list)
-          */
--
-         bool optional = false;
-         if (token[0] == '?')
-         {
-             token++;
-             optional = true;
-         }
--        const cipher_kt_t *ktc = cipher_kt_get(token);
--        if (strcmp(token, "none") == 0)
-+
-+        const bool nonecipher = (strcmp(token, "none") == 0);
-+
-+        if (nonecipher)
-         {
-             msg(M_WARN, "WARNING: cipher 'none' specified for --data-ciphers. "
-                         "This allows negotiation of NO encryption and "
-@@ -130,7 +130,7 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
-                         "over the network! "
-                         "PLEASE DO RECONSIDER THIS SETTING!");
-         }
--        if (!ktc && strcmp(token, "none") != 0)
-+        if (!nonecipher && !cipher_valid(token))
-         {
-             const char* optstr = optional ? "optional ": "";
-             msg(M_WARN, "Unsupported %scipher in --data-ciphers: %s", optstr, token);
-@@ -138,8 +138,8 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
-         }
-         else
-         {
--            const char *ovpn_cipher_name = cipher_kt_name(ktc);
--            if (ktc == NULL)
-+            const char *ovpn_cipher_name = cipher_kt_name(token);
-+            if (nonecipher)
-             {
-                 /* NULL resolves to [null-cipher] but we need none for
-                  * data-ciphers */
-@@ -466,17 +466,17 @@ p2p_mode_ncp(struct tls_multi *multi, struct tls_session *session)
-     if (!common_cipher)
-     {
-         struct buffer out = alloc_buf_gc(128, &gc);
--        const cipher_kt_t *cipher = session->opt->key_type.cipher;
--
-         /* at this point we do not really know if our fallback is
-          * not enabled or if we use 'none' cipher as fallback, so
-          * keep this ambiguity here and print fallback-cipher: none
-          */
- 
-         const char *fallback_name = "none";
--        if (cipher)
-+        const char *ciphername = session->opt->key_type.cipher;
-+
-+        if (cipher_defined(ciphername))
-         {
--            fallback_name = cipher_kt_name(cipher);
-+            fallback_name = cipher_kt_name(ciphername);
-         }
- 
-         buf_printf(&out, "(not negotiated, fallback-cipher: %s)", fallback_name);
 diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 80ed9684e..841261329 100644
+index 841261329..d940ec303 100644
 --- a/src/openvpn/tls_crypt.c
 +++ b/src/openvpn/tls_crypt.c
-@@ -51,10 +51,10 @@ static struct key_type
- tls_crypt_kt(void)
+@@ -52,14 +52,14 @@ tls_crypt_kt(void)
  {
      struct key_type kt;
--    kt.cipher = cipher_kt_get("AES-256-CTR");
-+    kt.cipher = "AES-256-CTR";
-     kt.digest = md_kt_get("SHA256");
+     kt.cipher = "AES-256-CTR";
+-    kt.digest = md_kt_get("SHA256");
++    kt.digest = "SHA256";
  
--    if (!kt.cipher)
-+    if (!cipher_valid(kt.cipher))
+     if (!cipher_valid(kt.cipher))
      {
          msg(M_WARN, "ERROR: --tls-crypt requires AES-256-CTR support.");
          return (struct key_type) { 0 };
+     }
+-    if (!kt.digest)
++    if (cipher_valid(kt.digest))
+     {
+         msg(M_WARN, "ERROR: --tls-crypt requires HMAC-SHA-256 support.");
+         return (struct key_type) { 0 };
 diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
-index 42632c72b..344817eef 100644
+index 344817eef..51672f9b2 100644
 --- a/tests/unit_tests/openvpn/test_crypto.c
 +++ b/tests/unit_tests/openvpn/test_crypto.c
-@@ -72,7 +72,7 @@ crypto_pem_encode_decode_loopback(void **state)
- static void
- test_translate_cipher(const char *ciphername, const char *openvpn_name)
+@@ -174,14 +174,13 @@ static void
+ crypto_test_hmac(void **state)
  {
--    const cipher_kt_t *cipher = cipher_kt_get(ciphername);
-+    bool cipher = cipher_valid(ciphername);
+     hmac_ctx_t *hmac = hmac_ctx_new();
+-    const md_kt_t *sha1 = md_kt_get("SHA1");
  
-     /* Empty cipher is fine */
-     if (!cipher)
-@@ -80,7 +80,7 @@ test_translate_cipher(const char *ciphername, const char *openvpn_name)
-         return;
-     }
+-    assert_int_equal(md_kt_size(sha1), 20);
++    assert_int_equal(md_kt_size("SHA1"), 20);
  
--    const char *kt_name = cipher_kt_name(cipher);
-+    const char *kt_name = cipher_kt_name(ciphername);
+     uint8_t key[20];
+     memcpy(key, testkey, sizeof(key));
  
-     assert_string_equal(kt_name, openvpn_name);
- }
-diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
-index f4c28ffdf..f3d7ed20a 100644
---- a/tests/unit_tests/openvpn/test_ncp.c
-+++ b/tests/unit_tests/openvpn/test_ncp.c
-@@ -59,8 +59,8 @@ static void
- test_check_ncp_ciphers_list(void **state)
- {
-     struct gc_arena gc = gc_new();
--    bool have_chacha = cipher_kt_get("CHACHA20-POLY1305");
--    bool have_blowfish = cipher_kt_get("BF-CBC");
-+    bool have_chacha = cipher_valid("CHACHA20-POLY1305");
-+    bool have_blowfish = cipher_valid("BF-CBC");
+-    hmac_ctx_init(hmac, key, sha1);
++    hmac_ctx_init(hmac, key, "SHA1");
+     hmac_ctx_update(hmac, (const uint8_t *)ipsumlorem, (int) strlen(ipsumlorem));
+     hmac_ctx_update(hmac, (const uint8_t *)ipsumlorem, (int) strlen(ipsumlorem));
  
-     assert_string_equal(mutate_ncp_cipher_list("none", &gc), "none");
-     assert_string_equal(mutate_ncp_cipher_list("AES-256-GCM:none", &gc),
-@@ -100,7 +100,7 @@ test_check_ncp_ciphers_list(void **state)
- 
-     /* For testing that with OpenSSL 1.1.0+ that also accepts ciphers in
-      * a different spelling the normalised cipher output is the same */
--    bool have_chacha_mixed_case = cipher_kt_get("ChaCha20-Poly1305");
-+    bool have_chacha_mixed_case = cipher_valid("ChaCha20-Poly1305");
-     if (have_chacha_mixed_case)
-     {
-         assert_string_equal(mutate_ncp_cipher_list("AES-128-CBC:ChaCha20-Poly1305", &gc),
 -- 
 2.33.0
 
