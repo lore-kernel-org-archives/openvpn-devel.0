@@ -1,13 +1,12 @@
-Message-ID: <447e0a7c-a60d-1085-12d1-64c3ebc8c589@...1227...>
-Date: Mon, 13 Dec 2021 16:39:13 +0100
+Date: Mon, 13 Dec 2021 16:57:31 +0100 (CET)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <918074241.1231712.1639411051056@...2642...>
+In-Reply-To: <20211213152529.3995394-1-arne@...1227...>
+References: <0211202135124.2598645-1-arne@...1227...>
+ <20211213152529.3995394-1-arne@...1227...>
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <20211207170211.3275837-1-arne@...1227...>
- <20211207170211.3275837-7-arne@...1227...>
- <1582627291.849748.1639153050584@...2642...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <1582627291.849748.1639153050584@...2642...>
-Subject: Re: [Openvpn-devel] [PATCH 06/21] Remove post_open_mtu code
+Subject: Re: [Openvpn-devel] [PATCH v2] Adjust cipher-negotiation.rst with
+ compat-mode changes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,34 +15,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: Frank Lichtenheld <frank@...2641...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Am 10.12.21 um 17:17 schrieb Frank Lichtenheld:
->> Arne Schwabe <arne@...1227...> hat am 07.12.2021 18:01 geschrieben:
->> This code is probably from a time when we could not set the MTU on
->> the Windows tap6 driver. Nowadays we can set the MTU on this device,
->> so this code is a noop now.
-> [...]
->> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
->> index 75d5eaf7b..12bdd2005 100644
->> --- a/src/openvpn/tun.c
->> +++ b/src/openvpn/tun.c
->> @@ -6071,7 +6071,6 @@ tuntap_get_mtu(struct tuntap *tt)
->>                           &mtu, sizeof(mtu),
->>                           &mtu, sizeof(mtu), &len, NULL))
->>       {
->> -        tt->post_open_mtu = (int)mtu;
->>           msg(D_MTU_INFO, "TAP-Windows MTU=%d", (int)mtu);
->>       }
->>   }
+Acked-By: Frank Lichtenheld <frank@...2641...>
+
+Still think it is a bit clunky, especially the "OpenVPN 2.6 and later with
+``--compat-mode 2.4.x`` (or lower)", but I couldn't come up with anything
+substantially better.
+
+Regards,
+  Frank
+
+> Arne Schwabe <arne@...1227...> hat am 13.12.2021 16:25 geschrieben:
 > 
-> This change makes no sense to me. Why would you not remove the complete tuntap_get_mtu call? If the whole point was to get the MTU, and now it will be the one we set, why even to the ioctl at all?
+>  
+> This explains that 2.6 will ignore --cipher without --compat-mode and
+> restructures the whole paragraph to better readable.
+> 
+> Patch V2: Adjust grammar, use consistently "and later"
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 
-I wanted to keep the message that is currently printed at verb 1. If we 
-decide that the message can be removed I can remove the calling of the 
-ioctl as well.
-
-Arne
+--
+Frank Lichtenheld
 
