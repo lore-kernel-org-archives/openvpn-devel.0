@@ -1,11 +1,11 @@
 From: selva.nair@...277...
-Date: Tue, 14 Dec 2021 11:59:21 -0500
-Message-Id: <20211214165928.30676-12-selva.nair@...277...>
+Date: Tue, 14 Dec 2021 11:59:26 -0500
+Message-Id: <20211214165928.30676-17-selva.nair@...277...>
 In-Reply-To: <20211214165928.30676-1-selva.nair@...277...>
 References: <20211214165928.30676-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 11/18] Support sending DigestSign request
- to management client
+Subject: [Openvpn-devel] [PATCH v3 16/18] Add a unit test for external key
+ provider
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,160 +20,384 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-To receive undigested message for signing, indicate support
-for handling message digesting in the client using an argument
-"digest" to --management-external-key.
-
-For example, to announce pkcs1 padding and digesting support use:
-
---management-external-key pkcs1 pss digest
-
-In PK_SIGN, the algorithm string will get data=message
-in addition to other relevant options.
-
-Note that it is not guaranteed that the client will be prompted
-with undigested message. This is possible only when OpenSSL
-calls our provider for DigestSign() as opposed to Sign(). In
-practice, signature operation always appears to result in
-a DigestSign() call through the provider interface.
+Tests:
+- Check SIGNATURE and KEYMGMT methods can be fetched
+  from the provider
+- Load sample RSA and EC keys as management-external-key
+  and check that their sign callbacks are correctly exercised:
+  with and without digest support mocked in the client
+  capability flag.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/manage.h      |  1 +
- src/openvpn/options.c     |  4 +++
- src/openvpn/xkey_helper.c | 52 ++++++++++++++++++++++++++++++---------
- 3 files changed, 45 insertions(+), 12 deletions(-)
+ configure.ac                             |   2 +
+ tests/unit_tests/openvpn/Makefile.am     |  20 ++
+ tests/unit_tests/openvpn/test_provider.c | 305 +++++++++++++++++++++++
+ 3 files changed, 327 insertions(+)
+ create mode 100644 tests/unit_tests/openvpn/test_provider.c
 
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index 5ed27c0c..9621f479 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -340,6 +340,7 @@ struct management *management_init(void);
- #define MF_QUERY_PROXY              (1<<14)
- #define MF_EXTERNAL_CERT            (1<<15)
- #define MF_EXTERNAL_KEY_PSSPAD      (1<<16)
-+#define MF_EXTERNAL_KEY_DIGEST      (1<<17)
+diff --git a/configure.ac b/configure.ac
+index e0f9c332..c446f631 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -766,6 +766,8 @@ PKG_CHECK_MODULES(
+ 	[]
+ )
  
- bool management_open(struct management *man,
-                      const char *addr,
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 3ec9025b..a323367c 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -5576,6 +5576,10 @@ add_option(struct options *options,
-             {
-                 options->management_flags |= MF_EXTERNAL_KEY_PSSPAD;
-             }
-+            else if (streq(p[j], "digest"))
-+            {
-+                options->management_flags |= MF_EXTERNAL_KEY_DIGEST;
-+            }
-             else
-             {
-                 msg(msglevel, "Unknown management-external-key flag: %s", p[j]);
-diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
-index d63943d2..d09ad635 100644
---- a/src/openvpn/xkey_helper.c
-+++ b/src/openvpn/xkey_helper.c
-@@ -138,17 +138,22 @@ int
- xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
-                      const unsigned char *tbs, size_t tbslen, XKEY_SIGALG alg)
- {
-+    dmsg(D_LOW, "In xkey_management_sign with keytype = %s, op = %s",
-+         alg.keytype, alg.op);
++AM_CONDITIONAL([HAVE_XKEY_PROVIDER], [false])
 +
-     (void) unused;
-     char alg_str[128];
-     unsigned char buf[EVP_MAX_MD_SIZE]; /* for computing digest if required */
-     size_t buflen = sizeof(buf);
+ if test "${with_crypto_library}" = "openssl"; then
+ 	AC_ARG_VAR([OPENSSL_CFLAGS], [C compiler flags for OpenSSL])
+ 	AC_ARG_VAR([OPENSSL_LIBS], [linker flags for OpenSSL])
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index 44b77cc5..96b670ae 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -11,6 +11,10 @@ if HAVE_LD_WRAP_SUPPORT
+ test_binaries += tls_crypt_testdriver
+ endif
  
--    unsigned char enc[EVP_MAX_MD_SIZE + 32]; /* 32 bytes enough for digest inf structure */
-+    unsigned char enc[EVP_MAX_MD_SIZE + 32]; /* 32 bytes enough for digest info structure */
-     size_t enc_len = sizeof(enc);
- 
-     unsigned int flags = management->settings.flags;
-+    bool is_message = !strcmp(alg.op, "DigestSign"); /* tbs is message, not digest */
- 
--    if (!strcmp(alg.op, "DigestSign"))
-+    /* if management client cannot do digest -- we do it here */
-+    if (!strcmp(alg.op, "DigestSign") && !(flags & MF_EXTERNAL_KEY_DIGEST))
-     {
-         dmsg(D_LOW, "xkey_management_sign: computing digest");
-         if (xkey_digest(tbs, tbslen, buf, &buflen, alg.mdname))
-@@ -156,6 +161,7 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
-             tbs = buf;
-             tbslen = buflen;
-             alg.op = "Sign";
-+            is_message = false;
-         }
-         else
-         {
-@@ -165,22 +171,38 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
- 
-     if (!strcmp(alg.keytype, "EC"))
-     {
--        strncpynt(alg_str, "ECDSA", sizeof(alg_str));
-+        if (!strcmp(alg.op, "Sign"))
-+        {
-+            strncpynt(alg_str, "ECDSA", sizeof(alg_str));
-+        }
-+        else
-+        {
-+            openvpn_snprintf(alg_str, sizeof(alg_str), "ECDSA,hashalg=%s", alg.mdname);
-+        }
-     }
-     /* else assume RSA key */
-     else if (!strcmp(alg.padmode, "pkcs1") && (flags & MF_EXTERNAL_KEY_PKCS1PAD))
-     {
--        /* management interface expects a pkcs1 encoded digest -- add it */
--        if (!encode_pkcs1(enc, &enc_len, alg.mdname, tbs, tbslen))
-+        /* For Sign, management interface expects a pkcs1 encoded digest -- add it */
-+        if (!strcmp(alg.op, "Sign"))
-         {
--            return 0;
-+            if (!encode_pkcs1(enc, &enc_len, alg.mdname, tbs, tbslen))
-+            {
-+                return 0;
-+            }
-+            tbs = enc;
-+            tbslen = enc_len;
-+            strncpynt(alg_str, "RSA_PKCS1_PADDING", sizeof(alg_str));
-+        }
-+        /* For undigested message, add hashalg=digest parameter */
-+        else
-+        {
-+            openvpn_snprintf(alg_str, sizeof(alg_str), "%s,hashalg=%s",
-+                            "RSA_PKCS1_PADDING", alg.mdname);
-         }
--        tbs = enc;
--        tbslen = enc_len;
--
--        strncpynt(alg_str, "RSA_PKCS1_PADDING", sizeof(alg_str));
-     }
--    else if (!strcmp(alg.padmode, "none") && (flags & MF_EXTERNAL_KEY_NOPADDING))
-+    else if (!strcmp(alg.padmode, "none") && (flags & MF_EXTERNAL_KEY_NOPADDING)
-+             &&!strcmp(alg.op, "Sign")) /* NO_PADDING requires digested data */
-     {
-         strncpynt(alg_str, "RSA_NO_PADDING", sizeof(alg_str));
-     }
-@@ -190,10 +212,16 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
-                        "RSA_PKCS1_PSS_PADDING", alg.mdname,alg.saltlen);
-     }
-     else {
--        msg(M_NONFATAL, "RSA padding mode unknown or not supported by management-client <%s>",
-+        msg(M_NONFATAL, "RSA padding mode not supported by management-client <%s>",
-             alg.padmode);
-         return 0;
-     }
++if HAVE_XKEY_PROVIDER
++test_binaries += provider_testdriver
++endif
 +
-+    if (is_message)
+ TESTS = $(test_binaries)
+ check_PROGRAMS = $(test_binaries)
+ 
+@@ -95,6 +99,22 @@ networking_testdriver_SOURCES = test_networking.c mock_msg.c \
+ 	$(openvpn_srcdir)/platform.c
+ endif
+ 
++if HAVE_XKEY_PROVIDER
++provider_testdriver_CFLAGS  = @TEST_CFLAGS@ \
++	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
++	$(OPTIONAL_CRYPTO_CFLAGS)
++provider_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
++	$(OPTIONAL_CRYPTO_LIBS)
++
++provider_testdriver_SOURCES = test_provider.c mock_msg.c \
++	$(openvpn_srcdir)/xkey_helper.c \
++	$(openvpn_srcdir)/xkey_provider.c \
++	$(openvpn_srcdir)/buffer.c \
++	$(openvpn_srcdir)/base64.c \
++	mock_get_random.c \
++	$(openvpn_srcdir)/platform.c
++endif
++
+ auth_token_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+ 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
+ 	$(OPTIONAL_CRYPTO_CFLAGS)
+diff --git a/tests/unit_tests/openvpn/test_provider.c b/tests/unit_tests/openvpn/test_provider.c
+new file mode 100644
+index 00000000..dcf39019
+--- /dev/null
++++ b/tests/unit_tests/openvpn/test_provider.c
+@@ -0,0 +1,305 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2021 Selva Nair <selva.nair@...277...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by the
++ *  Free Software Foundation, either version 2 of the License,
++ *  or (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#elif defined(_MSC_VER)
++#include "config-msvc.h"
++#endif
++
++#include "syshead.h"
++
++#include <setjmp.h>
++#include <cmocka.h>
++#include <openssl/bio.h>
++#include <openssl/pem.h>
++#include <openssl/core_names.h>
++#include <openssl/evp.h>
++
++#include "manage.h"
++#include "xkey_common.h"
++
++struct management *management; /* global */
++static int mgmt_callback_called;
++
++#ifndef _countof
++#define _countof(x) sizeof((x))/sizeof(*(x))
++#endif
++
++static OSSL_PROVIDER *prov[2];
++
++/* public keys for testing -- RSA and EC */
++static const char * const pubkey1 = "-----BEGIN PUBLIC KEY-----\n"
++    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7GWP6RLCGlvmVioIqYI6\n"
++    "LUR4owA7sJ/nJxBAk+/xzD6gqgSigBsTqeb+gdZwkKjY1N4w2DUA0r5i8Eja/BWN\n"
++    "xMZtC5nxK4MACtMqIwvlzfk130NhFXKtlZj2cyFBXqDdRyeg1ZrUQagcHVcgcReP\n"
++    "9yiePgfO7NUOQk8edEeOR53SFCgnLBQQ9dGWtZN0hO/5BN6NSm/fd6vq0VjTRP5a\n"
++    "BAH/BnqX9/3jV0jh8N9AE59mI1rjVVQ9VDnuAPkS8dLfdC661/CNxt0YWByTIgt1\n"
++    "+qjW4LUvLbnU/rlPhuJ1SBZg+z/JtDBCKfs7syu5WYFqRvNFg7/91Rr/NwxvW/1h\n"
++    "8QIDAQAB\n"
++    "-----END PUBLIC KEY-----\n";
++
++static const char * const pubkey2 = "-----BEGIN PUBLIC KEY-----\n"
++    "MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEO85iXW+HgnUkwlj1DohNVw0GsnGIh1gZ\n"
++    "u95ff1JiUaJIkYNIkZA+hwIPFVH5aJcSCv3SPIeDS2VUAESNKHZJBQ==\n"
++    "-----END PUBLIC KEY-----\n";
++
++static const char *pubkeys[] = {pubkey1, pubkey2};
++
++static const char *prov_name = "ovpn.xkey";
++
++static const char* test_msg = "Lorem ipsum dolor sit amet, consectetur "
++                              "adipisici elit, sed eiusmod tempor incidunt "
++                              "ut labore et dolore magna aliqua.";
++
++static const char* test_msg_b64 =
++    "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2ljaS"
++    "BlbGl0LCBzZWQgZWl1c21vZCB0ZW1wb3IgaW5jaWR1bnQgdXQgbGFib3JlIGV0IGRv"
++    "bG9yZSBtYWduYSBhbGlxdWEu";
++
++/* Sha256 digest of test_msg excluding NUL terminator */
++static const uint8_t test_digest[] =
++    {0x77, 0x38, 0x65, 0x00, 0x1e, 0x96, 0x48, 0xc6, 0x57, 0x0b, 0xae,
++     0xc0, 0xb7, 0x96, 0xf9, 0x66, 0x4d, 0x5f, 0xd0, 0xb7, 0xdb, 0xf3,
++     0x3a, 0xbf, 0x02, 0xcc, 0x78, 0x61, 0x83, 0x20, 0x20, 0xee};
++
++static const char *test_digest_b64 = "dzhlAB6WSMZXC67At5b5Zk1f0Lfb8zq/Asx4YYMgIO4=";
++
++/* Dummy signature used only to check that the expected callback
++ * was successfully exercised. Keep this shorter than 64 bytes
++ * --- the smallest size of the actual signature with the above
++ * keys.
++ */
++const uint8_t good_sig[] =
++   {0xd8, 0xa7, 0xd9, 0x81, 0xd8, 0xaa, 0xd8, 0xad, 0x20, 0xd9, 0x8a, 0xd8,
++    0xa7, 0x20, 0xd8, 0xb3, 0xd9, 0x85, 0xd8, 0xb3, 0xd9, 0x85, 0x0};
++
++const char *good_sig_b64 = "2KfZgdiq2K0g2YrYpyDYs9mF2LPZhQA=";
++
++static EVP_PKEY *
++load_pubkey(const char *pem)
++{
++    BIO *in = BIO_new_mem_buf(pem, -1);
++    assert_non_null(in);
++
++    EVP_PKEY *pkey = PEM_read_bio_PUBKEY(in, NULL, NULL, NULL);
++    assert_non_null(pkey);
++
++    BIO_free(in);
++    return pkey;
++}
++
++static void
++init_test()
++{
++    prov[0] = OSSL_PROVIDER_load(NULL,"default");
++    OSSL_PROVIDER_add_builtin(NULL, prov_name, xkey_provider_init);
++    prov[1] = OSSL_PROVIDER_load(NULL, prov_name);
++
++    /* set default propq matching what we use in ssl_openssl.c */
++    EVP_set_default_properties(NULL, "?provider!=ovpn.xkey");
++
++    management = test_calloc(sizeof(*management), 1);
++}
++
++static void
++uninit_test()
++{
++    for (size_t i = 0; i < _countof(prov); i++)
 +    {
-+        strncat(alg_str, ",data=message", sizeof(alg_str) - strlen(alg_str) - 1);
++        if (prov[i])
++        {
++            OSSL_PROVIDER_unload(prov[i]);
++        }
++    }
++    test_free(management);
++}
++
++/* Mock management callback for signature.
++ * We check that the received data to sign matches test_msg or
++ * test_digest and return a predefined string as signature so that
++ * the caller can validate all steps up to sending the data to
++ * the management client.
++ */
++char *
++management_query_pk_sig(struct management *man, const char *b64_data,
++                        const char *algorithm)
++{
++    char *out = NULL;
++
++    /* indicate entry to the callback */
++    mgmt_callback_called = 1;
++
++    const char *expected_tbs = test_digest_b64;
++    if (strstr(algorithm, "data=message"))
++    {
++         expected_tbs = test_msg_b64;
 +    }
 +
-     dmsg(D_LOW, "xkey management_sign: requesting sig with algorithm <%s>", alg_str);
- 
-     char *in_b64 = NULL;
++    assert_string_equal(b64_data, expected_tbs);
++
++    /* Return a predefined string as sig so that the caller
++     * can confirm that this callback was exercised.
++     */
++    out = strdup(good_sig_b64);
++    assert_non_null(out);
++
++    return out;
++}
++
++/* Check signature and keymgmt methods can be fetched from the provider */
++static void
++xkey_provider_test_fetch(void **state)
++{
++    assert_true(OSSL_PROVIDER_available(NULL, prov_name));
++
++    const char *algs[] = {"RSA", "ECDSA"};
++
++    for (size_t i = 0; i < _countof(algs); i++)
++    {
++        EVP_SIGNATURE *sig = EVP_SIGNATURE_fetch(NULL, algs[i], "provider=ovpn.xkey");
++        assert_non_null(sig);
++        assert_string_equal(OSSL_PROVIDER_get0_name(EVP_SIGNATURE_get0_provider(sig)), prov_name);
++
++        EVP_SIGNATURE_free(sig);
++    }
++
++    const char *names[] = {"RSA", "EC"};
++
++    for (size_t i = 0; i < _countof(names); i++)
++    {
++        EVP_KEYMGMT *km = EVP_KEYMGMT_fetch(NULL, names[i], "provider=ovpn.xkey");
++        assert_non_null(km);
++        assert_string_equal(OSSL_PROVIDER_get0_name(EVP_KEYMGMT_get0_provider(km)), prov_name);
++
++        EVP_KEYMGMT_free(km);
++    }
++}
++
++/* sign a test message using pkey -- caller must free the returned sig */
++static uint8_t *
++digest_sign(EVP_PKEY *pkey)
++{
++    uint8_t *sig = NULL;
++    size_t siglen = 0;
++
++    OSSL_PARAM params[6] = {OSSL_PARAM_END};
++
++    const char *mdname = "SHA256";
++    const char *padmode = "pss";
++    const char *saltlen = "digest";
++
++    if (EVP_PKEY_get_id(pkey) == EVP_PKEY_RSA)
++    {
++        params[0] = OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_DIGEST, (char *)mdname, 0);
++        params[1] = OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_PAD_MODE, (char *)padmode, 0);
++        params[2] = OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_PSS_SALTLEN, (char *)saltlen, 0);
++        /* same digest for mgf1 */
++        params[3] = OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_MGF1_DIGEST, (char *)saltlen, 0);
++        params[4] = OSSL_PARAM_construct_end();
++    }
++
++    EVP_PKEY_CTX *pctx = NULL;
++    EVP_MD_CTX *mctx = EVP_MD_CTX_new();
++
++    if (!mctx
++        || EVP_DigestSignInit_ex(mctx, &pctx, mdname, NULL, NULL, pkey,  params) <= 0)
++    {
++        fail_msg("Failed to initialize EVP_DigestSignInit_ex()");
++        goto done;
++    }
++
++
++    /* sign with sig = NULL to get required siglen */
++    assert_int_equal(EVP_DigestSign(mctx, sig, &siglen, (uint8_t*)test_msg, strlen(test_msg)), 1);
++    assert_true(siglen > 0);
++
++    if ((sig = test_calloc(1, siglen)) == NULL)
++    {
++        fail_msg("Out of memory");
++    }
++    assert_int_equal(EVP_DigestSign(mctx, sig, &siglen, (uint8_t*)test_msg, strlen(test_msg)), 1);
++
++done:
++    if (mctx)
++    {
++        EVP_MD_CTX_free(mctx); /* pctx is internally allocated and freed by mctx */
++    }
++    return sig;
++}
++
++/* Check loading of management external key and have sign callback exercised
++ * for RSA and EC keys with and without digest support in management client.
++ * Sha256 digest used for both cases with pss padding for RSA.
++ */
++static void
++xkey_provider_test_mgmt_sign_cb(void **state)
++{
++    EVP_PKEY *pubkey;
++    for (size_t i = 0; i < _countof(pubkeys); i++)
++    {
++        pubkey = load_pubkey(pubkeys[i]);
++        assert_true(pubkey != NULL);
++        EVP_PKEY *privkey = xkey_load_management_key(NULL, pubkey);
++        assert_true(privkey != NULL);
++
++        management->settings.flags = MF_EXTERNAL_KEY|MF_EXTERNAL_KEY_PSSPAD;
++
++        /* first without digest support in management client */
++again:
++        mgmt_callback_called = 0;
++        uint8_t *sig = digest_sign(privkey);
++        assert_non_null(sig);
++
++        /* check callback for signature got exercised */
++        assert_int_equal(mgmt_callback_called, 1);
++        assert_memory_equal(sig, good_sig, sizeof(good_sig));
++        test_free(sig);
++
++        if (!(management->settings.flags & MF_EXTERNAL_KEY_DIGEST))
++        {
++            management->settings.flags |= MF_EXTERNAL_KEY_DIGEST;
++            goto again; /* this time with digest support announced */
++        }
++
++        EVP_PKEY_free(pubkey);
++        EVP_PKEY_free(privkey);
++    }
++}
++
++int
++main(void)
++{
++    init_test();
++
++    const struct CMUnitTest tests[] = {
++        cmocka_unit_test(xkey_provider_test_fetch),
++        cmocka_unit_test(xkey_provider_test_mgmt_sign_cb),
++    };
++
++    int ret = cmocka_run_group_tests_name("xkey provider tests", tests, NULL, NULL);
++
++    uninit_test();
++    return ret;
++}
 -- 
 2.30.2
 
