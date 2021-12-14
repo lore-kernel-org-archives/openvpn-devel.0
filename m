@@ -1,11 +1,11 @@
 From: selva.nair@...277...
-Date: Tue, 14 Dec 2021 11:59:11 -0500
-Message-Id: <20211214165928.30676-2-selva.nair@...277...>
+Date: Tue, 14 Dec 2021 11:59:13 -0500
+Message-Id: <20211214165928.30676-4-selva.nair@...277...>
 In-Reply-To: <20211214165928.30676-1-selva.nair@...277...>
 References: <20211214165928.30676-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 01/18] A built-in provider for using
- external key with OpenSSL 3.0
+Subject: [Openvpn-devel] [PATCH v3 03/18] Implement SIGNATURE operations in
+ xkey provider
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,283 +20,656 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-Hooking into callbacks in RSA_METHOD and EVP_PKEY_METHOD
-structures is deprecated in OpenSSL 3.0. For signing with
-external keys that are not exportable (tokens, stores, etc.)
-requires a custom provider interface so that key operations
-are done under its context.
+- Basic frame work for announcing support for signature
+  operations
 
-A single provider is enough for handling all external keys
-we support -- management-external-key, cryptoapicert(CNG) and
-pkcs11-helper. The series of patches starting with this implement
-such a provider.
+- DigestSign and Sign functions for native keys are also
+  implemented.  Though strictly not needed, these functions
+  for native keys sets up the framework for signature operations.
+  They also help loading an exportable key from a file through
+  the provider for testing.
 
-This patch implements only the provider_init function so
-that it can be loaded, but has no capabilities. The required
-interfaces are added in following commits.
+  Subsequent commits will add support for signing with
+  external keys.
 
 v2 changes:
- - Require OpenSSL 3.0.1 or newer: 3.0.0 is "buggy" as it
-   does not preferentially fetch operations from the keymgmt
-   of the key. This causes either an unsuccessful attempt at
-   exporting unexportable keys or an onerous requirement that
-   the external key's KEYMGMT should support a whole lot
-   of unrelated functionalities including key generation and
-   key exchange.
-   Fixed by PR #16725 in OpenSSL.
- - Use a child libctx for internal use in the provider
+  - Remove verify operations which are no longer
+    required with proposed changes in OpenSSL 3.0.1 that we target.
 
-v3 changes:
- - Move OpenSSL version check for 3.0.1+ from configure to
-   xkey_common.h
+  - Undigested message is passed to the backend sign operation when
+    possible. This would allow more flexibility as some backends
+    prefer to do the hash operation internally.
+
+  This was 4/9 in v1
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/Makefile.am     |   1 +
- src/openvpn/xkey_common.h   |  45 ++++++++++
- src/openvpn/xkey_provider.c | 169 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 215 insertions(+)
- create mode 100644 src/openvpn/xkey_common.h
- create mode 100644 src/openvpn/xkey_provider.c
+ src/openvpn/xkey_common.h   |  43 +++
+ src/openvpn/xkey_provider.c | 530 +++++++++++++++++++++++++++++++++++-
+ 2 files changed, 566 insertions(+), 7 deletions(-)
 
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 5883c291..432efe73 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -128,6 +128,7 @@ openvpn_SOURCES = \
- 	tls_crypt.c tls_crypt.h \
- 	tun.c tun.h \
- 	vlan.c vlan.h \
-+	xkey_provider.c xkey_common.h \
- 	win32.h win32.c \
- 	win32-util.h win32-util.c \
- 	cryptoapi.h cryptoapi.c
 diff --git a/src/openvpn/xkey_common.h b/src/openvpn/xkey_common.h
-new file mode 100644
-index 00000000..a3bc3f2a
---- /dev/null
+index a3bc3f2a..db58d077 100644
+--- a/src/openvpn/xkey_common.h
 +++ b/src/openvpn/xkey_common.h
-@@ -0,0 +1,45 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2021 Selva Nair <selva.nair@...277...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by the
-+ *  Free Software Foundation, either version 2 of the License,
-+ *  or (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+@@ -40,6 +40,49 @@ OSSL_provider_init_fn xkey_provider_init;
+ 
+ #define XKEY_PROV_PROPS "provider=ovpn.xkey"
+ 
++/**
++ * Stuct to encapsulate signature algorithm parameters to pass
++ * to sign operation.
 + */
-+
-+#ifndef XKEY_COMMON_H_
-+#define XKEY_COMMON_H_
-+
-+#include <openssl/opensslv.h>
-+#if OPENSSL_VERSION_NUMBER >= 0x30000010L && !defined(DISABLE_XKEY_PROVIDER)
-+#define HAVE_XKEY_PROVIDER 1
-+
-+#include <openssl/provider.h>
-+#include <openssl/core_dispatch.h>
++typedef struct {
++   const char *padmode; /**< "pkcs1", "pss" or "none" */
++   const char *mdname;  /**< "SHA256" or "SHA2-256" etc. */
++   const char *saltlen; /**< "digest", "auto" or "max" */
++   const char *keytype; /**< "EC" or "RSA" */
++   const char *op;      /**< "Sign" or "DigestSign" */
++} XKEY_SIGALG;
 +
 +/**
-+ * Initialization function for OpenVPN external key provider for OpenSSL
-+ * Follows the function signature of OSSL_PROVIDER init()
++ * Callback for sign operation -- must be implemented for each backend and
++ * is used in xkey_signature_sign(), or set when loading the key.
++ * (custom key loading not yet implemented).
++ *
++ * @param handle opaque key handle provided by the backend -- could be null
++ *               or unused for management interface.
++ * @param sig    On return caller should fill this with the signature
++ * @param siglen On entry *siglen has max size of sig and on return must be
++ *               set to the actual size of the signature
++ * @param tbs    buffer to sign
++ * @param tbslen size of data in tbs buffer
++ * @sigalg       contains the signature algorithm parameters
++ *
++ * @returns 1 on success, 0 on error.
++ *
++ * The data in tbs is just the digest with no DigestInfo header added. This is
++ * unlike the deprecated RSA_sign callback which provides encoded digest.
++ * For RSA_PKCS1 signatures, the external signing function must encode the digest
++ * before signing. The digest algorithm used is passed in the sigalg structure.
 + */
-+OSSL_provider_init_fn xkey_provider_init;
++typedef int (XKEY_EXTERNAL_SIGN_fn)(void *handle, unsigned char *sig, size_t *siglen,
++                                 const unsigned char *tbs, size_t tbslen,
++                                 XKEY_SIGALG sigalg);
++/**
++ * Signature of private key free function callback used
++ * to free the opaque private key handle obtained from the
++ * backend. Not required for management-external-key.
++ */
++typedef void (XKEY_PRIVKEY_FREE_fn)(void *handle);
 +
-+#define XKEY_PROV_PROPS "provider=ovpn.xkey"
-+
-+#endif /* HAVE_XKEY_PROVIDER */
-+
-+#endif /* XKEY_COMMON_H_ */
+ #endif /* HAVE_XKEY_PROVIDER */
+ 
+ #endif /* XKEY_COMMON_H_ */
 diff --git a/src/openvpn/xkey_provider.c b/src/openvpn/xkey_provider.c
-new file mode 100644
-index 00000000..d47faf0a
---- /dev/null
+index a083ec2d..09138ae8 100644
+--- a/src/openvpn/xkey_provider.c
 +++ b/src/openvpn/xkey_provider.c
-@@ -0,0 +1,169 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2021 Selva Nair <selva.nair@...277...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by the
-+ *  Free Software Foundation, either version 2 of the License,
-+ *  or (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+@@ -81,18 +81,40 @@ typedef enum
+  */
+ typedef struct
+ {
+-    /* opaque handle dependent on KEY_ORIGIN -- could be NULL */
++    /** opaque handle dependent on KEY_ORIGIN -- could be NULL */
+     void *handle;
+-    /* associated public key as an openvpn native key */
++    /** associated public key as an openvpn native key */
+     EVP_PKEY *pubkey;
+-    /* origin of key -- native or external */
++    /** origin of key -- native or external */
+     XKEY_ORIGIN origin;
++    /** sign function in backend to call */
++    XKEY_EXTERNAL_SIGN_fn *sign;
++    /** keydata handle free function of backend */
++    XKEY_PRIVKEY_FREE_fn *free;
+     XKEY_PROVIDER_CTX *prov;
+-    int refcount;                /* reference count */
++    int refcount;                /**< reference count */
+ } XKEY_KEYDATA;
+ 
+-#define KEYTYPE(key) ((key)->pubkey ? EVP_PKEY_get_id((key)->pubkey) : 0)
+-#define KEYSIZE(key) ((key)->pubkey ? EVP_PKEY_get_size((key)->pubkey) : 0)
++static int
++KEYTYPE(const XKEY_KEYDATA *key)
++{
++    return key->pubkey ? EVP_PKEY_get_id(key->pubkey) : 0;
++}
++
++static int
++KEYSIZE(const XKEY_KEYDATA *key)
++{
++    return key->pubkey ? EVP_PKEY_get_size(key->pubkey) : 0;
++}
++
++/**
++ * Helper sign function for native keys
++ * Implemented using OpenSSL calls.
 + */
++int
++xkey_native_sign(XKEY_KEYDATA *key, unsigned char *sig, size_t *siglen,
++                 const unsigned char *tbs, size_t tbslen, XKEY_SIGALG sigalg);
 +
-+#ifdef HAVE_CONFIG_H
-+#include <config.h>
-+#elif defined(_MSC_VER)
-+#include "config-msvc.h"
-+#endif
+ 
+ /* keymgmt provider */
+ 
+@@ -390,6 +412,19 @@ ec_keymgmt_name(int id)
+ {
+     xkey_dmsg(D_LOW, "entry");
+ 
++    if (id == OSSL_OP_SIGNATURE)
++    {
++        return "ECDSA";
++    }
++    /* though we do not implement keyexch we could be queried for
++     * keyexch mechanism supported by EC keys
++     */
++    else if (id == OSSL_OP_KEYEXCH)
++    {
++        return "ECDH";
++    }
 +
-+#include "syshead.h"
-+#include "error.h"
-+#include "buffer.h"
-+#include "xkey_common.h"
++    msg(D_LOW, "xkey ec_keymgmt_name called with op_id != SIGNATURE or KEYEXCH id=%d", id);
+     return "EC";
+ }
+ 
+@@ -432,6 +467,487 @@ const OSSL_ALGORITHM keymgmts[] = {
+     {NULL, NULL, NULL, NULL}
+ };
+ 
 +
-+#ifdef HAVE_XKEY_PROVIDER
++/* signature provider */
 +
-+#include <openssl/provider.h>
-+#include <openssl/params.h>
-+#include <openssl/core_dispatch.h>
-+#include <openssl/core_object.h>
-+#include <openssl/core_names.h>
-+#include <openssl/store.h>
-+#include <openssl/evp.h>
-+#include <openssl/err.h>
-+
-+/* A descriptive name */
-+static const char *provname = "OpenVPN External Key Provider";
++/* signature provider callbacks we provide */
++static OSSL_FUNC_signature_newctx_fn signature_newctx;
++static OSSL_FUNC_signature_freectx_fn signature_freectx;
++static OSSL_FUNC_signature_sign_init_fn signature_sign_init;
++static OSSL_FUNC_signature_sign_fn signature_sign;
++static OSSL_FUNC_signature_digest_verify_init_fn signature_digest_verify_init;
++static OSSL_FUNC_signature_digest_verify_fn signature_digest_verify;
++static OSSL_FUNC_signature_digest_sign_init_fn signature_digest_sign_init;
++static OSSL_FUNC_signature_digest_sign_fn signature_digest_sign;
++static OSSL_FUNC_signature_set_ctx_params_fn signature_set_ctx_params;
++static OSSL_FUNC_signature_settable_ctx_params_fn signature_settable_ctx_params;
++static OSSL_FUNC_signature_get_ctx_params_fn signature_get_ctx_params;
++static OSSL_FUNC_signature_gettable_ctx_params_fn signature_gettable_ctx_params;
 +
 +typedef struct
 +{
-+    OSSL_LIB_CTX *libctx;  /**< a child libctx for our own use */
-+} XKEY_PROVIDER_CTX;
++    XKEY_PROVIDER_CTX *prov;
++    XKEY_KEYDATA *keydata;
++    XKEY_SIGALG sigalg;
++} XKEY_SIGNATURE_CTX;
 +
-+/* helper to print debug messages */
-+#define xkey_dmsg(f, ...) \
-+        do {                                                        \
-+              dmsg(f|M_NOLF, "xkey_provider: In %s: ", __func__);    \
-+              dmsg(f|M_NOPREFIX, __VA_ARGS__);                      \
-+           } while(0)
++static const XKEY_SIGALG default_sigalg = { .mdname="MD5-SHA1", .saltlen="digest",
++                                            .padmode="pkcs1", .keytype = "RSA"};
 +
-+/* main provider interface */
++const struct {
++    int nid;
++    const char *name;
++} digest_names[] = {{NID_md5_sha1, "MD5-SHA1"}, {NID_sha1, "SHA1"},
++                    {NID_sha224, "SHA224",}, {NID_sha256, "SHA256"}, {NID_sha384, "SHA384"},
++                    {NID_sha512, "SHA512"}, {0, NULL}};
++/* Use of NIDs as opposed to EVP_MD_fetch is okay here
++ * as these are only used for converting names passed in
++ * by OpenSSL to const strings.
++ */
 +
-+/* provider callbacks we implement */
-+static OSSL_FUNC_provider_query_operation_fn query_operation;
-+static OSSL_FUNC_provider_gettable_params_fn gettable_params;
-+static OSSL_FUNC_provider_get_params_fn get_params;
-+static OSSL_FUNC_provider_teardown_fn teardown;
++static struct {
++    int id;
++    const char *name;
++} padmode_names[] = {{RSA_PKCS1_PADDING, "pkcs1"},
++                     {RSA_PKCS1_PSS_PADDING, "pss"},
++                     {RSA_NO_PADDING, "none"},
++                     {0, NULL}};
 +
-+static const OSSL_ALGORITHM *
-+query_operation(void *provctx, int op, int *no_store)
++static const char *saltlen_names[] = {"digest", "max", "auto", NULL};
++
++/* Return a string literal for digest name - normalizes
++ * alternate names like SHA2-256 to SHA256 etc.
++ */
++static const char *
++xkey_mdname(const char *name)
 +{
-+    xkey_dmsg(D_LOW, "op = %d", op);
++    int i = 0;
 +
-+    *no_store = 0;
++    int nid = EVP_MD_get_type(EVP_get_digestbyname(name));
 +
-+    switch (op)
++    while (digest_names[i].name && nid != digest_names[i].nid)
 +    {
-+        case OSSL_OP_SIGNATURE:
-+            return NULL;
-+
-+        case OSSL_OP_KEYMGMT:
-+            return NULL;
-+
-+        default:
-+            xkey_dmsg(D_LOW, "op not supported");
-+            break;
++        i++;
 +    }
-+    return NULL;
++    return digest_names[i].name ?  digest_names[i].name : "MD5-SHA1";
 +}
 +
-+static const OSSL_PARAM *
-+gettable_params(void *provctx)
++static void *
++signature_newctx(void *provctx, const char *propq)
 +{
 +    xkey_dmsg(D_LOW, "entry");
 +
-+    static const OSSL_PARAM param_types[] = {
-+        OSSL_PARAM_DEFN(OSSL_PROV_PARAM_NAME, OSSL_PARAM_UTF8_PTR, NULL, 0),
-+        OSSL_PARAM_END
-+    };
++    (void) propq; /* unused */
 +
-+    return param_types;
-+}
-+static int
-+get_params(void *provctx, OSSL_PARAM params[])
-+{
-+    OSSL_PARAM *p;
-+
-+    xkey_dmsg(D_LOW, "entry");
-+
-+    p = OSSL_PARAM_locate(params, OSSL_PROV_PARAM_NAME);
-+    if (p)
++    XKEY_SIGNATURE_CTX *sctx = OPENSSL_zalloc(sizeof(*sctx));
++    if (!sctx)
 +    {
-+        return (OSSL_PARAM_set_utf8_ptr(p, provname) != 0);
++        msg(M_NONFATAL, "xkey_signature_newctx: out of memory");
++        return NULL;
 +    }
 +
-+    return 0;
++    sctx->prov = provctx;
++    sctx->sigalg = default_sigalg;
++
++    return sctx;
 +}
 +
 +static void
-+teardown(void *provctx)
++signature_freectx(void *ctx)
 +{
 +    xkey_dmsg(D_LOW, "entry");
 +
-+    XKEY_PROVIDER_CTX *prov = provctx;
-+    if (prov && prov->libctx)
-+    {
-+        OSSL_LIB_CTX_free(prov->libctx);
-+    }
-+    OPENSSL_free(prov);
++    XKEY_SIGNATURE_CTX *sctx = ctx;
++
++    keydata_free(sctx->keydata);
++
++    OPENSSL_free(sctx);
 +}
 +
-+static const OSSL_DISPATCH dispatch_table[] = {
-+    {OSSL_FUNC_PROVIDER_GETTABLE_PARAMS, (void (*)(void)) gettable_params},
-+    {OSSL_FUNC_PROVIDER_GET_PARAMS, (void (*)(void)) get_params},
-+    {OSSL_FUNC_PROVIDER_QUERY_OPERATION, (void (*)(void)) query_operation},
-+    {OSSL_FUNC_PROVIDER_TEARDOWN, (void (*)(void)) teardown},
-+    {0, NULL}
-+};
-+
-+int
-+xkey_provider_init(const OSSL_CORE_HANDLE *handle, const OSSL_DISPATCH *in,
-+                   const OSSL_DISPATCH **out, void **provctx)
++static const OSSL_PARAM *
++signature_settable_ctx_params(void *ctx, void *provctx)
 +{
-+    XKEY_PROVIDER_CTX *prov;
-+
 +    xkey_dmsg(D_LOW, "entry");
 +
-+    prov = OPENSSL_zalloc(sizeof(*prov));
-+    if (!prov)
++    static OSSL_PARAM settable[] = {
++        OSSL_PARAM_utf8_string(OSSL_SIGNATURE_PARAM_PAD_MODE, NULL, 0),
++        OSSL_PARAM_utf8_string(OSSL_SIGNATURE_PARAM_DIGEST, NULL, 0),
++        OSSL_PARAM_utf8_string(OSSL_SIGNATURE_PARAM_PSS_SALTLEN, NULL, 0),
++        OSSL_PARAM_END
++    };
++
++    return settable;
++}
++
++static int
++signature_set_ctx_params(void *ctx, const OSSL_PARAM params[])
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    XKEY_SIGNATURE_CTX *sctx = ctx;
++    const OSSL_PARAM *p;
++
++    if (params == NULL)
 +    {
-+        msg(M_NONFATAL, "xkey_provider_init: out of memory");
-+        return 0;
++        return 1;  /* not an error */
++    }
++    p = OSSL_PARAM_locate_const(params, OSSL_SIGNATURE_PARAM_PAD_MODE);
++    if (p && p->data_type == OSSL_PARAM_UTF8_STRING)
++    {
++        sctx->sigalg.padmode = NULL;
++        for (int i = 0; padmode_names[i].id != 0; i++)
++        {
++            if (!strcmp(p->data, padmode_names[i].name))
++            {
++                sctx->sigalg.padmode = padmode_names[i].name;
++                break;
++            }
++        }
++        if (sctx->sigalg.padmode == NULL)
++        {
++            msg(M_WARN, "xkey signature_ctx: padmode <%s>, treating as <none>",
++                (char *)p->data);
++            sctx->sigalg.padmode = "none";
++        }
++        xkey_dmsg(D_LOW, "setting padmode as %s", sctx->sigalg.padmode);
++    }
++    else if (p && p->data_type == OSSL_PARAM_INTEGER)
++    {
++        sctx->sigalg.padmode = NULL;
++        int padmode = 0;
++        if (OSSL_PARAM_get_int(p, &padmode))
++        {
++            for (int i = 0; padmode_names[i].id != 0; i++)
++            {
++                if (padmode == padmode_names[i].id)
++                {
++                    sctx->sigalg.padmode = padmode_names[i].name;
++                    break;
++                }
++            }
++        }
++        if (padmode == 0 || sctx->sigalg.padmode == NULL)
++        {
++            msg(M_WARN, "xkey signature_ctx: padmode <%d>, treating as <none>", padmode);
++            sctx->sigalg.padmode = "none";
++        }
++        xkey_dmsg(D_LOW, "setting padmode <%s>", sctx->sigalg.padmode);
++    }
++    else if (p)
++    {
++        msg(M_WARN, "xkey_signature_params: unknown padmode ignored");
 +    }
 +
-+    /* Make a child libctx for our use and set default prop query
-+     * on it to ensure calls we delegate won't loop back to us.
-+     */
-+    prov->libctx = OSSL_LIB_CTX_new_child(handle, in);
++    p = OSSL_PARAM_locate_const(params, OSSL_SIGNATURE_PARAM_DIGEST);
++    if (p  &&  p->data_type == OSSL_PARAM_UTF8_STRING)
++    {
++        sctx->sigalg.mdname = xkey_mdname(p->data);
++        xkey_dmsg(D_LOW, "setting hashalg as %s", sctx->sigalg.mdname);
++    }
++    else if (p)
++    {
++        msg(M_WARN, "xkey_signature_params: unknown digest type ignored");
++    }
 +
-+    EVP_set_default_properties(prov->libctx, "provider!=ovpn.xkey");
-+
-+    *out = dispatch_table;
-+    *provctx = prov;
++    p = OSSL_PARAM_locate_const(params, OSSL_SIGNATURE_PARAM_PSS_SALTLEN);
++    if (p && p->data_type == OSSL_PARAM_UTF8_STRING)
++    {
++        sctx->sigalg.saltlen = NULL;
++        for (int i = 0; saltlen_names[i] != NULL; i++)
++        {
++            if (!strcmp(p->data, saltlen_names[i]))
++            {
++                sctx->sigalg.saltlen = saltlen_names[i];
++                break;
++            }
++        }
++        if (sctx->sigalg.saltlen == NULL)
++        {
++            msg(M_WARN, "xkey_signature_params: unknown saltlen <%s>",
++                (char *)p->data);
++            sctx->sigalg.saltlen = "digest"; /* most common */
++        }
++        xkey_dmsg(D_LOW, "setting saltlen to %s", sctx->sigalg.saltlen);
++    }
++    else if (p)
++    {
++        msg(M_WARN, "xkey_signature_params: unknown saltlen ignored");
++    }
 +
 +    return 1;
 +}
 +
-+#endif /* HAVE_XKEY_PROVIDER */
++static const OSSL_PARAM *
++signature_gettable_ctx_params(void *ctx, void *provctx)
++{
++    xkey_dmsg(D_LOW,"entry");
++
++    static OSSL_PARAM gettable[] = { OSSL_PARAM_END }; /* Empty list */
++
++    return gettable;
++}
++
++static int
++signature_get_ctx_params(void *ctx, OSSL_PARAM params[])
++{
++    xkey_dmsg(D_LOW, "not implemented");
++    return 0;
++}
++
++static int
++signature_sign_init(void *ctx, void *provkey, const OSSL_PARAM params[])
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    XKEY_SIGNATURE_CTX *sctx = ctx;
++
++    if (sctx->keydata)
++    {
++        keydata_free(sctx->keydata);
++    }
++    sctx->keydata = provkey;
++    sctx->keydata->refcount++; /* we are keeping a copy */
++    sctx->sigalg.keytype = KEYTYPE(sctx->keydata) == EVP_PKEY_RSA ? "RSA" : "EC";
++
++    signature_set_ctx_params(sctx, params);
++
++    return 1;
++}
++
++/* Sign digest or message using sign function */
++static int
++xkey_sign_dispatch(XKEY_SIGNATURE_CTX *sctx, unsigned char *sig, size_t *siglen,
++                   const unsigned char *tbs, size_t tbslen)
++{
++    XKEY_EXTERNAL_SIGN_fn *sign = sctx->keydata->sign;
++    int ret = 0;
++
++    if (sctx->keydata->origin == OPENSSL_NATIVE)
++    {
++        ret = xkey_native_sign(sctx->keydata, sig, siglen, tbs, tbslen, sctx->sigalg);
++    }
++    else if (sign)
++    {
++        ret = sign(sctx->keydata->handle, sig, siglen, tbs, tbslen, sctx->sigalg);
++        xkey_dmsg(D_LOW, "xkey_provider: external sign op returned ret = %d siglen = %d", ret, (int) *siglen);
++    }
++    else
++    {
++        msg(M_NONFATAL, "xkey_provider: Internal error: No sign callback for external key.");
++    }
++
++    return ret;
++}
++
++static int
++signature_sign(void *ctx, unsigned char *sig, size_t *siglen, size_t sigsize,
++               const unsigned char *tbs, size_t tbslen)
++{
++    xkey_dmsg(D_LOW, "entry with siglen = %zu\n", *siglen);
++
++    XKEY_SIGNATURE_CTX *sctx = ctx;
++    ASSERT(sctx);
++    ASSERT(sctx->keydata);
++
++    if (!sig)
++    {
++        *siglen = KEYSIZE(sctx->keydata);
++        return 1;
++    }
++
++    sctx->sigalg.op = "Sign";
++    return xkey_sign_dispatch(sctx, sig, siglen, tbs, tbslen);
++}
++
++static int
++signature_digest_verify_init(void *ctx, const char *mdname, void *provkey,
++                             const OSSL_PARAM params[])
++{
++    xkey_dmsg(D_LOW, "mdname <%s>", mdname);
++
++    msg(M_WARN, "xkey_provider: DigestVerifyInit is not implemented");
++    return 0;
++}
++
++/* We do not expect to be called for DigestVerify() but still
++ * return an empty function for it in the sign dispatch array
++ * for debugging purposes.
++ */
++static int
++signature_digest_verify(void *ctx, const unsigned char *sig, size_t siglen,
++                        const unsigned char *tbs, size_t tbslen)
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    msg(M_WARN, "xkey_provider: DigestVerify is not implemented");
++    return 0;
++}
++
++static int
++signature_digest_sign_init(void *ctx, const char *mdname,
++                           void *provkey, const OSSL_PARAM params[])
++{
++    xkey_dmsg(D_LOW, "mdname = <%s>", mdname);
++
++    XKEY_SIGNATURE_CTX *sctx = ctx;
++
++    ASSERT(sctx);
++    ASSERT(provkey);
++    ASSERT(sctx->prov);
++
++    if (sctx->keydata)
++    {
++        keydata_free(sctx->keydata);
++    }
++    sctx->keydata = provkey; /* used by digest_sign */
++    sctx->keydata->refcount++;
++    sctx->sigalg.keytype = KEYTYPE(sctx->keydata) == EVP_PKEY_RSA ? "RSA" : "EC";
++
++    signature_set_ctx_params(ctx, params);
++    if (mdname)
++    {
++        sctx->sigalg.mdname = xkey_mdname(mdname); /* get a string literal pointer */
++    }
++    else
++    {
++        msg(M_WARN, "xkey digest_sign_init: mdname is NULL.");
++    }
++    return 1;
++}
++
++static int
++signature_digest_sign(void *ctx, unsigned char *sig, size_t *siglen,
++                      size_t sigsize, const unsigned char *tbs, size_t tbslen)
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    XKEY_SIGNATURE_CTX *sctx = ctx;
++
++    ASSERT(sctx);
++    ASSERT(sctx->keydata);
++
++    if (!sig) /* set siglen and return */
++    {
++        *siglen = KEYSIZE(sctx->keydata);
++        return 1;
++    }
++
++    if (sctx->keydata->origin != OPENSSL_NATIVE)
++    {
++        /* pass the message itself to the backend */
++        sctx->sigalg.op = "DigestSign";
++        return xkey_sign_dispatch(ctx, sig, siglen, tbs, tbslen);
++    }
++
++    /* create digest and pass on to signature_sign() */
++
++    const char *mdname = sctx->sigalg.mdname;
++    EVP_MD *md = EVP_MD_fetch(sctx->prov->libctx, mdname, NULL);
++    if (!md)
++    {
++        msg(M_WARN, "WARN: xkey digest_sign_init: MD_fetch failed for <%s>", mdname);
++        return 0;
++    }
++
++    /* construct digest using OpenSSL */
++    unsigned char buf[EVP_MAX_MD_SIZE];
++    unsigned int sz;
++    if (EVP_Digest(tbs, tbslen, buf, &sz, md, NULL) != 1)
++    {
++        msg(M_WARN, "WARN: xkey digest_sign: EVP_Digest failed");
++        EVP_MD_free(md);
++        return 0;
++    }
++    EVP_MD_free(md);
++
++    return signature_sign(ctx, sig, siglen, sigsize, buf, sz);
++}
++
++/* Sign digest using native sign function -- will only work for native keys
++ */
++int
++xkey_native_sign(XKEY_KEYDATA *key, unsigned char *sig, size_t *siglen,
++                 const unsigned char *tbs, size_t tbslen, XKEY_SIGALG sigalg)
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    ASSERT(key);
++
++    EVP_PKEY *pkey = key->handle;
++    int ret = 0;
++
++    ASSERT(sig);
++
++    if (!pkey)
++    {
++        msg(M_NONFATAL, "Error: xkey provider: signature request with empty private key");
++        return 0;
++    }
++
++    const char *saltlen = sigalg.saltlen;
++    const char *mdname = sigalg.mdname;
++    const char *padmode = sigalg.padmode;
++
++    xkey_dmsg(D_LOW, "digest=<%s>, padmode=<%s>, saltlen=<%s>", mdname, padmode, saltlen);
++
++    int i = 0;
++    OSSL_PARAM params[6];
++    if (EVP_PKEY_get_id(pkey) == EVP_PKEY_RSA)
++    {
++        params[i++] = OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_DIGEST, (char *)mdname, 0);
++        params[i++] = OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_PAD_MODE, (char *)padmode, 0);
++        if (!strcmp(sigalg.padmode, "pss"))
++        {
++            params[i++] = OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_PSS_SALTLEN, (char *) saltlen, 0);
++            /* same digest for mgf1 */
++            params[i++] = OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_MGF1_DIGEST, (char *) mdname, 0);
++        }
++    }
++    params[i++] = OSSL_PARAM_construct_end();
++
++    EVP_PKEY_CTX *ectx = EVP_PKEY_CTX_new_from_pkey(key->prov->libctx, pkey, NULL);
++
++    if (!ectx)
++    {
++        msg(M_WARN, "WARN: xkey test_sign: call to EVP_PKEY_CTX_new...failed");
++        return 0;
++    }
++
++    if (EVP_PKEY_sign_init_ex(ectx, NULL) != 1)
++    {
++        msg(M_WARN, "WARN: xkey test_sign: call to EVP_PKEY_sign_init failed");
++        return 0;
++    }
++    EVP_PKEY_CTX_set_params(ectx, params);
++
++    ret = EVP_PKEY_sign(ectx, sig, siglen, tbs, tbslen);
++    EVP_PKEY_CTX_free(ectx);
++
++    return ret;
++}
++
++static const OSSL_DISPATCH signature_functions[] = {
++    {OSSL_FUNC_SIGNATURE_NEWCTX, (void (*)(void)) signature_newctx},
++    {OSSL_FUNC_SIGNATURE_FREECTX, (void (*)(void)) signature_freectx},
++    {OSSL_FUNC_SIGNATURE_SIGN_INIT, (void (*)(void)) signature_sign_init},
++    {OSSL_FUNC_SIGNATURE_SIGN, (void (*)(void)) signature_sign},
++    {OSSL_FUNC_SIGNATURE_DIGEST_VERIFY_INIT, (void (*)(void)) signature_digest_verify_init},
++    {OSSL_FUNC_SIGNATURE_DIGEST_VERIFY, (void (*)(void)) signature_digest_verify},
++    {OSSL_FUNC_SIGNATURE_DIGEST_SIGN_INIT, (void (*)(void)) signature_digest_sign_init},
++    {OSSL_FUNC_SIGNATURE_DIGEST_SIGN, (void (*)(void)) signature_digest_sign},
++    {OSSL_FUNC_SIGNATURE_SET_CTX_PARAMS, (void (*)(void)) signature_set_ctx_params},
++    {OSSL_FUNC_SIGNATURE_SETTABLE_CTX_PARAMS, (void (*)(void)) signature_settable_ctx_params},
++    {OSSL_FUNC_SIGNATURE_GET_CTX_PARAMS, (void (*)(void)) signature_get_ctx_params},
++    {OSSL_FUNC_SIGNATURE_GETTABLE_CTX_PARAMS, (void (*)(void)) signature_gettable_ctx_params},
++    {0, NULL }
++};
++
++const OSSL_ALGORITHM signatures[] = {
++    {"RSA:rsaEncryption", props, signature_functions, "OpenVPN xkey RSA Signature"},
++    {"ECDSA", props, signature_functions, "OpenVPN xkey ECDSA Signature"},
++    {NULL, NULL, NULL, NULL}
++};
++
+ /* main provider interface */
+ 
+ /* provider callbacks we implement */
+@@ -450,7 +966,7 @@ query_operation(void *provctx, int op, int *no_store)
+     switch (op)
+     {
+         case OSSL_OP_SIGNATURE:
+-            return NULL;
++            return signatures;
+ 
+         case OSSL_OP_KEYMGMT:
+             return keymgmts;
 -- 
 2.30.2
 
