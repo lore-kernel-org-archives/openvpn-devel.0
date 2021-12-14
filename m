@@ -1,11 +1,11 @@
 From: selva.nair@...277...
-Date: Tue, 14 Dec 2021 11:59:18 -0500
-Message-Id: <20211214165928.30676-9-selva.nair@...277...>
+Date: Tue, 14 Dec 2021 11:59:19 -0500
+Message-Id: <20211214165928.30676-10-selva.nair@...277...>
 In-Reply-To: <20211214165928.30676-1-selva.nair@...277...>
 References: <20211214165928.30676-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 08/18] Add a function to encode digests
- with PKCS1 DigestInfo wrapper
+Subject: [Openvpn-devel] [PATCH v3 09/18] Allow management client to
+ announce pss padding support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,218 +20,138 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-The EVP_PKEY interface as well as provider passes the raw
-digest to the sign() function. In case of RSA_PKCS1,
-our management interface expects an encoded hash, which
-has the DigestInfo header added as per PKCSv1.5 specs,
-unless the hash algorithm is legacy MD5_SHA1.
+The --management-external-key option can currently indicate support
+for 'nopadding' or 'pkcs1' signatures in the client. Add 'pss' as an
+option to announce that PSS signing requests are accepted.
 
-Fix this by
- - add a function to perform the pkcs1 encoding before passing the
-   data to sign to the management interface. The implementation
-   is not pretty, but should work.
-   (Unfortunately OpenSSL does not expose a function for this).
+To match, extend the algorithm string in PK_SIGN request to
+include the following format:
 
-Note:
-1. cryptoki interface used by pkcs11-helper also requires this
-to be done before calling the Sign op. This will come handy there
-too.
-2. We have a similar function in ssl_mbedtls.c but its not prettier,
-   and require porting.
+- RSA_PKCS1_PSS_PADDING,hashlag=name,saltlen=[max|digest]
 
-v2 changes: Use hard-coded headers for known hash algorithms instead
-of assembling it from the ASN.1 objects.
+Here 'name' is the short common name of the hash algorithm.
+E.g., SHA1, SHA256 etc.
+
+Existing formats 'ECDSA' and 'RSA_PKCS1_PADDING' are unchanged.
+
+v2 changes: Fix typos and other sloppiness in documentation and
+commit message.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/xkey_common.h |  20 ++++++
- src/openvpn/xkey_helper.c | 130 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 150 insertions(+)
+ doc/man-sections/management-options.rst |  8 +++++++-
+ doc/management-notes.txt                | 22 ++++++++++++++++++----
+ src/openvpn/manage.h                    |  1 +
+ src/openvpn/options.c                   | 11 ++++++++---
+ 4 files changed, 34 insertions(+), 8 deletions(-)
 
-diff --git a/src/openvpn/xkey_common.h b/src/openvpn/xkey_common.h
-index 608afe99..c04c9c5c 100644
---- a/src/openvpn/xkey_common.h
-+++ b/src/openvpn/xkey_common.h
-@@ -96,6 +96,26 @@ typedef void (XKEY_PRIVKEY_FREE_fn)(void *handle);
-  */
- EVP_PKEY *xkey_load_management_key(OSSL_LIB_CTX *libctx, EVP_PKEY *pubkey);
- 
-+/**
-+ * Add PKCS1 DigestInfo to tbs and return the result in *enc.
-+ *
-+ * @param enc           pointer to output buffer
-+ * @param enc_len       capacity in bytes of output buffer
-+ * @param mdname        name of the hash algorithm (SHA256, SHA1 etc.)
-+ * @param tbs           pointer to digest to be encoded
-+ * @param tbslen        length of data in bytes
-+ *
-+ * @return              false on error, true  on success
-+ *
-+ * On return enc_len is  set to actual size of the result.
-+ * enc is NULL or enc_len is not enough to store the result, it is set
-+ * to the required size and false is returned.
-+ *
-+ */
-+bool
-+encode_pkcs1(unsigned char *enc, size_t *enc_len, const char *mdname,
-+             const unsigned char *tbs, size_t tbslen);
+diff --git a/doc/man-sections/management-options.rst b/doc/man-sections/management-options.rst
+index de0d47e7..b173a1ea 100644
+--- a/doc/man-sections/management-options.rst
++++ b/doc/man-sections/management-options.rst
+@@ -90,9 +90,15 @@ server and client mode operations.
+      management-external-key
+      management-external-key nopadding
+      management-external-key pkcs1
++     management-external-key pss
 +
- #endif /* HAVE_XKEY_PROVIDER */
- 
- #endif /* XKEY_COMMON_H_ */
-diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
-index aac78a2c..b2546cec 100644
---- a/src/openvpn/xkey_helper.c
-+++ b/src/openvpn/xkey_helper.c
-@@ -143,6 +143,9 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
-     unsigned char buf[EVP_MAX_MD_SIZE]; /* for computing digest if required */
-     size_t buflen = sizeof(buf);
- 
-+    unsigned char enc[EVP_MAX_MD_SIZE + 32]; /* 32 bytes enough for digest inf structure */
-+    size_t enc_len = sizeof(enc);
++  or any combination like:
++  ::
 +
-     if (!strcmp(alg.op, "DigestSign"))
+      management-external-key nopadding pkcs1
++     management-external-key pkcs1 pss
+ 
+-  The optional parameters :code:`nopadding` and :code:`pkcs1` signal
++  The optional parameters :code:`nopadding` :code:`pkcs1` and :code:`pss` signal
+   support for different padding algorithms. See
+   :code:`doc/mangement-notes.txt` for a complete description of this
+   feature.
+diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+index 84e3d04b..169a5efe 100644
+--- a/doc/management-notes.txt
++++ b/doc/management-notes.txt
+@@ -1019,10 +1019,24 @@ can be indicated in the signing request only if the client version is > 2"
+ 
+ The currently defined padding algorithms are:
+ 
+- - RSA_PKCS1_PADDING  -  PKCS1 padding and RSA signature
+- - RSA_NO_PADDING     -  No padding may be added for the signature
+- - ECDSA              -  EC signature.
+-
++ - RSA_PKCS1_PADDING            -  PKCS1 padding and RSA signature
++ - RSA_NO_PADDING               -  No padding may be added for the signature
++ - ECDSA                        -  EC signature.
++ - RSA_PKCS1_PSS_PADDING,params -  RSA signature with PSS padding
++
++   The params for PSS are specified as 'hashalg=name,saltlen=[max|digest]'.
++
++   The hashalg names are short common names such as SHA256, SHA224, etc.
++   PSS saltlen="digest" means use the same size as the hash to sign, while
++   "max" indicates maximum possible saltlen which is
++   '(nbits-1)/8 - hlen - 2'. Here 'nbits' is the number of bits in the
++   key modulus and 'hlen' the size in octets of the hash.
++   (See: RFC 8017 sec 8.1.1 and 9.1.1)
++
++   In the case of PKCS1_PADDING, when the hash algorithm is not legacy
++   MD5-SHA1, the hash is encoded with DigestInfo header before presenting
++   to the management interface. This is identical to CKM_RSA_PKCS in Cryptoki
++   as well as what RSA_private_encrypt() in OpenSSL expects.
+ 
+ COMMAND -- certificate (OpenVPN 2.4 or higher)
+ ----------------------------------------------
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index 04dc98d1..5ed27c0c 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -339,6 +339,7 @@ struct management *management_init(void);
+ #define MF_QUERY_REMOTE             (1<<13)
+ #define MF_QUERY_PROXY              (1<<14)
+ #define MF_EXTERNAL_CERT            (1<<15)
++#define MF_EXTERNAL_KEY_PSSPAD      (1<<16)
+ 
+ bool management_open(struct management *man,
+                      const char *addr,
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index fb427410..3ec9025b 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -60,6 +60,7 @@
+ #include "forward.h"
+ #include "ssl_verify.h"
+ #include "platform.h"
++#include "xkey_common.h"
+ #include <ctype.h>
+ 
+ #include "memdbg.h"
+@@ -2207,14 +2208,14 @@ options_postprocess_verify_ce(const struct options *options,
+ 
+ #endif /* ifdef ENABLE_MANAGEMENT */
+ 
+-#if  defined(ENABLE_MANAGEMENT)
++#if defined(ENABLE_MANAGEMENT) && !defined(HAVE_XKEY_PROVIDER)
+     if ((tls_version_max() >= TLS_VER_1_3)
+         && (options->management_flags & MF_EXTERNAL_KEY)
+         && !(options->management_flags & (MF_EXTERNAL_KEY_NOPADDING))
+         )
      {
-         dmsg(D_LOW, "xkey_management_sign: computing digest");
-@@ -165,6 +168,14 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
-     /* else assume RSA key */
-     else if (!strcmp(alg.padmode, "pkcs1"))
-     {
-+        /* management interface expects a pkcs1 encoded digest -- add it */
-+        if (!encode_pkcs1(enc, &enc_len, alg.mdname, tbs, tbslen))
-+        {
-+            return 0;
-+        }
-+        tbs = enc;
-+        tbslen = enc_len;
-+
-         strncpynt(alg_str, "RSA_PKCS1_PADDING", sizeof(alg_str));
+-        msg(M_ERR, "management-external-key with OpenSSL 1.1.1 requires "
+-            "the nopadding argument/support");
++        msg(M_FATAL, "management-external-key with TLS 1.3 or later requires "
++            "nopadding argument/support");
      }
-     else if (!strcmp(alg.padmode, "none"))
-@@ -205,4 +216,123 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
-     return (*siglen > 0);
- }
- 
-+/**
-+ * Add PKCS1 DigestInfo to tbs and return the result in *enc.
-+ *
-+ * @param enc           pointer to output buffer
-+ * @param enc_len       capacity in bytes of output buffer
-+ * @param mdname        name of the hash algorithm (SHA256, SHA1 etc.)
-+ * @param tbs           pointer to digest to be encoded
-+ * @param tbslen        length of data in bytes
-+ *
-+ * @return              false on error, true  on success
-+ *
-+ * On return enc_len is  set to actual size of the result.
-+ * enc is NULL or enc_len is not enough to store the result, it is set
-+ * to the required size and false is returned.
-+ */
-+bool
-+encode_pkcs1(unsigned char *enc, size_t *enc_len, const char *mdname,
-+             const unsigned char *tbs, size_t tbslen)
-+{
-+    ASSERT(enc_len != NULL);
-+    ASSERT(tbs != NULL);
-+
-+    /* Tabulate the digest info header for expected hash algorithms
-+     * These were pre-computed using the DigestInfo definition:
-+     * DigestInfo ::= SEQUENCE {
-+     *    digestAlgorithm DigestAlgorithmIdentifier,
-+     *    digest Digest }
-+     * Also see the table in RFC 8017 section 9.2, Note 1.
-+     */
-+
-+    const unsigned char sha1[] = {0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b,
-+                                  0x0e, 0x03, 0x02, 0x1a, 0x05, 0x00, 0x04, 0x14};
-+    const unsigned char sha256[] = {0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
-+                                    0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20};
-+    const unsigned char sha384[] = {0x30, 0x41, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
-+                                    0x01, 0x65, 0x03, 0x04, 0x02, 0x02, 0x05, 0x00, 0x04, 0x30};
-+    const unsigned char sha512[] = {0x30, 0x51, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
-+                                    0x01, 0x65, 0x03, 0x04, 0x02, 0x03, 0x05, 0x00, 0x04, 0x40};
-+    const unsigned char sha224[] = {0x30, 0x2d, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
-+                                    0x01, 0x65, 0x03, 0x04, 0x02, 0x04, 0x05, 0x00, 0x04, 0x1c};
-+    const unsigned char sha512_224[] = {0x30, 0x2d, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
-+                                    0x01, 0x65, 0x03, 0x04, 0x02, 0x05, 0x05, 0x00, 0x04, 0x1c};
-+    const unsigned char sha512_256[] = {0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
-+                                    0x01, 0x65, 0x03, 0x04, 0x02, 0x06, 0x05, 0x00, 0x04, 0x20};
-+
-+    typedef struct {
-+       const int nid;
-+       const unsigned char *header;
-+       size_t sz;
-+    } DIG_INFO;
-+
-+#define MAKE_DI(x) {NID_##x, x, sizeof(x)}
-+
-+    DIG_INFO dinfo[] = {MAKE_DI(sha1), MAKE_DI(sha256), MAKE_DI(sha384),
-+                        MAKE_DI(sha512), MAKE_DI(sha224), MAKE_DI(sha512_224),
-+                        MAKE_DI(sha512_256), {0,NULL,0}};
-+
-+    int out_len = 0;
-+    int ret = 0;
-+
-+    int nid = OBJ_sn2nid(mdname);
-+    if(nid == NID_undef)
-+    {
-+        /* try harder  -- name variants like SHA2-256 doesn't work */
-+        nid = EVP_MD_type(EVP_get_digestbyname(mdname));
-+        if(nid == NID_undef)
-+        {
-+            msg(M_WARN, "Error: encode_pkcs11: invalid digest name <%s>", mdname);
-+            goto done;
-+        }
-+    }
-+
-+    if (tbslen != EVP_MD_size(EVP_get_digestbyname(mdname)))
-+    {
-+        msg(M_WARN, "Error: encode_pkcs11: invalid input length <%d>", (int)tbslen);
-+        goto done;
-+    }
-+
-+    if (nid == NID_md5_sha1) /* no encoding needed -- just copy */
-+    {
-+        if (enc && (*enc_len >= tbslen))
-+        {
-+            memcpy(enc, tbs, tbslen);
-+            ret = true;
-+        }
-+        out_len = tbslen;
-+        goto done;
-+    }
-+
-+    /* locate entry for nid in dinfo table */
-+    DIG_INFO *di = dinfo;
-+    while((di->nid != nid) && (di->nid != 0))
-+    {
-+        di++;
-+    }
-+    if (di->nid != nid) /* not found in our table */
-+    {
-+        msg(M_WARN, "Error: encode_pkcs11: unsupported hash algorithm <%s>", mdname);
-+        goto done;
-+    }
-+
-+    out_len = tbslen + di->sz;
-+
-+    if (enc && (out_len <= (int) *enc_len))
-+    {
-+        /* combine header and digest */
-+        memcpy(enc, di->header, di->sz);
-+        memcpy(enc + di->sz, tbs, tbslen);
-+        dmsg(D_LOW, "encode_pkcs1: digest length = %d encoded length = %d",
-+             (int) tbslen, (int) out_len);
-+        ret = true;
-+    }
-+
-+done:
-+    *enc_len = out_len; /* assignment safe as out_len is > 0 at this point */
-+
-+    return ret;
-+}
-+
- #endif /* HAVE_XKEY_PROVIDER */
+ #endif
+     /*
+@@ -5571,6 +5572,10 @@ add_option(struct options *options,
+             {
+                 options->management_flags |= MF_EXTERNAL_KEY_PKCS1PAD;
+             }
++            else if (streq(p[j], "pss"))
++            {
++                options->management_flags |= MF_EXTERNAL_KEY_PSSPAD;
++            }
+             else
+             {
+                 msg(msglevel, "Unknown management-external-key flag: %s", p[j]);
 -- 
 2.30.2
 
