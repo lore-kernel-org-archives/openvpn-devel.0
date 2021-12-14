@@ -1,11 +1,11 @@
 From: selva.nair@...277...
-Date: Tue, 14 Dec 2021 11:59:27 -0500
-Message-Id: <20211214165928.30676-18-selva.nair@...277...>
+Date: Tue, 14 Dec 2021 11:59:23 -0500
+Message-Id: <20211214165928.30676-14-selva.nair@...277...>
 In-Reply-To: <20211214165928.30676-1-selva.nair@...277...>
 References: <20211214165928.30676-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 17/18] xkey-provider: Add a test for
- generic key load and signature
+Subject: [Openvpn-devel] [PATCH v3 13/18] Add a generic key loading helper
+ function for xkey provider
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,231 +20,145 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
+- Load keys by specifying the opaque privtae key handle,
+  public key, sign-op and free-op required for loading keys
+  from Windows store and pkcs11.
+
+- xkey_load_management_key is refactored to use the new function
+
+- Also make xkey_digest non-static
+
+Used in following commits to load CNG and pkcs11 keys
+
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- configure.ac                             |   2 -
- tests/unit_tests/openvpn/Makefile.am     |   4 -
- tests/unit_tests/openvpn/test_provider.c | 112 +++++++++++++++++++++--
- 3 files changed, 105 insertions(+), 13 deletions(-)
+ src/openvpn/xkey_common.h | 35 +++++++++++++++++++++++++++++++++++
+ src/openvpn/xkey_helper.c | 37 +++++++++++++++++++++++++++++++------
+ 2 files changed, 66 insertions(+), 6 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index c446f631..e0f9c332 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -766,8 +766,6 @@ PKG_CHECK_MODULES(
- 	[]
- )
+diff --git a/src/openvpn/xkey_common.h b/src/openvpn/xkey_common.h
+index c04c9c5c..e2ddc178 100644
+--- a/src/openvpn/xkey_common.h
++++ b/src/openvpn/xkey_common.h
+@@ -116,6 +116,41 @@ bool
+ encode_pkcs1(unsigned char *enc, size_t *enc_len, const char *mdname,
+              const unsigned char *tbs, size_t tbslen);
  
--AM_CONDITIONAL([HAVE_XKEY_PROVIDER], [false])
--
- if test "${with_crypto_library}" = "openssl"; then
- 	AC_ARG_VAR([OPENSSL_CFLAGS], [C compiler flags for OpenSSL])
- 	AC_ARG_VAR([OPENSSL_LIBS], [linker flags for OpenSSL])
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index 96b670ae..6b5c94ab 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -11,9 +11,7 @@ if HAVE_LD_WRAP_SUPPORT
- test_binaries += tls_crypt_testdriver
- endif
- 
--if HAVE_XKEY_PROVIDER
- test_binaries += provider_testdriver
--endif
- 
- TESTS = $(test_binaries)
- check_PROGRAMS = $(test_binaries)
-@@ -99,7 +97,6 @@ networking_testdriver_SOURCES = test_networking.c mock_msg.c \
- 	$(openvpn_srcdir)/platform.c
- endif
- 
--if HAVE_XKEY_PROVIDER
- provider_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
- 	$(OPTIONAL_CRYPTO_CFLAGS)
-@@ -113,7 +110,6 @@ provider_testdriver_SOURCES = test_provider.c mock_msg.c \
- 	$(openvpn_srcdir)/base64.c \
- 	mock_get_random.c \
- 	$(openvpn_srcdir)/platform.c
--endif
- 
- auth_token_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
-diff --git a/tests/unit_tests/openvpn/test_provider.c b/tests/unit_tests/openvpn/test_provider.c
-index dcf39019..0182b3b4 100644
---- a/tests/unit_tests/openvpn/test_provider.c
-+++ b/tests/unit_tests/openvpn/test_provider.c
-@@ -29,6 +29,10 @@
- #endif
- 
- #include "syshead.h"
-+#include "manage.h"
-+#include "xkey_common.h"
-+
-+#ifdef HAVE_XKEY_PROVIDER
- 
- #include <setjmp.h>
- #include <cmocka.h>
-@@ -37,9 +41,6 @@
- #include <openssl/core_names.h>
- #include <openssl/evp.h>
- 
--#include "manage.h"
--#include "xkey_common.h"
--
- struct management *management; /* global */
- static int mgmt_callback_called;
- 
-@@ -91,11 +92,11 @@ static const char *test_digest_b64 = "dzhlAB6WSMZXC67At5b5Zk1f0Lfb8zq/Asx4YYMgIO
-  * --- the smallest size of the actual signature with the above
-  * keys.
-  */
--const uint8_t good_sig[] =
-+static const uint8_t good_sig[] =
-    {0xd8, 0xa7, 0xd9, 0x81, 0xd8, 0xaa, 0xd8, 0xad, 0x20, 0xd9, 0x8a, 0xd8,
-     0xa7, 0x20, 0xd8, 0xb3, 0xd9, 0x85, 0xd8, 0xb3, 0xd9, 0x85, 0x0};
- 
--const char *good_sig_b64 = "2KfZgdiq2K0g2YrYpyDYs9mF2LPZhQA=";
-+static const char *good_sig_b64 = "2KfZgdiq2K0g2YrYpyDYs9mF2LPZhQA=";
- 
- static EVP_PKEY *
- load_pubkey(const char *pem)
-@@ -155,10 +156,16 @@ management_query_pk_sig(struct management *man, const char *b64_data,
-     if (strstr(algorithm, "data=message"))
-     {
-          expected_tbs = test_msg_b64;
-+         assert_non_null(strstr(algorithm, "hashalg=SHA256"));
-     }
--
-     assert_string_equal(b64_data, expected_tbs);
- 
-+    /* We test using ECDSA or PSS with saltlen = digest */
-+    if (!strstr(algorithm, "ECDSA"))
-+    {
-+        assert_non_null(strstr(algorithm, "RSA_PKCS1_PSS_PADDING,hashalg=SHA256,saltlen=digest"));
-+    }
-+
-     /* Return a predefined string as sig so that the caller
-      * can confirm that this callback was exercised.
-      */
-@@ -230,7 +237,6 @@ digest_sign(EVP_PKEY *pkey)
-         goto done;
-     }
- 
--
-     /* sign with sig = NULL to get required siglen */
-     assert_int_equal(EVP_DigestSign(mctx, sig, &siglen, (uint8_t*)test_msg, strlen(test_msg)), 1);
-     assert_true(siglen > 0);
-@@ -288,6 +294,90 @@ again:
-     }
- }
- 
-+/* helpers for testing generic key load and sign */
-+static int xkey_free_called;
-+static int xkey_sign_called;
-+static void
-+xkey_free(void *handle)
-+{
-+    xkey_free_called = 1;
-+    /* We use a dummy string as handle -- check its value */
-+    assert_string_equal(handle, "xkey_handle");
-+}
-+
-+static int
-+xkey_sign(void *handle, unsigned char *sig, size_t *siglen,
-+          const unsigned char *tbs, size_t tbslen, XKEY_SIGALG s)
-+{
-+    if (!sig)
-+    {
-+        *siglen = 256; /* some arbitrary size */
-+        return 1;
-+    }
-+
-+    xkey_sign_called = 1; /* called with non-null sig */
-+
-+    if (!strcmp(s.op, "DigestSign"))
-+    {
-+        assert_memory_equal(tbs, test_msg, strlen(test_msg));
-+    }
-+    else
-+    {
-+        assert_memory_equal(tbs, test_digest, sizeof(test_digest));
-+    }
-+
-+    /* For the test use sha256 and PSS padding for RSA */
-+    assert_int_equal(OBJ_sn2nid(s.mdname), NID_sha256);
-+    if (!strcmp(s.keytype, "RSA"))
-+    {
-+        assert_string_equal(s.padmode, "pss"); /* we use PSS for the test */
-+    }
-+    else if (strcmp(s.keytype, "EC"))
-+    {
-+        fail_msg("Unknown keytype: %s", s.keytype);
-+    }
-+
-+    /* return a predefined string as sig */
-+    memcpy(sig, good_sig, min_int(sizeof(good_sig), *siglen));
-+
-+    return 1;
-+}
-+
-+/* Load a key as a generic key and check its sign op gets
-+ * called for signature.
++/**
++ * Compute message digest
++ *
++ * @param src           pointer to message to be hashed
++ * @param srclen        length of data in bytes
++ * @param buf           pointer to output buffer
++ * @param buflen        *buflen = capacity in bytes of output buffer
++ * @param mdname        name of the hash algorithm (SHA256, SHA1 etc.)
++ *
++ * @return              false on error, true  on success
++ *
++ * On successful return *buflen is set to the actual size of the result.
++ * TIP: EVP_MD_MAX_SIZE should be enough capacity of buf for al algorithms.
 + */
++int
++xkey_digest(const unsigned char *src, size_t srclen, unsigned char *buf,
++            size_t *buflen, const char *mdname);
++
++/**
++ * Load a generic external key with custom sign and free ops
++ *
++ * @param libctx    library context in which xkey provider has been loaded
++ * @param handle    an opaque handle to the backend -- passed to alll callbacks
++ * @param pubkey    corresponding pubkey in the default provider's context
++ * @param sign_op   private key signature operation to callback
++ * @param sign_op   private key signature operation to callback
++ *
++ * @returns a new EVP_PKEY in the provider's keymgmt context.
++ * IMPORTANT: a reference to the handle is retained by the provider and
++ * relased by callng free_op. The caller should not free it.
++ */
++EVP_PKEY *
++xkey_load_generic_key(OSSL_LIB_CTX *libctx, void *handle, EVP_PKEY *pubkey,
++                      XKEY_EXTERNAL_SIGN_fn sign_op, XKEY_PRIVKEY_FREE_fn free_op);
++
+ #endif /* HAVE_XKEY_PROVIDER */
+ 
+ #endif /* XKEY_COMMON_H_ */
+diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
+index d09ad635..19de64ff 100644
+--- a/src/openvpn/xkey_helper.c
++++ b/src/openvpn/xkey_helper.c
+@@ -50,8 +50,18 @@ static const char *const props = XKEY_PROV_PROPS;
+ 
+ XKEY_EXTERNAL_SIGN_fn xkey_management_sign;
+ 
 +static void
-+xkey_provider_test_generic_sign_cb(void **state)
++print_openssl_errors()
 +{
-+    EVP_PKEY *pubkey;
-+    const char *dummy = "xkey_handle"; /* a dummy handle for the external key */
-+
-+    for (size_t i = 0; i < _countof(pubkeys); i++)
++    unsigned long e;
++    while ((e = ERR_get_error()))
 +    {
-+        pubkey = load_pubkey(pubkeys[i]);
-+        assert_true(pubkey != NULL);
-+
-+        EVP_PKEY *privkey = xkey_load_generic_key(NULL, (void*)dummy, pubkey, xkey_sign, xkey_free);
-+        assert_true(privkey != NULL);
-+
-+        xkey_sign_called = 0;
-+        xkey_free_called = 0;
-+        uint8_t *sig = digest_sign(privkey);
-+        assert_non_null(sig);
-+
-+        /* check callback for signature got exercised */
-+        assert_int_equal(xkey_sign_called, 1);
-+        assert_memory_equal(sig, good_sig, sizeof(good_sig));
-+        test_free(sig);
-+
-+        EVP_PKEY_free(pubkey);
-+        EVP_PKEY_free(privkey);
-+
-+        /* check key's free-op got called */
-+        assert_int_equal(xkey_free_called, 1);
++        msg(M_WARN, "OpenSSL error %lu: %s\n", e, ERR_error_string(e, NULL));
 +    }
 +}
 +
- int
- main(void)
- {
-@@ -296,6 +386,7 @@ main(void)
-     const struct CMUnitTest tests[] = {
-         cmocka_unit_test(xkey_provider_test_fetch),
-         cmocka_unit_test(xkey_provider_test_mgmt_sign_cb),
-+        cmocka_unit_test(xkey_provider_test_generic_sign_cb),
-     };
- 
-     int ret = cmocka_run_group_tests_name("xkey provider tests", tests, NULL, NULL);
-@@ -303,3 +394,10 @@ main(void)
-     uninit_test();
-     return ret;
- }
-+#else
+ /** helper to compute digest */
+-static int
 +int
-+main(void)
-+{
-+    return 0;
+ xkey_digest(const unsigned char *src, size_t srclen, unsigned char *buf,
+             size_t *buflen, const char *mdname)
+ {
+@@ -85,24 +95,38 @@ xkey_digest(const unsigned char *src, size_t srclen, unsigned char *buf,
+ EVP_PKEY *
+ xkey_load_management_key(OSSL_LIB_CTX *libctx, EVP_PKEY *pubkey)
+ {
+-    EVP_PKEY *pkey = NULL;
+     ASSERT(pubkey);
+ 
+-    /* Management interface doesnt require any handle to be
++    /* Management interface doesn't require any handle to be
+      * stored in the key. We use a dummy pointer as we do need a
+      * non-NULL value to indicate private key is avaialble.
+      */
+     void *dummy = & "dummy";
+ 
+-    const char *origin = "management";
+     XKEY_EXTERNAL_SIGN_fn *sign_op = xkey_management_sign;
+ 
++    return xkey_load_generic_key(libctx, dummy, pubkey, sign_op, NULL);
 +}
-+#endif /* HAVE_XKEY_PROVIDER */
++
++/**
++ * Load a generic key into the xkey provider.
++ * Returns an EVP_PKEY object attached to xkey provider.
++ * Caller must free it when no longer needed.
++ */
++EVP_PKEY *
++xkey_load_generic_key(OSSL_LIB_CTX *libctx, void *handle, EVP_PKEY *pubkey,
++                      XKEY_EXTERNAL_SIGN_fn sign_op, XKEY_PRIVKEY_FREE_fn free_op)
++{
++    EVP_PKEY *pkey = NULL;
++    const char *origin = "external";
++
+     /* UTF8 string pointers in here are only read from, so cast is safe */
+     OSSL_PARAM params[] = {
+         {"xkey-origin", OSSL_PARAM_UTF8_STRING, (char *) origin, 0, 0},
+         {"pubkey", OSSL_PARAM_OCTET_STRING, &pubkey, sizeof(pubkey), 0},
+-        {"handle", OSSL_PARAM_OCTET_PTR, &dummy, sizeof(dummy), 0},
++        {"handle", OSSL_PARAM_OCTET_PTR, &handle, sizeof(handle), 0},
+         {"sign_op", OSSL_PARAM_OCTET_PTR, (void **) &sign_op, sizeof(sign_op), 0},
++        {"free_op", OSSL_PARAM_OCTET_PTR, (void **) &free_op, sizeof(free_op), 0},
+         {NULL, 0, NULL, 0, 0}};
+ 
+     /* Do not use EVP_PKEY_new_from_pkey as that will take keymgmt from pubkey */
+@@ -111,7 +135,8 @@ xkey_load_management_key(OSSL_LIB_CTX *libctx, EVP_PKEY *pubkey)
+         || EVP_PKEY_fromdata_init(ctx) != 1
+         || EVP_PKEY_fromdata(ctx, &pkey, EVP_PKEY_KEYPAIR, params) != 1)
+     {
+-        msg(M_NONFATAL, "Error loading key into ovpn.xkey provider");
++        print_openssl_errors();
++        msg(M_FATAL, "OpenSSL error: failed to load key into ovpn.xkey provider");
+     }
+     if (ctx)
+     {
 -- 
 2.30.2
 
