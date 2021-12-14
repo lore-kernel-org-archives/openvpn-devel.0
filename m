@@ -1,11 +1,12 @@
-From: selva.nair@...277...
-Date: Tue, 14 Dec 2021 11:59:28 -0500
-Message-Id: <20211214165928.30676-19-selva.nair@...277...>
-In-Reply-To: <20211214165928.30676-1-selva.nair@...277...>
-References: <20211214165928.30676-1-selva.nair@...277...>
+Date: Tue, 14 Dec 2021 18:10:26 +0100 (CET)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <132451012.1249764.1639501826730@...2642...>
+In-Reply-To: <20211214150901.4118886-1-arne@...1227...>
+References: <20211207170211.3275837-1-arne@...1227...>
+ <20211214150901.4118886-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 18/18] Add xkey_provider sources and
- includes to MSVC project
+Subject: Re: [Openvpn-devel] [PATCH v2 08/21] Decouple MSS fix calculation
+ from frame calculation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,39 +15,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/openvpn.vcxproj | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index 65ee6839..2f0cee60 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -316,6 +316,8 @@
-     <ClCompile Include="vlan.c" />
-     <ClCompile Include="win32.c" />
-     <ClCompile Include="win32-util.c" />
-+    <ClCompile Include="xkey_helper.c"/>
-+    <ClCompile Include="xkey_provider.c"/>
-   </ItemGroup>
-   <ItemGroup>
-     <ClInclude Include="argv.h" />
-@@ -407,6 +409,7 @@
-     <ClInclude Include="vlan.h" />
-     <ClInclude Include="win32.h" />
-     <ClInclude Include="win32-util.h" />
-+    <ClInclude Include="xkey_common.h"/>
-   </ItemGroup>
-   <ItemGroup>
-     <ResourceCompile Include="openvpn_win32_resources.rc" />
--- 
-2.30.2
+> Arne Schwabe <arne@...1227...> hat am 14.12.2021 16:09 geschrieben:
+> 
+>  
+> This consolidates the MSS fix calculation into a single function
+> instead having it distributed all over the code. It also calculates
+> the real wire overhead without extra sizes for buffer etc.
+> 
+> Patch v2: improve comment
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  src/openvpn/forward.c |  5 ++---
+>  src/openvpn/init.c    |  3 ++-
+>  src/openvpn/mss.c     | 40 ++++++++++++++++++++++++++++++++++++++++
+>  src/openvpn/mss.h     |  6 ++++++
+>  src/openvpn/mtu.c     |  9 ---------
+>  src/openvpn/mtu.h     | 10 ++++++----
+>  src/openvpn/proto.h   | 11 -----------
+>  src/openvpn/ssl.c     |  3 ++-
+>  8 files changed, 58 insertions(+), 29 deletions(-)
+> 
+> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+> index 29efcd3b9..f82386a1d 100644
+> --- a/src/openvpn/forward.c
+> +++ b/src/openvpn/forward.c
+> @@ -1493,7 +1493,7 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
+>                  /* possibly alter the TCP MSS */
+>                  if (flags & PIP_MSSFIX)
+>                  {
+> -                    mss_fixup_ipv4(&ipbuf, MTU_TO_MSS(TUN_MTU_SIZE_DYNAMIC(&c->c2.frame)));
+> +                    mss_fixup_ipv4(&ipbuf, c->c2.frame.mss_fix);
 
+I still think this will badly explode in the ce.mssfix == 0 code path. In that case frame.mss_fix == 0 AFAICT
+and I see no handling of that possibility in mss_fixup_ipv4/6.
+
+Regards,
+--
+Frank Lichtenheld
 
