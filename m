@@ -1,11 +1,11 @@
 From: selva.nair@...277...
-Date: Tue, 14 Dec 2021 11:59:19 -0500
-Message-Id: <20211214165928.30676-10-selva.nair@...277...>
+Date: Tue, 14 Dec 2021 11:59:20 -0500
+Message-Id: <20211214165928.30676-11-selva.nair@...277...>
 In-Reply-To: <20211214165928.30676-1-selva.nair@...277...>
 References: <20211214165928.30676-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 09/18] Allow management client to
- announce pss padding support
+Subject: [Openvpn-devel] [PATCH v3 10/18] Respect algorithm support
+ announced by management client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,138 +20,69 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-The --management-external-key option can currently indicate support
-for 'nopadding' or 'pkcs1' signatures in the client. Add 'pss' as an
-option to announce that PSS signing requests are accepted.
+Support for padding algorithms in management-client is indicated
+in the optional argument to --management-external-key as "pkcs1",
+"pss" etc. We currently use it only for an early exit based on heuristics
+that a required algorithm may not be handled by the client. When
+signature is requested we do not check whether the padding is indeed
+supported by the client. This leads to situations like the client announcing
+nopadding support but we request pss signature.
 
-To match, extend the algorithm string in PK_SIGN request to
-include the following format:
+Here we add a check while requesting signature as well. If the padding
+treat it as an error instead of submitting the request to the
+management-interface regardless.
 
-- RSA_PKCS1_PSS_PADDING,hashlag=name,saltlen=[max|digest]
-
-Here 'name' is the short common name of the hash algorithm.
-E.g., SHA1, SHA256 etc.
-
-Existing formats 'ECDSA' and 'RSA_PKCS1_PADDING' are unchanged.
-
-v2 changes: Fix typos and other sloppiness in documentation and
-commit message.
+This change is made only when xkey provider is in use, though such a check
+would be appropriate always.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- doc/man-sections/management-options.rst |  8 +++++++-
- doc/management-notes.txt                | 22 ++++++++++++++++++----
- src/openvpn/manage.h                    |  1 +
- src/openvpn/options.c                   | 11 ++++++++---
- 4 files changed, 34 insertions(+), 8 deletions(-)
+ src/openvpn/xkey_helper.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/doc/man-sections/management-options.rst b/doc/man-sections/management-options.rst
-index de0d47e7..b173a1ea 100644
---- a/doc/man-sections/management-options.rst
-+++ b/doc/man-sections/management-options.rst
-@@ -90,9 +90,15 @@ server and client mode operations.
-      management-external-key
-      management-external-key nopadding
-      management-external-key pkcs1
-+     management-external-key pss
+diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
+index b2546cec..d63943d2 100644
+--- a/src/openvpn/xkey_helper.c
++++ b/src/openvpn/xkey_helper.c
+@@ -146,6 +146,8 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
+     unsigned char enc[EVP_MAX_MD_SIZE + 32]; /* 32 bytes enough for digest inf structure */
+     size_t enc_len = sizeof(enc);
+ 
++    unsigned int flags = management->settings.flags;
 +
-+  or any combination like:
-+  ::
-+
-      management-external-key nopadding pkcs1
-+     management-external-key pkcs1 pss
- 
--  The optional parameters :code:`nopadding` and :code:`pkcs1` signal
-+  The optional parameters :code:`nopadding` :code:`pkcs1` and :code:`pss` signal
-   support for different padding algorithms. See
-   :code:`doc/mangement-notes.txt` for a complete description of this
-   feature.
-diff --git a/doc/management-notes.txt b/doc/management-notes.txt
-index 84e3d04b..169a5efe 100644
---- a/doc/management-notes.txt
-+++ b/doc/management-notes.txt
-@@ -1019,10 +1019,24 @@ can be indicated in the signing request only if the client version is > 2"
- 
- The currently defined padding algorithms are:
- 
-- - RSA_PKCS1_PADDING  -  PKCS1 padding and RSA signature
-- - RSA_NO_PADDING     -  No padding may be added for the signature
-- - ECDSA              -  EC signature.
--
-+ - RSA_PKCS1_PADDING            -  PKCS1 padding and RSA signature
-+ - RSA_NO_PADDING               -  No padding may be added for the signature
-+ - ECDSA                        -  EC signature.
-+ - RSA_PKCS1_PSS_PADDING,params -  RSA signature with PSS padding
-+
-+   The params for PSS are specified as 'hashalg=name,saltlen=[max|digest]'.
-+
-+   The hashalg names are short common names such as SHA256, SHA224, etc.
-+   PSS saltlen="digest" means use the same size as the hash to sign, while
-+   "max" indicates maximum possible saltlen which is
-+   '(nbits-1)/8 - hlen - 2'. Here 'nbits' is the number of bits in the
-+   key modulus and 'hlen' the size in octets of the hash.
-+   (See: RFC 8017 sec 8.1.1 and 9.1.1)
-+
-+   In the case of PKCS1_PADDING, when the hash algorithm is not legacy
-+   MD5-SHA1, the hash is encoded with DigestInfo header before presenting
-+   to the management interface. This is identical to CKM_RSA_PKCS in Cryptoki
-+   as well as what RSA_private_encrypt() in OpenSSL expects.
- 
- COMMAND -- certificate (OpenVPN 2.4 or higher)
- ----------------------------------------------
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index 04dc98d1..5ed27c0c 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -339,6 +339,7 @@ struct management *management_init(void);
- #define MF_QUERY_REMOTE             (1<<13)
- #define MF_QUERY_PROXY              (1<<14)
- #define MF_EXTERNAL_CERT            (1<<15)
-+#define MF_EXTERNAL_KEY_PSSPAD      (1<<16)
- 
- bool management_open(struct management *man,
-                      const char *addr,
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index fb427410..3ec9025b 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -60,6 +60,7 @@
- #include "forward.h"
- #include "ssl_verify.h"
- #include "platform.h"
-+#include "xkey_common.h"
- #include <ctype.h>
- 
- #include "memdbg.h"
-@@ -2207,14 +2208,14 @@ options_postprocess_verify_ce(const struct options *options,
- 
- #endif /* ifdef ENABLE_MANAGEMENT */
- 
--#if  defined(ENABLE_MANAGEMENT)
-+#if defined(ENABLE_MANAGEMENT) && !defined(HAVE_XKEY_PROVIDER)
-     if ((tls_version_max() >= TLS_VER_1_3)
-         && (options->management_flags & MF_EXTERNAL_KEY)
-         && !(options->management_flags & (MF_EXTERNAL_KEY_NOPADDING))
-         )
+     if (!strcmp(alg.op, "DigestSign"))
      {
--        msg(M_ERR, "management-external-key with OpenSSL 1.1.1 requires "
--            "the nopadding argument/support");
-+        msg(M_FATAL, "management-external-key with TLS 1.3 or later requires "
-+            "nopadding argument/support");
+         dmsg(D_LOW, "xkey_management_sign: computing digest");
+@@ -166,7 +168,7 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
+         strncpynt(alg_str, "ECDSA", sizeof(alg_str));
      }
- #endif
-     /*
-@@ -5571,6 +5572,10 @@ add_option(struct options *options,
-             {
-                 options->management_flags |= MF_EXTERNAL_KEY_PKCS1PAD;
-             }
-+            else if (streq(p[j], "pss"))
-+            {
-+                options->management_flags |= MF_EXTERNAL_KEY_PSSPAD;
-+            }
-             else
-             {
-                 msg(msglevel, "Unknown management-external-key flag: %s", p[j]);
+     /* else assume RSA key */
+-    else if (!strcmp(alg.padmode, "pkcs1"))
++    else if (!strcmp(alg.padmode, "pkcs1") && (flags & MF_EXTERNAL_KEY_PKCS1PAD))
+     {
+         /* management interface expects a pkcs1 encoded digest -- add it */
+         if (!encode_pkcs1(enc, &enc_len, alg.mdname, tbs, tbslen))
+@@ -178,17 +180,17 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
+ 
+         strncpynt(alg_str, "RSA_PKCS1_PADDING", sizeof(alg_str));
+     }
+-    else if (!strcmp(alg.padmode, "none"))
++    else if (!strcmp(alg.padmode, "none") && (flags & MF_EXTERNAL_KEY_NOPADDING))
+     {
+         strncpynt(alg_str, "RSA_NO_PADDING", sizeof(alg_str));
+     }
+-    else if (!strcmp(alg.padmode, "pss"))
++    else if (!strcmp(alg.padmode, "pss") && (flags & MF_EXTERNAL_KEY_PSSPAD))
+     {
+         openvpn_snprintf(alg_str, sizeof(alg_str), "%s,hashalg=%s,saltlen=%s",
+                        "RSA_PKCS1_PSS_PADDING", alg.mdname,alg.saltlen);
+     }
+     else {
+-        msg(M_NONFATAL, "Unsupported RSA padding mode in signature request<%s>",
++        msg(M_NONFATAL, "RSA padding mode unknown or not supported by management-client <%s>",
+             alg.padmode);
+         return 0;
+     }
 -- 
 2.30.2
 
