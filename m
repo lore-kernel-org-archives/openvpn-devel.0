@@ -1,9 +1,10 @@
-Date: Tue, 14 Dec 2021 08:19:49 +0100 (CET)
-Message-Id: <202112140719.1BE7Jnat010668@...2054...>
+Date: Tue, 14 Dec 2021 09:23:55 +0100 (CET)
+Message-Id: <202112140823.1BE8Ntbt012438@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211207170211.3275837-4-arne@...1227...>
-References: <20211207170211.3275837-4-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove align_adjust frame code
+In-Reply-To: <20211207170211.3275837-5-arne@...1227...>
+References: <20211207170211.3275837-5-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix triggering assertion of
+ ks->authenticated after tls_deauthenticate
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,24 +20,44 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Followed the twisty maze through the code, and I agree with the
-observation - align_adjust is effectively not used for "normal" data
-paths (not cipher none), so align_adjust + align_flags can go.
+I have not tested the actuall ASSERT() crash, but went through the 
+change asking myself "so, what will happen instead, now?"
 
-Lightly tested on client side.  Including "cipher none" :-)
+- handle_data_channel_packet() will now ignore all keys that are
+  no longer KS_AUTH_TRUE, so if there is no other key, it will end
+  up in "TLS error: local/remote TLS keys are out of sync" and drop
+  the incoming packet (buf->len = 0).
+
+- tls_select_encryption_key() will also ignore those keys, and possibly
+  return NULL.  This is only called from tls_pre_encrypt(), which will
+  log "TLS Warning: no data channel send key available" in this case,
+  and drop the outgoing packlet (buf->len = 0).
+
+Looking at tls_deauthenticate(), the problem described sounds real - this
+function sets all keys to KS_AUTH_FALSE, without changing ks->state,
+thus the next incoming or outgoing packet for that peer would trigger
+the ASSERT()  (and this looks like could happen on regular renegotiation, 
+like on a username or CN change, so this sounds like an actual DoS vector
+againt a "master" server...).  
+
+The patch should fix this, without introducing undesired new side effects
+(like, bypassing KS_AUTH_FALSE).
+
+
+Subjected to a full set of server tests (passed).
 
 Your patch has been applied to the master branch.
 
-commit 053de4db59a2d99eed8a07877ea321be4065ba26
+commit 75f9fb6f5b9bf57578086c3e42870bba4a914d7c
 Author: Arne Schwabe
-Date:   Tue Dec 7 18:01:53 2021 +0100
+Date:   Tue Dec 7 18:01:54 2021 +0100
 
-     Remove align_adjust frame code
+     Fix triggering assertion of ks->authenticated after tls_deauthenticate
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20211207170211.3275837-4-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23331.html
+     Message-Id: <20211207170211.3275837-5-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23340.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
