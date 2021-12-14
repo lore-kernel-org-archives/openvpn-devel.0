@@ -1,11 +1,11 @@
 From: selva.nair@...277...
-Date: Tue, 14 Dec 2021 11:59:16 -0500
-Message-Id: <20211214165928.30676-7-selva.nair@...277...>
+Date: Tue, 14 Dec 2021 11:59:18 -0500
+Message-Id: <20211214165928.30676-9-selva.nair@...277...>
 In-Reply-To: <20211214165928.30676-1-selva.nair@...277...>
 References: <20211214165928.30676-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 06/18] A helper function to import
- private key for management-external-key
+Subject: [Openvpn-devel] [PATCH v3 08/18] Add a function to encode digests
+ with PKCS1 DigestInfo wrapper
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,199 +20,218 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-- Leverage keymgmt_import through EVP_PKEY_new_fromdata() to
-  import "management-external-key"
+The EVP_PKEY interface as well as provider passes the raw
+digest to the sign() function. In case of RSA_PKCS1,
+our management interface expects an encoded hash, which
+has the DigestInfo header added as per PKCSv1.5 specs,
+unless the hash algorithm is legacy MD5_SHA1.
 
-- When required, use this to set SSL_CTX_use_PrivateKey
+Fix this by
+ - add a function to perform the pkcs1 encoding before passing the
+   data to sign to the management interface. The implementation
+   is not pretty, but should work.
+   (Unfortunately OpenSSL does not expose a function for this).
 
-The sign_op is not implemented yet. This will error out while
-signing with --management-external-key. The next commit
-fixes that.
+Note:
+1. cryptoki interface used by pkcs11-helper also requires this
+to be done before calling the Sign op. This will come handy there
+too.
+2. We have a similar function in ssl_mbedtls.c but its not prettier,
+   and require porting.
+
+v2 changes: Use hard-coded headers for known hash algorithms instead
+of assembling it from the ASN.1 objects.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/Makefile.am   |   1 +
- src/openvpn/ssl_openssl.c |  11 ++++
- src/openvpn/xkey_common.h |  11 ++++
- src/openvpn/xkey_helper.c | 106 ++++++++++++++++++++++++++++++++++++++
- 4 files changed, 129 insertions(+)
- create mode 100644 src/openvpn/xkey_helper.c
+ src/openvpn/xkey_common.h |  20 ++++++
+ src/openvpn/xkey_helper.c | 130 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 150 insertions(+)
 
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 432efe73..0331298b 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -129,6 +129,7 @@ openvpn_SOURCES = \
- 	tun.c tun.h \
- 	vlan.c vlan.h \
- 	xkey_provider.c xkey_common.h \
-+	xkey_helper.c \
- 	win32.h win32.c \
- 	win32-util.h win32-util.c \
- 	cryptoapi.h cryptoapi.c
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index bdaa7a2b..23c74f55 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -1486,6 +1486,15 @@ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
-     EVP_PKEY *pkey = X509_get0_pubkey(cert);
-     ASSERT(pkey); /* NULL before SSL_CTX_use_certificate() is called */
- 
-+#ifdef HAVE_XKEY_PROVIDER
-+    EVP_PKEY *privkey = xkey_load_management_key(tls_libctx, pkey);
-+    if (!privkey
-+        || !SSL_CTX_use_PrivateKey(ctx->ctx, privkey))
-+    {
-+        goto cleanup;
-+    }
-+    EVP_PKEY_free(privkey);
-+#else
-     if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA)
-     {
-         if (!tls_ctx_use_external_rsa_key(ctx, pkey))
-@@ -1514,6 +1523,8 @@ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
-     }
- #endif /* OPENSSL_VERSION_NUMBER > 1.1.0 dev && !defined(OPENSSL_NO_EC) */
- 
-+#endif /* HAVE_XKEY_PROVIDER */
-+
-     ret = 0;
- cleanup:
-     if (ret)
 diff --git a/src/openvpn/xkey_common.h b/src/openvpn/xkey_common.h
-index f46bacd2..5bda5e30 100644
+index 608afe99..c04c9c5c 100644
 --- a/src/openvpn/xkey_common.h
 +++ b/src/openvpn/xkey_common.h
-@@ -82,6 +82,17 @@ typedef int (XKEY_EXTERNAL_SIGN_fn)(void *handle, unsigned char *sig, size_t *si
+@@ -96,6 +96,26 @@ typedef void (XKEY_PRIVKEY_FREE_fn)(void *handle);
   */
- typedef void (XKEY_PRIVKEY_FREE_fn)(void *handle);
+ EVP_PKEY *xkey_load_management_key(OSSL_LIB_CTX *libctx, EVP_PKEY *pubkey);
  
 +/**
-+ * Generate an encapsulated EVP_PKEY for management-external-key
++ * Add PKCS1 DigestInfo to tbs and return the result in *enc.
 + *
-+ * @param libctx library context in which xkey provider has been loaded
-+ * @param pubkey corresponding pubkey in the default provider's context
++ * @param enc           pointer to output buffer
++ * @param enc_len       capacity in bytes of output buffer
++ * @param mdname        name of the hash algorithm (SHA256, SHA1 etc.)
++ * @param tbs           pointer to digest to be encoded
++ * @param tbslen        length of data in bytes
 + *
-+ * @returns a new EVP_PKEY in the provider's keymgmt context.
-+ * The pubkey is up-refd if retained -- the caller can free it after return
++ * @return              false on error, true  on success
++ *
++ * On return enc_len is  set to actual size of the result.
++ * enc is NULL or enc_len is not enough to store the result, it is set
++ * to the required size and false is returned.
++ *
 + */
-+EVP_PKEY *xkey_load_management_key(OSSL_LIB_CTX *libctx, EVP_PKEY *pubkey);
++bool
++encode_pkcs1(unsigned char *enc, size_t *enc_len, const char *mdname,
++             const unsigned char *tbs, size_t tbslen);
 +
  #endif /* HAVE_XKEY_PROVIDER */
  
  #endif /* XKEY_COMMON_H_ */
 diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
-new file mode 100644
-index 00000000..51cfb12b
---- /dev/null
+index aac78a2c..b2546cec 100644
+--- a/src/openvpn/xkey_helper.c
 +++ b/src/openvpn/xkey_helper.c
-@@ -0,0 +1,106 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2021 Selva Nair <selva.nair@...277...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by the
-+ *  Free Software Foundation, either version 2 of the License,
-+ *  or (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
+@@ -143,6 +143,9 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
+     unsigned char buf[EVP_MAX_MD_SIZE]; /* for computing digest if required */
+     size_t buflen = sizeof(buf);
+ 
++    unsigned char enc[EVP_MAX_MD_SIZE + 32]; /* 32 bytes enough for digest inf structure */
++    size_t enc_len = sizeof(enc);
 +
-+#ifdef HAVE_CONFIG_H
-+#include <config.h>
-+#elif defined(_MSC_VER)
-+#include "config-msvc.h"
-+#endif
+     if (!strcmp(alg.op, "DigestSign"))
+     {
+         dmsg(D_LOW, "xkey_management_sign: computing digest");
+@@ -165,6 +168,14 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
+     /* else assume RSA key */
+     else if (!strcmp(alg.padmode, "pkcs1"))
+     {
++        /* management interface expects a pkcs1 encoded digest -- add it */
++        if (!encode_pkcs1(enc, &enc_len, alg.mdname, tbs, tbslen))
++        {
++            return 0;
++        }
++        tbs = enc;
++        tbslen = enc_len;
 +
-+#include "syshead.h"
-+#include "error.h"
-+#include "buffer.h"
-+#include "xkey_common.h"
-+
-+#ifdef HAVE_XKEY_PROVIDER
-+
-+#include <openssl/provider.h>
-+#include <openssl/params.h>
-+#include <openssl/core_dispatch.h>
-+#include <openssl/core_object.h>
-+#include <openssl/core_names.h>
-+#include <openssl/store.h>
-+#include <openssl/evp.h>
-+#include <openssl/err.h>
-+
-+static const char *const props = XKEY_PROV_PROPS;
-+
-+XKEY_EXTERNAL_SIGN_fn xkey_management_sign;
-+
+         strncpynt(alg_str, "RSA_PKCS1_PADDING", sizeof(alg_str));
+     }
+     else if (!strcmp(alg.padmode, "none"))
+@@ -205,4 +216,123 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
+     return (*siglen > 0);
+ }
+ 
 +/**
-+ * Load external key for signing via management interface.
-+ * The public key must be passed in by the caller as we may not
-+ * be able to get it from the management.
-+ * Returns an EVP_PKEY object attached to xkey provider.
-+ * Caller must free it when no longer needed.
++ * Add PKCS1 DigestInfo to tbs and return the result in *enc.
++ *
++ * @param enc           pointer to output buffer
++ * @param enc_len       capacity in bytes of output buffer
++ * @param mdname        name of the hash algorithm (SHA256, SHA1 etc.)
++ * @param tbs           pointer to digest to be encoded
++ * @param tbslen        length of data in bytes
++ *
++ * @return              false on error, true  on success
++ *
++ * On return enc_len is  set to actual size of the result.
++ * enc is NULL or enc_len is not enough to store the result, it is set
++ * to the required size and false is returned.
 + */
-+EVP_PKEY *
-+xkey_load_management_key(OSSL_LIB_CTX *libctx, EVP_PKEY *pubkey)
++bool
++encode_pkcs1(unsigned char *enc, size_t *enc_len, const char *mdname,
++             const unsigned char *tbs, size_t tbslen)
 +{
-+    EVP_PKEY *pkey = NULL;
-+    ASSERT(pubkey);
++    ASSERT(enc_len != NULL);
++    ASSERT(tbs != NULL);
 +
-+    /* Management interface doesnt require any handle to be
-+     * stored in the key. We use a dummy pointer as we do need a
-+     * non-NULL value to indicate private key is avaialble.
++    /* Tabulate the digest info header for expected hash algorithms
++     * These were pre-computed using the DigestInfo definition:
++     * DigestInfo ::= SEQUENCE {
++     *    digestAlgorithm DigestAlgorithmIdentifier,
++     *    digest Digest }
++     * Also see the table in RFC 8017 section 9.2, Note 1.
 +     */
-+    void *dummy = & "dummy";
 +
-+    const char *origin = "management";
-+    XKEY_EXTERNAL_SIGN_fn *sign_op = xkey_management_sign;
++    const unsigned char sha1[] = {0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b,
++                                  0x0e, 0x03, 0x02, 0x1a, 0x05, 0x00, 0x04, 0x14};
++    const unsigned char sha256[] = {0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
++                                    0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20};
++    const unsigned char sha384[] = {0x30, 0x41, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
++                                    0x01, 0x65, 0x03, 0x04, 0x02, 0x02, 0x05, 0x00, 0x04, 0x30};
++    const unsigned char sha512[] = {0x30, 0x51, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
++                                    0x01, 0x65, 0x03, 0x04, 0x02, 0x03, 0x05, 0x00, 0x04, 0x40};
++    const unsigned char sha224[] = {0x30, 0x2d, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
++                                    0x01, 0x65, 0x03, 0x04, 0x02, 0x04, 0x05, 0x00, 0x04, 0x1c};
++    const unsigned char sha512_224[] = {0x30, 0x2d, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
++                                    0x01, 0x65, 0x03, 0x04, 0x02, 0x05, 0x05, 0x00, 0x04, 0x1c};
++    const unsigned char sha512_256[] = {0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48,
++                                    0x01, 0x65, 0x03, 0x04, 0x02, 0x06, 0x05, 0x00, 0x04, 0x20};
 +
-+    /* UTF8 string pointers in here are only read from, so cast is safe */
-+    OSSL_PARAM params[] = {
-+        {"xkey-origin", OSSL_PARAM_UTF8_STRING, (char *) origin, 0, 0},
-+        {"pubkey", OSSL_PARAM_OCTET_STRING, &pubkey, sizeof(pubkey), 0},
-+        {"handle", OSSL_PARAM_OCTET_PTR, &dummy, sizeof(dummy), 0},
-+        {"sign_op", OSSL_PARAM_OCTET_PTR, (void **) &sign_op, sizeof(sign_op), 0},
-+        {NULL, 0, NULL, 0, 0}};
++    typedef struct {
++       const int nid;
++       const unsigned char *header;
++       size_t sz;
++    } DIG_INFO;
 +
-+    /* Do not use EVP_PKEY_new_from_pkey as that will take keymgmt from pubkey */
-+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_from_name(libctx, EVP_PKEY_get0_type_name(pubkey), props);
-+    if (!ctx
-+        || EVP_PKEY_fromdata_init(ctx) != 1
-+        || EVP_PKEY_fromdata(ctx, &pkey, EVP_PKEY_KEYPAIR, params) != 1)
++#define MAKE_DI(x) {NID_##x, x, sizeof(x)}
++
++    DIG_INFO dinfo[] = {MAKE_DI(sha1), MAKE_DI(sha256), MAKE_DI(sha384),
++                        MAKE_DI(sha512), MAKE_DI(sha224), MAKE_DI(sha512_224),
++                        MAKE_DI(sha512_256), {0,NULL,0}};
++
++    int out_len = 0;
++    int ret = 0;
++
++    int nid = OBJ_sn2nid(mdname);
++    if(nid == NID_undef)
 +    {
-+        msg(M_NONFATAL, "Error loading key into ovpn.xkey provider");
-+    }
-+    if (ctx)
-+    {
-+        EVP_PKEY_CTX_free(ctx);
++        /* try harder  -- name variants like SHA2-256 doesn't work */
++        nid = EVP_MD_type(EVP_get_digestbyname(mdname));
++        if(nid == NID_undef)
++        {
++            msg(M_WARN, "Error: encode_pkcs11: invalid digest name <%s>", mdname);
++            goto done;
++        }
 +    }
 +
-+    return pkey;
++    if (tbslen != EVP_MD_size(EVP_get_digestbyname(mdname)))
++    {
++        msg(M_WARN, "Error: encode_pkcs11: invalid input length <%d>", (int)tbslen);
++        goto done;
++    }
++
++    if (nid == NID_md5_sha1) /* no encoding needed -- just copy */
++    {
++        if (enc && (*enc_len >= tbslen))
++        {
++            memcpy(enc, tbs, tbslen);
++            ret = true;
++        }
++        out_len = tbslen;
++        goto done;
++    }
++
++    /* locate entry for nid in dinfo table */
++    DIG_INFO *di = dinfo;
++    while((di->nid != nid) && (di->nid != 0))
++    {
++        di++;
++    }
++    if (di->nid != nid) /* not found in our table */
++    {
++        msg(M_WARN, "Error: encode_pkcs11: unsupported hash algorithm <%s>", mdname);
++        goto done;
++    }
++
++    out_len = tbslen + di->sz;
++
++    if (enc && (out_len <= (int) *enc_len))
++    {
++        /* combine header and digest */
++        memcpy(enc, di->header, di->sz);
++        memcpy(enc + di->sz, tbs, tbslen);
++        dmsg(D_LOW, "encode_pkcs1: digest length = %d encoded length = %d",
++             (int) tbslen, (int) out_len);
++        ret = true;
++    }
++
++done:
++    *enc_len = out_len; /* assignment safe as out_len is > 0 at this point */
++
++    return ret;
 +}
 +
-+/* not yet implemented */
-+int
-+xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
-+                     const unsigned char *tbs, size_t tbslen, XKEY_SIGALG alg)
-+{
-+    msg(M_FATAL, "FATAL ERROR: A sign callback for this key is not implemented.");
-+    return 0;
-+}
-+
-+#endif /* HAVE_XKEY_PROVIDER */
+ #endif /* HAVE_XKEY_PROVIDER */
 -- 
 2.30.2
 
