@@ -1,11 +1,11 @@
 From: selva.nair@...277...
-Date: Tue, 14 Dec 2021 11:59:24 -0500
-Message-Id: <20211214165928.30676-15-selva.nair@...277...>
+Date: Tue, 14 Dec 2021 11:59:21 -0500
+Message-Id: <20211214165928.30676-12-selva.nair@...277...>
 In-Reply-To: <20211214165928.30676-1-selva.nair@...277...>
 References: <20211214165928.30676-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 14/18] pkcs11: Interface the xkey
- provider with pkcs11-helper
+Subject: [Openvpn-devel] [PATCH v3 11/18] Support sending DigestSign request
+ to management client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,221 +20,160 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-- Load the 'private key' handle through the provider and set it in
-  SSL_CTX
-- Add a sign op function to interface provider with pkcs11-helper.
-  Previously we used its "OpenSSL Session" which internally sets up
-  callbacks in RSA and EC key methods. Not useful for the provider
-  interface, so, we directly call the PKCS#11 sign operation
-  as done with mbedTLS.
-- tls_libctx is made global for accessing from pkcs11_openssl.c
+To receive undigested message for signing, indicate support
+for handling message digesting in the client using an argument
+"digest" to --management-external-key.
 
-  Supports ECDSA and RSA_PKCS1_PADDING signatures. PSS support
-  will be added when pkcs11-helper with our PR for specifying
-  CK_MECHANISM variable in sign operations is released.
-  (i.e., next release of pkcs11-helper).
+For example, to announce pkcs1 padding and digesting support use:
+
+--management-external-key pkcs1 pss digest
+
+In PK_SIGN, the algorithm string will get data=message
+in addition to other relevant options.
+
+Note that it is not guaranteed that the client will be prompted
+with undigested message. This is possible only when OpenSSL
+calls our provider for DigestSign() as opposed to Sign(). In
+practice, signature operation always appears to result in
+a DigestSign() call through the provider interface.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/pkcs11_openssl.c | 151 +++++++++++++++++++++++++++++++++++
- src/openvpn/ssl_openssl.c    |   2 +-
- src/openvpn/xkey_common.h    |   2 +
- 3 files changed, 154 insertions(+), 1 deletion(-)
+ src/openvpn/manage.h      |  1 +
+ src/openvpn/options.c     |  4 +++
+ src/openvpn/xkey_helper.c | 52 ++++++++++++++++++++++++++++++---------
+ 3 files changed, 45 insertions(+), 12 deletions(-)
 
-diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c
-index b29504b6..9cf46b2c 100644
---- a/src/openvpn/pkcs11_openssl.c
-+++ b/src/openvpn/pkcs11_openssl.c
-@@ -39,12 +39,163 @@
- #include "errlevel.h"
- #include "pkcs11_backend.h"
- #include "ssl_verify.h"
-+#include "xkey_common.h"
- #include <pkcs11-helper-1.0/pkcs11h-openssl.h>
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index 5ed27c0c..9621f479 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -340,6 +340,7 @@ struct management *management_init(void);
+ #define MF_QUERY_PROXY              (1<<14)
+ #define MF_EXTERNAL_CERT            (1<<15)
+ #define MF_EXTERNAL_KEY_PSSPAD      (1<<16)
++#define MF_EXTERNAL_KEY_DIGEST      (1<<17)
  
-+#ifdef HAVE_XKEY_PROVIDER
-+static XKEY_EXTERNAL_SIGN_fn xkey_pkcs11h_sign;
+ bool management_open(struct management *man,
+                      const char *addr,
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 3ec9025b..a323367c 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -5576,6 +5576,10 @@ add_option(struct options *options,
+             {
+                 options->management_flags |= MF_EXTERNAL_KEY_PSSPAD;
+             }
++            else if (streq(p[j], "digest"))
++            {
++                options->management_flags |= MF_EXTERNAL_KEY_DIGEST;
++            }
+             else
+             {
+                 msg(msglevel, "Unknown management-external-key flag: %s", p[j]);
+diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
+index d63943d2..d09ad635 100644
+--- a/src/openvpn/xkey_helper.c
++++ b/src/openvpn/xkey_helper.c
+@@ -138,17 +138,22 @@ int
+ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
+                      const unsigned char *tbs, size_t tbslen, XKEY_SIGALG alg)
+ {
++    dmsg(D_LOW, "In xkey_management_sign with keytype = %s, op = %s",
++         alg.keytype, alg.op);
 +
-+/**
-+ * Sign op called from xkey provider
-+ *
-+ * We support ECDSA, RSA_NO_PADDING, RSA_PKCS1_PADDING
-+ */
-+static int
-+xkey_pkcs11h_sign(void *handle, unsigned char *sig,
-+            size_t *siglen, const unsigned char *tbs, size_t tbslen, XKEY_SIGALG sigalg)
-+{
-+    pkcs11h_certificate_t cert = handle;
-+    CK_MECHANISM mech = {CKM_RSA_PKCS, NULL, 0}; /* default value */
-+
-+    unsigned char buf[EVP_MAX_MD_SIZE];
-+    size_t buflen;
-+
-+    if (!strcmp(sigalg.op, "DigestSign"))
-+    {
-+        dmsg(D_LOW, "xkey_pkcs11h_sign: computing digest");
-+        if (xkey_digest(tbs, tbslen, buf, &buflen, sigalg.mdname))
+     (void) unused;
+     char alg_str[128];
+     unsigned char buf[EVP_MAX_MD_SIZE]; /* for computing digest if required */
+     size_t buflen = sizeof(buf);
+ 
+-    unsigned char enc[EVP_MAX_MD_SIZE + 32]; /* 32 bytes enough for digest inf structure */
++    unsigned char enc[EVP_MAX_MD_SIZE + 32]; /* 32 bytes enough for digest info structure */
+     size_t enc_len = sizeof(enc);
+ 
+     unsigned int flags = management->settings.flags;
++    bool is_message = !strcmp(alg.op, "DigestSign"); /* tbs is message, not digest */
+ 
+-    if (!strcmp(alg.op, "DigestSign"))
++    /* if management client cannot do digest -- we do it here */
++    if (!strcmp(alg.op, "DigestSign") && !(flags & MF_EXTERNAL_KEY_DIGEST))
+     {
+         dmsg(D_LOW, "xkey_management_sign: computing digest");
+         if (xkey_digest(tbs, tbslen, buf, &buflen, alg.mdname))
+@@ -156,6 +161,7 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
+             tbs = buf;
+             tbslen = buflen;
+             alg.op = "Sign";
++            is_message = false;
+         }
+         else
+         {
+@@ -165,22 +171,38 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
+ 
+     if (!strcmp(alg.keytype, "EC"))
+     {
+-        strncpynt(alg_str, "ECDSA", sizeof(alg_str));
++        if (!strcmp(alg.op, "Sign"))
 +        {
-+            tbs = buf;
-+            tbslen = (size_t) buflen;
-+            sigalg.op = "Sign";
++            strncpynt(alg_str, "ECDSA", sizeof(alg_str));
 +        }
 +        else
 +        {
-+            return 0;
++            openvpn_snprintf(alg_str, sizeof(alg_str), "ECDSA,hashalg=%s", alg.mdname);
 +        }
-+    }
-+
-+    if (!strcmp(sigalg.keytype, "EC"))
-+    {
-+        mech.mechanism = CKM_ECDSA;
-+    }
-+    else if (!strcmp(sigalg.keytype, "RSA"))
-+    {
-+        if (!strcmp(sigalg.padmode,"none"))
-+        {
-+            mech.mechanism = CKM_RSA_X_509;
-+        }
-+        else if (!strcmp(sigalg.padmode, "pss"))
-+        {
-+            msg(M_NONFATAL, "PKCS#11: Error: PSS padding is not yet supported.");
-+            return 0;
-+        }
-+        else if (!strcmp(sigalg.padmode, "pkcs1"))
-+        {
-+            /* CMA_RSA_PKCS needs pkcs1 encoded digest */
-+
-+            unsigned char enc[EVP_MAX_MD_SIZE + 32]; /* 32 bytes enough for DigestInfo header */
-+            size_t enc_len = sizeof(enc);
-+
-+            if (!encode_pkcs1(enc, &enc_len, sigalg.mdname, tbs, tbslen))
+     }
+     /* else assume RSA key */
+     else if (!strcmp(alg.padmode, "pkcs1") && (flags & MF_EXTERNAL_KEY_PKCS1PAD))
+     {
+-        /* management interface expects a pkcs1 encoded digest -- add it */
+-        if (!encode_pkcs1(enc, &enc_len, alg.mdname, tbs, tbslen))
++        /* For Sign, management interface expects a pkcs1 encoded digest -- add it */
++        if (!strcmp(alg.op, "Sign"))
+         {
+-            return 0;
++            if (!encode_pkcs1(enc, &enc_len, alg.mdname, tbs, tbslen))
 +            {
 +                return 0;
 +            }
 +            tbs = enc;
 +            tbslen = enc_len;
++            strncpynt(alg_str, "RSA_PKCS1_PADDING", sizeof(alg_str));
 +        }
-+        else /* should not happen */
++        /* For undigested message, add hashalg=digest parameter */
++        else
 +        {
-+            msg(M_WARN, "PKCS#11: Unknown padmode <%s>", sigalg.padmode);
-+        }
-+    }
-+    else
++            openvpn_snprintf(alg_str, sizeof(alg_str), "%s,hashalg=%s",
++                            "RSA_PKCS1_PADDING", alg.mdname);
+         }
+-        tbs = enc;
+-        tbslen = enc_len;
+-
+-        strncpynt(alg_str, "RSA_PKCS1_PADDING", sizeof(alg_str));
+     }
+-    else if (!strcmp(alg.padmode, "none") && (flags & MF_EXTERNAL_KEY_NOPADDING))
++    else if (!strcmp(alg.padmode, "none") && (flags & MF_EXTERNAL_KEY_NOPADDING)
++             &&!strcmp(alg.op, "Sign")) /* NO_PADDING requires digested data */
+     {
+         strncpynt(alg_str, "RSA_NO_PADDING", sizeof(alg_str));
+     }
+@@ -190,10 +212,16 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
+                        "RSA_PKCS1_PSS_PADDING", alg.mdname,alg.saltlen);
+     }
+     else {
+-        msg(M_NONFATAL, "RSA padding mode unknown or not supported by management-client <%s>",
++        msg(M_NONFATAL, "RSA padding mode not supported by management-client <%s>",
+             alg.padmode);
+         return 0;
+     }
++
++    if (is_message)
 +    {
-+         ASSERT(0); /* coding error -- we couldnt have created any such key */
++        strncat(alg_str, ",data=message", sizeof(alg_str) - strlen(alg_str) - 1);
 +    }
 +
-+    return CKR_OK == pkcs11h_certificate_signAny(cert, mech.mechanism,
-+                                                 tbs, tbslen, sig, siglen);
-+}
-+
-+/* wrapper for handle free */
-+static void
-+xkey_handle_free(void *handle)
-+{
-+    pkcs11h_certificate_freeCertificate(handle);
-+}
-+
-+
-+/**
-+ * Load certificate and public key from pkcs11h to SSL_CTX
-+ * through xkey provider.
-+ *
-+ * @param certificate          pkcs11h certificate object
-+ * @param ctx                  OpenVPN root tls context
-+ *
-+ * @returns                    1 on success, 0 on error to match
-+ *                             other xkey_load_.. routines
-+ */
-+static int
-+xkey_load_from_pkcs11h(pkcs11h_certificate_t certificate,
-+                        struct tls_root_ctx *const ctx)
-+{
-+    int ret = 0;
-+
-+    X509 *x509 = pkcs11h_openssl_getX509(certificate);
-+    if (!x509)
-+    {
-+        msg(M_WARN, "PKCS#11: Unable get x509 certificate object");
-+        return 0;
-+    }
-+
-+    EVP_PKEY *pubkey = X509_get0_pubkey(x509);
-+
-+    XKEY_PRIVKEY_FREE_fn *free_op = xkey_handle_free; /* it calls pkcs11h_..._freeCertificate() */
-+    XKEY_EXTERNAL_SIGN_fn *sign_op = xkey_pkcs11h_sign;
-+
-+    EVP_PKEY *pkey = xkey_load_generic_key(tls_libctx, certificate, pubkey, sign_op, free_op);
-+    if (!pkey)
-+    {
-+        msg(M_WARN, "PKCS#11: Failed to load private key into xkey provider");
-+        goto cleanup;
-+    }
-+    /* provider took ownership of the pkcs11h certificate object -- do not free below */
-+    certificate = NULL;
-+
-+    if (!SSL_CTX_use_cert_and_key(ctx->ctx, x509, pkey, NULL, 0))
-+    {
-+        msg(M_WARN, "PKCS#11: Failed to set cert and private key for OpenSSL");
-+        goto cleanup;
-+    }
-+    ret = 1;
-+
-+cleanup:
-+    if (x509)
-+    {
-+        X509_free(x509);
-+    }
-+    if (pkey)
-+    {
-+        EVP_PKEY_free(pkey);
-+    }
-+    if (certificate)
-+    {
-+        pkcs11h_certificate_freeCertificate(certificate);
-+    }
-+    return ret;
-+}
-+#endif /* HAVE_XKEY_PROVIDER */
-+
- int
- pkcs11_init_tls_session(pkcs11h_certificate_t certificate,
-                         struct tls_root_ctx *const ssl_ctx)
- {
-+
-+#ifdef HAVE_XKEY_PROVIDER
-+    return (xkey_load_from_pkcs11h(certificate, ssl_ctx) == 0); /* inverts the return value */
-+#endif
-+
-     int ret = 1;
+     dmsg(D_LOW, "xkey management_sign: requesting sig with algorithm <%s>", alg_str);
  
-     X509 *x509 = NULL;
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 8f0281b1..b48845eb 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -70,7 +70,7 @@
- #include <openssl/applink.c>
- #endif
- 
--static OSSL_LIB_CTX *tls_libctx;
-+OSSL_LIB_CTX *tls_libctx; /* Global */
- 
- static void unload_xkey_provider(void);
- 
-diff --git a/src/openvpn/xkey_common.h b/src/openvpn/xkey_common.h
-index e2ddc178..8eac4c7c 100644
---- a/src/openvpn/xkey_common.h
-+++ b/src/openvpn/xkey_common.h
-@@ -151,6 +151,8 @@ EVP_PKEY *
- xkey_load_generic_key(OSSL_LIB_CTX *libctx, void *handle, EVP_PKEY *pubkey,
-                       XKEY_EXTERNAL_SIGN_fn sign_op, XKEY_PRIVKEY_FREE_fn free_op);
- 
-+extern OSSL_LIB_CTX *tls_libctx; /* Global */
-+
- #endif /* HAVE_XKEY_PROVIDER */
- 
- #endif /* XKEY_COMMON_H_ */
+     char *in_b64 = NULL;
 -- 
 2.30.2
 
