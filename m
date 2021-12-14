@@ -1,11 +1,9 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Tue, 14 Dec 2021 16:09:01 +0100
-Message-Id: <20211214150901.4118886-1-arne@...1227...>
-In-Reply-To: <20211207170211.3275837-1-arne@...1227...>
-References: <20211207170211.3275837-1-arne@...1227...>
+From: selva.nair@...277...
+Date: Tue, 14 Dec 2021 11:59:10 -0500
+Message-Id: <20211214165928.30676-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 08/21] Decouple MSS fix calculation from
- frame calculation
+Subject: [Openvpn-devel] [PATCH v3 00/18] External key provider for use with
+ OpenSSL 3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,245 +16,72 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This consolidates the MSS fix calculation into a single function
-instead having it distributed all over the code. It also calculates
-the real wire overhead without extra sizes for buffer etc.
+From: Selva Nair <selva.nair@...277...>
 
-Patch v2: improve comment
+The following series of patches implement a built-in
+provider for interfacing OpenSSL 3.0 when external 
+keys are in use.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/forward.c |  5 ++---
- src/openvpn/init.c    |  3 ++-
- src/openvpn/mss.c     | 40 ++++++++++++++++++++++++++++++++++++++++
- src/openvpn/mss.h     |  6 ++++++
- src/openvpn/mtu.c     |  9 ---------
- src/openvpn/mtu.h     | 10 ++++++----
- src/openvpn/proto.h   | 11 -----------
- src/openvpn/ssl.c     |  3 ++-
- 8 files changed, 58 insertions(+), 29 deletions(-)
+Essentially, to intercept the sign operation, the SSL_CTX
+object has to be created with properties string set to 
+prioritize our provider. In the provider we implement
+only keymgmt and signature operations and specify the
+property string as optional. That allows all operations
+we do not provide to be used from the default provider.
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 29efcd3b9..f82386a1d 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1493,7 +1493,7 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
-                 /* possibly alter the TCP MSS */
-                 if (flags & PIP_MSSFIX)
-                 {
--                    mss_fixup_ipv4(&ipbuf, MTU_TO_MSS(TUN_MTU_SIZE_DYNAMIC(&c->c2.frame)));
-+                    mss_fixup_ipv4(&ipbuf, c->c2.frame.mss_fix);
-                 }
- 
-                 /* possibly do NAT on packet */
-@@ -1517,8 +1517,7 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
-                 /* possibly alter the TCP MSS */
-                 if (flags & PIP_MSSFIX)
-                 {
--                    mss_fixup_ipv6(&ipbuf,
--                                   MTU_TO_MSS(TUN_MTU_SIZE_DYNAMIC(&c->c2.frame)));
-+                    mss_fixup_ipv6(&ipbuf, c->c2.frame.mss_fix);
-                 }
-                 if (!(flags & PIP_OUTGOING) && (flags
-                                                 &(PIPV6_IMCP_NOHOST_CLIENT | PIPV6_IMCP_NOHOST_SERVER)))
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index eb2678116..462edc01e 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -53,6 +53,7 @@
- #include "tls_crypt.h"
- #include "forward.h"
- #include "auth_token.h"
-+#include "mss.h"
- 
- #include "memdbg.h"
- 
-@@ -4156,7 +4157,7 @@ init_instance(struct context *c, const struct env_set *env, const unsigned int f
- #endif
- 
-     /* initialize dynamic MTU variable */
--    frame_init_mssfix(&c->c2.frame, &c->options);
-+    frame_calculate_mssfix(&c->c2.frame, &c->c1.ks.key_type, &c->options);
- 
-     /* bind the TCP/UDP socket */
-     if (c->mode == CM_P2P || c->mode == CM_TOP || c->mode == CM_CHILD_TCP)
-diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
-index aa5b68ce9..d2842aac5 100644
---- a/src/openvpn/mss.c
-+++ b/src/openvpn/mss.c
-@@ -30,6 +30,8 @@
- #include "syshead.h"
- #include "error.h"
- #include "mss.h"
-+#include "crypto.h"
-+#include "ssl_common.h"
- #include "memdbg.h"
- 
- /*
-@@ -204,3 +206,41 @@ mss_fixup_dowork(struct buffer *buf, uint16_t maxmss)
-         }
-     }
- }
-+
-+void
-+frame_calculate_mssfix(struct frame *frame, struct key_type *kt,
-+                       const struct options *options)
-+{
-+    if (options->ce.mssfix == 0)
-+    {
-+        return;
-+    }
-+
-+    unsigned int payload_size;
-+    unsigned int overhead;
-+
-+
-+    payload_size = frame_calculate_payload_size(frame, options);
-+
-+    overhead = frame_calculate_protocol_header_size(kt, options,
-+                                                    payload_size, false);
-+
-+    /* Calculate the number of bytes that the payload differs from the payload
-+     * MTU. This are fragment/compression/ethernet headers */
-+    unsigned payload_overhead = frame_calculate_payload_overhead(frame, options, true);
-+
-+    /* We are in a "liberal" position with respect to MSS,
-+     * i.e. we assume that MSS can be calculated from MTU
-+     * by subtracting out only the IP and TCP header sizes
-+     * without options.
-+     *
-+     * (RFC 879, section 7). */
-+
-+    /* Add 20 bytes for the IPv4 header and 20 byte for the TCP header of the
-+     * payload, the mssfix method will add 20 extra if payload is IPv6 */
-+    overhead += 20 + 20;
-+
-+    /* Calculate the maximum MSS value from the max link layer size specified
-+     * by ce.mssfix */
-+    frame->mss_fix = options->ce.mssfix - overhead - payload_overhead;
-+}
-\ No newline at end of file
-diff --git a/src/openvpn/mss.h b/src/openvpn/mss.h
-index 41254e2a6..856f4c4e3 100644
---- a/src/openvpn/mss.h
-+++ b/src/openvpn/mss.h
-@@ -26,6 +26,8 @@
- 
- #include "proto.h"
- #include "error.h"
-+#include "mtu.h"
-+#include "ssl_common.h"
- 
- void mss_fixup_ipv4(struct buffer *buf, int maxmss);
- 
-@@ -33,4 +35,8 @@ void mss_fixup_ipv6(struct buffer *buf, int maxmss);
- 
- void mss_fixup_dowork(struct buffer *buf, uint16_t maxmss);
- 
-+/** Set the --mssfix option. */
-+void frame_calculate_mssfix(struct frame *frame, struct key_type *kt,
-+                            const struct options *options);
-+
- #endif
-diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index 0da1dadfa..7e5c3c24d 100644
---- a/src/openvpn/mtu.c
-+++ b/src/openvpn/mtu.c
-@@ -211,15 +211,6 @@ frame_subtract_extra(struct frame *frame, const struct frame *src)
-     frame->extra_tun   += src->extra_frame;
- }
- 
--void
--frame_init_mssfix(struct frame *frame, const struct options *options)
--{
--    if (options->ce.mssfix)
--    {
--        frame_set_mtu_dynamic(frame, options->ce.mssfix, SET_MTU_UPPER_BOUND);
--    }
--}
--
- void
- frame_print(const struct frame *frame,
-             int level,
-diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index 5ad0931fd..ae83d3e7a 100644
---- a/src/openvpn/mtu.h
-+++ b/src/openvpn/mtu.h
-@@ -94,6 +94,12 @@ struct frame {
-     int link_mtu;               /**< Maximum packet size to be sent over
-                                  *   the external network interface. */
- 
-+    unsigned int mss_fix;      /**< The actual MSS value that should be
-+                                 *   written to the payload packets. This
-+                                 *   is the value for IPv4 TCP packets. For
-+                                 *   IPv6 packets another 20 bytes must
-+                                 *   be subtracted */
-+
-     int link_mtu_dynamic;       /**< Dynamic MTU value for the external
-                                  *   network interface. */
- 
-@@ -152,7 +158,6 @@ struct options;
-  * This is the size to "ifconfig" the tun or tap device.
-  */
- #define TUN_MTU_SIZE(f)          ((f)->link_mtu - TUN_LINK_DELTA(f))
--#define TUN_MTU_SIZE_DYNAMIC(f)  ((f)->link_mtu_dynamic - TUN_LINK_DELTA(f))
- 
- /*
-  * This is the maximum packet size that we need to be able to
-@@ -291,9 +296,6 @@ void alloc_buf_sock_tun(struct buffer *buf,
-                         const struct frame *frame,
-                         const bool tuntap_buffer);
- 
--/** Set the --mssfix option. */
--void frame_init_mssfix(struct frame *frame, const struct options *options);
--
- /*
-  * EXTENDED_SOCKET_ERROR_CAPABILITY functions -- print extra error info
-  * on socket errors, such as PMTU size.  As of 2003.05.11, only works
-diff --git a/src/openvpn/proto.h b/src/openvpn/proto.h
-index f73e50c07..94010a98f 100644
---- a/src/openvpn/proto.h
-+++ b/src/openvpn/proto.h
-@@ -247,17 +247,6 @@ struct ip_tcp_udp_hdr {
-         acc -= (u32) >> 16;    \
- }
- 
--/*
-- * We are in a "liberal" position with respect to MSS,
-- * i.e. we assume that MSS can be calculated from MTU
-- * by subtracting out only the IP and TCP header sizes
-- * without options.
-- *
-- * (RFC 879, section 7).
-- */
--#define MTU_TO_MSS(mtu) (mtu - sizeof(struct openvpn_iphdr) \
--                         - sizeof(struct openvpn_tcphdr))
--
- /*
-  * This returns an ip protocol version of packet inside tun
-  * and offset of IP header (via parameter).
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 8cbb129d2..96c78199a 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -62,6 +62,7 @@
- #include "ssl_ncp.h"
- #include "ssl_util.h"
- #include "auth_token.h"
-+#include "mss.h"
- 
- #include "memdbg.h"
- 
-@@ -1893,7 +1894,7 @@ tls_session_update_crypto_params_do_work(struct tls_session *session,
-                                    options->replay, packet_id_long_form);
-     frame_finalize(frame, options->ce.link_mtu_defined, options->ce.link_mtu,
-                    options->ce.tun_mtu_defined, options->ce.tun_mtu);
--    frame_init_mssfix(frame, options);
-+    frame_calculate_mssfix(frame, &session->opt->key_type, options);
-     frame_print(frame, D_MTU_INFO, "Data Channel MTU parms");
- 
-     /*
+Same as PR#161 https://github.com/OpenVPN/openvpn/pull/161
+with fixup commits in there squashed and rebased to master.
+
+Requires OpenSSL 3.0.1 (released on Dec 14, 2021) or
+OpenSSL 3.0 or 3.1 dev branch post Oct 27. 
+
+Selva Nair (18):
+  A built-in provider for using external key with OpenSSL 3.0
+  Implement KEYMGMT in the xkey provider
+  Implement SIGNATURE operations in xkey provider
+  Implement import of custom external keys
+  Initialize the xkey provider and use it in SSL context
+  A helper function to import private key for management-external-key
+  Enable signing via provider for management-external-key
+  Add a function to encode digests with PKCS1 DigestInfo wrapper
+  Allow management client to announce pss padding support
+  Respect algorithm support announced by management client
+  Support sending DigestSign request to management client
+  Increase ERR_BUF_SIZE when management interface support is enabled
+  Add a generic key loading helper function for xkey provider
+  pkcs11: Interface the xkey provider with pkcs11-helper
+  Enable signing using CNG through xkey provider
+  Add a unit test for external key provider
+  xkey-provider: Add a test for generic key load and signature
+  Add xkey_provider sources and includes to MSVC project
+
+ doc/man-sections/management-options.rst  |    8 +-
+ doc/management-notes.txt                 |   22 +-
+ src/openvpn/Makefile.am                  |    2 +
+ src/openvpn/cryptoapi.c                  |  241 ++++-
+ src/openvpn/error.h                      |    4 +-
+ src/openvpn/manage.h                     |    2 +
+ src/openvpn/openssl_compat.h             |    8 +
+ src/openvpn/openvpn.vcxproj              |    3 +
+ src/openvpn/options.c                    |   31 +-
+ src/openvpn/options.h                    |    2 +
+ src/openvpn/pkcs11_openssl.c             |  151 +++
+ src/openvpn/ssl.c                        |    5 +
+ src/openvpn/ssl.h                        |    6 +
+ src/openvpn/ssl_mbedtls.c                |    6 +
+ src/openvpn/ssl_openssl.c                |  108 +-
+ src/openvpn/xkey_common.h                |  158 +++
+ src/openvpn/xkey_helper.c                |  393 +++++++
+ src/openvpn/xkey_provider.c              | 1189 ++++++++++++++++++++++
+ tests/unit_tests/openvpn/Makefile.am     |   16 +
+ tests/unit_tests/openvpn/test_provider.c |  403 ++++++++
+ 20 files changed, 2715 insertions(+), 43 deletions(-)
+ create mode 100644 src/openvpn/xkey_common.h
+ create mode 100644 src/openvpn/xkey_helper.c
+ create mode 100644 src/openvpn/xkey_provider.c
+ create mode 100644 tests/unit_tests/openvpn/test_provider.c
+
 -- 
-2.33.0
+2.30.2
 
 
