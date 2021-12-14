@@ -1,11 +1,11 @@
 From: selva.nair@...277...
-Date: Tue, 14 Dec 2021 11:59:14 -0500
-Message-Id: <20211214165928.30676-5-selva.nair@...277...>
+Date: Tue, 14 Dec 2021 11:59:15 -0500
+Message-Id: <20211214165928.30676-6-selva.nair@...277...>
 In-Reply-To: <20211214165928.30676-1-selva.nair@...277...>
 References: <20211214165928.30676-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 04/18] Implement import of custom
- external keys
+Subject: [Openvpn-devel] [PATCH v3 05/18] Initialize the xkey provider and
+ use it in SSL context
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,265 +20,283 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-  Our key object retains info about the external
-  key as an opaque handle to the backend. We also
-  need the public key as an EVP_PKEY *.
+- Add function to check when external key is in use
 
-  For native keys we use OpenSSL API to import
-  data into the key. The 'handle' representing the
-  private key in that case is the OpenSSL EVP_PKEY
-  object itself.
+- Load xkey provider into a custom library context when required
 
-  For importing custom keys, we define custom
-  parameters describing the key using OSSL_PARAM
-  structure. We define 4 required and 1 optional
-  parameters for loading the key:
+- Use the custom libctx in SSL CTX when external key is in use
 
-  Required params of type OSSL_PARAM:
+As no keys are yet loaded through the provider,
+no functionality gets delegated to it as yet.
 
-  {.key="xkey-origin", .data_type = OSSL_PARAM_UTF8_STRING
-   .data = "foobar", .data_size = 0 }
-
-  Note: data_size = 0 refer to NUL terminated string in OpenSSL.
-  This parameter is only used to identify that the key as non-native
-  with an opaque handle. We really do not check the content of
-  the string. Should not be NULL.
-
-  {.key="handle", .data_type = OSSL_PARAM_OCTET_PTR,
-   .data = &handle, .data_size = sizeof(handle)}
-
-  {.key="pubkey", .data_type = OSSL_PARAM_OCTET_STRING,
-   .data = &pubkey, .data_size = sizeof(pubkey)}
-
-  {.key="sign_op", .data_type = OSSL_PARAM_OCTET_PTR,
-   .data = &sign_op_ptr, .data_size = sizeof(sign_op_ptr)}
-
-  Optional param:
-
-  {.key="free_op", .data_type = OSSL_PARAM_OCTET_PTR,
-   .data = &free_op_ptr, .data_size = sizeof(free_op_ptr)}
-
-  The 'handle' is opaque to us and is retained. The caller
-  should not free it. We will free it when no longer required
-  by calling 'free_op()', if provided. The 'handle' should
-  not be NULL as that indicates missing private key.
-
-  The 'pubkey' must be an 'EVP_PKEY *' variable, and is duplicated
-  by us. The caller may free it after return from import.
-
-  The 'sign_op' and 'free_op' function pointers should be of type
-  'XKEY_EXTERNAL_SIGN_fn' and 'XKEY_PRIVKEY_FREE_fn' defined
-  in xkey_common.h
-
-For example, for management-external-key, we really do not
-need any 'handle'. Pass anything that will live long and
-won't dereference to NULL. We do not use it for any other
-purpose. Pointer to a const string could be a choice.
-In this case, free_op = NULL is the safest choice.
-
-For a usage of keymgmt_import(), see the helper function
-implemented using it to load the management key in the next commit.
-
-v2 changes: "origin" --> "xkey-origin"
-            This was 5/9 in v1
+v2 changes: Provider loading is reworked to activate only when external
+            keys are in use
+            This was 2/9 in v1
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/xkey_provider.c | 135 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 133 insertions(+), 2 deletions(-)
+ src/openvpn/openssl_compat.h |  8 ++++
+ src/openvpn/options.c        | 16 +++++++
+ src/openvpn/options.h        |  2 +
+ src/openvpn/ssl.c            |  5 ++
+ src/openvpn/ssl.h            |  6 +++
+ src/openvpn/ssl_mbedtls.c    |  6 +++
+ src/openvpn/ssl_openssl.c    | 93 +++++++++++++++++++++++++++++++++++-
+ src/openvpn/xkey_common.h    |  1 -
+ 8 files changed, 134 insertions(+), 3 deletions(-)
 
-diff --git a/src/openvpn/xkey_provider.c b/src/openvpn/xkey_provider.c
-index 09138ae8..c2d560c5 100644
---- a/src/openvpn/xkey_provider.c
-+++ b/src/openvpn/xkey_provider.c
-@@ -78,6 +78,13 @@ typedef enum
-  *
-  * We also keep the public key in the form of a native OpenSSL EVP_PKEY.
-  * This allows us to do all public ops by calling ops in the default provider.
-+ * Both these are references retained by us and freed when the key is
-+ * destroyed. As the pubkey is native, we free it using EVP_PKEY_free().
-+ * To free the handle we call the backend if a free function
-+ * has been set for that key. It could be set when the key is
-+ * created/imported.
-+ * For native keys, there is no need to free the handle as its either
-+ * NULL of the same as the pubkey which we always free.
-  */
- typedef struct
- {
-@@ -133,6 +140,9 @@ static OSSL_FUNC_keymgmt_set_params_fn keymgmt_set_params;
- static OSSL_FUNC_keymgmt_query_operation_name_fn rsa_keymgmt_name;
- static OSSL_FUNC_keymgmt_query_operation_name_fn ec_keymgmt_name;
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index dcc210c7..5c9da9eb 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -760,6 +760,14 @@ int EVP_PKEY_get_group_name(EVP_PKEY *pkey, char *gname, size_t gname_sz,
+ #define EVP_CIPHER_get0_name EVP_CIPHER_name
+ #define EVP_CIPHER_CTX_get_mode EVP_CIPHER_CTX_mode
  
-+static int
-+keymgmt_import_helper(XKEY_KEYDATA *key, const OSSL_PARAM params[]);
++/** Reduce SSL_CTX_new_ex() to SSL_CTX_new() for OpenSSL < 3 */
++#define SSL_CTX_new_ex(libctx, propq, method)                \
++        SSL_CTX_new((method))
 +
- static XKEY_KEYDATA *
- keydata_new()
- {
-@@ -156,6 +166,11 @@ keydata_free(XKEY_KEYDATA *key)
-     {
-         return;
-     }
-+    if (key->free && key->handle)
-+    {
-+        key->free(key->handle);
-+        key->handle = NULL;
-+    }
-     if (key->pubkey)
-     {
-         EVP_PKEY_free(key->pubkey);
-@@ -195,7 +210,27 @@ keymgmt_load(const void *reference, size_t reference_sz)
-  * appropriate for the key. We just use it to create a native
-  * EVP_PKEY from params and assign to keydata->handle.
-  *
-- * Import of external keys -- to be implemented
-+ * For non-native keys the params[] array should include a custom
-+ * value with name "xkey-origin".
-+ *
-+ * Other required parameters in the params array are:
-+ *
-+ *  pubkey - pointer to native public key as a OCTET_STRING
-+ *           the public key is duplicated on receipt
-+ *  handle - reference to opaque handle to private key -- if not required
-+ *           pass a dummy value that is not zero. type = OCTET_PTR
-+ *           The reference is retained -- caller must _not_ free it.
-+ *  sign_op - function pointer for sign operation. type = OCTET_PTR
-+ *            Must be a reference to XKEY_EXTERNAL_SIGN_fn
-+ *  xkey-origin - A custom string to indicate the external key origin. UTF8_STRING
-+ *                The value doesn't really matter, but must be present.
-+ *
-+ * Optional params
-+ *  free_op - Called as free(handle) when the key is deleted. If the
-+ *           handle should not be freed, do not include. type = OCTET_PTR
-+ *           Must be a reference to XKEY_PRIVKEY_FREE_fn
-+ *
-+ *  See xkey_load_management_key for an example use.
-  */
- static int
- keymgmt_import(void *keydata, int selection, const OSSL_PARAM params[], const char *name)
-@@ -212,6 +247,17 @@ keymgmt_import(void *keydata, int selection, const OSSL_PARAM params[], const ch
-         return 0;
-     }
++/* Some safe typedefs to avoid too many ifdefs */
++typedef void OSSL_LIB_CTX;
++typedef void OSSL_PROVIDER;
++
+ /* Mimics the functions but only when the default context without
+  * options is chosen */
+ static inline const EVP_CIPHER *
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index b840b767..fb427410 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -5337,6 +5337,22 @@ show_compression_warning(struct compress_options *info)
+ }
+ #endif
  
-+    /* if params contain a custom origin, call our helper to import custom keys */
-+    const OSSL_PARAM *p = OSSL_PARAM_locate_const(params, "xkey-origin");
-+    if (p && p->data_type == OSSL_PARAM_UTF8_STRING)
++bool key_is_external(const struct options *options)
++{
++    bool ret = false;
++#ifdef ENABLE_MANAGEMENT
++    ret = ret || (options->management_flags & MF_EXTERNAL_KEY);
++#endif
++#ifdef ENABLE_PKCS11
++    ret = ret || (options->pkcs11_providers[0] != NULL);
++#endif
++#ifdef ENABLE_CRYPTOAPI
++    ret = ret || options->cryptoapi_cert;
++#endif
++
++    return ret;
++}
++
+ static void
+ add_option(struct options *options,
+            char *p[],
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index d4f41cd7..8dc06343 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -862,4 +862,6 @@ void options_string_import(struct options *options,
+                            unsigned int *option_types_found,
+                            struct env_set *es);
+ 
++bool key_is_external(const struct options *options);
++
+ #endif /* ifndef OPTIONS_H */
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 05096ee0..0c4e3234 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -603,6 +603,11 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx, bool in_ch
+ 
+     tls_clear_error();
+ 
++    if (key_is_external(options))
 +    {
-+        key->origin = EXTERNAL_KEY;
-+        xkey_dmsg(D_LOW, "importing external key");
-+        return keymgmt_import_helper(key, params);
++        load_xkey_provider();
 +    }
 +
-+    xkey_dmsg(D_LOW, "importing native key");
+     if (options->tls_server)
+     {
+         tls_ctx_server_new(new_ctx);
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index b14453fe..784ddd32 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -627,4 +627,10 @@ show_available_tls_ciphers(const char *cipher_list,
+ bool
+ tls_session_generate_data_channel_keys(struct tls_session *session);
+ 
++/**
++ * Load ovpn.xkey provider used for external key signing
++ */
++void
++load_xkey_provider(void);
 +
-     /* create a native public key and assign it to key->pubkey */
-     EVP_PKEY *pkey = NULL;
-     int selection_pub = selection & ~OSSL_KEYMGMT_SELECT_PRIVATE_KEY;
-@@ -370,10 +416,95 @@ keymgmt_get_params(void *keydata, OSSL_PARAM *params)
-     return EVP_PKEY_get_params(key->pubkey, params);
+ #endif /* ifndef OPENVPN_SSL_H */
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 94605801..15cd8b16 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -1550,4 +1550,10 @@ get_ssl_library_version(void)
+     return mbedtls_version;
  }
  
-+/* Helper used by keymgmt_import and keymgmt_set_params
-+ * for our keys. Not to be used for OpenSSL native keys.
-+ */
-+static int
-+keymgmt_import_helper(XKEY_KEYDATA *key, const OSSL_PARAM *params)
++void
++load_xkey_provider(void)
 +{
-+    xkey_dmsg(D_LOW, "entry");
++    return; /* no external key provider in mbedTLS build */
++}
 +
-+    const OSSL_PARAM *p;
-+    EVP_PKEY *pkey = NULL;
+ #endif /* defined(ENABLE_CRYPTO_MBEDTLS) */
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 724664bb..bdaa7a2b 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -45,6 +45,7 @@
+ #include "ssl_common.h"
+ #include "base64.h"
+ #include "openssl_compat.h"
++#include "xkey_common.h"
+ 
+ #ifdef ENABLE_CRYPTOAPI
+ #include "cryptoapi.h"
+@@ -69,6 +70,10 @@
+ #include <openssl/applink.c>
+ #endif
+ 
++static OSSL_LIB_CTX *tls_libctx;
 +
-+    ASSERT(key);
-+    /* calling this with native keys is a coding error */
-+    ASSERT(key->origin != OPENSSL_NATIVE);
++static void unload_xkey_provider(void);
 +
-+    if (params == NULL)
-+    {
-+        return 1; /* not an error */
-+    }
+ /*
+  * Allocate space in SSL objects in which to store a struct tls_session
+  * pointer back to parent.
+@@ -113,7 +118,7 @@ tls_ctx_server_new(struct tls_root_ctx *ctx)
+ {
+     ASSERT(NULL != ctx);
+ 
+-    ctx->ctx = SSL_CTX_new(SSLv23_server_method());
++    ctx->ctx = SSL_CTX_new_ex(tls_libctx, NULL, SSLv23_server_method());
+ 
+     if (ctx->ctx == NULL)
+     {
+@@ -131,7 +136,7 @@ tls_ctx_client_new(struct tls_root_ctx *ctx)
+ {
+     ASSERT(NULL != ctx);
+ 
+-    ctx->ctx = SSL_CTX_new(SSLv23_client_method());
++    ctx->ctx = SSL_CTX_new_ex(tls_libctx, NULL, SSLv23_client_method());
+ 
+     if (ctx->ctx == NULL)
+     {
+@@ -150,6 +155,7 @@ tls_ctx_free(struct tls_root_ctx *ctx)
+     ASSERT(NULL != ctx);
+     SSL_CTX_free(ctx->ctx);
+     ctx->ctx = NULL;
++    unload_xkey_provider(); /* in case it is loaded */
+ }
+ 
+ bool
+@@ -2284,4 +2290,87 @@ get_ssl_library_version(void)
+     return OpenSSL_version(OPENSSL_VERSION);
+ }
+ 
 +
-+    /* our keys are immutable, we do not allow resetting parameters */
-+    if (key->pubkey)
-+    {
-+        return 0;
-+    }
-+
-+    /* only check params we understand and ignore the rest */
-+
-+    p = OSSL_PARAM_locate_const(params, "pubkey"); /*setting pubkey on our keydata */
-+    if (p && p->data_type == OSSL_PARAM_OCTET_STRING
-+        && p->data_size == sizeof(pkey))
-+    {
-+        pkey = *(EVP_PKEY **)p->data;
-+        ASSERT(pkey);
-+
-+        int id = EVP_PKEY_get_id(pkey);
-+        if (id != EVP_PKEY_RSA && id != EVP_PKEY_EC)
-+        {
-+            msg(M_WARN, "Error: xkey keymgmt_import: unknown key type (%d)", id);
-+            return 0;
-+        }
-+
-+        key->pubkey = EVP_PKEY_dup(pkey);
-+        if (key->pubkey == NULL)
-+        {
-+            msg(M_NONFATAL, "Error: xkey keymgmt_import: duplicating pubkey failed.");
-+            return 0;
-+        }
-+    }
-+
-+    p = OSSL_PARAM_locate_const(params, "handle"); /*setting privkey */
-+    if (p && p->data_type == OSSL_PARAM_OCTET_PTR
-+        && p->data_size == sizeof(key->handle))
-+    {
-+        key->handle = *(void **)p->data;
-+        /* caller should keep the reference alive until we call free */
-+        ASSERT(key->handle); /* fix your params array */
-+    }
-+
-+    p = OSSL_PARAM_locate_const(params, "sign_op"); /*setting sign_op */
-+    if (p && p->data_type == OSSL_PARAM_OCTET_PTR
-+        && p->data_size == sizeof(key->sign))
-+    {
-+        key->sign = *(void **)p->data;
-+        ASSERT(key->sign); /* fix your params array */
-+    }
-+
-+    /* optional parameters */
-+    p = OSSL_PARAM_locate_const(params, "free_op"); /*setting free_op */
-+    if (p && p->data_type == OSSL_PARAM_OCTET_PTR
-+        && p->data_size == sizeof(key->free))
-+    {
-+        key->free = *(void **)p->data;
-+    }
-+    xkey_dmsg(D_LOW, "imported external %s key", EVP_PKEY_get0_type_name(key->pubkey));
-+
++/** Some helper routines for provider load/unload */
++#ifdef HAVE_XKEY_PROVIDER
++static int
++provider_load(OSSL_PROVIDER *prov, void *dest_libctx)
++{
++    const char *name = OSSL_PROVIDER_get0_name(prov);
++    OSSL_PROVIDER_load(dest_libctx, name);
 +    return 1;
 +}
 +
- /**
-+ * Set params on a key.
-+ *
-  * If the key is an encapsulated native key, we just call
-  * EVP_PKEY_set_params in the default context. Only those params
-  * supported by the default provider would work in this case.
-+ *
-+ * We treat our key object as immutable, so this works only with an
-+ * empty key. Supported params for external keys are the
-+ * same as those listed in the description of keymgmt_import.
-  */
- static int
- keymgmt_set_params(void *keydata, const OSSL_PARAM *params)
-@@ -385,7 +516,7 @@ keymgmt_set_params(void *keydata, const OSSL_PARAM *params)
++static int
++provider_unload(OSSL_PROVIDER *prov, void *unused)
++{
++    (void) unused;
++    OSSL_PROVIDER_unload(prov);
++    return 1;
++}
++#endif /* HAVE_XKEY_PROVIDER */
++
++/**
++ * Setup ovpn.xey provider for signing with external keys.
++ * It is loaded into a custom library context so as not to pollute
++ * the default context. Alternatively we could override any
++ * system-wide property query set on the default context. But we
++ * want to avoid that.
++ */
++void
++load_xkey_provider(void)
++{
++#ifdef HAVE_XKEY_PROVIDER
++
++    /* Make a new library context for use in TLS context */
++    if (!tls_libctx)
++    {
++        tls_libctx = OSSL_LIB_CTX_new();
++        check_malloc_return(tls_libctx);
++
++        /* Load all providers in default LIBCTX into this libctx.
++         * OpenSSL has a child libctx functionality to automate this,
++         * but currently that is usable only from within providers.
++         * So we do something close to it manually here.
++         */
++        OSSL_PROVIDER_do_all(NULL, provider_load, tls_libctx);
++    }
++
++    if (!OSSL_PROVIDER_available(tls_libctx, "ovpn.xkey"))
++    {
++        OSSL_PROVIDER_add_builtin(tls_libctx, "ovpn.xkey", xkey_provider_init);
++        if (!OSSL_PROVIDER_load(tls_libctx, "ovpn.xkey"))
++        {
++            msg(M_NONFATAL, "ERROR: failed loading external key provider: "
++                            "Signing with external keys will not work.");
++        }
++    }
++
++    /* We only implement minimal functionality in ovpn.xkey, so we do not want
++     * methods in xkey to be picked unless absolutely required (i.e, when the key
++     * is external). Ensure this by setting a default propquery for the custom
++     * libctx that unprefers, but does not forbid, ovpn.xkey. See also man page
++     * of "property" in OpenSSL 3.0.
++     */
++    EVP_set_default_properties(tls_libctx, "?provider!=ovpn.xkey");
++
++#endif /* HAVE_XKEY_PROVIDER */
++}
++
++/**
++ * Undo steps in load_xkey_provider
++ */
++static void
++unload_xkey_provider(void)
++{
++#ifdef HAVE_XKEY_PROVIDER
++    if (tls_libctx)
++    {
++        OSSL_PROVIDER_do_all(tls_libctx, provider_unload, NULL);
++        OSSL_LIB_CTX_free(tls_libctx);
++    }
++#endif /* HAVE_XKEY_PROVIDER */
++    tls_libctx = NULL;
++}
++
+ #endif /* defined(ENABLE_CRYPTO_OPENSSL) */
+diff --git a/src/openvpn/xkey_common.h b/src/openvpn/xkey_common.h
+index db58d077..f46bacd2 100644
+--- a/src/openvpn/xkey_common.h
++++ b/src/openvpn/xkey_common.h
+@@ -28,7 +28,6 @@
+ #include <openssl/opensslv.h>
+ #if OPENSSL_VERSION_NUMBER >= 0x30000010L && !defined(DISABLE_XKEY_PROVIDER)
+ #define HAVE_XKEY_PROVIDER 1
+-
+ #include <openssl/provider.h>
+ #include <openssl/core_dispatch.h>
  
-     if (key->origin != OPENSSL_NATIVE)
-     {
--        return 0; /* to be implemented */
-+        return keymgmt_import_helper(key, params);
-     }
-     else if (key->handle == NULL) /* once handle is set our key is immutable */
-     {
 -- 
 2.30.2
 
