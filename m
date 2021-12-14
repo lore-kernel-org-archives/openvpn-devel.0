@@ -1,11 +1,11 @@
 From: selva.nair@...277...
-Date: Tue, 14 Dec 2021 11:59:17 -0500
-Message-Id: <20211214165928.30676-8-selva.nair@...277...>
+Date: Tue, 14 Dec 2021 11:59:12 -0500
+Message-Id: <20211214165928.30676-3-selva.nair@...277...>
 In-Reply-To: <20211214165928.30676-1-selva.nair@...277...>
 References: <20211214165928.30676-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 07/18] Enable signing via provider for
- management-external-key
+Subject: [Openvpn-devel] [PATCH v3 02/18] Implement KEYMGMT in the xkey
+ provider
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,203 +20,423 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-- Add a function to set as sign_op during key import. The
-  function passes the signature request to management interface,
-  and returns the result to the provider.
+A minimal set of functions for keymgmt are implemented.
+No support for external key import as yet, only native
+keys. Support for native keys is required as keys may
+get imported into us for some operations as well as
+for comparison with unexportable external keys that we hold.
 
-v2 changes: Method to do digest added to match the changes in
-            the provider signature callback.
-TODO:
- - Allow passing the undigested message to management interface
- - Add pkcs1 DigestInfo header when required
+Implementation of signature callbacks is in the next commit.
+
+v2 changes: This was commit 3/9 in v1
+v3 changes: When OpenSSL native key is imported instead of duplicating
+the whole key, use only the public components for public key.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/ssl_openssl.c |   4 +-
- src/openvpn/xkey_common.h |   7 ++-
- src/openvpn/xkey_helper.c | 108 ++++++++++++++++++++++++++++++++++++--
- 3 files changed, 113 insertions(+), 6 deletions(-)
+ src/openvpn/xkey_provider.c | 375 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 374 insertions(+), 1 deletion(-)
 
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 23c74f55..8f0281b1 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -1169,7 +1169,7 @@ end:
- }
+diff --git a/src/openvpn/xkey_provider.c b/src/openvpn/xkey_provider.c
+index d47faf0a..a083ec2d 100644
+--- a/src/openvpn/xkey_provider.c
++++ b/src/openvpn/xkey_provider.c
+@@ -44,6 +44,9 @@
+ #include <openssl/evp.h>
+ #include <openssl/err.h>
  
++/* propq set all on all ops we implement */
++static const char *const props = XKEY_PROV_PROPS;
++
+ /* A descriptive name */
+ static const char *provname = "OpenVPN External Key Provider";
  
--#ifdef ENABLE_MANAGEMENT
-+#if defined(ENABLE_MANAGEMENT) && !defined(HAVE_XKEY_PROVIDER)
+@@ -59,6 +62,376 @@ typedef struct
+               dmsg(f|M_NOPREFIX, __VA_ARGS__);                      \
+            } while(0)
  
- /* encrypt */
- static int
-@@ -1470,7 +1470,9 @@ err:
-     return 0;
- }
- #endif /* OPENSSL_VERSION_NUMBER > 1.1.0 dev && !defined(OPENSSL_NO_EC) */
-+#endif /* ENABLE_MANAGEMENT && !HAVE_XKEY_PROVIDER */
- 
-+#ifdef ENABLE_MANAGEMENT
- int
- tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
- {
-diff --git a/src/openvpn/xkey_common.h b/src/openvpn/xkey_common.h
-index 5bda5e30..608afe99 100644
---- a/src/openvpn/xkey_common.h
-+++ b/src/openvpn/xkey_common.h
-@@ -67,10 +67,13 @@ typedef struct {
-  *
-  * @returns 1 on success, 0 on error.
-  *
-- * The data in tbs is just the digest with no DigestInfo header added. This is
-+ * If sigalg.op = "Sign", the data in tbs is the digest. If sigalg.op = "DigestSign"
-+ * it is the message that the backend should hash wih appropriate hash algorithm before
-+ * signing. In the former case no DigestInfo header is added to tbs. This is
-  * unlike the deprecated RSA_sign callback which provides encoded digest.
-  * For RSA_PKCS1 signatures, the external signing function must encode the digest
-- * before signing. The digest algorithm used is passed in the sigalg structure.
-+ * before signing. The digest algorithm used (or to be used) is passed in the sigalg
-+ * structure.
-  */
- typedef int (XKEY_EXTERNAL_SIGN_fn)(void *handle, unsigned char *sig, size_t *siglen,
-                                  const unsigned char *tbs, size_t tbslen,
-diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
-index 51cfb12b..aac78a2c 100644
---- a/src/openvpn/xkey_helper.c
-+++ b/src/openvpn/xkey_helper.c
-@@ -32,6 +32,8 @@
- #include "error.h"
- #include "buffer.h"
- #include "xkey_common.h"
-+#include "manage.h"
-+#include "base64.h"
- 
- #ifdef HAVE_XKEY_PROVIDER
- 
-@@ -48,6 +50,31 @@ static const char *const props = XKEY_PROV_PROPS;
- 
- XKEY_EXTERNAL_SIGN_fn xkey_management_sign;
- 
-+/** helper to compute digest */
-+static int
-+xkey_digest(const unsigned char *src, size_t srclen, unsigned char *buf,
-+            size_t *buflen, const char *mdname)
++typedef enum
 +{
-+    dmsg(D_LOW, "In xkey_digest");
-+    EVP_MD *md = EVP_MD_fetch(NULL, mdname, NULL); /* from default context */
-+    if (!md)
++    ORIGIN_UNDEFINED = 0,
++    OPENSSL_NATIVE, /* native key imported in */
++    EXTERNAL_KEY
++} XKEY_ORIGIN;
++
++/**
++ * XKEY_KEYDATA: Our keydata encapsulation:
++ *
++ * We keep an opaque handle provided by the backend for the loaded
++ * key. It's passed back to the backend for any operation on private
++ * keys --- in practice, sign() op only.
++ *
++ * We also keep the public key in the form of a native OpenSSL EVP_PKEY.
++ * This allows us to do all public ops by calling ops in the default provider.
++ */
++typedef struct
++{
++    /* opaque handle dependent on KEY_ORIGIN -- could be NULL */
++    void *handle;
++    /* associated public key as an openvpn native key */
++    EVP_PKEY *pubkey;
++    /* origin of key -- native or external */
++    XKEY_ORIGIN origin;
++    XKEY_PROVIDER_CTX *prov;
++    int refcount;                /* reference count */
++} XKEY_KEYDATA;
++
++#define KEYTYPE(key) ((key)->pubkey ? EVP_PKEY_get_id((key)->pubkey) : 0)
++#define KEYSIZE(key) ((key)->pubkey ? EVP_PKEY_get_size((key)->pubkey) : 0)
++
++/* keymgmt provider */
++
++/* keymgmt callbacks we implement */
++static OSSL_FUNC_keymgmt_new_fn keymgmt_new;
++static OSSL_FUNC_keymgmt_free_fn keymgmt_free;
++static OSSL_FUNC_keymgmt_load_fn keymgmt_load;
++static OSSL_FUNC_keymgmt_has_fn keymgmt_has;
++static OSSL_FUNC_keymgmt_match_fn keymgmt_match;
++static OSSL_FUNC_keymgmt_import_fn rsa_keymgmt_import;
++static OSSL_FUNC_keymgmt_import_fn ec_keymgmt_import;
++static OSSL_FUNC_keymgmt_import_types_fn keymgmt_import_types;
++static OSSL_FUNC_keymgmt_get_params_fn keymgmt_get_params;
++static OSSL_FUNC_keymgmt_gettable_params_fn keymgmt_gettable_params;
++static OSSL_FUNC_keymgmt_set_params_fn keymgmt_set_params;
++static OSSL_FUNC_keymgmt_query_operation_name_fn rsa_keymgmt_name;
++static OSSL_FUNC_keymgmt_query_operation_name_fn ec_keymgmt_name;
++
++static XKEY_KEYDATA *
++keydata_new()
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    XKEY_KEYDATA *key = OPENSSL_zalloc(sizeof(*key));
++    if (!key)
 +    {
-+        msg(M_WARN, "WARN: xkey_digest: MD_fetch failed for <%s>", mdname);
++        msg(M_NONFATAL, "xkey_keydata_new: out of memory");
++    }
++
++    return key;
++}
++
++static void
++keydata_free(XKEY_KEYDATA *key)
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    if (!key || key->refcount-- > 0) /* free when refcount goes to zero */
++    {
++        return;
++    }
++    if (key->pubkey)
++    {
++        EVP_PKEY_free(key->pubkey);
++    }
++    OPENSSL_free(key);
++}
++
++static void *
++keymgmt_new(void *provctx)
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    XKEY_KEYDATA *key = keydata_new();
++    if (key)
++    {
++        key->prov = provctx;
++    }
++
++    return key;
++}
++
++static void *
++keymgmt_load(const void *reference, size_t reference_sz)
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    return NULL;
++}
++
++/**
++ * Key import function
++ * When key operations like sign/verify are done in our context
++ * the key gets imported into us. We will also use import to
++ * load an external key into the provider.
++ *
++ * For native keys we get called with standard OpenSSL params
++ * appropriate for the key. We just use it to create a native
++ * EVP_PKEY from params and assign to keydata->handle.
++ *
++ * Import of external keys -- to be implemented
++ */
++static int
++keymgmt_import(void *keydata, int selection, const OSSL_PARAM params[], const char *name)
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    XKEY_KEYDATA *key = keydata;
++    ASSERT(key);
++
++    /* Our private key is immutable -- we import only if keydata is empty */
++    if (key->handle || key->pubkey)
++    {
++        msg(M_WARN, "Error: keymgmt_import: keydata not empty -- our keys are immutable");
 +        return 0;
 +    }
 +
-+    unsigned int len = (unsigned int) *buflen;
-+    if (EVP_Digest(src, srclen, buf, &len, md, NULL) != 1)
++    /* create a native public key and assign it to key->pubkey */
++    EVP_PKEY *pkey = NULL;
++    int selection_pub = selection & ~OSSL_KEYMGMT_SELECT_PRIVATE_KEY;
++
++    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_from_name(key->prov->libctx, name, NULL);
++    if (!ctx
++        || (EVP_PKEY_fromdata_init(ctx) != 1)
++        || (EVP_PKEY_fromdata(ctx, &pkey, selection_pub, (OSSL_PARAM*) params) !=1))
 +    {
-+        msg(M_WARN, "WARN: xkey_digest: EVP_Digest failed");
++        msg(M_WARN, "Error: keymgmt_import failed for key type <%s>", name);
++        if (pkey)
++        {
++            EVP_PKEY_free(pkey);
++        }
++        if (ctx)
++        {
++            EVP_PKEY_CTX_free(ctx);
++        }
 +        return 0;
 +    }
-+    EVP_MD_free(md);
 +
-+    *buflen = len;
++    key->pubkey = pkey;
++    key->origin = OPENSSL_NATIVE;
++    if (selection & OSSL_KEYMGMT_SELECT_PRIVATE_KEY)
++    {
++        /* create private key */
++        pkey = NULL;
++        if (EVP_PKEY_fromdata(ctx, &pkey, selection, (OSSL_PARAM*) params) == 1)
++        {
++            key->handle = pkey;
++            key->free = (XKEY_PRIVKEY_FREE_fn *) EVP_PKEY_free;
++        }
++    }
++    EVP_PKEY_CTX_free(ctx);
++
++    xkey_dmsg(D_LOW, "imported native %s key", EVP_PKEY_get0_type_name(pkey));
 +    return 1;
 +}
 +
- /**
-  * Load external key for signing via management interface.
-  * The public key must be passed in by the caller as we may not
-@@ -94,13 +121,88 @@ xkey_load_management_key(OSSL_LIB_CTX *libctx, EVP_PKEY *pubkey)
-     return pkey;
- }
- 
--/* not yet implemented */
-+/**
-+ * Signature callback for xkey_provider with management-external-key
-+ *
-+ * @param handle        Unused -- may be null
-+ * @param sig           On successful return signature is in sig.
-+ * @param siglen        On entry *siglen has length of buffer sig,
-+ *                      on successful return size of signature
-+ * @param tbs           hash or message to be signed
-+ * @param tbslen        len of data in dgst
-+ * @param sigalg        extra signature parameters
-+ *
-+ * @return              signature length or -1 on error.
++static int
++rsa_keymgmt_import(void *keydata, int selection, const OSSL_PARAM params[])
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    return keymgmt_import(keydata, selection, params, "RSA");
++}
++
++static int
++ec_keymgmt_import(void *keydata, int selection, const OSSL_PARAM params[])
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    return keymgmt_import(keydata, selection, params, "EC");
++}
++
++/* This function has to exist for key import to work
++ * though we do not support import of individual params
++ * like n or e. We simply return an empty list here for
++ * both rsa and ec, which works.
 + */
- int
- xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
-                      const unsigned char *tbs, size_t tbslen, XKEY_SIGALG alg)
- {
--    msg(M_FATAL, "FATAL ERROR: A sign callback for this key is not implemented.");
--    return 0;
-+    (void) unused;
-+    char alg_str[128];
-+    unsigned char buf[EVP_MAX_MD_SIZE]; /* for computing digest if required */
-+    size_t buflen = sizeof(buf);
++static const OSSL_PARAM *
++keymgmt_import_types(int selection)
++{
++    xkey_dmsg(D_LOW, "entry");
 +
-+    if (!strcmp(alg.op, "DigestSign"))
++    static const OSSL_PARAM key_types[] = { OSSL_PARAM_END };
++
++    if (selection & OSSL_KEYMGMT_SELECT_PUBLIC_KEY)
 +    {
-+        dmsg(D_LOW, "xkey_management_sign: computing digest");
-+        if (xkey_digest(tbs, tbslen, buf, &buflen, alg.mdname))
-+        {
-+            tbs = buf;
-+            tbslen = buflen;
-+            alg.op = "Sign";
-+        }
-+        else
-+        {
-+            return 0;
-+        }
++       return key_types;
++    }
++    return NULL;
++}
++
++static void
++keymgmt_free(void *keydata)
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    keydata_free(keydata);
++}
++
++static int
++keymgmt_has(const void *keydata, int selection)
++{
++    xkey_dmsg(D_LOW, "selection = %d", selection);
++
++    const XKEY_KEYDATA *key = keydata;
++    int ok = (key != NULL);
++
++    if (selection & OSSL_KEYMGMT_SELECT_PUBLIC_KEY)
++    {
++        ok = ok && key->pubkey;
++    }
++    if (selection & OSSL_KEYMGMT_SELECT_PRIVATE_KEY)
++    {
++        ok = ok && key->handle;
 +    }
 +
-+    if (!strcmp(alg.keytype, "EC"))
++    return ok;
++}
++
++static int
++keymgmt_match(const void *keydata1, const void *keydata2, int selection)
++{
++    const XKEY_KEYDATA *key1 = keydata1;
++    const XKEY_KEYDATA *key2 = keydata2;
++
++    xkey_dmsg(D_LOW, "entry");
++
++    int ret = key1 && key2 && key1->pubkey && key2->pubkey;
++
++    /* our keys always have pubkey -- we only match them */
++
++    if (selection & OSSL_KEYMGMT_SELECT_KEYPAIR)
 +    {
-+        strncpynt(alg_str, "ECDSA", sizeof(alg_str));
++        ret = ret && EVP_PKEY_eq(key1->pubkey, key2->pubkey);
++        xkey_dmsg(D_LOW, "checking key pair match: res = %d", ret);
 +    }
-+    /* else assume RSA key */
-+    else if (!strcmp(alg.padmode, "pkcs1"))
++
++    if (selection & OSSL_KEYMGMT_SELECT_DOMAIN_PARAMETERS)
 +    {
-+        strncpynt(alg_str, "RSA_PKCS1_PADDING", sizeof(alg_str));
++        ret = ret && EVP_PKEY_parameters_eq(key1->pubkey, key2->pubkey);
++        xkey_dmsg(D_LOW, "checking parameter match: res = %d", ret);
 +    }
-+    else if (!strcmp(alg.padmode, "none"))
++
++    return ret;
++}
++
++/* A minimal set of key params that we can return */
++static const OSSL_PARAM *
++keymgmt_gettable_params(void *provctx)
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    static OSSL_PARAM gettable[] = {
++        OSSL_PARAM_int(OSSL_PKEY_PARAM_BITS, NULL),
++        OSSL_PARAM_int(OSSL_PKEY_PARAM_SECURITY_BITS, NULL),
++        OSSL_PARAM_int(OSSL_PKEY_PARAM_MAX_SIZE, NULL),
++        OSSL_PARAM_END
++    };
++    return gettable;
++}
++
++static int
++keymgmt_get_params(void *keydata, OSSL_PARAM *params)
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    XKEY_KEYDATA *key = keydata;
++    if (!key || !key->pubkey)
 +    {
-+        strncpynt(alg_str, "RSA_NO_PADDING", sizeof(alg_str));
-+    }
-+    else if (!strcmp(alg.padmode, "pss"))
-+    {
-+        openvpn_snprintf(alg_str, sizeof(alg_str), "%s,hashalg=%s,saltlen=%s",
-+                       "RSA_PKCS1_PSS_PADDING", alg.mdname,alg.saltlen);
-+    }
-+    else {
-+        msg(M_NONFATAL, "Unsupported RSA padding mode in signature request<%s>",
-+            alg.padmode);
 +        return 0;
 +    }
-+    dmsg(D_LOW, "xkey management_sign: requesting sig with algorithm <%s>", alg_str);
 +
-+    char *in_b64 = NULL;
-+    char *out_b64 = NULL;
-+    int len = -1;
++    return EVP_PKEY_get_params(key->pubkey, params);
++}
 +
-+    int bencret = openvpn_base64_encode(tbs, (int) tbslen, &in_b64);
++/**
++ * If the key is an encapsulated native key, we just call
++ * EVP_PKEY_set_params in the default context. Only those params
++ * supported by the default provider would work in this case.
++ */
++static int
++keymgmt_set_params(void *keydata, const OSSL_PARAM *params)
++{
++    XKEY_KEYDATA *key = keydata;
++    ASSERT(key);
 +
-+    if (management && bencret > 0)
++    xkey_dmsg(D_LOW, "entry");
++
++    if (key->origin != OPENSSL_NATIVE)
 +    {
-+        out_b64 = management_query_pk_sig(management, in_b64, alg_str);
++        return 0; /* to be implemented */
 +    }
-+    if (out_b64)
++    else if (key->handle == NULL) /* once handle is set our key is immutable */
 +    {
-+        len = openvpn_base64_decode(out_b64, sig, (int) *siglen);
++        /* pubkey is always native -- just delegate */
++        return EVP_PKEY_set_params(key->pubkey, (OSSL_PARAM *)params);
 +    }
-+    free(in_b64);
-+    free(out_b64);
++    else
++    {
++        msg(M_WARN, "xkey keymgmt_set_params: key is immutable");
++    }
++    return 1;
++}
 +
-+    *siglen = (len > 0) ? len : 0;
++static const char *
++rsa_keymgmt_name(int id)
++{
++    xkey_dmsg(D_LOW, "entry");
 +
-+    return (*siglen > 0);
- }
++    return "RSA";
++}
++
++static const char *
++ec_keymgmt_name(int id)
++{
++    xkey_dmsg(D_LOW, "entry");
++
++    return "EC";
++}
++
++static const OSSL_DISPATCH rsa_keymgmt_functions[] = {
++    {OSSL_FUNC_KEYMGMT_NEW, (void (*)(void)) keymgmt_new},
++    {OSSL_FUNC_KEYMGMT_FREE, (void (*)(void)) keymgmt_free},
++    {OSSL_FUNC_KEYMGMT_LOAD, (void (*)(void)) keymgmt_load},
++    {OSSL_FUNC_KEYMGMT_HAS, (void (*)(void)) keymgmt_has},
++    {OSSL_FUNC_KEYMGMT_MATCH, (void (*)(void)) keymgmt_match},
++    {OSSL_FUNC_KEYMGMT_IMPORT, (void (*)(void)) rsa_keymgmt_import},
++    {OSSL_FUNC_KEYMGMT_IMPORT_TYPES, (void (*)(void)) keymgmt_import_types},
++    {OSSL_FUNC_KEYMGMT_GETTABLE_PARAMS, (void (*) (void)) keymgmt_gettable_params},
++    {OSSL_FUNC_KEYMGMT_GET_PARAMS, (void (*) (void)) keymgmt_get_params},
++    {OSSL_FUNC_KEYMGMT_SET_PARAMS, (void (*) (void)) keymgmt_set_params},
++    {OSSL_FUNC_KEYMGMT_SETTABLE_PARAMS, (void (*) (void)) keymgmt_gettable_params}, /* same as gettable */
++    {OSSL_FUNC_KEYMGMT_QUERY_OPERATION_NAME, (void (*)(void)) rsa_keymgmt_name},
++    {0, NULL }
++};
++
++static const OSSL_DISPATCH ec_keymgmt_functions[] = {
++    {OSSL_FUNC_KEYMGMT_NEW, (void (*)(void)) keymgmt_new},
++    {OSSL_FUNC_KEYMGMT_FREE, (void (*)(void)) keymgmt_free},
++    {OSSL_FUNC_KEYMGMT_LOAD, (void (*)(void)) keymgmt_load},
++    {OSSL_FUNC_KEYMGMT_HAS, (void (*)(void)) keymgmt_has},
++    {OSSL_FUNC_KEYMGMT_MATCH, (void (*)(void)) keymgmt_match},
++    {OSSL_FUNC_KEYMGMT_IMPORT, (void (*)(void)) ec_keymgmt_import},
++    {OSSL_FUNC_KEYMGMT_IMPORT_TYPES, (void (*)(void)) keymgmt_import_types},
++    {OSSL_FUNC_KEYMGMT_GETTABLE_PARAMS, (void (*) (void)) keymgmt_gettable_params},
++    {OSSL_FUNC_KEYMGMT_GET_PARAMS, (void (*) (void)) keymgmt_get_params},
++    {OSSL_FUNC_KEYMGMT_SET_PARAMS, (void (*) (void)) keymgmt_set_params},
++    {OSSL_FUNC_KEYMGMT_SETTABLE_PARAMS, (void (*) (void)) keymgmt_gettable_params}, /* same as gettable */
++    {OSSL_FUNC_KEYMGMT_QUERY_OPERATION_NAME, (void (*)(void)) ec_keymgmt_name},
++    {0, NULL }
++};
++
++const OSSL_ALGORITHM keymgmts[] = {
++    {"RSA:rsaEncryption", props, rsa_keymgmt_functions, "OpenVPN xkey RSA Key Manager"},
++    {"RSA-PSS:RSASSA-PSS", props, rsa_keymgmt_functions, "OpenVPN xkey RSA-PSS Key Manager"},
++    {"EC:id-ecPublicKey", props, ec_keymgmt_functions, "OpenVPN xkey EC Key Manager"},
++    {NULL, NULL, NULL, NULL}
++};
++
+ /* main provider interface */
  
- #endif /* HAVE_XKEY_PROVIDER */
+ /* provider callbacks we implement */
+@@ -80,7 +453,7 @@ query_operation(void *provctx, int op, int *no_store)
+             return NULL;
+ 
+         case OSSL_OP_KEYMGMT:
+-            return NULL;
++            return keymgmts;
+ 
+         default:
+             xkey_dmsg(D_LOW, "op not supported");
 -- 
 2.30.2
 
