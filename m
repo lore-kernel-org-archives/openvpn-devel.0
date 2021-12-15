@@ -1,9 +1,14 @@
-Message-ID: <7d891589-c102-6f14-f75c-bdd86b3c825e@...515...>
-Date: Wed, 15 Dec 2021 11:30:07 +0200
+Date: Wed, 15 Dec 2021 10:58:08 +0100 (CET)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <255580885.1301089.1639562288673@...2642...>
+In-Reply-To: <fdc7fccb-5ffe-6d24-2406-db9f56b0dc98@...1227...>
+References: <20211207170211.3275837-1-arne@...1227...>
+ <20211214150901.4118886-1-arne@...1227...>
+ <132451012.1249764.1639501826730@...2642...>
+ <fdc7fccb-5ffe-6d24-2406-db9f56b0dc98@...1227...>
 MIME-Version: 1.0
-Content-Language: en-US
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Subject: [Openvpn-devel] OpenVPN 2.5.5 released
+Subject: Re: [Openvpn-devel] [PATCH v2 08/21] Decouple MSS fix calculation
+ from frame calculation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,26 +17,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-The OpenVPN community project team is proud to release OpenVPN 2.5.5. 
-The most notable changes are Windows-related: use of CFG 
-Spectre-mitigations in MSVC builds, bringing back of OpenSSL config 
-loading and several build fixes. More details are available in Changes.rst:
 
-<https://github.com/OpenVPN/openvpn/blob/release/2.5/Changes.rst>
 
-Source code and Windows installers can be downloaded from our download page:
+> Arne Schwabe <arne@...1227...> hat am 14.12.2021 23:38 geschrieben:
+> Am 14.12.21 um 18:10 schrieb Frank Lichtenheld:
+> > 
+> > 
+> >> Arne Schwabe <arne@...1227...> hat am 14.12.2021 16:09 geschrieben:
+> >> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+> >> index 29efcd3b9..f82386a1d 100644
+> >> --- a/src/openvpn/forward.c
+> >> +++ b/src/openvpn/forward.c
+> >> @@ -1493,7 +1493,7 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
+> >>                   /* possibly alter the TCP MSS */
+> >>                   if (flags & PIP_MSSFIX)
+> >>                   {
+> >> -                    mss_fixup_ipv4(&ipbuf, MTU_TO_MSS(TUN_MTU_SIZE_DYNAMIC(&c->c2.frame)));
+> >> +                    mss_fixup_ipv4(&ipbuf, c->c2.frame.mss_fix);
+> > 
+> > I still think this will badly explode in the ce.mssfix == 0 code path. In that case frame.mss_fix == 0 AFAICT
+> > and I see no handling of that possibility in mss_fixup_ipv4/6.
+> 
+> I won't. This is part of the older parts of OpenVPN that are more 
+> obscure. You overlooking the implicit assumption that PIP_MSSFIX is only 
+> set if also c->c2.frame.mssfix is != 0
+> 
+> See the top of the function. If ce.mssfix is 0 then you never have the 
+> PIP_MSSFIX flag in the flags:
 
-<https://openvpn.net/community-downloads/>
+You're right. Should've not only looked at mss_fixup_*, but also at process_ip_header...
 
-Debian and Ubuntu packages are available in the official apt repositories:
-
-<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
-
-On Red Hat derivatives we recommend using the Fedora Copr repository.
-
-<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release/>
+Regards,
+--
+Frank Lichtenheld
 
