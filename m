@@ -1,14 +1,11 @@
-Message-ID: <fdc7fccb-5ffe-6d24-2406-db9f56b0dc98@...1227...>
-Date: Tue, 14 Dec 2021 23:38:41 +0100
+References: <YYfa3rAEKJKQ4RpK@...1296...>
+From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <05b1477c-a1b5-fbe4-e475-076fa44e5988@...1147...>
+Date: Wed, 15 Dec 2021 09:45:24 +0100
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <20211207170211.3275837-1-arne@...1227...>
- <20211214150901.4118886-1-arne@...1227...>
- <132451012.1249764.1639501826730@...2642...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <132451012.1249764.1639501826730@...2642...>
-Subject: Re: [Openvpn-devel] [PATCH v2 08/21] Decouple MSS fix calculation
- from frame calculation
+In-Reply-To: <YYfa3rAEKJKQ4RpK@...1296...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] NTLMv1, NTLMv2 HTTP proxy support?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,63 +14,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Frank Lichtenheld <frank@...2641...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-Am 14.12.21 um 18:10 schrieb Frank Lichtenheld:
-> 
-> 
->> Arne Schwabe <arne@...1227...> hat am 14.12.2021 16:09 geschrieben:
->>
->>   
->> This consolidates the MSS fix calculation into a single function
->> instead having it distributed all over the code. It also calculates
->> the real wire overhead without extra sizes for buffer etc.
->>
->> Patch v2: improve comment
->>
->> Signed-off-by: Arne Schwabe <arne@...1227...>
->> ---
->>   src/openvpn/forward.c |  5 ++---
->>   src/openvpn/init.c    |  3 ++-
->>   src/openvpn/mss.c     | 40 ++++++++++++++++++++++++++++++++++++++++
->>   src/openvpn/mss.h     |  6 ++++++
->>   src/openvpn/mtu.c     |  9 ---------
->>   src/openvpn/mtu.h     | 10 ++++++----
->>   src/openvpn/proto.h   | 11 -----------
->>   src/openvpn/ssl.c     |  3 ++-
->>   8 files changed, 58 insertions(+), 29 deletions(-)
->>
->> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
->> index 29efcd3b9..f82386a1d 100644
->> --- a/src/openvpn/forward.c
->> +++ b/src/openvpn/forward.c
->> @@ -1493,7 +1493,7 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
->>                   /* possibly alter the TCP MSS */
->>                   if (flags & PIP_MSSFIX)
->>                   {
->> -                    mss_fixup_ipv4(&ipbuf, MTU_TO_MSS(TUN_MTU_SIZE_DYNAMIC(&c->c2.frame)));
->> +                    mss_fixup_ipv4(&ipbuf, c->c2.frame.mss_fix);
-> 
-> I still think this will badly explode in the ce.mssfix == 0 code path. In that case frame.mss_fix == 0 AFAICT
-> and I see no handling of that possibility in mss_fixup_ipv4/6.
+Hi Gert,
 
-I won't. This is part of the older parts of OpenVPN that are more 
-obscure. You overlooking the implicit assumption that PIP_MSSFIX is only 
-set if also c->c2.frame.mssfix is != 0
+On 07/11/21 14:55, Gert Doering wrote:
+> Hi Community,
+>
+> OpenVPN supports HTTP proxies that require NTLM authentication,
+> supporting NTLMv1 and NTLMv2 protocols.
+>
+> This is old code, which was written in the dark ages, is not currently
+> unit/client tested, and uses DES which got deprecated in OpenSSL 3.0.0...
+>
+> That said, if people still *use* it, we are likely to keep it - otherwise
+> it might just become lost :-)
+>
+> So - if you use HTTP proxy in OpenVPN, and that proxy authenticates
+> against a Windows AD domain, and you use NTLMv1 or NTLMv2 authentication,
+> please speak up and tell us about your use case!
+>
+>
+it took me a while, but I finallly have a working setup with a Samba=20
+4.15 and a CentOS 7 webserver with mod_auth_ntlm_winbind ; especially=20
+the latter part is tricky/important, as that code is not supported on=20
+newer platforms, it seems.
 
-See the top of the function. If ce.mssfix is 0 then you never have the 
-PIP_MSSFIX flag in the flags:
+The good news is:=A0=A0 openvpn 2.5.1 still works , both with NTLMv1 and=20
+NTLMv2; I added two debug statements to ntlm.c and can clearly see:
 
-void
-process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
-{
-     if (!c->options.ce.mssfix)
-     {
-         flags &= ~PIP_MSSFIX;
-     }
+NTLMv1:
+2021-12-15 09:36:16 Info: generate NTLM response
+2021-12-15 09:36:16 NTLM response: add security buffer
 
+NTLMv2:
+2021-12-15 09:35:44 Info: generate NTLMv2 response
+2021-12-15 09:35:44 NTLMv2 response: add security buffer
 
-Arne
+Having said that, I think we can safely drop (at least) NTLMv1 support,=20
+as it is pretty hard to set up a system to support that - easiest way is=20
+to grab a legacy Windows server system (e.g. Windows Server 2003) but=20
+nobody should run that anyways. Or put another way
+ =A0 "if your local proxy is running unsupported legacy code in an=20
+unsecure setup,
+ =A0=A0 then you will have to resort to openvpn 2.4.x "
+
+or similar.
+
+BTW, do you know who worked on the obfuscation/transport API stuff? Was=20
+that David S?
+
+cheers,
+
+JJK / Jan Just Keijser
+
 
