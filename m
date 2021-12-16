@@ -1,16 +1,15 @@
-Date: Wed, 15 Dec 2021 18:20:30 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <Yboj3lzgXGhYfcl4@...1296...>
-References: <7d891589-c102-6f14-f75c-bdd86b3c825e@...515...>
- <RaXIe6fMgJLRE1eY08z6B9Y4NJ2TNZ2EWiknwAECQtJIZSP-oZ021pZ4EEOAqapXG1D4FP2z_IR9t-LmIWGi8GxoP7zzrqAOtaJSFI-vsec=@protonmail.com>
- <YbofVobdcZnTJvx9@...1296...>
- <e30243ad-ba46-ca1c-c4b7-dc11e8086985@...1147...>
+Date: Thu, 16 Dec 2021 16:38:34 +0100 (CET)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <2098172525.1458757.1639669114130@...2642...>
+In-Reply-To: <255580885.1301089.1639562288673@...2642...>
+References: <20211207170211.3275837-1-arne@...1227...>
+ <20211214150901.4118886-1-arne@...1227...>
+ <132451012.1249764.1639501826730@...2642...>
+ <fdc7fccb-5ffe-6d24-2406-db9f56b0dc98@...1227...>
+ <255580885.1301089.1639562288673@...2642...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="4jYCf5s0+HL7CSPa"
-Content-Disposition: inline
-In-Reply-To: <e30243ad-ba46-ca1c-c4b7-dc11e8086985@...1147...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] OpenVPN 2.5.5 released
+Subject: Re: [Openvpn-devel] [PATCH v2 08/21] Decouple MSS fix calculation
+ from frame calculation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,53 +18,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>
-Cc: Gert Doering <gert@...1296...>, tincantech <tincantech@...2282...>, openvpn-announce@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
---4jYCf5s0+HL7CSPa
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Acked-By: Frank Lichtenheld <frank@...2641...>
 
-Hi,
+I'm pretty sure that this patch is correct if 07/21 is correct.
 
-On Wed, Dec 15, 2021 at 06:17:01PM +0100, Jan Just Keijser wrote:
-> what!=A0 a malformatted Changes.rst file warrants its own CVE code, I=20
-> would say!
-> Let me report it to mitre ;)
+> Frank Lichtenheld <frank@...2641...> hat am 15.12.2021 10:58 geschrieben:
+> 
+>  
+> > Arne Schwabe <arne@...1227...> hat am 14.12.2021 23:38 geschrieben:
+> > Am 14.12.21 um 18:10 schrieb Frank Lichtenheld:
+> > > 
+> > > 
+> > >> Arne Schwabe <arne@...1227...> hat am 14.12.2021 16:09 geschrieben:
+> > >> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+> > >> index 29efcd3b9..f82386a1d 100644
+> > >> --- a/src/openvpn/forward.c
+> > >> +++ b/src/openvpn/forward.c
+> > >> @@ -1493,7 +1493,7 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
+> > >>                   /* possibly alter the TCP MSS */
+> > >>                   if (flags & PIP_MSSFIX)
+> > >>                   {
+> > >> -                    mss_fixup_ipv4(&ipbuf, MTU_TO_MSS(TUN_MTU_SIZE_DYNAMIC(&c->c2.frame)));
+> > >> +                    mss_fixup_ipv4(&ipbuf, c->c2.frame.mss_fix);
+> > > 
+> > > I still think this will badly explode in the ce.mssfix == 0 code path. In that case frame.mss_fix == 0 AFAICT
+> > > and I see no handling of that possibility in mss_fixup_ipv4/6.
+> > 
+> > I won't. This is part of the older parts of OpenVPN that are more 
+> > obscure. You overlooking the implicit assumption that PIP_MSSFIX is only 
+> > set if also c->c2.frame.mssfix is != 0
+> > 
+> > See the top of the function. If ce.mssfix is 0 then you never have the 
+> > PIP_MSSFIX flag in the flags:
+> 
+> You're right. Should've not only looked at mss_fixup_*, but also at process_ip_header...
+> 
+> Regards,
+> --
+> Frank Lichtenheld
+> 
+> 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
-We're our own CVE authority now, so mitre has no authority over us!!!
-
-That said, do not let me stop you ;-)
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---4jYCf5s0+HL7CSPa
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJhuiPdAAoJEB2Cnv7KVigScZYMAKe+cXftWGxn2c6hbnl42RZI
-m0qoGk1e4OwgqCG7G6AWi+oZj0O7kGXdv3HONZjb7utvuZCCT3bjT4+93BVzN22t
-RIJljRYfTtRkV12kE29Mr7xc4wom/6Gf5gUgaWj/OPMLSov0WukD6bMmcC6rVu5b
-HvsQSn6aIJMbr1h0CEvWqm5QJsEiH7PsR6KnyjoJL0qA/C1kTqMC/d/VPAtP45tM
-gN5xzZCDu/cBb85H0BV3XSb1H8XS7jHqTS0FNu+SQrhdUveg0Z6h5QZjrqZ2W2tN
-ZXRqgZFNR7gfl+GeUJGh+BXwgE1HPMg27CjGYOtIQMfz5N9WUqkLqXiEEbnHq0+g
-C5T77qYIz0IynzELwVO4DHiFhjrHBAMbhTZm527OL/HbuiAV+ITVx8+knSvA22ws
-bEfV9b0peQbLe3BIURMWk1qBwAZDhpRiJHudxFRJSMNuIoUFGmKFouIOdD5vh8kP
-QcMEZXjguXOWp+8uYC0HoJRjKm7B7zLXVuVaKEqStg==
-=fT2u
------END PGP SIGNATURE-----
-
---4jYCf5s0+HL7CSPa--
+--
+Frank Lichtenheld
 
