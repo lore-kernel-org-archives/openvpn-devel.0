@@ -1,12 +1,11 @@
-Date: Thu, 16 Dec 2021 16:51:35 +0100 (CET)
+Date: Thu, 16 Dec 2021 18:16:08 +0100 (CET)
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <1565170174.1461018.1639669895740@...2642...>
-In-Reply-To: <20211214150903.4119175-1-arne@...1227...>
+Message-ID: <512099266.1472890.1639674968820@...2642...>
+In-Reply-To: <20211207170211.3275837-10-arne@...1227...>
 References: <20211207170211.3275837-1-arne@...1227...>
- <20211214150903.4119175-1-arne@...1227...>
+ <20211207170211.3275837-10-arne@...1227...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v2 07/21] Add helper functions to
- calculate header/payload sizes
+Subject: Re: [Openvpn-devel] [PATCH 09/21] Rework occ link-mtu calculation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,72 +20,18 @@ To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 
 
-> Arne Schwabe <arne@...1227...> hat am 14.12.2021 16:09 geschrieben:
+> Arne Schwabe <arne@...1227...> hat am 07.12.2021 18:01 geschrieben:
 > 
 >  
-> These functions are intended to lay the groundwork to later replace
-> the distributed frame calculations and centralise the calculation in
-> one place.
-> 
-> Patch v2: clarify that the socks comments is assuming IPv4
+> Use the functions that directly compute the link mtu instead relying on the
+> frame logic.
 
-You addressed by first question, but not my others.
-
-[...]
-> diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-> index 0ab716d7a..0da1dadfa 100644
-> --- a/src/openvpn/mtu.c
-> +++ b/src/openvpn/mtu.c
-[...]
-> @@ -51,6 +52,91 @@ alloc_buf_sock_tun(struct buffer *buf,
->      ASSERT(buf_safe(buf, 0));
->  }
->  
-> +size_t
-> +frame_calculate_protocol_header_size(const struct key_type *kt,
-> +                                     const struct options *options,
-> +                                     unsigned int payload_size,
-> +                                     bool occ)
-> +{
-> +    /* Sum of all the overhead that reduces the usable packet size */
-> +    size_t header_size = 0;
-> +
-> +    bool tlsmode = options->tls_server || options->tls_client;
-> +
-> +    /* A socks proxy adds 10 byte of extra header to each packet
-> +     * (we only support Socks with IPv4, this value is different for IPv6) */
-> +    if (options->ce.socks_proxy_server && proto_is_udp(options->ce.proto))
-> +    {
-> +        header_size += 10;
-> +    }
-> +
-> +    /* TCP stream based packets have a 16 bit length field */
-> +    if (proto_is_tcp(options->ce.proto))
-> +    {
-> +        header_size += 2;
-> +    }
-> +
-> +    /* Add the opcode and peerid */
-> +    if (tlsmode)
-> +    {
-> +        header_size += options->use_peer_id ? 4 : 1;
-> +    }
-> +
-> +    /* Add the crypto overhead */
-> +    bool packet_id = options->replay;
-> +    bool packet_id_long_form = !tlsmode || cipher_kt_mode_ofb_cfb(kt->cipher);
-> +
-> +    /* For figuring out the crypto overhead, we need to use the real payload
-> +     * including all extra headers that also get encrypted */
-> +    header_size += calculate_crypto_overhead(kt, packet_id,
-> +                                             packet_id_long_form,
-> +                                             payload_size, occ);
-
-My question was why you mention "extra headers" here but that doesn't seem to be reflected
-in the code itself. After looking further into the code it seems to me that you allude here
-to the frame_caculate_payload_overhead function? But you don't use it here, you assume that
-the caller of this function already called it. So maybe instead of putting this comment here
-it would be better to put that into the documentation of this function in the header?
+Is the assumption that the old and new version of the calc_options_string_link_mtu
+functions should return the same values for the same configuration? I tried to
+actually test that with the UT, but they work so differently that it is
+difficult to adapt the test. So before going further down that rabbit hole I wanted to
+ask whether there is any sense in that or whether it is okay if they differ in
+the value calculated.
 
 Regards,
 --
