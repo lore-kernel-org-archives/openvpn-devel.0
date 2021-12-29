@@ -1,9 +1,10 @@
+Date: Wed, 29 Dec 2021 11:39:52 +0100 (CET)
+Message-Id: <202112291039.1BTAdqZh043741@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed, 29 Dec 2021 11:29:24 +0100
-Message-Id: <20211229102924.8901-1-gert@...1296...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Removed error message for an option flag
- not supported with --server-ipv6
+In-Reply-To: <20211215123449.53818-1-arne@...1227...>
+References: <20211215123449.53818-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Make github actions names nicer,
+ include Ubuntu18+OpenSSL 1.0.2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,45 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: =?UTF-8?q?Camille=20Gu=C3=A9rin?= <guerincamille56@...277...>
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Camille Guérin <guerincamille56@...277...>
+Acked-by: Gert Doering <gert@...1296...>
 
-Signed-off-by: Camille Guerin <guerincamille56@...277...>
+Looks reasonable.
 
-Closes: OpenVPN/openvpn#164
----
- src/openvpn/options.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+(I'm a bit confused that we seem to have lost OpenSSL 3.0 actions - I
+dimly remember we had one, or at least a patch for one...)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index ac13412a..f59d89cb 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -6870,7 +6870,7 @@ add_option(struct options *options,
-             }
-         }
-     }
--    else if (streq(p[0], "server-ipv6") && p[1] && !p[3])
-+    else if (streq(p[0], "server-ipv6") && p[1] && !p[2])
-     {
-         const int lev = M_WARN;
-         struct in6_addr network;
-@@ -6893,12 +6893,6 @@ add_option(struct options *options,
-         options->server_ipv6_defined = true;
-         options->server_network_ipv6 = network;
-         options->server_netbits_ipv6 = netbits;
--
--        if (p[2])       /* no "nopool" options or similar for IPv6 */
--        {
--            msg(msglevel, "error parsing --server-ipv6: %s is not a recognized flag", p[3]);
--            goto err;
--        }
-     }
-     else if (streq(p[0], "server-bridge") && p[1] && p[2] && p[3] && p[4] && !p[5])
-     {
--- 
-2.26.3
+Your patch has been applied to the master branch.
+
+commit 919d10ad4a51404a41e594c2b8985647ae1d6b3e
+Author: Arne Schwabe
+Date:   Wed Dec 15 13:34:49 2021 +0100
+
+     Make github actions names nicer, include Ubuntu18+OpenSSL 1.0.2
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20211215123449.53818-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23452.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
