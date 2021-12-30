@@ -1,10 +1,10 @@
-Date: Wed, 29 Dec 2021 20:48:02 +0100 (CET)
-Message-Id: <202112291948.1BTJm2dL051321@...2054...>
+Date: Thu, 30 Dec 2021 12:35:27 +0100 (CET)
+Message-Id: <202112301135.1BUBZRFB066221@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211229172714.6424-1-a@...2181...>
-References: <20211229172714.6424-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: options.c: fix version reported
- in --cipher warning message
+In-Reply-To: <20211229163445.1893687-1-arne@...1227...>
+References: <20211229163445.1893687-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add helper functions to
+ calculate header/payload sizes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,21 +15,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
+
+Acked-by: Gert Doering <gert@...1296...>
+
+With the latest comment changes (v2/2) and wiscii's grammar fix these
+code parts are now much easier to understand.
+
+There is not much to actually test yet, as the new functions are not
+called.  I have visually compared with crypto_adjust_frame_parameters()
+and "it seems to do the smae thing" (if(occ)).
+
+The comments in mtu.h are helpful to understand the terminology used
+regarding "header" and "payload (including compression *header*").
 
 Your patch has been applied to the master branch.
 
-commit 7747e0bcdb92f0a3f0f7b27ca7d97194fb8efa97
-Author: Antonio Quartulli
-Date:   Wed Dec 29 18:27:14 2021 +0100
+commit de018b5e93d6a85f39e5e8ecd3c986320fde8a2f
+Author: Arne Schwabe
+Date:   Wed Dec 29 17:34:45 2021 +0100
 
-     options.c: fix version reported in --cipher warning message
+     Add helper functions to calculate header/payload sizes
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20211229172714.6424-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23477.html
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20211229163445.1893687-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23476.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
