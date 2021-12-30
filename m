@@ -1,10 +1,14 @@
-Date: Thu, 30 Dec 2021 17:38:14 +0100 (CET)
-Message-Id: <202112301638.1BUGcEMp081228@...2054...>
+Date: Thu, 30 Dec 2021 18:03:22 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211214150901.4118886-1-arne@...1227...>
-References: <20211214150901.4118886-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Decouple MSS fix calculation
- from frame calculation
+Message-ID: <Yc3mWkIMThR8Vqg+@greenie.muc.de>
+References: <20211207170211.3275837-1-arne@...1227...>
+ <20211207170211.3275837-10-arne@...1227...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="SVqZMHZV2ko4Iuod"
+Content-Disposition: inline
+In-Reply-To: <20211207170211.3275837-10-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 09/21] Rework occ link-mtu calculation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,84 +17,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I've stared at the code (nice, things get simpler :-) ) and done
-a few tests (v4 over v4, v4 over v6, ...) with "--mssfix 1000" and
-looked at the resulting MSS values.  These are way different from
-"master without this" - but arguably, closer to reality than what
-we had before.
+--SVqZMHZV2ko4Iuod
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Old: BF-CBC,    --mssfix 1000 -> MSS 804 / 784
-     AES256GCM, --mssfix 1000 -> MSS 856 / 876
-New: BF-CBC,    --mssfix 1000 -> MSS 892 / 872
-     AES256GCM, --mssfix 1000 -> MSS 904 / 884 
+Hi,
 
-I have not done more sophisticated counting on whether the new values
-are *correct*, but tcpdump claims they are:
+On Tue, Dec 07, 2021 at 06:01:59PM +0100, Arne Schwabe wrote:
+> Use the functions that directly compute the link mtu instead relying on t=
+he
+> frame logic.
+[..]
+> --- a/src/openvpn/mtu.c
+> +++ b/src/openvpn/mtu.c
+> @@ -61,6 +61,8 @@ frame_calculate_protocol_header_size(const struct key_t=
+ype *kt,
+>      /* Sum of all the overhead that reduces the usable packet size */
+>      size_t header_size =3D 0;
+>=20=20
+> +    bool tlsmode =3D options->tls_server || options->tls_client;
+> +
+>      /* A socks proxy adds 10 byte of extra header to each packet */
+>      if (options->ce.socks_proxy_server && proto_is_udp(options->ce.proto=
+))
+>      {
+> @@ -74,7 +76,10 @@ frame_calculate_protocol_header_size(const struct key_=
+type *kt,
+>      }
+>=20=20
+>      /* Add the opcode and peerid */
+> -    header_size +=3D options->use_peer_id ? 4 : 1;
+> +    if (tlsmode)
+> +    {
+> +        header_size +=3D options->use_peer_id ? 4 : 1;
+> +    }
 
-- "AES256GCM, mssfix 1000", "ssh -4 $remote ls -lR"
+We need a v2 of this - these two hunks are already in master.
 
-16:55:40.171255 IP 194.97.140.11.51194 > 193.149.48.178.50377: UDP, length 1000
-16:55:40.171267 IP 194.97.140.11.51194 > 193.149.48.178.50377: UDP, length 1000
-16:55:40.171270 IP 194.97.140.11.51194 > 193.149.48.178.50377: UDP, length 1000
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-- "AES256GCM, mssfix 1000", "ssh -6 $remote ls -lR"
+Gert Doering - Munich, Germany                             gert@...1296...
 
-16:57:04.871238 IP 194.97.140.11.51194 > 193.149.48.178.50377: UDP, length 1000
+--SVqZMHZV2ko4Iuod
+Content-Type: application/pgp-signature; name="signature.asc"
 
-- IPv6 transport is a also correct (which surprises me a bit, I have
-  not seen a reference to the underlying protocol, which changes 
-  the "headroom" we have).  At least, sometimes... with AES256GCM:
+-----BEGIN PGP SIGNATURE-----
 
-16:58:31.681280 IP6 2001:608:0:814::f000:11.51194 > 2001:608:4::ce:c0f.65297: UDP, length 1000
-16:58:31.681289 IP6 2001:608:0:814::f000:11.51194 > 2001:608:4::ce:c0f.65297: UDP, length 1000
+iQGcBAEBAgAGBQJhzeZaAAoJEB2Cnv7KVigSPxkL/jP3JZiFd7UDdOPwfv9z+b4R
+9mJruhTXZEj56EMk92d1E4xg9GZzo+p00UdtewvazpSAuJpox4JkES5B5iS1Qv8z
++k4VB/RMGIc5F3oA/RBVI/eyKPZlocHo68dZHi2ZbbZd6xgFaxWKRwu4RrAb2Usu
+6BRjq+hHDhndndobd6/RlcvPqrDVDOFvvdc/84PcH4Mv4edJA+rULS2ymcX+GNdE
+zL0d59YIAXLB8hnYxmtlf6cDl49bbyAVte16ec7/lfEJPiudTbowublO5u9a2Evm
+Bnko3BRxGGTfvz58CnnifuuX6wHmTnOG+GTo+vVEYJ1GPrd0tu9vPuwU5g2Z74h0
+wVA3w4wuU077MHEDE54xtFeeqjYQfKV1L4j7f4QBasa6WHXCQh9U6erAAM6hQ6Ib
+Oe7VdiOmjXpjIAvhpl6rNQuC/LKGUvY7YGNrmmin6FM1r0TghmQTHqoDJm2sDeWY
+jUaP14ykCCKk+atBO24t81PlX9VlTIEQHWKoTRlm4w==
+=doX5
+-----END PGP SIGNATURE-----
 
-- over IPv6 transport, with BF, max packets are off by 8 bytes
-
-17:13:54.561605 IP6 2001:608:0:814::f000:11.51194 > 2001:608:4::ce:c0f.28958: UDP, length 1008
-17:13:54.561760 IP6 2001:608:0:814::f000:11.51194 > 2001:608:4::ce:c0f.28958: UDP, length 1008
-
-  (which is closer to what I'd expect, but still weird, why not 1020?
-   ... my machines do weird stuff here...)
-
-
-That said, the code has been subjected to t_client tests as well, which were
-uneventful (there is nothing that excercises TCP in there), as expected.
-
-
-The new frame_calculate_mssfix() looks a bit confused regarding
-"do we declare + initialize variables in one or two steps", and
-"do we call it 'unsigned' or 'unsigned int'".  But this can be 
-fixed in a followup cleanup patch ;-)
-
-Not sure I understand what the old code does here, looking at
-"tun_mtu_dynamic" - this looks like "adjust to discovered MTU",
-but the documentation of --mssfix does not speak about this ... so
-it will be interesting to revisit this (documentation + option)
-eventually and see if/how we want to consider MTU discovery.
-
-Your patch has been applied to the master branch.
-
-commit d4458eed0c3cf582f787893f033a19cb4629cd76
-Author: Arne Schwabe
-Date:   Tue Dec 14 16:09:01 2021 +0100
-
-     Decouple MSS fix calculation from frame calculation
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20211214150901.4118886-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23423.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+--SVqZMHZV2ko4Iuod--
 
