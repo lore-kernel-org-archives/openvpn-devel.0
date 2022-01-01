@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sat,  1 Jan 2022 17:25:23 +0100
-Message-Id: <20220101162532.2251835-6-arne@...1227...>
+Date: Sat,  1 Jan 2022 17:25:30 +0100
+Message-Id: <20220101162532.2251835-13-arne@...1227...>
 In-Reply-To: <20220101162532.2251835-1-arne@...1227...>
 References: <20220101162532.2251835-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 05/14] Implement optional mtu parameter
- for mssfix
+Subject: [Openvpn-devel] [PATCH v3 12/14] Replace TUN_MTU_SIZE with
+ frame->tun_mtu
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,359 +18,121 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The current mssfix parameter is a bit as it needs manual calculation of
-the allowable packet size and also the resulting MSS value does not take
-into account if IPv4 or IPv6 is used on the outer tunnel. The mtu parameter
-fixes both of these problem by dynamically including the real overhead.
-
-The syntax and naming of the parater is chosen for compatiblity with OpenVPN3.
-
-Patch V2: document mssfix 0 disabling mssfix, fix rst syntax
+This always uses the configured MTU size instead relying on the calculated
+MTU size.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- Changes.rst                            |  6 ++++
- doc/man-sections/link-options.rst      | 38 +++++++++++++++++++-------
- src/openvpn/init.c                     |  7 +++--
- src/openvpn/mss.c                      | 29 +++++++++++++++++++-
- src/openvpn/mss.h                      |  3 +-
- src/openvpn/multi.c                    |  3 +-
- src/openvpn/options.c                  | 13 +++++++--
- src/openvpn/options.h                  |  2 ++
- src/openvpn/ssl.c                      | 11 +++++---
- src/openvpn/ssl.h                      |  5 +++-
- tests/unit_tests/openvpn/test_crypto.c |  8 +++---
- 11 files changed, 98 insertions(+), 27 deletions(-)
+ src/openvpn/forward.c |  2 +-
+ src/openvpn/init.c    | 16 ++++++++--------
+ src/openvpn/mtu.h     |  5 -----
+ 3 files changed, 9 insertions(+), 14 deletions(-)
 
-diff --git a/Changes.rst b/Changes.rst
-index b7d7f205..cf6a2f86 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -62,6 +62,12 @@ Optional ciphers in ``--data-ciphers``
-     Ciphers in ``--data-ciphers`` can now be prefixed with a ``?`` to mark
-     those as optional and only use them if the SSL library supports them.
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 3f362e95..5f8361d3 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1379,7 +1379,7 @@ ipv6_send_icmp_unreachable(struct context *c, struct buffer *buf, bool client)
+      * packet
+      */
+     int max_payload_size = min_int(MAX_ICMPV6LEN,
+-                                   TUN_MTU_SIZE(&c->c2.frame) - icmpheader_len);
++                                   c->c2.frame.tun_mtu - icmpheader_len);
+     int payload_len = min_int(max_payload_size, BLEN(&inputipbuf));
  
-+
-+Improved ``--mssfix`` calculation
-+    The ``--mssfix`` option now allows an optional :code:`mtu` parameter to specify
-+    that different overhead for IPv4/IPv6 should taken into account and the resulting
-+    size is specified as the total size of the VPN packets including IP and UDP headers.
-+
- Deprecated features
- -------------------
- ``inetd`` has been removed
-diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
-index b1ae4e75..01bc910f 100644
---- a/doc/man-sections/link-options.rst
-+++ b/doc/man-sections/link-options.rst
-@@ -110,19 +110,37 @@ the local and the remote host.
-   (:code:`p2p`). OpenVPN 2.0 introduces a new mode (:code:`server`) which
-   implements a multi-client server capability.
- 
----mssfix max
-+--mssfix args
-+
-+  Valid syntax:
-+  ::
-+
-+     mssfix max [mtu]
-+
-+     mssfix
-+
-   Announce to TCP sessions running over the tunnel that they should limit
-   their send packet sizes such that after OpenVPN has encapsulated them,
-   the resulting UDP packet size that OpenVPN sends to its peer will not
--  exceed ``max`` bytes. The default value is :code:`1450`.
--
--  The ``max`` parameter is interpreted in the same way as the
--  ``--link-mtu`` parameter, i.e. the UDP packet size after encapsulation
--  overhead has been added in, but not including the UDP header itself.
--  Resulting packet would be at most 28 bytes larger for IPv4 and 48 bytes
--  for IPv6 (20/40 bytes for IP header and 8 bytes for UDP header). Default
--  value of 1450 allows IPv4 packets to be transmitted over a link with MTU
--  1473 or higher without IP level fragmentation.
-+  exceed ``max`` bytes. The default value is :code:`1450`. Use :code:`0`
-+  as max to disable mssfix.
-+
-+  If the :code:`mtu` parameter is specified the ``max`` value is interpreted
-+  as the resulting packet size of VPN packets including the IP and UDP header.
-+  Support for the :code:`mtu` parameter was added with OpenVPN version 2.6.0.
-+
-+  If the :code:`mtu` parameter is not specified, the ``max`` parameter
-+  is interpreted in the same way as the ``--link-mtu`` parameter, i.e.
-+  the UDP packet size after encapsulation overhead has been added in, but
-+  not including the UDP header itself. Resulting packet would be at most 28
-+  bytes larger for IPv4 and 48 bytes for IPv6 (20/40 bytes for IP header and
-+  8 bytes for UDP header). Default value of 1450 allows IPv4 packets to be
-+  transmitted over a link with MTU 1473 or higher without IP level
-+  fragmentation.
-+
-+  if ``--mssfix`` is specified is specified without any parameter it
-+  inherits the parameters of ``--fragment`` if specified or uses the
-+  default for ``--mssfix`` otherwise.
- 
-   The ``--mssfix`` option only makes sense when you are using the UDP
-   protocol for OpenVPN peer-to-peer communication, i.e. ``--proto udp``.
+     pip6out.payload_len = htons(sizeof(struct openvpn_icmp6hdr) + payload_len);
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index c4770c21..642460c1 100644
+index bf6369f8..4e81016b 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -2271,7 +2271,7 @@ do_deferred_p2p_ncp(struct context *c)
- #endif
+@@ -1799,7 +1799,7 @@ do_open_tun(struct context *c)
+                                              c->options.dev_type,
+                                              c->options.dev_node,
+                                              &gc);
+-        do_ifconfig(c->c1.tuntap, guess, TUN_MTU_SIZE(&c->c2.frame), c->c2.es,
++        do_ifconfig(c->c1.tuntap, guess, c->c2.frame.tun_mtu, c->c2.es,
+                     &c->net_ctx);
+     }
  
-     if (!tls_session_update_crypto_params(session, &c->options, &c->c2.frame,
--                                         frame_fragment))
-+                                         frame_fragment, get_link_socket_info(c)))
+@@ -1830,7 +1830,7 @@ do_open_tun(struct context *c)
+         && ifconfig_order() == IFCONFIG_AFTER_TUN_OPEN)
      {
-         msg(D_TLS_ERRORS, "ERROR: failed to set crypto cipher");
-         return false;
-@@ -2386,7 +2386,7 @@ do_deferred_options(struct context *c, const unsigned int found)
+         do_ifconfig(c->c1.tuntap, c->c1.tuntap->actual_name,
+-                    TUN_MTU_SIZE(&c->c2.frame), c->c2.es, &c->net_ctx);
++                    c->c2.frame.tun_mtu, c->c2.es, &c->net_ctx);
+     }
  
-         struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
-         if (!tls_session_update_crypto_params(session, &c->options, &c->c2.frame,
--                                              frame_fragment))
-+                                              frame_fragment, get_link_socket_info(c)))
-         {
-             msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
-             return false;
-@@ -4302,7 +4302,8 @@ init_instance(struct context *c, const struct env_set *env, const unsigned int f
+     /* run the up script */
+@@ -1842,7 +1842,7 @@ do_open_tun(struct context *c)
+                 c->c1.tuntap->adapter_index,
  #endif
- 
-     /* initialize dynamic MTU variable */
--    frame_calculate_mssfix(&c->c2.frame, &c->c1.ks.key_type, &c->options);
-+    frame_calculate_mssfix(&c->c2.frame, &c->c1.ks.key_type, &c->options,
-+                           get_link_socket_info(c));
- 
-     /* bind the TCP/UDP socket */
-     if (c->mode == CM_P2P || c->mode == CM_TOP || c->mode == CM_CHILD_TCP)
-diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
-index 3007cc52..ed64e1e2 100644
---- a/src/openvpn/mss.c
-+++ b/src/openvpn/mss.c
-@@ -227,9 +227,30 @@ adjust_payload_max_cbc(const struct key_type *kt, unsigned int target)
+                 dev_type_string(c->options.dev, c->options.dev_type),
+-                TUN_MTU_SIZE(&c->c2.frame),
++                c->c2.frame.tun_mtu,
+                 print_in_addr_t(c->c1.tuntap->local, IA_EMPTY_IF_UNDEF, &gc),
+                 print_in_addr_t(c->c1.tuntap->remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
+                 "init",
+@@ -1891,7 +1891,7 @@ else
+                     c->c1.tuntap->adapter_index,
+ #endif
+                     dev_type_string(c->options.dev, c->options.dev_type),
+-                    TUN_MTU_SIZE(&c->c2.frame),
++                    c->c2.frame.tun_mtu,
+                     print_in_addr_t(c->c1.tuntap->local, IA_EMPTY_IF_UNDEF, &gc),
+                     print_in_addr_t(c->c1.tuntap->remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
+                     "restart",
+@@ -1970,7 +1970,7 @@ do_close_tun(struct context *c, bool force)
+                             adapter_index,
+ #endif
+                             NULL,
+-                            TUN_MTU_SIZE(&c->c2.frame),
++                            c->c2.frame.tun_mtu,
+                             print_in_addr_t(local, IA_EMPTY_IF_UNDEF, &gc),
+                             print_in_addr_t(remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
+                             "init",
+@@ -2000,7 +2000,7 @@ do_close_tun(struct context *c, bool force)
+                         adapter_index,
+ #endif
+                         NULL,
+-                        TUN_MTU_SIZE(&c->c2.frame),
++                        c->c2.frame.tun_mtu,
+                         print_in_addr_t(local, IA_EMPTY_IF_UNDEF, &gc),
+                         print_in_addr_t(remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
+                         "init",
+@@ -2038,7 +2038,7 @@ do_close_tun(struct context *c, bool force)
+                             adapter_index,
+ #endif
+                             NULL,
+-                            TUN_MTU_SIZE(&c->c2.frame),
++                            c->c2.frame.tun_mtu,
+                             print_in_addr_t(local, IA_EMPTY_IF_UNDEF, &gc),
+                             print_in_addr_t(remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
+                             "restart",
+@@ -2218,7 +2218,7 @@ void adjust_mtu_peerid(struct context *c)
+     {
+         msg(M_WARN, "OPTIONS IMPORT: WARNING: peer-id set, but link-mtu"
+                     " fixed by config - reducing tun-mtu to %d, expect"
+-                    " MTU problems", TUN_MTU_SIZE(&c->c2.frame));
++                    " MTU problems", c->c2.frame.tun_mtu);
      }
  }
  
-+static unsigned int
-+get_ip_encap_overhead(const struct options *options,
-+                      const struct link_socket_info *lsi)
-+{
-+    /* Add the overhead of the encapsulating IP packets */
-+    sa_family_t af;
-+    if (lsi->lsa)
-+    {
-+        af = lsi->lsa->actual.dest.addr.sa.sa_family;
-+    }
-+    else
-+    {
-+        /* In the early init before the connection is established or we
-+         * are in listen mode we can only make an educated guess
-+         * from the af of the connection entry */
-+        af = options->ce.af;
-+    }
-+    return datagram_overhead(af, lsi->proto);
-+}
-+
- void
- frame_calculate_mssfix(struct frame *frame, struct key_type *kt,
--                       const struct options *options)
-+                       const struct options *options,
-+                       struct link_socket_info *lsi)
- {
-     if (options->ce.mssfix == 0)
-     {
-@@ -251,6 +272,12 @@ frame_calculate_mssfix(struct frame *frame, struct key_type *kt,
-      *
-      * (RFC 879, section 7). */
- 
-+    if (options->ce.mssfix_encap)
-+    {
-+        /* Add the overhead of the encapsulating IP packets */
-+        overhead += get_ip_encap_overhead(options, lsi);
-+    }
-+
-     /* Add 20 bytes for the IPv4 header and 20 byte for the TCP header of the
-      * payload, the mssfix method will add 20 extra if payload is IPv6 */
-     payload_overhead += 20 + 20;
-diff --git a/src/openvpn/mss.h b/src/openvpn/mss.h
-index 856f4c4e..eecc7994 100644
---- a/src/openvpn/mss.h
-+++ b/src/openvpn/mss.h
-@@ -37,6 +37,7 @@ void mss_fixup_dowork(struct buffer *buf, uint16_t maxmss);
- 
- /** Set the --mssfix option. */
- void frame_calculate_mssfix(struct frame *frame, struct key_type *kt,
--                            const struct options *options);
-+                            const struct options *options,
-+                            struct link_socket_info *lsi);
- 
- #endif
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index e5ffebff..67b7114a 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -2286,7 +2286,8 @@ multi_client_generate_tls_keys(struct context *c)
- #endif
-     struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
-     if (!tls_session_update_crypto_params(session, &c->options,
--                                          &c->c2.frame, frame_fragment))
-+                                          &c->c2.frame, frame_fragment,
-+                                          get_link_socket_info(c)))
-     {
-         msg(D_TLS_ERRORS, "TLS Error: initializing data channel failed");
-         register_signal(c, SIGUSR1, "process-push-msg-failed");
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 6e3dccb1..efe3b2fb 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -6771,18 +6771,27 @@ add_option(struct options *options,
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         script_security_set(atoi(p[1]));
-     }
--    else if (streq(p[0], "mssfix") && !p[2])
-+    else if (streq(p[0], "mssfix") && !p[3])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
-         if (p[1])
-         {
-             options->ce.mssfix = positive_atoi(p[1]);
-         }
--        else
-+
-+        if (!p[1])
-         {
-             options->ce.mssfix_default = true;
-         }
- 
-+        if (p[2] && streq(p[2], "mtu"))
-+        {
-+            options->ce.mssfix_encap = true;
-+        }
-+        else if (p[2])
-+        {
-+            msg(msglevel, "Unknown parameter to --mssfix: %s", p[2]);
-+        }
-     }
-     else if (streq(p[0], "disable-occ") && !p[1])
-     {
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index d4f41cd7..c8bccf3e 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -127,6 +127,8 @@ struct connection_entry
-     int fragment;        /* internal fragmentation size */
-     int mssfix;          /* Upper bound on TCP MSS */
-     bool mssfix_default; /* true if --mssfix was supplied without a parameter */
-+    bool mssfix_encap;   /* true if --mssfix had the "mtu" parameter to include
-+                          * overhead from IP and TCP/UDP encapsulation */
- 
-     int explicit_exit_notification; /* Explicitly tell peer when we are exiting via OCC_EXIT or [RESTART] message */
- 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index b815cdfc..d6b91efc 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1883,7 +1883,8 @@ cleanup:
- bool
- tls_session_update_crypto_params_do_work(struct tls_session *session,
-                                  struct options* options, struct frame *frame,
--                                 struct frame *frame_fragment)
-+                                 struct frame *frame_fragment,
-+                                 struct link_socket_info *lsi)
- {
-     if (session->key[KS_PRIMARY].crypto_options.key_ctx_bi.initialized)
-     {
-@@ -1913,7 +1914,7 @@ tls_session_update_crypto_params_do_work(struct tls_session *session,
-                                    options->replay, packet_id_long_form);
-     frame_finalize(frame, options->ce.link_mtu_defined, options->ce.link_mtu,
-                    options->ce.tun_mtu_defined, options->ce.tun_mtu);
--    frame_calculate_mssfix(frame, &session->opt->key_type, options);
-+    frame_calculate_mssfix(frame, &session->opt->key_type, options, lsi);
-     frame_print(frame, D_MTU_INFO, "Data Channel MTU parms");
- 
-     /*
-@@ -1938,7 +1939,8 @@ tls_session_update_crypto_params_do_work(struct tls_session *session,
- bool
- tls_session_update_crypto_params(struct tls_session *session,
-                                  struct options *options, struct frame *frame,
--                                 struct frame *frame_fragment)
-+                                 struct frame *frame_fragment,
-+                                 struct link_socket_info *lsi)
- {
- 
-     bool cipher_allowed_as_fallback = options->enable_ncp_fallback
-@@ -1957,7 +1959,8 @@ tls_session_update_crypto_params(struct tls_session *session,
-     /* Import crypto settings that might be set by pull/push */
-     session->opt->crypto_flags |= options->data_channel_crypto_flags;
- 
--    return tls_session_update_crypto_params_do_work(session, options, frame, frame_fragment);
-+    return tls_session_update_crypto_params_do_work(session, options, frame,
-+                                                    frame_fragment, lsi);
- }
- 
- 
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index b14453fe..e566acd8 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -508,13 +508,16 @@ void tls_update_remote_addr(struct tls_multi *multi,
-  * @param frame           The frame options for this session (frame overhead is
-  *                        adjusted based on the selected cipher/auth).
-  * @param frame_fragment  The fragment frame options.
-+ * @param lsi             link socket info to adjust MTU related options
-+ *                        depending on the current protocol
-  *
-  * @return true if updating succeeded or keys are already generated, false otherwise.
+diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
+index a87adbc4..c6eca864 100644
+--- a/src/openvpn/mtu.h
++++ b/src/openvpn/mtu.h
+@@ -181,11 +181,6 @@ struct options;
   */
- bool tls_session_update_crypto_params(struct tls_session *session,
-                                       struct options *options,
-                                       struct frame *frame,
--                                      struct frame *frame_fragment);
-+                                      struct frame *frame_fragment,
-+                                      struct link_socket_info *lsi);
+ #define TUN_LINK_DELTA(f)        ((f)->extra_frame + (f)->extra_tun)
  
+-/*
+- * This is the size to "ifconfig" the tun or tap device.
+- */
+-#define TUN_MTU_SIZE(f)          ((f)->link_mtu - TUN_LINK_DELTA(f))
+-
  /*
-  * inline functions
-diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
-index 4a094baa..8a31174b 100644
---- a/tests/unit_tests/openvpn/test_crypto.c
-+++ b/tests/unit_tests/openvpn/test_crypto.c
-@@ -382,7 +382,7 @@ test_mssfix_mtu_calculation(void **state)
-     init_key_type(&kt, o.ciphername, o.authname, false, false);
- 
-     /* No encryption, just packet id (8) + TCP payload(20) + IP payload(20) */
--    frame_calculate_mssfix(&f, &kt, &o);
-+    frame_calculate_mssfix(&f, &kt, &o, NULL);
-     assert_int_equal(f.mss_fix, 952);
- 
-     /* Static key OCC examples */
-@@ -392,7 +392,7 @@ test_mssfix_mtu_calculation(void **state)
-     o.ciphername = "none";
-     o.authname = "none";
-     init_key_type(&kt, o.ciphername, o.authname, false, false);
--    frame_calculate_mssfix(&f, &kt, &o);
-+    frame_calculate_mssfix(&f, &kt, &o, NULL);
-     assert_int_equal(f.mss_fix, 952);
- 
-     /* secret, cipher AES-128-CBC, auth none */
-@@ -406,7 +406,7 @@ test_mssfix_mtu_calculation(void **state)
-          * all result in the same CBC block size/padding and <= 991 and >=1008
-          * should be one block less and more respectively */
-         o.ce.mssfix = i;
--        frame_calculate_mssfix(&f, &kt, &o);
-+        frame_calculate_mssfix(&f, &kt, &o, NULL);
-         if (i <= 991)
-         {
-             assert_int_equal(f.mss_fix, 911);
-@@ -434,7 +434,7 @@ test_mssfix_mtu_calculation(void **state)
-         /* For stream ciphers, the value should not be influenced by block
-          * sizes or similar but always have the same difference */
-         o.ce.mssfix = i;
--        frame_calculate_mssfix(&f, &kt, &o);
-+        frame_calculate_mssfix(&f, &kt, &o, NULL);
- 
-         /* 4 byte opcode/peerid, 4 byte pkt ID, 16 byte tag, 40 TCP+IP */
-         assert_int_equal(f.mss_fix, i - 4 - 4 - 16 - 40);
+  * This is the maximum packet size that we need to be able to
+  * read from or write to a tun or tap device.  For example,
 -- 
 2.33.0
 
