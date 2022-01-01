@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sat,  1 Jan 2022 17:25:28 +0100
-Message-Id: <20220101162532.2251835-11-arne@...1227...>
+Date: Sat,  1 Jan 2022 17:25:24 +0100
+Message-Id: <20220101162532.2251835-7-arne@...1227...>
 In-Reply-To: <20220101162532.2251835-1-arne@...1227...>
 References: <20220101162532.2251835-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 10/14] Use new frame header methods to
- calculate OCC_MTU_LOAD payload size
+Subject: [Openvpn-devel] [PATCH v3 06/14] Update fragment and mssfix related
+ warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,71 +18,44 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+The warning that fragment/mssfix needs also tun-mtu set to 1500 makes
+little sense. Remove it completely. Instead warn if there are incosistencies
+between --fragment and mssfix.
+
+Patch v2: clarify the mssfix and fragment mtu warning message
+
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/occ.c | 31 +++++++++++++++++++++++--------
- 1 file changed, 23 insertions(+), 8 deletions(-)
+ src/openvpn/init.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c
-index c4e7c1be..73b875f3 100644
---- a/src/openvpn/occ.c
-+++ b/src/openvpn/occ.c
-@@ -199,8 +199,11 @@ check_send_occ_load_test_dowork(struct context *c)
-         if (entry->op >= 0)
-         {
-             c->c2.occ_op = entry->op;
--            c->c2.occ_mtu_load_size =
--                EXPANDED_SIZE(&c->c2.frame) + entry->delta;
-+            size_t payload_size = frame_calculate_payload_size(&c->c2.frame,
-+                                                               &c->options, &c->c1.ks.key_type);
-+            size_t header_size = frame_calculate_protocol_header_size(&c->c1.ks.key_type, &c->options, false);
-+
-+            c->c2.occ_mtu_load_size = payload_size + header_size;
-         }
-         else
-         {
-@@ -298,10 +301,21 @@ check_send_occ_msg_dowork(struct context *c)
-             {
-                 break;
-             }
--            need_to_add = min_int(c->c2.occ_mtu_load_size, EXPANDED_SIZE(&c->c2.frame))
-+            size_t proto_hdr, payload_hdr;
-+            const struct key_type *kt = &c->c1.ks.key_type;
-+
-+            /* OCC message have comp/fragment headers but not ethernet headers */
-+            payload_hdr = frame_calculate_payload_overhead(&c->c2.frame, &c->options,
-+                                                           kt, false);
-+
-+            /* Since we do not know the payload size we just pass 0 as size here */
-+            proto_hdr = frame_calculate_protocol_header_size(kt, &c->options, false);
-+
-+            need_to_add = min_int(c->c2.occ_mtu_load_size, c->c2.frame.buf.payload_size)
-                           - OCC_STRING_SIZE
--                          - sizeof(uint8_t)
--                          - EXTRA_FRAME(&c->c2.frame);
-+                          - sizeof(uint8_t)     /* occ opcode */
-+                          - payload_hdr
-+                          - proto_hdr;
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 642460c1..f3b0776c 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -3255,12 +3255,17 @@ do_init_frame(struct context *c)
+ #endif
  
-             while (need_to_add > 0)
-             {
-@@ -314,12 +328,13 @@ check_send_occ_msg_dowork(struct context *c)
-                 }
-                 --need_to_add;
-             }
--            dmsg(D_PACKET_CONTENT, "SENT OCC_MTU_LOAD min_int(%d-%d-%d-%d,%d) size=%d",
-+            dmsg(D_PACKET_CONTENT, "SENT OCC_MTU_LOAD min_int(%d,%d)-%d-%d-%d-%d) size=%d",
-                  c->c2.occ_mtu_load_size,
-+                 c->c2.frame.buf.payload_size,
-                  OCC_STRING_SIZE,
-                  (int) sizeof(uint8_t),
--                 EXTRA_FRAME(&c->c2.frame),
--                 c->c2.frame.buf.payload_size,
-+                 (int) payload_hdr,
-+                 (int) proto_hdr,
-                  BLEN(&c->c2.buf));
-             doit = true;
-         }
+ #ifdef ENABLE_FRAGMENT
+-    if ((c->options.ce.mssfix || c->options.ce.fragment)
+-        && TUN_MTU_SIZE(&c->c2.frame_fragment) != ETHERNET_MTU)
++    if (c->options.ce.fragment > 0 && c->options.ce.mssfix > c->options.ce.fragment)
+     {
+-        msg(M_WARN,
+-            "WARNING: normally if you use --mssfix and/or --fragment, you should also set --tun-mtu %d (currently it is %d)",
+-            ETHERNET_MTU, TUN_MTU_SIZE(&c->c2.frame_fragment));
++        msg(M_WARN, "WARNING: if you use --mssfix and --fragment, you should "
++                    "set --fragment (%d) larger or equal than --mssfix (%d)",
++                    c->options.ce.fragment, c->options.ce.mssfix);
++    }
++    if (c->options.ce.fragment > 0 && c->options.ce.mssfix > 0
++        && c->options.ce.fragment_encap != c->options.ce.mssfix_encap)
++    {
++        msg(M_WARN, "WARNING: if you use --mssfix and --fragment, you should "
++                    "use the \"mtu\" flag for both or none of of them.");
+     }
+ #endif
+ }
 -- 
 2.33.0
 
