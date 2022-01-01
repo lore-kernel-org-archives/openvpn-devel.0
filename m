@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sat,  1 Jan 2022 17:25:26 +0100
-Message-Id: <20220101162532.2251835-9-arne@...1227...>
+Date: Sat,  1 Jan 2022 17:25:22 +0100
+Message-Id: <20220101162532.2251835-5-arne@...1227...>
 In-Reply-To: <20220101162532.2251835-1-arne@...1227...>
 References: <20220101162532.2251835-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 08/14] Remove link_mtu parameter when
- running up/down scripts
+Subject: [Openvpn-devel] [PATCH v3 04/14] Fix datagram_overhead and assorted
+ functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,112 +18,124 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The link mtu is no longer used and calculating a compatibility link
-MTU just for scripts makes little sense as well. Replace the parameter
-instead with a fixed paramter 0.
+This function is supposed to calculate the overhead of the protocol
+header (IP/IPv6 + TCP/UDP). But at some point the index that used
+to index the array proto_overhead and the associated PROTO_N went
+completely out of sync. This fixed the function and related caller
+to again calculate the overhead as intended.
+
+Note that IPv6 mapped IPv4 addresses still have the wrong overhead calculated
+as they treated as IPv6 addresses (0:0:0:0:0:ffff::/96)
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- Changes.rst        |  2 ++
- src/openvpn/init.c | 16 +++-------------
- 2 files changed, 5 insertions(+), 13 deletions(-)
+ src/openvpn/forward.c | 10 ++++++----
+ src/openvpn/socket.c  | 16 +++-------------
+ src/openvpn/socket.h  | 17 ++++++-----------
+ 3 files changed, 15 insertions(+), 28 deletions(-)
 
-diff --git a/Changes.rst b/Changes.rst
-index cf6a2f86..7d6fb7f7 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -128,6 +128,8 @@ User-visible Changes
- - CHACHA20-POLY1305 is included in the default of ``--data-ciphers`` when available.
- - Option ``--prng`` is ignored as we rely on the SSL library random number generator.
- - Option ``--nobind`` is default when ``--client`` or ``--pull`` is used in the configuration
-+- :code:`link_mtu` parameter is removed from environment or replaced with 0 when scripts are
-+  called with parameters. This parameter is unreliable and no longer internally calculated.
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index c971c6bd..6de6b4d4 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -480,10 +480,10 @@ check_fragment(struct context *c)
+     struct link_socket_info *lsi = get_link_socket_info(c);
  
- Overview of changes in 2.5
- ==========================
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index f3b0776c..1c5d03a8 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -113,7 +113,6 @@ run_up_down(const char *command,
- #endif
-             const char *dev_type,
-             int tun_mtu,
--            int link_mtu,
-             const char *ifconfig_local,
-             const char *ifconfig_remote,
-             const char *context,
-@@ -129,7 +128,6 @@ run_up_down(const char *command,
-     }
-     setenv_str(es, "script_context", context);
-     setenv_int(es, "tun_mtu", tun_mtu);
--    setenv_int(es, "link_mtu", link_mtu);
-     setenv_str(es, "dev", arg);
-     if (dev_type)
+     /* OS MTU Hint? */
+-    if (lsi->mtu_changed)
++    if (lsi->mtu_changed && lsi->lsa)
      {
-@@ -157,11 +155,8 @@ run_up_down(const char *command,
-         struct argv argv = argv_new();
-         ASSERT(arg);
-         argv_printf(&argv,
--                    "%s %d %d %s %s %s",
--                    arg,
--                    tun_mtu, link_mtu,
--                    ifconfig_local, ifconfig_remote,
--                    context);
-+                    "%s %d 0 %s %s %s",
-+                    arg, tun_mtu, ifconfig_local, ifconfig_remote, context);
+         frame_adjust_path_mtu(&c->c2.frame_fragment, c->c2.link_socket->mtu,
+-                              c->options.ce.proto);
++                              lsi->lsa->actual.dest.addr.sa.sa_family, lsi->proto);
+         lsi->mtu_changed = false;
+     }
  
-         if (plugin_call(plugins, plugin_type, &argv, NULL, es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
-         {
-@@ -177,7 +172,7 @@ run_up_down(const char *command,
-         ASSERT(arg);
-         setenv_str(es, "script_type", script_type);
-         argv_parse_cmd(&argv, command);
--        argv_printf_cat(&argv, "%s %d %d %s %s %s", arg, tun_mtu, link_mtu,
-+        argv_printf_cat(&argv, "%s %d 0 %s %s %s", arg, tun_mtu,
-                         ifconfig_local, ifconfig_remote, context);
-         argv_msg(M_INFO, &argv);
-         openvpn_run_script(&argv, es, S_FATAL, "--up/--down");
-@@ -1848,7 +1843,6 @@ do_open_tun(struct context *c)
- #endif
-                 dev_type_string(c->options.dev, c->options.dev_type),
-                 TUN_MTU_SIZE(&c->c2.frame),
--                EXPANDED_SIZE(&c->c2.frame),
-                 print_in_addr_t(c->c1.tuntap->local, IA_EMPTY_IF_UNDEF, &gc),
-                 print_in_addr_t(c->c1.tuntap->remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
-                 "init",
-@@ -1898,7 +1892,6 @@ else
- #endif
-                     dev_type_string(c->options.dev, c->options.dev_type),
-                     TUN_MTU_SIZE(&c->c2.frame),
--                    EXPANDED_SIZE(&c->c2.frame),
-                     print_in_addr_t(c->c1.tuntap->local, IA_EMPTY_IF_UNDEF, &gc),
-                     print_in_addr_t(c->c1.tuntap->remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
-                     "restart",
-@@ -1978,7 +1971,6 @@ do_close_tun(struct context *c, bool force)
- #endif
-                             NULL,
-                             TUN_MTU_SIZE(&c->c2.frame),
--                            EXPANDED_SIZE(&c->c2.frame),
-                             print_in_addr_t(local, IA_EMPTY_IF_UNDEF, &gc),
-                             print_in_addr_t(remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
-                             "init",
-@@ -2009,7 +2001,6 @@ do_close_tun(struct context *c, bool force)
- #endif
-                         NULL,
-                         TUN_MTU_SIZE(&c->c2.frame),
--                        EXPANDED_SIZE(&c->c2.frame),
-                         print_in_addr_t(local, IA_EMPTY_IF_UNDEF, &gc),
-                         print_in_addr_t(remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
-                         "init",
-@@ -2048,7 +2039,6 @@ do_close_tun(struct context *c, bool force)
- #endif
-                             NULL,
-                             TUN_MTU_SIZE(&c->c2.frame),
--                            EXPANDED_SIZE(&c->c2.frame),
-                             print_in_addr_t(local, IA_EMPTY_IF_UNDEF, &gc),
-                             print_in_addr_t(remote_netmask, IA_EMPTY_IF_UNDEF, &gc),
-                             "restart",
+@@ -1565,8 +1565,10 @@ process_outgoing_link(struct context *c)
+              */
+             if (c->options.shaper)
+             {
+-                shaper_wrote_bytes(&c->c2.shaper, BLEN(&c->c2.to_link)
+-                                   + datagram_overhead(c->options.ce.proto));
++                int overhead = datagram_overhead(c->c2.to_link_addr->dest.addr.sa.sa_family,
++                                                 c->options.ce.proto);
++                shaper_wrote_bytes(&c->c2.shaper,
++                                   BLEN(&c->c2.to_link) + overhead);
+             }
+ 
+             /*
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index df736746..93d2e61e 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -44,17 +44,6 @@
+ 
+ #include "memdbg.h"
+ 
+-const int proto_overhead[] = { /* indexed by PROTO_x */
+-    0,
+-    IPv4_UDP_HEADER_SIZE, /* IPv4 */
+-    IPv4_TCP_HEADER_SIZE,
+-    IPv4_TCP_HEADER_SIZE,
+-    IPv6_UDP_HEADER_SIZE, /* IPv6 */
+-    IPv6_TCP_HEADER_SIZE,
+-    IPv6_TCP_HEADER_SIZE,
+-    IPv6_TCP_HEADER_SIZE,
+-};
+-
+ /*
+  * Convert sockflags/getaddr_flags into getaddr_flags
+  */
+@@ -1660,9 +1649,10 @@ socket_frame_init(const struct frame *frame, struct link_socket *sock)
+  * to us by the OS.
+  */
+ void
+-frame_adjust_path_mtu(struct frame *frame, int pmtu, int proto)
++frame_adjust_path_mtu(struct frame *frame, int pmtu, sa_family_t af, int proto)
+ {
+-    frame_set_mtu_dynamic(frame, pmtu - datagram_overhead(proto), SET_MTU_UPPER_BOUND);
++    frame_set_mtu_dynamic(frame, pmtu - datagram_overhead(af, proto),
++                          SET_MTU_UPPER_BOUND);
+ }
+ 
+ static void
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index cc1e0c36..936ef262 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -300,7 +300,7 @@ void do_preresolve(struct context *c);
+ 
+ void socket_adjust_frame_parameters(struct frame *frame, int proto);
+ 
+-void frame_adjust_path_mtu(struct frame *frame, int pmtu, int proto);
++void frame_adjust_path_mtu(struct frame *frame, int pmtu, sa_family_t af, int proto);
+ 
+ void link_socket_close(struct link_socket *sock);
+ 
+@@ -579,18 +579,13 @@ const char *addr_family_name(int af);
+ /*
+  * Overhead added to packets by various protocols.
+  */
+-#define IPv4_UDP_HEADER_SIZE              28
+-#define IPv4_TCP_HEADER_SIZE              40
+-#define IPv6_UDP_HEADER_SIZE              48
+-#define IPv6_TCP_HEADER_SIZE              60
+-
+-extern const int proto_overhead[];
+-
+ static inline int
+-datagram_overhead(int proto)
++datagram_overhead(sa_family_t af, int proto)
+ {
+-    ASSERT(proto >= 0 && proto < PROTO_N);
+-    return proto_overhead [proto];
++    int overhead = 0;
++    overhead += (proto == PROTO_UDP) ? 8 : 20;
++    overhead += (af == AF_INET) ? 20 : 40;
++    return overhead;
+ }
+ 
+ /*
 -- 
 2.33.0
 
