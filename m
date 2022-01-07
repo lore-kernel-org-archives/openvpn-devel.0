@@ -1,9 +1,9 @@
-Message-ID: <3b2bf322-66d5-5aad-9801-2d56678f0cbb@...2181...>
-Date: Fri, 7 Jan 2022 13:46:58 +0100
+Message-ID: <ac96fb31-6828-4f4d-eccd-2a5cd8ee54d9@...1227...>
+Date: Fri, 7 Jan 2022 13:47:23 +0100
 MIME-Version: 1.0
-Content-Language: en-US
+Content-Language: en-GB
 References: <20220107123550.188-1-lstipakov@...277...>
-From: Antonio Quartulli <a@...2181...>
+From: Arne Schwabe <arne@...1227...>
 In-Reply-To: <20220107123550.188-1-lstipakov@...277...>
 Subject: Re: [Openvpn-devel] [PATCH] auth_token.c: add NULL initialization
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,12 +16,9 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: Lev Stipakov <lstipakov@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-
-On 07/01/2022 13:35, Lev Stipakov wrote:
+Am 07.01.22 um 13:35 schrieb Lev Stipakov:
 > From: Lev Stipakov <lev@...515...>
 > 
 > This fixes
@@ -48,17 +45,10 @@ On 07/01/2022 13:35, Lev Stipakov wrote:
 > -    char *b64output;
 > +    char *b64output = NULL;
 >       openvpn_base64_encode(BPTR(&token), BLEN(&token), &b64output);
+>   
+>       struct buffer session_token = alloc_buf_gc(
 
-It's impossible to leave b64output uninitialized, but the compiler is 
-probably not smart enough to understand it.
+Fine with me
 
-On the other hand, passing uninitialized variables by reference to a 
-function (without checking its return value) and using them later is 
-never a good pattern..
-
-Acked-by: Antonio Quartulli <a@...2181...>
-
-
--- 
-Antonio Quartulli
+Acked-By: Arne Schwabe <arne@...1227...>
 
