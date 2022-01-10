@@ -1,9 +1,10 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Mon, 10 Jan 2022 15:45:10 +0100
-Message-Id: <20220110144510.17769-1-a@...2181...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] ssl.c: use arrow operator to access object
- member
+Date: Mon, 10 Jan 2022 15:59:21 +0100 (CET)
+Message-Id: <202201101459.20AExLve029691@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20211229102924.8901-1-gert@...1296...>
+References: <20211229102924.8901-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Removed error message for an
+ option flag not supported with --server-ipv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,36 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: guerincamille56@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
-The arrow operator exists exactly to perform a pointer dereference implicitly
-while accessing a member.
+Your patch has been applied to the master branch.
 
-while at it, add whitespaces around the '-' operator on the same line.
+commit c2c8128ad56e5ee1912166218ee36a2f0fe5b5c2
+Author: Camille Guérin
+Date:   Wed Dec 29 11:29:24 2021 +0100
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- src/openvpn/ssl.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+     Removed error message for an option flag not supported with --server-ipv6
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 400b2062..ef3597af 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1669,9 +1669,9 @@ init_key_contexts(struct key_ctx_bi *key,
-     init_key_ctx_bi(key, key2, key_direction, key_type, "Data Channel");
- 
-     /* Initialize implicit IVs */
--    key_ctx_update_implicit_iv(&key->encrypt, (*key2).keys[(int)server].hmac,
-+    key_ctx_update_implicit_iv(&key->encrypt, key2->keys[(int)server].hmac,
-                                MAX_HMAC_KEY_LENGTH);
--    key_ctx_update_implicit_iv(&key->decrypt, (*key2).keys[1-(int)server].hmac,
-+    key_ctx_update_implicit_iv(&key->decrypt, key2->keys[1 - (int)server].hmac,
-                                MAX_HMAC_KEY_LENGTH);
- 
- }
--- 
-2.34.1
+     Signed-off-by: Camille Guerin <guerincamille56@...277...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20211229102924.8901-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23471.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
