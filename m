@@ -1,11 +1,9 @@
-Date: Mon, 10 Jan 2022 10:37:07 +0100 (CET)
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <422890884.1201150.1641807427760@...2642...>
-In-Reply-To: <20211229102924.8901-1-gert@...1296...>
-References: <20211229102924.8901-1-gert@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Date: Mon, 10 Jan 2022 15:40:13 +0100
+Message-Id: <20220110144013.7233-1-a@...2181...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Removed error message for an option
- flag not supported with --server-ipv6
+Subject: [Openvpn-devel] [PATCH] doc/ciper-negotiation.rst: avoid warning by
+ fixing indentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,65 +12,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
-Cc: =?UTF-8?Q?Camille_Gu=C3=A9rin?= <guerincamille56@...277...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Looks good to me.
+Indentation is wrong and triggers the following:
 
-Acked-by: Frank Lichtenheld <frank@...2641...>
+rst2man.py openvpn.8.rst > openvpn.8
+man-sections/cipher-negotiation.rst:20: (WARNING/2) Definition list ends without a blank line; unexpected unindent.
+rst2man.py openvpn-examples.5.rst > openvpn-examples.5
+rst2html.py openvpn.8.rst > openvpn.8.html
+man-sections/cipher-negotiation.rst:20: (WARNING/2) Definition list ends without a blank line; unexpected unindent.
 
-> Gert Doering <gert@...1296...> hat am 29.12.2021 11:29 geschrieben:
->=20
->=20=20
-> From: Camille Gu=C3=A9rin <guerincamille56@...277...>
->=20
-> Signed-off-by: Camille Guerin <guerincamille56@...277...>
->=20
-> Closes: OpenVPN/openvpn#164
-> ---
->  src/openvpn/options.c | 8 +-------
->  1 file changed, 1 insertion(+), 7 deletions(-)
->=20
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index ac13412a..f59d89cb 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -6870,7 +6870,7 @@ add_option(struct options *options,
->              }
->          }
->      }
-> -    else if (streq(p[0], "server-ipv6") && p[1] && !p[3])
-> +    else if (streq(p[0], "server-ipv6") && p[1] && !p[2])
->      {
->          const int lev =3D M_WARN;
->          struct in6_addr network;
-> @@ -6893,12 +6893,6 @@ add_option(struct options *options,
->          options->server_ipv6_defined =3D true;
->          options->server_network_ipv6 =3D network;
->          options->server_netbits_ipv6 =3D netbits;
-> -
-> -        if (p[2])       /* no "nopool" options or similar for IPv6 */
-> -        {
-> -            msg(msglevel, "error parsing --server-ipv6: %s is not a reco=
-gnized flag", p[3]);
-> -            goto err;
-> -        }
->      }
->      else if (streq(p[0], "server-bridge") && p[1] && p[2] && p[3] && p[4=
-] && !p[5])
->      {
-> --=20
-> 2.26.3
->=20
->=20
->=20
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+Get rid of it.
 
---
-Frank Lichtenheld
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ doc/man-sections/cipher-negotiation.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/doc/man-sections/cipher-negotiation.rst b/doc/man-sections/cipher-negotiation.rst
+index efa4c6c9..9bcaed0a 100644
+--- a/doc/man-sections/cipher-negotiation.rst
++++ b/doc/man-sections/cipher-negotiation.rst
+@@ -16,7 +16,7 @@ with a AUTH_FAILED message (as seen in client log):
+     AUTH: Received control message: AUTH_FAILED,Data channel cipher negotiation failed (no shared cipher)
+ 
+ OpenVPN 2.5 and later will only allow the ciphers specified in ``--data-ciphers``.
+- If ``--data-ciphers`` is not set the default is :code:`AES-256-GCM:AES-128-GCM`.
++If ``--data-ciphers`` is not set the default is :code:`AES-256-GCM:AES-128-GCM`.
+ In 2.6 and later the default is changed to
+ :code:`AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305` when Chacha20-Poly1305 is available.
+ 
+-- 
+2.34.1
+
 
