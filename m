@@ -1,8 +1,12 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 11 Jan 2022 17:06:47 +0200
-Message-Id: <20220111150647.267-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH master+2.5] vcpkg-ports/pkcs11-helper:
- indicate OpenSSL EC support
+Content-Type: multipart/mixed; boundary="------------x3UaLqzBZQ0HTNAbJyRUzDFi"
+Message-ID: <d3aa450d-84e1-1544-fc65-5ad3b37a93f2@...515...>
+Date: Wed, 12 Jan 2022 13:34:20 +0200
+MIME-Version: 1.0
+Content-Language: en-US
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+References: <a50da2cf-9a90-622e-d507-4b806f248c86@...515...>
+In-Reply-To: <a50da2cf-9a90-622e-d507-4b806f248c86@...515...>
+Subject: [Openvpn-devel] Summary of the community meeting (12th January 2022)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,85 +15,202 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
+This is a multi-part message in MIME format.
+--------------x3UaLqzBZQ0HTNAbJyRUzDFi
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-We always build with OpenSSL >= 1.1.1, which has EC support.
+Hi,
 
-Signed-off-by: Lev Stipakov <lev@...515...>
+Here's the summary of the IRC meeting.
+
 ---
- ...-vc.h.in-indicate-OpenSSL-EC-support.patch | 33 +++++++++++++++++++
- contrib/vcpkg-ports/pkcs11-helper/CONTROL     |  2 +-
- .../vcpkg-ports/pkcs11-helper/portfile.cmake  |  1 +
- 3 files changed, 35 insertions(+), 1 deletion(-)
- create mode 100644 contrib/vcpkg-ports/pkcs11-helper/0003-config-w32-vc.h.in-indicate-OpenSSL-EC-support.patch
 
-diff --git a/contrib/vcpkg-ports/pkcs11-helper/0003-config-w32-vc.h.in-indicate-OpenSSL-EC-support.patch b/contrib/vcpkg-ports/pkcs11-helper/0003-config-w32-vc.h.in-indicate-OpenSSL-EC-support.patch
-new file mode 100644
-index 00000000..212181a7
---- /dev/null
-+++ b/contrib/vcpkg-ports/pkcs11-helper/0003-config-w32-vc.h.in-indicate-OpenSSL-EC-support.patch
-@@ -0,0 +1,33 @@
-+From c2293864de70fec322fe7e559055530ef56b9641 Mon Sep 17 00:00:00 2001
-+From: Lev Stipakov <lev@...515...>
-+Date: Tue, 11 Jan 2022 13:35:42 +0200
-+Subject: [PATCH] config-w32-vc.h.in: indicate OpenSSL EC support
-+
-+Signed-off-by: Lev Stipakov <lev@...515...>
-+---
-+ config-w32-vc.h.in | 12 ++++++++++++
-+ 1 file changed, 12 insertions(+)
-+
-+diff --git a/config-w32-vc.h b/config-w32-vc.h
-+index 6d94841..db83825 100644
-+--- a/config-w32-vc.h
-++++ b/config-w32-vc.h
-+@@ -218,3 +218,15 @@
-+ 
-+ /* Define to 1 if you have the `DSA_SIG_set0' function. */
-+ #define HAVE_DSA_SIG_SET0 1
-++
-++/* Define to 1 if you have the `ECDSA_SIG_set0' function. */
-++#define HAVE_ECDSA_SIG_SET0 1
-++
-++/* Define to 1 if you have the `EC_KEY_METHOD_get_sign' function. */
-++#define HAVE_EC_KEY_METHOD_GET_SIGN 1
-++
-++/* Define to 1 if you have the `EC_KEY_METHOD_set_sign' function. */
-++#define HAVE_EC_KEY_METHOD_SET_SIGN 1
-++
-++/* Define to 1 if OpenSSL has EC support. */
-++#define ENABLE_PKCS11H_OPENSSL_EC 1
-+-- 
-+2.23.0.windows.1
-+
-diff --git a/contrib/vcpkg-ports/pkcs11-helper/CONTROL b/contrib/vcpkg-ports/pkcs11-helper/CONTROL
-index 372d420a..6a5077fd 100644
---- a/contrib/vcpkg-ports/pkcs11-helper/CONTROL
-+++ b/contrib/vcpkg-ports/pkcs11-helper/CONTROL
-@@ -1,4 +1,4 @@
- Source: pkcs11-helper
--Version: 1.28-1
-+Version: 1.28-3
- Homepage: https://github.com/OpenSC/pkcs11-helper
- Description: pkcs11-helper is a library that simplifies the interaction with PKCS#11 providers for end-user applications.
-diff --git a/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake b/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
-index d8dee3f6..532aa69b 100644
---- a/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
-+++ b/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
-@@ -13,6 +13,7 @@ vcpkg_extract_source_archive_ex(
-     PATCHES
-         0001-nmake-compatibility-with-vcpkg-nmake.patch
-         0002-pkcs11.h-rename-interface-parameter.patch
-+        0003-config-w32-vc.h.in-indicate-OpenSSL-EC-support.patch
-         pkcs11-helper-001-RFC7512.patch
- )
- 
+COMMUNITY MEETING
+
+Place: #openvpn-meeting on libera.chat
+Date: Wed 12th January 2022
+Time: 10:30 CET (9:30 UTC)
+
+Planned meeting topics for this meeting were here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2022-01-12>
+
+Your local meeting time is easy to check from services such as
+
+<http://www.timeanddate.com/worldclock>
+
+SUMMARY
+
+cron2, d12fk, mattock, ordex and plaisthos participated in this meeting.
+
+---
+
+D12k said his DNS patch will be arriving as a GitHub PR shortly after 
+the meeting. Plaishos will take a look at at the PR when it is ready.
+
+---
+
+Mattock now has new production buildmaster running in a new, shiny 
+community VPC, but it is not accessible from the outside. The next step 
+is to add OpenVPN server to the VPC to grant access to buildbot workers 
+and people who need access. Mattock will provide new OpenVPN configs for 
+cron2 and wiscii when the server is ready.
+
+Noted that the Windows buildbot worker does not yet run connectivity 
+tests for the MSI installers it creates and signs. Adding that support 
+should be fairly straightforward however, given mattock semi-automated 
+Windows-based testing with Powershell earlier.
+
+---
+
+Talked about IPv6 on community.openvpn.net. Nothing has happened on that 
+front, but fortunately IPv6 is gaining traction globally and there might 
+eventually be progress on this as well.
+
 -- 
-2.23.0.windows.1
+
+Full chatlog attached
+
+
+--------------x3UaLqzBZQ0HTNAbJyRUzDFi
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn_irc_meeting_chatlog_2022-01-12.txt"
+Content-Disposition: attachment;
+ filename="openvpn_irc_meeting_chatlog_2022-01-12.txt"
+Content-Transfer-Encoding: base64
+
+KDExLjE4LjI5KSBjcm9uMjogSSdtIGZpZ2h0aW5nIElQU0VDIFZQTiwgc28gbWlnaHQgYmUg
+YSB0YWQgbGF0ZQooMTEuMjQuMjEpIG1hdHRvY2s6IGluc3RhbGwgT3BlblZQTiBpbnN0ZWFk
+CigxMS4zMS4xNSkgbWF0dG9jazogaGVsbG8KKDExLjMxLjQ1KSBtYXR0b2NrOiBhbnkgeW91
+bmcgYW5kIGVudGh1c2lhc3RpYyBzb2Z0d2FyZSBkZXZlbG9wZXJzIGhlcmUgdG9kYXk/Cigx
+MS4zMS41MykgbWF0dG9jazogb3IgaWYgbm90IHlvdW5nLCBhdCBsZWFzdCBlbnRodXNpYXN0
+aWM/CigxMS4zMi4wOSkgb3JkZXg6IGhpCigxMS4zMi41NikgZDEyZms6IGhlbGxvCigxMS4z
+My4xNSkgZDEyZms6IGNyb24yOiB3aGF0IGFyZSB5b3UgZmlnaHRpbmcgd2l0aD8KKDExLjMz
+LjM5KSBkMTJmazogbWF0dG9jazogY2FuIHNlcnZlIHdpdGggYmVpbmcgaGVyZSBhdCBsZWFz
+dCA7LSkKKDExLjMzLjUwKSBtYXR0b2NrOiBkMTJmazogdGhhdCBpcyBlbm91Z2ggOikKKDEx
+LjM0LjExKSBtYXR0b2NrOiBodHRwczovL2NvbW11bml0eS5vcGVudnBuLm5ldC9vcGVudnBu
+L3dpa2kvVG9waWNzLTIwMjItMDEtMTIKKDExLjM0LjE4KSBtYXR0b2NrOiBwdXJlIGNvcHkg
+YW5kIHBhc3RlIHRoYXQgYWdlbmRhCigxMS4zNC4yMSkgY3JvbjI6IG5vdyEKKDExLjM1LjIy
+KSBjcm9uMjogZDEyZms6IG1pZ3JhdGluZyBjb3Jwb3JhdGUgY3VzdG9tZXIgVlBOIGZyb20g
+IklLRXYxIG9uIE5ldHNjcmVlbiIgdG8gIklLRXYyIG9uIEZvcnRpZ2F0ZSIsIHdpdGggYWxs
+IHRoZSBwb3NzaWJsZSBjcmFwIG91dCB0aGVyZSwgbGlrZSAiQ2lzY28gQVNBIiBvciAib3Bu
+c2Vuc2UiLi4uCigxMS4zNS40MCkgY3JvbjI6ICp0aGlzKiBlcGlzb2RlIHdhcyAiYSBwcmUt
+c2hhcmVkIGtleSBzdGFydGluZyB3aXRoIDB4PGhleGRpZ2l0cz4iCigxMS4zNi4wNSkgY3Jv
+bjI6IHdoaWNoIG5ldHNjcmVlbiBhbmQgb3Buc2Vuc2UgaW50ZXJwcmV0IGFzLCB3ZWxsLCAi
+aGV4IGRpZ2l0cyBkZXNjcmliaW5nIHRoZSBrZXkiIGFuZCBmb3J0aW5ldCBqdXN0IHRha2Vz
+IHZlcmJhdGltIGFzICJpdCBpcyBhIGtleSB0aGF0IHN0YXJ0cyB3aXRoIDAsIHgsIC4uLiIK
+KDExLjM2LjQxKSBkMTJmazogaGF2ZSBub3Qgc2VlbSBtYW55IGJpbmFyeSBQU0tzCigxMS4z
+Ni41MCkgZDEyZms6ICpzZWVuCigxMS4zNy4wMikgY3JvbjI6IG5laXRoZXIgaGF2ZSBJLCBz
+byB0aGF0IGNhbWUgdW5leHBlY3RlZC4uLgooMTEuMzcuMTMpIG9yZGV4OiBob3cgd2FzICd4
+JyBpbnRlcnByZXRlZD8gby1vCigxMS4zNy4xOSkgb3JkZXg6IGp1c3QgYXNjaWkgPwooMTEu
+MzcuMzQpIGNyb24yOiBqdXN0IGFzY2lpIG9uIHRoZSBGRyBzaWRlLCBzbyAia2V5IG1pc21h
+dGNoIgooMTEuMzcuNDcpIG9yZGV4OiBpbmRlZWQKKDExLjM4LjM1KSBjcm9uMjogc28sIGFn
+ZW5kYSA6LSkKKDExLjM5LjA0KSBkMTJmazogb2ZmIGFnZW5kYSwgSSBjYW4gYW5ub3VuY2Ug
+dGhhdCB0aGUgLS1kbnMgUFIgd2lsbCBhcHBlYXIgc2hvcnRseSBhZnRlciB0aGlzIG1lZXRp
+bmcKKDExLjM5LjEwKSBjcm9uMjogbmljZQooMTEuMzkuMzApIGNyb24yOiBteSBwbGF0ZSBp
+cyBmdWxsIHdpdGggYnVmZmVycwooMTEuNDAuMTgpIGQxMmZrOiB5ZWFoIG5vIHJ1c2gKKDEx
+LjQwLjM0KSBtYXR0b2NrOiB1cGRhdGUgb24gbXkgcGFydDogcHJvZHVjdGlvbiBidWlsZGJv
+dCBleGlzdHMgaW4gYSBuZXcsIHNoaW55IGNvbW11bml0eSBWUEMsIGJ1dCBpcyBzdGlsbCB1
+bnJlYWNoYWJsZSBkdWUgdG8gbGFjayBvZiBvcGVudnBuIHNlcnZlcgooMTEuNDAuNDMpIG1h
+dHRvY2s6IHNvIG9wZW52cG4gc2VydmVyIGlzIHRoZSBuZXh0IHN0ZXAgZm9yIG1lCigxMS40
+MS40MCkgY3JvbjI6IG9rLiAgV2lsbCB0aGlzIGJlIHRyYW5zcGFyZW50IHRvIHRoZSBidWls
+ZCBjbGllbnRzIChzYW1lIGNyZWRlbnRpYWxzLCBzYW1lIGhvc3RuYW1lKSBvciBkbyB0aGV5
+IG5lZWQgbmV3IGNvbmZpZ3M/CigxMS40Mi4wOSkgcGxhaXN0aG9zOiBJIHdpbGwgdGFrZSBh
+IGxvayBhdCB0aGUgZG5zIHByIGFmdGVyIEkgYW0gZG9uZSB3aXRoIHhrZXkgcGF0Y2ggc2V0
+CigxMS40My4wMSkgbWF0dG9jazogY3JvbjI6IEkgdGhpbmsgSSdsbCBjcmVhdGUgYSBjb21w
+bGV0ZWx5IG5ldyBvcGVudnBuICsgQ0EgZm9yIHRoYXQgLSBvdGhlcndpc2UgSSdkIG5lZWQg
+dG8gdXBncmFkZSBhbmQgbWlncmF0ZSBvdGhlciBzdHVmZiBvdmVyIHRvIHRoZSBuZXcgQVdT
+IGZpcnN0CigxMS40My4zMykgY3JvbjI6IG9rYXkKKDExLjQzLjM1KSBtYXR0b2NrOiBJIGNh
+biBjcmVhdGUgbmV3IGNsaWVudCBjb25maWdzIGZvciB5b3UKKDExLjQ0LjAzKSBjcm9uMjog
+eWVzLCBwbGVhc2UgKGFuZCBmb3Igd2lzY2lpLCBkb24ndCB0aGluayBhbnlvbmUgZWxzZSBu
+b24tbWF0dG9jayBydW5zIGEgYnVpbGRzbGF2ZSB0b2RheSkKKDExLjQ0LjE1KSBtYXR0b2Nr
+OiB5ZXAKKDExLjQ4LjI4KSBtYXR0b2NrOiBhbnl0aGluZyBlbHNlIGZvciB0b2RheSBvciB3
+YXMgdGhpcyBvbmUgdGhlIHNob3J0ZXN0IG1lZXRpbmcgZXZlcj8gOikKKDExLjQ5LjE3KSBk
+MTJmazogdGhlIGlwdjYgZm9yIGNvbW11bml0eSBxdWVzdGlvbiBuZWVkcyB0byBiZSBhbnN3
+ZXJlZAooMTEuNDkuMjEpIGNyb24yOiBJIHdvbmRlciBob3cgdG8gcHJvY2VlZCB3aXRoIExl
+didzIHdpbmRvd3MgYnVpbGQgcGF0Y2hlcwooMTEuNDkuNDYpIGNyb24yOiBodHRwczovL3Bh
+dGNod29yay5vcGVudnBuLm5ldC9wYXRjaC8yMjE0LyBhbmQgaHR0cHM6Ly9wYXRjaHdvcmsu
+b3BlbnZwbi5uZXQvcGF0Y2gvMjIxNS8KKDExLjUwLjAzKSBtYXR0b2NrOiBkMTJmazogeWVw
+LCBubyBwcm9ncmVzcyBvbiBJUHY2IGZyb250CigxMS41MC4wOSkgY3JvbjI6IEkgY2FuIG1l
+cmdlIHRoYXQgKCJpdCdzIG5vdCB0b3VjaGluZyBjb2RlLCBzbyBJIGFtIG5vdCB2ZXJ5IGNv
+bmNlcm5lZCIpIGJ1dCBoYXZpbmcgYW4gYWN0dWFsIHRlc3Qgd291bGQgYmUgZ29vZC4uLgoo
+MTEuNTEuMzApIGQxMmZrOiBkb24ndCB3ZSBydW4gYSB3aW5kb3dzIGJ1aWxkc2xhdmU/Cigx
+MS41Mi4zOSkgbWF0dG9jazogZDEyZms6IG5vdCBhdCB0aGUgbW9tZW50CigxMS41Mi41Nykg
+bWF0dG9jazogdGhlIG5ldyBidWlsZG1hc3RlciB3aWxsIGhhdmUgYSBNU1ZDIGJ1aWxkYm90
+IHdvcmtlcgooMTEuNTMuMzIpIGQxMmZrOiBhaCB0aGUgbmV3IG9uZSBpcyBub3QgYWN0aXZl
+LCB5ZXQKKDExLjUzLjUxKSBkMTJmazogbXkgYmFkCigxMS41My41MikgbWF0dG9jazogbm8K
+KDExLjU0LjA3KSBjcm9uMjogd2lsbCBpdCBhbHNvIGluc3RhbGwgdGhlIHJlc3VsdCBhbmQg
+dGVzdCBpdD8KKDExLjU0LjIwKSBtYXR0b2NrOiBhdCB0aGUgbW9tZW50IGl0IG9ubHkgcHJv
+ZHVjZXMgc2lnbmVkIG1zaSBwYWNrYWdlcwooMTEuNTQuMzkpIG1hdHRvY2s6IGJ1dCBhZGRp
+bmcgdGVzdHMgc2hvdWxkIG5vdCBiZSB0b28gZGlmZmljdWx0CigxMS41NS4zNikgbWF0dG9j
+azogSSBoYXZlIHBvd2Vyc2hlbGwgY29kZSAod2hpY2ggYnJva2Ugc29tZSB0aW1lIGFnbywg
+YnV0IHNob3VsZCBiZSBlYXNpbHkgZml4YWJsZSkgZm9yIHRlc3Rpbmcgd2l0aCBvcGVudnBu
+LWd1aSwgb3BlbnZwbi5leGUgaW4gY21kLmV4ZSBhbmQgb3BlbnZwbnNlcnYyLmV4ZQooMTEu
+NTUuNTkpIG1hdHRvY2s6IHNvIGNvbm5lY3RpbmcgdG8gdF9jbGllbnQgc2VydmVyIGlzIHZl
+cnkgbXVjaCBhIHBvc3NpYmlsaXR5CigxMS41Ni40NCkgY3JvbjI6IGNvb2wKKDExLjU5LjM0
+KSBtYXR0b2NrOiBhbnl0aGluZyBlbHNlPwooMTEuNTkuNTIpIGQxMmZrOiBzaGlydHMKKDEy
+LjAwLjA3KSBjcm9uMjogSSBzdGlsbCB3b25kZXIgaG93IHRvIHByb2NlZWQgd2l0aCBsZXYn
+cyBwYXRjaGVzCigxMi4wMC4zNikgY3JvbjI6IGFuZCB5ZWFoLCBzaGlydHMsIEkgbmVlZCB0
+byBzZW5kIHN0dWZmIChnb3QgZGUtcHJpb3JpdGl6ZWQgYXJvdW5kIGNocmlzdG1hcykKKDEy
+LjAxLjQyKSBkMTJmazogeWVhaCBqdXN0IHdhbnRlZCB0byBicmluZyBpdCBiYWNrIHRvIG1l
+bW9yeQooMTIuMDIuMzYpIGNyb24yOiB0aGUgYm94IGlzIHNpdHRpbmcgcmlnaHQgb3V0c2lk
+ZSBteSAiaG9tZSBvZmZpY2UiIGRvb3IsIHNvIHF1aXRlIHByb21pbmVudGx5IGluIHRoZSB3
+YXkgOi0pCigxMi4wMy4xMSkgZDEyZms6IG9rIGFzIGxvbmcgYXMgeW91IHRyaXAgb3ZlciBp
+dCBmcm9tIHRpbWUgdG8gdGltZSwgc2hpcnRzIHdpbGwgaGFwcGVuID0pCigxMi4wNC4wMSkg
+bWF0dG9jazogSSB3b3VsZCBub3QgYmV0IG9uIGl0LCBrbm93aW5nICJjb21tdW5pdHkgKyBJ
+UHY2IiA6RAooMTIuMDQuMzUpIGNyb24yOiBJIHdvdWxkbid0IGhvbGQgVC1TaGlydHMgaG9z
+dGFnZSBmb3Igc29tZW9uZSBlbHNlJ3MgZmFpbHVyZSB0byBhY2NlcHQgSVB2Ni4uLgooMTIu
+MDQuNDYpIGQxMmZrOiBwdXQgSVB2NiBpbiBhIGJveCBpbiBmcm9udCBvZiB5b3VyIG9mZmlj
+ZSBkb29yID1QCigxMi4wNC41MSkgbWF0dG9jazogbm8sIEkgbWVhbnQgdGhhdCB0cmlwcGlu
+ZyBvdmVyIGRvZXMgbm90IGd1YXJhbnRlZSB0aGF0IHRoaW5ncyBnZXQgZG9uZSA6RAooMTIu
+MDQuNTUpIGNyb24yOiAoSkZUUiwgR29vZ2xlIHNob3dzIG5vdyBtb3JlIHRoYW4gNTAlIG9m
+IHRyYWZmaWMgdG93YXJkcyBHb29nbGUgYmVpbmcgSVB2NikKKDEyLjA1LjA0KSBjcm9uMjog
+KChmcm9tIHRoZSBVUywgdGhhdCBpcykpCigxMi4wNS4xMikgbWF0dG9jazogdGhhdCdzIGEg
+bG90CigxMi4wNS4yOSkgZDEyZms6IHllYWggaXQgYWhwcGVucyBuYXR1cmFsbHkgYXMgbW9z
+dCBwcm92aWRlcnMgYXNzaWduIGEgdjYgcHJlZml4CigxMi4wNS4yOSkgbWF0dG9jazogbWF5
+YmUgMjAyMiBpcyB0aGUgeWVhciBvZiBJUHY2CigxMi4wNS41MikgZDEyZms6IC4uLiBhbmQg
+dGhlIGxpbnV4IGRlc2t0b3AKKDEyLjA1LjU1KSBtYXR0b2NrOiBpdCBhbm5veWVzIG1lIHRo
+YXQgSSBoYXZlIHRvIHBheSAz4oKsL21vbnRoIGZvciBhIHN0YXRpYyBwdWJsaWMgSVB2NCBh
+ZGRyZXNzIGluIEhldHpuZXIgQ2xvdWQKKDEyLjA2LjAxKSBtYXR0b2NrOiBzbyBJIHdlbGNv
+bWUgSVB2NiB0aGVyZQooMTIuMDYuMDIpIGNyb24yOiB1c2UgSVB2NgooMTIuMDYuMDUpIGNy
+b24yOiA6KQooMTIuMDYuMTUpIG1hdHRvY2s6IEkgZG8sIGJ1dCBwZW9wbGUgd2hvIHZpc2l0
+IHRoYXQgSVAgZG8gbm90CigxMi4wNi40OCkgbWF0dG9jazogYW55aG93LCBpdCB3aWxsIHVu
+Zm9ydHVuYXRlbHkgdGFrZSBhIHdoaWxlIGJlZm9yZSBJUHY0IGNhbiBiZSB0dXJuZWQgb2Zm
+CigxMi4wNi41MykgZDEyZms6IHRoZXJlJ3MgdjQgdG8gdjYgYnJva2VycwooMTIuMDcuNTUp
+IG1hdHRvY2s6IHllYWgsIEkgdXNlZCBvbmUgaW4gdGhlIHBhc3QgZm9yIGNvbW11bml0eS9m
+b3J1bXMKKDEyLjA3LjU3KSBjcm9uMjogb25lIGNvdWxkIGFyZ3VlIHRoYXQgdGhleSBzaG91
+bGQgaGF2ZSBhIHdvcmQgd2l0aCB0aGVpciBJU1BzLi4uIDotKQooMTIuMTAuMTkpIGQxMmZr
+OiBhcyBsb25nIGFzIHY0IGdldHMgbW9yZSBhbmQgbW9yZSBleHBlbnNpY2UgaXQgcyBvbmx5
+IGEgbWF0dGVyIG9mIHRpbWUKKDEyLjEwLjQ5KSBtYXR0b2NrOiArMQooMTIuMTQuMDYpIG9y
+ZGV4OiBtYW55IHByb3ZpZGVycyBhcmUgYWxyZWFkeSBtb3ZpbmcgdG93YXJkcyB2NiwgYmVj
+YXVzZSB0aGV5IGp1c3QgZG9uJ3QgaGF2ZSBlbm91Z2ggdjQKKDEyLjE0LjE2KSBvcmRleDog
+YW5kIHNoYXJlIG9uZSB2NCB3aXRoIHF1aXRlIHNvbWUgdXNlcnMKKDEyLjE0LjI3KSBvcmRl
+eDogc28gaG9wZWZ1bGx5Li4udGhlIHRyZW5kIHdpbGwgY29udGludWUKKDEyLjE0LjUzKSBt
+YXR0b2NrOiBvaywgYW55IHJlYWwgdG9waWNzIGxlZnQ/IDopCigxMi4xNC41OSkgY3JvbjI6
+IG9yZGV4OiBpcyBhbnl0aGluZyBoYXBwZW5pbmcgaW4gLml0LCBmaW5hbGx5PwooMTIuMTUu
+MDgpIG9yZGV4OiBub3BlCigxMi4xNS4xMCkgY3JvbjI6IGJhaAooMTIuMTUuMTEpIG9yZGV4
+OiBvbmx5IFNreQooMTIuMTUuMjApIG9yZGV4OiBzdGFydGVkIGZyb20gc2NyYXRjaCBhbmQg
+c28gZGVwbG95ZWQgdjYgYWxsIG92ZXIgdGhlIHBsYWNlCigxMi4xNS4yOSkgb3JkZXg6IEZh
+c3R3ZWIgKGxhcmdlciBJU1ApIHByb3ZpZGVzIDZyZAooMTIuMTUuNDEpIG9yZGV4OiBidXQg
+VGVsZWNvbUl0YWxpYSAoVEhFIG1haW4gSVNQKSBzdGlsbCBoYXMgbm8gdjYKKDEyLjE2LjA3
+KSBvcmRleDogc21hbGxlciBJU1BzIGFyZSBtb3ZpbmcgdG8gdjYgdGhvdWdoLi4ubm90IHN1
+cmUgd2hhdCB3aWxsIGhhcHBlbiBpbiB0aGUgZnV0dXJlCigxMi4xNi4zMSkgb3JkZXg6IChz
+aW1wbHkgYmVjYXVzZSBzbWFsbGVyIElTUHMgaGF2ZSBubyBjaG9pY2UgYXMgdGhleSBkb24n
+dCBoYXZlIGVub3VnaCB2NCBhbmQgdGhleSBhcmUgYWxzbyBleHBlbnNpdmUpCigxMi4xNi41
+MikgY3JvbjI6IHRoYXQgaXMgdGhlIHdlaXJkIHBhcnQsIERldXRzY2hlIFRlbGVrb20gd2Fz
+IGFjdHVhbGx5IHRoZSBmaXJzdCAibGFyZ2Ugc2NhbGUiIElTUCBoZXJlIGluIHRoZSBtYXJr
+ZXQgdGhhdCBoYWQgSVB2NiBpbiBEU0wgYW5kIG1vYmlsZS4uLgooMTIuMTguMDgpIGQxMmZr
+OiB5ZWFoLCBJJ20gb24gYSBEVEFHIERTTCByZXNlbGxlciBsaW5lIGFuZCBJIG9ubHkgZ2V0
+IHY0IHZpYSBEU0xpdGUKKDEyLjE5LjIyKSBkMTJmazogbWF0dG9jazogSSB0aGluayB3ZSdy
+ZSBkb25lCigxMi4yMC4xMikgYmVjbSBbfmJlY21ANTVkNGZmZGIuYWNjZXNzLmVjb3RlbC5u
+ZXRdIMOoIGVudHJhdG8gbmVsbGEgc3RhbnphLgooMTIuMjAuMTgpIGNyb24yOiB5ZWFoLCBu
+b2JvZHkgd2lsbGluZyB0byBzYXkgYW55dGhpbmcgb24gbGV2J3MgcGF0Y2hlcy4uLgooMTIu
+MjAuNTQpIGQxMmZrOiB2Y3BrZyBpcyBzdGlsbCBzY2FyaW5nIG1lCigxMi4yMS4wOSkgZDEy
+Zms6ICphd2F5CigxMi4yMi4zMSkgbWF0dG9jazogb2sgSSdsbCBlYXQgbm93LCBzbyBtZWV0
+aW5nIGFkam91cm5lZAooMTIuMjcuMDQpIGQxMmZrOiBvLwo=
+--------------x3UaLqzBZQ0HTNAbJyRUzDFi--
 
 
