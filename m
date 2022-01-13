@@ -1,12 +1,12 @@
-Content-Type: multipart/mixed; boundary="------------x3UaLqzBZQ0HTNAbJyRUzDFi"
-Message-ID: <d3aa450d-84e1-1544-fc65-5ad3b37a93f2@...515...>
-Date: Wed, 12 Jan 2022 13:34:20 +0200
+Sender: yuanx3@...2645...
+From: "yuanxun" <yuanx3@...2645...>
+Date: Thu, 13 Jan 2022 11:14:37 +0800
+Message-ID: <000001d8082b$b9144940$2b3cdbc0$@chinatelecom.cn>
 MIME-Version: 1.0
-Content-Language: en-US
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-References: <a50da2cf-9a90-622e-d507-4b806f248c86@...515...>
-In-Reply-To: <a50da2cf-9a90-622e-d507-4b806f248c86@...515...>
-Subject: [Openvpn-devel] Summary of the community meeting (12th January 2022)
+Content-Type: multipart/related;
+ boundary="----=_NextPart_000_0001_01D8086E.C7384C90"
+Content-Language: zh-cn
+Subject: [Openvpn-devel] The ovpn-dco-win question
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,200 +17,168 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------x3UaLqzBZQ0HTNAbJyRUzDFi
-Content-Type: text/plain; charset=UTF-8; format=flowed
+This is a multipart message in MIME format.
+
+------=_NextPart_000_0001_01D8086E.C7384C90
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_001_0002_01D8086E.C73873A0"
+
+------=_NextPart_001_0002_01D8086E.C73873A0
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
-Hi,
+Hi!
 
-Here's the summary of the IRC meeting.
+I use vs2019 to compile the ovpn-dco-win driver, as installed in windows
+server2016.
 
----
-
-COMMUNITY MEETING
-
-Place: #openvpn-meeting on libera.chat
-Date: Wed 12th January 2022
-Time: 10:30 CET (9:30 UTC)
-
-Planned meeting topics for this meeting were here:
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2022-01-12>
-
-Your local meeting time is easy to check from services such as
-
-<http://www.timeanddate.com/worldclock>
-
-SUMMARY
-
-cron2, d12fk, mattock, ordex and plaisthos participated in this meeting.
-
----
-
-D12k said his DNS patch will be arriving as a GitHub PR shortly after 
-the meeting. Plaishos will take a look at at the PR when it is ready.
-
----
-
-Mattock now has new production buildmaster running in a new, shiny 
-community VPC, but it is not accessible from the outside. The next step 
-is to add OpenVPN server to the VPC to grant access to buildbot workers 
-and people who need access. Mattock will provide new OpenVPN configs for 
-cron2 and wiscii when the server is ready.
-
-Noted that the Windows buildbot worker does not yet run connectivity 
-tests for the MSI installers it creates and signs. Adding that support 
-should be fairly straightforward however, given mattock semi-automated 
-Windows-based testing with Powershell earlier.
-
----
-
-Talked about IPv6 on community.openvpn.net. Nothing has happened on that 
-front, but fortunately IPv6 is gaining traction globally and there might 
-eventually be progress on this as well.
-
--- 
-
-Full chatlog attached
+Then an error in the driver input point cannot be found.
 
 
---------------x3UaLqzBZQ0HTNAbJyRUzDFi
-Content-Type: text/plain; charset=UTF-8;
- name="openvpn_irc_meeting_chatlog_2022-01-12.txt"
-Content-Disposition: attachment;
- filename="openvpn_irc_meeting_chatlog_2022-01-12.txt"
+
+ 
+
+Is this the bug of the code? and What environment does the ovpn-dco-win
+need?
+
+
+------=_NextPart_001_0002_01D8086E.C73873A0
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40"><head><meta http-equiv=3DContent-Type content=
+=3D"text/html; charset=3Dus-ascii"><meta name=3DGenerator content=3D"Micros=
+oft Word 15 (filtered medium)"><!--[if !mso]><style>v\:* {behavior:url(#def=
+ault#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style><![endif]--><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	text-align:justify;
+	text-justify:inter-ideograph;
+	font-size:10.5pt;
+	font-family:DengXian;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:DengXian;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:DengXian;}
+/* Page Definitions */
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]--></head><body lang=3DZH-CN link=3D"#0563C1=
+" vlink=3D"#954F72" style=3D'word-wrap:break-word;text-justify-trim:punctua=
+tion'><div class=3DWordSection1><p class=3DMsoNormal><span lang=3DEN-US>Hi!=
+<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-US>I use vs2019 =
+to compile the ovpn-dco-win driver, as installed in windows server2016.<o:p=
+></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-US>Then an error in =
+the driver input point cannot be found.<o:p></o:p></span></p><p class=3DMso=
+Normal><span lang=3DEN-US><img width=3D238 height=3D29 style=3D'width:2.475=
+in;height:.3in' id=3D"_x56fe__x7247__x0020_1" src=3D"cid:image001.jpg@...2375...=
+49..."></span><span lang=3DEN-US><o:p></o:p></span></p><p class=3DMsoNormal=
+><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span =
+lang=3DEN-US>Is this the bug of the code? and What environment does the ovp=
+n-dco-win need?<o:p></o:p></span></p></div></body></html>=
+
+------=_NextPart_001_0002_01D8086E.C73873A0--
+
+------=_NextPart_000_0001_01D8086E.C7384C90
+Content-Type: image/jpeg;
+	name="image001.jpg"
 Content-Transfer-Encoding: base64
+Content-ID: <image001.jpg@...2649...>
 
-KDExLjE4LjI5KSBjcm9uMjogSSdtIGZpZ2h0aW5nIElQU0VDIFZQTiwgc28gbWlnaHQgYmUg
-YSB0YWQgbGF0ZQooMTEuMjQuMjEpIG1hdHRvY2s6IGluc3RhbGwgT3BlblZQTiBpbnN0ZWFk
-CigxMS4zMS4xNSkgbWF0dG9jazogaGVsbG8KKDExLjMxLjQ1KSBtYXR0b2NrOiBhbnkgeW91
-bmcgYW5kIGVudGh1c2lhc3RpYyBzb2Z0d2FyZSBkZXZlbG9wZXJzIGhlcmUgdG9kYXk/Cigx
-MS4zMS41MykgbWF0dG9jazogb3IgaWYgbm90IHlvdW5nLCBhdCBsZWFzdCBlbnRodXNpYXN0
-aWM/CigxMS4zMi4wOSkgb3JkZXg6IGhpCigxMS4zMi41NikgZDEyZms6IGhlbGxvCigxMS4z
-My4xNSkgZDEyZms6IGNyb24yOiB3aGF0IGFyZSB5b3UgZmlnaHRpbmcgd2l0aD8KKDExLjMz
-LjM5KSBkMTJmazogbWF0dG9jazogY2FuIHNlcnZlIHdpdGggYmVpbmcgaGVyZSBhdCBsZWFz
-dCA7LSkKKDExLjMzLjUwKSBtYXR0b2NrOiBkMTJmazogdGhhdCBpcyBlbm91Z2ggOikKKDEx
-LjM0LjExKSBtYXR0b2NrOiBodHRwczovL2NvbW11bml0eS5vcGVudnBuLm5ldC9vcGVudnBu
-L3dpa2kvVG9waWNzLTIwMjItMDEtMTIKKDExLjM0LjE4KSBtYXR0b2NrOiBwdXJlIGNvcHkg
-YW5kIHBhc3RlIHRoYXQgYWdlbmRhCigxMS4zNC4yMSkgY3JvbjI6IG5vdyEKKDExLjM1LjIy
-KSBjcm9uMjogZDEyZms6IG1pZ3JhdGluZyBjb3Jwb3JhdGUgY3VzdG9tZXIgVlBOIGZyb20g
-IklLRXYxIG9uIE5ldHNjcmVlbiIgdG8gIklLRXYyIG9uIEZvcnRpZ2F0ZSIsIHdpdGggYWxs
-IHRoZSBwb3NzaWJsZSBjcmFwIG91dCB0aGVyZSwgbGlrZSAiQ2lzY28gQVNBIiBvciAib3Bu
-c2Vuc2UiLi4uCigxMS4zNS40MCkgY3JvbjI6ICp0aGlzKiBlcGlzb2RlIHdhcyAiYSBwcmUt
-c2hhcmVkIGtleSBzdGFydGluZyB3aXRoIDB4PGhleGRpZ2l0cz4iCigxMS4zNi4wNSkgY3Jv
-bjI6IHdoaWNoIG5ldHNjcmVlbiBhbmQgb3Buc2Vuc2UgaW50ZXJwcmV0IGFzLCB3ZWxsLCAi
-aGV4IGRpZ2l0cyBkZXNjcmliaW5nIHRoZSBrZXkiIGFuZCBmb3J0aW5ldCBqdXN0IHRha2Vz
-IHZlcmJhdGltIGFzICJpdCBpcyBhIGtleSB0aGF0IHN0YXJ0cyB3aXRoIDAsIHgsIC4uLiIK
-KDExLjM2LjQxKSBkMTJmazogaGF2ZSBub3Qgc2VlbSBtYW55IGJpbmFyeSBQU0tzCigxMS4z
-Ni41MCkgZDEyZms6ICpzZWVuCigxMS4zNy4wMikgY3JvbjI6IG5laXRoZXIgaGF2ZSBJLCBz
-byB0aGF0IGNhbWUgdW5leHBlY3RlZC4uLgooMTEuMzcuMTMpIG9yZGV4OiBob3cgd2FzICd4
-JyBpbnRlcnByZXRlZD8gby1vCigxMS4zNy4xOSkgb3JkZXg6IGp1c3QgYXNjaWkgPwooMTEu
-MzcuMzQpIGNyb24yOiBqdXN0IGFzY2lpIG9uIHRoZSBGRyBzaWRlLCBzbyAia2V5IG1pc21h
-dGNoIgooMTEuMzcuNDcpIG9yZGV4OiBpbmRlZWQKKDExLjM4LjM1KSBjcm9uMjogc28sIGFn
-ZW5kYSA6LSkKKDExLjM5LjA0KSBkMTJmazogb2ZmIGFnZW5kYSwgSSBjYW4gYW5ub3VuY2Ug
-dGhhdCB0aGUgLS1kbnMgUFIgd2lsbCBhcHBlYXIgc2hvcnRseSBhZnRlciB0aGlzIG1lZXRp
-bmcKKDExLjM5LjEwKSBjcm9uMjogbmljZQooMTEuMzkuMzApIGNyb24yOiBteSBwbGF0ZSBp
-cyBmdWxsIHdpdGggYnVmZmVycwooMTEuNDAuMTgpIGQxMmZrOiB5ZWFoIG5vIHJ1c2gKKDEx
-LjQwLjM0KSBtYXR0b2NrOiB1cGRhdGUgb24gbXkgcGFydDogcHJvZHVjdGlvbiBidWlsZGJv
-dCBleGlzdHMgaW4gYSBuZXcsIHNoaW55IGNvbW11bml0eSBWUEMsIGJ1dCBpcyBzdGlsbCB1
-bnJlYWNoYWJsZSBkdWUgdG8gbGFjayBvZiBvcGVudnBuIHNlcnZlcgooMTEuNDAuNDMpIG1h
-dHRvY2s6IHNvIG9wZW52cG4gc2VydmVyIGlzIHRoZSBuZXh0IHN0ZXAgZm9yIG1lCigxMS40
-MS40MCkgY3JvbjI6IG9rLiAgV2lsbCB0aGlzIGJlIHRyYW5zcGFyZW50IHRvIHRoZSBidWls
-ZCBjbGllbnRzIChzYW1lIGNyZWRlbnRpYWxzLCBzYW1lIGhvc3RuYW1lKSBvciBkbyB0aGV5
-IG5lZWQgbmV3IGNvbmZpZ3M/CigxMS40Mi4wOSkgcGxhaXN0aG9zOiBJIHdpbGwgdGFrZSBh
-IGxvayBhdCB0aGUgZG5zIHByIGFmdGVyIEkgYW0gZG9uZSB3aXRoIHhrZXkgcGF0Y2ggc2V0
-CigxMS40My4wMSkgbWF0dG9jazogY3JvbjI6IEkgdGhpbmsgSSdsbCBjcmVhdGUgYSBjb21w
-bGV0ZWx5IG5ldyBvcGVudnBuICsgQ0EgZm9yIHRoYXQgLSBvdGhlcndpc2UgSSdkIG5lZWQg
-dG8gdXBncmFkZSBhbmQgbWlncmF0ZSBvdGhlciBzdHVmZiBvdmVyIHRvIHRoZSBuZXcgQVdT
-IGZpcnN0CigxMS40My4zMykgY3JvbjI6IG9rYXkKKDExLjQzLjM1KSBtYXR0b2NrOiBJIGNh
-biBjcmVhdGUgbmV3IGNsaWVudCBjb25maWdzIGZvciB5b3UKKDExLjQ0LjAzKSBjcm9uMjog
-eWVzLCBwbGVhc2UgKGFuZCBmb3Igd2lzY2lpLCBkb24ndCB0aGluayBhbnlvbmUgZWxzZSBu
-b24tbWF0dG9jayBydW5zIGEgYnVpbGRzbGF2ZSB0b2RheSkKKDExLjQ0LjE1KSBtYXR0b2Nr
-OiB5ZXAKKDExLjQ4LjI4KSBtYXR0b2NrOiBhbnl0aGluZyBlbHNlIGZvciB0b2RheSBvciB3
-YXMgdGhpcyBvbmUgdGhlIHNob3J0ZXN0IG1lZXRpbmcgZXZlcj8gOikKKDExLjQ5LjE3KSBk
-MTJmazogdGhlIGlwdjYgZm9yIGNvbW11bml0eSBxdWVzdGlvbiBuZWVkcyB0byBiZSBhbnN3
-ZXJlZAooMTEuNDkuMjEpIGNyb24yOiBJIHdvbmRlciBob3cgdG8gcHJvY2VlZCB3aXRoIExl
-didzIHdpbmRvd3MgYnVpbGQgcGF0Y2hlcwooMTEuNDkuNDYpIGNyb24yOiBodHRwczovL3Bh
-dGNod29yay5vcGVudnBuLm5ldC9wYXRjaC8yMjE0LyBhbmQgaHR0cHM6Ly9wYXRjaHdvcmsu
-b3BlbnZwbi5uZXQvcGF0Y2gvMjIxNS8KKDExLjUwLjAzKSBtYXR0b2NrOiBkMTJmazogeWVw
-LCBubyBwcm9ncmVzcyBvbiBJUHY2IGZyb250CigxMS41MC4wOSkgY3JvbjI6IEkgY2FuIG1l
-cmdlIHRoYXQgKCJpdCdzIG5vdCB0b3VjaGluZyBjb2RlLCBzbyBJIGFtIG5vdCB2ZXJ5IGNv
-bmNlcm5lZCIpIGJ1dCBoYXZpbmcgYW4gYWN0dWFsIHRlc3Qgd291bGQgYmUgZ29vZC4uLgoo
-MTEuNTEuMzApIGQxMmZrOiBkb24ndCB3ZSBydW4gYSB3aW5kb3dzIGJ1aWxkc2xhdmU/Cigx
-MS41Mi4zOSkgbWF0dG9jazogZDEyZms6IG5vdCBhdCB0aGUgbW9tZW50CigxMS41Mi41Nykg
-bWF0dG9jazogdGhlIG5ldyBidWlsZG1hc3RlciB3aWxsIGhhdmUgYSBNU1ZDIGJ1aWxkYm90
-IHdvcmtlcgooMTEuNTMuMzIpIGQxMmZrOiBhaCB0aGUgbmV3IG9uZSBpcyBub3QgYWN0aXZl
-LCB5ZXQKKDExLjUzLjUxKSBkMTJmazogbXkgYmFkCigxMS41My41MikgbWF0dG9jazogbm8K
-KDExLjU0LjA3KSBjcm9uMjogd2lsbCBpdCBhbHNvIGluc3RhbGwgdGhlIHJlc3VsdCBhbmQg
-dGVzdCBpdD8KKDExLjU0LjIwKSBtYXR0b2NrOiBhdCB0aGUgbW9tZW50IGl0IG9ubHkgcHJv
-ZHVjZXMgc2lnbmVkIG1zaSBwYWNrYWdlcwooMTEuNTQuMzkpIG1hdHRvY2s6IGJ1dCBhZGRp
-bmcgdGVzdHMgc2hvdWxkIG5vdCBiZSB0b28gZGlmZmljdWx0CigxMS41NS4zNikgbWF0dG9j
-azogSSBoYXZlIHBvd2Vyc2hlbGwgY29kZSAod2hpY2ggYnJva2Ugc29tZSB0aW1lIGFnbywg
-YnV0IHNob3VsZCBiZSBlYXNpbHkgZml4YWJsZSkgZm9yIHRlc3Rpbmcgd2l0aCBvcGVudnBu
-LWd1aSwgb3BlbnZwbi5leGUgaW4gY21kLmV4ZSBhbmQgb3BlbnZwbnNlcnYyLmV4ZQooMTEu
-NTUuNTkpIG1hdHRvY2s6IHNvIGNvbm5lY3RpbmcgdG8gdF9jbGllbnQgc2VydmVyIGlzIHZl
-cnkgbXVjaCBhIHBvc3NpYmlsaXR5CigxMS41Ni40NCkgY3JvbjI6IGNvb2wKKDExLjU5LjM0
-KSBtYXR0b2NrOiBhbnl0aGluZyBlbHNlPwooMTEuNTkuNTIpIGQxMmZrOiBzaGlydHMKKDEy
-LjAwLjA3KSBjcm9uMjogSSBzdGlsbCB3b25kZXIgaG93IHRvIHByb2NlZWQgd2l0aCBsZXYn
-cyBwYXRjaGVzCigxMi4wMC4zNikgY3JvbjI6IGFuZCB5ZWFoLCBzaGlydHMsIEkgbmVlZCB0
-byBzZW5kIHN0dWZmIChnb3QgZGUtcHJpb3JpdGl6ZWQgYXJvdW5kIGNocmlzdG1hcykKKDEy
-LjAxLjQyKSBkMTJmazogeWVhaCBqdXN0IHdhbnRlZCB0byBicmluZyBpdCBiYWNrIHRvIG1l
-bW9yeQooMTIuMDIuMzYpIGNyb24yOiB0aGUgYm94IGlzIHNpdHRpbmcgcmlnaHQgb3V0c2lk
-ZSBteSAiaG9tZSBvZmZpY2UiIGRvb3IsIHNvIHF1aXRlIHByb21pbmVudGx5IGluIHRoZSB3
-YXkgOi0pCigxMi4wMy4xMSkgZDEyZms6IG9rIGFzIGxvbmcgYXMgeW91IHRyaXAgb3ZlciBp
-dCBmcm9tIHRpbWUgdG8gdGltZSwgc2hpcnRzIHdpbGwgaGFwcGVuID0pCigxMi4wNC4wMSkg
-bWF0dG9jazogSSB3b3VsZCBub3QgYmV0IG9uIGl0LCBrbm93aW5nICJjb21tdW5pdHkgKyBJ
-UHY2IiA6RAooMTIuMDQuMzUpIGNyb24yOiBJIHdvdWxkbid0IGhvbGQgVC1TaGlydHMgaG9z
-dGFnZSBmb3Igc29tZW9uZSBlbHNlJ3MgZmFpbHVyZSB0byBhY2NlcHQgSVB2Ni4uLgooMTIu
-MDQuNDYpIGQxMmZrOiBwdXQgSVB2NiBpbiBhIGJveCBpbiBmcm9udCBvZiB5b3VyIG9mZmlj
-ZSBkb29yID1QCigxMi4wNC41MSkgbWF0dG9jazogbm8sIEkgbWVhbnQgdGhhdCB0cmlwcGlu
-ZyBvdmVyIGRvZXMgbm90IGd1YXJhbnRlZSB0aGF0IHRoaW5ncyBnZXQgZG9uZSA6RAooMTIu
-MDQuNTUpIGNyb24yOiAoSkZUUiwgR29vZ2xlIHNob3dzIG5vdyBtb3JlIHRoYW4gNTAlIG9m
-IHRyYWZmaWMgdG93YXJkcyBHb29nbGUgYmVpbmcgSVB2NikKKDEyLjA1LjA0KSBjcm9uMjog
-KChmcm9tIHRoZSBVUywgdGhhdCBpcykpCigxMi4wNS4xMikgbWF0dG9jazogdGhhdCdzIGEg
-bG90CigxMi4wNS4yOSkgZDEyZms6IHllYWggaXQgYWhwcGVucyBuYXR1cmFsbHkgYXMgbW9z
-dCBwcm92aWRlcnMgYXNzaWduIGEgdjYgcHJlZml4CigxMi4wNS4yOSkgbWF0dG9jazogbWF5
-YmUgMjAyMiBpcyB0aGUgeWVhciBvZiBJUHY2CigxMi4wNS41MikgZDEyZms6IC4uLiBhbmQg
-dGhlIGxpbnV4IGRlc2t0b3AKKDEyLjA1LjU1KSBtYXR0b2NrOiBpdCBhbm5veWVzIG1lIHRo
-YXQgSSBoYXZlIHRvIHBheSAz4oKsL21vbnRoIGZvciBhIHN0YXRpYyBwdWJsaWMgSVB2NCBh
-ZGRyZXNzIGluIEhldHpuZXIgQ2xvdWQKKDEyLjA2LjAxKSBtYXR0b2NrOiBzbyBJIHdlbGNv
-bWUgSVB2NiB0aGVyZQooMTIuMDYuMDIpIGNyb24yOiB1c2UgSVB2NgooMTIuMDYuMDUpIGNy
-b24yOiA6KQooMTIuMDYuMTUpIG1hdHRvY2s6IEkgZG8sIGJ1dCBwZW9wbGUgd2hvIHZpc2l0
-IHRoYXQgSVAgZG8gbm90CigxMi4wNi40OCkgbWF0dG9jazogYW55aG93LCBpdCB3aWxsIHVu
-Zm9ydHVuYXRlbHkgdGFrZSBhIHdoaWxlIGJlZm9yZSBJUHY0IGNhbiBiZSB0dXJuZWQgb2Zm
-CigxMi4wNi41MykgZDEyZms6IHRoZXJlJ3MgdjQgdG8gdjYgYnJva2VycwooMTIuMDcuNTUp
-IG1hdHRvY2s6IHllYWgsIEkgdXNlZCBvbmUgaW4gdGhlIHBhc3QgZm9yIGNvbW11bml0eS9m
-b3J1bXMKKDEyLjA3LjU3KSBjcm9uMjogb25lIGNvdWxkIGFyZ3VlIHRoYXQgdGhleSBzaG91
-bGQgaGF2ZSBhIHdvcmQgd2l0aCB0aGVpciBJU1BzLi4uIDotKQooMTIuMTAuMTkpIGQxMmZr
-OiBhcyBsb25nIGFzIHY0IGdldHMgbW9yZSBhbmQgbW9yZSBleHBlbnNpY2UgaXQgcyBvbmx5
-IGEgbWF0dGVyIG9mIHRpbWUKKDEyLjEwLjQ5KSBtYXR0b2NrOiArMQooMTIuMTQuMDYpIG9y
-ZGV4OiBtYW55IHByb3ZpZGVycyBhcmUgYWxyZWFkeSBtb3ZpbmcgdG93YXJkcyB2NiwgYmVj
-YXVzZSB0aGV5IGp1c3QgZG9uJ3QgaGF2ZSBlbm91Z2ggdjQKKDEyLjE0LjE2KSBvcmRleDog
-YW5kIHNoYXJlIG9uZSB2NCB3aXRoIHF1aXRlIHNvbWUgdXNlcnMKKDEyLjE0LjI3KSBvcmRl
-eDogc28gaG9wZWZ1bGx5Li4udGhlIHRyZW5kIHdpbGwgY29udGludWUKKDEyLjE0LjUzKSBt
-YXR0b2NrOiBvaywgYW55IHJlYWwgdG9waWNzIGxlZnQ/IDopCigxMi4xNC41OSkgY3JvbjI6
-IG9yZGV4OiBpcyBhbnl0aGluZyBoYXBwZW5pbmcgaW4gLml0LCBmaW5hbGx5PwooMTIuMTUu
-MDgpIG9yZGV4OiBub3BlCigxMi4xNS4xMCkgY3JvbjI6IGJhaAooMTIuMTUuMTEpIG9yZGV4
-OiBvbmx5IFNreQooMTIuMTUuMjApIG9yZGV4OiBzdGFydGVkIGZyb20gc2NyYXRjaCBhbmQg
-c28gZGVwbG95ZWQgdjYgYWxsIG92ZXIgdGhlIHBsYWNlCigxMi4xNS4yOSkgb3JkZXg6IEZh
-c3R3ZWIgKGxhcmdlciBJU1ApIHByb3ZpZGVzIDZyZAooMTIuMTUuNDEpIG9yZGV4OiBidXQg
-VGVsZWNvbUl0YWxpYSAoVEhFIG1haW4gSVNQKSBzdGlsbCBoYXMgbm8gdjYKKDEyLjE2LjA3
-KSBvcmRleDogc21hbGxlciBJU1BzIGFyZSBtb3ZpbmcgdG8gdjYgdGhvdWdoLi4ubm90IHN1
-cmUgd2hhdCB3aWxsIGhhcHBlbiBpbiB0aGUgZnV0dXJlCigxMi4xNi4zMSkgb3JkZXg6IChz
-aW1wbHkgYmVjYXVzZSBzbWFsbGVyIElTUHMgaGF2ZSBubyBjaG9pY2UgYXMgdGhleSBkb24n
-dCBoYXZlIGVub3VnaCB2NCBhbmQgdGhleSBhcmUgYWxzbyBleHBlbnNpdmUpCigxMi4xNi41
-MikgY3JvbjI6IHRoYXQgaXMgdGhlIHdlaXJkIHBhcnQsIERldXRzY2hlIFRlbGVrb20gd2Fz
-IGFjdHVhbGx5IHRoZSBmaXJzdCAibGFyZ2Ugc2NhbGUiIElTUCBoZXJlIGluIHRoZSBtYXJr
-ZXQgdGhhdCBoYWQgSVB2NiBpbiBEU0wgYW5kIG1vYmlsZS4uLgooMTIuMTguMDgpIGQxMmZr
-OiB5ZWFoLCBJJ20gb24gYSBEVEFHIERTTCByZXNlbGxlciBsaW5lIGFuZCBJIG9ubHkgZ2V0
-IHY0IHZpYSBEU0xpdGUKKDEyLjE5LjIyKSBkMTJmazogbWF0dG9jazogSSB0aGluayB3ZSdy
-ZSBkb25lCigxMi4yMC4xMikgYmVjbSBbfmJlY21ANTVkNGZmZGIuYWNjZXNzLmVjb3RlbC5u
-ZXRdIMOoIGVudHJhdG8gbmVsbGEgc3RhbnphLgooMTIuMjAuMTgpIGNyb24yOiB5ZWFoLCBu
-b2JvZHkgd2lsbGluZyB0byBzYXkgYW55dGhpbmcgb24gbGV2J3MgcGF0Y2hlcy4uLgooMTIu
-MjAuNTQpIGQxMmZrOiB2Y3BrZyBpcyBzdGlsbCBzY2FyaW5nIG1lCigxMi4yMS4wOSkgZDEy
-Zms6ICphd2F5CigxMi4yMi4zMSkgbWF0dG9jazogb2sgSSdsbCBlYXQgbm93LCBzbyBtZWV0
-aW5nIGFkam91cm5lZAooMTIuMjcuMDQpIGQxMmZrOiBvLwo=
---------------x3UaLqzBZQ0HTNAbJyRUzDFi--
+/9j/4AAQSkZJRgABAQEAeAB4AAD/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIf
+IiEmKzcvJik0KSEiMEExNDk7Pj4+JS5ESUM8SDc9Pjv/2wBDAQoLCw4NDhwQEBw7KCIoOzs7Ozs7
+Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozv/wAARCAAkASkDASIA
+AhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQA
+AAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3
+ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWm
+p6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEA
+AwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSEx
+BhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElK
+U1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3
+uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD2aiii
+gCjcSo0hWSBH2nA3DNZjHQQx3Wunhs8525zTddvZ7No/s4jLyzbP3gJA4J7fSucisbguVP2Q7mZ2
+dojwCSSevauyFCE480tjgq1rS5d2dXDf6XBtWAWaY6BXUVe+3N/cH515zdxhUEimGSF8bJI49vOe
+Rz+H512eo3g0/Tri7ZdwhjL7fXA6USp01BTi7pjp1akpODVmtDT+3N/cH50fbm/uD864+Kw165s1
+1Ma5NHO6+atqqJ5A7hT8u7GOvzVLb+MLL+z7Ga6jlW4vI9yQRIXYkdQAOpqOSPVG3NLozq/tzf3B
++dH25v7g/Oufh8TabNYzXZaSIQPskiljKyBj0XaecnIwO+aYvirTvstzcTLcW4tlDyRzwlH2noQp
+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
+QYj2Lfi3Hy87dqn16/Ma36KKOn9dkHU//9k=
+
+------=_NextPart_000_0001_01D8086E.C7384C90--
 
 
