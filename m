@@ -1,10 +1,10 @@
-Date: Fri, 14 Jan 2022 14:18:25 +0100 (CET)
-Message-Id: <202201141318.20EDIPbE027318@...2054...>
+Date: Fri, 14 Jan 2022 14:27:33 +0100 (CET)
+Message-Id: <202201141327.20EDRXn8034032@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220114122538.24662-1-a@...2181...>
-References: <20220114122538.24662-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: GitHub Actions: ensure Ubuntu
- builds are made with the chosen SSL library
+In-Reply-To: <20220110144510.17769-1-a@...2181...>
+References: <20220110144510.17769-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: ssl.c: use arrow operator to
+ access object member
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,20 +20,25 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"D'oh"... no idea who merged that original patch... :-)
+Both is technically doing the same thing, but we use -> notation in 
+most places, so this is more consistent.  Client-side tested.
+
+(JFTR, the offending commit is 15d052432, which moved from "structure
+access" to "pointer access", so going from "key2." to "(*key2)." is
+understandable...)
 
 Your patch has been applied to the master branch.
 
-commit 6445bf30c12a87c06ee0b24b19293efefc8cad27
+commit eb3e849e63e32cc015aa21c4481b232bf69c8976
 Author: Antonio Quartulli
-Date:   Fri Jan 14 13:25:38 2022 +0100
+Date:   Mon Jan 10 15:45:10 2022 +0100
 
-     GitHub Actions: ensure Ubuntu builds are made with the chosen SSL library
+     ssl.c: use arrow operator to access object member
 
      Signed-off-by: Antonio Quartulli <a@...2181...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220114122538.24662-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23539.html
+     Message-Id: <20220110144510.17769-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23521.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
