@@ -1,14 +1,8 @@
+From: David Sommerseth <openvpn@...2080...>
+Date: Wed, 19 Jan 2022 19:21:26 +0100
+Message-Id: <20220119182126.56880-1-openvpn@...2080...>
 MIME-Version: 1.0
-References: <CAKuzo_gy_xHzy8Tscb8xJ7QKN5+OZZksG7o_0eYkao8FDDJ5WA@...278...>
- <20220117094917.178-1-lstipakov@...277...>
- <16f083eb-67cc-8238-34ff-a22fc704afd2@...2181...>
- <CAGyAFMVTetuKrY5aw+0FPu-C_rmpU9AUUPbHCCb=GMLbdJ5HLQ@...278...>
- <YeVWPNC2e98AAXjD@...1296...>
-In-Reply-To: <YeVWPNC2e98AAXjD@...1296...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 19 Jan 2022 18:42:03 +0200
-Message-ID: <CAGyAFMW+fbpRm03EirbgN71xBTTqXhq4yw=Jg5ua9ixSA2JRKw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v3] tun: remove tun_finalize()
+Subject: [Openvpn-devel] [PATCH v3] crypto: Fix OPENSSL_FIPS enabled builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,34 +11,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Gentle nudge.
+From: David Sommerseth <davids@...515...>
 
-ma 17. tammik. 2022 klo 13.42 Gert Doering (gert@...1296...) kirjoitti:
->
-> Hi,
->
-> On Mon, Jan 17, 2022 at 11:56:51AM +0200, Lev Stipakov wrote:
-> > This is probably something committer (looks at cron2) could fix on the
-> > fly, unless there are more issues which would require v4?
->
-> If that's the only thing, I can fix that on the fly.
->
-> gert
-> --
-> "If was one thing all people took for granted, was conviction that if you
->  feed honest figures into a computer, honest figures come out. Never doubted
->  it myself till I met a computer with a sense of humor."
->                              Robert A. Heinlein, The Moon is a Harsh Mistress
->
-> Gert Doering - Munich, Germany                             gert@...1296...
+On Fedora and RHEL/CentOS, the standard OpenSSL library has the FIPS
+module enabled by default.  On these platforms, the OPENSSL_FIPS macro
+is always defined via /usr/include/openssl/opensslconf-*.h.
 
+Without this fix, the following compilation error appears:
 
+  ./src/openvpn/crypto.c: In function ‘print_cipher’:
+  ./src/openvpn/crypto.c:1707:43: error: ‘cipher’ undeclared (first use in this function); did you mean ‘iphdr’?
+       if (FIPS_mode() && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_FIPS))
+                                           ^~~~~~
+The EVP_CIPHER_fetch() and EVP_CIPHER_free() methods are also provided
+via the openssl_compat.h for older than OpenSSL 3.0.
 
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ src/openvpn/crypto.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 5626e2b6..eb0b1254 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -34,6 +34,7 @@
+ #include "error.h"
+ #include "integer.h"
+ #include "platform.h"
++#include "openssl_compat.h"
+ 
+ #include "memdbg.h"
+ 
+@@ -1704,10 +1705,15 @@ print_cipher(const char *ciphername)
+         printf(", TLS client/server mode only");
+     }
+ #ifdef OPENSSL_FIPS
+-    if (FIPS_mode() && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_FIPS))
++    evp_cipher_type *cipher = EVP_CIPHER_fetch(NULL, ciphername, NULL);
++
++    if (FIPS_mode()
++        && (NULL != cipher)
++        && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_FIPS))
+     {
+         printf(", disabled by FIPS mode");
+     }
++    EVP_CIPHER_free(cipher);
+ #endif
+ 
+     printf(")\n");
 -- 
--Lev
+2.27.0
+
 
