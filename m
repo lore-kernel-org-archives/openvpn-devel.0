@@ -1,10 +1,10 @@
-Date: Thu, 20 Jan 2022 15:08:47 +0100 (CET)
-Message-Id: <202201201408.20KE8lhs079444@...2054...>
+Date: Thu, 20 Jan 2022 15:18:42 +0100 (CET)
+Message-Id: <202201201418.20KEIgYl079649@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211214165928.30676-4-selva.nair@...277...>
-References: <20211214165928.30676-4-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Implement SIGNATURE operations
- in xkey provider
+In-Reply-To: <20211214165928.30676-5-selva.nair@...277...>
+References: <20211214165928.30676-5-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Implement import of custom
+ external keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,20 +18,20 @@ Content-Transfer-Encoding: 8bit
 To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This fixes compilation again.  Compile-tested, briefly glanced at the code.
+Compile-tested only (and glanced over the code).
 
 Your patch has been applied to the master branch.
 
-commit 25f9c47127190c487eb3b4b4a3f5553fb2d62b21
+commit ab3a8e5c28c433fd405f964d55bb754571191b9c
 Author: Selva Nair
-Date:   Tue Dec 14 11:59:13 2021 -0500
+Date:   Tue Dec 14 11:59:14 2021 -0500
 
-     Implement SIGNATURE operations in xkey provider
+     Implement import of custom external keys
 
      Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20211214165928.30676-4-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23437.html
+     Message-Id: <20211214165928.30676-5-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23439.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
