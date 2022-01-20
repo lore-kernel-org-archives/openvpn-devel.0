@@ -1,13 +1,13 @@
-Message-ID: <096c6e71-bb22-25bb-d968-26ce2a86fee7@...1227...>
-Date: Thu, 20 Jan 2022 11:54:07 +0100
+Message-ID: <effdbfae-81ea-c784-77a8-379ce5ba9b35@...1227...>
+Date: Thu, 20 Jan 2022 11:54:54 +0100
 MIME-Version: 1.0
 Content-Language: en-GB
 References: <20211214165928.30676-1-selva.nair@...277...>
- <20211214165928.30676-8-selva.nair@...277...>
+ <20211214165928.30676-9-selva.nair@...277...>
 From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20211214165928.30676-8-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v3 07/18] Enable signing via provider
- for management-external-key
+In-Reply-To: <20211214165928.30676-9-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v3 08/18] Add a function to encode
+ digests with PKCS1 DigestInfo wrapper
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,19 +23,30 @@ To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 Am 14.12.21 um 17:59 schrieb selva.nair@...277...:
 > From: Selva Nair <selva.nair@...277...>
 > 
-> - Add a function to set as sign_op during key import. The
->    function passes the signature request to management interface,
->    and returns the result to the provider.
+> The EVP_PKEY interface as well as provider passes the raw
+> digest to the sign() function. In case of RSA_PKCS1,
+> our management interface expects an encoded hash, which
+> has the DigestInfo header added as per PKCSv1.5 specs,
+> unless the hash algorithm is legacy MD5_SHA1.
 > 
-> v2 changes: Method to do digest added to match the changes in
->              the provider signature callback.
-> TODO:
->   - Allow passing the undigested message to management interface
->   - Add pkcs1 DigestInfo header when required
+> Fix this by
+>   - add a function to perform the pkcs1 encoding before passing the
+>     data to sign to the management interface. The implementation
+>     is not pretty, but should work.
+>     (Unfortunately OpenSSL does not expose a function for this).
 > 
-> Signed-off-by: Selva Nair <selva.nair@...277...>
+> Note:
+> 1. cryptoki interface used by pkcs11-helper also requires this
+> to be done before calling the Sign op. This will come handy there
+> too.
+> 2. We have a similar function in ssl_mbedtls.c but its not prettier,
+>     and require porting.
 > 
+> v2 changes: Use hard-coded headers for known hash algorithms instead
+> of assembling it from the ASN.1 objects.
+
 
 Acked-By: Arne Schwabe <arne@...1227...>
+
 
 
