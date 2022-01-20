@@ -1,11 +1,7 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon, 24 Jan 2022 03:54:59 +0100
-Message-Id: <20220124025459.1042317-1-arne@...1227...>
-In-Reply-To: <20220101162532.2251835-1-arne@...1227...>
-References: <20220101162532.2251835-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v5] Change buffer allocation calculation and
- checks to be more static
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 20 Jan 2022 23:22:43 +0200
+Message-Id: <20220120212243.306-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] msvc: switch to openssl3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,621 +13,524 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Currently we use half dynamic buffer sizes where we use have a fixed
-overhead for crypto (crypto_max_overhead) but use a dynamic overhead
-for the the other small header sizes.
+From: Lev Stipakov <lev@...515...>
 
-Patch v3: rebase
-Patch v4: add size of ack array to control channel frame size
-Patch v5: fix calculation of compression overhead calculated over 0 instead
-          of payload size
+ - add openssl3 port from https://github.com/microsoft/vcpkg/pull/20428/files
+with small changes:
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
+--- portfile.cmake.orig 2022-01-24 11:04:44.914467900 +0200
++++ portfile.cmake      2022-01-24 11:02:46.066088800 +0200
+@@ -5,8 +5,8 @@
+ vcpkg_from_github(
+     OUT_SOURCE_PATH SOURCE_PATH
+     REPO openssl/openssl
+-    REF openssl-3.0.0
+-    SHA512
+50b4fefa3e5a3359e7b06bfbc4ecc525ef9d76e13d087aa8e2d29880f08f74cc9d0c76b9bf1895c118def2bb0e4db0095e799a752b64b60721a423bd2cf989da
++    REF openssl-3.0.1
++    SHA512
+7f303769a3a796b88478399d42aa2a9a70dc74f62c975bbb93e8903e3bb8e25f16ecfc436186c2d4aa7383302c73ad1dd8ac4fccaa589062bbce6059d6073f18
+ )
+
+ if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
+@@ -114,13 +114,13 @@
+ if(VCPKG_TARGET_IS_UWP OR VCPKG_TARGET_IS_WINDOWS)
+     message(STATUS "Building ${TARGET_TRIPLET}-dbg")
+     vcpkg_execute_required_process(
+-        COMMAND ${JOM} /K /J ${VCPKG_CONCURRENCY} /F makefile
+install_dev
++        COMMAND ${JOM} /K /J ${VCPKG_CONCURRENCY} /F makefile
+install_dev install_runtime
+         WORKING_DIRECTORY
+"${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg"
+         LOGNAME install-${TARGET_TRIPLET}-dbg
+     )
+     message(STATUS "Building ${TARGET_TRIPLET}-rel")
+     vcpkg_execute_required_process(
+-        COMMAND ${JOM} /K /J ${VCPKG_CONCURRENCY} /F makefile
+install_dev
++        COMMAND ${JOM} /K /J ${VCPKG_CONCURRENCY} /F makefile
+install_dev install_runtime
+         WORKING_DIRECTORY
+"${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel"
+         LOGNAME install-${TARGET_TRIPLET}-rel
+     )
+@@ -129,13 +129,13 @@
+ else()
+     message(STATUS "Building ${TARGET_TRIPLET}-dbg")
+     vcpkg_execute_required_process(
+-        COMMAND ${MAKE} -j ${VCPKG_CONCURRENCY} install_dev
++        COMMAND ${MAKE} -j ${VCPKG_CONCURRENCY} install_dev
+install_runtime
+         WORKING_DIRECTORY
+"${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg"
+         LOGNAME install-${TARGET_TRIPLET}-dbg
+     )
+     message(STATUS "Building ${TARGET_TRIPLET}-rel")
+     vcpkg_execute_required_process(
+-        COMMAND ${MAKE} -j ${VCPKG_CONCURRENCY} install_dev
++        COMMAND ${MAKE} -j ${VCPKG_CONCURRENCY} install_dev
+install_runtime
+         WORKING_DIRECTORY
+"${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel"
+         LOGNAME install-${TARGET_TRIPLET}-rel
+     )
+@@ -161,6 +161,17 @@
+
+ endif()
+
++if(VCPKG_TARGET_IS_WINDOWS)
++    file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/openssl/")
++    file(RENAME "${CURRENT_PACKAGES_DIR}/bin/openssl.exe"
+"${CURRENT_PACKAGES_DIR}/tools/openssl/openssl.exe")
++
++    file(REMOVE
++        "${CURRENT_PACKAGES_DIR}/debug/bin/openssl.exe"
++    )
++endif()
++
++vcpkg_copy_tool_dependencies("${CURRENT_PACKAGES_DIR}/tools/openssl")
++
+ if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
+     file(REMOVE "${CURRENT_PACKAGES_DIR}/debug/lib/libcrypto.a"
+                 "${CURRENT_PACKAGES_DIR}/debug/lib/libssl.a"
+@@ -184,4 +195,4 @@
+ )
+ file(INSTALL     "${CURRENT_PORT_DIR}/usage"
+      DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}"
+-)
+\ No newline at end of file
++)
+
+ - use sizeof(void *) since msvc doesn't support sizeof of function ptr
+
+ - use XKEY_PROV_PROPS macro instead of props since msvc
+  requires constant expression in aggregate initializers
+
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- src/openvpn/comp-lz4.c   |   4 +-
- src/openvpn/crypto.c     |   4 +-
- src/openvpn/forward.c    |   8 +--
- src/openvpn/init.c       | 110 +++++++++++++++++++++++++++++++++++----
- src/openvpn/lzo.c        |   2 +-
- src/openvpn/mtu.c        |   7 ++-
- src/openvpn/mtu.h        |  74 +++++++++++++-------------
- src/openvpn/multi.c      |   4 +-
- src/openvpn/multi.h      |   2 +-
- src/openvpn/occ.c        |   4 +-
- src/openvpn/options.c    |   2 +-
- src/openvpn/ping.c       |   2 +-
- src/openvpn/reliable.c   |   2 -
- src/openvpn/reliable.h   |   3 ++
- src/openvpn/ssl.c        |  38 +++++++++++---
- src/openvpn/ssl_common.h |   3 +-
- 16 files changed, 196 insertions(+), 73 deletions(-)
+ .github/workflows/build.yaml                  |   2 +-
+ .../openssl3/detect_platform.cmake            |  86 ++++++++
+ contrib/vcpkg-ports/openssl3/portfile.cmake   | 198 ++++++++++++++++++
+ contrib/vcpkg-ports/openssl3/usage            |  11 +
+ contrib/vcpkg-ports/openssl3/vcpkg.json       |   7 +
+ .../vcpkg-ports/pkcs11-helper/portfile.cmake  |   2 +-
+ src/openvpn/xkey_helper.c                     |   4 +-
+ src/openvpn/xkey_provider.c                   |  13 +-
+ 8 files changed, 311 insertions(+), 12 deletions(-)
+ create mode 100644 contrib/vcpkg-ports/openssl3/detect_platform.cmake
+ create mode 100644 contrib/vcpkg-ports/openssl3/portfile.cmake
+ create mode 100644 contrib/vcpkg-ports/openssl3/usage
+ create mode 100644 contrib/vcpkg-ports/openssl3/vcpkg.json
 
-diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
-index bceca5e2..aa83ea80 100644
---- a/src/openvpn/comp-lz4.c
-+++ b/src/openvpn/comp-lz4.c
-@@ -213,7 +213,7 @@ lz4_decompress(struct buffer *buf, struct buffer work,
-                struct compress_context *compctx,
-                const struct frame *frame)
- {
--    size_t zlen_max = EXPANDED_SIZE(frame);
-+    size_t zlen_max = frame->buf.payload_size;
-     uint8_t c;          /* flag indicating whether or not our peer compressed */
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 9f884ac2..f1a75736 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -294,7 +294,7 @@ jobs:
+         uses: lukka/run-vcpkg@...2638...
+         with:
+           vcpkgGitCommitId: 'a2fcb03749ff5897b5985092934dc6057680c789'
+-          vcpkgArguments: 'openssl lz4 lzo pkcs11-helper tap-windows6'
++          vcpkgArguments: 'openssl3 lz4 lzo pkcs11-helper tap-windows6'
+           vcpkgTriplet: '${{ matrix.triplet }}-windows-ovpn'
+           cleanAfterBuild: false
  
-     if (buf->len <= 0)
-@@ -250,7 +250,7 @@ lz4v2_decompress(struct buffer *buf, struct buffer work,
-                  struct compress_context *compctx,
-                  const struct frame *frame)
- {
--    size_t zlen_max = EXPANDED_SIZE(frame);
-+    size_t zlen_max = frame->buf.payload_size;
-     uint8_t c;          /* flag indicating whether or not our peer compressed */
- 
-     if (buf->len <= 0)
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 0da71a32..40b15ad7 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -1065,7 +1065,7 @@ test_crypto(struct crypto_options *co, struct frame *frame)
- {
-     int i, j;
-     struct gc_arena gc = gc_new();
--    struct buffer src = alloc_buf_gc(TUN_MTU_SIZE(frame), &gc);
-+    struct buffer src = alloc_buf_gc(frame->buf.payload_size, &gc);
-     struct buffer work = alloc_buf_gc(BUF_SIZE(frame), &gc);
-     struct buffer encrypt_workspace = alloc_buf_gc(BUF_SIZE(frame), &gc);
-     struct buffer decrypt_workspace = alloc_buf_gc(BUF_SIZE(frame), &gc);
-@@ -1096,7 +1096,7 @@ test_crypto(struct crypto_options *co, struct frame *frame)
-     }
- 
-     msg(M_INFO, "Entering " PACKAGE_NAME " crypto self-test mode.");
--    for (i = 1; i <= TUN_MTU_SIZE(frame); ++i)
-+    for (i = 1; i <= frame->buf.payload_size; ++i)
-     {
-         update_time();
- 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index a905f993..d50766e3 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1120,8 +1120,8 @@ read_incoming_tun(struct context *c)
-     }
- #else  /* ifdef _WIN32 */
-     ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM(&c->c2.frame)));
--    ASSERT(buf_safe(&c->c2.buf, MAX_RW_SIZE_TUN(&c->c2.frame)));
--    c->c2.buf.len = read_tun(c->c1.tuntap, BPTR(&c->c2.buf), MAX_RW_SIZE_TUN(&c->c2.frame));
-+    ASSERT(buf_safe(&c->c2.buf, c->c2.frame.buf.payload_size));
-+    c->c2.buf.len = read_tun(c->c1.tuntap, BPTR(&c->c2.buf), c->c2.frame.buf.payload_size);
- #endif /* ifdef _WIN32 */
- 
- #ifdef PACKET_TRUNCATION_CHECK
-@@ -1710,7 +1710,7 @@ process_outgoing_tun(struct context *c)
-                       PIP_MSSFIX | PIPV4_EXTRACT_DHCP_ROUTER | PIPV4_CLIENT_NAT | PIP_OUTGOING,
-                       &c->c2.to_tun);
- 
--    if (c->c2.to_tun.len <= MAX_RW_SIZE_TUN(&c->c2.frame))
-+    if (c->c2.to_tun.len <= c->c2.frame.buf.payload_size)
-     {
-         /*
-          * Write to TUN/TAP device.
-@@ -1770,7 +1770,7 @@ process_outgoing_tun(struct context *c)
-          */
-         msg(D_LINK_ERRORS, "tun packet too large on write (tried=%d,max=%d)",
-             c->c2.to_tun.len,
--            MAX_RW_SIZE_TUN(&c->c2.frame));
-+            c->c2.frame.buf.payload_size);
-     }
- 
-     buf_reset(&c->c2.to_tun);
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 4e37b885..1ddc0d3c 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -740,7 +740,7 @@ init_port_share(struct context *c)
-     {
-         port_share = port_share_open(c->options.port_share_host,
-                                      c->options.port_share_port,
--                                     MAX_RW_SIZE_LINK(&c->c2.frame),
-+                                     c->c2.frame.buf.payload_size,
-                                      c->options.port_share_journal_dir);
-         if (port_share == NULL)
-         {
-@@ -2441,6 +2441,35 @@ do_startup_pause(struct context *c)
-     }
- }
- 
-+static size_t
-+get_frame_mtu(struct context *c, const struct options *o)
+diff --git a/contrib/vcpkg-ports/openssl3/detect_platform.cmake b/contrib/vcpkg-ports/openssl3/detect_platform.cmake
+new file mode 100644
+index 00000000..5f67f8d5
+--- /dev/null
++++ b/contrib/vcpkg-ports/openssl3/detect_platform.cmake
+@@ -0,0 +1,86 @@
++if(VCPKG_TARGET_IS_ANDROID)
++    # ${SOURCE_PATH}/Configuration/15-android.conf
++    if(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
++        set(PLATFORM "android-arm64")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm")
++        set(PLATFORM "android-arm")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
++        set(PLATFORM "android-x86_64")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
++        set(PLATFORM "android-x86")
++    endif()
++
++elseif(VCPKG_TARGET_IS_LINUX)
++    if(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
++        set(PLATFORM "linux-aarch64")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm")
++        set(PLATFORM "linux-armv4")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
++        set(PLATFORM "linux-x86_64")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
++        set(PLATFORM "linux-x86")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "ppc64le")
++        set(PLATFORM "linux-ppc64le")
++    endif()
++
++elseif(VCPKG_TARGET_IS_IOS)
++    # ${SOURCE_PATH}/Configuration/15-ios.conf
++    if(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
++        set(PLATFORM "ios64-xcrun")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm")
++        set(PLATFORM "ios-xcrun")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86" OR
++           VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
++        set(PLATFORM "iossimulator-xcrun")
++    endif()
++
++elseif(VCPKG_TARGET_IS_OSX)
++    if(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
++        set(PLATFORM "darwin64-arm64-cc")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
++        set(PLATFORM "darwin64-x86_64-cc")
++    endif()
++
++elseif(VCPKG_TARGET_IS_FREEBSD OR VCPKG_TARGET_IS_OPENBSD)
++    if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
++        set(PLATFORM "BSD-x86_64")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
++        set(PLATFORM "BSD-x86")
++    endif()
++
++elseif(VCPKG_TARGET_IS_MINGW)
++    if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
++        set(PLATFORM "mingw64")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
++        set(PLATFORM "mingw")
++    endif()
++
++elseif(VCPKG_TARGET_IS_UWP)
++    # ${SOURCE_PATH}/Configuration/50-win-onecore.conf
++    if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
++        set(PLATFORM "VC-WIN32-UWP")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
++        set(PLATFORM "VC-WIN64A-UWP")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm")
++        set(PLATFORM "VC-WIN32-ARM-UWP")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
++        set(PLATFORM "VC-WIN64-ARM-UWP")
++    endif()
++
++elseif(VCPKG_TARGET_IS_WINDOWS)
++    # ${SOURCE_PATH}/Configuration/50-win-onecore.conf
++    if(VCPKG_TARGET_ARCHITECTURE STREQUAL "x86")
++        set(PLATFORM "VC-WIN32")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "x64")
++        set(PLATFORM "VC-WIN64A")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm")
++        set(PLATFORM "VC-WIN32-ARM")
++    elseif(VCPKG_TARGET_ARCHITECTURE STREQUAL "arm64")
++        set(PLATFORM "VC-WIN64-ARM")
++    endif()
++
++endif()
++
++if(NOT DEFINED PLATFORM)
++    message(FATAL_ERROR "PLATFORM is unknown for the target platform/architecture")
++endif()
+diff --git a/contrib/vcpkg-ports/openssl3/portfile.cmake b/contrib/vcpkg-ports/openssl3/portfile.cmake
+new file mode 100644
+index 00000000..90a920f9
+--- /dev/null
++++ b/contrib/vcpkg-ports/openssl3/portfile.cmake
+@@ -0,0 +1,198 @@
++if(EXISTS ${CURRENT_INSTALLED_DIR}/include/openssl/ssl.h)
++    message(FATAL_ERROR "Can't build '${PORT}' if another SSL library is installed. Please remove existing one and try install '${PORT}' again if you need it.")
++endif()
++
++vcpkg_from_github(
++    OUT_SOURCE_PATH SOURCE_PATH
++    REPO openssl/openssl
++    REF openssl-3.0.1
++    SHA512 7f303769a3a796b88478399d42aa2a9a70dc74f62c975bbb93e8903e3bb8e25f16ecfc436186c2d4aa7383302c73ad1dd8ac4fccaa589062bbce6059d6073f18
++)
++
++if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
++    list(APPEND CONFIGURE_OPTIONS shared)
++else()
++    list(APPEND CONFIGURE_OPTIONS no-shared)
++endif()
++
++# see ${SOURCE_PATH}/INSTALL.md
++list(APPEND CONFIGURE_OPTIONS
++    no-zlib
++    no-ui-console   # Don't build with the User Interface (UI) console method
++    no-module       # Don't build any dynamically loadable engines
++    no-makedepend   # Don't generate dependencies
++    no-tests        # Don't build test programs or run any tests
++)
++if(VCPKG_TARGET_IS_UWP)
++    list(APPEND CONFIGURE_OPTIONS no-async)
++endif()
++if(VCPKG_TARGET_IS_WINDOWS)
++    # jom will build in parallel mode, we need /FS for PDB access
++    list(APPEND CONFIGURE_OPTIONS -utf-8 -FS)
++
++elseif(VCPKG_TARGET_IS_IOS)
++    # see https://github.com/microsoft/vcpkg PR 12527
++    # disable that makes linkage error (e.g. require stderr usage)
++    list(APPEND CONFIGURE_OPTIONS no-stdio no-ui no-asm)
++
++endif()
++
++# Option: platform/architecture. Defined a variable 'PLATFORM'
++include(${CMAKE_CURRENT_LIST_DIR}/detect_platform.cmake)
++
++# Clean & copy source files for working directories
++file(REMOVE_RECURSE "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg"
++                    "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel"
++)
++get_filename_component(SOURCE_DIR_NAME "${SOURCE_PATH}" NAME)
++file(COPY        "${SOURCE_PATH}"
++     DESTINATION "${CURRENT_BUILDTREES_DIR}")
++file(RENAME      "${CURRENT_BUILDTREES_DIR}/${SOURCE_DIR_NAME}"
++                 "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg")
++file(COPY        "${SOURCE_PATH}"
++     DESTINATION "${CURRENT_BUILDTREES_DIR}")
++file(RENAME      "${CURRENT_BUILDTREES_DIR}/${SOURCE_DIR_NAME}"
++                 "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel")
++
++# see ${SOURCE_PATH}/NOTES-PERL.md
++vcpkg_find_acquire_program(PERL)
++get_filename_component(PERL_EXE_PATH "${PERL}" PATH)
++vcpkg_add_to_path("${PERL_EXE_PATH}")
++
++if(NOT VCPKG_HOST_IS_WINDOWS)
++    # see ${SOURCE_PATH}/NOTES-UNIX.md
++    find_program(MAKE make REQUIRED)
++endif()
++
++if(VCPKG_TARGET_IS_WINDOWS)
++    # see ${SOURCE_PATH}/NOTES-WINDOWS.md
++    vcpkg_find_acquire_program(NASM)
++    get_filename_component(NASM_EXE_PATH "${NASM}" PATH)
++    vcpkg_add_to_path(PREPEND "${NASM_EXE_PATH}")
++    # note: jom is not for `vcpkg_add_to_path`
++    vcpkg_find_acquire_program(JOM)
++
++elseif(VCPKG_TARGET_IS_ANDROID)
++    # see ${SOURCE_PATH}/NOTES-ANDROID.md
++    if(NOT DEFINED ENV{ANDROID_NDK_ROOT} AND DEFINED ENV{ANDROID_NDK_HOME})
++        set(ENV{ANDROID_NDK_ROOT} $ENV{ANDROID_NDK_HOME})
++    endif()
++    if(NOT DEFINED ENV{ANDROID_NDK_ROOT})
++        message(FATAL_ERROR "ENV{ANDROID_NDK_ROOT} is required by ${SOURCE_PATH}/Configurations/15-android.conf")
++    endif()
++    if(VCPKG_HOST_IS_LINUX)
++        set(NDK_HOST_TAG "linux-x86_64")
++    elseif(VCPKG_HOST_IS_OSX)
++        set(NDK_HOST_TAG "darwin-x86_64")
++    elseif(VCPKG_HOST_IS_WINDOWS)
++        set(NDK_HOST_TAG "windows-x86_64")
++    else()
++        message(FATAL_ERROR "Unknown NDK host platform")
++    endif()
++    get_filename_component(NDK_TOOL_PATH "$ENV{ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${NDK_HOST_TAG}/bin" ABSOLUTE)
++    vcpkg_add_to_path(PREPEND "${NDK_TOOL_PATH}")
++
++endif()
++
++# Configure / Install
++# note: we need a PERL so can't use `vcpkg_configure_make` directly...
++message(STATUS "Configuring ${TARGET_TRIPLET}-dbg")
++vcpkg_execute_required_process(
++    COMMAND ${PERL} Configure ${OPENSSL_SHARED} ${CONFIGURE_OPTIONS}
++                ${PLATFORM} "--prefix=${CURRENT_PACKAGES_DIR}/debug"
++    WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg"
++    LOGNAME configure-perl-${TARGET_TRIPLET}-dbg
++)
++message(STATUS "Configuring ${TARGET_TRIPLET}-rel")
++vcpkg_execute_required_process(
++    COMMAND ${PERL} Configure ${OPENSSL_SHARED} ${CONFIGURE_OPTIONS}
++                ${PLATFORM} "--prefix=${CURRENT_PACKAGES_DIR}"
++    WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel"
++    LOGNAME configure-perl-${TARGET_TRIPLET}-rel
++)
++
++if(VCPKG_TARGET_IS_UWP OR VCPKG_TARGET_IS_WINDOWS)
++    message(STATUS "Building ${TARGET_TRIPLET}-dbg")
++    vcpkg_execute_required_process(
++        COMMAND ${JOM} /K /J ${VCPKG_CONCURRENCY} /F makefile install_dev install_runtime
++        WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg"
++        LOGNAME install-${TARGET_TRIPLET}-dbg
++    )
++    message(STATUS "Building ${TARGET_TRIPLET}-rel")
++    vcpkg_execute_required_process(
++        COMMAND ${JOM} /K /J ${VCPKG_CONCURRENCY} /F makefile install_dev install_runtime
++        WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel"
++        LOGNAME install-${TARGET_TRIPLET}-rel
++    )
++    vcpkg_copy_pdbs()
++
++else()
++    message(STATUS "Building ${TARGET_TRIPLET}-dbg")
++    vcpkg_execute_required_process(
++        COMMAND ${MAKE} -j ${VCPKG_CONCURRENCY} install_dev install_runtime
++        WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg"
++        LOGNAME install-${TARGET_TRIPLET}-dbg
++    )
++    message(STATUS "Building ${TARGET_TRIPLET}-rel")
++    vcpkg_execute_required_process(
++        COMMAND ${MAKE} -j ${VCPKG_CONCURRENCY} install_dev install_runtime
++        WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel"
++        LOGNAME install-${TARGET_TRIPLET}-rel
++    )
++    if(VCPKG_TARGET_IS_ANDROID AND VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
++        # install_dev copies symbolic link. overwrite them with the actual shared objects
++        file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/libcrypto.so"
++                     "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/libssl.so"
++             DESTINATION "${CURRENT_PACKAGES_DIR}/debug/lib"
++        )
++        file(INSTALL "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/libcrypto.so"
++                     "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/libssl.so"
++             DESTINATION "${CURRENT_PACKAGES_DIR}/lib"
++        )
++    endif()
++    # rename lib64 to lib for lib/pkgconfig
++    if(EXISTS "${CURRENT_PACKAGES_DIR}/debug/lib64")
++        file(RENAME "${CURRENT_PACKAGES_DIR}/debug/lib64" "${CURRENT_PACKAGES_DIR}/debug/lib")
++    endif()
++    if(EXISTS "${CURRENT_PACKAGES_DIR}/lib64")
++        file(RENAME "${CURRENT_PACKAGES_DIR}/lib64" "${CURRENT_PACKAGES_DIR}/lib")
++    endif()
++    vcpkg_fixup_pkgconfig()
++
++endif()
++
++if(VCPKG_TARGET_IS_WINDOWS)
++    file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/openssl/")
++    file(RENAME "${CURRENT_PACKAGES_DIR}/bin/openssl.exe" "${CURRENT_PACKAGES_DIR}/tools/openssl/openssl.exe")
++
++    file(REMOVE
++        "${CURRENT_PACKAGES_DIR}/debug/bin/openssl.exe"
++    )
++endif()
++
++vcpkg_copy_tool_dependencies("${CURRENT_PACKAGES_DIR}/tools/openssl")
++
++if(VCPKG_LIBRARY_LINKAGE STREQUAL "dynamic")
++    file(REMOVE "${CURRENT_PACKAGES_DIR}/debug/lib/libcrypto.a"
++                "${CURRENT_PACKAGES_DIR}/debug/lib/libssl.a"
++                "${CURRENT_PACKAGES_DIR}/lib/libcrypto.a"
++                "${CURRENT_PACKAGES_DIR}/lib/libssl.a"
++    )
++else()
++    file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/bin"
++                        "${CURRENT_PACKAGES_DIR}/bin"
++    )
++    if(VCPKG_TARGET_IS_WINDOWS)
++        file(REMOVE "${CURRENT_PACKAGES_DIR}/debug/lib/ossl_static.pdb"
++                    "${CURRENT_PACKAGES_DIR}/lib/ossl_static.pdb"
++        )
++    endif()
++endif()
++file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
++
++file(INSTALL     "${SOURCE_PATH}/LICENSE.txt"
++     DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}" RENAME "copyright"
++)
++file(INSTALL     "${CURRENT_PORT_DIR}/usage"
++     DESTINATION "${CURRENT_PACKAGES_DIR}/share/${PORT}"
++)
+diff --git a/contrib/vcpkg-ports/openssl3/usage b/contrib/vcpkg-ports/openssl3/usage
+new file mode 100644
+index 00000000..1f4298f7
+--- /dev/null
++++ b/contrib/vcpkg-ports/openssl3/usage
+@@ -0,0 +1,11 @@
++The package openssl3 can be imported via CMake FindOpenSSL module:
++
++    find_package(OpenSSL REQUIRED)
++    target_link_libraries(main PRIVATE OpenSSL::SSL OpenSSL::Crypto)
++
++Also, FindPkgConfig module can be used if pkg-config(.pc) files are installed:
++
++    find_package(PkgConfig REQUIRED)
++    pkg_check_modules(openssl REQUIRED IMPORTED_TARGET GLOBAL openssl>=3.0)
++    
++    target_link_libraries(main PRIVATE PkgConfig::openssl)
+diff --git a/contrib/vcpkg-ports/openssl3/vcpkg.json b/contrib/vcpkg-ports/openssl3/vcpkg.json
+new file mode 100644
+index 00000000..93db84b9
+--- /dev/null
++++ b/contrib/vcpkg-ports/openssl3/vcpkg.json
+@@ -0,0 +1,7 @@
 +{
-+    size_t mtu;
-+
-+    if (o->ce.link_mtu_defined)
-+    {
-+        ASSERT(o->ce.link_mtu_defined);
-+        /* if we have a link mtu defined we calculate what the old code
-+         * would have come up with as tun-mtu */
-+        size_t overhead = frame_calculate_protocol_header_size(&c->c1.ks.key_type,
-+                                                               o, true);
-+        mtu = o->ce.link_mtu - overhead;
-+
-+    }
-+    else
-+    {
-+        ASSERT(o->ce.tun_mtu_defined);
-+        mtu = o->ce.tun_mtu;
-+    }
-+
-+    if (mtu < TUN_MTU_MIN)
-+    {
-+        msg(M_WARN, "TUN MTU value (%lu) must be at least %d", mtu, TUN_MTU_MIN);
-+        frame_print(&c->c2.frame, M_FATAL, "MTU is too small");
-+    }
-+    return mtu;
++  "name": "openssl3",
++  "version-semver": "3.0.1",
++  "description": "TLS/SSL and crypto library",
++  "homepage": "https://www.openssl.org/",
++  "license": "Apache-2.0"
 +}
-+
- /*
-  * Finalize MTU parameters based on command line or config file options.
-  */
-@@ -2452,12 +2481,71 @@ frame_finalize_options(struct context *c, const struct options *o)
-         o = &c->options;
-     }
+diff --git a/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake b/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
+index 532aa69b..0723344e 100644
+--- a/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
++++ b/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
+@@ -23,7 +23,7 @@ vcpkg_build_nmake(
+     PROJECT_NAME Makefile.w32-vc
+     OPTIONS
+         OPENSSL=1
+-        OPENSSL_HOME=${CURRENT_PACKAGES_DIR}/../openssl_${TARGET_TRIPLET}
++        OPENSSL_HOME=${CURRENT_PACKAGES_DIR}/../openssl3_${TARGET_TRIPLET}
+ )
  
--    frame_add_to_extra_buffer(&c->c2.frame, PAYLOAD_ALIGN);
--    frame_finalize(&c->c2.frame,
-+    struct frame *frame = &c->c2.frame;
-+
-+    frame->tun_mtu = get_frame_mtu(c, o);
-+
-+    /* We always allow at least 1500 MTU packets to be received in our buffer
-+     * space */
-+    size_t payload_size = max_int(1500, frame->tun_mtu);
-+
-+    /* The extra tun needs to be added to the payload size */
-+    if (o->ce.tun_mtu_defined)
-+    {
-+        payload_size += o->ce.tun_mtu_extra;
-+    }
-+
-+    /* Add 100 byte of extra space in the buffer to account for slightly
-+     * mismatched MUTs between peers */
-+    payload_size += 100;
-+
-+
-+    /* the space that is reserved before the payload to add extra headers to it
-+    * we always reserve the space for the worst case */
-+    size_t headroom = 0;
-+
-+    /* includes IV and packet ID */
-+    headroom += crypto_max_overhead();
-+
-+    /* peer id + opcode */
-+    headroom += 4;
-+
-+    /* socks proxy header */
-+    headroom += 10;
-+
-+    /* compression header and fragment header (part of the encrypted payload) */
-+    headroom += 1 + 1;
-+
-+    /* Round up headroom to the next multiple of 4 to ensure alignment */
-+    headroom = (headroom + 3) & ~3;
-+
-+    /* Add the headroom to the payloadsize as a received (IP) packet can have
-+     * all the extra headers in it */
-+    payload_size += headroom;
-+
-+    /* the space after the payload, this needs some extra buffer space for
-+     * encryption so headroom is probably too much but we do not really care
-+     * the few extra bytes */
-+    size_t tailroom = headroom;
-+
-+#ifdef USE_COMP
-+    msg(D_MTU_DEBUG, "MTU: adding %lu buffer tailroom for compression for %lu "
-+                     "bytes of payload",
-+                     COMP_EXTRA_BUFFER(payload_size), payload_size);
-+    tailroom += COMP_EXTRA_BUFFER(payload_size);
-+#endif
-+
-+    frame->buf.payload_size = payload_size;
-+    frame->buf.headroom = headroom;
-+    frame->buf.tailroom = tailroom;
-+
-+    /* Kept to still update/calculate the other fields for now */
-+    frame_finalize(frame,
-                    o->ce.link_mtu_defined,
-                    o->ce.link_mtu,
-                    o->ce.tun_mtu_defined,
-                    o->ce.tun_mtu);
-+
- }
+ file(INSTALL ${SOURCE_PATH}/include/pkcs11-helper-1.0 DESTINATION ${CURRENT_PACKAGES_DIR}/include/)
+diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
+index c667f7be..50231335 100644
+--- a/src/openvpn/xkey_helper.c
++++ b/src/openvpn/xkey_helper.c
+@@ -125,8 +125,8 @@ xkey_load_generic_key(OSSL_LIB_CTX *libctx, void *handle, EVP_PKEY *pubkey,
+         {"xkey-origin", OSSL_PARAM_UTF8_STRING, (char *) origin, 0, 0},
+         {"pubkey", OSSL_PARAM_OCTET_STRING, &pubkey, sizeof(pubkey), 0},
+         {"handle", OSSL_PARAM_OCTET_PTR, &handle, sizeof(handle), 0},
+-        {"sign_op", OSSL_PARAM_OCTET_PTR, (void **) &sign_op, sizeof(sign_op), 0},
+-        {"free_op", OSSL_PARAM_OCTET_PTR, (void **) &free_op, sizeof(free_op), 0},
++        {"sign_op", OSSL_PARAM_OCTET_PTR, (void **) &sign_op, sizeof(void *), 0},
++        {"free_op", OSSL_PARAM_OCTET_PTR, (void **) &free_op, sizeof(void *), 0},
+         {NULL, 0, NULL, 0, 0}};
  
- /*
-@@ -3224,17 +3312,19 @@ init_context_buffers(const struct frame *frame)
+     /* Do not use EVP_PKEY_new_from_pkey as that will take keymgmt from pubkey */
+diff --git a/src/openvpn/xkey_provider.c b/src/openvpn/xkey_provider.c
+index c2d560c5..115b9931 100644
+--- a/src/openvpn/xkey_provider.c
++++ b/src/openvpn/xkey_provider.c
+@@ -44,9 +44,6 @@
+ #include <openssl/evp.h>
+ #include <openssl/err.h>
  
-     ALLOC_OBJ_CLEAR(b, struct context_buffers);
- 
--    b->read_link_buf = alloc_buf(BUF_SIZE(frame));
--    b->read_tun_buf = alloc_buf(BUF_SIZE(frame));
-+    size_t buf_size = BUF_SIZE(frame);
-+
-+    b->read_link_buf = alloc_buf(buf_size);
-+    b->read_tun_buf = alloc_buf(buf_size);
- 
--    b->aux_buf = alloc_buf(BUF_SIZE(frame));
-+    b->aux_buf = alloc_buf(buf_size);
- 
--    b->encrypt_buf = alloc_buf(BUF_SIZE(frame));
--    b->decrypt_buf = alloc_buf(BUF_SIZE(frame));
-+    b->encrypt_buf = alloc_buf(buf_size);
-+    b->decrypt_buf = alloc_buf(buf_size);
- 
- #ifdef USE_COMP
--    b->compress_buf = alloc_buf(BUF_SIZE(frame));
--    b->decompress_buf = alloc_buf(BUF_SIZE(frame));
-+    b->compress_buf = alloc_buf(buf_size);
-+    b->decompress_buf = alloc_buf(buf_size);
- #endif
- 
-     return b;
-diff --git a/src/openvpn/lzo.c b/src/openvpn/lzo.c
-index 8d572684..e7e89655 100644
---- a/src/openvpn/lzo.c
-+++ b/src/openvpn/lzo.c
-@@ -213,7 +213,7 @@ lzo_decompress(struct buffer *buf, struct buffer work,
-                struct compress_context *compctx,
-                const struct frame *frame)
- {
--    lzo_uint zlen = EXPANDED_SIZE(frame);
-+    lzo_uint zlen = frame->buf.payload_size;
-     int err;
-     uint8_t c;          /* flag indicating whether or not our peer compressed */
- 
-diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index cc7c95e4..1648c8fe 100644
---- a/src/openvpn/mtu.c
-+++ b/src/openvpn/mtu.c
-@@ -48,7 +48,7 @@ alloc_buf_sock_tun(struct buffer *buf,
-     /* allocate buffer for overlapped I/O */
-     *buf = alloc_buf(BUF_SIZE(frame));
-     ASSERT(buf_init(buf, FRAME_HEADROOM(frame)));
--    buf->len = tuntap_buffer ? MAX_RW_SIZE_TUN(frame) : MAX_RW_SIZE_LINK(frame);
-+    buf->len = frame->buf.payload_size;
-     ASSERT(buf_safe(buf, 0));
- }
- 
-@@ -296,6 +296,11 @@ frame_print(const struct frame *frame,
-         buf_printf(&out, "%s ", prefix);
-     }
-     buf_printf(&out, "[");
-+    buf_printf(&out, " mss_fix:%d", frame->mss_fix);
-+    buf_printf(&out, " tun_mtu:%d", frame->tun_mtu);
-+    buf_printf(&out, " headroom:%d", frame->buf.headroom);
-+    buf_printf(&out, " payload:%d", frame->buf.payload_size);
-+    buf_printf(&out, " tailroom:%d", frame->buf.tailroom);
-     buf_printf(&out, " L:%d", frame->link_mtu);
-     buf_printf(&out, " D:%d", frame->link_mtu_dynamic);
-     buf_printf(&out, " EF:%d", frame->extra_frame);
-diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index c83d8816..930c4b73 100644
---- a/src/openvpn/mtu.h
-+++ b/src/openvpn/mtu.h
-@@ -91,6 +91,25 @@
-  * Packet geometry parameters.
-  */
- struct frame {
-+    struct {
-+        /* This struct holds all the information about the buffers that are
-+         * allocated to match this frame */
-+        int payload_size;       /**< the maximum size that a payload that our
-+                                 *   buffers can hold from either tun device
-+                                 *   or network link.
-+                                 */
-+
-+
-+        int headroom;           /**< the headroom in the buffer, this is choosen
-+                                 *   to allow all potential header to be added
-+                                 *   before the packet */
-+
-+        int tailroom;            /**< the tailroom in the buffer. Chosen large
-+                                  *  enough to also accompany any extrea header
-+                                  *  or work space required by
-+                                  *  decryption/encryption or compression. */
-+    } buf;
-+
-     int link_mtu;               /**< Maximum packet size to be sent over
-                                  *   the external network interface. */
- 
-@@ -110,6 +129,17 @@ struct frame {
-                                  *   @endcode
-                                  */
- 
-+    int tun_mtu;                /**< the (user) configured tun-mtu. This is used
-+                                 *   in configuring the tun interface or
-+                                 *   in calculations that use the desired size
-+                                 *   of the payload in the buffer.
-+                                 *
-+                                 *   This variable is also used in control
-+                                 *   frame context to set the desired maximum
-+                                 *   control frame payload (although most of
-+                                 *   code ignores it)
-+                                 */
-+
-     int extra_buffer;           /**< Maximum number of bytes that
-                                  *   processing steps could expand the
-                                  *   internal work buffer.
-@@ -165,8 +195,8 @@ struct options;
-  * a tap device ifconfiged to an MTU of 1200 might actually want
-  * to return a packet size of 1214 on a read().
-  */
--#define PAYLOAD_SIZE(f)          ((f)->link_mtu - (f)->extra_frame)
- #define PAYLOAD_SIZE_DYNAMIC(f)  ((f)->link_mtu_dynamic - (f)->extra_frame)
-+#define PAYLOAD_SIZE(f)          ((f)->buf.payload_size)
- 
- /*
-  * Max size of a payload packet after encryption, compression, etc.
-@@ -176,35 +206,23 @@ struct options;
- #define EXPANDED_SIZE_DYNAMIC(f) ((f)->link_mtu_dynamic)
- #define EXPANDED_SIZE_MIN(f)     (TUN_MTU_MIN + TUN_LINK_DELTA(f))
- 
--/*
-- * These values are used as maximum size constraints
-- * on read() or write() from TUN/TAP device or TCP/UDP port.
-- */
--#define MAX_RW_SIZE_TUN(f)       (PAYLOAD_SIZE(f))
--#define MAX_RW_SIZE_LINK(f)      (EXPANDED_SIZE(f) + (f)->extra_link)
+-/* propq set all on all ops we implement */
+-static const char *const props = XKEY_PROV_PROPS;
 -
- /*
-  * Control buffer headroom allocations to allow for efficient prepending.
-  */
--#define FRAME_HEADROOM_BASE(f)     (TUN_LINK_DELTA(f) + (f)->extra_buffer + (f)->extra_link)
--/* Same as FRAME_HEADROOM_BASE but rounded up to next multiple of PAYLOAD_ALIGN */
--#define FRAME_HEADROOM(f)          frame_headroom(f)
+ /* A descriptive name */
+ static const char *provname = "OpenVPN External Key Provider";
  
- /*
-  * Max size of a buffer used to build a packet for output to
-- * the TCP/UDP port.
-- *
-- * the FRAME_HEADROOM_BASE(f) * 2 should not be necessary but it looks that at
-- * some point in the past we seem to have lost the information what parts of
-- * the extra space we need to have before the data and which we need after
-- * the data. So we ensure we have the FRAME_HEADROOM before and after the
-- * actual data.
-+ * the TCP/UDP port or to read a packet from a tap/tun device.
-  *
-  * Most of our code only prepends headers but compression needs the extra bytes
-  * *after* the data as compressed data might end up larger than the original
-- * data (and max compression overhead is part of extra_buffer)
-+ * data (and max compression overhead is part of extra_buffer). Also crypto
-+ * needs an extra block for encryption. Therefore tailroom is larger than the
-+ * headroom.
-  */
--#define BUF_SIZE(f)              (TUN_MTU_SIZE(f) + FRAME_HEADROOM_BASE(f) * 2)
-+#define BUF_SIZE(f) ((f)->buf.headroom + (f)->buf.payload_size + (f)->buf.tailroom)
-+
-+#define FRAME_HEADROOM(f)          ((f)->buf.headroom)
- 
- /*
-  * Function prototypes.
-@@ -326,20 +344,6 @@ const char *format_extended_socket_error(int fd, int *mtu, struct gc_arena *gc);
- 
- #endif
- 
--/*
-- * Calculate a starting offset into a buffer object, dealing with
-- * headroom and alignment issues.
-- */
--static inline int
--frame_headroom(const struct frame *f)
--{
--    const int offset = FRAME_HEADROOM_BASE(f);
--    /* These two lines just pad offset to next multiple of PAYLOAD_ALIGN in
--     * a complicated and confusing way */
--    const int delta = ((PAYLOAD_ALIGN << 24) - offset) & (PAYLOAD_ALIGN - 1);
--    return offset + delta;
--}
--
- /*
-  * frame member adjustment functions
-  */
-@@ -383,7 +387,7 @@ frame_add_to_extra_buffer(struct frame *frame, const int increment)
- static inline bool
- frame_defined(const struct frame *frame)
- {
--    return frame->link_mtu > 0;
-+    return frame->buf.payload_size > 0;
- }
- 
- #endif /* ifndef MTU_H */
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 103e882e..e5ffebff 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -3495,7 +3495,7 @@ gremlin_flood_clients(struct multi_context *m)
-         int i;
- 
-         ASSERT(buf_init(&buf, FRAME_HEADROOM(&m->top.c2.frame)));
--        parm.packet_size = min_int(parm.packet_size, MAX_RW_SIZE_TUN(&m->top.c2.frame));
-+        parm.packet_size = min_int(parm.packet_size, m->top.c2.frame.buf.payload_size);
- 
-         msg(D_GREMLIN, "GREMLIN_FLOOD_CLIENTS: flooding clients with %d packets of size %d",
-             parm.n_packets,
-@@ -3557,7 +3557,7 @@ multi_process_per_second_timers_dowork(struct multi_context *m)
- }
- 
- void
--multi_top_init(struct multi_context *m, const struct context *top)
-+multi_top_init(struct multi_context *m, struct context *top)
- {
-     inherit_context_top(&m->top, top);
-     m->top.c2.buffers = init_context_buffers(&top->c2.frame);
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index 6e85c21c..c2b085e3 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -257,7 +257,7 @@ void multi_init(struct multi_context *m, struct context *t, bool tcp_mode);
- 
- void multi_uninit(struct multi_context *m);
- 
--void multi_top_init(struct multi_context *m, const struct context *top);
-+void multi_top_init(struct multi_context *m, struct context *top);
- 
- void multi_top_free(struct multi_context *m);
- 
-diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c
-index 610c05f5..c4e7c1be 100644
---- a/src/openvpn/occ.c
-+++ b/src/openvpn/occ.c
-@@ -219,7 +219,7 @@ check_send_occ_msg_dowork(struct context *c)
- 
-     c->c2.buf = c->c2.buffers->aux_buf;
-     ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM(&c->c2.frame)));
--    ASSERT(buf_safe(&c->c2.buf, MAX_RW_SIZE_TUN(&c->c2.frame)));
-+    ASSERT(buf_safe(&c->c2.buf, c->c2.frame.buf.payload_size));
-     ASSERT(buf_write(&c->c2.buf, occ_magic, OCC_STRING_SIZE));
- 
-     switch (c->c2.occ_op)
-@@ -319,7 +319,7 @@ check_send_occ_msg_dowork(struct context *c)
-                  OCC_STRING_SIZE,
-                  (int) sizeof(uint8_t),
-                  EXTRA_FRAME(&c->c2.frame),
--                 MAX_RW_SIZE_TUN(&c->c2.frame),
-+                 c->c2.frame.buf.payload_size,
-                  BLEN(&c->c2.buf));
-             doit = true;
-         }
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 1fd9b78c..c7a86bd2 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3833,7 +3833,7 @@ options_string(const struct options *o,
-     buf_printf(&out, ",link-mtu %u",
-                (unsigned int) calc_options_string_link_mtu(o, frame));
- 
--    buf_printf(&out, ",tun-mtu %d", PAYLOAD_SIZE(frame));
-+    buf_printf(&out, ",tun-mtu %d", frame->tun_mtu);
-     buf_printf(&out, ",proto %s",  proto_remote(o->ce.proto, remote));
- 
-     bool p2p_nopull = o->mode == MODE_POINT_TO_POINT && !PULL_DEFINED(o);
-diff --git a/src/openvpn/ping.c b/src/openvpn/ping.c
-index 67bbca14..a28f347f 100644
---- a/src/openvpn/ping.c
-+++ b/src/openvpn/ping.c
-@@ -80,7 +80,7 @@ check_ping_send_dowork(struct context *c)
- {
-     c->c2.buf = c->c2.buffers->aux_buf;
-     ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM(&c->c2.frame)));
--    ASSERT(buf_safe(&c->c2.buf, MAX_RW_SIZE_TUN(&c->c2.frame)));
-+    ASSERT(buf_safe(&c->c2.buf, c->c2.frame.buf.payload_size));
-     ASSERT(buf_write(&c->c2.buf, ping_string, sizeof(ping_string)));
- 
-     /*
-diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
-index 08c9ab19..ef17aae7 100644
---- a/src/openvpn/reliable.c
-+++ b/src/openvpn/reliable.c
-@@ -205,8 +205,6 @@ error:
-     return false;
- }
- 
--#define ACK_SIZE(n) (sizeof(uint8_t) + ((n) ? SID_SIZE : 0) + sizeof(packet_id_type) * (n))
--
- /* write a packet ID acknowledgement record to buf, */
- /* removing all acknowledged entries from ack */
- bool
-diff --git a/src/openvpn/reliable.h b/src/openvpn/reliable.h
-index 693abb3c..02484d1e 100644
---- a/src/openvpn/reliable.h
-+++ b/src/openvpn/reliable.h
-@@ -66,6 +66,9 @@ struct reliable_ack
-     packet_id_type packet_id[RELIABLE_ACK_SIZE];
+@@ -592,9 +589,9 @@ static const OSSL_DISPATCH ec_keymgmt_functions[] = {
  };
  
-+/* The size of the ACK header */
-+#define ACK_SIZE(n) (sizeof(uint8_t) + ((n) ? SID_SIZE : 0) + sizeof(packet_id_type) * (n))
-+
- /**
-  * The structure in which the reliability layer stores a single incoming
-  * or outgoing packet.
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 891355fb..772d17c5 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -332,6 +332,35 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
-     /* set dynamic link MTU to cap control channel packets at 1250 bytes */
-     ASSERT(TUN_LINK_DELTA(frame) < min_int(frame->link_mtu, 1250));
-     frame->link_mtu_dynamic = min_int(frame->link_mtu, 1250) - TUN_LINK_DELTA(frame);
-+
-+    /* calculate the maximum overhead that control channel frames may have */
-+    int overhead = 0;
-+
-+    /* Socks */
-+    overhead += 10;
-+
-+    /* tls-auth and tls-crypt */
-+    overhead += max_int(tls_crypt_buf_overhead(),
-+                        packet_id_size(true) + OPENVPN_MAX_HMAC_SIZE);
-+
-+    /* TCP length field and opcode */
-+    overhead+= 3;
-+
-+    /* ACK array and remote SESSION ID (part of the ACK array) */
-+    overhead += ACK_SIZE(RELIABLE_ACK_SIZE);
-+
-+    /* Previous OpenVPN version calculated the maximum size and buffer of a
-+     * control frame depending on the overhead of the data channel frame
-+     * overhead and limited its maximum size to 1250. We always allocate the
-+     * 1250 buffer size since a lot of code blindly assumes a large buffer
-+     * (e.g. PUSH_BUNDLE_SIZE) and set frame->mtu_mtu as suggestion for the
-+     * size */
-+    frame->buf.payload_size = 1250 + overhead;
-+
-+    frame->buf.headroom = overhead;
-+    frame->buf.tailroom = overhead;
-+
-+    frame->tun_mtu = min_int(data_channel_frame->tun_mtu, 1250);
- }
+ const OSSL_ALGORITHM keymgmts[] = {
+-    {"RSA:rsaEncryption", props, rsa_keymgmt_functions, "OpenVPN xkey RSA Key Manager"},
+-    {"RSA-PSS:RSASSA-PSS", props, rsa_keymgmt_functions, "OpenVPN xkey RSA-PSS Key Manager"},
+-    {"EC:id-ecPublicKey", props, ec_keymgmt_functions, "OpenVPN xkey EC Key Manager"},
++    {"RSA:rsaEncryption", XKEY_PROV_PROPS, rsa_keymgmt_functions, "OpenVPN xkey RSA Key Manager"},
++    {"RSA-PSS:RSASSA-PSS", XKEY_PROV_PROPS, rsa_keymgmt_functions, "OpenVPN xkey RSA-PSS Key Manager"},
++    {"EC:id-ecPublicKey", XKEY_PROV_PROPS, ec_keymgmt_functions, "OpenVPN xkey EC Key Manager"},
+     {NULL, NULL, NULL, NULL}
+ };
  
- void
-@@ -1875,13 +1904,6 @@ tls_session_update_crypto_params_do_work(struct tls_session *session,
-         msg(D_HANDSHAKE, "Data Channel: using negotiated cipher '%s'",
-             options->ciphername);
-     }
--    else
--    {
--        /* Very hacky workaround and quick fix for frame calculation
--         * different when adjusting frame size when the original and new cipher
--         * are identical to avoid a regression with client without NCP */
--        return tls_session_generate_data_channel_keys(session);
--    }
+@@ -1074,8 +1071,8 @@ static const OSSL_DISPATCH signature_functions[] = {
+ };
  
-     init_key_type(&session->opt->key_type, options->ciphername,
-                   options->authname, true, true);
-@@ -2964,7 +2986,7 @@ tls_process(struct tls_multi *multi,
-             buf = reliable_get_buf_output_sequenced(ks->send_reliable);
-             if (buf)
-             {
--                int status = key_state_read_ciphertext(&ks->ks_ssl, buf, PAYLOAD_SIZE_DYNAMIC(&multi->opt.frame));
-+                int status = key_state_read_ciphertext(&ks->ks_ssl, buf, multi->opt.frame.tun_mtu);
-                 if (status == -1)
-                 {
-                     msg(D_TLS_ERRORS,
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index f851bd2b..ada68b4b 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -221,8 +221,9 @@ struct key_state
-     struct reliable *rec_reliable; /* order incoming ciphertext packets before we pass to TLS */
-     struct reliable_ack *rec_ack; /* buffers all packet IDs we want to ACK back to sender */
- 
-+    /** Holds outgoing message for the control channel until ks->state reaches
-+     * S_ACTIVE */
-     struct buffer_list *paybuf;
--
-     counter_type n_bytes;                /* how many bytes sent/recvd since last key exchange */
-     counter_type n_packets;              /* how many packets sent/recvd since last key exchange */
+ const OSSL_ALGORITHM signatures[] = {
+-    {"RSA:rsaEncryption", props, signature_functions, "OpenVPN xkey RSA Signature"},
+-    {"ECDSA", props, signature_functions, "OpenVPN xkey ECDSA Signature"},
++    {"RSA:rsaEncryption", XKEY_PROV_PROPS, signature_functions, "OpenVPN xkey RSA Signature"},
++    {"ECDSA", XKEY_PROV_PROPS, signature_functions, "OpenVPN xkey ECDSA Signature"},
+     {NULL, NULL, NULL, NULL}
+ };
  
 -- 
-2.33.0
+2.23.0.windows.1
 
 
