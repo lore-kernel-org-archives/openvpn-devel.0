@@ -1,13 +1,13 @@
-Message-ID: <812ea408-893f-799e-d560-c193aaa2f789@...1227...>
-Date: Thu, 20 Jan 2022 12:11:29 +0100
+Message-ID: <4c7d083b-5499-cfde-07c1-be9417e8f654@...1227...>
+Date: Thu, 20 Jan 2022 12:21:30 +0100
 MIME-Version: 1.0
 Content-Language: en-GB
 References: <20211214165928.30676-1-selva.nair@...277...>
- <20211214165928.30676-13-selva.nair@...277...>
+ <20211214165928.30676-16-selva.nair@...277...>
 From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20211214165928.30676-13-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v3 12/18] Increase ERR_BUF_SIZE when
- management interface support is enabled
+In-Reply-To: <20211214165928.30676-16-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v3 15/18] Enable signing using CNG
+ through xkey provider
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,19 +23,18 @@ To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 Am 14.12.21 um 17:59 schrieb selva.nair@...277...:
 > From: Selva Nair <selva.nair@...277...>
 > 
-> Sending largish messages to the management interface errors due to
-> the limited size used for the "error" buffer in x_msg_va(). Although
-> all intermediate steps allocate required space for the data to
-> send, it gets truncated at the last step.
+> - Add xkey_cng_sign() as sign_op for the provider
+>    and load the key using xkey_generic_load.
 > 
-> This really requires a smarter fix. As a quick relief, we just increase
-> the buffer size to 10240 when management support is compiled in. Should
-> be enough for PK_SIGN with undigested message.
+> - Enable/Disable old code when provider is available or not.
 > 
-> Signed-off-by: Selva Nair <selva.nair@...277...>
-
+> - xkey_digest is made non-static for use in cryptoapi.c
+> 
+> One function cng_padding_type() is moved down to reduce number
+> of ifdef's.
 
 
 Acked-By: Arne Schwabe <arne@...1227...>
 
+Note, I have not tested the CNG signing myself.
 
