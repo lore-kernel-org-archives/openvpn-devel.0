@@ -1,13 +1,13 @@
-Message-ID: <36d57ded-e10e-27a5-0c66-5b098f3954da@...1227...>
-Date: Thu, 20 Jan 2022 11:14:58 +0100
+Message-ID: <8982651b-6563-1cc7-2f87-b6ef3cd76e58@...1227...>
+Date: Thu, 20 Jan 2022 11:15:56 +0100
 MIME-Version: 1.0
 Content-Language: en-GB
 References: <20211214165928.30676-1-selva.nair@...277...>
- <20211214165928.30676-2-selva.nair@...277...>
+ <20211214165928.30676-3-selva.nair@...277...>
 From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20211214165928.30676-2-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v3 01/18] A built-in provider for using
- external key with OpenSSL 3.0
+In-Reply-To: <20211214165928.30676-3-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v3 02/18] Implement KEYMGMT in the xkey
+ provider
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,7 +23,20 @@ To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 Am 14.12.21 um 17:59 schrieb selva.nair@...277...:
 > From: Selva Nair <selva.nair@...277...>
 > 
+> A minimal set of functions for keymgmt are implemented.
+> No support for external key import as yet, only native
+> keys. Support for native keys is required as keys may
+> get imported into us for some operations as well as
+> for comparison with unexportable external keys that we hold.
+> 
+> Implementation of signature callbacks is in the next commit.
+> 
+> v2 changes: This was commit 3/9 in v1
+> v3 changes: When OpenSSL native key is imported instead of duplicating
+> the whole key, use only the public components for public key.
+> 
 
 Acked-By: Arne Schwabe <arne@...1227...>
+
 
 
