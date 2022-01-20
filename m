@@ -1,10 +1,16 @@
-Date: Thu, 20 Jan 2022 18:08:54 +0100 (CET)
-Message-Id: <202201201708.20KH8sJT007634@...2054...>
+Date: Thu, 20 Jan 2022 18:24:07 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211214165928.30676-15-selva.nair@...277...>
-References: <20211214165928.30676-15-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: pkcs11: Interface the xkey
- provider with pkcs11-helper
+Message-ID: <Yemat3tmIyN8Hq+s@...1296...>
+References: <20211214165928.30676-8-selva.nair@...277...>
+ <202201201518.20KFI6r4000355@...2054...>
+ <CAKuzo_jX7aL3WG91JRk4_+27m=0G4JRvUrVTRzHd6=jqAf3bpg@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="sj3L71vWJY7Coj1N"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_jX7aL3WG91JRk4_+27m=0G4JRvUrVTRzHd6=jqAf3bpg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Enable signing via provider
+ for management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,54 +19,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-client tested with 3.0.1 (no pkcs#11 though), and stared at the code a bit.
+--sj3L71vWJY7Coj1N
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This change looks like it really wants an "#else" and move the #endif 
-to the end of the function...  (though the compiler does not warn)
+Hi,
 
- pkcs11_init_tls_session(pkcs11h_certificate_t certificate,
-                         struct tls_root_ctx *const ssl_ctx)
- {
-+
-+#ifdef HAVE_XKEY_PROVIDER
-+    return (xkey_load_from_pkcs11h(certificate, ssl_ctx) == 0); /* inverts the return value */
-+#endif
-+
-     int ret = 1;
-     (more stuff)
+On Thu, Jan 20, 2022 at 11:32:40AM -0500, Selva Nair wrote:
+> On Thu, Jan 20, 2022 at 10:18 AM Gert Doering <gert@...1296...> wrote:
+>=20
+> > Compile and client tested on 1.1.1 and 3.0.1.
+> >
+> > Glancing at the code related to management_external_key() does
+> > not make me very happy... too many build time variants.
+>=20
+>=20
+> "Happiness" is never a word that comes to mind while reading OpenVPN code=
+ :)
+> ...
 
+Oh, some of the code paths are really nice these days :-) - but the
+#ifdef maze regarding SSL libraries / crypto features is getting truly
+annoying.
 
-This prototype looks a bit surprising
+> Even at our snail's pace, 2.7 may be out before we can break free of
+> OpenSSL 1, LibreSSL xyz etc. An option may be to require OpenSSL 3+ or
+> similar for external keys, or at least for management-external-key.
+>=20
+> That feature is really used by only a few platforms (only Android for
+> now?).=20
 
-+static XKEY_EXTERNAL_SIGN_fn xkey_pkcs11h_sign;
+That was my idea - since only Windows and Android use the "xkey" code
+paths today (as far as I understand), make 3.0.1 a hard requirement
+for Windows and Android, and disable --management-external-key for
+older SSL builds.  Maybe this is a bit too drastic, but it would
+reduce code paths to be maintained and tested quite a bit.
 
-given that the function is defined just below?  Is this to ensure
-XKEY_EXTERNAL_SIGN_fn matches the actual function definition?
+For Windows and Android, we bundle the SSL library to be used anyway,
+so we do not need to care what the OS might bring along.
 
+> Although it's a nifty option that could potentially be leveraged to
+> remove pkcs11-helper, CNG etc out of OpenVPN core.
 
-Your patch has been applied to the master branch.
+Whatever reduces #ifdef and library dependencies :-)
 
-commit 6121001ed82914f336da081bb8aefaeb055450cb
-Author: Selva Nair
-Date:   Tue Dec 14 11:59:24 2021 -0500
+gert
 
-     pkcs11: Interface the xkey provider with pkcs11-helper
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20211214165928.30676-15-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23442.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--sj3L71vWJY7Coj1N
+Content-Type: application/pgp-signature; name="signature.asc"
 
---
-kind regards,
+-----BEGIN PGP SIGNATURE-----
 
-Gert Doering
+iQGcBAEBAgAGBQJh6Zq3AAoJEB2Cnv7KVigSPEcL/2BQIxaWAGzpsOCRyM5vpWjj
+7W+fbVzsSNVEiaG+XLeNPpwUrD4X12tFXm4KsdLoOCugILaTQcPuIHpiZGqv+lcm
+06GyJN3uQsLaJzzQpKm/RH0Q+OhyVGk4avnogJFOp719rUOZooGY0IDwxjLuv+bP
+MxShvdXD1py4T8lQD2GExumDgtiffj2b7eT3Fw4z7pu0djEit23p2dbEv5FrHPIL
+Y/01dAJntXPZCUvYvhHEIN/p84NIO4nCD3CpwvEsc+iHMfWwyc/NGA84bdaN4LBV
+V4blrkQXnTlakkEq+sf7yv+r76piWWvFekJi/gfiio1FL65RTAKnPmJ5jP8Z0mUG
+RbfKs8JZz1xQr6YPnHKNrGMYQl2qj6E9OcvI5eipnOsF0xZOMyWbaDY2/HBN1MAc
+sRP4/gwX7hnb4Jmqkbvf/PE7DnwANyhkbhCRqfYgKaRPC7kNaa7K3XNwhPhcFb5F
+Qgr2bBSzYexI2ewlietIbWvRCEgEdtWOTx1eF/ybvA==
+=mCqt
+-----END PGP SIGNATURE-----
 
+--sj3L71vWJY7Coj1N--
 
