@@ -1,13 +1,13 @@
-Message-ID: <90d15dcb-71e8-4663-d2a6-3229b1cb361e@...1227...>
-Date: Thu, 20 Jan 2022 11:42:50 +0100
+Message-ID: <53ab5ec6-df69-49fa-8468-1b9331c6eb20@...1227...>
+Date: Thu, 20 Jan 2022 11:53:37 +0100
 MIME-Version: 1.0
 Content-Language: en-GB
 References: <20211214165928.30676-1-selva.nair@...277...>
- <20211214165928.30676-6-selva.nair@...277...>
+ <20211214165928.30676-7-selva.nair@...277...>
 From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20211214165928.30676-6-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v3 05/18] Initialize the xkey provider
- and use it in SSL context
+In-Reply-To: <20211214165928.30676-7-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v3 06/18] A helper function to import
+ private key for management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,22 +23,14 @@ To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 Am 14.12.21 um 17:59 schrieb selva.nair@...277...:
 > From: Selva Nair <selva.nair@...277...>
 > 
-> - Add function to check when external key is in use
+> - Leverage keymgmt_import through EVP_PKEY_new_fromdata() to
+>    import "management-external-key"
 > 
-> - Load xkey provider into a custom library context when required
+> - When required, use this to set SSL_CTX_use_PrivateKey
 > 
-> - Use the custom libctx in SSL CTX when external key is in use
-> 
-> As no keys are yet loaded through the provider,
-> no functionality gets delegated to it as yet.
-> 
-> v2 changes: Provider loading is reworked to activate only when external
->              keys are in use
->              This was 2/9 in v1
-> 
+> The sign_op is not implemented yet. This will error out while
+> signing with --management-external-key. The next commit
+> fixes that.
 
 Acked-By: Arne Schwabe <arne@...1227...>
-
-
-
 
