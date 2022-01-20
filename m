@@ -1,10 +1,10 @@
-Date: Thu, 20 Jan 2022 15:32:22 +0100 (CET)
-Message-Id: <202201201432.20KEWMRw096411@...2054...>
+Date: Thu, 20 Jan 2022 15:43:16 +0100 (CET)
+Message-Id: <202201201443.20KEhGKs098358@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211214165928.30676-6-selva.nair@...277...>
-References: <20211214165928.30676-6-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Initialize the xkey provider
- and use it in SSL context
+In-Reply-To: <20211214165928.30676-7-selva.nair@...277...>
+References: <20211214165928.30676-7-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: A helper function to import
+ private key for management-external-key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,25 +18,43 @@ Content-Transfer-Encoding: 8bit
 To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is the first truly "interesting" patch in the series, that brings
-stuff to be tested :-)
+Compile tested with 3.0.1 and glanced over the code.  Not actually
+tested (no management-external-key here) but I know that Arne is using
+*this* in his Android app, so it got a good beating :-)
 
-Tested on OSSL 1.1.1 and mbedTLS builds ("so nothing breaks with the
-old stuff"), and on 3.0.1 - but only with regular keys, so no
-"key_is_external() = true" yet.
+There might be a memory leak lurking here:
+
++#ifdef HAVE_XKEY_PROVIDER
++    EVP_PKEY *privkey = xkey_load_management_key(tls_libctx, pkey);
++    if (!privkey
++        || !SSL_CTX_use_PrivateKey(ctx->ctx, privkey))
++    {
++        goto cleanup;
++    }
++    EVP_PKEY_free(privkey);
++#else
+
+if I read this right, the actual signing operation is happening
+in SSL_CTX_use_PrivateKey() - so, if the key can be loaded fine
+(privkey != NULL) but the actual signing fails, we "goto cleanup",
+and never EVP_PKEY_free() it.  But I might be misunderstanding this.
+
+Fixed one typo in a comment ("avaialble") on the fly.  Hope that 
+won't come back as a "context not matching" conflict later on.
+
 
 Your patch has been applied to the master branch.
 
-commit 4b85c488ecadb3c076bc6cb605e00653cef67c94
+commit c279986bf4814aad72f9358d8509aa35f54ff662
 Author: Selva Nair
-Date:   Tue Dec 14 11:59:15 2021 -0500
+Date:   Tue Dec 14 11:59:16 2021 -0500
 
-     Initialize the xkey provider and use it in SSL context
+     A helper function to import private key for management-external-key
 
      Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20211214165928.30676-6-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23432.html
+     Message-Id: <20211214165928.30676-7-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23443.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
