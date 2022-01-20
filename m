@@ -1,13 +1,13 @@
-Message-ID: <4c7d083b-5499-cfde-07c1-be9417e8f654@...1227...>
-Date: Thu, 20 Jan 2022 12:21:30 +0100
+Message-ID: <c3390e5f-f83b-169f-bbec-2162c952d1e0@...1227...>
+Date: Thu, 20 Jan 2022 12:22:19 +0100
 MIME-Version: 1.0
 Content-Language: en-GB
 References: <20211214165928.30676-1-selva.nair@...277...>
- <20211214165928.30676-16-selva.nair@...277...>
+ <20211214165928.30676-17-selva.nair@...277...>
 From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20211214165928.30676-16-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v3 15/18] Enable signing using CNG
- through xkey provider
+In-Reply-To: <20211214165928.30676-17-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v3 16/18] Add a unit test for external
+ key provider
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,18 +23,14 @@ To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 Am 14.12.21 um 17:59 schrieb selva.nair@...277...:
 > From: Selva Nair <selva.nair@...277...>
 > 
-> - Add xkey_cng_sign() as sign_op for the provider
->    and load the key using xkey_generic_load.
-> 
-> - Enable/Disable old code when provider is available or not.
-> 
-> - xkey_digest is made non-static for use in cryptoapi.c
-> 
-> One function cng_padding_type() is moved down to reduce number
-> of ifdef's.
+> Tests:
+> - Check SIGNATURE and KEYMGMT methods can be fetched
+>    from the provider
+> - Load sample RSA and EC keys as management-external-key
+>    and check that their sign callbacks are correctly exercised:
+>    with and without digest support mocked in the client
+>    capability flag.
 
 
 Acked-By: Arne Schwabe <arne@...1227...>
-
-Note, I have not tested the CNG signing myself.
 
