@@ -1,10 +1,10 @@
-Date: Thu, 20 Jan 2022 17:58:07 +0100 (CET)
-Message-Id: <202201201658.20KGw7BS007381@...2054...>
+Date: Thu, 20 Jan 2022 18:16:37 +0100 (CET)
+Message-Id: <202201201716.20KHGbmF007817@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211214165928.30676-14-selva.nair@...277...>
-References: <20211214165928.30676-14-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add a generic key loading
- helper function for xkey provider
+In-Reply-To: <20211214165928.30676-16-selva.nair@...277...>
+References: <20211214165928.30676-16-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Enable signing using CNG
+ through xkey provider
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,24 +18,21 @@ Content-Transfer-Encoding: 8bit
 To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I knew fixing that "avaiable" typo would come back and bite me :-)
-
-Client tested with 3.0.1, and glanced at the code a bit.
-
-Fixed a comment typo ("callng free_op").
+Compile-tested on Linux with OpenSSL 3.0.1, and on Ubuntu/MinGW
+(though with older OpenSSL) to ensure it doesn't break windows builds.
 
 Your patch has been applied to the master branch.
 
-commit b64c9eb31824dd46c949d071751f8aebc008004c
+commit 7ae282ca23e5a17cd9f2eb4801deed64ca64c704
 Author: Selva Nair
-Date:   Tue Dec 14 11:59:23 2021 -0500
+Date:   Tue Dec 14 11:59:25 2021 -0500
 
-     Add a generic key loading helper function for xkey provider
+     Enable signing using CNG through xkey provider
 
      Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20211214165928.30676-14-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23436.html
+     Message-Id: <20211214165928.30676-16-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23444.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
