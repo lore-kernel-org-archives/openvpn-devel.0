@@ -1,10 +1,11 @@
-Date: Fri, 21 Jan 2022 14:49:43 +0100 (CET)
-Message-Id: <202201211349.20LDnhbE033730@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220121133900.14567-1-a@...2181...>
-References: <20220121133900.14567-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: GitHub Actions: add other
- config flavours
+From: Antonio Quartulli <a@...2181...>
+Date: Fri, 21 Jan 2022 15:09:41 +0100
+Message-Id: <20220121140941.13930-1-a@...2181...>
+In-Reply-To: <20220120101125.31234-1-a@...2181...>
+References: <20220120101125.31234-1-a@...2181...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2] unit-test: fix test_crypto when USE_COMP
+ is not defined
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +16,93 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>, Arne Schwabe <arne@...1227...>
 
-Acked-by: Gert Doering <gert@...1296...>
+This unit-test did not consider the case when USE_COMP is not defined,
+thus generating a compiler error.
 
-Sounds useful.  We should not overdo the "burn energy for testing build
-variants" thing, but "not test problematic variants" is not good either.
+Adapt the test to the case when no compression is available.
 
-Your patch has been applied to the master branch.
+Cc: Arne Schwabe <arne@...1227...>
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
 
-commit 8ee0997abd0642c4c4a6135573beba647d982f7c
-Author: Antonio Quartulli
-Date:   Fri Jan 21 14:39:00 2022 +0100
+v2:
+* restore original MTU numbers - this can be addressed by another patch
 
-     GitHub Actions: add other config flavours
+ tests/unit_tests/openvpn/test_crypto.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220121133900.14567-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23624.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
+index 19ce174e..8aa2fd0f 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -278,30 +278,34 @@ test_occ_mtu_calculation(void **state)
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+     assert_int_equal(linkmtu, 1440);
+ 
+-    /* --secret, cipher BF-CBC, auth SHA1 */
++    /* secret, cipher BF-CBC, auth SHA1 */
+     o.ciphername = "BF-CBC";
+     o.authname = "SHA1";
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+     assert_int_equal(linkmtu, 1444);
+ 
+-    /* --secret, cipher BF-CBC, auth SHA1, tcp-client */
++    /* secret, cipher BF-CBC, auth SHA1, tcp-client */
+     o.ce.proto = PROTO_TCP_CLIENT;
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+     assert_int_equal(linkmtu, 1446);
+ 
+     o.ce.proto = PROTO_UDP;
+ 
+-    /* --secret, comp-lzo yes, cipher BF-CBC, auth SHA1 */
++#if defined(USE_COMP)
++    /* secret, comp-lzo yes, cipher BF-CBC, auth SHA1 */
+     o.comp.alg = COMP_ALG_LZO;
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+     assert_int_equal(linkmtu, 1445);
++#endif
+ 
+-    /* --secret, comp-lzo yes, cipher BF-CBC, auth SHA1, fragment 1200 */
++    /* secret, comp-lzo yes, cipher BF-CBC, auth SHA1, fragment 1200 */
+     o.ce.fragment = 1200;
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+     assert_int_equal(linkmtu, 1449);
+ 
++#if defined(USE_COMP)
+     o.comp.alg = COMP_ALG_UNDEF;
++#endif
+     o.ce.fragment = 0;
+ 
+     /* TLS mode */
+@@ -309,7 +313,7 @@ test_occ_mtu_calculation(void **state)
+     o.tls_client = true;
+     o.pull = true;
+ 
+-    /* tls client, cipher AES-128-CBC, auth SHA1, tls-auth*/
++    /* tls client, cipher AES-128-CBC, auth SHA1, tls-auth */
+     o.authname = "SHA1";
+     o.ciphername = "AES-128-CBC";
+     o.tls_auth_file = "dummy";
+@@ -346,6 +350,7 @@ test_occ_mtu_calculation(void **state)
+     assert_int_equal(linkmtu, 1449);
+ 
+ 
++#if defined(USE_COMP)
+     /* tls client, auth SHA1, cipher AES-256-GCM, fragment, comp-lzo yes */
+     o.comp.alg = COMP_ALG_LZO;
+     o.ce.fragment = 1200;
+@@ -356,6 +361,7 @@ test_occ_mtu_calculation(void **state)
+     o.ce.socks_proxy_server = "socks.example.com";
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+     assert_int_equal(linkmtu, 1464);
++#endif
+ 
+     gc_free(&gc);
+ }
+-- 
+2.34.1
 
 
