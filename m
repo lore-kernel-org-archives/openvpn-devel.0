@@ -1,12 +1,12 @@
-Message-ID: <a91217dd-5c98-accf-2fb5-ebdaba2a0ecb@...2181...>
-Date: Fri, 21 Jan 2022 22:55:09 +0100
+Message-ID: <63eb5777-e1f8-d6d5-47b5-954edd778eb9@...1227...>
+Date: Sat, 22 Jan 2022 03:37:25 +0100
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20211213162841.15763-1-frank@...2641...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20211213162841.15763-1-frank@...2641...>
-Subject: Re: [Openvpn-devel] [PATCH] Make build deterministic,
- remove __DATE__
+Content-Language: en-GB
+References: <20220121204933.591-1-a@...2181...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20220121204933.591-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 2.5] GitHub Actions: update script to
+ same version as master
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,24 +17,16 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Frank Lichtenheld <frank@...2641...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-On 13/12/2021 17:28, Frank Lichtenheld wrote:
-> The information provided by this is minimal
-> and it makes it more difficult to provide
-> deterministic builds. There are work-arounds
-> for that but I think it is easier to just remove
-> it completely.
+Am 21.01.22 um 21:49 schrieb Antonio Quartulli:
+> Signed-off-by: Antonio Quartulli <a@...2181...>
+> ---
 > 
-> Allows the build to pass with -Wdate-time -Werror.
+> This patch combines some master commits in order to bring the GH script
+> up to the same state as the one in master (minus OpenSSL3 related
+> changes).
 > 
-> Signed-off-by: Frank Lichtenheld <frank@...2641...>
 
-Acked-by: Antonio Quartulli <a@...2181...>
-
-
--- 
-Antonio Quartulli
+Acked-By: Arne Schwabe <arne@...1227...>
 
