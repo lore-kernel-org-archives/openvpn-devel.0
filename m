@@ -1,12 +1,9 @@
+From: selva.nair@...277...
+Date: Mon, 24 Jan 2022 21:51:26 -0500
+Message-Id: <20220125025128.2117-1-selva.nair@...277...>
 MIME-Version: 1.0
-References: <20220121052259.508-1-lstipakov@...277...>
- <20220121052259.508-2-lstipakov@...277...>
-In-Reply-To: <20220121052259.508-2-lstipakov@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 24 Jan 2022 16:41:41 -0500
-Message-ID: <CAKuzo_hVuU2yZHpmaaGO3+2C=Z6MLaJLcydQfw3x+RD+G9d5BA@...278...>
-Content-Type: multipart/alternative; boundary="0000000000008a8d9205d65ad6d1"
-Subject: Re: [Openvpn-devel] [PATCH 1/2] xkey: fix msvc build
+Subject: [Openvpn-devel] [PATCH 1/3] xkey: Use a custom error level for
+ debug messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,228 +12,515 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---0000000000008a8d9205d65ad6d1
-Content-Type: text/plain; charset="UTF-8"
+From: Selva Nair <selva.nair@...277...>
 
-On Mon, Jan 24, 2022 at 2:22 PM Lev Stipakov <lstipakov@...277...> wrote:
+D_XKEY = loglev(6, 69, M_DEBUG) is defined and used for
+all low level debug messages  from xkey_provider.c and
+xkey_helper.c
 
-> From: Lev Stipakov <lev@...515...>
->
->  - use sizeof(void *) since msvc doesn't support sizeof of function ptr
->
+As suggested by Arne Schwabe <arne@...1227...>
 
-This is not just an msvc problem, but signals a bigger issue it seems. In
-retrospect, passing function pointers  pickled this was probably a bad
-design decision on my part though we are forced by OpenSSL 3's design of
-using OSSL_PARAMs to pass data to providers.
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/errlevel.h      |  1 +
+ src/openvpn/xkey_helper.c   |  8 +--
+ src/openvpn/xkey_provider.c | 98 ++++++++++++++++++-------------------
+ 3 files changed, 54 insertions(+), 53 deletions(-)
 
-For now, The proposed fix (i.e., to use void*) looks okay to me especially
-since its handled like a normal pointer during key import. But we may have
-to find a better way for passing these function pointers if this comes back
-to bite us.
+diff --git a/src/openvpn/errlevel.h b/src/openvpn/errlevel.h
+index 602e48a8..94c6c282 100644
+--- a/src/openvpn/errlevel.h
++++ b/src/openvpn/errlevel.h
+@@ -113,6 +113,7 @@
+ #define D_TUN_RW             LOGLEV(6, 69, M_DEBUG)  /* show TUN/TAP reads/writes */
+ #define D_TAP_WIN_DEBUG      LOGLEV(6, 69, M_DEBUG)  /* show TAP-Windows driver debug info */
+ #define D_CLIENT_NAT         LOGLEV(6, 69, M_DEBUG)  /* show client NAT debug info */
++#define D_XKEY               LOGLEV(6, 69, M_DEBUG)  /* show xkey-provider debug info */
+ 
+ #define D_SHOW_KEYS          LOGLEV(7, 70, M_DEBUG)  /* show data channel encryption keys */
+ #define D_SHOW_KEY_SOURCE    LOGLEV(7, 70, M_DEBUG)  /* show data channel key source entropy */
+diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
+index c667f7be..582bec5d 100644
+--- a/src/openvpn/xkey_helper.c
++++ b/src/openvpn/xkey_helper.c
+@@ -65,7 +65,7 @@ int
+ xkey_digest(const unsigned char *src, size_t srclen, unsigned char *buf,
+             size_t *buflen, const char *mdname)
+ {
+-    dmsg(D_LOW, "In xkey_digest");
++    dmsg(D_XKEY, "In xkey_digest");
+     EVP_MD *md = EVP_MD_fetch(NULL, mdname, NULL); /* from default context */
+     if (!md)
+     {
+@@ -163,7 +163,7 @@ int
+ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
+                      const unsigned char *tbs, size_t tbslen, XKEY_SIGALG alg)
+ {
+-    dmsg(D_LOW, "In xkey_management_sign with keytype = %s, op = %s",
++    dmsg(D_XKEY, "In xkey_management_sign with keytype = %s, op = %s",
+          alg.keytype, alg.op);
+ 
+     (void) unused;
+@@ -180,7 +180,7 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
+     /* if management client cannot do digest -- we do it here */
+     if (!strcmp(alg.op, "DigestSign") && !(flags & MF_EXTERNAL_KEY_DIGEST))
+     {
+-        dmsg(D_LOW, "xkey_management_sign: computing digest");
++        dmsg(D_XKEY, "xkey_management_sign: computing digest");
+         if (xkey_digest(tbs, tbslen, buf, &buflen, alg.mdname))
+         {
+             tbs = buf;
+@@ -379,7 +379,7 @@ encode_pkcs1(unsigned char *enc, size_t *enc_len, const char *mdname,
+         /* combine header and digest */
+         memcpy(enc, di->header, di->sz);
+         memcpy(enc + di->sz, tbs, tbslen);
+-        dmsg(D_LOW, "encode_pkcs1: digest length = %d encoded length = %d",
++        dmsg(D_XKEY, "encode_pkcs1: digest length = %d encoded length = %d",
+              (int) tbslen, (int) out_len);
+         ret = true;
+     }
+diff --git a/src/openvpn/xkey_provider.c b/src/openvpn/xkey_provider.c
+index c2d560c5..9a02ed13 100644
+--- a/src/openvpn/xkey_provider.c
++++ b/src/openvpn/xkey_provider.c
+@@ -146,7 +146,7 @@ keymgmt_import_helper(XKEY_KEYDATA *key, const OSSL_PARAM params[]);
+ static XKEY_KEYDATA *
+ keydata_new()
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     XKEY_KEYDATA *key = OPENSSL_zalloc(sizeof(*key));
+     if (!key)
+@@ -160,7 +160,7 @@ keydata_new()
+ static void
+ keydata_free(XKEY_KEYDATA *key)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     if (!key || key->refcount-- > 0) /* free when refcount goes to zero */
+     {
+@@ -181,7 +181,7 @@ keydata_free(XKEY_KEYDATA *key)
+ static void *
+ keymgmt_new(void *provctx)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     XKEY_KEYDATA *key = keydata_new();
+     if (key)
+@@ -195,7 +195,7 @@ keymgmt_new(void *provctx)
+ static void *
+ keymgmt_load(const void *reference, size_t reference_sz)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     return NULL;
+ }
+@@ -235,7 +235,7 @@ keymgmt_load(const void *reference, size_t reference_sz)
+ static int
+ keymgmt_import(void *keydata, int selection, const OSSL_PARAM params[], const char *name)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     XKEY_KEYDATA *key = keydata;
+     ASSERT(key);
+@@ -252,11 +252,11 @@ keymgmt_import(void *keydata, int selection, const OSSL_PARAM params[], const ch
+     if (p && p->data_type == OSSL_PARAM_UTF8_STRING)
+     {
+         key->origin = EXTERNAL_KEY;
+-        xkey_dmsg(D_LOW, "importing external key");
++        xkey_dmsg(D_XKEY, "importing external key");
+         return keymgmt_import_helper(key, params);
+     }
+ 
+-    xkey_dmsg(D_LOW, "importing native key");
++    xkey_dmsg(D_XKEY, "importing native key");
+ 
+     /* create a native public key and assign it to key->pubkey */
+     EVP_PKEY *pkey = NULL;
+@@ -293,14 +293,14 @@ keymgmt_import(void *keydata, int selection, const OSSL_PARAM params[], const ch
+     }
+     EVP_PKEY_CTX_free(ctx);
+ 
+-    xkey_dmsg(D_LOW, "imported native %s key", EVP_PKEY_get0_type_name(pkey));
++    xkey_dmsg(D_XKEY, "imported native %s key", EVP_PKEY_get0_type_name(pkey));
+     return 1;
+ }
+ 
+ static int
+ rsa_keymgmt_import(void *keydata, int selection, const OSSL_PARAM params[])
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     return keymgmt_import(keydata, selection, params, "RSA");
+ }
+@@ -308,7 +308,7 @@ rsa_keymgmt_import(void *keydata, int selection, const OSSL_PARAM params[])
+ static int
+ ec_keymgmt_import(void *keydata, int selection, const OSSL_PARAM params[])
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     return keymgmt_import(keydata, selection, params, "EC");
+ }
+@@ -321,7 +321,7 @@ ec_keymgmt_import(void *keydata, int selection, const OSSL_PARAM params[])
+ static const OSSL_PARAM *
+ keymgmt_import_types(int selection)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     static const OSSL_PARAM key_types[] = { OSSL_PARAM_END };
+ 
+@@ -335,7 +335,7 @@ keymgmt_import_types(int selection)
+ static void
+ keymgmt_free(void *keydata)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     keydata_free(keydata);
+ }
+@@ -343,7 +343,7 @@ keymgmt_free(void *keydata)
+ static int
+ keymgmt_has(const void *keydata, int selection)
+ {
+-    xkey_dmsg(D_LOW, "selection = %d", selection);
++    xkey_dmsg(D_XKEY, "selection = %d", selection);
+ 
+     const XKEY_KEYDATA *key = keydata;
+     int ok = (key != NULL);
+@@ -366,7 +366,7 @@ keymgmt_match(const void *keydata1, const void *keydata2, int selection)
+     const XKEY_KEYDATA *key1 = keydata1;
+     const XKEY_KEYDATA *key2 = keydata2;
+ 
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     int ret = key1 && key2 && key1->pubkey && key2->pubkey;
+ 
+@@ -375,13 +375,13 @@ keymgmt_match(const void *keydata1, const void *keydata2, int selection)
+     if (selection & OSSL_KEYMGMT_SELECT_KEYPAIR)
+     {
+         ret = ret && EVP_PKEY_eq(key1->pubkey, key2->pubkey);
+-        xkey_dmsg(D_LOW, "checking key pair match: res = %d", ret);
++        xkey_dmsg(D_XKEY, "checking key pair match: res = %d", ret);
+     }
+ 
+     if (selection & OSSL_KEYMGMT_SELECT_DOMAIN_PARAMETERS)
+     {
+         ret = ret && EVP_PKEY_parameters_eq(key1->pubkey, key2->pubkey);
+-        xkey_dmsg(D_LOW, "checking parameter match: res = %d", ret);
++        xkey_dmsg(D_XKEY, "checking parameter match: res = %d", ret);
+     }
+ 
+     return ret;
+@@ -391,7 +391,7 @@ keymgmt_match(const void *keydata1, const void *keydata2, int selection)
+ static const OSSL_PARAM *
+ keymgmt_gettable_params(void *provctx)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     static OSSL_PARAM gettable[] = {
+         OSSL_PARAM_int(OSSL_PKEY_PARAM_BITS, NULL),
+@@ -405,7 +405,7 @@ keymgmt_gettable_params(void *provctx)
+ static int
+ keymgmt_get_params(void *keydata, OSSL_PARAM *params)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     XKEY_KEYDATA *key = keydata;
+     if (!key || !key->pubkey)
+@@ -422,7 +422,7 @@ keymgmt_get_params(void *keydata, OSSL_PARAM *params)
+ static int
+ keymgmt_import_helper(XKEY_KEYDATA *key, const OSSL_PARAM *params)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     const OSSL_PARAM *p;
+     EVP_PKEY *pkey = NULL;
+@@ -490,7 +490,7 @@ keymgmt_import_helper(XKEY_KEYDATA *key, const OSSL_PARAM *params)
+     {
+         key->free = *(void **)p->data;
+     }
+-    xkey_dmsg(D_LOW, "imported external %s key", EVP_PKEY_get0_type_name(key->pubkey));
++    xkey_dmsg(D_XKEY, "imported external %s key", EVP_PKEY_get0_type_name(key->pubkey));
+ 
+     return 1;
+ }
+@@ -512,7 +512,7 @@ keymgmt_set_params(void *keydata, const OSSL_PARAM *params)
+     XKEY_KEYDATA *key = keydata;
+     ASSERT(key);
+ 
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     if (key->origin != OPENSSL_NATIVE)
+     {
+@@ -533,7 +533,7 @@ keymgmt_set_params(void *keydata, const OSSL_PARAM *params)
+ static const char *
+ rsa_keymgmt_name(int id)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     return "RSA";
+ }
+@@ -541,7 +541,7 @@ rsa_keymgmt_name(int id)
+ static const char *
+ ec_keymgmt_name(int id)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     if (id == OSSL_OP_SIGNATURE)
+     {
+@@ -555,7 +555,7 @@ ec_keymgmt_name(int id)
+         return "ECDH";
+     }
+ 
+-    msg(D_LOW, "xkey ec_keymgmt_name called with op_id != SIGNATURE or KEYEXCH id=%d", id);
++    msg(D_XKEY, "xkey ec_keymgmt_name called with op_id != SIGNATURE or KEYEXCH id=%d", id);
+     return "EC";
+ }
+ 
+@@ -666,7 +666,7 @@ xkey_mdname(const char *name)
+ static void *
+ signature_newctx(void *provctx, const char *propq)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     (void) propq; /* unused */
+ 
+@@ -686,7 +686,7 @@ signature_newctx(void *provctx, const char *propq)
+ static void
+ signature_freectx(void *ctx)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     XKEY_SIGNATURE_CTX *sctx = ctx;
+ 
+@@ -698,7 +698,7 @@ signature_freectx(void *ctx)
+ static const OSSL_PARAM *
+ signature_settable_ctx_params(void *ctx, void *provctx)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     static OSSL_PARAM settable[] = {
+         OSSL_PARAM_utf8_string(OSSL_SIGNATURE_PARAM_PAD_MODE, NULL, 0),
+@@ -713,7 +713,7 @@ signature_settable_ctx_params(void *ctx, void *provctx)
+ static int
+ signature_set_ctx_params(void *ctx, const OSSL_PARAM params[])
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     XKEY_SIGNATURE_CTX *sctx = ctx;
+     const OSSL_PARAM *p;
+@@ -740,7 +740,7 @@ signature_set_ctx_params(void *ctx, const OSSL_PARAM params[])
+                 (char *)p->data);
+             sctx->sigalg.padmode = "none";
+         }
+-        xkey_dmsg(D_LOW, "setting padmode as %s", sctx->sigalg.padmode);
++        xkey_dmsg(D_XKEY, "setting padmode as %s", sctx->sigalg.padmode);
+     }
+     else if (p && p->data_type == OSSL_PARAM_INTEGER)
+     {
+@@ -762,7 +762,7 @@ signature_set_ctx_params(void *ctx, const OSSL_PARAM params[])
+             msg(M_WARN, "xkey signature_ctx: padmode <%d>, treating as <none>", padmode);
+             sctx->sigalg.padmode = "none";
+         }
+-        xkey_dmsg(D_LOW, "setting padmode <%s>", sctx->sigalg.padmode);
++        xkey_dmsg(D_XKEY, "setting padmode <%s>", sctx->sigalg.padmode);
+     }
+     else if (p)
+     {
+@@ -773,7 +773,7 @@ signature_set_ctx_params(void *ctx, const OSSL_PARAM params[])
+     if (p  &&  p->data_type == OSSL_PARAM_UTF8_STRING)
+     {
+         sctx->sigalg.mdname = xkey_mdname(p->data);
+-        xkey_dmsg(D_LOW, "setting hashalg as %s", sctx->sigalg.mdname);
++        xkey_dmsg(D_XKEY, "setting hashalg as %s", sctx->sigalg.mdname);
+     }
+     else if (p)
+     {
+@@ -798,7 +798,7 @@ signature_set_ctx_params(void *ctx, const OSSL_PARAM params[])
+                 (char *)p->data);
+             sctx->sigalg.saltlen = "digest"; /* most common */
+         }
+-        xkey_dmsg(D_LOW, "setting saltlen to %s", sctx->sigalg.saltlen);
++        xkey_dmsg(D_XKEY, "setting saltlen to %s", sctx->sigalg.saltlen);
+     }
+     else if (p)
+     {
+@@ -811,7 +811,7 @@ signature_set_ctx_params(void *ctx, const OSSL_PARAM params[])
+ static const OSSL_PARAM *
+ signature_gettable_ctx_params(void *ctx, void *provctx)
+ {
+-    xkey_dmsg(D_LOW,"entry");
++    xkey_dmsg(D_XKEY,"entry");
+ 
+     static OSSL_PARAM gettable[] = { OSSL_PARAM_END }; /* Empty list */
+ 
+@@ -821,14 +821,14 @@ signature_gettable_ctx_params(void *ctx, void *provctx)
+ static int
+ signature_get_ctx_params(void *ctx, OSSL_PARAM params[])
+ {
+-    xkey_dmsg(D_LOW, "not implemented");
++    xkey_dmsg(D_XKEY, "not implemented");
+     return 0;
+ }
+ 
+ static int
+ signature_sign_init(void *ctx, void *provkey, const OSSL_PARAM params[])
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     XKEY_SIGNATURE_CTX *sctx = ctx;
+ 
+@@ -860,7 +860,7 @@ xkey_sign_dispatch(XKEY_SIGNATURE_CTX *sctx, unsigned char *sig, size_t *siglen,
+     else if (sign)
+     {
+         ret = sign(sctx->keydata->handle, sig, siglen, tbs, tbslen, sctx->sigalg);
+-        xkey_dmsg(D_LOW, "xkey_provider: external sign op returned ret = %d siglen = %d", ret, (int) *siglen);
++        xkey_dmsg(D_XKEY, "xkey_provider: external sign op returned ret = %d siglen = %d", ret, (int) *siglen);
+     }
+     else
+     {
+@@ -874,7 +874,7 @@ static int
+ signature_sign(void *ctx, unsigned char *sig, size_t *siglen, size_t sigsize,
+                const unsigned char *tbs, size_t tbslen)
+ {
+-    xkey_dmsg(D_LOW, "entry with siglen = %zu\n", *siglen);
++    xkey_dmsg(D_XKEY, "entry with siglen = %zu\n", *siglen);
+ 
+     XKEY_SIGNATURE_CTX *sctx = ctx;
+     ASSERT(sctx);
+@@ -894,7 +894,7 @@ static int
+ signature_digest_verify_init(void *ctx, const char *mdname, void *provkey,
+                              const OSSL_PARAM params[])
+ {
+-    xkey_dmsg(D_LOW, "mdname <%s>", mdname);
++    xkey_dmsg(D_XKEY, "mdname <%s>", mdname);
+ 
+     msg(M_WARN, "xkey_provider: DigestVerifyInit is not implemented");
+     return 0;
+@@ -908,7 +908,7 @@ static int
+ signature_digest_verify(void *ctx, const unsigned char *sig, size_t siglen,
+                         const unsigned char *tbs, size_t tbslen)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     msg(M_WARN, "xkey_provider: DigestVerify is not implemented");
+     return 0;
+@@ -918,7 +918,7 @@ static int
+ signature_digest_sign_init(void *ctx, const char *mdname,
+                            void *provkey, const OSSL_PARAM params[])
+ {
+-    xkey_dmsg(D_LOW, "mdname = <%s>", mdname);
++    xkey_dmsg(D_XKEY, "mdname = <%s>", mdname);
+ 
+     XKEY_SIGNATURE_CTX *sctx = ctx;
+ 
+@@ -950,7 +950,7 @@ static int
+ signature_digest_sign(void *ctx, unsigned char *sig, size_t *siglen,
+                       size_t sigsize, const unsigned char *tbs, size_t tbslen)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     XKEY_SIGNATURE_CTX *sctx = ctx;
+ 
+@@ -1000,7 +1000,7 @@ int
+ xkey_native_sign(XKEY_KEYDATA *key, unsigned char *sig, size_t *siglen,
+                  const unsigned char *tbs, size_t tbslen, XKEY_SIGALG sigalg)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     ASSERT(key);
+ 
+@@ -1019,7 +1019,7 @@ xkey_native_sign(XKEY_KEYDATA *key, unsigned char *sig, size_t *siglen,
+     const char *mdname = sigalg.mdname;
+     const char *padmode = sigalg.padmode;
+ 
+-    xkey_dmsg(D_LOW, "digest=<%s>, padmode=<%s>, saltlen=<%s>", mdname, padmode, saltlen);
++    xkey_dmsg(D_XKEY, "digest=<%s>, padmode=<%s>, saltlen=<%s>", mdname, padmode, saltlen);
+ 
+     int i = 0;
+     OSSL_PARAM params[6];
+@@ -1090,7 +1090,7 @@ static OSSL_FUNC_provider_teardown_fn teardown;
+ static const OSSL_ALGORITHM *
+ query_operation(void *provctx, int op, int *no_store)
+ {
+-    xkey_dmsg(D_LOW, "op = %d", op);
++    xkey_dmsg(D_XKEY, "op = %d", op);
+ 
+     *no_store = 0;
+ 
+@@ -1103,7 +1103,7 @@ query_operation(void *provctx, int op, int *no_store)
+             return keymgmts;
+ 
+         default:
+-            xkey_dmsg(D_LOW, "op not supported");
++            xkey_dmsg(D_XKEY, "op not supported");
+             break;
+     }
+     return NULL;
+@@ -1112,7 +1112,7 @@ query_operation(void *provctx, int op, int *no_store)
+ static const OSSL_PARAM *
+ gettable_params(void *provctx)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     static const OSSL_PARAM param_types[] = {
+         OSSL_PARAM_DEFN(OSSL_PROV_PARAM_NAME, OSSL_PARAM_UTF8_PTR, NULL, 0),
+@@ -1126,7 +1126,7 @@ get_params(void *provctx, OSSL_PARAM params[])
+ {
+     OSSL_PARAM *p;
+ 
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     p = OSSL_PARAM_locate(params, OSSL_PROV_PARAM_NAME);
+     if (p)
+@@ -1140,7 +1140,7 @@ get_params(void *provctx, OSSL_PARAM params[])
+ static void
+ teardown(void *provctx)
+ {
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     XKEY_PROVIDER_CTX *prov = provctx;
+     if (prov && prov->libctx)
+@@ -1164,7 +1164,7 @@ xkey_provider_init(const OSSL_CORE_HANDLE *handle, const OSSL_DISPATCH *in,
+ {
+     XKEY_PROVIDER_CTX *prov;
+ 
+-    xkey_dmsg(D_LOW, "entry");
++    xkey_dmsg(D_XKEY, "entry");
+ 
+     prov = OPENSSL_zalloc(sizeof(*prov));
+     if (!prov)
+-- 
+2.30.2
 
-
->
->  - use XKEY_PROV_PROPS macro instead of props since msvc
->   requires constant expression in aggregate initializers
->
-
-Makes sense.
-
-
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->  src/openvpn/xkey_helper.c   |  4 ++--
->  src/openvpn/xkey_provider.c | 13 +++++--------
->  2 files changed, 7 insertions(+), 10 deletions(-)
->
-> diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
-> index c667f7be..50231335 100644
-> --- a/src/openvpn/xkey_helper.c
-> +++ b/src/openvpn/xkey_helper.c
-> @@ -125,8 +125,8 @@ xkey_load_generic_key(OSSL_LIB_CTX *libctx, void
-> *handle, EVP_PKEY *pubkey,
->          {"xkey-origin", OSSL_PARAM_UTF8_STRING, (char *) origin, 0, 0},
->          {"pubkey", OSSL_PARAM_OCTET_STRING, &pubkey, sizeof(pubkey), 0},
->          {"handle", OSSL_PARAM_OCTET_PTR, &handle, sizeof(handle), 0},
-> -        {"sign_op", OSSL_PARAM_OCTET_PTR, (void **) &sign_op,
-> sizeof(sign_op), 0},
-> -        {"free_op", OSSL_PARAM_OCTET_PTR, (void **) &free_op,
-> sizeof(free_op), 0},
-> +        {"sign_op", OSSL_PARAM_OCTET_PTR, (void **) &sign_op, sizeof(void
-> *), 0},
-> +        {"free_op", OSSL_PARAM_OCTET_PTR, (void **) &free_op, sizeof(void
-> *), 0},
->          {NULL, 0, NULL, 0, 0}};
->
->      /* Do not use EVP_PKEY_new_from_pkey as that will take keymgmt from
-> pubkey */
-> diff --git a/src/openvpn/xkey_provider.c b/src/openvpn/xkey_provider.c
-> index c2d560c5..115b9931 100644
-> --- a/src/openvpn/xkey_provider.c
-> +++ b/src/openvpn/xkey_provider.c
-> @@ -44,9 +44,6 @@
->  #include <openssl/evp.h>
->  #include <openssl/err.h>
->
-> -/* propq set all on all ops we implement */
-> -static const char *const props = XKEY_PROV_PROPS;
-> -
->  /* A descriptive name */
->  static const char *provname = "OpenVPN External Key Provider";
->
-> @@ -592,9 +589,9 @@ static const OSSL_DISPATCH ec_keymgmt_functions[] = {
->  };
->
->  const OSSL_ALGORITHM keymgmts[] = {
-> -    {"RSA:rsaEncryption", props, rsa_keymgmt_functions, "OpenVPN xkey RSA
-> Key Manager"},
-> -    {"RSA-PSS:RSASSA-PSS", props, rsa_keymgmt_functions, "OpenVPN xkey
-> RSA-PSS Key Manager"},
-> -    {"EC:id-ecPublicKey", props, ec_keymgmt_functions, "OpenVPN xkey EC
-> Key Manager"},
-> +    {"RSA:rsaEncryption", XKEY_PROV_PROPS, rsa_keymgmt_functions,
-> "OpenVPN xkey RSA Key Manager"},
-> +    {"RSA-PSS:RSASSA-PSS", XKEY_PROV_PROPS, rsa_keymgmt_functions,
-> "OpenVPN xkey RSA-PSS Key Manager"},
-> +    {"EC:id-ecPublicKey", XKEY_PROV_PROPS, ec_keymgmt_functions, "OpenVPN
-> xkey EC Key Manager"},
->      {NULL, NULL, NULL, NULL}
->  };
->
-> @@ -1074,8 +1071,8 @@ static const OSSL_DISPATCH signature_functions[] = {
->  };
->
->  const OSSL_ALGORITHM signatures[] = {
-> -    {"RSA:rsaEncryption", props, signature_functions, "OpenVPN xkey RSA
-> Signature"},
-> -    {"ECDSA", props, signature_functions, "OpenVPN xkey ECDSA Signature"},
-> +    {"RSA:rsaEncryption", XKEY_PROV_PROPS, signature_functions, "OpenVPN
-> xkey RSA Signature"},
-> +    {"ECDSA", XKEY_PROV_PROPS, signature_functions, "OpenVPN xkey ECDSA
-> Signature"},
->      {NULL, NULL, NULL, NULL}
->  };
-
-
-Acked-by: Selva Nair <selva.nair@...277...>
-
---0000000000008a8d9205d65ad6d1
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
-<div dir=3D"ltr" class=3D"gmail_attr">On Mon, Jan 24, 2022 at 2:22 PM Lev S=
-tipakov &lt;<a href=3D"mailto:lstipakov@...277..." target=3D"_blank">lstipa=
-kov@...277...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" sty=
-le=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);paddi=
-ng-left:1ex">From: Lev Stipakov &lt;<a href=3D"mailto:lev@...515..." target=
-=3D"_blank">lev@...515...</a>&gt;<br>
-<br>
-=C2=A0- use sizeof(void *) since msvc doesn&#39;t support sizeof of functio=
-n ptr<br></blockquote><div><br></div><div>This is not just an msvc problem,=
- but signals a bigger issue it seems. In retrospect, passing function point=
-ers=C2=A0 pickled this was probably a bad design decision on my part though=
- we are forced by OpenSSL 3&#39;s design of using OSSL_PARAMs to pass data =
-to providers.</div><div><br></div><div>For now, The proposed fix (i.e., to =
-use void*) looks okay to me especially since its=C2=A0handled like a normal=
- pointer=C2=A0during key import. But we may have to find a better way for p=
-assing these function pointers if this comes back to bite us.<br></div><div=
->=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px =
-0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
-<br>
-=C2=A0- use XKEY_PROV_PROPS macro instead of props since msvc<br>
-=C2=A0 requires constant expression in aggregate initializers<br></blockquo=
-te><div><br></div><div>Makes sense.</div><div><br></div><blockquote class=
-=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rg=
-b(204,204,204);padding-left:1ex">
-<br>
-Signed-off-by: Lev Stipakov &lt;<a href=3D"mailto:lev@...515..." target=3D"=
-_blank">lev@...515...</a>&gt;<br>
----<br>
-=C2=A0src/openvpn/xkey_helper.c=C2=A0 =C2=A0|=C2=A0 4 ++--<br>
-=C2=A0src/openvpn/xkey_provider.c | 13 +++++--------<br>
-=C2=A02 files changed, 7 insertions(+), 10 deletions(-)<br>
-<br>
-diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c<br>
-index c667f7be..50231335 100644<br>
---- a/src/openvpn/xkey_helper.c<br>
-+++ b/src/openvpn/xkey_helper.c<br>
-@@ -125,8 +125,8 @@ xkey_load_generic_key(OSSL_LIB_CTX *libctx, void *handl=
-e, EVP_PKEY *pubkey,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{&quot;xkey-origin&quot;, OSSL_PARAM_UTF8=
-_STRING, (char *) origin, 0, 0},<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{&quot;pubkey&quot;, OSSL_PARAM_OCTET_STR=
-ING, &amp;pubkey, sizeof(pubkey), 0},<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{&quot;handle&quot;, OSSL_PARAM_OCTET_PTR=
-, &amp;handle, sizeof(handle), 0},<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 {&quot;sign_op&quot;, OSSL_PARAM_OCTET_PTR, (v=
-oid **) &amp;sign_op, sizeof(sign_op), 0},<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 {&quot;free_op&quot;, OSSL_PARAM_OCTET_PTR, (v=
-oid **) &amp;free_op, sizeof(free_op), 0},<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 {&quot;sign_op&quot;, OSSL_PARAM_OCTET_PTR, (v=
-oid **) &amp;sign_op, sizeof(void *), 0},<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 {&quot;free_op&quot;, OSSL_PARAM_OCTET_PTR, (v=
-oid **) &amp;free_op, sizeof(void *), 0},<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{NULL, 0, NULL, 0, 0}};<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0/* Do not use EVP_PKEY_new_from_pkey as that will take =
-keymgmt from pubkey */<br>
-diff --git a/src/openvpn/xkey_provider.c b/src/openvpn/xkey_provider.c<br>
-index c2d560c5..115b9931 100644<br>
---- a/src/openvpn/xkey_provider.c<br>
-+++ b/src/openvpn/xkey_provider.c<br>
-@@ -44,9 +44,6 @@<br>
-=C2=A0#include &lt;openssl/evp.h&gt;<br>
-=C2=A0#include &lt;openssl/err.h&gt;<br>
-<br>
--/* propq set all on all ops we implement */<br>
--static const char *const props =3D XKEY_PROV_PROPS;<br>
--<br>
-=C2=A0/* A descriptive name */<br>
-=C2=A0static const char *provname =3D &quot;OpenVPN External Key Provider&q=
-uot;;<br>
-<br>
-@@ -592,9 +589,9 @@ static const OSSL_DISPATCH ec_keymgmt_functions[] =3D {=
-<br>
-=C2=A0};<br>
-<br>
-=C2=A0const OSSL_ALGORITHM keymgmts[] =3D {<br>
--=C2=A0 =C2=A0 {&quot;RSA:rsaEncryption&quot;, props, rsa_keymgmt_functions=
-, &quot;OpenVPN xkey RSA Key Manager&quot;},<br>
--=C2=A0 =C2=A0 {&quot;RSA-PSS:RSASSA-PSS&quot;, props, rsa_keymgmt_function=
-s, &quot;OpenVPN xkey RSA-PSS Key Manager&quot;},<br>
--=C2=A0 =C2=A0 {&quot;EC:id-ecPublicKey&quot;, props, ec_keymgmt_functions,=
- &quot;OpenVPN xkey EC Key Manager&quot;},<br>
-+=C2=A0 =C2=A0 {&quot;RSA:rsaEncryption&quot;, XKEY_PROV_PROPS, rsa_keymgmt=
-_functions, &quot;OpenVPN xkey RSA Key Manager&quot;},<br>
-+=C2=A0 =C2=A0 {&quot;RSA-PSS:RSASSA-PSS&quot;, XKEY_PROV_PROPS, rsa_keymgm=
-t_functions, &quot;OpenVPN xkey RSA-PSS Key Manager&quot;},<br>
-+=C2=A0 =C2=A0 {&quot;EC:id-ecPublicKey&quot;, XKEY_PROV_PROPS, ec_keymgmt_=
-functions, &quot;OpenVPN xkey EC Key Manager&quot;},<br>
-=C2=A0 =C2=A0 =C2=A0{NULL, NULL, NULL, NULL}<br>
-=C2=A0};<br>
-<br>
-@@ -1074,8 +1071,8 @@ static const OSSL_DISPATCH signature_functions[] =3D =
-{<br>
-=C2=A0};<br>
-<br>
-=C2=A0const OSSL_ALGORITHM signatures[] =3D {<br>
--=C2=A0 =C2=A0 {&quot;RSA:rsaEncryption&quot;, props, signature_functions, =
-&quot;OpenVPN xkey RSA Signature&quot;},<br>
--=C2=A0 =C2=A0 {&quot;ECDSA&quot;, props, signature_functions, &quot;OpenVP=
-N xkey ECDSA Signature&quot;},<br>
-+=C2=A0 =C2=A0 {&quot;RSA:rsaEncryption&quot;, XKEY_PROV_PROPS, signature_f=
-unctions, &quot;OpenVPN xkey RSA Signature&quot;},<br>
-+=C2=A0 =C2=A0 {&quot;ECDSA&quot;, XKEY_PROV_PROPS, signature_functions, &q=
-uot;OpenVPN xkey ECDSA Signature&quot;},<br>
-=C2=A0 =C2=A0 =C2=A0{NULL, NULL, NULL, NULL}<br>
-=C2=A0};=C2=A0</blockquote><div>=C2=A0</div><div>Acked-by: Selva Nair &lt;<=
-a href=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...1354...=
-..</a>&gt;</div></div></div>
-
---0000000000008a8d9205d65ad6d1--
 
