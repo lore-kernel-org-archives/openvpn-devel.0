@@ -1,17 +1,9 @@
-Date: Wed, 26 Jan 2022 15:27:40 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <YfFaXHV719WEKBIy@...1296...>
-References: <20220125025128.2117-1-selva.nair@...277...>
- <20220125025128.2117-3-selva.nair@...277...>
- <3682fe69-a2e8-3018-fb29-ca3db9bfffe7@...1227...>
- <CAKuzo_gJh9Yrj-Qfz_ZWNF2Cd9AqPLfo-CooOO1moHHvNSNJzA@...278...>
+From: Antonio Quartulli <a@...2181...>
+Date: Wed, 26 Jan 2022 16:11:28 +0100
+Message-Id: <20220126151128.5078-1-a@...2181...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="pIgDZPmtYnOHLlHp"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_gJh9Yrj-Qfz_ZWNF2Cd9AqPLfo-CooOO1moHHvNSNJzA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 3/3] Support PSS signing using
- pkcs11-helper >= 1.28
+Subject: [Openvpn-devel] [PATCH] crypto.c: remove (dead) OpenSSL specific
+ code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,50 +12,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Arne Schwabe <arne@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>, David Sommerseth <davids@...515...>
 
---pIgDZPmtYnOHLlHp
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Originally we wanted to move this OpenSSL specific code to its own
+backend and use a proper abstraction in the crypto.c code.
 
-Hi,
+However, tests have revealed that OpenVPN will never try to print a
+cipher that is not supported by FIPS (assuming FIPS is enabled), because
+along the chain of calls we already call cipher_get() which returns NULL
+for FIPS-disabled ciphers.
 
-On Wed, Jan 26, 2022 at 09:23:29AM -0500, Selva Nair wrote:
-> P.S. If the commit is not pushed yet, I can send a v2 for review, or foll=
-ow
-> up with a fixup.
+For this reason, we can just remove any FIPS specific code from
+print_cipher() and be done with it.
 
-I only noticed it after pushing, so yes, messed-up.  Sorry again.
+This patch fixes compilations with mbedTLS when some OpenSSL is also
+installed. The issue was introduced with:
+544330fe ("crypto: Fix OPENSSL_FIPS enabled builds")
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Cc: David Sommerseth <davids@...515...>
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/crypto.c | 11 -----------
+ 1 file changed, 11 deletions(-)
 
-Gert Doering - Munich, Germany                             gert@...1296...
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 0aa76e05..b0a3cf81 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -34,7 +34,6 @@
+ #include "error.h"
+ #include "integer.h"
+ #include "platform.h"
+-#include "openssl_compat.h"
+ 
+ #include "memdbg.h"
+ 
+@@ -1704,16 +1703,6 @@ print_cipher(const char *ciphername)
+     {
+         printf(", TLS client/server mode only");
+     }
+-#ifdef OPENSSL_FIPS
+-    evp_cipher_type *cipher = EVP_CIPHER_fetch(NULL, ciphername, NULL);
+-
+-    if (FIPS_mode() && cipher
+-        && !(EVP_CIPHER_flags(cipher) & EVP_CIPH_FLAG_FIPS))
+-    {
+-        printf(", disabled by FIPS mode");
+-    }
+-    EVP_CIPHER_free(cipher);
+-#endif
+ 
+     printf(")\n");
+ }
+-- 
+2.34.1
 
---pIgDZPmtYnOHLlHp
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJh8VpcAAoJEB2Cnv7KVigSCcEL/iVNGW2Plw7+YHrkYIKUi4Oz
-c4O0IomYVN1WLAGlcFuy5DfTR0WwA4rmSxQDzlBnREYIWz4mCSeDyO2k/PqbVgdx
-b9BnoLQWM9nfVfmf5/DdPHHHCjGwWbX77/MYhCFIIJF8OPGYoAJYXppcJ9IKEoGB
-B7ptSslkv5/kbn3N96jNoQtAJCKEPt3QP0Jn5AkqPy36RjXV7/9qgLSfQqWfvUvx
-zJn7D2YCjc5Uypx6kyDWYVaZX7FV/IN3iRvU0xNGCngNblHLmRT6lJuO0KaI6VFs
-TDSbrsf2r5YHw5upR4IDq73RwYs9gEANAKJ2YJwSmbYErHHKZ9peqd1NbJ8yUKlf
-ddnsenGNxU6gWWjxGF1NSooG8R0tpcC1Y7yTh2rkB3bKq9ALhrw5O1/Nm5NpU0Lo
-EjDSpYGTRO62FgodzEG6rGdt7Z+ZnRkEqgZbYWQz1oWLt3ici5xpxFkJTMoszLJu
-3rJ7ImBh7QvfF2Lrxc6IBeQuSGRaTb1KwzD9SQXZ/w==
-=7AvF
------END PGP SIGNATURE-----
-
---pIgDZPmtYnOHLlHp--
 
