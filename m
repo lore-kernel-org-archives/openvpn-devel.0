@@ -1,10 +1,10 @@
-Date: Wed, 26 Jan 2022 14:47:11 +0100 (CET)
-Message-Id: <202201261347.20QDlBLt060177@...2054...>
+Date: Wed, 26 Jan 2022 14:49:14 +0100 (CET)
+Message-Id: <202201261349.20QDnEVB060240@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220121185752.14138-1-selva.nair@...277...>
-References: <20220121185752.14138-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Do not error when md_kt_size()
- is called with mdname=none
+In-Reply-To: <20220121204933.591-1-a@...2181...>
+References: <20220121204933.591-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: GitHub Actions: update script
+ to same version as master
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,41 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch + explanation make sense and Arne indeed ACKed this.  Thanks.
+Thanks.
 
-Reproduced the problem (GCM + verb7):
+Your patch has been applied to the release/2.5 branch.
 
-   2022-01-26 14:40:34 us=15705 Data Channel: using negotiated cipher 'AES-256-GCM'
-   ...
-   2022-01-26 14:40:34 us=15829 Message hash algorithm 'none' not found
-   2022-01-26 14:40:34 us=15849 Exiting due to fatal error
+commit f1f8eb5f88caf72937a95dc797ab0d26c563f280
+Author: Antonio Quartulli
+Date:   Fri Jan 21 21:49:33 2022 +0100
 
-and can see the fix work
+     GitHub Actions: update script to same version as master
 
-   2022-01-26 14:42:38 us=355685 Data Channel: using negotiated cipher 'AES-256-GCM'
-   ...
-   2022-01-26 14:42:38 us=355782 Master Encrypt (cipher): 0ba0d2b3 83f3f160 3ff8fe87 11c22db7 dc67c1fd 7f9ba3f0 9077f9e9 7ee77cf2
-   2022-01-26 14:42:38 us=355791 Master Encrypt (hmac): 
-   ...
-   2022-01-26 14:42:38 us=355897 Incoming Data Channel: CIPHER block_size=16 iv_size=12
-   2022-01-26 14:42:38 us=356020 ROUTE_GATEWAY 193.149.48.190/255.255.255.192 IFACE=bge0 HWADDR=3c:a8:2a:9f:70:90
-
-
-Your patch has been applied to the master branch.
-
-commit 9076d90684c06c8f0ac0ba4c099b00ddbc4ab29d
-Author: Selva Nair
-Date:   Fri Jan 21 13:57:52 2022 -0500
-
-     Do not error when md_kt_size() is called with mdname=none
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220121185752.14138-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23631.html
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20220121204933.591-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23634.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
