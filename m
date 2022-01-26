@@ -1,9 +1,10 @@
-Date: Wed, 26 Jan 2022 13:46:44 +0100 (CET)
-Message-Id: <202201261246.20QCki4Z057378@...2054...>
+Date: Wed, 26 Jan 2022 13:51:06 +0100 (CET)
+Message-Id: <202201261251.20QCp6gX057549@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220125142456.18176-1-a@...2181...>
-References: <20220125142456.18176-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: update copyright year to 2022
+In-Reply-To: <20220125025128.2117-1-selva.nair@...277...>
+References: <20220125025128.2117-1-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: xkey: Use a custom error level
+ for debug messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,24 +15,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Verified that this patch indeed only touches "copyright" lines
-(git show -I Copyright).
+Looks good, compile tested on 3.0.1/Linux (no surprises, straightforward
+enough).
 
 Your patch has been applied to the master branch.
 
-commit 1800d77ec54dc8608c4933a46d3d23437cf224c1
-Author: Antonio Quartulli
-Date:   Tue Jan 25 15:24:56 2022 +0100
+commit dfb9cd62dc8b643c95f862d3f75c53f36aecd2da
+Author: Selva Nair
+Date:   Mon Jan 24 21:51:26 2022 -0500
 
-     update copyright year to 2022
+     xkey: Use a custom error level for debug messages
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20220125142456.18176-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23650.html
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20220125025128.2117-1-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23649.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
