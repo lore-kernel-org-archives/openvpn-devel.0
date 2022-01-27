@@ -1,16 +1,9 @@
-Message-ID: <a265e171-909a-e0a3-c5b8-63ac21f4a4ea@...2181...>
-Date: Wed, 26 Jan 2022 22:09:23 +0100
+From: selva.nair@...277...
+Date: Wed, 26 Jan 2022 19:14:10 -0500
+Message-Id: <20220127001410.7587-1-selva.nair@...277...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20220126162830.20952-1-a@...2181...>
- <20220126162830.20952-2-a@...2181...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20220126162830.20952-2-a@...2181...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------lg8Zv0oMIgRY4uVctA1gc9Fz"
-Subject: Re: [Openvpn-devel] [PATCH 2/2] crypto: move OpenSSL specific FIPS
- check to its backend
+Subject: [Openvpn-devel] [PATCH] pkcs11_openssl.c: check
+ EVP_get_digestbyname() != NULL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,64 +12,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <davids@...515...>, Arne Schwabe <arne@...1227...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------lg8Zv0oMIgRY4uVctA1gc9Fz
-Content-Type: multipart/mixed; boundary="------------0LZ6QuDllGTmOcA6ODHmtjbq";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <davids@...515...>, Arne Schwabe <arne@...1227...>
-Message-ID: <a265e171-909a-e0a3-c5b8-63ac21f4a4ea@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] crypto: move OpenSSL specific FIPS
- check to its backend
-References: <20220126162830.20952-1-a@...2181...>
- <20220126162830.20952-2-a@...2181...>
-In-Reply-To: <20220126162830.20952-2-a@...2181...>
+From: Selva Nair <selva.nair@...277...>
 
---------------0LZ6QuDllGTmOcA6ODHmtjbq
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: base64
+Reported-by: Arne Schwabe <arne@...1227...>
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/pkcs11_openssl.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-SGksDQoNCk9uIDI2LzAxLzIwMjIgMTc6MjgsIEFudG9uaW8gUXVhcnR1bGxpIHdyb3RlOg0KPiBP
-dXIgY3J5cHRvIEFQSSBhbHJlYWR5IHByb3ZpZGVzIGEgZnVuY3Rpb24gcGVyZm9ybWluZyBhIHZh
-bGlkaXR5IGNoZWNrDQo+IG9uIHRoZSBzcGVjaWZpZWQgY2lwaGVybmFtZS4gVGhlIE9wZW5TU0wg
-Y291bnRlcnBhcnQgYWxzbyBjaGVja3MgZm9yIHRoZQ0KPiBjaXBoZXIgYmVpbmcgRklQUy1lbmFi
-bGVkLg0KPiANCj4gVGhpcyBBUEkgaXMgY2lwaGVyX3ZhbGlkKCkuIEV4dGVuZCBpdCBzbyB0aGF0
-IGl0IGNhbiBwcm92aWRlIGEgcmVhc29uDQo+IHdoZW5ldmVyIHRoZSBjaXBoZXIgaXMgbm90IHZh
-bGlkIGFuZCB1c2UgaXQgaW4gY3J5cHRvLmMuDQo+IA0KPiBUaGlzIHdheSB3ZSBtb3ZlIGFueSBP
-cGVuU1NMIHNwZWNpZmljIGJpdCB0byBpdHMgb3duDQo+IGJhY2tlbmQgYW5kIGRpcmVjdGx5IHVz
-ZSB0aGUgbmV3IGNpcGhlcl92YWxpZF9yZWFzb24oKSBBUEkgaW4gdGhlDQo+IGdlbmVyaWMgY29k
-ZS4NCj4gDQo+IFRoaXMgcGF0Y2ggZml4ZXMgY29tcGlsYXRpb25zIHdpdGggbWJlZFRMUyB3aGVu
-IHNvbWUgT3BlblNTTCBpcyBhbHNvDQo+IGluc3RhbGxlZC4gVGhlIGlzc3VlIHdhcyBpbnRyb2R1
-Y2VkIHdpdGg6DQo+IDU0NDMzMGZlICgiY3J5cHRvOiBGaXggT1BFTlNTTF9GSVBTIGVuYWJsZWQg
-YnVpbGRzIikNCj4gDQo+IENjOiBEYXZpZCBTb21tZXJzZXRoIDxkYXZpZHNALi4uNTE1Li4uPg0K
-PiBTaWduZWQtb2ZmLWJ5OiBBbnRvbmlvIFF1YXJ0dWxsaSA8YUAuLi4yMTgxLi4uPg0KPiAtLS0N
-Cj4gDQoNCkZUUjoNCg0KdGVzdGVkIG9uIFJIRUw4IHdpdGggRklQUyBlbmFibGVkIGFuZCBJIGNv
-dWxkbid0IGV4cGVyaWVuY2UgYW55IA0KbWlzYmVoYXZpb3UvY3Jhc2ggd2hpbGUgYXR0ZW1wdGlu
-ZyB0byB1c2UgYSBGSVBTLWRpc2FibGVkIGNpcGhlci4NCg0KQ2hlZXJzLA0KDQotLSANCkFudG9u
-aW8gUXVhcnR1bGxpDQo=
+diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c
+index a82b4b32..c4f88816 100644
+--- a/src/openvpn/pkcs11_openssl.c
++++ b/src/openvpn/pkcs11_openssl.c
+@@ -89,7 +89,14 @@ set_pss_params(CK_RSA_PKCS_PSS_PARAMS *pss_params, XKEY_SIGALG sigalg,
+     pss_params->mgf = mdtypes[i].mgf_id;
+ 
+     /* determine salt length */
+-    int mdsize = EVP_MD_size(EVP_get_digestbyname(sigalg.mdname));
++    const EVP_MD *md = EVP_get_digestbyname(sigalg.mdname);
++    if (!md)
++    {
++        msg(M_WARN, "WARN: set_pss_params: EVP_get_digestbyname returned NULL "
++                    "for mdname = <%s>", sigalg.mdname);
++        goto cleanup;
++    }
++    int mdsize = EVP_MD_get_size(md);
+ 
+     int saltlen = -1;
+     if (!strcmp(sigalg.saltlen, "digest")) /* same as digest size */
+-- 
+2.30.2
 
---------------0LZ6QuDllGTmOcA6ODHmtjbq--
-
---------------lg8Zv0oMIgRY4uVctA1gc9Fz
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEE0iaIiJwUxUtDlXhmjWnm2aT0HkcFAmHxuIMACgkQjWnm2aT0
-HkfM2Qf/dkQsNkAyLGt3H9YDBEbozf0Nl+WprgVUQCJnKefFHfYzuapKhIHZ1DPm
-Nx1ngioLa31y6WPHHviUtyqUlyfUQP71+txqE2TQtByn7KOF9nYruvNoVG6+PQY/
-Qe+crnkEO1nWueW39m8PqbUbvVd4XCdCqi90j34nC7Jj2DWcTFKek8LJEdYRt6je
-0DcSqA//L8B+BmHuI8ExkYm8kiUeAUgeDdgfCWjV7MgEIpvLxH+F/n2h7GM0vg0I
-h77613j9WlluOEtls7zaT/wUhM2K5nhIWiiWN/MrPwWvRNcfVGDR1QHPGQiZgLYe
-wBlATsm8S4SFvrRMNaWsRPzwxZM2Rw==
-=zXg0
------END PGP SIGNATURE-----
-
---------------lg8Zv0oMIgRY4uVctA1gc9Fz--
 
