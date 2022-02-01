@@ -1,13 +1,8 @@
-Message-ID: <7781365e-5c2f-ad38-d08f-151cc1a7f3d8@...1227...>
-Date: Sat, 29 Jan 2022 20:05:29 +0100
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <20220101162532.2251835-1-arne@...1227...>
- <20220101162532.2251835-3-arne@...1227...> <YfPQVunkBAhZWuXC@...1296...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <YfPQVunkBAhZWuXC@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH v3 02/14] Fix mssfix and frame
- calculation in CBC mode
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue, 1 Feb 2022 11:43:40 +0200
+Message-ID: <CAGyAFMXhDNuu7jKwsOnymtd2F1qLQgn4-0KMppLogZ-AdYPmFw@...278...>
+Subject: [Openvpn-devel] OpenVPN Data Channel Offload for Windows (Jan 2022)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,57 +11,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Am 28.01.22 um 12:15 schrieb Gert Doering:
-> Hi,
-> 
-> On Sat, Jan 01, 2022 at 05:25:20PM +0100, Arne Schwabe wrote:
->> This commit fixes the MSS calculation in CBC mode. This fix has two parts:
->>
->> - Added rounding to a multiple of block size during calculation of overhead
->> - In CBC mode the packet ID is part of the plaintext (or payload) rather
->>    than part of the header (like for AEAD), adjust the functions to
->>    correctly reflect this.
->>
->> OCC link calculation is not affected since it ignores rounding of CBC
->> block size completely.
-> 
-> I've done a bit of whacking of this, and it is still not fully right,
-> unfortunately.
-> 
-> The short form is
-> 
->    - BF-CBC, LZ4, --mssfix 1000, over IPv4
->       v4 TCP -> MSS 923, resulting UDP payload <= 1008 bytes
->       v6 TCP -> MSS 903, resulting UDP payload <= 1008 bytes
->   - BF-CBC, LZ4, --mssfix 1000, over IPv6
->       v4 TCP -> MSS 923, resulting UDP payload <= 1008 bytes
->       v6 TCP -> MSS 903, resulting UDP payload <= 1008 bytes
->       [so this is clearly wrong!]
-> 
->   - BF-CBC, comp no, --mssfix 1000, over IPv4
->       v4 TCP -> MSS 923, resulting UDP payload <= 1000 bytes
->       [can't test v6 inside in this particular server instance]
-> 
-> so, something is wrong with the rounding and the compression opcode
-> in CBC mode.  With "comp no" the resulting packets are correct (UDP payload
-> <= 1000 bytes), with "comp lz4" - doing the framing, but not doing
-> actual compression - UDP payload exceeds --mssfix config.
+Dear all,
 
-I looked into this. This is still an artefact from our workaround that 
-we do not recalculate frame parameter if the cipehr does not change 
-after push. So if something else is pushed that changes the frame 
-parameter like compression, we continue to use the old parameter and 
-this the behaviour we are seeing.
+OpenVPN Community would like to present a new technical preview version of
+OpenVPN Windows client with Data Channel Offload functionality. This version
+includes many bugfixes and improvements since the previous one (May 2021).
+It also uses OpenSSL 3.0.1.
 
-The workaround is eventually removed in the patch set but not in this 
-patch. To test here either already put the compress option in the config 
-before or artificially use a different cipher to force teh recalculation.
+The client is built from the openvpn "dco" branch
+(https://github.com/openvpn/openvpn/tree/dco)
+plus some unmerged patches. The Data Channel Offload kernel driver is built
+from https://github.com/openvpn/ovpn-dco-win
 
-Arne
+The signed installers for x64, x86 and ARM64 could be downloaded from
+the link below:
 
+https://build.openvpn.net/downloads/temp/ovpn-dco-win/msi/
+
+Note that DCO functionality requires Windows 10 2004 (Windows Server
+2022) or newer.
+To enable it, add following options to your ovpn profile:
+
+    windows-driver ovpn-dco-win
+    tun-mtu 1428
+
+If you are interested in what happens inside the driver, you could run TraceView
+(https://docs.microsoft.com/en-us/windows-hardware/drivers/devtest/traceview)
+and
+create a new logging session with control GUID
+4970F9cf-2c0c-4f11-b1cc-e3a1e9958833.
+More information could be found in README.md in ovpn-dco-win repo.
+
+Please give it a try and let us know if you got better performance
+compared to tap-windows6.
+If you experience any issues with it, please let us know too. Be aware
+that this is a technical
+preview and not a final release, so use your judgement.
+
+--
+-Lev
 
