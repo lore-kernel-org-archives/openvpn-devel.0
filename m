@@ -1,15 +1,9 @@
-Message-ID: <1c8b9b19-3ca3-327f-34a9-a7800e7f151a@...2080...>
-Date: Wed, 2 Feb 2022 16:21:41 +0100
-MIME-Version: 1.0
-Content-Language: en-GB
-References: <20220126162830.20952-1-a@...2181...>
-From: David Sommerseth <openvpn@...2080...>
-In-Reply-To: <20220126162830.20952-1-a@...2181...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------T2eb64mq2nndI6LL0d1gmqla"
-Subject: Re: [Openvpn-devel] [PATCH 1/2] crypto: move validation logic from
- cipher_get to cipher_valid
+Date: Wed, 2 Feb 2022 17:38:07 +0100 (CET)
+Message-Id: <202202021638.212Gc791033360@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220126123502.403-1-lstipakov@...277...>
+References: <20220126123502.403-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: msvc: switch to openssl3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,104 +12,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------T2eb64mq2nndI6LL0d1gmqla
-Content-Type: multipart/mixed; boundary="------------hDDsOmRlsdG6ZCl500U0Bsvz";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Message-ID: <1c8b9b19-3ca3-327f-34a9-a7800e7f151a@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] crypto: move validation logic from
- cipher_get to cipher_valid
-References: <20220126162830.20952-1-a@...2181...>
-In-Reply-To: <20220126162830.20952-1-a@...2181...>
+Haven't tested anything.  If you and Antonio say this works, good enough :)
 
---------------hDDsOmRlsdG6ZCl500U0Bsvz
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: base64
+Your patch has been applied to the master branch.
 
-T24gMjYvMDEvMjAyMiAxNzoyOCwgQW50b25pbyBRdWFydHVsbGkgd3JvdGU6DQo+IFdpdGggY2lw
-aGVyIHZhbGlkYXRpb24gcGVyZm9ybWVkIGluIGNpcGhlcl9nZXQoKSwgYSBjaXBoZXIgaXMgbmV2
-ZXINCj4gcmV0dXJuZWQgaW4gYW55IGNhc2UgaWYgc29tZSBjaGVjayBmYWlscy4NCj4gDQo+IFRo
-aXMgcHJldmVudHMgT3BlblZQTiBmcm9tIG9wZXJhdGluZyBvbiBhbGwgY2lwaGVycyBwcm92aWRl
-ZCBieSB0aGUgU1NMDQo+IGxpYnJhcnksIGxpa2UgcHJpbnRpbmcgdGhlbSB0byB0aGUgdXNlci4N
-Cj4gDQo+IE1vdmUgdGhlIHZhbGlkYXRpb24gbG9naWMgdG8gY2lwaGVyX3ZhbGlkKCkgc28gdGhh
-dCBjaGVja3MgYXJlIHBlcmZvcm1lZA0KPiBvbmx5IHdoZW4gT3BlblZQTiByZWFsbHkgd2FudCB0
-byBrbm93IGlmIGEgY2lwaGVyIGlzIHVzYWJsZSBvciBub3QuDQo+IA0KPiBGaXhlczogY2UyOTU0
-YTAgKCJSZW1vdmUgY2lwaGVyX2t0X3QgYW5kIGNoYW5nZSB0eXBlIHRvIGNvbnN0IGNoYXIqIGlu
-IEFQSSIpDQo+IENjOiBBcm5lIFNjaHdhYmUgPGFybmVALi4uMTIyNy4uLj4NCj4gU2lnbmVkLW9m
-Zi1ieTogQW50b25pbyBRdWFydHVsbGkgPGFALi4uMjE4MS4uLj4NCj4gLS0tDQo+IA0KPiBOT1RF
-OiBtYmVkdGxzIGFscmVhZHkgZm9sbG93cyB0aGlzIGFwcHJvYWNoIGFuZCBkaWQgbm90IHJlcXVp
-cmUNCj4gYW55IGNoYW5nZS4NCj4gDQo+ICAgc3JjL29wZW52cG4vY3J5cHRvX29wZW5zc2wuYyB8
-IDMwICsrKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiAgIDEgZmlsZSBjaGFuZ2VkLCAx
-MSBpbnNlcnRpb25zKCspLCAxOSBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9zcmMv
-b3BlbnZwbi9jcnlwdG9fb3BlbnNzbC5jIGIvc3JjL29wZW52cG4vY3J5cHRvX29wZW5zc2wuYw0K
-PiBpbmRleCBhNzI1MzA2Yy4uZWEwMTQ3ZGIgMTAwNjQ0DQo+IC0tLSBhL3NyYy9vcGVudnBuL2Ny
-eXB0b19vcGVuc3NsLmMNCj4gKysrIGIvc3JjL29wZW52cG4vY3J5cHRvX29wZW5zc2wuYw0KPiBA
-QCAtNTY1LDE2ICs1NjUsMTkgQEAgcmFuZF9ieXRlcyh1aW50OF90ICpvdXRwdXQsIGludCBsZW4p
-DQo+ICAgc3RhdGljIGV2cF9jaXBoZXJfdHlwZSAqDQo+ICAgY2lwaGVyX2dldChjb25zdCBjaGFy
-ICpjaXBoZXJuYW1lKQ0KPiAgIHsNCj4gLSAgICBldnBfY2lwaGVyX3R5cGUgKmNpcGhlciA9IE5V
-TEw7DQo+IC0NCj4gICAgICAgQVNTRVJUKGNpcGhlcm5hbWUpOw0KPiAgIA0KPiAgICAgICBjaXBo
-ZXJuYW1lID0gdHJhbnNsYXRlX2NpcGhlcl9uYW1lX2Zyb21fb3BlbnZwbihjaXBoZXJuYW1lKTsN
-Cj4gLSAgICBjaXBoZXIgPSBFVlBfQ0lQSEVSX2ZldGNoKE5VTEwsIGNpcGhlcm5hbWUsIE5VTEwp
-Ow0KPiArICAgIHJldHVybiBFVlBfQ0lQSEVSX2ZldGNoKE5VTEwsIGNpcGhlcm5hbWUsIE5VTEwp
-Ow0KPiArfQ0KPiAgIA0KPiAtICAgIGlmIChOVUxMID09IGNpcGhlcikNCj4gK2Jvb2wgY2lwaGVy
-X3ZhbGlkKGNvbnN0IGNoYXIgKmNpcGhlcm5hbWUpDQoNCk5pdHBpY2sgLSBmdW5jdGlvbiByZXR1
-cm4gJ2Jvb2wnIHNob3VsZCBiZSBvbiBhIGxpbmUgb24gaXRzIG93bi4NCg0KWy4uLl0NCg0KPiBA
-QCAtNTg1LDcgKzU4OCw3IEBAIGNpcGhlcl9nZXQoY29uc3QgY2hhciAqY2lwaGVybmFtZSkNCj4g
-ICAgICAgew0KPiAgICAgICAgICAgbXNnKERfTE9XLCAiQ2lwaGVyIGFsZ29yaXRobSAnJXMnIGlz
-IGtub3duIGJ5IE9wZW5TU0wgbGlicmFyeSBidXQgIg0KPiAgICAgICAgICAgICAgICAgICAgICAg
-ImN1cnJlbnRseSBkaXNhYmxlZCBieSBydW5uaW5nIGluIEZJUFMgbW9kZS4iLCBjaXBoZXJuYW1l
-KTsNCj4gLSAgICAgICAgcmV0dXJuIE5VTEw7DQo+ICsgICAgICAgIHJldHVybiBmYWxzZTsNCg0K
-SXQncyBtaXNzaW5nIGFuIEVWUF9DSVBIRVJfZnJlZShjaXBoZXIpIGhlcmUuDQoNCj4gICAgICAg
-fQ0KPiAgICNlbmRpZg0KPiAgICAgICBpZiAoRVZQX0NJUEhFUl9rZXlfbGVuZ3RoKGNpcGhlcikg
-PiBNQVhfQ0lQSEVSX0tFWV9MRU5HVEgpDQo+IEBAIC01OTQsMjIgKzU5NywxMSBAQCBjaXBoZXJf
-Z2V0KGNvbnN0IGNoYXIgKmNpcGhlcm5hbWUpDQo+ICAgICAgICAgICAgICAgIndoaWNoIGlzIGxh
-cmdlciB0aGFuICIgUEFDS0FHRV9OQU1FICIncyBjdXJyZW50IG1heGltdW0ga2V5IHNpemUgIg0K
-PiAgICAgICAgICAgICAgICIoJWQgYnl0ZXMpIiwgY2lwaGVybmFtZSwgRVZQX0NJUEhFUl9rZXlf
-bGVuZ3RoKGNpcGhlciksDQo+ICAgICAgICAgICAgICAgTUFYX0NJUEhFUl9LRVlfTEVOR1RIKTsN
-Cj4gLSAgICAgICAgcmV0dXJuIE5VTEw7DQo+ICsgICAgICAgIHJldHVybiBmYWxzZTsNCg0KTWlz
-c2luZyBFVlBfQ0lQSEVSX2ZyZWUoY2lwaGVyKSBoZXJlIGFzIHdlbGwuDQoNCj4gICAgICAgfQ0K
-PiAgIA0KPiAtICAgIHJldHVybiBjaXBoZXI7DQo+IC19DQo+IC0NCj4gLWJvb2wgY2lwaGVyX3Zh
-bGlkKGNvbnN0IGNoYXIgKmNpcGhlcm5hbWUpDQo+IC17DQo+IC0gICAgZXZwX2NpcGhlcl90eXBl
-ICpjaXBoZXIgPSBjaXBoZXJfZ2V0KGNpcGhlcm5hbWUpOw0KPiAtICAgIGJvb2wgdmFsaWQgPSAo
-Y2lwaGVyICE9IE5VTEwpOw0KPiAtICAgIGlmICghdmFsaWQpDQo+IC0gICAgew0KPiAtICAgICAg
-ICBjcnlwdG9fbXNnKERfTE9XLCAiQ2lwaGVyIGFsZ29yaXRobSAnJXMnIG5vdCBmb3VuZCIsIGNp
-cGhlcm5hbWUpOw0KPiAtICAgIH0NCj4gICAgICAgRVZQX0NJUEhFUl9mcmVlKGNpcGhlcik7DQo+
-IC0gICAgcmV0dXJuIHZhbGlkOw0KPiArICAgIHJldHVybiB0cnVlOw0KDQpNYXliZSBpdCB3b3Vs
-ZCBiZSBiZXR0ZXIgdG8gaGF2ZSBhICdib29sIHJldCA9IHRydWUnIGRlZmluZWQgaW4gdGhlIA0K
-YmVnaW5uaW5nIGFuZCBoYXZlIGFuICdleGl0JyBsYWJlbCBhYm92ZSB0aGUgRVZQX0NJUEhFUl9m
-cmVlKCkgYW5kIGF0IA0KdGhvc2UgdHdvIGZhaWx1cmUgbG9jYXRpb25zIGp1c3Qgc2V0IHJldCA9
-IGZhbHNlIGFuZCBnb3RvIGV4aXQ/DQoNCg0KDQotLSANCmtpbmQgcmVnYXJkcywNCg0KRGF2aWQg
-U29tbWVyc2V0aA0KT3BlblZQTiBJbmMNCg0K
+commit 225893ef7d06cdaf145436c54bd1070266a1d1da
+Author: Lev Stipakov
+Date:   Wed Jan 26 14:35:02 2022 +0200
 
---------------hDDsOmRlsdG6ZCl500U0Bsvz--
+     msvc: switch to openssl3
 
---------------T2eb64mq2nndI6LL0d1gmqla
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20220126123502.403-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23662.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
------BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmH6oYYACgkQhs+UTJZx
-/fL/gw//c7rVTuWgRSxIh09LM8bN9ZNfgBbYTyMMBcVC6YGNeysdbJ+iuPFghbt5
-EXo/YYICf4cuoCcCHLuid/QYGML40/1vnGk8nsaPd16b/bTd2rhoP9nCe8ISLSOX
-cd2nU9IuNOST137xQruSqlZS9E7Soht3GsYuiqdxBpxBmSK4GhLfunbLb2OT2TNe
-4SFVvD7VvDm8kcir8fD2IRAwVYBTEBYS/liBqWQ+fjnsGjvzRuhK7Qh1zurWufMw
-dOoxKSsMxETab39vQYQ4LeZiqZzDyi01Ogm2oRu7A2280Oyfc0E+wsbavkSNALxA
-7cv56TiMlAC2idVFRAo4VbHrzehUH+6fncCeWyiQi2osTGv48HWJ/7WojxHqPnpc
-TbmDa7A4/Ejsb6f+YO74QWxLQR9hfJykNgZBXsHhwR9JaqYuoSEm9UFkV2rWO8xY
-Noeih8QJ4D3r1MrG9nkUeSQStF7FOKP/NE/ztDEWDfw32NJ9u6PaggHNSsUKuJa9
-AhBe4vNrMqdT6QIskGin30ZZaC9JxqvwhoqvCbNO8eylP5vkV9HYT/iAfFUkh095
-fJnw8lSUUC++LJO8kqDURp7rITZK9/XAtHuSSOkanlq2T/l8CWqfXE08jl6RA8yo
-3I0E1bObiVcvG94XXyzQNWe+VhzuVFd04PABD7lK9gkfJg20WlE=
-=vK8f
------END PGP SIGNATURE-----
+--
+kind regards,
 
---------------T2eb64mq2nndI6LL0d1gmqla--
+Gert Doering
+
 
