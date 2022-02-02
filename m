@@ -1,10 +1,10 @@
-Date: Wed, 2 Feb 2022 14:21:33 +0100 (CET)
-Message-Id: <202202021321.212DLX6t028574@...2054...>
+Date: Wed, 2 Feb 2022 14:39:10 +0100 (CET)
+Message-Id: <202202021339.212DdAQh030711@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220124025459.1042317-1-arne@...1227...>
-References: <20220124025459.1042317-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Change buffer allocation
- calculation and checks to be more static
+In-Reply-To: <20220101162532.2251835-5-arne@...1227...>
+References: <20220101162532.2251835-5-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix datagram_overhead and
+ assorted functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,36 +20,33 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Tested on client and server side, all "regular" stuff works, but
-it breaks my TCP/P2P/P2P-NCP test case for big packets, namely...
+For reference, this was 12/21 in the first patch series, and got an
+ACK from Frank Lichtenheld there.
 
-2022-02-02 12:57:19 TCP/UDP packet too large on write to [AF_INET6]2001:608:0:814::f000:11:51204 (tried=1520,max=1499)
+Stared at the code.  Looks bigger than it really is :-) - what it
+really does is pass on the socket address family down the call
+chain to the "datagram_overhead()" function, which will then know
+if it's v4 or v6.  
 
-(expected result: oversized packet, fragment/segment on outer layer)
+Should we ever support SCTP, we'll only have to adjust a single
+function here, no mixture of functions and tables... :-)
 
-After discussion on IRC, decided to go forward anyway, as this is only
-one specific corner case (P2P NCP), and it gets fixed for good in 13/14 
-- removing EXPANDED_SIZE() in forward.c, replacing it with just 
-"buf.payload_size", which always has "sufficient headroom" - tested,
-fixes this corner case, doesn't break anything else.
-
-
-(For reference, this was 10/21 in v1 of the patchset, 03/14 in v3, and
-standalone patches v4+v5 - but neither of the previous ones got an ACK
-or NAK, just MaxF finding ways to crash v3 and v4 ;-) )
+Tested client and server side.  P2P NCP is still broken (waiting for 
+13/14), Rest works.
 
 Your patch has been applied to the master branch.
 
-commit 65a21eb14f4afd80864e88ff425f5d9ef8d8fdec
+commit a63a727b020ef42c475bd861b960200686359b2d
 Author: Arne Schwabe
-Date:   Mon Jan 24 03:54:59 2022 +0100
+Date:   Sat Jan 1 17:25:22 2022 +0100
 
-     Change buffer allocation calculation and checks to be more static
+     Fix datagram_overhead and assorted functions
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220124025459.1042317-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23638.html
+     Message-Id: <20220101162532.2251835-5-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23504.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
