@@ -1,10 +1,10 @@
-Date: Thu, 3 Feb 2022 11:38:04 +0100 (CET)
-Message-Id: <202202031038.213Ac4hu057169@...2054...>
+Date: Thu, 3 Feb 2022 13:35:42 +0100 (CET)
+Message-Id: <202202031235.213CZgMW068001@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220203082620.8186-1-a@...2181...>
-References: <20220203082620.8186-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: keyingmaterialexporter.c:
- include strings.h
+In-Reply-To: <20220101162532.2251835-9-arne@...1227...>
+References: <20220101162532.2251835-9-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove link_mtu parameter when
+ running up/down scripts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-FreeBSD manpage confirms that <strings.h> should be used.  Insanity,
-but well.
+"Because it makes sense".  Client-side and server-side tested (I do not
+have any scripts that look at link_mtu, I have other scripts that might
+be upset).  Code change is simple enough.
 
-Your patch has been applied to the master and release/2.5 branch (bugfix,
-even if not very critical).
+For reference, this was 16/21 in v1 of the series, and got a NAK 
+for "missing update to script-options.rst".  This is still not in, 
+so we agreed on IRC this morning that I'll do the missing text 
+adjustments, which I have done.
 
-commit d93a2b6160759d42d3fbaecc7fc868a7120221ef (master)
-commit 2d31bf20dcffaab00a677bab06c8fe3816b6605b (release/2.5)
-Author: Antonio Quartulli
-Date:   Thu Feb 3 09:26:20 2022 +0100
+Your patch has been applied to the master branch.
 
-     keyingmaterialexporter.c: include strings.h
+commit 3780ce0e16c2cd06e77357a30df3c43595c98cab (master)
+Author: Arne Schwabe
+Date:   Sat Jan 1 17:25:26 2022 +0100
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Remove link_mtu parameter when running up/down scripts
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220203082620.8186-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23702.html
+     Message-Id: <20220101162532.2251835-9-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23493.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
