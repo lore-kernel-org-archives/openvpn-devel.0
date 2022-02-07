@@ -1,12 +1,13 @@
-Message-ID: <d363a86d-088a-e81f-aed8-77f22f698397@...1227...>
-Date: Fri, 4 Feb 2022 20:12:26 +0100
+Message-ID: <4f3b12fd-af55-e4f8-205e-149dbbfe68be@...2181...>
+Date: Mon, 7 Feb 2022 09:49:52 +0100
 MIME-Version: 1.0
-Content-Language: en-GB
+Content-Language: en-US
 References: <20211006180644.3081219-1-arne@...1227...>
  <20211105150742.2909443-1-arne@...1227...>
  <4407050c-4304-9112-7cb2-7a8489aaa315@...2181...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <4407050c-4304-9112-7cb2-7a8489aaa315@...2181...>
+ <d363a86d-088a-e81f-aed8-77f22f698397@...1227...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <d363a86d-088a-e81f-aed8-77f22f698397@...1227...>
 Subject: Re: [Openvpn-devel] [PATCH v2] Default to --cipher BF-CBC if not
  set and compat-mode < 2.4.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,40 +20,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Am 04.02.22 um 17:51 schrieb Antonio Quartulli:
-> Hi,
-> 
-> On 05/11/2021 16:07, Arne Schwabe wrote:
->> When we try to make a configuration compatible to a version earlier
->> than 2.4.0 we probably need to have a --cipher configured since NCP
->> is not available. In configuration where --cipher is not specified
->> we default to BF-CBC to support these old clients.
->>
->> Note that with OpenSSL 3.0 you will also need to enable the legacy
->> provider otherwise we bail out since BF-CBC is no longer supported.
->>
->> Also move the condition so BF-CBC gets included in the data-ciphers
->> list.
->>
->> Patch v2: move the comment to a better place.
->>
->> Signed-off-by: Arne Schwabe <arne@...1227...>
-> 
-> Reviewed-by: Antonio Quartulli <a@...2181...>
-> 
-> Unfortunately I cannot fully ACK this patch because I'd need to compile 
-> 2.3 to run a test, but this turned to be a mission impossible (due to 
-> OpenSSL compatibility issues).
-> 
-> The change makes sense and it should do what we expect.
-> 
-> If anybody wants to test against an openvpn2.3 peer is most welcome.
+Hi,
 
-A 2.4 client with ncp-disable should work nicely as well. We just do not 
-make ourselves compatible with 2.4.0 with ncp-disable if you select 
-2.4.0, you need 2.3.0 for that.
+On 04/02/2022 20:12, Arne Schwabe wrote:
+> A 2.4 client with ncp-disable should work nicely as well. We just do not 
+> make ourselves compatible with 2.4.0 with ncp-disable if you select 
+> 2.4.0, you need 2.3.0 for that.
 
-Arne
+Thanks for the hint!
+
+Went the lazy route and tested against 2.4.11 with --ncp-disable.
+
+Server: 2.4.11 with --ncp-disable (to mimic 2.3.x) and no --cipher 
+specified (BF-CBC is therefore the default).
+
+Client: master + this patch and no --cipher specified.
+
+* First attempt: wrong cipher negotiated and connection breaks.
+* Second attempt: add --compat-mode 2.3.0 to client (to exercise the 
+code implemented by this patch) and I could happily connect to the 
+2.3.x-like server using BF-CBC.
+
+
+
+Acked-by: Antonio Quartulli <a@...2181...>
+
+
+-- 
+Antonio Quartulli
 
