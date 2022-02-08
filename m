@@ -1,9 +1,9 @@
 MIME-Version: 1.0
-From: =?UTF-8?B?44CKQeC5mzI344CL44OE?= <m2afmgtataloo@...277...>
-Date: Tue, 8 Feb 2022 16:39:48 +0330
-Message-ID: <CANpmKPU3Ptv+DYMv4ZrBF_Br_m20H1u32pSPkUsGTM1xB7maTQ@...278...>
-Content-Type: multipart/alternative; boundary="0000000000006f135605d7816ff9"
-Subject: [Openvpn-devel] (no subject)
+From: aung wai <aungzin12200@...277...>
+Date: Tue, 8 Feb 2022 20:14:06 +0700
+Message-ID: <CAG7wORsoghpTtsb+s5A2t+GNKO6V-5EYEQaoeGYNtA9ZN1=Dbw@...278...>
+Content-Type: multipart/alternative; boundary="000000000000bf83a105d7817c9e"
+Subject: [Openvpn-devel] Plese connect
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,15 +14,15 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Openvpn-devel@lists.sourceforge.net
 
---0000000000006f135605d7816ff9
+--000000000000bf83a105d7817c9e
 Content-Type: text/plain; charset="UTF-8"
 
+Openvpn
 
-
---0000000000006f135605d7816ff9
+--000000000000bf83a105d7817c9e
 Content-Type: text/html; charset="UTF-8"
 
-<div dir="auto"></div>
+<div dir="auto">Openvpn<div dir="auto"><br></div></div>
 
---0000000000006f135605d7816ff9--
+--000000000000bf83a105d7817c9e--
 
