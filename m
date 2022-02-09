@@ -1,13 +1,12 @@
+Content-Type: multipart/mixed; boundary="------------0oQRKvpmpVmd20uRrS7JuQR5"
+Message-ID: <a74c7d64-89cb-ca59-b86b-e7a1ba5fb331@...515...>
+Date: Wed, 9 Feb 2022 12:45:41 +0200
 MIME-Version: 1.0
-References: <20220107145359.311-1-lstipakov@...277...>
- <CAGyAFMXNQnQ_jeoQXJSkW8xXn8QM0nqeJHYB5xL288U6t+TcJw@...278...>
-In-Reply-To: <CAGyAFMXNQnQ_jeoQXJSkW8xXn8QM0nqeJHYB5xL288U6t+TcJw@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Wed, 9 Feb 2022 15:16:23 +0500
-Message-ID: <CAFHpkQFwO0qMqWhtUidv0TNWyGrsnMHqYVib12yCzowBgL1KtQ@...278...>
-Content-Type: multipart/alternative; boundary="000000000000ee32ee05d7932068"
-Subject: Re: [Openvpn-devel] [PATCH 2.5] msvc: adjust build options to
- harden binaries
+Content-Language: en-US
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+References: <d9a8901c-55a2-8c63-bfbe-057b3554c4b8@...515...>
+In-Reply-To: <d9a8901c-55a2-8c63-bfbe-057b3554c4b8@...515...>
+Subject: [Openvpn-devel] Summary of community meeting (9th February 2022)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,1114 +15,239 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
+To: openvpn-devel@lists.sourceforge.net
 
---000000000000ee32ee05d7932068
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------0oQRKvpmpVmd20uRrS7JuQR5
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Sorry, I did not catch that you have been waiting for me.
-I'll have a look in couple of days
+Hi,
 
-=D1=81=D1=80, 9 =D1=84=D0=B5=D0=B2=D1=80. 2022 =D0=B3. =D0=B2 15:07, Lev St=
-ipakov <lstipakov@...277...>:
+Here's the summary of the IRC meeting.
 
-> Hi Ilja,
->
-> Is there any chance you could have a look at this patch?
->
->
-> pe 7. tammik. 2022 klo 16.54 Lev Stipakov (lstipakov@...277...) kirjoitti:
-> >
-> > From: Lev Stipakov <lev@...515...>
-> >
-> >  - enable hardware-enforced stack protection on
-> > compatible hardware/software (/CETCOMPAT linker option)
-> >
-> >  - hash object files with SHA256 (/ZH:SHA_256 compiler option)
-> >
-> >  - enable SDL. The required to add
-> >
-> >     _CRT_NONSTDC_NO_DEPRECATE
-> >     _CRT_SECURE_NO_WARNINGS
-> >     _WINSOCK_DEPRECATED_NO_WARNINGS
-> >
-> > preprocessor definitions. I don't feel like replacing strdup (which is
-> > correct POSIX function) and inet_ntoa (we always pass IPv4 address to
-> > it, inet_ntop will make code more complex)
-> >
-> > Above issues were discovered by bitskim.
-> >
-> > Signed-off-by: Lev Stipakov <lev@...515...>
-> > ---
-> >
-> >  Note that one needs to cherry-pick commit
-> >
-> >      "e5e9a07" (tapctl: Resolve MSVC C4996 warnings)
-> >
-> >  before applying this patch.
-> >
-> >  src/openvpn/openvpn.vcxproj           | 35 +++++++++++------
-> >  src/openvpnmsica/openvpnmsica.vcxproj | 43 +++++++++++++++++++++
-> >  src/openvpnserv/openvpnserv.vcxproj   | 26 ++++++++++---
-> >  src/tapctl/tapctl.vcxproj             | 54 ++++++++++++++++++++++++---
-> >  4 files changed, 134 insertions(+), 24 deletions(-)
-> >
-> > diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-> > index 33b8f19a..a540ec22 100644
-> > --- a/src/openvpn/openvpn.vcxproj
-> > +++ b/src/openvpn/openvpn.vcxproj
-> > @@ -147,11 +147,12 @@
-> >    </PropertyGroup>
-> >    <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win32'">
-> >      <ClCompile>
-> > -
-> <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Preprocesso=
-rDefinitions>
-> > +
-> <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNING=
-S;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</Prep=
-rocessorDefinitions>
-> >
-> <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</Unde=
-finePreprocessorDefinitions>
-> > -      <WarningLevel>Level2</WarningLevel>
-> >        <TreatWarningAsError>true</TreatWarningAsError>
-> >
-> <AdditionalIncludeDirectories>..\compat;$(SolutionDir);%(AdditionalInclud=
-eDirectories)</AdditionalIncludeDirectories>
-> > +      <WarningLevel>Level2</WarningLevel>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> >      </ClCompile>
-> >      <ResourceCompile />
-> >      <Link>
-> > @@ -162,11 +163,12 @@
-> >    </ItemDefinitionGroup>
-> >    <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x64'">
-> >      <ClCompile>
-> > -
-> <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Preprocesso=
-rDefinitions>
-> > +
-> <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNING=
-S;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</Prep=
-rocessorDefinitions>
-> >
-> <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</Unde=
-finePreprocessorDefinitions>
-> > -      <WarningLevel>Level2</WarningLevel>
-> >        <TreatWarningAsError>true</TreatWarningAsError>
-> >
-> <AdditionalIncludeDirectories>..\compat;$(SolutionDir)include;$(SolutionD=
-ir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-> > +      <WarningLevel>Level2</WarningLevel>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> >      </ClCompile>
-> >      <ResourceCompile />
-> >      <Link>
-> > @@ -177,11 +179,12 @@
-> >    </ItemDefinitionGroup>
-> >    <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|ARM64'">
-> >      <ClCompile>
-> > -
-> <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Preprocesso=
-rDefinitions>
-> > +
-> <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNING=
-S;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</Prep=
-rocessorDefinitions>
-> >
-> <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</Unde=
-finePreprocessorDefinitions>
-> > -      <WarningLevel>Level2</WarningLevel>
-> >        <TreatWarningAsError>true</TreatWarningAsError>
-> >
-> <AdditionalIncludeDirectories>..\compat;$(SolutionDir);%(AdditionalInclud=
-eDirectories)</AdditionalIncludeDirectories>
-> > +      <WarningLevel>Level2</WarningLevel>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> >      </ClCompile>
-> >      <ResourceCompile />
-> >      <Link>
-> > @@ -192,44 +195,52 @@
-> >    </ItemDefinitionGroup>
-> >    <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|Win32'">
-> >      <ClCompile>
-> > -
-> <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Preprocesso=
-rDefinitions>
-> > +
-> <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNING=
-S;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</Prep=
-rocessorDefinitions>
-> >
-> <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</Unde=
-finePreprocessorDefinitions>
-> > -      <WarningLevel>Level2</WarningLevel>
-> >        <TreatWarningAsError>true</TreatWarningAsError>
-> >
-> <AdditionalIncludeDirectories>..\compat;$(SolutionDir);%(AdditionalInclud=
-eDirectories)</AdditionalIncludeDirectories>
-> >        <ControlFlowGuard>Guard</ControlFlowGuard>
-> > +      <WarningLevel>Level2</WarningLevel>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> > +      <SDLCheck>true</SDLCheck>
-> >      </ClCompile>
-> >      <ResourceCompile />
-> >      <Link>
-> >
-> <AdditionalDependencies>Ncrypt.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt=
-32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;Advapi32=
-.lib</AdditionalDependencies>
-> >
-> <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS1=
-1H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-> >        <SubSystem>Console</SubSystem>
-> > +      <CETCompat>true</CETCompat>
-> >      </Link>
-> >    </ItemDefinitionGroup>
-> >    <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x64'">
-> >      <ClCompile>
-> > -
-> <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Preprocesso=
-rDefinitions>
-> > +
-> <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNING=
-S;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</Prep=
-rocessorDefinitions>
-> >
-> <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</Unde=
-finePreprocessorDefinitions>
-> > -      <WarningLevel>Level2</WarningLevel>
-> >        <TreatWarningAsError>true</TreatWarningAsError>
-> >
-> <AdditionalIncludeDirectories>..\compat;$(SolutionDir);%(AdditionalInclud=
-eDirectories)</AdditionalIncludeDirectories>
-> >        <ControlFlowGuard>Guard</ControlFlowGuard>
-> > +      <SDLCheck>true</SDLCheck>
-> > +      <WarningLevel>Level2</WarningLevel>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> >      </ClCompile>
-> >      <ResourceCompile />
-> >      <Link>
-> >
-> <AdditionalDependencies>Ncrypt.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt=
-32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;Advapi32=
-.lib</AdditionalDependencies>
-> >
-> <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS1=
-1H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-> >        <SubSystem>Console</SubSystem>
-> > +      <CETCompat>true</CETCompat>
-> >      </Link>
-> >    </ItemDefinitionGroup>
-> >    <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|ARM64'">
-> >      <ClCompile>
-> > -
-> <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Preprocesso=
-rDefinitions>
-> > +
-> <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNING=
-S;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</Prep=
-rocessorDefinitions>
-> >
-> <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)</Unde=
-finePreprocessorDefinitions>
-> > -      <WarningLevel>Level2</WarningLevel>
-> >        <TreatWarningAsError>true</TreatWarningAsError>
-> >
-> <AdditionalIncludeDirectories>..\compat;$(SolutionDir);%(AdditionalInclud=
-eDirectories)</AdditionalIncludeDirectories>
-> >        <ControlFlowGuard>Guard</ControlFlowGuard>
-> > +      <WarningLevel>Level2</WarningLevel>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> > +      <SDLCheck>true</SDLCheck>
-> >      </ClCompile>
-> >      <ResourceCompile />
-> >      <Link>
-> > diff --git a/src/openvpnmsica/openvpnmsica.vcxproj
-> b/src/openvpnmsica/openvpnmsica.vcxproj
-> > index 11aa78bb..5e774430 100644
-> > --- a/src/openvpnmsica/openvpnmsica.vcxproj
-> > +++ b/src/openvpnmsica/openvpnmsica.vcxproj
-> > @@ -135,6 +135,49 @@
-> >    <PropertyGroup Label=3D"Vcpkg"
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x64'">
-> >      <VcpkgEnabled>true</VcpkgEnabled>
-> >    </PropertyGroup>
-> > +  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x64'">
-> > +    <Link>
-> > +      <CETCompat>true</CETCompat>
-> > +    </Link>
-> > +    <ClCompile>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> > +
-> <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefiniti=
-ons>
-> > +    </ClCompile>
-> > +  </ItemDefinitionGroup>
-> > +  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|Win32'">
-> > +    <Link>
-> > +      <CETCompat>true</CETCompat>
-> > +    </Link>
-> > +    <ClCompile>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> > +      <SDLCheck>true</SDLCheck>
-> > +
-> <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefiniti=
-ons>
-> > +    </ClCompile>
-> > +  </ItemDefinitionGroup>
-> > +  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|ARM64'">
-> > +    <ClCompile>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> > +
-> <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefiniti=
-ons>
-> > +    </ClCompile>
-> > +  </ItemDefinitionGroup>
-> > +  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|ARM64'">
-> > +    <ClCompile>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> > +
-> <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefiniti=
-ons>
-> > +    </ClCompile>
-> > +  </ItemDefinitionGroup>
-> > +  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win32'">
-> > +    <ClCompile>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> > +
-> <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefiniti=
-ons>
-> > +    </ClCompile>
-> > +  </ItemDefinitionGroup>
-> > +  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x64'">
-> > +    <ClCompile>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> > +
-> <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefiniti=
-ons>
-> > +    </ClCompile>
-> > +  </ItemDefinitionGroup>
-> >    <ItemGroup>
-> >      <ClCompile Include=3D"..\tapctl\error.c" />
-> >      <ClCompile Include=3D"..\tapctl\tap.c" />
-> > diff --git a/src/openvpnserv/openvpnserv.vcxproj
-> b/src/openvpnserv/openvpnserv.vcxproj
-> > index 520242f4..c70db229 100644
-> > --- a/src/openvpnserv/openvpnserv.vcxproj
-> > +++ b/src/openvpnserv/openvpnserv.vcxproj
-> > @@ -124,7 +124,9 @@
-> >    <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win32'">
-> >      <ClCompile>
-> >
-> <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDir=
-ectories)</AdditionalIncludeDirectories>
-> > -
-> <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Preprocesso=
-rDefinitions>
-> > +
-> <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS=
-;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-> > +      <SDLCheck>true</SDLCheck>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> >      </ClCompile>
-> >      <ResourceCompile />
-> >      <Link>
-> > @@ -135,7 +137,9 @@
-> >    <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x64'">
-> >      <ClCompile>
-> >
-> <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDir=
-ectories)</AdditionalIncludeDirectories>
-> > -
-> <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Preprocesso=
-rDefinitions>
-> > +
-> <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS=
-;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-> > +      <SDLCheck>true</SDLCheck>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> >      </ClCompile>
-> >      <ResourceCompile />
-> >      <Link>
-> > @@ -146,7 +150,9 @@
-> >    <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|ARM64'">
-> >      <ClCompile>
-> >
-> <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDir=
-ectories)</AdditionalIncludeDirectories>
-> > -
-> <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Preprocesso=
-rDefinitions>
-> > +
-> <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS=
-;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-> > +      <SDLCheck>true</SDLCheck>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> >      </ClCompile>
-> >      <ResourceCompile />
-> >      <Link>
-> > @@ -157,29 +163,37 @@
-> >    <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|Win32'">
-> >      <ClCompile>
-> >
-> <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDir=
-ectories)</AdditionalIncludeDirectories>
-> > -
-> <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Preprocesso=
-rDefinitions>
-> > +
-> <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS=
-;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-> > +      <SDLCheck>true</SDLCheck>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> >      </ClCompile>
-> >      <ResourceCompile />
-> >      <Link>
-> >
-> <AdditionalDependencies>Userenv.lib;Iphlpapi.lib;ntdll.lib;Fwpuclnt.lib;N=
-etapi32.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-> >        <SubSystem>Console</SubSystem>
-> > +      <CETCompat>true</CETCompat>
-> >      </Link>
-> >    </ItemDefinitionGroup>
-> >    <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x64'">
-> >      <ClCompile>
-> >
-> <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDir=
-ectories)</AdditionalIncludeDirectories>
-> > -
-> <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Preprocesso=
-rDefinitions>
-> > +
-> <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS=
-;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-> > +      <SDLCheck>true</SDLCheck>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> >      </ClCompile>
-> >      <ResourceCompile />
-> >      <Link>
-> >
-> <AdditionalDependencies>legacy_stdio_definitions.lib;Userenv.lib;Iphlpapi=
-.lib;ntdll.lib;Fwpuclnt.lib;Netapi32.lib;Shlwapi.lib;%(AdditionalDependenci=
-es)</AdditionalDependencies>
-> >        <SubSystem>Console</SubSystem>
-> > +      <CETCompat>true</CETCompat>
-> >      </Link>
-> >    </ItemDefinitionGroup>
-> >    <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|ARM64'">
-> >      <ClCompile>
-> >
-> <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDir=
-ectories)</AdditionalIncludeDirectories>
-> > -
-> <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Preprocesso=
-rDefinitions>
-> > +
-> <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS=
-;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-> > +      <SDLCheck>true</SDLCheck>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> >      </ClCompile>
-> >      <ResourceCompile />
-> >      <Link>
-> > diff --git a/src/tapctl/tapctl.vcxproj b/src/tapctl/tapctl.vcxproj
-> > index 79da9d33..f439dc4f 100644
-> > --- a/src/tapctl/tapctl.vcxproj
-> > +++ b/src/tapctl/tapctl.vcxproj
-> > @@ -135,12 +135,54 @@
-> >    <PropertyGroup Label=3D"Vcpkg"
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x64'">
-> >      <VcpkgEnabled>true</VcpkgEnabled>
-> >    </PropertyGroup>
-> > -  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|ARM64'" />
-> > -  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|ARM64'" />
-> > -  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win32'" />
-> > -  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|Win32'" />
-> > -  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x64'" />
-> > -  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x64'" />
-> > +  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|ARM64'">
-> > +    <ClCompile>
-> > +      <SDLCheck>true</SDLCheck>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> > +
-> <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefiniti=
-ons>
-> > +    </ClCompile>
-> > +  </ItemDefinitionGroup>
-> > +  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|ARM64'">
-> > +    <ClCompile>
-> > +      <SDLCheck>true</SDLCheck>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> > +
-> <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefiniti=
-ons>
-> > +    </ClCompile>
-> > +  </ItemDefinitionGroup>
-> > +  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win32'">
-> > +    <ClCompile>
-> > +      <SDLCheck>true</SDLCheck>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> > +
-> <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefiniti=
-ons>
-> > +    </ClCompile>
-> > +  </ItemDefinitionGroup>
-> > +  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|Win32'">
-> > +    <ClCompile>
-> > +      <SDLCheck>true</SDLCheck>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> > +
-> <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefiniti=
-ons>
-> > +    </ClCompile>
-> > +    <Link>
-> > +      <CETCompat>true</CETCompat>
-> > +    </Link>
-> > +  </ItemDefinitionGroup>
-> > +  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x64'">
-> > +    <ClCompile>
-> > +      <SDLCheck>true</SDLCheck>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> > +
-> <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefiniti=
-ons>
-> > +    </ClCompile>
-> > +  </ItemDefinitionGroup>
-> > +  <ItemDefinitionGroup
-> Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x64'">
-> > +    <Link>
-> > +      <CETCompat>true</CETCompat>
-> > +    </Link>
-> > +    <ClCompile>
-> > +      <SDLCheck>true</SDLCheck>
-> > +      <AdditionalOptions>/ZH:SHA_256
-> %(AdditionalOptions)</AdditionalOptions>
-> > +
-> <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefiniti=
-ons>
-> > +    </ClCompile>
-> > +  </ItemDefinitionGroup>
-> >    <ItemGroup>
-> >      <ClCompile Include=3D"error.c" />
-> >      <ClCompile Include=3D"tap.c" />
-> > --
-> > 2.23.0.windows.1
-> >
->
->
-> --
-> -Lev
->
+---
 
---000000000000ee32ee05d7932068
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+COMMUNITY MEETING
 
-<div dir=3D"ltr">Sorry, I did not catch that you=C2=A0have been waiting for=
- me.=C2=A0<div>I&#39;ll have a look in couple of days</div></div><br><div c=
-lass=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">=D1=81=D1=80, 9 =
-=D1=84=D0=B5=D0=B2=D1=80. 2022 =D0=B3. =D0=B2 15:07, Lev Stipakov &lt;<a hr=
-ef=3D"mailto:lstipakov@...277...">lstipakov@...277...</a>&gt;:<br></div><bl=
-ockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-lef=
-t:1px solid rgb(204,204,204);padding-left:1ex">Hi Ilja,<br>
-<br>
-Is there any chance you could have a look at this patch?<br>
-<br>
-<br>
-pe 7. tammik. 2022 klo 16.54 Lev Stipakov (<a href=3D"mailto:lstipakov@...1665...=
-77..." target=3D"_blank">lstipakov@...277...</a>) kirjoitti:<br>
-&gt;<br>
-&gt; From: Lev Stipakov &lt;<a href=3D"mailto:lev@...515..." target=3D"_bla=
-nk">lev@...515...</a>&gt;<br>
-&gt;<br>
-&gt;=C2=A0 - enable hardware-enforced stack protection on<br>
-&gt; compatible hardware/software (/CETCOMPAT linker option)<br>
-&gt;<br>
-&gt;=C2=A0 - hash object files with SHA256 (/ZH:SHA_256 compiler option)<br>
-&gt;<br>
-&gt;=C2=A0 - enable SDL. The required to add<br>
-&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0_CRT_NONSTDC_NO_DEPRECATE<br>
-&gt;=C2=A0 =C2=A0 =C2=A0_CRT_SECURE_NO_WARNINGS<br>
-&gt;=C2=A0 =C2=A0 =C2=A0_WINSOCK_DEPRECATED_NO_WARNINGS<br>
-&gt;<br>
-&gt; preprocessor definitions. I don&#39;t feel like replacing strdup (whic=
-h is<br>
-&gt; correct POSIX function) and inet_ntoa (we always pass IPv4 address to<=
-br>
-&gt; it, inet_ntop will make code more complex)<br>
-&gt;<br>
-&gt; Above issues were discovered by bitskim.<br>
-&gt;<br>
-&gt; Signed-off-by: Lev Stipakov &lt;<a href=3D"mailto:lev@...515..." targe=
-t=3D"_blank">lev@...515...</a>&gt;<br>
-&gt; ---<br>
-&gt;<br>
-&gt;=C2=A0 Note that one needs to cherry-pick commit<br>
-&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &quot;e5e9a07&quot; (tapctl: Resolve MSVC C4996 wa=
-rnings)<br>
-&gt;<br>
-&gt;=C2=A0 before applying this patch.<br>
-&gt;<br>
-&gt;=C2=A0 src/openvpn/openvpn.vcxproj=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0| 35 +++++++++++------<br>
-&gt;=C2=A0 src/openvpnmsica/openvpnmsica.vcxproj | 43 +++++++++++++++++++++=
-<br>
-&gt;=C2=A0 src/openvpnserv/openvpnserv.vcxproj=C2=A0 =C2=A0| 26 ++++++++++-=
---<br>
-&gt;=C2=A0 src/tapctl/tapctl.vcxproj=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0| 54 ++++++++++++++++++++++++---<br>
-&gt;=C2=A0 4 files changed, 134 insertions(+), 24 deletions(-)<br>
-&gt;<br>
-&gt; diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj=
-<br>
-&gt; index 33b8f19a..a540ec22 100644<br>
-&gt; --- a/src/openvpn/openvpn.vcxproj<br>
-&gt; +++ b/src/openvpn/openvpn.vcxproj<br>
-&gt; @@ -147,11 +147,12 @@<br>
-&gt;=C2=A0 =C2=A0 &lt;/PropertyGroup&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configur=
-ation)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot;&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CONSOLE;%(Prepro=
-cessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CRT_NONSTDC_NO_D=
-EPRECATE;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%=
-(PreprocessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;UndefinePreprocessorDefinitions&gt;%(Un=
-definePreprocessorDefinitions)&lt;/UndefinePreprocessorDefinitions&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;WarningLevel&gt;Level2&lt;/WarningLevel&gt;<=
-br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;TreatWarningAsError&gt;true&lt;/TreatWa=
-rningAsError&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalIncludeDirectories&gt;..\comp=
-at;$(SolutionDir);%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDire=
-ctories&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;WarningLevel&gt;Level2&lt;/WarningLevel&gt;<=
-br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ResourceCompile /&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt; @@ -162,11 +163,12 @@<br>
-&gt;=C2=A0 =C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configur=
-ation)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot;&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CONSOLE;%(Prepro=
-cessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CRT_NONSTDC_NO_D=
-EPRECATE;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%=
-(PreprocessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;UndefinePreprocessorDefinitions&gt;%(Un=
-definePreprocessorDefinitions)&lt;/UndefinePreprocessorDefinitions&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;WarningLevel&gt;Level2&lt;/WarningLevel&gt;<=
-br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;TreatWarningAsError&gt;true&lt;/TreatWa=
-rningAsError&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalIncludeDirectories&gt;..\comp=
-at;$(SolutionDir)include;$(SolutionDir);%(AdditionalIncludeDirectories)&lt;=
-/AdditionalIncludeDirectories&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;WarningLevel&gt;Level2&lt;/WarningLevel&gt;<=
-br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ResourceCompile /&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt; @@ -177,11 +179,12 @@<br>
-&gt;=C2=A0 =C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configur=
-ation)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CONSOLE;%(Prepro=
-cessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CRT_NONSTDC_NO_D=
-EPRECATE;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%=
-(PreprocessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;UndefinePreprocessorDefinitions&gt;%(Un=
-definePreprocessorDefinitions)&lt;/UndefinePreprocessorDefinitions&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;WarningLevel&gt;Level2&lt;/WarningLevel&gt;<=
-br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;TreatWarningAsError&gt;true&lt;/TreatWa=
-rningAsError&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalIncludeDirectories&gt;..\comp=
-at;$(SolutionDir);%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDire=
-ctories&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;WarningLevel&gt;Level2&lt;/WarningLevel&gt;<=
-br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ResourceCompile /&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt; @@ -192,44 +195,52 @@<br>
-&gt;=C2=A0 =C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configur=
-ation)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot;&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CONSOLE;%(Prepro=
-cessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CRT_NONSTDC_NO_D=
-EPRECATE;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%=
-(PreprocessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;UndefinePreprocessorDefinitions&gt;%(Un=
-definePreprocessorDefinitions)&lt;/UndefinePreprocessorDefinitions&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;WarningLevel&gt;Level2&lt;/WarningLevel&gt;<=
-br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;TreatWarningAsError&gt;true&lt;/TreatWa=
-rningAsError&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalIncludeDirectories&gt;..\comp=
-at;$(SolutionDir);%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDire=
-ctories&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;ControlFlowGuard&gt;Guard&lt;/ControlFl=
-owGuard&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;WarningLevel&gt;Level2&lt;/WarningLevel&gt;<=
-br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ResourceCompile /&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalDependencies&gt;Ncrypt.lib;gd=
-i32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.=
-lib;Rpcrt4.lib;setupapi.lib;Advapi32.lib&lt;/AdditionalDependencies&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalLibraryDirectories&gt;$(OPENS=
-SL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirecto=
-ries)&lt;/AdditionalLibraryDirectories&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;SubSystem&gt;Console&lt;/SubSystem&gt;<=
-br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;CETCompat&gt;true&lt;/CETCompat&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/Link&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configur=
-ation)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot;&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CONSOLE;%(Prepro=
-cessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CRT_NONSTDC_NO_D=
-EPRECATE;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%=
-(PreprocessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;UndefinePreprocessorDefinitions&gt;%(Un=
-definePreprocessorDefinitions)&lt;/UndefinePreprocessorDefinitions&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;WarningLevel&gt;Level2&lt;/WarningLevel&gt;<=
-br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;TreatWarningAsError&gt;true&lt;/TreatWa=
-rningAsError&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalIncludeDirectories&gt;..\comp=
-at;$(SolutionDir);%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDire=
-ctories&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;ControlFlowGuard&gt;Guard&lt;/ControlFl=
-owGuard&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;WarningLevel&gt;Level2&lt;/WarningLevel&gt;<=
-br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ResourceCompile /&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalDependencies&gt;Ncrypt.lib;gd=
-i32.lib;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.=
-lib;Rpcrt4.lib;setupapi.lib;Advapi32.lib&lt;/AdditionalDependencies&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalLibraryDirectories&gt;$(OPENS=
-SL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirecto=
-ries)&lt;/AdditionalLibraryDirectories&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;SubSystem&gt;Console&lt;/SubSystem&gt;<=
-br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;CETCompat&gt;true&lt;/CETCompat&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/Link&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configur=
-ation)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot;&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CONSOLE;%(Prepro=
-cessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CRT_NONSTDC_NO_D=
-EPRECATE;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%=
-(PreprocessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;UndefinePreprocessorDefinitions&gt;%(Un=
-definePreprocessorDefinitions)&lt;/UndefinePreprocessorDefinitions&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;WarningLevel&gt;Level2&lt;/WarningLevel&gt;<=
-br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;TreatWarningAsError&gt;true&lt;/TreatWa=
-rningAsError&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalIncludeDirectories&gt;..\comp=
-at;$(SolutionDir);%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDire=
-ctories&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;ControlFlowGuard&gt;Guard&lt;/ControlFl=
-owGuard&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;WarningLevel&gt;Level2&lt;/WarningLevel&gt;<=
-br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ResourceCompile /&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt; diff --git a/src/openvpnmsica/openvpnmsica.vcxproj b/src/openvpnmsica/=
-openvpnmsica.vcxproj<br>
-&gt; index 11aa78bb..5e774430 100644<br>
-&gt; --- a/src/openvpnmsica/openvpnmsica.vcxproj<br>
-&gt; +++ b/src/openvpnmsica/openvpnmsica.vcxproj<br>
-&gt; @@ -135,6 +135,49 @@<br>
-&gt;=C2=A0 =C2=A0 &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=3D&=
-quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot=
-;&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;VcpkgEnabled&gt;true&lt;/VcpkgEnabled&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;/PropertyGroup&gt;<br>
-&gt; +=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot;&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;CETCompat&gt;true&lt;/CETCompat&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/Link&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;%(PreprocessorDef=
-initions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt; +=C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt; +=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot;&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;CETCompat&gt;true&lt;/CETCompat&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/Link&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;%(PreprocessorDef=
-initions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt; +=C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt; +=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;%(PreprocessorDef=
-initions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt; +=C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt; +=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot;&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;%(PreprocessorDef=
-initions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt; +=C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt; +=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot;&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;%(PreprocessorDef=
-initions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt; +=C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt; +=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot;&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;%(PreprocessorDef=
-initions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt; +=C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;ItemGroup&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile Include=3D&quot;..\tapctl\error.c&qu=
-ot; /&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile Include=3D&quot;..\tapctl\tap.c&quot=
-; /&gt;<br>
-&gt; diff --git a/src/openvpnserv/openvpnserv.vcxproj b/src/openvpnserv/ope=
-nvpnserv.vcxproj<br>
-&gt; index 520242f4..c70db229 100644<br>
-&gt; --- a/src/openvpnserv/openvpnserv.vcxproj<br>
-&gt; +++ b/src/openvpnserv/openvpnserv.vcxproj<br>
-&gt; @@ -124,7 +124,9 @@<br>
-&gt;=C2=A0 =C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configur=
-ation)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot;&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalIncludeDirectories&gt;..\open=
-vpn;..\compat;%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDirector=
-ies&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CONSOLE;%(Prepro=
-cessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CRT_SECURE_NO_WA=
-RNINGS;_CRT_NONSTDC_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)&lt;/Pre=
-processorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ResourceCompile /&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt; @@ -135,7 +137,9 @@<br>
-&gt;=C2=A0 =C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configur=
-ation)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot;&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalIncludeDirectories&gt;..\open=
-vpn;..\compat;%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDirector=
-ies&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CONSOLE;%(Prepro=
-cessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CRT_SECURE_NO_WA=
-RNINGS;_CRT_NONSTDC_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)&lt;/Pre=
-processorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ResourceCompile /&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt; @@ -146,7 +150,9 @@<br>
-&gt;=C2=A0 =C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configur=
-ation)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalIncludeDirectories&gt;..\open=
-vpn;..\compat;%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDirector=
-ies&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CONSOLE;%(Prepro=
-cessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CRT_SECURE_NO_WA=
-RNINGS;_CRT_NONSTDC_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)&lt;/Pre=
-processorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ResourceCompile /&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt; @@ -157,29 +163,37 @@<br>
-&gt;=C2=A0 =C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configur=
-ation)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot;&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalIncludeDirectories&gt;..\open=
-vpn;..\compat;%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDirector=
-ies&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CONSOLE;%(Prepro=
-cessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CRT_SECURE_NO_WA=
-RNINGS;_CRT_NONSTDC_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)&lt;/Pre=
-processorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ResourceCompile /&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalDependencies&gt;Userenv.lib;I=
-phlpapi.lib;ntdll.lib;Fwpuclnt.lib;Netapi32.lib;Shlwapi.lib;%(AdditionalDep=
-endencies)&lt;/AdditionalDependencies&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;SubSystem&gt;Console&lt;/SubSystem&gt;<=
-br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;CETCompat&gt;true&lt;/CETCompat&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/Link&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configur=
-ation)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot;&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalIncludeDirectories&gt;..\open=
-vpn;..\compat;%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDirector=
-ies&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CONSOLE;%(Prepro=
-cessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CRT_SECURE_NO_WA=
-RNINGS;_CRT_NONSTDC_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)&lt;/Pre=
-processorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ResourceCompile /&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalDependencies&gt;legacy_stdio_=
-definitions.lib;Userenv.lib;Iphlpapi.lib;ntdll.lib;Fwpuclnt.lib;Netapi32.li=
-b;Shlwapi.lib;%(AdditionalDependencies)&lt;/AdditionalDependencies&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;SubSystem&gt;Console&lt;/SubSystem&gt;<=
-br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;CETCompat&gt;true&lt;/CETCompat&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/Link&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configur=
-ation)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot;&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 &lt;AdditionalIncludeDirectories&gt;..\open=
-vpn;..\compat;%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDirector=
-ies&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CONSOLE;%(Prepro=
-cessorDefinitions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;_CRT_SECURE_NO_WA=
-RNINGS;_CRT_NONSTDC_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)&lt;/Pre=
-processorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ResourceCompile /&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt; diff --git a/src/tapctl/tapctl.vcxproj b/src/tapctl/tapctl.vcxproj<br>
-&gt; index 79da9d33..f439dc4f 100644<br>
-&gt; --- a/src/tapctl/tapctl.vcxproj<br>
-&gt; +++ b/src/tapctl/tapctl.vcxproj<br>
-&gt; @@ -135,12 +135,54 @@<br>
-&gt;=C2=A0 =C2=A0 &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=3D&=
-quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot=
-;&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;VcpkgEnabled&gt;true&lt;/VcpkgEnabled&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;/PropertyGroup&gt;<br>
-&gt; -=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot; /&gt;<br>
-&gt; -=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot; /&gt;<br>
-&gt; -=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot; /&gt;<br>
-&gt; -=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot; /&gt;<br>
-&gt; -=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot; /&gt;<br>
-&gt; -=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot; /&gt;<br>
-&gt; +=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;%(PreprocessorDef=
-initions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt; +=C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt; +=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot;&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;%(PreprocessorDef=
-initions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt; +=C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt; +=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot;&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;%(PreprocessorDef=
-initions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt; +=C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt; +=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot;&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;%(PreprocessorDef=
-initions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;CETCompat&gt;true&lt;/CETCompat&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/Link&gt;<br>
-&gt; +=C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt; +=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot;&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;%(PreprocessorDef=
-initions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt; +=C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt; +=C2=A0 &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration=
-)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot;&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;Link&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;CETCompat&gt;true&lt;/CETCompat&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/Link&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;ClCompile&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;AdditionalOptions&gt;/ZH:SHA_256 %(Additiona=
-lOptions)&lt;/AdditionalOptions&gt;<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 &lt;PreprocessorDefinitions&gt;%(PreprocessorDef=
-initions)&lt;/PreprocessorDefinitions&gt;<br>
-&gt; +=C2=A0 =C2=A0 &lt;/ClCompile&gt;<br>
-&gt; +=C2=A0 &lt;/ItemDefinitionGroup&gt;<br>
-&gt;=C2=A0 =C2=A0 &lt;ItemGroup&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile Include=3D&quot;error.c&quot; /&gt;<=
-br>
-&gt;=C2=A0 =C2=A0 =C2=A0 &lt;ClCompile Include=3D&quot;tap.c&quot; /&gt;<br>
-&gt; --<br>
-&gt; 2.23.0.windows.1<br>
-&gt;<br>
-<br>
-<br>
---<br>
--Lev<br>
-</blockquote></div>
+Place: #openvpn-meeting on libera.chat
+Date: Wed 9th February 2022
+Time: 10:30 CET (9:30 UTC)
 
---000000000000ee32ee05d7932068--
+Planned meeting topics for this meeting were here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2022-02-09>
+
+Your local meeting time is easy to check from services such as
+
+<http://www.timeanddate.com/worldclock>
+
+SUMMARY
+
+cron2, dazo, d12fk, lev, mattock and ordex participated in this meeting.
+
+---
+
+Noted that IPv6 on community has not progressed, despite poor excuses. 
+Dazo promised to start pushing it internally to get this embarrassment 
+fixed for good.
+
+---
+
+Noted that 2.6 is moving forward at slow but steady pace. The DNS and 
+DCO patches can be reviewed and tested independently by different 
+people, which can help speed things up.
+
+---
+
+Talked about a few patches being crafted on the security list. Agreed 
+that we should do 2.4 and 2.5 releases soon after the patches are 
+merged, even though there's no reason to rush.
+
+---
+
+Talked about missing 2.5/2.6 man pages on the main website:
+
+<https://patchwork.openvpn.net/patch/2064/>
+
+Mattock opened an internal ticket for the website team to fix this.
+
+---
+
+Talked about buildbot. Production buildbot is running and mattock is 
+finalizing the Windows Server 2019 buildbot worker. Enabling Spectre 
+mitigation broke building some time ago and he's adding VS components to 
+fix that breakage. Due to esoteric WinRM-related reasons code-signing 
+might be broken in EC2, but that remains to be seen.
+
+-- 
+
+Full chatlog attached
+
+--------------0oQRKvpmpVmd20uRrS7JuQR5
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn_irc_meeting_chatlog_2022-02-09.txt"
+Content-Disposition: attachment;
+ filename="openvpn_irc_meeting_chatlog_2022-02-09.txt"
+Content-Transfer-Encoding: base64
+
+KDExLjMyLjI5KSBkMTJmazogbW9ybmluZwooMTEuMzMuMDgpIGNyb24yOiBtZW93CigxMS4z
+My4yMikgZGF6bzogZXkhCigxMS4zMy41NSkgbWF0dG9jazogaGkKKDExLjM0LjQyKSBvcmRl
+eDogaGkKKDExLjM0LjU3KSBvcmRleDogSSBtYXkgbm90IGJlIDEwMCUgcHJlc2VudCBiZWNh
+dXNlIHRoZSBoZWF0ZXIgdGVjaG5pY2lhbiBpcyBjb21pbmcgYW55dGltZSBzb29uCigxMS4z
+NS4wMykgb3JkZXg6IGJ1dCB3aWxsIGZvbGxvdyBhcyBJIGNhbgooMTEuMzYuNTQpIGxldl9f
+OiBndXRlbiB0YWcKKDExLjM3LjA0KSBkMTJmazogUGFnZSBUb3BpY3MtMjAyMi0wMi0wOSBu
+b3QgZm91bmQKKDExLjM3LjI1KSBkYXpvOiBvcmRleDogaHR0cHM6Ly95b3V0dS5iZS9zWHlj
+aVI1b0U4bz90PTIyCigxMS4zNy4yOSkgY3JvbjIgaGEgc2NlbHRvIGNvbWUgYXJnb21lbnRv
+OiBodHRwczovL2NvbW11bml0eS5vcGVudnBuLm5ldC9vcGVudnBuL3dpa2kvVG9waWNzLTIw
+MjItMDItMDkKKDExLjM3LjU0KSBtYXR0b2NrOiBvaCB5ZXMsIGEgbmV3IG1vbnRoIGFnYWlu
+CigxMS4zNy41NikgbWF0dG9jazogdGltZSBmbGllcwooMTEuMzguMDcpIG1hdHRvY2s6IGxl
+dCBtZSBmaXggdGhhdAooMTEuMzguMTApIGNyb24yOiBhIG5ldyBtb250aCwgYW5kIHN0aWxs
+IG5vIElQdjYuLi4KKDExLjM4LjQyKSBkYXpvOiBjcm9uMjogV2UncmUgcmVwbGFubmluZyBp
+bnRlcm5hbGx5LCB3ZSdsbCBiZSByZWFkeSBmb3IgSVB2NyB3aGVuIHRoYXQgYXJyaXZlcwoo
+MTEuMzguNDQpIGQxMmZrOiBpdCBfaXNfIHRoZSBmdXR1cmUKKDExLjM4LjU4KSBvcmRleDog
+ZGF6bzogZXhhY3RseQooMTEuMzkuMzApIGNyb24yOiBub3Qgc3VyZSBob3cgb2Z0ZW4gSSd2
+ZSBoZWFyZCAqdGhhdCogZXhjdXNlIGluIHRoZSBsYXN0IDIwIHllYXJzLCBidXQgbm8sIGl0
+J3Mgbm90IGEgbmV3IG9uZS4uLiAoIklQdjYgaGFzIHNvIG1hbnkgc2hvcnRjb21pbmdzLCBs
+ZXQncyBqdXN0IHdhaXQgZm9yIHRoZSBuZXh0IHRoaW5nLCBpdCB3aWxsIGJlIG11Y2ggYmV0
+dGVyIikKKDExLjM5LjMxKSBtYXR0b2NrOiBodHRwczovL2NvbW11bml0eS5vcGVudnBuLm5l
+dC9vcGVudnBuL3dpa2kvVG9waWNzLTIwMjItMDItMDkKKDExLjQwLjIyKSBkYXpvOiBTeW5j
+IHVwIQooMTEuNDAuNTkpIG1hdHRvY2s6IHllcAooMTEuNDEuMzkpIGNyb24yOiAyLjY6IG5v
+dCBtdWNoIGhhcyBoYXBwZW5lZCBoZXJlLi4uIEkndmUgcmV2aWV3ZWQgYW5kIHRlc3RlZCBt
+b3N0IG9mIHRoZSByZW1haW5pbmcgZnJhbWUgcGF0Y2hlcywgYnV0IGdvdCBzdHVjayBhdCBz
+b21lIHBvaW50IGFuZCBuZWVkIHRvIGRpc2N1c3MgdGhlIHdheSBmb3J3YXJkIHdpdGggcGxh
+aXN0aG9zICh3aG8gaGFkIG1vcmUgaW1wb3J0YW50IHByaW9yaXRpZXMgZm9yIHRoZSBsYXN0
+IGRheXMpLiAgQnV0LCBtYWtpbmcgcHJvZ3Jlc3MuCigxMS40Mi4wNCkgb3JkZXg6IHNob3Vs
+ZCB3ZSBwbGFuIGZvciB0aG9zZSAyIHBhdGNoZXMgb24gc2VjQCA/CigxMS40Mi4wNCkgY3Jv
+bjI6IEkndmUgc2VlbiBkYXpvK29yZGV4JyB3b3JrIG9uIHRoZSBwbHVnaW4gc3R1ZmYsIHdp
+bGwgbG9vayBpbnRvIHRoYXQgdG9tb3Jyb3ctaXNoCigxMS40Mi4wOSkgb3JkZXg6IGtrCigx
+MS40Mi4xMikgY3JvbjI6IHllcywgc29vbgooMTEuNDIuMjMpIGNyb24yOiAicmVhbGx5IHNv
+b24iLCBub3QgIm9wZW52cG4gY29ycCBpcHY2IHNvb24iCigxMS40My4xMSkgb3JkZXg6IGhl
+aGUKKDExLjQ0LjUyKSBvcmRleDogbW9hcj8KKDExLjQ1LjE0KSBkMTJmazogdGhlIC0tZG5z
+IG9wdGlvbiBQUgooMTEuNDUuNDQpIGQxMmZrOiBJIHBvcnRlZCBpdCB0byBvdnBuMyBhbmQg
+aXQgbWlnaHQgYmUgbWVyZ2VkIGludG8gbWFzdGVyIHNvb25pc2gKKDExLjQ1LjU4KSBvcmRl
+eDogSSBwcmVzdW1lIHRoYXQgd2lsbCBuZWVkIHRvIHdhaXQgbW9yZSBhdmFpbGFibGUgcmV2
+aWV3IGN5Y2xlcyAoPykKKDExLjQ2LjAyKSBvcmRleDogd2FpdCBmb3IqCigxMS40Ni4wNykg
+ZGF6bzogSnVzdCB3b25kZXJpbmcgLi4uIG9uY2Ugd2UncmUgcmVhZHkgdG8gbWVyZ2UgdGhl
+IHNlY2xpc3QgcGF0Y2hlcywgc2hvdWxkIHdlIHBsYW4gZm9yIGEgMi40IGFuZCAyLjUgcmVs
+ZWFzZSByZWxhdGVkIHRvIHRoYXQ/CigxMS40Ni4yMCkgb3JkZXg6IG1heWJlIGp1c3QgMi41
+ID8KKDExLjQ2LjIyKSBjcm9uMjogeWVzIChidXQgbm90ICJydXNoZWQiKQooMTEuNDYuMjUp
+IGRhem86IEl0J3Mgbm90IHRoYXQgdXJnZW50LCBidXQgb25jZSB0aGUgY2F0IGlzIG91dCBv
+ZiB0aGUgYmFnIC4uLi4KKDExLjQ2LjM4KSBjcm9uMjogd2UgaGFkIGludGVuZGVkIHRvIGRv
+IGEgMi40LjEyIGFueXdheSwgYW5kIHRoZW4gZm9ybWFsbHkgY2xvc2UgdGhhdCB0cmFpbgoo
+MTEuNDYuNDMpIGRhem86IHllYWgKKDExLjQ3LjA5KSBkMTJmazogb3JkZXg6IHN1cmUsIGJ1
+dCBpdCBpcyB0aW1lIHRvIHN0YXJ0IHRoaW5raW5nIGFib3V0IHRoZSB3YXkgZm9yd2FyZAoo
+MTEuNDcuMzUpIGQxMmZrOiB0aHVzLCBJIHdhbnQgdG8gc3RhcnQgYSByZmMgb24gLWRldmVs
+IAooMTEuNDguMDQpIGNyb24yOiBkMTJmazogaG93IGJpZyBpcyB0aGUgcGF0Y2hzZXQ/Cigx
+MS40OC4xNCkgY3JvbjI6ICgid2hhdCBncmFudWxhcml0eSIpCigxMS40OC4zMykgZDEyZms6
+IGF0bSB2ZXJ5IG92ZXJzZWVhYmxlCigxMS40OC40MCkgb3JkZXg6IGxldCdzIG5vdCBmb3Jn
+ZXQgdGhhdCBhZnRlciB0aGUgZnJhbWUgcGF0Y2hlcyB3ZSBoYXZlIHRoZSBkY28gcGF0Y2hz
+ZXQgd2FpdGluZyB0b28KKDExLjQ5LjM0KSBjcm9uMjogdW5kZXJzdG9vZAooMTEuNTMuMjAp
+IGRhem86IHNvLCBmcmFtZSBwYXRjaGVzLCBkY28gcGF0Y2hlcyBhbmQgRE5TIHBhdGNoZXMg
+Li4uIHRoYXQncyB0aGUgcGxhbiwgdG9nZXRoZXIgd2l0aCB0aGUgc2VjbGlzdCBwYXRjaGVz
+IGluLWJldHdlZW4gd2hlcmUgY29udmVuaWVudAooMTEuNTQuMDIpIGNyb24yOiBhcyBkaWZm
+ZXJlbnQgcGVvcGxlIGNhbiBkbyByZXZpZXcvdGVzdGluZyBmb3IgRENPIGFuZCBETlMgdGhp
+cyBjYW4gZ28gc29tZXdoYXQgaW4gcGFyYWxsZWwKKDExLjU0LjAyKSBkYXpvOiBhbnl0aGlu
+ZyBidXJuaW5nIGZvciByZXZpZXcgb24gcGF0Y2h3b3JrIGZvciAyLjUgb3IgMi42PwooMTEu
+NTQuNDApIGNyb24yOiB3ZSBoYXZlIGxldl9fJ3MgImFkanVzdCBidWxkIG9wdGlvbnMgdG8g
+aGFyZGVuIGJpbmFyaWVzIiBwYXRjaGVzIGZvciB3aW5kb3dzIGJ1aWxkLCB3aGljaCBhcmUg
+c29ydCBvZiBoYW5naW5nIGluIHRoZSBjb2xkCigxMS41NC41MSkgY3JvbjI6IG5vYm9keSBx
+dWFsaWZpZWQgdG8gcmV2aWV3IHRoZW0gYXJvdW5kLCBpdCBzZWVtcwooMTEuNTUuMDMpIGNy
+b24yOiAyMjA3LCAyMjA5LCAyMjEwCigxMS41NS4yMCkgY3JvbjI6IGFoCigxMS41NS4yNykg
+Y3JvbjI6IGRhem86IEkgdGhpbmsgdGhpcyBpcyBmb3IgeW91IDotKQooMTEuNTUuMzQpIGNy
+b24yOiBodHRwczovL3BhdGNod29yay5vcGVudnBuLm5ldC9wcm9qZWN0L29wZW52cG4yL2xp
+c3QvP3Nlcmllcz0xMzc2CigxMS41NS40MikgY3JvbjI6IHJzdCBidWlsZGluZyAvIG1ha2Vm
+aWxlIGZpeGVzIGZyb20gZGpwaWcKKDExLjU1LjUyKSBkYXpvOiBTdXJlLCBJJ2xsIHRha2Ug
+YSBsb29rIHRoZXJlCigxMS41Ni4wMCkgbGV2X186IEkgZXhwZWN0ZWQgY2hpcGlzdGluZSB0
+byBhY2sgdGhvc2UKKDExLjU2LjE3KSBjcm9uMjogZGF6bzogSSBpbnRlbmRlZCB0byBoYXZl
+IGEgbG9vaywgYnV0IGdvdCBkaXN0cmFjdGVkIGFnYWluIGFuZCBhZ2FpbiwgYW5kIHRoaXMg
+aXMgcmVhbGx5IHlvdXIgbGFuZCBhbnl3YXkgOi0pCigxMS41Ni4xOSkgbGV2X186IHNpbmNl
+IGhlIGRpc2NvdmVyZWQgbWlzc2luZyBzcGVjdHJlIGV0YwooMTEuNTYuMjYpIGNyb24yOiBs
+ZXZfXzogY2FuIHlvdSBhc2sgaGltPwooMTEuNTYuNDYpIGxldl9fOiB5ZWFoIEkgZ3Vlc3Mg
+SSBoYXZlIHRvCigxMS41Ni41NikgZGF6bzogZm9yIHRoZSAyMjA3LCAyMjA5IGFuZCAyMjEw
+IC4uLiBJJ2Qgc2F5IHdlIGFwcGx5IGxhenktQUNLIG9uIHRoZW0gLi4uLiBhbmQgZml4IGl0
+IGlmIG5lZWRlZCBhZnRlcndhcmRzOyB0aGV5IHRvdWNoIG5vbi1zb3VyY2UgY29kZSwgb25s
+eSBWUyBwcm9qZWN0IGZpbGVzIGFmYWljcwooMTEuNTcuMTEpIGNyb24yOiBtYXR0b2NrOiBo
+dHRwczovL3BhdGNod29yay5vcGVudnBuLm5ldC9wYXRjaC8yMDY0LyAtPiB0aGlzIGlzIHdh
+aXRpbmcgZm9yIHlvdQooMTEuNTcuNDkpIGRhem86IENhbiB3ZSBnZXQgYSAibWFuIHBhZ2Ui
+IGVudHJ5IHBhZ2UsIHdpdGggZnVydGhlciBwb2ludGVycyB0byBhbGwgdGhlIHZlcnNpb25z
+IC0gaGF2ZSB0aGUgc2FtZSBhY3Jvc3MgYWxsIHZlcnNpb25zPwooMTEuNTcuNDkpIGNyb24y
+OiAoaXQncyBhYm91dCBwb2ludGluZyBkb2N1bWVudGF0aW9uIHJlZmVyZW5jZXMgdG8gVVJM
+cyBvbiBjb21tdW5pdHkubmV0LCBhbmQgSSBkaWQgbm90IHdhbnQgdG8gcG9pbnQgIm1hc3Rl
+ciIgZG9jIHRvICJyZWZlcmVuY2UtbWFudWFsLWZvci0yLTQvIgooMTEuNTguMDcpIG1hdHRv
+Y2s6IEkgdGhpbmsgSSBjcmVhdGVkIGEgdGlja2V0IHRvIHRoZSB3ZWJzaXRlIHRlYW0gYWJv
+dXQgdGhpcwooMTEuNTguMTApIGNyb24yOiBkYXpvOiB0aGF0IHdvdWxkIGJlIGdvb2QKKDEx
+LjU4LjE0KSBtYXR0b2NrOiBJIGRvbid0IGhhdmUgc3VwZXJwb3dlcnMgdGhlcmUKKDExLjU4
+LjIyKSBsZXZfXzogc29tZW9uZSBuZWVkcyB0byByZXZpZXcgMjI2MAooMTEuNTguNTUpIGRh
+em86IGxldl9fOiB3aG8gaGFzIGJlc3QgdW5kZXJzdGFuZGluZyBvZiB0aG9zZSBjb2RlIHBh
+dGhzPwooMTEuNTkuMDEpIGxldl9fOiByb3ptYW5zaQooMTEuNTkuMTIpIGRhem86IGNhbiB3
+ZSBwaW5nIGhpbT8KKDExLjU5LjU2KSBtYXR0b2NrOiBvaywgbm8gdGlja2V0IGl0IHNlZW1z
+LCBpdCB3YXMgYW5vdGhlciB3ZWJzaXRlIGlzc3VlCigxMi4wMC4wNSkgY3JvbjI6IG9oCigx
+Mi4wMC4xOCkgbGV2X186IGRhem86IHdlIGNvdWxkIHRyeQooMTIuMDUuMDkpIGxldl9fOiBw
+aW5nZWQKKDEyLjA1LjMwKSBkYXpvOiArMQooMTIuMDUuMzgpIGRhem86IG5leHQgdG9waWM/
+CigxMi4wNi4zNykgY3JvbjI6IDIuIGlzIGNvcGllZCBvdmVyIGZyb20gbGFzdCBtZWV0aW5n
+LCBhbmQgSSB0aGluayB3ZSBzdWZmaWNpZW50bHkgYWRkcmVzc2VkIHRoaXMKKDEyLjA2LjQ3
+KSBkYXpvOiBnb29kIQooMTIuMDYuNTkpIGNyb24yOiBJIHNlZW0gdG8gcmVjYWxsIHRoYXQg
+IndlIGdvIGZvciBvcGVuc3NsIDMuMC4xIGZvciAyLjYiIHdhcyB0aGUgYWdyZWVkIG91dGNv
+bWUgb24gdGhlIHByaW1hcnkgcXVlc3Rpb24KKDEyLjA3LjE0KSBsZXZfXzogKGFsc28gcGlu
+Z2VkIGNoaXBpdHNpbmUpCigxMi4wNy4yNCkgZDEyZms6IHNvIHhrZXkgaXMgaW4gMy4wLjEK
+KDEyLjA3LjI1KSBjcm9uMjogd2lzY2lpIGhhcyBtYWRlIGVhc3lyc2Egd29yaywgc28gd2Ug
+ZWl0aGVyIGZpbmQgYSB3YXkgdG8gbWVyZ2UgdGhlIHBhdGNoIG9yIHdlIHNoaXAgZWFzeXJz
+YStwYXRjaAooMTIuMDcuMzcpIGRhem86IHNvdW5kcyBnb29kIQooMTIuMDcuNTIpIGNyb24y
+OiBkMTJmazogeWVwLCBtYXN0ZXIrMy4wLjEgaGFzIHhrZXkgYW5kIGl0IHNlZW1zIHRvIGRv
+IGFsbCB0aGUgcmlnaHQgdGhpbmdzICgtLW1hbmFnZW1lbnQtZXh0ZXJuYWwta2V5IGFuZCAt
+LWNyeXB0b2FwaSkKKDEyLjA4LjAyKSBjcm9uMjogYW5kIHBrY3MjMTEKKDEyLjA4LjI0KSBk
+MTJmazogb2theSB0aGVuIHN1cHBvcnQgZm9yIG92cG4zIHNob3VsZCBiZSBtb3JlIGVhc3kg
+dG8gZG8KKDEyLjA4LjI2KSBjcm9uMjogSSBzYXkgInNlZW1zIiBiZWNhdXNlIHdlIGhhdmUg
+bGltaXRlZCByZXBvcnRzIG9uIGV2ZXJ5dGhpbmcgcmVsYXRlZCB0byBjcnlwdG9hcGkvcGtj
+cyMxMQooMTIuMDguNTMpIGNyb24yOiBwbGFpc3Rob3MgaXMgdXNpbmcgLS1tYW5hZ2VtZW50
+LWV4dGVybmFsLWtleSBpbiB0aGUgQW5kcm9pZCBhcHAsIGFuZCBjb25maXJtZWQgIml0IHdv
+cmtzIgooMTIuMDkuMDYpIGJlY20gW35iZWNtQDU1ZDQ3M2Y2LmFjY2Vzcy5lY290ZWwubmV0
+XSDDqCBlbnRyYXRvIG5lbGxhIHN0YW56YS4KKDEyLjExLjMwKSBtYXR0b2NrOiBvaywgdGlj
+a2V0IGFib3V0IHRoZSBtYW4gcGFnZXMgb24gd2Vic2l0ZSBjcmVhdGVkCigxMi4xMS4zNykg
+Y3JvbjI6IHRoYW5rcwooMTIuMTIuMTApIGRhem86IFJlZ2FyZGluZyBJUHY2IHRvIGNvbW11
+bml0eSAuLi4gSSdsbCBtYWtlIG1vcmUgZnV6eiBhYm91dCB0aGlzIGFnYWluIGludGVybmFs
+bHk7IHRoaXMgaXMganVzdCB1bnN1c3RhaW5hYmxlIGVtYmFycmFzc2luZyAKKDEyLjEzLjA5
+KSBjcm9uMjogdGhhbmtzIDopCigxMi4xNC40MykgZGF6bzogc28gYnVpbGRib3Qgc3RhdHVz
+IC4uLi4uIG1hdHRvY2s/CigxMi4xNC40NikgY3JvbjI6IDQuIC0gYnVpbGRib3Qgc3RhdHVz
+LCBub3cgSSBoYXZlIG5vdCBmb3VuZCBzdWZmaWNpZW50IHRpbWUgdG8gbWFrZSBvbmUgb2Yg
+bXkgRnJlZUJTRHMgYSAibmV3IGFuZCBzaGlueSBweXRob24gMyBidWlsZGJvdCIKKDEyLjE0
+LjU1KSBjcm9uMjogSSBoYXZlIGNyZWRlbnRpYWxzIGFuZCBpbnN0cnVjdGlvbnMKKDEyLjE0
+LjU5KSBkYXpvOiBuaWNlIQooMTIuMTYuMTMpIG1hdHRvY2s6IHByb2R1Y3Rpb24gYnVpbGRi
+b3QgaXMgdXAgYW5kIHJ1bm5pbmcsIHdpbmRvd3Mgc2VydmVyIDIwMTkgd29ya2VyIHdvcmtz
+LCBidXQgYnVpbGRzIGRvbid0LCBiZWNhdXNlIHdlIHJlcXVpcmUgc3BlY3RyZSBtaXRpZ2F0
+ZWQgbGlicyBub3cKKDEyLjE2LjM5KSBtYXR0b2NrOiBJJ20gdHJ5aW5nIHRvIGZpZ3VyZSBv
+dXQgd2hpY2ggVmlzdWFsIFN0dWRpbyBjb21wb25lbnRzIHRoZSBidWlsZCByZXF1aXJlcywg
+YW5kIHRoYXQgdGFrZXMgYSBmYWlyIGFtb3VudCBvZiB0aW1lLCBwbHVzIGJ1aWxkaW5nIG9m
+IEFNSXMgYW5kIHRlc3RpbmcKKDEyLjE3LjE1KSBtYXR0b2NrOiBjb2RlIHNpZ25pbmcgbWln
+aHQgYmUgYnJva2VuLCBiZWNhdXNlIFdpblJNIGFjdHMgImRpZmZlcmVudGx5IiBmcm9tIG5v
+cm1hbCBhZG1pbiBzZXNzaW9ucyBpbiByZWdhcmRzIHRvIGltcG9ydGluZyBjb2RlLXNpZ25p
+bmcgY2VydHMKKDEyLjE3LjI0KSBtYXR0b2NrOiBJIGhhdmVuJ3QgZ290dGVuIGZhciBlbm91
+Z2ggdG8gdmVyaWZ5IHRoYXQgeWV0CigxMi4xNy4zNCkgY3JvbjI6ICJXaW5STSI/CigxMi4x
+Ny41OSkgbWF0dG9jazogV2luZG93cyBSZW1vdGUgTWFuYWdlbWVudCB1c2VkIGJ5IFBhY2tl
+ciB0aGF0IGlzIHVzZWQgdG8gYnVpbGQgdGhlIEFNSSB0aGF0IGlzIHVzZWQgZm9yIHRoZSBv
+bi1kZW1hbmQgRUMyIHdpbmRvd3Mgd29ya2VyCigxMi4xOC4xOCkgbWF0dG9jazogbGlrZSBT
+U0ggYnV0IGZvciBXaW5kb3dzLCBpbiB0aGlzIGNvbnRleHQKKDEyLjE4LjI5KSBtYXR0b2Nr
+OiBXaW5STSBzdXBwb3J0cyBTU0ggYXMgYSB0cmFuc3BvcnQgYXMgd2VsbCBub3dhZGF5cwoo
+MTIuMTguMzUpIG1hdHRvY2s6IGFueWhvdywgdGVjaG5pY2FsIGNyYXAKKDEyLjE5LjI4KSBt
+YXR0b2NrOiBhZnRlciB3aW5kb3dzIHdvcmtlciBpdCBpcyBvdnBuLWRjbyBwYWNrYWdpbmcg
+dGltZSAob3BlbnZwbiArIG92cG4tZGNvIGl0c2VsZiBJIGd1ZXNzKQooMTIuMjAuMjkpIG1h
+dHRvY2s6IHRoYXQncyBhYm91dCBpdAooMTIuMjIuMDMpIG9yZGV4OiBsZXZfXzogd2hlbiB5
+b3Ugd2FudCB0byBhdHRyYWN0IHNvbWVib2R5J3MgYXR0ZW50aW9uLCB5b3UgY2FuIGFkZCBo
+aW0gYXMgQ2M6IGF0IHRoZSBib3R0b20gb2YgdGhlIGNvbW1pdCBtZXNzYWdlLiBnaXQtc2Vu
+ZC1lbWFpbCB3aWxsIENDIGhpbSBhdXRvbWF0aWNhbGx5CigxMi4yMy4xNCkgZGF6bzogc28g
+Li4uIHRoYXQncyB0aGUgYWdlbmRhOyBhbnl0aGluZyBlbHNlIGJ1cm5pbmc/CigxMi4yNS4w
+OSkgY3JvbjI6IGp1c3Qgc28geW91J3JlIGF3YXJlLCBvcmRleC9wbGFpc3Rob3MvSSBoYXZl
+IHN0YXJ0ZWQgZGlzY3Vzc2lnbiB3aGF0IHRvIGRvIHdpdGggInR1bi1tdHUiLCB3aGljaCBp
+cyBhIHRvdWdoIGNvbXBhdC1xdWVzdGlvbgooMTIuMjguMDkpIG1hdHRvY2s6IG5vdGhpbmcg
+YnVybmluZyBhdCBteSBlbmQKKDEyLjI4LjI0KSBtYXR0b2NrOiB3ZSBoYXZlIHR3byBtaW51
+dGVzIGxlZnQKKDEyLjI4LjQ0KSBkYXpvOiB0aGF0J3MgZ29vZCEgIEkgdGhpbmsgcGxhaXN0
+aG9zIHN1Z2dlc3Rpb24gb2YgcHVzaGFibGUgdHVuLW10dSB3aGVyZSB0aGUgcHVzaGVkIHZh
+bHVlIGNhbiBiZSAibWVyZ2VkIiB3aGVuIHVzaW5nIGEgbG93ZXIgdmFsdWUgdGhhbiB0aGUg
+bG9jYWwgY29uZmlnCigxMi4yOC41NykgZGF6bzogaXMgYSBnb29kIGlkZWEKKDEyLjI5LjIw
+KSBjcm9uMjogSSBoYXZlIG1pc3NlZCB0aGF0IG9uZSwgaXQgc2VlbXMsIGFuZCBuZWVkIHRv
+IGdpdmUgaXQgc29tZSB0aG91Z2h0CigxMi4zMC4yNikgbWF0dG9jazogd3JpdGluZyB0aGUg
+c3VtbWFyeSBub3cK
+
+--------------0oQRKvpmpVmd20uRrS7JuQR5--
 
