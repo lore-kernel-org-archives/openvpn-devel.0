@@ -1,12 +1,12 @@
-Date: Wed, 9 Feb 2022 15:54:39 +0100 (CET)
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <1601040617.129220.1644418479406@...2642...>
-In-Reply-To: <bd326838-2774-93db-1566-675813e20245@...2080...>
-References: <20220208114905.100-1-lstipakov@...277...>
- <1019065492.66755.1644353962956@...2642...>
- <bd326838-2774-93db-1566-675813e20245@...2080...>
+Message-ID: <ad2031eb-2d68-2dec-5f94-830529f2bdcb@...2080...>
+Date: Wed, 9 Feb 2022 23:20:16 +0100
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] msvc: cleanup
+Content-Language: en-US
+References: <20211209171138.8589-1-frank@...2641...>
+From: David Sommerseth <openvpn@...2080...>
+In-Reply-To: <20211209171138.8589-1-frank@...2641...>
+Subject: Re: [Openvpn-devel] [PATCH 1/3] doc/Makefile: rebuild rst docs if
+ input files change
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +15,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: David Sommerseth <openvpn@...2080...>
-Cc: Lev Stipakov <lev@...515...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-> David Sommerseth <openvpn@...2080...> hat am 09.02.2022 15:19 geschrieben:
+On 09/12/2021 18:11, Frank Lichtenheld wrote:
+> For now the dependencies are statically defined, which
+> should be fine and is still a much better solution than
+> to have no dependencies.
 > 
->  
-> On 08/02/2022 21:59, Frank Lichtenheld wrote:
-> > One thing I noticed while building:
-> > 
-> > FOR /F %i IN ('where rst2html.py') DO python %i "c:\OpenVPN\openvpn\/doc/openvpn.8.rst" "c:\OpenVPN\openvpn\/doc/openvpn.8.html"
-> > 
-> > This is clearly outdated code from before the rst split. But probably not something that needs to be addressed in this patch.
+> Signed-off-by: Frank Lichtenheld <frank@...2641...>
+> ---
+>   doc/Makefile.am | 21 +++++++++++++++------
+>   1 file changed, 15 insertions(+), 6 deletions(-)
 > 
-> The openvpn.8.rst includes all the other .rst files and builds a 
-> complete man page from there, so this isn't unexpected.  It's part of 
-> the man-split design.
 
-Yeah, I was confused. There was a "file not found" warning, but that is about rst2html.py, not openvpn.8.rst.
+Done code review and lightly tested it, where it does what it is 
+intended to do.  This change makes a lot of sense as well.
 
-Regards,
---
-Frank Lichtenheld
+Acked-By: David Sommerseth <davids@...515...>
+
+-- 
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
 
