@@ -1,10 +1,13 @@
-Date: Thu, 10 Feb 2022 08:54:18 +0100 (CET)
-Message-Id: <202202100754.21A7sIP5055216@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20211209171138.8589-1-frank@...2641...>
+Date: Thu, 10 Feb 2022 11:21:46 +0100 (CET)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <1155495853.307825.1644488506153@...2642...>
+In-Reply-To: <c240bc99-0fb6-0400-5280-2f1c13955025@...2080...>
 References: <20211209171138.8589-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: doc/Makefile: rebuild rst docs
- if input files change
+ <20211209171138.8589-3-frank@...2641...>
+ <c240bc99-0fb6-0400-5280-2f1c13955025@...2080...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 3/3 v2] doc/options: clean up documentation
+ for --proto and related options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +16,110 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: David Sommerseth <openvpn@...2080...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+The family specific options were generally omitted.
 
-I think it makes sense for release/2.5 as well, but the Makefile looks
-a bit different there (no examples-fingerprint.rst at least, did not
-look into it more in detail).
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ doc/man-sections/client-options.rst |  5 +++++
+ doc/man-sections/link-options.rst   |  5 ++++-
+ src/openvpn/options.c               | 17 +++++++++--------
+ 3 files changed, 18 insertions(+), 9 deletions(-)
 
-commit 529cc6a52fc45a1a67abb5c91819ba4fb2f631e3
-Author: Frank Lichtenheld
-Date:   Thu Dec 9 18:11:36 2021 +0100
+v2: move #define around
 
-     doc/Makefile: rebuild rst docs if input files change
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
+index 73f1ea51..4c4a8707 100644
+--- a/doc/man-sections/client-options.rst
++++ b/doc/man-sections/client-options.rst
+@@ -198,6 +198,11 @@ configuration.
+   When iterating through connection profiles, only consider profiles using
+   protocol ``p`` (:code:`tcp` \| :code:`udp`).
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20211209171138.8589-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23369.html
-     Signed-off-by: Gert Doering <gert@...1296...>
++  Note that this specifically only affects the protocol, not the inet
++  family (i.e. IPv4 vs. IPv6). While the option actually accepts
++  values like :code:`udp6`, there is no difference to specifying
++  :code:`udp`.
++
+ --pull
+   This option must be used on a client which is connecting to a
+   multi-client server. It indicates to OpenVPN that it should accept
+diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
+index cbc1e97b..0457727e 100644
+--- a/doc/man-sections/link-options.rst
++++ b/doc/man-sections/link-options.rst
+@@ -276,7 +276,10 @@ the local and the remote host.
 
+ --proto p
+   Use protocol ``p`` for communicating with remote host. ``p`` can be
+-  :code:`udp`, :code:`tcp-client`, or :code:`tcp-server`.
++  :code:`udp`, :code:`tcp-client`, or :code:`tcp-server`. You can also
++  limit OpenVPN to use only IPv4 or only IPv6 by specifying ``p`` as
++  :code:`udp4`, :code:`tcp4-client`, :code:`tcp4-server` or :code:`udp6`,
++  :code:`tcp6-client`, :code:`tcp6-server`, respectively.
 
+   The default protocol is :code:`udp` when ``--proto`` is not specified.
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 1176a7c8..e7eba341 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -126,9 +126,11 @@ static const char usage_message[] =
+     "--remote-random-hostname : Add a random string to remote DNS name.\n"
+     "--mode m        : Major mode, m = 'p2p' (default, point-to-point) or 'server'.\n"
+     "--proto p       : Use protocol p for communicating with peer.\n"
+-    "                  p = udp (default), tcp-server, or tcp-client\n"
++    "                  p = udp (default), tcp-server, tcp-client\n"
++    "                      udp4, tcp4-server, tcp4-client\n"
++    "                      udp6, tcp6-server, tcp6-client\n"
+     "--proto-force p : only consider protocol p in list of connection profiles.\n"
+-    "                  p = udp6, tcp6-server, or tcp6-client (ipv6)\n"
++    "                  p = udp or tcp\n"
+     "--connect-retry n [m] : For client, number of seconds to wait between\n"
+     "                  connection retries (default=%d). On repeated retries\n"
+     "                  the wait time is exponentially increased to a maximum of m\n"
+@@ -2298,6 +2300,8 @@ options_postprocess_verify_ce(const struct options *options,
+      */
+     if (options->mode == MODE_SERVER)
+     {
++#define USAGE_VALID_SERVER_PROTOS "--mode server currently only supports " \
++      "--proto values of udp, tcp-server, tcp4-server, or tcp6-server"
+ #ifdef TARGET_ANDROID
+         msg(M_FATAL, "--mode server not supported on Android");
+ #endif
+@@ -2315,15 +2319,14 @@ options_postprocess_verify_ce(const struct options *options,
+         }
+         if (!(proto_is_udp(ce->proto) || ce->proto == PROTO_TCP_SERVER))
+         {
+-            msg(M_USAGE, "--mode server currently only supports "
+-                "--proto udp or --proto tcp-server or proto tcp6-server");
++            msg(M_USAGE, USAGE_VALID_SERVER_PROTOS);
+         }
+ #if PORT_SHARE
+         if ((options->port_share_host || options->port_share_port)
+             && (ce->proto != PROTO_TCP_SERVER))
+         {
+             msg(M_USAGE, "--port-share only works in TCP server mode "
+-                "(--proto tcp-server or tcp6-server)");
++                "(--proto values of tcp-server, tcp4-server, or tcp6-server)");
+         }
+ #endif
+         if (!options->tls_server)
+@@ -2367,9 +2370,7 @@ options_postprocess_verify_ce(const struct options *options,
+         }
+         if (!(proto_is_dgram(ce->proto) || ce->proto == PROTO_TCP_SERVER))
+         {
+-            msg(M_USAGE,
+-                "--mode server currently only supports --proto udp or --proto "
+-                "tcp-server or --proto tcp6-server");
++            msg(M_USAGE, USAGE_VALID_SERVER_PROTOS);
+         }
+         if (!proto_is_udp(ce->proto) && (options->cf_max || options->cf_per))
+         {
 --
-kind regards,
-
-Gert Doering
-
+2.30.2
 
