@@ -1,10 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Thu, 10 Feb 2022 17:26:30 +0100
-Message-Id: <20220210162632.3309974-6-arne@...1227...>
+Date: Fri, 11 Feb 2022 09:58:05 +0100 (CET)
+Message-Id: <202202110858.21B8w5MH085949@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20220210162632.3309974-1-arne@...1227...>
 References: <20220210162632.3309974-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4 6/8] Remove extra_link from frame
+Subject: [Openvpn-devel] [PATCH applied] Re: Replace TUN_MTU_SIZE with
+ frame->tun_mtu
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,156 +15,44 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The previous commits removed any reads from this variable. So we can
-now safely remove it.
+Acked-by: Gert Doering <gert@...1296...>
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/init.c  | 19 -------------------
- src/openvpn/mtu.c   |  1 -
- src/openvpn/mtu.h   | 13 -------------
- src/openvpn/socks.c | 11 +----------
- src/openvpn/socks.h |  2 --
- src/openvpn/ssl.c   |  1 -
- 6 files changed, 1 insertion(+), 46 deletions(-)
+Code change looks very straight forward :-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index b1952f46..7e22d09b 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -3110,14 +3110,6 @@ do_init_frame(struct context *c)
-     }
- #endif /* USE_COMP */
- 
--    /*
--     * Adjust frame size for UDP Socks support.
--     */
--    if (c->options.ce.socks_proxy_server)
--    {
--        socks_adjust_frame_parameters(&c->c2.frame, c->options.ce.proto);
--    }
--
-     /*
-      * Adjust frame size based on the --tun-mtu-extra parameter.
-      */
-@@ -3150,17 +3142,6 @@ do_init_frame(struct context *c)
- #endif
- #endif /* USE_COMP */
- 
--    /* packets with peer-id (P_DATA_V2) need 3 extra bytes in frame (on client)
--     * and need link_mtu+3 bytes on socket reception (on server).
--     *
--     * accommodate receive path in f->extra_link, which has the side effect of
--     * also increasing send buffers (BUF_SIZE() macro), which need to be
--     * allocated big enough before receiving peer-id option from server.
--     *
--     * f->extra_frame is adjusted when peer-id option is push-received
--     */
--    frame_add_to_extra_link(&c->c2.frame, 3);
--
- #ifdef ENABLE_FRAGMENT
-     /*
-      * Set frame parameter for fragment code.  This is necessary because
-diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index 6d349f7a..2c455c3e 100644
---- a/src/openvpn/mtu.c
-+++ b/src/openvpn/mtu.c
-@@ -266,7 +266,6 @@ frame_print(const struct frame *frame,
-     buf_printf(&out, " EF:%d", frame->extra_frame);
-     buf_printf(&out, " EB:%d", frame->extra_buffer);
-     buf_printf(&out, " ET:%d", frame->extra_tun);
--    buf_printf(&out, " EL:%d", frame->extra_link);
-     buf_printf(&out, " ]");
- 
-     msg(level, "%s", out.data);
-diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index 5f7205f4..6188c0da 100644
---- a/src/openvpn/mtu.h
-+++ b/src/openvpn/mtu.h
-@@ -163,13 +163,6 @@ struct frame {
-                                  *   which defaults to 0 for tun and 32
-                                  *   (\c TAP_MTU_EXTRA_DEFAULT) for tap.
-                                  *   */
--
--    int extra_link;             /**< Maximum number of bytes in excess of
--                                 *   external network interface's MTU that
--                                 *   might be read from or written to it.
--                                 *
--                                 *   Used by peer-id (3) and
--                                 *   socks UDP (10) */
- };
- 
- /* Forward declarations, to prevent includes */
-@@ -378,12 +371,6 @@ frame_add_to_extra_tun(struct frame *frame, const int increment)
-     frame->extra_tun += increment;
- }
- 
--static inline void
--frame_add_to_extra_link(struct frame *frame, const int increment)
--{
--    frame->extra_link += increment;
--}
--
- static inline void
- frame_add_to_extra_buffer(struct frame *frame, const int increment)
- {
-diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
-index f5108b03..768bb613 100644
---- a/src/openvpn/socks.c
-+++ b/src/openvpn/socks.c
-@@ -49,15 +49,6 @@
- 
- #define UP_TYPE_SOCKS           "SOCKS Proxy"
- 
--void
--socks_adjust_frame_parameters(struct frame *frame, int proto)
--{
--    if (proto == PROTO_UDP)
--    {
--        frame_add_to_extra_link(frame, 10);
--    }
--}
--
- struct socks_proxy_info *
- socks_proxy_new(const char *server,
-                 const char *port,
-@@ -610,7 +601,7 @@ socks_process_outgoing_udp(struct buffer *buf,
-     /*
-      * Get a 10 byte subset buffer prepended to buf --
-      * we expect these bytes will be here because
--     * we allocated frame space in socks_adjust_frame_parameters.
-+     * we always allocate space for these bytes
-      */
-     struct buffer head = buf_sub(buf, 10, true);
- 
-diff --git a/src/openvpn/socks.h b/src/openvpn/socks.h
-index 88cf9523..47cdac10 100644
---- a/src/openvpn/socks.h
-+++ b/src/openvpn/socks.h
-@@ -42,8 +42,6 @@ struct socks_proxy_info {
-     char authfile[256];
- };
- 
--void socks_adjust_frame_parameters(struct frame *frame, int proto);
--
- struct socks_proxy_info *socks_proxy_new(const char *server,
-                                          const char *port,
-                                          const char *authfile);
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 10f75d66..38085f77 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -322,7 +322,6 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
- 
-     /* inherit link MTU and extra_link from data channel */
-     frame->link_mtu = data_channel_frame->link_mtu;
--    frame->extra_link = data_channel_frame->extra_link;
- 
-     /* set extra_frame */
-     tls_adjust_frame_parameters(frame);
--- 
-2.33.0
+Passes all my torture tests on client and server (except frame max 
+setting on P2P TAP, but that's known and will be fixed at the end 
+of the series).
+
+For reference, this was 19/21 in v1 and 12/14 in v3 of the series,
+which could not go in because it broke compilation.  The difference
+v3 -> v4 is "more TUN_MTU_SIZE() calls get converted" - all of
+these in code parts that got removed in other parts of the v3 patch
+series, but breaking compilation nonetheless.
+
+Doing this as 01/08 now will also magically fix the "ifconfig has
+the wrong mtu value" problem that made me stall 09/14 v3.
+
+Your patch has been applied to the master branch.
+
+commit 364b7b4f04985600e0a0a46e79555379b5df9977
+Author: Arne Schwabe
+Date:   Thu Feb 10 17:26:25 2022 +0100
+
+     Replace TUN_MTU_SIZE with frame->tun_mtu
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220210162632.3309974-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23752.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
