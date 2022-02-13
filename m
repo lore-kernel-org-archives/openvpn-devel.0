@@ -1,10 +1,9 @@
-Date: Sun, 13 Feb 2022 11:42:15 +0100 (CET)
-Message-Id: <202202131042.21DAgF5W047495@...2054...>
+Date: Sun, 13 Feb 2022 11:56:54 +0100 (CET)
+Message-Id: <202202131056.21DAusDR055723@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220207155757.22314-1-a@...2181...>
-References: <20220207155757.22314-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Get rid of README.IPv6 and
- TODO.IPv6
+In-Reply-To: <20220210162632.3309974-6-arne@...1227...>
+References: <20220210162632.3309974-6-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove extra_link from frame
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +14,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-What Antonio says.  We have reached the stage where IPv6 is "just normal",
-so no need for a special README.IPv6 anymore :-)  (or so we claim).
+This patch series is coming to an end, and now we get to reap the 
+benefits - code gets simpler, old cruft gets removed.
 
-We might introduce a README.IPv4 at some point... ("yes, we do still
-support this old stuff").  But maybe implement IPX first?  ;-)
+Stared at the change (looks good and fairly straightforward), still
+ran full set of client side tests (including SOCKS).  Not run the
+server side tests as there really isn't anthing that looks relevant.
 
 Your patch has been applied to the master branch.
 
-commit 9cc7e32827bdb778970eb6231d319b0f18fb56c6
-Author: Antonio Quartulli
-Date:   Mon Feb 7 16:57:57 2022 +0100
+commit 625c4063a543700713c8fdde7dd911343dcc4dcc
+Author: Arne Schwabe
+Date:   Thu Feb 10 17:26:30 2022 +0100
 
-     Get rid of README.IPv6 and TODO.IPv6
+     Remove extra_link from frame
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220207155757.22314-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23729.html
+     Message-Id: <20220210162632.3309974-6-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23751.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
