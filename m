@@ -1,10 +1,10 @@
-Date: Sun, 13 Feb 2022 10:45:23 +0100 (CET)
-Message-Id: <202202130945.21D9jNEd042935@...2054...>
+Date: Sun, 13 Feb 2022 11:36:58 +0100 (CET)
+Message-Id: <202202131036.21DAawgd047309@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220210162632.3309974-4-arne@...1227...>
-References: <20220210162632.3309974-4-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Update fragment and mssfix
- related warnings
+In-Reply-To: <20220210162632.3309974-5-arne@...1227...>
+References: <20220210162632.3309974-5-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Use new frame header methods to
+ calculate OCC_MTU_LOAD payload size
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,27 +20,31 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Have not actually tried triggering these warnings, but the logic is
-sane, and the code looks reasonable.
+.. though I'm not sure I understand any of this code, or how to trigger
+it.  So I've only run client/server tests, and stared at the code changes
+for a bit.
 
-Client-side tested "just for completeness".
+I think it actually breaks the original intent, as the "changes per
+iteration" variable "entry->delta" is gone now - so this is a semi-NAK,
+as in "we need to come back here and fix this".  But I want to move
+forward with the frame stuff, and 7/8 can not go in without this.
 
-For reference, this was 15/21 in v1+v2 of this series and 06/14 in v3,
-and 15/21 got an ACK from Frank Lichtenfeld with a comment about the
-wording of the "the mtu" warning, which was addressed in v2.
+Can anyone tell me how to actually trigger an "OCC MTU test"?  --mtu-disc 
+is doing socket level stuff ("only supported on OSes ... necessary system
+call") - so maybe this was broken / inactive already before...
 
 Your patch has been applied to the master branch.
 
-commit f1e06301c71e8c8d4eb9c93939e775596fc2f998
+commit fb76954a232decc86e071a76861c1e4fdd2507ab
 Author: Arne Schwabe
-Date:   Thu Feb 10 17:26:28 2022 +0100
+Date:   Thu Feb 10 17:26:29 2022 +0100
 
-     Update fragment and mssfix related warnings
+     Use new frame header methods to calculate OCC_MTU_LOAD payload size
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220210162632.3309974-4-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23753.html
+     Message-Id: <20220210162632.3309974-5-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23750.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
