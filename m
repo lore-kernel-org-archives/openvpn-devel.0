@@ -1,9 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 14 Feb 2022 01:33:21 +0100
-Message-Id: <20220214003321.3741582-1-arne@...1227...>
+Date: Mon, 14 Feb 2022 03:10:53 +0100
+Message-Id: <20220214021054.3750071-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Add unit test for mssfix with compression
- involved
+Subject: [Openvpn-devel] [PATCH 1/2] Fix 'defined but not used' warnings
+ with enable-small/disable-management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,49 +16,82 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+Some functions are only used when management is used or enable-small is
+not used. Fix the ifdefs to correctly also include these helper
+functions the ifdefs to avoid compile errors when using -Werror
 ---
- tests/unit_tests/openvpn/test_crypto.c | 28 ++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ src/openvpn/multi.c   | 11 +++++------
+ src/openvpn/options.c |  7 +++----
+ 2 files changed, 8 insertions(+), 10 deletions(-)
 
-diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
-index 7fb9d624..ca170547 100644
---- a/tests/unit_tests/openvpn/test_crypto.c
-+++ b/tests/unit_tests/openvpn/test_crypto.c
-@@ -426,6 +426,34 @@ test_mssfix_mtu_calculation(void **state)
-             assert_int_equal(f.mss_fix, 927);
-         }
-     }
-+#ifdef USE_COMP
-+    o.comp.alg = COMP_ALG_LZO;
-+
-+    /* Same but with compression added. Compression adds one byte extra to the
-+     * payload so the payload should be reduced by compared to the no
-+     * compression calculation before */
-+    for (int i = 990;i <= 1010;i++)
-+    {
-+        /* 992 - 1008 should end up with the same mssfix value all they
-+         * all result in the same CBC block size/padding and <= 991 and >=1008
-+         * should be one block less and more respectively */
-+        o.ce.mssfix = i;
-+        frame_calculate_dynamic(&f, &kt, &o, NULL);
-+        if (i <= 991)
-+        {
-+            assert_int_equal(f.mss_fix, 910);
-+        }
-+        else if (i >= 1008)
-+        {
-+            assert_int_equal(f.mss_fix, 942);
-+        }
-+        else
-+        {
-+            assert_int_equal(f.mss_fix, 926);
-+        }
-+    }
-+    o.comp.alg = COMP_ALG_UNDEF;
-+#endif
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 6f7bb6f8..e7f2c697 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3653,6 +3653,11 @@ multi_close_instance_on_signal(struct multi_context *m, struct multi_instance *m
+     multi_close_instance(m, mi, false);
+ }
  
-     /* tls client, auth SHA1, cipher AES-256-GCM */
-     o.authname = "SHA1";
++/*
++ * Management subsystem callbacks
++ */
++#ifdef ENABLE_MANAGEMENT
++
+ static void
+ multi_signal_instance(struct multi_context *m, struct multi_instance *mi, const int sig)
+ {
+@@ -3660,12 +3665,6 @@ multi_signal_instance(struct multi_context *m, struct multi_instance *mi, const
+     multi_close_instance_on_signal(m, mi);
+ }
+ 
+-/*
+- * Management subsystem callbacks
+- */
+-
+-#ifdef ENABLE_MANAGEMENT
+-
+ static void
+ management_callback_status(void *arg, const int version, struct status_output *so)
+ {
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 813d34c9..2538421b 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -910,6 +910,8 @@ struct pull_filter_list
+     struct pull_filter *tail;
+ };
+ 
++#ifndef ENABLE_SMALL
++
+ static const char *
+ pull_filter_type_name(int type)
+ {
+@@ -931,8 +933,6 @@ pull_filter_type_name(int type)
+     }
+ }
+ 
+-#ifndef ENABLE_SMALL
+-
+ #define SHOW_PARM(name, value, format) msg(D_SHOW_PARMS, "  " #name " = " format, (value))
+ #define SHOW_STR(var)       SHOW_PARM(var, (o->var ? o->var : "[UNDEF]"), "'%s'")
+ #define SHOW_STR_INLINE(var)    SHOW_PARM(var, \
+@@ -1268,6 +1268,7 @@ dhcp_option_address_parse(const char *name, const char *parm, in_addr_t *array,
+ 
+ #endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */
+ 
++#ifndef ENABLE_SMALL
+ static const char *
+ print_vlan_accept(enum vlan_acceptable_frames mode)
+ {
+@@ -1285,8 +1286,6 @@ print_vlan_accept(enum vlan_acceptable_frames mode)
+     return NULL;
+ }
+ 
+-#ifndef ENABLE_SMALL
+-
+ static void
+ show_p2mp_parms(const struct options *o)
+ {
 -- 
 2.33.0
 
