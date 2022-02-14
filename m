@@ -1,9 +1,9 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon, 14 Feb 2022 10:26:07 +0100
-Message-Id: <20220214092607.3785665-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Remove FRAME_HEADROOM, PAYLOAD_SIZE,
- EXTRA_FRAME and TUN_LINK_DELTA macros
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 14 Feb 2022 14:24:09 +0200
+Message-Id: <20220214122409.260-1-lstipakov@...277...>
+In-Reply-To: <20220127090917.633-1-lstipakov@...277...>
+References: <20220127090917.633-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH v3] openvpnmsica: add ovpn-dco custom actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,341 +15,492 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>, Simon Rozman <simon@...2293...>
 
-The buffer overhaul simplified the frame struct to a point that these
-macros are either not used anymore or are not adding any benefit in
-understanding the code anymore. Replace the macros with direct member
-acessses.
+From: Lev Stipakov <lev@...515...>
 
-Patch v2: Remove all FRAME_HEADROOM macros
+Add two custom actions to service ovpn-dco driver installation.
+
+ - EvaluateDriver
+
+Runs under user privileges. Determines what action (install/uninstall)
+should be performed on ovpn-dco component.
+
+ - ProcessDriver
+
+Runs under SYSTEM privileges. Performs driver (un)installation.
+During uninstall, all existing adapters with given hwid (ovpn-dco)
+are removed.
+
+The logic is inspired by custom actions from tap-windows6 installer
+(https://github.com/OpenVPN/tap-windows6/tree/master/msm).
+
+Signed-off-by: Lev Stipakov <lev@...515...>
+Signed-off-by: Simon Rozman <simon@...2293...>
 ---
- src/openvpn/comp-lz4.c |  8 ++++----
- src/openvpn/crypto.c   | 19 ++++++++++---------
- src/openvpn/forward.c  |  8 ++++----
- src/openvpn/fragment.c |  6 +++---
- src/openvpn/lzo.c      |  6 +++---
- src/openvpn/mtu.c      |  2 +-
- src/openvpn/mtu.h      | 23 -----------------------
- src/openvpn/multi.c    |  2 +-
- src/openvpn/occ.c      |  2 +-
- src/openvpn/ping.c     |  2 +-
- src/openvpn/ssl.c      |  6 +++---
- 11 files changed, 31 insertions(+), 53 deletions(-)
 
-diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
-index 0f2034f7..bf0c05b1 100644
---- a/src/openvpn/comp-lz4.c
-+++ b/src/openvpn/comp-lz4.c
-@@ -69,11 +69,11 @@ do_lz4_compress(struct buffer *buf,
-      */
-     if (buf->len >= COMPRESS_THRESHOLD && (compctx->flags & COMP_F_ALLOW_COMPRESS))
+ v3:
+  - Remove GetComponentNameById() and use hardcoded component name
+    instead
+  - Use WCHAR consistently
+  - add msg() calls on failure paths
+  - fix a few memory leaks
+  - minor cleanups
+
+ 
+ v2:
+  - fix string conversion warning
+
+ src/openvpnmsica/Makefile.am    |   2 +-
+ src/openvpnmsica/openvpnmsica.c | 315 ++++++++++++++++++++++++++++++--
+ src/openvpnmsica/openvpnmsica.h |  30 +++
+ 3 files changed, 334 insertions(+), 13 deletions(-)
+
+diff --git a/src/openvpnmsica/Makefile.am b/src/openvpnmsica/Makefile.am
+index a1a04afe..95482940 100644
+--- a/src/openvpnmsica/Makefile.am
++++ b/src/openvpnmsica/Makefile.am
+@@ -42,7 +42,7 @@ libopenvpnmsica_la_CFLAGS = \
+ 	-UNTDDI_VERSION -U_WIN32_WINNT \
+ 	-D_WIN32_WINNT=_WIN32_WINNT_VISTA \
+ 	-Wl,--kill-at
+-libopenvpnmsica_la_LDFLAGS = -ladvapi32 -lole32 -lmsi -lsetupapi -liphlpapi -lshell32 -lshlwapi -lversion -no-undefined -avoid-version
++libopenvpnmsica_la_LDFLAGS = -ladvapi32 -lole32 -lmsi -lsetupapi -liphlpapi -lshell32 -lshlwapi -lversion -lnewdev -no-undefined -avoid-version
+ endif
+ 
+ libopenvpnmsica_la_SOURCES = \
+diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c
+index 6560751a..843b5762 100644
+--- a/src/openvpnmsica/openvpnmsica.c
++++ b/src/openvpnmsica/openvpnmsica.c
+@@ -43,6 +43,10 @@
+ #include <stdbool.h>
+ #include <stdlib.h>
+ #include <tchar.h>
++#include <setupapi.h>
++#include <newdev.h>
++#include <initguid.h>
++#include <devguid.h>
+ 
+ #ifdef _MSC_VER
+ #pragma comment(lib, "advapi32.lib")
+@@ -60,6 +64,12 @@
+ #define MSICA_ADAPTER_TICK_SIZE (16*1024) /** Amount of tick space to reserve for one TAP/TUN adapter creation/deletition. */
+ 
+ #define FILE_NEED_REBOOT        L".ovpn_need_reboot"
++#define CMP_OVPN_DCO_INF        L"CMP_ovpn_dco.inf"
++#define ACTION_ADD_DRIVER       L"AddDriver"
++#define ACTION_DELETE_DRIVER    L"DeleteDriver"
++#define ACTION_NOOP             L"Noop"
++#define FILE_OVPN_DCO_INF       L"ovpn-dco.inf"
++#define OVPN_DCO_HWID           L"ovpn-dco"
+ 
+ /**
+  * Joins an argument sequence and sets it to the MSI property.
+@@ -424,6 +434,11 @@ FindSystemInfo(_In_ MSIHANDLE hInstall)
+         TEXT("Wintun") TEXT("\0"),
+         TEXT("WINTUNADAPTERS"),
+         TEXT("ACTIVEWINTUNADAPTERS"));
++    find_adapters(
++        hInstall,
++        TEXT("ovpn-dco") TEXT("\0"),
++        TEXT("OVPNDCOAPTERS"),
++        TEXT("ACTIVEOVPNDCOADAPTERS"));
+ 
+     if (bIsCoInitialized)
      {
--        const size_t ps = PAYLOAD_SIZE(frame);
-+        const size_t ps = frame->buf.payload_size;
-         int zlen_max = ps + COMP_EXTRA_BUFFER(ps);
-         int zlen;
- 
--        ASSERT(buf_init(work, FRAME_HEADROOM(frame)));
-+        ASSERT(buf_init(work, frame->buf.headroom));
-         ASSERT(buf_safe(work, zlen_max));
- 
-         if (buf->len > ps)
-@@ -221,7 +221,7 @@ lz4_decompress(struct buffer *buf, struct buffer work,
-         return;
-     }
- 
--    ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
-+    ASSERT(buf_init(&work, frame->buf.headroom));
- 
-     /* do unframing/swap (assumes buf->len > 0) */
-     {
-@@ -258,7 +258,7 @@ lz4v2_decompress(struct buffer *buf, struct buffer work,
-         return;
-     }
- 
--    ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
-+    ASSERT(buf_init(&work, frame->buf.headroom));
- 
-     /* do unframing/swap (assumes buf->len > 0) */
-     uint8_t *head = BPTR(buf);
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index c8d2bcca..3176a1b7 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -49,14 +49,14 @@
-  * work is a workspace buffer we are given of size BUF_SIZE.
-  * work may be used to return output data, or the input buffer
-  * may be modified and returned as output.  If output data is
-- * returned in work, the data should start after FRAME_HEADROOM bytes
-+ * returned in work, the data should start after buf.headroom bytes
-  * of padding to leave room for downstream routines to prepend.
-  *
-- * Up to a total of FRAME_HEADROOM bytes may be prepended to the input buf
-+ * Up to a total of buf.headroom bytes may be prepended to the input buf
-  * by all routines (encryption, decryption, compression, and decompression).
-  *
-  * Note that the buf_prepend return will assert if we try to
-- * make a header bigger than FRAME_HEADROOM.  This should not
-+ * make a header bigger than buf.headroom.  This should not
-  * happen unless the frame parameters are wrong.
-  */
- 
-@@ -370,7 +370,7 @@ openvpn_decrypt_aead(struct buffer *buf, struct buffer work,
- 
-     ASSERT(ad_start >= buf->data && ad_start <= BPTR(buf));
- 
--    ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
-+    ASSERT(buf_init(&work, frame->buf.headroom));
- 
-     /* IV and Packet ID required for this mode */
-     ASSERT(packet_id_initialized(&opt->packet_id));
-@@ -532,8 +532,8 @@ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
-             uint8_t iv_buf[OPENVPN_MAX_IV_LENGTH] = { 0 };
-             int outlen;
- 
--            /* initialize work buffer with FRAME_HEADROOM bytes of prepend capacity */
--            ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
-+            /* initialize work buffer with buf.headroom bytes of prepend capacity */
-+            ASSERT(buf_init(&work, frame->buf.headroom));
- 
-             /* read the IV from the packet */
-             if (buf->len < iv_size)
-@@ -742,6 +742,7 @@ warn_insecure_key_type(const char *ciphername)
-  * Build a struct key_type.
-  */
- void
-+
- init_key_type(struct key_type *kt, const char *ciphername,
-               const char *authname, bool tls_mode, bool warn)
+@@ -1042,15 +1057,15 @@ parse_guid(
+ static void
+ CreateRebootFile(_In_z_ LPCWSTR szTmpDir)
  {
-@@ -1035,7 +1036,7 @@ test_crypto(struct crypto_options *co, struct frame *frame)
-     void *buf_p;
+-    TCHAR path[MAX_PATH];
++    WCHAR path[MAX_PATH];
+     swprintf_s(path, _countof(path), L"%s%s", szTmpDir, FILE_NEED_REBOOT);
  
-     /* init work */
--    ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
-+    ASSERT(buf_init(&work, frame->buf.headroom));
+-    msg(M_WARN, "%s: Reboot required, create reboot indication file \"%" PRIsLPTSTR "\"", __FUNCTION__, path);
++    msg(M_WARN, "%s: Reboot required, create reboot indication file \"%ls\"", __FUNCTION__, path);
  
-     /* init implicit IV */
+-    HANDLE file = CreateFile(path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
++    HANDLE file = CreateFileW(path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+     if (file == INVALID_HANDLE_VALUE)
      {
-@@ -1078,8 +1079,8 @@ test_crypto(struct crypto_options *co, struct frame *frame)
-         ASSERT(buf_p);
-         memcpy(buf_p, BPTR(&src), BLEN(&src));
- 
--        /* initialize work buffer with FRAME_HEADROOM bytes of prepend capacity */
--        ASSERT(buf_init(&encrypt_workspace, FRAME_HEADROOM(frame)));
-+        /* initialize work buffer with buf.headroom bytes of prepend capacity */
-+        ASSERT(buf_init(&encrypt_workspace, frame->buf.headroom));
- 
-         /* encrypt */
-         openvpn_encrypt(&buf, encrypt_workspace, co);
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index f508d3b6..c615eed4 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -556,8 +556,8 @@ encrypt_sign(struct context *c, bool comp_frag)
- #endif
+-        msg(M_NONFATAL | M_ERRNO, "%s: CreateFile(\"%" PRIsLPTSTR "\") failed", __FUNCTION__, path);
++        msg(M_NONFATAL | M_ERRNO, "%s: CreateFile(\"%ls\") failed", __FUNCTION__, path);
      }
- 
--    /* initialize work buffer with FRAME_HEADROOM bytes of prepend capacity */
--    ASSERT(buf_init(&b->encrypt_buf, FRAME_HEADROOM(&c->c2.frame)));
-+    /* initialize work buffer with buf.headroom bytes of prepend capacity */
-+    ASSERT(buf_init(&b->encrypt_buf, c->c2.frame.buf.headroom));
- 
-     if (c->c2.tls_multi)
+     else
      {
-@@ -802,7 +802,7 @@ read_incoming_link(struct context *c)
-     perf_push(PERF_READ_IN_LINK);
- 
-     c->c2.buf = c->c2.buffers->read_link_buf;
--    ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM(&c->c2.frame)));
-+    ASSERT(buf_init(&c->c2.buf, c->c2.frame.buf.headroom));
- 
-     status = link_socket_read(c->c2.link_socket,
-                               &c->c2.buf,
-@@ -1118,7 +1118,7 @@ read_incoming_tun(struct context *c)
-         sockethandle_finalize(sh, &c->c1.tuntap->reads, &c->c2.buf, NULL);
-     }
- #else  /* ifdef _WIN32 */
--    ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM(&c->c2.frame)));
-+    ASSERT(buf_init(&c->c2.buf, c->c2.frame.buf.headroom));
-     ASSERT(buf_safe(&c->c2.buf, c->c2.frame.buf.payload_size));
-     c->c2.buf.len = read_tun(c->c1.tuntap, BPTR(&c->c2.buf), c->c2.frame.buf.payload_size);
- #endif /* ifdef _WIN32 */
-diff --git a/src/openvpn/fragment.c b/src/openvpn/fragment.c
-index 949db8f5..e7ca12f2 100644
---- a/src/openvpn/fragment.c
-+++ b/src/openvpn/fragment.c
-@@ -211,7 +211,7 @@ fragment_incoming(struct fragment_master *f, struct buffer *buf,
-                 frag->defined = true;
-                 frag->max_frag_size = size;
-                 frag->map = 0;
--                ASSERT(buf_init(&frag->buf, FRAME_HEADROOM(frame)));
-+                ASSERT(buf_init(&frag->buf, frame->buf.headroom));
-             }
- 
-             /* copy the data to fragment buffer */
-@@ -342,7 +342,7 @@ fragment_outgoing(struct fragment_master *f, struct buffer *buf,
+@@ -1140,7 +1155,7 @@ ProcessDeferredAction(_In_ MSIHANDLE hInstall)
+             if (dwResult == ERROR_SUCCESS)
              {
-                 FRAG_ERR("too many fragments would be required to send datagram");
+                 /* Set adapter name. May fail on some machines, but that is not critical - use silent
+-                   flag to mute messagebox and print error only to log */
++                 * flag to mute messagebox and print error only to log */
+                 tap_set_adapter_name(&guidAdapter, szName, TRUE);
              }
--            ASSERT(buf_init(&f->outgoing, FRAME_HEADROOM(frame)));
-+            ASSERT(buf_init(&f->outgoing, frame->buf.headroom));
-             ASSERT(buf_copy(&f->outgoing, buf));
-             f->outgoing_seq_id = modulo_add(f->outgoing_seq_id, 1, N_SEQ_ID);
-             f->outgoing_frag_id = 0;
-@@ -391,7 +391,7 @@ fragment_ready_to_send(struct fragment_master *f, struct buffer *buf,
+         }
+@@ -1267,30 +1282,306 @@ CheckAndScheduleReboot(_In_ MSIHANDLE hInstall)
  
-         /* initialize return buffer */
-         *buf = f->outgoing_return;
--        ASSERT(buf_init(buf, FRAME_HEADROOM(frame)));
-+        ASSERT(buf_init(buf, frame->buf.headroom));
-         ASSERT(buf_copy_n(buf, &f->outgoing, size));
+     debug_popup(__FUNCTION__);
  
-         /* fragment flags differ based on whether or not we are sending the last fragment */
-diff --git a/src/openvpn/lzo.c b/src/openvpn/lzo.c
-index a293ccad..39e833cb 100644
---- a/src/openvpn/lzo.c
-+++ b/src/openvpn/lzo.c
-@@ -160,8 +160,8 @@ lzo_compress(struct buffer *buf, struct buffer work,
-      */
-     if (buf->len >= COMPRESS_THRESHOLD && lzo_compression_enabled(compctx))
+-    UINT ret = ERROR_SUCCESS;
+     BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
+ 
+     OPENVPNMSICA_SAVE_MSI_SESSION(hInstall);
+ 
+     /* get user-specific temp path, to where we create reboot indication file */
+-    TCHAR tempPath[MAX_PATH];
+-    GetTempPath(MAX_PATH, tempPath);
++    WCHAR tempPath[MAX_PATH];
++    GetTempPathW(MAX_PATH, tempPath);
+ 
+     /* check if reboot file exists */
+-    TCHAR path[MAX_PATH];
+-    _stprintf_s(path, _countof(path), L"%s%s", tempPath, FILE_NEED_REBOOT);
++    WCHAR path[MAX_PATH];
++    swprintf_s(path, _countof(path), L"%s%s", tempPath, FILE_NEED_REBOOT);
+     WIN32_FIND_DATA data = { 0 };
+-    HANDLE searchHandle = FindFirstFile(path, &data);
++    HANDLE searchHandle = FindFirstFileW(path, &data);
+     if (searchHandle != INVALID_HANDLE_VALUE)
      {
--        const size_t ps = PAYLOAD_SIZE(frame);
--        ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
-+        const size_t ps = frame->buf.payload_size;
-+        ASSERT(buf_init(&work, frame->buf.headroom));
-         ASSERT(buf_safe(&work, ps + COMP_EXTRA_BUFFER(ps)));
+         msg(M_WARN, "%s: Reboot file exists, schedule reboot", __FUNCTION__);
  
-         if (buf->len > ps)
-@@ -222,7 +222,7 @@ lzo_decompress(struct buffer *buf, struct buffer work,
-         return;
+         FindClose(searchHandle);
+-        DeleteFile(path);
++        DeleteFileW(path);
+ 
+         MsiSetMode(hInstall, MSIRUNMODE_REBOOTATEND, TRUE);
      }
  
--    ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
-+    ASSERT(buf_init(&work, frame->buf.headroom));
- 
-     c = *BPTR(buf);
-     ASSERT(buf_advance(buf, 1));
-diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index 3e48d275..aa810f1c 100644
---- a/src/openvpn/mtu.c
-+++ b/src/openvpn/mtu.c
-@@ -47,7 +47,7 @@ alloc_buf_sock_tun(struct buffer *buf,
- {
-     /* allocate buffer for overlapped I/O */
-     *buf = alloc_buf(BUF_SIZE(frame));
--    ASSERT(buf_init(buf, FRAME_HEADROOM(frame)));
-+    ASSERT(buf_init(buf, frame->buf.headroom));
-     buf->len = frame->buf.payload_size;
-     ASSERT(buf_safe(buf, 0));
- }
-diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index dddbf4fc..7f967e06 100644
---- a/src/openvpn/mtu.h
-+++ b/src/openvpn/mtu.h
-@@ -148,27 +148,6 @@ struct frame {
- /* Forward declarations, to prevent includes */
- struct options;
- 
--/* Routines which read struct frame should use the macros below */
--
--/*
-- * Overhead added to packet payload due to encapsulation
-- */
--#define EXTRA_FRAME(f)           ((f)->extra_frame)
--
--/*
-- * Delta between tun payload size and final TCP/UDP datagram size
-- * (not including extra_link additions)
-- */
--#define TUN_LINK_DELTA(f)        ((f)->extra_frame + (f)->extra_tun)
--
--/*
-- * This is the maximum packet size that we need to be able to
-- * read from or write to a tun or tap device.  For example,
-- * a tap device ifconfiged to an MTU of 1200 might actually want
-- * to return a packet size of 1214 on a read().
-- */
--#define PAYLOAD_SIZE(f)          ((f)->buf.payload_size)
--
- /*
-  * Control buffer headroom allocations to allow for efficient prepending.
-  */
-@@ -184,8 +163,6 @@ struct options;
-  */
- #define BUF_SIZE(f) ((f)->buf.headroom + (f)->buf.payload_size + (f)->buf.tailroom)
- 
--#define FRAME_HEADROOM(f)          ((f)->buf.headroom)
--
- /*
-  * Function prototypes.
-  */
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index e7f2c697..74e8ef3c 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -3495,7 +3495,7 @@ gremlin_flood_clients(struct multi_context *m)
-         struct packet_flood_parms parm = get_packet_flood_parms(level);
-         int i;
- 
--        ASSERT(buf_init(&buf, FRAME_HEADROOM(&m->top.c2.frame)));
-+        ASSERT(buf_init(&buf, m->top.c2.frame.buf.headroom));
-         parm.packet_size = min_int(parm.packet_size, m->top.c2.frame.buf.payload_size);
- 
-         msg(D_GREMLIN, "GREMLIN_FLOOD_CLIENTS: flooding clients with %d packets of size %d",
-diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c
-index b7670356..1ed0d377 100644
---- a/src/openvpn/occ.c
-+++ b/src/openvpn/occ.c
-@@ -221,7 +221,7 @@ check_send_occ_msg_dowork(struct context *c)
-     bool doit = false;
- 
-     c->c2.buf = c->c2.buffers->aux_buf;
--    ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM(&c->c2.frame)));
-+    ASSERT(buf_init(&c->c2.buf, c->c2.frame.buf.headroom));
-     ASSERT(buf_safe(&c->c2.buf, c->c2.frame.buf.payload_size));
-     ASSERT(buf_write(&c->c2.buf, occ_magic, OCC_STRING_SIZE));
- 
-diff --git a/src/openvpn/ping.c b/src/openvpn/ping.c
-index b38f2016..588723d0 100644
---- a/src/openvpn/ping.c
-+++ b/src/openvpn/ping.c
-@@ -79,7 +79,7 @@ void
- check_ping_send_dowork(struct context *c)
- {
-     c->c2.buf = c->c2.buffers->aux_buf;
--    ASSERT(buf_init(&c->c2.buf, FRAME_HEADROOM(&c->c2.frame)));
-+    ASSERT(buf_init(&c->c2.buf, c->c2.frame.buf.headroom));
-     ASSERT(buf_safe(&c->c2.buf, c->c2.frame.buf.payload_size));
-     ASSERT(buf_write(&c->c2.buf, ping_string, sizeof(ping_string)));
- 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index ae6a9914..14a943a7 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -979,10 +979,10 @@ key_state_init(struct tls_session *session, struct key_state *ks)
-     ks->plaintext_write_buf = alloc_buf(TLS_CHANNEL_BUF_SIZE);
-     ks->ack_write_buf = alloc_buf(BUF_SIZE(&session->opt->frame));
-     reliable_init(ks->send_reliable, BUF_SIZE(&session->opt->frame),
--                  FRAME_HEADROOM(&session->opt->frame), TLS_RELIABLE_N_SEND_BUFFERS,
-+                  session->opt->frame.buf.headroom, TLS_RELIABLE_N_SEND_BUFFERS,
-                   ks->key_id ? false : session->opt->xmit_hold);
-     reliable_init(ks->rec_reliable, BUF_SIZE(&session->opt->frame),
--                  FRAME_HEADROOM(&session->opt->frame), TLS_RELIABLE_N_REC_BUFFERS,
-+                  session->opt->frame.buf.headroom, TLS_RELIABLE_N_REC_BUFFERS,
-                   false);
-     reliable_set_timeout(ks->send_reliable, session->opt->packet_timeout);
- 
-@@ -2982,7 +2982,7 @@ tls_process(struct tls_multi *multi,
-     if (!to_link->len && !reliable_ack_empty(ks->rec_ack))
++    if (bIsCoInitialized)
++    {
++        CoUninitialize();
++    }
++    return ERROR_SUCCESS;
++}
++
++static BOOL
++IsInstalling(_In_ INSTALLSTATE InstallState, _In_ INSTALLSTATE ActionState)
++{
++    return INSTALLSTATE_LOCAL == ActionState || INSTALLSTATE_SOURCE == ActionState
++           || (INSTALLSTATE_DEFAULT == ActionState
++               && (INSTALLSTATE_LOCAL == InstallState || INSTALLSTATE_SOURCE == InstallState));
++}
++
++static BOOL
++IsReInstalling(_In_ INSTALLSTATE InstallState, _In_ INSTALLSTATE ActionState)
++{
++    return (INSTALLSTATE_LOCAL == ActionState || INSTALLSTATE_SOURCE == ActionState
++            || INSTALLSTATE_DEFAULT == ActionState)
++           && (INSTALLSTATE_LOCAL == InstallState || INSTALLSTATE_SOURCE == InstallState);
++}
++
++static BOOL
++IsUninstalling(_In_ INSTALLSTATE InstallState, _In_ INSTALLSTATE ActionState)
++{
++    return (INSTALLSTATE_ABSENT == ActionState || INSTALLSTATE_REMOVED == ActionState)
++           && (INSTALLSTATE_LOCAL == InstallState || INSTALLSTATE_SOURCE == InstallState);
++}
++
++UINT __stdcall
++EvaluateDriver(_In_ MSIHANDLE hInstall)
++{
++#ifdef _MSC_VER
++#pragma comment(linker, DLLEXP_EXPORT)
++#endif
++
++    debug_popup(__FUNCTION__);
++
++    UINT ret;
++    BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
++
++    OPENVPNMSICA_SAVE_MSI_SESSION(hInstall);
++
++    INSTALLSTATE InstallState, ActionState;
++    ret = MsiGetComponentStateW(hInstall, CMP_OVPN_DCO_INF, &InstallState, &ActionState);
++    if (ret != ERROR_SUCCESS)
++    {
++        SetLastError(ret);
++        msg(M_NONFATAL | M_ERRNO, "%s: MsiGetComponentState(\"%ls\") failed", __FUNCTION__, CMP_OVPN_DCO_INF);
++        goto cleanup;
++    }
++
++    /* get user-specific temp path, to where we create reboot indication file */
++    WCHAR tempPath[MAX_PATH];
++    GetTempPathW(MAX_PATH, tempPath);
++
++    WCHAR pathToInf[MAX_PATH];
++    DWORD pathLen = _countof(pathToInf);
++    ret = MsiGetPropertyW(hInstall, L"OVPNDCO", pathToInf, &pathLen);
++    if (ret != ERROR_SUCCESS)
++    {
++        SetLastError(ret);
++        msg(M_NONFATAL | M_ERRNO, "%s: MsiGetProperty failed", __FUNCTION__);
++        goto cleanup;
++    }
++
++    WCHAR action[0x400];
++    if ((IsReInstalling(InstallState, ActionState) || IsInstalling(InstallState, ActionState)))
++    {
++        swprintf_s(action, _countof(action), L"%s|%s%s|%s", ACTION_ADD_DRIVER, pathToInf, FILE_OVPN_DCO_INF, tempPath);
++    }
++    else if (IsUninstalling(InstallState, ActionState))
++    {
++        swprintf_s(action, _countof(action), L"%s|%s%s|%s", ACTION_DELETE_DRIVER, pathToInf, FILE_OVPN_DCO_INF, tempPath);
++    }
++    else
++    {
++        swprintf_s(action, _countof(action), L"%s||", ACTION_NOOP);
++    }
++
++    ret = MsiSetPropertyW(hInstall, L"OvpnDcoProcess", action);
++
++cleanup:
++    if (bIsCoInitialized)
++    {
++        CoUninitialize();
++    }
++    return ret;
++}
++
++static BOOL
++GetPublishedDriverName(_In_z_ LPCWSTR hwid, _Out_writes_z_(len) LPWSTR publishedName, _In_ DWORD len)
++{
++    wcscpy_s(publishedName, len, L"");
++
++    HDEVINFO devInfoSet = SetupDiGetClassDevsW(&GUID_DEVCLASS_NET, NULL, NULL, 0);
++    if (!devInfoSet)
++    {
++        msg(M_NONFATAL | M_ERRNO, "%s: SetupDiGetClassDevsW failed", __FUNCTION__);
++        return FALSE;
++    }
++    BOOL res = FALSE;
++    if (!SetupDiBuildDriverInfoList(devInfoSet, NULL, SPDIT_CLASSDRIVER))
++    {
++        msg(M_NONFATAL | M_ERRNO, "%s: SetupDiBuildDriverInfoList failed", __FUNCTION__);
++        goto cleanupDeviceInfoSet;
++    }
++    for (DWORD idx = 0;; ++idx)
++    {
++        SP_DRVINFO_DATA_W drvInfo = { .cbSize = sizeof(drvInfo) };
++        if (!SetupDiEnumDriverInfoW(devInfoSet, NULL, SPDIT_CLASSDRIVER, idx, &drvInfo))
++        {
++            if (GetLastError() == ERROR_NO_MORE_ITEMS)
++            {
++                break;
++            }
++            msg(M_NONFATAL | M_ERRNO, "%s: SetupDiEnumDriverInfoW failed", __FUNCTION__);
++            goto cleanupDriverInfoList;
++        }
++        DWORD size;
++        if (SetupDiGetDriverInfoDetailW(devInfoSet, NULL, &drvInfo, NULL, 0, &size) || GetLastError() != ERROR_INSUFFICIENT_BUFFER)
++        {
++            msg(M_NONFATAL | M_ERRNO, "%s: SetupDiGetDriverInfoDetailW failed", __FUNCTION__);
++            goto cleanupDriverInfoList;
++        }
++        PSP_DRVINFO_DETAIL_DATA_W drvDetails = calloc(1, size);
++        if (!drvDetails)
++        {
++            msg(M_NONFATAL, "%s: calloc(1, %u) failed", __FUNCTION__, size);
++            goto cleanupDriverInfoList;
++        }
++        drvDetails->cbSize = sizeof(*drvDetails);
++        if (!SetupDiGetDriverInfoDetailW(devInfoSet, NULL, &drvInfo, drvDetails, size, &size))
++        {
++            msg(M_NONFATAL | M_ERRNO, "%s: SetupDiGetDriverInfoDetailW failed", __FUNCTION__);
++            free(drvDetails);
++            goto cleanupDriverInfoList;
++        }
++        if (wcscmp(hwid, drvDetails->HardwareID) == 0)
++        {
++            PathStripPathW(drvDetails->InfFileName);
++            wcscpy_s(publishedName, len, drvDetails->InfFileName);
++            free(drvDetails);
++            res = TRUE;
++            break;
++        }
++        free(drvDetails);
++    }
++
++cleanupDriverInfoList:
++    SetupDiDestroyDriverInfoList(devInfoSet, NULL, SPDIT_CLASSDRIVER);
++cleanupDeviceInfoSet:
++    SetupDiDestroyDeviceInfoList(devInfoSet);
++    return res;
++}
++
++static void
++DeleteDriver(_In_z_ LPCWSTR pathToTmp)
++{
++    /* get list of adapters for hwid */
++    struct tap_adapter_node *pAdapterList = NULL;
++    DWORD ret = tap_list_adapters(NULL, OVPN_DCO_HWID, &pAdapterList);
++    if (ret != ERROR_SUCCESS)
++    {
++        msg(M_NONFATAL, "%s", "Failed to get adapter list: %d", __FUNCTION__, ret);
++    }
++
++    /* delete all adapters */
++    BOOL rebootRequired = FALSE;
++    for (struct tap_adapter_node *pAdapter = pAdapterList; pAdapter != NULL; pAdapter = pAdapter->pNext)
++    {
++        tap_delete_adapter(NULL, &pAdapter->guid, &rebootRequired);
++    }
++
++    /* delete driver */
++    WCHAR publishedName[MAX_PATH] = { 0 };
++    if (GetPublishedDriverName(OVPN_DCO_HWID, publishedName, _countof(publishedName)))
++    {
++        if (!SetupUninstallOEMInfW(publishedName, 0, NULL))
++        {
++            msg(M_NONFATAL | M_ERRNO, "%s: SetupUninstallOEMInfW(\"%ls\") failed", __FUNCTION__, publishedName);
++        }
++    }
++
++    if (rebootRequired)
++    {
++        CreateRebootFile(pathToTmp);
++    }
++}
++
++static void
++AddDriver(_In_z_ LPCWSTR pathToInf, _In_z_ LPCWSTR pathToTmp)
++{
++    /* copy driver to driver store */
++    if (!SetupCopyOEMInfW(pathToInf, NULL, SPOST_PATH, 0, NULL, 0, NULL, NULL))
++    {
++        msg(M_NONFATAL | M_ERRNO, "%s: SetupCopyOEMInf(\"%ls\") failed", __FUNCTION__, pathToInf);
++        return;
++    }
++
++    /* update driver for existing devices (if any) */
++    BOOL rebootRequired = FALSE;
++    if (!UpdateDriverForPlugAndPlayDevicesW(NULL, OVPN_DCO_HWID, pathToInf, INSTALLFLAG_NONINTERACTIVE | INSTALLFLAG_FORCE, &rebootRequired))
++    {
++        /* ERROR_NO_SUCH_DEVINST means that no devices exist, which is normal case - device (adapter) is created at later stage */
++        if (GetLastError() != ERROR_NO_SUCH_DEVINST)
++        {
++            msg(M_NONFATAL | M_ERRNO, "%s: UpdateDriverForPlugAndPlayDevices(\"%ls\", \"%ls\") failed", __FUNCTION__, OVPN_DCO_HWID, pathToInf);
++            return;
++        }
++    }
++    if (rebootRequired)
++    {
++        CreateRebootFile(pathToTmp);
++    }
++}
++
++UINT __stdcall
++ProcessDriver(_In_ MSIHANDLE hInstall)
++{
++#ifdef _MSC_VER
++#pragma comment(linker, DLLEXP_EXPORT)
++#endif
++
++    debug_popup(__FUNCTION__);
++
++    UINT ret = 0;
++    BOOL bIsCoInitialized = SUCCEEDED(CoInitialize(NULL));
++
++    OPENVPNMSICA_SAVE_MSI_SESSION(hInstall);
++
++    LPWSTR customData = NULL;
++    ret = msi_get_string(hInstall, L"CustomActionData", &customData);
++    if (ret != ERROR_SUCCESS)
++    {
++        goto cleanup;
++    }
++
++    int i = 0;
++    WCHAR action[0x400] = { 0 };
++    WCHAR pathToInf[MAX_PATH] = { 0 };
++    WCHAR pathToTmp[MAX_PATH] = { 0 };
++
++    WCHAR *pos = NULL;
++    WCHAR *token = wcstok_s(customData, L"|", &pos);
++    /* action|path_to_inf_file|path_to_tmp_dir */
++    while (token)
++    {
++        switch (i++)
++        {
++            case 0:
++                wcscpy_s(action, _countof(action), token);
++                break;
++
++            case 1:
++                wcscpy_s(pathToInf, _countof(pathToInf), token);
++                break;
++
++            case 2:
++                wcscpy_s(pathToTmp, _countof(pathToTmp), token);
++                break;
++        }
++        token = wcstok_s(NULL, L"|", &pos);
++    }
++
++    if (wcscmp(action, ACTION_ADD_DRIVER) == 0)
++    {
++        AddDriver(pathToInf, pathToTmp);
++    }
++    else if (wcscmp(action, ACTION_DELETE_DRIVER) == 0)
++    {
++        DeleteDriver(pathToTmp);
++    }
++
++cleanup:
++    free(customData);
+     if (bIsCoInitialized)
      {
-         struct buffer buf = ks->ack_write_buf;
--        ASSERT(buf_init(&buf, FRAME_HEADROOM(&multi->opt.frame)));
-+        ASSERT(buf_init(&buf, multi->opt.frame.buf.headroom));
-         write_control_auth(session, ks, &buf, to_link_addr, P_ACK_V1,
-                            RELIABLE_ACK_SIZE, false);
-         *to_link = buf;
+         CoUninitialize();
+diff --git a/src/openvpnmsica/openvpnmsica.h b/src/openvpnmsica/openvpnmsica.h
+index 8c53de45..a2d2d3f4 100644
+--- a/src/openvpnmsica/openvpnmsica.h
++++ b/src/openvpnmsica/openvpnmsica.h
+@@ -88,6 +88,10 @@ extern "C" {
+  *   with semicolon delimited list of all installed adapter GUIDs and active adapter GUIDs
+  *   respectively.
+  *
++ * - Finds existing ovpn-dco adapters and set OVPNDCOADAPTERS and ACTIVEOVPNDCOADAPTERS properties
++ *   with semicolon delimited list of all installed adapter GUIDs and active adapter GUIDs
++ *   respectively.
++ *
+  * @param hInstall      Handle to the installation provided to the DLL custom action
+  *
+  * @return ERROR_SUCCESS on success; An error code otherwise
+@@ -147,6 +151,32 @@ DLLEXP_DECL UINT __stdcall
+ ProcessDeferredAction(_In_ MSIHANDLE hInstall);
+ 
+ 
++/**
++ * Check what operation shall be performed on ovpn-dco driver
++ * and set data value (path to inf and user temp dir) for ProcessDriver action.
++ *
++ * @param hInstall      Handle to the installation provided to the DLL custom action
++ *
++ * @return ERROR_SUCCESS on success; An error code otherwise
++ *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
++ */
++DLLEXP_DECL UINT __stdcall
++EvaluateDriver(_In_ MSIHANDLE hInstall);
++
++
++/**
++ * Install or uninstall ovpn-dco driver, removing all adapters using that driver.
++ * If reboot is required, creates reboot indication file in user's temp directory
++ *
++ * @param hInstall      Handle to the installation provided to the DLL custom action
++ *
++ * @return ERROR_SUCCESS on success; An error code otherwise
++ *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
++ */
++DLLEXP_DECL UINT __stdcall
++ProcessDriver(_In_ MSIHANDLE hInstall);
++
++
+ /**
+  * Schedule reboot after installation if reboot
+  * indication file is found in user's temp directory
 -- 
-2.33.0
+2.23.0.windows.1
 
 
