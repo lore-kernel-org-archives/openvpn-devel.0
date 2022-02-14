@@ -1,9 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 14 Feb 2022 01:14:40 +0100
-Message-Id: <20220214001440.3739838-1-arne@...1227...>
+Date: Mon, 14 Feb 2022 01:31:40 +0100
+Message-Id: <20220214003140.3741349-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Remove FRAME_HEADROOM, PAYLOAD_SIZE,
- EXTRA_FRAME and TUN_LINK_DELTA macros
+Subject: [Openvpn-devel] [PATCH] Add better documentation for CAS_* states
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,195 +15,46 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The buffer overhaul simplified the frame struct to a point that these
-macros are either not used anymore or are not adding any benefit in
-understanding the code anymore. Replace the macros with direct member
-acessses.
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/comp-lz4.c |  8 ++++----
- src/openvpn/crypto.c   |  8 ++++----
- src/openvpn/fragment.c |  6 +++---
- src/openvpn/lzo.c      |  6 +++---
- src/openvpn/mtu.c      |  2 +-
- src/openvpn/mtu.h      | 21 ---------------------
- 6 files changed, 15 insertions(+), 36 deletions(-)
+ src/openvpn/ssl_common.h | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
-index 0f2034f7..bf0c05b1 100644
---- a/src/openvpn/comp-lz4.c
-+++ b/src/openvpn/comp-lz4.c
-@@ -69,11 +69,11 @@ do_lz4_compress(struct buffer *buf,
-      */
-     if (buf->len >= COMPRESS_THRESHOLD && (compctx->flags & COMP_F_ALLOW_COMPRESS))
-     {
--        const size_t ps = PAYLOAD_SIZE(frame);
-+        const size_t ps = frame->buf.payload_size;
-         int zlen_max = ps + COMP_EXTRA_BUFFER(ps);
-         int zlen;
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 42b63cd0..10a3f730 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -522,9 +522,10 @@ struct tls_session
+ #define KEY_SCAN_SIZE 3
  
--        ASSERT(buf_init(work, FRAME_HEADROOM(frame)));
-+        ASSERT(buf_init(work, frame->buf.headroom));
-         ASSERT(buf_safe(work, zlen_max));
  
-         if (buf->len > ps)
-@@ -221,7 +221,7 @@ lz4_decompress(struct buffer *buf, struct buffer work,
-         return;
-     }
+-/* client authentication state, CAS_SUCCEEDED must be 0 since
+- * non multi code path still checks this variable but does not initialise it
+- * so the code depends on zero initialisation */
++/* multi state (originally client authentication state (=CAS))
++ * CAS_NOT_CONNECTED must be 0 since non multi code paths still check
++ * this variable but do not explicitly initialise it and depend
++ * on zero initialisation */
  
--    ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
-+    ASSERT(buf_init(&work, frame->buf.headroom));
- 
-     /* do unframing/swap (assumes buf->len > 0) */
-     {
-@@ -258,7 +258,7 @@ lz4v2_decompress(struct buffer *buf, struct buffer work,
-         return;
-     }
- 
--    ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
-+    ASSERT(buf_init(&work, frame->buf.headroom));
- 
-     /* do unframing/swap (assumes buf->len > 0) */
-     uint8_t *head = BPTR(buf);
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index c8d2bcca..13ac1576 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -370,7 +370,7 @@ openvpn_decrypt_aead(struct buffer *buf, struct buffer work,
- 
-     ASSERT(ad_start >= buf->data && ad_start <= BPTR(buf));
- 
--    ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
-+    ASSERT(buf_init(&work, frame->buf.headroom));
- 
-     /* IV and Packet ID required for this mode */
-     ASSERT(packet_id_initialized(&opt->packet_id));
-@@ -533,7 +533,7 @@ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
-             int outlen;
- 
-             /* initialize work buffer with FRAME_HEADROOM bytes of prepend capacity */
--            ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
-+            ASSERT(buf_init(&work, frame->buf.headroom));
- 
-             /* read the IV from the packet */
-             if (buf->len < iv_size)
-@@ -1035,7 +1035,7 @@ test_crypto(struct crypto_options *co, struct frame *frame)
-     void *buf_p;
- 
-     /* init work */
--    ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
-+    ASSERT(buf_init(&work, frame->buf.headroom));
- 
-     /* init implicit IV */
-     {
-@@ -1079,7 +1079,7 @@ test_crypto(struct crypto_options *co, struct frame *frame)
-         memcpy(buf_p, BPTR(&src), BLEN(&src));
- 
-         /* initialize work buffer with FRAME_HEADROOM bytes of prepend capacity */
--        ASSERT(buf_init(&encrypt_workspace, FRAME_HEADROOM(frame)));
-+        ASSERT(buf_init(&encrypt_workspace, frame->buf.headroom));
- 
-         /* encrypt */
-         openvpn_encrypt(&buf, encrypt_workspace, co);
-diff --git a/src/openvpn/fragment.c b/src/openvpn/fragment.c
-index 949db8f5..e7ca12f2 100644
---- a/src/openvpn/fragment.c
-+++ b/src/openvpn/fragment.c
-@@ -211,7 +211,7 @@ fragment_incoming(struct fragment_master *f, struct buffer *buf,
-                 frag->defined = true;
-                 frag->max_frag_size = size;
-                 frag->map = 0;
--                ASSERT(buf_init(&frag->buf, FRAME_HEADROOM(frame)));
-+                ASSERT(buf_init(&frag->buf, frame->buf.headroom));
-             }
- 
-             /* copy the data to fragment buffer */
-@@ -342,7 +342,7 @@ fragment_outgoing(struct fragment_master *f, struct buffer *buf,
-             {
-                 FRAG_ERR("too many fragments would be required to send datagram");
-             }
--            ASSERT(buf_init(&f->outgoing, FRAME_HEADROOM(frame)));
-+            ASSERT(buf_init(&f->outgoing, frame->buf.headroom));
-             ASSERT(buf_copy(&f->outgoing, buf));
-             f->outgoing_seq_id = modulo_add(f->outgoing_seq_id, 1, N_SEQ_ID);
-             f->outgoing_frag_id = 0;
-@@ -391,7 +391,7 @@ fragment_ready_to_send(struct fragment_master *f, struct buffer *buf,
- 
-         /* initialize return buffer */
-         *buf = f->outgoing_return;
--        ASSERT(buf_init(buf, FRAME_HEADROOM(frame)));
-+        ASSERT(buf_init(buf, frame->buf.headroom));
-         ASSERT(buf_copy_n(buf, &f->outgoing, size));
- 
-         /* fragment flags differ based on whether or not we are sending the last fragment */
-diff --git a/src/openvpn/lzo.c b/src/openvpn/lzo.c
-index a293ccad..39e833cb 100644
---- a/src/openvpn/lzo.c
-+++ b/src/openvpn/lzo.c
-@@ -160,8 +160,8 @@ lzo_compress(struct buffer *buf, struct buffer work,
-      */
-     if (buf->len >= COMPRESS_THRESHOLD && lzo_compression_enabled(compctx))
-     {
--        const size_t ps = PAYLOAD_SIZE(frame);
--        ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
-+        const size_t ps = frame->buf.payload_size;
-+        ASSERT(buf_init(&work, frame->buf.headroom));
-         ASSERT(buf_safe(&work, ps + COMP_EXTRA_BUFFER(ps)));
- 
-         if (buf->len > ps)
-@@ -222,7 +222,7 @@ lzo_decompress(struct buffer *buf, struct buffer work,
-         return;
-     }
- 
--    ASSERT(buf_init(&work, FRAME_HEADROOM(frame)));
-+    ASSERT(buf_init(&work, frame->buf.headroom));
- 
-     c = *BPTR(buf);
-     ASSERT(buf_advance(buf, 1));
-diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index 3e48d275..aa810f1c 100644
---- a/src/openvpn/mtu.c
-+++ b/src/openvpn/mtu.c
-@@ -47,7 +47,7 @@ alloc_buf_sock_tun(struct buffer *buf,
- {
-     /* allocate buffer for overlapped I/O */
-     *buf = alloc_buf(BUF_SIZE(frame));
--    ASSERT(buf_init(buf, FRAME_HEADROOM(frame)));
-+    ASSERT(buf_init(buf, frame->buf.headroom));
-     buf->len = frame->buf.payload_size;
-     ASSERT(buf_safe(buf, 0));
- }
-diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index dddbf4fc..08bd8dbc 100644
---- a/src/openvpn/mtu.h
-+++ b/src/openvpn/mtu.h
-@@ -148,27 +148,6 @@ struct frame {
- /* Forward declarations, to prevent includes */
- struct options;
- 
--/* Routines which read struct frame should use the macros below */
--
--/*
-- * Overhead added to packet payload due to encapsulation
-- */
--#define EXTRA_FRAME(f)           ((f)->extra_frame)
--
--/*
-- * Delta between tun payload size and final TCP/UDP datagram size
-- * (not including extra_link additions)
-- */
--#define TUN_LINK_DELTA(f)        ((f)->extra_frame + (f)->extra_tun)
--
--/*
-- * This is the maximum packet size that we need to be able to
-- * read from or write to a tun or tap device.  For example,
-- * a tap device ifconfiged to an MTU of 1200 might actually want
-- * to return a packet size of 1214 on a read().
-- */
--#define PAYLOAD_SIZE(f)          ((f)->buf.payload_size)
--
- /*
-  * Control buffer headroom allocations to allow for efficient prepending.
-  */
+ /* CAS_NOT_CONNECTED is the initial state for every context. When the *first*
+  * tls_session reaches S_ACTIVE, this state machine moves to CAS_PENDING (server)
+@@ -532,11 +533,11 @@ struct tls_session
+  * connect scripts/plugins */
+ enum multi_status {
+     CAS_NOT_CONNECTED,
+-    CAS_WAITING_AUTH,               /**< TLS connection established but deferred auth not finished */
+-    CAS_PENDING,
+-    CAS_PENDING_DEFERRED,
+-    CAS_PENDING_DEFERRED_PARTIAL,   /**< at least handler succeeded, no result yet*/
+-    CAS_FAILED,
++    CAS_WAITING_AUTH,               /**< Initial TLS connection established but deferred auth is not yet finished */
++    CAS_PENDING,                    /**< Options import (Connect script/plugin, ccd,...) */
++    CAS_PENDING_DEFERRED,           /**< Waiting on an async option import handler */
++    CAS_PENDING_DEFERRED_PARTIAL,   /**< at least handler succeeded but another is still pending */
++    CAS_FAILED,                     /**< Option import failed or explicitly denied the client */
+     CAS_WAITING_OPTIONS_IMPORT,     /**< client with pull or p2p waiting for first time options import */
+     CAS_CONNECT_DONE,
+ };
 -- 
 2.33.0
 
