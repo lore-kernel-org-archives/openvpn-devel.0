@@ -1,14 +1,11 @@
-Date: Tue, 15 Feb 2022 14:15:32 +0000
-From: tincantech <tincantech@...2282...>
-Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <x7RICgb9R6O1fW0nYDTCX18ULY25w4QVIhr3NBcvciwx-G6HV0nhiftWO157d4KAoY3frs598Gj7wMzV0RuZQYOTOty-GJWumpZRjvTIWoc=@protonmail.com>
-In-Reply-To: <20220215105407.3936338-1-arne@...1227...>
-References: <20220215105407.3936338-1-arne@...1227...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Tue, 15 Feb 2022 15:54:25 +0100
+Message-Id: <20220215145425.1989-1-frank@...2641...>
+In-Reply-To: <1155495853.307825.1644488506153@...2642...>
+References: <1155495853.307825.1644488506153@...2642...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="b1_qgV42fPI72NuIm6kwlwDi56bTt3lwrGENnngefLWluE"
-Subject: Re: [Openvpn-devel] [PATCH] Fix checks of SHA256 in tls-crypt and
- auth-token
+Subject: [Openvpn-devel] [PATCH 3/3 v3] doc/options: clean up documentation
+ for --proto and related options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,88 +14,117 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-This is a multi-part message in MIME format.
-
---b1_qgV42fPI72NuIm6kwlwDi56bTt3lwrGENnngefLWluE
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+The family specific options were generally omitted.
 
-May as well attribute this correctly.
+Cc: David Sommerseth <openvpn@...2080...>
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ doc/man-sections/client-options.rst | 10 ++++++++++
+ doc/man-sections/link-options.rst   |  5 ++++-
+ src/openvpn/options.c               | 17 +++++++++--------
+ 3 files changed, 23 insertions(+), 9 deletions(-)
 
-* tincantech@...2282...
+v2: move #define around
+v3: reword --proto-force with input from David
 
-Protonmail, now so badly mangles mail on reply that I may have to go back t=
-o gmail.
------BEGIN PGP SIGNATURE-----
-Version: ProtonMail
-
-wsBzBAEBCAAGBQJiC7VvACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ2jFAgAjHPRhyMsY1JJuJjt7ePXPcve39xSF46BDUZyMQYXoEVC/pMC
-Zrlg5SUtASqxBTis3qI8A8t1aCi+8PdYgM+e2GdSuFLwYYGHDsBMBxlohr0V
-tHEVz4eaLtA5h/vQ5a5aki5g/rkPFP7Zedx1jgO7VNxF1EAmfbGK3ch1F/67
-o23TePBzlNOPJLrGNPouU58msG8lv5+kB0PRSOUlNGLIN4TA86ynr9ThqvNY
-NLP+IXFkmFasizioI5sFZ8wqaLyMFfiSQbUiTXu5yD2DQjuarxwqUsLP2lZv
-in8LULOk9Vx+L2RWrmv/LOdCgmRNWppAOs+VN4K1P9EcU+y0P4mRjA=3D=3D
-=3Dd1PC
------END PGP SIGNATURE-----
-
---b1_qgV42fPI72NuIm6kwlwDi56bTt3lwrGENnngefLWluE
-Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
-
-LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tDQpWZXJzaW9uOiBPcGVuUEdQLmpz
-IHY0LjEwLjEwDQpDb21tZW50OiBodHRwczovL29wZW5wZ3Bqcy5vcmcNCg0KeHNCTkJGdndTY2NC
-Q0FET21IRW5RbExtT2pKUnRKTDJsNTNNTHd3RlR5N1huRXBzM2IxUTBVd1dZRkN2DQpMMm9OcDBu
-cmRHbEtLREpxNTBZMDlTUitVUllCUW1LbVkzRW16cHlVSUtNL3JnbzFSeXViSHBNUkhiRHANCjdK
-cDhMeGtmZkZCVkpqL3Q1Vk1wRDZlTVI2YVVjaVFqZ1JMOE5aZTYrVDd4ZlhYWHdWNWhvUmVaM2pP
-Kw0KekhpNlNSN3hUdkdYbGErTVF6NkVFcFdubGJMdmcyb3J0OUtzZXVWallycXZSTXhjZFAwbzlj
-WldKNWVwDQpKTm1nZUI2TTcrT1cwOFUxU3NYdEtycExSY0k2eUttVjM4amh6UHIyWmdQOXJtcmxF
-clIvMWlxUVFIWFkNCm84LzBEZlB5RjBtSDl5blFJaUxFL2wrRll1NHJzRzhWaUtseGhYY3plUHpB
-dExDamlCMGEwbVJWQUJFQg0KQUFITk55SjBhVzVqWVc1MFpXTm9RSEJ5YjNSdmJtMWhhV3d1WTI5
-dElpQThkR2x1WTJGdWRHVmphRUJ3DQpjbTkwYjI1dFlXbHNMbU52YlQ3Q3dIOEVFQUVJQUNrRkFs
-dndTY2NHQ3drSENBTUNDUkJQbDV6MmE1QzQNCm5RUVZDQW9DQXhZQ0FRSVpBUUliQXdJZUFRQUtD
-UkJQbDV6MmE1QzRuUUJEQi85WlVvOUJPWEpSNjFObQ0KMDJvWi84YVJYTzlOblVTRnQ2R0xPV2NE
-TnZBczRJSldNRFZFUWZZYW5iKzQyMVFOZC81ZDZIMWlYRitpDQo0TERLME02YWdDK2dzTkZKbmpQ
-R0l0dlB0ajdXeWp5blpSeDhENDBQUFhpZ2ZIWXV3Mm9SdTBscitQMXANCjFxZVVlNE5iY3FJdjhJ
-SXZMejJ6Q2xZWk9OZ0FzUVZjTkFIaTdaNG9ydFEyaW8yQkFWai84MTlKUFlNdA0KdEhnWTgxd1Mx
-Vjd2OEdEVFpnOG9hUGhYR2ZhQzRUWkZHdFpyL2J5YmNxcnNvMzVqYVFtQzU0eE1iWHBGDQpBVXJj
-M3VHVk9IK09kRy9CVzJnY1lxcHZVRkJ1a1h4Q1VCWUhQMk5mWGhOZnpHdDluQzF1bE5LWWVQMTkN
-ClRHbE9vckJNWUlBRUhvR3h2cGJVWGZiYU5XQ1V6c0JOQkZ2d1NjY0JDQUM5S3lWWlJTNWFNYUc1
-UGkwbg0KZng4YU5vczNiWXAyNDZNdGZhb0tCZlRRQXJkK0daVytXbkZ5SkVpU3lMZHowclV1dHlD
-QWRmNWxnVkgrDQpXdkx2SW1pR3JTcnpWcE1UMm5DUzA5THFMNTBRano4QTdncDVIL2hRenRaOGlO
-eXNHRDlOTzQ2T25JNzUNCjkwZEhmQ3JYalFQU0Z0RkdzVHpnRHhRSWlNdXp6OURSN0Jla0tQbXVP
-RkloQmU5ZUVacWJ4YzhSV2VRdA0KaGE3aS9EckpUUk5LMWFPQURRRlZ1VjEvQW01VGhHUFdGTS9Z
-SlV5VFloTVcweWVQaDQ1T2JXdVJRWmtzDQpsK2FPbTRMMEtHRERZbG0vRlF4L0VNQ3Vidmx6eS96
-eERkQjZucUZpaDJxWnJmeW1uaVNPS2FqRzBqb1QNCnBab3ovRXorNGZBdGc2eTBQc3BOUjZpZEFC
-RUJBQUhDd0drRUdBRUlBQk1GQWx2d1NjY0pFRStYblBacg0Ka0xpZEFoc01BQW9KRUUrWG5QWnJr
-TGlkUmUwSC9qNUNJRklBdWN1YWlFTWtMa05LRUFPNXM3eDQ3ZU55DQpHUGZac2x5WStIanpHVTBk
-MDdNa2tHbVZrUFRWendxVnpOWmJueTdaQXYxemxXMFV5MHlIcDFBUHB5WXQNCjhidVVwcFRCcTdk
-NDdvZ3hFUll6dC9MYzJMNWEvVktGTlJiaE4xL1hRbVBpejJFbGU0dHlpcGJUYXBjeQ0KK3pieWZ6
-QU1EMTNjSWRaMTNoVHNOUDBvbGdCaEFxVUFVVVlweFJsa0FIZUorRHQzTmJ6SFM0S1FLNTM4DQpO
-Si9sN2JYU0tzR3FvWXFKZVo4Vk5CeHdXV1VidUc0ampyaDQzTUlSZ1VaNVdzUFVZVjZIeDA1NmtN
-amINCi9iWUJqSTBURU12SDgxNjB1cXpGWGVIdll5VWxxMFNpbkQvWjlpb0llOFFkc0hHQkRVSVJZ
-WXViMXBPOA0KcXJDelJaeDBvTkE9DQo9L0RlYQ0KLS0tLS1FTkQgUEdQIFBVQkxJQyBLRVkgQkxP
-Q0stLS0tLQ0K
-
---b1_qgV42fPI72NuIm6kwlwDi56bTt3lwrGENnngefLWluE
-Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
-
-wsBzBAABCAAGBQJiC7VvACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec9muQuJ29gwgApOD1
-xEsjM9WFXHzUbjLiiFYOwBF1ods76Mp3Yt+kKTClvaTIcID77+PUD0m+Yf0pX6AWv3WVtzDJFho5
-8FTxz+8Im3p3QimlCwOwW+T5h7AkaD2rDQN0x1Y8qMBvNsdAwhYnM+xRB5F1kQFHez9Xvpr1GbiV
-yms8m+TTP+p8S523wgxQxctzGYrurPOvSXhknGKSlwF3PC7TcUX7fawVMxEp5JFbpBtClQ0/cO/B
-TQElQTQ4naUz+PQpWZ+JHQ1/cFsOkluR9O1UrKX2nDqiJ+SQ9Ea/4nqJaHPYRPDuCqURD4R8cm+r
-mUyd06mIzaOTH/0yw7MVMus607CMXxWpaw==
-
---b1_qgV42fPI72NuIm6kwlwDi56bTt3lwrGENnngefLWluE--
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
+index c7cec176..e53b5262 100644
+--- a/doc/man-sections/client-options.rst
++++ b/doc/man-sections/client-options.rst
+@@ -199,6 +199,16 @@ configuration.
+   When iterating through connection profiles, only consider profiles using
+   protocol ``p`` (:code:`tcp` \| :code:`udp`).
+ 
++  Note that this specifically only filters by the transport layer
++  protocol, i.e. UDP or TCP. This does not affect whether IPv4 or
++  IPv6 is used as IP protocol.
++
++  For implementation reasons the option accepts the :code:`4` and :code:`6`
++  suffixes when specifying the protocol
++  (i.e. :code:`udp4` / :code:`udp6` / :code:`tcp4` / :code:`tcp6`).
++  However, these behave the same as without the suffix and should be avoided
++  to prevent confusion.
++
+ --pull
+   This option must be used on a client which is connecting to a
+   multi-client server. It indicates to OpenVPN that it should accept
+diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
+index 52df843d..782aa738 100644
+--- a/doc/man-sections/link-options.rst
++++ b/doc/man-sections/link-options.rst
+@@ -289,7 +289,10 @@ the local and the remote host.
+ 
+ --proto p
+   Use protocol ``p`` for communicating with remote host. ``p`` can be
+-  :code:`udp`, :code:`tcp-client`, or :code:`tcp-server`.
++  :code:`udp`, :code:`tcp-client`, or :code:`tcp-server`. You can also
++  limit OpenVPN to use only IPv4 or only IPv6 by specifying ``p`` as
++  :code:`udp4`, :code:`tcp4-client`, :code:`tcp4-server` or :code:`udp6`,
++  :code:`tcp6-client`, :code:`tcp6-server`, respectively.
+ 
+   The default protocol is :code:`udp` when ``--proto`` is not specified.
+ 
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 92aeba3d..7ce0ba61 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -126,9 +126,11 @@ static const char usage_message[] =
+     "--remote-random-hostname : Add a random string to remote DNS name.\n"
+     "--mode m        : Major mode, m = 'p2p' (default, point-to-point) or 'server'.\n"
+     "--proto p       : Use protocol p for communicating with peer.\n"
+-    "                  p = udp (default), tcp-server, or tcp-client\n"
++    "                  p = udp (default), tcp-server, tcp-client\n"
++    "                      udp4, tcp4-server, tcp4-client\n"
++    "                      udp6, tcp6-server, tcp6-client\n"
+     "--proto-force p : only consider protocol p in list of connection profiles.\n"
+-    "                  p = udp6, tcp6-server, or tcp6-client (ipv6)\n"
++    "                  p = udp or tcp\n"
+     "--connect-retry n [m] : For client, number of seconds to wait between\n"
+     "                  connection retries (default=%d). On repeated retries\n"
+     "                  the wait time is exponentially increased to a maximum of m\n"
+@@ -2300,6 +2302,8 @@ options_postprocess_verify_ce(const struct options *options,
+      */
+     if (options->mode == MODE_SERVER)
+     {
++#define USAGE_VALID_SERVER_PROTOS "--mode server currently only supports " \
++      "--proto values of udp, tcp-server, tcp4-server, or tcp6-server"
+ #ifdef TARGET_ANDROID
+         msg(M_FATAL, "--mode server not supported on Android");
+ #endif
+@@ -2317,15 +2321,14 @@ options_postprocess_verify_ce(const struct options *options,
+         }
+         if (!(proto_is_udp(ce->proto) || ce->proto == PROTO_TCP_SERVER))
+         {
+-            msg(M_USAGE, "--mode server currently only supports "
+-                "--proto udp or --proto tcp-server or proto tcp6-server");
++            msg(M_USAGE, USAGE_VALID_SERVER_PROTOS);
+         }
+ #if PORT_SHARE
+         if ((options->port_share_host || options->port_share_port)
+             && (ce->proto != PROTO_TCP_SERVER))
+         {
+             msg(M_USAGE, "--port-share only works in TCP server mode "
+-                "(--proto tcp-server or tcp6-server)");
++                "(--proto values of tcp-server, tcp4-server, or tcp6-server)");
+         }
+ #endif
+         if (!options->tls_server)
+@@ -2369,9 +2372,7 @@ options_postprocess_verify_ce(const struct options *options,
+         }
+         if (!(proto_is_dgram(ce->proto) || ce->proto == PROTO_TCP_SERVER))
+         {
+-            msg(M_USAGE,
+-                "--mode server currently only supports --proto udp or --proto "
+-                "tcp-server or --proto tcp6-server");
++            msg(M_USAGE, USAGE_VALID_SERVER_PROTOS);
+         }
+         if (!proto_is_udp(ce->proto) && (options->cf_max || options->cf_per))
+         {
+-- 
+2.30.2
 
 
