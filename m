@@ -1,9 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed, 16 Feb 2022 13:56:53 +0100
-Message-Id: <20220216125653.4080943-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix mbed TLS compile if OpenSSL headers are
- not available
+Date: Wed, 16 Feb 2022 14:04:24 +0100 (CET)
+Message-Id: <202202161304.21GD4O14069183@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220215145425.1989-1-frank@...2641...>
+References: <20220215145425.1989-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: doc/options: clean up
+ documentation for --proto and related options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,44 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-We unconditionally include openssl/opensslv.h which fails if OpenSSL header
-are not available.
+Your patch has been applied to the master and release/2.5 branch (applied
+without resistance, documentation improvements are good).
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/xkey_common.h | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+commit ba9a07a69db3ddb63fceac05b92a000d9b1c805e (master)
+commit 1e177d87f968be14f14b293273039c522ed1a75f (release/2.5)
+Author: Frank Lichtenheld
+Date:   Tue Feb 15 15:54:25 2022 +0100
 
-diff --git a/src/openvpn/xkey_common.h b/src/openvpn/xkey_common.h
-index e58748b4..67c888be 100644
---- a/src/openvpn/xkey_common.h
-+++ b/src/openvpn/xkey_common.h
-@@ -25,11 +25,14 @@
- #ifndef XKEY_COMMON_H_
- #define XKEY_COMMON_H_
- 
-+/* Guard to only enable if OpenSSL is used and not trigger an error if mbed
-+ * TLS is compiled without OpenSSL being installed */
-+#if defined(ENABLE_CRYPTO_OPENSSL)
- #include <openssl/opensslv.h>
- #if OPENSSL_VERSION_NUMBER >= 0x30000010L && !defined(DISABLE_XKEY_PROVIDER)
- #define HAVE_XKEY_PROVIDER 1
- #include <openssl/provider.h>
--#include <openssl/core_dispatch.h>
-+#include <openssl/core_dispatnch.h>
- 
- /**
-  * Initialization function for OpenVPN external key provider for OpenSSL
-@@ -169,4 +172,6 @@ xkey_max_saltlen(int modBits, int hLen)
- }
- #endif /* HAVE_XKEY_PROVIDER */
- 
-+#endif /* ENABLE_CRYPTO_OPENSSL */
-+
- #endif /* XKEY_COMMON_H_ */
--- 
-2.33.0
+     doc/options: clean up documentation for --proto and related options
+
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <20220215145425.1989-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23798.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
