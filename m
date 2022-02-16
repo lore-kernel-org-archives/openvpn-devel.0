@@ -1,10 +1,8 @@
-Date: Wed, 16 Feb 2022 14:09:04 +0100 (CET)
-Message-Id: <202202161309.21GD94nF071240@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220216125653.4080943-1-arne@...1227...>
-References: <20220216125653.4080943-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix mbed TLS compile if OpenSSL
- headers are not available
+From: Lev Stipakov <lstipakov@...277...>
+Date: Wed, 16 Feb 2022 15:42:27 +0200
+Message-Id: <20220216134227.147-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH master+release/2.5] vcpkg: link lzo
+ statically
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +13,62 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Acked-by: Gert Doering <gert@...1296...>
+From: Lev Stipakov <lev@...515...>
 
-"Because it makes sense" :-) - ignoring the "core_dispatnch.h" typo.
+Having .dll for a single executable doesn't make
+much sense. Static linking removes 117kb .dll
+and grows .exe size by only 4kb.
 
-Your patch has been applied to the master branch.
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ contrib/vcpkg-triplets/arm64-windows-ovpn.cmake | 3 ++-
+ contrib/vcpkg-triplets/x64-windows-ovpn.cmake   | 3 ++-
+ contrib/vcpkg-triplets/x86-windows-ovpn.cmake   | 3 ++-
+ 3 files changed, 6 insertions(+), 3 deletions(-)
 
-commit e8a2794824ded011a1ed58aeb95321332b1ae684
-Author: Arne Schwabe
-Date:   Wed Feb 16 13:56:53 2022 +0100
-
-     Fix mbed TLS compile if OpenSSL headers are not available
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220216125653.4080943-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23804.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/contrib/vcpkg-triplets/arm64-windows-ovpn.cmake b/contrib/vcpkg-triplets/arm64-windows-ovpn.cmake
+index dd3c6c0a..dc600056 100644
+--- a/contrib/vcpkg-triplets/arm64-windows-ovpn.cmake
++++ b/contrib/vcpkg-triplets/arm64-windows-ovpn.cmake
+@@ -2,6 +2,7 @@ set(VCPKG_TARGET_ARCHITECTURE arm64)
+ set(VCPKG_CRT_LINKAGE dynamic)
+ set(VCPKG_LIBRARY_LINKAGE dynamic)
+ 
+-if(PORT STREQUAL "lz4")
++set(STATIC_PORTS lz4 lzo)
++if(PORT IN_LIST STATIC_PORTS)
+     set(VCPKG_LIBRARY_LINKAGE static)
+ endif()
+diff --git a/contrib/vcpkg-triplets/x64-windows-ovpn.cmake b/contrib/vcpkg-triplets/x64-windows-ovpn.cmake
+index 7036ed2d..76e5cd55 100644
+--- a/contrib/vcpkg-triplets/x64-windows-ovpn.cmake
++++ b/contrib/vcpkg-triplets/x64-windows-ovpn.cmake
+@@ -2,6 +2,7 @@ set(VCPKG_TARGET_ARCHITECTURE x64)
+ set(VCPKG_CRT_LINKAGE dynamic)
+ set(VCPKG_LIBRARY_LINKAGE dynamic)
+ 
+-if(PORT STREQUAL "lz4")
++set(STATIC_PORTS lz4 lzo)
++if(PORT IN_LIST STATIC_PORTS)
+     set(VCPKG_LIBRARY_LINKAGE static)
+ endif()
+diff --git a/contrib/vcpkg-triplets/x86-windows-ovpn.cmake b/contrib/vcpkg-triplets/x86-windows-ovpn.cmake
+index 7d3bf340..643d7bdd 100644
+--- a/contrib/vcpkg-triplets/x86-windows-ovpn.cmake
++++ b/contrib/vcpkg-triplets/x86-windows-ovpn.cmake
+@@ -2,6 +2,7 @@ set(VCPKG_TARGET_ARCHITECTURE x86)
+ set(VCPKG_CRT_LINKAGE dynamic)
+ set(VCPKG_LIBRARY_LINKAGE dynamic)
+ 
+-if(PORT STREQUAL "lz4")
++set(STATIC_PORTS lz4 lzo)
++if(PORT IN_LIST STATIC_PORTS)
+     set(VCPKG_LIBRARY_LINKAGE static)
+ endif()
+-- 
+2.23.0.windows.1
 
 
