@@ -1,8 +1,9 @@
 From: Max Fillinger <maximilian.fillinger@...2507...>
-Date: Wed, 16 Feb 2022 14:57:16 +0100
-Message-ID: <20220216135716.6541-1-maximilian.fillinger@...2507...>
+Date: Wed, 16 Feb 2022 15:04:57 +0100
+Message-ID: <20220216140457.6651-1-maximilian.fillinger@...2507...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Add warning about mbed TLS licensing problem
+Subject: [Openvpn-devel] [Patch v2] Add warning about mbed TLS licensing
+ problem
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +22,7 @@ Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
  1 file changed, 17 insertions(+)
 
 diff --git a/README.mbedtls b/README.mbedtls
-index 4875822d..b5604bb8 100644
+index 4875822d..062ae470 100644
 --- a/README.mbedtls
 +++ b/README.mbedtls
 @@ -11,6 +11,23 @@ This version depends on mbed TLS 2.0 (and requires at least 2.0.0).
@@ -41,7 +42,7 @@ index 4875822d..b5604bb8 100644
 +   that may be licensed under GPLv2. Unfortunately, this version is
 +   unsupported and won't receive any more updates.
 +
-+Support for mbed TLS is likely to be removed in OpenVPN 2.17.
++Support for mbed TLS is likely to be removed in OpenVPN 2.7.
 +
 +*************************************************************************
 +
