@@ -1,8 +1,8 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 16 Feb 2022 15:42:27 +0200
-Message-Id: <20220216134227.147-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH master+release/2.5] vcpkg: link lzo
- statically
+From: Max Fillinger <maximilian.fillinger@...2507...>
+Date: Wed, 16 Feb 2022 14:57:16 +0100
+Message-ID: <20220216135716.6541-1-maximilian.fillinger@...2507...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Add warning about mbed TLS licensing problem
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,61 +14,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
-
-Having .dll for a single executable doesn't make
-much sense. Static linking removes 117kb .dll
-and grows .exe size by only 4kb.
-
-Signed-off-by: Lev Stipakov <lev@...515...>
+Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
 ---
- contrib/vcpkg-triplets/arm64-windows-ovpn.cmake | 3 ++-
- contrib/vcpkg-triplets/x64-windows-ovpn.cmake   | 3 ++-
- contrib/vcpkg-triplets/x86-windows-ovpn.cmake   | 3 ++-
- 3 files changed, 6 insertions(+), 3 deletions(-)
+ README.mbedtls | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/contrib/vcpkg-triplets/arm64-windows-ovpn.cmake b/contrib/vcpkg-triplets/arm64-windows-ovpn.cmake
-index dd3c6c0a..dc600056 100644
---- a/contrib/vcpkg-triplets/arm64-windows-ovpn.cmake
-+++ b/contrib/vcpkg-triplets/arm64-windows-ovpn.cmake
-@@ -2,6 +2,7 @@ set(VCPKG_TARGET_ARCHITECTURE arm64)
- set(VCPKG_CRT_LINKAGE dynamic)
- set(VCPKG_LIBRARY_LINKAGE dynamic)
+diff --git a/README.mbedtls b/README.mbedtls
+index 4875822d..b5604bb8 100644
+--- a/README.mbedtls
++++ b/README.mbedtls
+@@ -11,6 +11,23 @@ This version depends on mbed TLS 2.0 (and requires at least 2.0.0).
  
--if(PORT STREQUAL "lz4")
-+set(STATIC_PORTS lz4 lzo)
-+if(PORT IN_LIST STATIC_PORTS)
-     set(VCPKG_LIBRARY_LINKAGE static)
- endif()
-diff --git a/contrib/vcpkg-triplets/x64-windows-ovpn.cmake b/contrib/vcpkg-triplets/x64-windows-ovpn.cmake
-index 7036ed2d..76e5cd55 100644
---- a/contrib/vcpkg-triplets/x64-windows-ovpn.cmake
-+++ b/contrib/vcpkg-triplets/x64-windows-ovpn.cmake
-@@ -2,6 +2,7 @@ set(VCPKG_TARGET_ARCHITECTURE x64)
- set(VCPKG_CRT_LINKAGE dynamic)
- set(VCPKG_LIBRARY_LINKAGE dynamic)
+ *************************************************************************
  
--if(PORT STREQUAL "lz4")
-+set(STATIC_PORTS lz4 lzo)
-+if(PORT IN_LIST STATIC_PORTS)
-     set(VCPKG_LIBRARY_LINKAGE static)
- endif()
-diff --git a/contrib/vcpkg-triplets/x86-windows-ovpn.cmake b/contrib/vcpkg-triplets/x86-windows-ovpn.cmake
-index 7d3bf340..643d7bdd 100644
---- a/contrib/vcpkg-triplets/x86-windows-ovpn.cmake
-+++ b/contrib/vcpkg-triplets/x86-windows-ovpn.cmake
-@@ -2,6 +2,7 @@ set(VCPKG_TARGET_ARCHITECTURE x86)
- set(VCPKG_CRT_LINKAGE dynamic)
- set(VCPKG_LIBRARY_LINKAGE dynamic)
++Warning:
++
++As of version 2.17, mbed TLS can be licensed *only* under the Apache v2.0
++license. That license is incompatible with OpenVPN's GPLv2.
++
++If you wish to distribute OpenVPN linked with mbed TLS, there are two options:
++
++ * Ensure that your case falls under the system library exception in GPLv2, or
++
++ * Use an earlier version of mbed TLS. Version 2.16.12 is the last release
++   that may be licensed under GPLv2. Unfortunately, this version is
++   unsupported and won't receive any more updates.
++
++Support for mbed TLS is likely to be removed in OpenVPN 2.17.
++
++*************************************************************************
++
+ Due to limitations in the mbed TLS library, the following features are missing
+ in the mbed TLS version of OpenVPN:
  
--if(PORT STREQUAL "lz4")
-+set(STATIC_PORTS lz4 lzo)
-+if(PORT IN_LIST STATIC_PORTS)
-     set(VCPKG_LIBRARY_LINKAGE static)
- endif()
 -- 
-2.23.0.windows.1
+2.20.1
 
 
