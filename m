@@ -1,10 +1,12 @@
-Date: Thu, 17 Feb 2022 16:14:43 +0100 (CET)
-Message-Id: <202202171514.21HFEhbI095414@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220217142756.6581-1-maximilian.fillinger@...2507...>
-References: <20220217142756.6581-1-maximilian.fillinger@...2507...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add warning about mbed TLS
- licensing problem
+Message-ID: <cc7b3bfb-b90c-3c5b-65c6-cf3dd2226090@...1227...>
+Date: Thu, 17 Feb 2022 16:41:16 +0100
+MIME-Version: 1.0
+Content-Language: en-GB
+References: <20220217142306.8108-1-a@...2181...>
+ <20220217143241.18766-1-a@...2181...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20220217143241.18766-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2] crypto: unify key_type creation code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +15,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Max Fillinger <maximilian.fillinger@...2507...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Am 17.02.22 um 15:32 schrieb Antonio Quartulli:
+> At the moment we have tls_crypt_kt() and auth_token_kt that basically do
+> the same thing, but with different algorithms used to inizialise the
+> structure.
 
-"Raising awareness", without putting in any hard dates / versions.
+Should be initialise or initialize depending on your dialect.
 
-Your patch has been applied to the master branch.
+> 
+> In order to avoid code duplication and copy/paste errors, unify code and
+> make it parametric, so that it can be re-used in various places.
+> 
+> Signed-off-by: Antonio Quartulli <a@...2181...>
+> 
 
-commit 110eee0288cff0720952a2cf16c4fb191d0bd616
-Author: Max Fillinger
-Date:   Thu Feb 17 15:27:56 2022 +0100
-
-     Add warning about mbed TLS licensing problem
-
-     Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220217142756.6581-1-maximilian.fillinger@...2507...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23825.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Acked-By: Arne Schwabe <arne@...1227...>
 
