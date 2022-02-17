@@ -1,9 +1,10 @@
-From: Max Fillinger <maximilian.fillinger@...2507...>
-Date: Thu, 17 Feb 2022 15:27:56 +0100
-Message-ID: <20220217142756.6581-1-maximilian.fillinger@...2507...>
+From: Antonio Quartulli <a@...2181...>
+Date: Thu, 17 Feb 2022 15:32:41 +0100
+Message-Id: <20220217143241.18766-1-a@...2181...>
+In-Reply-To: <20220217142306.8108-1-a@...2181...>
+References: <20220217142306.8108-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Add warning about mbed TLS licensing
- problem
+Subject: [Openvpn-devel] [PATCH v2] crypto: unify key_type creation code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,42 +16,166 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+At the moment we have tls_crypt_kt() and auth_token_kt that basically do
+the same thing, but with different algorithms used to inizialise the
+structure.
+
+In order to avoid code duplication and copy/paste errors, unify code and
+make it parametric, so that it can be re-used in various places.
+
+Signed-off-by: Antonio Quartulli <a@...2181...>
+
 ---
- README.mbedtls | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
 
-diff --git a/README.mbedtls b/README.mbedtls
-index 4875822d..d3466fa9 100644
---- a/README.mbedtls
-+++ b/README.mbedtls
-@@ -11,6 +11,24 @@ This version depends on mbed TLS 2.0 (and requires at least 2.0.0).
+Changes from v1:
+* added doc for optname param
+---
+ src/openvpn/auth_token.c | 20 +-------------------
+ src/openvpn/crypto.h     | 32 ++++++++++++++++++++++++++++++++
+ src/openvpn/tls_crypt.c  | 27 +++------------------------
+ 3 files changed, 36 insertions(+), 43 deletions(-)
+
+diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
+index 10c9dde6..6aae73c9 100644
+--- a/src/openvpn/auth_token.c
++++ b/src/openvpn/auth_token.c
+@@ -30,24 +30,6 @@ const char *auth_token_pem_name = "OpenVPN auth-token server key";
+ /* Size of the data of the token (not b64 encoded and without prefix) */
+ #define TOKEN_DATA_LEN (2 * sizeof(int64_t) + AUTH_TOKEN_SESSION_ID_LEN + 32)
  
- *************************************************************************
+-static struct key_type
+-auth_token_kt(void)
+-{
+-    struct key_type kt = { 0 };
+-    /* We do not encrypt our session tokens */
+-    kt.cipher = "none";
+-    kt.digest = "SHA256";
+-
+-    if (!md_valid(kt.digest))
+-    {
+-        msg(M_WARN, "ERROR: --tls-crypt requires HMAC-SHA-256 support.");
+-        return (struct key_type) { 0 };
+-    }
+-
+-    return kt;
+-}
+-
+-
+ void
+ add_session_token_env(struct tls_session *session, struct tls_multi *multi,
+                       const struct user_pass *up)
+@@ -138,7 +120,7 @@ void
+ auth_token_init_secret(struct key_ctx *key_ctx, const char *key_file,
+                        bool key_inline)
+ {
+-    struct key_type kt = auth_token_kt();
++    struct key_type kt = create_kt("none", "SHA256", "auth-gen-token");
  
-+Warning:
-+
-+As of mbed TLS 2.17, it can be licensed *only* under the Apache v2.0 license.
-+That license is incompatible with OpenVPN's GPLv2.
-+
-+If you wish to distribute OpenVPN linked with mbed TLS, there are two options:
-+
-+ * Ensure that your case falls under the system library exception in GPLv2, or
-+
-+ * Use an earlier version of mbed TLS. Version 2.16.12 is the last release
-+   that may be licensed under GPLv2. Unfortunately, this version is
-+   unsupported and won't receive any more updates.
-+
-+If nothing changes about the license situation, mbed TLS support may be
-+deprecated in a future release of OpenVPN.
-+
-+*************************************************************************
-+
- Due to limitations in the mbed TLS library, the following features are missing
- in the mbed TLS version of OpenVPN:
+     struct buffer server_secret_key = alloc_buf(2048);
  
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 6e505517..132aeaa5 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -547,4 +547,36 @@ key_ctx_bi_defined(const struct key_ctx_bi *key)
+  */
+ const char *print_key_filename(const char *str, bool is_inline);
+ 
++/**
++ * Creates and validates an instance of struct key_type with the provided
++ * algs.
++ *
++ * @param cipher    the cipher algorithm to use (must be a string literal)
++ * @param md        the digest algorithm to use (must be a string literal)
++ * @param optname   the name of the option requiring the key_type object
++ *
++ * @return          the initialized key_type instance
++ */
++static inline struct key_type
++create_kt(const char *cipher, const char *md, const char *optname)
++{
++    struct key_type kt;
++    kt.cipher = cipher;
++    kt.digest = md;
++
++    if (cipher_defined(kt.cipher) && !cipher_valid(kt.cipher))
++    {
++        msg(M_WARN, "ERROR: --%s requires %s support.", optname, kt.cipher);
++        return (struct key_type) { 0 };
++    }
++    if (md_defined(kt.digest) && !md_valid(kt.digest))
++    {
++        msg(M_WARN, "ERROR: --%s requires %s support.", optname, kt.digest);
++        return (struct key_type) { 0 };
++    }
++
++    return kt;
++}
++
++
+ #endif /* CRYPTO_H */
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index aae2a917..99e85010 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -47,27 +47,6 @@ static const uint8_t TLS_CRYPT_METADATA_TYPE_USER           = 0x00;
+ /** Metadata contains a 64-bit unix timestamp in network byte order */
+ static const uint8_t TLS_CRYPT_METADATA_TYPE_TIMESTAMP      = 0x01;
+ 
+-static struct key_type
+-tls_crypt_kt(void)
+-{
+-    struct key_type kt;
+-    kt.cipher = "AES-256-CTR";
+-    kt.digest = "SHA256";
+-
+-    if (!cipher_valid(kt.cipher))
+-    {
+-        msg(M_WARN, "ERROR: --tls-crypt requires AES-256-CTR support.");
+-        return (struct key_type) { 0 };
+-    }
+-    if (!md_valid(kt.digest))
+-    {
+-        msg(M_WARN, "ERROR: --tls-crypt requires HMAC-SHA-256 support.");
+-        return (struct key_type) { 0 };
+-    }
+-
+-    return kt;
+-}
+-
+ int
+ tls_crypt_buf_overhead(void)
+ {
+@@ -80,7 +59,7 @@ tls_crypt_init_key(struct key_ctx_bi *key, const char *key_file,
+ {
+     const int key_direction = tls_server ?
+                               KEY_DIRECTION_NORMAL : KEY_DIRECTION_INVERSE;
+-    struct key_type kt = tls_crypt_kt();
++    struct key_type kt = create_kt("AES-256-CTR", "SHA256", "tls-crypt");
+     if (!kt.cipher || !kt.digest)
+     {
+         msg(M_FATAL, "ERROR: --tls-crypt not supported");
+@@ -271,7 +250,7 @@ tls_crypt_v2_load_client_key(struct key_ctx_bi *key, const struct key2 *key2,
+ {
+     const int key_direction = tls_server ?
+                               KEY_DIRECTION_NORMAL : KEY_DIRECTION_INVERSE;
+-    struct key_type kt = tls_crypt_kt();
++    struct key_type kt = create_kt("AES-256-CTR", "SHA256", "tls-crypt");
+     if (!kt.cipher || !kt.digest)
+     {
+         msg(M_FATAL, "ERROR: --tls-crypt-v2 not supported");
+@@ -319,7 +298,7 @@ tls_crypt_v2_init_server_key(struct key_ctx *key_ctx, bool encrypt,
+         msg(M_FATAL, "ERROR: invalid tls-crypt-v2 server key format");
+     }
+ 
+-    struct key_type kt = tls_crypt_kt();
++    struct key_type kt = create_kt("AES-256-CTR", "SHA256", "tls-crypt");
+     if (!kt.cipher || !kt.digest)
+     {
+         msg(M_FATAL, "ERROR: --tls-crypt-v2 not supported");
 -- 
-2.20.1
+2.34.1
 
 
