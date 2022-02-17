@@ -1,10 +1,9 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Thu, 17 Feb 2022 15:32:41 +0100
-Message-Id: <20220217143241.18766-1-a@...2181...>
-In-Reply-To: <20220217142306.8108-1-a@...2181...>
-References: <20220217142306.8108-1-a@...2181...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] crypto: unify key_type creation code
+Date: Thu, 17 Feb 2022 15:59:39 +0100 (CET)
+Message-Id: <202202171459.21HExdLT095121@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220216134227.147-1-lstipakov@...277...>
+References: <20220216134227.147-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: vcpkg: link lzo statically
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,167 +14,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-At the moment we have tls_crypt_kt() and auth_token_kt that basically do
-the same thing, but with different algorithms used to inizialise the
-structure.
+Acked-by: Gert Doering <gert@...1296...>
 
-In order to avoid code duplication and copy/paste errors, unify code and
-make it parametric, so that it can be re-used in various places.
+That came out of the "shouldn't we simplify our build scripts to make
+lz4 dynamic"... turns out that dynamic libs used by a single binary only
+are particulary inefficient here.  Thus, going the other way :)
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
+I have not tested this, just looked at it, and it looks reasonable
+(and affects only .cmake stuff)
 
----
+Your patch has been applied to the master branch.
 
-Changes from v1:
-* added doc for optname param
----
- src/openvpn/auth_token.c | 20 +-------------------
- src/openvpn/crypto.h     | 32 ++++++++++++++++++++++++++++++++
- src/openvpn/tls_crypt.c  | 27 +++------------------------
- 3 files changed, 36 insertions(+), 43 deletions(-)
+commit cac1ebd859e9d60642d2375a2c0bdacac35ca12c (master)
+commit eded6a32edcb7d4378140fcbf984fae4d8735029 (release/2.5)
+Author: Lev Stipakov
+Date:   Wed Feb 16 15:42:27 2022 +0200
 
-diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
-index 10c9dde6..6aae73c9 100644
---- a/src/openvpn/auth_token.c
-+++ b/src/openvpn/auth_token.c
-@@ -30,24 +30,6 @@ const char *auth_token_pem_name = "OpenVPN auth-token server key";
- /* Size of the data of the token (not b64 encoded and without prefix) */
- #define TOKEN_DATA_LEN (2 * sizeof(int64_t) + AUTH_TOKEN_SESSION_ID_LEN + 32)
- 
--static struct key_type
--auth_token_kt(void)
--{
--    struct key_type kt = { 0 };
--    /* We do not encrypt our session tokens */
--    kt.cipher = "none";
--    kt.digest = "SHA256";
--
--    if (!md_valid(kt.digest))
--    {
--        msg(M_WARN, "ERROR: --tls-crypt requires HMAC-SHA-256 support.");
--        return (struct key_type) { 0 };
--    }
--
--    return kt;
--}
--
--
- void
- add_session_token_env(struct tls_session *session, struct tls_multi *multi,
-                       const struct user_pass *up)
-@@ -138,7 +120,7 @@ void
- auth_token_init_secret(struct key_ctx *key_ctx, const char *key_file,
-                        bool key_inline)
- {
--    struct key_type kt = auth_token_kt();
-+    struct key_type kt = create_kt("none", "SHA256", "auth-gen-token");
- 
-     struct buffer server_secret_key = alloc_buf(2048);
- 
-diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index 6e505517..132aeaa5 100644
---- a/src/openvpn/crypto.h
-+++ b/src/openvpn/crypto.h
-@@ -547,4 +547,36 @@ key_ctx_bi_defined(const struct key_ctx_bi *key)
-  */
- const char *print_key_filename(const char *str, bool is_inline);
- 
-+/**
-+ * Creates and validates an instance of struct key_type with the provided
-+ * algs.
-+ *
-+ * @param cipher    the cipher algorithm to use (must be a string literal)
-+ * @param md        the digest algorithm to use (must be a string literal)
-+ * @param optname   the name of the option requiring the key_type object
-+ *
-+ * @return          the initialized key_type instance
-+ */
-+static inline struct key_type
-+create_kt(const char *cipher, const char *md, const char *optname)
-+{
-+    struct key_type kt;
-+    kt.cipher = cipher;
-+    kt.digest = md;
-+
-+    if (cipher_defined(kt.cipher) && !cipher_valid(kt.cipher))
-+    {
-+        msg(M_WARN, "ERROR: --%s requires %s support.", optname, kt.cipher);
-+        return (struct key_type) { 0 };
-+    }
-+    if (md_defined(kt.digest) && !md_valid(kt.digest))
-+    {
-+        msg(M_WARN, "ERROR: --%s requires %s support.", optname, kt.digest);
-+        return (struct key_type) { 0 };
-+    }
-+
-+    return kt;
-+}
-+
-+
- #endif /* CRYPTO_H */
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index aae2a917..99e85010 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -47,27 +47,6 @@ static const uint8_t TLS_CRYPT_METADATA_TYPE_USER           = 0x00;
- /** Metadata contains a 64-bit unix timestamp in network byte order */
- static const uint8_t TLS_CRYPT_METADATA_TYPE_TIMESTAMP      = 0x01;
- 
--static struct key_type
--tls_crypt_kt(void)
--{
--    struct key_type kt;
--    kt.cipher = "AES-256-CTR";
--    kt.digest = "SHA256";
--
--    if (!cipher_valid(kt.cipher))
--    {
--        msg(M_WARN, "ERROR: --tls-crypt requires AES-256-CTR support.");
--        return (struct key_type) { 0 };
--    }
--    if (!md_valid(kt.digest))
--    {
--        msg(M_WARN, "ERROR: --tls-crypt requires HMAC-SHA-256 support.");
--        return (struct key_type) { 0 };
--    }
--
--    return kt;
--}
--
- int
- tls_crypt_buf_overhead(void)
- {
-@@ -80,7 +59,7 @@ tls_crypt_init_key(struct key_ctx_bi *key, const char *key_file,
- {
-     const int key_direction = tls_server ?
-                               KEY_DIRECTION_NORMAL : KEY_DIRECTION_INVERSE;
--    struct key_type kt = tls_crypt_kt();
-+    struct key_type kt = create_kt("AES-256-CTR", "SHA256", "tls-crypt");
-     if (!kt.cipher || !kt.digest)
-     {
-         msg(M_FATAL, "ERROR: --tls-crypt not supported");
-@@ -271,7 +250,7 @@ tls_crypt_v2_load_client_key(struct key_ctx_bi *key, const struct key2 *key2,
- {
-     const int key_direction = tls_server ?
-                               KEY_DIRECTION_NORMAL : KEY_DIRECTION_INVERSE;
--    struct key_type kt = tls_crypt_kt();
-+    struct key_type kt = create_kt("AES-256-CTR", "SHA256", "tls-crypt");
-     if (!kt.cipher || !kt.digest)
-     {
-         msg(M_FATAL, "ERROR: --tls-crypt-v2 not supported");
-@@ -319,7 +298,7 @@ tls_crypt_v2_init_server_key(struct key_ctx *key_ctx, bool encrypt,
-         msg(M_FATAL, "ERROR: invalid tls-crypt-v2 server key format");
-     }
- 
--    struct key_type kt = tls_crypt_kt();
-+    struct key_type kt = create_kt("AES-256-CTR", "SHA256", "tls-crypt");
-     if (!kt.cipher || !kt.digest)
-     {
-         msg(M_FATAL, "ERROR: --tls-crypt-v2 not supported");
--- 
-2.34.1
+     vcpkg: link lzo statically
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220216134227.147-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23807.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
