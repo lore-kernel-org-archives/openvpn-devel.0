@@ -1,18 +1,8 @@
+From: Antonio Quartulli <a@...2181...>
+Date: Thu, 17 Feb 2022 15:23:06 +0100
+Message-Id: <20220217142306.8108-1-a@...2181...>
 MIME-Version: 1.0
-References: <20220107145359.311-1-lstipakov@...277...>
- <CAGyAFMXNQnQ_jeoQXJSkW8xXn8QM0nqeJHYB5xL288U6t+TcJw@...278...>
- <CAFHpkQFwO0qMqWhtUidv0TNWyGrsnMHqYVib12yCzowBgL1KtQ@...278...>
- <CAFHpkQE-LBkt-Lyz97vLdgQFt7VPLmedw8ogNojVy2p3GsdaiQ@...278...>
- <CAGyAFMWQLs2=BoF6fhUcG6gLN5LvPA9xHZ8JRocdH5-DL5LW_w@...278...>
- <CAFHpkQHURwN2x=AC_RK38tjwD8kGgHhSbq==espXJHSM33L6ZA@...278...>
- <CAGyAFMWN-4rLAjPEwUbDqE79gs3bUWWSFLSnzz9QaTgiQSKQHA@...278...>
-In-Reply-To: <CAGyAFMWN-4rLAjPEwUbDqE79gs3bUWWSFLSnzz9QaTgiQSKQHA@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Thu, 17 Feb 2022 17:28:08 +0500
-Message-ID: <CAFHpkQHGUGpAS7QgXiV0+FXhStWroAKqDV-5+4vqSQwyyZb0jw@...278...>
-Content-Type: multipart/alternative; boundary="000000000000dc70cf05d835e6e7"
-Subject: Re: [Openvpn-devel] [PATCH 2.5] msvc: adjust build options to
- harden binaries
+Subject: [Openvpn-devel] [PATCH] crypto: unify key_type creation code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,66 +11,163 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
---000000000000dc70cf05d835e6e7
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+At the moment we have tls_crypt_kt() and auth_token_kt that basically do
+the same thing, but with different algorithms used to inizialise the
+structure.
 
-Ack from me.
+In order to avoid code duplication and copy/paste errors, unify code and
+make it parametric, so that it can be re-used in various places.
 
-=D1=87=D1=82, 17 =D1=84=D0=B5=D0=B2=D1=80. 2022 =D0=B3. =D0=B2 16:55, Lev S=
-tipakov <lstipakov@...277...>:
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/auth_token.c | 20 +-------------------
+ src/openvpn/crypto.h     | 31 +++++++++++++++++++++++++++++++
+ src/openvpn/tls_crypt.c  | 27 +++------------------------
+ 3 files changed, 35 insertions(+), 43 deletions(-)
 
-> Hi,
->
-> > can you please apply "pdb" patch to your branch ?
-> > CI: github actions: keep "pdb" in artifacts =C2=B7 OpenVPN/openvpn@...1665...=
-653...
->
-> Done! https://github.com/lstipakov/openvpn/actions/runs/1858390624
->
-> > BinSkim uses pdb for analysis.
-> >
-> > probably, it makes sense to apply this patch to release/2.5 branch as
-> well
->
-> I agree. /me looks at Gert.
->
-> --
-> -Lev
->
+diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
+index 10c9dde6..6aae73c9 100644
+--- a/src/openvpn/auth_token.c
++++ b/src/openvpn/auth_token.c
+@@ -30,24 +30,6 @@ const char *auth_token_pem_name = "OpenVPN auth-token server key";
+ /* Size of the data of the token (not b64 encoded and without prefix) */
+ #define TOKEN_DATA_LEN (2 * sizeof(int64_t) + AUTH_TOKEN_SESSION_ID_LEN + 32)
+ 
+-static struct key_type
+-auth_token_kt(void)
+-{
+-    struct key_type kt = { 0 };
+-    /* We do not encrypt our session tokens */
+-    kt.cipher = "none";
+-    kt.digest = "SHA256";
+-
+-    if (!md_valid(kt.digest))
+-    {
+-        msg(M_WARN, "ERROR: --tls-crypt requires HMAC-SHA-256 support.");
+-        return (struct key_type) { 0 };
+-    }
+-
+-    return kt;
+-}
+-
+-
+ void
+ add_session_token_env(struct tls_session *session, struct tls_multi *multi,
+                       const struct user_pass *up)
+@@ -138,7 +120,7 @@ void
+ auth_token_init_secret(struct key_ctx *key_ctx, const char *key_file,
+                        bool key_inline)
+ {
+-    struct key_type kt = auth_token_kt();
++    struct key_type kt = create_kt("none", "SHA256", "auth-gen-token");
+ 
+     struct buffer server_secret_key = alloc_buf(2048);
+ 
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 6e505517..734b696c 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -547,4 +547,35 @@ key_ctx_bi_defined(const struct key_ctx_bi *key)
+  */
+ const char *print_key_filename(const char *str, bool is_inline);
+ 
++/**
++ * Creates and validates an instance of struct key_type with the provided
++ * algs.
++ *
++ * @param cipher    the cipher algorithm to use (must be a string literal)
++ * @param md        the digest algorithm to use (must be a string literal)
++ *
++ * @return          the initialized key_type instance
++ */
++static inline struct key_type
++create_kt(const char *cipher, const char *md, const char *optname)
++{
++    struct key_type kt;
++    kt.cipher = cipher;
++    kt.digest = md;
++
++    if (cipher_defined(kt.cipher) && !cipher_valid(kt.cipher))
++    {
++        msg(M_WARN, "ERROR: --%s requires %s support.", optname, kt.cipher);
++        return (struct key_type) { 0 };
++    }
++    if (md_defined(kt.digest) && !md_valid(kt.digest))
++    {
++        msg(M_WARN, "ERROR: --%s requires %s support.", optname, kt.digest);
++        return (struct key_type) { 0 };
++    }
++
++    return kt;
++}
++
++
+ #endif /* CRYPTO_H */
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index aae2a917..99e85010 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -47,27 +47,6 @@ static const uint8_t TLS_CRYPT_METADATA_TYPE_USER           = 0x00;
+ /** Metadata contains a 64-bit unix timestamp in network byte order */
+ static const uint8_t TLS_CRYPT_METADATA_TYPE_TIMESTAMP      = 0x01;
+ 
+-static struct key_type
+-tls_crypt_kt(void)
+-{
+-    struct key_type kt;
+-    kt.cipher = "AES-256-CTR";
+-    kt.digest = "SHA256";
+-
+-    if (!cipher_valid(kt.cipher))
+-    {
+-        msg(M_WARN, "ERROR: --tls-crypt requires AES-256-CTR support.");
+-        return (struct key_type) { 0 };
+-    }
+-    if (!md_valid(kt.digest))
+-    {
+-        msg(M_WARN, "ERROR: --tls-crypt requires HMAC-SHA-256 support.");
+-        return (struct key_type) { 0 };
+-    }
+-
+-    return kt;
+-}
+-
+ int
+ tls_crypt_buf_overhead(void)
+ {
+@@ -80,7 +59,7 @@ tls_crypt_init_key(struct key_ctx_bi *key, const char *key_file,
+ {
+     const int key_direction = tls_server ?
+                               KEY_DIRECTION_NORMAL : KEY_DIRECTION_INVERSE;
+-    struct key_type kt = tls_crypt_kt();
++    struct key_type kt = create_kt("AES-256-CTR", "SHA256", "tls-crypt");
+     if (!kt.cipher || !kt.digest)
+     {
+         msg(M_FATAL, "ERROR: --tls-crypt not supported");
+@@ -271,7 +250,7 @@ tls_crypt_v2_load_client_key(struct key_ctx_bi *key, const struct key2 *key2,
+ {
+     const int key_direction = tls_server ?
+                               KEY_DIRECTION_NORMAL : KEY_DIRECTION_INVERSE;
+-    struct key_type kt = tls_crypt_kt();
++    struct key_type kt = create_kt("AES-256-CTR", "SHA256", "tls-crypt");
+     if (!kt.cipher || !kt.digest)
+     {
+         msg(M_FATAL, "ERROR: --tls-crypt-v2 not supported");
+@@ -319,7 +298,7 @@ tls_crypt_v2_init_server_key(struct key_ctx *key_ctx, bool encrypt,
+         msg(M_FATAL, "ERROR: invalid tls-crypt-v2 server key format");
+     }
+ 
+-    struct key_type kt = tls_crypt_kt();
++    struct key_type kt = create_kt("AES-256-CTR", "SHA256", "tls-crypt");
+     if (!kt.cipher || !kt.digest)
+     {
+         msg(M_FATAL, "ERROR: --tls-crypt-v2 not supported");
+-- 
+2.34.1
 
---000000000000dc70cf05d835e6e7
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Ack from me.</div><br><div class=3D"gmail_quote"><div dir=
-=3D"ltr" class=3D"gmail_attr">=D1=87=D1=82, 17 =D1=84=D0=B5=D0=B2=D1=80. 20=
-22 =D0=B3. =D0=B2 16:55, Lev Stipakov &lt;<a href=3D"mailto:lstipakov@...1664...=
-7...">lstipakov@...277...</a>&gt;:<br></div><blockquote class=3D"gmail_quot=
-e" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204)=
-;padding-left:1ex">Hi,<br>
-<br>
-&gt; can you please apply &quot;pdb&quot; patch to your branch ?<br>
-&gt; CI: github actions: keep &quot;pdb&quot; in artifacts =C2=B7 OpenVPN/o=
-penvpn@...2653...<br>
-<br>
-Done! <a href=3D"https://github.com/lstipakov/openvpn/actions/runs/18583906=
-24" rel=3D"noreferrer" target=3D"_blank">https://github.com/lstipakov/openv=
-pn/actions/runs/1858390624</a><br>
-<br>
-&gt; BinSkim uses pdb for analysis.<br>
-&gt;<br>
-&gt; probably, it makes sense to apply this patch to release/2.5 branch as =
-well<br>
-<br>
-I agree. /me looks at Gert.<br>
-<br>
--- <br>
--Lev<br>
-</blockquote></div>
-
---000000000000dc70cf05d835e6e7--
 
