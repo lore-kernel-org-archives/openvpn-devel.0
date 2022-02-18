@@ -1,8 +1,8 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Sat, 19 Feb 2022 01:50:04 +0200
-Message-Id: <20220218235004.269-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH v2] msvc: adjust build options to harden
- binaries
+Date: Sat, 19 Feb 2022 01:52:55 +0200
+Message-Id: <20220218235255.334-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH v2 release/2.5] msvc: adjust build options
+ to harden binaries
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -35,40 +35,38 @@ it, inet_ntop will make code more complex)
 
 Above issues were discovered by bitskim.
 
+Before applying this patch, this one must be applied from master:
+
+https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21774.html
+
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
+
  v2:
+  - rebase on top of latest release/2.5
+  - add SDL checks to all configurations
 
-   - rebase on top of latest master
-   - mute ossl3 deprecation warnings treated as errors by msvc
-   - add SDL checks to all configurations
+ src/openvpn/auth_token.c              |  1 +
+ src/openvpn/openvpn.vcxproj           | 38 +++++++++++++------
+ src/openvpnmsica/openvpnmsica.vcxproj | 48 ++++++++++++++++++++++++
+ src/openvpnserv/openvpnserv.vcxproj   | 26 ++++++++++---
+ src/tapctl/tapctl.vcxproj             | 54 ++++++++++++++++++++++++---
+ 5 files changed, 143 insertions(+), 24 deletions(-)
 
- src/openvpn/crypto_openssl.c          |  5 +++
- src/openvpn/openvpn.vcxproj           | 44 +++++++++++++++---------
- src/openvpn/openvpn.vcxproj.filters   |  9 +++++
- src/openvpnmsica/openvpnmsica.vcxproj | 42 +++++++++++++++++++++++
- src/openvpnserv/openvpnserv.vcxproj   | 14 ++++++++
- src/tapctl/tapctl.vcxproj             | 48 +++++++++++++++++++++++----
- 6 files changed, 141 insertions(+), 21 deletions(-)
-
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 8bc41792..e84b33f1 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -62,6 +62,11 @@
- #error Windows build with OPENSSL_NO_EC: disabling EC key is not supported.
- #endif
+diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
+index ca7e5a4d..37af6605 100644
+--- a/src/openvpn/auth_token.c
++++ b/src/openvpn/auth_token.c
+@@ -87,6 +87,7 @@ add_session_token_env(struct tls_session *session, struct tls_multi *multi,
  
-+#ifdef _MSC_VER
-+/* mute ossl3 deprecation warnings treated as errors in msvc */
-+#pragma warning(disable: 4996)
-+#endif
-+
- /*
-  * Check for key size creepage.
-  */
+             default:
+                 /* Silence compiler warning, all four possible combinations are covered */
++                state = NULL;
+                 ASSERT(0);
+         }
+     }
 diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index 56fdf520..1d32c41f 100644
+index 91d5ebbe..05c63b03 100644
 --- a/src/openvpn/openvpn.vcxproj
 +++ b/src/openvpn/openvpn.vcxproj
 @@ -147,11 +147,13 @@
@@ -178,58 +176,11 @@ index 56fdf520..1d32c41f 100644
      </ClCompile>
      <ResourceCompile />
      <Link>
-@@ -316,8 +330,8 @@
-     <ClCompile Include="vlan.c" />
-     <ClCompile Include="win32.c" />
-     <ClCompile Include="win32-util.c" />
--    <ClCompile Include="xkey_helper.c"/>
--    <ClCompile Include="xkey_provider.c"/>
-+    <ClCompile Include="xkey_helper.c" />
-+    <ClCompile Include="xkey_provider.c" />
-   </ItemGroup>
-   <ItemGroup>
-     <ClInclude Include="argv.h" />
-@@ -409,7 +423,7 @@
-     <ClInclude Include="vlan.h" />
-     <ClInclude Include="win32.h" />
-     <ClInclude Include="win32-util.h" />
--    <ClInclude Include="xkey_common.h"/>
-+    <ClInclude Include="xkey_common.h" />
-   </ItemGroup>
-   <ItemGroup>
-     <ResourceCompile Include="openvpn_win32_resources.rc" />
-diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
-index f5fdfcd7..4cf0bb00 100644
---- a/src/openvpn/openvpn.vcxproj.filters
-+++ b/src/openvpn/openvpn.vcxproj.filters
-@@ -246,6 +246,12 @@
-     <ClCompile Include="ssl_util.c">
-       <Filter>Source Files</Filter>
-     </ClCompile>
-+    <ClCompile Include="xkey_helper.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-+    <ClCompile Include="xkey_provider.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-   </ItemGroup>
-   <ItemGroup>
-     <ClInclude Include="base64.h">
-@@ -515,6 +521,9 @@
-     <ClInclude Include="win32-util.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-+    <ClInclude Include="xkey_common.h">
-+      <Filter>Header Files</Filter>
-+    </ClInclude>
-   </ItemGroup>
-   <ItemGroup>
-     <ResourceCompile Include="openvpn_win32_resources.rc">
 diff --git a/src/openvpnmsica/openvpnmsica.vcxproj b/src/openvpnmsica/openvpnmsica.vcxproj
-index 11aa78bb..bf384db6 100644
+index 11aa78bb..3a9f0c97 100644
 --- a/src/openvpnmsica/openvpnmsica.vcxproj
 +++ b/src/openvpnmsica/openvpnmsica.vcxproj
-@@ -135,6 +135,48 @@
+@@ -135,6 +135,54 @@
    <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
      <VcpkgEnabled>true</VcpkgEnabled>
    </PropertyGroup>
@@ -239,6 +190,7 @@ index 11aa78bb..bf384db6 100644
 +    </Link>
 +    <ClCompile>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
++      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +      <SDLCheck>true</SDLCheck>
 +    </ClCompile>
 +  </ItemDefinitionGroup>
@@ -249,29 +201,34 @@ index 11aa78bb..bf384db6 100644
 +    <ClCompile>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
 +      <SDLCheck>true</SDLCheck>
++      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +    </ClCompile>
 +  </ItemDefinitionGroup>
 +  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
 +    <ClCompile>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
++      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +      <SDLCheck>true</SDLCheck>
 +    </ClCompile>
 +  </ItemDefinitionGroup>
 +  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
 +    <ClCompile>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
++      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +      <SDLCheck>true</SDLCheck>
 +    </ClCompile>
 +  </ItemDefinitionGroup>
 +  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
 +    <ClCompile>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
++      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +      <SDLCheck>true</SDLCheck>
 +    </ClCompile>
 +  </ItemDefinitionGroup>
 +  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 +    <ClCompile>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
++      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +      <SDLCheck>true</SDLCheck>
 +    </ClCompile>
 +  </ItemDefinitionGroup>
@@ -279,40 +236,48 @@ index 11aa78bb..bf384db6 100644
      <ClCompile Include="..\tapctl\error.c" />
      <ClCompile Include="..\tapctl\tap.c" />
 diff --git a/src/openvpnserv/openvpnserv.vcxproj b/src/openvpnserv/openvpnserv.vcxproj
-index 5fd7d60b..d42e9642 100644
+index 520242f4..c70db229 100644
 --- a/src/openvpnserv/openvpnserv.vcxproj
 +++ b/src/openvpnserv/openvpnserv.vcxproj
-@@ -125,6 +125,8 @@
+@@ -124,7 +124,9 @@
+   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
      <ClCompile>
        <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +      <SDLCheck>true</SDLCheck>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
      </ClCompile>
      <ResourceCompile />
      <Link>
-@@ -136,6 +138,8 @@
+@@ -135,7 +137,9 @@
+   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
      <ClCompile>
        <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +      <SDLCheck>true</SDLCheck>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
      </ClCompile>
      <ResourceCompile />
      <Link>
-@@ -147,6 +151,8 @@
+@@ -146,7 +150,9 @@
+   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
      <ClCompile>
        <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +      <SDLCheck>true</SDLCheck>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
      </ClCompile>
      <ResourceCompile />
      <Link>
-@@ -158,28 +164,36 @@
+@@ -157,29 +163,37 @@
+   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
      <ClCompile>
        <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +      <SDLCheck>true</SDLCheck>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
      </ClCompile>
@@ -326,7 +291,8 @@ index 5fd7d60b..d42e9642 100644
    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
      <ClCompile>
        <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +      <SDLCheck>true</SDLCheck>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
      </ClCompile>
@@ -340,17 +306,18 @@ index 5fd7d60b..d42e9642 100644
    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
      <ClCompile>
        <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-       <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +      <SDLCheck>true</SDLCheck>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
      </ClCompile>
      <ResourceCompile />
      <Link>
 diff --git a/src/tapctl/tapctl.vcxproj b/src/tapctl/tapctl.vcxproj
-index 79da9d33..0fc22d97 100644
+index 79da9d33..f439dc4f 100644
 --- a/src/tapctl/tapctl.vcxproj
 +++ b/src/tapctl/tapctl.vcxproj
-@@ -135,12 +135,48 @@
+@@ -135,12 +135,54 @@
    <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
      <VcpkgEnabled>true</VcpkgEnabled>
    </PropertyGroup>
@@ -364,24 +331,28 @@ index 79da9d33..0fc22d97 100644
 +    <ClCompile>
 +      <SDLCheck>true</SDLCheck>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
++      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +    </ClCompile>
 +  </ItemDefinitionGroup>
 +  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
 +    <ClCompile>
 +      <SDLCheck>true</SDLCheck>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
++      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +    </ClCompile>
 +  </ItemDefinitionGroup>
 +  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
 +    <ClCompile>
 +      <SDLCheck>true</SDLCheck>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
++      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +    </ClCompile>
 +  </ItemDefinitionGroup>
 +  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
 +    <ClCompile>
 +      <SDLCheck>true</SDLCheck>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
++      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +    </ClCompile>
 +    <Link>
 +      <CETCompat>true</CETCompat>
@@ -391,6 +362,7 @@ index 79da9d33..0fc22d97 100644
 +    <ClCompile>
 +      <SDLCheck>true</SDLCheck>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
++      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +    </ClCompile>
 +  </ItemDefinitionGroup>
 +  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -400,6 +372,7 @@ index 79da9d33..0fc22d97 100644
 +    <ClCompile>
 +      <SDLCheck>true</SDLCheck>
 +      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
++      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
 +    </ClCompile>
 +  </ItemDefinitionGroup>
    <ItemGroup>
