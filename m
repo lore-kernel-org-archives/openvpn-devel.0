@@ -1,10 +1,8 @@
-Date: Thu, 17 Feb 2022 19:49:49 +0100 (CET)
-Message-Id: <202202171849.21HInnNS006374@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220217181943.33531-1-arne@...1227...>
-References: <20220217181943.33531-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove unused function
- cipher_var_key_size
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri, 18 Feb 2022 14:41:49 +0200
+Message-Id: <20220218124149.149-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH master+release/2.5] error.c: use correct API
+ to get error description on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +13,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Acked-by: Gert Doering <gert@...1296...>
+From: Lev Stipakov <lev@...515...>
 
-Easy enough.
+On Windows we use GetLastError() to get error code. To get
+error description, we must use FormatMessage() and not strerror().
 
-Your patch has been applied to the master branch.
+Replace strerror() with openvpn_strerror() macro, which is resolved
+to strerror_win32() (which calls FormatMessage) on Windows and
+to strerror() on other platforms.
 
-commit 9cfe02039f00ea1ff026967497695d4cc35b1706
-Author: Arne Schwabe
-Date:   Thu Feb 17 19:19:43 2022 +0100
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/error.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-     Remove unused function cipher_var_key_size
-
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220217181943.33531-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23832.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index 54796d03..cb2a0db1 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -268,7 +268,7 @@ x_msg_va(const unsigned int flags, const char *format, va_list arglist)
+     if ((flags & M_ERRNO) && e)
+     {
+         openvpn_snprintf(m2, ERR_BUF_SIZE, "%s: %s (errno=%d)",
+-                         m1, strerror(e), e);
++                         m1, openvpn_strerror(e, &gc), e);
+         SWAP;
+     }
+ 
+-- 
+2.23.0.windows.1
 
 
