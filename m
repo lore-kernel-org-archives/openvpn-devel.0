@@ -1,6 +1,4 @@
-Date: Sun, 20 Feb 2022 15:38:41 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <YhJScRargHjNSUgg@...1296...>
+MIME-Version: 1.0
 References: <CAFHpkQE-LBkt-Lyz97vLdgQFt7VPLmedw8ogNojVy2p3GsdaiQ@...278...>
  <CAGyAFMWQLs2=BoF6fhUcG6gLN5LvPA9xHZ8JRocdH5-DL5LW_w@...278...>
  <CAFHpkQHURwN2x=AC_RK38tjwD8kGgHhSbq==espXJHSM33L6ZA@...278...>
@@ -11,11 +9,12 @@ References: <CAFHpkQE-LBkt-Lyz97vLdgQFt7VPLmedw8ogNojVy2p3GsdaiQ@...278...>
  <CAFHpkQFi+W9RSOrLat13hRpU1v8drijnCiaHrrSoqfYkOeWogA@...278...>
  <YhJNvB5lrYOocWgS@...1296...>
  <CAFHpkQHkaNkLb_xrm34=6LVSGcZ8QXD_XxiO=pi3RoT7DmsdiA@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="H+iywUY76I5ImC9b"
-Content-Disposition: inline
-In-Reply-To: <CAFHpkQHkaNkLb_xrm34=6LVSGcZ8QXD_XxiO=pi3RoT7DmsdiA@...278...>
+ <YhJScRargHjNSUgg@...1296...>
+In-Reply-To: <YhJScRargHjNSUgg@...1296...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Sun, 20 Feb 2022 19:53:56 +0500
+Message-ID: <CAFHpkQFZmvz1dbeg05qNHbPd8Aq1dHO_HkoRS7XEoJq0ZotNRg@...278...>
+Content-Type: multipart/alternative; boundary="000000000000578ddd05d8744a4a"
 Subject: Re: [Openvpn-devel] [PATCH 2.5] msvc: adjust build options to
  harden binaries
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -26,54 +25,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ???????? ?????????????? <chipitsine@...277...>
-Cc: Gert Doering <gert@...1296...>, Lev Stipakov <lstipakov@...277...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: Lev Stipakov <lstipakov@...277...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---H+iywUY76I5ImC9b
-Content-Type: text/plain; charset="us-ascii"
+--000000000000578ddd05d8744a4a
+Content-Type: text/plain; charset="UTF-8"
+
+There is ack from me earlier in this thread.
+
+Lev, I did all things you asked me to do. Please follow up. I do not catch
+what else left
+
+On Sun, Feb 20, 2022, 7:38 PM Gert Doering <gert@...1296...> wrote:
+
+> Hi,
+>
+> On Sun, Feb 20, 2022 at 07:29:24PM +0500, ???????? ?????????????? wrote:
+> > Lev, I'm lost here. Can you please follow up?
+>
+> Please test and ACK *this* patch:
+>
+>   https://patchwork.openvpn.net/patch/2296/
+>
+> this is the "v2 for master" patch.
+>
+> When that is done, we can talk about release/2.5 application.
+>
+> gert
+> --
+> "If was one thing all people took for granted, was conviction that if you
+>  feed honest figures into a computer, honest figures come out. Never
+> doubted
+>  it myself till I met a computer with a sense of humor."
+>                              Robert A. Heinlein, The Moon is a Harsh
+> Mistress
+>
+> Gert Doering - Munich, Germany
+> gert@...1296...
+>
+
+--000000000000578ddd05d8744a4a
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+<div dir=3D"auto">There is ack from me earlier in this thread.<div dir=3D"a=
+uto"><br></div><div dir=3D"auto">Lev, I did all things you asked me to do. =
+Please follow up. I do not catch what else left</div></div><br><div class=
+=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Sun, Feb 20, 2022=
+, 7:38 PM Gert Doering &lt;<a href=3D"mailto:gert@...1296...">gert@...1725...=
+..</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margi=
+n:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
+<br>
+On Sun, Feb 20, 2022 at 07:29:24PM +0500, ???????? ?????????????? wrote:<br>
+&gt; Lev, I&#39;m lost here. Can you please follow up?<br>
+<br>
+Please test and ACK *this* patch:<br>
+<br>
+=C2=A0 <a href=3D"https://patchwork.openvpn.net/patch/2296/" rel=3D"norefer=
+rer noreferrer" target=3D"_blank">https://patchwork.openvpn.net/patch/2296/=
+</a><br>
+<br>
+this is the &quot;v2 for master&quot; patch.=C2=A0 <br>
+<br>
+When that is done, we can talk about release/2.5 application.<br>
+<br>
+gert<br>
+-- <br>
+&quot;If was one thing all people took for granted, was conviction that if =
+you <br>
+=C2=A0feed honest figures into a computer, honest figures come out. Never d=
+oubted <br>
+=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
+ress<br>
+<br>
+Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
+o:gert@...1296..." target=3D"_blank" rel=3D"noreferrer">gert@...1296...</a>=
+<br>
+</blockquote></div>
 
-On Sun, Feb 20, 2022 at 07:29:24PM +0500, ???????? ?????????????? wrote:
-> Lev, I'm lost here. Can you please follow up?
-
-Please test and ACK *this* patch:
-
-  https://patchwork.openvpn.net/patch/2296/
-
-this is the "v2 for master" patch.=20=20
-
-When that is done, we can talk about release/2.5 application.
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---H+iywUY76I5ImC9b
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJiElJxAAoJEB2Cnv7KVigSDoML/02nfpVSO4XBxC3YYH6yWgET
-255DCIRfgnyqys7PQaseOziVWc4/wHiI0RY4HZ1MHgI5LjF/7v/buyjCSaJIHfdO
-os9OjpZy3c3/2GGnyZuZsp2YdM56MUKx2RfmhS27bb7A0ypSB/L4+jW3EXVxWnWj
-Df3qhGfOThYuLr/teAGEidgjPe3z/3vhwRL6yMfKEwLd7alv8NHrKRSv0ZA0pNxW
-ER2OqXQMzAN+DSe0EZROXnI3jBFWGIr2RkqA7OXkVJ0moF5NVFgH4mEK+SPHKygf
-P4xNcoJf6g97qp8YygwcV/mlTQFUPVoYIrRNHkUTEp7XJ7nFVeCDkmh0XNVT5ZUu
-S+5Z+BNuSr5YdklTlRxnzJOP+CletBOzkEvjic3JM+mn/kc+sHND4D384RD9Nf5o
-vOo32w/cA+llMqWAPpnzcA3+2YJe8Szq8zq+KJTsPDTnQhZ9yNN80hyap7rGFzKS
-9gYf2rYEduwWAD02F2JmZTbDOOg+TFaX2GuhNTnGgA==
-=xpxA
------END PGP SIGNATURE-----
-
---H+iywUY76I5ImC9b--
+--000000000000578ddd05d8744a4a--
 
