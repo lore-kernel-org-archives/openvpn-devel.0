@@ -1,6 +1,4 @@
-Date: Sun, 20 Feb 2022 15:18:36 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <YhJNvB5lrYOocWgS@...1296...>
+MIME-Version: 1.0
 References: <CAGyAFMXNQnQ_jeoQXJSkW8xXn8QM0nqeJHYB5xL288U6t+TcJw@...278...>
  <CAFHpkQFwO0qMqWhtUidv0TNWyGrsnMHqYVib12yCzowBgL1KtQ@...278...>
  <CAFHpkQE-LBkt-Lyz97vLdgQFt7VPLmedw8ogNojVy2p3GsdaiQ@...278...>
@@ -11,11 +9,12 @@ References: <CAGyAFMXNQnQ_jeoQXJSkW8xXn8QM0nqeJHYB5xL288U6t+TcJw@...278...>
  <CAFHpkQFBr0-0j89q77pHFkc26LrcBGfA+T1qvHsW24hCK6vKtg@...278...>
  <YhJLvgQ8wOTgEbzz@...1296...>
  <CAFHpkQFi+W9RSOrLat13hRpU1v8drijnCiaHrrSoqfYkOeWogA@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="wARWNs8v5thWg5FP"
-Content-Disposition: inline
-In-Reply-To: <CAFHpkQFi+W9RSOrLat13hRpU1v8drijnCiaHrrSoqfYkOeWogA@...278...>
+ <YhJNvB5lrYOocWgS@...1296...>
+In-Reply-To: <YhJNvB5lrYOocWgS@...1296...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Sun, 20 Feb 2022 19:29:24 +0500
+Message-ID: <CAFHpkQHkaNkLb_xrm34=6LVSGcZ8QXD_XxiO=pi3RoT7DmsdiA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000032e6c05d873f2f0"
 Subject: Re: [Openvpn-devel] [PATCH 2.5] msvc: adjust build options to
  harden binaries
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -26,50 +25,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ???????? ?????????????? <chipitsine@...277...>
-Cc: Gert Doering <gert@...1296...>, Lev Stipakov <lstipakov@...277...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: Lev Stipakov <lstipakov@...277...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---wARWNs8v5thWg5FP
-Content-Type: text/plain; charset="us-ascii"
+--000000000000032e6c05d873f2f0
+Content-Type: text/plain; charset="UTF-8"
+
+Lev, I'm lost here. Can you please follow up?
+
+On Sun, Feb 20, 2022, 7:18 PM Gert Doering <gert@...1296...> wrote:
+
+> Hi,
+>
+> On Sun, Feb 20, 2022 at 07:15:33PM +0500, ???????? ?????????????? wrote:
+> > It is applied to master.
+>
+> The "adjust build options to harden binaries" has no ACK for master.
+>
+> This is needed so the 2.5 patch can go into 2.5
+>
+> gert
+> --
+> "If was one thing all people took for granted, was conviction that if you
+>  feed honest figures into a computer, honest figures come out. Never
+> doubted
+>  it myself till I met a computer with a sense of humor."
+>                              Robert A. Heinlein, The Moon is a Harsh
+> Mistress
+>
+> Gert Doering - Munich, Germany
+> gert@...1296...
+>
+
+--000000000000032e6c05d873f2f0
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+<div dir=3D"auto">Lev, I&#39;m lost here. Can you please follow up?</div><b=
+r><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Sun, =
+Feb 20, 2022, 7:18 PM Gert Doering &lt;<a href=3D"mailto:gert@...1296...">g=
+ert@...1296...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" st=
+yle=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<b=
+r>
+<br>
+On Sun, Feb 20, 2022 at 07:15:33PM +0500, ???????? ?????????????? wrote:<br>
+&gt; It is applied to master.<br>
+<br>
+The &quot;adjust build options to harden binaries&quot; has no ACK for mast=
+er.<br>
+<br>
+This is needed so the 2.5 patch can go into 2.5<br>
+<br>
+gert<br>
+-- <br>
+&quot;If was one thing all people took for granted, was conviction that if =
+you <br>
+=C2=A0feed honest figures into a computer, honest figures come out. Never d=
+oubted <br>
+=C2=A0it myself till I met a computer with a sense of humor.&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Robert A. Heinlein, The Moon is a Harsh Mist=
+ress<br>
+<br>
+Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
+o:gert@...1296..." target=3D"_blank" rel=3D"noreferrer">gert@...1296...</a>=
+<br>
+</blockquote></div>
 
-On Sun, Feb 20, 2022 at 07:15:33PM +0500, ???????? ?????????????? wrote:
-> It is applied to master.
-
-The "adjust build options to harden binaries" has no ACK for master.
-
-This is needed so the 2.5 patch can go into 2.5
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---wARWNs8v5thWg5FP
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJiEk28AAoJEB2Cnv7KVigS18gL/RISUI9QTt1I7UfjGTja1NfP
-VQla9izUUxxnLQJ7g+m0jPqKfS7sB1NQPctenlRhRjarcHZ8AlsolPsYLN2yCGiZ
-EyGBDQ0pUQDFq6JGa0m6ioJA4FgU5yHeR784kLj42aOtvPsemZW5F4dmtow8kjgk
-2xH2gZyjUUednE9osgHAXQ0LPe03WBWNy8uBlHNM7IkcAqUIGqtxif7Rro4ythu9
-vpgU5aQI3RG0xJU7WZekKjq8z747EnUxqc56BdTG5nwb04svx//dsLpg7xwJ0U6R
-yVKRDkHsAh5wL/23E8d9T9Ftc8W9x5/W3W65eDft9SLzsoqcKEKC+VLpvfSwWbvs
-LTW9F+/CwYDuVipCqBPFwtLyech0v4bv+X7MNmtL3UV6tSf7YtRmNg55A2+bau3t
-jqMDgF1sUBxYRk2aq8T/5Y7fmQoo4girvg+3FaM3Q517mpcyFZyrVr8ZXaUakT5W
-YJMgO+416kCnLzwzrMJPyOPOTqWQr/sejJg1trlAtw==
-=SwMX
------END PGP SIGNATURE-----
-
---wARWNs8v5thWg5FP--
+--000000000000032e6c05d873f2f0--
 
