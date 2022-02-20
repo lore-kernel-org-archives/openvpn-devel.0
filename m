@@ -1,8 +1,20 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 18 Feb 2022 14:41:49 +0200
-Message-Id: <20220218124149.149-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH master+release/2.5] error.c: use correct API
- to get error description on Windows
+Date: Sun, 20 Feb 2022 15:04:30 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <YhJKbnyZYeuTk0Fd@...1296...>
+References: <20220107145359.311-1-lstipakov@...277...>
+ <CAGyAFMXNQnQ_jeoQXJSkW8xXn8QM0nqeJHYB5xL288U6t+TcJw@...278...>
+ <CAFHpkQFwO0qMqWhtUidv0TNWyGrsnMHqYVib12yCzowBgL1KtQ@...278...>
+ <CAFHpkQE-LBkt-Lyz97vLdgQFt7VPLmedw8ogNojVy2p3GsdaiQ@...278...>
+ <CAGyAFMWQLs2=BoF6fhUcG6gLN5LvPA9xHZ8JRocdH5-DL5LW_w@...278...>
+ <CAFHpkQHURwN2x=AC_RK38tjwD8kGgHhSbq==espXJHSM33L6ZA@...278...>
+ <CAGyAFMWN-4rLAjPEwUbDqE79gs3bUWWSFLSnzz9QaTgiQSKQHA@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="ZxB+x/qpBfo192Sf"
+Content-Disposition: inline
+In-Reply-To: <CAGyAFMWN-4rLAjPEwUbDqE79gs3bUWWSFLSnzz9QaTgiQSKQHA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 2.5] msvc: adjust build options to
+ harden binaries
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,39 +23,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: Lev Stipakov <lstipakov@...277...>
+Cc: ???????? ?????????????? <chipitsine@...277...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Lev Stipakov <lev@...515...>
+--ZxB+x/qpBfo192Sf
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On Windows we use GetLastError() to get error code. To get
-error description, we must use FormatMessage() and not strerror().
+Hi,
 
-Replace strerror() with openvpn_strerror() macro, which is resolved
-to strerror_win32() (which calls FormatMessage) on Windows and
-to strerror() on other platforms.
+On Thu, Feb 17, 2022 at 01:55:35PM +0200, Lev Stipakov wrote:
+> > can you please apply "pdb" patch to your branch ?
+> > CI: github actions: keep "pdb" in artifacts =B7 OpenVPN/openvpn@...2658...=
+...
+>=20
+> Done! https://github.com/lstipakov/openvpn/actions/runs/1858390624
+>=20
+> > BinSkim uses pdb for analysis.
+> >
+> > probably, it makes sense to apply this patch to release/2.5 branch as w=
+ell
+>=20
+> I agree. /me looks at Gert.
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- src/openvpn/error.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I'm a bit confused on what exactly you want applied where now.
 
-diff --git a/src/openvpn/error.c b/src/openvpn/error.c
-index 54796d03..cb2a0db1 100644
---- a/src/openvpn/error.c
-+++ b/src/openvpn/error.c
-@@ -268,7 +268,7 @@ x_msg_va(const unsigned int flags, const char *format, va_list arglist)
-     if ((flags & M_ERRNO) && e)
-     {
-         openvpn_snprintf(m2, ERR_BUF_SIZE, "%s: %s (errno=%d)",
--                         m1, strerror(e), e);
-+                         m1, openvpn_strerror(e, &gc), e);
-         SWAP;
-     }
- 
--- 
-2.23.0.windows.1
+What is "this patch"?  This one, or "the pdb patch", or yet something
+else mentioned in this thread?
 
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--ZxB+x/qpBfo192Sf
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJiEkpuAAoJEB2Cnv7KVigSssAL/1vKyDkATBEcZRHm0nQ2ZZiI
+kpPyec0+gtVPl/x+pFfbbLc+8vmyru9jS5I5SY/mchngfdC5P+Ai6shlHPpxdVO3
+TBANchM4zUPWr5QfcgPBBA11fq9Z20s0TtYzfWqZQuEnWG1H1nmrFjvJfL9pgRo+
+pJPYFkrn7VP5baE/8aIro95rIxrY5X8yGNwqW+F7BojnQLTcyymMWwwkNJ04UKdX
+vI08HBFoygizNsc1QIfRyk2mo9baBNfIre/jpfFCOl7crDoHCdig43sOQ4YL/ju2
+l/jUpulRTRarqP0hzggO09fXcvIFVC8cucJv+8KKhzNKk+mmFN1wo9P944qUikee
+aegUZDGEQWRvQ+8suqVUn+Z21c7Dv8hrNR/n0DoJjgljbNmygndYNtdw9Lc/Ahcy
+hIorRPgXHpGSFmixXfJdKsdB3ESXDTSCpRNzsIeQk80gOsEnF5bdjsTQs+IgX7FS
+3J3exnjIRnyEE+ASp0cUiEB8CNp1yyuQ5/DxRQMfpw==
+=bA3o
+-----END PGP SIGNATURE-----
+
+--ZxB+x/qpBfo192Sf--
 
