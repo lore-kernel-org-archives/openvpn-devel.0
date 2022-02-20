@@ -1,10 +1,23 @@
-Date: Sun, 20 Feb 2022 15:32:52 +0100 (CET)
-Message-Id: <202202201432.21KEWqHP069376@...2054...>
+Date: Sun, 20 Feb 2022 15:38:41 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220214122409.260-1-lstipakov@...277...>
-References: <20220214122409.260-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: openvpnmsica: add ovpn-dco
- custom actions
+Message-ID: <YhJScRargHjNSUgg@...1296...>
+References: <CAFHpkQE-LBkt-Lyz97vLdgQFt7VPLmedw8ogNojVy2p3GsdaiQ@...278...>
+ <CAGyAFMWQLs2=BoF6fhUcG6gLN5LvPA9xHZ8JRocdH5-DL5LW_w@...278...>
+ <CAFHpkQHURwN2x=AC_RK38tjwD8kGgHhSbq==espXJHSM33L6ZA@...278...>
+ <CAGyAFMWN-4rLAjPEwUbDqE79gs3bUWWSFLSnzz9QaTgiQSKQHA@...278...>
+ <YhJKbnyZYeuTk0Fd@...1296...>
+ <CAFHpkQFBr0-0j89q77pHFkc26LrcBGfA+T1qvHsW24hCK6vKtg@...278...>
+ <YhJLvgQ8wOTgEbzz@...1296...>
+ <CAFHpkQFi+W9RSOrLat13hRpU1v8drijnCiaHrrSoqfYkOeWogA@...278...>
+ <YhJNvB5lrYOocWgS@...1296...>
+ <CAFHpkQHkaNkLb_xrm34=6LVSGcZ8QXD_XxiO=pi3RoT7DmsdiA@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="H+iywUY76I5ImC9b"
+Content-Disposition: inline
+In-Reply-To: <CAFHpkQHkaNkLb_xrm34=6LVSGcZ8QXD_XxiO=pi3RoT7DmsdiA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 2.5] msvc: adjust build options to
+ harden binaries
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,40 +26,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: ???????? ?????????????? <chipitsine@...277...>
+Cc: Gert Doering <gert@...1296...>, Lev Stipakov <lstipakov@...277...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+--H+iywUY76I5ImC9b
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Thanks to Simon for testing & advising Lev here.
+Hi,
 
-I would have preferred to have the WCHAR fixes decoupled from "new
-functionality" - that makes reviewing easier.  This said, the WCHAR
-fixes look good, and the rest looks at least "reasonable" - as I have
-no much idea what's going on there I can only look at "safe pointer 
-use" etc.
+On Sun, Feb 20, 2022 at 07:29:24PM +0500, ???????? ?????????????? wrote:
+> Lev, I'm lost here. Can you please follow up?
 
-Your patch has been applied to the master branch.
+Please test and ACK *this* patch:
 
-commit 055605783ee08767d871fbeffb6871368bdf1ada
-Author: Lev Stipakov
-Date:   Mon Feb 14 14:24:09 2022 +0200
+  https://patchwork.openvpn.net/patch/2296/
 
-     openvpnmsica: add ovpn-dco custom actions
+this is the "v2 for master" patch.=20=20
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Signed-off-by: Simon Rozman <simon@...2293...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220214122409.260-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23786.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+When that is done, we can talk about release/2.5 application.
 
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
---
-kind regards,
+Gert Doering - Munich, Germany                             gert@...1296...
 
-Gert Doering
+--H+iywUY76I5ImC9b
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJiElJxAAoJEB2Cnv7KVigSDoML/02nfpVSO4XBxC3YYH6yWgET
+255DCIRfgnyqys7PQaseOziVWc4/wHiI0RY4HZ1MHgI5LjF/7v/buyjCSaJIHfdO
+os9OjpZy3c3/2GGnyZuZsp2YdM56MUKx2RfmhS27bb7A0ypSB/L4+jW3EXVxWnWj
+Df3qhGfOThYuLr/teAGEidgjPe3z/3vhwRL6yMfKEwLd7alv8NHrKRSv0ZA0pNxW
+ER2OqXQMzAN+DSe0EZROXnI3jBFWGIr2RkqA7OXkVJ0moF5NVFgH4mEK+SPHKygf
+P4xNcoJf6g97qp8YygwcV/mlTQFUPVoYIrRNHkUTEp7XJ7nFVeCDkmh0XNVT5ZUu
+S+5Z+BNuSr5YdklTlRxnzJOP+CletBOzkEvjic3JM+mn/kc+sHND4D384RD9Nf5o
+vOo32w/cA+llMqWAPpnzcA3+2YJe8Szq8zq+KJTsPDTnQhZ9yNN80hyap7rGFzKS
+9gYf2rYEduwWAD02F2JmZTbDOOg+TFaX2GuhNTnGgA==
+=xpxA
+-----END PGP SIGNATURE-----
+
+--H+iywUY76I5ImC9b--
 
