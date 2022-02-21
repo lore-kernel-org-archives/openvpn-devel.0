@@ -1,15 +1,21 @@
-Date: Mon, 21 Feb 2022 09:01:16 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <YhNGzGShgm4YskGz@...1296...>
-References: <20210826100221.1378-1-chipitsine@...277...>
- <202109111650.18BGoVLx078901@...2054...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="iqaYSEg9Ol2aik6Y"
-Content-Disposition: inline
-In-Reply-To: <202109111650.18BGoVLx078901@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: CI: github actions: keep
- pdb in artifacts
+References: <CAFHpkQHURwN2x=AC_RK38tjwD8kGgHhSbq==espXJHSM33L6ZA@...278...>
+ <CAGyAFMWN-4rLAjPEwUbDqE79gs3bUWWSFLSnzz9QaTgiQSKQHA@...278...>
+ <YhJKbnyZYeuTk0Fd@...1296...>
+ <CAFHpkQFBr0-0j89q77pHFkc26LrcBGfA+T1qvHsW24hCK6vKtg@...278...>
+ <YhJLvgQ8wOTgEbzz@...1296...>
+ <CAFHpkQFi+W9RSOrLat13hRpU1v8drijnCiaHrrSoqfYkOeWogA@...278...>
+ <YhJNvB5lrYOocWgS@...1296...>
+ <CAFHpkQHkaNkLb_xrm34=6LVSGcZ8QXD_XxiO=pi3RoT7DmsdiA@...278...>
+ <YhJScRargHjNSUgg@...1296...>
+ <CAFHpkQFZmvz1dbeg05qNHbPd8Aq1dHO_HkoRS7XEoJq0ZotNRg@...278...>
+ <YhJ64G+OXH411d8Q@...1296...>
+In-Reply-To: <YhJ64G+OXH411d8Q@...1296...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 21 Feb 2022 10:58:56 +0200
+Message-ID: <CAGyAFMXDzrOwymD2ExGP6nWyi8oH+RCT2C98fT2k533F5Ncf4Q@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 2.5] msvc: adjust build options to
+ harden binaries
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,60 +24,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Ilya Shipitsin <chipitsine@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: ???????? ?????????????? <chipitsine@...277...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---iqaYSEg9Ol2aik6Y
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Let's start from the beginning.
 
-Hi,
+I'll start two new threads (master and 2.5) and Ilya could ack them.
 
-On Sat, Sep 11, 2021 at 06:50:31PM +0200, Gert Doering wrote:
-> SoB added, no further tests.
->=20
-> Your patch has been applied to the master branch.
->=20
-> commit 9da733751ce80b2226ef19923365bd3102cfbd47
-> Author: Ilya Shipitsin
-> Date:   Thu Aug 26 15:02:21 2021 +0500
+Ilya, to ack please reply on those threads with following line:
 
-As requested by Lev, also applied to release/2.5
+Acked-by: Firstname Lastname <email@...1113...>
 
-commit fb3661e6690bc2a32b8a35e2451bf256f3a429ee (HEAD -> release/2.5)
-Author: Ilya Shipitsin <chipitsine@...277...>
-Date:   Thu Aug 26 15:02:21 2021 +0500
+su 20. helmik. 2022 klo 19.31 Gert Doering (gert@...1296...) kirjoitti:
+>
+> Hi,
+>
+> On Sun, Feb 20, 2022 at 07:53:56PM +0500, ???????? ?????????????? wrote:
+> > There is ack from me earlier in this thread.
+>
+> "ACK in this thread" is not really helpful, as it is not clear for
+> which patch exactly this is.
+>
+> (You basically ACKed in response to v1 of the 2.5 patch, while we
+> have v2 for the master + 2.5 patch out)
+>
+> For me, to make clear which version of which patches an ACK refers
+> to, it is important that the reply is to the correct e-mail - you can
+> see in patchwork if your ACK has been recorded or not.
+>
+> https://patchwork.openvpn.net/project/openvpn2/list/
+>
+> gert
+> --
+> "If was one thing all people took for granted, was conviction that if you
+>  feed honest figures into a computer, honest figures come out. Never doubted
+>  it myself till I met a computer with a sense of humor."
+>                              Robert A. Heinlein, The Moon is a Harsh Mistress
+>
+> Gert Doering - Munich, Germany                             gert@...1296...
 
-    CI: github actions: keep "pdb" in artifacts
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---iqaYSEg9Ol2aik6Y
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJiE0bLAAoJEB2Cnv7KVigSdyML/1ojKC4MMS0UgIqADl5s3SY1
-mplbxUX5EV9LE+GbwHxjrwTHwr8chal5KVHbvdAUd5iLikh6RXwm8womEvuXrFQ4
-SMHo2VgQEahBExHt3ikSJiKO2srGto7juyx9QZDRfmGs6iMtQAZjz2UOu9nPTYym
-cvRrZLlMIuM5pxanbO1qLm4QVJ4jckO+nEQOath0okgCHomoKLgwOfxWjbzPte8I
-5hOLY1jvcv8KtGppAvkPkRiYNGlqQWyo5DeAQg5pK9PcOtXsPijAJM9rHpev5t7c
-HiTLBZIBhhxwIYUJk4finxpiq2G1apacksBrtt/ZYdcN4VMKBt3LdyI6P0tugBrD
-zHvz4VRhONGmutFPBwqXwXe58SoBw9jYoFFAbCbzKUxLhClZXIPFXsRlScHRwjEi
-Ae0qAV6JKrgiimx08tFhH2FcukcZHf28zgW3GGZSbXLIiSX0DK5RSBR7UhMz0y8Y
-7C4Cj2DEo4DoLGmOI6DAcyCQqt9uFzn/Mls1chq3dw==
-=NX+Y
------END PGP SIGNATURE-----
-
---iqaYSEg9Ol2aik6Y--
+-- 
+-Lev
 
