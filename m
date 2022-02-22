@@ -1,14 +1,10 @@
+From: Gert Doering <gert@...1296...>
+Date: Tue, 22 Feb 2022 12:38:32 +0100
+Message-Id: <20220222113832.13383-1-gert@...1296...>
+In-Reply-To: <20220221173818.10693-1-gert@...1296...>
+References: <20220221173818.10693-1-gert@...1296...>
 MIME-Version: 1.0
-References: <20220218124149.149-1-lstipakov@...277...>
- <CAGyAFMVOCdv0JiQfsLqm5kDqdwCAsX=zxT06UTMQvet7tP4nhA@...278...>
- <CAKuzo_jHvf6zgTyOHvy01+LZoUXK9eOTOEky9CTon=xTBfTcLA@...278...>
-In-Reply-To: <CAKuzo_jHvf6zgTyOHvy01+LZoUXK9eOTOEky9CTon=xTBfTcLA@...278...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 22 Feb 2022 11:30:28 +0200
-Message-ID: <CAGyAFMWA+7oY4aSDJS_kW11okMnyUAJrkpC45XcNGk0C0St6Vw@...278...>
-Content-Type: multipart/alternative; boundary="0000000000009d35be05d89800d6"
-Subject: Re: [Openvpn-devel] [PATCH master+release/2.5] error.c: use correct
- API to get error description on Windows
+Subject: [Openvpn-devel] [PATCH v2] Fix --mtu-disc maybe|yes on Linux.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,104 +13,107 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---0000000000009d35be05d89800d6
-Content-Type: text/plain; charset="UTF-8"
+--mtu-disc (on Linux) needs two components to work:
+   - setsockopt() with IP_MTU_DISCOVER or IPV6_MTU_DISCOVER
+   - "extended error reporting" (setsockopt(IP_RECVERR) and
+     then via mtu.c/format_extended_socket_error()) to react on
+     "packet too big" errors on sendto() / sendmsg()
 
-Hi,
+Some configure.ac reorganization broke detection of <linux/errqueue.h>
+and "struct sock_extended_err".  Re-add <linux/errqueue.h> to configure.ac,
+remove all the other conditionals in syshead.h, and remove the
+"struct sock_extended_err" check completely (assumption: if errqueue.h
+exists, it contains what we need).
 
+Thus, the "non-helpful" socket error message turns into:
 
-> While this would be a cleaner fix, it also requires extensive changes and
-> it is not always easy to decide where to use M_ERRNO and where to use
-> M_WINERR. E.g., without looking into the internals of platform.c one
-> doesn't know whether platform_open() uses _wopen() or CreateFile().
->
+2022-02-22 12:31:42 write UDPv4 [EMSGSIZE Path-MTU=800]: Message too long (fd=3,code=90)
+2022-02-22 12:31:42 Note adjusting 'mssfix 1400 mtu' to 'mssfix 800 mtu' according to path MTU discovery
+2022-02-22 12:31:42 Note adjusting 'fragment 1400 mtu' to 'fragment 800 mtu' according to path MTU discovery
 
-True.
+... while at it, fix extra space in first part of these messages, and
+print o->ce.fragment for the "fragment" message...
 
+v2: assume that "if it's linux, and has these two headers, everything
+else will be there as well" and get rid of most of the #ifdef checks
 
-> A possible option is to continue the use of M_ERRNO on WIndows as is
-> (except for socket errors), continue to use GetLastError() in x_msg(), but
-> if/when the latter if it returns zero, try errno and strerrror(). Not ideal
-> but less changes and easier and transparent to the user of msg(). That
-> said, I haven't checked whether GetLastError() returns zero or a valid and
-> correct error code for C runtime errors -- without which this approach wont
-> work.
->
+Trac: #1452
 
-I did some tests, ::GetLastError appears to return zero or correct error
-code:
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ configure.ac          | 8 +-------
+ src/openvpn/mss.c     | 6 +++---
+ src/openvpn/syshead.h | 2 +-
+ 3 files changed, 5 insertions(+), 11 deletions(-)
 
-    sqrt(-1);
-    int err = errno; // -33 EDOM
-    DWORD lasterr = GetLastError(); // 0
-
-    _open("c:\\Temp\\notfound", _O_RDONLY);
-    err = errno; // 2 ENOENT
-    lasterr = GetLastError(); // 2 ERROR_FILE_NOT_FOUND
-
-    _open("c:\\Temp\\directory", _O_RDONLY);
-    err = errno; // 13 EACCES
-    lasterr = GetLastError(); // 5 ERROR_ACCESS_DENIED
-
-    malloc(10000000000);
-    err = errno; // 12 ENOMEM
-    lasterr = GetLastError(); // 8 ERROR_NOT_ENOUGH_MEMORY
-
-So let's go with this approach.
-
-
-> BTW, there are a couple of uses of strerror() in check_status() (error.c)
-> missed by the original patch.
->
-
-Thanks, I will address it in this "proper" fix.
-
+diff --git a/configure.ac b/configure.ac
+index d42185d0..9c898718 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -425,7 +425,7 @@ AC_CHECK_HEADERS([ \
+ 	unistd.h libgen.h stropts.h \
+ 	syslog.h pwd.h grp.h termios.h \
+ 	sys/sockio.h sys/uio.h linux/sockios.h \
+-	linux/types.h poll.h sys/epoll.h err.h \
++	linux/types.h linux/errqueue.h poll.h sys/epoll.h err.h \
+ ])
+ 
+ SOCKET_INCLUDES="
+@@ -484,12 +484,6 @@ AC_CHECK_TYPE(
+ 	,
+ 	[[${SOCKET_INCLUDES}]]
+ )
+-AC_CHECK_TYPE(
+-	[struct sock_extended_err],
+-	[AC_DEFINE([HAVE_SOCK_EXTENDED_ERR], [1], [struct sock_extended_err needed for extended socket error support])],
+-	,
+-	[[${SOCKET_INCLUDES}]]
+-)
+ AC_CHECK_TYPE(
+ 	[struct msghdr],
+ 	[AC_DEFINE([HAVE_MSGHDR], [1], [struct msghdr needed for extended socket error support])],
+diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
+index 81692e91..25b26405 100644
+--- a/src/openvpn/mss.c
++++ b/src/openvpn/mss.c
+@@ -361,7 +361,7 @@ frame_adjust_path_mtu(struct context *c)
+         || (o->ce.mssfix_encap && pmtu < o->ce.mssfix + encap_overhead))
+     {
+         const char* mtustr = o->ce.mssfix_encap ? " mtu" : "";
+-        msg(D_MTU_INFO, "Note adjusting 'mssfix %d %s' to 'mssfix %d mtu' "
++        msg(D_MTU_INFO, "Note adjusting 'mssfix %d%s' to 'mssfix %d mtu' "
+                         "according to path MTU discovery", o->ce.mssfix,
+             mtustr, pmtu);
+         o->ce.mssfix = pmtu;
+@@ -374,8 +374,8 @@ frame_adjust_path_mtu(struct context *c)
+         (o->ce.fragment_encap && pmtu < o->ce.fragment + encap_overhead))
+     {
+         const char* mtustr = o->ce.fragment_encap ? " mtu" : "";
+-        msg(D_MTU_INFO, "Note adjusting 'fragment %d %s' to 'fragment %d mtu' "
+-                        "according to path MTU discovery", o->ce.mssfix,
++        msg(D_MTU_INFO, "Note adjusting 'fragment %d%s' to 'fragment %d mtu' "
++                        "according to path MTU discovery", o->ce.fragment,
+             mtustr, pmtu);
+         o->ce.fragment = pmtu;
+         o->ce.fragment_encap = true;
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index d699c608..a638b3dd 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -371,7 +371,7 @@ typedef int MIB_TCP_STATE;
+ /*
+  * Do we have the capability to report extended socket errors?
+  */
+-#if defined(HAVE_LINUX_TYPES_H) && defined(HAVE_LINUX_ERRQUEUE_H) && defined(HAVE_SOCK_EXTENDED_ERR) && defined(HAVE_MSGHDR) && defined(HAVE_CMSGHDR) && defined(CMSG_FIRSTHDR) && defined(CMSG_NXTHDR) && defined(IP_RECVERR) && defined(MSG_ERRQUEUE) && defined(SOL_IP)
++#if defined(HAVE_LINUX_TYPES_H) && defined(HAVE_LINUX_ERRQUEUE_H)
+ #define EXTENDED_SOCKET_ERROR_CAPABILITY 1
+ #else
+ #define EXTENDED_SOCKET_ERROR_CAPABILITY 0
 -- 
--Lev
+2.26.3
 
---0000000000009d35be05d89800d6
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_quote"><div>Hi,</div><div>=C2=A0</div>=
-<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr"><div cla=
-ss=3D"gmail_quote"><div>While this would be a cleaner fix, it also requires=
- extensive changes and it is not always easy to decide where to use M_ERRNO=
- and where to use M_WINERR. E.g., without looking into the internals of pla=
-tform.c=C2=A0one doesn&#39;t know whether platform_open() uses _wopen() or =
-CreateFile().</div></div></div></blockquote><div><br></div><div>True.</div>=
-<div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px =
-0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=
-=3D"ltr"><div class=3D"gmail_quote"><div>A possible option is to continue t=
-he use of M_ERRNO on WIndows as is (except for socket errors), continue to =
-use GetLastError() in x_msg(), but if/when the latter if it returns zero, t=
-ry errno and strerrror(). Not ideal but less changes and easier and transpa=
-rent to the user of msg(). That said, I haven&#39;t=C2=A0checked whether Ge=
-tLastError() returns zero or a valid and correct error code for C runtime e=
-rrors -- without which this approach wont work.</div></div></div></blockquo=
-te><div><br></div><div>I did some tests, ::GetLastError appears to return=
-=C2=A0zero or correct error code:</div><div><br></div><div>=C2=A0 =C2=A0 sq=
-rt(-1);<br>=C2=A0 =C2=A0 int err =3D errno; // -33 EDOM<br>=C2=A0 =C2=A0 DW=
-ORD lasterr =3D GetLastError(); // 0<br><br>=C2=A0 =C2=A0 _open(&quot;c:\\T=
-emp\\notfound&quot;, _O_RDONLY);<br>=C2=A0 =C2=A0 err =3D errno; // 2 ENOEN=
-T<br>=C2=A0 =C2=A0 lasterr =3D GetLastError(); // 2 ERROR_FILE_NOT_FOUND<br=
-><br>=C2=A0 =C2=A0 _open(&quot;c:\\Temp\\directory&quot;, _O_RDONLY);<br>=
-=C2=A0 =C2=A0 err =3D errno; // 13 EACCES<br>=C2=A0 =C2=A0 lasterr =3D GetL=
-astError(); // 5 ERROR_ACCESS_DENIED<br><br>=C2=A0 =C2=A0 malloc(1000000000=
-0);<br>=C2=A0 =C2=A0 err =3D errno; // 12 ENOMEM<br>=C2=A0 =C2=A0 lasterr =
-=3D GetLastError(); // 8 ERROR_NOT_ENOUGH_MEMORY</div><div><br></div><div>S=
-o let&#39;s go with this approach.</div><div>=C2=A0</div><blockquote class=
-=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rg=
-b(204,204,204);padding-left:1ex"><div dir=3D"ltr"><div class=3D"gmail_quote=
-"><div>BTW, there are a couple of uses of strerror() in check_status() (err=
-or.c) missed by the original patch.</div></div></div></blockquote><div><br>=
-</div><div>Thanks, I will address it in this &quot;proper&quot; fix.</div><=
-/div><div><br></div>-- <br><div dir=3D"ltr" class=3D"gmail_signature">-Lev<=
-/div></div>
-
---0000000000009d35be05d89800d6--
 
