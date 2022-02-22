@@ -1,8 +1,8 @@
 From: Kristof Provost <kprovost@...2661...>
-Date: Tue, 22 Feb 2022 14:28:23 +0100
-Message-Id: <20220222132824.18935-3-kprovost@...2661...>
-In-Reply-To: <20220222132824.18935-1-kprovost@...2661...>
-References: <20220222132824.18935-1-kprovost@...2661...>
+Date: Tue, 22 Feb 2022 14:16:56 +0100
+Message-Id: <20220222131657.6616-3-kprovost@...2661...>
+In-Reply-To: <20220222131657.6616-1-kprovost@...2661...>
+References: <20220222131657.6616-1-kprovost@...2661...>
 MIME-Version: 1.0
 Subject: [Openvpn-devel] [PATCH 2/3] open_tun_generic(): Do not consider
  open_tun_dco() returning 0 to be an error
