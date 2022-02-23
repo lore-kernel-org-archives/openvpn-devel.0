@@ -1,8 +1,9 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue, 22 Feb 2022 15:35:14 +0100
-Message-Id: <20220222143514.3480-1-gert@...1296...>
+From: Antonio Quartulli <a@...2181...>
+Date: Wed, 23 Feb 2022 08:58:47 +0100
+Message-Id: <20220223075847.11704-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Implement --mtu-disc for IPv6 UDP sockets.
+Subject: [Openvpn-devel] [PATCH] networking: use OPENVPN_ETH_ALEN instead of
+ ETH_ALEN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,70 +15,53 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Commit 4225114b96 repaired "--mtu-disc yes" brokenness for IPv4 UDP sockets
-(caused by autoconf/ifdef issues).  This patch adds new functionality
-to do --mtu-disc for IPv6 sockets as well.
+With the introduction of SITNL two occurrences of ETH_ALEN
+were introduced in the code. This define exists on Linux in
+the linux/if_ether.h header, however the latter is included
+in linux/if_tun.h which may or may not exist (depending on
+how old your system is).
 
-Half of it (setsockopt(IPV6_MTU_DISCOVER)) was already there, but
-receiving of detailed socket errors was missing the enablement of
-setsockopt(IPV6_RECVERR) and parsing of IPPROTO_IPV6/IPV6_RECVERR
-messages received.
+If the system lacks if_tun.h then the compilation fails because
+ETH_ALEN cannot be found.
 
-With that, we now get (sending over a route with "mtu 1300"):
+For this reason, swap ETH_ALEN with OPENVPN_ETH_ALEN which is
+already used in other places of the code.
 
-2022-02-22 15:28:07 write UDPv6 [EMSGSIZE Path-MTU=1300]: Message too long (fd=3,code=90)
-2022-02-22 15:28:07 Note adjusting 'mssfix 1400 mtu' to 'mssfix 1300 mtu' according to path MTU discovery
-2022-02-22 15:28:07 Note adjusting 'fragment 1400 mtu' to 'fragment 1300 mtu' according to path MTU discovery
-
-Signed-off-by: Gert Doering <gert@...1296...>
+Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/mtu.c | 20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
+ src/openvpn/lladdr.c           | 2 +-
+ src/openvpn/networking_sitnl.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index aa810f1c..51eeaa64 100644
---- a/src/openvpn/mtu.c
-+++ b/src/openvpn/mtu.c
-@@ -352,6 +352,17 @@ format_extended_socket_error(int fd, int *mtu, struct gc_arena *gc)
-                     buf_printf(&out,"CMSG=%d|", cmsg->cmsg_type);
-                 }
-             }
-+            else if (cmsg->cmsg_level == IPPROTO_IPV6)
-+            {
-+                if (cmsg->cmsg_type == IPV6_RECVERR)
-+                {
-+                    e = (struct sock_extended_err *) CMSG_DATA(cmsg);
-+                }
-+                else
-+                {
-+                    buf_printf(&out,"CMSG=%d|", cmsg->cmsg_type);
-+                }
-+            }
-         }
-         if (e == NULL)
-         {
-@@ -405,11 +416,18 @@ void
- set_sock_extended_error_passing(int sd)
- {
-     int on = 1;
--    if (setsockopt(sd, SOL_IP, IP_RECVERR, (void *) &on, sizeof(on)))
-+    /* see "man 7 ip" (on Linux) */
-+    if (setsockopt(sd, SOL_IP, IP_RECVERR, (void *) &on, sizeof(on)) != 0)
-     {
-         msg(M_WARN | M_ERRNO,
-             "Note: enable extended error passing on TCP/UDP socket failed (IP_RECVERR)");
+diff --git a/src/openvpn/lladdr.c b/src/openvpn/lladdr.c
+index 3ddbebb3..4abe8c54 100644
+--- a/src/openvpn/lladdr.c
++++ b/src/openvpn/lladdr.c
+@@ -26,7 +26,7 @@ set_lladdr(openvpn_net_ctx_t *ctx, const char *ifname, const char *lladdr,
      }
-+    /* see "man 7 ipv6" (on Linux) */
-+    if (setsockopt(sd, IPPROTO_IPV6, IPV6_RECVERR, (void *) &on, sizeof(on)) != 0)
-+    {
-+        msg(M_WARN | M_ERRNO,
-+            "Note: enable extended error passing on TCP/UDP socket failed (IPV6_RECVERR)");
-+    }
- }
  
- #endif /* if EXTENDED_SOCKET_ERROR_CAPABILITY */
+ #if defined(TARGET_LINUX)
+-    uint8_t addr[ETH_ALEN];
++    uint8_t addr[OPENVPN_ETH_ALEN];
+ 
+     sscanf(lladdr, MAC_FMT, MAC_SCAN_ARG(addr));
+     r = (net_addr_ll_set(ctx, ifname, addr) == 0);
+diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
+index 959c897f..c16323ac 100644
+--- a/src/openvpn/networking_sitnl.c
++++ b/src/openvpn/networking_sitnl.c
+@@ -748,7 +748,7 @@ net_addr_ll_set(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
+     req.i.ifi_family = AF_PACKET;
+     req.i.ifi_index = ifindex;
+ 
+-    SITNL_ADDATTR(&req.n, sizeof(req), IFLA_ADDRESS, addr, ETH_ALEN);
++    SITNL_ADDATTR(&req.n, sizeof(req), IFLA_ADDRESS, addr, OPENVPN_ETH_ALEN);
+ 
+     msg(M_INFO, "%s: lladdr " MAC_FMT " for %s", __func__, MAC_PRINT_ARG(addr),
+         iface);
 -- 
-2.26.3
+2.34.1
 
 
