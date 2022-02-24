@@ -1,8 +1,10 @@
 From: Kristof Provost <kprovost@...2661...>
-Date: Thu, 24 Feb 2022 17:55:55 +0100
-Message-Id: <20220224165557.22060-1-kprovost@...2661...>
+Date: Thu, 24 Feb 2022 17:55:56 +0100
+Message-Id: <20220224165557.22060-2-kprovost@...2661...>
+In-Reply-To: <20220224165557.22060-1-kprovost@...2661...>
+References: <20220224165557.22060-1-kprovost@...2661...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH DCO]: FreeBSD DCO support
+Subject: [Openvpn-devel] [PATCH 1/2] dco: process DCO control packets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,25 +17,41 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+From: Kristof Provost <kp@...1376...>
 
-Here's the current version of the patch to add FreeBSD DCO support.
+If control packets come in through the DCO interface (i.e. via
+dco_do_read()) we must process them through process_incoming_link().
+This doesn't currently manifest, because Linux passes control packets
+through the regular socket, not via the DCO netlink interface, but other
+platforms will not.
 
-The first patch isn't strictly related to FreeBSD, but fixes what I
-think is a generic issue. It doesn't manifest with Linux because the
-Linux DCO driver allows control packets to continue through normal UDP
-processing. We don't do that in FreeBSD, so it manifests there.
+Signed-off-by: Kristof Provost <kprovost@...2661...>
+---
+ src/openvpn/forward.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-I've had to add a lot of '|| defined(TARGET_FREEBSD)', and I think the
-code could be a bit cleaner if we'd make these calls conditional only on
-defined(ENABLE_DCO), and instead expect every DCO implementation to
-provide them, if only as stubs. I've not done that here.
-
-For those interested in testing, the kernel side of things is under
-review here: https://reviews.freebsd.org/D34340
-
-Best,
-Kristof
-
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index cd956cb3..c16f32fc 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1104,8 +1104,16 @@ process_incoming_link(struct context *c)
+ static void
+ process_incoming_dco(struct context *c)
+ {
++    struct link_socket_info *lsi = get_link_socket_info(c);
++
+     msg(M_INFO, __func__);
+     dco_do_read(&c->c1.tuntap->dco);
++
++    c->c2.buf = c->c1.tuntap->dco.dco_packet_in;
++    c->c2.from = lsi->lsa->actual;
++
++    process_incoming_link(c);
++    buf_init(&c->c1.tuntap->dco.dco_packet_in, 0);
+ }
+ 
+ /*
+-- 
+2.35.1
 
 
