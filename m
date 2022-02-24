@@ -1,12 +1,9 @@
-Sender: yuanx3@...2645...
-From: "yuanxun" <yuanx3@...2645...>
-Date: Thu, 24 Feb 2022 16:57:33 +0800
-Message-ID: <000901d8295c$91ac0710$b5041530$@chinatelecom.cn>
+From: Arne Schwabe <arne@...1227...>
+Date: Thu, 24 Feb 2022 15:42:45 +0100
+Message-Id: <20220224144245.878056-1-arne@...1227...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
- boundary="----=_NextPart_000_000A_01D8299F.9FD3DAF0"
-Content-Language: zh-cn
-Subject: [Openvpn-devel]  openvpn user concurrency
+Subject: [Openvpn-devel] [PATCH] Implement fixed MSS value for mssfix and
+ use it for non default MTUs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,94 +12,165 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a multipart message in MIME format.
+This allows to set the MSS value inside the tunnel to a user specified
+value instead of calculating it form (somewhat) dynamic encapsoluation
+overhead.
 
-------=_NextPart_000_000A_01D8299F.9FD3DAF0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Also default to the MTU when tun-mtu does not have the default value
+to ensure that packets are not larger than the tun-mtu. This only affects
+packets that are routed via the VPN and none of the peers is an endpoint
+since otherwise the peer would already set a lower MTU.
+---
+ doc/man-sections/link-options.rst |  9 +++++++-
+ src/openvpn/mss.c                 |  8 +++++++
+ src/openvpn/options.c             | 37 ++++++++++++++++++++-----------
+ src/openvpn/options.h             |  1 +
+ 4 files changed, 41 insertions(+), 14 deletions(-)
 
-Hello!
-
-Considering a metric when using openvpn, what is the user concurrency limit
-for a single service process?
-
-Is the concurrency limited by the number of max-clients, or is there a
-limit?
-
+diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
+index 782aa7381..6473ad423 100644
+--- a/doc/man-sections/link-options.rst
++++ b/doc/man-sections/link-options.rst
+@@ -132,12 +132,14 @@ the local and the remote host.
  
-
-I haven't figured out how to test it, has anyone done this test?
-
-
-------=_NextPart_000_000A_01D8299F.9FD3DAF0
-Content-Type: text/html; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
-osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
-//www.w3.org/TR/REC-html40"><head><META HTTP-EQUIV=3D"Content-Type" CONTENT=
-=3D"text/html; charset=3Dus-ascii"><meta name=3DGenerator content=3D"Micros=
-oft Word 15 (filtered medium)"><style><!--
-/* Font Definitions */
-@font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:\7B49\7EBF;
-	panose-1:2 1 6 0 3 1 1 1 1 1;}
-@font-face
-	{font-family:"Microsoft YaHei UI";
-	panose-1:2 11 5 3 2 2 4 2 2 4;}
-@font-face
-	{font-family:"\@\7B49\7EBF";
-	panose-1:2 1 6 0 3 1 1 1 1 1;}
-@font-face
-	{font-family:"\@Microsoft YaHei UI";}
-/* Style Definitions */
-p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	text-align:justify;
-	text-justify:inter-ideograph;
-	font-size:10.5pt;
-	font-family:\7B49\7EBF;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:\7B49\7EBF;
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;
-	font-family:\7B49\7EBF;}
-/* Page Definitions */
-@page WordSection1
-	{size:612.0pt 792.0pt;
-	margin:72.0pt 90.0pt 72.0pt 90.0pt;}
-div.WordSection1
-	{page:WordSection1;}
---></style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext=3D"edit">
-<o:idmap v:ext=3D"edit" data=3D"1" />
-</o:shapelayout></xml><![endif]--></head><body lang=3DZH-CN link=3D"#0563C1=
-" vlink=3D"#954F72" style=3D'word-wrap:break-word;text-justify-trim:punctua=
-tion'><div class=3DWordSection1><p class=3DMsoNormal><span lang=3DEN-US>Hel=
-lo!<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-US style=3D'f=
-ont-family:"Microsoft YaHei UI",sans-serif;color:black'>Considering a metri=
-c when using openvpn, what is the user concurrency limit for a single servi=
-ce process?<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-US st=
-yle=3D'font-family:"Microsoft YaHei UI",sans-serif;color:black'>Is the conc=
-urrency limited by the number of max-clients, or is there a limit?<o:p></o:=
-p></span></p><p class=3DMsoNormal><span lang=3DEN-US style=3D'font-family:"=
-Microsoft YaHei UI",sans-serif;color:black'><o:p>&nbsp;</o:p></span></p><p =
-class=3DMsoNormal><span lang=3DEN-US style=3D'font-family:"Microsoft YaHei =
-UI",sans-serif;color:black'>I haven't figured out how to test it, has anyon=
-e done this test?</span><span lang=3DEN-US><o:p></o:p></span></p></div></bo=
-dy></html>=
-
-------=_NextPart_000_000A_01D8299F.9FD3DAF0--
+      mssfix max [mtu]
+ 
++     mssfix max [fixed]
++
+      mssfix
+ 
+   Announce to TCP sessions running over the tunnel that they should limit
+   their send packet sizes such that after OpenVPN has encapsulated them,
+   the resulting UDP packet size that OpenVPN sends to its peer will not
+-  exceed ``max`` bytes. The default value is :code:`1450`. Use :code:`0`
++  exceed ``max`` bytes. The default value is :code:`1492 mtu`. Use :code:`0`
+   as max to disable mssfix.
+ 
+   If the :code:`mtu` parameter is specified the ``max`` value is interpreted
+@@ -153,6 +155,11 @@ the local and the remote host.
+   transmitted over IPv4 on a link with MTU 1478 or higher without IP level
+   fragmentation (and 1498 for IPv6).
+ 
++  If the :code:`fixed` parameter is specified, OpenVPN will make no attempt
++  to calculate the VPN encapsulation overhead but instead will set the MSS to
++  limit the size of the payload IP packets to the specified number. IPv4 packets
++  will have the MSS value lowered to mssfix - 40 and IPv6 packets to mssfix - 60.
++
+   if ``--mssfix`` is specified is specified without any parameter it
+   inherits the parameters of ``--fragment`` if specified or uses the
+   default for ``--mssfix`` otherwise.
+diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
+index 25b264059..22f9fcf2f 100644
+--- a/src/openvpn/mss.c
++++ b/src/openvpn/mss.c
+@@ -289,6 +289,14 @@ frame_calculate_mssfix(struct frame *frame, struct key_type *kt,
+                        const struct options *options,
+                        struct link_socket_info *lsi)
+ {
++    if (options->ce.mssfix_fixed)
++    {
++        /* we subtract IPv4 and TCP overhead here, mssfix method will add the
++         * extra 20 for IPv6 */
++        frame->mss_fix = options->ce.mssfix - (20 + 20);
++        return;
++    }
++
+     unsigned int overhead, payload_overhead;
+ 
+     overhead = frame_calculate_protocol_header_size(kt, options, false);
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 7ce0ba613..2bf711fd0 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1515,6 +1515,7 @@ show_connection_entry(const struct connection_entry *o)
+ #endif
+     SHOW_INT(mssfix);
+     SHOW_BOOL(mssfix_encap);
++    SHOW_BOOL(mssfix_fixed);
+ 
+     SHOW_INT(explicit_exit_notification);
+ 
+@@ -2937,19 +2938,24 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
+         }
+         else
+ #endif
+-        if (ce->tun_mtu_defined && o->ce.tun_mtu == TUN_MTU_DEFAULT)
++        if (ce->tun_mtu_defined)
+         {
+-            /* We want to only set mssfix default value if we use a default
+-             * MTU Size, otherwise the different size of tun should either
+-             * already solve the problem or mssfix might artifically make the
+-             * payload packets smaller without mssfix 0 */
+-            ce->mssfix = MSSFIX_DEFAULT;
+-            ce->mssfix_encap = true;
+-        }
+-        else
+-        {
+-            msg(D_MTU_INFO, "Note: not enabling mssfix for non-default value "
+-                            "of --tun-mtu");
++            if (o->ce.tun_mtu == TUN_MTU_DEFAULT)
++            {
++                /* We want to only set mssfix default value if we use a default
++                 * MTU Size, otherwise the different size of tun should either
++                 * already solve the problem or mssfix might artifically make the
++                 * payload packets smaller without mssfix 0 */
++                ce->mssfix = MSSFIX_DEFAULT;
++                ce->mssfix_encap = true;
++            }
++            else
++            {
++                /* We still apply the mssfix value but only adjust it to the
++                 * size of the tun interface. */
++                ce->mssfix = ce->tun_mtu;
++                ce->mssfix_fixed = true;
++            }
+         }
+     }
+ 
+@@ -6844,7 +6850,7 @@ add_option(struct options *options,
+         if (p[1])
+         {
+             /* value specified, assume encapsulation is not
+-             * included unles "mtu" follows later */
++             * included unless "mtu" follows later */
+             options->ce.mssfix = positive_atoi(p[1]);
+             options->ce.mssfix_encap = false;
+             options->ce.mssfix_default = false;
+@@ -6854,12 +6860,17 @@ add_option(struct options *options,
+             /* Set MTU to default values */
+             options->ce.mssfix_default = true;
+             options->ce.mssfix_encap = true;
++            options->ce.mssfix_fixed = false;
+         }
+ 
+         if (p[2] && streq(p[2], "mtu"))
+         {
+             options->ce.mssfix_encap = true;
+         }
++        else if (p[2] && streq(p[2], "fixed"))
++        {
++            options->ce.mssfix_fixed = true;
++        }
+         else if (p[2])
+         {
+             msg(msglevel, "Unknown parameter to --mssfix: %s", p[2]);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 9c25fbafd..75f3bb264 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -131,6 +131,7 @@ struct connection_entry
+     bool mssfix_default; /* true if --mssfix should use the default parameters */
+     bool mssfix_encap;   /* true if --mssfix had the "mtu" parameter to include
+                           * overhead from IP and TCP/UDP encapsulation */
++    bool mssfix_fixed;   /* use the mssfix value without any encapsulation adjustments */
+ 
+     int explicit_exit_notification; /* Explicitly tell peer when we are exiting via OCC_EXIT or [RESTART] message */
+ 
+-- 
+2.33.0
 
 
