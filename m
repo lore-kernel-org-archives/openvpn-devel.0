@@ -1,9 +1,10 @@
-From: Saifur Rahman Mohsin <mohsin92@...1835...>
-Date: Thu, 24 Feb 2022 22:53:30 +0530
-Message-Id: <20220224172330.43451-1-mohsin92@...1835...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Ignore deprecation warning for daemon on
- macOS
+Date: Sat, 26 Feb 2022 11:12:11 +0100 (CET)
+Message-Id: <202202261012.21QACBPu018046@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220224172330.43451-1-mohsin92@...1835...>
+References: <20220224172330.43451-1-mohsin92@...1835...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Ignore deprecation warning for
+ daemon on macOS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,38 +15,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Saifur Rahman Mohsin <mohsin92@...1835...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Follow up to a480eaa (does the same for auth-pam.c).
+Acked-by: Gert Doering <gert@...1296...>
 
-Signed-off-by: Saifur Rahman Mohsin<mohsin92@...1835...>
----
- src/plugins/auth-pam/auth-pam.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+Thanks for your submission.  Indeed, this is the same as Arne sent in
+commit a480eaae1d32a6, which was only applied to one of the plugins in
+question (plugins/down-root) and not plugins/auth-pam.
 
-diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-index 3be647e9..33492e9c 100644
---- a/src/plugins/auth-pam/auth-pam.c
-+++ b/src/plugins/auth-pam/auth-pam.c
-@@ -214,10 +214,17 @@ daemonize(const char *envp[])
-         {
-             fd = dup(2);
-         }
-+#if defined(__APPLE__) && defined(__clang__)
-+#pragma clang diagnostic push
-+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-+#endif
-         if (daemon(0, 0) < 0)
-         {
-             plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "daemonization failed");
-         }
-+#if defined(__APPLE__) && defined(__clang__)
-+#pragma clang diagnostic pop
-+#endif
-         else if (fd >= 3)
-         {
-             dup2(fd, 2);
--- 
-2.32.0 (Apple Git-132)
+Your patch has been applied to the master branch.
+
+commit d5c1ec2913620cec5b453c35d5c851f8c79a7ae1
+Author: Saifur Rahman Mohsin via Openvpn-devel
+Date:   Thu Feb 24 22:53:30 2022 +0530
+
+     Ignore deprecation warning for daemon() on macOS (plugin/auth-pam)
+
+     Signed-off-by: Saifur Rahman Mohsin <mohsin92@...1835...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220224172330.43451-1-mohsin92@...1835...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23890.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
