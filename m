@@ -1,13 +1,9 @@
-Date: Sat, 26 Feb 2022 11:15:26 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <Yhn9vqmohOvaTd2Z@...1296...>
-References: <20220224172330.43451-1-mohsin92@...1835...>
- <202202261012.21QACBPu018046@...2054...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="zgjIOtJvv47E+0eu"
-Content-Disposition: inline
-In-Reply-To: <202202261012.21QACBPu018046@...2054...>
+From: Saifur Rahman Mohsin <mohsin92@...1835...>
+Mime-Version: 1.0 (1.0)
+Date: Sun, 27 Feb 2022 17:20:12 +0530
+Message-Id: <6640AD24-2C23-4DC2-B897-8AFF8F249394@...1835...>
+References: <Yhn9vqmohOvaTd2Z@...1296...>
+In-Reply-To: <Yhn9vqmohOvaTd2Z@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH applied] Re: Ignore deprecation warning
  for daemon on macOS
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,15 +14,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Saifur Rahman Mohsin <mohsin92@...1835...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---zgjIOtJvv47E+0eu
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hello
 
-Hi,
+No worries. Thanks.
+
+Saifur Rahman Mohsin
+Technology Evangelist
+
+On 26-Feb-2022, at 3:45 PM, Gert Doering <gert@...1296...> wrote:
+
+=EF=BB=BFHi,
 
 On Sat, Feb 26, 2022 at 11:12:11AM +0100, Gert Doering wrote:
 > Acked-by: Gert Doering <gert@...1296...>
@@ -52,30 +54,10 @@ Apologies for the confusion.
 gert
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+feed honest figures into a computer, honest figures come out. Never doubted=
+=20
+it myself till I met a computer with a sense of humor."
+                            Robert A. Heinlein, The Moon is a Harsh Mistress
 
 Gert Doering - Munich, Germany                             gert@...1296...
-
---zgjIOtJvv47E+0eu
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJiGf29AAoJEB2Cnv7KVigSZEYL/RNb7qjhZ0WHyqopW43tTH+x
-6xhF0dEXLVYSdC9XLbB9I5gRtpZyIp6VooXk4rpwW+Mk/GUjO3eHW+xtiFofevoq
-LkDGjlD25/j/Ge8WFVmesuj+sPMFwKqPFbNv7asMk7nZPKKZQrbfg9CeG/CCmtiH
-0a8/aLiQO+1njj35IitiVZOudnVzB9Hmgx5GsgZGL13AFSTNSofJgWTiqUvCcN/M
-7Hcow/x/maEwGPv05IQCabq6WFLNVaTBxk/xCmuIZJdAGxPo8QrlwBdcF7idG+s7
-xUCEhZe26OW/x4+GGva0j/ASS9NDo2UU2VrBYex7p7ZfkF8hlkFFVF3G6JGXUu4b
-VvsorNAtYAFFX1Ed8PqgUh1lyt+ij+xHy/GocVYdei+tGsLb5Ia4fBlH59z1nQ9n
-Jpgh9RyhvFHloMEpiRVCGBUdf7FzZha0tskr8e5JoSxuGAinHTr19OkECFDd8Hji
-nzeXLjICOG2ZPadPtwOdeA8hAsZkbVcANKq3Tg4+vQ==
-=QGZE
------END PGP SIGNATURE-----
-
---zgjIOtJvv47E+0eu--
 
