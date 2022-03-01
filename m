@@ -1,12 +1,8 @@
-Content-Type: multipart/mixed; boundary="------------SfSbZAUgxDemWjxJZroolTWF"
-Message-ID: <7b9a5dc8-3601-895d-a7e6-5e54605c9c24@...515...>
-Date: Wed, 2 Mar 2022 14:28:34 +0200
-MIME-Version: 1.0
-Content-Language: en-US
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-References: <b9e4b423-0ea0-d6fc-e590-ec2e83a0b282@...515...>
-In-Reply-To: <b9e4b423-0ea0-d6fc-e590-ec2e83a0b282@...515...>
-Subject: [Openvpn-devel] Summary of the community meeting (2nd March 2022)
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue,  1 Mar 2022 15:50:54 +0200
+Message-Id: <20220301135054.277-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] Fix incorrect default mssfix value in
+ server mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,186 +11,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-This is a multi-part message in MIME format.
---------------SfSbZAUgxDemWjxJZroolTWF
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Lev Stipakov <lev@...515...>
 
+When calculating default mssfix, we take into account
+protocol overhead, which usually includes 3 bytes peer-id.
 
-Hi,
+Peer-id usage is indicated by options->use_peer_id flag.
+In client mode it is set when applying pushed options.
+In server mode  it is not set and as a result mssfix value
+is 3 bytes off.
 
-Here's the summary of the IRC meeting.
+Fix by setting this flag in multi.c when calculating
+tunnel-specific options.
 
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
+ src/openvpn/multi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-COMMUNITY MEETING
-
-Place: #openvpn-meeting on libera.chat
-Date: Wed 2nd March 2022
-Time: 10:30 CET (9:30 UTC)
-
-Planned meeting topics for this meeting were here:
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2022-03-02>
-
-Your local meeting time is easy to check from services such as
-
-<http://www.timeanddate.com/worldclock>
-
-SUMMARY
-
-d12fk, lev, mattock, ordex, plaisthos and rob0 participated in this meeting.
-
----
-
-Noted that email sending in Trac does not work because the recipient 
-(e.g. gmail) rejects the From address. Mattock will organize a meeting 
-with somebody that has access to Sendgrid to resolve this. Then we can 
-start adding Sendgrid-based email delivery to other places as well (Pwm, 
-Trac).
-
----
-
-Noted that buildbot Windows builds broke on several fronts due to change 
-in OpenVPN build process (spectre mitigation, openssl3). Those are now 
-fixed except for openvpn-gui build which still fails. Mattock will work 
-on that.
-
----
-
-Lev is working on dco-win and fixed a bug when connection stalls (found 
-  by plaisthos on his hardware). He's also working on adding mssfix 
-support. We also now have chachapoly support on Windows 11
-
-Latest signed dco-win releases could be found here:
-
-<https://github.com/OpenVPN/ovpn-dco-win/releases>
-
----
-
-Talked about security@...515... GPG keys. Noted that MaxF needs one 
-and that the existing subkeys are soon expiring.
-
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index d8d44f96..ea19c539 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1772,6 +1772,7 @@ multi_client_set_protocol_options(struct context *c)
+     if (proto & IV_PROTO_DATA_V2)
+     {
+         tls_multi->use_peer_id = true;
++        o->use_peer_id = true;
+     }
+     else if (dco_enabled(o))
+     {
 -- 
+2.23.0.windows.1
 
-Full chatlog attached
-
---------------SfSbZAUgxDemWjxJZroolTWF
-Content-Type: text/plain; charset=UTF-8;
- name="openvpn_irc_meeting_chatlog_2022-03-02.txt"
-Content-Disposition: attachment;
- filename="openvpn_irc_meeting_chatlog_2022-03-02.txt"
-Content-Transfer-Encoding: base64
-
-KDExLjMxLjI4KSBtYXR0b2NrOiBoaQooMTEuMzEuMzEpIG1hdHRvY2s6IG1lZXRpbmcgdGlt
-ZQooMTEuMzEuMzkpIG1hdHRvY2s6IGFkZGluZyB0aGUgbWVldGluZyBhZ2VuZGEgcGFnZXMK
-KDExLjMyLjEzKSBNYXhGOiBoaSEKKDExLjMyLjIyKSBwbGFpc3Rob3M6IGhleQooMTEuMzIu
-MjgpIGRhem86IGhleSEKKDExLjMyLjM1KSBsZXZfXzogaGVsbG8KKDExLjMyLjQ0KSBtYXR0
-b2NrOiBoaSBndXlzIQooMTEuMzUuMzcpIG1hdHRvY2s6IGh0dHBzOi8vY29tbXVuaXR5Lm9w
-ZW52cG4ubmV0L29wZW52cG4vd2lraS9Ub3BpY3MtMjAyMi0wMy0wMgooMTEuMzYuNDgpIGQx
-MmZrOiBtb2luCigxMS4zNi41MykgbWF0dG9jazogd2lsbCBjcm9uMiBiZSBoZXJlPwooMTEu
-MzguNDApICoqKmQxMmZrIGFkZGVkIC0tZG5zIHRvIHRoZSBhZ25lZGEKKDExLjM4LjQ4KSBt
-YXR0b2NrOiArMQooMTEuNDEuMTQpIG1hdHRvY2s6IG1heWJlIHN5bmMtdXAgZmlyc3Q/Cigx
-MS40MS4yNykgbWF0dG9jazogY3JvbjIgaXMgbm90IGhlcmUgaXQgc2VlbXMsIGJ1dCBtYXli
-ZSBhIHNtYWxsIHN0YXR1cyByZXBvcnQgd291bGQgYmUgb2s/CigxMS40Mi4xMSkgZGF6bzog
-eWVhaAooMTEuNDIuNTkpIG1hdHRvY2s6IEknbGwgc3RhcnQKKDExLjQzLjE4KSBtYXR0b2Nr
-OiBJJ20gZmlnaHRpbmcgU2VuZGdyaWQgdG8gdW5kZXJzdGFuZCB3aHkgdGhlIGVtYWlscyAo
-dGhhdCBnZXQgcXVldWVkKSBnZXQgaW52YWxpZCAiRnJvbSIgYWRkcmVzc2VzCigxMS40My4z
-OCkgbWF0dG9jazogd2l0aG91dCB2aXNpYmlsaXR5IGF0IHRoZSBzZW5kZ3JpZCBzaWRlIGZp
-eGluZyB0aGlzIGlzIGEgYml0IGNoYWxsZW5naW5nLCBzbyBJIG1heSBoYXZlIHRvIGRvIGEg
-Y2FsbCB3aXRoIHNvbWVib2R5IHdobyBoYXMgdGhhdCBhY2Nlc3MKKDExLjQ0LjA4KSBkYXpv
-OiBjb3VsZCBpdCBiZSB5b3UgbmVlZCBkaWZmZXJlbnQgc2VuZGdyaWQgY3JlZGVudGlhbHMg
-cGVyICJmcm9tIGlkZW50aXR5Ij8KKDExLjQ0LjI1KSBtYXR0b2NrOiBvbiBidWlsZGJvdCBz
-aWRlIHRoaW5ncyBoYXZlIHByb2dyZXNzZWQsIGJ1dCBJIHdhcyBzZXQgYmFjayBieSB0d28g
-dGhpbmdzIDEpIGludHJvZHVjdGlvbiBvZiBzcGVjdHJlIG1pdGlnYXRpb24gaW4gdGhlIFdp
-bmRvd3MgYnVpbGQgcHJvY2VzcyAobmVlZGVkIGZpeGVzKSBhbmQgMikgb3BlbnNzbDMKKDEx
-LjQ0LjQwKSBtYXR0b2NrOiBkYXpvOiB0aGUgY3JlZGVudGlhbHMgYXJlIG9rCigxMS40NS4y
-MikgbWF0dG9jazogdGhlIGVtYWlsIGdldHMgZHJvcHBlZCBieSB0aGUgcmVjaXBpZW50IGVt
-YWlsIHNlcnZlciBkdWUgdG8gbWFsZm9ybWVkIEZyb20gYWRkcmVzcwooMTEuNDUuMjMpIGRh
-em86IE9yIHRoYXQgdGhlIGVudmVsb3BlIHNlbmRlciBpcyBub3QgdGhlIHNhbWUgYXMgImZy
-b20iIC4uLiBhbmQgc2VuZGdyaWQgcHJpb3JpdGlzZXMgKG92ZXJ3cml0ZXMpICJmcm9tIiB3
-aXRoIHRoZSBlbnZlbG9wZSBhZGRyZXNzPyAoYXMgYW4gc3BhbSBjb3VudGVyIG1lYXN1cmUp
-CigxMS40NS4zMykgZGF6bzogYWhoCigxMS40NS41OSkgbWF0dG9jazogaXQgaXMgaGFyZCB0
-byB0ZWxsIHdoYXQgZXhhY3RseSBpcyB3cm9uZyB3aXRob3V0IHRoZSB2aXNpYmlsaXR5LCBz
-byBJIHRoaW5rIEkgbmVlZCBhIHNlc3Npb24gd2l0aCBhIHBlcnNvbiB3aXRoIFNlbmRncmlk
-IGFjY2VzcyB0byByZXNvbHZlIGl0CigxMS40Ni4wNikgbWF0dG9jazogYW55aG93CigxMS40
-Ni4zMCkgbWF0dG9jazogYnVpbGRib3Qgd2luZG93cyBidWlsZHMgaGF2ZSBvbmx5IG9uZSBm
-aW5hbCBpc3N1ZTogb3BlbnZwbi1ndWkgYnVpbGRzIGJyb2tlLCBhbmQgdGhpcyBzZWVtcyBh
-bHNvIHJlbGF0ZWQgdG8gb3BlbnNzbDMKKDExLjQ2LjM2KSBtYXR0b2NrOiBjb2RlIHNpZ25p
-bmcgZXRjLiBpcyB3b3JraW5nIGZpbmUKKDExLjQ3LjAwKSBtYXR0b2NrOiBvbmNlIHdpbmRv
-d3MgYnVpbGQgYXJlIHdvcmtpbmcsIEkgd2FudCB0byBlbmFibGUgbm90aWZpY2F0aW9ucyAo
-d2hpY2ggaXMgYWxzbyBibG9ja2VkIGJ5IHNlbmRncmlkIGlzc3VlcykKKDExLjQ3LjA5KSBt
-YXR0b2NrOiB0aGVuIGJ1aWxkYm90IHdpbGwgYmUgImluIHByb2R1Y3Rpb24iCigxMS40Ny4y
-MSkgbWF0dG9jazogbm93IGl0IGlzLCBidXQgbm9ib2R5IHdpbGwga25vdyBpZiB0aGUgYnVp
-bGRzIGRvIG5vdCB3b3JrCigxMS40Ny4zMCkgbWF0dG9jazogdGhhdCdzIGFsbCBmcm9tIG15
-IGVuZAooMTEuNTAuNTApIGQxMmZrOiBpcyBpdCBhbHNvIHRoZSBlbmQgb2Ygc3RhdHVzIHVw
-ZGF0ZXM/CigxMS41MS4wMCkgbWF0dG9jazogY291bGQgdmVyeSB3ZWxsIGJlCigxMS41MS4w
-MSkgbGV2X186IEkgYW0gd29ya2luZyBvbiBkY28td2luLCBmaXhlZCBhIGJ1ZyB3aGVuIGNv
-bm5lY3Rpb24gc3RhbGxzIHdoaWNoIHBsYWlzdGhvcyBkaXNjb3ZlcmVkIG9uIGhpcyBoYXJk
-d2FyZS4gV29ya2luZyBvbiBhZGRpbmcgbXNzZml4IHN1cHBvcnQgCigxMS41MS4xNikgbWF0
-dG9jazogd2UgaGFkIGEgdm9sdW50ZWVyISA6KQooMTEuNTIuNDQpIGxldl9fOiBhbmQgd2Ug
-YWxzbyBoYXZlIGNoYWNoYXBvbHkgc3VwcG9ydCBvbiBXaW5kb3dzIDExCigxMS41My4xMCkg
-bGV2X186IGxhdGVzdCBzaWduZWQgZGNvLXdpbiByZWxlYXNlcyBjb3VsZCBiZSBmb3VuZCBo
-ZXJlIGh0dHBzOi8vZ2l0aHViLmNvbS9PcGVuVlBOL292cG4tZGNvLXdpbi9yZWxlYXNlcwoo
-MTEuNTMuNDEpIG1hdHRvY2s6ICsxCigxMS41My40NykgZDEyZms6IGRvIHlvdSBrbm93IGlm
-IHRoZXkgd2lsbCBicmluZyBjaGFjaGEgdG8gd2luZG93cyAxMCB3aXRoIGFuIHVwZGF0ZT8K
-KDExLjU1LjMyKSBsZXZfXzogSSBkb24ndCBrbm93IGZvciBzdXJlIGJ1dCBJIGRvdWJ0Cigx
-MS41Ni4xMSkgbGV2X186IGJ1dCBpZiB0aGV5IGRvIGl0IHdpbGwgd29yayBmb3IgdXMsIHNp
-bmNlIHdlIHByb2JlIGl0IGluIHJ1bnRpbWUKKDExLjU2LjU2KSBkMTJmazogaXMgaXQgaW4g
-Y3J5cHRvYXBpPwooMTEuNTcuNTkpIGxldl9fOiBDTkcKKDExLjU4LjQwKSBsZXZfXzogaHR0
-cHM6Ly9kb2NzLm1pY3Jvc29mdC5jb20vZW4tdXMvd2luZG93cy93aW4zMi9zZWNjbmcvY25n
-LXBvcnRhbCBDcnlwdG9ncmFwaHkgQVBJOiBOZXh0IEdlbmVyYXRpb24gKENORykgaXMgdGhl
-IGxvbmctdGVybSByZXBsYWNlbWVudCBmb3IgdGhlIENyeXB0b0FQSQooMTIuMDIuMTMpIGQx
-MmZrOiBWaXN0YSBvbndhcmRzLCBtYXliZSB0aGUgZHJpdmVyIGNhbiBqdXN0IGJlIGJhY2tw
-b3J0ZWQsIGRvIHlvdSBrbm93IGlmIHRoZSBhbGdvcyBhcmUgaW4gYSBkZWRpY2F0ZWQgZGxs
-PwooMTIuMDMuMzUpIGxldl9fOiBtdXN0IGJlIEJDcnlwdC5kbGwKKDEyLjA2LjIyKSBwbGFp
-c3Rob3M6IGlzbid0IHRoZSBkcml2ZXIgZnJhbWV3b3JrIGl0c2VsZiB0aGF0IHlvdSBhcmUg
-dXNpbmcgd2luMTArPwooMTIuMDYuNDEpIGxldl9fOiBidXQgZGNvLXdpbiByZXF1aXJlcyBh
-dCBsZWFzdCBXaW5kb3dzIDEwIDIwMDQgKHNpbmNlIHRoYXQgZnJhbWV3b3JrIEkgdXNlIGFw
-cGVhcmVkIHNpbmNlIHRoZXJlKQooMTIuMTEuNTApIGQxMmZrOiB0aGluayBpdCB3b3VsZCBi
-ZSBwb3NzaWJsZSB0byBkZXYgYSBjaGNoYXBsb3kgZHJpdmVyIGZvciBDTkcgYmVmb3JlIHdp
-bjExLiBhbnl3YXksIHNoYWxsIHdlIG1vdmUgb24gd2l0aCB0aGUgYWdlbmRhPwooMTIuMTIu
-MTEpIG1hdHRvY2s6IHllcyB5ZXMKKDEyLjEyLjE1KSBtYXR0b2NrOiBtb3ZlIG9uCigxMi4x
-Mi4yMSkgbWF0dG9jazogYW55dGhpbmcgZWxzZSB0byByZXBvcnQgZnJvbSBhbnlvbmU/Cigx
-Mi4xNC4wNykgbWF0dG9jazogSSBoYXZlIG9uZSB0aGluZyBhY3R1YWxseTogTWF4RiBpcyBi
-ZWluZyBhZGRlZCB0byB0aGUgc2VjdXJpdHkgbGlzdAooMTIuMTQuMjEpIG1hdHRvY2s6IEkg
-dXNlIHRoZSBwaHJhc2UgImlzIGJlaW5nIGFkZGVkIiBiZWNhdXNlIEkgY2FuJ3QgZG8gaXQg
-bm8gbG9uZ2VyCigxMi4xNC4yOSkgbm92YWZsYXNoIFt+bm92YWZsYXNoQDE4NS0yMjctNzUt
-MjQxLmRzbC5jYW1icml1bS5ubF0gw6ggZW50cmF0byBuZWxsYSBzdGFuemEuCigxMi4xNC4y
-OSkgbWF0dG9jazogc28sIEkgY2FuIGF0IG1vc3QgcHVzaCBhdCBwZW9wbGUgd2hvIGNhbiBk
-byBpdAooMTIuMTQuNTApIGRhem86ICsxCigxMi4xNi4yNCkgTWF4RjogSG93IGRvZXMgaXQg
-d29yayB3aXRoIHRoZSBHUEcgc3Via2V5cz8gSSd2ZSB1cGxvYWRlZCBhIGtleSB0byBhIGtl
-eXNlcnZlciBhbHJlYWR5CigxMi4xOC41MSkgbWF0dG9jazogZGF6byBjYW4gYW5zd2VyIG1v
-cmUgcHJvcGVybHksIGJ1dCBiYXNpY2FsbHkgeW91IGdldCBhIHN1YmtleSBvZiBzZWN1cml0
-eUBvcGVucHZuLm5ldCBrZXkgb25jZSBkYXpvIGNvbmZpcm1zIHRoYXQgeW91IGFyZSB5b3UK
-KDEyLjE5LjIyKSBtYXR0b2NrOiB0aGF0IGFsbG93cyB1cyBhbGwgdG8gb3BlbiBlbWFpbHMg
-ZW5jcnlwdGVkIHdpdGggdGhlIHNhbWUgcHVibGljIHNlY3VyaXR5QG9wZW52cG4ubmV0IGtl
-eQooMTIuMTkuMzQpIGRhem86IE1heEY6IEknbGwgYXJyYW5nZSB0aGF0IGZvciB5b3UKKDEy
-LjE5LjUyKSBtYXR0b2NrOiB5b3VyIG93biBHUEcga2V5IGlzIG5vdCByZWxldmFudCBpbiB0
-aGlzIGNvbnRleHQsIGV4Y2VwdCBtYXliZSB0byBwcm92ZSB5b3VyIGlkZW50aXR5IGFuZCB0
-byByZWNlaXZlIHRoZSBzdWJrZXkKKDEyLjIwLjAwKSBkYXpvOiBhbmQgaXQncyBnZXR0aW5n
-IGNsb3NlIHRvIGFub3RoZXIga2V5IHJvdGF0aW9uCigxMi4yMC4wNCkgTWF4RjogYWgsIEkg
-c2VlCigxMi4yMC4wOCkgTWF4RjogdGhhbmsgeW91CigxMi4yMC4zMCkgZGF6bzogeWVhaCwg
-SSBuZWVkIHlvdXIgcHVibGljIGtleSAuLi4geW91IGRvbid0IGdldCBhbnkgb2YgdGhlIHNl
-Y3JldCBzdHVmZiB1bmVuY3J5cHRlZCBmcm9tIG1lIDstKQooMTIuMjIuMDQpIE1heEY6IEkn
-bGwgbWFpbCBpdCB0byB5b3UgaW4gYSBtb21lbnQuIGRhdmlkc0BvcGVudnBuLm5ldCBpcyB0
-aGUgcmlnaHQgYWRkcmVzcywgY29ycmVjdD8KKDEyLjIyLjUzKSBNYXhGOiBhbHNvLCBpdCdz
-IGhlcmU6IGh0dHBzOi8va2V5c2VydmVyLnVidW50dS5jb20vcGtzL2xvb2t1cD9zZWFyY2g9
-bWF4K2ZpbGxpbmdlciZmaW5nZXJwcmludD1vbiZvcD1pbmRleAooMTIuMjIuNTUpIG1hdHRv
-Y2s6IEkgbmVlZCB0byBzcGxpdCBpbiBhIGZldyBtaW5zLCBsdW5jaAooMTIuMjMuMDApIG1h
-dHRvY2s6IGFueSBsYXN0IG1pbnV0ZSB0b3BpY3M/CigxMi4yMy40MSkgZDEyZms6IC0tZG5z
-IHNob3VsZCBiZSBxdWljawooMTIuMjMuNTIpIGRhem86IG1hdHRvY2s6IHllcwooMTIuMjMu
-NTUpIGRhem86IHNvcnJ5CigxMi4yMy41NikgZDEyZms6IEkgb25seSBoYXZlIDEgYWNrIG9u
-IGdpdGh1YgooMTIuMjMuNTkpIGRhem86IE1heEY6IFllcyEKKDEyLjI0LjEyKSBtYXR0b2Nr
-OiB5b3UgY2FuIGtlZXAgdGFsa2luZywgSSB3aWxsIGxlYXZlIHNvb24KKDEyLjI0LjE4KSBk
-MTJmazogaXMgaXQgZW5vdWdoPwooMTIuMjQuMjEpIG1hdHRvY2s6IHN1bW1hcnkgaXMgcmVh
-ZHkgdXAgdG8gdGhpcyBwb2ludAooMTIuMjUuMjQpIGRhem86IGQxMmZrOiB5ZXMsIHRoYXQn
-cyBub3JtYWxseSBlbm91Z2ggb24gdGhlIGNvbW11bml0eSBzaWRlCigxMi4yNS40MikgZGF6
-bzogaXQncyBjb3JwLXNpZGUgdGhlcmUgaXMgdGhlIDItQUNLIGFwcHJvYWNoCigxMi4yOS4x
-MSkgcm9iMDogYXd3LCBJIG1pc3NlZCBvdXQgOigKKDEyLjMwLjU3KSBkMTJmazogb2theSB3
-aWxsIGUtbWFpbCB0aGUgcGF0Y2ggdG8gLWRldmVsIHRoZW4K
-
---------------SfSbZAUgxDemWjxJZroolTWF--
 
