@@ -1,12 +1,12 @@
-Message-ID: <44258b51-41a7-8d81-e362-c399e069f476@...1227...>
-Date: Thu, 3 Mar 2022 15:08:25 +0100
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <20220301135054.277-1-lstipakov@...277...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20220301135054.277-1-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix incorrect default mssfix value in
- server mode
+References: <20220224144245.878056-1-arne@...1227...>
+In-Reply-To: <20220224144245.878056-1-arne@...1227...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri, 4 Mar 2022 13:57:46 +0200
+Message-ID: <CAGyAFMW4hX8p9GH8unPAhLg-OPevpvdmDu_GUbLPUZBwB0bLKA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000c087dd05d9633916"
+Subject: Re: [Openvpn-devel] [PATCH] Implement fixed MSS value for mssfix
+ and use it for non default MTUs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +15,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Am 01.03.22 um 14:50 schrieb Lev Stipakov:
-> From: Lev Stipakov <lev@...515...>
-> 
-> When calculating default mssfix, we take into account
-> protocol overhead, which usually includes 3 bytes peer-id.
-> 
-> Peer-id usage is indicated by options->use_peer_id flag.
-> In client mode it is set when applying pushed options.
-> In server mode  it is not set and as a result mssfix value
-> is 3 bytes off.
-> 
-> Fix by setting this flag in multi.c when calculating
-> tunnel-specific options.
+--000000000000c087dd05d9633916
+Content-Type: text/plain; charset="UTF-8"
 
-Acked-By: Arne Schwabe <arne@...1227...>
+Hi,
 
-This fixes the issue at hand. It would be better to refactor the whole 
-peerid in use signalling eventually but this is good enough for now.
+encapsoluation
+>
 
-Arne
+Built and tested on Windows with dco, works as expected - "mssfix 1000
+fixed" results in MSS 960 and 1000 bytes in-tunnel TCP packets with 1024
+bytes transport UDP packets. Same behavior with "tun-mtu 1000".
+
+Acked-by: Lev Stipakov <lstipakov@...277...>
+
+--000000000000c087dd05d9633916
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr">Hi,<div><br></div></div><div class=3D"gma=
+il_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8=
+ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">encapsoluation<=
+br></blockquote><div><br></div><div>Built and tested on Windows with dco, w=
+orks as expected - &quot;mssfix 1000 fixed&quot; results in MSS 960 and 100=
+0 bytes in-tunnel TCP packets with 1024 bytes transport UDP packets. Same b=
+ehavior with &quot;tun-mtu 1000&quot;.=C2=A0</div><div><br></div><div>Acked=
+-by: Lev Stipakov &lt;<a href=3D"mailto:lstipakov@...277...">lstipakov@...1665...=
+77...</a>&gt;</div></div></div>
+
+--000000000000c087dd05d9633916--
 
