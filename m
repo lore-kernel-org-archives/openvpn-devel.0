@@ -1,13 +1,11 @@
-Message-ID: <f4d55b82-4a9d-fd09-a8d9-f4ec6a8692d1@...2181...>
-Date: Tue, 8 Mar 2022 15:16:37 +0100
+Message-ID: <d0cd57b8-82aa-31cf-1db5-c328ab775748@...2181...>
+Date: Tue, 8 Mar 2022 15:23:17 +0100
 MIME-Version: 1.0
 Content-Language: en-US
 References: <20220224165557.22060-1-kprovost@...2661...>
- <20220224165557.22060-3-kprovost@...2661...>
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20220224165557.22060-3-kprovost@...2661...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] ovpn-dco: introduce FreeBSD
- data-channel offload support
+In-Reply-To: <20220224165557.22060-1-kprovost@...2661...>
+Subject: Re: [Openvpn-devel] [PATCH DCO]: FreeBSD DCO support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,57 +18,33 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 To: Kristof Provost <kprovost@...2661...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi Kristof,
-
-A quick question for you, see below
+Hi,
 
 On 24/02/2022 17:55, Kristof Provost via Openvpn-devel wrote:
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -787,7 +787,20 @@ dnl
->   			AC_DEFINE(ENABLE_DCO, 1, [Enable data channel offload for Linux])
->   			AC_MSG_NOTICE([Enabled ovpn-dco support for Linux])
->   		;;
-> -
-> +		*-*-freebsd*)
-> +			DCO_CFLAGS="-I${DCO_SOURCEDIR}"
-> +			saved_CFLAGS="${CFLAGS}"
-> +			CFLAGS="${CFLAGS} ${DCO_CFLAGS}"
-> +			AC_CHECK_HEADERS(
-> +					 [if_ovpn.h],
-> +					 ,
-> +					 [AC_MSG_ERROR([if_ovpn.h is missing (use DCO_SOURCEDIR to set path to it, CFLAGS=${CFLAGS})])]
-> +					 )
-> +			CFLAGS=${saved_CFLAGS}
-> +			LIBS="${LIBS} -lnv"
-> +			AC_DEFINE(ENABLE_DCO, 1, [Enable data channel offload for FreeBSD])
-> +			AC_MSG_NOTICE([Enabled ovpn-dco support for FreeBSD])
-> +		;;
+> I've had to add a lot of '|| defined(TARGET_FREEBSD)', and I think the
+> code could be a bit cleaner if we'd make these calls conditional only on
+> defined(ENABLE_DCO), and instead expect every DCO implementation to
+> provide them, if only as stubs. I've not done that here.
 
-If you double check the latest dco branch, you will see that I have 
-dropped the DCO_SOURCEDIR variable and I have rather switched to "let's 
-include the kernel API header in the openvpn repository all the time and 
-be happy with it".
+Can you name what new internal APIs would you want to add?
+I am also in favor of less ifdefs and have APIs that can be defined as 
+stub or not based on the platform.
 
-The idea is that the kernel API will always be backwards compatible, 
-therefore having a stale header will never be a problem. It can be 
-updated when a new feature is implemented in openvpn itself. (a similar 
-approach is taken by hostapd or iw on Linux, where they ship a copy of 
-nl80211.h)
 
-On the other hand, we drastically simplify the configure logic and avoid 
-having to deal with this variable which may have different pitfalls on 
-different platforms.
+A comment for your kernel API:
+I have seen you created an API named "OVPN_SET_TIMEOUT", however I'd 
+suggest to name it "OVPN_SET_PEER" (like on Linux and Windows), because 
+the idea is that this call will be used to set any additional/optional 
+per-peer param.
 
-Do you have any opinion about the above? or shipping a copy of the 
-header with openvpn source code is fine with you?
+For example, we have been recently working on mssfix, which we may want 
+to set on a per-peer basis (more params may come later).
+
+The SET_PEER call will allow to set all these params (if specified).
+
+What do you think?
 
 Regards,
-
-
-p.s. as a side note, the rest of the code contains some "code style" 
-issues. Nothing major, but wanted to mention it (we can discuss on IRC 
-if you want).
 
 -- 
 Antonio Quartulli
