@@ -1,12 +1,13 @@
+Message-ID: <f4d55b82-4a9d-fd09-a8d9-f4ec6a8692d1@...2181...>
+Date: Tue, 8 Mar 2022 15:16:37 +0100
 MIME-Version: 1.0
-References: <20220224144245.878056-1-arne@...1227...>
-In-Reply-To: <20220224144245.878056-1-arne@...1227...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 4 Mar 2022 13:57:46 +0200
-Message-ID: <CAGyAFMW4hX8p9GH8unPAhLg-OPevpvdmDu_GUbLPUZBwB0bLKA@...278...>
-Content-Type: multipart/alternative; boundary="000000000000c087dd05d9633916"
-Subject: Re: [Openvpn-devel] [PATCH] Implement fixed MSS value for mssfix
- and use it for non default MTUs
+Content-Language: en-US
+References: <20220224165557.22060-1-kprovost@...2661...>
+ <20220224165557.22060-3-kprovost@...2661...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20220224165557.22060-3-kprovost@...2661...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] ovpn-dco: introduce FreeBSD
+ data-channel offload support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,36 +16,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Kristof Provost <kprovost@...2661...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000c087dd05d9633916
-Content-Type: text/plain; charset="UTF-8"
+Hi Kristof,
 
-Hi,
+A quick question for you, see below
 
-encapsoluation
->
+On 24/02/2022 17:55, Kristof Provost via Openvpn-devel wrote:
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -787,7 +787,20 @@ dnl
+>   			AC_DEFINE(ENABLE_DCO, 1, [Enable data channel offload for Linux])
+>   			AC_MSG_NOTICE([Enabled ovpn-dco support for Linux])
+>   		;;
+> -
+> +		*-*-freebsd*)
+> +			DCO_CFLAGS="-I${DCO_SOURCEDIR}"
+> +			saved_CFLAGS="${CFLAGS}"
+> +			CFLAGS="${CFLAGS} ${DCO_CFLAGS}"
+> +			AC_CHECK_HEADERS(
+> +					 [if_ovpn.h],
+> +					 ,
+> +					 [AC_MSG_ERROR([if_ovpn.h is missing (use DCO_SOURCEDIR to set path to it, CFLAGS=${CFLAGS})])]
+> +					 )
+> +			CFLAGS=${saved_CFLAGS}
+> +			LIBS="${LIBS} -lnv"
+> +			AC_DEFINE(ENABLE_DCO, 1, [Enable data channel offload for FreeBSD])
+> +			AC_MSG_NOTICE([Enabled ovpn-dco support for FreeBSD])
+> +		;;
 
-Built and tested on Windows with dco, works as expected - "mssfix 1000
-fixed" results in MSS 960 and 1000 bytes in-tunnel TCP packets with 1024
-bytes transport UDP packets. Same behavior with "tun-mtu 1000".
+If you double check the latest dco branch, you will see that I have 
+dropped the DCO_SOURCEDIR variable and I have rather switched to "let's 
+include the kernel API header in the openvpn repository all the time and 
+be happy with it".
 
-Acked-by: Lev Stipakov <lstipakov@...277...>
+The idea is that the kernel API will always be backwards compatible, 
+therefore having a stale header will never be a problem. It can be 
+updated when a new feature is implemented in openvpn itself. (a similar 
+approach is taken by hostapd or iw on Linux, where they ship a copy of 
+nl80211.h)
 
---000000000000c087dd05d9633916
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On the other hand, we drastically simplify the configure logic and avoid 
+having to deal with this variable which may have different pitfalls on 
+different platforms.
 
-<div dir=3D"ltr"><div dir=3D"ltr">Hi,<div><br></div></div><div class=3D"gma=
-il_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8=
-ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">encapsoluation<=
-br></blockquote><div><br></div><div>Built and tested on Windows with dco, w=
-orks as expected - &quot;mssfix 1000 fixed&quot; results in MSS 960 and 100=
-0 bytes in-tunnel TCP packets with 1024 bytes transport UDP packets. Same b=
-ehavior with &quot;tun-mtu 1000&quot;.=C2=A0</div><div><br></div><div>Acked=
--by: Lev Stipakov &lt;<a href=3D"mailto:lstipakov@...277...">lstipakov@...1665...=
-77...</a>&gt;</div></div></div>
+Do you have any opinion about the above? or shipping a copy of the 
+header with openvpn source code is fine with you?
 
---000000000000c087dd05d9633916--
+Regards,
+
+
+p.s. as a side note, the rest of the code contains some "code style" 
+issues. Nothing major, but wanted to mention it (we can discuss on IRC 
+if you want).
+
+-- 
+Antonio Quartulli
 
