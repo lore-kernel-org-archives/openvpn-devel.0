@@ -1,11 +1,12 @@
-From: Kristof Provost <kprovost@...2661...>
-Date: Thu, 10 Mar 2022 14:13:14 +0100
-Message-Id: <20220310131314.12295-2-kprovost@...2661...>
-In-Reply-To: <20220310131314.12295-1-kprovost@...2661...>
-References: <20220310131314.12295-1-kprovost@...2661...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] ovpn-dco: introduce FreeBSD data-channel
- offload support
+References: <20220310115718.11188-1-gert@...1296...>
+In-Reply-To: <20220310115718.11188-1-gert@...1296...>
+From: Pete Nelson <petiepooo@...277...>
+Date: Thu, 10 Mar 2022 13:57:01 +0000
+Message-ID: <CAAYFXLmCztuh1AZHzdGW=3cKM9g5GjaEWy4pBWzbsaGsp7ri+w@...278...>
+Content-Type: multipart/alternative; boundary="000000000000416eba05d9dd9789"
+Subject: Re: [Openvpn-devel] [PATCH] Enable deferred auth for multiple
+ plugins (RFC).
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,983 +15,760 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Kristof Provost <kp@...1376...>
+--000000000000416eba05d9dd9789
+Content-Type: text/plain; charset="UTF-8"
 
-Implement data-channel offload for FreeBSD. The implementation and flow
-is very similar to that of the Linux DCO support.
+One of the behaviors that brought this to light was a user who had an LDAP
+(non-deferred) plugin followed by a Duo MFA (deferred) plugin.  He noted
+that, even if the LDAP call returned failure, the Duo plugin was still
+called.  That would generate a push notification to his phone even though
+the authentication was already destined to fail due to LDAP.  It looks like
+this patch returns failure when the first plugin fails, so would resolve
+that scenario by not calling the Duo plugin at all if LDAP returned failure.
 
-Signed-off-by: Kristof Provost <kprovost@...2661...>
----
- configure.ac                   |   6 +-
- src/openvpn/Makefile.am        |   1 +
- src/openvpn/dco_freebsd.c      | 584 +++++++++++++++++++++++++++++++++
- src/openvpn/dco_freebsd.h      |  46 +++
- src/openvpn/dco_internal.h     |   1 +
- src/openvpn/forward.c          |   6 +-
- src/openvpn/mtcp.c             |   6 +-
- src/openvpn/multi.c            |  32 +-
- src/openvpn/options.c          |   4 +-
- src/openvpn/ovpn_dco_freebsd.h |  60 ++++
- src/openvpn/tun.c              |   8 +-
- src/openvpn/tun.h              |   6 +
- 12 files changed, 746 insertions(+), 14 deletions(-)
- create mode 100644 src/openvpn/dco_freebsd.c
- create mode 100644 src/openvpn/dco_freebsd.h
- create mode 100644 src/openvpn/ovpn_dco_freebsd.h
+Is the source for the "auth-multi" plugin you tested with available
+anywhere?  I could not find it, and had wanted something like it for my own
+testing.
 
-diff --git a/configure.ac b/configure.ac
-index cdfb198e..18840ae7 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -787,7 +787,11 @@ dnl
- 			AC_DEFINE(ENABLE_DCO, 1, [Enable data channel offload for Linux])
- 			AC_MSG_NOTICE([Enabled ovpn-dco support for Linux])
- 		;;
--
-+		*-*-freebsd*)
-+			LIBS="${LIBS} -lnv"
-+			AC_DEFINE(ENABLE_DCO, 1, [Enable data channel offload for FreeBSD])
-+			AC_MSG_NOTICE([Enabled ovpn-dco support for FreeBSD])
-+		;;
- 		*-mingw*)
- 			AC_MSG_NOTICE([NOTE: --enable-dco ignored on Windows because it's always enabled])
- 		;;
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 84fd3202..4515935e 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -54,6 +54,7 @@ openvpn_SOURCES = \
- 	crypto_openssl.c crypto_openssl.h \
- 	crypto_mbedtls.c crypto_mbedtls.h \
- 	dco.c dco.h dco_internal.h \
-+	dco_freebsd.c dco_freebsd.h \
- 	dco_linux.c dco_linux.h \
- 	dco_win.c dco_win.h \
- 	dhcp.c dhcp.h \
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-new file mode 100644
-index 00000000..fbbe22c8
---- /dev/null
-+++ b/src/openvpn/dco_freebsd.c
-@@ -0,0 +1,584 @@
-+/*
-+ *  Interface to FreeBSD dco networking code
-+ *
-+ *  Copyright (C) 2022 Rubicon Communications, LLC (Netgate). All Rights Reserved.
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#elif defined(_MSC_VER)
-+#include "config-msvc.h"
-+#endif
-+
-+#if defined(ENABLE_DCO) && defined(TARGET_FREEBSD)
-+
-+#include "syshead.h"
-+
-+#include <sys/param.h>
-+#include <sys/linker.h>
-+#include <sys/nv.h>
-+#include <netinet/in.h>
-+
-+#include "dco_freebsd.h"
-+#include "dco.h"
-+#include "tun.h"
-+#include "crypto.h"
-+#include "ssl_common.h"
-+
-+static nvlist_t *
-+sockaddr_to_nvlist(const struct sockaddr *sa)
-+{
-+    nvlist_t *nvl = nvlist_create(0);
-+
-+    nvlist_add_number(nvl, "af", sa->sa_family);
-+
-+    switch (sa->sa_family) {
-+    case AF_INET:
-+    {
-+        const struct sockaddr_in *in = (const struct sockaddr_in*)sa;
-+        nvlist_add_binary(nvl, "address", &in->sin_addr, sizeof(in->sin_addr));
-+        nvlist_add_number(nvl, "port", in->sin_port);
-+        break;
-+    }
-+    case AF_INET6:
-+    {
-+        const struct sockaddr_in6 *in6 = (const struct sockaddr_in6*)sa;
-+        nvlist_add_binary(nvl, "address", &in6->sin6_addr, sizeof(in6->sin6_addr));
-+        nvlist_add_number(nvl, "port", in6->sin6_port);
-+        break;
-+    }
-+    default:
-+        abort();
-+    }
-+
-+    return (nvl);
-+}
-+
-+int
-+dco_new_peer(dco_context_t *dco, unsigned int peerid, int sd,
-+             struct sockaddr *localaddr, struct sockaddr *remoteaddr,
-+             struct in_addr *remote_in4, struct in6_addr *remote_in6)
-+{
-+    struct ifdrv drv;
-+    nvlist_t *nvl;
-+    int ret;
-+
-+    nvl = nvlist_create(0);
-+
-+    msg(D_DCO_DEBUG, "%s: peer-id %d, fd %d", __func__, peerid, sd);
-+
-+    if (localaddr)
-+    {
-+        nvlist_add_nvlist(nvl, "local", sockaddr_to_nvlist(localaddr));
-+    }
-+
-+    if (remoteaddr)
-+    {
-+        nvlist_add_nvlist(nvl, "remote", sockaddr_to_nvlist(remoteaddr));
-+    }
-+
-+    nvlist_add_number(nvl, "fd", sd);
-+
-+    bzero(&drv, sizeof(drv));
-+    snprintf(drv.ifd_name, IFNAMSIZ, "%s", dco->ifname);
-+    drv.ifd_cmd = OVPN_NEW_PEER;
-+    drv.ifd_data = nvlist_pack(nvl, &drv.ifd_len);
-+
-+    ret = ioctl(dco->fd, SIOCSDRVSPEC, &drv);
-+    free(drv.ifd_data);
-+    nvlist_destroy(nvl);
-+    if (ret)
-+    {
-+        msg(D_DCO, "Failed to create new peer %d", errno);
-+        return ret;
-+    }
-+
-+    return 0;
-+}
-+
-+static int
-+open_fd(dco_context_t *dco)
-+{
-+    int ret;
-+
-+    ret = pipe2(dco->pipefd, O_CLOEXEC);
-+    if (ret != 0)
-+    {
-+        return -1;
-+    }
-+
-+    dco->fd = socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, 0);
-+    dco->dco_packet_in = alloc_buf(PAGE_SIZE);
-+
-+    return dco->fd;
-+}
-+
-+static void
-+close_fd(dco_context_t *dco)
-+{
-+    close(dco->pipefd[0]);
-+    close(dco->pipefd[1]);
-+    close(dco->fd);
-+}
-+
-+bool
-+ovpn_dco_init(dco_context_t *dco)
-+{
-+    if (open_fd(dco) < 0)
-+    {
-+        msg(D_DCO, "Failed to open socket");
-+        return false;
-+    }
-+    return true;
-+}
-+
-+static int
-+create_interface(struct tuntap *tt, const char *dev)
-+{
-+    int ret;
-+    struct ifreq ifr;
-+
-+    bzero(&ifr, sizeof(ifr));
-+
-+    /* Create ovpnx first, then rename it. */
-+    snprintf(ifr.ifr_name, IFNAMSIZ, "ovpn");
-+    ret = ioctl(tt->dco.fd, SIOCIFCREATE2, &ifr);
-+    if (ret)
-+    {
-+        msg(D_DCO, "Failed to create interface %s: %d", ifr.ifr_name, errno);
-+        return ret;
-+    }
-+
-+    /* Rename */
-+    if (!strcmp(dev, "tun"))
-+    {
-+        ifr.ifr_data = "ovpn";
-+    }
-+    else
-+    {
-+        ifr.ifr_data = dev;
-+    }
-+    ret = ioctl(tt->dco.fd, SIOCSIFNAME, &ifr);
-+    if (ret)
-+    {
-+        /* Delete the created interface again. */
-+        (void)ioctl(tt->dco.fd, SIOCIFDESTROY, &ifr);
-+        msg(D_DCO, "Failed to create interface %s: %d", ifr.ifr_data, errno);
-+        return ret;
-+    }
-+
-+    snprintf(tt->dco.ifname, IFNAMSIZ, "%s", ifr.ifr_data);
-+    tt->actual_name = string_alloc(tt->dco.ifname, NULL);
-+
-+    return 0;
-+}
-+
-+static int
-+remove_interface(struct tuntap *tt)
-+{
-+    int ret;
-+    struct ifreq ifr;
-+
-+    bzero(&ifr, sizeof(ifr));
-+    snprintf(ifr.ifr_name, IFNAMSIZ, "%s", tt->dco.ifname);
-+
-+    ret = ioctl(tt->dco.fd, SIOCIFDESTROY, &ifr);
-+    if (ret)
-+    {
-+        msg(D_DCO, "Failed to remove interface %s: %d", ifr.ifr_name, errno);
-+        return ret;
-+    }
-+
-+    tt->dco.ifname[0] = 0;
-+
-+    return 0;
-+}
-+
-+int
-+open_tun_dco(struct tuntap *tt, openvpn_net_ctx_t *ctx, const char *dev)
-+{
-+    int ret;
-+
-+    ret = create_interface(tt, dev);
-+
-+    if (ret < 0)
-+    {
-+        msg(D_DCO, "Failed to create interface");
-+    }
-+
-+    return ret;
-+}
-+
-+void
-+close_tun_dco(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-+{
-+    remove_interface(tt);
-+    close_fd(&tt->dco);
-+}
-+
-+int
-+dco_swap_keys(dco_context_t *dco, unsigned int peerid)
-+{
-+    struct ifdrv drv;
-+    int ret;
-+
-+    msg(D_DCO_DEBUG, "%s: peer-id %d", __func__, peerid);
-+
-+    bzero(&drv, sizeof(drv));
-+    snprintf(drv.ifd_name, IFNAMSIZ, "%s", dco->ifname);
-+    drv.ifd_cmd = OVPN_SWAP_KEYS;
-+
-+    ret = ioctl(dco->fd, SIOCSDRVSPEC, &drv);
-+    if (ret)
-+    {
-+        msg(D_DCO, "Failed to swap keys %d", errno);
-+        return ret;
-+    }
-+
-+    return 0;
-+}
-+
-+int
-+dco_del_peer(dco_context_t *dco, unsigned int peerid)
-+{
-+    struct ifdrv drv;
-+    int ret;
-+
-+    bzero(&drv, sizeof(drv));
-+    snprintf(drv.ifd_name, IFNAMSIZ, "%s", dco->ifname);
-+    drv.ifd_cmd = OVPN_DEL_PEER;
-+
-+    ret = ioctl(dco->fd, SIOCSDRVSPEC, &drv);
-+    if (ret)
-+    {
-+        msg(D_DCO, "Failed to delete peer %d", errno);
-+        return ret;
-+    }
-+
-+    return 0;
-+}
-+
-+int
-+dco_del_key(dco_context_t *dco, unsigned int peerid,
-+            dco_key_slot_t slot)
-+{
-+    struct ifdrv drv;
-+    nvlist_t *nvl;
-+    int ret;
-+
-+    msg(D_DCO, "%s: peer-id %d, slot %d", __func__, peerid, slot);
-+
-+    nvl = nvlist_create(0);
-+    nvlist_add_number(nvl, "slot", slot);
-+    nvlist_add_number(nvl, "peerid", peerid);
-+
-+    bzero(&drv, sizeof(drv));
-+    snprintf(drv.ifd_name, IFNAMSIZ, "%s", dco->ifname);
-+    drv.ifd_cmd = OVPN_DEL_KEY;
-+    drv.ifd_data = nvlist_pack(nvl, &drv.ifd_len);
-+
-+    ret = ioctl(dco->fd, SIOCSDRVSPEC, &drv);
-+    free(drv.ifd_data);
-+    nvlist_destroy(nvl);
-+    if (ret)
-+    {
-+        msg(D_DCO, "Failed to delete key %d", errno);
-+        return ret;
-+    }
-+
-+    return 0;
-+}
-+
-+static nvlist_t *
-+key_to_nvlist(const uint8_t *key, const uint8_t *implicit_iv, const char *ciphername)
-+{
-+    nvlist_t *nvl;
-+    size_t key_len;
-+
-+    nvl = nvlist_create(0);
-+
-+    nvlist_add_string(nvl, "cipher", ciphername);
-+
-+    if (strcmp(ciphername, "none") != 0)
-+    {
-+        key_len = cipher_kt_key_size(ciphername);
-+
-+        nvlist_add_binary(nvl, "key", key, key_len);
-+        nvlist_add_binary(nvl, "iv", implicit_iv, 8);
-+    }
-+
-+    return (nvl);
-+}
-+
-+static int
-+start_tun(dco_context_t *dco)
-+{
-+    struct ifdrv drv;
-+    int ret;
-+
-+    bzero(&drv, sizeof(drv));
-+    snprintf(drv.ifd_name, IFNAMSIZ, "%s", dco->ifname);
-+    drv.ifd_cmd = OVPN_START_VPN;
-+
-+    ret = ioctl(dco->fd, SIOCSDRVSPEC, &drv);
-+    if (ret)
-+    {
-+        msg(D_DCO, "Failed to start vpn %d", errno);
-+        return ret;
-+    }
-+
-+    return 0;
-+}
-+
-+int
-+dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid,
-+            dco_key_slot_t slot,
-+            const uint8_t *encrypt_key, const uint8_t *encrypt_iv,
-+            const uint8_t *decrypt_key, const uint8_t *decrypt_iv,
-+            const char *ciphername)
-+{
-+    struct ifdrv drv;
-+    nvlist_t *nvl;
-+    int ret;
-+
-+    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s",
-+        __func__, slot, keyid, peerid, ciphername);
-+
-+    nvl = nvlist_create(0);
-+
-+    nvlist_add_number(nvl, "slot", slot);
-+    nvlist_add_number(nvl, "keyid", keyid);
-+    nvlist_add_number(nvl, "peerid", peerid);
-+
-+    nvlist_add_nvlist(nvl, "encrypt",
-+        key_to_nvlist(encrypt_key, encrypt_iv, ciphername));
-+    nvlist_add_nvlist(nvl, "decrypt",
-+        key_to_nvlist(decrypt_key, decrypt_iv, ciphername));
-+
-+    bzero(&drv, sizeof(drv));
-+    snprintf(drv.ifd_name, IFNAMSIZ, "%s", dco->ifname);
-+    drv.ifd_cmd = OVPN_NEW_KEY;
-+    drv.ifd_data = nvlist_pack(nvl, &drv.ifd_len);
-+
-+    ret = ioctl(dco->fd, SIOCSDRVSPEC, &drv);
-+    free(drv.ifd_data);
-+    nvlist_destroy(nvl);
-+    if (ret)
-+    {
-+        msg(D_DCO, "Failed to set key %d", errno);
-+        return ret;
-+    }
-+
-+    return start_tun(dco);
-+}
-+
-+int
-+ovpn_set_peer(dco_context_t *dco, unsigned int peerid,
-+              unsigned int keepalive_interval, unsigned int keepalive_timeout)
-+{
-+    struct ifdrv drv;
-+    nvlist_t *nvl;
-+    int ret;
-+
-+    nvl = nvlist_create(0);
-+    nvlist_add_number(nvl, "interval", keepalive_interval);
-+    nvlist_add_number(nvl, "timeout", keepalive_timeout);
-+
-+    bzero(&drv, sizeof(drv));
-+    snprintf(drv.ifd_name, IFNAMSIZ, "%s", dco->ifname);
-+    drv.ifd_cmd = OVPN_SET_PEER;
-+    drv.ifd_data = nvlist_pack(nvl, &drv.ifd_len);
-+
-+    ret = ioctl(dco->fd, SIOCSDRVSPEC, &drv);
-+    free(drv.ifd_data);
-+    nvlist_destroy(nvl);
-+    if (ret)
-+    {
-+        msg(D_DCO, "Failed to set keepalive %d", errno);
-+        return ret;
-+    }
-+
-+    return 0;
-+}
-+
-+int
-+dco_do_read(dco_context_t *dco)
-+{
-+    struct ifdrv drv;
-+    uint8_t buf[4096];
-+    nvlist_t *nvl;
-+    const uint8_t *pkt;
-+    size_t pktlen;
-+    int ret;
-+
-+    bzero(&drv, sizeof(drv));
-+    snprintf(drv.ifd_name, IFNAMSIZ, "%s", dco->ifname);
-+    drv.ifd_cmd = OVPN_GET_PKT;
-+    drv.ifd_data = buf;
-+    drv.ifd_len = sizeof(buf);
-+
-+    ret = ioctl(dco->fd, SIOCGDRVSPEC, &drv);
-+    if (ret)
-+    {
-+        msg(D_DCO, "Failed to read control packet %d", errno);
-+        return errno;
-+    }
-+
-+    nvl = nvlist_unpack(buf, drv.ifd_len, 0);
-+    if (!nvl)
-+    {
-+        msg(D_DCO, "Failed to unpack nvlist");
-+        return EINVAL;
-+    }
-+
-+    dco->dco_message_peer_id = nvlist_get_number(nvl, "peerid");
-+
-+    pkt = nvlist_get_binary(nvl, "packet", &pktlen);
-+    memcpy(BPTR(&dco->dco_packet_in), pkt, pktlen);
-+    dco->dco_packet_in.len = pktlen;
-+
-+    nvlist_destroy(nvl);
-+
-+    return 0;
-+}
-+
-+int
-+dco_do_write(dco_context_t *dco, int peer_id, struct buffer *buf)
-+{
-+    struct ifdrv drv;
-+    nvlist_t *nvl;
-+    int ret;
-+
-+    nvl = nvlist_create(0);
-+
-+    nvlist_add_binary(nvl, "packet", BSTR(buf), BLEN(buf));
-+    nvlist_add_number(nvl, "peerid", peer_id);
-+
-+    bzero(&drv, sizeof(drv));
-+    snprintf(drv.ifd_name, IFNAMSIZ, "%s", dco->ifname);
-+    drv.ifd_cmd = OVPN_SEND_PKT;
-+    drv.ifd_data = nvlist_pack(nvl, &drv.ifd_len);
-+
-+    ret = ioctl(dco->fd, SIOCSDRVSPEC, &drv);
-+    free(drv.ifd_data);
-+    nvlist_destroy(nvl);
-+    if (ret)
-+    {
-+        msg(D_DCO, "Failed to send control packet %d", errno);
-+        return ret;
-+    }
-+
-+    return BLEN(buf);
-+}
-+
-+bool
-+dco_available(int msglevel)
-+{
-+    struct if_clonereq ifcr;
-+    char *buf = NULL;
-+    int fd;
-+    int ret;
-+    bool available = false;
-+
-+    /* Attempt to load the module. Ignore errors, because it might already be
-+     * loaded, or built into the kernel. */
-+    (void)kldload("if_ovpn");
-+
-+    fd = socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, 0);
-+    if (fd < 0)
-+    {
-+        return false;
-+    }
-+
-+    bzero(&ifcr, sizeof(ifcr));
-+
-+    ret = ioctl(fd, SIOCIFGCLONERS, &ifcr);
-+    if (ret != 0)
-+    {
-+        goto out;
-+    }
-+
-+    buf = malloc(ifcr.ifcr_total * IFNAMSIZ);
-+
-+    ifcr.ifcr_count = ifcr.ifcr_total;
-+    ifcr.ifcr_buffer = buf;
-+    ret = ioctl(fd, SIOCIFGCLONERS, &ifcr);
-+    if (ret != 0)
-+    {
-+        goto out;
-+    }
-+
-+    for (int i = 0; i < ifcr.ifcr_total; i++)
-+    {
-+        if (strcmp(buf + (i * IFNAMSIZ), "ovpn") == 0)
-+        {
-+            available = true;
-+            goto out;
-+        }
-+    }
-+
-+out:
-+    free(buf);
-+    close(fd);
-+
-+    return available;
-+}
-+
-+void
-+dco_event_set(dco_context_t *dco, struct event_set *es, void *arg)
-+{
-+    struct ifdrv drv;
-+    nvlist_t *nvl;
-+    uint8_t buf[128];
-+    int ret;
-+
-+    bzero(&drv, sizeof(drv));
-+    snprintf(drv.ifd_name, IFNAMSIZ, "%s", dco->ifname);
-+    drv.ifd_cmd = OVPN_POLL_PKT;
-+    drv.ifd_len = sizeof(buf);
-+    drv.ifd_data = buf;
-+
-+    ret = ioctl(dco->fd, SIOCGDRVSPEC, &drv);
-+    if (ret)
-+    {
-+        msg(D_DCO, "Failed to poll for packets %d", errno);
-+        return;
-+    }
-+
-+    nvl = nvlist_unpack(buf, drv.ifd_len, 0);
-+    if (!nvl)
-+    {
-+        msg(D_DCO, "Failed to unpack nvlist");
-+        return;
-+    }
-+
-+    if (nvlist_get_number(nvl, "pending") > 0)
-+    {
-+        (void)write(dco->pipefd[0], " ", 1);
-+        event_ctl(es, dco->pipefd[1], EVENT_READ, arg);
-+    }
-+
-+    nvlist_destroy(nvl);
-+}
-+
-+const char *
-+dco_get_supported_ciphers()
-+{
-+    return "none:AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
-+}
-+
-+#endif /* defined(ENABLE_DCO) && defined(TARGET_FREEBSD) */
-diff --git a/src/openvpn/dco_freebsd.h b/src/openvpn/dco_freebsd.h
-new file mode 100644
-index 00000000..7de0d1c2
---- /dev/null
-+++ b/src/openvpn/dco_freebsd.h
-@@ -0,0 +1,46 @@
-+/*
-+ *  Interface to FreeBSD dco networking code
-+ *
-+ *  Copyright (C) 2022 Rubicon Communications, LLC (Netgate). All Rights Reserved.
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
-+#ifndef DCO_FREEBSD_H
-+#define DCO_FREEBSD_H
-+
-+#if defined(ENABLE_DCO) && defined(TARGET_FREEBSD)
-+
-+#include <buffer.h>
-+#include "event.h"
-+
-+#include "ovpn_dco_freebsd.h"
-+
-+typedef enum ovpn_key_slot dco_key_slot_t;
-+typedef enum ovpn_key_cipher dco_cipher_t;
-+
-+typedef struct dco_context {
-+	int fd;
-+	int pipefd[2];
-+
-+	char ifname[IFNAMSIZ];
-+
-+	struct buffer dco_packet_in;
-+
-+	int dco_message_peer_id;
-+	int dco_del_peer_reason;
-+} dco_context_t;
-+
-+#endif /* defined(ENABLE_DCO) && defined(TARGET_FREEBSD) */
-+#endif /* ifndef DCO_FREEBSD_H */
-diff --git a/src/openvpn/dco_internal.h b/src/openvpn/dco_internal.h
-index ed1a1cff..80d6821a 100644
---- a/src/openvpn/dco_internal.h
-+++ b/src/openvpn/dco_internal.h
-@@ -27,6 +27,7 @@
- 
- #if defined(ENABLE_DCO)
- 
-+#include "dco_freebsd.h"
- #include "dco_linux.h"
- #include "dco_win.h"
- 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index a54ce040..60eb5b5c 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1651,7 +1651,7 @@ process_outgoing_link(struct context *c)
-                 socks_preprocess_outgoing_link(c, &to_addr, &size_delta);
- 
-                 /* Send packet */
--#ifdef TARGET_LINUX
-+#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-                 if (c->c2.link_socket->info.dco_installed)
-                 {
-                     size = dco_do_write(&c->c1.tuntap->dco,
-@@ -1926,7 +1926,7 @@ io_wait_dowork(struct context *c, const unsigned int flags)
- #ifdef ENABLE_ASYNC_PUSH
-     static int file_shift = FILE_SHIFT;
- #endif
--#ifdef TARGET_LINUX
-+#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-     static int dco_shift = DCO_SHIFT;    /* Event from DCO linux kernel module */
- #endif
- 
-@@ -2036,7 +2036,7 @@ io_wait_dowork(struct context *c, const unsigned int flags)
-      */
-     socket_set(c->c2.link_socket, c->c2.event_set, socket, (void *)&socket_shift, NULL);
-     tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)&tun_shift, NULL);
--#if defined(TARGET_LINUX)
-+#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-     if (socket & EVENT_READ && c->c2.did_open_tun)
-     {
-         dco_event_set(&c->c1.tuntap->dco, c->c2.event_set, (void *)&dco_shift);
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index b4445dbe..43573e5b 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -281,7 +281,7 @@ multi_tcp_wait(const struct context *c,
-     }
- #endif
-     tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, persistent);
--#if defined(TARGET_LINUX)
-+#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-     dco_event_set(&c->c1.tuntap->dco, mtcp->es, MTCP_DCO);
- #endif
- 
-@@ -400,7 +400,7 @@ multi_tcp_wait_lite(struct multi_context *m, struct multi_instance *mi, const in
- 
-     tv_clear(&c->c2.timeval); /* ZERO-TIMEOUT */
- 
--#if defined(TARGET_LINUX)
-+#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-     if (mi && mi->context.c2.link_socket->info.dco_installed)
-     {
-         /* If we got a socket that has been handed over to the kernel
-@@ -763,7 +763,7 @@ multi_tcp_process_io(struct multi_context *m)
-                     multi_tcp_action(m, mi, TA_INITIAL, false);
-                 }
-             }
--#if defined(ENABLE_DCO) && defined(TARGET_LINUX)
-+#if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD))
-             /* incoming data on DCO? */
-             else if (e->arg == MTCP_DCO)
-             {
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 5054c4dd..908e5d35 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -3138,7 +3138,8 @@ multi_signal_instance(struct multi_context *m, struct multi_instance *mi, const
- }
- #endif
- 
--#if defined(ENABLE_DCO) && defined(TARGET_LINUX)
-+#if defined(ENABLE_DCO)
-+#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
- static void
- process_incoming_dco_packet(struct multi_context *m, struct multi_instance *mi,  dco_context_t *dco)
- {
-@@ -3166,7 +3167,9 @@ process_incoming_dco_packet(struct multi_context *m, struct multi_instance *mi,
-     done:
-     buf_init(&dco->dco_packet_in, 0);
- }
-+#endif
- 
-+#if defined(TARGET_LINUX)
- static void
- process_incoming_del_peer(struct multi_context *m, struct multi_instance *mi, dco_context_t *dco)
- {
-@@ -3225,6 +3228,33 @@ multi_process_incoming_dco(struct multi_context *m)
-     dco->dco_message_peer_id = -1;
-     return ret > 0;
- }
-+
-+#elif defined(TARGET_FREEBSD)
-+
-+bool
-+multi_process_incoming_dco(struct multi_context *m)
-+{
-+    dco_context_t *dco = &m->top.c1.tuntap->dco;
-+
-+    struct multi_instance *mi = NULL;
-+
-+    int ret = dco_do_read(&m->top.c1.tuntap->dco);
-+    int peer_id = dco->dco_message_peer_id;
-+
-+    if ((peer_id >= 0) && (peer_id < m->max_clients) && (m->instances[peer_id]))
-+    {
-+        mi = m->instances[peer_id];
-+        process_incoming_dco_packet(m, mi, dco);
-+    }
-+    else
-+    {
-+        msg(D_DCO, "Received packet for peer-id unknown to OpenVPN: %d" , peer_id);
-+    }
-+
-+    dco->dco_message_peer_id = -1;
-+    return ret > 0;
-+}
-+#endif
- #endif
- 
- /*
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index fc3177e4..45aad71f 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3349,7 +3349,7 @@ options_postprocess_mutate(struct options *o)
-     }
- 
-     /* check if any option should force disabling DCO */
--#if defined(TARGET_LINUX)
-+#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-     o->tuntap_options.disable_dco = dco_check_option_conflict(D_DCO, o);
- #endif
- 
-@@ -5674,7 +5674,7 @@ add_option(struct options *options,
- #endif
-     else if (streq(p[0], "disable-dco") || streq(p[0], "dco-disable"))
-     {
--#if defined(TARGET_LINUX)
-+#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-         options->tuntap_options.disable_dco = true;
- #endif
-     }
-diff --git a/src/openvpn/ovpn_dco_freebsd.h b/src/openvpn/ovpn_dco_freebsd.h
-new file mode 100644
-index 00000000..310bfaf4
---- /dev/null
-+++ b/src/openvpn/ovpn_dco_freebsd.h
-@@ -0,0 +1,60 @@
-+/*-
-+ * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
-+ *
-+ * Copyright (c) 2021 Rubicon Communications, LLC (Netgate)
-+ *
-+ * Redistribution and use in source and binary forms, with or without
-+ * modification, are permitted provided that the following conditions
-+ * are met:
-+ * 1. Redistributions of source code must retain the above copyright
-+ *    notice, this list of conditions and the following disclaimer.
-+ * 2. Redistributions in binary form must reproduce the above copyright
-+ *    notice, this list of conditions and the following disclaimer in the
-+ *    documentation and/or other materials provided with the distribution.
-+ *
-+ * THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
-+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE PROJECT OR CONTRIBUTORS BE LIABLE
-+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-+ * SUCH DAMAGE.
-+ */
-+
-+#ifndef _NET_IF_OVPN_H_
-+#define _NET_IF_OVPN_H_
-+
-+#include <sys/types.h>
-+#include <netinet/in.h>
-+
-+/* Maximum size of an ioctl request. */
-+#define OVPN_MAX_REQUEST_SIZE	4096
-+
-+enum ovpn_key_slot {
-+	OVPN_KEY_SLOT_PRIMARY	= 0,
-+	OVPN_KEY_SLOT_SECONDARY	= 1
-+};
-+
-+enum ovpn_key_cipher {
-+	OVPN_CIPHER_ALG_NONE			= 0,
-+	OVPN_CIPHER_ALG_AES_GCM			= 1,
-+	OVPN_CIPHER_ALG_CHACHA20_POLY1305	= 2
-+};
-+
-+#define OVPN_NEW_PEER		_IO  ('D', 1)
-+#define OVPN_DEL_PEER		_IO  ('D', 2)
-+#define OVPN_GET_STATS		_IO  ('D', 3)
-+#define OVPN_NEW_KEY		_IO  ('D', 4)
-+#define OVPN_SWAP_KEYS		_IO  ('D', 5)
-+#define OVPN_DEL_KEY		_IO  ('D', 6)
-+#define OVPN_SET_PEER		_IO  ('D', 7)
-+#define OVPN_START_VPN		_IO  ('D', 8)
-+#define OVPN_SEND_PKT		_IO  ('D', 9)
-+#define OVPN_POLL_PKT		_IO  ('D', 10)
-+#define OVPN_GET_PKT		_IO  ('D', 11)
-+
-+#endif
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 79ddcec1..0f73a691 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1796,7 +1796,7 @@ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
-                                      "/dev/%s%d", dev, i);
-                     openvpn_snprintf(dynamic_name, sizeof(dynamic_name),
-                                      "%s%d", dev, i);
--#ifdef TARGET_LINUX
-+#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-                     if (!tt->options.disable_dco)
-                     {
-                         if (open_tun_dco(tt, ctx, dynamic_name) == 0)
-@@ -1831,7 +1831,7 @@ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
-             }
-         }
- 
--#ifdef TARGET_LINUX
-+#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-         if (!tt->options.disable_dco)
-         {
-             if (!dynamic_opened)
-@@ -2011,7 +2011,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
-     {
-         open_null(tt);
-     }
--#if defined(TARGET_LINUX)
-+#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-     else if (!tt->options.disable_dco)
-     {
-         open_tun_generic(dev, dev_type, NULL, true, tt, ctx);
-@@ -2267,7 +2267,7 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-         net_ctx_reset(ctx);
-     }
- 
--#ifdef TARGET_LINUX
-+#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-     if (!tt->options.disable_dco)
-     {
-         close_tun_dco(tt, ctx);
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index fee2c61c..4490ae9a 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -145,6 +145,12 @@ struct tuntap_options {
-     bool disable_dco;
- };
- 
-+#elif defined(TARGET_FREEBSD)
-+
-+struct tuntap_options {
-+    bool disable_dco;
-+};
-+
- #else  /* if defined(_WIN32) || defined(TARGET_ANDROID) */
- 
- struct tuntap_options {
--- 
-2.35.1
+On Thu, Mar 10, 2022 at 12:18 PM Gert Doering <gert@...1296...> wrote:
 
+> Without this patch, OpenVPN behaviour if more than one plugin wants
+> to do deferred user/password authentication not well-defined, as
+> there is just one set of auth control files and a single plugin state.
+>
+> This patch changes "key state -> plugin_auth" from a single struct
+> to an array of MAX_PLUGINS elements that have per-plugin auth-control
+> files and auth status.
+>
+> All direct access is changed to iterating over this array.
+>
+> The actual plugin calls are no longer done with the "do them all"
+> function plugin_call() (or plugin_call_ssl()) but plugin.c/plugin.h
+> is changed to expose the "call one" function plugin_call_item(), and
+> verify_user_pass_plugin() calls this for each loaded plugin,
+> keeping track of "overall" state.
+>
+> key_state_test_plugin_auth() is introduced to do the
+> "key_state_test_auth_control_file()" test for all plugins, and
+> return "FAIL if one fails, PENDING if one is pending, SUCCESS
+> if one was pending and succeeded now".
+>
+> This was tested with the "auth-multi" test plugin, with 5-7 plugins
+> loaded (some deferred, some direct) and "some of them failing" or
+> "all succeeding".  Testing included "will it leak files if multiple
+> deferred plugins are ongoing, and one of the earlier ones rejects
+> authentication".
+>
+> This patch is not suitable for production use:
+>  - it's full of debug output
+>  - it will break compilation without ENABLE_PLUGINS
+>  - it stands to argue whether plugin_call_item() should be exposed,
+>    or key_state_test_plugin_auth() might be moved to plugin.c instead
+>    (with a null function if ENABLE_PLUGINS is not defined)
+>
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  src/openvpn/plugin.c     |   2 +-
+>  src/openvpn/plugin.h     |   9 +++
+>  src/openvpn/ssl.c        |   5 +-
+>  src/openvpn/ssl_common.h |   4 +-
+>  src/openvpn/ssl_verify.c | 127 ++++++++++++++++++++++++++++++++-------
+>  5 files changed, 123 insertions(+), 24 deletions(-)
+>
+> diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
+> index e3a89293..74b57033 100644
+> --- a/src/openvpn/plugin.c
+> +++ b/src/openvpn/plugin.c
+> @@ -518,7 +518,7 @@ plugin_open_item(struct plugin *p,
+>      }
+>  }
+>
+> -static int
+> +int
+>  plugin_call_item(const struct plugin *p,
+>                   void *per_client_context,
+>                   const int type,
+> diff --git a/src/openvpn/plugin.h b/src/openvpn/plugin.h
+> index c6fa206a..799a646e 100644
+> --- a/src/openvpn/plugin.h
+> +++ b/src/openvpn/plugin.h
+> @@ -132,6 +132,15 @@ int plugin_call_ssl(const struct plugin_list *pl,
+>                      int current_cert_depth,
+>                      openvpn_x509_cert_t *current_cert
+>                      );
+> +int plugin_call_item(const struct plugin *p,
+> +                     void *per_client_context,
+> +                     const int type,
+> +                     const struct argv *av,
+> +                     struct openvpn_plugin_string_list **retlist,
+> +                     const char **envp,
+> +                     int certdepth,
+> +                     openvpn_x509_cert_t *current_cert
+> +                     );
+>
+>  void plugin_list_close(struct plugin_list *pl);
+>
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index 14a943a7..ce6de9a0 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -1036,7 +1036,10 @@ key_state_free(struct key_state *ks, bool clear)
+>
+>      packet_id_free(&ks->crypto_options.packet_id);
+>
+> -    key_state_rm_auth_control_files(&ks->plugin_auth);
+> +    for (int i=0; i<MAX_PLUGINS; i++)
+> +    {
+> +        key_state_rm_auth_control_files(&ks->plugin_auth[i]);
+> +    }
+>      key_state_rm_auth_control_files(&ks->script_auth);
+>
+>      if (clear)
+> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+> index 8a077c74..0de3290a 100644
+> --- a/src/openvpn/ssl_common.h
+> +++ b/src/openvpn/ssl_common.h
+> @@ -37,6 +37,8 @@
+>
+>  #include "ssl_backend.h"
+>
+> +#include "plugin.h"
+> +
+>  /* passwords */
+>  #define UP_TYPE_AUTH        "Auth"
+>  #define UP_TYPE_PRIVATE_KEY "Private Key"
+> @@ -239,7 +241,7 @@ struct key_state
+>  #endif
+>      time_t acf_last_mod;
+>
+> -    struct auth_deferred_status plugin_auth;
+> +    struct auth_deferred_status plugin_auth[MAX_PLUGINS];
+>      struct auth_deferred_status script_auth;
+>  };
+>
+> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+> index 3b6b58fa..38c8a830 100644
+> --- a/src/openvpn/ssl_verify.c
+> +++ b/src/openvpn/ssl_verify.c
+> @@ -1059,6 +1059,50 @@ key_state_test_auth_control_file(struct
+> auth_deferred_status *ads, bool cached)
+>      return ACF_DISABLED;
+>  }
+>
+> +/**
+> + * Checks the auth control status for all plugins.
+> + *
+> + * returns:
+> + * - ACF_PENDING  if any plugin is still waiting for results.
+> + * - ACF_SUCCEEDED if there were pending plugins AND all succeeded
+> + * - ACF_FAILED   if any plugin fails
+> + * - ACF_DISABLED if no plugin is waiting
+> + *
+> + * @param ads       array of deferred status control structures
+> + * @param cached    Return only cached status
+> + * @return          ACF_* as per enum
+> + */
+> +static enum auth_deferred_result
+> +key_state_test_plugin_auth(struct auth_deferred_status *ads, bool cached)
+> +{
+> +    unsigned int ret = ACF_DISABLED;
+> +
+> +    for (int i=0;i<MAX_PLUGINS;i++)
+> +    {
+> +        unsigned int ret_one =
+> key_state_test_auth_control_file(&(ads[i]), cached);
+> +msg(M_INFO, "GERT(9a): kstpa: i=%d, ret_one=%d", i, ret_one);
+> +
+> +        /* if at least one plugin fails, we fail all */
+> +        if ( ret_one == ACF_FAILED )
+> +        {
+> +            ret = ret_one;
+> +            break;
+> +        }
+> +        /* if at least one plugin is still pending, we're still pending */
+> +        if ( ret_one == ACF_PENDING )
+> +        {
+> +            ret = ret_one;
+> +        }
+> +        /* if no plugins are pending AND we have success, we succeed */
+> +        if ( ret_one == ACF_SUCCEEDED && ret != ACF_PENDING )
+> +        {
+> +            ret = ret_one;
+> +        }
+> +    }
+> +msg(M_INFO, "GERT(9b): kstpa: ret=%d", ret);
+> +    return ret;
+> +}
+> +
+>  /**
+>   * This method takes a key_state and if updates the state
+>   * of the key if it is deferred.
+> @@ -1069,6 +1113,7 @@ key_state_test_auth_control_file(struct
+> auth_deferred_status *ads, bool cached)
+>  static void
+>  update_key_auth_status(bool cached, struct key_state *ks)
+>  {
+> +msg(M_INFO, "GERT(10) update_key_auth_status authenticated=%d",
+> ks->authenticated);
+>      if (ks->authenticated == KS_AUTH_FALSE)
+>      {
+>          return;
+> @@ -1078,7 +1123,7 @@ update_key_auth_status(bool cached, struct key_state
+> *ks)
+>          enum auth_deferred_result auth_plugin = ACF_DISABLED;
+>          enum auth_deferred_result auth_script = ACF_DISABLED;
+>          enum auth_deferred_result auth_man = ACF_DISABLED;
+> -        auth_plugin = key_state_test_auth_control_file(&ks->plugin_auth,
+> cached);
+> +        auth_plugin = key_state_test_plugin_auth(ks->plugin_auth, cached);
+>          auth_script = key_state_test_auth_control_file(&ks->script_auth,
+> cached);
+>  #ifdef ENABLE_MANAGEMENT
+>          auth_man = man_def_auth_test(ks);
+> @@ -1357,40 +1402,80 @@ static int
+>  verify_user_pass_plugin(struct tls_session *session, struct tls_multi
+> *multi,
+>                          const struct user_pass *up)
+>  {
+> -    int retval = OPENVPN_PLUGIN_FUNC_ERROR;
+> +    int retval = OPENVPN_PLUGIN_FUNC_SUCCESS;
+>      struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key
+> */
+>
+> +    struct gc_arena gc = gc_new();
+> +
+>      /* set password in private env space */
+>      setenv_str(session->opt->es, "password", up->password);
+>
+> -    /* generate filename for deferred auth control file */
+> -    if (!key_state_gen_auth_control_files(&ks->plugin_auth, session->opt))
+> +    /* iterate over list of plugins here, because deferred auth needs
+> +     * per-plugin auth control files
+> +     */
+> +    const struct plugin_list *pl = session->opt->plugins;
+> +    int plugins_active = plugin_n(pl);
+> +    ASSERT( plugins_active < SIZE(ks->plugin_auth) );
+> +    msg(M_INFO, "GERT(1): plugins_active=%d, SIZE=%d", plugins_active,
+> (int)SIZE(ks->plugin_auth) );
+> +
+> +    for (int i=0; i<plugins_active; i++)
+>      {
+> -        msg(D_TLS_ERRORS, "TLS Auth Error (%s): "
+> -            "could not create deferred auth control file", __func__);
+> -        return retval;
+> -    }
+> +        /* generate filename for deferred auth control file */
+> +        if (!key_state_gen_auth_control_files(&ks->plugin_auth[i],
+> session->opt))
+> +        {
+> +            msg(D_TLS_ERRORS, "TLS Auth Error (%s): "
+> +                "could not create deferred auth control file", __func__);
+> +            retval = OPENVPN_PLUGIN_FUNC_ERROR;
+> +            break;
+> +        }
+>
+> -    /* call command */
+> -    retval = plugin_call(session->opt->plugins,
+> OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY, NULL, NULL, session->opt->es);
+> +        msg(M_INFO, "GERT(4): plugin #%d, acf=%s acp=%s", i,
+> +                ks->plugin_auth[i].auth_control_file,
+> ks->plugin_auth[i].auth_pending_file);
+>
+> -    if (retval == OPENVPN_PLUGIN_FUNC_DEFERRED)
+> -    {
+> -        /* Check if the plugin has written the pending auth control
+> -         * file and send the pending auth to the client */
+> -        if(!key_state_check_auth_pending_file(&ks->plugin_auth, multi))
+> +        /* call command */
+> +        // retval = plugin_call_item(session->opt->plugins,
+> OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY, NULL, NULL, session->opt->es);
+> +        //                                pl                    type
+>                        av    pr    es   [crt -1, NULL]
+> +
+> +        const char **envp = make_env_array(session->opt->es, false, &gc);
+> +        const int status = plugin_call_item(&pl->common->plugins[i],
+> +
+> pl->per_client.per_client_context[i],
+> +
+> OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY,
+> +                                            NULL, NULL, envp, -1, NULL );
+> +
+> +        if (status == OPENVPN_PLUGIN_FUNC_DEFERRED)
+> +        {
+> +            /* Check if the plugin has written the pending auth control
+> +             * file and send the pending auth to the client */
+> +            if(!key_state_check_auth_pending_file(&(ks->plugin_auth[i]),
+> multi))
+> +            {
+> +                retval = OPENVPN_PLUGIN_FUNC_ERROR;
+> +                key_state_rm_auth_control_files(&(ks->plugin_auth[i]));
+> +                break;
+> +            }
+> +            else
+> +            {
+> +                retval = OPENVPN_PLUGIN_FUNC_DEFERRED;
+> +            }
+> +        }
+> +        else
+> +        {
+> +            /* purge auth control filename (and file itself) for
+> non-deferred returns */
+> +            key_state_rm_auth_control_files(&(ks->plugin_auth[i]));
+> +            ks->plugin_auth[i].auth_control_status = ACF_DISABLED;
+> +        }
+> +
+> +        /* if a single plugin fails, we fail all */
+> +        if (status == OPENVPN_PLUGIN_FUNC_ERROR)
+>          {
+>              retval = OPENVPN_PLUGIN_FUNC_ERROR;
+> -            key_state_rm_auth_control_files(&ks->plugin_auth);
+> +            break;
+>          }
+> -    }
+> -    else
+> -    {
+> -        /* purge auth control filename (and file itself) for non-deferred
+> returns */
+> -        key_state_rm_auth_control_files(&ks->plugin_auth);
+> +
+> +        msg(M_INFO, "GERT(3): plugin #%d status=%d -> retval=%d", i,
+> status, retval );
+>      }
+>
+>      setenv_del(session->opt->es, "password");
+> +    gc_free(&gc);
+>
+>      return retval;
+>  }
+> --
+> 2.34.1
+>
+>
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+
+--000000000000416eba05d9dd9789
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>One of the behaviors that brought this to light was a=
+ user who had an LDAP (non-deferred) plugin followed by a Duo MFA (deferred=
+) plugin.=C2=A0 He noted that, even if the LDAP call returned failure, the =
+Duo plugin was still called.=C2=A0 That would generate a push notification =
+to his phone even though the authentication was already destined to fail du=
+e to LDAP.=C2=A0 It looks like this patch returns failure when the first pl=
+ugin fails, so would resolve that scenario by not calling the Duo plugin at=
+ all if LDAP returned failure.<br></div><div><br></div><div>Is the source f=
+or the &quot;auth-multi&quot; plugin you tested with available anywhere?=C2=
+=A0 I could not find it, and had wanted something like it for my own testin=
+g.<br></div></div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"=
+gmail_attr">On Thu, Mar 10, 2022 at 12:18 PM Gert Doering &lt;<a href=3D"ma=
+ilto:gert@...1296...">gert@...1296...</a>&gt; wrote:<br></div><blockquote c=
+lass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px soli=
+d rgb(204,204,204);padding-left:1ex">Without this patch, OpenVPN behaviour =
+if more than one plugin wants<br>
+to do deferred user/password authentication not well-defined, as<br>
+there is just one set of auth control files and a single plugin state.<br>
+<br>
+This patch changes &quot;key state -&gt; plugin_auth&quot; from a single st=
+ruct<br>
+to an array of MAX_PLUGINS elements that have per-plugin auth-control<br>
+files and auth status.<br>
+<br>
+All direct access is changed to iterating over this array.<br>
+<br>
+The actual plugin calls are no longer done with the &quot;do them all&quot;=
+<br>
+function plugin_call() (or plugin_call_ssl()) but plugin.c/plugin.h<br>
+is changed to expose the &quot;call one&quot; function plugin_call_item(), =
+and<br>
+verify_user_pass_plugin() calls this for each loaded plugin,<br>
+keeping track of &quot;overall&quot; state.<br>
+<br>
+key_state_test_plugin_auth() is introduced to do the<br>
+&quot;key_state_test_auth_control_file()&quot; test for all plugins, and<br>
+return &quot;FAIL if one fails, PENDING if one is pending, SUCCESS<br>
+if one was pending and succeeded now&quot;.<br>
+<br>
+This was tested with the &quot;auth-multi&quot; test plugin, with 5-7 plugi=
+ns<br>
+loaded (some deferred, some direct) and &quot;some of them failing&quot; or=
+<br>
+&quot;all succeeding&quot;.=C2=A0 Testing included &quot;will it leak files=
+ if multiple<br>
+deferred plugins are ongoing, and one of the earlier ones rejects<br>
+authentication&quot;.<br>
+<br>
+This patch is not suitable for production use:<br>
+=C2=A0- it&#39;s full of debug output<br>
+=C2=A0- it will break compilation without ENABLE_PLUGINS<br>
+=C2=A0- it stands to argue whether plugin_call_item() should be exposed,<br>
+=C2=A0 =C2=A0or key_state_test_plugin_auth() might be moved to plugin.c ins=
+tead<br>
+=C2=A0 =C2=A0(with a null function if ENABLE_PLUGINS is not defined)<br>
+<br>
+Signed-off-by: Gert Doering &lt;<a href=3D"mailto:gert@...1296..." target=
+=3D"_blank">gert@...1296...</a>&gt;<br>
+---<br>
+=C2=A0src/openvpn/plugin.c=C2=A0 =C2=A0 =C2=A0|=C2=A0 =C2=A02 +-<br>
+=C2=A0src/openvpn/plugin.h=C2=A0 =C2=A0 =C2=A0|=C2=A0 =C2=A09 +++<br>
+=C2=A0src/openvpn/ssl.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 |=C2=A0 =C2=A05 +-<br>
+=C2=A0src/openvpn/ssl_common.h |=C2=A0 =C2=A04 +-<br>
+=C2=A0src/openvpn/ssl_verify.c | 127 ++++++++++++++++++++++++++++++++------=
+-<br>
+=C2=A05 files changed, 123 insertions(+), 24 deletions(-)<br>
+<br>
+diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c<br>
+index e3a89293..74b57033 100644<br>
+--- a/src/openvpn/plugin.c<br>
++++ b/src/openvpn/plugin.c<br>
+@@ -518,7 +518,7 @@ plugin_open_item(struct plugin *p,<br>
+=C2=A0 =C2=A0 =C2=A0}<br>
+=C2=A0}<br>
+<br>
+-static int<br>
++int<br>
+=C2=A0plugin_call_item(const struct plugin *p,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 void *per_cl=
+ient_context,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 const int ty=
+pe,<br>
+diff --git a/src/openvpn/plugin.h b/src/openvpn/plugin.h<br>
+index c6fa206a..799a646e 100644<br>
+--- a/src/openvpn/plugin.h<br>
++++ b/src/openvpn/plugin.h<br>
+@@ -132,6 +132,15 @@ int plugin_call_ssl(const struct plugin_list *pl,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0int current_cert_depth,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0openvpn_x509_cert_t *current_cert<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0);<br>
++int plugin_call_item(const struct plugin *p,<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0void *per_client_context,<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0const int type,<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0const struct argv *av,<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0struct openvpn_plugin_string_list **retlist,<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0const char **envp,<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0int certdepth,<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0openvpn_x509_cert_t *current_cert<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0);<br>
+<br>
+=C2=A0void plugin_list_close(struct plugin_list *pl);<br>
+<br>
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c<br>
+index 14a943a7..ce6de9a0 100644<br>
+--- a/src/openvpn/ssl.c<br>
++++ b/src/openvpn/ssl.c<br>
+@@ -1036,7 +1036,10 @@ key_state_free(struct key_state *ks, bool clear)<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0packet_id_free(&amp;ks-&gt;crypto_options.packet_id);<b=
+r>
+<br>
+-=C2=A0 =C2=A0 key_state_rm_auth_control_files(&amp;ks-&gt;plugin_auth);<br>
++=C2=A0 =C2=A0 for (int i=3D0; i&lt;MAX_PLUGINS; i++)<br>
++=C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 key_state_rm_auth_control_files(&amp;ks-&gt;pl=
+ugin_auth[i]);<br>
++=C2=A0 =C2=A0 }<br>
+=C2=A0 =C2=A0 =C2=A0key_state_rm_auth_control_files(&amp;ks-&gt;script_auth=
+);<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0if (clear)<br>
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h<br>
+index 8a077c74..0de3290a 100644<br>
+--- a/src/openvpn/ssl_common.h<br>
++++ b/src/openvpn/ssl_common.h<br>
+@@ -37,6 +37,8 @@<br>
+<br>
+=C2=A0#include &quot;ssl_backend.h&quot;<br>
+<br>
++#include &quot;plugin.h&quot;<br>
++<br>
+=C2=A0/* passwords */<br>
+=C2=A0#define UP_TYPE_AUTH=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;Auth&quot;<br>
+=C2=A0#define UP_TYPE_PRIVATE_KEY &quot;Private Key&quot;<br>
+@@ -239,7 +241,7 @@ struct key_state<br>
+=C2=A0#endif<br>
+=C2=A0 =C2=A0 =C2=A0time_t acf_last_mod;<br>
+<br>
+-=C2=A0 =C2=A0 struct auth_deferred_status plugin_auth;<br>
++=C2=A0 =C2=A0 struct auth_deferred_status plugin_auth[MAX_PLUGINS];<br>
+=C2=A0 =C2=A0 =C2=A0struct auth_deferred_status script_auth;<br>
+=C2=A0};<br>
+<br>
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c<br>
+index 3b6b58fa..38c8a830 100644<br>
+--- a/src/openvpn/ssl_verify.c<br>
++++ b/src/openvpn/ssl_verify.c<br>
+@@ -1059,6 +1059,50 @@ key_state_test_auth_control_file(struct auth_deferre=
+d_status *ads, bool cached)<br>
+=C2=A0 =C2=A0 =C2=A0return ACF_DISABLED;<br>
+=C2=A0}<br>
+<br>
++/**<br>
++ * Checks the auth control status for all plugins.<br>
++ *<br>
++ * returns:<br>
++ * - ACF_PENDING=C2=A0 if any plugin is still waiting for results.<br>
++ * - ACF_SUCCEEDED if there were pending plugins AND all succeeded<br>
++ * - ACF_FAILED=C2=A0 =C2=A0if any plugin fails<br>
++ * - ACF_DISABLED if no plugin is waiting<br>
++ *<br>
++ * @param ads=C2=A0 =C2=A0 =C2=A0 =C2=A0array of deferred status control s=
+tructures<br>
++ * @param cached=C2=A0 =C2=A0 Return only cached status<br>
++ * @return=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ACF_* as per enum<br>
++ */<br>
++static enum auth_deferred_result<br>
++key_state_test_plugin_auth(struct auth_deferred_status *ads, bool cached)<=
+br>
++{<br>
++=C2=A0 =C2=A0 unsigned int ret =3D ACF_DISABLED;<br>
++<br>
++=C2=A0 =C2=A0 for (int i=3D0;i&lt;MAX_PLUGINS;i++)<br>
++=C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 unsigned int ret_one =3D key_state_test_auth_c=
+ontrol_file(&amp;(ads[i]), cached);<br>
++msg(M_INFO, &quot;GERT(9a): kstpa: i=3D%d, ret_one=3D%d&quot;, i, ret_one)=
+;<br>
++<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* if at least one plugin fails, we fail all *=
+/<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 if ( ret_one =3D=3D ACF_FAILED )<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ret =3D ret_one;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 break;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* if at least one plugin is still pending, we=
+&#39;re still pending */<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 if ( ret_one =3D=3D ACF_PENDING )<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ret =3D ret_one;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* if no plugins are pending AND we have succe=
+ss, we succeed */<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 if ( ret_one =3D=3D ACF_SUCCEEDED &amp;&amp; r=
+et !=3D ACF_PENDING )<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ret =3D ret_one;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
++=C2=A0 =C2=A0 }<br>
++msg(M_INFO, &quot;GERT(9b): kstpa: ret=3D%d&quot;, ret);<br>
++=C2=A0 =C2=A0 return ret;<br>
++}<br>
++<br>
+=C2=A0/**<br>
+=C2=A0 * This method takes a key_state and if updates the state<br>
+=C2=A0 * of the key if it is deferred.<br>
+@@ -1069,6 +1113,7 @@ key_state_test_auth_control_file(struct auth_deferred=
+_status *ads, bool cached)<br>
+=C2=A0static void<br>
+=C2=A0update_key_auth_status(bool cached, struct key_state *ks)<br>
+=C2=A0{<br>
++msg(M_INFO, &quot;GERT(10) update_key_auth_status authenticated=3D%d&quot;=
+, ks-&gt;authenticated);<br>
+=C2=A0 =C2=A0 =C2=A0if (ks-&gt;authenticated =3D=3D KS_AUTH_FALSE)<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return;<br>
+@@ -1078,7 +1123,7 @@ update_key_auth_status(bool cached, struct key_state =
+*ks)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0enum auth_deferred_result auth_plugin =3D=
+ ACF_DISABLED;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0enum auth_deferred_result auth_script =3D=
+ ACF_DISABLED;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0enum auth_deferred_result auth_man =3D AC=
+F_DISABLED;<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 auth_plugin =3D key_state_test_auth_control_fi=
+le(&amp;ks-&gt;plugin_auth, cached);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 auth_plugin =3D key_state_test_plugin_auth(ks-=
+&gt;plugin_auth, cached);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0auth_script =3D key_state_test_auth_contr=
+ol_file(&amp;ks-&gt;script_auth, cached);<br>
+=C2=A0#ifdef ENABLE_MANAGEMENT<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0auth_man =3D man_def_auth_test(ks);<br>
+@@ -1357,40 +1402,80 @@ static int<br>
+=C2=A0verify_user_pass_plugin(struct tls_session *session, struct tls_multi=
+ *multi,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0const struct user_pass *up)<br>
+=C2=A0{<br>
+-=C2=A0 =C2=A0 int retval =3D OPENVPN_PLUGIN_FUNC_ERROR;<br>
++=C2=A0 =C2=A0 int retval =3D OPENVPN_PLUGIN_FUNC_SUCCESS;<br>
+=C2=A0 =C2=A0 =C2=A0struct key_state *ks =3D &amp;session-&gt;key[KS_PRIMAR=
+Y];=C2=A0 =C2=A0 =C2=A0 /* primary key */<br>
+<br>
++=C2=A0 =C2=A0 struct gc_arena gc =3D gc_new();<br>
++<br>
+=C2=A0 =C2=A0 =C2=A0/* set password in private env space */<br>
+=C2=A0 =C2=A0 =C2=A0setenv_str(session-&gt;opt-&gt;es, &quot;password&quot;=
+, up-&gt;password);<br>
+<br>
+-=C2=A0 =C2=A0 /* generate filename for deferred auth control file */<br>
+-=C2=A0 =C2=A0 if (!key_state_gen_auth_control_files(&amp;ks-&gt;plugin_aut=
+h, session-&gt;opt))<br>
++=C2=A0 =C2=A0 /* iterate over list of plugins here, because deferred auth =
+needs<br>
++=C2=A0 =C2=A0 =C2=A0* per-plugin auth control files<br>
++=C2=A0 =C2=A0 =C2=A0*/<br>
++=C2=A0 =C2=A0 const struct plugin_list *pl =3D session-&gt;opt-&gt;plugins=
+;<br>
++=C2=A0 =C2=A0 int plugins_active =3D plugin_n(pl);<br>
++=C2=A0 =C2=A0 ASSERT( plugins_active &lt; SIZE(ks-&gt;plugin_auth) );<br>
++=C2=A0 =C2=A0 msg(M_INFO, &quot;GERT(1): plugins_active=3D%d, SIZE=3D%d&qu=
+ot;, plugins_active, (int)SIZE(ks-&gt;plugin_auth) );<br>
++<br>
++=C2=A0 =C2=A0 for (int i=3D0; i&lt;plugins_active; i++)<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(D_TLS_ERRORS, &quot;TLS Auth Error (%s): &=
+quot;<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;could not create deferred =
+auth control file&quot;, __func__);<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 return retval;<br>
+-=C2=A0 =C2=A0 }<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* generate filename for deferred auth control=
+ file */<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!key_state_gen_auth_control_files(&amp;ks-=
+&gt;plugin_auth[i], session-&gt;opt))<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(D_TLS_ERRORS, &quot;TLS Auth=
+ Error (%s): &quot;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;could not cr=
+eate deferred auth control file&quot;, __func__);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 retval =3D OPENVPN_PLUGIN_FUNC_E=
+RROR;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 break;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
+<br>
+-=C2=A0 =C2=A0 /* call command */<br>
+-=C2=A0 =C2=A0 retval =3D plugin_call(session-&gt;opt-&gt;plugins, OPENVPN_=
+PLUGIN_AUTH_USER_PASS_VERIFY, NULL, NULL, session-&gt;opt-&gt;es);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_INFO, &quot;GERT(4): plugin #%d, acf=3D%=
+s acp=3D%s&quot;, i, <br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ks-&gt;plugin_auth=
+[i].auth_control_file, ks-&gt;plugin_auth[i].auth_pending_file);<br>
+<br>
+-=C2=A0 =C2=A0 if (retval =3D=3D OPENVPN_PLUGIN_FUNC_DEFERRED)<br>
+-=C2=A0 =C2=A0 {<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* Check if the plugin has written the pending=
+ auth control<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0* file and send the pending auth to the =
+client */<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 if(!key_state_check_auth_pending_file(&amp;ks-=
+&gt;plugin_auth, multi))<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* call command */<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 // retval =3D plugin_call_item(session-&gt;opt=
+-&gt;plugins, OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY, NULL, NULL, session-&gt=
+;opt-&gt;es);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 //=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pl=C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 type=C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0av=C2=A0 =C2=A0 pr=C2=A0 =C2=A0 es=C2=A0 =C2=A0[=
+crt -1, NULL]<br>
++<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 const char **envp =3D make_env_array(session-&=
+gt;opt-&gt;es, false, &amp;gc);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 const int status =3D plugin_call_item(&amp;pl-=
+&gt;common-&gt;plugins[i],<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 pl-&gt;per_client.per_client_context[i],<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY,<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 NULL, NULL, envp, -1, NULL );<br>
++<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (status =3D=3D OPENVPN_PLUGIN_FUNC_DEFERRED=
+)<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 /* Check if the plugin has writt=
+en the pending auth control<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0* file and send the pendin=
+g auth to the client */<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if(!key_state_check_auth_pending=
+_file(&amp;(ks-&gt;plugin_auth[i]), multi))<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 retval =3D OPENVPN=
+_PLUGIN_FUNC_ERROR;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 key_state_rm_auth_=
+control_files(&amp;(ks-&gt;plugin_auth[i]));<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 break;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 else<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 retval =3D OPENVPN=
+_PLUGIN_FUNC_DEFERRED;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 else<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 /* purge auth control filename (=
+and file itself) for non-deferred returns */<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 key_state_rm_auth_control_files(=
+&amp;(ks-&gt;plugin_auth[i]));<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ks-&gt;plugin_auth[i].auth_contr=
+ol_status =3D ACF_DISABLED;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
++<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* if a single plugin fails, we fail all */<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (status =3D=3D OPENVPN_PLUGIN_FUNC_ERROR)<b=
+r>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0retval =3D OPENVPN_PLUGIN_F=
+UNC_ERROR;<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 key_state_rm_auth_control_files(=
+&amp;ks-&gt;plugin_auth);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 break;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
+-=C2=A0 =C2=A0 }<br>
+-=C2=A0 =C2=A0 else<br>
+-=C2=A0 =C2=A0 {<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* purge auth control filename (and file itsel=
+f) for non-deferred returns */<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 key_state_rm_auth_control_files(&amp;ks-&gt;pl=
+ugin_auth);<br>
++<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_INFO, &quot;GERT(3): plugin #%d status=
+=3D%d -&gt; retval=3D%d&quot;, i, status, retval );<br>
+=C2=A0 =C2=A0 =C2=A0}<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0setenv_del(session-&gt;opt-&gt;es, &quot;password&quot;=
+);<br>
++=C2=A0 =C2=A0 gc_free(&amp;gc);<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0return retval;<br>
+=C2=A0}<br>
+-- <br>
+2.34.1<br>
+<br>
+<br>
+<br>
+_______________________________________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
+envpn-devel@lists.sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
+nfo/openvpn-devel</a><br>
+</blockquote></div>
+
+--000000000000416eba05d9dd9789--
 
