@@ -1,10 +1,11 @@
-Date: Mon, 14 Mar 2022 17:54:46 +0100 (CET)
+Date: Mon, 14 Mar 2022 18:06:54 +0100 (CET)
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <404808391.276382.1647276886162@...2642...>
-In-Reply-To: <20220314162048.22955-1-a@...2181...>
-References: <20220314162048.22955-1-a@...2181...>
+Message-ID: <1711126770.277624.1647277614874@...2642...>
+In-Reply-To: <20220314120334.231-1-lstipakov@...277...>
+References: <20220314120334.231-1-lstipakov@...277...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] remove unused sitnl.h file
+Subject: Re: [Openvpn-devel] [PATCH master+release/2.5]
+ vcpkg-ports/pkcs11-helper: adapt to new upstream URL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,18 +16,22 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
 
+Acked-by: Frank Lichtenheld <frank@...2641...>
 
+Tested vcpkg upgrade/install on Windows 10 with VS 2019.
 
-> Antonio Quartulli <a@...2181...> hat am 14.03.2022 17:20 geschrieben:
+> Lev Stipakov <lstipakov@...277...> hat am 14.03.2022 13:03 geschrieben:
 > 
 >  
-> sitnl.h must have slipped in when implementing the networking AI and the
-> SITNL backend. However it is unused and should simply be removed.
-
-We have an AI? ;)
-(I assume this should read API?)
+> From: Lev Stipakov <lev@...515...>
+> 
+> Signed-off-by: Lev Stipakov <lev@...515...>
+> ---
+>  contrib/vcpkg-ports/pkcs11-helper/CONTROL        | 2 +-
+>  contrib/vcpkg-ports/pkcs11-helper/portfile.cmake | 8 ++++----
+>  2 files changed, 5 insertions(+), 5 deletions(-)
 
 Regards,
 --
