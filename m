@@ -1,13 +1,13 @@
-Message-ID: <d67e63d0-dd0b-dbed-c7aa-b0d767178d2f@...2181...>
-Date: Tue, 15 Mar 2022 16:08:09 +0100
+Message-ID: <2b7f8427-16ee-cc8c-edae-2933abeca441@...2181...>
+Date: Tue, 15 Mar 2022 16:09:15 +0100
 MIME-Version: 1.0
 Content-Language: en-US
-References: <20220313200715.13518-1-openvpn@...2080...>
- <20220313200715.13518-4-openvpn@...2080...>
+References: <20220313193154.9350-1-openvpn@...2080...>
+ <20220313193154.9350-2-openvpn@...2080...>
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20220313200715.13518-4-openvpn@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2.4 v4 3/3] plug-ins: Remove
- defer/simple.c sample plugin
+In-Reply-To: <20220313193154.9350-2-openvpn@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH v4 1/3] sample-plugin: New plugin for
+ testing multiple auth plugins
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,17 +22,21 @@ To: David Sommerseth <openvpn@...2080...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 13/03/2022 21:07, David Sommerseth wrote:
+On 13/03/2022 20:31, David Sommerseth wrote:
 > From: David Sommerseth <davids@...515...>
 > 
-> The use case for this plug-in is dubious now with the new multi-auth.c
-> plugin available.  This new plugin is based on simple.c, but allows
-> far more flexibility for testing.
+> This plugin allows setting username/passwords as well as configure
+> deferred authentication behaviour as part of the runtime initialization.
+> 
+> With this plug-in it is easier to test various scenarios where multiple
+> authentication plug-ins are active on the server side.
+> 
+> A test documentation was also added to describe various test cases and
+> the expected results.
 > 
 > Signed-off-by: David Sommerseth <davids@...515...>
 
-Does nothing more than removing the simple auth plugin (superseded by 
-the plugin in 1/2)
+Same as the patch for master.
 
 Acked-by: Antonio Quartulli <a@...2181...>
 
