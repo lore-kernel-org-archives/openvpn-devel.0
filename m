@@ -1,15 +1,10 @@
-Date: Tue, 15 Mar 2022 18:14:37 +0100
+Date: Tue, 15 Mar 2022 19:47:14 +0100 (CET)
+Message-Id: <202203151847.22FIlEF2017381@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <YjDJfV/CAiLztsDp@...1296...>
-References: <20220315155344.37787-1-openvpn@...2080...>
- <20220315155344.37787-4-openvpn@...2080...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Ha3jJpZNCZJQ1BK/"
-Content-Disposition: inline
-In-Reply-To: <20220315155344.37787-4-openvpn@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2.4 v5 3/3] plug-ins: Remove
- defer/simple.c sample plugin
+In-Reply-To: <20220315155344.37787-3-openvpn@...2080...>
+References: <20220315155344.37787-3-openvpn@...2080...>
+Subject: [Openvpn-devel] [PATCH applied] Re: plug-ins: Disallow multiple
+ deferred authentication plug-ins
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,54 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---Ha3jJpZNCZJQ1BK/
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+I have not done formal testing, just verified that the code change is
+the same and that it compiles.  The "plugin.c" module did change quite
+a bit since 2.4 (PF removal, argv overhaul, ENABLE_CRYPTO, etc.) but 
+the code patched here - plugin_call_ssl() - is identical.
 
-Hi,
+Your patch has been applied to the release/2.4 branch.
 
-On Tue, Mar 15, 2022 at 04:53:44PM +0100, David Sommerseth wrote:
-> From: David Sommerseth <davids@...515...>
->=20
-> The use case for this plug-in is dubious now with the new multi-auth.c
-> plugin available.  This new plugin is based on simple.c, but allows
-> far more flexibility for testing.
+commit 58ec3bb4aac77131118dbbc39a65181e7847adee
+Author: David Sommerseth
+Date:   Tue Mar 15 16:53:43 2022 +0100
 
-As for 1/3 v5, we decided to not invest time into plugin maintenance
-for 2.4 -> so, formal NAK for this one.  Just for the sake of the
-archives.
+     plug-ins: Disallow multiple deferred authentication plug-ins
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220315155344.37787-3-openvpn@...2080...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20220315155344.37787-3-openvpn@...2080...
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---Ha3jJpZNCZJQ1BK/
-Content-Type: application/pgp-signature; name="signature.asc"
+--
+kind regards,
 
------BEGIN PGP SIGNATURE-----
+Gert Doering
 
-iQGcBAEBAgAGBQJiMMl9AAoJEB2Cnv7KVigSU+0L/1/T6HGhLb6r+iTMY8GlB+7u
-imadtxICNPk/8shHAvzh1VOywf/dstuolVickkjVklZr2WjDXHKZ/ylRNcWRvZAi
-uJqRxThdsoy8mMhJsIGdzEEiion7SUz+lRXiUFmNnb7U9lTkaGp8xasxc0M8w1Hl
-0ObJBEYF2o1V9yBNceg5c2GBZODArp4y18v8Z1reYQw2ySVtfm9geIBBSqsHR/Dn
-nUWzhpNcA09IT/jxL1jCQGz/10Te0SzWD/SUwX4zs7ocMDF1KRjkm3LG88tewLhb
-y6gXuGQ4nm44962lQw+PzO6Aa10yKE139Mk7Bey+R/FDmomQJ6jjsP3yjlCMiVVa
-VBZrdCU+B5OaM9Achhqo9VdJfkifGBToeBcfB0aPcnefOwlDB2EpvnRL4a24XaQG
-7faIzouhqZ55lFyAo6fuejg2aydUcEEOLzybSjPZxVooiB7hF4ih4baeV8SBp40J
-drWfdb3g3slMabUFAuB8GK/z4GDwV5XToIOoTsbY1A==
-=TTPF
------END PGP SIGNATURE-----
-
---Ha3jJpZNCZJQ1BK/--
 
