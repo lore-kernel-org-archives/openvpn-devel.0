@@ -1,9 +1,12 @@
-Date: Tue, 15 Mar 2022 19:47:14 +0100 (CET)
-Message-Id: <202203151847.22FIlEF2017381@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220315155344.37787-3-openvpn@...2080...>
-References: <20220315155344.37787-3-openvpn@...2080...>
-Subject: [Openvpn-devel] [PATCH applied] Re: plug-ins: Disallow multiple
+Date: Tue, 15 Mar 2022 20:25:48 +0100 (CET)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <128215854.389358.1647372348795@...2642...>
+In-Reply-To: <a4e4d381-80a8-4f80-62ec-a7d9f12c1a1f@...2181...>
+References: <20220313193154.9350-1-openvpn@...2080...>
+ <20220313193154.9350-3-openvpn@...2080...>
+ <a4e4d381-80a8-4f80-62ec-a7d9f12c1a1f@...2181...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH v4 2/3] plug-ins: Disallow multiple
  deferred authentication plug-ins
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -13,34 +16,22 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-I have not done formal testing, just verified that the code change is
-the same and that it compiles.  The "plugin.c" module did change quite
-a bit since 2.4 (PF removal, argv overhaul, ENABLE_CRYPTO, etc.) but 
-the code patched here - plugin_call_ssl() - is identical.
-
-Your patch has been applied to the release/2.4 branch.
-
-commit 58ec3bb4aac77131118dbbc39a65181e7847adee
-Author: David Sommerseth
-Date:   Tue Mar 15 16:53:43 2022 +0100
-
-     plug-ins: Disallow multiple deferred authentication plug-ins
-
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220315155344.37787-3-openvpn@...2080...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20220315155344.37787-3-openvpn@...2080...
-     Signed-off-by: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Antonio Quartulli <a@...2181...>, David Sommerseth <openvpn@...2080...>, openvpn-devel@lists.sourceforge.net
 
 
+
+> Antonio Quartulli <a@...2181...> hat am 15.03.2022 16:11 geschrieben:
+> Frank reported that we should use double space after the full-stop. 
+> Honestly I'd prefer just single-space everywhere as it is more 
+> "traditional".
+
+Yeah, I also prefer one space but I actually grepped the code and while it
+is somewhat inconsistent, double-space seems to be winning decisively right
+now. And we definitely should not use both in the same message ;)
+
+Regards,
 --
-kind regards,
-
-Gert Doering
-
+Frank Lichtenheld
 
