@@ -1,10 +1,12 @@
-Date: Mon, 14 Mar 2022 20:08:58 +0100 (CET)
-Message-Id: <202203141908.22EJ8wWG084244@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220314120334.231-1-lstipakov@...277...>
+Message-ID: <1cb5e0db-b550-2756-bcb0-f465d674f528@...515...>
+Date: Tue, 15 Mar 2022 10:04:15 +0200
+MIME-Version: 1.0
+Content-Language: en-US
 References: <20220314120334.231-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: vcpkg-ports/pkcs11-helper:
- adapt to new upstream URL
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+In-Reply-To: <20220314120334.231-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH master+release/2.5]
+ vcpkg-ports/pkcs11-helper: adapt to new upstream URL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +15,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Thanks, Frank, for testing the windows build stuff.  I usually do trust
-Lev's build patches (what else could I do?) but knowing them tested and
-having an ACK is much better.
+Based on my testing this fixes the Windows build issues.
 
-Lev, your patch has been applied to the master and release/2.5 branch.
+ACK.
 
-commit fd567aa0ef71afc0788b97341e88f59406c8f7df (head)
-commit 3ffe644638e40dd997cc87c24be3d2be4644ab6b (release/2.5)
-Author: Lev Stipakov
-Date:   Mon Mar 14 14:03:34 2022 +0200
-
-     vcpkg-ports/pkcs11-helper: adapt to new upstream URL
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20220314120334.231-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23940.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Il 14.3.2022 14.03, Lev Stipakov ha scritto:
+> From: Lev Stipakov <lev@...515...>
+> 
+> Signed-off-by: Lev Stipakov <lev@...515...>
+> ---
+>   contrib/vcpkg-ports/pkcs11-helper/CONTROL        | 2 +-
+>   contrib/vcpkg-ports/pkcs11-helper/portfile.cmake | 8 ++++----
+>   2 files changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/contrib/vcpkg-ports/pkcs11-helper/CONTROL b/contrib/vcpkg-ports/pkcs11-helper/CONTROL
+> index 6a5077fd..ff116364 100644
+> --- a/contrib/vcpkg-ports/pkcs11-helper/CONTROL
+> +++ b/contrib/vcpkg-ports/pkcs11-helper/CONTROL
+> @@ -1,4 +1,4 @@
+>   Source: pkcs11-helper
+> -Version: 1.28-3
+> +Version: 1.28-4
+>   Homepage: https://github.com/OpenSC/pkcs11-helper
+>   Description: pkcs11-helper is a library that simplifies the interaction with PKCS#11 providers for end-user applications.
+> diff --git a/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake b/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
+> index 0723344e..4a9cd20c 100644
+> --- a/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
+> +++ b/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
+> @@ -1,9 +1,9 @@
+> -set(VERSION 1.28)
+> +set(VERSION 1.28.0)
+>   
+>   vcpkg_download_distfile(ARCHIVE
+> -    URLS "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11-helper-${VERSION}/pkcs11-helper-${VERSION}.0.tar.bz2"
+> -    FILENAME "pkcs11-helper-${VERSION}.tar.bz2"
+> -    SHA512 11b8e554d9223ab9305a3ad7e2b6a9bbece1c09ca8d49276618dec31eefdccf6a32b0db85a28a90334ea42fe809beec83514a31930b79bdbefa368ed4658945b
+> +    URLS "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11-helper-${VERSION}/pkcs11-helper-${VERSION}.tar.gz"
+> +    FILENAME "pkcs11-helper-${VERSION}.tar.gz"
+> +    SHA512 1c1cc7f83ed360fabdcfa68d0eafa7d25be03e68c6a202e7ad2907feb472663bb34e12b9e162344ec221a4298abc02acdc75f0f45d9a89657aa7ac55e59badd5
+>   )
+>   
+>   vcpkg_extract_source_archive_ex(
 
