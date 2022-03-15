@@ -1,15 +1,15 @@
-Date: Tue, 15 Mar 2022 18:13:43 +0100
+Date: Tue, 15 Mar 2022 18:14:37 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <YjDJR+xDcuV7QBIW@...1296...>
+Message-ID: <YjDJfV/CAiLztsDp@...1296...>
 References: <20220315155344.37787-1-openvpn@...2080...>
- <20220315155344.37787-2-openvpn@...2080...>
+ <20220315155344.37787-4-openvpn@...2080...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="1OHEu+7vhnw9TjQc"
+ protocol="application/pgp-signature"; boundary="Ha3jJpZNCZJQ1BK/"
 Content-Disposition: inline
-In-Reply-To: <20220315155344.37787-2-openvpn@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2.4 v5 1/3] sample-plugin: New plugin
- for testing multiple auth plugins
+In-Reply-To: <20220315155344.37787-4-openvpn@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH v2.4 v5 3/3] plug-ins: Remove
+ defer/simple.c sample plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,33 +21,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: David Sommerseth <openvpn@...2080...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---1OHEu+7vhnw9TjQc
+--Ha3jJpZNCZJQ1BK/
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Mar 15, 2022 at 04:53:42PM +0100, David Sommerseth wrote:
+On Tue, Mar 15, 2022 at 04:53:44PM +0100, David Sommerseth wrote:
 > From: David Sommerseth <davids@...515...>
 >=20
-> This plugin allows setting username/passwords as well as configure
-> deferred authentication behaviour as part of the runtime initialization.
->=20
-> With this plug-in it is easier to test various scenarios where multiple
-> authentication plug-ins are active on the server side.
->=20
-> A test documentation was also added to describe various test cases and
-> the expected results.
->=20
-> Signed-off-by: David Sommerseth <davids@...515...>
+> The use case for this plug-in is dubious now with the new multi-auth.c
+> plugin available.  This new plugin is based on simple.c, but allows
+> far more flexibility for testing.
 
-We've discussed this on IRC, and decided to not invest further work
-into 2.4 for this - the 2.5 plugin will work, but "fiddling with the
-build stuff" is left as an excercise for the reader, as we consider
-2.4 to be effectively "out of maintenance, only critical bugfixes".
-
-Thus, formal NAK on this.
+As for 1/3 v5, we decided to not invest time into plugin maintenance
+for 2.4 -> so, formal NAK for this one.  Just for the sake of the
+archives.
 
 gert
 --=20
@@ -60,22 +50,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---1OHEu+7vhnw9TjQc
+--Ha3jJpZNCZJQ1BK/
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJiMMlHAAoJEB2Cnv7KVigSaGEL/0N8vfwYynqAqHXUNjxTsIeD
-uc9XAegQGI0Us/lpgKfrXIuJhiYI8CsYQJQsiHXm7Q40ZZsjVoLOAeAQG2wLqj3K
-ony2j+8ETaHowx5gI+seCjYwDXR8MnyCVBqMS8jPQ2TU8QjKtClCKjjOWAN9X7mG
-l7H6aUFOM3vTOgPDD+Bv66EWYix0mrngGpDEDiIrWG35UhOFsKg+2Vw07mpYTmbq
-ODDk5+OUP5Y170Wod6UyLde5m2JdPg540icMBzYvd99U2BpdWod11WIOSHVZqYMk
-pEkLXATgEN6HonKlr+Fc9c7Ay9o9LyWdVANnpyfjX+ovshVxVi99zB14wyv+eM6b
-/NQpoHvTS1AN+nbPRlXULZ6elakjqtbUiOmrWSx6ZobEiDmmCIsmzLGdJIEKZ8i5
-uCzyu+J1q3V6ZHiaudpt0C0ef48XFDziqb2HliRSza+knpDOlAdtpVHPnMx3fM4s
-cTI3dJrZD36Q/A6nhwxbSDonyvAqUAx6FYLxzle8CA==
-=9lnj
+iQGcBAEBAgAGBQJiMMl9AAoJEB2Cnv7KVigSU+0L/1/T6HGhLb6r+iTMY8GlB+7u
+imadtxICNPk/8shHAvzh1VOywf/dstuolVickkjVklZr2WjDXHKZ/ylRNcWRvZAi
+uJqRxThdsoy8mMhJsIGdzEEiion7SUz+lRXiUFmNnb7U9lTkaGp8xasxc0M8w1Hl
+0ObJBEYF2o1V9yBNceg5c2GBZODArp4y18v8Z1reYQw2ySVtfm9geIBBSqsHR/Dn
+nUWzhpNcA09IT/jxL1jCQGz/10Te0SzWD/SUwX4zs7ocMDF1KRjkm3LG88tewLhb
+y6gXuGQ4nm44962lQw+PzO6Aa10yKE139Mk7Bey+R/FDmomQJ6jjsP3yjlCMiVVa
+VBZrdCU+B5OaM9Achhqo9VdJfkifGBToeBcfB0aPcnefOwlDB2EpvnRL4a24XaQG
+7faIzouhqZ55lFyAo6fuejg2aydUcEEOLzybSjPZxVooiB7hF4ih4baeV8SBp40J
+drWfdb3g3slMabUFAuB8GK/z4GDwV5XToIOoTsbY1A==
+=TTPF
 -----END PGP SIGNATURE-----
 
---1OHEu+7vhnw9TjQc--
+--Ha3jJpZNCZJQ1BK/--
 
