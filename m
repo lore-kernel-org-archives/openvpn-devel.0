@@ -1,12 +1,9 @@
-Date: Wed, 16 Mar 2022 10:29:37 +0100 (CET)
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <1592362800.422327.1647422977914@...2642...>
-In-Reply-To: <202203160839.22G8dfkY031659@...2054...>
-References: <20220316080912.118-1-lstipakov@...277...>
- <202203160839.22G8dfkY031659@...2054...>
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 16 Mar 2022 11:23:17 +0100
+Message-Id: <20220316102317.3356246-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: vcpkg-ports: add openssl
- 1.1.1n
+Subject: [Openvpn-devel] [PATCH] Fix IV_PLAT_VER and UV_ variables sent
+ without push-peer-info
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +12,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+Commit 8c72d7981 changed the push_peer_info_detail to have an
+additional level for P2P NCP and shifting most of the other levels
+with 1. The check for UV_ and IV_PLAT_VER was not changed accordingly.
+---
+ src/openvpn/ssl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index ca028856..87b476b2 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2255,7 +2255,7 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+                 {
+                     if ((((strncmp(e->string, "UV_", 3) == 0
+                         || strncmp(e->string, "IV_PLAT_VER=", sizeof("IV_PLAT_VER=") - 1) == 0)
+-                        && session->opt->push_peer_info_detail >= 2)
++                        && session->opt->push_peer_info_detail > 2)
+                         || (strncmp(e->string, "IV_GUI_VER=", sizeof("IV_GUI_VER=") - 1) == 0)
+                         || (strncmp(e->string, "IV_SSO=", sizeof("IV_SSO=") - 1) == 0)
+                     )
+-- 
+2.33.0
 
-> Gert Doering <gert@...1296...> hat am 16.03.2022 09:39 geschrieben:
-> 
->  
-> Acked-by: Gert Doering <gert@...1296...>
-> 
-> As discussed on IRC, we need to build with the new security-fixed 1.1.1n
-> release, and vcpkg port is not there yet.  Somewhat annoying, we should 
-> find a better way to decouple "build" and "openvpn main repo" commits...
-
-We could always move the whole contrib/vcpkg-ports directory to a separate
-repository, right? Or is there a strong technical reason why this should be
-in the main repository?
-
-Regards,
---
-Frank Lichtenheld
 
