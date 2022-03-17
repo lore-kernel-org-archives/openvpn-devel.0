@@ -1,14 +1,16 @@
-Date: Thu, 17 Mar 2022 11:41:22 +0100
+Date: Thu, 17 Mar 2022 11:47:33 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <YjMQUsyqUaxzlAWn@...1296...>
-References: <20220308230621.1532809-1-heiko@...2662...>
- <20220312135810.242028-1-heiko@...2662...>
+Message-ID: <YjMRxbebLJLUl5Du@...1296...>
+References: <20220316080912.118-1-lstipakov@...277...>
+ <202203160839.22G8dfkY031659@...2054...>
+ <1592362800.422327.1647422977914@...2642...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="GFKpr+nEtSIYO7l8"
+ protocol="application/pgp-signature"; boundary="ViU3/EEwYYZq2Nfx"
 Content-Disposition: inline
-In-Reply-To: <20220312135810.242028-1-heiko@...2662...>
-Subject: Re: [Openvpn-devel] [PATCH] add support for --dns option
+In-Reply-To: <1592362800.422327.1647422977914@...2642...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: vcpkg-ports: add openssl
+ 1.1.1n
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,66 +19,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Heiko Hund <heiko@...2662...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: Gert Doering <gert@...1296...>, Lev Stipakov <lev@...515...>, openvpn-devel@lists.sourceforge.net
 
---GFKpr+nEtSIYO7l8
+--ViU3/EEwYYZq2Nfx
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-(this is about v2)
-
-On Sat, Mar 12, 2022 at 02:58:10PM +0100, Heiko Hund wrote:
-> As a first step towards DNS configuration in openvpn and a unified way
-> to push DNS related settings to clients in v2 and v3, this commit adds
-> support for parsing the new --dns option. Later commits will add support
-> for setting up DNS on different platforms.
+On Wed, Mar 16, 2022 at 10:29:37AM +0100, Frank Lichtenheld wrote:
+> > As discussed on IRC, we need to build with the new security-fixed 1.1.1n
+> > release, and vcpkg port is not there yet.  Somewhat annoying, we should=
+=20
+> > find a better way to decouple "build" and "openvpn main repo" commits...
 >=20
-> For now, --dns and DNS related --dhcp-option can be used together for
-> smoother transition. Settings from --dns will override ones --dhcp-option
-> where applicable.
->=20
-> For detailed information about the option consult the documentation in
-> this commit.
-[..]
-> +    for (i =3D 1, d =3D o->search_domains; d !=3D NULL; i++, d =3D d->ne=
-xt)
-> +    {
-> +        name_ok =3D openvpn_snprintf(env_name, sizeof(env_name), "dns_se=
-arch_domain_%d", i) && name_ok;
-> +        setenv_str(es, env_name, d->name);
-> +    }
+> We could always move the whole contrib/vcpkg-ports directory to a separate
+> repository, right? Or is there a strong technical reason why this should =
+be
+> in the main repository?
 
-With the "&& name_ok" this code does not really improve, even if it
-was requested in the v1 review...
+Just for the sake of the archives - this is what we discussed in the
+meeting yesterday, and the plan is
 
-I wonder why we bother to actually *do* this?  As in "we already know
-that this can never overflow here" (because all strings involved are=20
-known, and the max width of %d is known, too), but *if* it ever did,=20
-calling the subsequent setenv_str() wouldn't be a good idea to do - no?
+ - "building openvpn should be possible from the openvpn repo, without
+    any extra submodules either way" - but will give the person building
+    the vcpkg default packages (like, 1.1.1m yesterday)
 
-Can we make transform these into a miniwrapper that does
+ - "for release building", we add whatever is needed to the openvpn-build
+   repo, to do "take openvpn repo, add vcpkg port overlays for newer=20
+   versions etc." and build from there
 
- - openvpn_snprintf()
- - check result, warn if overflow
- - call setenv_str() otherwise
+so this patch will go away again, in the not so distant future.
 
-like
-
-   for (i =3D 1, d =3D o->search_domains; d !=3D NULL; i++, d =3D d->next)
-   {
-        _do_dns_env_thing( "dns_search_domain_%d", i, d->name );
-   }
-
-so, shorter lines, clearer code, actual error checking, and no && ugliness =
-:-)
-
-(As far as I could see, it's all "setenv_str()" anyway)
+(Thanks, Lev, for all the work on this)
 
 gert
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -87,22 +67,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---GFKpr+nEtSIYO7l8
+--ViU3/EEwYYZq2Nfx
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJiMxBSAAoJEB2Cnv7KVigSe8EL/1UxG8j1OZiroEHETaHvu1jX
-bR0EsdqG3ru+i3/pS1DumBxiOgXM3pBp6ENoxSD1V10MDUAftbuNoCqodm515RJB
-Z9/iQXGfkYnfNXQNlmn4M/LmdHeec0FKjBd6lzefZ9XDM6aPhEK6eruGcIYMRyKe
-rlm7178Cd+m6cORfzq2HQnqn9SGmvm9IvJPqxJG/K9EeXrwW9hAju38sV08CD10y
-+Ip31lS9RduJ4mRpEswPnk/O5NcORPInvGQTieJ2YuyVn8fnt1uNiX0QxflaZS+f
-/K06ecK72aD6+kc0/b8/NSRVZ3ufwD3yKa80P/4owLg0jzu3Zn0reoK41LJ9yuZP
-87EWpBXK/+kXuRnf2JCjYIoD60mMCjKfSt+tEgCZpJXatccIMxM7uD5U6VeENjNT
-j9yZLdib1GxMfGqQzxRomfwkSxopaVp8CR3BSxR88zKNR+BLTblLjoVKH3FYCZJd
-5Dml/DSZt3nh3i9iy13JUKxFqwtSlnTxl2/lU3TQKQ==
-=cmDi
+iQGcBAEBAgAGBQJiMxHFAAoJEB2Cnv7KVigSWgoL/i49S7Cr6FRhJM6qurs50xOD
+CesbakjO6LPNdcpyB5QPFXl9pkK3mYFq4GiQM/DGWrEd4qC1mG6rXX9WR23zOHey
+UD8q0+xJ3hlJvib1sbnJOXLla8egngERMVtykoevykz/1Uy+XD62EGLn75rSN4K1
+1weFb3G2dOoAAWqne2cp6/+qZN23R2FGf0e2w0QAMNyuKEsmCsxuSt0re9tEPKdd
+PnVirZ8bIeE0gDBJkaFCw3MOfyGLeaiye75QQzlYbFj8IiICWV8jv0OVC0zLYIVH
+3frB9HgEZhljSQ9uefX0nFQyEod+ph8DTLpNqhMqCjeQq6LccXdVnLm/Tvd5gCL8
+SjQqXSyPM2/QFjvecWocxZi0ynPCdUnSOylIqU8nzBN+M5PQN5/zBm8ovPyNAKIf
+QjGRkea8Z+CxFs6mHcLrvrl4kIzS+XLS0uCnPaaeASnnFtDeOgTlXGKoa/PGPwq7
+4Mk8eu23xaR/d3FfqNPLguqOvfT3CdQNnNGoEqQ8ag==
+=7hGq
 -----END PGP SIGNATURE-----
 
---GFKpr+nEtSIYO7l8--
+--ViU3/EEwYYZq2Nfx--
 
