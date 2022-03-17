@@ -1,9 +1,10 @@
-Date: Thu, 17 Mar 2022 15:02:44 +0100 (CET)
-Message-Id: <202203171402.22HE2inl069279@...2054...>
+Date: Thu, 17 Mar 2022 14:31:33 +0100 (CET)
+Message-Id: <202203171331.22HDVXjc068710@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220317135728.183-1-lstipakov@...277...>
-References: <20220317135728.183-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: vcpkg-ports: remove openssl port
+In-Reply-To: <20220218235255.334-1-lstipakov@...277...>
+References: <20220218235255.334-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: msvc: adjust build options to
+ harden binaries
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,22 +18,20 @@ Content-Transfer-Encoding: 8bit
 To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
-
-As discussed :-)
+.. and more magic XML files... :-)
 
 Your patch has been applied to the release/2.5 branch.
 
-commit aa6f15dd2a1df68409384d6f955f68692595b77b (release/2.5)
+commit 4bf8f1147dc7aadce2b15b84bb4613d965660191
 Author: Lev Stipakov
-Date:   Thu Mar 17 15:57:28 2022 +0200
+Date:   Sat Feb 19 01:52:55 2022 +0200
 
-     vcpkg-ports: remove openssl port
+     msvc: adjust build options to harden binaries
 
      Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220317135728.183-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23993.html
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20220218235255.334-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23852.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
