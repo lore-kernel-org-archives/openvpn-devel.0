@@ -1,12 +1,7 @@
-From: Heiko Hund <heiko@...2662...>
-Date: Thu, 17 Mar 2022 13:06:56 +0100
-Message-ID: <1694181.r3cYAWFjbh@...2664...>
-In-Reply-To: <YjMQUsyqUaxzlAWn@...1296...>
-References: <20220308230621.1532809-1-heiko@...2662...>
- <20220312135810.242028-1-heiko@...2662...>
- <YjMQUsyqUaxzlAWn@...1296...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] add support for --dns option
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 17 Mar 2022 14:23:57 +0200
+Message-Id: <20220317122357.111-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] vcpkg-ports\openssl3: update to 3.0.2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,63 +11,70 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Hi Gert
+From: Lev Stipakov <lev@...515...>
 
-On Donnerstag, 17. M=C3=A4rz 2022 11:41:22 CET Gert Doering wrote:
-> I wonder why we bother to actually *do* this?  As in "we already know
-> that this can never overflow here" (because all strings involved are
-> known, and the max width of %d is known, too), but *if* it ever did,
-> calling the subsequent setenv_str() wouldn't be a good idea to do - no?
+While on it, remove deprecated vcpkg_fail_port_install().
+since we don't care about UWP/Linux/OS X here.
 
-It's in the spirit of defensive programming. It cannot overflow now, but wi=
-ll likely overflow some time. However I thought that getting the value into=
- env might still be worthwhile in some scenarios, even if the name is not c=
-omplete, e.g. if the env is logged somewhere. The error message in the open=
-vpn log, will lead to cause then.
-=20
-> Can we make transform these into a miniwrapper that does
-> like
->=20
->    for (i =3D 1, d =3D o->search_domains; d !=3D NULL; i++, d =3D d->next)
->    {
->         _do_dns_env_thing( "dns_search_domain_%d", i, d->name );
->    }
+Also bump github actions's vcpkg commit id.
 
-I actually had such a wrapper in place, but dumped it because I didn't like=
- the fact that the value would have to come before the name in the argument=
- list, because of the var-args. Since we have a format string with two %d (=
-and there might be more / other formatting specifiers in the future), the w=
-rapper would have to deal with ..., or we'd end up with two wrappers (or mo=
-re if this is extended in the future). No matter what:
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ .github/workflows/build.yaml                | 2 +-
+ contrib/vcpkg-ports/openssl3/portfile.cmake | 6 ++----
+ contrib/vcpkg-ports/openssl3/vcpkg.json     | 2 +-
+ 3 files changed, 4 insertions(+), 6 deletions(-)
 
->            const char* format =3D s->domain_type =3D=3D DNS_RESOLVE_DOMAI=
-NS ?
->                "dns_server_%d_resolve_domain_%d" : "dns_server_%d_exclude=
-_domain_%d";
-
-requires it to be:
-
- _do_dns_env_thing(d->name, "dns_server_%d_resolve__domain_%d", i, j);
-
-right now already. And that lead me to not making things wrapped.
-
-However I could be talked into removing the checks for openvpn_snprintf()'s=
- return value if there's a consensus, as it wouldn't introduce an actual is=
-sue. Just maybe a little harder to debug issues in future code possibly. Al=
-so not setting the env if sprintf fails sounds good, would do this rather:
-
-if (openvpn_snprinf())
-    setenv_str();
-else
-    name_ok =3D false;
-
-Iff the value is really not useful in the env, when the name is incomplete.=
- Bonus: no &=3D.
-
-Heiko
-
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 34d1dcce..fa99e12b 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -293,7 +293,7 @@ jobs:
+       - name: Restore artifacts, or run vcpkg, build and cache artifacts
+         uses: lukka/run-vcpkg@...2638...
+         with:
+-          vcpkgGitCommitId: 'a2fcb03749ff5897b5985092934dc6057680c789'
++          vcpkgGitCommitId: 'a69b65229b3956b7f45abd81671b7330114bcaad'
+           vcpkgArguments: 'openssl3 lz4 lzo pkcs11-helper tap-windows6'
+           vcpkgTriplet: '${{ matrix.triplet }}-windows-ovpn'
+           cleanAfterBuild: false
+diff --git a/contrib/vcpkg-ports/openssl3/portfile.cmake b/contrib/vcpkg-ports/openssl3/portfile.cmake
+index 333ad171..40fe97b7 100644
+--- a/contrib/vcpkg-ports/openssl3/portfile.cmake
++++ b/contrib/vcpkg-ports/openssl3/portfile.cmake
+@@ -4,13 +4,11 @@ if(EXISTS ${CURRENT_INSTALLED_DIR}/include/openssl/ssl.h)
+     message(FATAL_ERROR "Can't build '${PORT}' if another SSL library is installed. Please remove existing one and try install '${PORT}' again if you need it.")
+ endif()
+ 
+-vcpkg_fail_port_install(MESSAGE "${PORT} is only for Windows Desktop" ON_TARGET "UWP" "Linux" "OSX")
+-
+ vcpkg_from_github(
+     OUT_SOURCE_PATH SOURCE_PATH
+     REPO openssl/openssl
+-    REF openssl-3.0.1
+-    SHA512 7f303769a3a796b88478399d42aa2a9a70dc74f62c975bbb93e8903e3bb8e25f16ecfc436186c2d4aa7383302c73ad1dd8ac4fccaa589062bbce6059d6073f18
++    REF openssl-3.0.2
++    SHA512 d69c87b8250da813f282ead0bd005ebde663e77595ee8d99560d25f345570da2fa552b57c372956d461e3b631a19d6d60bebafe6ff89aeebbb5d34ad516b62ac
+ )
+ 
+ vcpkg_find_acquire_program(PERL)
+diff --git a/contrib/vcpkg-ports/openssl3/vcpkg.json b/contrib/vcpkg-ports/openssl3/vcpkg.json
+index 93db84b9..ecf7a8d0 100644
+--- a/contrib/vcpkg-ports/openssl3/vcpkg.json
++++ b/contrib/vcpkg-ports/openssl3/vcpkg.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "openssl3",
+-  "version-semver": "3.0.1",
++  "version-semver": "3.0.2",
+   "description": "TLS/SSL and crypto library",
+   "homepage": "https://www.openssl.org/",
+   "license": "Apache-2.0"
+-- 
+2.23.0.windows.1
 
 
