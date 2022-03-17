@@ -1,16 +1,10 @@
-Date: Thu, 17 Mar 2022 11:47:33 +0100
+Date: Thu, 17 Mar 2022 12:38:50 +0100 (CET)
+Message-Id: <202203171138.22HBcow3065632@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <YjMRxbebLJLUl5Du@...1296...>
-References: <20220316080912.118-1-lstipakov@...277...>
- <202203160839.22G8dfkY031659@...2054...>
- <1592362800.422327.1647422977914@...2642...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="ViU3/EEwYYZq2Nfx"
-Content-Disposition: inline
-In-Reply-To: <1592362800.422327.1647422977914@...2642...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: vcpkg-ports: add openssl
- 1.1.1n
+In-Reply-To: <20220314131356.11577-1-a@...2181...>
+References: <20220314131356.11577-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: options: drop useless netmask
+ variable
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,70 +13,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Frank Lichtenheld <frank@...2641...>
-Cc: Gert Doering <gert@...1296...>, Lev Stipakov <lev@...515...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---ViU3/EEwYYZq2Nfx
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Acked-by: Gert Doering <gert@...1296...>
 
-Hi,
+Trivial change, obviously correct.  I *did* test-compile this :-) but
+did not actually test any iroute stuff (that will come next in the 
+"DCO server" testbed).
 
-On Wed, Mar 16, 2022 at 10:29:37AM +0100, Frank Lichtenheld wrote:
-> > As discussed on IRC, we need to build with the new security-fixed 1.1.1n
-> > release, and vcpkg port is not there yet.  Somewhat annoying, we should=
-=20
-> > find a better way to decouple "build" and "openvpn main repo" commits...
->=20
-> We could always move the whole contrib/vcpkg-ports directory to a separate
-> repository, right? Or is there a strong technical reason why this should =
-be
-> in the main repository?
+Your patch has been applied to the master branch.
 
-Just for the sake of the archives - this is what we discussed in the
-meeting yesterday, and the plan is
+commit 07be493796250ad680a4a41c26e19c1938bf37ce
+Author: Antonio Quartulli
+Date:   Mon Mar 14 14:13:56 2022 +0100
 
- - "building openvpn should be possible from the openvpn repo, without
-    any extra submodules either way" - but will give the person building
-    the vcpkg default packages (like, 1.1.1m yesterday)
+     options: drop useless netmask variable
 
- - "for release building", we add whatever is needed to the openvpn-build
-   repo, to do "take openvpn repo, add vcpkg port overlays for newer=20
-   versions etc." and build from there
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220314131356.11577-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23941.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-so this patch will go away again, in the not so distant future.
 
-(Thanks, Lev, for all the work on this)
+--
+kind regards,
 
-gert
+Gert Doering
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---ViU3/EEwYYZq2Nfx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJiMxHFAAoJEB2Cnv7KVigSWgoL/i49S7Cr6FRhJM6qurs50xOD
-CesbakjO6LPNdcpyB5QPFXl9pkK3mYFq4GiQM/DGWrEd4qC1mG6rXX9WR23zOHey
-UD8q0+xJ3hlJvib1sbnJOXLla8egngERMVtykoevykz/1Uy+XD62EGLn75rSN4K1
-1weFb3G2dOoAAWqne2cp6/+qZN23R2FGf0e2w0QAMNyuKEsmCsxuSt0re9tEPKdd
-PnVirZ8bIeE0gDBJkaFCw3MOfyGLeaiye75QQzlYbFj8IiICWV8jv0OVC0zLYIVH
-3frB9HgEZhljSQ9uefX0nFQyEod+ph8DTLpNqhMqCjeQq6LccXdVnLm/Tvd5gCL8
-SjQqXSyPM2/QFjvecWocxZi0ynPCdUnSOylIqU8nzBN+M5PQN5/zBm8ovPyNAKIf
-QjGRkea8Z+CxFs6mHcLrvrl4kIzS+XLS0uCnPaaeASnnFtDeOgTlXGKoa/PGPwq7
-4Mk8eu23xaR/d3FfqNPLguqOvfT3CdQNnNGoEqQ8ag==
-=7hGq
------END PGP SIGNATURE-----
-
---ViU3/EEwYYZq2Nfx--
 
