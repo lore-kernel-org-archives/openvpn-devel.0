@@ -1,11 +1,9 @@
-Date: Wed, 16 Mar 2022 18:22:54 +0100 (CET)
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <1814938197.9888.1647451374712@...2642...>
-In-Reply-To: <20220316135411.217-1-lstipakov@...277...>
-References: <20220316135411.217-1-lstipakov@...277...>
+Message-ID: <3f038403-09f2-2471-9187-e85a39d37d5a@...515...>
+Date: Thu, 17 Mar 2022 07:02:46 +0200
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH master+release/2.5]
- vcpkg-ports\pkcs11-helper: shorten patch filename
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Content-Language: en-US
+Subject: [Openvpn-devel] OpenVPN 2.5.6 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,23 +12,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
 
+The OpenVPN community project team is proud to release OpenVPN 2.5.6. 
+This is mostly a bugfix release including one security fix ("Disallow 
+multiple deferred authentication plug-ins.", CVE: 2022-0547). More 
+details are available in Changes.rst:
 
+<https://github.com/OpenVPN/openvpn/blob/release/2.5/Changes.rst>
 
-> Lev Stipakov <lstipakov@...277...> hat am 16.03.2022 14:54 geschrieben:
-> 
->  
-> From: Lev Stipakov <lev@...515...>
-> 
-> "make dist" uses tar which breaks on long filenames:
+Source code and Windows installers can be downloaded from our download page:
 
-I think this should specfically mention "uses tar -o". Most modern usages of tar do not have this limit.
+<https://openvpn.net/community-downloads/>
 
-Regards,
---
-Frank Lichtenheld
+Debian and Ubuntu packages are available in the official apt repositories:
+
+<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
+
+On Red Hat derivatives we recommend using the Fedora Copr repository.
+
+<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release/>
 
