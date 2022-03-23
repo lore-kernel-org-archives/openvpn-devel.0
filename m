@@ -1,10 +1,9 @@
-Date: Thu, 17 Mar 2022 14:31:33 +0100 (CET)
-Message-Id: <202203171331.22HDVXjc068710@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220218235255.334-1-lstipakov@...277...>
-References: <20220218235255.334-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: msvc: adjust build options to
- harden binaries
+Message-ID: <a108364d-ae5c-50c8-9158-8008988f3036@...515...>
+Date: Wed, 23 Mar 2022 11:47:58 +0200
+MIME-Version: 1.0
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Content-Language: en-US
+Subject: [Openvpn-devel] OpenVPN 2.4.12 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +12,17 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
 
-.. and more magic XML files... :-)
+OpenVPN 2.4.12 was released last week. It will be the last release in 
+the 2.4.x series, so we encourage you to migrate to latest 2.5.x release 
+if you can.
 
-Your patch has been applied to the release/2.5 branch.
+Source code and Windows installers can be downloaded from our download page:
 
-commit 4bf8f1147dc7aadce2b15b84bb4613d965660191
-Author: Lev Stipakov
-Date:   Sat Feb 19 01:52:55 2022 +0200
+<https://openvpn.net/community-downloads/>
 
-     msvc: adjust build options to harden binaries
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20220218235255.334-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23852.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Linux packages are not provided for this release.
 
