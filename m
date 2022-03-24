@@ -1,10 +1,12 @@
-Content-Type: multipart/mixed; boundary="------------GAdj4cyKDKdUsOIz0enOXPJP"
-Message-ID: <400a4652-39d6-ec8d-6f58-824f552e0440@...2666...>
-Date: Thu, 24 Mar 2022 14:40:03 +0100
+Message-ID: <9f710eb5-007c-cc8e-56b0-1b00c3f12c19@...1227...>
+Date: Thu, 24 Mar 2022 18:48:20 +0100
 MIME-Version: 1.0
-Content-Language: en-US
-From: Michael Baentsch <info@...2666...>
-Subject: [Openvpn-devel] [PATCH] Enablement of quantum-safe key establishment
+Content-Language: en-GB
+References: <400a4652-39d6-ec8d-6f58-824f552e0440@...2666...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <400a4652-39d6-ec8d-6f58-824f552e0440@...2666...>
+Subject: Re: [Openvpn-devel] [PATCH] Enablement of quantum-safe key
+ establishment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,72 +15,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is a multi-part message in MIME format.
---------------GAdj4cyKDKdUsOIz0enOXPJP
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
+To: Michael Baentsch <info@...2666...>, openvpn-devel@lists.sourceforge.net
 
-Hello,
+Am 24.03.22 um 14:40 schrieb Michael Baentsch:
+> Hello,
+> 
+>     as per https://community.openvpn.net/openvpn/ticket/1460 the current 
+> openvpn master fails when activating a TLS1.3 group implemented in an 
+> external provider.
+> 
+> The patch attached fixes this and enables successful OpenSSL key 
+> establishment using any of the quantum-safe and hybrid (classic/QSC) 
+> algorithms supported by https://github.com/open-quantum-safe/oqs-provider
 
-    as per https://community.openvpn.net/openvpn/ticket/1460 the current 
-openvpn master fails when activating a TLS1.3 group implemented in an 
-external provider.
+Thanks for the patch. Usually we would like to have patches in a git 
+format that contains a commit message (see git format-patch) and 
+https://github.com/OpenVPN/openvpn/blob/master/CONTRIBUTING.rst
 
-The patch attached fixes this and enables successful OpenSSL key 
-establishment using any of the quantum-safe and hybrid (classic/QSC) 
-algorithms supported by https://github.com/open-quantum-safe/oqs-provider
+The current patch has a few problems:
 
-Regards,
+- Breaks OpenSSL 1.0.2 compatibity. Currently we still support RHEL7, 
+which only has OpenSSL 1.0.2
+- uses C90 variable declaration (int rc)
+- indentation problems
 
---Michael
+We normally use our own gc_alloc etc usage for strings as the previous 
+code did. That usage was replaced with malloc/free.
 
---------------GAdj4cyKDKdUsOIz0enOXPJP
-Content-Type: text/x-patch; charset=UTF-8; name="ssl_openssl.c.patch"
-Content-Disposition: attachment; filename="ssl_openssl.c.patch"
-Content-Transfer-Encoding: base64
+And the code does not have any comments but removes the existing ones 
+and with a line like this:
 
-aW5kZXggYjg1OTUxNzQuLjczYWI0YjZhIDEwMDY0NAotLS0gYS9zcmMvb3BlbnZwbi9zc2xf
-b3BlbnNzbC5jCisrKyBiL3NyYy9vcGVudnBuL3NzbF9vcGVuc3NsLmMKQEAgLTU3Miw3ICs1
-NzIsOSBAQCB2b2lkCiB0bHNfY3R4X3NldF90bHNfZ3JvdXBzKHN0cnVjdCB0bHNfcm9vdF9j
-dHggKmN0eCwgY29uc3QgY2hhciAqZ3JvdXBzKQogewogICAgIEFTU0VSVChjdHgpOwotICAg
-IHN0cnVjdCBnY19hcmVuYSBnYyA9IGdjX25ldygpOworICAgIGNoYXIgKmYgPSBzdHJzdHIo
-Z3JvdXBzLCAic2VjcDI1NnIxIik7CisgICAgaW50IHJjOworICAgIAogICAgIC8qIFRoaXMg
-bWV0aG9kIGNvdWxkIGJlIGFzIGVhc3kgYXMKICAgICAgKiAgU1NMX0NUWF9zZXQxX2dyb3Vw
-c19saXN0KGN0eC0+Y3R4LCBncm91cHMpCiAgICAgICogYnV0IE9wZW5TU0wgZG9lcyBub3Qg
-bGlrZSB0aGUgbmFtZSBzZWNwMjU2cjEgZm9yIHByaW1lMjU2djEKQEAgLTU4MCw0MyArNTgy
-LDI2IEBAIHRsc19jdHhfc2V0X3Rsc19ncm91cHMoc3RydWN0IHRsc19yb290X2N0eCAqY3R4
-LCBjb25zdCBjaGFyICpncm91cHMpCiAgICAgICogVG8gc3VwcG9ydCB0aGUgc2FtZSBuYW1l
-IGZvciBPcGVuU1NMIGFuZCBtYmVkVExTLCB3ZSBkbwogICAgICAqIHRoaXMgZGFuY2UuCiAg
-ICAgICovCi0KLSAgICBpbnQgZ3JvdXBzX2NvdW50ID0gZ2V0X251bV9lbGVtZW50cyhncm91
-cHMsICc6Jyk7Ci0KLSAgICBpbnQgKmdsaXN0OwotICAgIC8qIEFsbG9jYXRlIGFuIGFycmF5
-IGZvciB0aGVtICovCi0gICAgQUxMT0NfQVJSQVlfQ0xFQVJfR0MoZ2xpc3QsIGludCwgZ3Jv
-dXBzX2NvdW50LCAmZ2MpOwotCi0gICAgLyogUGFyc2UgYWxsb3dlZCBjaXBoZXJzLCBnZXR0
-aW5nIElEcyAqLwotICAgIGludCBnbGlzdGxlbiA9IDA7Ci0gICAgY2hhciAqdG1wX2dyb3Vw
-cyA9IHN0cmluZ19hbGxvYyhncm91cHMsICZnYyk7Ci0KLSAgICBjb25zdCBjaGFyICp0b2tl
-bjsKLSAgICB3aGlsZSAoKHRva2VuID0gc3Ryc2VwKCZ0bXBfZ3JvdXBzLCAiOiIpKSkKLSAg
-ICB7Ci0gICAgICAgIGlmIChzdHJlcSh0b2tlbiwgInNlY3AyNTZyMSIpKQotICAgICAgICB7
-Ci0gICAgICAgICAgICB0b2tlbiA9ICJwcmltZTI1NnYxIjsKLSAgICAgICAgfQotICAgICAg
-ICBpbnQgbmlkID0gT0JKX3NuMm5pZCh0b2tlbik7Ci0KLSAgICAgICAgaWYgKG5pZCA9PSAw
-KQotICAgICAgICB7Ci0gICAgICAgICAgICBtc2coTV9XQVJOLCAiV2FybmluZyB1bmtub3du
-IGN1cnZlL2dyb3VwIHNwZWNpZmllZDogJXMiLCB0b2tlbik7Ci0gICAgICAgIH0KLSAgICAg
-ICAgZWxzZQotICAgICAgICB7Ci0gICAgICAgICAgICBnbGlzdFtnbGlzdGxlbl0gPSBuaWQ7
-Ci0gICAgICAgICAgICBnbGlzdGxlbisrOwotICAgICAgICB9CisgICAgaWYgKGYpIHsKKyAg
-ICAgICAgIGNoYXIgKm5ld19ncm91cHNfbGlzdCA9IG1hbGxvYyhzdHJsZW4oZ3JvdXBzKSsy
-KTsKKwkgY2hhciAqIGlkeCA9IG5ld19ncm91cHNfbGlzdDsKKwkgbWVtY3B5KGlkeCwgZ3Jv
-dXBzLCAoZi1ncm91cHMpKTsKKwkgaWR4ICs9IChmLWdyb3Vwcyk7CisJIG1lbWNweShpZHgs
-ICJwcmltZTI1NnYxIiwgc3RybGVuKCJwcmltZTI1NnYxIikpOworCSBpZHggKz0gc3RybGVu
-KCJwcmltZTI1NnYxIik7CisJIG1lbWNweShpZHgsIGYrc3RybGVuKCJzZWNwMjU2cjEiKSwg
-c3RybGVuKGdyb3VwcyktKGYtZ3JvdXBzKS1zdHJsZW4oInNlY3AyNTZyMSIpKTsKKwkgbmV3
-X2dyb3Vwc19saXN0W3N0cmxlbihncm91cHMpKzFdID0gJ1wwJzsKKworCSByYyA9IFNTTF9D
-VFhfc2V0MV9ncm91cHNfbGlzdChjdHgtPmN0eCwgbmV3X2dyb3Vwc19saXN0KTsKKwkgZnJl
-ZShuZXdfZ3JvdXBzX2xpc3QpOwogICAgIH0KKyAgICBlbHNlCisJIHJjID0gU1NMX0NUWF9z
-ZXQxX2dyb3Vwc19saXN0KGN0eC0+Y3R4LCBncm91cHMpOwogCi0gICAgaWYgKCFTU0xfQ1RY
-X3NldDFfZ3JvdXBzKGN0eC0+Y3R4LCBnbGlzdCwgZ2xpc3RsZW4pKQotICAgIHsKKyAgICBp
-ZiAoIXJjKSB7CiAgICAgICAgIGNyeXB0b19tc2coTV9GQVRBTCwgIkZhaWxlZCB0byBzZXQg
-YWxsb3dlZCBUTFMgZ3JvdXAgbGlzdDogJXMiLAogICAgICAgICAgICAgICAgICAgIGdyb3Vw
-cyk7CiAgICAgfQotICAgIGdjX2ZyZWUoJmdjKTsKIH0KIAogdm9pZAoK
+memcpy(idx, f+strlen("secp256r1"), 
+strlen(groups)-(f-groups)-strlen("secp256r1"));
 
---------------GAdj4cyKDKdUsOIz0enOXPJP--
+some comments what the code is doing would improve readibility.
+
+The fix itself is right of using the newer SSL_CTX_set1_groups_list 
+function that uses strings instead of nids.
+
+But if we use a function that only newer OpenSSL version, have you 
+double checked that the prime256v1 vs secp256r1 is still necessary
+
+
+Build failure with OpenSSL 1.0.2: 
+https://github.com/schwabe/openvpn/runs/5680551849?check_suite_focus=true
+
+Arne
 
