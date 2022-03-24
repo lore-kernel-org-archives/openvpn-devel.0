@@ -1,11 +1,10 @@
-From: Heiko Hund <heiko@...2662...>
-Date: Wed, 23 Mar 2022 15:43:41 +0100
-Message-ID: <2629714.a3cCF2CB6G@...2664...>
-In-Reply-To: <20220323143452.1100446-1-heiko@...2662...>
-References: <20220308230621.1532809-1-heiko@...2662...>
- <20220323143452.1100446-1-heiko@...2662...>
+Content-Type: multipart/mixed; boundary="------------GAdj4cyKDKdUsOIz0enOXPJP"
+Message-ID: <400a4652-39d6-ec8d-6f58-824f552e0440@...2666...>
+Date: Thu, 24 Mar 2022 14:40:03 +0100
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v3] add support for --dns option
+Content-Language: en-US
+From: Michael Baentsch <info@...2666...>
+Subject: [Openvpn-devel] [PATCH] Enablement of quantum-safe key establishment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,43 +13,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-On Mittwoch, 23. M=C3=A4rz 2022 15:34:52 CET Heiko Hund wrote:
-> +static void
-> +setenv_dns_option(struct env_set *es,
-> +                  const char *format, int i, int j,
-> +                  const char *value)
-> +{
-> +    char name[64];
-> +    bool name_ok =3D false;
-> +
-> +    if (j < 0)
-> +    {
-> +        name_ok =3D openvpn_snprintf(name, sizeof(name), format, i);
-> +    }
-> +    else
-> +    {
-> +        name_ok =3D openvpn_snprintf(name, sizeof(name), format, i, j);
-> +    }
-> +
-> +    if (!name_ok)
-> +    {
-> +        msg(M_WARN, "WARNING: dns option setenv name buffer overflow");
-> +    }
-> +
-> +    setenv_str(es, name, value);
-> +}
+This is a multi-part message in MIME format.
+--------------GAdj4cyKDKdUsOIz0enOXPJP
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-Here's the helper function Gert was asking for. It's somewhat special in ho=
-w=20
-the 'j' parameter is handled, but since it's local and very specialized, I =
-can=20
-live with that.
+Hello,
 
-Regards, Heiko
+    as per https://community.openvpn.net/openvpn/ticket/1460 the current 
+openvpn master fails when activating a TLS1.3 group implemented in an 
+external provider.
 
+The patch attached fixes this and enables successful OpenSSL key 
+establishment using any of the quantum-safe and hybrid (classic/QSC) 
+algorithms supported by https://github.com/open-quantum-safe/oqs-provider
 
+Regards,
+
+--Michael
+
+--------------GAdj4cyKDKdUsOIz0enOXPJP
+Content-Type: text/x-patch; charset=UTF-8; name="ssl_openssl.c.patch"
+Content-Disposition: attachment; filename="ssl_openssl.c.patch"
+Content-Transfer-Encoding: base64
+
+aW5kZXggYjg1OTUxNzQuLjczYWI0YjZhIDEwMDY0NAotLS0gYS9zcmMvb3BlbnZwbi9zc2xf
+b3BlbnNzbC5jCisrKyBiL3NyYy9vcGVudnBuL3NzbF9vcGVuc3NsLmMKQEAgLTU3Miw3ICs1
+NzIsOSBAQCB2b2lkCiB0bHNfY3R4X3NldF90bHNfZ3JvdXBzKHN0cnVjdCB0bHNfcm9vdF9j
+dHggKmN0eCwgY29uc3QgY2hhciAqZ3JvdXBzKQogewogICAgIEFTU0VSVChjdHgpOwotICAg
+IHN0cnVjdCBnY19hcmVuYSBnYyA9IGdjX25ldygpOworICAgIGNoYXIgKmYgPSBzdHJzdHIo
+Z3JvdXBzLCAic2VjcDI1NnIxIik7CisgICAgaW50IHJjOworICAgIAogICAgIC8qIFRoaXMg
+bWV0aG9kIGNvdWxkIGJlIGFzIGVhc3kgYXMKICAgICAgKiAgU1NMX0NUWF9zZXQxX2dyb3Vw
+c19saXN0KGN0eC0+Y3R4LCBncm91cHMpCiAgICAgICogYnV0IE9wZW5TU0wgZG9lcyBub3Qg
+bGlrZSB0aGUgbmFtZSBzZWNwMjU2cjEgZm9yIHByaW1lMjU2djEKQEAgLTU4MCw0MyArNTgy
+LDI2IEBAIHRsc19jdHhfc2V0X3Rsc19ncm91cHMoc3RydWN0IHRsc19yb290X2N0eCAqY3R4
+LCBjb25zdCBjaGFyICpncm91cHMpCiAgICAgICogVG8gc3VwcG9ydCB0aGUgc2FtZSBuYW1l
+IGZvciBPcGVuU1NMIGFuZCBtYmVkVExTLCB3ZSBkbwogICAgICAqIHRoaXMgZGFuY2UuCiAg
+ICAgICovCi0KLSAgICBpbnQgZ3JvdXBzX2NvdW50ID0gZ2V0X251bV9lbGVtZW50cyhncm91
+cHMsICc6Jyk7Ci0KLSAgICBpbnQgKmdsaXN0OwotICAgIC8qIEFsbG9jYXRlIGFuIGFycmF5
+IGZvciB0aGVtICovCi0gICAgQUxMT0NfQVJSQVlfQ0xFQVJfR0MoZ2xpc3QsIGludCwgZ3Jv
+dXBzX2NvdW50LCAmZ2MpOwotCi0gICAgLyogUGFyc2UgYWxsb3dlZCBjaXBoZXJzLCBnZXR0
+aW5nIElEcyAqLwotICAgIGludCBnbGlzdGxlbiA9IDA7Ci0gICAgY2hhciAqdG1wX2dyb3Vw
+cyA9IHN0cmluZ19hbGxvYyhncm91cHMsICZnYyk7Ci0KLSAgICBjb25zdCBjaGFyICp0b2tl
+bjsKLSAgICB3aGlsZSAoKHRva2VuID0gc3Ryc2VwKCZ0bXBfZ3JvdXBzLCAiOiIpKSkKLSAg
+ICB7Ci0gICAgICAgIGlmIChzdHJlcSh0b2tlbiwgInNlY3AyNTZyMSIpKQotICAgICAgICB7
+Ci0gICAgICAgICAgICB0b2tlbiA9ICJwcmltZTI1NnYxIjsKLSAgICAgICAgfQotICAgICAg
+ICBpbnQgbmlkID0gT0JKX3NuMm5pZCh0b2tlbik7Ci0KLSAgICAgICAgaWYgKG5pZCA9PSAw
+KQotICAgICAgICB7Ci0gICAgICAgICAgICBtc2coTV9XQVJOLCAiV2FybmluZyB1bmtub3du
+IGN1cnZlL2dyb3VwIHNwZWNpZmllZDogJXMiLCB0b2tlbik7Ci0gICAgICAgIH0KLSAgICAg
+ICAgZWxzZQotICAgICAgICB7Ci0gICAgICAgICAgICBnbGlzdFtnbGlzdGxlbl0gPSBuaWQ7
+Ci0gICAgICAgICAgICBnbGlzdGxlbisrOwotICAgICAgICB9CisgICAgaWYgKGYpIHsKKyAg
+ICAgICAgIGNoYXIgKm5ld19ncm91cHNfbGlzdCA9IG1hbGxvYyhzdHJsZW4oZ3JvdXBzKSsy
+KTsKKwkgY2hhciAqIGlkeCA9IG5ld19ncm91cHNfbGlzdDsKKwkgbWVtY3B5KGlkeCwgZ3Jv
+dXBzLCAoZi1ncm91cHMpKTsKKwkgaWR4ICs9IChmLWdyb3Vwcyk7CisJIG1lbWNweShpZHgs
+ICJwcmltZTI1NnYxIiwgc3RybGVuKCJwcmltZTI1NnYxIikpOworCSBpZHggKz0gc3RybGVu
+KCJwcmltZTI1NnYxIik7CisJIG1lbWNweShpZHgsIGYrc3RybGVuKCJzZWNwMjU2cjEiKSwg
+c3RybGVuKGdyb3VwcyktKGYtZ3JvdXBzKS1zdHJsZW4oInNlY3AyNTZyMSIpKTsKKwkgbmV3
+X2dyb3Vwc19saXN0W3N0cmxlbihncm91cHMpKzFdID0gJ1wwJzsKKworCSByYyA9IFNTTF9D
+VFhfc2V0MV9ncm91cHNfbGlzdChjdHgtPmN0eCwgbmV3X2dyb3Vwc19saXN0KTsKKwkgZnJl
+ZShuZXdfZ3JvdXBzX2xpc3QpOwogICAgIH0KKyAgICBlbHNlCisJIHJjID0gU1NMX0NUWF9z
+ZXQxX2dyb3Vwc19saXN0KGN0eC0+Y3R4LCBncm91cHMpOwogCi0gICAgaWYgKCFTU0xfQ1RY
+X3NldDFfZ3JvdXBzKGN0eC0+Y3R4LCBnbGlzdCwgZ2xpc3RsZW4pKQotICAgIHsKKyAgICBp
+ZiAoIXJjKSB7CiAgICAgICAgIGNyeXB0b19tc2coTV9GQVRBTCwgIkZhaWxlZCB0byBzZXQg
+YWxsb3dlZCBUTFMgZ3JvdXAgbGlzdDogJXMiLAogICAgICAgICAgICAgICAgICAgIGdyb3Vw
+cyk7CiAgICAgfQotICAgIGdjX2ZyZWUoJmdjKTsKIH0KIAogdm9pZAoK
+
+--------------GAdj4cyKDKdUsOIz0enOXPJP--
 
