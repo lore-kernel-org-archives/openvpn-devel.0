@@ -1,19 +1,10 @@
-Date: Fri, 25 Mar 2022 18:21:21 +0100
+Date: Fri, 25 Mar 2022 19:57:55 +0100 (CET)
+Message-Id: <202203251857.22PIvta2049622@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <Yj36ETvmHJhN9lSt@...1296...>
-References: <400a4652-39d6-ec8d-6f58-824f552e0440@...2666...>
- <9f710eb5-007c-cc8e-56b0-1b00c3f12c19@...1227...>
- <1315401d-b450-6db4-08f5-fed79f51a205@...2666...>
- <889af1a8-eee2-d869-00ef-29ada1db2bb6@...1227...>
- <bac3c082-face-b0a7-e041-00c9ffe7a7a2@...2181...>
- <9800b0fd-1788-da6e-9e0d-fdfc1f82a40b@...2666...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="5MCi6WbPRSuuDq3y"
-Content-Disposition: inline
-In-Reply-To: <9800b0fd-1788-da6e-9e0d-fdfc1f82a40b@...2666...>
-Subject: Re: [Openvpn-devel] [PATCH] Enablement of quantum-safe key
- establishment
+In-Reply-To: <20220224144245.878056-1-arne@...1227...>
+References: <20220224144245.878056-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Implement fixed MSS value for
+ mssfix and use it for non default MTUs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,75 +13,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Michael Baentsch <info@...2666...>
-Cc: Antonio Quartulli <a@...2181...>, Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---5MCi6WbPRSuuDq3y
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+I have tested this on the server and client test rigs ("nothing broke").
 
-Hi,
+Also, explicitly tested this using "--mssfix 500 fixed" and tcpdumped
+on the tunnel interface - not caring about outside packet size, this time.
 
-On Fri, Mar 25, 2022 at 06:10:10PM +0100, Michael Baentsch wrote:
-> I'm not quite sure I understand what you're asking me to do. Why not=20
-> simply use standard github cooperation mechanisms?
+TUN mode:
+  IPv4 MSS: 460
+    Family: IP (2)
+    Total Length: 500
+    Transmission Control Protocol, Src Port: 22, Dst Port: 36351, Seq: 5005, Ack: 37, Len: 448
+    TCP payload (448 bytes)
 
-Because our master repo is not "on github", and we do patch review
-via the mailing list, with archived public ACKs, and list archive
-URLs included in the commit message.  So it is very clear how a=20
-certain code change came into our tree.
+  IPv6 MSS: 440
+    Family: IPv6 (28)
+    Payload Length: 460
+    Transmission Control Protocol, Src Port: 22, Dst Port: 27345, Seq: 8518, Ack: 3034, Len: 428
+    [TCP Segment Len: 428]
+    TCP payload (428 bytes)
 
-(Is this highly annoying and very much time consuming?  Yes...=20
-but also "is this appropriate for software handling people's most
-sensitive data packets?" - and the answer for that is "yes!" as=20
-well... :-) )
+  (tshark / tcpdump claim "504 bytes on the wire" in both cases, but
+   I assume this is some FreeBSD/tun overhead artefact... maybe the
+   "is this ipv4 or or ipv6?" extra header)
 
-> $ git send-email --to=3Dopenvpn-devel@lists.sourceforge.net HEAD~1
-> git: 'send-email' ist kein Git-Befehl. Siehe 'git --help'.
->
-> Pardon the German of my computer: It says "send-email" is no known git=20
-> command.
+TAP mode:
 
-Seems your distribution split this part of git into a separate package
-(propably to avoid the dependency on a mail transport agent).
+  IPv4 MSS: 460
+    514 bytes on wire (4112 bits), 514 bytes captured (4112 bits) on interface tap0, id 0
+    ...
+    TCP payload (448 bytes)
 
-Of course you can do "git format-patch" and then send the result with
-a regular mail client - but we've found out (the hard way) that most
-mail clients mistreat patches one way or the other - breaking long
-lines, reformatting whitespace, ... - so the end result does not=20
-apply anymore. "git send-email" works around this.
+  IPv6 MSS: 440
+    514 bytes on wire (4112 bits), 514 bytes captured (4112 bits) on interface tap0, id 0
+    ...
+    TCP payload (428 bytes)
 
-If you do not succeed in this, one of us can take the patch from the
-PR and send it to the list.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+So, in tun mode, this does what it says on the lid ("MSS is lowered so
+the resulting IPv4/IPv6 packet is not exceeding this value").  For TAP,
+there is overhead, which gets added.
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Arguably this is *correct* behaviour - this goes hand in hand with
+"--tun-mtu $small --mssfix (default)", and if you set a "--tun-mtu 500"
+on a *TAP* interface, this is what you get: IP packets "up to 500",
+plus ethernet header.  The system-set MSS value will be exactly the
+same number that OpenVPN uses in this case (tested!), so -> perfect.
 
---5MCi6WbPRSuuDq3y
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+Your patch has been applied to the master branch.
 
-iQGcBAEBAgAGBQJiPfoRAAoJEB2Cnv7KVigSIr0L/Ra6TgXcCBU58sH09YVOuUN1
-Bo6x/0Z8csb0annwFXJeyLZHBBQ9YXL1ffvDPlqR/6eEhbczP9oqFuRwfRruZGkS
-6K85VAjJcgPkJ5XU86RMLMAs0aeP5ClKgdjMpsBbu3AJYApCaCtbxbqAzvQRuoSe
-8syM3/nrUd4kLZXlssXRycJFJQ//QU2uPeyuzf+ucZOAMt4Z5EJ0wboZ5QFgJMT9
-p7f5FaNYKbGYFl3PVgbF/8cMIcXWSj+oyC6jiGkXtYRDcOg6C42P1v47J7uOQQ3g
-V0L5nL3EEMYFmcBMgMlUSO31EV6+Z5JQg40uD790Xgyy/F5OsLIS7ON0JZoxq7M2
-kSICGjP0PyXi+SRqH9zSCsHh3JiCXUaeV2B3xlnF0cnDa/P16yEyDR69T5CRUnIj
-pk3HR3r2Fb1ZxHeZari8wx/gDyLTH0MOCrAs87NCvNeseqExxwPHyZnCngEkF7sW
-XvcTFRjGueq1QNVFF337oNngrQwcJLINROzS9jj3wQ==
-=vguV
------END PGP SIGNATURE-----
+commit 47671d6d6814eadb3dd5e742ebc40c6f21038224
+Author: Arne Schwabe
+Date:   Thu Feb 24 15:42:45 2022 +0100
 
---5MCi6WbPRSuuDq3y--
+     Implement fixed MSS value for mssfix and use it for non default MTUs
+
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20220224144245.878056-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23886.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
