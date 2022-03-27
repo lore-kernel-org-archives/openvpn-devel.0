@@ -1,10 +1,7 @@
-Date: Fri, 25 Mar 2022 19:57:55 +0100 (CET)
-Message-Id: <202203251857.22PIvta2049622@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220224144245.878056-1-arne@...1227...>
-References: <20220224144245.878056-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Implement fixed MSS value for
- mssfix and use it for non default MTUs
+From: Michael Baentsch <info@...2666...>
+Date: Sun, 27 Mar 2022 15:16:39 +0200
+Message-Id: <20220327131639.29686-1-info@...2666...>
+Subject: [Openvpn-devel] [PATCH] correct tls-groups for OpenSSL3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,73 +12,51 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Michael <57787676+baentsch@...2243...>
 
-I have tested this on the server and client test rigs ("nothing broke").
+From: Michael <57787676+baentsch@...2243...>
 
-Also, explicitly tested this using "--mssfix 500 fixed" and tcpdumped
-on the tunnel interface - not caring about outside packet size, this time.
+---
+ src/openvpn/ssl_openssl.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-TUN mode:
-  IPv4 MSS: 460
-    Family: IP (2)
-    Total Length: 500
-    Transmission Control Protocol, Src Port: 22, Dst Port: 36351, Seq: 5005, Ack: 37, Len: 448
-    TCP payload (448 bytes)
-
-  IPv6 MSS: 440
-    Family: IPv6 (28)
-    Payload Length: 460
-    Transmission Control Protocol, Src Port: 22, Dst Port: 27345, Seq: 8518, Ack: 3034, Len: 428
-    [TCP Segment Len: 428]
-    TCP payload (428 bytes)
-
-  (tshark / tcpdump claim "504 bytes on the wire" in both cases, but
-   I assume this is some FreeBSD/tun overhead artefact... maybe the
-   "is this ipv4 or or ipv6?" extra header)
-
-TAP mode:
-
-  IPv4 MSS: 460
-    514 bytes on wire (4112 bits), 514 bytes captured (4112 bits) on interface tap0, id 0
-    ...
-    TCP payload (448 bytes)
-
-  IPv6 MSS: 440
-    514 bytes on wire (4112 bits), 514 bytes captured (4112 bits) on interface tap0, id 0
-    ...
-    TCP payload (428 bytes)
-
-
-So, in tun mode, this does what it says on the lid ("MSS is lowered so
-the resulting IPv4/IPv6 packet is not exceeding this value").  For TAP,
-there is overhead, which gets added.
-
-Arguably this is *correct* behaviour - this goes hand in hand with
-"--tun-mtu $small --mssfix (default)", and if you set a "--tun-mtu 500"
-on a *TAP* interface, this is what you get: IP packets "up to 500",
-plus ethernet header.  The system-set MSS value will be exactly the
-same number that OpenVPN uses in this case (tested!), so -> perfect.
-
-
-Your patch has been applied to the master branch.
-
-commit 47671d6d6814eadb3dd5e742ebc40c6f21038224
-Author: Arne Schwabe
-Date:   Thu Feb 24 15:42:45 2022 +0100
-
-     Implement fixed MSS value for mssfix and use it for non default MTUs
-
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20220224144245.878056-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23886.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index b8595174..af97dabc 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -572,13 +572,15 @@ void
+ tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)
+ {
+     ASSERT(ctx);
++#if OPENSSL_VERSION_NUMBER < 0x30000000L
+     struct gc_arena gc = gc_new();
+     /* This method could be as easy as
+      *  SSL_CTX_set1_groups_list(ctx->ctx, groups)
+-     * but OpenSSL does not like the name secp256r1 for prime256v1
++     * but OpenSSL (< 3.0) does not like the name secp256r1 for prime256v1
+      * This is one of the important curves.
+      * To support the same name for OpenSSL and mbedTLS, we do
+      * this dance.
++     * Also note that the code is wrong in the presence of OpenSSL3 providers.
+      */
+ 
+     int groups_count = get_num_elements(groups, ':');
+@@ -617,6 +619,13 @@ tls_ctx_set_tls_groups(struct tls_root_ctx *ctx, const char *groups)
+                    groups);
+     }
+     gc_free(&gc);
++#else
++    if (!SSL_CTX_set1_groups_list(ctx->ctx, groups))
++    {
++        crypto_msg(M_FATAL, "Failed to set allowed TLS group list: %s",
++                   groups);
++    }
++#endif
+ }
+ 
+ void
+-- 
+2.17.1
 
 
