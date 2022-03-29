@@ -1,16 +1,12 @@
-Date: Tue, 29 Mar 2022 22:09:40 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <YkNnhL9xa3muEUPk@...1296...>
-References: <CAAUX2SXb8MStU98ZEsswLkLDUM74zL6MapZC+=xc0_eYXwyEbw@...278...>
- <YkLkGj7WrC6ej0yR@...1296...>
- <CAAYFXLk10kF11t=C-V0RQCJ_4ttm80BspZ2ErWoCwqMZQa3GMg@...278...>
+Message-ID: <67b47c41-7af6-31ca-4ad8-4c3bcd8baba9@...2669...>
+Date: Wed, 30 Mar 2022 01:45:53 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="h6TBX7LzPTaVS/Eq"
-Content-Disposition: inline
-In-Reply-To: <CAAYFXLk10kF11t=C-V0RQCJ_4ttm80BspZ2ErWoCwqMZQa3GMg@...278...>
-Subject: Re: [Openvpn-devel] [ovpn-dco] can not delete tun interface
- automatically if option "user nobody" is used
+Content-Language: en-US
+References: <20220329192934.1415-1-timo@...2669...>
+From: Timo Rothenpieler <timo@...2669...>
+In-Reply-To: <20220329192934.1415-1-timo@...2669...>
+Subject: Re: [Openvpn-devel] [PATCH] Retain CAP_NET_ADMIN when dropping
+ privileges
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,52 +15,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Pete Nelson <petiepooo@...277...>
-Cc: Gert Doering <gert@...1296...>, Tony He <huangya90@...277...>, Antonio Quartulli <antonio@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---h6TBX7LzPTaVS/Eq
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+On 29.03.2022 21:29, Timo Rothenpieler wrote:
+> +static bool
+> +do_keep_caps(bool prepare)
+> +{
+> +    struct __user_cap_header_struct cap_hdr = { _LINUX_CAPABILITY_VERSION_3 };
+> +    struct __user_cap_data_struct cap_data[_LINUX_CAPABILITY_U32S_3] = {};
+> +
+> +    if (syscall(SYS_capget, &cap_hdr, cap_data) < 0)
+> +    {
+> +        msg(M_NONFATAL | M_ERRNO, "failed getting capabilities");
+> +        return false;
+> +    }
+> +
+> +    if (prepare)
+> +    {
+> +        SET_CAP_HELPER(cap_data, permitted, CAP_NET_ADMIN);
+> +    }
+> +    else
+> +    {
+> +        SET_CAP_HELPER(cap_data, effective, CAP_NET_ADMIN);
 
-Hi,
+This is missing something like the following:
 
-On Tue, Mar 29, 2022 at 06:33:14PM +0000, Pete Nelson wrote:
-> Couldn't the down-root plugin be used?  It's biggest drawback for this is
-> that it's Linux-only, I suppose.
+>         /* Clamp permitted capabilities to effective ones.
+>          * Without doing this, the process can give itself root-like caps at any time. */
+>         for (int i = 0; i < sizeof(cap_data)/sizeof(cap_data[0]); i++)
+>         {
+>             cap_data[i].permitted = cap_data[i].effective;
+>         }
 
-Yes, you could use down-root (and that's more portable than "DCO", which
-is "Linux and FreeBSD only"), but that's not a particularily nice solution,
-given that it has no information about "what openvpn wants to undo" - so
-you practically need to write your own scripts to do all that.
+Without that, the permitted caps stay the full set of root caps, and the 
+process can make them effective at any time.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Patch on GitHub is updated with that.
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---h6TBX7LzPTaVS/Eq
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJiQ2eEAAoJEB2Cnv7KVigSpRcL/18FD/dahehuk6vfU9XOdly9
-IqpNLrlncwpWYUtU6R1KQWu7vLvhlxtfwbi6oSbB5Bk4xzTqSaaMU6aqiig4vZ7n
-plkHn1rCkexV54m3nO89Iv+DhHlDvX8qLbLEDbf/Z72KoCcuSY+pg78Eyw0X8WSg
-VnRtdmAbC2IAmXBO8Z5oCf48H8ar81DWywybpbTC9rKIFrW8nq/U79eA/lv5jNJR
-VBv7NP2PG5xeLdPDGybUvOG/K48ua4qeLiptgcndee63iZbS6R9+CxBlw+8SHOpX
-jOIihFlyYng8esz0Oh1orX3iB62cIq1HmUp6VbW4KM9qriJ8cEU2hNE68RbRKu+8
-mn/sUytt0vRJTNhcbsV4CIsanxnIqYCfQzrphi/skJ4buE4olUyNUzVOgz2PqS4+
-Ni3kbTw6NP2Oeu46L1GC1pk9WBLs6sTZwsV7xku3T6kHKvlJarrHjfCI8BtumH9G
-L612pcxisWVoPAsxnin/9UkM6qzj09OSii3k52mz0w==
-=0wcg
------END PGP SIGNATURE-----
-
---h6TBX7LzPTaVS/Eq--
+> +    }
+> +
+> +    if (syscall(SYS_capset, &cap_hdr, cap_data) < 0)
+> +    {
+> +        msg(M_NONFATAL | M_ERRNO, "failed setting %s capabilities", prepare ? "permitted" : "effective");
+> +        return false;
+> +    }
+> +
+> +    if (prepare && prctl(PR_SET_KEEPCAPS, 1) < 0)
+> +    {
+> +        msg(M_NONFATAL | M_ERRNO, "failed setting keepcaps");
+> +        return false;
+> +    }
+> +
+> +    return true;
+> +}
 
