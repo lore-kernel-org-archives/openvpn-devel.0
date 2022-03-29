@@ -1,13 +1,9 @@
+From: Timo Rothenpieler <timo@...2669...>
+Date: Tue, 29 Mar 2022 21:29:34 +0200
+Message-Id: <20220329192934.1415-1-timo@...2669...>
 MIME-Version: 1.0
-References: <CAAUX2SXb8MStU98ZEsswLkLDUM74zL6MapZC+=xc0_eYXwyEbw@...278...>
- <YkLkGj7WrC6ej0yR@...1296...>
-In-Reply-To: <YkLkGj7WrC6ej0yR@...1296...>
-From: Pete Nelson <petiepooo@...277...>
-Date: Tue, 29 Mar 2022 18:33:14 +0000
-Message-ID: <CAAYFXLk10kF11t=C-V0RQCJ_4ttm80BspZ2ErWoCwqMZQa3GMg@...278...>
-Content-Type: multipart/alternative; boundary="00000000000016c53a05db5faa72"
-Subject: Re: [Openvpn-devel] [ovpn-dco] can not delete tun interface
- automatically if option "user nobody" is used
+Subject: [Openvpn-devel] [PATCH] Retain CAP_NET_ADMIN when dropping
+ privileges
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,49 +12,186 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: Tony He <huangya90@...277...>, Antonio Quartulli <antonio@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---00000000000016c53a05db5faa72
-Content-Type: text/plain; charset="UTF-8"
+---
+This patch sits on top of the current dco branch, and will not apply to
+latest master.
 
-On Tue, Mar 29, 2022 at 10:50 AM Gert Doering <gert@...1296...> wrote:
+It solves the issue of dropping root privileges breaking dco and sitnl
+due to missing NET_ADMIN capabilities.
 
-> On Tue, Mar 29, 2022 at 06:21:37PM +0800, Tony He wrote:
-> > 1. Add option "user nobody" to test ovpn-dco.
-> > 2. Start openvpn, below is the log. Then we will see tun0 is still
-> > there after openvpn exit. We must use the command "ip link del tunX"
-> > to delete. This is not friendly to end user.
->
-> Yes.  This is currently unsolved - if you tell openvpn to give up its
-> privileges, it will give up its privileges, and then it lacks privileges
-> to tear down the interface again.
->
 
-Couldn't the down-root plugin be used?  It's biggest drawback for this is
-that it's Linux-only, I suppose.
+ configure.ac           |  3 ++
+ src/openvpn/init.c     | 22 +++++++++++++-
+ src/openvpn/platform.c | 65 +++++++++++++++++++++++++++++++++++++++++-
+ src/openvpn/platform.h |  2 +-
+ 4 files changed, 89 insertions(+), 3 deletions(-)
 
---00000000000016c53a05db5faa72
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+diff --git a/configure.ac b/configure.ac
+index 7199483a..220c63e5 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -710,6 +710,9 @@ if test -z "${LIBPAM_LIBS}"; then
+ 	)
+ fi
+ 
++AC_CHECK_HEADERS([linux/capability.h sys/syscall.h sys/prctl.h],
++                 [AC_DEFINE(HAVE_LINUX_CAPABILITIES, 1, [Linux capability support available])])
++
+ case "${with_mem_check}" in
+ 	valgrind)
+ 		AC_CHECK_HEADERS(
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 8818ba6f..13c07ff0 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1138,6 +1138,25 @@ possibly_become_daemon(const struct options *options)
+     return ret;
+ }
+ 
++/*
++ * Determine if we need to retain process capabilities. DCO and SITNL need it.
++ * Enforce it for DCO, but only try and soft-fail for SITNL to keep backwards compat.
++ */
++static int
++get_need_keep_caps(struct context *c)
++{
++    if (dco_enabled(&c->options))
++    {
++        return 1;
++    }
++
++#ifdef ENABLE_SITNL
++    return -1;
++#else
++    return 0;
++#endif
++}
++
+ /*
+  * Actually do UID/GID downgrade, chroot and SELinux context switching, if requested.
+  */
+@@ -1167,8 +1186,9 @@ do_uid_gid_chroot(struct context *c, bool no_delay)
+         {
+             if (no_delay)
+             {
++                int keep_caps = get_need_keep_caps(c);
+                 platform_group_set(&c0->platform_state_group);
+-                platform_user_set(&c0->platform_state_user);
++                platform_user_set(&c0->platform_state_user, keep_caps);
+             }
+             else if (c->first_time)
+             {
+diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
+index 450f28ba..680ebb5f 100644
+--- a/src/openvpn/platform.c
++++ b/src/openvpn/platform.c
+@@ -43,6 +43,12 @@
+ #include <direct.h>
+ #endif
+ 
++#ifdef HAVE_LINUX_CAPABILITIES
++#include <linux/capability.h>
++#include <sys/syscall.h>
++#include <sys/prctl.h>
++#endif
++
+ /* Redefine the top level directory of the filesystem
+  * to restrict access to files for security */
+ void
+@@ -91,17 +97,74 @@ platform_user_get(const char *username, struct platform_state_user *state)
+     return ret;
+ }
+ 
++#ifdef HAVE_LINUX_CAPABILITIES
++#define SET_CAP_HELPER(data, set, cap) data[(cap)>>5].set |= 1<<((cap)&31)
++
++static bool
++do_keep_caps(bool prepare)
++{
++    struct __user_cap_header_struct cap_hdr = { _LINUX_CAPABILITY_VERSION_3 };
++    struct __user_cap_data_struct cap_data[_LINUX_CAPABILITY_U32S_3] = {};
++
++    if (syscall(SYS_capget, &cap_hdr, cap_data) < 0)
++    {
++        msg(M_NONFATAL | M_ERRNO, "failed getting capabilities");
++        return false;
++    }
++
++    if (prepare)
++    {
++        SET_CAP_HELPER(cap_data, permitted, CAP_NET_ADMIN);
++    }
++    else
++    {
++        SET_CAP_HELPER(cap_data, effective, CAP_NET_ADMIN);
++    }
++
++    if (syscall(SYS_capset, &cap_hdr, cap_data) < 0)
++    {
++        msg(M_NONFATAL | M_ERRNO, "failed setting %s capabilities", prepare ? "permitted" : "effective");
++        return false;
++    }
++
++    if (prepare && prctl(PR_SET_KEEPCAPS, 1) < 0)
++    {
++        msg(M_NONFATAL | M_ERRNO, "failed setting keepcaps");
++        return false;
++    }
++
++    return true;
++}
++#else
++static bool
++do_keep_caps(bool prepare)
++{
++    return false;
++}
++#endif
++
+ void
+-platform_user_set(const struct platform_state_user *state)
++platform_user_set(const struct platform_state_user *state, int keep_caps)
+ {
+ #if defined(HAVE_GETPWNAM) && defined(HAVE_SETUID)
+     if (state->username && state->pw)
+     {
++        bool caps_prepared = keep_caps && do_keep_caps(true);
++
+         if (setuid(state->pw->pw_uid))
+         {
+             msg(M_ERR, "setuid('%s') failed", state->username);
+         }
+         msg(M_INFO, "UID set to %s", state->username);
++
++        if (caps_prepared && do_keep_caps(false))
++        {
++            msg(M_INFO, "Capabilities retained");
++        }
++        else if (keep_caps > 0)
++        {
++            msg(M_FATAL, "Failed retaining capabilities");
++        }
+     }
+ #endif
+ }
+diff --git a/src/openvpn/platform.h b/src/openvpn/platform.h
+index a3eec298..ef06da93 100644
+--- a/src/openvpn/platform.h
++++ b/src/openvpn/platform.h
+@@ -79,7 +79,7 @@ struct platform_state_group {
+ 
+ bool platform_user_get(const char *username, struct platform_state_user *state);
+ 
+-void platform_user_set(const struct platform_state_user *state);
++void platform_user_set(const struct platform_state_user *state, int keep_caps);
+ 
+ bool platform_group_get(const char *groupname, struct platform_state_group *state);
+ 
+-- 
+2.25.1
 
-<div dir=3D"ltr"><div dir=3D"ltr">On Tue, Mar 29, 2022 at 10:50 AM Gert Doe=
-ring &lt;<a href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt; wrote:<=
-br></div><div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=
-=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding=
--left:1ex">On Tue, Mar 29, 2022 at 06:21:37PM +0800, Tony He wrote:<br>
-&gt; 1. Add option &quot;user nobody&quot; to test ovpn-dco.<br>
-&gt; 2. Start openvpn, below is the log. Then we will see tun0 is still<br>
-&gt; there after openvpn exit. We must use the command &quot;ip link del tu=
-nX&quot;<br>
-&gt; to delete. This is not friendly to end user.<br>
-<br>
-Yes.=C2=A0 This is currently unsolved - if you tell openvpn to give up its<=
-br>
-privileges, it will give up its privileges, and then it lacks privileges<br>
-to tear down the interface again.<br></blockquote><div><br></div><div>Could=
-n&#39;t the down-root plugin be used?=C2=A0 It&#39;s biggest drawback for t=
-his is that it&#39;s Linux-only, I suppose.<br></div></div></div>
-
---00000000000016c53a05db5faa72--
 
