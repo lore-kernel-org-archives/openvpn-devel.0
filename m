@@ -1,9 +1,13 @@
-Date: Tue, 29 Mar 2022 15:42:46 +0200 (CEST)
-Message-Id: <202203291342.22TDgkhR052694@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220323143452.1100446-1-heiko@...2662...>
-References: <20220323143452.1100446-1-heiko@...2662...>
-Subject: [Openvpn-devel] [PATCH applied] Re: add support for --dns option
+Message-ID: <9fa83f54-cdd1-f2ca-38c5-f601b3c3b45c@...2666...>
+Date: Tue, 29 Mar 2022 16:14:58 +0200
+MIME-Version: 1.0
+Content-Language: en-US
+References: <20220329053709.19462-1-info@...2666...>
+ <YkLfTY6hyQzy9QW7@...1296...>
+From: Michael Baentsch <info@...2666...>
+In-Reply-To: <YkLfTY6hyQzy9QW7@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Enable usage of TLS groups not
+ identified by a NID in OpenSSL 3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,51 +16,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Heiko Hund <heiko@...2662...>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Am 29.03.22 um 12:28 schrieb Gert Doering:
+> Hi,
+>
+> On Tue, Mar 29, 2022 at 07:37:09AM +0200, Michael Baentsch wrote:
+>> From: Michael <57787676+baentsch@...2243...>
+>>
+>> OpenSSL3 prefers to specify groups (including EC groups) with names
+>> instead of NID to allow also groups provided by providers.
+>> This commit also removes the mapping of secp256r1 to prime256v1 for
+>> the OpenSSL3 code path as OpenSSL 3.0 recognises secp256r1.1
+>> ---
+> If Arne is fine with the actual change, I think the commit message
+> is good to go.  The "From:" line (which is what git recorded as author)
+> is a bit weird - if you're fine with that, I'll use your e-mail From:
+> instead, also for the "signed-off-by:" header.
 
-Thanks for being patient with an old man and rewriting the &name_ok
-thing :-) - I like the current code much better.
+What do you consider weird in there? My name is Michael and I prefer to 
+not use a real email address in git commit messages:
 
-For the original patch, I am relying on the ACK from Frank.  I have
-tested the setenv bit (which is new) by feeding openvpn a few --dns
-options on the command line and then looking at the env passed to
---up - and things matched what the documentation says it should be.
+<57787676+baentsch@...2243...> is the ID github assigned 
+to my "baentsch" github ID .
 
-To see "--dns server 5 address 1.2.3.4" show up as
-"dns_server_2_address4=1.2.3.4" was a bit as a surprise first, but
-it makes sense when re-reading the documentation - servers will
-be sorted by preference, and then the output is just "1, 2, 3, ..." 
-in contiguous numbering.  Also, things are nicely output in the
-"print options" part of openvpn (show_dns_options()).
+But then again, OpenVPN is not using github, so linking to that ID won't 
+work anyway...
 
+So, OK, go ahead and use "Michael Baentsch (info@...2666...)" as From:
 
-** NOTE: as discussed on IRC, uncrustify did have a few whitespace things 
-** to complain about, so I fixed those on-the-fly.  No code change.
+>
+> (The exact meaning of the signed-off-by: is a bit fuzzy to me - our
+> developer docs say "patch is ready to be applied", but they also say
+> "if it is missing, the value of From: is used".  Some other voices
+> interpret it as "yes, I've read the project guidelines and license,
+> and agree to them"...)
+>
+> gert
 
-Your patch has been applied to the master branch.
+Thanks in advance,
 
-commit b3e0d95dcfd0de2a5fe6545fed8f46e0dd35784d
-Author: Heiko Hund
-Date:   Wed Mar 23 15:34:52 2022 +0100
-
-     add support for --dns option
-
-     Signed-off-by: Heiko Hund <heiko@...2662...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220323143452.1100446-1-heiko@...2662...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23997.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+--Michael
 
 
