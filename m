@@ -1,12 +1,14 @@
-Content-Type: multipart/mixed; boundary="------------JetLsmNZhYoEAPZwy8C5Tpzo"
-Message-ID: <1ee9b1aa-4160-c893-7bfd-3e31d035340b@...515...>
-Date: Wed, 30 Mar 2022 13:45:20 +0300
+Message-ID: <8b9722eb-3282-dc1b-abbe-91cc37083af3@...2669...>
+Date: Wed, 30 Mar 2022 13:31:24 +0200
 MIME-Version: 1.0
 Content-Language: en-US
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-References: <b9e4b423-0ea0-d6fc-e590-ec2e83a0b282@...515...>
-In-Reply-To: <b9e4b423-0ea0-d6fc-e590-ec2e83a0b282@...515...>
-Subject: [Openvpn-devel] Summary of the community meeting (30th March 2022)
+References: <20220329192934.1415-1-timo@...2669...>
+ <0886f123-9243-f7df-347c-68b62c469675@...2080...>
+ <1a4c7f58-16fb-b909-0b40-41f20390179b@...2080...>
+From: Timo Rothenpieler <timo@...2669...>
+In-Reply-To: <1a4c7f58-16fb-b909-0b40-41f20390179b@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Retain CAP_NET_ADMIN when dropping
+ privileges
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,206 +17,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <openvpn@...2080...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------JetLsmNZhYoEAPZwy8C5Tpzo
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+On 30.03.2022 11:11, David Sommerseth wrote:
+> On 30/03/2022 10:51, David Sommerseth wrote:
+>> On 29/03/2022 21:29, Timo Rothenpieler wrote:
+>>> ---
+>>> This patch sits on top of the current dco branch, and will not apply to
+>>> latest master.
+>>>
+>>> It solves the issue of dropping root privileges breaking dco and sitnl
+>>> due to missing NET_ADMIN capabilities.
+>>>
+>>>
+>>>   configure.ac           |  3 ++
+>>>   src/openvpn/init.c     | 22 +++++++++++++-
+>>>   src/openvpn/platform.c | 65 +++++++++++++++++++++++++++++++++++++++++-
+>>>   src/openvpn/platform.h |  2 +-
+>>>   4 files changed, 89 insertions(+), 3 deletions(-)
+>>>
+>>
+>> Thanks a lot!  I've quickly looked through the code, and I have to NAK 
+>> this approach:
+>>
+>>> +#ifdef HAVE_LINUX_CAPABILITIES
+>>> +#define SET_CAP_HELPER(data, set, cap) data[(cap)>>5].set |= 
+>>> 1<<((cap)&31)
+>>> +
+>>> +static bool
+>>> +do_keep_caps(bool prepare)
+>>> +{
+>>> +    struct __user_cap_header_struct cap_hdr = { 
+>>> _LINUX_CAPABILITY_VERSION_3 };
+>>> +    struct __user_cap_data_struct cap_data[_LINUX_CAPABILITY_U32S_3] 
+>>> = {};
+>>> +
+>>> +    if (syscall(SYS_capget, &cap_hdr, cap_data) < 0)
+>>
+>> We should really use libcap or libcap-ng and not avoid using syscalls 
+>> directly.
 
-Hi,
+Is there any preference between the two? I initially used libcap, but 
+wanted to avoid introducing another dependency.
+But both libcap and libcap-ng seem to be widely adopted by distros, and 
+there isn't a huge difference in boilerplate between them for this purpose.
 
-Here's the summary of the IRC meeting.
+> This did not come out well.  Sorry about that.
+> 
+> We should really avoid using syscalls directly, as that binds us to 
+> certain APIs and bindings.
+> 
+> Newer kernels may also require additional adjustments in the future, to 
+> preserve the same behaviour.  Which means we need to maintain this code 
+> and also pay more attention to the security aspects of privilege 
+> management, like new vulnerabilities and exploits.
+> 
+> The libcap or libcap-ng libraries are used by far more applications, 
+> doing similar privilege management - and these libraries already pay 
+> attention to the security aspects of new vulnerabilities and exploits. 
+> The libcap-ng library is also recommended by more developers, due to its 
+> simpler API.
+> 
+> It is possible to argue that sitnl does low-level calls to the kernel as 
+> well.  But potential libraries had an API which was making everything 
+> far more complex on the OpenVPN side.  For libcap-ng at least, that is 
+> not the case; as the API it provides is pretty simple.
 
----
+Shouldn't caps support also be enabled when sitnl is in use?
+Given it also needs CAP_NET_ADMIN.
 
-COMMUNITY MEETING
-
-Place: #openvpn-meeting on libera.chat
-Date: Wed 30th March 2022
-Time: 10:30 CEST (8:30 UTC)
-
-Planned meeting topics for this meeting were here:
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2022-03-30>
-
-Your local meeting time is easy to check from services such as
-
-<http://www.timeanddate.com/worldclock>
-
-SUMMARY
-
-cron2, dazo, d12fk, mattock, MaxF, novaflash, ordex and plaisthos 
-participated in this meeting.
-
----
-
-Cron2 noted that the hackathon T-shirts have not yet been sent to 
-novaflash for further distribution.
-
---
-
-Novaflash presented a workaround to the "no IPv6 on community servers" 
-dilemma. The proposal is to create subdomains in Cloudflare for each 
-community server and turn on IPv6 there without affecting the whole of 
-openvpn.net domain. This seems the only reasonable way forward that can 
-be done relatively quickly.
-
---
-
-Talked about OpenVPN 2.6.
-
-Plaisthos has HMAC based (syn cookies) three way handshake working for 
-none/tls-auth/tls-crypt. Cron2 is fighting DCO and iroutes right now, 
-but he has a path forward. Besides that the patch queue looks fairly 
-decent. The big ones are done, there are a few small ones that want to 
-be looked at (and old stuff that needs to be revived or closed). Some 
-patches in the queue require more careful review before being merged.
-
---
-
-Talked about community server upgrade. Mattock plans to migrate the 
-current (somewhat outdated) community servers to the new VPC, then 
-upgrade them one by one.
-
---
-
-Talked about new production buildbot. It is now email notification 
-capable. It was agreed to make it send build failures and other 
-notifications to the openvpn-builds mailing list.
-
-Potentially it could be configured to notify "projects owners" as well 
-if we wanted that.
-
--- 
-
-Full chatlog attached
-
---------------JetLsmNZhYoEAPZwy8C5Tpzo
-Content-Type: text/plain; charset=UTF-8;
- name="openvpn_irc_meeting_chatlog_2022-03-30.txt"
-Content-Disposition: attachment;
- filename="openvpn_irc_meeting_chatlog_2022-03-30.txt"
-Content-Transfer-Encoding: base64
-
-KDExLjI0LjIxKSBtYXR0b2NrOiBtZWV0aW5nIHRpbWUgYWxtb3N0IGhlcmUKKDExLjI2LjU5
-KSBNYXhGIFt+TWF4RkBjdXN0LTk1LTEyOC05MS0yNDIuYnJlZWRiYW5kZGVsZnQubmxdIMOo
-IGVudHJhdG8gbmVsbGEgc3RhbnphLgooMTEuMzAuNDYpIG5vdmFmbGFzaCBbfm5vdmFmbGFz
-aEAxODUtMjI3LTc1LTI0MS5kc2wuY2FtYnJpdW0ubmxdIMOoIGVudHJhdG8gbmVsbGEgc3Rh
-bnphLgooMTEuMzIuNDUpIG1hdHRvY2s6IGFueW9uZSBoZXJlPwooMTEuMzIuNTcpIGRhem86
-IHl1cHAhCigxMS4zMi41OCkgbm92YWZsYXNoOiBubwooMTEuMzMuMDIpIGNyb24yOiBtZW93
-CigxMS4zMy4wNSkgTWF4Rjogbm90IG1lIQooMTEuMzMuMzQpIG5vdmFmbGFzaDogaGV5IGNy
-b24yIC0gZGlkIGkgbmVnbGVjdCB0byBzZW5kIHlvdSBteSBhZGRyZXNzIGluIHJlZ2FyZHMg
-dG8gZGlzdHJpYnV0aW9uIG9mIHQtc2hpcnRzPwooMTEuMzQuMjYpIGQxMmZrOiBhbHNvIGhl
-cmUgbWF0dG9jawooMTEuMzQuMzcpIGNyb24yOiBubywgYnV0IGFmdGVyIGl0IHRvb2sgd2Vl
-a3MgdG8gZ2V0IHRoZSBhZGRyZXNzZXMsIEkgZ290IHRvbyBidXN5IG90aGVyd2lzZS4uLiBz
-byBzb3JyeSwgdC1zaGlydHMgc3RpbGwgc2l0dGluZyBoZXJlLgooMTEuMzQuNDMpICoqKmNy
-b24yIGZlZWxpbmcgZW1iYXJyYXNzZWQKKDExLjM1LjAxKSBub3ZhZmxhc2g6IGFoIG9rYXku
-IHNvIGl0J3Mgbm90IG15IGZhdWx0LgooMTEuMzUuMTUpIG5vdmFmbGFzaDogd2Ugc3RpbGwg
-ZGlkbid0IGdldCBpcHY2CigxMS4zNS4xNikgY3JvbjI6ICp0aGlzKiBpcyBhbGwgbXkgZmF1
-bHQuICBFdmVyeXRoaW5nIGVsc2UgY2FuIGJlIHlvdXIgZmF1bHQgdG9kYXkgOi0pCigxMS4z
-NS4xOCkgKioqbm92YWZsYXNoIGZlZWxpbmcgZW1iYXJyYXNzZWQKKDExLjM1LjM4KSBkMTJm
-azogYnR3LCBjbG9zZWQgdGhlIC0tZG5zIFBSIG9uIGdpdGh1YiBtYW51YWxseSwgZGlkbid0
-IGF1dG9jbG9zZSBiL2Mgb2YgdGhlIGZvcm1hdHRpbmcgY2hhbmdlcyBieSBjcm9uMgooMTEu
-MzYuMDEpIG5vdmFmbGFzaDogb2theSwgaSBhbHJlYWR5IG1hbmFnZWQgdG8gZGVmbGVjdCBz
-b21lIGJsYW1lIG9udG8gZGF6byB5ZXN0ZXJkYXksIHNvIGknbSByZWFkeSB0byB0YWtlIG9u
-IG1vcmUgdG9kYXkuCigxMS4zNi4wOCkgY3JvbjI6IGdpdGh1YiBhdXRvZGV0ZWN0cyBtZXJn
-ZWQgcGF0Y2hlcywgZXZlbiBpZiBubyByZWZlcmVuY2UgdG8gdGhlIFBSIGluIHRoZSBjb21t
-aXQgbWVzc2FnZT8KKDExLjM2LjM0KSBkMTJmazogZ2l0IGNhbiBkbyB0aGF0CigxMS4zNi41
-NSkgZDEyZms6IGlmZiB0aGUgc2hhIGlzIHRoZSBzYW1lCigxMS4zNy4yOSkgZDEyZms6IHRo
-aXMgdGltZSBpdCBqdXN0IHNob3dlZCBjb25mbGljdHMgd2l0aCBtYXN0ZXIgd2FhYWF5IG9u
-IHRoZSBib3R0b20KKDExLjM3LjQ4KSBjcm9uMjogd2VsbCwgeWVhaCwgdGhhdCdzIHRoZSB1
-bmNydXN0aWZpY2F0aW9uCigxMS4zOC4wMSkgY3JvbjI6IGQxMmZrOiBidXQgdGhhdCdzIGdv
-b2QgdG8ga25vdwooMTEuNDAuMTcpIG1hdHRvY2s6IG1heWJlIG5vdmFmbGFzaCBjYW4gbWVu
-dGlvbiB0aGUgcG90ZW50aWFsIHdvcmthcm91bmQvZml4IHRvIHRoZSBJUHY2IGRpbGVtbWE/
-CigxMS40MC4yOCkgbm92YWZsYXNoOiBvaCB5ZWFoCigxMS40MC4zNykgbm92YWZsYXNoOiB5
-b3UgY2FuIHNldCBhIGRpZmZlcmVudCBuYW1lc2VydmVyIHBlciBzdWJkb21haW4KKDExLjQw
-LjU2KSBtYXR0b2NrOiBodHRwczovL2NvbW11bml0eS5vcGVudnBuLm5ldC9vcGVudnBuL3dp
-a2kvVG9waWNzLTIwMjItMDMtMzAKKDExLjQxLjAzKSBub3ZhZmxhc2g6IHNvIHdlIGNhbiBy
-dW4gYW5vdGhlciBuYW1lc2VydmVyIGZvciBjb21tdW5pdHkgc3R1ZmYgYW5kIGFzc2lnbiB0
-aGUgc3ViZG9tYWlucyB0byB0aGF0IG5hbWVzZXJ2ZXIgc28gaXQgY2FuIGRvIGlwdjQgYW5k
-IGlwdjYgd2l0aG91dCBhZmZlY3RpbmcgdGhlIHJlc3Qgb2YgdGhlIG9wZW52cG4ubmV0IGRv
-bWFpbidzIGRucyBzZXR0aW5ncwooMTEuNDEuMTUpIGNyb24yIGhhIHNjZWx0byBjb21lIGFy
-Z29tZW50bzogaHR0cHM6Ly9jb21tdW5pdHkub3BlbnZwbi5uZXQvb3BlbnZwbi93aWtpL1Rv
-cGljcy0yMDIyLTAzLTMwCigxMS40MS4yMykgbm92YWZsYXNoOiB3aGljaCwgaWYgaSB1bmRl
-cnN0YW5kIHRoZSBzaXR1YXRpb24gY29ycmVjdGx5LCBjYW4gYmUgYSB3b3JrYXJvdW5kL3Nv
-bHV0aW9uLCBhdCBsZWFzdCB1bnRpbCB0aGUgdGltZSB0aGUgY29tcGFueSBkb2VzIGlwdjYg
-b24gdGhlIHdob2xlIGRvbWFpbi4KKDExLjQxLjU2KSBjcm9uMjogdGhhdCBzb3VuZHMgbGlr
-ZSBhIHdheSBmb3J3YXJkIGZvciBjb21tdW5pdHkgOi0pIC0gYW5kIHdheSBiYWNrd2FyZCBm
-b3IgY29ycCAoIndlIGhhdmUgc29sdmVkIHdoYXQgR2VydCBpcyBjb21wbGFpbmcgYWJvdXQs
-IHNvIHdlIGRvIG5vdCBuZWVkIHRvIGZpeCB0aGUgYWN0dWFsIHRoaW5nIikKKDExLjQyLjAx
-KSBtYXR0b2NrOiAidW50aWwgdGhlIHRpbWUiIGNvdWxkIGJlIHllYXJzIGZyb20gbm93LCBz
-byBJIHRoaW5rIHRoaXMgaXMgYSByZWFzb25hYmxlIGhhY2sKKDExLjQyLjM5KSBjcm9uMjog
-SSdtIGZpbmUgaWYgSSBoYXZlIElQdjYgb24gZXZlcnl0aGluZyBJIHdhbnQgdG8gYWNjZXNz
-IHJlZ3VsYXJpbHkuLi4KKDExLjQzLjA2KSBub3ZhZmxhc2g6IGRvZXMgeW91ciBmcmlkZ2Ug
-aGF2ZSBpcHY2PwooMTEuNDMuMzEpIGNyb24yOiBpdCBoYXMgbm8gbmV0d29yayBjb25uZWN0
-aW9uCigxMS40My40Mikgbm92YWZsYXNoOiBidXQgdGhlbiBob3cgd2lsbCB5b3UgYWNjZXNz
-IGl0Li4KKDExLjQzLjQ2KSBtYXR0b2NrOiBJIHdpbGwgZ2V0IHdvcnJpZWQgd2hlbiB0aGV5
-IHN0YXJ0IHNlbGxpbmcgYXhlcyB0aGF0IGhhdmUgSVB2NgooMTEuNDQuMTIpIG1hdHRvY2s6
-IGFueWhvdwooMTEuNDQuMjIpIG1hdHRvY2s6IG5vdmFmbGFzaDogZGlkIHlvdSBkbyBhIFBv
-QyBhYm91dCB0aGlzIHN1YmRvbWFpbiB0aGluZz8KKDExLjQ0LjI4KSBub3ZhZmxhc2g6IG5v
-CigxMS40NC4zMykgbm92YWZsYXNoOiBidXQgaXQncyB0cml2aWFsIHRvIHRyeSBvbmUKKDEx
-LjQ0LjQyKSBjcm9uMjogbm92YWZsYXNoOiBJIHdhbGsgaW50byB0aGUga2l0Y2hlbiBhbmQg
-b3BlbiB0aGUgZG9vciA6LSkKKDExLjQ1LjAwKSBub3ZhZmxhc2g6IGJ1dCB5b3Ugc2FpZCB5
-b3Ugd2FudCBpcHY2IG9uIGV2ZXJ5dGhpbmcgeW91IGFjY2VzcyByZWd1bGFybHkuLjotUAoo
-MTEuNDUuMjMpIG5vdmFmbGFzaDogc28gbGV0J3MgZG8gYSBwb2MgYW5kIHNlZSB3aGF0IGhh
-cHBlbnMKKDExLjQ1LjM0KSBwbGFpc3Rob3M6IHByb2JhYmx5IG5vdGhpbmcgaGFwcGVucyBh
-bmQgaXQganVzdCB3b3JrcwooMTEuNDUuMzkpIG5vdmFmbGFzaDogeWEKKDExLjQ2LjI1KSBw
-bGFpc3Rob3M6IEFzIGZvciB0aGUgMi42IHN5bmN1cC4gSSBhbHJlYWR5IGhhdmUgSE1BQyBi
-YXNlZCAoc3luIGNvb2tpZXMpIHRocmVlIHdheSBoYW5kc2hha2Ugd29ya2luZyBmb3Igbm9u
-ZS90bHMtYXV0aC90bHMtY3J5cHQuIAooMTEuNDYuNDQpIGNyb24yOiB2ZXJ5IHZlcnkgbmlj
-ZQooMTEuNDYuNTIpIHBsYWlzdGhvczogdGxzLWNyeXB0djIgc3RhdGVsZXNzIDN3YXkgaGFu
-ZHNoYWtlIHJlcXVpcmVzIGNsaWVudCBzdXBwb3J0LCBwcm90b2NvbCBjaGFuZ2VzIAooMTEu
-NDguMjIpIHBsYWlzdGhvczogc28gdGxzLWNyeXB0djIgd2lsbCBkZWZhdWx0IHRvIGFsbG93
-IGNyZWF0aW5nIGEgc2Vzc2lvbiB3aXRoIGp1c3QgYSBub3JtYWwgcGFja2V0IChzbyB5b3Ug
-YXJlIHZ1bG5lcmFibGUgdG8gcmVwbGF5IGF0dGFja3MpIAooMTEuNDkuMDcpIHBsYWlzdGhv
-czogYnV0IHByb2JhYmx5IHRscy1jcnlwdC12MiB2ZXJzaW9uIHdpbGwgZ2V0IGEgb3B0aW9u
-YWwgcGFyYW1ldGVyIHRoYXQgY29udHJvbHMgaWYgb2xkIGNsaWVudHMgYXJlIGFsbG93ZWQg
-d2hpY2ggZGVmYXVsdCB3aWxsIGJlIGNoYW5nZSBzb21ld2hlcmUgaW4gdGhlIGZ1dHVyZQoo
-MTEuNTAuMTgpIGNyb24yOiB0aGlzIGlzIHdoYXQgeW91IGRlc2lnbmVkICYgYWdyZWVkIG9u
-IGF0IHRoZSBoYWNrYXRob24sIHJpZ2h0PwooMTEuNTIuNDYpIG1hdHRvY2tfIFt+eWFhaWNA
-bW9iaWxlLWFjY2Vzcy1iY2VlNTktMjIxLmRoY3AuaW5ldC5maV0gw6ggZW50cmF0byBuZWxs
-YSBzdGFuemEuCigxMS41My4wMCkgbWF0dG9jazogd293LCBJIHdhcyBhYmxlIHRvIGpvaW4g
-ZnJvbSBtb2JpbGUgYXMgd2VsbC4uLgooMTEuNTYuMjIpIHBsYWlzdGhvczogY3JvbjI6IHll
-YWgKKDExLjU2LjM1KSBub3ZhZmxhc2g6IG1hdHRvY2sgLSBwZXJoYXBzIHlvdSBjYW4gaW5m
-b3JtIGNvbW11bml0eSBhYm91dCBwbGFucyBmb3IgY29tbXVuaXR5IHN0dWZmIGluIGFwcmls
-L21heSBvciBzbz8gaWYgdGltZSBwZXJtaXRzCigxMi4wMS40OCkgbWF0dG9ja186IFllcC4g
-U28gSSBwbGFuIHRvIG1pZ3JhdGUgdGhlIGN1cnJlbnQgKHNvbWV3aGF0IG91dGRhdGVkKSBj
-b21tdW5pdHkgc2VydmVycyB0byB0aGUgbmV3IFZQQy4KKDEyLjAyLjA1KSBtYXR0b2NrXzog
-VGhlbiB1cGdyYWRlIHRoZW0gb25lIGJ5IG9uZQooMTIuMDIuMjIpIGNyb24yOiBncmVhdAoo
-MTIuMDUuMDApIG1hdHRvY2tfOiBBbm90aGVyIHRoaW5nOiBuZXcgYnVpbGRib3QgaXMgbm93
-IG5vdGlmaWNhdGlvbiBjYXBhYmxlCigxMi4wNS4xMykgbm92YWZsYXNoOiBhbmQgZGlkbid0
-IHlvdSBhbHNvIGZpeCB0cmFjIGVtYWlsIHNlbmRpbmc/CigxMi4wNS4zMCkgbWF0dG9ja186
-IERvIHdlIGp1c3Qgc2VuZCB0aGUgZW1haWxzIHRvIHRoZSBidWlsZHMgbGlzdD8KKDEyLjA1
-LjQxKSBtYXR0b2NrXzogbm92YWZsYXNoOiB5ZWEKKDEyLjA1LjU1KSBjcm9uMjogeWVzLCBw
-bGVhc2UKKDEyLjA2LjUwKSBtYXR0b2NrXzogSSBjb3VsZCBwb3RlbnRpYWxseSBzZW5kIGVt
-YWlsIHRvICJwcm9qZWN0IG93bmVycyIgYXMgd2VsbAooMTIuMDcuNDQpIG1hdHRvY2tfOiBB
-bHNvIFZQTiBjbGllbnQgY29uZmlncyBmb3IgYWxsIGludGVyZXN0ZXMgcGFydGllYQooMTIu
-MDguMjcpIGNyb24yOiBld3d3LCBuZXcgVlBOIGNsaWVudCBjb25maWdzLi4uIHllcywgcGxl
-YXNlIGRpc3RyaWJ1dGUKKDEyLjA4LjM0KSBtYXR0b2NrXzogKzEKKDEyLjExLjUzKSBtYXR0
-b2NrXzogQW55dGhpbmcgZWxzZT8KKDEyLjEyLjA1KSBjcm9uMjogSSdtIGZpZ2h0aW5nIERD
-TyBhbmQgaXJvdXRlcyByaWdodCBub3cKKDEyLjEyLjM1KSBjcm9uMjogSSB0aGluayBJIGhh
-dmUgYSBwYXRoIGZvcndhcmQgKHR3byBjbGllbnRzLCBvbmUgd2l0aCAvMzJzIG9uIGl0cyBs
-b29wYmFjaywgbmV0d29ya3MgaXJvdXRlJ2QgdG8gdGhhdCBjbGllbnQgLSBhbmQgYSBzZWNv
-bmQgb25lIGRvaW5nIHRfY2xpZW50IHBpbmdzIG9uIHRob3NlIGlyb3V0ZSBJUHMpCigxMi4x
-NC41MikgY3JvbjI6IGJlc2lkZXMgdGhpcywgb3VyIHBhdGNoIHF1ZXVlIGxvb2tzIGZhaXJs
-eSBkZWNlbnQuICBUaGUgYmlnIG9uZXMgYXJlIGRvbmUsIHRoZXJlIGFyZSBhIGZldyBzbWFs
-bCBvbmVzIHRoYXQgd2FudCB0byBiZSBsb29rZWQgYXQgKGFuZCBvbGQgc3R1ZmYgdGhhdCBu
-ZWVkcyB0byBiZSByZXZpdmVkIG9yIGNsb3NlZCkKKDEyLjI1LjQwKSBtYXR0b2NrXzogRGlz
-Y3Vzc2lvbiBjYW1lIHRvIGFuZCBlbmQ/IDopCigxMi4yNi4xOCkgcGxhaXN0aG9zOiBJIGhh
-dmUgYSBudW1iZXIgb2YgcGF0Y2hlcyB0aGF0IGFyZSBzaXR0aW5nIG9uIHRoZSBtYWlsaW5n
-IGxpc3QgYW5kIGFyZSBpZ25vcmVkCigxMi4yNi40OSkgcGxhaXN0aG9zOiBlc3BlY2lhbGx5
-OiBJbXBsZW1lbnQgLS1jbGllbnQtY3JyZXNwb25zZSBzY3JpcHQgb3B0aW9ucyBhbmQgcGx1
-Z2luIGludGVyZmFjZQooMTIuMjYuNTApIG9yZGV4OiBoaSEKKDEyLjI2LjU2KSBub3ZhZmxh
-c2g6IGp1c3QgaW4gdGltZSBvcmRleAooMTIuMjcuMDQpIG9yZGV4OiBmb3IgdGhlIGJsYW1p
-bmc/CigxMi4yNy4wOCkgcGxhaXN0aG9zOiBzb21laG93IHRoYXQgcGF0Y2ggZ290IGlnbm9y
-ZWQgZnJtIHRoZSBhdXRoIHBlbmRpbmcgcGF0Y2hzZXQgZm9yIHNvbWUgcmVhc29uCigxMi4y
-Ny40MykgY3JvbjI6IHBsYWlzdGhvczogeWVzLCB0aGVzZSBhcmUgdGhlIG9uZXMgSSB3YW50
-ZWQgdG8gZ28gdGhyb3VnaC4gIFNvbWUgSSBzYXcgYW5kIGp1c3QgZGlkIG5vdCB1bmRlcnN0
-YW5kLCBzb21lIG5lZWQgbW9yZSBjbHVlZnVsIGV5ZXMgKGxldidzIE1fRVJSTk8gcGF0Y2gp
-CigxMi41My4yNSkgbm92YWZsYXNoIGhhIGFiYmFuZG9uYXRvIGxhIHN0YW56YSAocXVpdDog
-UXVpdDogbGV0IGhlIHdobyBpcyBpbm5vY2VudCBjYXN0IHRoZSBmaXJzdCAvcXVpdCBtZXNz
-YWdlKS4KKDEzLjAxLjM2KSBtYXR0b2NrOiB3cml0aW5nIHRoZSBzdW1tYXJ5Cg==
-
---------------JetLsmNZhYoEAPZwy8C5Tpzo--
 
