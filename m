@@ -1,15 +1,10 @@
-Message-ID: <50dc29cf-3a9e-579e-a030-4d185c8612cb@...2181...>
-Date: Wed, 30 Mar 2022 14:16:18 +0200
+From: Timo Rothenpieler <timo@...2669...>
+Date: Wed, 30 Mar 2022 17:05:50 +0200
+Message-Id: <20220330150550.1489-1-timo@...2669...>
+In-Reply-To: <1a4c7f58-16fb-b909-0b40-41f20390179b@...2080...>
+References: <1a4c7f58-16fb-b909-0b40-41f20390179b@...2080...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20220329192934.1415-1-timo@...2669...>
- <0886f123-9243-f7df-347c-68b62c469675@...2080...>
- <1a4c7f58-16fb-b909-0b40-41f20390179b@...2080...>
- <8b9722eb-3282-dc1b-abbe-91cc37083af3@...2669...>
- <YkRFk80glGw62CWy@...1296...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <YkRFk80glGw62CWy@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Retain CAP_NET_ADMIN when dropping
+Subject: [Openvpn-devel] [PATCH] Retain CAP_NET_ADMIN when dropping
  privileges
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -19,35 +14,231 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>, Timo Rothenpieler <timo@...2669...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+---
+ configure.ac                              | 18 ++++++
+ distro/systemd/openvpn-client@...2221... |  2 +-
+ distro/systemd/openvpn-server@...2221... |  2 +-
+ src/openvpn/init.c                        | 25 ++++++-
+ src/openvpn/platform.c                    | 79 +++++++++++++++++++++++
+ src/openvpn/platform.h                    |  5 ++
+ 6 files changed, 127 insertions(+), 4 deletions(-)
 
-On 30/03/2022 13:57, Gert Doering wrote:
-> Hi,
-> 
-> On Wed, Mar 30, 2022 at 01:31:24PM +0200, Timo Rothenpieler wrote:
->>> It is possible to argue that sitnl does low-level calls to the kernel as
->>> well.  But potential libraries had an API which was making everything
->>> far more complex on the OpenVPN side.  For libcap-ng at least, that is
->>> not the case; as the API it provides is pretty simple.
->>
->> Shouldn't caps support also be enabled when sitnl is in use?
->> Given it also needs CAP_NET_ADMIN.
-> 
-> That was a misunderstanding.  David explained why we are not using a
-> library but directly talk to the netlink socket for SITNL.
-> 
-> And yes, we want CAP_NET_ADMIN for sitnl+--user as well ;-)
-
-One detail: using SITNL is a compile time decision, while using DCO is a 
-runtime decision (assuming it was compiled in)
-
-Thanks!
-
+diff --git a/configure.ac b/configure.ac
+index 7199483a..5832b62f 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -794,6 +794,24 @@ dnl
+ 	esac
+ fi
+ 
++dnl
++dnl Depend on libcap-ng on Linux
++dnl
++case "$host" in
++	*-*-linux*)
++		PKG_CHECK_MODULES([LIBCAPNG],
++				  [libcap-ng],
++				  [have_libcapng="yes"],
++				  [AC_MSG_ERROR([libcap-ng package not found. Is the development package and pkg-config installed?])]
++		)
++
++		CFLAGS="${CFLAGS} ${LIBCAPNG_CFALGS}"
++		LIBS="${LIBS} ${LIBCAPNG_LIBS}"
++		AC_DEFINE(HAVE_LIBCAPNG, 1, [Enable libcap-ng support])
++	;;
++esac
++
++
+ if test "${with_crypto_library}" = "openssl"; then
+ 	AC_ARG_VAR([OPENSSL_CFLAGS], [C compiler flags for OpenSSL])
+ 	AC_ARG_VAR([OPENSSL_LIBS], [linker flags for OpenSSL])
+diff --git a/distro/systemd/openvpn-client@...2221... b/distro/systemd/openvpn-client@...2221...
+index cbcef653..159fb4dc 100644
+--- a/distro/systemd/openvpn-client@...2221...
++++ b/distro/systemd/openvpn-client@...2221...
+@@ -11,7 +11,7 @@ Type=notify
+ PrivateTmp=true
+ WorkingDirectory=/etc/openvpn/client
+ ExecStart=@sbindir@/openvpn --suppress-timestamps --nobind --config %i.conf
+-CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
++CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+ LimitNPROC=10
+ DeviceAllow=/dev/null rw
+ DeviceAllow=/dev/net/tun rw
+diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/openvpn-server@...2221...
+index d1cc72cb..6e8e7d94 100644
+--- a/distro/systemd/openvpn-server@...2221...
++++ b/distro/systemd/openvpn-server@...2221...
+@@ -11,7 +11,7 @@ Type=notify
+ PrivateTmp=true
+ WorkingDirectory=/etc/openvpn/server
+ ExecStart=@sbindir@/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
+-CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_AUDIT_WRITE
++CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_AUDIT_WRITE
+ LimitNPROC=10
+ DeviceAllow=/dev/null rw
+ DeviceAllow=/dev/net/tun rw
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 8818ba6f..705eb92e 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1138,6 +1138,25 @@ possibly_become_daemon(const struct options *options)
+     return ret;
+ }
+ 
++/*
++ * Determine if we need to retain process capabilities. DCO and SITNL need it.
++ * Enforce it for DCO, but only try and soft-fail for SITNL to keep backwards compat.
++ */
++static int
++get_need_keep_caps(struct context *c)
++{
++    if (dco_enabled(&c->options))
++    {
++        return 1;
++    }
++
++#ifdef ENABLE_SITNL
++    return -1;
++#else
++    return 0;
++#endif
++}
++
+ /*
+  * Actually do UID/GID downgrade, chroot and SELinux context switching, if requested.
+  */
+@@ -1167,8 +1186,10 @@ do_uid_gid_chroot(struct context *c, bool no_delay)
+         {
+             if (no_delay)
+             {
+-                platform_group_set(&c0->platform_state_group);
+-                platform_user_set(&c0->platform_state_user);
++                int keep_caps = get_need_keep_caps(c);
++                platform_user_group_set(&c0->platform_state_user,
++                                        &c0->platform_state_group,
++                                        keep_caps);
+             }
+             else if (c->first_time)
+             {
+diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
+index 450f28ba..e67844ad 100644
+--- a/src/openvpn/platform.c
++++ b/src/openvpn/platform.c
+@@ -43,6 +43,10 @@
+ #include <direct.h>
+ #endif
+ 
++#ifdef HAVE_LIBCAPNG
++#include <cap-ng.h>
++#endif
++
+ /* Redefine the top level directory of the filesystem
+  * to restrict access to files for security */
+ void
+@@ -155,6 +159,81 @@ platform_group_set(const struct platform_state_group *state)
+ #endif
+ }
+ 
++void platform_user_group_set(const struct platform_state_user *user_state,
++                             const struct platform_state_group *group_state,
++                             int keep_caps)
++{
++    unsigned int err_flags = (keep_caps > 0) ? M_FATAL : M_NONFATAL;
++#ifdef HAVE_LIBCAPNG
++    int new_gid = -1, new_uid = -1;
++    int res;
++
++    if (keep_caps == 0)
++    {
++        goto fallback;
++    }
++
++    /*
++     * new_uid/new_gid defaults to -1, which will not make
++     * libcap-ng change the UID/GID unless configured
++     */
++    if (group_state->groupname && group_state->gr)
++    {
++        new_gid = group_state->gr->gr_gid;
++    }
++    if (user_state->username && user_state->pw)
++    {
++        new_uid = user_state->pw->pw_uid;
++    }
++
++    /* Prepare capabilities before dropping UID/GID */
++    capng_clear(CAPNG_SELECT_BOTH);
++    res = capng_update(CAPNG_ADD, CAPNG_EFFECTIVE | CAPNG_PERMITTED, CAP_NET_ADMIN);
++    if (res < 0)
++    {
++        msg(err_flags, "capng_update(CAP_NET_ADMIN) failed: %d", res);
++        goto fallback;
++    }
++
++    /* Change to new UID/GID */
++    res = capng_change_id(new_uid, new_gid, CAPNG_DROP_SUPP_GRP | CAPNG_CLEAR_BOUNDING);
++    if (res == -4 || res == -6)
++    {
++        msg(M_ERR, "capng_change_id('%s','%s') failed: %d",
++            user_state->username, group_state->groupname, res);
++    }
++    else if (res < 0)
++    {
++        msg(err_flags | M_ERRNO, "capng_change_id('%s','%s') failed retaining capabilities: %d",
++            user_state->username, group_state->groupname, res);
++        goto fallback;
++    }
++
++    if (new_uid >= 0)
++    {
++         msg(M_INFO, "UID set to %s", user_state->username);
++    }
++    if (new_gid >= 0)
++    {
++         msg(M_INFO, "GID set to %s", group_state->groupname);
++    }
++
++    msg(M_INFO, "Capabilities retained");
++
++    return;
++fallback:
++#endif  /* HAVE_LIBCAPNG */
++    if (keep_caps)
++    {
++        msg(err_flags, "Unable to retain capabilities");
++    }
++
++    platform_group_set(group_state);
++    platform_user_set(user_state);
++}
++
++
++
+ /* Change process priority */
+ void
+ platform_nice(int niceval)
+diff --git a/src/openvpn/platform.h b/src/openvpn/platform.h
+index a3eec298..b163f093 100644
+--- a/src/openvpn/platform.h
++++ b/src/openvpn/platform.h
+@@ -85,6 +85,11 @@ bool platform_group_get(const char *groupname, struct platform_state_group *stat
+ 
+ void platform_group_set(const struct platform_state_group *state);
+ 
++void platform_user_group_set(const struct platform_state_user *user_state,
++                             const struct platform_state_group *group_state,
++                             int keep_caps);
++
++
+ /*
+  * Extract UID or GID
+  */
 -- 
-Antonio Quartulli
+2.25.1
+
 
