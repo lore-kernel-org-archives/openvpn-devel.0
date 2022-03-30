@@ -1,10 +1,10 @@
 From: Timo Rothenpieler <timo@...2669...>
-Date: Wed, 30 Mar 2022 17:05:50 +0200
-Message-Id: <20220330150550.1489-1-timo@...2669...>
-In-Reply-To: <1a4c7f58-16fb-b909-0b40-41f20390179b@...2080...>
-References: <1a4c7f58-16fb-b909-0b40-41f20390179b@...2080...>
+Date: Wed, 30 Mar 2022 22:55:37 +0200
+Message-Id: <20220330205536.139-1-timo@...2669...>
+In-Reply-To: <20220329192934.1415-1-timo@...2669...>
+References: <20220329192934.1415-1-timo@...2669...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Retain CAP_NET_ADMIN when dropping
+Subject: [Openvpn-devel] [PATCH v2] Retain CAP_NET_ADMIN when dropping
  privileges
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -19,19 +19,22 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
 ---
- configure.ac                              | 18 ++++++
+Using libcap-ng now
+
+
+ configure.ac                              | 19 +++++
  distro/systemd/openvpn-client@...2221... |  2 +-
  distro/systemd/openvpn-server@...2221... |  2 +-
  src/openvpn/init.c                        | 25 ++++++-
- src/openvpn/platform.c                    | 79 +++++++++++++++++++++++
+ src/openvpn/platform.c                    | 91 +++++++++++++++++++++++
  src/openvpn/platform.h                    |  5 ++
- 6 files changed, 127 insertions(+), 4 deletions(-)
+ 6 files changed, 140 insertions(+), 4 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index 7199483a..5832b62f 100644
+index 7199483a..168360d4 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -794,6 +794,24 @@ dnl
+@@ -794,6 +794,25 @@ dnl
  	esac
  fi
  
@@ -45,6 +48,7 @@ index 7199483a..5832b62f 100644
 +				  [have_libcapng="yes"],
 +				  [AC_MSG_ERROR([libcap-ng package not found. Is the development package and pkg-config installed?])]
 +		)
++		AC_CHECK_HEADER([sys/prctl.h],,[AC_MSG_ERROR([sys/prctl.h not found!])])
 +
 +		CFLAGS="${CFLAGS} ${LIBCAPNG_CFALGS}"
 +		LIBS="${LIBS} ${LIBCAPNG_LIBS}"
@@ -126,21 +130,22 @@ index 8818ba6f..705eb92e 100644
              else if (c->first_time)
              {
 diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
-index 450f28ba..e67844ad 100644
+index 450f28ba..4fce5a83 100644
 --- a/src/openvpn/platform.c
 +++ b/src/openvpn/platform.c
-@@ -43,6 +43,10 @@
+@@ -43,6 +43,11 @@
  #include <direct.h>
  #endif
  
 +#ifdef HAVE_LIBCAPNG
 +#include <cap-ng.h>
++#include <sys/prctl.h>
 +#endif
 +
  /* Redefine the top level directory of the filesystem
   * to restrict access to files for security */
  void
-@@ -155,6 +159,81 @@ platform_group_set(const struct platform_state_group *state)
+@@ -155,6 +160,92 @@ platform_group_set(const struct platform_state_group *state)
  #endif
  }
  
@@ -180,7 +185,9 @@ index 450f28ba..e67844ad 100644
 +        goto fallback;
 +    }
 +
-+    /* Change to new UID/GID */
++    /* Change to new UID/GID.
++     * capng_change_id() internally calls capng_apply() to apply prepared capabilities.
++     */
 +    res = capng_change_id(new_uid, new_gid, CAPNG_DROP_SUPP_GRP | CAPNG_CLEAR_BOUNDING);
 +    if (res == -4 || res == -6)
 +    {
@@ -189,6 +196,10 @@ index 450f28ba..e67844ad 100644
 +    }
 +    else if (res < 0)
 +    {
++        if (res == -3)
++        {
++            msg(M_NONFATAL, "Following error likely due to missing capability CAP_SETPCAP.");
++        }
 +        msg(err_flags | M_ERRNO, "capng_change_id('%s','%s') failed retaining capabilities: %d",
 +            user_state->username, group_state->groupname, res);
 +        goto fallback;
@@ -203,10 +214,15 @@ index 450f28ba..e67844ad 100644
 +         msg(M_INFO, "GID set to %s", group_state->groupname);
 +    }
 +
-+    msg(M_INFO, "Capabilities retained");
++    msg(M_INFO, "Capabilities retained: CAP_NET_ADMIN");
 +
 +    return;
 +fallback:
++    /* capng_change_id() can leave this flag clobbered on failure */
++    if (prctl(PR_GET_KEEPCAPS) && prctl(PR_SET_KEEPCAPS, 0) < 0)
++    {
++        msg(M_ERR, "Clearing KEEPCAPS flag failed");
++    }
 +#endif  /* HAVE_LIBCAPNG */
 +    if (keep_caps)
 +    {
