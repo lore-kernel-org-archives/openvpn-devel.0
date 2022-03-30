@@ -1,9 +1,9 @@
-Message-ID: <67b47c41-7af6-31ca-4ad8-4c3bcd8baba9@...2669...>
-Date: Wed, 30 Mar 2022 01:45:53 +0200
+Message-ID: <0886f123-9243-f7df-347c-68b62c469675@...2080...>
+Date: Wed, 30 Mar 2022 10:51:52 +0200
 MIME-Version: 1.0
-Content-Language: en-US
+Content-Language: en-GB
 References: <20220329192934.1415-1-timo@...2669...>
-From: Timo Rothenpieler <timo@...2669...>
+From: David Sommerseth <openvpn@...2080...>
 In-Reply-To: <20220329192934.1415-1-timo@...2669...>
 Subject: Re: [Openvpn-devel] [PATCH] Retain CAP_NET_ADMIN when dropping
  privileges
@@ -17,9 +17,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Timo Rothenpieler <timo@...2669...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 29.03.2022 21:29, Timo Rothenpieler wrote:
+On 29/03/2022 21:29, Timo Rothenpieler wrote:
+> ---
+> This patch sits on top of the current dco branch, and will not apply to
+> latest master.
+> 
+> It solves the issue of dropping root privileges breaking dco and sitnl
+> due to missing NET_ADMIN capabilities.
+> 
+> 
+>   configure.ac           |  3 ++
+>   src/openvpn/init.c     | 22 +++++++++++++-
+>   src/openvpn/platform.c | 65 +++++++++++++++++++++++++++++++++++++++++-
+>   src/openvpn/platform.h |  2 +-
+>   4 files changed, 89 insertions(+), 3 deletions(-)
+> 
+
+Thanks a lot!  I've quickly looked through the code, and I have to NAK 
+this approach:
+
+> +#ifdef HAVE_LINUX_CAPABILITIES
+> +#define SET_CAP_HELPER(data, set, cap) data[(cap)>>5].set |= 1<<((cap)&31)
+> +
 > +static bool
 > +do_keep_caps(bool prepare)
 > +{
@@ -27,47 +49,29 @@ On 29.03.2022 21:29, Timo Rothenpieler wrote:
 > +    struct __user_cap_data_struct cap_data[_LINUX_CAPABILITY_U32S_3] = {};
 > +
 > +    if (syscall(SYS_capget, &cap_hdr, cap_data) < 0)
-> +    {
-> +        msg(M_NONFATAL | M_ERRNO, "failed getting capabilities");
-> +        return false;
-> +    }
-> +
-> +    if (prepare)
-> +    {
-> +        SET_CAP_HELPER(cap_data, permitted, CAP_NET_ADMIN);
-> +    }
-> +    else
-> +    {
-> +        SET_CAP_HELPER(cap_data, effective, CAP_NET_ADMIN);
 
-This is missing something like the following:
+We should really use libcap or libcap-ng and not avoid using syscalls 
+directly.
 
->         /* Clamp permitted capabilities to effective ones.
->          * Without doing this, the process can give itself root-like caps at any time. */
->         for (int i = 0; i < sizeof(cap_data)/sizeof(cap_data[0]); i++)
->         {
->             cap_data[i].permitted = cap_data[i].effective;
->         }
+I have used libcap-ng in openvpn3-linux, both for preserving 
+capabilities and dropping root.  It does all the right steps fairly easily.
 
-Without that, the permitted caps stay the full set of root caps, and the 
-process can make them effective at any time.
+The configure.ac detection, which for OpenVPN 2.x can be restricted when 
+DCO is going to be built into openvpn:
+<https://github.com/OpenVPN/openvpn3-linux/blob/master/configure.ac#L113>
 
-Patch on GitHub is updated with that.
+The code for preserving capabilities:
+<https://github.com/OpenVPN/openvpn3-linux/blob/c40218df43c8e652fedfa70304eae797b305e780/src/netcfg/openvpn3-service-netcfg.cpp#L82>
 
-> +    }
-> +
-> +    if (syscall(SYS_capset, &cap_hdr, cap_data) < 0)
-> +    {
-> +        msg(M_NONFATAL | M_ERRNO, "failed setting %s capabilities", prepare ? "permitted" : "effective");
-> +        return false;
-> +    }
-> +
-> +    if (prepare && prctl(PR_SET_KEEPCAPS, 1) < 0)
-> +    {
-> +        msg(M_NONFATAL | M_ERRNO, "failed setting keepcaps");
-> +        return false;
-> +    }
-> +
-> +    return true;
-> +}
+And the code for dropping root, ensuring the capabilities are restricted 
+properly:
+<https://github.com/OpenVPN/openvpn3-linux/blob/c40218df43c8e652fedfa70304eae797b305e780/src/netcfg/openvpn3-service-netcfg.cpp#L64>
+
+
+-- 
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
 
