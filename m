@@ -1,19 +1,14 @@
-Message-ID: <ca750932-2b32-e717-6af5-cfaab6e38ee0@...2080...>
-Date: Thu, 31 Mar 2022 13:39:20 +0200
+Message-ID: <78f5a523-8d24-2d36-5414-11bc746f9b70@...2080...>
+Date: Thu, 31 Mar 2022 15:20:59 +0200
 MIME-Version: 1.0
 Content-Language: en-US
 References: <20220329192934.1415-1-timo@...2669...>
  <20220330205536.139-1-timo@...2669...>
- <9564ba11-d626-4e60-fa2f-979c114b95c2@...277...>
- <d18f61d5-3f4d-b6b1-2a57-d2b2ff9b7a25@...2080...>
- <YkWKTthhlLISLXbl@...1296...>
- <8c17e977-98b8-64f7-56fa-42fc2cb5f787@...2669...>
- <YkWRq/k7YDEvr2m+@greenie.muc.de>
 From: David Sommerseth <openvpn@...2080...>
-In-Reply-To: <YkWRq/k7YDEvr2m+@greenie.muc.de>
+In-Reply-To: <20220330205536.139-1-timo@...2669...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="------------aiiiTMqWYte5t2tHiCrPWlTz"
+ boundary="------------6Q9cmr19f0aNDWVPk5CRPfEX"
 Subject: Re: [Openvpn-devel] [PATCH v2] Retain CAP_NET_ADMIN when dropping
  privileges
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -24,74 +19,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Timo Rothenpieler <timo@...2669...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------aiiiTMqWYte5t2tHiCrPWlTz
-Content-Type: multipart/mixed; boundary="------------mk509DsH4MO0Uqb55vHovq5a";
+--------------6Q9cmr19f0aNDWVPk5CRPfEX
+Content-Type: multipart/mixed; boundary="------------q0DqndtNvE6v3BHTd3kbXU0f";
  protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
-To: Gert Doering <gert@...1296...>,
- Timo Rothenpieler <timo@...2669...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <ca750932-2b32-e717-6af5-cfaab6e38ee0@...2080...>
+To: openvpn-devel@lists.sourceforge.net
+Cc: Timo Rothenpieler <timo@...2669...>
+Message-ID: <78f5a523-8d24-2d36-5414-11bc746f9b70@...2080...>
 Subject: Re: [Openvpn-devel] [PATCH v2] Retain CAP_NET_ADMIN when dropping
  privileges
 References: <20220329192934.1415-1-timo@...2669...>
  <20220330205536.139-1-timo@...2669...>
- <9564ba11-d626-4e60-fa2f-979c114b95c2@...277...>
- <d18f61d5-3f4d-b6b1-2a57-d2b2ff9b7a25@...2080...>
- <YkWKTthhlLISLXbl@...1296...>
- <8c17e977-98b8-64f7-56fa-42fc2cb5f787@...2669...>
- <YkWRq/k7YDEvr2m+@greenie.muc.de>
-In-Reply-To: <YkWRq/k7YDEvr2m+@greenie.muc.de>
+In-Reply-To: <20220330205536.139-1-timo@...2669...>
 
---------------mk509DsH4MO0Uqb55vHovq5a
+--------------q0DqndtNvE6v3BHTd3kbXU0f
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: base64
 
-T24gMzEvMDMvMjAyMiAxMzozNCwgR2VydCBEb2VyaW5nIHdyb3RlOg0KPiBIaSwNCj4gDQo+IE9u
-IFRodSwgTWFyIDMxLCAyMDIyIGF0IDAxOjI5OjI4UE0gKzAyMDAsIFRpbW8gUm90aGVucGllbGVy
-IHdyb3RlOg0KPj4gVGhhdCdzIGV4YWN0bHkgd2hhdCB0aGUgcGF0Y2ggZG9lcy4NCj4gDQo+IFdo
-aWNoIEkgdmVyeSBtdWNoIGxpa2UgOi0pICAoSSBzYWlkIHRoYXQgb24gSVJDIGFscmVhZHksIHJl
-cGVhdGluZyBoZXJlDQo+IGZvciB0aGUgbGlzdCBhcmNoaXZlKQ0KPiANCj4+IE9ubHkgZGlmZmVy
-ZW5jZSBpcyB0aGF0IGZvciBzaXRubCwgdG8gYXZvaWQgYnJlYWtpbmcgZXhpc3Rpbmcgc2V0dXBz
-LCBpdA0KPj4gd2lsbCBmYWxsIGJhY2sgdG8gdGhlIG9sZCBhcHByb2FjaCBvZiBzd2l0Y2hpbmcg
-dXNlciBpZiB0aGUgY2FwYWJpbGl0eQ0KPj4gcmV0YWluaW5nIGFwcHJvYWNoIGZhaWxlZC4NCj4g
-DQo+IEknbSBhIGJpdCB1bmRlY2lkZWQgaWYgdGhpcyBpcyByZWFsbHkgc29tZXRoaW5nIHRvIHdv
-cnJ5IGFib3V0Li4uIGJ1dA0KPiB0aGVuLCBpbiBhbiBleGlzdGluZyBhbmQgd29ya2luZyBzeXN0
-ZW1kIGVudmlyb25tZW50IHdpdGggcmVkdWNlZA0KPiBjYXBhYmlsaXRpZXMgaXQgbWlnaHQgYnJl
-YWsgc2V0dXBzIGdvaW5nIDIuNSAtPiAyLjYsIHNvIG1heWJlICJiZWluZw0KPiBjYXJlZnVsIGFi
-b3V0IHRoaW5ncyIgaXMgdGhlIGJldHRlciB3YXkgOi0pDQoNClllYWgsIEkgYWdyZWUgd2l0aCB0
-aGlzLiAgRm9yIHYyLjYsIHRoZSB0aW1lIGlzIHRvbyBzaG9ydCB0byBiZSBkYXJlIHRvbyANCm11
-Y2ggcG90ZW50aWFsIGJyZWFrYWdlIG5vdy4gIEJ1dCB3ZSBjYW4gY29uc2lkZXIgZnVydGhlciBz
-dGVwcyB3aXRoIHYyLjcuDQoNCg0KLS0gDQpraW5kIHJlZ2FyZHMsDQoNCkRhdmlkIFNvbW1lcnNl
-dGgNCk9wZW5WUE4gSW5jDQoNCg==
+T24gMzAvMDMvMjAyMiAyMjo1NSwgVGltbyBSb3RoZW5waWVsZXIgd3JvdGU6DQo+IC0tLQ0KPiBV
+c2luZyBsaWJjYXAtbmcgbm93DQo+IA0KPiANCj4gICBjb25maWd1cmUuYWMgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICB8IDE5ICsrKysrDQo+ICAgZGlzdHJvL3N5c3RlbWQvb3BlbnZwbi1j
+bGllbnRALi4uMjIyMS4uLiB8ICAyICstDQo+ICAgZGlzdHJvL3N5c3RlbWQvb3BlbnZwbi1zZXJ2
+ZXJALi4uMjIyMS4uLiB8ICAyICstDQo+ICAgc3JjL29wZW52cG4vaW5pdC5jICAgICAgICAgICAg
+ICAgICAgICAgICAgfCAyNSArKysrKystDQo+ICAgc3JjL29wZW52cG4vcGxhdGZvcm0uYyAgICAg
+ICAgICAgICAgICAgICAgfCA5MSArKysrKysrKysrKysrKysrKysrKysrKw0KPiAgIHNyYy9vcGVu
+dnBuL3BsYXRmb3JtLmggICAgICAgICAgICAgICAgICAgIHwgIDUgKysNCj4gICA2IGZpbGVzIGNo
+YW5nZWQsIDE0MCBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQ0KPiANClNpbmNlIEkgd29y
+a2VkIGNsb3NlbHkgd2l0aCBUaW1vIG9uIHRoaXMgcGF0Y2ggdmVyc2lvbiwgSSBkb24ndCBmZWVs
+IEkgDQpzaG91bGQgZ2l2ZSBpdCBhbiBBQ0sgdmVyZGljdCBhbG9uZS4gIEJ1dCBJIGJlbGlldmUg
+dGhpcyBpcyB0aGUgcmlnaHQgDQpwYXRjaCB0byBpbmNsdWRlLg0KDQpJIHdpbGwganVzdCBzdWdn
+ZXN0IGEgY29tbWl0IG1lc3NhZ2U6DQoNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0NCnBsYXRmb3JtOiBSZXRhaW4gQ0FQX05FVF9BRE1JTiB3aGVuIGRyb3Bw
+aW5nIHByaXZpbGVnZXMNCg0KT24gTGludXgsIHdoZW4gZHJvcHBpbmcgcHJpdmlsZWdlcywgaW50
+ZXJhY3Rpb24gd2l0aCB0aGUgbmV0d29yayANCmNvbmZpZ3VyYXRpb24sIHN1Y2ggYXMgdGVhcmlu
+ZyBkb3duIHJvdXRlcyBvciBvdnBuLWRjbyBpbnRlcmZhY2VzDQp3aWxsIGZhaWwgd2hlbiAtLXVz
+ZXIvLS1ncm91cCBhcmUgdXNlZC4NCg0KVGhpcyBwYXRjaCBzZXQgc2V0cyB0aGUgQ0FQX05FVF9B
+RE1JTiBjYXBhYmlsaXR5LCB3aGljaCBncmFudHMgdGhlIA0KbmVlZGVkIHByaXZpbGVnZXMgZHVy
+aW5nIHRoZSBsaWZldGltZSBvZiB0aGUgT3BlblZQTiBwcm9jZXNzIHdoZW4gDQpkcm9wcGluZyBy
+b290IHByaXZpbGVnZXMuDQoNClNpZ25lZC1vZmYtYnk6IFRpbW8gUm90aGVucGllbGVyIDx0aW1v
+QC4uLjI2NjkuLi4+DQpSZXZpZXdlZC1CeTogRGF2aWQgU29tbWVyc2V0aCA8ZGF2aWRzQC4uLjUx
+NS4uLj4NCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCg0K
+DQpJIGhhdmUgb3RoZXJ3aXNlIHRlc3RlZCB0aGlzIHBhdGNoIG9uIGEgUm9ja3kgTGludXggOCBk
+aXN0cmlidXRpb24uDQpDbGllbnQgdGVzdCBjYXNlcyBJIHJhbiB3aGVuIHRlc3RpbmcgdGhpcyB3
+YXM6DQoNCiAgICogZnJvbSB0aGUgY29tbWFuZCBsaW5lLCB3aXRoIGFuZCB3aXRob3V0IERDTw0K
+ICAgKiB2aWEgc3lzdGVtZCwgd2l0aCBhbmQgd2l0aG91dCBEQ08NCg0KV2l0aCB0aGVzZSA0IHRl
+c3QgY2FzZXMsIGVhY2ggb2YgdGhlbSB3ZXJlIHJ1biB3aXRoIGNvbWJpbmF0aW9ucyBvZg0KDQog
+ICAqIG5vIC0tdXNlci8tLWdyb3VwDQogICAqIG9ubHkgLS11c2VyDQogICAqIG9ubHkgLS1ncm91
+cA0KICAgKiBib3RoIC0tdXNlciBhbmQgLS1ncm91cA0KDQpJJ3ZlIGFsc28gcnVuIGEgZmV3IHRl
+c3RzIHVzaW5nIGFuIC0tdXAgc2NyaXB0IHdoaWNoIG1vZGlmaWVkIA0KL2V0Yy9yZXNvbHYuY29u
+Ziwgd2hpY2ggYWxzbyB3b3JrZWQgYXMgZXhwZWN0ZWQgd2l0aCBjYXBhYmlsaXRpZXMgZW5hYmxl
+ZC4NCg0KVGhlcmUgd2VyZSBubyB1bmV4cGVjdGVkIGJlaGF2aW9yIHdpdGggdGhpcyBmaW5hbCBw
+YXRjaCBzZXQsIHdpdGggb25lIA0Kc3BlY2lhbCBleGNlcHRpb24gd2hpY2ggaXMgb3V0c2lkZSB0
+aGUgc2NvcGUgb2YgdGhpcyBwYXRjaCAtIFNFTGludXguDQoNClNFTGludXggb24gRmVkb3JhIGFu
+ZCBSSEVMICh3aGljaCBSb2NreSBMaW51eCBpbmhlcml0cykgZGVuaWVzIHRoZSANCk9wZW5WUE4g
+cHJvY2VzcyB3aGVuIHJ1biB2aWEgc3lzdGVtZCB0byB1c2UgdGhlIFNFVF9QQ0FQIGNhcGFiaWxp
+dHkuICBJbiANCmFkZGl0aW9uLCB0aGUgU0VMaW51eCByZWZlcmVuY2UgcG9saWN5IGFsc28gZGVu
+aWVzIGFsbCBpbnRlcmFjdGlvbnMgd2l0aCANCnRoZSBHZW5lcmljIE5ldGxpbmsgaW50ZXJmYWNl
+cyB1c2VkIGJ5IG92cG4tZGNvLiAgSSB3aWxsIGZvbGxvdyB1cCB0aGlzIA0Kd2l0aCB0aGUgdXBz
+dHJlYW0gU0VMaW51eCByZWZlcmVuY2UgcG9saWN5IG1haW50YWluZXJzLg0KDQpQYWNrYWdlIG1h
+aW50YWluZXJzIG5lZWRpbmcgU0VMaW51eCBjYW4gaW4gdGhlIG1lYW4gdGltZSwgdW50aWwgYW4g
+DQp1cGRhdGVkIFNFTGludXggcG9saWN5IGlzIGF2YWlsYWJsZSwgcHJvdmlkZSBhbiBhZGRpdGlv
+bmFsIFNFTGludXggDQptb2R1bGUgd2hpY2ggZ3JhbnRzIHRoZSBuZWVkZWQgcHJpdmlsZWdlcyB0
+byBvcGVudnBuX3QgbGFiZWxsZWQgcHJvY2Vzc2VzLg0KDQoNCi0tIA0Ka2luZCByZWdhcmRzLA0K
+DQpEYXZpZCBTb21tZXJzZXRoDQpPcGVuVlBOIEluYw0KDQo=
 
---------------mk509DsH4MO0Uqb55vHovq5a--
+--------------q0DqndtNvE6v3BHTd3kbXU0f--
 
---------------aiiiTMqWYte5t2tHiCrPWlTz
+--------------6Q9cmr19f0aNDWVPk5CRPfEX
 Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="OpenPGP_signature"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmJFkugACgkQhs+UTJZx
-/fLD5g//ZtjwX7Nouc0aQ2a2z11YFa3mWezHIZctLkYZ895/9BTxo/IWiVo+Zf6U
-smLNUeoBa829oJMr/LAUDLOukXguxMdjChstsXM/VhIIevZbEjWFSqsey0+vcyr7
-UJXCsxIF5Mpj+Bs3ZLqGZ8AIjXgpX41W4Wkn6h5axjMszD9knczX4wvyrYtoXI+N
-QVmufhbqiVeXlxgXyg8nvUc+N7f0/HDgjL91iEScaitUp/YepN0/Hnzgfu6+iicf
-c7s7JIRmattrmH7+i7wDtzm13yYVfEVcXAYoUq5aNP1QX2lK61jl824dJmmKzpoQ
-qEdJg8m/1gM17ffRFDBOlzahpRudkjwf7rv7eug5Z0hfekHAx8Y2NpryfTKiqHrn
-vtZUySRfoqcE1Gollj/zqXBO6srUXve0MrW8Y6LD3kY6X7+T9kE4Cw8invDpus5U
-SgqQRwoXg7q6hkVMSvRdlfkbe+qtXcTy96lD84VxgjUGQNrqzsWbYO15aSGxVhsu
-T53Tp3LD+OSpqe5+q7UkajCDCCu4fD1CIa4xRxlL2+ZbMIAFpSXdMFDIqx5MWol8
-YsJoElhZmjxPh24B73OZErO4CUyBBvv0gR/MJoLZadxY2LNeSNbMYaoISE6l/EYg
-lEQQVkhVRyassiLkkPIAwqFcnSRJ1nop8RPW0Rz38XyZbuhsMlI=
-=qjHN
+iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmJFqrsACgkQhs+UTJZx
+/fLeIg/+PrjTtAXpGIljIX2vzdZgBUFKyCY3YtnozuKu428pY6gURMvX5OW7avCP
+pjztSaSTgKw43vi0OQauMYCHefJMAhR77QxUdzkQb1KM/9x0+sjkl5+X/bNmgdx4
+2PA3HmcahXaB46Xqdc77l39jI4FkXDhuoyJGrDOzuadoyOH389aM5kpxEdEJEpMB
+lK26yjQkM8hv6smOseLsGf1WGV3wTtFrrJB+WZJ30dBowJ3MmYPdgLZqWU/QoaOK
+4KZWW0CT4NfSgi6L+bvTs+SPKiuCK5SEyCni2FOIbSnTaA/x0vul+FipR+HnNert
+uRQNUfq+hJUs3qsCl2hXnJa2cHX4j0lRnpTw9INpDHPxKzn82jr8tks0TzPzqtDu
+7GnJfHMSIaIbmeJTi3ylNEOZPHBUpK+XfHeR46JrLNLexsN3DliipbMRV/ZpKjfR
+HqPXbtR0fN5sekqyv6cn7JDW6vm3PrpAiRqVZMmZ0/QU0+1jP2HRpsx/TM2qWoSb
+A7CFjmflzyXQ5dEMCH4PmIe35PRtz4/+S1uAhHE7w5SwLYJvLd0hfyMZI72mnLPZ
+KmCL1wOIa/g5+ascLmuUURQN8TOlrZekqm5aK6yjCbcWwL48MZuw+78qBAkZRgVp
+Ys0n8u3tS7aAbLC5qmaf32UI4e9gHk+0wJEUBni2KFHIqoXiMwY=
+=dqrD
 -----END PGP SIGNATURE-----
 
---------------aiiiTMqWYte5t2tHiCrPWlTz--
+--------------6Q9cmr19f0aNDWVPk5CRPfEX--
 
