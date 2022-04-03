@@ -1,10 +1,10 @@
-Date: Sun, 3 Apr 2022 16:45:32 +0200 (CEST)
-Message-Id: <202204031445.233EjWxX069601@...2054...>
+Date: Sun, 3 Apr 2022 16:47:38 +0200 (CEST)
+Message-Id: <202204031447.233ElcfC069654@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220402070902.30282-2-a@...2181...>
-References: <20220402070902.30282-2-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: networking: remove duplicate
- methods from networking_sitnl.c
+In-Reply-To: <20220402070902.30282-3-a@...2181...>
+References: <20220402070902.30282-3-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: networking: silence warnings
+ about unused arguments
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Trivial enough.  Compile-tested with sitnl and --enable-iproute2.
+While my compiler (gcc 11.2.1) does not warn about them, having these (void) 
+for two of the three functions and not all of them is at least slightly 
+silly... so, yeah, why not.
 
 Your patch has been applied to the master branch.
 
-commit c0fa37eda2a12c6587e9b2db2c0a33c91d3ced6e
-Author: Arne Schwabe
-Date:   Sat Apr 2 09:08:56 2022 +0200
+commit c3aa44699c69811493a81bda340a03530059929b
+Author: Antonio Quartulli
+Date:   Sat Apr 2 09:08:57 2022 +0200
 
-     networking: remove duplicate methods from networking_sitnl.c
+     networking: silence warnings about unused arguments
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
      Signed-off-by: Antonio Quartulli <a@...2181...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220402070902.30282-2-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24054.html
+     Message-Id: <20220402070902.30282-3-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24052.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
