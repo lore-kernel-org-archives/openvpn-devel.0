@@ -1,9 +1,12 @@
-Message-ID: <20482e7f-60b0-578b-83c9-b6054f4bf58a@...515...>
-Date: Tue, 5 Apr 2022 12:19:15 +0300
+Date: Tue, 5 Apr 2022 12:00:49 +0200 (CEST)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <922985778.595013.1649152849318@...2642...>
+In-Reply-To: <20220402070902.30282-6-a@...2181...>
+References: <20220402070902.30282-1-a@...2181...>
+ <20220402070902.30282-6-a@...2181...>
 MIME-Version: 1.0
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Content-Language: en-US
-Subject: [Openvpn-devel] Community meetings in April 2022
+Subject: Re: [Openvpn-devel] [PATCH 5/7] tun: extract close_tun_handle into
+ its own fucntion and print correct type
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,25 +15,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+Acked-by: Frank Lichtenheld <frank@...2641...>
 
-Next community meetings have been scheduled to
+Seems trivial.
 
-- Wed 6th March 2022 at 10:30 CEST
-- Wed 13th March 2022 at 10:30 CEST
-- Wed 20th March 2022 at 10:30 CEST
-- Wed 27th March 2022 at 10:30 CEST
+> Antonio Quartulli <a@...2181...> hat am 02.04.2022 09:09 geschrieben:
+[...]
+> +    if (tt->hand != NULL)
+> +    {
+> +        dmsg(D_WIN32_IO_LOW, "Attempting CloseHandle on %s adapter", adaptertype);
+> +        if (!CloseHandle(tt->hand))
+> +        {
+> +            msg(M_WARN | M_ERRNO, "Warning: CloseHandle failed on %s adapter", adaptertype);
+> +        }
+> +        tt->hand = NULL;
 
-The place is #openvpn-meeting IRC channel at libera.chat Meeting agendas
-and summaries are in here:
+Setting hand to NULL is a slight behavior change, it wasn't there before.
+It might be nice to acknowledge it in the commit message just to confirm that
+it was a deliberate change.
 
-<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
-
-Samuli
-
-
+Regards,
+--
+Frank Lichtenheld
 
