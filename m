@@ -1,14 +1,14 @@
-Message-ID: <bf1525ca-3482-64e6-e839-2be71afaa561@...2181...>
-Date: Tue, 5 Apr 2022 13:21:35 +0200
+Message-ID: <d7fe7278-2c35-c54c-dd60-469ef6af40e4@...2181...>
+Date: Tue, 5 Apr 2022 13:24:55 +0200
 MIME-Version: 1.0
 Content-Language: en-US
 References: <20220402070902.30282-1-a@...2181...>
- <20220402070902.30282-6-a@...2181...>
- <922985778.595013.1649152849318@...2642...>
+ <20220402070902.30282-7-a@...2181...>
+ <1653915871.596525.1649153663382@...2642...>
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <922985778.595013.1649152849318@...2642...>
-Subject: Re: [Openvpn-devel] [PATCH 5/7] tun: extract close_tun_handle into
- its own fucntion and print correct type
+In-Reply-To: <1653915871.596525.1649153663382@...2642...>
+Subject: Re: [Openvpn-devel] [PATCH 6/7] ovpn-dco-win: introduce windows
+ data-channel offload support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,37 +20,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 To: Frank Lichtenheld <frank@...2641...>, openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
 Hi,
 
-On 05/04/2022 12:00, Frank Lichtenheld wrote:
-> Acked-by: Frank Lichtenheld <frank@...2641...>
+On 05/04/2022 12:14, Frank Lichtenheld wrote:
 > 
-> Seems trivial.
 > 
 >> Antonio Quartulli <a@...2181...> hat am 02.04.2022 09:09 geschrieben:
 > [...]
->> +    if (tt->hand != NULL)
->> +    {
->> +        dmsg(D_WIN32_IO_LOW, "Attempting CloseHandle on %s adapter", adaptertype);
->> +        if (!CloseHandle(tt->hand))
->> +        {
->> +            msg(M_WARN | M_ERRNO, "Warning: CloseHandle failed on %s adapter", adaptertype);
->> +        }
->> +        tt->hand = NULL;
+>> diff --git a/README.dco.md b/README.dco.md
+>> index 27c166b9..d3599727 100644
+>> --- a/README.dco.md
+>> +++ b/README.dco.md
+>> @@ -109,6 +116,8 @@ Limitations by design
+>>   - topology subnet is the only supported `--topology` for servers
+>>   - iroute directives install routes on the host operating system, see also
+>>     routing with ovpn-dco
+>> +- (ovpn-dco-win) client and p2p mode only
+>> +- (ovpn-dco-win) only AES-GCM-128/192/256 cipher support
 > 
-> Setting hand to NULL is a slight behavior change, it wasn't there before.
-> It might be nice to acknowledge it in the commit message just to confirm that
-> it was a deliberate change.
+> This seems to be out-of-sync with the code. The code seems to add CHACHA20-POLY1305 support
+> on Windows 11.
 
-Yes, it was a deliberate change.
-This helper function will be invoked by (possibly) multiple places, so 
-it's better to set a precondition and prevent a double close.
-
-I agree we should add a sentence to the commit message about this.
+You are correct - this should be changed.
 
 Regards,
-
 
 -- 
 Antonio Quartulli
