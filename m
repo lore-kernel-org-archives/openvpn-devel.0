@@ -1,11 +1,12 @@
-Message-ID: <c00a586d-27c9-b28e-d604-192b5defe3ab@...515...>
-Date: Tue, 5 Apr 2022 15:10:20 +0300
 MIME-Version: 1.0
-Content-Language: en-US
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-References: <20482e7f-60b0-578b-83c9-b6054f4bf58a@...515...>
-In-Reply-To: <20482e7f-60b0-578b-83c9-b6054f4bf58a@...515...>
-Subject: Re: [Openvpn-devel] Community meetings in April 2022
+References: <CAAUX2SXYyxz-A_cWsf+ZuCyPkHz_O+D+fdZNS2p_7qV6fDR4EA@...278...>
+ <581cf124-143b-690c-37d2-72fb2bd0e39a@...277...>
+In-Reply-To: <581cf124-143b-690c-37d2-72fb2bd0e39a@...277...>
+From: Tony He <huangya90@...277...>
+Date: Tue, 5 Apr 2022 21:04:11 +0800
+Message-ID: <CAAUX2SXzyFLZmPCC0ruV9BYxEoEnJs41zRFw3hbVDypKQdFJxQ@...278...>
+Subject: Re: [Openvpn-devel] [ovpn-dco] How to benchmark kernel crypto
+ performance?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,41 +15,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Jan Just Keijser <jan.just.keijser@...277...>
+Cc: Antonio Quartulli <antonio@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-In April, not in March as stated before. So
+Hi JJK,
 
-- Wed 6th April 2022 at 10:30 CEST
-- Wed 13th April 2022 at 10:30 CEST
-- Wed 20th April 2022 at 10:30 CEST
-- Wed 27th April 2022 at 10:30 CEST
+Yeah, I know this way, but there is still context switching in the
+kernel space and user space. I have been looking for a way
+to benchmark in the kernel space. I expect there is a kernel module like be=
+low:
 
-Samuli
+insmod benchmark.ko AES-256-GCM
+(After it's done,  this module will exit automatically)
 
-Il 5.4.2022 12.19, Samuli Seppänen ha scritto:
-> Hi,
-> 
-> Next community meetings have been scheduled to
-> 
-> - Wed 6th March 2022 at 10:30 CEST
-> - Wed 13th March 2022 at 10:30 CEST
-> - Wed 20th March 2022 at 10:30 CEST
-> - Wed 27th March 2022 at 10:30 CEST
-> 
-> The place is #openvpn-meeting IRC channel at libera.chat Meeting agendas
-> and summaries are in here:
-> 
-> <https://community.openvpn.net/openvpn/wiki/IrcMeetings>
-> 
-> Samuli
-> 
-> 
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+Tony
+
+Jan Just Keijser <jan.just.keijser@...277...> =E4=BA=8E2022=E5=B9=B44=E6=9C=
+=885=E6=97=A5=E5=91=A8=E4=BA=8C 19:26=E5=86=99=E9=81=93=EF=BC=9A
+>
+> hi Tony,
+>
+> On 02/04/22 11:40, Tony He wrote:
+> > Hi Antonio,
+> >
+> > I am porting ovpn-dco to embedded ARMv8 device with hardware crypto
+> > engine. However the performance is not very good.
+> > It's about 130-140Mbps. I expect more. The SDK already provides kernel
+> > CryptoAPI(CFI) interface  to access the crypto engine.
+> > I want to know if the crypto operation is the bottleneck. Do you know
+> > how to benchmark crypto performance in the kernel space?
+> > Any advice is welcome. Thank you!
+> >
+> a quick & dirty way to test the hardware crypto engine is to use the
+> Linux cryptodev engine in combination with openssl ; it's a bit tricky
+> to get it working but it *is* a nice way to test hardware crypto.
+>
+> * https://github.com/cryptodev-linux/cryptodev-linux.git
+> * do a custom openssl build with
+>      ./Configure -DHAVE_CRYPTODEV -DUSE_CRYPTODEV_DIGESTS enable-engine
+> enable-dso enable-devcryptoeng <platform>
+> * run openssl speed using
+>    ./openssl speed -elapsed -engine devcrypto -evp aes-128-cbc
+>
+> and compare the results with "-engine devcrypto" removed.
+>
+> HTH,
+>
+> JJK
+>
+>
+>
 
