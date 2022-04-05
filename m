@@ -1,15 +1,14 @@
-Date: Tue, 5 Apr 2022 17:02:54 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <YkxaHo8ZC31uJ38v@...1296...>
-References: <20220402070902.30282-1-a@...2181...>
- <20220402070902.30282-4-a@...2181...>
+References: <CAAUX2SXYyxz-A_cWsf+ZuCyPkHz_O+D+fdZNS2p_7qV6fDR4EA@...278...>
+ <581cf124-143b-690c-37d2-72fb2bd0e39a@...277...>
+ <CAAUX2SXzyFLZmPCC0ruV9BYxEoEnJs41zRFw3hbVDypKQdFJxQ@...278...>
+From: Jan Just Keijser <jan.just.keijser@...277...>
+Message-ID: <144bd291-8203-84a8-9ccd-d4f4040cbe11@...277...>
+Date: Tue, 5 Apr 2022 17:46:44 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="2KL6WSUUsu8pmze3"
-Content-Disposition: inline
-In-Reply-To: <20220402070902.30282-4-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 3/7] networking: implement net_iface_new
- and net_iface_del APIs
+In-Reply-To: <CAAUX2SXzyFLZmPCC0ruV9BYxEoEnJs41zRFw3hbVDypKQdFJxQ@...278...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [ovpn-dco] How to benchmark kernel crypto
+ performance?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,63 +17,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Tony He <huangya90@...277...>
+Cc: Antonio Quartulli <antonio@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---2KL6WSUUsu8pmze3
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi Tony,
 
-Hi,
+On 05/04/22 15:04, Tony He wrote:
+> Hi JJK,
+>
+> Yeah, I know this way, but there is still context switching in the
+> kernel space and user space. I have been looking for a way
+> to benchmark in the kernel space. I expect there is a kernel module like below:
+>
+> insmod benchmark.ko AES-256-GCM
+> (After it's done,  this module will exit automatically)
 
-On Sat, Apr 02, 2022 at 09:08:58AM +0200, Antonio Quartulli wrote:
-> +int
-> +net_iface_del(openvpn_net_ctx_t *ctx, const char *iface)
-> +{
-> +    struct argv argv =3D argv_new();
-> +
-> +    argv_printf(&argv, "%s link del %s", iproute_path, iface);
-> +    openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip link del fai=
-led");
-> +
-> +    argv_free(&argv);
+that would be 'tcrypt' then, I guess ; on my Fedora boxen I have
+#  modinfo tcrypt
+filename: /lib/modules/5.16.18-100.fc34.x86_64/kernel/crypto/tcrypt.ko.xz
+author:         James Morris <jmorris@...2670...>
+description:    Quick & dirty crypto testing module
+[...]
+parm:           alg:charp
+parm:           type:uint
+parm:           mask:uint
+parm:           mode:int
+parm:           sec:Length in seconds of speed tests (defaults to zero 
+which uses CPU cycles instead) (uint)
+parm:           num_mb:Number of concurrent requests to be used in mb 
+speed tests (defaults to 8) (uint)
+parm:           klen:Key length (defaults to 0) (uint)
 
-On "failure to remove something" we generally do not hard-abort right
-away but just report the error, and continue with cleaning up things.
 
-So maybe net_iface_del() should do the same thing?
+cheers,
 
-(See "undo_ifconfig_ipv4()", for example, or most other close_tun() related
-openvpn_execve_check() calls)
+JJK
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+> Jan Just Keijser <jan.just.keijser@...277...> 于2022年4月5日周二 19:26写道：
+>> hi Tony,
+>>
+>> On 02/04/22 11:40, Tony He wrote:
+>>> Hi Antonio,
+>>>
+>>> I am porting ovpn-dco to embedded ARMv8 device with hardware crypto
+>>> engine. However the performance is not very good.
+>>> It's about 130-140Mbps. I expect more. The SDK already provides kernel
+>>> CryptoAPI(CFI) interface  to access the crypto engine.
+>>> I want to know if the crypto operation is the bottleneck. Do you know
+>>> how to benchmark crypto performance in the kernel space?
+>>> Any advice is welcome. Thank you!
+>>>
+>> a quick & dirty way to test the hardware crypto engine is to use the
+>> Linux cryptodev engine in combination with openssl ; it's a bit tricky
+>> to get it working but it *is* a nice way to test hardware crypto.
+>>
+>> * https://github.com/cryptodev-linux/cryptodev-linux.git
+>> * do a custom openssl build with
+>>       ./Configure -DHAVE_CRYPTODEV -DUSE_CRYPTODEV_DIGESTS enable-engine
+>> enable-dso enable-devcryptoeng <platform>
+>> * run openssl speed using
+>>     ./openssl speed -elapsed -engine devcrypto -evp aes-128-cbc
+>>
+>> and compare the results with "-engine devcrypto" removed.
+>>
+>> HTH,
+>>
+>> JJK
+>>
+>>
+>>
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---2KL6WSUUsu8pmze3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJiTFoeAAoJEB2Cnv7KVigStasMAKiqyjmoTMWsbCA725UIBbX6
-KCGmn+4ooQ6liX6B50J2U3CYpfeLBrP5etqUo9ulZJhnzHFVplSoVnyRRqz6kNiq
-YK1BKYgXqT5V7mgwr+QpssDU8V37twReRkStTZxsB5qo/J4TZdE8xnrWAVi8QrT9
-ylvedMu7IlImo/sw3/tdBc/Vi6HdJFYCrh9kcnrbp28l+9BYYLY1oQVMIFZd9Hdo
-4E/xoHdEtTaQNwYGR/6OE1iwqLqCwlDkHsGhSGGzujWrLmye1VzIcCDZk69uRzKv
-+nPZpE3fAbCaf2PZ3T5vArKPfsnQ7fRAEjgJXatEEAcs1A5NsKzDirY4vR2ahzZQ
-lsVjiKfdr+/8Fdnkp3xtOhDHqXGVqU0dpn7MTrL5lhD3T8HZ+KHSRmKkC69VZaQj
-RXfbEuyHifGMYmXeTCK0yjQ9XbMKarmqSGeNI65YgRTEIsyvlwmQ9Zx8R3jCBG7d
-dw/GMlXuCJ0Oxw+qJZYwzpoNmiDOM9LE4KGKPJrDyg==
-=zMHI
------END PGP SIGNATURE-----
-
---2KL6WSUUsu8pmze3--
 
