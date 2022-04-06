@@ -1,14 +1,13 @@
-References: <CAAUX2SXYyxz-A_cWsf+ZuCyPkHz_O+D+fdZNS2p_7qV6fDR4EA@...278...>
- <581cf124-143b-690c-37d2-72fb2bd0e39a@...277...>
- <CAAUX2SXzyFLZmPCC0ruV9BYxEoEnJs41zRFw3hbVDypKQdFJxQ@...278...>
-From: Jan Just Keijser <jan.just.keijser@...277...>
-Message-ID: <144bd291-8203-84a8-9ccd-d4f4040cbe11@...277...>
-Date: Tue, 5 Apr 2022 17:46:44 +0200
+Message-ID: <67b5b48f-619a-b344-9f51-e1bba55aa3d2@...2181...>
+Date: Wed, 6 Apr 2022 11:52:43 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAAUX2SXzyFLZmPCC0ruV9BYxEoEnJs41zRFw3hbVDypKQdFJxQ@...278...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [ovpn-dco] How to benchmark kernel crypto
- performance?
+References: <20220329192934.1415-1-timo@...2669...>
+ <20220330205536.139-1-timo@...2669...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20220330205536.139-1-timo@...2669...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Retain CAP_NET_ADMIN when dropping
+ privileges
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,76 +16,321 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Tony He <huangya90@...277...>
-Cc: Antonio Quartulli <antonio@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Timo Rothenpieler <timo@...2669...>, openvpn-devel@lists.sourceforge.net
 
-Hi Tony,
+Hi,
 
-On 05/04/22 15:04, Tony He wrote:
-> Hi JJK,
->
-> Yeah, I know this way, but there is still context switching in the
-> kernel space and user space. I have been looking for a way
-> to benchmark in the kernel space. I expect there is a kernel module like below:
->
-> insmod benchmark.ko AES-256-GCM
-> (After it's done,  this module will exit automatically)
+On 30/03/2022 22:55, Timo Rothenpieler wrote:
+> ---
+> Using libcap-ng now
 
-that would be 'tcrypt' then, I guess ; on my Fedora boxen I have
-#  modinfo tcrypt
-filename: /lib/modules/5.16.18-100.fc34.x86_64/kernel/crypto/tcrypt.ko.xz
-author:         James Morris <jmorris@...2670...>
-description:    Quick & dirty crypto testing module
-[...]
-parm:           alg:charp
-parm:           type:uint
-parm:           mask:uint
-parm:           mode:int
-parm:           sec:Length in seconds of speed tests (defaults to zero 
-which uses CPU cycles instead) (uint)
-parm:           num_mb:Number of concurrent requests to be used in mb 
-speed tests (defaults to 8) (uint)
-parm:           klen:Key length (defaults to 0) (uint)
+A commit message would be good, but I see that David has already 
+proposed one.
+
+> 
+> 
+>   configure.ac                              | 19 +++++
+>   distro/systemd/openvpn-client@...2221... |  2 +-
+>   distro/systemd/openvpn-server@...2221... |  2 +-
+>   src/openvpn/init.c                        | 25 ++++++-
+>   src/openvpn/platform.c                    | 91 +++++++++++++++++++++++
+>   src/openvpn/platform.h                    |  5 ++
+>   6 files changed, 140 insertions(+), 4 deletions(-)
+> 
+> diff --git a/configure.ac b/configure.ac
+> index 7199483a..168360d4 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -794,6 +794,25 @@ dnl
+>   	esac
+>   fi
+>   
+> +dnl
+> +dnl Depend on libcap-ng on Linux
+> +dnl
+> +case "$host" in
+> +	*-*-linux*)
+> +		PKG_CHECK_MODULES([LIBCAPNG],
+> +				  [libcap-ng],
+> +				  [have_libcapng="yes"],
+
+do we really need have_libcapng? it seems it is not used further in 
+configure.ac
+
+> +				  [AC_MSG_ERROR([libcap-ng package not found. Is the development package and pkg-config installed?])]
+> +		)
+> +		AC_CHECK_HEADER([sys/prctl.h],,[AC_MSG_ERROR([sys/prctl.h not found!])])
+> +
+> +		CFLAGS="${CFLAGS} ${LIBCAPNG_CFALGS}"
+> +		LIBS="${LIBS} ${LIBCAPNG_LIBS}"
+> +		AC_DEFINE(HAVE_LIBCAPNG, 1, [Enable libcap-ng support])
+> +	;;
+> +esac
+> +
+> +
+>   if test "${with_crypto_library}" = "openssl"; then
+>   	AC_ARG_VAR([OPENSSL_CFLAGS], [C compiler flags for OpenSSL])
+>   	AC_ARG_VAR([OPENSSL_LIBS], [linker flags for OpenSSL])
+> diff --git a/distro/systemd/openvpn-client@...2221... b/distro/systemd/openvpn-client@...2221...
+> index cbcef653..159fb4dc 100644
+> --- a/distro/systemd/openvpn-client@...2221...
+> +++ b/distro/systemd/openvpn-client@...2221...
+> @@ -11,7 +11,7 @@ Type=notify
+>   PrivateTmp=true
+>   WorkingDirectory=/etc/openvpn/client
+>   ExecStart=@sbindir@/openvpn --suppress-timestamps --nobind --config %i.conf
+> -CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+> +CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+>   LimitNPROC=10
+>   DeviceAllow=/dev/null rw
+>   DeviceAllow=/dev/net/tun rw
+> diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/openvpn-server@...2221...
+> index d1cc72cb..6e8e7d94 100644
+> --- a/distro/systemd/openvpn-server@...2221...
+> +++ b/distro/systemd/openvpn-server@...2221...
+> @@ -11,7 +11,7 @@ Type=notify
+>   PrivateTmp=true
+>   WorkingDirectory=/etc/openvpn/server
+>   ExecStart=@sbindir@/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
+> -CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_AUDIT_WRITE
+> +CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_AUDIT_WRITE
+>   LimitNPROC=10
+>   DeviceAllow=/dev/null rw
+>   DeviceAllow=/dev/net/tun rw
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index 8818ba6f..705eb92e 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -1138,6 +1138,25 @@ possibly_become_daemon(const struct options *options)
+>       return ret;
+>   }
+>   
+> +/*
+> + * Determine if we need to retain process capabilities. DCO and SITNL need it.
+> + * Enforce it for DCO, but only try and soft-fail for SITNL to keep backwards compat.
+> + */
+
+Since this function is returning a tri-state value, may it be better to 
+document what the returned values mean in the comment above?
+
+> +static int
+> +get_need_keep_caps(struct context *c)
+
+I know this function is kinda a getter, but two verbs in the function 
+name sounds weird. How about just "need_keep_caps"?
+
+> +{
+> +    if (dco_enabled(&c->options))
+> +    {
+> +        return 1;
+> +    }
+> +
+> +#ifdef ENABLE_SITNL
+> +    return -1;
+> +#else
+> +    return 0;
+> +#endif
+> +}
+
+Since the check above is really platform specific, wouldn't it make 
+sense to move its definition to platform.c?
+At the end of the day this function is just invoked once to get a value 
+and immediately pass it to platform_user_group_set().
+
+> +
+>   /*
+>    * Actually do UID/GID downgrade, chroot and SELinux context switching, if requested.
+>    */
+> @@ -1167,8 +1186,10 @@ do_uid_gid_chroot(struct context *c, bool no_delay)
+>           {
+>               if (no_delay)
+>               {
+> -                platform_group_set(&c0->platform_state_group);
+> -                platform_user_set(&c0->platform_state_user);
+
+By removing the invocations above, these two functions are now defined 
+and used only in platform.c. Therefore, they can be made static and 
+their declarations can be removed from platform.h.
+
+> +                int keep_caps = get_need_keep_caps(c);
+> +                platform_user_group_set(&c0->platform_state_user,
+> +                                        &c0->platform_state_group,
+> +                                        keep_caps);
+>               }
+>               else if (c->first_time)
+>               {
+> diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
+> index 450f28ba..4fce5a83 100644
+> --- a/src/openvpn/platform.c
+> +++ b/src/openvpn/platform.c
+> @@ -43,6 +43,11 @@
+>   #include <direct.h>
+>   #endif
+>   
+> +#ifdef HAVE_LIBCAPNG
+> +#include <cap-ng.h>
+> +#include <sys/prctl.h>
+> +#endif
+> +
+>   /* Redefine the top level directory of the filesystem
+>    * to restrict access to files for security */
+>   void
+> @@ -155,6 +160,92 @@ platform_group_set(const struct platform_state_group *state)
+>   #endif
+>   }
+>   
+
+Should we add a comment here describing what this function is doing? I 
+know it is not complex, but maybe we should say that we will try to set 
+the uid/gid using libcap-ng because we will also try to retain the 
+CAP_NET_ADMIN capa? If libcap-ng is not available, we will simply try to 
+switch user/group, unless not allowed (i.e. SITNL is enabled)
+
+> +void platform_user_group_set(const struct platform_state_user *user_state,
+> +                             const struct platform_state_group *group_state,
+> +                             int keep_caps)
+> +{
+> +    unsigned int err_flags = (keep_caps > 0) ? M_FATAL : M_NONFATAL;
+
+Shrug - I really don't like this "OpenVPN way" of handling code flow - 
+with a value passed to a print() function...but hey, this is how it's 
+currently done in most of the code.
+
+> +#ifdef HAVE_LIBCAPNG
+> +    int new_gid = -1, new_uid = -1;
+> +    int res;
+> +
+> +    if (keep_caps == 0)
+> +    {
+> +        goto fallback;
+> +    }
+> +
+> +    /*
+> +     * new_uid/new_gid defaults to -1, which will not make
+> +     * libcap-ng change the UID/GID unless configured
+> +     */
+> +    if (group_state->groupname && group_state->gr)
+> +    {
+> +        new_gid = group_state->gr->gr_gid;
+> +    }
+> +    if (user_state->username && user_state->pw)
+> +    {
+> +        new_uid = user_state->pw->pw_uid;
+> +    }
+> +
+> +    /* Prepare capabilities before dropping UID/GID */
+> +    capng_clear(CAPNG_SELECT_BOTH);
+> +    res = capng_update(CAPNG_ADD, CAPNG_EFFECTIVE | CAPNG_PERMITTED, CAP_NET_ADMIN);
+> +    if (res < 0)
+> +    {
+> +        msg(err_flags, "capng_update(CAP_NET_ADMIN) failed: %d", res);
+> +        goto fallback;
+> +    }
+> +
+> +    /* Change to new UID/GID.
+> +     * capng_change_id() internally calls capng_apply() to apply prepared capabilities.
+> +     */
+> +    res = capng_change_id(new_uid, new_gid, CAPNG_DROP_SUPP_GRP | CAPNG_CLEAR_BOUNDING);
+> +    if (res == -4 || res == -6)
+
+Argh, libcap-ng defines its own error codes...can we at least extend the 
+comment above to explain what these magic -4 and -6 are? (this way we 
+are sure to catch what the devel
+
+> +    {
+> +        msg(M_ERR, "capng_change_id('%s','%s') failed: %d",
+> +            user_state->username, group_state->groupname, res);
+
+If I understood correctly, in these two cases (-4 and -6) we failed to 
+set either the uid or the gid, but the capas were retained?
+
+If so, this means that the --user or --group options failed to be 
+applied. Is it right to continue the execution? If I am not wrong 
+OpenVPN currently aborts if the user/group couldn't be changed. 
+Shouldn't we keep this behaviuor?
+
+> +    }
+> +    else if (res < 0)
+> +    {
+> +        if (res == -3)
+> +        {
+> +            msg(M_NONFATAL, "Following error likely due to missing capability CAP_SETPCAP.");
+> +        }
+> +        msg(err_flags | M_ERRNO, "capng_change_id('%s','%s') failed retaining capabilities: %d",
+
+'man cap_change_id' does not mention setting errno at all.
+What do we expect to see with M_ERRNO?
+
+> +            user_state->username, group_state->groupname, res);
+> +        goto fallback;
+> +    }
+> +
+> +    if (new_uid >= 0)
+> +    {
+> +         msg(M_INFO, "UID set to %s", user_state->username);
+> +    }
+> +    if (new_gid >= 0)
+> +    {
+> +         msg(M_INFO, "GID set to %s", group_state->groupname);
+> +    }
+> +
+> +    msg(M_INFO, "Capabilities retained: CAP_NET_ADMIN");
+> +
+> +    return;
+> +fallback:
+> +    /* capng_change_id() can leave this flag clobbered on failure */
+> +    if (prctl(PR_GET_KEEPCAPS) && prctl(PR_SET_KEEPCAPS, 0) < 0)
+
+What does this flag mean and why do we need to reset it to 0?
+And what happens if the flag is not reset? (It seems we don't care much 
+and just continue the execution)
+
+> +    {
+> +        msg(M_ERR, "Clearing KEEPCAPS flag failed");
+> +    }
+> +#endif  /* HAVE_LIBCAPNG */
+> +    if (keep_caps)
+
+for my poor eyes..add an empty line after the endif :-)
+
+> +    {
+> +        msg(err_flags, "Unable to retain capabilities");
+> +    }
+> +
+> +    platform_group_set(group_state);
+> +    platform_user_set(user_state);
+> +}
+> +
+> +
+> +
+
+I think only one empty line is enough :D
+
+>   /* Change process priority */
+>   void
+>   platform_nice(int niceval)
+> diff --git a/src/openvpn/platform.h b/src/openvpn/platform.h
+> index a3eec298..b163f093 100644
+> --- a/src/openvpn/platform.h
+> +++ b/src/openvpn/platform.h
+> @@ -85,6 +85,11 @@ bool platform_group_get(const char *groupname, struct platform_state_group *stat
+>   
+>   void platform_group_set(const struct platform_state_group *state);
+>   
+> +void platform_user_group_set(const struct platform_state_user *user_state,
+> +                             const struct platform_state_group *group_state,
+> +                             int keep_caps);
+> +
+> +
+>   /*
+>    * Extract UID or GID
+>    */
 
 
-cheers,
+Regards,
 
-JJK
-
-> Jan Just Keijser <jan.just.keijser@...277...> 于2022年4月5日周二 19:26写道：
->> hi Tony,
->>
->> On 02/04/22 11:40, Tony He wrote:
->>> Hi Antonio,
->>>
->>> I am porting ovpn-dco to embedded ARMv8 device with hardware crypto
->>> engine. However the performance is not very good.
->>> It's about 130-140Mbps. I expect more. The SDK already provides kernel
->>> CryptoAPI(CFI) interface  to access the crypto engine.
->>> I want to know if the crypto operation is the bottleneck. Do you know
->>> how to benchmark crypto performance in the kernel space?
->>> Any advice is welcome. Thank you!
->>>
->> a quick & dirty way to test the hardware crypto engine is to use the
->> Linux cryptodev engine in combination with openssl ; it's a bit tricky
->> to get it working but it *is* a nice way to test hardware crypto.
->>
->> * https://github.com/cryptodev-linux/cryptodev-linux.git
->> * do a custom openssl build with
->>       ./Configure -DHAVE_CRYPTODEV -DUSE_CRYPTODEV_DIGESTS enable-engine
->> enable-dso enable-devcryptoeng <platform>
->> * run openssl speed using
->>     ./openssl speed -elapsed -engine devcrypto -evp aes-128-cbc
->>
->> and compare the results with "-engine devcrypto" removed.
->>
->> HTH,
->>
->> JJK
->>
->>
->>
-
+-- 
+Antonio Quartulli
 
