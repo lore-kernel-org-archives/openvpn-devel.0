@@ -1,13 +1,14 @@
-Content-Type: multipart/mixed; boundary="------------1i6sxS7HxooTj5oMBHLhXFxP"
-Message-ID: <b720d0ac-de87-2da1-adcb-9d03665fe8f3@...515...>
-Date: Wed, 6 Apr 2022 13:22:20 +0300
+Message-ID: <d2fd8d11-225c-992c-28f4-9a8522d65b37@...2669...>
+Date: Wed, 6 Apr 2022 14:44:12 +0200
 MIME-Version: 1.0
 Content-Language: en-US
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-References: <20482e7f-60b0-578b-83c9-b6054f4bf58a@...515...>
- <c00a586d-27c9-b28e-d604-192b5defe3ab@...515...>
-In-Reply-To: <c00a586d-27c9-b28e-d604-192b5defe3ab@...515...>
-Subject: [Openvpn-devel] Summary of the community meeting (6th April 2022)
+References: <20220329192934.1415-1-timo@...2669...>
+ <20220330205536.139-1-timo@...2669...>
+ <67b5b48f-619a-b344-9f51-e1bba55aa3d2@...2181...>
+From: Timo Rothenpieler <timo@...2669...>
+In-Reply-To: <67b5b48f-619a-b344-9f51-e1bba55aa3d2@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Retain CAP_NET_ADMIN when dropping
+ privileges
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,311 +17,381 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------1i6sxS7HxooTj5oMBHLhXFxP
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+On 06.04.2022 11:52, Antonio Quartulli wrote:
+> Hi,
+> 
+> On 30/03/2022 22:55, Timo Rothenpieler wrote:
+>> ---
+>> Using libcap-ng now
+> 
+> A commit message would be good, but I see that David has already 
+> proposed one.
 
-Hi,
+The latest rebased version of this patch already has that message.
+Just seemed silly to re-send it just because of that:
+https://github.com/BtbN/openvpn/tree/dco
 
-Here's the summary of the IRC meeting.
 
----
+>>
+>>
+>>   configure.ac                              | 19 +++++
+>>   distro/systemd/openvpn-client@...2221... |  2 +-
+>>   distro/systemd/openvpn-server@...2221... |  2 +-
+>>   src/openvpn/init.c                        | 25 ++++++-
+>>   src/openvpn/platform.c                    | 91 +++++++++++++++++++++++
+>>   src/openvpn/platform.h                    |  5 ++
+>>   6 files changed, 140 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/configure.ac b/configure.ac
+>> index 7199483a..168360d4 100644
+>> --- a/configure.ac
+>> +++ b/configure.ac
+>> @@ -794,6 +794,25 @@ dnl
+>>       esac
+>>   fi
+>> +dnl
+>> +dnl Depend on libcap-ng on Linux
+>> +dnl
+>> +case "$host" in
+>> +    *-*-linux*)
+>> +        PKG_CHECK_MODULES([LIBCAPNG],
+>> +                  [libcap-ng],
+>> +                  [have_libcapng="yes"],
+> 
+> do we really need have_libcapng? it seems it is not used further in 
+> configure.ac
 
-COMMUNITY MEETING
+I have little to no experience with autotools, and I think this is 
+straight up copied from the openvpn3 setup.
+Can I just leave the line empty? Or put empty [] there?
 
-Place: #openvpn-meeting on libera.chat
-Date: Wed 6th April 2022
-Time: 10:30 CEST (9:30 UTC)
+>> +                  [AC_MSG_ERROR([libcap-ng package not found. Is the 
+>> development package and pkg-config installed?])]
+>> +        )
+>> +        AC_CHECK_HEADER([sys/prctl.h],,[AC_MSG_ERROR([sys/prctl.h not 
+>> found!])])
+>> +
+>> +        CFLAGS="${CFLAGS} ${LIBCAPNG_CFALGS}"
+>> +        LIBS="${LIBS} ${LIBCAPNG_LIBS}"
+>> +        AC_DEFINE(HAVE_LIBCAPNG, 1, [Enable libcap-ng support])
+>> +    ;;
+>> +esac
+>> +
+>> +
+>>   if test "${with_crypto_library}" = "openssl"; then
+>>       AC_ARG_VAR([OPENSSL_CFLAGS], [C compiler flags for OpenSSL])
+>>       AC_ARG_VAR([OPENSSL_LIBS], [linker flags for OpenSSL])
+>> diff --git a/distro/systemd/openvpn-client@...2221... 
+>> b/distro/systemd/openvpn-client@...2221...
+>> index cbcef653..159fb4dc 100644
+>> --- a/distro/systemd/openvpn-client@...2221...
+>> +++ b/distro/systemd/openvpn-client@...2221...
+>> @@ -11,7 +11,7 @@ Type=notify
+>>   PrivateTmp=true
+>>   WorkingDirectory=/etc/openvpn/client
+>>   ExecStart=@sbindir@/openvpn --suppress-timestamps --nobind --config 
+>> %i.conf
+>> -CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW 
+>> CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+>> +CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW 
+>> CAP_SETGID CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+>>   LimitNPROC=10
+>>   DeviceAllow=/dev/null rw
+>>   DeviceAllow=/dev/net/tun rw
+>> diff --git a/distro/systemd/openvpn-server@...2221... 
+>> b/distro/systemd/openvpn-server@...2221...
+>> index d1cc72cb..6e8e7d94 100644
+>> --- a/distro/systemd/openvpn-server@...2221...
+>> +++ b/distro/systemd/openvpn-server@...2221...
+>> @@ -11,7 +11,7 @@ Type=notify
+>>   PrivateTmp=true
+>>   WorkingDirectory=/etc/openvpn/server
+>>   ExecStart=@sbindir@/openvpn --status %t/openvpn-server/status-%i.log 
+>> --status-version 2 --suppress-timestamps --config %i.conf
+>> -CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE 
+>> CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE 
+>> CAP_AUDIT_WRITE
+>> +CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE 
+>> CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT 
+>> CAP_DAC_OVERRIDE CAP_AUDIT_WRITE
+>>   LimitNPROC=10
+>>   DeviceAllow=/dev/null rw
+>>   DeviceAllow=/dev/net/tun rw
+>> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+>> index 8818ba6f..705eb92e 100644
+>> --- a/src/openvpn/init.c
+>> +++ b/src/openvpn/init.c
+>> @@ -1138,6 +1138,25 @@ possibly_become_daemon(const struct options 
+>> *options)
+>>       return ret;
+>>   }
+>> +/*
+>> + * Determine if we need to retain process capabilities. DCO and SITNL 
+>> need it.
+>> + * Enforce it for DCO, but only try and soft-fail for SITNL to keep 
+>> backwards compat.
+>> + */
+> 
+> Since this function is returning a tri-state value, may it be better to 
+> document what the returned values mean in the comment above?
+> 
+>> +static int
+>> +get_need_keep_caps(struct context *c)
+> 
+> I know this function is kinda a getter, but two verbs in the function 
+> name sounds weird. How about just "need_keep_caps"?
+> 
+>> +{
+>> +    if (dco_enabled(&c->options))
+>> +    {
+>> +        return 1;
+>> +    }
+>> +
+>> +#ifdef ENABLE_SITNL
+>> +    return -1;
+>> +#else
+>> +    return 0;
+>> +#endif
+>> +}
+> 
+> Since the check above is really platform specific, wouldn't it make 
+> sense to move its definition to platform.c?
+> At the end of the day this function is just invoked once to get a value 
+> and immediately pass it to platform_user_group_set().
 
-Planned meeting topics for this meeting were here:
+The reason it ended up here is that it needs access to the context, to 
+find out if it's using the dco or not.
+Should the context just be passed to the platform function instead? I 
+see no other one of them doing that.
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2022-04-06>
+>> +
+>>   /*
+>>    * Actually do UID/GID downgrade, chroot and SELinux context 
+>> switching, if requested.
+>>    */
+>> @@ -1167,8 +1186,10 @@ do_uid_gid_chroot(struct context *c, bool 
+>> no_delay)
+>>           {
+>>               if (no_delay)
+>>               {
+>> -                platform_group_set(&c0->platform_state_group);
+>> -                platform_user_set(&c0->platform_state_user);
+> 
+> By removing the invocations above, these two functions are now defined 
+> and used only in platform.c. Therefore, they can be made static and 
+> their declarations can be removed from platform.h.
 
-Your local meeting time is easy to check from services such as
+That was intentional, since it seemed out of scope of this patch.
+I can easily add it though if preferred.
 
-<http://www.timeanddate.com/worldclock>
+>> +                int keep_caps = get_need_keep_caps(c);
+>> +                platform_user_group_set(&c0->platform_state_user,
+>> +                                        &c0->platform_state_group,
+>> +                                        keep_caps);
+>>               }
+>>               else if (c->first_time)
+>>               {
+>> diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
+>> index 450f28ba..4fce5a83 100644
+>> --- a/src/openvpn/platform.c
+>> +++ b/src/openvpn/platform.c
+>> @@ -43,6 +43,11 @@
+>>   #include <direct.h>
+>>   #endif
+>> +#ifdef HAVE_LIBCAPNG
+>> +#include <cap-ng.h>
+>> +#include <sys/prctl.h>
+>> +#endif
+>> +
+>>   /* Redefine the top level directory of the filesystem
+>>    * to restrict access to files for security */
+>>   void
+>> @@ -155,6 +160,92 @@ platform_group_set(const struct 
+>> platform_state_group *state)
+>>   #endif
+>>   }
+> 
+> Should we add a comment here describing what this function is doing? I 
+> know it is not complex, but maybe we should say that we will try to set 
+> the uid/gid using libcap-ng because we will also try to retain the 
+> CAP_NET_ADMIN capa? If libcap-ng is not available, we will simply try to 
+> switch user/group, unless not allowed (i.e. SITNL is enabled)
+> 
+>> +void platform_user_group_set(const struct platform_state_user 
+>> *user_state,
+>> +                             const struct platform_state_group 
+>> *group_state,
+>> +                             int keep_caps)
+>> +{
+>> +    unsigned int err_flags = (keep_caps > 0) ? M_FATAL : M_NONFATAL;
+> 
+> Shrug - I really don't like this "OpenVPN way" of handling code flow - 
+> with a value passed to a print() function...but hey, this is how it's 
+> currently done in most of the code.
+> 
+>> +#ifdef HAVE_LIBCAPNG
+>> +    int new_gid = -1, new_uid = -1;
+>> +    int res;
+>> +
+>> +    if (keep_caps == 0)
+>> +    {
+>> +        goto fallback;
+>> +    }
+>> +
+>> +    /*
+>> +     * new_uid/new_gid defaults to -1, which will not make
+>> +     * libcap-ng change the UID/GID unless configured
+>> +     */
+>> +    if (group_state->groupname && group_state->gr)
+>> +    {
+>> +        new_gid = group_state->gr->gr_gid;
+>> +    }
+>> +    if (user_state->username && user_state->pw)
+>> +    {
+>> +        new_uid = user_state->pw->pw_uid;
+>> +    }
+>> +
+>> +    /* Prepare capabilities before dropping UID/GID */
+>> +    capng_clear(CAPNG_SELECT_BOTH);
+>> +    res = capng_update(CAPNG_ADD, CAPNG_EFFECTIVE | CAPNG_PERMITTED, 
+>> CAP_NET_ADMIN);
+>> +    if (res < 0)
+>> +    {
+>> +        msg(err_flags, "capng_update(CAP_NET_ADMIN) failed: %d", res);
+>> +        goto fallback;
+>> +    }
+>> +
+>> +    /* Change to new UID/GID.
+>> +     * capng_change_id() internally calls capng_apply() to apply 
+>> prepared capabilities.
+>> +     */
+>> +    res = capng_change_id(new_uid, new_gid, CAPNG_DROP_SUPP_GRP | 
+>> CAPNG_CLEAR_BOUNDING);
+>> +    if (res == -4 || res == -6)
+> 
+> Argh, libcap-ng defines its own error codes...can we at least extend the 
+> comment above to explain what these magic -4 and -6 are? (this way we 
+> are sure to catch what the devel
+> 
+>> +    {
+>> +        msg(M_ERR, "capng_change_id('%s','%s') failed: %d",
+>> +            user_state->username, group_state->groupname, res);
+> 
+> If I understood correctly, in these two cases (-4 and -6) we failed to 
+> set either the uid or the gid, but the capas were retained?
+> 
+> If so, this means that the --user or --group options failed to be 
+> applied. Is it right to continue the execution? If I am not wrong 
+> OpenVPN currently aborts if the user/group couldn't be changed. 
+> Shouldn't we keep this behaviuor?
 
-SUMMARY
+That's the whole point of this check, it aborts (via M_ERR) if 
+setuid/setgid failed, since there is no fallback to that and it'd fail 
+again anyway if openvpn tried again.
 
-cron2, dazo, d12fk, lev, mattock, MaxF, ordex and plaisthos participated 
-in this meeting.
+A comment explaining the -4 and -6 return codes is definitely a good idea.
 
----
+>> +    }
+>> +    else if (res < 0)
+>> +    {
+>> +        if (res == -3)
+>> +        {
+>> +            msg(M_NONFATAL, "Following error likely due to missing 
+>> capability CAP_SETPCAP.");
+>> +        }
+>> +        msg(err_flags | M_ERRNO, "capng_change_id('%s','%s') failed 
+>> retaining capabilities: %d",
+> 
+> 'man cap_change_id' does not mention setting errno at all.
+> What do we expect to see with M_ERRNO?
 
-Talked about OpenVPN 2.6:
+Every function it internally calls sets errno, so in case of failure 
+errno will reflect what went wrong. Like, for example EPERM will be the 
+most common cause of failure.
 
-<https://community.openvpn.net/openvpn/wiki/StatusOfOpenvpn26>
+>> +            user_state->username, group_state->groupname, res);
+>> +        goto fallback;
+>> +    }
+>> +
+>> +    if (new_uid >= 0)
+>> +    {
+>> +         msg(M_INFO, "UID set to %s", user_state->username);
+>> +    }
+>> +    if (new_gid >= 0)
+>> +    {
+>> +         msg(M_INFO, "GID set to %s", group_state->groupname);
+>> +    }
+>> +
+>> +    msg(M_INFO, "Capabilities retained: CAP_NET_ADMIN");
+>> +
+>> +    return;
+>> +fallback:
+>> +    /* capng_change_id() can leave this flag clobbered on failure */
+>> +    if (prctl(PR_GET_KEEPCAPS) && prctl(PR_SET_KEEPCAPS, 0) < 0)
+> 
+> What does this flag mean and why do we need to reset it to 0?
+> And what happens if the flag is not reset? (It seems we don't care much 
+> and just continue the execution)
 
-Noted that tls-cryptv2 will need client support and some tricks to do 
-signalling there (packet id starts at magic number instead 1). This is 
-on the "must have" list for 2.6.
+See https://github.com/stevegrubb/libcap-ng/issues/33
 
-Lev has discovered an issue with tap-windows6 driver and Windows Server 
-2022 / Windows 11 which in some cases breaks TCP streams. It manifests 
-itself by, for example, iperf3 -R via VPN on Windows not working at all. 
-Lev has a workaround (fix?) for it already, but he'll do some further 
-looking into the problem to see if there's a cleaner solution. This also 
-required changes to the build configuration to differentiate between 
-Windows 10 and 11.
+It's basically working around that issue, where capng_change_id() 
+failing can leave the KEEPCAPS flag set, which would lead to our 
+fallback setuid to retain rootlike capabilities, so we have to ensure 
+it's unset before attempting to setuid.
 
-Noted that there's a Windows GUI bug that breaks escaping of ' in 
-passwords. We need a new Windows installer release to fix this.
+It's fixed in upstream libcap-ng now, but it will take potentially 
+months until that makes it into a release, and then even longer until it 
+hits distros, so implementing a workaround seemed in order.
+It has no ill effects and will just be a no-op with the patch in place.
 
-Noted that OpenSSL 3.0.1 Windows build are working fine.
-
-Mattock is fixing the auth-user-pass docs.
-
----
-
-Noted that new production buildbot spams the hell out of us with "Build 
-successful" emails. Mattock (hopefully) made it send mails only on failure.
-
---
-
-Full chatlog attached
-
---------------1i6sxS7HxooTj5oMBHLhXFxP
-Content-Type: text/plain; charset=UTF-8;
- name="openvpn_irc_meeting_chatlog_2022-04-06.txt"
-Content-Disposition: attachment;
- filename="openvpn_irc_meeting_chatlog_2022-04-06.txt"
-Content-Transfer-Encoding: base64
-
-KDExLjI3LjE2KSBkYXpvOiB3MDB0IT8hIHRvcGljIFVSTCBpcyBhbHJlYWR5IGNvcnJlY3Qh
-CigxMS4yNy4yOCkgY3JvbjI6IEkgZ290IHByZXBhcmVkIDotKQooMTEuMjcuNDcpIGRhem86
-IDopCigxMS4zMS4xMykgcGxhaXN0aG9zOiBtb2luCigxMS4zMi4wNSkgY3JvbjI6IGhpCigx
-MS4zMy40MikgcGxhaXN0aG9zOiBzbyBvbiB1cGRhdGUgZm9yIDIuNiAKKDExLjM0LjAxKSBw
-bGFpc3Rob3M6IHN5biBjb29raWUgbGlrZSAzd2F5IGhhbmRzaGFrZSB3b3JrcyBmb3IgdGxz
-LWF1dGgvdGxzLWNyeXB0L25vbmUKKDExLjM0LjM0KSBvcmRleDogaGVyZQooMTEuMzQuNDIp
-IE1heEYgW35NYXhGQGN1c3QtOTUtMTI4LTkxLTI0Mi5icmVlZGJhbmRkZWxmdC5ubF0gw6gg
-ZW50cmF0byBuZWxsYSBzdGFuemEuCigxMS4zNC40Mikgb3JkZXg6IDIuNj8KKDExLjM0LjQ0
-KSBwbGFpc3Rob3M6IHRscy1jcnlwdHYyIHdpbGwgbmVlZCBjbGllbnQgc3VwcG9ydCBhbmQg
-SSBhbHNvIGRvaW5nIHNvbWUgdHJpY2tzIHRvIGRvIHNpZ25hbGxpbmcgdGhlcmUgKHBhY2tl
-dCBpZCBzdGFydHMgYXQgbWFnaWMgbnVtYmVyIGluc3RlYWQgMSkKKDExLjM0LjQ2KSBjcm9u
-MjogdmVyeSBuaWNlCigxMS4zNC41MSkgb3JkZXg6IGlzbid0IGl0IGEgYml0IHJ1c2hlZCB0
-byBnbyBpbiAyLjY/CigxMS4zNC41OSkgY3JvbjI6IGl0J3MgbXVjaCB0b28gbGF0ZQooMTEu
-MzUuMzIpIGNyb24yOiB0aGlzIGlzIG9uZSBvZiBvdXIgd2VhayBzcG90cywgYWxsb3dpbmcg
-cmVmbGVjdGlvbiBhbmQgc3RhdGUgZXhoYXVzdGlvbiBhdHRhY2tzCigxMS4zNS41OSkgb3Jk
-ZXg6IHlhcAooMTEuMzYuMTApIG9yZGV4OiBzdGlsbCBpbiBhIGxpbWl0ZWQgbWFubmVyIHRo
-b3VnaAooMTEuMzYuMTQpIE1heEYgaGEgYWJiYW5kb25hdG8gbGEgc3RhbnphIChxdWl0OiBD
-bGllbnQgUXVpdCkuCigxMS4zNi40NCkgb3JkZXg6IGJ1dCByZWdhcmRsZXNzLCBpc24ndCBp
-dCBsYXRlIGZvciBzdWNoIGEgYmlnIHRoaW5nIHRvIGdvIGludG8gMi42PwooMTEuMzYuNTYp
-IGNyb24yOiBvcmRleDogaXQncyBvbiB0aGUgTVVTVCBIQVZFIGxpc3QKKDExLjM3LjA4KSBN
-YXhGIFt+TWF4RkBjdXN0LTk1LTEyOC05MS0yNDIuYnJlZWRiYW5kZGVsZnQubmxdIMOoIGVu
-dHJhdG8gbmVsbGEgc3RhbnphLgooMTEuMzcuMjEpIGNyb24yOiBhbmQgaXQgc2hvdWxkIGhh
-dmUgYmVlbiBpbiAyLjUgOi0pCigxMS4zNy41NSkgb3JkZXg6IG9oCigxMS4zOC4xMCkgcGxh
-aXN0aG9zOiBvcmRleDogd2hhdCBkbyB5b3UgbWVhbiB3aXRoIGxtaXRlZCBtYW5uZXI/Cigx
-MS4zOC4zOSkgcGxhaXN0aG9zOiBJIHVwZGF0ZWQgYSBmZXcgYml0cyBpbiB0aGUgUkZDIHRo
-YXQgSSB0b3VjaGVkIGR1cmluZyB0aGF0IHN0dWZmCigxMS4zOC40OCkgY3JvbjI6ICpsaWtl
-KgooMTEuMzguNTQpIG9yZGV4OiBwbGFpc3Rob3M6IHRoYXQgaXQncyBub3QgbGlrZSB3ZSBj
-YW4gYmUgdXNlZCBpbiBhIEREb1MgYXR0YWNrIGFzIGFtcGxpZmllcgooMTEuMzkuMDcpIG9y
-ZGV4OiAoSSB0aGluaz8pCigxMS4zOS4xNykgY3JvbjI6IHdlIGNhbgooMTEuMzkuMzcpIG9y
-ZGV4OiBvaCBvawooMTEuNDAuNDgpIGNyb24yOiB3aXRoIHRscy1hdXRoL3Rscy1jcnlwdCwg
-eW91IG5lZWQgdG8gaGF2ZSB0aGF0IGtleSwgb2YgY291cnNlIC0gYnV0IGlmIHlvdSBoYXZl
-IGEgYmlnIFZQTiBwcm92aWRlciwgYWxsIGNsaWVudHMgaGF2ZSB0aGUgc2FtZSB0bHMtKiBr
-ZXksIHNvIGlmIG9uZSBvZiB0aGVtIGlzIGxhenkgb3IgbWFsaWNpb3VzLCBpdCdzIG5vIHBl
-cmZlY3QgcHJvdGVjdGlvbgooMTEuNDEuMDQpIGNyb24yOiBhbHNvLCBzdGF0ZSBleGhhdXN0
-aW9uIGluIHRoZSBzZXJ2ZXIsIGFuZCBhdHRhY2tzIGFnYWluc3Qgb25nb2luZyBzZXNzaW9u
-cwooMTEuNDIuMjkpIHBsYWlzdGhvczogeW91IGRvbid0IG5lZWQgdGhlIGtleQooMTEuNDIu
-MzkpIHBsYWlzdGhvczogcmVwbGF5IGF0dGFja3Mgd29yayBmaW5lCigxMS40My4xMikgY3Jv
-bjI6IGlmIHlvdSBjYW4gc25pZmYgYSBwYWNrZXQsIHllcywgYnV0ICJ0byBhYnVzZSBhIHJh
-bmRvbSBvcGVudnBuIHNlcnZlciBmb3IgcmVmbGVjdGlvbiIsIHlvdSBuZWVkIHRvIHNlZSBh
-dCBsZWFzdCBvbmUgaGFuZHNoYWtlIHBhY2tldAooMTEuNDUuMDUpIG1hdHRvY2s6IGhpCigx
-MS40NS4wNykgbWF0dG9jazogdGltZSBmbGV3CigxMS40Ni4wMSkgbGV2X186IGhlbGxvCigx
-MS40Ni4wMSkgTWF4RjIyIFt+TWF4RkAyNy03My0xNzctMTQzLmZ0dGguZ2xhc29wZXJhdG9y
-Lm5sXSDDqCBlbnRyYXRvIG5lbGxhIHN0YW56YS4KKDExLjQ2LjQ2KSBNYXhGMjI6IGxpYmVy
-YSB3ZWJjaGF0IHJlYWxseSBoYXRlcyBtZSB0b2RheQooMTEuNDcuNDkpIHBsYWlzdGhvczog
-OlAKKDExLjQ3LjU4KSBNYXhGIGhhIGFiYmFuZG9uYXRvIGxhIHN0YW56YSAocXVpdDogUGlu
-ZyB0aW1lb3V0OiAyNTAgc2Vjb25kcykuCigxMS40OC4wOSkgb3JkZXg6IElUIFJFQUxMWSBE
-T0VTCigxMS40OC4xMSkgb3JkZXg6IG9wcwooMTEuNDguMjUpIGRhem86ICEhCigxMS40OC4y
-NikgdnBuSGVscGVyOiBkYXpvOiB0ZW1wZXIsIHRlbXBlciEKKDExLjQ4LjI5KSBjcm9uMjog
-aGFoYQooMTEuNDguMzgpIG1hdHRvY2s6IHdlbGwgc29tZWJvZHkgaGVyZSBoYXMgZ29vZCBt
-YW5uZXJzCigxMS40OC41OSkgcGxhaXN0aG9zOiB2cG5IZWxwZXIgaW4gaGVyZSwgaXMgbmV3
-CigxMS40OS4wMCkgdnBuSGVscGVyOiBwbGFpc3Rob3M6IEVycm9yOiAiaW4iIGlzIG5vdCBh
-IHZhbGlkIGNvbW1hbmQuCigxMS40OS4xMikgZGF6bzogOi1ECigxMS40OS4xNCkgY3JvbjI6
-IG1hdHRvY2s6IE1BS0UgSVQgU1RPUAooMTEuNDkuNDApIGNyb24yOiBJIGFtIG5vdCBwdXNo
-aW5nIGFueXRoaW5nLCBhbmQgdGhlIGJ1aWxkYm90IGtlZXBzIHNwYW1taW5nIG1lIHdpdGgg
-IkJVSUxEIFNVQ0NFU1MhIiBtYWlscwooMTEuNTAuMDApIG1hdHRvY2s6IGNyb24yOiBsb2wg
-eWVzCigxMS41MC4wMykgbWF0dG9jazogdGhlcmUgYXJlIHNvIG1hbnkgYnVpbGRzCigxMS41
-MC4xNCkgbWF0dG9jazogSSdsbCBtYWtlIGl0IHN0b3AgZm9yIHN1Y2Nlc3NmdWwgYnVpbGRz
-LCBqdXN0IGEgc2VjCigxMS41MC4xOSkgbGV2X186IEkgZGlzY292ZXJlZCBhbiBpc3N1ZSB3
-aXRoIHRhcC13aW5kb3dzNiBkcml2ZXIgYW5kIHdpbmRvd3Mgc2VydmVyIDIwMjIgd2hpY2gg
-aW4gc29tZSBjYXNlcyBicmVha3MgVENQIHN0cmVhbXMsIGl0IG1hbmlmZXN0cyBpdHNlbGYg
-aW4gaXBlcmYzIC1SIHZpYSB2cG4gb24gd2luZG93cyBub3Qgd29ya2luZyBhdCBhbGwKKDEx
-LjUwLjI0KSBwbGFpc3Rob3M6IGFueXdheS4gQmFzaWNhbGx5IHNvbWV0aGluZyBJIGFtIGRv
-aW5nIHRvIGluZGljYXRlIHRvIGluZGljYXRlIGZyb20gdGhlIGNsaWVudCByZWFsbHkgcmVh
-bGx5IGVhcmx5IHByb3RvY29sIHN1cHBvcnQgaXMgdG8gbW9kaWZ5IHRoZSByZXBsYXkgaWQg
-dGhhdCBpcyBwYXJ0IG9mIGNsaWVudCByZXNldCB2MyBwYWNrZXQKKDExLjUwLjUwKSBwbGFp
-c3Rob3M6IG5yb21hbGx5IHRoYXQgaXMgKDMyYml0IHRpbWVzdGFtcCkwMDAwMDAwMSBvbiB0
-aGUgZmlyc3QgcGFja2V0CigxMS41MC41NCkgY3JvbjI6IGxldl9fOiBpbnRlcmVzdGluZy4g
-IERpZCB5b3UgZmluZCB0aGUgY2F1c2UgYWxyZWFkeT8KKDExLjUxLjI2KSBjcm9uMjogcGxh
-aXN0aG9zOiB0aGlzIGlzIGZvciB0bHMtY3J5cHQgdjIgc3VwcG9ydD8KKDExLjUxLjMzKSBw
-bGFpc3Rob3M6IGFuZCBuZXcgY2xpZW50cyB3aWxsIGluc3RlYWQgdXNlICgzMiBiaXQgdGlt
-ZXN0YW1wKTB4MGYwMTAwMDEgaW4gdGhlaXIgdjMgcGFja2V0CigxMS41Mi4xOSkgcGxhaXN0
-aG9zOiB0byBpbmRpY2F0ZSB0aGF0IHRoZXkgc3VwcG9ydCByZXNlbmRpbmcgdGhlIHdyYXBw
-ZWQgdGxzLWNyeXB0djIga2V5IGluIHRoZSAzcmQgcGFja2V0IG9mIHRoZSBoYW5kc2hha2Us
-IHNvIHRoZSBzZXJ2ZXIgZG9lcyBub3QgbmVlZCB0byBzdG9yZSB0aGUgd3JhcHBlZCBrZXkg
-ZnJvbSB0aGUgaW5pdGlhbCBwYWNrZXQgKGFuZCB0aGVyZWZvcmUgY2FuIGJlIHN0YXRlbGVz
-cykKKDExLjUyLjQ0KSBwbGFpc3Rob3M6IGNyb24yOiBjbGllbnQgcmVzZXQgdjMgaXMgdGhl
-IGludGlpYWwgcGFja2V0IG9mIHRscy1jcnlwdC12MiwgeWVzCigxMS41Mi40OCkgbGV2X186
-IEkgbWFkZSBzb21lIGNoYW5nZXMgdG8gdGFwLXdpbmRvd3M2IGFuZCBwcm9ibGVtIHdlbnQg
-YXdheSAod2UgcHJvY2VzcyAidHVuIHdyaXRlIiByZXF1ZXN0cyBzeW5jaHJvbm91c2x5IGFu
-ZCB0ZWxsIG5kaXMgdG8gY29weSBidWZmZXJzIGFuZCB0aGVuIGltbWVkaWF0ZWx5IGZyZWUg
-dGhvc2UgaW5zdGVhZCBvZiBpbmRpY2F0aW5nIHRvIHVzZXJzcGFjZSB0aGF0IHJlcXVlc3Qg
-aXMgcGVuZGluZywgd2FpdCBmb3IgbmRpcyBjYWxsYmFjayAibm93IGFsbCBwYWNrZXMgYXJl
-IGRpZ2VzdGVkLCB5b3UgY2FuIGZyZWUgYnVmZmVycyIgYW5kIHRoZW4gaW5kaWNhdGUgdG8g
-dXNlcnNwYWNlIHRoYXQgd3JpdGUgaXMgY29tcGxldGUpCigxMS41My4xNikgY3JvbjI6IHBs
-YWlzdGhvczogc291bmRzIGdvb2QKKDExLjUzLjQ1KSBsZXZfXzogY3JvbjI6IHRoZXJlIGlz
-IGEgZGVsYXkgKHVwIHRvIHNlY29uZCkgaW5zaWRlIE5ESVMgYmV0d2VlbiBpbmRpY2F0aW5n
-IHBhY2tldCB0byBPUyBhbmQgcmVjZWl2aW5nIGNhbGxiYWNrICJwYWNrZXQgaXMgZGlnZXN0
-ZWQiLCBhbmQgZHVyaW5nIHRoYXQgZGVsYXkgd2UgZG9uJ3QgZG8gYW55IHR1biB3cml0ZXMK
-KDExLjU0LjEwKSBsZXZfXzogYW5kIHRoaXMgaXMgd2luZG93cyBzZXJ2ZXIgMjAyMiBzcGVj
-aWZpYyAtIEkgY291bGRuCigxMS41NC4zNikgbGV2X186ICogY291bGRuJ3QgcmVwcm9kdWNl
-IGl0IHdpdGggd2luZG93cyAxMAooMTEuNTUuMDkpIGNyb24yOiBsZXZfXzogbW1taC4gIDEg
-c2Vjb25kIG5vIHdyaXRlcyBzb3VuZHMgcXVpdGUgYSBsb3QuICBCdXQgIndhaXQgZm9yIHRo
-ZSBjYWxsYmFjayBiZWZvcmUgZnJlZWluZyB0aGUgYnVmZmVyIiBzb3VuZHMgbGlrZSB0aGUg
-Y29ycmVjdCB0aGluZyB0byBkbwooMTEuNTYuMzMpIGxldl9fOiBORElTIGhhcyBhIGZsYWcg
-d2hpY2ggdGVsbHMgaXQgdG8gY29weSB0aGUgYnVmZmVyLCB3aGljaCBlbmFibGVzIHVzIHRv
-IGNvbXBsZXRlIHdyaXRlIGltbWVkaWF0ZWx5IGFuZCBub3QgY2FyZSBhYm91dCAiaW4tZmxp
-Z2h0IiBwYWNrZXRzCigxMS41Ny4wNSkgY3JvbjI6IG9yIHN1Y2gKKDExLjU3LjMxKSBsZXZf
-XzogdGhpcyBpcyBzb21ldGhpbmcgd2ludHVuIGRpZCBpbiBlYXJsaWVyIHZlcnNpb25zIGJl
-Zm9yZSB0aGV5IHN3aXRjaGVkIHRvIHJpbmcgYnVmZmVycyBodHRwczovL2dpdGh1Yi5jb20v
-V2lyZUd1YXJkL3dpbnR1bi9ibG9iLzAuMS93aW50dW4uYyNMNjQ3CigxMi4wMi41MikgbGV2
-X186IGFueXdheSwgSSdsbCB0cnkgdG8gZmlndXJlIG91dCB3aGF0IGNhdXNlcyB0aGF0IGRl
-bGF5IGluc2lkZSBuZGlzIGFuZCBpZiBJIHdvbid0IGZpbmQgYW4gYW5zd2VyIGluIHJlYXNv
-bmFibGUgdGltZWZyYW1lIEknbGwgZG8gdGhpcyB3b3JrYXJvdW5kL2ZpeCAoSSBoYXZlIHdv
-cmtpbmcgUG9DLCBuZWVkIHRvIGZpbmFsaXplIGl0KQooMTIuMDUuMjEpIGNyb24yOiBJIGhh
-dmVuJ3QgcmVhY2hlZCB3aW5kb3dzIERDTyByZXZpZXcvdGVzdGluZyB5ZXQuLi4gc3RpbGwg
-b24gTGludXgKKDEyLjA2LjUzKSBsZXZfXzogZm9yIGRjbyB3aW5kb3dzIEkgYWRkZWQgUlgg
-Y2hlY2tzdW0gb2ZmbG9hZCBzdXBwb3J0IC0gd2UgaW5kaWNhdGUgdGhhdCBSWCBjaGVja3N1
-bXMgYXJlIGdvb2QgYW5kIG5vIG5lZWQgdG8gY2FsY3VsYXRlIHRob3NlCigxMi4wOC4zMykg
-bGV2X186IHRoaXMgd29ya3Mgc3RhcnRpbmcgZnJvbSBXaW5kb3dzIFNlcnZlciAyMDIyL1dp
-bmRvd3MgMTEsIHNvIEkgaGFkIHRvIGNyZWF0ZSBhZGRpdGlvbmFsIGJ1aWxkIGNvbmZpZ3Vy
-YXRpb24gYW5kIHdpbGwgaGF2ZSB0byBjaGFuZ2UgaW5zdGFsbGVyIHNjcmlwdCBhIGJpdCAo
-aWYgbmV3IGtlcm5lbCAtPiBjb3B5IGRyaXZlciBmcm9tIHRoaXMgcGF0aCwgZWxzZSBmcm9t
-IHRoYXQgcGF0aCkKKDEyLjE0LjQwKSBjcm9uMjogbmljZQooMTIuMTUuMDIpIG1hdHRvY2s6
-IG9rLCBub3cgYnVpbGRib3QgX21pZ2h0XyBub3QgYmUgc2VuZGluZyAiYnVpbGQgc3VjY2Vz
-c2Z1bCIgZW1haWxzIGFueW1vcmUKKDEyLjE1LjE2KSAqKipjcm9uMiBzaWdocyB3aXRoIHJl
-bGllZgooMTIuMTUuMTkpIG1hdHRvY2s6IHRoZSBjb2RlIGhhcyBiZWVuIHJlc3RydWN0dXJl
-ZCBzbyB0aGUgb2xkIGVhc3kgd2F5IG9mIGRvaW5nIHRoYXQgbm8gbG9uZ2VyIHdvcmtlZAoo
-MTIuMTUuMjQpIGRhem86IEFueXRoaW5nIGVsc2Ugb24gMi42PyAgV2hhdCBuZWVkcyBhdHRl
-bnRpb24gYW5kIGZyb20gd2hvbT8KKDEyLjE1LjQ4KSBtYXR0b2NrOiBpZiB0aGVyZSdzIG5v
-IGVtYWlsIGZyb20gImRlYmlhbi0xMC1mYWN0b3J5LXBhY2thZ2UiIGJ1aWxkZXIgdGhlbiB0
-aGluZ3Mgc2hvdWxkIGJlIG9rCigxMi4xNi4xNCkgY3JvbjI6IEkgaGF2ZSB0d28gcGF0Y2hl
-cyBvdXQgb24gdGhlIGxpc3QgdGhhdCBJJ2QgbGlrZSByZXZpZXcgb24gLSAtLW10dS1kaXNj
-IGZvciBJUHY2LCBhbmQgbXVsdGktZGVmZXJyZWQtYXV0aC1wbHVnaW4KKDEyLjE2LjM4KSBk
-YXpvOiBJIGNhbiBnaXZlIHRoZSBtdWx0aS1kZWZlcnJlZC1hdXRoLXBsdWdpbiBhIGdvCigx
-Mi4xOS4wOCkgZGF6bzogSSBwcmVzdW1lIGl0J3MgdGhpcyBvbmU6IGh0dHBzOi8vcGF0Y2h3
-b3JrLm9wZW52cG4ubmV0L3BhdGNoLzIzMjcvICAKKDEyLjE5LjA5KSB2cG5IZWxwZXI6IFRp
-dGxlOiBbT3BlbnZwbi1kZXZlbF0gRW5hYmxlIGRlZmVycmVkIGF1dGggZm9yIG11bHRpcGxl
-IHBsdWdpbnMgKFJGQykuIC0gUGF0Y2h3b3JrIChhdCBwYXRjaHdvcmsub3BlbnZwbi5uZXQp
-CigxMi4xOS40MikgZGF6bzogQW5kIGZvciByZWZlcmVuY2UsIHRoZSBtdHUtZGlzYzogaHR0
-cHM6Ly9wYXRjaHdvcmsub3BlbnZwbi5uZXQvcGF0Y2gvMjMxOC8KKDEyLjE5LjQzKSB2cG5I
-ZWxwZXI6IFRpdGxlOiBbT3BlbnZwbi1kZXZlbF0gSW1wbGVtZW50IC0tbXR1LWRpc2MgZm9y
-IElQdjYgVURQIHNvY2tldHMuIC0gUGF0Y2h3b3JrIChhdCBwYXRjaHdvcmsub3BlbnZwbi5u
-ZXQpCigxMi4yMC40NykgY3JvbjI6IHllcy4gIEFzIGl0IHNheXMsIHRoaXMgaXMgbm90IHJl
-YWR5IHRvIGdvIC0gaXQncyB3b3JraW5nLCBhbmQgc2hvdWxkIGJlIGNvcnJlY3QgImF1dGhl
-bnRpY2F0aW9uIHdpc2UiLCBidXQgYnV0IG5vdCBiZSBjb3JyZWN0IGNvZGUtd2lzZSBvciBz
-dHlsZS13aXNlCigxMi4yMC41NSkgY3JvbjI6IGFuZCB5ZXMsIHRoYXQgaXMgdGhlIG90aGVy
-IG9uZQooMTIuMzcuMDkpIG1hdHRvY2s6IG9rLCBtZWV0aW5nIG92ZXI/CigxMi4zNy4xMSkg
-bWF0dG9jazogc3VtbWFyeSBpcyBkb25lCigxMi4zNy4xOSkgY3JvbjI6IHNlZW1zIGxpa2Ug
-aXQgOikKKDEyLjM3LjI1KSBtYXR0b2NrOiBJIHRoaW5rIGJ1aWxkYm90IHN0b3BwZWQgc3Bh
-bW1pbmcKKDEyLjM3LjMwKSBjcm9uMjogb2gsIG5vZXMsIHlvdSBpZ25vcmVkIG15IDIuNSBp
-dGVtIG9uIHRoZSBhZ2VuZGEuLi4KKDEyLjM3LjM0KSBjcm9uMjogd2UgbmVlZCBhIEk2MDIg
-cmUtcmVsZWFzZQooMTIuMzcuMzYpIG1hdHRvY2s6IG5vdCBtZQooMTIuMzcuNDMpIG1hdHRv
-Y2s6IEkgc2F3IGl0IGFuZCBnb3Qgc2NhcmVkIGFscmVhZHkKKDEyLjM3LjUwKSBtYXR0b2Nr
-OiBidXQgeWVhaCwgbmV3IFdpbmRvd3MgaW5zdGFsbGVycyBhcmUgZG9hYmxlCigxMi4zNy41
-OSkgbWF0dG9jazogbm90IGEgZnVsbC1ibG93biByZWxlYXNlIHVubGVzcyBhYnNvbHV0ZWx5
-IG5lY2Vzc2FyeQooMTIuMzguMjMpIGNyb24yOiB3ZWxsLCBuZXcgR1VJIHZlcnNpb24sIGJl
-Y2F1c2Ugb2YgR1VJIGJ1ZwooMTIuMzguMzMpIGNyb24yOiBubyBjaGFuZ2VzIGluIG9wZW52
-cG4gaXRzZWxmCigxMi4zOC40NikgZGF6bzogU2hvdWxkIHdlIGRvIGEgcXVpY2sgcmVjYXAg
-b24gdGhlICJtdXN0IGhhdmUiIGl0ZW1zIGhlcmU/ICBodHRwczovL2NvbW11bml0eS5vcGVu
-dnBuLm5ldC9vcGVudnBuL3dpa2kvU3RhdHVzT2ZPcGVudnBuMjYKKDEyLjM5LjEwKSBkYXpv
-OiAiRE5TIG9wdGlvbiByZXdvcmsiIC4uLiB3aGF0IHdhcyBzbGF0ZWQgZm9yIDIuNiBoYXMg
-YmVlbiBtZXJnZWQsIHJpZ2h0PwooMTIuMzkuMTYpIG1hdHRvY2s6IGNyb24yOiArMQooMTIu
-MzkuNTQpIGRhem86ICJzb3J0IG91dCBtdWx0aXBsZS1wbHVnaW4gbWVzcyIgLi4uIHRoYXQn
-cyBwYXRjaHdvcmsgMjMyNwooMTIuNDAuMjIpIGRhem86ICJ1cGRhdGUgYXV0aC11c2VyLXBh
-c3MgZG9jcyIgIC4uLi4gbWF0dG9jaywgdGhhdCdzIG9uIHlvdXIgcGxhdGUKKDEyLjQxLjU3
-KSBkYXpvOiBhbmQgd2Ugc2hvdWxkIHVwZGF0ZSBvdXIgZXN0aW1hdGVkIHNjaGVkdWxlCigx
-Mi40Mi41OSkgcGxhaXN0aG9zOiB0aGUgYXV0aC10b2tlbiBjb3JuZXIgY2FzZSBwYXRjaCBp
-cyBzdGlsbCBzaXR0aW5nIG9uIHRoZSBtYWlsaW5nIGxpc3QKKDEyLjQzLjQyKSBkYXpvOiBw
-bGFpc3Rob3M6IGdvdCBhIHBhdGNod29yayBJRCBmb3IgaXQ/CigxMi40NC40NCkgcGxhaXN0
-aG9zOiBodHRwczovL3BhdGNod29yay5vcGVudnBuLm5ldC9wYXRjaC8yMzAzLwooMTIuNDQu
-NDUpIHZwbkhlbHBlcjogVGl0bGU6IFtPcGVudnBuLWRldmVsLHYzXSBGaXggT3BlblZQTiBx
-dWVyeWluZyB1c2VyL3Bhc3N3b3JkIGlmIGF1dGgtdG9rZW4gd2l0aCB1c2VyIGV4cGlyZXMg
-LSBQYXRjaHdvcmsgKGF0IHBhdGNod29yay5vcGVudnBuLm5ldCkKKDEyLjQ3LjQ5KSBQaXBw
-aW5fIGhhIGFiYmFuZG9uYXRvIGxhIHN0YW56YSAocXVpdDogUmVtb3RlIGhvc3QgY2xvc2Vk
-IHRoZSBjb25uZWN0aW9uKS4KKDEyLjQ4LjE1KSBQaXBwaW5fIFtQaXBwaW5fQG9wZW52cG4v
-Y29tbXVuaXR5L1BpcHBpbl0gw6ggZW50cmF0byBuZWxsYSBzdGFuemEuCigxMi40OC41Nykg
-ZGF6bzogcGxhaXN0aG9zOiBmcmFtZS9idWZmZXIgc2l6ZSBwYXRjaGVzIC4uLi4gZGlkbid0
-IHdlIG1lcmdlIHRoZW0/CigxMi40OS4xMCkgY3JvbjI6IGRhem86IHllcwooMTIuNDkuMjIp
-IGNyb24yOiBhbGwgaW4sIGFsbCB0ZXN0ZWQsIGFsbCBmb2xsb3d1cCBjb21tZW50cyBhZGRy
-ZXNzZWQgXG8vCigxMi40OS4yNSkgKioqZGF6byB1cGRhdGVzIHN0YXR1cyBwYWdlCigxMi41
-Mi4xOSkgUGlwcGluX18gW1BpcHBpbl9Ab3BlbnZwbi9jb21tdW5pdHkvUGlwcGluXSDDqCBl
-bnRyYXRvIG5lbGxhIHN0YW56YS4KKDEyLjUyLjE5KSBQaXBwaW5fIMOoIG9yYSBjb25vc2Np
-dXRvIGNvbWUgR3Vlc3Q4NjA5CigxMi41Mi4xOSkgUGlwcGluX18gw6ggb3JhIGNvbm9zY2l1
-dG8gY29tZSBQaXBwaW5fCigxMi41Mi4yMykgY3JvbjI6IGRhem86IHRoZSAiRE5TIG9wdGlv
-bnMiIHBhdGNoIGlzIGluIGFuZCBzaG91bGQgZG8gdGhlIHJpZ2h0IHRoaW5nIGZvciB3aW5k
-b3dzICsgZW52IGZvciBldmVyeXRoaW5nIGVsc2UKKDEyLjUyLjQwKSBkYXpvOiBnb29kLCBJ
-J2xsIG1hcmsgaXQgZG9uZQooMTIuNTMuMjIpIEd1ZXN0ODYwOSBoYSBhYmJhbmRvbmF0byBs
-YSBzdGFuemEgKHF1aXQ6IFBpbmcgdGltZW91dDogMjYwIHNlY29uZHMpLgooMTIuNTYuMjYp
-IGRhem86IG1hdHRvY2s6IGNhbiB5b3UgZGVjaWRlIHRoZSBmYXRlIG9mICJ1cGRhdGUgYXV0
-aC11c2VyLXBhc3MgZG9jcyIgLi4uIHRoYXQncyBiZWVuIGxpbmdlcmluZyBmb3IgeWVhcnMg
-bm93CigxMi41Ni40MikgbWF0dG9jazogZGF6bzogeWVhaCwgSSBrbm93CigxMi41Ni40NSkg
-bWF0dG9jazogSSdsbCBjaGVjayBpdCBvdXQgbm93CigxMi41Ny4wNSkgbWF0dG9jazogb25s
-eSBmb3VyIHllYXJzIQooMTIuNTcuMTApIG1hdHRvY2s6IG5vLCBzaXgKKDEyLjU4LjE4KSBk
-YXpvOiBtYXR0b2NrIGxldl9fIEhvdyBpcyBpdCB3aXRoIG9wZW5zc2wgMy4wLjEgaW4gV2lu
-ZG93cyBidWlsZHM/ICBubyBzdGF0dXMgaGVyZQooMTIuNTkuMDgpIGRhem86IG9yZGV4IGNy
-b24yOiBXaGF0IGFib3V0ICJkbyBub3QgcHVzaCByb3V0ZS1pcHY2IGVudHJpZXMgdGhhdCBh
-cmUgYWxzbyBpbiB0aGUgaXJvdXRlLWlwdjYgbGlzdCIsIGl0IHNheXMgInBlbmRpbmcgcmV2
-aWV3IgooMTIuNTkuMDkpIG1hdHRvY2s6IG9wZW5zc2wgMy4wLjEgd2luZG93cyBidWlsZCB3
-b3JrCigxMi41OS4xNykgZGF6bzogbWF0dG9jazogb2theSwgc28gd2UgY2FuIGNsb3NlIHRo
-YXQgb2ZmIGFzIGRvbmUKKDEyLjU5LjIwKSBtYXR0b2NrOiBJIGtub3cgYmVjYXVzZSBteSBi
-dWlsZHMgYnJva2UgYmFkbHkgYmVjYXVzZSBvZiBvcGVuc3NsIDMuMC54CigxMi41OS4yNCkg
-Y3JvbjI6IHRoZXJlJ3MgYSBjb3VwbGUgb2YgZGFuZ2xpbmcgcGF0Y2hlcyB0aGF0IG5vYm9k
-eSBoYWQgdGltZSBmb3IgeWV0CigxMi41OS4zNCkgbWF0dG9jazogcGx1cyBJIG5lZWRlZCB0
-byBtYWtlIHRoZSBidWlsZHMgd29yayBmb3IgYm90aCAxLjEuMSBhbmQgMy4wLngKKDEyLjU5
-LjQzKSBkYXpvOiBjcm9uMjogYWxyaWdodCwgZ290IGEgcGF0Y2h3b3JrIHBvaW50ZXIgZm9y
-IGl0PwooMTIuNTkuNDUpIG1hdHRvY2s6IHJlcXVpcmVkIHR3byBzZXBhcmF0ZSBidWlsZGVy
-IHZtcyB1bmZvcnR1bmF0ZWx5CigxMy4wMC4wMykgY3JvbjI6IGRhem86ICJzb21ld2hlcmUg
-ZG93biIsIGZyb20gb3JkZXgKKDEzLjAwLjEyKSBkYXpvOiBJJ2xsIHRyeSB0byBkaWcgaXQg
-dXAKKDEzLjAxLjAxKSBkYXpvOiBjcm9uMjogdGhpcyBvbmU/ICBPciB3ZSBnb3QgYSBuZXdl
-ciBvbmU/ICBodHRwczovL3BhdGNod29yay5vcGVudnBuLm5ldC9wYXRjaC8zMzIvCigxMy4w
-MS4wMikgdnBuSGVscGVyOiBUaXRsZTogW09wZW52cG4tZGV2ZWxdIGRvIG5vdCBwdXNoIHJv
-dXRlLWlwdjYgZW50cmllcyB0aGF0IGFyZSBhbHNvIGluIHRoZSBpcm91dGUtaXB2NiBsaXN0
-IC0gUGF0Y2h3b3JrIChhdCBwYXRjaHdvcmsub3BlbnZwbi5uZXQpCigxMy4wMS4xMCkgY3Jv
-bjI6IHRoYXQgd291bGQgYmUgdGhlIG9uZQooMTMuMDEuMjgpIGRhem86IHRoeCEKKDEzLjAy
-LjUxKSBkYXpvOiBjcm9uMiBwbGFpc3Rob3MgIkREb1MgcmVmbGVjdGlvbiBoYXJkZW5pbmcg
-KHJhdGUtbGltaXRpbmcpIiAuLi4gaXQgc2F5cyAid2lwIiwgYnV0IGRvbid0IHJlY2FsbCBk
-aXNjdXNzaW9ucyBsYXRlbHkgaGVyZQooMTMuMDMuMTIpIGNyb24yOiBzY3JvbGwgdXAgNTAg
-bGluZXMgOi0pCigxMy4wMy4zNikgZGF6bzogaGFoYWhhIC4uLiBva2F5LCAqdGhhdCogb25l
-IC4uLi4gSSB0aG91Z2h0IHRoYXQgd2FzIHRoZSAiVExTIGhhbmRzaGFrZSByZXBsYXkgcHJv
-dGVjdGlvbiIKKDEzLjA0LjA0KSBjcm9uMjogaXQncyByZWxhdGVkCigxMy4wNC4wOCkgbWF0
-dG9jazogSSdsbCBkbyBhIFBSIHRoYXQgbW9kaWZpZXMgdGhlIG1hbi1wYWdlCigxMy4wNC4x
-OCkgZGF6bzogbWF0dG9jazogdGh4IQooMTMuMDQuMjEpIG1hdHRvY2s6IG5vdwooMTMuMDQu
-MjEpIGNyb24yOiBteSBvd24gcmF0ZS1saW1pdCBwYXRjaGVzIG1pZ2h0IGJlIGRyb3BwZWQg
-KGFsc28sIGZhaXJseSBkb3duIGluIHBhdGNod29yaykKKDEzLjA0LjUwKSBwbGFpc3Rob3M6
-IGRhem86IHRoZSBzZWNvbmQgb25lIGFsc28gaW5jbHVkZXMgdGhlICJzd2l0Y2ggdG8gYSBu
-ZXcgdGxzLWNyeXB0IGtleSBvbiByZW5lb2ciIHRvIGZ1bGx5IGZpeCBpdAooMTMuMDQuNTYp
-IGRhem86IGh0dHBzOi8vcGF0Y2h3b3JrLm9wZW52cG4ubmV0L3Byb2plY3Qvb3BlbnZwbjIv
-bGlzdC8/c2VyaWVzPSZzdWJtaXR0ZXI9NSZzdGF0ZT0mcT0mYXJjaGl2ZT0mZGVsZWdhdGU9
-IC4uLiB5ZWFoLCB0aGVyZSdzIGEgZmV3IG9sZCBvbmVzIGhlcmUKKDEzLjA0LjU3KSB2cG5I
-ZWxwZXI6IFRpdGxlOiBPcGVuVlBOIDIgLSBQYXRjaHdvcmsgKGF0IHBhdGNod29yay5vcGVu
-dnBuLm5ldCkKKDEzLjA5LjA3KSBkYXpvOiBwbGFpc3Rob3M6IGFscmlnaHQsIEknbGwganVz
-dCBtYXJrIHRoZW0gYXMgIndpcCIgZm9yIG5vdwooMTMuMDkuMzcpIGRhem86IFVwZGF0ZWQh
-IGh0dHBzOi8vY29tbXVuaXR5Lm9wZW52cG4ubmV0L29wZW52cG4vd2lraS9TdGF0dXNPZk9w
-ZW52cG4yNgooMTMuMDkuMzkpIE1heEYyMiBoYSBhYmJhbmRvbmF0byBsYSBzdGFuemEgKHF1
-aXQ6IFF1aXQ6IENsaWVudCBjbG9zZWQpLgooMTMuMTAuMzgpIE1heEYgW35NYXhGQDI3LTcz
-LTE3Ny0xNDMuZnR0aC5nbGFzb3BlcmF0b3IubmxdIMOoIGVudHJhdG8gbmVsbGEgc3Rhbnph
-LgooMTMuMTIuMjIpIG1hdHRvY2s6IGh0dHBzOi8vZ2l0aHViLmNvbS9PcGVuVlBOL29wZW52
-cG4vcHVsbC8xNzIvZmlsZXMKKDEzLjE0LjIyKSBtYXR0b2NrOiBtZWV0aW5nIGVuZGVkIF9u
-b3dfIEkgaG9wZSA6KQooMTMuMTguMzMpIGRhem86IG1hdHRvY2s6IHllYWgsIEkgdGhpbmsg
-d2UgY2FuIHdyYXAgaXQgdXAgbm93CigxMy4xOC41MSkgZGF6bzogbWF0dG9jazogY29tbWVu
-dGVkIG9uIHlvdXIgcHVsbC1yZXEgLi4uIGp1c3QgYXMgYW4gaWRlYS4KKDEzLjIwLjEzKSBt
-YXR0b2NrOiBkYXpvOiBJJ2xsIGhhdmUgYSBsb29rCg==
-
---------------1i6sxS7HxooTj5oMBHLhXFxP--
+>> +    {
+>> +        msg(M_ERR, "Clearing KEEPCAPS flag failed");
+>> +    }
+>> +#endif  /* HAVE_LIBCAPNG */
+>> +    if (keep_caps)
+> 
+> for my poor eyes..add an empty line after the endif :-)
+> 
+>> +    {
+>> +        msg(err_flags, "Unable to retain capabilities");
+>> +    }
+>> +
+>> +    platform_group_set(group_state);
+>> +    platform_user_set(user_state);
+>> +}
+>> +
+>> +
+>> +
+> 
+> I think only one empty line is enough :D
+> 
+>>   /* Change process priority */
+>>   void
+>>   platform_nice(int niceval)
+>> diff --git a/src/openvpn/platform.h b/src/openvpn/platform.h
+>> index a3eec298..b163f093 100644
+>> --- a/src/openvpn/platform.h
+>> +++ b/src/openvpn/platform.h
+>> @@ -85,6 +85,11 @@ bool platform_group_get(const char *groupname, 
+>> struct platform_state_group *stat
+>>   void platform_group_set(const struct platform_state_group *state);
+>> +void platform_user_group_set(const struct platform_state_user 
+>> *user_state,
+>> +                             const struct platform_state_group 
+>> *group_state,
+>> +                             int keep_caps);
+>> +
+>> +
+>>   /*
+>>    * Extract UID or GID
+>>    */
+> 
+> 
+> Regards,
+> 
 
