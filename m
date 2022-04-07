@@ -1,10 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Thu,  7 Apr 2022 10:39:53 +0200
-Message-Id: <20220407083953.24322-1-a@...2181...>
-In-Reply-To: <20220402070902.30282-4-a@...2181...>
-References: <20220402070902.30282-4-a@...2181...>
+Date: Thu,  7 Apr 2022 11:41:46 +0200
+Message-Id: <20220407094146.7684-1-a@...2181...>
+In-Reply-To: <20220407083953.24322-1-a@...2181...>
+References: <20220407083953.24322-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 3/7] networking: implement net_iface_new
+Subject: [Openvpn-devel] [PATCH v3 3/7] networking: implement net_iface_new
  and net_iface_del APIs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -34,6 +34,9 @@ Changes from v1:
 * don't initialize ifichange as we are not changing any ifi_flag
 * remove S_FATAL flag from net_iface_del() iproute2 implementation
 
+Changes from v2:
+* fix leftover variable (iface_type -> type) in net_iface_new() for
+  iproute2
 ---
  src/openvpn/networking.h                   | 21 ++++++++
  src/openvpn/networking_iproute2.c          | 28 ++++++++++
@@ -74,7 +77,7 @@ index 9335701e..647718e0 100644
   * Bring interface up or down.
   *
 diff --git a/src/openvpn/networking_iproute2.c b/src/openvpn/networking_iproute2.c
-index 3ca2bb35..1911a6a2 100644
+index 3ca2bb35..9a55b241 100644
 --- a/src/openvpn/networking_iproute2.c
 +++ b/src/openvpn/networking_iproute2.c
 @@ -63,6 +63,34 @@ net_ctx_free(openvpn_net_ctx_t *ctx)
@@ -87,7 +90,7 @@ index 3ca2bb35..1911a6a2 100644
 +{
 +    struct argv argv = argv_new();
 +
-+    argv_printf(&argv, "%s link add %s type %s", iproute_path, iface, iface_type);
++    argv_printf(&argv, "%s link add %s type %s", iproute_path, iface, type);
 +    argv_msg(M_INFO, &argv);
 +    openvpn_execve_check(&argv, ctx->es, S_FATAL, "Linux ip link add failed");
 +
