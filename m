@@ -1,15 +1,9 @@
-Message-ID: <652b8fe7-95c0-3237-e0c6-d6a23fd1b0f2@...2080...>
-Date: Wed, 6 Apr 2022 15:41:57 +0200
+From: Antonio Quartulli <a@...2181...>
+Date: Thu,  7 Apr 2022 10:15:55 +0200
+Message-Id: <20220407081555.25228-1-a@...2181...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20220329192934.1415-1-timo@...2669...>
- <20220330205536.139-1-timo@...2669...>
- <67b5b48f-619a-b344-9f51-e1bba55aa3d2@...2181...>
- <d2fd8d11-225c-992c-28f4-9a8522d65b37@...2669...>
-From: David Sommerseth <openvpn@...2080...>
-In-Reply-To: <d2fd8d11-225c-992c-28f4-9a8522d65b37@...2669...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Retain CAP_NET_ADMIN when dropping
- privileges
+Subject: [Openvpn-devel] [PATCH] t_net.sh: delete dummy iface using iproute
+ command
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,51 +12,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Timo Rothenpieler <timo@...2669...>
-Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <a@...2181...>
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-On 06/04/2022 14:44, Timo Rothenpieler wrote:
->>>
->>> --- a/configure.ac
->>> +++ b/configure.ac
->>> @@ -794,6 +794,25 @@ dnl
->>>       esac
->>>   fi
->>> +dnl
->>> +dnl Depend on libcap-ng on Linux
->>> +dnl
->>> +case "$host" in
->>> +    *-*-linux*)
->>> +        PKG_CHECK_MODULES([LIBCAPNG],
->>> +                  [libcap-ng],
->>> +                  [have_libcapng="yes"],
->>
->> do we really need have_libcapng? it seems it is not used further in 
->> configure.ac
-> 
-> I have little to no experience with autotools, and I think this is 
-> straight up copied from the openvpn3 setup.
+A dummy interface cannot be deleted using --rmtun because openvpn tries
+to send some ioctl (i.e. TUNSETPERSIST) which is not supported by this
+device type. This results in the following error:
 
-That's probably right.
+2022-04-07 09:59:29 Cannot ioctl TUNSETPERSIST(0) ovpn-dummy0: Bad file descriptor (errno=9)
+2022-04-07 09:59:29 Exiting due to fatal error
 
-> Can I just leave the line empty? Or put empty [] there?
+and the interface is not deleted.
 
-Yes, [] should suffice.  That said, it makes no big difference if it is 
-there or not.  If needed to check ("test") if libcap-ng is available or 
-not, this checks needs to be added again though.
+Use iproute to generically delete an interface.
 
-That said, we do not have a consistent way of using PKG_CHECK_MODULES() 
-in general.  We have at least 4 different ways in use today.
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ tests/t_net.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Probably something to clean-up some day later.
-
-
+diff --git a/tests/t_net.sh b/tests/t_net.sh
+index f9dba404..af78152c 100755
+--- a/tests/t_net.sh
++++ b/tests/t_net.sh
+@@ -166,6 +166,6 @@ for i in $(seq 0 $MAX_TEST); do
+ done
+ 
+ # remove interface for good
+-$RUN_SUDO $openvpn --dev $IFACE --dev-type tun --rmtun >/dev/null
++$RUN_SUDO ip link del $IFACE
+ 
+ exit 0
 -- 
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
+2.35.1
 
 
