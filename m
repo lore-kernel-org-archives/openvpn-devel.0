@@ -1,10 +1,9 @@
-Date: Fri, 8 Apr 2022 13:42:07 +0200 (CEST)
-Message-Id: <202204081142.238Bg71D081194@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220407081555.25228-1-a@...2181...>
-References: <20220407081555.25228-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: t_net.sh: delete dummy iface
- using iproute command
+MIME-Version: 1.0
+From: Pete Nelson <petiepooo@...277...>
+Date: Fri, 8 Apr 2022 18:24:07 +0000
+Message-ID: <CAAYFXLmLN3mJ1hqJrhhhqBeXwWaFHOMCMUx91BujJpnm0KM-Kg@...278...>
+Content-Type: multipart/alternative; boundary="000000000000db28db05dc28b32e"
+Subject: [Openvpn-devel] Tips for testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +12,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+--000000000000db28db05dc28b32e
+Content-Type: text/plain; charset="UTF-8"
 
-Indeed, now t_net.sh properly cleans up behind itself :-) - thanks.
-
-Your patch has been applied to the master and release/2.5 branch.
-
-commit 976e6caf0e161d3c787e1378cec44608c17b292a (master)
-commit c3f4419cd37faaf4f2960d911a1008a161b82561 (release/2.5)
-Author: Antonio Quartulli
-Date:   Thu Apr 7 10:15:55 2022 +0200
-
-     t_net.sh: delete dummy iface using iproute command
-
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220407081555.25228-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24086.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
+Hello, devs.
+I'm looking for tips on testing a dev branch of openvpn.  I see I can fork
+the github repo and enable actions to test that it builds on various OSs,
+but what do you guys do for functional testing?  Do you run a bunch of VMs
+or docker containers and have them connect to each other?  Any tips,
+scripts, or setups you can share would be appreciated.
+Regards,
 --
-kind regards,
+Pete
 
-Gert Doering
+--000000000000db28db05dc28b32e
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+<div dir=3D"ltr"><div>Hello, devs.</div><div>I&#39;m looking for tips on te=
+sting a dev branch of openvpn.=C2=A0 I see I can fork the github repo and e=
+nable actions to test that it builds on various OSs, but what do you guys d=
+o for functional testing?=C2=A0 Do you run a bunch of VMs or docker contain=
+ers and have them connect to each other?=C2=A0 Any tips, scripts, or setups=
+ you can share would be appreciated.</div><div>Regards,</div><div>--</div><=
+div>Pete<br></div></div>
+
+--000000000000db28db05dc28b32e--
 
