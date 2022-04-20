@@ -1,11 +1,12 @@
+Sender: yuanx3@...2645...
+From: "yuanxun" <yuanx3@...2645...>
+Date: Wed, 20 Apr 2022 16:18:55 +0800
+Message-ID: <000001d8548f$4891c980$d9b55c80$@chinatelecom.cn>
 MIME-Version: 1.0
-References: <CAF465zritiOYwQkFEdUG5Fr5+ZDVubwpcmMgF=4zU3n4q8bbvg@...278...>
-In-Reply-To: <CAF465zritiOYwQkFEdUG5Fr5+ZDVubwpcmMgF=4zU3n4q8bbvg@...278...>
-From: David Schneider <schneidav81@...277...>
-Date: Tue, 19 Apr 2022 15:09:19 +0200
-Message-ID: <CAF465zod1f6+jrUB+ZticpEwTAvr1YFFJ_jLKxoLeNG2LrieDQ@...278...>
-Content-Type: multipart/mixed; boundary="0000000000005f62f905dd019634"
-Subject: Re: [Openvpn-devel] Fix links to client docs
+Content-Type: multipart/alternative;
+ boundary="----=_NextPart_000_0001_01D854D2.56B75370"
+Content-Language: zh-cn
+Subject: [Openvpn-devel]  :openvpn dco connection problem
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,87 +17,83 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---0000000000005f62f905dd019634
-Content-Type: text/plain; charset="UTF-8"
+This is a multipart message in MIME format.
 
-Hello
+------=_NextPart_000_0001_01D854D2.56B75370
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-This is my first contribution to this project.  As stated in the
-README patches should be sent to the mailing list.
+Hi
 
-Here is a small change to fix the wrong path to the client docs page.
+I recently encountered a bug when using the openvpn dco branch. When the
+client connection reaches max_cliants, I reconnect one of the clients, and
+the client will fail to reconnect when it reaches the set number of
+reconnections. At this time, the client state is Not connected, but on the
+management interface, always online.
 
-Please let me know if the patch should be submitted in any other form.
+ 
 
-BR David
+ 
 
---0000000000005f62f905dd019634
-Content-Type: text/x-patch; charset="US-ASCII"; 
-	name="0001-fix-path-to-net.openvpn.v3.client-docs.patch"
-Content-Disposition: attachment; 
-	filename="0001-fix-path-to-net.openvpn.v3.client-docs.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_l265vn7f0>
-X-Attachment-Id: f_l265vn7f0
 
-RnJvbSBkMzE2NGI4OTgyM2E5N2M5OTMxODBlMTJmZjk3Y2VlNjAzNTBhZmMyIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBEYXZpZCBTY2huZWlkZXIgPHNjaG5laWRhdjgxQGdtYWlsLmNv
-bT4KRGF0ZTogVHVlLCAxOSBBcHIgMjAyMiAxNDo0ODozOSArMDIwMApTdWJqZWN0OiBbUEFUQ0gg
-MS8xXSBmaXggcGF0aCB0byBuZXQub3BlbnZwbi52My5jbGllbnQgZG9jcwoKU2lnbmVkLW9mZi1i
-eTogRGF2aWQgU2NobmVpZGVyIDxzY2huZWlkYXY4MUBnbWFpbC5jb20+Ci0tLQogZG9jcy9kYnVz
-L2RidXMtc2VydmljZS1uZXQub3BlbnZwbi52My5zZXNzaW9ucy5tZCB8IDE0ICsrKysrKystLS0t
-LS0tCiAxIGZpbGUgY2hhbmdlZCwgNyBpbnNlcnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQoKZGlm
-ZiAtLWdpdCBhL2RvY3MvZGJ1cy9kYnVzLXNlcnZpY2UtbmV0Lm9wZW52cG4udjMuc2Vzc2lvbnMu
-bWQgYi9kb2NzL2RidXMvZGJ1cy1zZXJ2aWNlLW5ldC5vcGVudnBuLnYzLnNlc3Npb25zLm1kCmlu
-ZGV4IDQ2M2IwOGEuLjUyYjFiOWYgMTAwNjQ0Ci0tLSBhL2RvY3MvZGJ1cy9kYnVzLXNlcnZpY2Ut
-bmV0Lm9wZW52cG4udjMuc2Vzc2lvbnMubWQKKysrIGIvZG9jcy9kYnVzL2RidXMtc2VydmljZS1u
-ZXQub3BlbnZwbi52My5zZXNzaW9ucy5tZApAQCAtMzE2LDcgKzMxNiw3IEBAIGNhbm5vdCBoYXZl
-IGl0cyBhY2Nlc3MgcmV2b2tlZC4KIAogU2VlIHRoZSBgbmV0Lm9wZW52cG4udjMuYmFja2VuZHMu
-VXNlcklucHV0UXVldWVHZXRUeXBlR3JvdXBgIGluCiBbYG5ldC5vcGVudnBuLnYzLmJhY2tlbmRz
-YAotY2xpZW50XShkYnVzLXNlcnZpY2UubmV0Lm9wZW52cG4udjMuY2xpZW50Lm1kKSBkb2N1bWVu
-dGF0aW9uIGZvcgorY2xpZW50XShkYnVzLXNlcnZpY2UtbmV0Lm9wZW52cG4udjMuY2xpZW50Lm1k
-KSBkb2N1bWVudGF0aW9uIGZvcgogZGV0YWlscy4gIFRoZSBzZXNzaW9uIG1hbmFnZXIganVzdCBw
-cm94aWVzIHRoaXMgbWV0aG9kIGNhbGwgdG8gdGhlCiBiYWNrZW5kIHByb2Nlc3MuCiAKQEAgLTMy
-NSw3ICszMjUsNyBAQCBiYWNrZW5kIHByb2Nlc3MuCiAKIFNlZSB0aGUgYG5ldC5vcGVudnBuLnYz
-LmJhY2tlbmRzLlVzZXJJbnB1dFF1ZXVlQ2hlY2tgIGluCiBbYG5ldC5vcGVudnBuLnYzLmJhY2tl
-bmRzYAotY2xpZW50XShkYnVzLXNlcnZpY2UubmV0Lm9wZW52cG4udjMuY2xpZW50Lm1kKSBkb2N1
-bWVudGF0aW9uIGZvcgorY2xpZW50XShkYnVzLXNlcnZpY2UtbmV0Lm9wZW52cG4udjMuY2xpZW50
-Lm1kKSBkb2N1bWVudGF0aW9uIGZvcgogZGV0YWlscy4gIFRoZSBzZXNzaW9uIG1hbmFnZXIganVz
-dCBwcm94aWVzIHRoaXMgbWV0aG9kIGNhbGwgdG8gdGhlCiBiYWNrZW5kIHByb2Nlc3MuCiAKQEAg
-LTMzNCw3ICszMzQsNyBAQCBiYWNrZW5kIHByb2Nlc3MuCiAKIFNlZSB0aGUgYG5ldC5vcGVudnBu
-LnYzLmJhY2tlbmRzLlVzZXJJbnB1dFF1ZXVlRmV0Y2hgIGluCiBbYG5ldC5vcGVudnBuLnYzLmJh
-Y2tlbmRzYAotY2xpZW50XShkYnVzLXNlcnZpY2UubmV0Lm9wZW52cG4udjMuY2xpZW50Lm1kKSBk
-b2N1bWVudGF0aW9uIGZvcgorY2xpZW50XShkYnVzLXNlcnZpY2UtbmV0Lm9wZW52cG4udjMuY2xp
-ZW50Lm1kKSBkb2N1bWVudGF0aW9uIGZvcgogZGV0YWlscy4gIFRoZSBzZXNzaW9uIG1hbmFnZXIg
-anVzdCBwcm94aWVzIHRoaXMgbWV0aG9kIGNhbGwgdG8gdGhlCiBiYWNrZW5kIHByb2Nlc3MuCiAK
-QEAgLTM0Myw3ICszNDMsNyBAQCBiYWNrZW5kIHByb2Nlc3MuCiAKIFNlZSB0aGUgYG5ldC5vcGVu
-dnBuLnYzLmJhY2tlbmRzLlVzZXJJbnB1dFByb3ZpZGVgIGluCiBbYG5ldC5vcGVudnBuLnYzLmJh
-Y2tlbmRzYAotY2xpZW50XShkYnVzLXNlcnZpY2UubmV0Lm9wZW52cG4udjMuY2xpZW50Lm1kKSBk
-b2N1bWVudGF0aW9uIGZvcgorY2xpZW50XShkYnVzLXNlcnZpY2UtbmV0Lm9wZW52cG4udjMuY2xp
-ZW50Lm1kKSBkb2N1bWVudGF0aW9uIGZvcgogZGV0YWlscy4gIFRoZSBzZXNzaW9uIG1hbmFnZXIg
-anVzdCBwcm94aWVzIHRoaXMgbWV0aG9kIGNhbGwgdG8gdGhlCiBiYWNrZW5kIHByb2Nlc3MuCiAK
-QEAgLTM1Miw3ICszNTIsNyBAQCBiYWNrZW5kIHByb2Nlc3MuCiAKIFNlZSB0aGUgYG5ldC5vcGVu
-dnBuLnYzLmJhY2tlbmRzLkF0dGVudGlvblJlcXVpcmVkYCBlbnRyeSBpbgogW2BuZXQub3BlbnZw
-bi52My5iYWNrZW5kc2AKLWNsaWVudF0oZGJ1cy1zZXJ2aWNlLm5ldC5vcGVudnBuLnYzLmNsaWVu
-dC5tZCkgZG9jdW1lbnRhdGlvbiBmb3IKK2NsaWVudF0oZGJ1cy1zZXJ2aWNlLW5ldC5vcGVudnBu
-LnYzLmNsaWVudC5tZCkgZG9jdW1lbnRhdGlvbiBmb3IKIGRldGFpbHMuICBUaGUgc2Vzc2lvbiBt
-YW5hZ2VyIGp1c3QgcHJveGllcyB0aGVzZSBzaWduYWxzIGZyb20gdGhlCiBiYWNrZW5kIHByb2Nl
-c3MgdG8gZnJvbnQtZW5kcyBzdWJzY3JpYmluZyB0byB0aGlzIHNpZ25hbC4KIApAQCAtMzYxLDcg
-KzM2MSw3IEBAIGJhY2tlbmQgcHJvY2VzcyB0byBmcm9udC1lbmRzIHN1YnNjcmliaW5nIHRvIHRo
-aXMgc2lnbmFsLgogCiBTZWUgdGhlIGBuZXQub3BlbnZwbi52My5iYWNrZW5kcy5TdGF0dXNTaWdu
-YWxgIGVudHJ5IGluCiBbYG5ldC5vcGVudnBuLnYzLmJhY2tlbmRzYAotY2xpZW50XShkYnVzLXNl
-cnZpY2UubmV0Lm9wZW52cG4udjMuY2xpZW50Lm1kKSBkb2N1bWVudGF0aW9uIGZvcgorY2xpZW50
-XShkYnVzLXNlcnZpY2UtbmV0Lm9wZW52cG4udjMuY2xpZW50Lm1kKSBkb2N1bWVudGF0aW9uIGZv
-cgogZGV0YWlscy4gIFRoZSBzZXNzaW9uIG1hbmFnZXIganVzdCBwcm94aWVzIHRoZXNlIHNpZ25h
-bHMgZnJvbSB0aGUKIGJhY2tlbmQgcHJvY2VzcyB0byBmcm9udC1lbmRzIHN1YnNjcmliaW5nIHRv
-IHRoaXMgc2lnbmFsLgogCkBAIC00MjIsNyArNDIyLDcgQEAgVGhpcyBpcyBlc3NlbnRpYWxseSBh
-IHNhdmVkIExvZyBzaWduYWwgYW5kIGNvbnRhaW5zIHRoZSBmb2xsb3dpbmcgcmVmZXJlbmNlcyBp
-bgogIyMjIyBEaWN0aW9uYXJ5OiBzdGF0aXN0aWNzCiAKIFNlZSB0aGUgcHJvcGVydGllcyBzZWN0
-aW9uIGluIFtgbmV0Lm9wZW52cG4udjMuYmFja2VuZHNgCi1jbGllbnRdKGRidXMtc2VydmljZS5u
-ZXQub3BlbnZwbi52My5jbGllbnQubWQpIGRvY3VtZW50YXRpb24gZm9yCitjbGllbnRdKGRidXMt
-c2VydmljZS1uZXQub3BlbnZwbi52My5jbGllbnQubWQpIGRvY3VtZW50YXRpb24gZm9yCiBkZXRh
-aWxzLiAgVGhlIHNlc3Npb24gbWFuYWdlciBqdXN0IHByb3hpZXMgdGhlIGNvbnRlbnRzIG9mIHRo
-ZQogYHN0YXRpc3RpY3NgIHByb3BlcnR5IGZyb20gdGhlIGJhY2tlbmQgcHJvY2Vzcy4KIAotLSAK
-Mi4zNS4zCgo=
---0000000000005f62f905dd019634--
+------=_NextPart_000_0001_01D854D2.56B75370
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40"><head><meta http-equiv=3DContent-Type content=
+=3D"text/html; charset=3Dus-ascii"><meta name=3DGenerator content=3D"Micros=
+oft Word 15 (filtered medium)"><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:DengXian;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	text-align:justify;
+	text-justify:inter-ideograph;
+	font-size:10.5pt;
+	font-family:DengXian;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:DengXian;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:DengXian;}
+/* Page Definitions */
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]--></head><body lang=3DZH-CN link=3D"#0563C1=
+" vlink=3D"#954F72" style=3D'word-wrap:break-word;text-justify-trim:punctua=
+tion'><div class=3DWordSection1><p class=3DMsoNormal><span lang=3DEN-US>Hi<=
+o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-US>I recently enc=
+ountered a bug when using the openvpn dco branch. When the client connectio=
+n reaches max_cliants, I reconnect one of the clients, and the client will =
+fail to reconnect when it reaches the set number of reconnections. At this =
+time, the client state is Not connected, but on the management interface, a=
+lways online.<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-US>=
+<o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span lang=3DEN-US><o:p>&n=
+bsp;</o:p></span></p></div></body></html>=
+
+------=_NextPart_000_0001_01D854D2.56B75370--
+
 
