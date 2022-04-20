@@ -1,12 +1,12 @@
-Sender: yuanx3@...2645...
-From: "yuanxun" <yuanx3@...2645...>
-Date: Wed, 20 Apr 2022 16:18:55 +0800
-Message-ID: <000001d8548f$4891c980$d9b55c80$@chinatelecom.cn>
+Message-ID: <a79d293a-9983-440f-14cf-fce2dace7dad@...2080...>
+Date: Wed, 20 Apr 2022 10:38:46 +0200
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
- boundary="----=_NextPart_000_0001_01D854D2.56B75370"
-Content-Language: zh-cn
-Subject: [Openvpn-devel]  :openvpn dco connection problem
+Content-Language: en-US
+References: <CAF465zritiOYwQkFEdUG5Fr5+ZDVubwpcmMgF=4zU3n4q8bbvg@...278...>
+ <CAF465zod1f6+jrUB+ZticpEwTAvr1YFFJ_jLKxoLeNG2LrieDQ@...278...>
+From: David Sommerseth <openvpn@...2080...>
+In-Reply-To: <CAF465zod1f6+jrUB+ZticpEwTAvr1YFFJ_jLKxoLeNG2LrieDQ@...278...>
+Subject: Re: [Openvpn-devel] Fix links to client docs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,85 +15,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is a multipart message in MIME format.
-
-------=_NextPart_000_0001_01D854D2.56B75370
-Content-Type: text/plain;
-	charset="us-ascii"
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+To: David Schneider <schneidav81@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi
+On 19/04/2022 15:09, David Schneider wrote:
+> Hello
+> 
+> This is my first contribution to this project.  As stated in the
+> README patches should be sent to the mailing list.
+> 
+> Here is a small change to fix the wrong path to the client docs page.
+> 
+> Please let me know if the patch should be submitted in any other form.
+> 
 
-I recently encountered a bug when using the openvpn dco branch. When the
-client connection reaches max_cliants, I reconnect one of the clients, and
-the client will fail to reconnect when it reaches the set number of
-reconnections. At this time, the client state is Not connected, but on the
-management interface, always online.
+Thanks a lot!  This worked fine, I could easily do a 'git am' on your 
+attachment.
 
- 
-
- 
+I've applied your patch, but slightly adjusted the commit message.
 
 
-------=_NextPart_000_0001_01D854D2.56B75370
-Content-Type: text/html; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+commit b7d9bda52aee2f0577fd45e0adbf9ac3eaf8ae00
+Author: David Schneider <schneidav81@...277...>
+Date:   Tue Apr 19 14:48:39 2022 +0200
 
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
-osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
-//www.w3.org/TR/REC-html40"><head><meta http-equiv=3DContent-Type content=
-=3D"text/html; charset=3Dus-ascii"><meta name=3DGenerator content=3D"Micros=
-oft Word 15 (filtered medium)"><style><!--
-/* Font Definitions */
-@font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:DengXian;
-	panose-1:2 1 6 0 3 1 1 1 1 1;}
-@font-face
-	{font-family:DengXian;
-	panose-1:2 1 6 0 3 1 1 1 1 1;}
-/* Style Definitions */
-p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	text-align:justify;
-	text-justify:inter-ideograph;
-	font-size:10.5pt;
-	font-family:DengXian;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:DengXian;
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;
-	font-family:DengXian;}
-/* Page Definitions */
-@page WordSection1
-	{size:612.0pt 792.0pt;
-	margin:72.0pt 90.0pt 72.0pt 90.0pt;}
-div.WordSection1
-	{page:WordSection1;}
---></style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext=3D"edit">
-<o:idmap v:ext=3D"edit" data=3D"1" />
-</o:shapelayout></xml><![endif]--></head><body lang=3DZH-CN link=3D"#0563C1=
-" vlink=3D"#954F72" style=3D'word-wrap:break-word;text-justify-trim:punctua=
-tion'><div class=3DWordSection1><p class=3DMsoNormal><span lang=3DEN-US>Hi<=
-o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-US>I recently enc=
-ountered a bug when using the openvpn dco branch. When the client connectio=
-n reaches max_cliants, I reconnect one of the clients, and the client will =
-fail to reconnect when it reaches the set number of reconnections. At this =
-time, the client state is Not connected, but on the management interface, a=
-lways online.<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-US>=
-<o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span lang=3DEN-US><o:p>&n=
-bsp;</o:p></span></p></div></body></html>=
+     docs: Fix incorrect doc paths in net.openvpn.v3.sessions docs
 
-------=_NextPart_000_0001_01D854D2.56B75370--
+     Signed-off-by: David Schneider <schneidav81@...277...>
+     Signed-off-by: David Sommerseth <davids@...515...>
+
+
+-- 
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
 
 
