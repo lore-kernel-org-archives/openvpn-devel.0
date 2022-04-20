@@ -1,12 +1,11 @@
-Message-ID: <a79d293a-9983-440f-14cf-fce2dace7dad@...2080...>
-Date: Wed, 20 Apr 2022 10:38:46 +0200
+Message-ID: <4921cec7-eedc-a426-51cc-1fe1f98721ac@...1227...>
+Date: Wed, 20 Apr 2022 10:50:36 +0200
 MIME-Version: 1.0
-Content-Language: en-US
-References: <CAF465zritiOYwQkFEdUG5Fr5+ZDVubwpcmMgF=4zU3n4q8bbvg@...278...>
- <CAF465zod1f6+jrUB+ZticpEwTAvr1YFFJ_jLKxoLeNG2LrieDQ@...278...>
-From: David Sommerseth <openvpn@...2080...>
-In-Reply-To: <CAF465zod1f6+jrUB+ZticpEwTAvr1YFFJ_jLKxoLeNG2LrieDQ@...278...>
-Subject: Re: [Openvpn-devel] Fix links to client docs
+Content-Language: en-GB
+References: <000001d8548f$4891c980$d9b55c80$@chinatelecom.cn>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <000001d8548f$4891c980$d9b55c80$@chinatelecom.cn>
+Subject: Re: [Openvpn-devel] :openvpn dco connection problem
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,40 +16,18 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: David Schneider <schneidav81@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: yuanxun <yuanx3@...2645...>, openvpn-devel@lists.sourceforge.net
 
-On 19/04/2022 15:09, David Schneider wrote:
-> Hello
+Am 20.04.22 um 10:18 schrieb yuanxun:
+> Hi
 > 
-> This is my first contribution to this project.  As stated in the
-> README patches should be sent to the mailing list.
-> 
-> Here is a small change to fix the wrong path to the client docs page.
-> 
-> Please let me know if the patch should be submitted in any other form.
-> 
+> I recently encountered a bug when using the openvpn dco branch. When the 
+> client connection reaches max_cliants, I reconnect one of the clients, 
+> and the client will fail to reconnect when it reaches the set number of 
+> reconnections. At this time, the client state is Not connected, but on 
+> the management interface, always online.
 
-Thanks a lot!  This worked fine, I could easily do a 'git am' on your 
-attachment.
+Can you post logs of the openvpn server? Preferrable with verb 4 at least?
 
-I've applied your patch, but slightly adjusted the commit message.
-
-
-commit b7d9bda52aee2f0577fd45e0adbf9ac3eaf8ae00
-Author: David Schneider <schneidav81@...277...>
-Date:   Tue Apr 19 14:48:39 2022 +0200
-
-     docs: Fix incorrect doc paths in net.openvpn.v3.sessions docs
-
-     Signed-off-by: David Schneider <schneidav81@...277...>
-     Signed-off-by: David Sommerseth <davids@...515...>
-
-
--- 
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
+Arne
 
