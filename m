@@ -1,10 +1,9 @@
-Date: Thu, 21 Apr 2022 09:30:45 +0200 (CEST)
-Message-Id: <202204210730.23L7UjnG046348@...2054...>
+Date: Thu, 21 Apr 2022 10:00:09 +0200 (CEST)
+Message-Id: <202204210800.23L809Es053990@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220420121322.42732-3-openvpn@...2080...>
-References: <20220420121322.42732-3-openvpn@...2080...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dev-tools: Avoid uncrustify
- mangling MAC_FMT macro
+In-Reply-To: <20220420143050.52790-1-openvpn@...2080...>
+References: <20220420143050.52790-1-openvpn@...2080...>
+Subject: [Openvpn-devel] [PATCH applied] Re: The Great Reformatting of 2022
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,25 +19,39 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-As pointed out, I do not like this particular macro and the _STRINGIFY()
-stuff, and it seems uncrustify agrees with me :-) - but until we can 
-find a volunteer to make that code nicer on the eyes, this will at least
-avoid uncrustify breaking it.
+We've, indeed, not been very thorough in following our own formatting
+rules... seems a few tabs-vs-spaces snuck in, and there were some
+misunderstanding on certain constructs (like, function return types).
 
-As this is just C level comments, nothing needed to be tested.
+As discussed on IRC, we do a Great Reformatting now, and then require
+all core contributors to send clean patches only, aka "use the pre-commit
+hook that Heiko has developed".  Which only works if the underlying tree
+is clean - which this achieves.
+
+I've gone through the changes with "git show -w" - this is mainly
+"function return on separate line", "C++ comment", "#else with comment",
+but no actual code changes.
+
+Without "-w", it's a number of space-vs-tab, "char *foo" vs. "char* foo",
+all minor things, but uncrustify has no mercy there (I do not find all
+changes aesthetically "better" than before, especially the msg() stuff,
+but unless someone finds an uncrustify option to do these differently,
+consistency trumps personal aesthetics).
+
+I have also compile + t_client tested, for good measure (all OK).
 
 Your patch has been applied to the master branch.
 
-commit 9febbcbbcf3b1a786a1e77145d30a43eb7996dc4
+commit abe49856d81f51136d543539202a0bf8fb946474
 Author: David Sommerseth
-Date:   Wed Apr 20 14:13:22 2022 +0200
+Date:   Wed Apr 20 16:30:50 2022 +0200
 
-     dev-tools: Avoid uncrustify mangling MAC_FMT macro
+     The Great Reformatting of 2022
 
      Signed-off-by: David Sommerseth <davids@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220420121322.42732-3-openvpn@...2080...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24121.html
+     Message-Id: <20220420143050.52790-1-openvpn@...2080...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24123.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
