@@ -1,15 +1,10 @@
-Date: Thu, 21 Apr 2022 17:03:41 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <YmFyTcVS+nmzWiuz@...1296...>
+From: Heiko Hund <heiko@...2662...>
+Date: Thu, 21 Apr 2022 18:43:30 +0200
+Message-Id: <20220421164330.2483743-1-heiko@...2662...>
+In-Reply-To: <20220420233148.2384208-1-heiko@...2662...>
 References: <20220420233148.2384208-1-heiko@...2662...>
- <866053733.106111.1650528089348@...2642...>
- <YmESwwvWq/IwpMg+@greenie.muc.de> <2899105.Ihd2bCoRom@...2664...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="wQiU1PiyqGqfI0u6"
-Content-Disposition: inline
-In-Reply-To: <2899105.Ihd2bCoRom@...2664...>
-Subject: Re: [Openvpn-devel] [PATCH] Add git pre-commit hook script to
+Subject: [Openvpn-devel] [PATCH v3] Add git pre-commit hook script to
  uncrustify
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -19,63 +14,222 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Heiko Hund <heiko@...2662...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---wQiU1PiyqGqfI0u6
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+The script is self installing if you call it with "install" as the first
+parameter. Once installed as the pre-commit hook it will check files to
+be committed according to the rules in uncrustify.conf and abort the
+commit if there's formatting issues. The script produces a patch in /tmp
+which can be git apply'ed to fix all issues found.
 
-Hi,
+The script was originally authored by David Martin [1] and slightly
+modified to fit our needs. At the time it had a 2-clause BSD license.
 
-On Thu, Apr 21, 2022 at 02:41:18PM +0200, Heiko Hund wrote:
-> > Especially this one is something I only noticed after I sent my mail -
-> > so this definitely needs to to mktemp-style temp files, or a private
-> > tmp directory (in the local repo?)
->=20
-> I don't really see the need for secure tmp files here, as there's no chan=
-ce to=20
-> exploit anything by racing for the file(name). Or am I just not creative=
-=20
-> enough?
+[1] https://github.com/ddddavidmartin/Pre-commit-hooks
 
-The classic approach is "create a symlink from /tmp/$known_name to
-something you want overwritten", and on next "git commit", some file
-owned by the committer gets overwritten (or created as empty)
+Signed-off-by: Heiko Hund <heiko@...2662...>
+---
+ CONTRIBUTING.rst                       |   8 ++
+ dev-tools/git-pre-commit-uncrustify.sh | 168 +++++++++++++++++++++++++
+ 2 files changed, 176 insertions(+)
+ create mode 100755 dev-tools/git-pre-commit-uncrustify.sh
 
-Since an attacker can not control the content *and* the comitter won't
-do this as root (at least I hope so) *and* you actually need to have
-different users on the machine, the risk is comparatively low, but still,
-this is a code construct that should be avoided.
+diff --git a/CONTRIBUTING.rst b/CONTRIBUTING.rst
+index db47f397..a848f899 100644
+--- a/CONTRIBUTING.rst
++++ b/CONTRIBUTING.rst
+@@ -18,6 +18,14 @@ When sending patches to "openvpn-devel" the subject line should be prefixed with
+ git-format-patch or sent using git-send-email. Try to split large patches into
+ small, atomic pieces to make reviews easier.
+ 
++Please make sure that the source code formatting follows the guidelines at
++https://community.openvpn.net/openvpn/wiki/CodeStyle. Automated checking can be
++done with uncrustify (http://uncrustify.sourceforge.net/) and the configuration
++file which can be found in the git repository at dev-tools/uncrustify.conf.
++There is also a git pre-commit hook script, which runs uncrustify automatically
++each time you commit and lets you format your code conveniently, if needed.
++To install the hook simply run: dev-tools/git-pre-commit-uncrustify.sh install
++
+ If you want quick feedback on a patch before sending it to openvpn-devel mailing
+ list, you can visit the #openvpn-devel channel on irc.libera.chat. Note that
+ you need to be logged in to Libera to join the channel:
+diff --git a/dev-tools/git-pre-commit-uncrustify.sh b/dev-tools/git-pre-commit-uncrustify.sh
+new file mode 100755
+index 00000000..a5cf3d41
+--- /dev/null
++++ b/dev-tools/git-pre-commit-uncrustify.sh
+@@ -0,0 +1,168 @@
++#!/bin/sh
++
++# Copyright (c) 2015, David Martin
++#               2022, Heiko Hund
++# All rights reserved.
++#
++# Redistribution and use in source and binary forms, with or without
++# modification, are permitted provided that the following conditions are met:
++#
++# * Redistributions of source code must retain the above copyright notice, this
++#   list of conditions and the following disclaimer.
++#
++# * Redistributions in binary form must reproduce the above copyright notice,
++#   this list of conditions and the following disclaimer in the documentation
++#   and/or other materials provided with the distribution.
++#
++# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
++# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
++# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
++# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
++# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
++# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++
++
++# git pre-commit hook that runs an Uncrustify stylecheck.
++# Features:
++#  - abort commit when commit does not comply with the style guidelines
++#  - create a patch of the proposed style changes
++#
++# More info on Uncrustify: http://uncrustify.sourceforge.net/
++
++# This file was taken from a set of unofficial pre-commit hooks available
++# at https://github.com/ddddavidmartin/Pre-commit-hooks and modified to
++# fit the openvpn project's needs
++
++# exit on error
++set -e
++
++
++# If called so, install this script as pre-commit hook
++if [ "$1" = "install" ] ; then
++    TARGET="$(git rev-parse --git-path hooks)/pre-commit"
++
++    if [ -e "$TARGET" ] ; then
++        printf "$TARGET file exists. Won't overwrite.\n"
++        printf "Aborting installation.\n"
++        exit 1
++    fi
++
++    read -p "Install as $TARGET? [y/N] " INPUT
++    [ "$INPUT" = "y" ] || exit 0
++    cp "$0" "$TARGET"
++    chmod +x $TARGET
++    exit 0
++fi
++
++# check whether the given file matches any of the set extensions
++matches_extension() {
++    local filename="$(basename -- "$1")"
++    local extension=".${filename##*.}"
++    local ext
++
++    for ext in .c .h ; do [ "$ext" = "$extension" ] && return 0; done
++
++    return 1
++}
++
++# necessary check for initial commit
++if git rev-parse --verify HEAD >/dev/null 2>&1 ; then
++    against=HEAD
++else
++    # Initial commit: diff against an empty tree object
++    against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
++fi
++
++UNCRUSTIFY=$(command -v uncrustify)
++UNCRUST_CONFIG="$(git rev-parse --show-toplevel)/dev-tools/uncrustify.conf"
++
++# make sure the config file and executable are correctly set
++if [ ! -f "$UNCRUST_CONFIG" ] ; then
++    printf "Error: uncrustify config file not found.\n"
++    printf "Expected to find it at $UNCRUST_CONFIG.\n"
++    printf "Aborting commit.\n"
++    exit 1
++fi
++
++if [ -z "$UNCRUSTIFY" ] ; then
++    printf "Error: uncrustify executable not found.\n"
++    printf "Is it installed and in your \$PATH?\n"
++    printf "Aborting commit.\n"
++    exit 1
++fi
++
++# create a filename to store our generated patch
++patch=$(mktemp /tmp/ovpn-fmt-XXXXXX)
++
++# create one patch containing all changes to the files
++# sed to remove quotes around the filename, if inserted by the system
++# (done sometimes, if the filename contains special characters, like the quote itself)
++git diff-index --cached --diff-filter=ACMR --name-only $against -- | \
++sed -e 's/^"\(.*\)"$/\1/' | \
++while read file
++do
++    # ignore file if we do check for file extensions and the file
++    # does not match any of the extensions specified in $FILE_EXTS
++    if ! matches_extension "$file"; then
++        continue;
++    fi
++
++    # escape special characters in the source filename:
++    # - '\': backslash needs to be escaped
++    # - '*': used as matching string => '*' would mean expansion
++    #        (curiously, '?' must not be escaped)
++    # - '[': used as matching string => '[' would mean start of set
++    # - '|': used as sed split char instead of '/', so it needs to be escaped
++    #        in the filename
++    # printf %s particularly important if the filename contains the % character
++    file_escaped_source=$(printf "%s" "$file" | sed -e 's/[\*[|]/\\&/g')
++
++    # escape special characters in the target filename:
++    # phase 1 (characters escaped in the output diff):
++    #     - '\': backslash needs to be escaped in the output diff
++    #     - '"': quote needs to be escaped in the output diff if present inside
++    #            of the filename, as it used to bracket the entire filename part
++    # phase 2 (characters escaped in the match replacement):
++    #     - '\': backslash needs to be escaped again for sed itself
++    #            (i.e. double escaping after phase 1)
++    #     - '&': would expand to matched string
++    #     - '|': used as sed split char instead of '/'
++    # printf %s particularly important if the filename contains the % character
++    file_escaped_target=$(printf "%s" "$file" | sed -e 's/[\"]/\\&/g' -e 's/[\&|]/\\&/g')
++
++    # uncrustify our sourcefile, create a patch with diff and append it to our $patch
++    # The sed call is necessary to transform the patch from
++    #    --- $file timestamp
++    #    +++ - timestamp
++    # to both lines working on the same file and having a a/ and b/ prefix.
++    # Else it can not be applied with 'git apply'.
++    "$UNCRUSTIFY" -q -c "$UNCRUST_CONFIG" -f "$file" | \
++        diff -u -- "$file" - | \
++        sed -e "1s|--- $file_escaped_source|--- \"a/$file_escaped_target\"|" -e "2s|+++ -|+++ \"b/$file_escaped_target\"|" >> "$patch"
++done
++
++# if no patch has been generated all is ok, clean up the file stub and exit
++if [ ! -s "$patch" ] ; then
++    rm -f "$patch"
++    exit 0
++fi
++
++# a patch has been created, notify the user and exit
++printf "Formatting of some code does not follow the project guidelines.\n"
++
++if [ $(wc -l < $patch) -gt 80 ] ; then
++    printf "The file $patch contains the necessary fixes.\n"
++else
++    printf "Here's the patch that fixes the formatting:\n\n"
++    cat $patch
++fi
++
++printf "\nYou can apply these changes with:\n git apply $patch\n"
++printf "(from the root directory of the repository) and then commit again.\n"
++printf "\nAborting commit.\n"
++
++exit 1
+-- 
+2.32.0
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---wQiU1PiyqGqfI0u6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJiYXJNAAoJEB2Cnv7KVigSRaIL/jExtQzYccJy+2ruIeWX8KDo
-vX5s97X02wO2eGCdi1Ojkxxdss2JCdxJ6ldSW5Y2fEb0wq9J9SOeVwcydqdhW20L
-5Mxzsp3zkh8B4p7fINEaSwvv+OZXfhIYF1HRJm7BwoL2EPw6C7dN9uR2Mj1Tfitw
-El3M1qf770w4vaqql+B9VLTvWLAfr9wC5CmNsc7clBahpaNBoZz2MGqUySLXPEBm
-uNMy9ekKFdnMG+eUDhRY/8JTgC3HkRf1muVYDIS7U/IisAuuMwvOP++D2CnhJ8jR
-LQHzm1dtaF7keK9K67kTKKcXawm8/ZkpdKUBKXZHnwstl8JvmuugojEVqCed4xQp
-jVzphX59N8p+4UG2d98E+Kbr4SFTajqnbKvck9baqFZ1KNdRjJw4CjVcPw7s/wXz
-qgNSnlOOmfylGP855rR4GYwI1oL/+uW05E9xdiOdlEZ9xKI7T/UyTLQNKBqVe/A1
-YABOF69bKHG6UvoqEMjPTvb8jOA+Q/R0/SoyRb9I2w==
-=VW6h
------END PGP SIGNATURE-----
-
---wQiU1PiyqGqfI0u6--
 
