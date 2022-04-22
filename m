@@ -1,11 +1,12 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 22 Apr 2022 15:40:33 +0200
-Message-Id: <20220422134038.3801239-5-arne@...1227...>
-In-Reply-To: <20220422134038.3801239-1-arne@...1227...>
+Date: Fri, 22 Apr 2022 16:29:38 +0200
+Message-Id: <20220422142953.3805364-4-arne@...1227...>
+In-Reply-To: <20220422142953.3805364-1-arne@...1227...>
 References: <20220422134038.3801239-1-arne@...1227...>
+ <20220422142953.3805364-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 04/28] Add documentation for swap_hmac
- function
+Subject: [Openvpn-devel] [PATCH 13/28] Change FULL_SYNC macro to
+ no_pending_reliable_packets function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,51 +19,146 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
+This changes this macro to a better named inline function. This
+introduces a slight whitespace problem but the next refactoring will
+move the incorrectly intended block to its own function anyway.
 ---
- src/openvpn/ssl.c | 22 ++++++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
+ src/openvpn/ssl.c | 100 ++++++++++++++++++++++++++--------------------
+ 1 file changed, 57 insertions(+), 43 deletions(-)
 
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 4ebf5acc2..f58f3b727 100644
+index bad59f2a1..4ca093243 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -1366,10 +1366,7 @@ tls_multi_free(struct tls_multi *multi, bool clear)
+@@ -1774,8 +1774,10 @@ flush_payload_buffer(struct key_state *ks)
  }
  
- 
--/*
-- * Move a packet authentication HMAC + related fields to or from the front
-- * of the buffer so it can be processed by encrypt/decrypt.
-- */
-+
+ /* true if no in/out acknowledgements pending */
+-#define FULL_SYNC \
+-    (reliable_empty(ks->send_reliable) && reliable_ack_empty(ks->rec_ack))
++static bool no_pending_reliable_packets(struct key_state *ks)
++{
++    return (reliable_empty(ks->send_reliable) && reliable_ack_empty(ks->rec_ack));
++}
  
  /*
-  * Dependent on hmac size, opcode size, and session_id size.
-@@ -1377,6 +1374,23 @@ tls_multi_free(struct tls_multi *multi, bool clear)
-  */
- #define SWAP_BUF_SIZE 256
+  * Move the active key to the lame duck key and reinitialize the
+@@ -2428,6 +2430,54 @@ session_move_pre_start(const struct tls_session *session,
+     return true;
  
+ }
++
 +/**
-+ * Move a packet authentication HMAC + related fields to or from the front
-+ * of the buffer so it can be processed by encrypt/decrypt.
-+ *
-+ * Turning the on wire format that starts with the opcode to a format
-+ * that starts with the hmac
-+ * e.g. "onwire" [opcode + packet id] [hmac] [remainder of packed]
-+ *
-+ *
-+ *    "internal" [hmac] [opcode + packet id] [remainer of packet]
-+ *
-+ *  @param buf      the buffer the swap operation is executed on
-+ *  @param incoming determines the direction of the swap
-+ *  @param co       crypto options, determines the hmac to use in the swap
-+ *
-+ *  @return         if the swap was successful (buf was large enough)
++ * Moves the key to state to S_ACTIVE and also advances the multi_state state
++ * machine if this is the initial connection. 
 + */
- static bool
- swap_hmac(struct buffer *buf, const struct crypto_options *co, bool incoming)
- {
++static void
++session_move_active(struct tls_multi *multi, struct tls_session *session,
++                    struct link_socket_info *to_link_socket_info,
++                    struct key_state *ks)
++{
++    dmsg(D_TLS_DEBUG_MED, "STATE S_ACTIVE");
++
++    ks->established = now;
++    if (check_debug_level(D_HANDSHAKE))
++    {
++        print_details(&ks->ks_ssl, "Control Channel:");
++    }
++    ks->state = S_ACTIVE;
++    /* Cancel negotiation timeout */
++    ks->must_negotiate = 0;
++    INCR_SUCCESS;
++
++    /* Set outgoing address for data channel packets */
++    link_socket_set_outgoing_addr(to_link_socket_info, &ks->remote_addr,
++                                  session->common_name, session->opt->es);
++
++    /* Check if we need to advance the tls_multi state machine */
++    if (multi->multi_state == CAS_NOT_CONNECTED)
++    {
++        if (session->opt->mode == MODE_SERVER)
++        {
++            /* On a server we continue with running connect scripts next */
++            multi->multi_state = CAS_WAITING_AUTH;
++        }
++        else
++        {
++            /* Skip the connect script related states */
++            multi->multi_state = CAS_WAITING_OPTIONS_IMPORT;
++        }
++    }
++
++    /* Flush any payload packets that were buffered before our state transitioned to S_ACTIVE */
++    flush_payload_buffer(ks);
++
++#ifdef MEASURE_TLS_HANDSHAKE_STATS
++    show_tls_performance_stats();
++#endif
++}
+ /*
+  * This is the primary routine for processing TLS stuff inside the
+  * the main event loop.  When this routine exits
+@@ -2518,7 +2568,7 @@ tls_process(struct tls_multi *multi,
+         }
+ 
+         /* Wait for Initial Handshake ACK */
+-        if (ks->state == S_PRE_START && FULL_SYNC)
++        if (ks->state == S_PRE_START && no_pending_reliable_packets(ks))
+         {
+             ks->state = S_START;
+             state_change = true;
+@@ -2542,47 +2592,11 @@ tls_process(struct tls_multi *multi,
+ 
+         /* Wait for ACK */
+         if (((ks->state == S_GOT_KEY && !session->opt->server)
+-             || (ks->state == S_SENT_KEY && session->opt->server)))
++             || (ks->state == S_SENT_KEY && session->opt->server))
++             && no_pending_reliable_packets(ks))
+         {
+-            if (FULL_SYNC)
+-            {
+-                ks->established = now;
+-                dmsg(D_TLS_DEBUG_MED, "STATE S_ACTIVE");
+-                if (check_debug_level(D_HANDSHAKE))
+-                {
+-                    print_details(&ks->ks_ssl, "Control Channel:");
+-                }
+-                state_change = true;
+-                ks->state = S_ACTIVE;
+-                /* Cancel negotiation timeout */
+-                ks->must_negotiate = 0;
+-                INCR_SUCCESS;
+-
+-                /* Set outgoing address for data channel packets */
+-                link_socket_set_outgoing_addr(to_link_socket_info, &ks->remote_addr, session->common_name, session->opt->es);
+-
+-                /* Check if we need to advance the tls_multi state machine */
+-                if (multi->multi_state == CAS_NOT_CONNECTED)
+-                {
+-                    if (session->opt->mode == MODE_SERVER)
+-                    {
+-                        /* On a server we continue with running connect scripts next */
+-                        multi->multi_state = CAS_WAITING_AUTH;
+-                    }
+-                    else
+-                    {
+-                        /* Skip the connect script related states */
+-                        multi->multi_state = CAS_WAITING_OPTIONS_IMPORT;
+-                    }
+-                }
+-
+-                /* Flush any payload packets that were buffered before our state transitioned to S_ACTIVE */
+-                flush_payload_buffer(ks);
+-
+-#ifdef MEASURE_TLS_HANDSHAKE_STATS
+-                show_tls_performance_stats();
+-#endif
+-            }
++            session_move_active(multi, session, to_link_socket_info, ks);
++            state_change = true;
+         }
+ 
+         /* Reliable buffer to outgoing TCP/UDP (send up to CONTROL_SEND_ACK_MAX ACKs
 -- 
 2.32.0 (Apple Git-132)
 
