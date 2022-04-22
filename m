@@ -1,9 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 22 Apr 2022 15:40:29 +0200
-Message-Id: <20220422134038.3801239-1-arne@...1227...>
+Date: Fri, 22 Apr 2022 15:40:31 +0200
+Message-Id: <20220422134038.3801239-3-arne@...1227...>
+In-Reply-To: <20220422134038.3801239-1-arne@...1227...>
+References: <20220422134038.3801239-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 00/28] Stateless three-way handshake and
- control channel improvements
+Subject: [Openvpn-devel] [PATCH 02/28] Remove dead PID_TEST code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,99 +17,122 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-OpenVPN currently has a bit of a weakness in its early three way handshake
+Enabling this test produces compile errors and by the looks of it the
+test has been broken for many years.
+---
+ src/openvpn/init.c      |  5 ----
+ src/openvpn/packet_id.c | 56 -----------------------------------------
+ src/openvpn/packet_id.h | 10 --------
+ 3 files changed, 71 deletions(-)
 
-A single client reset packet (first packet of the handshake) will
-  - trigger creating session on the server side leading to poential
-    ressource exhaustian
-  - make the server respond with 3 answers trying to get an ACK for its
-    answer making it a amplification
-
-This patch series intends to solve this problem and since the patches revolve
-a lot around control channel behaviour, I discovered and fixed a number of other
-weaknesses in the control channel implementation:
-
- - Implementing an HMAC based scheme to offer a stateless three way handshake for
-   the server that avoids the previous mentioned problems.
- - Restricting control channel packet size is now possible without breaking the
-   protocol (--tls-mtu)
- - Server and client will now always repeat previous ACKs to avoid the peer
-   resending a packet if an ACK is gone missing. (Similar to what cumulative
-   ACKs in other protocols achieve).
-
-Arne Schwabe (28):
-  Remove tls_init_control_channel_frame_parameters wrapper function
-  Remove dead PID_TEST code
-  Move pre decrypt lite check to its own function
-  Add documentation for swap_hmac function
-  Extend tls_pre_decrypt_lite to return type of packet and keep state
-  Move ssl function related to control channel wrap/unwrap to
-    ssl_pkt.c/h
-  Add unit tests for test_tls_decrypt_lite
-  Split out reliable_ack_parse from reliable_ack_read
-  Remove inc_pid argument from reliable_mark_deleted that is always true
-  Remove EXPONENTIAL_BACKOFF define
-  Refactor tls-auth/tls-crypt wrapping into into own function
-  Extract session_move_pre_start as own function, use local buffer
-    variable
-  Change FULL_SYNC macro to no_pending_reliable_packets function
-  Move tls_process_state into its own function
-  Remove pointless indentation from tls_process.
-  Move CRL reload to key_state_init from S_START transition
-  Implement constructing a control channel reset client as standalone
-    fucntion
-  Implement stateless, HMAC basedsesssion id three way handshake
-  Make buf_write_u8/16/32 take the type they pretend to take
-  Change reliable_get_buf_sequenced to reliable_get_entry_sequenced
-  Extract read_incoming_tls_ciphertext into function
-  Implement HMAC based session id for tls-crypt v2
-  Optimise three-way handshake condition for S_PRE_START to S_START
-  Extract read_incoming_tls_plaintext into its own function
-  Ensure that control channel packet are respecting tls-mtu
-  Allow setting control channel packet size with tls-mtu
-  Add unit test for reliable_get_num_output_sequenced_available
-  Always include ACKs for the last seen control packets
-
- Changes.rst                                |   16 +
- doc/doxygen/doc_protocol_overview.h        |    2 +
- doc/man-sections/link-options.rst          |    7 +
- doc/man-sections/tls-options.rst           |   14 +
- doc/tls-crypt-v2.txt                       |   41 +
- src/openvpn/Makefile.am                    |    1 +
- src/openvpn/buffer.h                       |   13 +-
- src/openvpn/crypto.h                       |    8 +
- src/openvpn/init.c                         |   28 +-
- src/openvpn/mtu.h                          |    5 +
- src/openvpn/mudp.c                         |  164 ++-
- src/openvpn/multi.h                        |    3 +
- src/openvpn/openvpn.h                      |    6 +
- src/openvpn/openvpn.vcxproj                |    2 +
- src/openvpn/openvpn.vcxproj.filters        |    3 +
- src/openvpn/options.c                      |   27 +
- src/openvpn/options.h                      |    4 +
- src/openvpn/packet_id.c                    |   56 -
- src/openvpn/packet_id.h                    |   25 +-
- src/openvpn/reliable.c                     |  209 +++-
- src/openvpn/reliable.h                     |   84 +-
- src/openvpn/ssl.c                          | 1312 ++++++++++----------
- src/openvpn/ssl.h                          |   97 +-
- src/openvpn/ssl_backend.h                  |    8 +-
- src/openvpn/ssl_common.h                   |    1 +
- src/openvpn/ssl_mbedtls.c                  |   19 +-
- src/openvpn/ssl_mbedtls.h                  |    4 +
- src/openvpn/ssl_openssl.c                  |   22 +-
- src/openvpn/ssl_openssl.h                  |    7 +
- src/openvpn/ssl_pkt.c                      |  549 ++++++++
- src/openvpn/ssl_pkt.h                      |  295 +++++
- tests/unit_tests/openvpn/Makefile.am       |   29 +-
- tests/unit_tests/openvpn/mock_get_random.c |   10 +
- tests/unit_tests/openvpn/test_packet_id.c  |   90 ++
- tests/unit_tests/openvpn/test_pkt.c        |  620 +++++++++
- 35 files changed, 2825 insertions(+), 956 deletions(-)
- create mode 100644 src/openvpn/ssl_pkt.c
- create mode 100644 src/openvpn/ssl_pkt.h
- create mode 100644 tests/unit_tests/openvpn/test_pkt.c
-
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index d5be3cf9f..e41bb9d4b 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -791,11 +791,6 @@ init_static(void)
+ 
+     init_ssl_lib();
+ 
+-#ifdef PID_TEST
+-    packet_id_interactive_test();       /* test the sequence number code */
+-    return false;
+-#endif
+-
+ #ifdef SCHEDULE_TEST
+     schedule_test();
+     return false;
+diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
+index 494320309..e357909d7 100644
+--- a/src/openvpn/packet_id.c
++++ b/src/openvpn/packet_id.c
+@@ -634,59 +634,3 @@ packet_id_debug_print(int msglevel,
+ }
+ 
+ #endif /* ifdef ENABLE_DEBUG */
+-
+-#ifdef PID_TEST
+-
+-void
+-packet_id_interactive_test(void)
+-{
+-    struct packet_id pid;
+-    struct packet_id_net pin;
+-    bool long_form;
+-    bool count = 0;
+-    bool test;
+-
+-    const int seq_backtrack = 10;
+-    const int time_backtrack = 10;
+-
+-    packet_id_init(&pid, seq_backtrack, time_backtrack);
+-
+-    while (true)
+-    {
+-        char buf[80];
+-        if (!fgets(buf, sizeof(buf), stdin))
+-        {
+-            break;
+-        }
+-        update_time();
+-        if (sscanf(buf, "%lu,%u", &pin.time, &pin.id) == 2)
+-        {
+-            packet_id_reap_test(&pid.rec);
+-            test = packet_id_test(&pid.rec, &pin);
+-            printf("packet_id_test (%" PRIi64 ", " packet_id_format ") returned %d\n",
+-                   (int64_t)pin.time,
+-                   (packet_id_print_type)pin.id,
+-                   test);
+-            if (test)
+-            {
+-                packet_id_add(&pid.rec, &pin);
+-            }
+-        }
+-        else
+-        {
+-            long_form = (count < 20);
+-            packet_id_alloc_outgoing(&pid.send, &pin, long_form);
+-            printf("(%" PRIi64 "(" packet_id_format "), %d)\n",
+-                   (int64_t)pin.time,
+-                   (packet_id_print_type)pin.id,
+-                   long_form);
+-            if (pid.send.id == 10)
+-            {
+-                pid.send.id = 0xFFFFFFF8;
+-            }
+-            ++count;
+-        }
+-    }
+-    packet_id_free(&pid);
+-}
+-#endif /* ifdef PID_TEST */
+diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h
+index bb613282e..410071e26 100644
+--- a/src/openvpn/packet_id.h
++++ b/src/openvpn/packet_id.h
+@@ -35,11 +35,6 @@
+ #include "error.h"
+ #include "otime.h"
+ 
+-/*
+- * Enables OpenVPN to be compiled in special packet_id test mode.
+- */
+-/*#define PID_TEST*/
+-
+ #if 1
+ /*
+  * These are the types that members of
+@@ -296,11 +291,6 @@ packet_id_persist_save_obj(struct packet_id_persist *p, const struct packet_id *
+ 
+ const char *packet_id_net_print(const struct packet_id_net *pin, bool print_timestamp, struct gc_arena *gc);
+ 
+-#ifdef PID_TEST
+-void packet_id_interactive_test(void);
+-
+-#endif
+-
+ static inline int
+ packet_id_size(bool long_form)
+ {
 -- 
 2.32.0 (Apple Git-132)
 
