@@ -1,12 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 22 Apr 2022 16:29:48 +0200
-Message-Id: <20220422142953.3805364-14-arne@...1227...>
-In-Reply-To: <20220422142953.3805364-1-arne@...1227...>
-References: <20220422134038.3801239-1-arne@...1227...>
- <20220422142953.3805364-1-arne@...1227...>
+Date: Fri, 22 Apr 2022 15:40:29 +0200
+Message-Id: <20220422134038.3801239-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 23/28] Optimise three-way handshake
- condition for S_PRE_START to S_START
+Subject: [Openvpn-devel] [PATCH 00/28] Stateless three-way handshake and
+ control channel improvements
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,121 +16,99 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-We move to the S_START when we have finished the three-way handshake. After
-the three way handshake is done, the client will send the TLS Client Hello
-packet.
+OpenVPN currently has a bit of a weakness in its early three way handshake
 
-Currently we consider the three way handshake only complete if all
-outgoing packet have been acked (which in this case is the one
-HARD_RESET_CLIENT or HARD_RESET_SERVER) and also all akcs for incoming
-packets are send out.
+A single client reset packet (first packet of the handshake) will
+  - trigger creating session on the server side leading to poential
+    ressource exhaustian
+  - make the server respond with 3 answers trying to get an ACK for its
+    answer making it a amplification
 
-The outgoing packet ack is important as it signal that the other side is
-really responding. The need to send out all ACKs before moving to the next
-state also breaks piggybacking the ACKs onto the next control packet.
+This patch series intends to solve this problem and since the patches revolve
+a lot around control channel behaviour, I discovered and fixed a number of other
+weaknesses in the control channel implementation:
 
-With this change both server and client will only send a P_CONTROL_V1 with
-the TLS Client Hello and the TLS Server Hello with piggybacked ack instead
-sending an P_ACK_V1 + P_CONTROL_V1, recuding the number of packets in a
-handshake by 2.
+ - Implementing an HMAC based scheme to offer a stateless three way handshake for
+   the server that avoids the previous mentioned problems.
+ - Restricting control channel packet size is now possible without breaking the
+   protocol (--tls-mtu)
+ - Server and client will now always repeat previous ACKs to avoid the peer
+   resending a packet if an ACK is gone missing. (Similar to what cumulative
+   ACKs in other protocols achieve).
 
-This also allows the server to avoid resending P_CONTROL_HARD_RESET_V2
-to complete the three-way handshake with HMAC. Only packets with
-an ACK contain the remote session id that we need for HMAC session id
-verification. The ACK_V1 packet that complets this three-way handshake
-can get lost. But the P_CONTROL_V1 with the piggybacked ACK will get
-retransmitted. This allows to put the burden of retransmission fully on
-the client.
+Arne Schwabe (28):
+  Remove tls_init_control_channel_frame_parameters wrapper function
+  Remove dead PID_TEST code
+  Move pre decrypt lite check to its own function
+  Add documentation for swap_hmac function
+  Extend tls_pre_decrypt_lite to return type of packet and keep state
+  Move ssl function related to control channel wrap/unwrap to
+    ssl_pkt.c/h
+  Add unit tests for test_tls_decrypt_lite
+  Split out reliable_ack_parse from reliable_ack_read
+  Remove inc_pid argument from reliable_mark_deleted that is always true
+  Remove EXPONENTIAL_BACKOFF define
+  Refactor tls-auth/tls-crypt wrapping into into own function
+  Extract session_move_pre_start as own function, use local buffer
+    variable
+  Change FULL_SYNC macro to no_pending_reliable_packets function
+  Move tls_process_state into its own function
+  Remove pointless indentation from tls_process.
+  Move CRL reload to key_state_init from S_START transition
+  Implement constructing a control channel reset client as standalone
+    fucntion
+  Implement stateless, HMAC basedsesssion id three way handshake
+  Make buf_write_u8/16/32 take the type they pretend to take
+  Change reliable_get_buf_sequenced to reliable_get_entry_sequenced
+  Extract read_incoming_tls_ciphertext into function
+  Implement HMAC based session id for tls-crypt v2
+  Optimise three-way handshake condition for S_PRE_START to S_START
+  Extract read_incoming_tls_plaintext into its own function
+  Ensure that control channel packet are respecting tls-mtu
+  Allow setting control channel packet size with tls-mtu
+  Add unit test for reliable_get_num_output_sequenced_available
+  Always include ACKs for the last seen control packets
 
-The S_GOT_KEY/S_SENT_KEY -> S_ACTIVE is similar. We do not need to wait
-for the ack packet to be sent to move the state forward. This has however
-no effect on actual packets since there are normally no outstanding ACKs
-here.
----
- src/openvpn/ssl.c                   | 15 +++++----------
- tests/unit_tests/openvpn/test_pkt.c |  8 ++++----
- 2 files changed, 9 insertions(+), 14 deletions(-)
+ Changes.rst                                |   16 +
+ doc/doxygen/doc_protocol_overview.h        |    2 +
+ doc/man-sections/link-options.rst          |    7 +
+ doc/man-sections/tls-options.rst           |   14 +
+ doc/tls-crypt-v2.txt                       |   41 +
+ src/openvpn/Makefile.am                    |    1 +
+ src/openvpn/buffer.h                       |   13 +-
+ src/openvpn/crypto.h                       |    8 +
+ src/openvpn/init.c                         |   28 +-
+ src/openvpn/mtu.h                          |    5 +
+ src/openvpn/mudp.c                         |  164 ++-
+ src/openvpn/multi.h                        |    3 +
+ src/openvpn/openvpn.h                      |    6 +
+ src/openvpn/openvpn.vcxproj                |    2 +
+ src/openvpn/openvpn.vcxproj.filters        |    3 +
+ src/openvpn/options.c                      |   27 +
+ src/openvpn/options.h                      |    4 +
+ src/openvpn/packet_id.c                    |   56 -
+ src/openvpn/packet_id.h                    |   25 +-
+ src/openvpn/reliable.c                     |  209 +++-
+ src/openvpn/reliable.h                     |   84 +-
+ src/openvpn/ssl.c                          | 1312 ++++++++++----------
+ src/openvpn/ssl.h                          |   97 +-
+ src/openvpn/ssl_backend.h                  |    8 +-
+ src/openvpn/ssl_common.h                   |    1 +
+ src/openvpn/ssl_mbedtls.c                  |   19 +-
+ src/openvpn/ssl_mbedtls.h                  |    4 +
+ src/openvpn/ssl_openssl.c                  |   22 +-
+ src/openvpn/ssl_openssl.h                  |    7 +
+ src/openvpn/ssl_pkt.c                      |  549 ++++++++
+ src/openvpn/ssl_pkt.h                      |  295 +++++
+ tests/unit_tests/openvpn/Makefile.am       |   29 +-
+ tests/unit_tests/openvpn/mock_get_random.c |   10 +
+ tests/unit_tests/openvpn/test_packet_id.c  |   90 ++
+ tests/unit_tests/openvpn/test_pkt.c        |  620 +++++++++
+ 35 files changed, 2825 insertions(+), 956 deletions(-)
+ create mode 100644 src/openvpn/ssl_pkt.c
+ create mode 100644 src/openvpn/ssl_pkt.h
+ create mode 100644 tests/unit_tests/openvpn/test_pkt.c
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 5e1a23ccd..e3101c7fa 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1796,13 +1796,6 @@ flush_payload_buffer(struct key_state *ks)
-     }
- }
- 
--/* true if no in/out acknowledgements pending */
--static bool
--no_pending_reliable_packets(struct key_state *ks)
--{
--    return (reliable_empty(ks->send_reliable) && reliable_ack_empty(ks->rec_ack));
--}
--
- /*
-  * Move the active key to the lame duck key and reinitialize the
-  * active key.
-@@ -2646,8 +2639,10 @@ tls_process_state(struct tls_multi *multi,
-         goto error;
-     }
- 
--    /* Wait for Initial Handshake ACK */
--    if (ks->state == S_PRE_START && no_pending_reliable_packets(ks))
-+    /* Check if the initial three-way Handshake is complete.
-+     * This handshake can be considered to be complete when our own
-+     * initial packet can been successfully acked. */
-+    if (ks->state == S_PRE_START && reliable_empty(ks->send_reliable))
-     {
-         ks->state = S_START;
-         state_change = true;
-@@ -2660,7 +2655,7 @@ tls_process_state(struct tls_multi *multi,
-     /* Wait for ACK */
-     if (((ks->state == S_GOT_KEY && !session->opt->server)
-          || (ks->state == S_SENT_KEY && session->opt->server))
--        && no_pending_reliable_packets(ks))
-+        && reliable_empty(ks->send_reliable))
-     {
-         session_move_active(multi, session, to_link_socket_info, ks);
-         state_change = true;
-diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
-index 184b88383..d525def3c 100644
---- a/tests/unit_tests/openvpn/test_pkt.c
-+++ b/tests/unit_tests/openvpn/test_pkt.c
-@@ -531,7 +531,7 @@ test_generate_reset_packet_plain(void **ut_state)
- 
-     uint8_t header = 0 | (P_CONTROL_HARD_RESET_CLIENT_V2 << P_OPCODE_SHIFT);
- 
--    struct buffer buf = tls_reset_standalone(&tas, &client_id, &server_id, header, 0, 0);
-+    struct buffer buf = tls_reset_standalone(&tas.tls_wrap, &tas, &client_id, &server_id, header, false);
- 
- 
-     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
-@@ -539,7 +539,7 @@ test_generate_reset_packet_plain(void **ut_state)
- 
-     /* Assure repeated generation of reset is deterministic/stateless*/
-     assert_memory_equal(state.peer_session_id.id, client_id.id, SID_SIZE);
--    struct buffer buf2 = tls_reset_standalone(&tas, &client_id, &server_id, header, 0, 0);
-+    struct buffer buf2 = tls_reset_standalone(&tas.tls_wrap, &tas, &client_id, &server_id, header, false);
-     assert_int_equal(BLEN(&buf), BLEN(&buf2));
-     assert_memory_equal(BPTR(&buf), BPTR(&buf2), BLEN(&buf));
-     free_buf(&buf2);
-@@ -566,7 +566,7 @@ test_generate_reset_packet_tls_auth(void **ut_state)
- 
-     now = 0x22446688;
-     reset_packet_id_send(&tas_client.tls_wrap.opt.packet_id.send);
--    struct buffer buf = tls_reset_standalone(&tas_client, &client_id, &server_id, header, 0, 0);
-+    struct buffer buf = tls_reset_standalone(&tas_client.tls_wrap, &tas_client, &client_id, &server_id, header, false);
- 
-     enum first_packet_verdict verdict = tls_pre_decrypt_lite(&tas_server, &state, &from, &buf);
-     assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
-@@ -575,7 +575,7 @@ test_generate_reset_packet_tls_auth(void **ut_state)
- 
-     /* Assure repeated generation of reset is deterministic/stateless*/
-     reset_packet_id_send(&tas_client.tls_wrap.opt.packet_id.send);
--    struct buffer buf2 = tls_reset_standalone(&tas_client, &client_id, &server_id, header, 0, 0);
-+    struct buffer buf2 = tls_reset_standalone(&tas_client.tls_wrap, &tas_client, &client_id, &server_id, header,false);
-     assert_int_equal(BLEN(&buf), BLEN(&buf2));
-     assert_memory_equal(BPTR(&buf), BPTR(&buf2), BLEN(&buf));
-     free_buf(&buf2);
 -- 
 2.32.0 (Apple Git-132)
 
