@@ -1,12 +1,12 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 22 Apr 2022 16:29:49 +0200
-Message-Id: <20220422142953.3805364-15-arne@...1227...>
+Date: Fri, 22 Apr 2022 16:29:40 +0200
+Message-Id: <20220422142953.3805364-6-arne@...1227...>
 In-Reply-To: <20220422142953.3805364-1-arne@...1227...>
 References: <20220422134038.3801239-1-arne@...1227...>
  <20220422142953.3805364-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 24/28] Extract read_incoming_tls_plaintext
- into its own function
+Subject: [Openvpn-devel] [PATCH 15/28] Remove pointless indentation from
+ tls_process.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,72 +19,89 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This makes the tls_process_state function a bit easier to read allows
-extending the read_incoming_tls_plaintext function later without
-making tls_process_state even longer.
+This is probably a result from earlier code that still needed to be
+C89 compatible add probably added this to allow variable decleration
 ---
- src/openvpn/ssl.c | 38 +++++++++++++++++++++++---------------
- 1 file changed, 23 insertions(+), 15 deletions(-)
+ src/openvpn/ssl.c | 56 +++++++++++++++++++++++------------------------
+ 1 file changed, 27 insertions(+), 29 deletions(-)
 
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index e3101c7fa..01717559c 100644
+index 15af58949..097be8c02 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -2612,6 +2612,28 @@ control_packet_needs_wkc(const struct key_state *ks)
-            && (ks->send_reliable->packet_id == 1);
- }
- 
-+static bool
-+read_incoming_tls_plaintext(struct buffer *buf, struct key_state *ks, interval_t *wakeup)
-+{
-+    ASSERT(buf_init(buf, 0));
-+    int status = key_state_read_plaintext(&ks->ks_ssl, buf, TLS_CHANNEL_BUF_SIZE);
-+    update_time();
-+    if (status == -1)
-+    {
-+        msg(D_TLS_ERRORS, "TLS Error: TLS object -> incoming plaintext read error");
-+        return false;
-+    }
-+    if (status == 1)
-+    {
-+        *state_change = true;
-+        dmsg(D_TLS_DEBUG, "TLS -> Incoming Plaintext");
-+
-+        /* More data may be available, wake up again asap to check. */
-+        *wakeup = 0;
-+    }
-+    return true;
-+}
-+
- 
- static bool
- tls_process_state(struct tls_multi *multi,
-@@ -2705,24 +2727,10 @@ tls_process_state(struct tls_multi *multi,
-     struct buffer *buf = &ks->plaintext_read_buf;
-     if (!buf->len)
-     {
--        int status;
--
--        ASSERT(buf_init(buf, 0));
--        status = key_state_read_plaintext(&ks->ks_ssl, buf, TLS_CHANNEL_BUF_SIZE);
--        update_time();
--        if (status == -1)
-+        if (!read_incoming_tls_plaintext(buf, ks, wakeup))
-         {
--            msg(D_TLS_ERRORS, "TLS Error: TLS object -> incoming plaintext read error");
-             goto error;
-         }
--        if (status == 1)
--        {
--            state_change = true;
--            dmsg(D_TLS_DEBUG, "TLS -> Incoming Plaintext");
--
--            /* More data may be available, wake up again asap to check. */
--            *wakeup = 0;
--        }
+@@ -2774,45 +2774,43 @@ tls_process(struct tls_multi *multi,
      }
  
-     /* Send Key */
+     /* When should we wake up again? */
++    if (ks->state >= S_INITIAL)
+     {
+-        if (ks->state >= S_INITIAL)
+-        {
+-            compute_earliest_wakeup(wakeup,
+-                                    reliable_send_timeout(ks->send_reliable));
+-
+-            if (ks->must_negotiate)
+-            {
+-                compute_earliest_wakeup(wakeup, ks->must_negotiate - now);
+-            }
+-        }
++        compute_earliest_wakeup(wakeup,
++                                reliable_send_timeout(ks->send_reliable));
+ 
+-        if (ks->established && session->opt->renegotiate_seconds)
++        if (ks->must_negotiate)
+         {
+-            compute_earliest_wakeup(wakeup,
+-                                    ks->established + session->opt->renegotiate_seconds - now);
++            compute_earliest_wakeup(wakeup, ks->must_negotiate - now);
+         }
++    }
+ 
+-        dmsg(D_TLS_DEBUG, "TLS: tls_process: timeout set to %d", *wakeup);
++    if (ks->established && session->opt->renegotiate_seconds)
++    {
++        compute_earliest_wakeup(wakeup,
++                                ks->established + session->opt->renegotiate_seconds - now);
++    }
+ 
+-        /* prevent event-loop spinning by setting minimum wakeup of 1 second */
+-        if (*wakeup <= 0)
+-        {
+-            *wakeup = 1;
++    dmsg(D_TLS_DEBUG, "TLS: tls_process: timeout set to %d", *wakeup);
+ 
+-            /* if we had something to send to remote, but to_link was busy,
+-             * let caller know we need to be called again soon */
+-            return true;
+-        }
++    /* prevent event-loop spinning by setting minimum wakeup of 1 second */
++    if (*wakeup <= 0)
++    {
++        *wakeup = 1;
+ 
+-        /* If any of the state changes resulted in the to_link buffer being
+-         * set, we are also active */
+-        if (to_link->len)
+-        {
+-            return true;
+-        }
++        /* if we had something to send to remote, but to_link was busy,
++         * let caller know we need to be called again soon */
++        return true;
++    }
+ 
+-        return false;
++    /* If any of the state changes resulted in the to_link buffer being
++     * set, we are also active */
++    if (to_link->len)
++    {
++        return true;
+     }
++
++    return false;
+ }
+ 
+ /*
 -- 
 2.32.0 (Apple Git-132)
 
