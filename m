@@ -1,12 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 22 Apr 2022 16:29:40 +0200
-Message-Id: <20220422142953.3805364-6-arne@...1227...>
-In-Reply-To: <20220422142953.3805364-1-arne@...1227...>
+Date: Fri, 22 Apr 2022 16:29:35 +0200
+Message-Id: <20220422142953.3805364-1-arne@...1227...>
+In-Reply-To: <20220422134038.3801239-1-arne@...1227...>
 References: <20220422134038.3801239-1-arne@...1227...>
- <20220422142953.3805364-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 15/28] Remove pointless indentation from
- tls_process.
+Subject: [Openvpn-devel] [PATCH 10/28] Remove EXPONENTIAL_BACKOFF define
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +17,45 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is probably a result from earlier code that still needed to be
-C89 compatible add probably added this to allow variable decleration
+We have EXPONENTIAL_BACKOFF as default forever (8c47de7, 2.1.1c,
+2010). Remove the other code path that is dead code.
 ---
- src/openvpn/ssl.c | 56 +++++++++++++++++++++++------------------------
- 1 file changed, 27 insertions(+), 29 deletions(-)
+ src/openvpn/reliable.c | 5 -----
+ src/openvpn/reliable.h | 2 --
+ 2 files changed, 7 deletions(-)
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 15af58949..097be8c02 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2774,45 +2774,43 @@ tls_process(struct tls_multi *multi,
+diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
+index 2aae152bb..d8711f7dc 100644
+--- a/src/openvpn/reliable.c
++++ b/src/openvpn/reliable.c
+@@ -602,14 +602,9 @@ reliable_send(struct reliable *rel, int *opcode)
      }
- 
-     /* When should we wake up again? */
-+    if (ks->state >= S_INITIAL)
+     if (best)
      {
--        if (ks->state >= S_INITIAL)
--        {
--            compute_earliest_wakeup(wakeup,
--                                    reliable_send_timeout(ks->send_reliable));
+-#ifdef EXPONENTIAL_BACKOFF
+         /* exponential backoff */
+         best->next_try = local_now + best->timeout;
+         best->timeout *= 2;
+-#else
+-        /* constant timeout, no backoff */
+-        best->next_try = local_now + best->timeout;
+-#endif
+         best->n_acks = 0;
+         *opcode = best->opcode;
+         dmsg(D_REL_DEBUG, "ACK reliable_send ID " packet_id_format " (size=%d to=%d)",
+diff --git a/src/openvpn/reliable.h b/src/openvpn/reliable.h
+index cf6de0506..b045410a7 100644
+--- a/src/openvpn/reliable.h
++++ b/src/openvpn/reliable.h
+@@ -41,8 +41,6 @@
+  *  @{ */
+ 
+ 
+-#define EXPONENTIAL_BACKOFF
 -
--            if (ks->must_negotiate)
--            {
--                compute_earliest_wakeup(wakeup, ks->must_negotiate - now);
--            }
--        }
-+        compute_earliest_wakeup(wakeup,
-+                                reliable_send_timeout(ks->send_reliable));
- 
--        if (ks->established && session->opt->renegotiate_seconds)
-+        if (ks->must_negotiate)
-         {
--            compute_earliest_wakeup(wakeup,
--                                    ks->established + session->opt->renegotiate_seconds - now);
-+            compute_earliest_wakeup(wakeup, ks->must_negotiate - now);
-         }
-+    }
- 
--        dmsg(D_TLS_DEBUG, "TLS: tls_process: timeout set to %d", *wakeup);
-+    if (ks->established && session->opt->renegotiate_seconds)
-+    {
-+        compute_earliest_wakeup(wakeup,
-+                                ks->established + session->opt->renegotiate_seconds - now);
-+    }
- 
--        /* prevent event-loop spinning by setting minimum wakeup of 1 second */
--        if (*wakeup <= 0)
--        {
--            *wakeup = 1;
-+    dmsg(D_TLS_DEBUG, "TLS: tls_process: timeout set to %d", *wakeup);
- 
--            /* if we had something to send to remote, but to_link was busy,
--             * let caller know we need to be called again soon */
--            return true;
--        }
-+    /* prevent event-loop spinning by setting minimum wakeup of 1 second */
-+    if (*wakeup <= 0)
-+    {
-+        *wakeup = 1;
- 
--        /* If any of the state changes resulted in the to_link buffer being
--         * set, we are also active */
--        if (to_link->len)
--        {
--            return true;
--        }
-+        /* if we had something to send to remote, but to_link was busy,
-+         * let caller know we need to be called again soon */
-+        return true;
-+    }
- 
--        return false;
-+    /* If any of the state changes resulted in the to_link buffer being
-+     * set, we are also active */
-+    if (to_link->len)
-+    {
-+        return true;
-     }
-+
-+    return false;
- }
- 
- /*
+ #define RELIABLE_ACK_SIZE 8     /**< The maximum number of packet IDs
+                                  *   waiting to be acknowledged which can
+                                  *   be stored in one \c reliable_ack
 -- 
 2.32.0 (Apple Git-132)
 
