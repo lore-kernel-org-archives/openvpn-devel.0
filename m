@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 22 Apr 2022 15:40:38 +0200
-Message-Id: <20220422134038.3801239-10-arne@...1227...>
+Date: Fri, 22 Apr 2022 15:40:32 +0200
+Message-Id: <20220422134038.3801239-4-arne@...1227...>
 In-Reply-To: <20220422134038.3801239-1-arne@...1227...>
 References: <20220422134038.3801239-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 09/28] Remove inc_pid argument from
- reliable_mark_deleted that is always true
+Subject: [Openvpn-devel] [PATCH 03/28] Move pre decrypt lite check to its
+ own function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,64 +18,49 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a small cleanup to remove a superfluous argument
----
- src/openvpn/reliable.c | 7 ++-----
- src/openvpn/reliable.h | 2 +-
- src/openvpn/ssl.c      | 2 +-
- 3 files changed, 4 insertions(+), 7 deletions(-)
+This prepares for extending this function with the HMAC based session ID
+check.
 
-diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
-index 274f937ab..2aae152bb 100644
---- a/src/openvpn/reliable.c
-+++ b/src/openvpn/reliable.c
-@@ -738,7 +738,7 @@ reliable_mark_active_outgoing(struct reliable *rel, struct buffer *buf, int opco
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/mudp.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index 4fbe3c1a3..910268333 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -39,6 +39,20 @@
+ #include <sys/inotify.h>
+ #endif
  
- /* delete a buffer previously activated by reliable_mark_active() */
- void
--reliable_mark_deleted(struct reliable *rel, struct buffer *buf, bool inc_pid)
-+reliable_mark_deleted(struct reliable *rel, struct buffer *buf)
- {
-     int i;
-     for (i = 0; i < rel->size; ++i)
-@@ -747,10 +747,7 @@ reliable_mark_deleted(struct reliable *rel, struct buffer *buf, bool inc_pid)
-         if (buf == &e->buf)
-         {
-             e->active = false;
--            if (inc_pid)
--            {
--                rel->packet_id = e->packet_id + 1;
--            }
-+            rel->packet_id = e->packet_id + 1;
-             return;
++static bool
++do_pre_decrypt_check(struct multi_context *m)
++{
++    if (!m->top.c2.tls_auth_standalone)
++    {
++        return false;
++    }
++    if (!tls_pre_decrypt_lite(m->top.c2.tls_auth_standalone, &m->top.c2.from, &m->top.c2.buf))
++    {
++        return false;
++    }
++    return true;
++}
++
+ /*
+  * Get a client instance based on real address.  If
+  * the instance doesn't exist, create it while
+@@ -95,8 +109,7 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
          }
-     }
-diff --git a/src/openvpn/reliable.h b/src/openvpn/reliable.h
-index 05426fd8c..cf6de0506 100644
---- a/src/openvpn/reliable.h
-+++ b/src/openvpn/reliable.h
-@@ -367,7 +367,7 @@ struct buffer *reliable_get_buf_sequenced(struct reliable *rel);
-  * @param inc_pid If true, the reliable structure's packet ID counter
-  *     will be incremented.
-  */
--void reliable_mark_deleted(struct reliable *rel, struct buffer *buf, bool inc_pid);
-+void reliable_mark_deleted(struct reliable *rel, struct buffer *buf);
- 
- /** @} name Functions for extracting incoming packets */
- 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index cdf3e31da..6669c4719 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2610,7 +2610,7 @@ tls_process(struct tls_multi *multi,
-             }
-             if (status == 1)
+         if (!mi)
+         {
+-            if (!m->top.c2.tls_auth_standalone
+-                || tls_pre_decrypt_lite(m->top.c2.tls_auth_standalone, &m->top.c2.from, &m->top.c2.buf))
++            if (do_pre_decrypt_check(m))
              {
--                reliable_mark_deleted(ks->rec_reliable, buf, true);
-+                reliable_mark_deleted(ks->rec_reliable, buf);
-                 state_change = true;
-                 dmsg(D_TLS_DEBUG, "Incoming Ciphertext -> TLS");
-             }
+                 if (frequency_limit_event_allowed(m->new_connection_limiter))
+                 {
 -- 
 2.32.0 (Apple Git-132)
 
