@@ -1,12 +1,12 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 22 Apr 2022 16:29:44 +0200
-Message-Id: <20220422142953.3805364-10-arne@...1227...>
+Date: Fri, 22 Apr 2022 16:29:49 +0200
+Message-Id: <20220422142953.3805364-15-arne@...1227...>
 In-Reply-To: <20220422142953.3805364-1-arne@...1227...>
 References: <20220422134038.3801239-1-arne@...1227...>
  <20220422142953.3805364-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 19/28] Make buf_write_u8/16/32 take the type
- they pretend to take
+Subject: [Openvpn-devel] [PATCH 24/28] Extract read_incoming_tls_plaintext
+ into its own function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,47 +19,72 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This functions should accept the type of integer they say to write. Calling
-the u32 function with an integer that is actually 32 bit unsigned gives
-compiler warnings.
+This makes the tls_process_state function a bit easier to read allows
+extending the read_incoming_tls_plaintext function later without
+making tls_process_state even longer.
 ---
- src/openvpn/buffer.h | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ src/openvpn/ssl.c | 38 +++++++++++++++++++++++---------------
+ 1 file changed, 23 insertions(+), 15 deletions(-)
 
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index 97cc86241..231f1b0d4 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -694,23 +694,22 @@ buf_write_prepend(struct buffer *dest, const void *src, int size)
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index e3101c7fa..01717559c 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2612,6 +2612,28 @@ control_packet_needs_wkc(const struct key_state *ks)
+            && (ks->send_reliable->packet_id == 1);
  }
  
- static inline bool
--buf_write_u8(struct buffer *dest, int data)
-+buf_write_u8(struct buffer *dest, uint8_t data)
- {
--    uint8_t u8 = (uint8_t) data;
--    return buf_write(dest, &u8, sizeof(uint8_t));
-+    return buf_write(dest, &data, sizeof(uint8_t));
- }
++static bool
++read_incoming_tls_plaintext(struct buffer *buf, struct key_state *ks, interval_t *wakeup)
++{
++    ASSERT(buf_init(buf, 0));
++    int status = key_state_read_plaintext(&ks->ks_ssl, buf, TLS_CHANNEL_BUF_SIZE);
++    update_time();
++    if (status == -1)
++    {
++        msg(D_TLS_ERRORS, "TLS Error: TLS object -> incoming plaintext read error");
++        return false;
++    }
++    if (status == 1)
++    {
++        *state_change = true;
++        dmsg(D_TLS_DEBUG, "TLS -> Incoming Plaintext");
++
++        /* More data may be available, wake up again asap to check. */
++        *wakeup = 0;
++    }
++    return true;
++}
++
  
- static inline bool
--buf_write_u16(struct buffer *dest, int data)
-+buf_write_u16(struct buffer *dest, uint16_t data)
- {
--    uint16_t u16 = htons((uint16_t) data);
-+    uint16_t u16 = htons(data);
-     return buf_write(dest, &u16, sizeof(uint16_t));
- }
+ static bool
+ tls_process_state(struct tls_multi *multi,
+@@ -2705,24 +2727,10 @@ tls_process_state(struct tls_multi *multi,
+     struct buffer *buf = &ks->plaintext_read_buf;
+     if (!buf->len)
+     {
+-        int status;
+-
+-        ASSERT(buf_init(buf, 0));
+-        status = key_state_read_plaintext(&ks->ks_ssl, buf, TLS_CHANNEL_BUF_SIZE);
+-        update_time();
+-        if (status == -1)
++        if (!read_incoming_tls_plaintext(buf, ks, wakeup))
+         {
+-            msg(D_TLS_ERRORS, "TLS Error: TLS object -> incoming plaintext read error");
+             goto error;
+         }
+-        if (status == 1)
+-        {
+-            state_change = true;
+-            dmsg(D_TLS_DEBUG, "TLS -> Incoming Plaintext");
+-
+-            /* More data may be available, wake up again asap to check. */
+-            *wakeup = 0;
+-        }
+     }
  
- static inline bool
--buf_write_u32(struct buffer *dest, int data)
-+buf_write_u32(struct buffer *dest, uint32_t data)
- {
--    uint32_t u32 = htonl((uint32_t) data);
-+    uint32_t u32 = htonl(data);
-     return buf_write(dest, &u32, sizeof(uint32_t));
- }
- 
+     /* Send Key */
 -- 
 2.32.0 (Apple Git-132)
 
