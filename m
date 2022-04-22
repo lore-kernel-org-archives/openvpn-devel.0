@@ -1,10 +1,10 @@
-Date: Fri, 22 Apr 2022 09:30:12 +0200 (CEST)
-Message-Id: <202204220730.23M7UCU5079036@...2054...>
+Date: Fri, 22 Apr 2022 13:48:32 +0200 (CEST)
+Message-Id: <202204221148.23MBmWDw089532@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220421164330.2483743-1-heiko@...2662...>
-References: <20220421164330.2483743-1-heiko@...2662...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add git pre-commit hook script
- to uncrustify
+In-Reply-To: <20220421131909.32053-1-a@...2181...>
+References: <20220421131909.32053-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: auth-pam.c: add missing include
+ limits.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Heiko Hund <heiko@...2662...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks for fixing the minor issues.  Re-tested, still "great stuff!!" ;-)
+Acked-by: Gert Doering <gert@...1296...>
 
-Your patch has been applied to the master branch.
+Sounds reasonable, and <limits.h> is standard.  Test compiled on FreeBSD.
 
-commit 237ba888684e9b035e3b05d661dd44011be0dcb2
-Author: Heiko Hund
-Date:   Thu Apr 21 18:43:30 2022 +0200
+Your patch has been applied to the master and release/2.5 branch.
 
-     Add git pre-commit hook script to uncrustify
+commit 0fed64a91d894b46105bf7e8b16edea4d90ab70c (master)
+commit 70b6c69c8255ebd6e789e59b0fe8e106a35e9ad8 (release/2.5)
+Author: Antonio Quartulli
+Date:   Thu Apr 21 15:19:09 2022 +0200
 
-     Signed-off-by: Heiko Hund <heiko@...2662...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20220421164330.2483743-1-heiko@...2662...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24141.html
+     auth-pam.c: add missing include limits.h
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220421131909.32053-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24136.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
