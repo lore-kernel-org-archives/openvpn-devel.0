@@ -1,15 +1,9 @@
-Date: Fri, 22 Apr 2022 21:05:34 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <YmL8fpKi2/MqE/+s@...1296...>
-References: <20220422134038.3801239-1-arne@...1227...>
- <20220422134038.3801239-5-arne@...1227...>
+From: Marc Becker <becm@...68...>
+Date: Sat, 23 Apr 2022 15:57:04 +0200
+Message-Id: <20220423135704.88164-1-becm@...68...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="xLRvTTmL/3Xf90qo"
-Content-Disposition: inline
-In-Reply-To: <20220422134038.3801239-5-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 04/28] Add documentation for swap_hmac
- function
+Subject: [Openvpn-devel] [PATCH] vcpkg-ports/pkcs11-helper: bump to release
+ 1.29
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,77 +12,123 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---xLRvTTmL/3Xf90qo
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This release has merged win32 support patch,
+so our own patch could be removed from the port.
 
-On Fri, Apr 22, 2022 at 03:40:33PM +0200, Arne Schwabe wrote:
-> +/**
-> + * Move a packet authentication HMAC + related fields to or from the fro=
-nt
-> + * of the buffer so it can be processed by encrypt/decrypt.
-> + *
-> + * Turning the on wire format that starts with the opcode to a format
-> + * that starts with the hmac
-> + * e.g. "onwire" [opcode + packet id] [hmac] [remainder of packed]
-> + *
-> + *
-> + *    "internal" [hmac] [opcode + packet id] [remainer of packet]
-> + *
+Upstream archive format changed back to BZIP2.
 
-I was about to merge this as "it is easy, and does not change code", but
-if we add documentation, it should be correct :-) - and this schematic
-does not match my understanding of the actual code - which seems to
-swap
+Signed-off-by: Marc Becker <becm@...68...>
+---
+ ...config-w32-vc.h.in-indicate-OpenSSL.patch} |  0
+ ...-pkcs11.h-rename-interface-parameter.patch | 32 -------------------
+ contrib/vcpkg-ports/pkcs11-helper/CONTROL     |  2 +-
+ .../vcpkg-ports/pkcs11-helper/portfile.cmake  | 11 +++----
+ 4 files changed, 6 insertions(+), 39 deletions(-)
+ rename contrib/vcpkg-ports/pkcs11-helper/{0003-config-w32-vc.h.in-indicate=
+-OpenSSL.patch =3D> 0002-config-w32-vc.h.in-indicate-OpenSSL.patch} (100%)
+ delete mode 100644 contrib/vcpkg-ports/pkcs11-helper/0002-pkcs11.h-rename-=
+interface-parameter.patch
 
-  [opcode + session id] [hmac + packet id]
+diff --git a/contrib/vcpkg-ports/pkcs11-helper/0003-config-w32-vc.h.in-indi=
+cate-OpenSSL.patch b/contrib/vcpkg-ports/pkcs11-helper/0002-config-w32-vc.h=
+.in-indicate-OpenSSL.patch
+similarity index 100%
+rename from contrib/vcpkg-ports/pkcs11-helper/0003-config-w32-vc.h.in-indic=
+ate-OpenSSL.patch
+rename to contrib/vcpkg-ports/pkcs11-helper/0002-config-w32-vc.h.in-indicat=
+e-OpenSSL.patch
+diff --git a/contrib/vcpkg-ports/pkcs11-helper/0002-pkcs11.h-rename-interfa=
+ce-parameter.patch b/contrib/vcpkg-ports/pkcs11-helper/0002-pkcs11.h-rename=
+-interface-parameter.patch
+deleted file mode 100644
+index 13c60d9d..00000000
+--- a/contrib/vcpkg-ports/pkcs11-helper/0002-pkcs11.h-rename-interface-para=
+meter.patch
++++ /dev/null
+@@ -1,32 +0,0 @@
+-From 0c2f862fe23dc6d2c0ca8432d1f6027c922c5a04 Mon Sep 17 00:00:00 2001
+-From: Lev Stipakov <lev@...515...>
+-Date: Tue, 11 Jan 2022 14:24:45 +0200
+-Subject: [PATCH] pkcs11.h: rename "interface" parameter
+-
+-"interface" is defined in cobaseapi.h as
+-
+-  #define interface __STRUCT__
+-
+-so use different name.
+-
+-Signed-off-by: Lev Stipakov <lev@...515...>
+----
+- include/pkcs11-helper-1.0/pkcs11.h | 2 +-
+- 1 file changed, 1 insertion(+), 1 deletion(-)
+-
+-diff --git a/include/pkcs11-helper-1.0/pkcs11.h b/include/pkcs11-helper-1.=
+0/pkcs11.h
+-index 85aa98e..7a7b958 100644
+---- a/include/pkcs11-helper-1.0/pkcs11.h
+-+++ b/include/pkcs11-helper-1.0/pkcs11.h
+-@@ -1210,7 +1210,7 @@ _CK_DECLARE_FUNCTION (C_GetInterfaceList,
+- _CK_DECLARE_FUNCTION (C_GetInterface,
+- 		      (unsigned char *interface_name,
+- 		       struct ck_version *version,
+--		       struct ck_interface **interface,
+-+		       struct ck_interface **iface,
+- 		       ck_flags_t flags));
+-
+- _CK_DECLARE_FUNCTION (C_LoginUser,
+---
+-2.23.0.windows.1
+-
+diff --git a/contrib/vcpkg-ports/pkcs11-helper/CONTROL b/contrib/vcpkg-port=
+s/pkcs11-helper/CONTROL
+index ff116364..1ead697e 100644
+--- a/contrib/vcpkg-ports/pkcs11-helper/CONTROL
++++ b/contrib/vcpkg-ports/pkcs11-helper/CONTROL
+@@ -1,4 +1,4 @@
+ Source: pkcs11-helper
+-Version: 1.28-4
++Version: 1.29-1
+ Homepage: https://github.com/OpenSC/pkcs11-helper
+ Description: pkcs11-helper is a library that simplifies the interaction wi=
+th PKCS#11 providers for end-user applications.
+diff --git a/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake b/contrib/vcp=
+kg-ports/pkcs11-helper/portfile.cmake
+index 6008f615..a19ea254 100644
+--- a/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
++++ b/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
+@@ -1,9 +1,9 @@
+-set(VERSION 1.28.0)
++set(VERSION 1.29.0)
 
-could you double check that?  The size of the "things it swaps" is
+ vcpkg_download_distfile(ARCHIVE
+-    URLS "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11=
+-helper-${VERSION}/pkcs11-helper-${VERSION}.tar.gz"
+-    FILENAME "pkcs11-helper-${VERSION}.tar.gz"
+-    SHA512 1c1cc7f83ed360fabdcfa68d0eafa7d25be03e68c6a202e7ad2907feb472663=
+bb34e12b9e162344ec221a4298abc02acdc75f0f45d9a89657aa7ac55e59badd5
++    URLS "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11=
+-helper-${VERSION}/pkcs11-helper-${VERSION}.tar.bz2"
++    FILENAME "pkcs11-helper-${VERSION}.tar.bz2"
++    SHA512 c530f5a4b5826a02bfe787a1293a7595d5a0d6348daa16675bd10c6d6734b1f=
+24a3cc73b5b89433cf1edf8815f8b7298fdfd1ed686f096bb5edfb425e9430eb2
+ )
 
-         /* hmac + packet_id (8 bytes) */
-         const int hmac_size =3D hmac_ctx_size(ctx->hmac) + packet_id_size(=
-true);
-=20
-         /* opcode + session_id */
-         const int osid_size =3D 1 + SID_SIZE;
+ vcpkg_extract_source_archive_ex(
+@@ -12,8 +12,7 @@ vcpkg_extract_source_archive_ex(
+     REF ${VERSION}
+     PATCHES
+         0001-nmake-compatibility-with-vcpkg-nmake.patch
+-        0002-pkcs11.h-rename-interface-parameter.patch
+-        0003-config-w32-vc.h.in-indicate-OpenSSL.patch
++        0002-config-w32-vc.h.in-indicate-OpenSSL.patch
+         pkcs11-helper-001-RFC7512.patch
+ )
 
-... so that would make it "[hmac + packet id]" not "[hmac]" and
-"[opcode + packet id]"...?!
+--
+2.30.2
 
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---xLRvTTmL/3Xf90qo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJiYvx7AAoJEB2Cnv7KVigSumAL/ifnrUznghBZDW68Adw3N7ee
-evQrhZtl/AFiy/UxhtyDI0Xw9IcnzhXoRgKaVCFKkXt0yAdKxd1BHLWXb8KcJ4XF
-4qhLJ2NBNiv9fIz6Xr6BCpItaFk715sBOZCLPn5ky9hscKr4PCpGDomD+g9InU3j
-p3D3ieCbW7l0x0NwKleIcJL7YL+IeUAEqem/xsWZxEBItcLm7PKim9gRwHTwbxbI
-8kRorkuizLyn7CN3GMg2z8Hp6kMx2s0sbmcxpYGu3M5dm9u3MpqVPn6CfL6wfWoT
-af2Ax6FEOMjJGMoCKCF1GE0cxv2bTtNVsbaBBjlO6K9iSr2rCwmPGAMyA0a21pPP
-Y1Bl7Qw3syC0ei8DQTIn3pqyYqxQT3s5b2MXGlKBqingbZqIhCDMZN65IPNwqpGP
-hIu0IfNmqcb8oTJtFoytrxt7ihuLSyNzQxSrF4oqlgs2JuDOFCLKEkLpaFMkk/UZ
-XXtbIja0M1rNQqFe2AfoUglOh3juGXZAkoLLyYgQ3Q==
-=vts3
------END PGP SIGNATURE-----
-
---xLRvTTmL/3Xf90qo--
 
