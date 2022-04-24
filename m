@@ -1,12 +1,10 @@
-MIME-Version: 1.0
-Message-ID: <trinity-b2591293-0d7a-411f-9548-0e177be0f01c-1650832365276@...2672...>
-From: Marc Becker <becm@...68...>
-Date: Sun, 24 Apr 2022 22:32:45 +0200
-In-Reply-To: <CAFHpkQFLyEdJwK+ewKAQst1KViTNuPf+EUjLvXX1=17xFj4rTg@...278...>
-References: <20220424192510.75385-1-becm@...68...>
- <CAFHpkQFLyEdJwK+ewKAQst1KViTNuPf+EUjLvXX1=17xFj4rTg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] fix GitHub workflow working directories
- in MinGW builds
+Date: Sun, 24 Apr 2022 22:41:04 +0200 (CEST)
+Message-Id: <202204242041.23OKf4D3040322@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220422134038.3801239-5-arne@...1227...>
+References: <20220422134038.3801239-5-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add documentation for swap_hmac
+ function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +13,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/html; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-<html><head></head><body><div style="font-family: Verdana;font-size: 12.0px;"><div>
-<div>&gt;&quot;old&quot; links are immutable.</div>
+Acked-by: Gert Doering <gert@...1296...>
 
-<div>&nbsp;</div>
-The &quot;old&quot; links also do not provide the latest versions (currently&nbsp;1.1.1n &amp; 3.0.2).</div>
+I have taken the hunks from 05/28 that relate to swap_hmac (change
+the comment, add byte sizes to the "osid_size" comment) into this
+one, so this one is now factually correct, and 05(bis)/28 does no longer
+contain "swap_hmac" related changes.
 
-<div>&nbsp;</div>
+As this brings no code change, I've just verified that the comment
+matches my understanding of the function (it now does), not tested
+anything.
 
-<div>While the mirrors do follow the logic of having only the latest version on top level,</div>
+Your patch has been applied to the master branch.
 
-<div>it seams on the main site all versions can be fetched via this pattern (tested).</div>
+commit e061ec5800af746cb86ccbb9b571e1cb18f8ad99
+Author: Arne Schwabe
+Date:   Fri Apr 22 15:40:33 2022 +0200
 
-<div>&nbsp;</div>
+     Add documentation for swap_hmac function
 
-<div>This way building a matrix with [ 1.0.2, 1.1.1n, 3.0.2 ] should also be possible with little effort.</div>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220422134038.3801239-5-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24177.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-<div>&nbsp;</div>
 
-<div>It also does not require version&rarr;subpath magic for pre-3.0 versions (when OpenSSL introduced sane versioning).</div></div></body></html>
+--
+kind regards,
+
+Gert Doering
+
 
