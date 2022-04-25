@@ -1,10 +1,10 @@
-Date: Mon, 25 Apr 2022 18:00:15 +0200 (CEST)
-Message-Id: <202204251600.23PG0Fu3075278@...2054...>
+Date: Mon, 25 Apr 2022 18:38:16 +0200 (CEST)
+Message-Id: <202204251638.23PGcGvU076021@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220422134038.3801239-8-arne@...1227...>
-References: <20220422134038.3801239-8-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add unit tests for
- test_tls_decrypt_lite
+In-Reply-To: <20220422134038.3801239-9-arne@...1227...>
+References: <20220422134038.3801239-9-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Split out reliable_ack_parse
+ from reliable_ack_read
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,38 +18,26 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
-
-Unit tests are always good :-) - and of course 06/28 is only there
-to make this happen.  I have only done a "semi-deep" look into the code,
-but it seems to cover the usual cases (good packet, short packet, corrupt
-packet for nothing/tls-auth/tls-crypt) which is way more than we have now.
-
-Passes "make distcheck" + "make check with mbedTLS and openssl"
-
-[==========] Running 3 test(s).
-[ RUN      ] test_tls_decrypt_lite_none
-[       OK ] test_tls_decrypt_lite_none
-[ RUN      ] test_tls_decrypt_lite_auth
-[       OK ] test_tls_decrypt_lite_auth
-[ RUN      ] test_tls_decrypt_lite_crypt
-[       OK ] test_tls_decrypt_lite_crypt
-[==========] 3 test(s) run.
-[  PASSED  ] 3 test(s).
-PASS: pkt_testdriver
-
 Your patch has been applied to the master branch.
 
-commit 34694688f43ba1cb5827d921df0b374c916119ce
+Tested on client and server ("for good measure") even if stare-at-code
+suggests it's really the same code, split in half.  The change in
+ssl.c is due to "ack->len is now always zeroed".
+
+Uncrustify (0.74.0_f) has opinions on "if ( a && (b || c))" 
+constructs, so a bit of whitespace was changed.
+
+Comment in reliable.h adjusted ("compares extracts").
+
+commit ac97e16123aba7d4792ca978a4e2e6875973b8ed
 Author: Arne Schwabe
-Date:   Fri Apr 22 15:40:36 2022 +0200
+Date:   Fri Apr 22 15:40:37 2022 +0200
 
-     Add unit tests for test_tls_decrypt_lite
+     Split out reliable_ack_parse from reliable_ack_read
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220422134038.3801239-8-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24168.html
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20220422134038.3801239-9-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24145.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
