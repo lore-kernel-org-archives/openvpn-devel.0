@@ -1,10 +1,10 @@
-Date: Mon, 25 Apr 2022 17:57:12 +0200 (CEST)
-Message-Id: <202204251557.23PFvC8p074067@...2054...>
+Date: Mon, 25 Apr 2022 18:00:15 +0200 (CEST)
+Message-Id: <202204251600.23PG0Fu3075278@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220422134038.3801239-7-arne@...1227...>
-References: <20220422134038.3801239-7-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Move ssl function related to
- control channel wrap/unwrap to ssl_pkt.c/h
+In-Reply-To: <20220422134038.3801239-8-arne@...1227...>
+References: <20220422134038.3801239-8-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add unit tests for
+ test_tls_decrypt_lite
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,29 +20,36 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"git show --color-moved=zebra" confirms that this is just code being
-moved around, *except* for the swap_hmac() comment (*that* comment),
-which actually gets changed in the process.  But it's still correct :-)
+Unit tests are always good :-) - and of course 06/28 is only there
+to make this happen.  I have only done a "semi-deep" look into the code,
+but it seems to cover the usual cases (good packet, short packet, corrupt
+packet for nothing/tls-auth/tls-crypt) which is way more than we have now.
 
-"make check" and "make distcheck" agree that all configure/autoconf
-related bits are fine with the new files.  "make check" tested on a
-OpenSSL and mbedTLS build.
+Passes "make distcheck" + "make check with mbedTLS and openssl"
 
-Whitespace in Makefile.am fixed, missing end-of-file newline in ssl_pkt.c
-fixed.
+[==========] Running 3 test(s).
+[ RUN      ] test_tls_decrypt_lite_none
+[       OK ] test_tls_decrypt_lite_none
+[ RUN      ] test_tls_decrypt_lite_auth
+[       OK ] test_tls_decrypt_lite_auth
+[ RUN      ] test_tls_decrypt_lite_crypt
+[       OK ] test_tls_decrypt_lite_crypt
+[==========] 3 test(s) run.
+[  PASSED  ] 3 test(s).
+PASS: pkt_testdriver
 
 Your patch has been applied to the master branch.
 
-commit 788ce35cf09aff09b79f428cdd6cfc0ff8627934
+commit 34694688f43ba1cb5827d921df0b374c916119ce
 Author: Arne Schwabe
-Date:   Fri Apr 22 15:40:35 2022 +0200
+Date:   Fri Apr 22 15:40:36 2022 +0200
 
-     Move ssl function related to control channel wrap/unwrap to ssl_pkt.c/h
+     Add unit tests for test_tls_decrypt_lite
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220422134038.3801239-7-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24149.html
+     Message-Id: <20220422134038.3801239-8-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24168.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
