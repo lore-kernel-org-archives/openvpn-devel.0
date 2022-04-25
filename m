@@ -1,10 +1,12 @@
-Date: Mon, 25 Apr 2022 15:08:55 +0200 (CEST)
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <1819498256.337104.1650892135929@...2642...>
-In-Reply-To: <20220425122709.4148015-1-arne@...1227...>
+Message-ID: <c03d612c-318d-297d-81cd-4b9b7d973d65@...1227...>
+Date: Mon, 25 Apr 2022 15:12:20 +0200
+MIME-Version: 1.0
+Content-Language: en-GB
 References: <20220422134038.3801239-4-arne@...1227...>
  <20220425122709.4148015-1-arne@...1227...>
-MIME-Version: 1.0
+ <1819498256.337104.1650892135929@...2642...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <1819498256.337104.1650892135929@...2642...>
 Subject: Re: [Openvpn-devel] [PATCH v2] Move pre decrypt lite check to its
  own function
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,37 +17,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>, openvpn-devel@lists.sourceforge.net
 
-> Arne Schwabe <arne@...1227...> hat am 25.04.2022 14:27 geschrieben:
-[...]
-> diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-> index 4fbe3c1a3..780ca171d 100644
-> --- a/src/openvpn/mudp.c
-> +++ b/src/openvpn/mudp.c
-> @@ -39,6 +39,17 @@
->  #include <sys/inotify.h>
->  #endif
->  
-> +static bool
-> +do_pre_decrypt_check(struct multi_context *m)
-> +{
-> +    ASSERT(m->top.c2.tls_auth_standalone);
-> +    if (!tls_pre_decrypt_lite(m->top.c2.tls_auth_standalone, &m->top.c2.from, &m->top.c2.buf))
-> +    {
-> +        return false;
-> +    }
-> +    return true;
+Am 25.04.22 um 15:08 schrieb Frank Lichtenheld:
+>> Arne Schwabe <arne@...1227...> hat am 25.04.2022 14:27 geschrieben:
+> [...]
+>> diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+>> index 4fbe3c1a3..780ca171d 100644
+>> --- a/src/openvpn/mudp.c
+>> +++ b/src/openvpn/mudp.c
+>> @@ -39,6 +39,17 @@
+>>   #include <sys/inotify.h>
+>>   #endif
+>>   
+>> +static bool
+>> +do_pre_decrypt_check(struct multi_context *m)
+>> +{
+>> +    ASSERT(m->top.c2.tls_auth_standalone);
+>> +    if (!tls_pre_decrypt_lite(m->top.c2.tls_auth_standalone, &m->top.c2.from, &m->top.c2.buf))
+>> +    {
+>> +        return false;
+>> +    }
+>> +    return true;
+> 
+> You could replace four lines with one:
+> 
+> return tls_pre_decrypt_lite(m->top.c2.tls_auth_standalone, &m->top.c2.from, &m->top.c2.buf));
+> 
+> But that might not make sense due to changes in later patches? Haven't checked.
+> 
 
-You could replace four lines with one:
+The function grows to a 70 line function over the course of the patches. :)
 
-return tls_pre_decrypt_lite(m->top.c2.tls_auth_standalone, &m->top.c2.from, &m->top.c2.buf));
-
-But that might not make sense due to changes in later patches? Haven't checked.
-
-Regards,
---
-Frank Lichtenheld
+Arne
 
