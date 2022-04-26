@@ -1,8 +1,10 @@
 From: Kristof Provost <kprovost@...2661...>
-Date: Tue, 26 Apr 2022 18:29:33 +0200
-Message-Id: <20220426162934.12938-1-kprovost@...2661...>
+Date: Tue, 26 Apr 2022 18:29:34 +0200
+Message-Id: <20220426162934.12938-2-kprovost@...2661...>
+In-Reply-To: <20220426162934.12938-1-kprovost@...2661...>
+References: <20220426162934.12938-1-kprovost@...2661...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH DCO]: Handle (DCO) timeouts in client mode
+Subject: [Openvpn-devel] [PATCH] Handle (DCO) timeouts in client mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,19 +17,34 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+From: Kristof Provost <kp@...1376...>
 
-During testing of FreeBSD DCO support we discovered that a DCO enabled
-client does not detect that the server has gone away, even if
-'keepalive' is set.
+Handle the DCO driver telling us that the peer went away, even if we're
+not running in multi-instance mode.
 
-This turns out to be because we only handle DCO notification messages in
-the multi-instance (i.e. server) code path.
-I'm not 100% sure this patch does the correct thing, but we do need to
-do something at the point it changes.
+Signed-off-by:	Kristof Provost <kprovost@...2661...>
+---
+ src/openvpn/forward.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Br,
-Kristof
-
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 9ddea439..25fa300f 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1111,6 +1111,12 @@ process_incoming_dco(struct context *c)
+ 
+     dco_do_read(dco);
+ 
++    if (dco->dco_message_type == OVPN_NOTIF_DEL_PEER)
++    {
++        register_signal(c, SIGTERM, "ping timeout");
++        return;
++    }
++
+     if (dco->dco_message_type != OVPN_CMD_PACKET)
+     {
+         msg(D_DCO_DEBUG, "%s: received message of type %u - ignoring", __func__,
+-- 
+2.36.0
 
 
