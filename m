@@ -1,13 +1,10 @@
-Date: Tue, 26 Apr 2022 11:42:37 +0200 (CEST)
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <1483518003.412269.1650966157885@...2642...>
-In-Reply-To: <20220422142953.3805364-4-arne@...1227...>
-References: <20220422134038.3801239-1-arne@...1227...>
- <20220422142953.3805364-1-arne@...1227...>
- <20220422142953.3805364-4-arne@...1227...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 13/28] Change FULL_SYNC macro to
- no_pending_reliable_packets function
+Date: Tue, 26 Apr 2022 11:57:48 +0200 (CEST)
+Message-Id: <202204260957.23Q9vmP4095077@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220422142953.3805364-2-arne@...1227...>
+References: <20220422142953.3805364-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Refactor tls-auth/tls-crypt
+ wrapping into into own function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,46 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-> Arne Schwabe <arne@...1227...> hat am 22.04.2022 16:29 geschrieben:
-> 
->  
-> This changes this macro to a better named inline function. This
-> introduces a slight whitespace problem but the next refactoring will
-> move the incorrectly intended block to its own function anyway.
+I've done a bit of "extra eyes stare at the code" and things look good
+(due to the newly named options, git is not that helpful in confirming
+"it's all the same code").  Will test together with 12.
 
-Could it be that you forgot to update the commit message when you squashed
-this commit? Looking at the diff this already moves the block to its
-own function?
+Your patch has been applied to the master branch.
 
-Apart from that and a small whitespace oddity noted below the changes
-look good (in the sense that they shouldn't change behavior and just
-move code around).
+commit 9bbebf100a07f4dca3f088dce19cd87608e82b4c
+Author: Arne Schwabe
+Date:   Fri Apr 22 16:29:36 2022 +0200
 
-> ---
->  src/openvpn/ssl.c | 100 ++++++++++++++++++++++++++--------------------
->  1 file changed, 57 insertions(+), 43 deletions(-)
-> 
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index bad59f2a1..4ca093243 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-[...]
-> @@ -2428,6 +2430,54 @@ session_move_pre_start(const struct tls_session *session,
->      return true;
->  
->  }
-> +
-> +/**
-> + * Moves the key to state to S_ACTIVE and also advances the multi_state state
-> + * machine if this is the initial connection. 
+     Refactor tls-auth/tls-crypt wrapping into into own function
 
-Spurious whitespace at the end of the line
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20220422142953.3805364-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24150.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Regards,
+
 --
-Frank Lichtenheld
+kind regards,
+
+Gert Doering
+
 
