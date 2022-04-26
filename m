@@ -1,10 +1,13 @@
-Date: Tue, 26 Apr 2022 09:53:44 +0200 (CEST)
-Message-Id: <202204260753.23Q7rime092253@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220425215822.18569-1-becm@...68...>
-References: <20220425215822.18569-1-becm@...68...>
-Subject: [Openvpn-devel] [PATCH applied] Re: fix GitHub workflow working
- directories in MinGW builds
+Date: Tue, 26 Apr 2022 11:23:22 +0200 (CEST)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <2079416571.410214.1650965002893@...2642...>
+In-Reply-To: <20220422142953.3805364-2-arne@...1227...>
+References: <20220422134038.3801239-1-arne@...1227...>
+ <20220422142953.3805364-1-arne@...1227...>
+ <20220422142953.3805364-2-arne@...1227...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH 11/28] Refactor tls-auth/tls-crypt
+ wrapping into into own function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +16,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Marc Becker <becm@...68...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Acked-By: Frank Lichtenheld <frank@...2641...>
 
-Applied (changes look reasonable and simplify future version bumps), and 
-verified that everything builds in my GH repo and that it does, indeed, 
-build with pkcs11-helper 1.29.0 (.bz2!) and OpenSSL 1.1.1n.
+Verified visually that this only moves code around and doesn't change behavior.
+Only compile/UT tested.
 
-Your patch has been applied to the master branch.
+> Arne Schwabe <arne@...1227...> hat am 22.04.2022 16:29 geschrieben:
+> 
+>  
+> This allows the the wrapping to be easier reused by a function that
+> does not have access to a full TLS session.
+> ---
+>  src/openvpn/ssl_pkt.c | 82 ++++++++++++++++++++++++++-----------------
+>  1 file changed, 50 insertions(+), 32 deletions(-)
 
-commit 33abca041519b3f72bb6cc3eea81eb987e72d178
-Author: Marc Becker
-Date:   Mon Apr 25 23:58:22 2022 +0200
-
-     fix GitHub workflow working directories in MinGW builds
-
-     Signed-off-by: Marc Becker <becm@...68...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220425215822.18569-1-becm@...68...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24202.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
+Regards,
 --
-kind regards,
-
-Gert Doering
-
+Frank Lichtenheld
 
