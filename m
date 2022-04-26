@@ -1,10 +1,10 @@
-Date: Tue, 26 Apr 2022 15:40:19 +0200 (CEST)
-Message-Id: <202204261340.23QDeJjL098492@...2054...>
+Date: Tue, 26 Apr 2022 15:52:35 +0200 (CEST)
+Message-Id: <202204261352.23QDqZxJ098720@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220426132324.76517-1-arne@...1227...>
-References: <20220426132324.76517-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Change FULL_SYNC macro to
- no_pending_reliable_packets function
+In-Reply-To: <20220426132324.76517-2-arne@...1227...>
+References: <20220426132324.76517-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Extract session_move_active
+ into its own function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,24 +20,26 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-As discussed on IRC, this is "13/28 v2, first half" (accidentially squashed).
+This is the 2nd half of "patch 13 v2".  It has a semi-ACK from Frank,
+and now a proper commit message as well :-)
 
-Un-squashing these makes this one much clearer - only FULL_SYNC, and 
-it does what it says on the lid.
+Verified "it's only moved code" by hand (indent change), and lightly
+tested.
 
-Quick compile and client test passed.
+Whitespace error has been fixed by git, so the "whitespace fix" hunk coming
+up won't apply - but I can handle that :-)
 
 Your patch has been applied to the master branch.
 
-commit 04c3779922aed541755a20f415e7cb9d717ee7ed
+commit 4dbe508ab6d011d57f4acc71f3c0330deb852206
 Author: Arne Schwabe
-Date:   Tue Apr 26 15:23:23 2022 +0200
+Date:   Tue Apr 26 15:23:24 2022 +0200
 
-     Change FULL_SYNC macro to no_pending_reliable_packets function
+     Extract session_move_active into its own function
 
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220426132324.76517-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24213.html
+     Message-Id: <20220426132324.76517-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24212.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
