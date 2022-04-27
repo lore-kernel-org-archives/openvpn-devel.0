@@ -1,13 +1,11 @@
-Message-ID: <f4c40b20-6a0a-0fb2-a4ac-ad0055dbca33@...2181...>
-Date: Wed, 27 Apr 2022 10:04:58 +0200
-MIME-Version: 1.0
-Content-Language: en-US
+From: Kristof Provost <kprovost@...2661...>
+Date: Wed, 27 Apr 2022 11:52:40 +0200
+Message-ID: <DA49D57D-FF28-4B6D-B9EB-5C5BE8332F48@...2661...>
+In-Reply-To: <761e5640-6d43-d25b-4845-25698d2e0688@...2181...>
 References: <20220427074828.6283-1-kprovost@...2661...>
  <20220427074828.6283-2-kprovost@...2661...>
  <761e5640-6d43-d25b-4845-25698d2e0688@...2181...>
- <Ymj380c+Pl7JLFik@...1296...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <Ymj380c+Pl7JLFik@...1296...>
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH] Handle (DCO) timeouts in client mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,40 +15,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: Kristof Provost <kprovost@...2661...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
 
-Hi,
-
-On 27/04/2022 09:59, Gert Doering wrote:
-> Hi,
-> 
-> On Wed, Apr 27, 2022 at 09:55:24AM +0200, Antonio Quartulli wrote:
->>> --- a/src/openvpn/forward.c
->>> +++ b/src/openvpn/forward.c
->>> @@ -1111,6 +1111,12 @@ process_incoming_dco(struct context *c)
->>>    
->>>        dco_do_read(dco);
->>>    
->>> +    if (dco->dco_message_type == OVPN_NOTIF_DEL_PEER)
+On 27 Apr 2022, at 9:55, Antonio Quartulli wrote:
+> Hi Kristof,
+>
+> On 27/04/2022 09:48, Kristof Provost via Openvpn-devel wrote:
+>> From: Kristof Provost <kp@...1376...>
 >>
->> Not sure where this constant is coming from, but on ovpn_dco_linux.h we
->> have OVPN_CMD_DEL_PEER (similar format as the following OVPN_CMD_PACKET).
-> 
-> For "notifications coming from kernel", _NOTIF_ feels more logical
-> than _CMD_ ("commands going into kernel").  No?
+>> Handle the DCO driver telling us that the peer went away, even if we're
+>> not running in multi-instance mode.
+>
+> thanks for catching and fixing this. It was indeed on the todo list, but =
+well hidden under the rest :-D
+>
+I know how todo piles work all too well.
 
-It's just the same message that can go both directions.
+>>
+>> Signed-off-by:	Kristof Provost <kprovost@...2661...>
+>> ---
+>>   src/openvpn/forward.c | 6 ++++++
+>>   1 file changed, 6 insertions(+)
+>>
+>> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+>> index 9ddea439..f60c56a8 100644
+>> --- a/src/openvpn/forward.c
+>> +++ b/src/openvpn/forward.c
+>> @@ -1111,6 +1111,12 @@ process_incoming_dco(struct context *c)
+>>        dco_do_read(dco);
+>>  +    if (dco->dco_message_type =3D=3D OVPN_NOTIF_DEL_PEER)
+>
+> Not sure where this constant is coming from, but on ovpn_dco_linux.h we h=
+ave OVPN_CMD_DEL_PEER (similar format as the following OVPN_CMD_PACKET).
+>
+> Is that a format we can adhere to on BSD as well?
+>
+Good catch. OVPN_NOTIF_DEL_PEER  is specific to the FreeBSD DCO interface a=
+nd shouldn=E2=80=99t be used in the generic openvpn code. It worked acciden=
+tally because it has the same value as OVPN_CMD_DEL_PEER. We should indeed =
+be using OVPN_CMD_DEL_PEER here.
 
-This is the same that the WiFi stack in the Linux kernel does with 
-messages such as NEW_STA and DEL_STA.
+I=E2=80=99ll update the patch and probably submit both the freebsd dco patc=
+h and this together in a few hours.
 
-So we're just re-using the same accepted pattern.
-
-Regards,
-
--- 
-Antonio Quartulli
+Kristof
 
