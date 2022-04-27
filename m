@@ -1,14 +1,15 @@
-Date: Wed, 27 Apr 2022 18:43:31 +0200
+Date: Wed, 27 Apr 2022 19:35:53 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <Ymlys4bx/rIfg3/5@...1296...>
+Message-ID: <Yml++SXoDj2uuCi/@greenie.muc.de>
 References: <20220422134038.3801239-1-arne@...1227...>
  <20220422142953.3805364-1-arne@...1227...>
  <20220422142953.3805364-8-arne@...1227...>
+ <Ymlys4bx/rIfg3/5@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="X87dydupRSGM8/G+"
+ protocol="application/pgp-signature"; boundary="yFvA1bjYKzptHpOU"
 Content-Disposition: inline
-In-Reply-To: <20220422142953.3805364-8-arne@...1227...>
+In-Reply-To: <Ymlys4bx/rIfg3/5@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH 17/28] Implement constructing a control
  channel reset client as standalone fucntion
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,48 +23,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---X87dydupRSGM8/G+
+--yFvA1bjYKzptHpOU
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Apr 22, 2022 at 04:29:42PM +0200, Arne Schwabe wrote:
-> This implement creating a reset packet without needing to setup a full co=
-ntrol
-> session.
+On Wed, Apr 27, 2022 at 06:43:31PM +0200, Gert Doering wrote:
+> [  ERROR   ] --- ASSERT: buf_write(&buf, &net_pid, sizeof(net_pid))
+> [   LINE   ] --- ../../../../openvpn/src/openvpn/ssl_pkt.c:425: error: Fa=
+ilure!
+> [  FAILED  ] test_generate_reset_packet_tls_auth
 
-I was about to merge this, with "it has a unit test, so what could
-go wrong".
+It needs this hunk from 18/28
 
-But...
++struct tls_auth_standalone
++init_tas_auth(int key_direction)
+ {=20
+     struct tls_auth_standalone tas =3D { 0 };
++    struct frame frame =3D { {.headroom =3D 200, .payload_size =3D 1400}, =
+0};=20=20=20
++    tas.frame =3D frame;
 
-[ RUN      ] test_generate_reset_packet_plain
-[       OK ] test_generate_reset_packet_plain
-[ RUN      ] test_generate_reset_packet_tls_auth
-[  ERROR   ] --- ASSERT: buf_write(&buf, &net_pid, sizeof(net_pid))
-[   LINE   ] --- ../../../src/openvpn/ssl_pkt.c:425: error: Failure!
-[  FAILED  ] test_generate_reset_packet_tls_auth
+... and then the tests pass.  (This is not really surprising, as it
+fails buf_write() =3D=3D the buffer is too small, and without .payload_size,
+it will be zero-sized...)
 
-Gentoo/OpenSSL 1.1.1n build
-
-[  ERROR   ] --- ASSERT:=20
-[   LINE   ] --- ../../../../openvpn/src/openvpn/ssl_pkt.c:425: error: Fail=
-ure!
-[  FAILED  ] test_generate_reset_packet_tls_auth
-
-Gentoo/mbedTLS build (with --enable-small, thus, no message)
-
-[  ERROR   ] --- ASSERT: buf_write(&buf, &net_pid, sizeof(net_pid))
-[   LINE   ] --- ../../../../openvpn/src/openvpn/ssl_pkt.c:425: error: Fail=
-ure!
-[  FAILED  ] test_generate_reset_packet_tls_auth
-
-FreeBSD/OpenSSL 1.1.1l build
-
-
-Could you have a look?
+Can you move that one over, rebase, and send 17 v2 + 18 v2?  (18 will
+also benefit from rebasing to partially already whitespace-fixed master)
 
 gert
 --=20
@@ -76,22 +64,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---X87dydupRSGM8/G+
+--yFvA1bjYKzptHpOU
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJiaXKzAAoJEB2Cnv7KVigS5A4MALIaqtvUg+sVlCkOWou7ZAP6
-j7601qgJXTwJ5DBZ0BUrNitS9H0hCR6isrif1mVEAwANWnO7Sutg19frQsxyaZ5B
-O66TbKhka9Fd1SD2xURff80IG3JXTsG56eRSrb0w2JorI5D6GEYhHTn/8o8+1dT2
-FXhPdqCJow17yAJWfYTb0jIdvun47VB8qWL9ZuHhmDc61qfuvfVNZxY+E/6Ll2gi
-7lYEUCxpXf5m+af0nI+awJOJVmnwHYuDI+Kvo7SLFBmXgPcs0ZwtmNyciEEtmw6t
-TaNf2JK1wn48LjdKTSKLfpyqODatu42USG8i2BJj5O9xswfcV6COR6VIgAMCNtir
-iKBg6JHpDJ64lXrri/tqZvaZEMjX9fhT7FVIeMi72IPxsoOFkhjSEXpfEcI6OaW7
-5aZGAk2i65OU9iHe2yiqwg+e+45yr73Pnk2vHhgMBzhgFYA/XYmZerSVe8MwFymY
-KHW1HD80BndNI0l+37OItZIfKMJt0r4uLjZXN6Ws9w==
-=YqrO
+iQGcBAEBAgAGBQJiaX75AAoJEB2Cnv7KVigSDVgL/AnAzUEThUQokACFF5+Z8dsn
+WIgQaerdGHh9SoQSiVZ4cidhLPzYWcB+cdA0w6pPAlluWWoKtW3RJlttBxfeoFJs
+AoZm1oE62oR/ewOskiV1kJ1Wa0n/gnezW58jieIA5KQ64k+WLM32ncEvsF22Gfaj
+frR66kw+EdVnIOZctinYOM6dA0YDjGImmv2OEkyLs9Rzf2RcC+KiYYkEhPRU6CPC
+W7IeH1e0fRCY8lsj+sXJkUGBqqojijZrSI2jqgpw4bSjkAjOtwZ/t+TdGJT4H6Sc
+QQsQAc7P+6XJa+8yvP79nziVpWTS+eUCWkZTIItqgA0j5xzJ8/e2AMh36NZxbgtl
+MdYZizbG/BG5bXMyEx54FGolWkvg4bVM6pB1uRtFhmTnvrUvJJWs4xe15pvdAelB
+fta+6x+uU3KiefHGPmv/WlcAEKGyeCCKkydBxD3a0LdyXIkwIK0AT2SzXnQ9WzMC
+T2JJEiVjTms0IdmMwdpPgfx3MUA9QErGgZMRC/r2Cw==
+=f5Rl
 -----END PGP SIGNATURE-----
 
---X87dydupRSGM8/G+--
+--yFvA1bjYKzptHpOU--
 
