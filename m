@@ -1,10 +1,15 @@
-Date: Fri, 29 Apr 2022 15:21:31 +0200 (CEST)
-Message-Id: <202204291321.23TDLVDA070588@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220427223419.241904-1-arne@...1227...>
-References: <20220427223419.241904-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Implement constructing a
- control channel reset client as standalone function
+Date: Fri, 29 Apr 2022 15:25:49 +0200 (CEST)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <1092698496.693105.1651238749643@...2642...>
+In-Reply-To: <1078939443.692575.1651238286579@...2642...>
+References: <20220422134038.3801239-1-arne@...1227...>
+ <20220422142953.3805364-1-arne@...1227...>
+ <20220422142953.3805364-13-arne@...1227...>
+ <877931381.691988.1651237887669@...2642...>
+ <1078939443.692575.1651238286579@...2642...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH 22/28] Implement HMAC based session id
+ for tls-crypt v2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,39 +18,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Stared at the code for a bit, seems to make sense and the unit test
-finds it a valid packet (mbedTLS and OpenSSL).
+> Frank Lichtenheld <frank@...2641...> hat am 29.04.2022 15:18 geschrieben:
+> > Frank Lichtenheld <frank@...2641...> hat am 29.04.2022 15:11 geschrieben:
+> > > Arne Schwabe <arne@...1227...> hat am 22.04.2022 16:29 geschrieben:
+> [...]
+> > > diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
+> > > index c4e23521d..184b88383 100644
+> > > --- a/tests/unit_tests/openvpn/test_pkt.c
+> > > +++ b/tests/unit_tests/openvpn/test_pkt.c
+> > > @@ -531,7 +531,7 @@ test_generate_reset_packet_plain(void **ut_state)
+> > >  
+> > >      uint8_t header = 0 | (P_CONTROL_HARD_RESET_CLIENT_V2 << P_OPCODE_SHIFT);
+> > >  
+> > > -    struct buffer buf = tls_reset_standalone(&tas, &client_id, &server_id, header);
+> > > +    struct buffer buf = tls_reset_standalone(&tas, &client_id, &server_id, header, 0, 0);
+> > 
+> > Nitpick: the second 0 should be "false" instead. Same for all further calls in this file.
+> 
+> Note: fixed in 23/28
 
-v2 also adds uncrustify fixes to test_pkt.c, so the tree is clean
-wrt uncrustify 0.72 now again.  Great!  (Even though the array indent
-does not look nice yet this way)
+Note: the issue here is worse than I initially assumed. Not only should the second 0 be false, the
+first 0 is just completely wrong, since the second new parameter was added as the first parameter.
 
-Fixed the 3 typos Frank pointed out plus the "carefully only as" 
-comment text that was discussed on IRC (for v1 already).
+So the UT is actually broken in 22/28 and needs the fix from 23/28:
 
-Your patch has been applied to the master branch.
+[ RUN      ] test_generate_reset_packet_plain
+[  ERROR   ] --- ASSERT: buf_write(&buf, &net_pid, sizeof(net_pid))
+[   LINE   ] --- ../../../src/openvpn/ssl_pkt.c:444: error: Failure!
+[  FAILED  ] test_generate_reset_packet_plain
+[ RUN      ] test_generate_reset_packet_tls_auth
+[  ERROR   ] --- ASSERT: buf_write(&buf, &net_pid, sizeof(net_pid))
+[   LINE   ] --- ../../../src/openvpn/ssl_pkt.c:444: error: Failure!
+[  FAILED  ] test_generate_reset_packet_tls_auth
 
-commit 870af5f54967821c72074a7c5c60e10a4561d95e
-Author: Arne Schwabe
-Date:   Thu Apr 28 00:34:18 2022 +0200
-
-     Implement constructing a control channel reset client as standalone function
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220427223419.241904-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24240.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
+Regards,
 --
-kind regards,
-
-Gert Doering
-
+Frank Lichtenheld
 
