@@ -1,15 +1,15 @@
-Date: Fri, 29 Apr 2022 15:25:49 +0200 (CEST)
+Date: Fri, 29 Apr 2022 15:34:59 +0200 (CEST)
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <1092698496.693105.1651238749643@...2642...>
-In-Reply-To: <1078939443.692575.1651238286579@...2642...>
+Message-ID: <613700148.693810.1651239299897@...2642...>
+In-Reply-To: <19ea8bac-8dc5-8e6b-2db3-615565f2a04e@...1227...>
 References: <20220422134038.3801239-1-arne@...1227...>
- <20220422142953.3805364-1-arne@...1227...>
- <20220422142953.3805364-13-arne@...1227...>
- <877931381.691988.1651237887669@...2642...>
- <1078939443.692575.1651238286579@...2642...>
+ <20220427223419.241904-1-arne@...1227...>
+ <20220427223419.241904-2-arne@...1227...>
+ <2127738744.675772.1651228104970@...2642...>
+ <19ea8bac-8dc5-8e6b-2db3-615565f2a04e@...1227...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 22/28] Implement HMAC based session id
- for tls-crypt v2
+Subject: Re: [Openvpn-devel] [PATCH v2] Implement stateless,
+ HMAC basedsesssion id three way handshake
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,40 +20,63 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-> Frank Lichtenheld <frank@...2641...> hat am 29.04.2022 15:18 geschrieben:
-> > Frank Lichtenheld <frank@...2641...> hat am 29.04.2022 15:11 geschrieben:
-> > > Arne Schwabe <arne@...1227...> hat am 22.04.2022 16:29 geschrieben:
-> [...]
-> > > diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
-> > > index c4e23521d..184b88383 100644
-> > > --- a/tests/unit_tests/openvpn/test_pkt.c
-> > > +++ b/tests/unit_tests/openvpn/test_pkt.c
-> > > @@ -531,7 +531,7 @@ test_generate_reset_packet_plain(void **ut_state)
-> > >  
-> > >      uint8_t header = 0 | (P_CONTROL_HARD_RESET_CLIENT_V2 << P_OPCODE_SHIFT);
-> > >  
-> > > -    struct buffer buf = tls_reset_standalone(&tas, &client_id, &server_id, header);
-> > > +    struct buffer buf = tls_reset_standalone(&tas, &client_id, &server_id, header, 0, 0);
+> Arne Schwabe <arne@...1227...> hat am 29.04.2022 13:31 geschrieben:
+> Am 29.04.22 um 12:28 schrieb Frank Lichtenheld:
+> >> Instead of allocating a connection for each client on the initial packet
+> >> OpenVPN will now send back a response that contains an HMAC based cookie
+> >> that the client will need to respond to. This eliminates the amplification
+> >> attack and resource exhaustion attacks. For tls-crypt-v2 client HMAC based
+> >> handshake is not used yet.
 > > 
-> > Nitpick: the second 0 should be "false" instead. Same for all further calls in this file.
+> > I think this is not very helpful in understanding the change. In trying to
+> > understand it, this is my personal explanation I came up with. Not sure
+> > whether it is correct, but maybe it can be useful:
+> > 
+> > "Instead of allocating a connection for each client on the initial
+> > HARD_RESET_CLIENT packet OpenVPN server will now create its own session id
+> > for the HARD_RESET_SERVER packet as an HMAC of client data. This way it can
+> > verify the session id on the second packet of
+> > the client (ACK or CONTROL) and only create the connection then."
+> > 
+> > "This eliminates the amplification [...]" (unchanged)
 > 
-> Note: fixed in 23/28
+> 
+> New try:
+> 
+> Instead of allocating a connection for each client on the initial packet
+> OpenVPN will now calculate a session id based on a HMAC that serves as
+> verifiable cookie that can be checked for authenticity when the client
+> responds with it. This eliminates the amplification attack and resource
+> exhaustion attacks. For tls-crypt-v2 clients the HMAC based handshake
+> is not used yet.
 
-Note: the issue here is worse than I initially assumed. Not only should the second 0 be false, the
-first 0 is just completely wrong, since the second new parameter was added as the first parameter.
+I'm not sure why you are against including more low-level details here,
+but I think this is good enough to not warrant further discussion.
 
-So the UT is actually broken in 22/28 and needs the fix from 23/28:
+> >> +
+> >> +        bool ret = check_session_id_hmac(state, from, hmac, handwindow);
+> >> +
+> >> +        const char *peer = print_link_socket_actual(&m->top.c2.from, &gc);
+> >> +        if (!ret)
+> >> +        {
+> >> +
+> >> +            msg(D_MULTI_MEDIUM, "Packet with invalid or missing SID from %s", peer);
+> > 
+> > Not a review, but rather a question: What actually happens to the connection in this
+> > code path?
+> 
+> The packet is simply dropped. This can happen when clients send ACK + 
+> CONTROL_V1 (clienthello) as response and the ACK (that contains the 
+> session id) and the ACK gets lost. OpenVPN 3 client already combine the 
+> packet and do not suffer the problem and for OpenVPN 2.x the later 
+> patches in the series also ensure that all packets have the session id 
+> in them.
+> 
+> This is will be an extra resend for the affected clients.
 
-[ RUN      ] test_generate_reset_packet_plain
-[  ERROR   ] --- ASSERT: buf_write(&buf, &net_pid, sizeof(net_pid))
-[   LINE   ] --- ../../../src/openvpn/ssl_pkt.c:444: error: Failure!
-[  FAILED  ] test_generate_reset_packet_plain
-[ RUN      ] test_generate_reset_packet_tls_auth
-[  ERROR   ] --- ASSERT: buf_write(&buf, &net_pid, sizeof(net_pid))
-[   LINE   ] --- ../../../src/openvpn/ssl_pkt.c:444: error: Failure!
-[  FAILED  ] test_generate_reset_packet_tls_auth
+Okay, thanks.
 
 Regards,
 --
