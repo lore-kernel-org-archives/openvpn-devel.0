@@ -1,10 +1,10 @@
 From: Kristof Provost <kprovost@...2661...>
-Date: Fri, 29 Apr 2022 19:02:33 +0200
-Message-Id: <20220429170236.48239-2-kprovost@...2661...>
+Date: Fri, 29 Apr 2022 19:02:35 +0200
+Message-Id: <20220429170236.48239-4-kprovost@...2661...>
 In-Reply-To: <20220429170236.48239-1-kprovost@...2661...>
 References: <20220429170236.48239-1-kprovost@...2661...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/4] Handle (DCO) timeouts in client mode
+Subject: [Openvpn-devel] [PATCH 3/4] Ensure dynamic_name is always populated
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,31 +19,26 @@ To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 From: Kristof Provost <kp@...1376...>
 
-Handle the DCO driver telling us that the peer went away, even if we're
-not running in multi-instance mode.
+It's always used for open_tun_dco(), so we must ensure it's populated,
+even if 'dev_node' is set.
 
-Signed-off-by:	Kristof Provost <kprovost@...2661...>
+Signed-off-by: Kristof Provost <kprovost@...2661...>
 ---
- src/openvpn/forward.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ src/openvpn/tun.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 9ddea439..e4215b70 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1111,6 +1111,12 @@ process_incoming_dco(struct context *c)
- 
-     dco_do_read(dco);
- 
-+    if (dco->dco_message_type == OVPN_CMD_DEL_PEER)
-+    {
-+        trigger_ping_timeout_signal(c);
-+        return;
-+    }
-+
-     if (dco->dco_message_type != OVPN_CMD_PACKET)
-     {
-         msg(D_DCO_DEBUG, "%s: received message of type %u - ignoring", __func__,
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 245a6507..7976ad11 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1755,6 +1755,7 @@ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
+         if (dev_node)
+         {
+             openvpn_snprintf(tunname, sizeof(tunname), "%s", dev_node);
++            strncpynt(dynamic_name, dev, sizeof(dynamic_name));
+         }
+         else
+         {
 -- 
 2.36.0
 
