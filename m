@@ -1,14 +1,12 @@
-Message-ID: <96375152-3b30-1da5-9b8f-8856cf3d5ec2@...1227...>
-Date: Thu, 28 Apr 2022 00:37:57 +0200
-MIME-Version: 1.0
-Content-Language: en-GB
-From: Arne Schwabe <arne@...1227...>
+Date: Fri, 29 Apr 2022 10:48:42 +0200 (CEST)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <1709708673.663686.1651222122635@...2642...>
+In-Reply-To: <20220427223419.241904-1-arne@...1227...>
 References: <20220422134038.3801239-1-arne@...1227...>
- <20220422142953.3805364-1-arne@...1227...>
- <20220422142953.3805364-11-arne@...1227...>
-In-Reply-To: <20220422142953.3805364-11-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 20/28] Change reliable_get_buf_sequenced
- to reliable_get_entry_sequenced
+ <20220427223419.241904-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH v2] Implement constructing a control
+ channel reset client as standalone fucntion
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,24 +15,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
+Some small issues Gert might decide to fix on apply:
 
->    *     buffer.
->    *
-> - * @return A pointer to the buffer of the entry with the next
-> - *     sequential key ID.  If no such entry is present, this function
-> - *     returns NULL.
-> + * @return A pointer to the entry with the next sequential key ID.
-> + *     If no such entry is present, this function  returns NULL.
->    */
+Typo "fucntion" in summary line of commit message.
 
+> Arne Schwabe <arne@...1227...> hat am 28.04.2022 00:34 geschrieben:
+> This implement creating a reset packet without needing to setup a full control
 
+"implements"
 
-As pointed out in the IRC by Gert, this comment is wrong. It should be 
-message or packet id instead of key id.
+> session.
+[...]
+> diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
+> index 7233871b1..a93027505 100644
+> --- a/src/openvpn/ssl_pkt.c
+> +++ b/src/openvpn/ssl_pkt.c
+[...]
+> +    /* Add tls-auth/tls-crypt wrapping, this might replace buf */
+> +    tls_wrap_control(&tas->tls_wrap, header, &buf, own_sid);
+> +
+> +    return buf;
+> +}
+> +
 
-Arne
+git am complains about "new blank line at EOF."
+
+> diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
+> index b7a8d9c35..dd9361407 100644
+> --- a/src/openvpn/ssl_pkt.h
+> +++ b/src/openvpn/ssl_pkt.h
+[...]
+> @@ -157,6 +163,19 @@ read_control_auth(struct buffer *buf,
+>                    const struct link_socket_actual *from,
+>                    const struct tls_options *opt);
+>  
+> +
+> +/**
+> + * This function creates a reset packet using the information
+> + * from the tls pre decrypt state.
+> + *
+> + * The returned buf need to be free with \c free_buf
+
+"needs"
+
+Regards,
+--
+Frank Lichtenheld
 
