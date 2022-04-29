@@ -1,11 +1,10 @@
 From: Kristof Provost <kprovost@...2661...>
-Date: Fri, 29 Apr 2022 19:02:34 +0200
-Message-Id: <20220429170236.48239-3-kprovost@...2661...>
+Date: Fri, 29 Apr 2022 19:02:33 +0200
+Message-Id: <20220429170236.48239-2-kprovost@...2661...>
 In-Reply-To: <20220429170236.48239-1-kprovost@...2661...>
 References: <20220429170236.48239-1-kprovost@...2661...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/4] rework do_up() for correct order of DCO
- operations
+Subject: [Openvpn-devel] [PATCH 1/4] Handle (DCO) timeouts in client mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,200 +19,31 @@ To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 From: Kristof Provost <kp@...1376...>
 
-We must create the peer before we can dco_set_peer or dco_new_key.
-On the other hand, we must first process options, because those may
-change our peer id and we should create the peer with the correct id.
+Handle the DCO driver telling us that the peer went away, even if we're
+not running in multi-instance mode.
 
-Split up do_deferred_options() in do_deferred_options() and
-finish_options(). Call any DCO configuration operations (i.e.
-dco_set_peer()/dco_new_key()) after we've created the peer (i.e.
-dco_new_peer()).
-
-Signed-off-by: Kristof Provost <kprovost@...2661...>
+Signed-off-by:	Kristof Provost <kprovost@...2661...>
 ---
- src/openvpn/init.c  | 112 +++++++++++++++++++++++++-------------------
- src/openvpn/init.h  |   2 +
- src/openvpn/multi.c |   2 +
- 3 files changed, 68 insertions(+), 48 deletions(-)
+ src/openvpn/forward.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 8496e21f..5d53cf7e 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2100,26 +2100,26 @@ do_up(struct context *c, bool pulled_options, unsigned int option_types_found)
-             }
-         }
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 9ddea439..e4215b70 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1111,6 +1111,12 @@ process_incoming_dco(struct context *c)
  
--        if ((c->mode == MODE_POINT_TO_POINT) && c->c2.did_open_tun)
-+        if (pulled_options)
-         {
--            /* If we are in DCO mode we need to set the new peer options now */
--            int ret = dco_p2p_add_new_peer(c);
--            if (ret < 0)
-+            if (!do_deferred_options(c, option_types_found))
-             {
--                msg(D_DCO, "Cannot add peer to DCO: %s", strerror(-ret));
-+                msg(D_PUSH_ERRORS, "ERROR: Failed to apply push options");
-                 return false;
-             }
-         }
--
--        if (pulled_options)
-+        if (c->mode == MODE_POINT_TO_POINT)
-         {
--            if (!do_deferred_options(c, option_types_found))
-+            /* If we are in DCO mode we need to set the new peer options now */
-+            int ret = dco_p2p_add_new_peer(c);
-+            if (ret < 0)
-             {
--                msg(D_PUSH_ERRORS, "ERROR: Failed to apply push options");
-+                msg(D_DCO, "Cannot add peer to DCO: %s", strerror(-ret));
-                 return false;
-             }
-         }
--        else if (c->mode == MODE_POINT_TO_POINT)
-+
-+        if (!pulled_options && c->mode == MODE_POINT_TO_POINT)
-         {
-             if (!do_deferred_p2p_ncp(c))
-             {
-@@ -2128,6 +2128,13 @@ do_up(struct context *c, bool pulled_options, unsigned int option_types_found)
-             }
-         }
+     dco_do_read(dco);
  
-+
-+        if (!finish_options(c))
-+        {
-+            msg(D_TLS_ERRORS, "ERROR: Failed to finish option processing");
-+            return false;
-+        }
-+
-         if (c->c2.did_open_tun)
-         {
-             c->c1.pulled_options_digest_save = c->c2.pulled_options_digest;
-@@ -2344,49 +2351,58 @@ do_deferred_options(struct context *c, const unsigned int found)
-         {
-             return false;
-         }
--        struct frame *frame_fragment = NULL;
++    if (dco->dco_message_type == OVPN_CMD_DEL_PEER)
++    {
++        trigger_ping_timeout_signal(c);
++        return;
 +    }
 +
-+    return true;
-+}
-+
-+bool
-+finish_options(struct context *c)
-+{
-+    if (!c->options.pull || !dco_enabled(&c->options))
-+    {
-+        return true;
-+    }
-+
-+    struct frame *frame_fragment = NULL;
- #ifdef ENABLE_FRAGMENT
--        if (c->options.ce.fragment)
--        {
--            frame_fragment = &c->c2.frame_fragment;
--        }
-+    if (c->options.ce.fragment)
-+    {
-+        frame_fragment = &c->c2.frame_fragment;
-+    }
- #endif
- 
--        struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
--        if (!tls_session_update_crypto_params(c->c2.tls_multi, session,
--                                              &c->options, &c->c2.frame,
--                                              frame_fragment,
--                                              get_link_socket_info(c)))
--        {
--            msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
--            return false;
--        }
-+    struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
-+    if (!tls_session_update_crypto_params(c->c2.tls_multi, session,
-+                                          &c->options, &c->c2.frame,
-+                                          frame_fragment,
-+                                          get_link_socket_info(c)))
-+    {
-+        msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
-+        return false;
-+    }
- 
--        if (dco_enabled(&c->options))
--        {
--            /* Check if the pushed options are compatible with DCO if we have
--             * DCO enabled */
--            if (!check_dco_pull_options(&c->options))
--            {
--                msg(D_TLS_ERRORS, "OPTIONS ERROR: pushed options are incompatible with "
--                    "data channel offload. Use --disable-dco to connect"
--                    "to this server");
--                return false;
--            }
-+    /* Check if the pushed options are compatible with DCO if we have
-+     * DCO enabled */
-+    if (!check_dco_pull_options(&c->options))
-+    {
-+        msg(D_TLS_ERRORS, "OPTIONS ERROR: pushed options are incompatible with "
-+            "data channel offload. Use --disable-dco to connect"
-+            "to this server");
-+        return false;
-+    }
- 
--            if (c->options.ping_send_timeout || c->c2.frame.mss_fix)
--            {
--                int ret = dco_set_peer(&c->c1.tuntap->dco,
--                                       c->c2.tls_multi->peer_id,
--                                       c->options.ping_send_timeout,
--                                       c->options.ping_rec_timeout,
--                                       c->c2.frame.mss_fix);
--                if (ret < 0)
--                {
--                    msg(D_DCO, "Cannot set DCO peer: %s", strerror(-ret));
--                    return false;
--                }
--            }
-+    if (c->options.ping_send_timeout || c->c2.frame.mss_fix)
-+    {
-+        int ret = dco_set_peer(&c->c1.tuntap->dco,
-+                               c->c2.tls_multi->peer_id,
-+                               c->options.ping_send_timeout,
-+                               c->options.ping_rec_timeout,
-+                               c->c2.frame.mss_fix);
-+        if (ret < 0)
-+        {
-+            msg(D_DCO, "Cannot set DCO peer: %s", strerror(-ret));
-+            return false;
-         }
-     }
-     return true;
-diff --git a/src/openvpn/init.h b/src/openvpn/init.h
-index 1c341da3..5cc2a990 100644
---- a/src/openvpn/init.h
-+++ b/src/openvpn/init.h
-@@ -97,6 +97,8 @@ void reset_coarse_timers(struct context *c);
- 
- bool do_deferred_options(struct context *c, const unsigned int found);
- 
-+bool finish_options(struct context *c);
-+
- void inherit_context_child(struct context *dest,
-                            const struct context *src);
- 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 958712f1..47e1c6cc 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -2452,6 +2452,8 @@ multi_client_connect_late_setup(struct multi_context *m,
-         mi->context.c2.tls_multi->multi_state = CAS_FAILED;
-     }
- 
-+    finish_options(&mi->context);
-+
-     /* send push reply if ready */
-     if (mi->context.c2.push_request_received)
+     if (dco->dco_message_type != OVPN_CMD_PACKET)
      {
+         msg(D_DCO_DEBUG, "%s: received message of type %u - ignoring", __func__,
 -- 
 2.36.0
 
