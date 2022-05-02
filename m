@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon,  2 May 2022 17:43:10 +0200
-Message-Id: <20220502154310.836947-1-arne@...1227...>
-In-Reply-To: <20220422142953.3805364-9-arne@...1227...>
-References: <20220422142953.3805364-9-arne@...1227...>
+Date: Mon,  2 May 2022 18:09:45 +0200
+Message-Id: <20220502160945.839283-1-arne@...1227...>
+In-Reply-To: <20220422142953.3805364-13-arne@...1227...>
+References: <20220422142953.3805364-13-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Implement stateless,
- HMAC basedsesssion id three way handshake
+Subject: [Openvpn-devel] [PATCH v3] Implement HMAC based session id for
+ tls-crypt v2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,926 +18,742 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-OpenVPN currently has a bit of a weakness in its early three way handshake
+Tls-crypt v2 is more complicated to implement a proper stateless
+handshake. To allow state handshake this commit does
 
-A single client reset packet (first packet of the handshake) will
-  - trigger creating a session on the server side leading to potential
-    ressource exhaustion
-  - make the server respond with 3 answers trying to get an ACK for its
-    P_CONTROL_HARD_RESET_SERVER_V2 answer making it an amplification
+ - introduce a new packet CONTROL_WKC_V1 that repeats the wrapped
+   client key.
+ - introduce a way to negotiate the support for this packet in the
+   three way handshake
 
-Instead of allocating a connection for each client on the initial packet
-OpenVPN will now calculate a session id based on a HMAC that serves as
-verifiable cookie that can be checked for authenticity when the client
-responds with it. This eliminates the amplification attack and resource
-exhaustion attacks. For tls-crypt-v2 clients the HMAC based handshake
-is not used yet.
-
-Patch v2: rebase on master
-patch v3: fix unit tests, improve comment/style of code
+Details about the protocol changes are in tls-crypt-v2.txt. Optional
+arguments to the tls-crypt-v2 option have been added to explicitly
+allow or disallow client that do not support the stateless handshake.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
----
- doc/doxygen/doc_protocol_overview.h |   2 +
- src/openvpn/init.c                  |   4 +
- src/openvpn/mudp.c                  | 105 ++++++++++++--
- src/openvpn/multi.h                 |   3 +
- src/openvpn/openvpn.h               |   6 +
- src/openvpn/ssl.c                   |  41 +++++-
- src/openvpn/ssl.h                   |   8 ++
- src/openvpn/ssl_pkt.c               | 104 +++++++++++++-
- src/openvpn/ssl_pkt.h               |  54 ++++++-
- tests/unit_tests/openvpn/test_pkt.c | 210 ++++++++++++++++++++++++++--
- 10 files changed, 509 insertions(+), 28 deletions(-)
 
-diff --git a/doc/doxygen/doc_protocol_overview.h b/doc/doxygen/doc_protocol_overview.h
-index f26ce3a36..37de1cb0e 100644
---- a/doc/doxygen/doc_protocol_overview.h
-+++ b/doc/doxygen/doc_protocol_overview.h
-@@ -118,6 +118,8 @@
-  * parts:
-  *
-  *  - local \c session_id (random 64 bit value to identify TLS session).
-+ *      (the tls-server side uses a HMAC of the client to create a pseudo
-+ *       random number for a SYN Cookie like approach)
-  *  - HMAC signature of entire encapsulation header for HMAC firewall
-  *    [only if \c --tls-auth is specified] (usually 16 or 20 bytes).
-  *  - packet-id for replay protection (4 or 8 bytes, includes sequence
+Patch v3: improve grammar, style, comments, fix unit tests
+---
+ Changes.rst                         |  10 +++
+ doc/man-sections/tls-options.rst    |  14 ++++
+ doc/tls-crypt-v2.txt                |  41 +++++++++
+ src/openvpn/crypto.h                |   8 ++
+ src/openvpn/init.c                  |   4 +
+ src/openvpn/mudp.c                  |  85 ++++++++++++++-----
+ src/openvpn/options.c               |  13 +++
+ src/openvpn/options.h               |   3 +
+ src/openvpn/reliable.h              |   2 -
+ src/openvpn/ssl.c                   | 125 +++++++++++++++++++++++++---
+ src/openvpn/ssl_pkt.c               |  28 +++++--
+ src/openvpn/ssl_pkt.h               |  36 +++++++-
+ tests/unit_tests/openvpn/test_pkt.c |  10 +--
+ 13 files changed, 334 insertions(+), 45 deletions(-)
+
+diff --git a/Changes.rst b/Changes.rst
+index ceb0b2680..67a23c792 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -69,6 +69,16 @@ Improved ``--mssfix`` and ``--fragment`` calculation
+     account and the resulting size is specified as the total size of the VPN packets
+     including IP and UDP headers.
+ 
++Cookie based handshake for UDP server
++    Instead of allocating a connection for each client on the initial packet
++    OpenVPN server will now use an HMAC based cookie as its session id. This
++    way the server can verify it on completing the handshake without keeping
++    state. This eliminates the amplification and resource exhaustion attacks.
++    For tls-crypt-v2 clients, this requires OpenVPN 2.6 clients or later
++    because the client needs to resend its client key on completing the hand
++    shake. The tls-crypt-v2 option allows controlling if older clients are
++    accepted.
++
+ Deprecated features
+ -------------------
+ ``inetd`` has been removed
+diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
+index ac5756034..c06ee3354 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -486,6 +486,13 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
+   8000 years'.
+ 
+ --tls-crypt-v2 keyfile
++
++  Valid syntax:
++  ::
++     tls-crypt-v2 keyfile
++     tls-crypt-v2 keyfile force-cookie
++     tls-crypt-v2 keyfile allow-noncookie
++
+   Use client-specific tls-crypt keys.
+ 
+   For clients, ``keyfile`` is a client-specific tls-crypt key. Such a key
+@@ -501,6 +508,13 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
+   client is using client-specific keys, and automatically select the right
+   mode.
+ 
++  The optional parameters :code:`force-cookie` allows only tls-crypt-v2
++  clients that support a cookie based stateless three way handshake that
++  avoids replay attacks and state exhaustion on the server side (OpenVPN
++  2.6 and later). The option :code:`allow-noncookie` explicitly allows
++  older tls-crypt-v2 clients. The default is (currently)
++  :code:`allow-noncookie`.
++
+ --tls-crypt-v2-verify cmd
+   Run command ``cmd`` to verify the metadata of the client-specific
+   tls-crypt-v2 key of a connecting client. This allows server
+diff --git a/doc/tls-crypt-v2.txt b/doc/tls-crypt-v2.txt
+index f6a6a1395..eb7b7138b 100644
+--- a/doc/tls-crypt-v2.txt
++++ b/doc/tls-crypt-v2.txt
+@@ -157,6 +157,47 @@ When setting up the openvpn connection:
+    messages.
+ 
+ 
++HMAC Cookie support
++-------------------
++To avoid exhaustion attack and keeping state for connections that fail to
++complete the three-way handshake, the OpenVPN server will use its own session
++id as challenge that the client must repeat in the third packet of the
++handshake. This introduces a problem. If the server does not keep the wrapped
++client key from the initial packet, the server cannot decode the third packet.
++Therefore, tls-crypt-v2 in 2.6 allows resending the wrapped key in the third
++packet of the handshake with the P_CONTROL_WKC_V1 message. The modified
++handshake is as follows (the rest of the handshake is unmodified):
++
++1. The client creates the P_CONTROL_HARD_RESET_CLIENT_V3 message as before
++   but indicates that it supports resending the wrapped key. This is done
++   by setting the packet id of the replay id to 0x0f010000. The first byte
++   indicates the early negotiation support and the next byte the flags.
++
++2. The server responds with a P_CONTROL_HARD_RESET_V2 message. Instead of having
++   an empty payload like normally, the payload consists of TLV (type (uint16),
++   length (uint16), value) packets. TLV was chosen
++   to allow extensibility in the future. Currently only the following TLV is
++   defined:
++
++   flags - type 0x01, length 2.
++
++   Bit 1 indicates that the client needs to resend the WKc in the third packet.
++
++3. Instead of normal P_ACK_V1 or P_CONTROL_V1 packet, the client will send a
++   P_CONTROL_WKC_V1 packet. The P_CONTROL_WKC_V1 is identical to a normal
++   P_CONTROL_V1 packet but with the WKc appended.
++
++   Normally the first message of the client is either P_ACK_V1, directly
++   followed by a P_CONTROL_V1 message that contains the TLS Client Hello or
++   just a P_CONTROL_V1 message. Instead of a P_ACK_V1 message the client should
++   send a P_CONTROL_WKC_V1 message with an empty payload. This message must
++   also include an ACK for the P_CONTROL_HARD_RESET_V2 message.
++
++   When directly sending the TLS Client Hello message in the P_CONTROL_WKC_V1
++   message, the client must ensure that the resulting P_CONTROL_WKC_V1 message
++   with the appended WKc does not extend the control message length.
++
++
+ Considerations
+ --------------
+ 
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 806632edf..98e2c7664 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -256,6 +256,14 @@ struct crypto_options
+     /**< Bit-flag indicating that data channel key derivation
+      * is done using TLS keying material export [RFC5705]
+      */
++#define CO_RESEND_WKC (1<<4)
++    /**< Bit-flag indicating that the client is expected to
++     * resend the wrapped client key with the 2nd packet (packet-id 1)
++     * like with the HARD_RESET_CLIENT_V3 packet */
++#define CO_FORCE_TLSCRYPTV2_COOKIE  (1<<5)
++    /**< Bit-flag indicating that we do not allow clients that do
++     * not support resending the wrapped client key (WKc) with the
++     * third packet of the three-way handshake */
+     unsigned int flags;         /**< Bit-flags determining behavior of
+                                  *   security operation functions. */
+ };
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index e41bb9d4b..7e7041a8e 100644
+index 7e7041a8e..85e146bf2 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -54,6 +54,7 @@
- #include "forward.h"
- #include "auth_token.h"
- #include "mss.h"
-+#include "mudp.h"
- 
- #include "memdbg.h"
- 
-@@ -2973,7 +2974,9 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
-     if (flags & CF_INIT_TLS_AUTH_STANDALONE)
-     {
-         c->c2.tls_auth_standalone = tls_auth_standalone_init(&to, &c->c2.gc);
-+        c->c2.session_id_hmac = session_id_hmac_init();
+@@ -2960,6 +2960,10 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+         {
+             to.tls_wrap.tls_crypt_v2_server_key = c->c1.ks.tls_crypt_v2_server_key;
+             to.tls_crypt_v2_verify_script = c->options.tls_crypt_v2_verify_script;
++            if (options->ce.tls_crypt_v2_force_cookie)
++            {
++                to.tls_wrap.opt.flags |= CO_FORCE_TLSCRYPTV2_COOKIE;
++            }
+         }
      }
-+
- }
- 
- static void
-@@ -2992,6 +2995,7 @@ do_init_frame_tls(struct context *c)
-         tls_init_control_channel_frame_parameters(&c->c2.frame, &c->c2.tls_auth_standalone->frame);
-         frame_print(&c->c2.tls_auth_standalone->frame, D_MTU_INFO,
-                     "TLS-Auth MTU parms");
-+        c->c2.tls_auth_standalone->tls_wrap.work = alloc_buf_gc(BUF_SIZE(&c->c2.frame), &c->c2.gc);
-     }
- }
  
 diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index e5cc36b45..ead61e827 100644
+index ead61e827..88cd6a497 100644
 --- a/src/openvpn/mudp.c
 +++ b/src/openvpn/mudp.c
-@@ -40,24 +40,81 @@
+@@ -40,6 +40,30 @@
  #include <sys/inotify.h>
  #endif
  
-+/* Return if this packet should create a new session */
++static void
++send_hmac_reset_packet(struct multi_context *m,
++                       struct tls_pre_decrypt_state *state,
++                       struct tls_auth_standalone *tas,
++                       struct session_id *sid,
++                       bool tlscryptv2)
++{
++    reset_packet_id_send(&state->tls_wrap_tmp.opt.packet_id.send);
++    state->tls_wrap_tmp.opt.packet_id.rec.initialized = true;
++    uint8_t header = 0 | (P_CONTROL_HARD_RESET_SERVER_V2 << P_OPCODE_SHIFT);
++    struct buffer buf = tls_reset_standalone(&state->tls_wrap_tmp, tas, sid,
++                                             &state->peer_session_id, header,
++                                             tlscryptv2);
++
++    struct context *c = &m->top;
++
++    buf_reset_len(&c->c2.buffers->aux_buf);
++    buf_copy(&c->c2.buffers->aux_buf, &buf);
++    m->hmac_reply = c->c2.buffers->aux_buf;
++    m->hmac_reply_dest = &m->top.c2.from;
++    msg(D_MULTI_DEBUG, "Reset packet from client, sending HMAC based reset challenge");
++}
++
++
+ /* Return if this packet should create a new session */
  static bool
--do_pre_decrypt_check(struct multi_context *m)
-+do_pre_decrypt_check(struct multi_context *m,
-+                     struct tls_pre_decrypt_state *state,
-+                     struct mroute_addr addr)
- {
-     ASSERT(m->top.c2.tls_auth_standalone);
+ do_pre_decrypt_check(struct multi_context *m,
+@@ -58,37 +82,62 @@ do_pre_decrypt_check(struct multi_context *m,
+     struct openvpn_sockaddr *from = &m->top.c2.from.dest;
+     int handwindow = m->top.options.handshake_window;
  
-     enum first_packet_verdict verdict;
--    struct tls_pre_decrypt_state state = {0};
- 
--    verdict = tls_pre_decrypt_lite(m->top.c2.tls_auth_standalone, &state,
--                                   &m->top.c2.from, &m->top.c2.buf);
-+    struct tls_auth_standalone *tas = m->top.c2.tls_auth_standalone;
- 
--    free_tls_pre_decrypt_state(&state);
-+    verdict = tls_pre_decrypt_lite(tas, state, &m->top.c2.from, &m->top.c2.buf);
- 
--    if (verdict == VERDICT_INVALID || verdict == VERDICT_VALID_CONTROL_V1)
-+    hmac_ctx_t *hmac = m->top.c2.session_id_hmac;
-+    struct openvpn_sockaddr *from = &m->top.c2.from.dest;
-+    int handwindow = m->top.options.handshake_window;
-+
-+
-+    if (verdict == VERDICT_VALID_RESET_V3)
-+    {
-+        /* For tls-crypt-v2 we need to keep the state of the first packet to
-+         * store the unwrapped key */
-+        return true;
-+    }
-+    else if (verdict == VERDICT_VALID_RESET_V2)
+-
+     if (verdict == VERDICT_VALID_RESET_V3)
      {
-+        /* Calculate the session ID HMAC for our reply and create reset packet */
-+        struct session_id sid = calculate_session_id_hmac(state->peer_session_id,
-+                                                          from, hmac, handwindow, 0);
-+        reset_packet_id_send(&tas->tls_wrap.opt.packet_id.send);
-+        tas->tls_wrap.opt.packet_id.rec.initialized = true;
-+        uint8_t header = 0 | (P_CONTROL_HARD_RESET_SERVER_V2 << P_OPCODE_SHIFT);
-+        struct buffer buf = tls_reset_standalone(tas, &sid,
-+                                                 &state->peer_session_id, header);
+-        /* For tls-crypt-v2 we need to keep the state of the first packet to
+-         * store the unwrapped key */
+-        return true;
++        /* Extract the packet id to check if it has the special format that
++         * indicates early negotiation support */
++        struct packet_id_net pin;
++        struct buffer tmp = m->top.c2.buf;
++        ASSERT(buf_advance(&tmp, 1 + SID_SIZE));
++        ASSERT(packet_id_read(&pin, &tmp, true));
 +
++        /* The most significant byte ist 0x0f if early negotiation is supported */
++        bool early_neg_support = (pin.id & EARLY_NEG_MASK) == EARLY_NEG_START;
 +
-+        struct context *c = &m->top;
-+
-+        buf_reset_len(&c->c2.buffers->aux_buf);
-+        buf_copy(&c->c2.buffers->aux_buf, &buf);
-+        m->hmac_reply = c->c2.buffers->aux_buf;
-+        m->hmac_reply_dest = &m->top.c2.from;
-+        msg(D_MULTI_DEBUG, "Reset packet from client, sending HMAC based reset challenge");
-+        /* We have a reply do not create a new session */
-         return false;
-+
-+    }
-+    else if (verdict == VERDICT_VALID_CONTROL_V1 || verdict == VERDICT_VALID_ACK_V1)
-+    {
-+        /* ACK_V1 contains the peer id (our id) while CONTROL_V1 can but does not
-+         * need to contain the peer id */
-+        struct gc_arena gc = gc_new();
-+
-+        bool ret = check_session_id_hmac(state, from, hmac, handwindow);
-+
-+        const char *peer = print_link_socket_actual(&m->top.c2.from, &gc);
-+        if (!ret)
++        if (early_neg_support && (pin.id & EARLY_NEG_RESENDWKC))
 +        {
++            /* Calculate the session ID HMAC for our reply and create reset packet */
++            struct session_id sid = calculate_session_id_hmac(state->peer_session_id,
++                                                              from, hmac, handwindow, 0);
++            send_hmac_reset_packet(m, state, tas, &sid, true);
 +
-+            msg(D_MULTI_MEDIUM, "Packet with invalid or missing SID from %s", peer);
-+
++            return false;
 +        }
 +        else
 +        {
-+            msg(D_MULTI_DEBUG, "Valid packet with HMAC challenge from peer (%s), "
-+                               "accepting new connection.", peer);
++            /* For tls-crypt-v2 we need to keep the state of the first packet
++             * to store the unwrapped key if the client doesn't support resending
++             * the wrapped key */
++            if (tas->tls_wrap.opt.flags & CO_FORCE_TLSCRYPTV2_COOKIE)
++            {
++                struct gc_arena gc = gc_new();
++                const char *peer = print_link_socket_actual(&m->top.c2.from, &gc);
++                msg(D_MULTI_DEBUG, "tls-crypt-v2 force-cookie is enabled,"
++                    "ignoring connection attempt from old client"
++                    " (%s)", peer);
++                gc_free(&gc);
++                return false;
++            }
++            else
++            {
++                return true;
++            }
 +        }
-+        gc_free(&gc);
-+
-+        return ret;
      }
--    return true;
-+
-+    /* VERDICT_INVALID */
-+    return false;
- }
- 
- /*
-@@ -114,10 +171,18 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
-                 mi = (struct multi_instance *) he->value;
-             }
-         }
-+
-+        /* we not have no existing multi instance for this connection */
-         if (!mi)
-         {
--            if (do_pre_decrypt_check(m))
-+            struct tls_pre_decrypt_state state = {0};
-+
-+            if (do_pre_decrypt_check(m, &state, real))
-             {
-+                /* This is an unknown session but with valid tls-auth/tls-crypt (or no auth at all),
-+                 * if this is the initial packet of a session, we just send a reply with a HMAC session id and do not
-+                 * generate a session slot */
-+
-                 if (frequency_limit_event_allowed(m->new_connection_limiter))
-                 {
-                     mi = multi_create_instance(m, &real);
-@@ -127,6 +192,14 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
-                         mi->did_real_hash = true;
-                         multi_assign_peer_id(m, mi);
-                     }
-+                    /* If we have a session ids already, ensure that the state is using the same */
-+                    if (session_id_defined(&state.server_session_id)
-+                        && session_id_defined((&state.peer_session_id)))
-+                    {
-+                        mi->context.c2.tls_multi->n_sessions++;
-+                        struct tls_session *session = &mi->context.c2.tls_multi->session[TM_ACTIVE];
-+                        session_skip_to_pre_start(session, &state, &m->top.c2.from);
-+                    }
-                 }
-                 else
-                 {
-@@ -135,6 +208,7 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
-                         mroute_addr_print(&real, &gc));
-                 }
-             }
-+            free_tls_pre_decrypt_state(&state);
-         }
- 
- #ifdef ENABLE_DEBUG
-@@ -155,7 +229,7 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
- }
- 
- /*
-- * Send a packet to TCP/UDP socket.
-+ * Send a packet to UDP socket.
-  */
- static inline void
- multi_process_outgoing_link(struct multi_context *m, const unsigned int mpp_flags)
-@@ -165,6 +239,14 @@ multi_process_outgoing_link(struct multi_context *m, const unsigned int mpp_flag
+     else if (verdict == VERDICT_VALID_RESET_V2)
      {
-         multi_process_outgoing_link_dowork(m, mi, mpp_flags);
-     }
-+    if (m->hmac_reply_dest && m->hmac_reply.len > 0)
-+    {
-+        msg_set_prefix("Connection Attempt");
-+        m->top.c2.to_link = m->hmac_reply;
-+        m->top.c2.to_link_addr = m->hmac_reply_dest;
-+        process_outgoing_link(&m->top);
-+        m->hmac_reply_dest = NULL;
-+    }
- }
- 
- /*
-@@ -272,6 +354,10 @@ p2mp_iow_flags(const struct multi_context *m)
-     {
-         flags |= IOW_MBUF;
-     }
-+    else if (m->hmac_reply_dest)
-+    {
-+        flags |= IOW_TO_LINK;
-+    }
-     else
-     {
-         flags |= IOW_READ;
-@@ -364,4 +450,3 @@ tunnel_server_udp(struct context *top)
-     multi_top_free(&multi);
-     close_instance(top);
- }
+         /* Calculate the session ID HMAC for our reply and create reset packet */
+         struct session_id sid = calculate_session_id_hmac(state->peer_session_id,
+                                                           from, hmac, handwindow, 0);
+-        reset_packet_id_send(&tas->tls_wrap.opt.packet_id.send);
+-        tas->tls_wrap.opt.packet_id.rec.initialized = true;
+-        uint8_t header = 0 | (P_CONTROL_HARD_RESET_SERVER_V2 << P_OPCODE_SHIFT);
+-        struct buffer buf = tls_reset_standalone(tas, &sid,
+-                                                 &state->peer_session_id, header);
 -
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index f89c7dbd2..f1e9ab91f 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -191,6 +191,9 @@ struct multi_context {
-     struct context top;         /**< Storage structure for process-wide
-                                  *   configuration. */
  
-+    struct buffer hmac_reply;
-+    struct link_socket_actual *hmac_reply_dest;
-+
-     /*
-      * Timer object for stale route check
-      */
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 77263dfbe..00cd652fa 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -330,6 +330,12 @@ struct context_2
-      *   received from a new client.  See the
-      *   \c --tls-auth commandline option. */
+-        struct context *c = &m->top;
++        send_hmac_reset_packet(m, state, tas, &sid, false);
  
+-        buf_reset_len(&c->c2.buffers->aux_buf);
+-        buf_copy(&c->c2.buffers->aux_buf, &buf);
+-        m->hmac_reply = c->c2.buffers->aux_buf;
+-        m->hmac_reply_dest = &m->top.c2.from;
+-        msg(D_MULTI_DEBUG, "Reset packet from client, sending HMAC based reset challenge");
+         /* We have a reply do not create a new session */
+         return false;
+ 
+     }
+-    else if (verdict == VERDICT_VALID_CONTROL_V1 || verdict == VERDICT_VALID_ACK_V1)
++    else if (verdict == VERDICT_VALID_CONTROL_V1 || verdict == VERDICT_VALID_ACK_V1
++             || verdict == VERDICT_VALID_WKC_V1)
+     {
+         /* ACK_V1 contains the peer id (our id) while CONTROL_V1 can but does not
+          * need to contain the peer id */
+@@ -99,9 +148,7 @@ do_pre_decrypt_check(struct multi_context *m,
+         const char *peer = print_link_socket_actual(&m->top.c2.from, &gc);
+         if (!ret)
+         {
+-
+             msg(D_MULTI_MEDIUM, "Packet with invalid or missing SID from %s", peer);
+-
+         }
+         else
+         {
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 7f5c903d1..9ff384d09 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -8896,6 +8896,19 @@ add_option(struct options *options,
+             options->ce.tls_crypt_v2_file = p[1];
+             options->ce.tls_crypt_v2_file_inline = is_inline;
+         }
 +
-+    hmac_ctx_t *session_id_hmac;
-+    /**< the HMAC we use to generate and verify our syn cookie like
-+     * session ids from the server.
-+     */
++        if (p[2] && streq(p[2], "force-cookie"))
++        {
++            options->ce.tls_crypt_v2_force_cookie = true;
++        }
++        else if (p[2] && streq(p[2], "allow-noncookie"))
++        {
++            options->ce.tls_crypt_v2_force_cookie = false;
++        }
++        else if (p[2])
++        {
++            msg(msglevel, "Unsupported tls-crypt-v2 argument: %s", p[2]);
++        }
+     }
+     else if (streq(p[0], "tls-crypt-v2-verify") && p[1] && !p[2])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 055789b3b..c2937dc37 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -162,6 +162,9 @@ struct connection_entry
+      * authenticated encryption v2 */
+     const char *tls_crypt_v2_file;
+     bool tls_crypt_v2_file_inline;
 +
-     /* used to optimize calls to tls_multi_process */
-     struct interval tmp_int;
++    /* Allow only client that support resending the wrapped client key */
++    bool tls_crypt_v2_force_cookie;
+ };
+ 
+ struct remote_entry
+diff --git a/src/openvpn/reliable.h b/src/openvpn/reliable.h
+index 8da2c0729..b9863efe3 100644
+--- a/src/openvpn/reliable.h
++++ b/src/openvpn/reliable.h
+@@ -361,8 +361,6 @@ struct reliable_entry *reliable_get_entry_sequenced(struct reliable *rel);
+  *
+  * @param rel The reliable structure associated with the given buffer.
+  * @param buf The buffer of the reliable entry which is to be removed.
+- * @param inc_pid If true, the reliable structure's packet ID counter
+- *     will be incremented.
+  */
+ void reliable_mark_deleted(struct reliable *rel, struct buffer *buf);
  
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index cb3382d6f..80440c411 100644
+index 8ea7c06fa..5e1a23ccd 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -1285,6 +1285,10 @@ tls_auth_standalone_init(struct tls_options *tls_options,
-     /* get initial frame parms, still need to finalize */
-     tas->frame = tls_options->frame;
+@@ -1099,6 +1099,14 @@ tls_session_init(struct tls_multi *multi, struct tls_session *session)
+                    session->opt->replay_time,
+                    "TLS_WRAP", session->key_id);
  
-+    packet_id_init(&tas->tls_wrap.opt.packet_id,
-+                   tls_options->replay_window, tls_options->replay_time, "TAS",
-+                   0);
-+
-     return tas;
- }
- 
-@@ -2398,13 +2402,13 @@ auth_deferred_expire_window(const struct tls_options *o)
- 
- /**
-  * Move the session from S_INITIAL to S_PRE_START. This will also generate
-- * the intial message based on ks->initial_opcode
-+ * the initial message based on ks->initial_opcode
-  *
-  * @return if the state change was succesful
-  */
- static bool
- session_move_pre_start(const struct tls_session *session,
--                       struct key_state *ks)
-+                       struct key_state *ks, bool skip_initial_send)
- {
-     struct buffer *buf = reliable_get_buf_output_sequenced(ks->send_reliable);
-     if (!buf)
-@@ -2418,6 +2422,13 @@ session_move_pre_start(const struct tls_session *session,
- 
-     /* null buffer */
-     reliable_mark_active_outgoing(ks->send_reliable, buf, ks->initial_opcode);
-+
-+    /* If we want to skip sending the initial handshake packet we still generate
-+     * it to increase internal counters etc. but immediately mark it as done */
-+    if (skip_initial_send)
++    /* If we are using tls-crypt-v2 we manipulate the packet id to be (ab)used
++     * to indicate early protocol negotiation */
++    if (session->opt->tls_crypt_v2)
 +    {
-+        reliable_mark_deleted(ks->send_reliable, buf);
++        session->tls_wrap.opt.packet_id.send.time = now;
++        session->tls_wrap.opt.packet_id.send.id = EARLY_NEG_START | EARLY_NEG_RESENDWKC;
 +    }
-     INCR_GENERATED;
- 
-     ks->state = S_PRE_START;
-@@ -2491,6 +2502,30 @@ session_move_active(struct tls_multi *multi, struct tls_session *session,
- #endif
++
+     /* load most recent packet-id to replay protect on --tls-auth */
+     packet_id_persist_load_obj(session->tls_wrap.opt.pid_persist,
+                                &session->tls_wrap.opt.packet_id);
+@@ -2525,6 +2533,53 @@ session_skip_to_pre_start(struct tls_session *session,
+     return session_move_pre_start(session, ks, true);
  }
  
-+bool
-+session_skip_to_pre_start(struct tls_session *session,
-+                          struct tls_pre_decrypt_state *state,
-+                          struct link_socket_actual *from)
++/**
++ * Parses the TLVs (type, length, value) in the early negotiation
++ */
++static bool
++parse_early_negotiation_tlvs(struct buffer *buf, struct key_state *ks)
 +{
-+    struct key_state *ks = &session->key[KS_PRIMARY];
-+    ks->session_id_remote = state->peer_session_id;
-+    ks->remote_addr = *from;
-+    session->session_id = state->server_session_id;
-+    session->untrusted_addr = *from;
-+    session->burst = true;
++    while (buf->len > 0)
++    {
++        if (buf_len(buf) < 4)
++        {
++            goto error;
++        }
++        /* read type */
++        uint16_t type = buf_read_u16(buf);
++        uint16_t len = buf_read_u16(buf);
++        if (buf_len(buf) < len)
++        {
++            goto error;
++        }
 +
-+    /* The OpenVPN protocol implicitly mandates that packet id always start
-+     * from 0 in the RESET packets as OpenVPN 2.x will not allow gaps in the
-+     * ids and starts always from 0. Since we skip/ignore one (RESET) packet
-+     * in each direction, we need to set the ids to 1 */
-+    ks->rec_reliable->packet_id = 1;
-+    /* for ks->send_reliable->packet_id, session_move_pre_start moves the
-+     * counter to 1 */
-+    session->tls_wrap.opt.packet_id.send.id = 1;
-+    return session_move_pre_start(session, ks, true);
++        if (type == EARLY_NEG_TLV_FLAG)
++        {
++            if (len != sizeof(uint16_t))
++            {
++                goto error;
++            }
++            uint16_t flags = buf_read_u16(buf);
++
++            if (flags & EARLY_NEG_FLAG_RESEND_WKC)
++            {
++                ks->crypto_options.flags |= CO_RESEND_WKC;
++            }
++        }
++        else
++        {
++            /* Skip types we do not parse */
++            buf_advance(buf, len);
++        }
++    }
++    reliable_mark_deleted(ks->rec_reliable, buf);
++
++    return true;
++error:
++    msg(D_TLS_ERRORS, "TLS Error: Early negotiation malformed packet");
++    return false;
 +}
 +
+ /**
+  * Read incoming ciphertext and passes it to the buffer of the SSL library.
+  * Returns false if an error is encountered that should abort the session.
+@@ -2557,6 +2612,13 @@ read_incoming_tls_ciphertext(struct buffer *buf, struct key_state *ks,
+     return true;
+ }
+ 
++static bool
++control_packet_needs_wkc(const struct key_state *ks)
++{
++    return (ks->crypto_options.flags & CO_RESEND_WKC)
++           && (ks->send_reliable->packet_id == 1);
++}
 +
  
  static bool
  tls_process_state(struct tls_multi *multi,
-@@ -2506,7 +2541,7 @@ tls_process_state(struct tls_multi *multi,
-     /* Initial handshake */
-     if (ks->state == S_INITIAL)
+@@ -2626,9 +2688,21 @@ tls_process_state(struct tls_multi *multi,
+     struct reliable_entry *entry = reliable_get_entry_sequenced(ks->rec_reliable);
+     if (entry)
      {
--        state_change = session_move_pre_start(session, ks);
-+        state_change = session_move_pre_start(session, ks, false);
+-        if (!read_incoming_tls_ciphertext(&entry->buf, ks, &state_change))
++        /* The first packet from the peer (the reset packet) is special and
++         * contains early protocol negotiation */
++        if (entry->packet_id == 0 && is_hard_reset_method2(entry->opcode))
+         {
+-            goto error;
++            if (!parse_early_negotiation_tlvs(&entry->buf, ks))
++            {
++                goto error;
++            }
++        }
++        else
++        {
++            if (!read_incoming_tls_ciphertext(&entry->buf, ks, &state_change))
++            {
++                goto error;
++            }
+         }
      }
  
-     /* Are we timed out on receive? */
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index e925a16ea..0ba86d3e6 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -556,4 +556,12 @@ tls_session_generate_data_channel_keys(struct tls_session *session);
- void
- load_xkey_provider(void);
+@@ -2721,7 +2795,12 @@ tls_process_state(struct tls_multi *multi,
+             }
+             if (status == 1)
+             {
+-                reliable_mark_active_outgoing(ks->send_reliable, buf, P_CONTROL_V1);
++                int opcode = P_CONTROL_V1;
++                if (control_packet_needs_wkc(ks))
++                {
++                    opcode = P_CONTROL_WKC_V1;
++                }
++                reliable_mark_active_outgoing(ks->send_reliable, buf, opcode);
+                 INCR_GENERATED;
+                 state_change = true;
+                 dmsg(D_TLS_DEBUG, "Outgoing Ciphertext -> Reliable");
+@@ -2811,15 +2890,38 @@ tls_process(struct tls_multi *multi,
  
-+/* Special method to skip the three way handshake RESET stages. This is
-+ * used by the HMAC code when seeing a packet that matches the previous
-+ * HMAC based stateless server state */
-+bool
-+session_skip_to_pre_start(struct tls_session *session,
-+                          struct tls_pre_decrypt_state *state,
-+                          struct link_socket_actual *from);
+     update_time();
+ 
++    /* We often send acks back to back to a following control packet. This
++     * normally does not create a problem (apart from an extra packet. However,
++     * with the P_CONTROL_WKC_V1 we need to ensure that the packet gets resend
++     * if not received by remote, so instead we use an empty control packet in
++     * this special case */
 +
- #endif /* ifndef OPENVPN_SSL_H */
++
+     /* Send 1 or more ACKs (each received control packet gets one ACK) */
+     if (!to_link->len && !reliable_ack_empty(ks->rec_ack))
+     {
+-        struct buffer buf = ks->ack_write_buf;
+-        ASSERT(buf_init(&buf, multi->opt.frame.buf.headroom));
+-        write_control_auth(session, ks, &buf, to_link_addr, P_ACK_V1,
+-                           RELIABLE_ACK_SIZE, false);
+-        *to_link = buf;
+-        dmsg(D_TLS_DEBUG, "Dedicated ACK -> TCP/UDP");
++        if (control_packet_needs_wkc(ks))
++        {
++            struct buffer *buf = reliable_get_buf_output_sequenced(ks->send_reliable);
++            if (!buf)
++            {
++                return false;
++            }
++
++            /* We do not write anything to the buffer, this way this will be
++             * an empty control packet that gets the ack piggybacked and
++             * also appended the wrapped client key since it has a WCK opcode */
++            reliable_mark_active_outgoing(ks->send_reliable, buf, P_CONTROL_WKC_V1);
++        }
++        else
++        {
++            struct buffer buf = ks->ack_write_buf;
++            ASSERT(buf_init(&buf, multi->opt.frame.buf.headroom));
++            write_control_auth(session, ks, &buf, to_link_addr, P_ACK_V1,
++                               RELIABLE_ACK_SIZE, false);
++            *to_link = buf;
++            dmsg(D_TLS_DEBUG, "Dedicated ACK -> TCP/UDP");
++        }
+     }
+ 
+     /* When should we wake up again? */
+@@ -3464,7 +3566,8 @@ tls_pre_decrypt(struct tls_multi *multi,
+     }
+ 
+     /*
+-     * We have an authenticated control channel packet (if --tls-auth was set).
++     * We have an authenticated control channel packet (if --tls-auth/tls-crypt
++     * or tls-crypt-v2 was set).
+      * Now pass to our reliability layer which deals with
+      * packet acknowledgements, retransmits, sequencing, etc.
+      */
+@@ -3893,7 +3996,7 @@ protocol_dump(struct buffer *buffer, unsigned int flags, struct gc_arena *gc)
+ 
+     if (op == P_ACK_V1)
+     {
+-        goto done;
++        goto print_data;
+     }
+ 
+     /*
 diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
-index 7d9172703..9c8154b12 100644
+index 9c8154b12..2376446ee 100644
 --- a/src/openvpn/ssl_pkt.c
 +++ b/src/openvpn/ssl_pkt.c
-@@ -320,7 +320,8 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
-     /* Allow only the reset packet or the first packet of the actual handshake. */
+@@ -148,7 +148,8 @@ tls_wrap_control(struct tls_wrap_ctx *ctx, uint8_t header, struct buffer *buf,
+             return;
+         }
+ 
+-        if ((header >> P_OPCODE_SHIFT) == P_CONTROL_HARD_RESET_CLIENT_V3)
++        if ((header >> P_OPCODE_SHIFT) == P_CONTROL_HARD_RESET_CLIENT_V3
++            || (header >> P_OPCODE_SHIFT) == P_CONTROL_WKC_V1)
+         {
+             if (!buf_copy(&ctx->work,
+                           ctx->tls_crypt_v2_wkc))
+@@ -197,7 +198,8 @@ read_control_auth(struct buffer *buf,
+     bool ret = false;
+ 
+     const uint8_t opcode = *(BPTR(buf)) >> P_OPCODE_SHIFT;
+-    if (opcode == P_CONTROL_HARD_RESET_CLIENT_V3
++    if ((opcode == P_CONTROL_HARD_RESET_CLIENT_V3
++         || opcode == P_CONTROL_WKC_V1)
+         && !tls_crypt_v2_extract_client_key(buf, ctx, opt))
+     {
+         msg(D_TLS_ERRORS,
+@@ -321,6 +323,7 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
      if (op != P_CONTROL_HARD_RESET_CLIENT_V2
          && op != P_CONTROL_HARD_RESET_CLIENT_V3
--        && op != P_CONTROL_V1)
-+        && op != P_CONTROL_V1
-+        && op != P_ACK_V1)
+         && op != P_CONTROL_V1
++        && op != P_CONTROL_WKC_V1
+         && op != P_ACK_V1)
      {
          /*
-          * This can occur due to bogus data or DoS packets.
-@@ -388,9 +389,17 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
+@@ -397,6 +400,10 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
      {
-         return VERDICT_VALID_CONTROL_V1;
+         return VERDICT_VALID_RESET_V3;
      }
-+    else if (op == P_ACK_V1)
++    else if (op == P_CONTROL_WKC_V1)
 +    {
-+        return VERDICT_VALID_ACK_V1;
-+    }
-+    else if (op == P_CONTROL_HARD_RESET_CLIENT_V3)
-+    {
-+        return VERDICT_VALID_RESET_V3;
++        return VERDICT_VALID_WKC_V1;
 +    }
      else
      {
--        return VERDICT_VALID_RESET;
-+        return VERDICT_VALID_RESET_V2;
-     }
+         return VERDICT_VALID_RESET_V2;
+@@ -410,10 +417,12 @@ error:
  
- error:
-@@ -399,6 +408,7 @@ error:
-     return VERDICT_INVALID;
- }
  
-+
  struct buffer
- tls_reset_standalone(struct tls_auth_standalone *tas,
+-tls_reset_standalone(struct tls_auth_standalone *tas,
++tls_reset_standalone(struct tls_wrap_ctx *ctx,
++                     struct tls_auth_standalone *tas,
                       struct session_id *own_sid,
-@@ -429,3 +439,93 @@ tls_reset_standalone(struct tls_auth_standalone *tas,
+                      struct session_id *remote_sid,
+-                     uint8_t header)
++                     uint8_t header,
++                     bool tlscryptv2)
+ {
+     struct buffer buf = alloc_buf(tas->frame.buf.payload_size);
+     ASSERT(buf_init(&buf, tas->frame.buf.headroom));
+@@ -434,8 +443,17 @@ tls_reset_standalone(struct tls_auth_standalone *tas,
+ 
+     ASSERT(buf_write(&buf, &net_pid, sizeof(net_pid)));
+ 
++    /* Add indication for tls-crypt-v2 to resend the packet with the with
++     * reply */
++    if (tlscryptv2)
++    {
++        buf_write_u16(&buf, EARLY_NEG_TLV_FLAG); /* TYPE: flags */
++        buf_write_u16(&buf, sizeof(uint16_t));
++        buf_write_u16(&buf, EARLY_NEG_FLAG_RESEND_WKC);
++    }
++
+     /* Add tls-auth/tls-crypt wrapping, this might replace buf */
+-    tls_wrap_control(&tas->tls_wrap, header, &buf, own_sid);
++    tls_wrap_control(ctx, header, &buf, own_sid);
  
      return buf;
  }
-+
-+hmac_ctx_t *
-+session_id_hmac_init(void)
-+{
-+    /* We assume that SHA256 is always available */
-+    ASSERT(md_valid("SHA256"));
-+    hmac_ctx_t *hmac_ctx = hmac_ctx_new();
-+
-+    uint8_t key[SHA256_DIGEST_LENGTH];
-+    ASSERT(rand_bytes(key, sizeof(key)));
-+
-+    hmac_ctx_init(hmac_ctx, key, "SHA256");
-+    return hmac_ctx;
-+}
-+
-+struct session_id
-+calculate_session_id_hmac(struct session_id client_sid,
-+                          const struct openvpn_sockaddr *from,
-+                          hmac_ctx_t *hmac,
-+                          int handwindow, int offset)
-+{
-+    union {
-+        uint8_t hmac_result[SHA256_DIGEST_LENGTH];
-+        struct session_id sid;
-+    } result;
-+
-+    /* Get the valid time quantisation for our hmac,
-+     * we divide time by handwindow/2 and allow the previous
-+     * and future session time if specified by offset */
-+    uint32_t session_id_time = now/((handwindow+1)/2) + offset;
-+
-+    hmac_ctx_reset(hmac);
-+    /* We do not care about endian here since it does not need to be
-+     * portable */
-+    hmac_ctx_update(hmac, (const uint8_t *) &session_id_time,
-+                    sizeof(session_id_time));
-+
-+    /* add client IP and port */
-+    switch (af_addr_size(from->addr.sa.sa_family))
-+    {
-+        case AF_INET:
-+            hmac_ctx_update(hmac, (const uint8_t *) &from->addr.in4, sizeof(struct sockaddr_in));
-+            break;
-+
-+        case AF_INET6:
-+            hmac_ctx_update(hmac, (const uint8_t *) &from->addr.in6, sizeof(struct sockaddr_in6));
-+            break;
-+    }
-+
-+    /* add session id of client */
-+    hmac_ctx_update(hmac, client_sid.id, SID_SIZE);
-+
-+    hmac_ctx_final(hmac, result.hmac_result);
-+
-+    return result.sid;
-+}
-+
-+bool
-+check_session_id_hmac(struct tls_pre_decrypt_state *state,
-+                      const struct openvpn_sockaddr *from,
-+                      hmac_ctx_t *hmac,
-+                      int handwindow)
-+{
-+    if (!from)
-+    {
-+        return false;
-+    }
-+
-+    struct buffer buf = state->newbuf;
-+    struct reliable_ack ack;
-+
-+    if (!reliable_ack_parse(&buf, &ack, &state->server_session_id))
-+    {
-+        return false;
-+    }
-+
-+    /* check adjacent timestamps too */
-+    for (int offset = -2; offset <= 1; offset++)
-+    {
-+        struct session_id expected_id =
-+            calculate_session_id_hmac(state->peer_session_id, from, hmac, handwindow, offset);
-+
-+        if (memcmp_constant_time(&expected_id, &state->server_session_id, SID_SIZE))
-+        {
-+            return true;
-+        }
-+    }
-+    return false;
-+}
-+
 diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
-index 769dc1f44..ae92f6b33 100644
+index ae92f6b33..9426fb1d8 100644
 --- a/src/openvpn/ssl_pkt.h
 +++ b/src/openvpn/ssl_pkt.h
-@@ -77,11 +77,15 @@ struct tls_auth_standalone
- };
+@@ -54,11 +54,15 @@
+ /* indicates key_method >= 2 and client-specific tls-crypt key */
+ #define P_CONTROL_HARD_RESET_CLIENT_V3 10    /* initial key from client, forget previous state */
  
- enum first_packet_verdict {
--    /** This packet is a valid reset packet from the peer */
--    VERDICT_VALID_RESET,
--    /** This packet is a valid control packet from the peer,
--     * i.e. it has a valid session id hmac in it */
-+    /** This packet is a valid reset packet from the peer (all but tls-crypt-v2) */
-+    VERDICT_VALID_RESET_V2,
-+    /** This is a valid v3 reset (tls-crypt-v2) */
-+    VERDICT_VALID_RESET_V3,
-+    /** This packet is a valid control packet from the peer */
-     VERDICT_VALID_CONTROL_V1,
-+    /** This packet is a valid ACK control packet from the peer,
-+     * i.e. it has a valid session id hmac in it */
-+    VERDICT_VALID_ACK_V1,
++/* Variant of P_CONTROL_V1 but with appended wrapped key
++ * like P_CONTROL_HARD_RESET_CLIENT_V3 */
++#define P_CONTROL_WKC_V1               11
++
+ /* define the range of legal opcodes
+  * Since we do no longer support key-method 1 we consider
+  * the v1 op codes invalid */
+ #define P_FIRST_OPCODE                 3
+-#define P_LAST_OPCODE                  10
++#define P_LAST_OPCODE                  11
+ 
+ /*
+  * Define number of buffers for send and receive in the reliability layer.
+@@ -86,6 +90,8 @@ enum first_packet_verdict {
+     /** This packet is a valid ACK control packet from the peer,
+      * i.e. it has a valid session id hmac in it */
+     VERDICT_VALID_ACK_V1,
++    /** The packet is a valid control packet with appended wrapped client key */
++    VERDICT_VALID_WKC_V1,
      /** the packet failed on of the various checks */
      VERDICT_INVALID
  };
-@@ -94,6 +98,7 @@ struct tls_pre_decrypt_state {
-     struct tls_wrap_ctx tls_wrap_tmp;
-     struct buffer newbuf;
-     struct session_id peer_session_id;
-+    struct session_id server_session_id;
- };
- 
- /**
-@@ -141,6 +146,47 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
-                      const struct link_socket_actual *from,
-                      const struct buffer *buf);
- 
-+/* Creates an SHA256 HMAC context with a random key that is used for the
-+ * session id.
-+ *
-+ * We do not support loading this from a config file since continuing session
-+ * between restarts of OpenVPN has never been supported and that includes
-+ * early session setup
-+ */
-+hmac_ctx_t *session_id_hmac_init(void);
-+
-+/**
-+ * Calculates the a HMAC based server session id based on a client session id
-+ * and socket addr.
-+ *
-+ * @param client_sid    session id of the client
-+ * @param from          link_socket from the client
-+ * @param hmac          the hmac context to use for the calculation
-+ * @param handwindow    the quantisation of the current time
-+ * @param offset        offset to 'now' to use
-+ * @return              the expected server session id
-+ */
-+struct session_id
-+calculate_session_id_hmac(struct session_id client_sid,
-+                          const struct openvpn_sockaddr *from,
-+                          hmac_ctx_t *hmac,
-+                          int handwindow, int offset);
-+
-+/**
-+ * Checks if a control packet has a correct HMAC server session id
-+ *
-+ * @param client_sid    session id of the client
-+ * @param from          link_socket from the client
-+ * @param hmac          the hmac context to use for the calculation
-+ * @param handwindow    the quantisation of the current time
-+ * @return              the expected server session id
-+ */
-+bool
-+check_session_id_hmac(struct tls_pre_decrypt_state *state,
-+                      const struct openvpn_sockaddr *from,
-+                      hmac_ctx_t *hmac,
-+                      int handwindow);
-+
- /*
-  * Write a control channel authentication record.
+@@ -217,10 +223,12 @@ read_control_auth(struct buffer *buf,
+  * The returned buf needs to be free with \c free_buf
   */
+ struct buffer
+-tls_reset_standalone(struct tls_auth_standalone *tas,
++tls_reset_standalone(struct tls_wrap_ctx *ctx,
++                     struct tls_auth_standalone *tas,
+                      struct session_id *own_sid,
+                      struct session_id *remote_sid,
+-                     uint8_t header);
++                     uint8_t header,
++                     bool tlscryptv2);
+ 
+ static inline const char *
+ packet_opcode_name(int op)
+@@ -248,6 +256,9 @@ packet_opcode_name(int op)
+         case P_CONTROL_V1:
+             return "P_CONTROL_V1";
+ 
++        case P_CONTROL_WKC_V1:
++            return "P_CONTROL_WKC_V1";
++
+         case P_ACK_V1:
+             return "P_ACK_V1";
+ 
+@@ -261,4 +272,23 @@ packet_opcode_name(int op)
+             return "P_???";
+     }
+ }
++
++/* initial packet id (instead of 0) that indicates that the peer supports
++ * early protocol negotiation. This will make the packet id turn a bit faster
++ * but the network time part of the packet id could take care of that. And
++ * this is also a rather theoretical scenario as it still needs more than
++ * 2^31 control channel packets to happen */
++#define EARLY_NEG_MASK          0xff000000
++#define EARLY_NEG_START         0x0a000000
++
++#define EARLY_NEG_RESENDWKC     0x00010000
++
++
++/* Early negotiation that part of the server response in the RESET_V2 packet.
++ * Since clients that announce early negotiation support will treat the payload
++ * of reset packets special and parse it as TLV messages.
++ * as TLV (type, length, value) */
++#define EARLY_NEG_TLV_FLAG          0x01
++#define EARLY_NEG_FLAG_RESEND_WKC   0x01
+ #endif /* ifndef SSL_PKT_H */
++
 diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
-index 77338cd3a..36812628e 100644
+index 36812628e..f3fddf870 100644
 --- a/tests/unit_tests/openvpn/test_pkt.c
 +++ b/tests/unit_tests/openvpn/test_pkt.c
-@@ -44,6 +44,7 @@
+@@ -536,7 +536,7 @@ test_generate_reset_packet_plain(void **ut_state)
  
- #include "mock_msg.h"
- #include "mss.h"
-+#include "reliable.h"
+     uint8_t header = 0 | (P_CONTROL_HARD_RESET_CLIENT_V2 << P_OPCODE_SHIFT);
  
- int
- parse_line(const char *line, char **p, const int n, const char *file,
-@@ -151,6 +152,21 @@ const uint8_t client_ack_tls_auth_randomid[] = {
-     0x56, 0x33, 0x6b
- };
- 
-+/* This is a truncated packet as we do not care for the TLS payload in the
-+ * unit test */
-+const uint8_t client_control_with_ack[] = {
-+    0x20, 0x78, 0x19, 0xbf, 0x2e, 0xbc, 0xd1, 0x9a,
-+    0x45, 0x01, 0x00, 0x00, 0x00, 0x00, 0xea,
-+    0xfe,0xbf, 0xa4, 0x41, 0x8a, 0xe3, 0x1b,
-+    0x00, 0x00, 0x00, 0x01, 0x16, 0x03, 0x01
-+};
-+
-+const uint8_t client_ack_none_random_id[] = {
-+    0x28, 0xae, 0xb9, 0xaf, 0xe1, 0xf0, 0x1d, 0x79,
-+    0xc8, 0x01, 0x00, 0x00, 0x00, 0x00, 0xdd,
-+    0x85, 0xdb, 0x53, 0x56, 0x23, 0xb0, 0x2e
-+};
-+
- struct tls_auth_standalone
- init_tas_auth(int key_direction)
- {
-@@ -168,6 +184,7 @@ init_tas_auth(int key_direction)
-     crypto_read_openvpn_key(&tls_crypt_kt, &tas.tls_wrap.opt.key_ctx_bi,
-                             static_key, true, key_direction,
-                             "Control Channel Authentication", "tls-auth");
-+
-     return tas;
- }
- 
-@@ -210,7 +227,7 @@ test_tls_decrypt_lite_crypt(void **ut_state)
-     buf_reset_len(&buf);
-     buf_write(&buf, client_reset_v2_tls_crypt, sizeof(client_reset_v2_tls_crypt));
-     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
--    assert_int_equal(verdict, VERDICT_VALID_RESET);
-+    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
-     free_tls_pre_decrypt_state(&state);
- 
-     /* flip a byte in various places */
-@@ -251,17 +268,19 @@ test_tls_decrypt_lite_auth(void **ut_state)
-     buf_reset_len(&buf);
-     buf_write(&buf, client_reset_v2_tls_auth, sizeof(client_reset_v2_tls_auth));
-     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
--    assert_int_equal(verdict, VERDICT_VALID_RESET);
-+    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
-+    free_tls_pre_decrypt_state(&state);
- 
-     free_tls_pre_decrypt_state(&state);
-     /* The pre decrypt function should not modify the buffer, so calling it
-      * again should have the same result */
-     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
--    assert_int_equal(verdict, VERDICT_VALID_RESET);
-+    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
-     free_tls_pre_decrypt_state(&state);
- 
-     /* and buf memory should be equal */
-     assert_memory_equal(BPTR(&buf), client_reset_v2_tls_auth, sizeof(client_reset_v2_tls_auth));
-+    free_tls_pre_decrypt_state(&state);
- 
-     buf_reset_len(&buf);
-     buf_write(&buf, client_ack_tls_auth_randomid, sizeof(client_ack_tls_auth_randomid));
-@@ -273,6 +292,7 @@ test_tls_decrypt_lite_auth(void **ut_state)
-     BPTR(&buf)[20] = 0x23;
-     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
-     assert_int_equal(verdict, VERDICT_INVALID);
-+    free_tls_pre_decrypt_state(&state);
- 
-     free_tls_pre_decrypt_state(&state);
-     /* Wrong key direction gives a wrong hmac key and should not validate */
-@@ -304,19 +324,21 @@ test_tls_decrypt_lite_none(void **ut_state)
-     /* the method will not do additional test, so the tls-auth and tls-crypt
-      * reset will be accepted */
-     enum first_packet_verdict verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
--    assert_int_equal(verdict, VERDICT_VALID_RESET);
-+    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
-     free_tls_pre_decrypt_state(&state);
- 
-     buf_reset_len(&buf);
-     buf_write(&buf, client_reset_v2_none, sizeof(client_reset_v2_none));
-     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
--    assert_int_equal(verdict, VERDICT_VALID_RESET);
-+    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
-+    free_tls_pre_decrypt_state(&state);
- 
-     free_tls_pre_decrypt_state(&state);
-     buf_reset_len(&buf);
-     buf_write(&buf, client_reset_v2_tls_crypt, sizeof(client_reset_v2_none));
-     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
--    assert_int_equal(verdict, VERDICT_VALID_RESET);
-+    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
-+    free_tls_pre_decrypt_state(&state);
- 
-     free_tls_pre_decrypt_state(&state);
- 
-@@ -325,10 +347,177 @@ test_tls_decrypt_lite_none(void **ut_state)
-     buf_write(&buf, client_ack_tls_auth_randomid, sizeof(client_ack_tls_auth_randomid));
-     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
-     assert_int_equal(verdict, VERDICT_VALID_CONTROL_V1);
-+
-     free_tls_pre_decrypt_state(&state);
-     free_buf(&buf);
- }
- 
-+static void
-+test_parse_ack(void **ut_state)
-+{
-+    struct buffer buf = alloc_buf(1024);
-+    buf_write(&buf, client_control_with_ack, sizeof(client_control_with_ack));
-+
-+    /* skip over op code and peer session id */
-+    buf_advance(&buf, 9);
-+
-+    struct reliable_ack ack;
-+    struct session_id sid;
-+    bool ret;
-+
-+    ret = reliable_ack_parse(&buf, &ack, &sid);
-+    assert_true(ret);
-+
-+    assert_int_equal(ack.len, 1);
-+    assert_int_equal(ack.packet_id[0], 0);
-+
-+    struct session_id expected_id = { .id = {0xea, 0xfe, 0xbf, 0xa4, 0x41, 0x8a, 0xe3, 0x1b }};
-+    assert_memory_equal(&sid, &expected_id, SID_SIZE);
-+
-+    buf_reset_len(&buf);
-+    buf_write(&buf, client_ack_none_random_id, sizeof(client_ack_none_random_id));
-+
-+    /* skip over op code and peer session id */
-+    buf_advance(&buf, 9);
-+    ret = reliable_ack_parse(&buf, &ack, &sid);
-+    assert_true(ret);
-+
-+    assert_int_equal(ack.len, 1);
-+    assert_int_equal(ack.packet_id[0], 0);
-+
-+    struct session_id expected_id2 = { .id = {0xdd, 0x85, 0xdb, 0x53, 0x56, 0x23, 0xb0, 0x2e }};
-+    assert_memory_equal(&sid, &expected_id2, SID_SIZE);
-+
-+    buf_reset_len(&buf);
-+    buf_write(&buf, client_reset_v2_none, sizeof(client_reset_v2_none));
-+
-+    /* skip over op code and peer session id */
-+    buf_advance(&buf, 9);
-+    ret = reliable_ack_parse(&buf, &ack, &sid);
-+
-+    free_buf(&buf);
-+}
-+
-+static void
-+test_verify_hmac_tls_auth(void **ut_state)
-+{
-+    hmac_ctx_t *hmac = session_id_hmac_init();
-+
-+    struct link_socket_actual from = { 0 };
-+    struct tls_auth_standalone tas = { 0 };
-+    struct tls_pre_decrypt_state state = { 0 };
-+
-+    struct buffer buf = alloc_buf(1024);
-+    enum first_packet_verdict verdict;
-+
-+    tas = init_tas_auth(KEY_DIRECTION_NORMAL);
-+
-+    buf_reset_len(&buf);
-+    buf_write(&buf, client_ack_tls_auth_randomid, sizeof(client_ack_tls_auth_randomid));
-+    verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
-+    assert_int_equal(verdict, VERDICT_VALID_CONTROL_V1);
-+
-+    /* This is a valid packet but containing a random id instead of an HMAC id*/
-+    bool valid = check_session_id_hmac(&state, &from.dest, hmac, 30);
-+    assert_false(valid);
-+
-+    free_key_ctx_bi(&tas.tls_wrap.opt.key_ctx_bi);
-+    free_key_ctx(&tas.tls_wrap.tls_crypt_v2_server_key);
-+    free_tls_pre_decrypt_state(&state);
-+    free_buf(&buf);
-+    hmac_ctx_cleanup(hmac);
-+    hmac_ctx_free(hmac);
-+}
-+
-+static void
-+test_verify_hmac_none(void **ut_state)
-+{
-+    hmac_ctx_t *hmac = session_id_hmac_init();
-+
-+    struct link_socket_actual from = { 0 };
-+    struct tls_auth_standalone tas = { 0 };
-+    struct tls_pre_decrypt_state state = { 0 };
-+
-+    struct buffer buf = alloc_buf(1024);
-+    enum first_packet_verdict verdict;
-+
-+    tas.tls_wrap.mode = TLS_WRAP_NONE;
-+
-+    buf_reset_len(&buf);
-+    buf_write(&buf, client_ack_none_random_id, sizeof(client_ack_none_random_id));
-+    verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
-+    assert_int_equal(verdict, VERDICT_VALID_ACK_V1);
-+
-+    bool valid = check_session_id_hmac(&state, &from.dest, hmac, 30);
-+    assert_true(valid);
-+
-+    free_tls_pre_decrypt_state(&state);
-+    free_buf(&buf);
-+    hmac_ctx_cleanup(hmac);
-+    hmac_ctx_free(hmac);
-+}
-+
-+static hmac_ctx_t *
-+init_static_hmac(void)
-+{
-+    ASSERT(md_valid("SHA256"));
-+    hmac_ctx_t *hmac_ctx = hmac_ctx_new();
-+
-+    uint8_t key[SHA256_DIGEST_LENGTH] = {1, 2, 3};
-+
-+    hmac_ctx_init(hmac_ctx, key, "SHA256");
-+    return hmac_ctx;
-+}
-+
-+static void
-+test_calc_session_id_hmac_static(void **ut_state)
-+{
-+    hmac_ctx_t *hmac = init_static_hmac();
-+    static const int handwindow = 100;
-+
-+    struct openvpn_sockaddr addr = {0 };
-+
-+    /* we do not use htons functions here since the hmac calculate function
-+     * also does not care about the endianness of the data but just assumes
-+     * the endianness doesn't change between calls */
-+    addr.addr.in4.sin_family = AF_INET;
-+    addr.addr.in4.sin_addr.s_addr = 0xff000ff;
-+    addr.addr.in4.sin_port = 1194;
-+
-+
-+    struct session_id client_id = { {0, 1, 2, 3, 4, 5, 6, 7}};
-+
-+    now = 1005;
-+    struct session_id server_id = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, 0);
-+
-+    struct session_id expected_server_id = { {0xba,  0x83, 0xa9, 0x00, 0x72, 0xbd,0x93, 0xba }};
-+    assert_memory_equal(expected_server_id.id, server_id.id, SID_SIZE);
-+
-+    struct session_id server_id_m1 = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, -1);
-+    struct session_id server_id_p1 = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, 1);
-+    struct session_id server_id_p2 = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, 2);
-+
-+    assert_memory_not_equal(expected_server_id.id, server_id_m1.id, SID_SIZE);
-+    assert_memory_not_equal(expected_server_id.id, server_id_p1.id, SID_SIZE);
-+
-+    /* changing the time puts us into the next hmac time window (handwindow/2=50)
-+     * and shifts the ids by one */
-+    now = 1062;
-+
-+    struct session_id server_id2_m2 = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, -2);
-+    struct session_id server_id2_m1 = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, -1);
-+    struct session_id server_id2 = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, 0);
-+    struct session_id server_id2_p1 = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, 1);
-+
-+    assert_memory_equal(server_id2_m2.id, server_id_m1.id, SID_SIZE);
-+    assert_memory_equal(server_id2_m1.id, expected_server_id.id, SID_SIZE);
-+    assert_memory_equal(server_id2.id, server_id_p1.id, SID_SIZE);
-+    assert_memory_equal(server_id2_p1.id, server_id_p2.id, SID_SIZE);
-+
-+    hmac_ctx_cleanup(hmac);
-+    hmac_ctx_free(hmac);
-+}
-+
- static void
- test_generate_reset_packet_plain(void **ut_state)
- {
-@@ -351,7 +540,7 @@ test_generate_reset_packet_plain(void **ut_state)
+-    struct buffer buf = tls_reset_standalone(&tas, &client_id, &server_id, header);
++    struct buffer buf = tls_reset_standalone(&tas.tls_wrap, &tas, &client_id, &server_id, header, false);
  
  
      verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
--    assert_int_equal(verdict, VERDICT_VALID_RESET);
-+    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
+@@ -544,7 +544,7 @@ test_generate_reset_packet_plain(void **ut_state)
  
      /* Assure repeated generation of reset is deterministic/stateless*/
      assert_memory_equal(state.peer_session_id.id, client_id.id, SID_SIZE);
-@@ -385,7 +574,7 @@ test_generate_reset_packet_tls_auth(void **ut_state)
-     struct buffer buf = tls_reset_standalone(&tas_client, &client_id, &server_id, header);
- 
-     enum first_packet_verdict verdict = tls_pre_decrypt_lite(&tas_server, &state, &from, &buf);
--    assert_int_equal(verdict, VERDICT_VALID_RESET);
-+    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
- 
-     assert_memory_equal(state.peer_session_id.id, client_id.id, SID_SIZE);
- 
-@@ -396,7 +585,6 @@ test_generate_reset_packet_tls_auth(void **ut_state)
+-    struct buffer buf2 = tls_reset_standalone(&tas, &client_id, &server_id, header);
++    struct buffer buf2 = tls_reset_standalone(&tas.tls_wrap, &tas, &client_id, &server_id, header, false);
+     assert_int_equal(BLEN(&buf), BLEN(&buf2));
      assert_memory_equal(BPTR(&buf), BPTR(&buf2), BLEN(&buf));
      free_buf(&buf2);
+@@ -571,7 +571,7 @@ test_generate_reset_packet_tls_auth(void **ut_state)
  
+     now = 0x22446688;
+     reset_packet_id_send(&tas_client.tls_wrap.opt.packet_id.send);
+-    struct buffer buf = tls_reset_standalone(&tas_client, &client_id, &server_id, header);
++    struct buffer buf = tls_reset_standalone(&tas_client.tls_wrap, &tas_client, &client_id, &server_id, header, false);
+ 
+     enum first_packet_verdict verdict = tls_pre_decrypt_lite(&tas_server, &state, &from, &buf);
+     assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
+@@ -580,11 +580,11 @@ test_generate_reset_packet_tls_auth(void **ut_state)
+ 
+     /* Assure repeated generation of reset is deterministic/stateless*/
+     reset_packet_id_send(&tas_client.tls_wrap.opt.packet_id.send);
+-    struct buffer buf2 = tls_reset_standalone(&tas_client, &client_id, &server_id, header);
++    struct buffer buf2 = tls_reset_standalone(&tas_client.tls_wrap, &tas_client, &client_id, &server_id, header,false);
+     assert_int_equal(BLEN(&buf), BLEN(&buf2));
+     assert_memory_equal(BPTR(&buf), BPTR(&buf2), BLEN(&buf));
++    
+     free_buf(&buf2);
 -
      free_tls_pre_decrypt_state(&state);
  
      packet_id_free(&tas_client.tls_wrap.opt.packet_id);
-@@ -414,6 +602,10 @@ main(void)
-         cmocka_unit_test(test_tls_decrypt_lite_none),
-         cmocka_unit_test(test_tls_decrypt_lite_auth),
-         cmocka_unit_test(test_tls_decrypt_lite_crypt),
-+        cmocka_unit_test(test_parse_ack),
-+        cmocka_unit_test(test_calc_session_id_hmac_static),
-+        cmocka_unit_test(test_verify_hmac_none),
-+        cmocka_unit_test(test_verify_hmac_tls_auth),
-         cmocka_unit_test(test_generate_reset_packet_plain),
-         cmocka_unit_test(test_generate_reset_packet_tls_auth),
-     };
 -- 
 2.32.0 (Apple Git-132)
 
