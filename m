@@ -1,15 +1,11 @@
-Date: Sat, 30 Apr 2022 18:12:40 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <Ym1f+Jmvfj28Or6s@...1296...>
-References: <20220402070902.30282-5-a@...2181...>
- <20220411133528.27279-1-a@...2181...>
+From: Arne Schwabe <arne@...1227...>
+Date: Mon,  2 May 2022 17:43:10 +0200
+Message-Id: <20220502154310.836947-1-arne@...1227...>
+In-Reply-To: <20220422142953.3805364-9-arne@...1227...>
+References: <20220422142953.3805364-9-arne@...1227...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="HThcY/IcZcaX6but"
-Content-Disposition: inline
-In-Reply-To: <20220411133528.27279-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2 4/7] ovpn-dco: introduce linux
- data-channel offload support
+Subject: [Openvpn-devel] [PATCH v3] Implement stateless,
+ HMAC basedsesssion id three way handshake
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,714 +14,931 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+
+OpenVPN currently has a bit of a weakness in its early three way handshake
+
+A single client reset packet (first packet of the handshake) will
+  - trigger creating a session on the server side leading to potential
+    ressource exhaustion
+  - make the server respond with 3 answers trying to get an ACK for its
+    P_CONTROL_HARD_RESET_SERVER_V2 answer making it an amplification
+
+Instead of allocating a connection for each client on the initial packet
+OpenVPN will now calculate a session id based on a HMAC that serves as
+verifiable cookie that can be checked for authenticity when the client
+responds with it. This eliminates the amplification attack and resource
+exhaustion attacks. For tls-crypt-v2 clients the HMAC based handshake
+is not used yet.
+
+Patch v2: rebase on master
+patch v3: fix unit tests, improve comment/style of code
+
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ doc/doxygen/doc_protocol_overview.h |   2 +
+ src/openvpn/init.c                  |   4 +
+ src/openvpn/mudp.c                  | 105 ++++++++++++--
+ src/openvpn/multi.h                 |   3 +
+ src/openvpn/openvpn.h               |   6 +
+ src/openvpn/ssl.c                   |  41 +++++-
+ src/openvpn/ssl.h                   |   8 ++
+ src/openvpn/ssl_pkt.c               | 104 +++++++++++++-
+ src/openvpn/ssl_pkt.h               |  54 ++++++-
+ tests/unit_tests/openvpn/test_pkt.c | 210 ++++++++++++++++++++++++++--
+ 10 files changed, 509 insertions(+), 28 deletions(-)
+
+diff --git a/doc/doxygen/doc_protocol_overview.h b/doc/doxygen/doc_protocol_overview.h
+index f26ce3a36..37de1cb0e 100644
+--- a/doc/doxygen/doc_protocol_overview.h
++++ b/doc/doxygen/doc_protocol_overview.h
+@@ -118,6 +118,8 @@
+  * parts:
+  *
+  *  - local \c session_id (random 64 bit value to identify TLS session).
++ *      (the tls-server side uses a HMAC of the client to create a pseudo
++ *       random number for a SYN Cookie like approach)
+  *  - HMAC signature of entire encapsulation header for HMAC firewall
+  *    [only if \c --tls-auth is specified] (usually 16 or 20 bytes).
+  *  - packet-id for replay protection (4 or 8 bytes, includes sequence
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index e41bb9d4b..7e7041a8e 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -54,6 +54,7 @@
+ #include "forward.h"
+ #include "auth_token.h"
+ #include "mss.h"
++#include "mudp.h"
+ 
+ #include "memdbg.h"
+ 
+@@ -2973,7 +2974,9 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+     if (flags & CF_INIT_TLS_AUTH_STANDALONE)
+     {
+         c->c2.tls_auth_standalone = tls_auth_standalone_init(&to, &c->c2.gc);
++        c->c2.session_id_hmac = session_id_hmac_init();
+     }
++
+ }
+ 
+ static void
+@@ -2992,6 +2995,7 @@ do_init_frame_tls(struct context *c)
+         tls_init_control_channel_frame_parameters(&c->c2.frame, &c->c2.tls_auth_standalone->frame);
+         frame_print(&c->c2.tls_auth_standalone->frame, D_MTU_INFO,
+                     "TLS-Auth MTU parms");
++        c->c2.tls_auth_standalone->tls_wrap.work = alloc_buf_gc(BUF_SIZE(&c->c2.frame), &c->c2.gc);
+     }
+ }
+ 
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index e5cc36b45..ead61e827 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -40,24 +40,81 @@
+ #include <sys/inotify.h>
+ #endif
+ 
++/* Return if this packet should create a new session */
+ static bool
+-do_pre_decrypt_check(struct multi_context *m)
++do_pre_decrypt_check(struct multi_context *m,
++                     struct tls_pre_decrypt_state *state,
++                     struct mroute_addr addr)
+ {
+     ASSERT(m->top.c2.tls_auth_standalone);
+ 
+     enum first_packet_verdict verdict;
+-    struct tls_pre_decrypt_state state = {0};
+ 
+-    verdict = tls_pre_decrypt_lite(m->top.c2.tls_auth_standalone, &state,
+-                                   &m->top.c2.from, &m->top.c2.buf);
++    struct tls_auth_standalone *tas = m->top.c2.tls_auth_standalone;
+ 
+-    free_tls_pre_decrypt_state(&state);
++    verdict = tls_pre_decrypt_lite(tas, state, &m->top.c2.from, &m->top.c2.buf);
+ 
+-    if (verdict == VERDICT_INVALID || verdict == VERDICT_VALID_CONTROL_V1)
++    hmac_ctx_t *hmac = m->top.c2.session_id_hmac;
++    struct openvpn_sockaddr *from = &m->top.c2.from.dest;
++    int handwindow = m->top.options.handshake_window;
++
++
++    if (verdict == VERDICT_VALID_RESET_V3)
++    {
++        /* For tls-crypt-v2 we need to keep the state of the first packet to
++         * store the unwrapped key */
++        return true;
++    }
++    else if (verdict == VERDICT_VALID_RESET_V2)
+     {
++        /* Calculate the session ID HMAC for our reply and create reset packet */
++        struct session_id sid = calculate_session_id_hmac(state->peer_session_id,
++                                                          from, hmac, handwindow, 0);
++        reset_packet_id_send(&tas->tls_wrap.opt.packet_id.send);
++        tas->tls_wrap.opt.packet_id.rec.initialized = true;
++        uint8_t header = 0 | (P_CONTROL_HARD_RESET_SERVER_V2 << P_OPCODE_SHIFT);
++        struct buffer buf = tls_reset_standalone(tas, &sid,
++                                                 &state->peer_session_id, header);
++
++
++        struct context *c = &m->top;
++
++        buf_reset_len(&c->c2.buffers->aux_buf);
++        buf_copy(&c->c2.buffers->aux_buf, &buf);
++        m->hmac_reply = c->c2.buffers->aux_buf;
++        m->hmac_reply_dest = &m->top.c2.from;
++        msg(D_MULTI_DEBUG, "Reset packet from client, sending HMAC based reset challenge");
++        /* We have a reply do not create a new session */
+         return false;
++
++    }
++    else if (verdict == VERDICT_VALID_CONTROL_V1 || verdict == VERDICT_VALID_ACK_V1)
++    {
++        /* ACK_V1 contains the peer id (our id) while CONTROL_V1 can but does not
++         * need to contain the peer id */
++        struct gc_arena gc = gc_new();
++
++        bool ret = check_session_id_hmac(state, from, hmac, handwindow);
++
++        const char *peer = print_link_socket_actual(&m->top.c2.from, &gc);
++        if (!ret)
++        {
++
++            msg(D_MULTI_MEDIUM, "Packet with invalid or missing SID from %s", peer);
++
++        }
++        else
++        {
++            msg(D_MULTI_DEBUG, "Valid packet with HMAC challenge from peer (%s), "
++                               "accepting new connection.", peer);
++        }
++        gc_free(&gc);
++
++        return ret;
+     }
+-    return true;
++
++    /* VERDICT_INVALID */
++    return false;
+ }
+ 
+ /*
+@@ -114,10 +171,18 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
+                 mi = (struct multi_instance *) he->value;
+             }
+         }
++
++        /* we not have no existing multi instance for this connection */
+         if (!mi)
+         {
+-            if (do_pre_decrypt_check(m))
++            struct tls_pre_decrypt_state state = {0};
++
++            if (do_pre_decrypt_check(m, &state, real))
+             {
++                /* This is an unknown session but with valid tls-auth/tls-crypt (or no auth at all),
++                 * if this is the initial packet of a session, we just send a reply with a HMAC session id and do not
++                 * generate a session slot */
++
+                 if (frequency_limit_event_allowed(m->new_connection_limiter))
+                 {
+                     mi = multi_create_instance(m, &real);
+@@ -127,6 +192,14 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
+                         mi->did_real_hash = true;
+                         multi_assign_peer_id(m, mi);
+                     }
++                    /* If we have a session ids already, ensure that the state is using the same */
++                    if (session_id_defined(&state.server_session_id)
++                        && session_id_defined((&state.peer_session_id)))
++                    {
++                        mi->context.c2.tls_multi->n_sessions++;
++                        struct tls_session *session = &mi->context.c2.tls_multi->session[TM_ACTIVE];
++                        session_skip_to_pre_start(session, &state, &m->top.c2.from);
++                    }
+                 }
+                 else
+                 {
+@@ -135,6 +208,7 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
+                         mroute_addr_print(&real, &gc));
+                 }
+             }
++            free_tls_pre_decrypt_state(&state);
+         }
+ 
+ #ifdef ENABLE_DEBUG
+@@ -155,7 +229,7 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
+ }
+ 
+ /*
+- * Send a packet to TCP/UDP socket.
++ * Send a packet to UDP socket.
+  */
+ static inline void
+ multi_process_outgoing_link(struct multi_context *m, const unsigned int mpp_flags)
+@@ -165,6 +239,14 @@ multi_process_outgoing_link(struct multi_context *m, const unsigned int mpp_flag
+     {
+         multi_process_outgoing_link_dowork(m, mi, mpp_flags);
+     }
++    if (m->hmac_reply_dest && m->hmac_reply.len > 0)
++    {
++        msg_set_prefix("Connection Attempt");
++        m->top.c2.to_link = m->hmac_reply;
++        m->top.c2.to_link_addr = m->hmac_reply_dest;
++        process_outgoing_link(&m->top);
++        m->hmac_reply_dest = NULL;
++    }
+ }
+ 
+ /*
+@@ -272,6 +354,10 @@ p2mp_iow_flags(const struct multi_context *m)
+     {
+         flags |= IOW_MBUF;
+     }
++    else if (m->hmac_reply_dest)
++    {
++        flags |= IOW_TO_LINK;
++    }
+     else
+     {
+         flags |= IOW_READ;
+@@ -364,4 +450,3 @@ tunnel_server_udp(struct context *top)
+     multi_top_free(&multi);
+     close_instance(top);
+ }
+-
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index f89c7dbd2..f1e9ab91f 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -191,6 +191,9 @@ struct multi_context {
+     struct context top;         /**< Storage structure for process-wide
+                                  *   configuration. */
+ 
++    struct buffer hmac_reply;
++    struct link_socket_actual *hmac_reply_dest;
++
+     /*
+      * Timer object for stale route check
+      */
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 77263dfbe..00cd652fa 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -330,6 +330,12 @@ struct context_2
+      *   received from a new client.  See the
+      *   \c --tls-auth commandline option. */
+ 
++
++    hmac_ctx_t *session_id_hmac;
++    /**< the HMAC we use to generate and verify our syn cookie like
++     * session ids from the server.
++     */
++
+     /* used to optimize calls to tls_multi_process */
+     struct interval tmp_int;
+ 
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index cb3382d6f..80440c411 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1285,6 +1285,10 @@ tls_auth_standalone_init(struct tls_options *tls_options,
+     /* get initial frame parms, still need to finalize */
+     tas->frame = tls_options->frame;
+ 
++    packet_id_init(&tas->tls_wrap.opt.packet_id,
++                   tls_options->replay_window, tls_options->replay_time, "TAS",
++                   0);
++
+     return tas;
+ }
+ 
+@@ -2398,13 +2402,13 @@ auth_deferred_expire_window(const struct tls_options *o)
+ 
+ /**
+  * Move the session from S_INITIAL to S_PRE_START. This will also generate
+- * the intial message based on ks->initial_opcode
++ * the initial message based on ks->initial_opcode
+  *
+  * @return if the state change was succesful
+  */
+ static bool
+ session_move_pre_start(const struct tls_session *session,
+-                       struct key_state *ks)
++                       struct key_state *ks, bool skip_initial_send)
+ {
+     struct buffer *buf = reliable_get_buf_output_sequenced(ks->send_reliable);
+     if (!buf)
+@@ -2418,6 +2422,13 @@ session_move_pre_start(const struct tls_session *session,
+ 
+     /* null buffer */
+     reliable_mark_active_outgoing(ks->send_reliable, buf, ks->initial_opcode);
++
++    /* If we want to skip sending the initial handshake packet we still generate
++     * it to increase internal counters etc. but immediately mark it as done */
++    if (skip_initial_send)
++    {
++        reliable_mark_deleted(ks->send_reliable, buf);
++    }
+     INCR_GENERATED;
+ 
+     ks->state = S_PRE_START;
+@@ -2491,6 +2502,30 @@ session_move_active(struct tls_multi *multi, struct tls_session *session,
+ #endif
+ }
+ 
++bool
++session_skip_to_pre_start(struct tls_session *session,
++                          struct tls_pre_decrypt_state *state,
++                          struct link_socket_actual *from)
++{
++    struct key_state *ks = &session->key[KS_PRIMARY];
++    ks->session_id_remote = state->peer_session_id;
++    ks->remote_addr = *from;
++    session->session_id = state->server_session_id;
++    session->untrusted_addr = *from;
++    session->burst = true;
++
++    /* The OpenVPN protocol implicitly mandates that packet id always start
++     * from 0 in the RESET packets as OpenVPN 2.x will not allow gaps in the
++     * ids and starts always from 0. Since we skip/ignore one (RESET) packet
++     * in each direction, we need to set the ids to 1 */
++    ks->rec_reliable->packet_id = 1;
++    /* for ks->send_reliable->packet_id, session_move_pre_start moves the
++     * counter to 1 */
++    session->tls_wrap.opt.packet_id.send.id = 1;
++    return session_move_pre_start(session, ks, true);
++}
++
++
+ 
+ static bool
+ tls_process_state(struct tls_multi *multi,
+@@ -2506,7 +2541,7 @@ tls_process_state(struct tls_multi *multi,
+     /* Initial handshake */
+     if (ks->state == S_INITIAL)
+     {
+-        state_change = session_move_pre_start(session, ks);
++        state_change = session_move_pre_start(session, ks, false);
+     }
+ 
+     /* Are we timed out on receive? */
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index e925a16ea..0ba86d3e6 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -556,4 +556,12 @@ tls_session_generate_data_channel_keys(struct tls_session *session);
+ void
+ load_xkey_provider(void);
+ 
++/* Special method to skip the three way handshake RESET stages. This is
++ * used by the HMAC code when seeing a packet that matches the previous
++ * HMAC based stateless server state */
++bool
++session_skip_to_pre_start(struct tls_session *session,
++                          struct tls_pre_decrypt_state *state,
++                          struct link_socket_actual *from);
++
+ #endif /* ifndef OPENVPN_SSL_H */
+diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
+index 7d9172703..9c8154b12 100644
+--- a/src/openvpn/ssl_pkt.c
++++ b/src/openvpn/ssl_pkt.c
+@@ -320,7 +320,8 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
+     /* Allow only the reset packet or the first packet of the actual handshake. */
+     if (op != P_CONTROL_HARD_RESET_CLIENT_V2
+         && op != P_CONTROL_HARD_RESET_CLIENT_V3
+-        && op != P_CONTROL_V1)
++        && op != P_CONTROL_V1
++        && op != P_ACK_V1)
+     {
+         /*
+          * This can occur due to bogus data or DoS packets.
+@@ -388,9 +389,17 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
+     {
+         return VERDICT_VALID_CONTROL_V1;
+     }
++    else if (op == P_ACK_V1)
++    {
++        return VERDICT_VALID_ACK_V1;
++    }
++    else if (op == P_CONTROL_HARD_RESET_CLIENT_V3)
++    {
++        return VERDICT_VALID_RESET_V3;
++    }
+     else
+     {
+-        return VERDICT_VALID_RESET;
++        return VERDICT_VALID_RESET_V2;
+     }
+ 
+ error:
+@@ -399,6 +408,7 @@ error:
+     return VERDICT_INVALID;
+ }
+ 
++
+ struct buffer
+ tls_reset_standalone(struct tls_auth_standalone *tas,
+                      struct session_id *own_sid,
+@@ -429,3 +439,93 @@ tls_reset_standalone(struct tls_auth_standalone *tas,
+ 
+     return buf;
+ }
++
++hmac_ctx_t *
++session_id_hmac_init(void)
++{
++    /* We assume that SHA256 is always available */
++    ASSERT(md_valid("SHA256"));
++    hmac_ctx_t *hmac_ctx = hmac_ctx_new();
++
++    uint8_t key[SHA256_DIGEST_LENGTH];
++    ASSERT(rand_bytes(key, sizeof(key)));
++
++    hmac_ctx_init(hmac_ctx, key, "SHA256");
++    return hmac_ctx;
++}
++
++struct session_id
++calculate_session_id_hmac(struct session_id client_sid,
++                          const struct openvpn_sockaddr *from,
++                          hmac_ctx_t *hmac,
++                          int handwindow, int offset)
++{
++    union {
++        uint8_t hmac_result[SHA256_DIGEST_LENGTH];
++        struct session_id sid;
++    } result;
++
++    /* Get the valid time quantisation for our hmac,
++     * we divide time by handwindow/2 and allow the previous
++     * and future session time if specified by offset */
++    uint32_t session_id_time = now/((handwindow+1)/2) + offset;
++
++    hmac_ctx_reset(hmac);
++    /* We do not care about endian here since it does not need to be
++     * portable */
++    hmac_ctx_update(hmac, (const uint8_t *) &session_id_time,
++                    sizeof(session_id_time));
++
++    /* add client IP and port */
++    switch (af_addr_size(from->addr.sa.sa_family))
++    {
++        case AF_INET:
++            hmac_ctx_update(hmac, (const uint8_t *) &from->addr.in4, sizeof(struct sockaddr_in));
++            break;
++
++        case AF_INET6:
++            hmac_ctx_update(hmac, (const uint8_t *) &from->addr.in6, sizeof(struct sockaddr_in6));
++            break;
++    }
++
++    /* add session id of client */
++    hmac_ctx_update(hmac, client_sid.id, SID_SIZE);
++
++    hmac_ctx_final(hmac, result.hmac_result);
++
++    return result.sid;
++}
++
++bool
++check_session_id_hmac(struct tls_pre_decrypt_state *state,
++                      const struct openvpn_sockaddr *from,
++                      hmac_ctx_t *hmac,
++                      int handwindow)
++{
++    if (!from)
++    {
++        return false;
++    }
++
++    struct buffer buf = state->newbuf;
++    struct reliable_ack ack;
++
++    if (!reliable_ack_parse(&buf, &ack, &state->server_session_id))
++    {
++        return false;
++    }
++
++    /* check adjacent timestamps too */
++    for (int offset = -2; offset <= 1; offset++)
++    {
++        struct session_id expected_id =
++            calculate_session_id_hmac(state->peer_session_id, from, hmac, handwindow, offset);
++
++        if (memcmp_constant_time(&expected_id, &state->server_session_id, SID_SIZE))
++        {
++            return true;
++        }
++    }
++    return false;
++}
++
+diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
+index 769dc1f44..ae92f6b33 100644
+--- a/src/openvpn/ssl_pkt.h
++++ b/src/openvpn/ssl_pkt.h
+@@ -77,11 +77,15 @@ struct tls_auth_standalone
+ };
+ 
+ enum first_packet_verdict {
+-    /** This packet is a valid reset packet from the peer */
+-    VERDICT_VALID_RESET,
+-    /** This packet is a valid control packet from the peer,
+-     * i.e. it has a valid session id hmac in it */
++    /** This packet is a valid reset packet from the peer (all but tls-crypt-v2) */
++    VERDICT_VALID_RESET_V2,
++    /** This is a valid v3 reset (tls-crypt-v2) */
++    VERDICT_VALID_RESET_V3,
++    /** This packet is a valid control packet from the peer */
+     VERDICT_VALID_CONTROL_V1,
++    /** This packet is a valid ACK control packet from the peer,
++     * i.e. it has a valid session id hmac in it */
++    VERDICT_VALID_ACK_V1,
+     /** the packet failed on of the various checks */
+     VERDICT_INVALID
+ };
+@@ -94,6 +98,7 @@ struct tls_pre_decrypt_state {
+     struct tls_wrap_ctx tls_wrap_tmp;
+     struct buffer newbuf;
+     struct session_id peer_session_id;
++    struct session_id server_session_id;
+ };
+ 
+ /**
+@@ -141,6 +146,47 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
+                      const struct link_socket_actual *from,
+                      const struct buffer *buf);
+ 
++/* Creates an SHA256 HMAC context with a random key that is used for the
++ * session id.
++ *
++ * We do not support loading this from a config file since continuing session
++ * between restarts of OpenVPN has never been supported and that includes
++ * early session setup
++ */
++hmac_ctx_t *session_id_hmac_init(void);
++
++/**
++ * Calculates the a HMAC based server session id based on a client session id
++ * and socket addr.
++ *
++ * @param client_sid    session id of the client
++ * @param from          link_socket from the client
++ * @param hmac          the hmac context to use for the calculation
++ * @param handwindow    the quantisation of the current time
++ * @param offset        offset to 'now' to use
++ * @return              the expected server session id
++ */
++struct session_id
++calculate_session_id_hmac(struct session_id client_sid,
++                          const struct openvpn_sockaddr *from,
++                          hmac_ctx_t *hmac,
++                          int handwindow, int offset);
++
++/**
++ * Checks if a control packet has a correct HMAC server session id
++ *
++ * @param client_sid    session id of the client
++ * @param from          link_socket from the client
++ * @param hmac          the hmac context to use for the calculation
++ * @param handwindow    the quantisation of the current time
++ * @return              the expected server session id
++ */
++bool
++check_session_id_hmac(struct tls_pre_decrypt_state *state,
++                      const struct openvpn_sockaddr *from,
++                      hmac_ctx_t *hmac,
++                      int handwindow);
++
+ /*
+  * Write a control channel authentication record.
+  */
+diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
+index 77338cd3a..36812628e 100644
+--- a/tests/unit_tests/openvpn/test_pkt.c
++++ b/tests/unit_tests/openvpn/test_pkt.c
+@@ -44,6 +44,7 @@
+ 
+ #include "mock_msg.h"
+ #include "mss.h"
++#include "reliable.h"
+ 
+ int
+ parse_line(const char *line, char **p, const int n, const char *file,
+@@ -151,6 +152,21 @@ const uint8_t client_ack_tls_auth_randomid[] = {
+     0x56, 0x33, 0x6b
+ };
+ 
++/* This is a truncated packet as we do not care for the TLS payload in the
++ * unit test */
++const uint8_t client_control_with_ack[] = {
++    0x20, 0x78, 0x19, 0xbf, 0x2e, 0xbc, 0xd1, 0x9a,
++    0x45, 0x01, 0x00, 0x00, 0x00, 0x00, 0xea,
++    0xfe,0xbf, 0xa4, 0x41, 0x8a, 0xe3, 0x1b,
++    0x00, 0x00, 0x00, 0x01, 0x16, 0x03, 0x01
++};
++
++const uint8_t client_ack_none_random_id[] = {
++    0x28, 0xae, 0xb9, 0xaf, 0xe1, 0xf0, 0x1d, 0x79,
++    0xc8, 0x01, 0x00, 0x00, 0x00, 0x00, 0xdd,
++    0x85, 0xdb, 0x53, 0x56, 0x23, 0xb0, 0x2e
++};
++
+ struct tls_auth_standalone
+ init_tas_auth(int key_direction)
+ {
+@@ -168,6 +184,7 @@ init_tas_auth(int key_direction)
+     crypto_read_openvpn_key(&tls_crypt_kt, &tas.tls_wrap.opt.key_ctx_bi,
+                             static_key, true, key_direction,
+                             "Control Channel Authentication", "tls-auth");
++
+     return tas;
+ }
+ 
+@@ -210,7 +227,7 @@ test_tls_decrypt_lite_crypt(void **ut_state)
+     buf_reset_len(&buf);
+     buf_write(&buf, client_reset_v2_tls_crypt, sizeof(client_reset_v2_tls_crypt));
+     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
+-    assert_int_equal(verdict, VERDICT_VALID_RESET);
++    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
+     free_tls_pre_decrypt_state(&state);
+ 
+     /* flip a byte in various places */
+@@ -251,17 +268,19 @@ test_tls_decrypt_lite_auth(void **ut_state)
+     buf_reset_len(&buf);
+     buf_write(&buf, client_reset_v2_tls_auth, sizeof(client_reset_v2_tls_auth));
+     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
+-    assert_int_equal(verdict, VERDICT_VALID_RESET);
++    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
++    free_tls_pre_decrypt_state(&state);
+ 
+     free_tls_pre_decrypt_state(&state);
+     /* The pre decrypt function should not modify the buffer, so calling it
+      * again should have the same result */
+     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
+-    assert_int_equal(verdict, VERDICT_VALID_RESET);
++    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
+     free_tls_pre_decrypt_state(&state);
+ 
+     /* and buf memory should be equal */
+     assert_memory_equal(BPTR(&buf), client_reset_v2_tls_auth, sizeof(client_reset_v2_tls_auth));
++    free_tls_pre_decrypt_state(&state);
+ 
+     buf_reset_len(&buf);
+     buf_write(&buf, client_ack_tls_auth_randomid, sizeof(client_ack_tls_auth_randomid));
+@@ -273,6 +292,7 @@ test_tls_decrypt_lite_auth(void **ut_state)
+     BPTR(&buf)[20] = 0x23;
+     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
+     assert_int_equal(verdict, VERDICT_INVALID);
++    free_tls_pre_decrypt_state(&state);
+ 
+     free_tls_pre_decrypt_state(&state);
+     /* Wrong key direction gives a wrong hmac key and should not validate */
+@@ -304,19 +324,21 @@ test_tls_decrypt_lite_none(void **ut_state)
+     /* the method will not do additional test, so the tls-auth and tls-crypt
+      * reset will be accepted */
+     enum first_packet_verdict verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
+-    assert_int_equal(verdict, VERDICT_VALID_RESET);
++    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
+     free_tls_pre_decrypt_state(&state);
+ 
+     buf_reset_len(&buf);
+     buf_write(&buf, client_reset_v2_none, sizeof(client_reset_v2_none));
+     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
+-    assert_int_equal(verdict, VERDICT_VALID_RESET);
++    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
++    free_tls_pre_decrypt_state(&state);
+ 
+     free_tls_pre_decrypt_state(&state);
+     buf_reset_len(&buf);
+     buf_write(&buf, client_reset_v2_tls_crypt, sizeof(client_reset_v2_none));
+     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
+-    assert_int_equal(verdict, VERDICT_VALID_RESET);
++    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
++    free_tls_pre_decrypt_state(&state);
+ 
+     free_tls_pre_decrypt_state(&state);
+ 
+@@ -325,10 +347,177 @@ test_tls_decrypt_lite_none(void **ut_state)
+     buf_write(&buf, client_ack_tls_auth_randomid, sizeof(client_ack_tls_auth_randomid));
+     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
+     assert_int_equal(verdict, VERDICT_VALID_CONTROL_V1);
++
+     free_tls_pre_decrypt_state(&state);
+     free_buf(&buf);
+ }
+ 
++static void
++test_parse_ack(void **ut_state)
++{
++    struct buffer buf = alloc_buf(1024);
++    buf_write(&buf, client_control_with_ack, sizeof(client_control_with_ack));
++
++    /* skip over op code and peer session id */
++    buf_advance(&buf, 9);
++
++    struct reliable_ack ack;
++    struct session_id sid;
++    bool ret;
++
++    ret = reliable_ack_parse(&buf, &ack, &sid);
++    assert_true(ret);
++
++    assert_int_equal(ack.len, 1);
++    assert_int_equal(ack.packet_id[0], 0);
++
++    struct session_id expected_id = { .id = {0xea, 0xfe, 0xbf, 0xa4, 0x41, 0x8a, 0xe3, 0x1b }};
++    assert_memory_equal(&sid, &expected_id, SID_SIZE);
++
++    buf_reset_len(&buf);
++    buf_write(&buf, client_ack_none_random_id, sizeof(client_ack_none_random_id));
++
++    /* skip over op code and peer session id */
++    buf_advance(&buf, 9);
++    ret = reliable_ack_parse(&buf, &ack, &sid);
++    assert_true(ret);
++
++    assert_int_equal(ack.len, 1);
++    assert_int_equal(ack.packet_id[0], 0);
++
++    struct session_id expected_id2 = { .id = {0xdd, 0x85, 0xdb, 0x53, 0x56, 0x23, 0xb0, 0x2e }};
++    assert_memory_equal(&sid, &expected_id2, SID_SIZE);
++
++    buf_reset_len(&buf);
++    buf_write(&buf, client_reset_v2_none, sizeof(client_reset_v2_none));
++
++    /* skip over op code and peer session id */
++    buf_advance(&buf, 9);
++    ret = reliable_ack_parse(&buf, &ack, &sid);
++
++    free_buf(&buf);
++}
++
++static void
++test_verify_hmac_tls_auth(void **ut_state)
++{
++    hmac_ctx_t *hmac = session_id_hmac_init();
++
++    struct link_socket_actual from = { 0 };
++    struct tls_auth_standalone tas = { 0 };
++    struct tls_pre_decrypt_state state = { 0 };
++
++    struct buffer buf = alloc_buf(1024);
++    enum first_packet_verdict verdict;
++
++    tas = init_tas_auth(KEY_DIRECTION_NORMAL);
++
++    buf_reset_len(&buf);
++    buf_write(&buf, client_ack_tls_auth_randomid, sizeof(client_ack_tls_auth_randomid));
++    verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
++    assert_int_equal(verdict, VERDICT_VALID_CONTROL_V1);
++
++    /* This is a valid packet but containing a random id instead of an HMAC id*/
++    bool valid = check_session_id_hmac(&state, &from.dest, hmac, 30);
++    assert_false(valid);
++
++    free_key_ctx_bi(&tas.tls_wrap.opt.key_ctx_bi);
++    free_key_ctx(&tas.tls_wrap.tls_crypt_v2_server_key);
++    free_tls_pre_decrypt_state(&state);
++    free_buf(&buf);
++    hmac_ctx_cleanup(hmac);
++    hmac_ctx_free(hmac);
++}
++
++static void
++test_verify_hmac_none(void **ut_state)
++{
++    hmac_ctx_t *hmac = session_id_hmac_init();
++
++    struct link_socket_actual from = { 0 };
++    struct tls_auth_standalone tas = { 0 };
++    struct tls_pre_decrypt_state state = { 0 };
++
++    struct buffer buf = alloc_buf(1024);
++    enum first_packet_verdict verdict;
++
++    tas.tls_wrap.mode = TLS_WRAP_NONE;
++
++    buf_reset_len(&buf);
++    buf_write(&buf, client_ack_none_random_id, sizeof(client_ack_none_random_id));
++    verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
++    assert_int_equal(verdict, VERDICT_VALID_ACK_V1);
++
++    bool valid = check_session_id_hmac(&state, &from.dest, hmac, 30);
++    assert_true(valid);
++
++    free_tls_pre_decrypt_state(&state);
++    free_buf(&buf);
++    hmac_ctx_cleanup(hmac);
++    hmac_ctx_free(hmac);
++}
++
++static hmac_ctx_t *
++init_static_hmac(void)
++{
++    ASSERT(md_valid("SHA256"));
++    hmac_ctx_t *hmac_ctx = hmac_ctx_new();
++
++    uint8_t key[SHA256_DIGEST_LENGTH] = {1, 2, 3};
++
++    hmac_ctx_init(hmac_ctx, key, "SHA256");
++    return hmac_ctx;
++}
++
++static void
++test_calc_session_id_hmac_static(void **ut_state)
++{
++    hmac_ctx_t *hmac = init_static_hmac();
++    static const int handwindow = 100;
++
++    struct openvpn_sockaddr addr = {0 };
++
++    /* we do not use htons functions here since the hmac calculate function
++     * also does not care about the endianness of the data but just assumes
++     * the endianness doesn't change between calls */
++    addr.addr.in4.sin_family = AF_INET;
++    addr.addr.in4.sin_addr.s_addr = 0xff000ff;
++    addr.addr.in4.sin_port = 1194;
++
++
++    struct session_id client_id = { {0, 1, 2, 3, 4, 5, 6, 7}};
++
++    now = 1005;
++    struct session_id server_id = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, 0);
++
++    struct session_id expected_server_id = { {0xba,  0x83, 0xa9, 0x00, 0x72, 0xbd,0x93, 0xba }};
++    assert_memory_equal(expected_server_id.id, server_id.id, SID_SIZE);
++
++    struct session_id server_id_m1 = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, -1);
++    struct session_id server_id_p1 = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, 1);
++    struct session_id server_id_p2 = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, 2);
++
++    assert_memory_not_equal(expected_server_id.id, server_id_m1.id, SID_SIZE);
++    assert_memory_not_equal(expected_server_id.id, server_id_p1.id, SID_SIZE);
++
++    /* changing the time puts us into the next hmac time window (handwindow/2=50)
++     * and shifts the ids by one */
++    now = 1062;
++
++    struct session_id server_id2_m2 = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, -2);
++    struct session_id server_id2_m1 = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, -1);
++    struct session_id server_id2 = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, 0);
++    struct session_id server_id2_p1 = calculate_session_id_hmac(client_id, &addr, hmac, handwindow, 1);
++
++    assert_memory_equal(server_id2_m2.id, server_id_m1.id, SID_SIZE);
++    assert_memory_equal(server_id2_m1.id, expected_server_id.id, SID_SIZE);
++    assert_memory_equal(server_id2.id, server_id_p1.id, SID_SIZE);
++    assert_memory_equal(server_id2_p1.id, server_id_p2.id, SID_SIZE);
++
++    hmac_ctx_cleanup(hmac);
++    hmac_ctx_free(hmac);
++}
++
+ static void
+ test_generate_reset_packet_plain(void **ut_state)
+ {
+@@ -351,7 +540,7 @@ test_generate_reset_packet_plain(void **ut_state)
+ 
+ 
+     verdict = tls_pre_decrypt_lite(&tas, &state, &from, &buf);
+-    assert_int_equal(verdict, VERDICT_VALID_RESET);
++    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
+ 
+     /* Assure repeated generation of reset is deterministic/stateless*/
+     assert_memory_equal(state.peer_session_id.id, client_id.id, SID_SIZE);
+@@ -385,7 +574,7 @@ test_generate_reset_packet_tls_auth(void **ut_state)
+     struct buffer buf = tls_reset_standalone(&tas_client, &client_id, &server_id, header);
+ 
+     enum first_packet_verdict verdict = tls_pre_decrypt_lite(&tas_server, &state, &from, &buf);
+-    assert_int_equal(verdict, VERDICT_VALID_RESET);
++    assert_int_equal(verdict, VERDICT_VALID_RESET_V2);
+ 
+     assert_memory_equal(state.peer_session_id.id, client_id.id, SID_SIZE);
+ 
+@@ -396,7 +585,6 @@ test_generate_reset_packet_tls_auth(void **ut_state)
+     assert_memory_equal(BPTR(&buf), BPTR(&buf2), BLEN(&buf));
+     free_buf(&buf2);
+ 
+-
+     free_tls_pre_decrypt_state(&state);
+ 
+     packet_id_free(&tas_client.tls_wrap.opt.packet_id);
+@@ -414,6 +602,10 @@ main(void)
+         cmocka_unit_test(test_tls_decrypt_lite_none),
+         cmocka_unit_test(test_tls_decrypt_lite_auth),
+         cmocka_unit_test(test_tls_decrypt_lite_crypt),
++        cmocka_unit_test(test_parse_ack),
++        cmocka_unit_test(test_calc_session_id_hmac_static),
++        cmocka_unit_test(test_verify_hmac_none),
++        cmocka_unit_test(test_verify_hmac_tls_auth),
+         cmocka_unit_test(test_generate_reset_packet_plain),
+         cmocka_unit_test(test_generate_reset_packet_tls_auth),
+     };
+-- 
+2.32.0 (Apple Git-132)
 
---HThcY/IcZcaX6but
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-Hi,
-
-On Mon, Apr 11, 2022 at 03:35:28PM +0200, Antonio Quartulli wrote:
-> Implement the data-channel offloading using the ovpn-dco kernel
-> module. See README.dco.md for more details.
->=20
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
-
-I've browsed through the code a bit to see if I can spot "unsafe"
-constructs (memory, pointers), or anything else noteworthy - since
-this is not the actual current code, it's hard to ACK.
-
-We should move forward with "get this merged, and if the good folks
-testing this find new breakages, make this extra (smaller) patches=20
-on top, with proper credit"...
-
-That said...  a few things, in addition to the IN6_IS_ADDR_V4MAPPED() thing:
-
-
-> +int
-> +dco_p2p_add_new_peer(struct context *c)
-> +{
-> +    if (!dco_enabled(&c->options))
-> +    {
-> +        return 0;
-> +    }
-[..]
-> +
-> +    if (dco_enabled(&c->options) && !c->c2.link_socket->info.dco_install=
-ed)
-> +    {
-
-This second "dco_enabled()" check looks very unnecessary...
-
-Not sure about the "if (!dco_installed)" check here - this seems to guard
-against double installment of this socket, but from the code flow I'm
-not sure how this could happen?
-
-> +void
-> +dco_remove_peer(struct context *c)
-> +{
-> +    if (!dco_enabled(&c->options))
-> +    {
-> +        return;
-> +    }
-> +    if (c->c1.tuntap && c->c2.tls_multi && c->c2.tls_multi->dco_peer_add=
-ed)
-> +    {
-> +        c->c2.tls_multi->dco_peer_added =3D false;
-> +        dco_del_peer(&c->c1.tuntap->dco, c->c2.tls_multi->peer_id);
-> +    }
-
-"traditional code ordering" would have the " =3D false" after the
-actual dco_del_peer() call... but that's of only aesthetic significance.
-
-> +void
-> +dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
-> +{
-> +    msg(D_DCO_DEBUG, "%s: peer_id=3D%d", __func__, multi->peer_id);
-[..]
-> +
-> +    struct key_state *primary =3D tls_select_encryption_key(multi);
-> +    ASSERT(!primary || primary->dco_status !=3D DCO_NOT_INSTALLED);
-> +
-> +    /* no primary key available -> no usable key exists, therefore we sh=
-ould
-> +     * tell DCO to simply wipe all keys
-> +     */
-> +    if (!primary)
-> +    {
-
-"First, we ASSERT() if primary is NULL, and then, we do some action
-on primary being NULL"?
-
-
-> +    struct key_state *secondary =3D dco_get_secondary_key(multi, primary=
-);
-> +    ASSERT(!secondary || secondary->dco_status !=3D DCO_NOT_INSTALLED);
-
-Can you be sure that there always will be a valid and authorized secondary
-key when this fires?
-
-> +
-> +    /* the current primary key was installed as secondary in DCO, this m=
-eans
-> +     * that userspace has promoted it and we should tell DCO to swap keys
-> +     */
-> +    if (primary->dco_status =3D=3D DCO_INSTALLED_SECONDARY)
-> +    {
-> +        msg(D_DCO_DEBUG, "Swapping primary and secondary keys, now: id1=
-=3D%d id2=3D%d",
-> +            primary->key_id, secondary ? secondary->key_id : -1);
-> +
-> +        dco_swap_keys(dco, multi->peer_id);
-> +        primary->dco_status =3D DCO_INSTALLED_PRIMARY;
-> +        if (secondary)
-> +        {
-> +            secondary->dco_status =3D DCO_INSTALLED_SECONDARY;
-> +        }
-> +    }
-> +
-> +    /* if we have no secondary key anymore, inform DCO about it */
-> +    if (!secondary && multi->dco_keys_installed =3D=3D 2)
-> +    {
-> +        dco_del_key(dco, multi->peer_id, OVPN_KEY_SLOT_SECONDARY);
-> +        multi->dco_keys_installed =3D 1;
-> +    }
-
-Since you ASSERT()ed on "!secondary", it is guaranteed to be not-NULL
-here...
-
-
-> +static int
-> +dco_install_key(struct tls_multi *multi, struct key_state *ks,
-> +                const uint8_t *encrypt_key, const uint8_t *encrypt_iv,
-> +                const uint8_t *decrypt_key, const uint8_t *decrypt_iv,
-> +                const char *ciphername)
-> +
-> +{
-> +    msg(D_DCO_DEBUG, "%s: peer_id=3D%d keyid=3D%d", __func__, multi->pee=
-r_id,
-> +        ks->key_id);
-> +
-> +    /* Install a key in the PRIMARY slot only when no other key exist.
-> +     * From that moment on, any new key will be installed in the SECONDA=
-RY
-> +     * slot and will be promoted to PRIMARY when userspace says so (a sw=
-ap
-> +     * will be performed in that case)
-> +     */
-> +    dco_key_slot_t slot =3D OVPN_KEY_SLOT_PRIMARY;
-> +    if (multi->dco_keys_installed > 0)
-> +    {
-> +        slot =3D OVPN_KEY_SLOT_SECONDARY;
-> +    }
-> +
-> +    int ret =3D dco_new_key(multi->dco, multi->peer_id, ks->key_id, slot,
-> +                          encrypt_key, encrypt_iv,
-> +                          decrypt_key, decrypt_iv,
-> +                          ciphername);
-> +    if ((ret =3D=3D 0) && (multi->dco_keys_installed < 2))
-> +    {
-> +        multi->dco_keys_installed++;
-> +        switch (slot)
-> +        {
-> +            case OVPN_KEY_SLOT_PRIMARY:
-> +                ks->dco_status =3D DCO_INSTALLED_PRIMARY;
-> +                break;
-
-I find this code slightly confusing.  So when there are 2 keys installed
-and this function is called to install a new (upcoming secondary key),
-it will never set "ks->dco_status", then?  Because the whole if()
-construct is not called...
-
-Doing this in a switch seems overly complicated anyway, compared to
-
-   ks->dco_status =3D ( slot =3D=3D OVPN_KEY_SLOT_PRIMARY )? DCO_INSTALLED_=
-PRIMARY:
-                                                       DCO_INSTALLED_SECOND=
-ARY;
-
-
-> +int
-> +init_key_dco_bi(struct tls_multi *multi, struct key_state *ks,
-> +                const struct key2 *key2, int key_direction,
-> +                const char *ciphername, bool server)
-> +{
-> +    struct key_direction_state kds;
-> +    key_direction_state_init(&kds, key_direction);
-> +
-> +    return dco_install_key(multi, ks,
-> +                           key2->keys[kds.out_key].cipher,
-> +                           key2->keys[(int)server].hmac,
-> +                           key2->keys[kds.in_key].cipher,
-> +                           key2->keys[1 - (int)server].hmac,
-> +                           ciphername);
-> +}
-
-This "_bi" stuff is "bidirectional data channel key", right?
-
-(I tried to understand more, and the only easy-to-understand sections
-I found were related to "static openvpn key" reading, which we don't
-do in DCO mode...)
-
-[..]
-> +
-> +/* These methods are currently Linux specific but likely to be used any
-> + * platform that implements Server side DCO
-> + */
-> +
-> +void
-> +dco_install_iroute(struct multi_context *m, struct multi_instance *mi,
-> +                   struct mroute_addr *addr)
-> +{
-> +#if defined(TARGET_LINUX)
-> +    if (!dco_enabled(&m->top.options))
-> +    {
-> +        return;
-> +    }
-> +
-> +    int addrtype =3D (addr->type & MR_ADDR_MASK);
-> +
-> +    /* If we do not have local IP addr to install, skip the route */
-> +    if ((addrtype =3D=3D MR_ADDR_IPV6 && !mi->context.c2.push_ifconfig_i=
-pv6_defined)
-> +        || (addrtype =3D=3D MR_ADDR_IPV4 && !mi->context.c2.push_ifconfi=
-g_defined))
-> +    {
-> +        return;
-> +    }
-
-Should we have a warning here?  "iroute requested but cannot be installed
-because no gateway/peer ip known"?
-
-Otherwise we'll end up with a valid config that "silently does nothing".
-
-(If we print that warning elsewhere, fine with me)
-
-
-> +    struct context *c =3D &mi->context;
-> +    const char *dev =3D c->c1.tuntap->actual_name;
-> +
-> +    if (addrtype =3D=3D MR_ADDR_IPV6)
-> +    {
-> +        int netbits =3D 128;
-> +        if (addr->type & MR_WITH_NETBITS)
-> +        {
-> +            netbits =3D addr->netbits;
-> +        }
-
-Side note: I wonder why we have that distinction anyway... a
-"MR WITHOUT NETBITS" would just be a "host route", so it could
-always set /128 in the iroute parsing code...  but this is outside
-of *this* patch to clean up.
-
-> +
-> +        net_route_v6_add(&m->top.net_ctx, &addr->v6.addr, netbits,
-> +                         &mi->context.c2.push_ifconfig_ipv6_local, dev, =
-0,
-> +                         DCO_IROUTE_METRIC);
-> +    }
-> +    else if (addrtype =3D=3D MR_ADDR_IPV4)
-> +    {
-> +        int netbits =3D 32;
-> +        if (addr->type & MR_WITH_NETBITS)
-> +        {
-> +            netbits =3D addr->netbits;
-> +        }
-
-... and here for IPv4 host routes...
-
-[..]
-
-dco.h:
-
-> +#if defined(TARGET_LINUX)
-> +#define DCO_DEFAULT_METRIC  200
-> +#else
-> +#define DCO_DEFAULT_METRIC  0
-> +#endif
-
-I find that define confusing, and I think the change to do_open_tun() /=20
-do_init_route_list() is not a good way to do it.
-
-If we're having that conditional for the "default metric in=20
-route_option_list" anyway, it should just be "DCO_DEFAULT_METRIC"
-(not platform dependent), and set in do_init_route_list().
-
-See below...
-
-
-> diff --git a/src/openvpn/dco_internal.h b/src/openvpn/dco_internal.h
-[..]
-> +/**
-> + * The following are the DCO APIs used to control the driver.
-> + * They are implemented by either dco_linux.c or dco_win.c
-> + */
-
-If this is the API, shouldn't it go to dco.h then?  The other parts
-of dco_internal.h look more like "helper functions that multiple
-DCO implementations need"
-
-
-> diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-[..]
-
-I have not looked into detail into the netlink stuff (that would
-need to have a parallel look into the kernel module and a deeper
-understanding on what's going on)
-
-> +/**
-> + * Send a preprared netlink message and registers cb as callback if non-=
-null.
-
-Typo "prep*r*ared"
-
-> +static int
-> +ovpn_nl_msg_send(dco_context_t *dco, struct nl_msg *nl_msg, ovpn_nl_cb c=
-b,
-> +                 const char *prefix)
-> +{
-> +    dco->status =3D 1;
-> +
-> +    if (cb)
-> +    {
-> +        nl_cb_set(dco->nl_cb, NL_CB_VALID, NL_CB_CUSTOM, cb, dco);
-> +    }
-> +    else
-> +    {
-> +        nl_cb_set(dco->nl_cb, NL_CB_VALID, NL_CB_CUSTOM, NULL, dco);
-> +    }
-
-As Frank already commented - if cb is NULL, you can just always pass on=20
-"cb", instead of having a second branch that spells out "NULL"...
-
-> +struct sockaddr *
-> +mapped_v4_to_v6(struct sockaddr *sock, struct gc_arena *gc)
-> +{
-> +    struct sockaddr_in6 *sock6 =3D ((struct sockaddr_in6 *)sock);
-> +    if (sock->sa_family =3D=3D AF_INET6
-> +        && memcmp(&sock6->sin6_addr, "\x00\x00\x00\x00\x00\x00\x00\x00\x=
-00\x00\xff\xff", 12)=3D=3D0)
-> +    {
-
-See previous mail, IN6_IS_ADDR_V4MAPPED()
-
-> +int
-> +dco_new_peer(dco_context_t *dco, unsigned int peerid, int sd,
-> +             struct sockaddr *localaddr, struct sockaddr *remoteaddr,
-> +             struct in_addr *remote_in4, struct in6_addr *remote_in6)
-> +{
-> +    msg(D_DCO_DEBUG, "%s: peer-id %d, fd %d", __func__, peerid, sd);
-[..]
-> +    nla_nest_end(nl_msg, attr);
-> +
-> +
-> +    ret =3D ovpn_nl_msg_send(dco, nl_msg, NULL, __func__);
-
-double blank line here
-
-
-> +static int
-> +ovpn_nl_cb_error(struct sockaddr_nl (*nla) __attribute__ ((unused)),
-> +                 struct nlmsgerr *err, void *arg)
-> +{
-> +    struct nlmsghdr *nlh =3D (struct nlmsghdr *)err - 1;
-> +    struct nlattr *tb_msg[NLMSGERR_ATTR_MAX + 1];
-> +    int len =3D nlh->nlmsg_len;
-> +    struct nlattr *attrs;
-> +    int *ret =3D arg;
-> +    int ack_len =3D sizeof(*nlh) + sizeof(int) + sizeof(*nlh);
-> +
-> +    *ret =3D err->error;
-> +
-> +    if (!(nlh->nlmsg_flags & NLM_F_ACK_TLVS))
-> +    {
-> +        return NL_STOP;
-> +    }
-
-This is a bunch of magic with no explanation on what it does...
-
-Maybe a comment before the function when this callback function is
-called, what sort of context it expects, and what it can do?
-
-
-> +static void
-> +ovpn_dco_init_netlink(dco_context_t *dco)
-> +{
-> +    dco->ovpn_dco_id =3D resolve_ovpn_netlink_id(M_ERR);
-> +
-> +    dco->nl_sock =3D nl_socket_alloc();
-> +
-> +
-
-double blank line
-
-> +    if (!dco->nl_sock)
-> +    {
-> +        msg(M_ERR, "Cannot create netlink socket");
-> +    }
-> +
-> +    /* TODO: Why are we setting this buffer size? */
-> +    nl_socket_set_buffer_size(dco->nl_sock, 8192, 8192);
-
-This is a very good question :-)
-
-> +static void
-> +ovpn_dco_uninit_netlink(dco_context_t *dco)
-> +{
-> +    nl_socket_free(dco->nl_sock);
-> +    dco->nl_sock =3D NULL;
-> +
-> +    /* Decrease reference count */
-> +    nl_cb_put(dco->nl_cb);
-> +
-> +    memset(dco, 0, sizeof(*dco));
-
-CLEAR(dco);
-
-
-> +static int
-> +mcast_family_handler(struct nl_msg *msg, void *arg)
-> +{
-> +    dco_context_t *dco =3D arg;
-> +    struct nlattr *tb[CTRL_ATTR_MAX + 1];
-> +    struct genlmsghdr *gnlh =3D nlmsg_data(nlmsg_hdr(msg));
-> +
-> +    nla_parse(tb, CTRL_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
-> +              genlmsg_attrlen(gnlh, 0), NULL);
-> +
-> +    if (!tb[CTRL_ATTR_MCAST_GROUPS])
-> +    {
-> +        return NL_SKIP;
-> +    }
-
-This, again, is a function full of magic, and desperately lacking a
-few comments on the why and how...
-
-> +/**
-> + * Lookup the multicast id for OpenVPN. This method and its help method =
-currently
-> + * hardcode the lookup to OVPN_NL_NAME and OVPN_NL_MULTICAST_GROUP_PEERS=
- but
-> + * extended in the future if we need to lookup more than one mcast id.
-
-Missing a "... 'can be' extended ..." here?
-
-What is that multicast ID being used for?  Why would one want more than
-one?
-
-
-> +static int
-> +ovpn_handle_msg(struct nl_msg *msg, void *arg)
-> +{
-> +    dco_context_t *dco =3D arg;
-> +
-> +    struct genlmsghdr *gnlh =3D nlmsg_data(nlmsg_hdr(msg));
-> +    struct nlattr *attrs[OVPN_ATTR_MAX + 1];
-> +    struct nlmsghdr *nlh =3D nlmsg_hdr(msg);
-
-This seems to be the most magic of all the undocumented function
-here...?  (Can you spot the pattern of my comments? ;-) )
-
-
-> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-[..]
-
-
-I am skipping all the rest from here to init.c, due to "it's 4000 lines
-of patch review" - I want to get to the point about the metric, and
-will continue with forward.c later.
-
-
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index 21adc3cf..60c941a2 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-[..]
-> @@ -1299,15 +1300,23 @@ do_init_timers(struct context *c, bool deferred)
->      }
->=20=20
->      /* initialize pings */
-> -
-> -    if (c->options.ping_send_timeout)
-> +    if (dco_enabled(&c->options))
->      {
-> -        event_timeout_init(&c->c2.ping_send_interval, c->options.ping_se=
-nd_timeout, 0);
-> +        /* The DCO kernel module will send the pings instead of user spa=
-ce */
-> +        event_timeout_clear(&c->c2.ping_rec_interval);
-> +        event_timeout_clear(&c->c2.ping_send_interval);
->      }
-
-Do we actually need to clear these, as opposed to "just do not call
-event_timeout_init()"?
-
->      if (!deferred)
-> @@ -1381,13 +1390,13 @@ do_alloc_route_list(struct context *c)
->  static void
->  do_init_route_list(const struct options *options,
->                     struct route_list *route_list,
-> +                   int metric,
->                     const struct link_socket_info *link_socket_info,
->                     struct env_set *es,
->                     openvpn_net_ctx_t *ctx)
->  {
->      const char *gw =3D NULL;
->      int dev =3D dev_type_enum(options->dev, options->dev_type);
-> -    int metric =3D 0;
-
-I find the addition of an extra parameter and the accompanying=20
-extra code in do_init_tun() to be a complicated way to get to the
-desired result.  You have "options" here, so you can just do
-
-   int metric =3D 0;
-   if (dco_enabled(options))
-   {
-       metric =3D DCO_DEFAULT_METRIC;
-   }
-
-and get to the same result more easily.
-
-
->      if (dev =3D=3D DEV_TYPE_TUN && (options->topology =3D=3D TOP_NET30 |=
-| options->topology =3D=3D TOP_P2P))
->      {
-> @@ -1418,12 +1427,12 @@ do_init_route_list(const struct options *options,
->  static void
->  do_init_route_ipv6_list(const struct options *options,
->                          struct route_ipv6_list *route_ipv6_list,
-> +                        int metric,
->                          const struct link_socket_info *link_socket_info,
->                          struct env_set *es,
->                          openvpn_net_ctx_t *ctx)
->  {
->      const char *gw =3D NULL;
-> -    int metric =3D -1;            /* no metric set */
-
-Same here...
-
->      gw =3D options->ifconfig_ipv6_remote;         /* default GW =3D remo=
-te end */
->      if (options->route_ipv6_default_gateway)
-[..]
-
-> @@ -1715,12 +1730,24 @@ do_open_tun(struct context *c)
->      ASSERT(c->c2.link_socket);
->      if (c->options.routes && c->c1.route_list)
->      {
-> -        do_init_route_list(&c->options, c->c1.route_list,
-> +        int metric =3D 0;
-> +        if (dco_enabled(&c->options))
-> +        {
-> +            metric =3D DCO_DEFAULT_METRIC;
-> +        }
-> +
-> +        do_init_route_list(&c->options, c->c1.route_list, metric,
->                             &c->c2.link_socket->info, c->c2.es, &c->net_c=
-tx);
->      }
->      if (c->options.routes_ipv6 && c->c1.route_ipv6_list)
->      {
-> -        do_init_route_ipv6_list(&c->options, c->c1.route_ipv6_list,
-> +        int metric =3D -1;
-> +        if (dco_enabled(&c->options))
-> +        {
-> +            metric =3D DCO_DEFAULT_METRIC;
-> +        }
-> +
-> +        do_init_route_ipv6_list(&c->options, c->c1.route_ipv6_list, metr=
-ic,
->                                  &c->c2.link_socket->info, c->c2.es,
->                                  &c->net_ctx);
->      }
-
-... and with the suggested change to do_init_route*_list(), this
-change can totally go.
-
-
-> @@ -2014,6 +2046,7 @@ tun_abort(void)
->   * Handle delayed tun/tap interface bringup due to --up-delay or --pull
->   */
->=20=20
-> +
->  /**
->   * Helper for do_up().  Take two option hashes and return true if they a=
-re not
->   * equal, or either one is all-zeroes.
-
-Spurious extra new line.
-
-
-> @@ -2034,23 +2067,6 @@ do_up(struct context *c, bool pulled_options, unsi=
-gned int option_types_found)
->      {
->          reset_coarse_timers(c);
->=20=20
-> -        if (pulled_options)
-> -        {
-> -            if (!do_deferred_options(c, option_types_found))
-> -            {
-> -                msg(D_PUSH_ERRORS, "ERROR: Failed to apply push options"=
-);
-> -                return false;
-> -            }
-> -        }
-> -        else if (c->mode =3D=3D MODE_POINT_TO_POINT)
-> -        {
-> -            if (!do_deferred_p2p_ncp(c))
-> -            {
-> -                msg(D_TLS_ERRORS, "ERROR: Failed to apply P2P negotiated=
- protocol options");
-> -                return false;
-> -            }
-> -        }
-> -
->          /* if --up-delay specified, open tun, do ifconfig, and run up sc=
-ript now */
->          if (c->options.up_delay || PULL_DEFINED(&c->options))
->          {
-> @@ -2076,6 +2092,23 @@ do_up(struct context *c, bool pulled_options, unsi=
-gned int option_types_found)
->              }
->          }
->=20=20
-> +        if (pulled_options)
-> +        {
-> +            if (!do_deferred_options(c, option_types_found))
-> +            {
-> +                msg(D_PUSH_ERRORS, "ERROR: Failed to apply push options"=
-);
-> +                return false;
-> +            }
-> +        }
-> +        else if (c->mode =3D=3D MODE_POINT_TO_POINT)
-> +        {
-> +            if (!do_deferred_p2p_ncp(c))
-> +            {
-> +                msg(D_TLS_ERRORS, "ERROR: Failed to apply P2P negotiated=
- protocol options");
-> +                return false;
-> +            }
-> +        }
-> +
->          if (c->c2.did_open_tun)
->          {
->              c->c1.pulled_options_digest_save =3D c->c2.pulled_options_di=
-gest;
-
-
-On this, I can't see an obvious reason why the two blocks (what is
-show in the diff, and the "options_hash_changed_or_zero()" block) need to=20
-change order - can you help me understand?
-
-
->  /*
->   * Handle non-tun-related pulled options.
->   */
-> @@ -2286,15 +2333,54 @@ do_deferred_options(struct context *c, const unsi=
-gned int found)
->          }
->  #endif
->=20=20
-> +        if (c->c2.did_open_tun)
-> +        {
-> +            /* If we are in DCO mode we need to set the new peer options=
- now */
-> +            int ret =3D dco_p2p_add_new_peer(c);
-> +            if (ret < 0)
-> +            {
-> +                msg(D_DCO, "Cannot add peer to DCO: %s", strerror(-ret));
-> +                return false;
-> +            }
-> +        }
-
-That comment reads as if we "set the new options for an existing peer",
-but the code reads as if this is creating the peer, with the new options.
-
-If that interpretation is right, maybe
-
-  /* if we are in DCO mode, we now have all information needed and
-   * can proceed to create the peer
-   */
-
-or something?
-
-
-Enough for today.  More modules to come.
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---HThcY/IcZcaX6but
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJibV/4AAoJEB2Cnv7KVigS4pcMAKSEXglfA2DLxW+mXa2I5euG
-FGqIrwwQOKa1kc1Z4cVAOwQmCPyIGd/doMsiS2Qih0LzR8mdvG4xkGMBL3fwACM+
-/H5ZBpnPqog7LntuWo13P6C91efTKS/S+DJnT7wEdujcvmvdQ8hfEFCgz7oXyrL1
-O6qJA4ft3W2KrH+7DPlV/dUvElwA1G6QCzAP8vH9lTEkt/3rVfPXbAsS2a3tAbcn
-wq5CC8xsgT28QMqhADLd5LELSO8BiDIKXepaDuhWQi2K1VrddFeSs72Tiw6/nque
-ci/XBeJyxjYTPW2y/izjAo+eUruE3Fqu5B7vCN+23BPM43eLVuEJdKfSALE7lE0a
-xB18yqIjCD3rzYs9wUqTrMNwFA2Oz/IRix1zweKXVStl3NrHD4dft+mgxvN7PgQH
-tbROOjrcwsfIyu1ooBwr2UA1nniys/ReNc1ASudTij4da+bEXAxPHmcefa99bOFI
-4+bAeXRBTzRfSoCXsGkt9v0NXKu93kjMaA634f3NdQ==
-=ktvK
------END PGP SIGNATURE-----
-
---HThcY/IcZcaX6but--
 
