@@ -1,12 +1,12 @@
-Date: Tue, 3 May 2022 11:12:27 +0200 (CEST)
+Date: Tue, 3 May 2022 11:46:01 +0200 (CEST)
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <1812801850.32102.1651569147848@...2642...>
-In-Reply-To: <20220502154310.836947-1-arne@...1227...>
-References: <20220422142953.3805364-9-arne@...1227...>
- <20220502154310.836947-1-arne@...1227...>
+Message-ID: <1913103764.36168.1651571161812@...2642...>
+In-Reply-To: <20220502160945.839283-1-arne@...1227...>
+References: <20220422142953.3805364-13-arne@...1227...>
+ <20220502160945.839283-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v3] Implement stateless,
- HMAC basedsesssion id three way handshake
+Subject: Re: [Openvpn-devel] [PATCH v3] Implement HMAC based session id for
+ tls-crypt v2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,166 +19,115 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Acked-By: Frank Lichtenheld <frank@...2641...>
+Still found a few typos and whitespace issues, but no code issues.
 
-Used this patch to make myself familiar with the OpenVPN RFC documentation
-enough to say that this change overall makes sense to me. No further
-issues found in the code. Just some more text/whitespace issues, see below.
+Overall this looks okay to me but I'm hesitant to actually ack it
+because I'm not sure of the potential implications of all the protocol
+hacks (i.e. the packet id flags and the TLV payload).
 
-Compile/UT tested only from my side.
-
-Small issues:
-
-You have ignored my comment about the commit's summary line:
-Summary line: "HMAC-based session-id three-way-handshake" maybe? Just to help one parse the word pile ;)
-
-> Arne Schwabe <arne@...1227...> hat am 02.05.2022 17:43 geschrieben:
+> Arne Schwabe <arne@...1227...> hat am 02.05.2022 18:09 geschrieben:
 [...]
-> diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-> index e5cc36b45..ead61e827 100644
-> --- a/src/openvpn/mudp.c
-> +++ b/src/openvpn/mudp.c
-> @@ -40,24 +40,81 @@
-[...]
-> +    else if (verdict == VERDICT_VALID_CONTROL_V1 || verdict == VERDICT_VALID_ACK_V1)
-> +    {
-> +        /* ACK_V1 contains the peer id (our id) while CONTROL_V1 can but does not
-> +         * need to contain the peer id */
-> +        struct gc_arena gc = gc_new();
-> +
-> +        bool ret = check_session_id_hmac(state, from, hmac, handwindow);
-> +
-> +        const char *peer = print_link_socket_actual(&m->top.c2.from, &gc);
-> +        if (!ret)
-> +        {
-> +
-> +            msg(D_MULTI_MEDIUM, "Packet with invalid or missing SID from %s", peer);
-> +
-> +        }
-> +        else
-> +        {
-> +            msg(D_MULTI_DEBUG, "Valid packet with HMAC challenge from peer (%s), "
-> +                               "accepting new connection.", peer);
-
-uncrustify is not happy with this one:
---- "a/src/openvpn/mudp.c"      2022-05-03 10:51:05.039037300 +0200
-+++ "b/src/openvpn/mudp.c"      2022-05-03 10:51:05.215071400 +0200
-@@ -106,7 +106,7 @@
-         else
-         {
-             msg(D_MULTI_DEBUG, "Valid packet with HMAC challenge from peer (%s), "
--                               "accepting new connection.", peer);
-+                "accepting new connection.", peer);
-         }
-         gc_free(&gc);
-
-> @@ -114,10 +171,18 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
->                  mi = (struct multi_instance *) he->value;
->              }
->          }
-> +
-> +        /* we not have no existing multi instance for this connection */
-
-Remove "not"
-
->          if (!mi)
->          {
-> -            if (do_pre_decrypt_check(m))
-> +            struct tls_pre_decrypt_state state = {0};
-> +
-> +            if (do_pre_decrypt_check(m, &state, real))
->              {
-> +                /* This is an unknown session but with valid tls-auth/tls-crypt (or no auth at all),
-> +                 * if this is the initial packet of a session, we just send a reply with a HMAC session id and do not
-> +                 * generate a session slot */
-> +
->                  if (frequency_limit_event_allowed(m->new_connection_limiter))
->                  {
->                      mi = multi_create_instance(m, &real);
-> @@ -127,6 +192,14 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
->                          mi->did_real_hash = true;
->                          multi_assign_peer_id(m, mi);
->                      }
-> +                    /* If we have a session ids already, ensure that the state is using the same */
-
-"id", not "ids"
-
-> +                    if (session_id_defined(&state.server_session_id)
-> +                        && session_id_defined((&state.peer_session_id)))
-> +                    {
-> +                        mi->context.c2.tls_multi->n_sessions++;
-> +                        struct tls_session *session = &mi->context.c2.tls_multi->session[TM_ACTIVE];
-> +                        session_skip_to_pre_start(session, &state, &m->top.c2.from);
-> +                    }
->                  }
->                  else
->                  {
-[...]
-> diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-> index e925a16ea..0ba86d3e6 100644
-> --- a/src/openvpn/ssl.h
-> +++ b/src/openvpn/ssl.h
-> @@ -556,4 +556,12 @@ tls_session_generate_data_channel_keys(struct tls_session *session);
->  void
->  load_xkey_provider(void);
+> @@ -58,37 +82,62 @@ do_pre_decrypt_check(struct multi_context *m,
+>      struct openvpn_sockaddr *from = &m->top.c2.from.dest;
+>      int handwindow = m->top.options.handshake_window;
 >  
-> +/* Special method to skip the three way handshake RESET stages. This is
-> + * used by the HMAC code when seeing a packet that matches the previous
-> + * HMAC based stateless server state */
-> +bool
-> +session_skip_to_pre_start(struct tls_session *session,
-> +                          struct tls_pre_decrypt_state *state,
-> +                          struct link_socket_actual *from);
+> -
+>      if (verdict == VERDICT_VALID_RESET_V3)
+>      {
+> -        /* For tls-crypt-v2 we need to keep the state of the first packet to
+> -         * store the unwrapped key */
+> -        return true;
+> +        /* Extract the packet id to check if it has the special format that
+> +         * indicates early negotiation support */
+> +        struct packet_id_net pin;
+> +        struct buffer tmp = m->top.c2.buf;
+> +        ASSERT(buf_advance(&tmp, 1 + SID_SIZE));
+> +        ASSERT(packet_id_read(&pin, &tmp, true));
 > +
->  #endif /* ifndef OPENVPN_SSL_H */
+> +        /* The most significant byte ist 0x0f if early negotiation is supported */
+
+Your German is showing ;) "is"
+
+[...]
 > diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
-> index 7d9172703..9c8154b12 100644
+> index 9c8154b12..2376446ee 100644
 > --- a/src/openvpn/ssl_pkt.c
 > +++ b/src/openvpn/ssl_pkt.c
 [...]
-> +    /* check adjacent timestamps too */
-> +    for (int offset = -2; offset <= 1; offset++)
-> +    {
-> +        struct session_id expected_id =
-> +            calculate_session_id_hmac(state->peer_session_id, from, hmac, handwindow, offset);
+> @@ -434,8 +443,17 @@ tls_reset_standalone(struct tls_auth_standalone *tas,
+>  
+>      ASSERT(buf_write(&buf, &net_pid, sizeof(net_pid)));
+>  
+> +    /* Add indication for tls-crypt-v2 to resend the packet with the with
+
+Redundant "with"
+
+> +     * reply */
+[...]
+> diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
+> index ae92f6b33..9426fb1d8 100644
+> --- a/src/openvpn/ssl_pkt.h
+> +++ b/src/openvpn/ssl_pkt.h
+[...]
+> @@ -261,4 +272,23 @@ packet_opcode_name(int op)
+>              return "P_???";
+>      }
+>  }
 > +
-> +        if (memcmp_constant_time(&expected_id, &state->server_session_id, SID_SIZE))
-> +        {
-> +            return true;
-> +        }
-> +    }
-> +    return false;
-> +}
+> +/* initial packet id (instead of 0) that indicates that the peer supports
+> + * early protocol negotiation. This will make the packet id turn a bit faster
+> + * but the network time part of the packet id could take care of that. And
+> + * this is also a rather theoretical scenario as it still needs more than
+> + * 2^31 control channel packets to happen */
+> +#define EARLY_NEG_MASK          0xff000000
+> +#define EARLY_NEG_START         0x0a000000
+> +
+> +#define EARLY_NEG_RESENDWKC     0x00010000
+> +
+> +
+> +/* Early negotiation that part of the server response in the RESET_V2 packet.
+> + * Since clients that announce early negotiation support will treat the payload
+> + * of reset packets special and parse it as TLV messages.
+> + * as TLV (type, length, value) */
+> +#define EARLY_NEG_TLV_FLAG          0x01
+> +#define EARLY_NEG_FLAG_RESEND_WKC   0x01
+>  #endif /* ifndef SSL_PKT_H */
 > +
 
 new blank line at EOF.
 
-> diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
-> index 769dc1f44..ae92f6b33 100644
-> --- a/src/openvpn/ssl_pkt.h
-> +++ b/src/openvpn/ssl_pkt.h
+> diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
+> index 36812628e..f3fddf870 100644
+> --- a/tests/unit_tests/openvpn/test_pkt.c
+> +++ b/tests/unit_tests/openvpn/test_pkt.c
 [...]
-> @@ -141,6 +146,47 @@ tls_pre_decrypt_lite(const struct tls_auth_standalone *tas,
->                       const struct link_socket_actual *from,
->                       const struct buffer *buf);
+> @@ -580,11 +580,11 @@ test_generate_reset_packet_tls_auth(void **ut_state)
 >  
-> +/* Creates an SHA256 HMAC context with a random key that is used for the
-> + * session id.
-> + *
-> + * We do not support loading this from a config file since continuing session
-> + * between restarts of OpenVPN has never been supported and that includes
-> + * early session setup
+>      /* Assure repeated generation of reset is deterministic/stateless*/
+>      reset_packet_id_send(&tas_client.tls_wrap.opt.packet_id.send);
+> -    struct buffer buf2 = tls_reset_standalone(&tas_client, &client_id, &server_id, header);
+> +    struct buffer buf2 = tls_reset_standalone(&tas_client.tls_wrap, &tas_client, &client_id, &server_id, header,false);
+>      assert_int_equal(BLEN(&buf), BLEN(&buf2));
+>      assert_memory_equal(BPTR(&buf), BPTR(&buf2), BLEN(&buf));
+> +    
 
-Nitpick: missing full stop.
+Trailing whitespace:
+--- "a/tests/unit_tests/openvpn/test_pkt.c"^I2022-05-03 11:17:01.179037300 +0200$
++++ "b/tests/unit_tests/openvpn/test_pkt.c"^I2022-05-03 11:17:02.013292900 +0200$
+@@ -583,7 +583,7 @@$
+     struct buffer buf2 = tls_reset_standalone(&tas_client.tls_wrap, &tas_client, &client_id, &server_id, header,false);$
+     assert_int_equal(BLEN(&buf), BLEN(&buf2));$
+     assert_memory_equal(BPTR(&buf), BPTR(&buf2), BLEN(&buf));$
+-    $
++$
+     free_buf(&buf2);$
+     free_tls_pre_decrypt_state(&state);$
 
-+
-+/**
-+ * Calculates the a HMAC based server session id based on a client session id
-
-either "the" or "a" but not both.
-
-+ * and socket addr.
-+ *
+>      free_buf(&buf2);
+> -
+>      free_tls_pre_decrypt_state(&state);
+>  
+>      packet_id_free(&tas_client.tls_wrap.opt.packet_id);
 
 Regards,
 --
