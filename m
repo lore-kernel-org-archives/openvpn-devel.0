@@ -1,9 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed,  4 May 2022 13:31:58 +0200
-Message-Id: <20220504113158.1051861-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix format specifier for printing size_t on
- 32bit size_t platforms
+Date: Thu, 5 May 2022 12:18:11 +0200 (CEST)
+Message-Id: <202205051018.245AIBoB006285@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220502154310.836947-1-arne@...1227...>
+References: <20220502154310.836947-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Implement stateless HMAC-based
+ sesssion-id three-way-handshake
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,36 +15,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Today even 32 bit platform generally use a 64bit size_t but Android
-armeabi-v7a is an expection to that and uses a 32bit size_t. Use
-z as correct specifier for a size_t.
+I have not reviewied this in full depth, trusting Frank here.
 
-Clang complained about this:
+I *have* tested this on the server side testbed with "plain", "tls-auth"
+and "tls-crypt" instances - and besides the fact that tls-crypt breaks
+the 2.3 client (no support ;-) ) it all works nicely.
 
-warning: format specifies type 'unsigned long' but the
-argument has type 'size_t' (aka 'unsigned int') [-Wformat]
+All the comments and whitespace bits have been fixed-on-the-fly
+as instructed.  I have also fixed the "Return *true* if this packet..."
+comment before do_pre_decrypt_check() and rewrapped the very long
+comment lines in mudp.c (why did uncrustify not find this?).
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/init.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I have stared a bit at the code and I think I understand what the code
+does, and it seems to make sense.  Plus, it has unit tests :-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 3085e97b..e7d39645 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2431,7 +2431,7 @@ get_frame_mtu(struct context *c, const struct options *o)
- 
-     if (mtu < TUN_MTU_MIN)
-     {
--        msg(M_WARN, "TUN MTU value (%lu) must be at least %d", mtu, TUN_MTU_MIN);
-+        msg(M_WARN, "TUN MTU value (%zu) must be at least %d", mtu, TUN_MTU_MIN);
-         frame_print(&c->c2.frame, M_FATAL, "MTU is too small");
-     }
-     return mtu;
--- 
-2.32.0 (Apple Git-132)
+Your patch has been applied to the master branch.
+
+commit b364711486dc6371ad2659a5aa190941136f4f04
+Author: Arne Schwabe
+Date:   Mon May 2 17:43:10 2022 +0200
+
+     Implement stateless HMAC-based sesssion-id three-way-handshake
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20220502154310.836947-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24262.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
