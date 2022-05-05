@@ -1,7 +1,9 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Thu,  5 May 2022 13:38:38 +0300
-Message-Id: <20220505103838.122-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH release/2.5] vcpkg: switch to manifest
+Date: Thu,  5 May 2022 13:41:42 +0300
+Message-Id: <20220505104142.230-1-lstipakov@...277...>
+In-Reply-To: <20220505103838.122-1-lstipakov@...277...>
+References: <20220505103838.122-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH v2 release/2.5] vcpkg: switch to manifest
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -26,11 +28,13 @@ separate "vcpkg install" step to install dependencies.
 
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
+ v2: add missing lz4 dependency 
+
  .github/workflows/build.yaml | 15 ++++++---------
  .gitignore                   |  1 +
  src/openvpn/openvpn.vcxproj  |  9 +++++++++
- src/openvpn/vcpkg.json       | 18 ++++++++++++++++++
- 4 files changed, 34 insertions(+), 9 deletions(-)
+ src/openvpn/vcpkg.json       | 19 +++++++++++++++++++
+ 4 files changed, 35 insertions(+), 9 deletions(-)
  create mode 100644 src/openvpn/vcpkg.json
 
 diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
@@ -117,10 +121,10 @@ index 05c63b03..7f09249b 100644
      <ClCompile>
 diff --git a/src/openvpn/vcpkg.json b/src/openvpn/vcpkg.json
 new file mode 100644
-index 00000000..a5509736
+index 00000000..6537fdd6
 --- /dev/null
 +++ b/src/openvpn/vcpkg.json
-@@ -0,0 +1,18 @@
+@@ -0,0 +1,19 @@
 +{
 +  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
 +  "name": "openvpn",
@@ -129,6 +133,7 @@ index 00000000..a5509736
 +    "openssl",
 +    "tap-windows6",
 +    "lzo",
++    "lz4",
 +    "pkcs11-helper"
 +  ],
 +  "builtin-baseline": "4b766c1cd17205e1b768c4fadfd5f867c1d0510e",
