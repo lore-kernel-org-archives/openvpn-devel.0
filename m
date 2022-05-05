@@ -1,9 +1,10 @@
-Date: Thu, 5 May 2022 16:04:40 +0200 (CEST)
-Message-Id: <202205051404.245E4eNd040544@...2054...>
+Date: Thu, 5 May 2022 16:04:59 +0200 (CEST)
+Message-Id: <202205051404.245E4x9Z040550@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220505121449.347-1-lstipakov@...277...>
-References: <20220505121449.347-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: vcpkg: switch to manifest
+In-Reply-To: <20220504113158.1051861-1-arne@...1227...>
+References: <20220504113158.1051861-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix format specifier for
+ printing size_t on 32bit size_t platforms
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,26 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"Again, I have no idea, but it looks reasonable and github builds nice
-things from it..."
+%zu is now a first class citizen even in MSVC, so we're safe to use it.  
+
+Says Lev, and The Internet.
+
+https://stackoverflow.com/questions/15610053/correct-printf-format-specifier-for-size-t-zu-or-iu
+
+Only minimally tested ("does it compile on amd64 linux with no warning").
 
 Your patch has been applied to the master branch.
 
-commit f6d80493a965d08c6b9beb67e25e2762b8aa94d9
-Author: Lev Stipakov
-Date:   Thu May 5 15:14:49 2022 +0300
+commit 6e375353ed99b794994b809570b217e3e732a44b
+Author: Arne Schwabe
+Date:   Wed May 4 13:31:58 2022 +0200
 
-     vcpkg: switch to manifest
+     Fix format specifier for printing size_t on 32bit size_t platforms
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220505121449.347-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24285.html
+     Message-Id: <20220504113158.1051861-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24277.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
