@@ -1,10 +1,10 @@
-Date: Thu, 5 May 2022 16:04:59 +0200 (CEST)
-Message-Id: <202205051404.245E4x9Z040550@...2054...>
+Date: Thu, 5 May 2022 16:09:46 +0200 (CEST)
+Message-Id: <202205051409.245E9kaU040678@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220504113158.1051861-1-arne@...1227...>
-References: <20220504113158.1051861-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix format specifier for
- printing size_t on 32bit size_t platforms
+In-Reply-To: <20220504111802.1050648-1-arne@...1227...>
+References: <20220504111802.1050648-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove workaround for Android
+ 4.4
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,26 +20,27 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-%zu is now a first class citizen even in MSVC, so we're safe to use it.  
+I have not actually investigated this in more detail - but this is 
+something the Android GUI controls, so if you say "it will never send
+this message anymore" we can remove the code from openvpn core.
 
-Says Lev, and The Internet.
-
-https://stackoverflow.com/questions/15610053/correct-printf-format-specifier-for-size-t-zu-or-iu
-
-Only minimally tested ("does it compile on amd64 linux with no warning").
+I did wonder (on IRC) if we can get rid of ANDROID_OPEN_BEFORE_CLOSE at
+the same time - but looking more close, I see that we still have two
+variants, ANDROID_KEEP_OLD_TUN and ANDROID_OPEN_BEFORE_CLOSE.  So, yes, 
+as long as the GUI can send both, we need both in the core...
 
 Your patch has been applied to the master branch.
 
-commit 6e375353ed99b794994b809570b217e3e732a44b
+commit 44517fd7694012502318975173b1d0c05045d388
 Author: Arne Schwabe
-Date:   Wed May 4 13:31:58 2022 +0200
+Date:   Wed May 4 13:18:02 2022 +0200
 
-     Fix format specifier for printing size_t on 32bit size_t platforms
+     Remove workaround for Android 4.4
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220504113158.1051861-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24277.html
+     Message-Id: <20220504111802.1050648-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24276.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
