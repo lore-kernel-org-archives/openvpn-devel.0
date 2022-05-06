@@ -1,10 +1,10 @@
-Date: Fri, 6 May 2022 18:02:35 +0200 (CEST)
-Message-Id: <202205061602.246G2Zqi087866@...2054...>
+Date: Fri, 6 May 2022 18:05:31 +0200 (CEST)
+Message-Id: <202205061605.246G5Vrh087996@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220506132836.1318985-1-arne@...1227...>
-References: <20220506132836.1318985-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add uncrustify check to github
- actions
+In-Reply-To: <20220506132836.1318985-2-arne@...1227...>
+References: <20220506132836.1318985-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add ubuntu 22.04 to Github
+ Actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,24 +20,21 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Nice one.  Tested on my github repo with the clean "master" tree, and
-then applied a crappy change and tested again.
+Looks good.  Not tested anything, github can do that :-)
 
-(https://github.com/cron2/openvpn/actions/runs/2282765938 ->
- https://github.com/cron2/openvpn/runs/6325784768?check_suite_focus)
+Added SOB.
 
 Your patch has been applied to the master branch.
 
-commit 8eeb4751767c5c2f6a192fc917330b2974dac9de
+commit baa1e67f310b1db3c5b7b9b9f12867a86c947648
 Author: Arne Schwabe
-Date:   Fri May 6 15:28:35 2022 +0200
+Date:   Fri May 6 15:28:36 2022 +0200
 
-     Add uncrustify check to github actions
+     Add ubuntu 22.04 to Github Actions
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220506132836.1318985-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24300.html
+     Message-Id: <20220506132836.1318985-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24299.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
