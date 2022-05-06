@@ -1,10 +1,11 @@
-Date: Fri, 6 May 2022 15:03:12 +0200 (CEST)
-Message-Id: <202205061303.246D3C5T074187@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220503112900.933975-1-arne@...1227...>
-References: <20220503112900.933975-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Extract
- read_incoming_tls_plaintext into its own function
+From: Arne Schwabe <arne@...1227...>
+Date: Fri,  6 May 2022 15:28:36 +0200
+Message-Id: <20220506132836.1318985-2-arne@...1227...>
+In-Reply-To: <20220506132836.1318985-1-arne@...1227...>
+References: <20220422142953.3805364-13-arne@...1227...>
+ <20220506132836.1318985-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 2/2] Add ubuntu 22.04 to Github Actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +16,39 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Stared at code for a bit (looks trivial enough), added "and" to the
-commit message, ran client test.
+This adds Ubuntu 22.04 to the Github actions. mbed TLS in 22.04 is still
+old enough (2.28) to build with OpenVPN and GPL licensed.
+---
+ .github/workflows/build.yaml | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Your patch has been applied to the master branch.
-
-commit 413877f522e89ccc6dd2543bc585ac553df3bd42
-Author: Arne Schwabe
-Date:   Tue May 3 13:29:00 2022 +0200
-
-     Extract read_incoming_tls_plaintext into its own function
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20220503112900.933975-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24268.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index dd23b1426..d34f4e9a9 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -159,7 +159,7 @@ jobs:
+     strategy:
+       fail-fast: false
+       matrix:
+-        os: [ubuntu-18.04, ubuntu-20.04]
++        os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
+         sslpkg: [libmbedtls-dev]
+         ssllib: [mbedtls]
+         libname: [mbed TLS]
+@@ -177,6 +177,10 @@ jobs:
+             sslpkg: "libssl-dev"
+             libname: OpenSSL 1.1.1
+             ssllib: openssl
++          - os: ubuntu-22.04
++            sslpkg: "libssl-dev"
++            libname: OpenSSL 3.0.2
++            ssllib: openssl
+           - os: ubuntu-20.04
+             sslpkg: "libssl-dev"
+             libname: OpenSSL 1.1.1
+-- 
+2.32.0 (Apple Git-132)
 
 
