@@ -1,11 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri,  6 May 2022 15:28:36 +0200
-Message-Id: <20220506132836.1318985-2-arne@...1227...>
-In-Reply-To: <20220506132836.1318985-1-arne@...1227...>
+Date: Fri,  6 May 2022 15:28:35 +0200
+Message-Id: <20220506132836.1318985-1-arne@...1227...>
+In-Reply-To: <20220422142953.3805364-13-arne@...1227...>
 References: <20220422142953.3805364-13-arne@...1227...>
- <20220506132836.1318985-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/2] Add ubuntu 22.04 to Github Actions
+Subject: [Openvpn-devel] [PATCH 1/2] Add uncrustify check to github actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,36 +17,56 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This adds Ubuntu 22.04 to the Github actions. mbed TLS in 22.04 is still
-old enough (2.28) to build with OpenVPN and GPL licensed.
+This adds checking if the code style is still clean github actions with the
+exact version of uncrustify that is required and might also be helpful for
+external commiters to get notified about code style problem when running
+the Github actions on their own repository.
+
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- .github/workflows/build.yaml | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ .github/workflows/build.yaml | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
 diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index dd23b1426..d34f4e9a9 100644
+index ac46a72cd..dd23b1426 100644
 --- a/.github/workflows/build.yaml
 +++ b/.github/workflows/build.yaml
-@@ -159,7 +159,7 @@ jobs:
+@@ -3,6 +3,35 @@ name: Build
+ on: [push, pull_request]
+ 
+ jobs:
++  checkuncrustify:
++    name: "Check code style with Uncrustify"
++    # Ubuntu 22.04 has uncrustify 0.72_f
++    runs-on: ubuntu-22.04
++    steps:
++      - name: Install dependencies
++        run: sudo apt update && sudo apt install -y uncrustify
++      - name: Checkout OpenVPN
++        uses: actions/checkout@...2620...
++        with:
++          path: openvpn
++      - name: Show uncrustify version
++        run: uncrustify --version
++      - name: Run uncrustify
++        run: ./dev-tools/reformat-all.sh
++        working-directory: openvpn
++      - name: Check for changes
++        run: git diff --output=uncrustify-changes.patch
++        working-directory: openvpn
++      - name: Show changes on standard output
++        run: git diff
++        working-directory: openvpn
++      - uses: actions/upload-artifact@...2620...
++        with:
++          name: uncrustify-changes.patch
++          path: 'openvpn/uncrustify-changes.patch'
++      - name: Set job status
++        run: test ! -s uncrustify-changes.patch
++        working-directory: openvpn
+   mingw:
      strategy:
        fail-fast: false
-       matrix:
--        os: [ubuntu-18.04, ubuntu-20.04]
-+        os: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
-         sslpkg: [libmbedtls-dev]
-         ssllib: [mbedtls]
-         libname: [mbed TLS]
-@@ -177,6 +177,10 @@ jobs:
-             sslpkg: "libssl-dev"
-             libname: OpenSSL 1.1.1
-             ssllib: openssl
-+          - os: ubuntu-22.04
-+            sslpkg: "libssl-dev"
-+            libname: OpenSSL 3.0.2
-+            ssllib: openssl
-           - os: ubuntu-20.04
-             sslpkg: "libssl-dev"
-             libname: OpenSSL 1.1.1
 -- 
 2.32.0 (Apple Git-132)
 
