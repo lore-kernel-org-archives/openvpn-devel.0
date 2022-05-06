@@ -1,10 +1,10 @@
-Date: Fri, 6 May 2022 14:45:38 +0200 (CEST)
-Message-Id: <202205061245.246CjcdB071795@...2054...>
+Date: Fri, 6 May 2022 15:02:06 +0200 (CEST)
+Message-Id: <202205061302.246D26Gj074009@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220505130348.1183195-1-arne@...1227...>
-References: <20220505130348.1183195-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Implement HMAC based session id
- for tls-crypt v2
+In-Reply-To: <20220422142953.3805364-14-arne@...1227...>
+References: <20220422142953.3805364-14-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Optimise three-way handshake
+ condition for S_PRE_START to S_START
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,44 +18,30 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I have stared at the code for a bit (and fixed "the comment"), all looks
-reasonable.
+As instructed, I have done quite a bit of wording changes in the
+commit message and the tls_process_state() comment.  No code change.
 
-Building a test setup took quite a bit of time (different client-side keys, 
-different client versions, --verify script, etc.) but the server did 
-exactly what was documented -> good :-)
+Also, I've left off the hunk for test_pkt.c, as that is already in
+(v2 or v3 of one of the previous patches in the series).
 
-I have also tested "force-cookie", "default" and "allow-noncookie" with
-2.5.6 and "same codebase master" clients - it works as documented, *but*
-in the "force-cookie" case, the logging is unsatisfactory - --verb 4 will
-show "yes, there is activity", but the 
+S-O-B added.
 
-  tls-crypt-v2 force-cookie is enabled,ignoring connection attempt from old client...
+I have not explicitly counted handshake packets, but the explanation
+seems to match the actual code change, and the explanation makes sense.
 
-message needs --verb 7 -> this needs to go to a more clearly visible
-log level, so admins have a better chance to see what is happening.
-
-Discussed on IRC, agreed on "let's make the logging more useful in
-a followup patch".
-
-
-I have rewrapped one msg() line in mudp.c, because the 3 lines nicely fit in
-two, making the result more readable.  Also, added a ")" to a comment in
-ssl.c, and rewrapped slightly.
-
+Lightly (client-side only) tested.
 
 Your patch has been applied to the master branch.
 
-commit e7d8c4a72002cbaa7542ea0cff8acca1b971b1f5
+commit 3f5626891e6bc569456ab168b3a5e5f76e0538bd
 Author: Arne Schwabe
-Date:   Thu May 5 15:03:48 2022 +0200
+Date:   Fri Apr 22 16:29:48 2022 +0200
 
-     Implement HMAC based session id for tls-crypt v2
+     Optimise three-way handshake condition for S_PRE_START to S_START
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20220505130348.1183195-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24287.html
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20220422142953.3805364-14-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24161.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
