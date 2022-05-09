@@ -1,12 +1,13 @@
-Message-ID: <39beacfc-4899-7e2c-bcf1-58be2f11f1e4@...2181...>
-Date: Mon, 9 May 2022 13:51:53 +0200
+Message-ID: <1c49666b-032a-4978-dd2c-6879c308bf5a@...2181...>
+Date: Mon, 9 May 2022 13:52:49 +0200
 MIME-Version: 1.0
 Content-Language: en-US
 References: <20220429170236.48239-1-kprovost@...2661...>
- <20220429170236.48239-2-kprovost@...2661...>
+ <20220429170236.48239-4-kprovost@...2661...>
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20220429170236.48239-2-kprovost@...2661...>
-Subject: Re: [Openvpn-devel] [PATCH 1/4] Handle (DCO) timeouts in client mode
+In-Reply-To: <20220429170236.48239-4-kprovost@...2661...>
+Subject: Re: [Openvpn-devel] [PATCH 3/4] Ensure dynamic_name is always
+ populated
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,10 +25,10 @@ Hi,
 On 29/04/2022 19:02, Kristof Provost via Openvpn-devel wrote:
 > From: Kristof Provost <kp@...1376...>
 > 
-> Handle the DCO driver telling us that the peer went away, even if we're
-> not running in multi-instance mode.
+> It's always used for open_tun_dco(), so we must ensure it's populated,
+> even if 'dev_node' is set.
 > 
-> Signed-off-by:	Kristof Provost <kprovost@...2661...>
+> Signed-off-by: Kristof Provost <kprovost@...2661...
 
 I squashed this change in the dco branch.
 Thanks a lot!
