@@ -1,12 +1,12 @@
-Message-ID: <0efb5969-6d9c-cef7-704f-d76a909501b3@...2181...>
-Date: Mon, 9 May 2022 20:06:31 +0200
-MIME-Version: 1.0
-Content-Language: en-US
+Date: Tue, 10 May 2022 11:33:48 +0200 (CEST)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <466809680.552694.1652175228160@...2642...>
+In-Reply-To: <0efb5969-6d9c-cef7-704f-d76a909501b3@...2181...>
 References: <20220402070902.30282-5-a@...2181...>
  <20220411133528.27279-1-a@...2181...>
  <2078542256.353074.1649759630031@...2642...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <2078542256.353074.1649759630031@...2642...>
+ <0efb5969-6d9c-cef7-704f-d76a909501b3@...2181...>
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH v2 4/7] ovpn-dco: introduce linux
  data-channel offload support
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,284 +17,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: Frank Lichtenheld <frank@...2641...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-On 12/04/2022 12:33, Frank Lichtenheld wrote:
-> Honestly still not sure one would start reviewing the actual code but here
-> are at least a few minor things I noticed while browsing through it:
+> Antonio Quartulli <a@...2181...> hat am 09.05.2022 20:06 geschrieben:
+> On 12/04/2022 12:33, Frank Lichtenheld wrote:
+> > Honestly still not sure one would start reviewing the actual code but here
+> > are at least a few minor things I noticed while browsing through it:
+> > 
+> >> Antonio Quartulli <a@...2181...> hat am 11.04.2022 15:35 geschrieben:
+[...]
+> > [...]
+> >> diff --git a/README.dco.md b/README.dco.md
+> >> new file mode 100644
+> >> index 00000000..e73e0fc2
+> >> --- /dev/null
+> >> +++ b/README.dco.md
+> > [...}
+> >> +DCO and P2P mode
+> >> +----------------
+> >> +DCO is also available when running OpenVPN in P2P mode without --pull/--client option.
+> >> +The P2P mode is useful for scenarios when the OpenVPN tunnel should not interfere with
+> >> +overall routing and behave more like a "dumb" tunnel like GRE.
+> >> +
+> >> +However, DCO requires DATA_V2 to be enabled. This requires P2P with NCP capability, which
+> >> +is only available in OpenVPN 2.6 and later.
+> > 
+> > Changes.rst doesn't mention this change, should it?
 > 
->> Antonio Quartulli <a@...2181...> hat am 11.04.2022 15:35 geschrieben:
->>
->>   
->> Implement the data-channel offloading using the ovpn-dco kernel
->> module. See README.dco.md for more details.
->>
->> Signed-off-by: Arne Schwabe <arne@...1227...>
->> Signed-off-by: Antonio Quartulli <a@...2181...>
->> ---
->>
->> Changes from v1:
->> * uncrustified code. Note that uncrustify wanted to change way more
->>    code in our repo, therefore I had to dig into the proposed changes and
->>    pick only those related to this patch. For this reason I may have
->>    missed something.
+> how does this sound:
 > 
-> You also incorporated my review suggestions.
+> Note that DCO will use DATA_V2 packets in P2P mode, therefore,
+> this implies that peers must be running 2.6.0+ in order to have P2P-NCP
+> which brings DATA_V2 packet support.
 
-Right - sorry!
+I think you misunderstood my point? I wasn't actually criticizing your text, I was wondering
+whether we should add an additional point in Changes.rst, because I see no mention of this
+new feature.
 
+8c72d7981c32c43d1c7967a312bb439e13fc5b40 did add this feature without any changes
+to documentation or Changes.rst.
+
+> > Should we mention here what "NCP" stands for?
 > 
-> [...]
->> diff --git a/README.dco.md b/README.dco.md
->> new file mode 100644
->> index 00000000..e73e0fc2
->> --- /dev/null
->> +++ b/README.dco.md
-> [...}
->> +DCO and P2P mode
->> +----------------
->> +DCO is also available when running OpenVPN in P2P mode without --pull/--client option.
->> +The P2P mode is useful for scenarios when the OpenVPN tunnel should not interfere with
->> +overall routing and behave more like a "dumb" tunnel like GRE.
->> +
->> +However, DCO requires DATA_V2 to be enabled. This requires P2P with NCP capability, which
->> +is only available in OpenVPN 2.6 and later.
-> 
-> Changes.rst doesn't mention this change, should it?
+> to be honest I barely know what it stands for :-D I just know it is 
+> "cipher negotiation", but the actual definition I think is expected to 
+> be found elsewhere. no?
 
-how does this sound:
+FWIW, src/openvpn/options.h:#define OPT_P_NCP             (1<<12) /**< Negotiable crypto parameters */
 
-Note that DCO will use DATA_V2 packets in P2P mode, therefore,
-this implies that peers must be running 2.6.0+ in order to have P2P-NCP
-which brings DATA_V2 packet support.
-
-
-> Should we mention here what "NCP" stands for?
-
-to be honest I barely know what it stands for :-D I just know it is 
-"cipher negotiation", but the actual definition I think is expected to 
-be found elsewhere. no?
-
-> 
->> +OpenVPN prints a diagnostic message for the P2P NCP result when running in P2P mode:
->> +
->> +    P2P mode NCP negotiation result: TLS_export=1, DATA_v2=1, peer-id 9484735, cipher=AES-256-GCM
->> +
->> +Double check that your have `DATA_v2=1` in your output and a supported AEAD cipher
->> +(AES-XXX-GCM or CHACHA20POLY1305).
-> [...]
->> diff --git a/doc/man-sections/advanced-options.rst b/doc/man-sections/advanced-options.rst
->> index 5157c561..6019aefe 100644
->> --- a/doc/man-sections/advanced-options.rst
->> +++ b/doc/man-sections/advanced-options.rst
->> @@ -91,3 +91,16 @@ used when debugging or testing out special usage scenarios.
->>     *(Linux only)* Set the TX queue length on the TUN/TAP interface.
->>     Currently defaults to operating system default.
->>   
->> +--disable-dco
->> +  Disables the opportunistic use of the data channel offloading if available.
-> 
-> Nitpick: would remove "the" in "the data channel offloading".
-
-right
-
-> 
-> [...]
->> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
->> index 9e10f64e..7e49d710 100644
->> --- a/src/openvpn/crypto.c
->> +++ b/src/openvpn/crypto.c
->> @@ -845,6 +845,7 @@ init_key_ctx(struct key_ctx *ctx, const struct key *key,
->>                cipher_kt_iv_size(kt->cipher));
->>           warn_insecure_key_type(ciphername);
->>       }
->> +
-> 
-> Spurious uncrustify change?
-
-removed
-
-> 
->>       if (md_defined(kt->digest))
->>       {
->>           ctx->hmac = hmac_ctx_new();
->> diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
->> new file mode 100644
->> index 00000000..2f7779f6
->> --- /dev/null
->> +++ b/src/openvpn/dco.c
-> [...]
->> +/**
->> + * Find a usable key that is not the primary (i.e. the secondary key)
->> + *
->> + * @param multi     The TLS struct to retrieve keys from
->> + * @param primary   The primary key that should be skipped doring the scan
-> 
-> "during"
-
-I almost managed to have Gert in the comment :-D
-
-> 
-> [...]
->> +static bool
->> +dco_check_option_conflict_ce(const struct connection_entry *ce, int msglevel)
->> +{
->> +    if (ce->fragment)
->> +    {
->> +        msg(msglevel, "Note: --fragment disables data channel offload.");
->> +        return true;
->> +    }
->> +
->> +    if (ce->http_proxy_options)
->> +    {
->> +        msg(msglevel, "Note: --http-proxy disables data channel offload.");
->> +        return true;
->> +    }
->> +
->> +    if (ce->socks_proxy_server)
->> +    {
->> +        msg(msglevel, "Note --socks-proxy disable data channel offload.");
-> 
-> "Note: --socks-proxy disables data channel offload."
-
-right
-
-> 
-> Missing ':' after "Note" and missing 's' in "disables".
-
-yup, thanks!
-
-> 
->> +        return true;
->> +    }
->> +
->> +    return false;
->> +}
-> [...]
->> diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
->> new file mode 100644
->> index 00000000..6c670950
->> --- /dev/null
->> +++ b/src/openvpn/dco_linux.c
-> [...]
->> +/**
->> + * @brief resolves the netlink ID for ovpn-dco
->> + *
->> + * This function queries the kernel via a netlink socket
->> + * whether the ovpn-dco netlink namespace is available
->> + *
->> + * This function can be used to determine if the kernel
->> + * support DCO offloading.
-> 
-> "supports"
-
-thanks
-
-> 
->> + *
->> + * @return ID on success, negative error code on error
->> + */
->> +static int
->> +resolve_ovpn_netlink_id(int msglevel)
-> [...]
->> +/**
->> + * Send a preprared netlink message and registers cb as callback if non-null.
->> + *
->> + * The method will also free nl_msg
->> + * @param dco       The dco context to use
->> + * @param nl_msg    the message to use
->> + * @param cb        An optional callback if the caller expects an answers\
-> 
-> "an answer", also spurious '\'
-
-thanks
-
-> 
->> + * @param prefix    A prefix to report in the error message to give the user context
->> + * @return          status of sending the message
->> + */
->> +static int
->> +ovpn_nl_msg_send(dco_context_t *dco, struct nl_msg *nl_msg, ovpn_nl_cb cb,
->> +                 const char *prefix)
->> +{
->> +    dco->status = 1;
->> +
->> +    if (cb)
->> +    {
->> +        nl_cb_set(dco->nl_cb, NL_CB_VALID, NL_CB_CUSTOM, cb, dco);
->> +    }
->> +    else
->> +    {
->> +        nl_cb_set(dco->nl_cb, NL_CB_VALID, NL_CB_CUSTOM, NULL, dco);
->> +    }
-> 
-> Is there an actual difference to just writing
-> 
-> nl_cb_set(dco->nl_cb, NL_CB_VALID, NL_CB_CUSTOM, cb, dco);
-> 
-> without the whole if/else?
-
-yeah, this must be the result of older pruning, which left the 
-leaves...but they can now be merged :-)
-
-done!
-
-> 
->> +    nl_send_auto(dco->nl_sock, nl_msg);
->> +
->> +    while (dco->status == 1)
->> +    {
->> +        ovpn_nl_recvmsgs(dco, prefix);
->> +    }
->> +
->> +    if (dco->status < 0)
->> +    {
->> +        msg(M_INFO, "%s: failed to send netlink message: %s (%d)",
->> +            prefix, strerror(-dco->status), dco->status);
->> +    }
->> +
->> +    return dco->status;
->> +}
->> +
->> +struct sockaddr *
->> +mapped_v4_to_v6(struct sockaddr *sock, struct gc_arena *gc)
->> +{
->> +    struct sockaddr_in6 *sock6 = ((struct sockaddr_in6 *)sock);
->> +    if (sock->sa_family == AF_INET6
->> +        && memcmp(&sock6->sin6_addr, "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff", 12)==0)
-> 
-> magic constant?
-
-as Gert pointed out, there is a nice macro for this. using it now.
-
-> 
->> +    {
->> +
->> +        struct sockaddr_in *sock4;
->> +        ALLOC_OBJ_CLEAR_GC(sock4, struct sockaddr_in, gc);
->> +        memcpy(&sock4->sin_addr, sock6->sin6_addr.s6_addr +12, 4);
->> +        sock4->sin_port = sock6->sin6_port;
->> +        sock4->sin_family = AF_INET;
->> +        return (struct sockaddr *) sock4;
->> +    }
->> +    return sock;
->> +}
-> [...]
-> 
-> Regards,
-
-Thanks a lot for the review!
+In general, I would think in this context using "cipher negotiation" as you
+already mentioned would be better than using an opaque acronym. Or at least use
+both so that users who are not intimately familiar with our nomenclature still
+know what you're talking about.
 
 Regards,
-
-> --
-> Frank Lichtenheld
-> 
-
--- 
-Antonio Quartulli
+--
+Frank Lichtenheld
 
