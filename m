@@ -1,12 +1,11 @@
-Content-Type: multipart/mixed; boundary="------------ZxFZykpS0Mu2L4NQHxMeNGg2"
-Message-ID: <43f61f64-9873-9f4a-1c0d-2af6424496a3@...515...>
-Date: Wed, 11 May 2022 13:26:02 +0300
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 11 May 2022 13:08:10 +0200
+Message-Id: <20220511110810.1944975-1-arne@...1227...>
+In-Reply-To: <20220422142953.3805364-17-arne@...1227...>
+References: <20220422142953.3805364-17-arne@...1227...>
 MIME-Version: 1.0
-Content-Language: en-US
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-References: <f1a750b0-dd27-c332-c538-d37642e2776f@...515...>
-In-Reply-To: <f1a750b0-dd27-c332-c538-d37642e2776f@...515...>
-Subject: [Openvpn-devel] Summary of the community meeting (11th May 2022)
+Subject: [Openvpn-devel] [PATCH v3 26/28] Allow setting control channel
+ packet size with tls-mtu
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,219 +14,281 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------ZxFZykpS0Mu2L4NQHxMeNGg2
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Currently control packet size is controlled by tun-mtu in a very
+non-obvious way since the control overhead is not taken into account
+and control channel packet will end up with a different size than
+data channel packet.
 
-Hi,
+Instead we decouple this and introduce tls-mtu which defaults to
+1250.
 
-Here's the summary of the IRC meeting.
+Patch v2: rebase on latest patch set
+Patch v3: Introduce TLS_CHANNEL_MTU_MIN define and give explaination
+          of its value.
 
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
+ Changes.rst                       |  8 ++++++++
+ doc/man-sections/link-options.rst |  7 +++++++
+ src/openvpn/common.h              | 10 ++++++++++
+ src/openvpn/init.c                |  8 ++++++--
+ src/openvpn/mtu.h                 |  5 +++++
+ src/openvpn/options.c             | 14 ++++++++++++++
+ src/openvpn/options.h             |  1 +
+ src/openvpn/ssl.c                 | 25 +++++++++++++------------
+ src/openvpn/ssl.h                 |  8 +++-----
+ 9 files changed, 67 insertions(+), 19 deletions(-)
 
-COMMUNITY MEETING
-
-Place: #openvpn-meeting on libera.chat
-Date: Wed 11th May 2022
-Time: 10:30 CEST (9:30 UTC)
-
-Planned meeting topics for this meeting were here:
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2022-05-11>
-
-Your local meeting time is easy to check from services such as
-
-<http://www.timeanddate.com/worldclock>
-
-SUMMARY
-
-cron2, dazo, d12fk, lev, mattock, MaxF, ordex and plaisthos participated 
-in this meeting.
-
----
-
-Talked about OpenVPN 2.5.
-
-Mattock will spin up a new Windows installer to fix some OpenVPN-GUI 
-issues. Luckily OpenVPN was not affected by the OpenSSL issues fixed 
-since our previous installer release.
-
----
-
-Talked about OpenVPN 2.6.
-
-D12fk will submit a path this week which add a --dns-support bit to 
-IV_PROTO. It is mostly for servers to be able to not push --dns to 
-non-compliant clients, to avoid warnings in log files, which reduces the 
-potential of clueless support tickets.
-
-The HMAC stuff is all in, thanks to djpig and ordex for lots of review 
-rounds + testing.
-
-The xkey patch is waiting for review (from Selva or someone else).
-
----
-
-Talked about the fix to broken TCP connections on Windows Server 2022:
-
-<https://github.com/OpenVPN/tap-windows6/pull/147>
-
-Lev will ask Simon to give his feedback in the PR, in addition to 
-already having given it privately.
-
+diff --git a/Changes.rst b/Changes.rst
+index 67a23c792..2d00859e3 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -79,6 +79,12 @@ Cookie based handshake for UDP server
+     shake. The tls-crypt-v2 option allows controlling if older clients are
+     accepted.
+ 
++Improved control channel packet size control (``--tls-mtu``)
++    The size of control channel is no longer tied to
++    ``--link-mtu``/``--tun-mtu`` and can be set using ``--tls-mtu``. Setting
++    the size to small sizes no longer breaks the OpenVPN protocol in certain
++    situations.
++
+ Deprecated features
+ -------------------
+ ``inetd`` has been removed
+@@ -141,6 +147,8 @@ User-visible Changes
+ - Option ``--nobind`` is default when ``--client`` or ``--pull`` is used in the configuration
+ - :code:`link_mtu` parameter is removed from environment or replaced with 0 when scripts are
+   called with parameters. This parameter is unreliable and no longer internally calculated.
++- control channel packet maximum size is no longer influenced by ``--link-mtu``/``--tun-mtu``
++  and must be set by ``--tls-mtu`` now.
+ 
+ Overview of changes in 2.5
+ ==========================
+diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
+index 6473ad423..40ff2c3ee 100644
+--- a/doc/man-sections/link-options.rst
++++ b/doc/man-sections/link-options.rst
+@@ -454,3 +454,10 @@ the local and the remote host.
+      if mode server:
+          socket-flags TCP_NODELAY
+          push "socket-flags TCP_NODELAY"
++
++--tls-mtu size
++  This option sets the maximum size for control channel packets. OpenVPN will
++  try to keep its control channel messages below this size but due to some
++  constraints in the protocol this is not always possible. If the option is
++  not set, it default to 1250. Valid sizes are between 512 and 2048.
++  The maximum packet size includes encapsulation overhead like UDP and IP.
+\ No newline at end of file
+diff --git a/src/openvpn/common.h b/src/openvpn/common.h
+index b94680885..056c25438 100644
+--- a/src/openvpn/common.h
++++ b/src/openvpn/common.h
+@@ -68,6 +68,16 @@ typedef unsigned long ptr_type;
+  */
+ #define TLS_CHANNEL_BUF_SIZE 2048
+ 
++/* TLS control buffer minimum size, this size is not actually inherent to
++ * the protocol but. Our current sending window is 6 and the receive window
++ * is 8 or 12 depending on the OpenVPN version. We need to be able to send
++ * a TLS record of size TLS_CHANNEL_BUF_SIZE. Splitting this into more than
++ * 6 packets (with overhead) would complicate our sending logic a lot more, so
++ * we settle here for a "round" number that allow with overhead of ~100 bytes
++ * to be larger than TLS_CHANNEL_BUF_SIZE. E.g. 6x ~400 > 2048.
++ * */
++#define TLS_CHANNEL_MTU_MIN 512
++
+ /*
+  * This parameter controls the maximum size of a bundle
+  * of pushed options.
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index b0c62a859..c86866219 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2451,6 +2451,10 @@ frame_finalize_options(struct context *c, const struct options *o)
+      * space */
+     size_t payload_size = max_int(1500, frame->tun_mtu);
+ 
++    /* we need to be also large enough to hold larger control channel packets
++     * if configured */
++    payload_size = max_int(payload_size, o->ce.tls_mtu);
++
+     /* The extra tun needs to be added to the payload size */
+     if (o->ce.tun_mtu_defined)
+     {
+@@ -2987,7 +2991,7 @@ do_init_frame_tls(struct context *c)
+ {
+     if (c->c2.tls_multi)
+     {
+-        tls_multi_init_finalize(c->c2.tls_multi, &c->c2.frame);
++        tls_multi_init_finalize(c->c2.tls_multi, c->options.ce.tls_mtu);
+         ASSERT(c->c2.tls_multi->opt.frame.buf.payload_size <=
+                c->c2.frame.buf.payload_size);
+         frame_print(&c->c2.tls_multi->opt.frame, D_MTU_INFO,
+@@ -2995,7 +2999,7 @@ do_init_frame_tls(struct context *c)
+     }
+     if (c->c2.tls_auth_standalone)
+     {
+-        tls_init_control_channel_frame_parameters(&c->c2.frame, &c->c2.tls_auth_standalone->frame);
++        tls_init_control_channel_frame_parameters(&c->c2.tls_auth_standalone->frame, c->options.ce.tls_mtu);
+         frame_print(&c->c2.tls_auth_standalone->frame, D_MTU_INFO,
+                     "TLS-Auth MTU parms");
+         c->c2.tls_auth_standalone->tls_wrap.work = alloc_buf_gc(BUF_SIZE(&c->c2.frame), &c->c2.gc);
+diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
+index 7f967e066..86959bd53 100644
+--- a/src/openvpn/mtu.h
++++ b/src/openvpn/mtu.h
+@@ -79,6 +79,11 @@
+  */
+ #define MSSFIX_DEFAULT     1492
+ 
++/*
++ * Default maximum size of control channel packets
++ */
++#define TLS_MTU_DEFAULT    1250
++
+ /*
+  * Alignment of payload data such as IP packet or
+  * ethernet frame.
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 9ff384d09..8241eb163 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -815,6 +815,7 @@ init_options(struct options *o, const bool init_gc)
+     o->ce.bind_local = true;
+     o->ce.tun_mtu = TUN_MTU_DEFAULT;
+     o->ce.link_mtu = LINK_MTU_DEFAULT;
++    o->ce.tls_mtu = TLS_MTU_DEFAULT;
+     o->ce.mtu_discover_type = -1;
+     o->ce.mssfix = 0;
+     o->ce.mssfix_default = true;
+@@ -1582,6 +1583,7 @@ show_connection_entry(const struct connection_entry *o)
+     SHOW_BOOL(link_mtu_defined);
+     SHOW_INT(tun_mtu_extra);
+     SHOW_BOOL(tun_mtu_extra_defined);
++    SHOW_INT(tls_mtu);
+ 
+     SHOW_INT(mtu_discover_type);
+ 
+@@ -6281,6 +6283,18 @@ add_option(struct options *options,
+         options->ce.tun_mtu_extra = positive_atoi(p[1]);
+         options->ce.tun_mtu_extra_defined = true;
+     }
++    else if (streq(p[0], "tls-mtu") && p[1] && !p[2])
++    {
++        VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);
++        int tls_mtu = atoi(p[1]);
++        if (tls_mtu < TLS_CHANNEL_MTU_MIN || tls_mtu > TLS_CHANNEL_BUF_SIZE)
++        {
++            msg(msglevel, "Bad tls-mtu value, must be between %d and %d",
++                TLS_CHANNEL_MTU_MIN, TLS_CHANNEL_BUF_SIZE);
++            goto err;
++        }
++        options->ce.tls_mtu = positive_atoi(p[1]);
++    }
+ #ifdef ENABLE_FRAGMENT
+     else if (streq(p[0], "mtu-dynamic"))
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index c2937dc37..6615d1c74 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -123,6 +123,7 @@ struct connection_entry
+     bool tun_mtu_extra_defined;
+     int link_mtu;        /* MTU of device over which tunnel packets pass via TCP/UDP */
+     bool link_mtu_defined; /* true if user overriding parm with command line option */
++    int tls_mtu;         /* Maximum MTU for the control channel messages */
+ 
+     /* Advanced MTU negotiation and datagram fragmentation options */
+     int mtu_discover_type; /* used if OS supports setting Path MTU discovery options on socket */
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 1e3c500d8..eb4898a85 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -296,8 +296,7 @@ tls_limit_reneg_bytes(const char *ciphername, int *reneg_bytes)
+ }
+ 
+ void
+-tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame,
+-                                          struct frame *frame)
++tls_init_control_channel_frame_parameters(struct frame *frame, int tls_mtu)
+ {
+     /*
+      * frame->extra_frame is already initialized with tls_auth buffer requirements,
+@@ -322,18 +321,20 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
+ 
+     /* Previous OpenVPN version calculated the maximum size and buffer of a
+      * control frame depending on the overhead of the data channel frame
+-     * overhead and limited its maximum size to 1250. We always allocate the
+-     * TLS_CHANNEL_BUF_SIZE buffer size since a lot of code blindly assumes
+-     * a large buffer (e.g. PUSH_BUNDLE_SIZE) and also our peer might have
+-     * a higher size configured and we still want to be able to receive the
+-     * packets. frame->mtu_mtu is set as suggestion for the maximum packet
+-     * size */
+-    frame->buf.payload_size = 1250 + overhead;
++     * overhead and limited its maximum size to 1250. Since control frame
++     * frames also need to fit into data channel buffer we have the same
++     * default of 1500 + 100 as data channel buffers have. Increasing
++     * tls-mtu beyond this limit also increases the data channel buffers */
++    frame->buf.payload_size = max_int(1500, tls_mtu) + 100;
+ 
+     frame->buf.headroom = overhead;
+     frame->buf.tailroom = overhead;
+ 
+-    frame->tun_mtu = min_int(data_channel_frame->tun_mtu, 1250);
++    frame->tun_mtu = tls_mtu;
++
++    /* Ensure the tun-mtu stays in a valid range */
++    frame->tun_mtu = min_int(frame->tun_mtu, TLS_CHANNEL_BUF_SIZE);
++    frame->tun_mtu = max_int(frame->tun_mtu, TLS_CHANNEL_MTU_MIN);
+ }
+ 
+ /**
+@@ -1299,9 +1300,9 @@ tls_multi_init(struct tls_options *tls_options)
+ }
+ 
+ void
+-tls_multi_init_finalize(struct tls_multi *multi, const struct frame *frame)
++tls_multi_init_finalize(struct tls_multi *multi, int tls_mtu)
+ {
+-    tls_init_control_channel_frame_parameters(frame, &multi->opt.frame);
++    tls_init_control_channel_frame_parameters(&multi->opt.frame, tls_mtu);
+     /* initialize the active and untrusted sessions */
+ 
+     tls_session_init(multi, &multi->session[TM_ACTIVE]);
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 0ba86d3e6..cab5f449e 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -156,10 +156,9 @@ struct tls_multi *tls_multi_init(struct tls_options *tls_options);
+  *
+  * @param multi        - The \c tls_multi structure of which to finalize
+  *                       initialization.
+- * @param frame        - The data channel's \c frame structure.
++ * @param tls_mtu      - maximum allowed size for control channel packets
+  */
+-void tls_multi_init_finalize(struct tls_multi *multi,
+-                             const struct frame *frame);
++void tls_multi_init_finalize(struct tls_multi *multi, int tls_mtu);
+ 
+ /*
+  * Initialize a standalone tls-auth verification object.
+@@ -171,8 +170,7 @@ struct tls_auth_standalone *tls_auth_standalone_init(struct tls_options *tls_opt
+  * Setups the control channel frame size parameters from the data channel
+  * parameters
+  */
+-void tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame,
+-                                               struct frame *frame);
++void tls_init_control_channel_frame_parameters(struct frame *frame, int tls_mtu);
+ 
+ /*
+  * Set local and remote option compatibility strings.
 -- 
+2.32.0 (Apple Git-132)
 
-Full chatlog attached
---------------ZxFZykpS0Mu2L4NQHxMeNGg2
-Content-Type: text/plain; charset=UTF-8;
- name="openvpn_irc_meeting_chatlog_2022-05-11.txt"
-Content-Disposition: attachment;
- filename="openvpn_irc_meeting_chatlog_2022-05-11.txt"
-Content-Transfer-Encoding: base64
-
-KDExLjI5LjU0KSBtYXR0b2NrOiBoaQooMTEuMzAuMjgpIGNyb24yOiB5byEKKDExLjMxLjA4
-KSBkMTJmazogaGVsbG8KKDExLjMyLjE3KSBNYXhGOiBoaSEKKDExLjMzLjQwKSBtYXR0b2Nr
-OiBJIGhhdmUgYWJvdXQgMjAgbWludXRlcywgdGhlbiBJIG5lZWQgdG8gaGVhZCB0byBsdW5j
-aCAtIGNhbiBmb2xsb3cgdGhlIGRpc2N1c3Npb24gd2l0aCBteSBtb2JpbGUgdGhvdWdoCigx
-MS4zMy41MykgY3JvbjI6IHlvdSBhbmQgeW91ciBmb29kIGRlc2lyZXMuLi4gOi0pCigxMS4z
-NC4wNikgY3JvbjIgaGEgc2NlbHRvIGNvbWUgYXJnb21lbnRvOiBodHRwczovL2NvbW11bml0
-eS5vcGVudnBuLm5ldC9vcGVudnBuL3dpa2kvVG9waWNzLTIwMjItMDUtMTEKKDExLjM0LjI3
-KSBkMTJmazogLmZpIGZvb2Qgc2NoZWR1bGUgaXMgc2xpZ2h0bHkgc2hpZnRlZCwgYm90aCB0
-aW1lem9uZSBhbmQgY3VsdHVyYWwgcmVhc29ucwooMTEuMzQuMzMpIG1hdHRvY2s6IGh0dHBz
-Oi8vY29tbXVuaXR5Lm9wZW52cG4ubmV0L29wZW52cG4vd2lraS9Ub3BpY3MtMjAyMi0wNS0x
-MQooMTEuMzYuMzkpIGNyb24yOiBzbyAtIDIuNSB1cGRhdGVzPwooMTEuMzYuNTEpIHBsYWlz
-dGhvczogICAgbW9pbiBtb2luCigxMS4zNi41OSkgZGF6bzogbW9pbgooMTEuMzcuMDkpIGQx
-MmZrOiBJJ2xsIHN1Ym1pdCBhIHBhdGggdGhpcyB3ZWVrIHdoaWNoIGFkZCBhIC0tZG5zLXN1
-cHBvcnQgYml0IHRvIElWX1BST1RPCigxMS4zNy4xMSkgbWF0dG9jazogMi41IGluc3RhbGxl
-ci12aXNlIG5vLCBidXQgSSdsbCBkbyBhIGJ1aWxkIGxhdGVyIHRvZGF5CigxMS4zNy4yMikg
-bWF0dG9jazogdGVzdGVkIGxldidzIG5ldyBXaW5kb3dzIGJ1aWxkIHByb2Nlc3MgYW5kIGl0
-IHNlZW1zIHRvIHdvcmsKKDExLjM3LjM0KSBtYXR0b2NrOiBpbnN0YWxsZXIgKyBuZXcgYnVp
-bGQgcHJvY2VzcyBhcmUgbm90IHN0cmljdGx5IHJlbGF0ZWQgdGhvdWdoCigxMS4zNy41Mykg
-Y3JvbjI6IGQxMmZrOiB3aHk/CigxMS4zOC4yNCkgY3JvbjI6IChhcyBpbiAidGhlIHNlcnZl
-ciBjYW4ganVzdCBwdXNoIGJvdGgsIHdpdGhvdXQgZG9pbmcgaGFybSIpCigxMS4zOC40NCkg
-ZDEyZms6IHllcywgcGxhaXN0aG9zIHJlcXVlc3RlZCBpdCBmb3IgQVMKKDExLjM5LjAzKSBj
-cm9uMjogc28geW91IHdhbnQgdG8gYXZvaWQgd2FybmluZ3MgaWYgcHVzaGluZyB0byBhbiAi
-b2xkIiBjbGllbnQ/CigxMS4zOS4yMCkgZDEyZms6IGNvbmNlcm4gaXN0IGN1c3RvbWVycyBn
-ZXR0aW5nIHdvcnJpZWQgZm9yIG5vIHJlYXNvbgooMTEuMzkuMjMpIGRhem86IGNyb24yOiBp
-dCdzIG1vcmUgZm9yIHNlcnZlcnMgdG8gYmUgYWJsZSB0byBub3QgcHVzaCAtLWRucyB0byBu
-b24tY29tcGxpYW50IGNsaWVudHMsIHRvIGF2b2lkIHdhcm5pbmdzIGluIGxvZyBmaWxlcywg
-d2hpY2ggcmVkdWNlcyB0aGUgcG90ZW50aWFsIG9mIGNsdWVsZXNzIHN1cHBvcnQgdGlja2V0
-cwooMTEuNDAuMDEpIGNyb24yOiBzbywgInllcyIgOikKKDExLjQwLjEwKSBjcm9uMjogKG5v
-dCBleGFjdGx5IGEgMi41IHRvcGljLCB0aG8pCigxMS40MC4yMCkgZDEyZms6IHllYWgsIG15
-IGZhdWx0CigxMS40MS4xNikgY3JvbjI6IGJ1dCB3ZSBzZWVtIHRvIGhhdmUgbm90aGluZyBl
-bHNlIG9uIDIuNSBhbnl3YXkgOy0pIChleGNlcHQsIGZvciB0aGUgbWludXRlcyAid2UgYXJl
-IG5vdCB2dWxuZXJhYmxlIHRvIHRoZSBuZXcgb3BlbnNzbCBzZWN1cml0eSBpc3N1ZXMsIGJ1
-dCB3ZSBzdGlsbCByZWxlYXNlIGEgbmV3IGluc3RhbGxlciBkdWUgdG8gb3VyIG93biBidWdz
-IikKKDExLjQxLjIyKSBjcm9uMjogc28sIDIuNgooMTEuNDEuMzMpIGNyb24yOiAidGhlcmUg
-d2lsbCBiZSBhbiBJVl9QUk9UTyBiaXQgZm9yIEROUyIgOy0pCigxMS40Mi4xNCkgY3JvbjI6
-IHRoZSBITUFDIHN0dWZmIGlzIGFsbCBpbiAodGhhbmtzLCBkanBpZyBhbmQgb3JkZXgsIGZv
-ciBsb3RzIG9mIHJldmlldyByb3VuZHMgKyB0ZXN0aW5nKQooMTEuNDIuMTgpIG9yZGV4OiBo
-aQooMTEuNDIuMjIpIHBsYWlzdGhvczogSSBtYWRlIGEgcGF0Y2ggZm9yIGVkNDQ4L2VkMjU1
-MTkgZm9yIHhrZXlfcHJvdmlkZXIKKDExLjQyLjUwKSBjcm9uMjogZnJlZWJzZCBvcGVudnBu
-LWRldmVsIHBvcnQgaGFzIGJlZW4gdXBkYXRlZCB0byBtYXN0ZXIgImFzIG9mIGxhc3QgZnJp
-ZGF5Iiwgc28gd2UgbWlnaHQgc2VlIGJ1ZyByZXBvcnRzCigxMS40My4xNCkgKioqY3JvbjIg
-aG9wZXMgU2VsdmEgZmluZHMgdGhlIHhrZXkgcGF0Y2ggaW50ZXJlc3RpbmcgYW5kIHRlc3Rz
-ICYgQUNLcyA6LSkKKDExLjQzLjIyKSBwbGFpc3Rob3M6IEkgc3RpbGwgbmVlZCB0byBkbyB0
-aGUgbXR1IDE0MDAgYnkgZGVmYXVsdCBwYXRjaAooMTEuNDMuMjkpIHBsYWlzdGhvczogY3Jv
-bjI6IHllYWggaXQgaXMgbm90IHNvbWV0aGluZyB1cmdlbnQKKDExLjQzLjQ3KSBwbGFpc3Ro
-b3M6IHdobyB5b3Ugd2lsbCBjdXJyZW50bHkgYmUgaGFyZHByZXNzZWQgdG8gZmluZCBzb21l
-dGhpbmcgdGhhdCBhbHJlYWR5IHN1cHBvcnRzIHRoZXNlIGNlcnRpZmljYXRlcwooMTEuNDMu
-NTYpIGNyb24yOiBhaCwgcGxhaXN0aG9zOiBkb2VzICItLW10dS1kaXNjIHllcyIgd29yayB3
-aXRoIHRoZSBjb250cm9sLWNoYW5uZWwgTVRVIHBhdGNoZXM/CigxMS40NC40MCkgY3JvbjI6
-IHNvLCBpZiBJIHNlbmQgYSBjb250cm9sLWNoYW5uZWwgcGFja2V0IGFuZCBnZXQgYmFjayBh
-IHNvY2tldCBlcnJvciAicGFja2V0IHRvbyBiaWciLCB3aWxsIGl0IGluZmx1ZW5jZSBib3Ro
-IGNvbnRyb2wrZGF0YSBjaGFubmVsIE1UVSBzZXR0aW5ncz8KKDExLjQ0LjU0KSBwbGFpc3Ro
-b3M6IG10dS1kaXNjIGlzIGRhdGEgY2hhbm5lbCBpaXJjCigxMS40NS4xMykgY3JvbjI6IG10
-dS1kaXNjIGlzICJtYWtlIHRoZSBzb2NrZXQgZG9uJ3QgZnJhZ21lbnQgYW5kIHJlcG9ydCBl
-cnJvcnMiLCBzbyB0aGF0IGFmZmVjdHMgY29udHJvbCBwYWNrZXRzIGFzIHdlbGwKKDExLjQ1
-LjEzKSBwbGFpc3Rob3M6IGJ1dCBpdCB3b24ndCBjaGFnbmUgY29udHJvbCBjaGFubmVsIHNl
-dHRpbmdzCigxMS40NS4yMCkgbWF0dG9jazIgW355YWFpY0Btb2JpbGUtYWNjZXNzLWJjZWUy
-NS0wLmRoY3AuaW5ldC5maV0gw6ggZW50cmF0byBuZWxsYSBzdGFuemEuCigxMS40NS4yMSkg
-Y3JvbjI6IG10dS10ZXN0IGlzICJEQ08iCigxMS40NS40OSkgcGxhaXN0aG9zOiBhbmQgaXQg
-bmV2ZXIgcmVhbGx5IHdvcmtlZAooMTEuNDYuMDcpIGNyb24yOiB3aGljaCBvbmU/CigxMS40
-Ni4yMCkgcGxhaXN0aG9zOiBiZWNhdXNlIGl0IGtpY2tzIGluIGFmdGVyIHRoZSBjb250cm9s
-IGNoYW5uZWwgaGFzIGJlZW4gYWxyZWFkeSBlc3RhYmxpc2hlZCBhbmQgT3BlblZQTiBsYWNr
-cyB0aGUgYWJpbGl0eSB0byByZXNlbmQgYW5kIHNwbGl0IHBhY2tldHMKKDExLjQ2LjI3KSBw
-bGFpc3Rob3M6IChvbiBhIHByb3RvY29sIGxldmVsKQooMTEuNDcuMDcpIHBsYWlzdGhvczog
-VENQIGRvZXMgQUNLIGJ5dGVzIGluc3RlYWQgb2YgcGFja2V0cyBmb3IgYSBnb29kIHJlYXNv
-biwgc28geW91IGNhbiB0cnkgc2VuZGluZyBsZXNzIHdpdGhvdXQgZ2V0dGluZyBjb25mdXNl
-ZCBhYm91dCBwYWNrZXQgaWQgYWNrcyAodGhpcyBpcyB0aGUgb3JpZ2luYWwgdG9vIGJpZyBw
-YWNrZXQgYmVpbmcgYWNrZWQgb3IgdGhlIHNtYWxsZXIgcmVzZW5kPykKKDExLjQ3LjIzKSBj
-cm9uMjogb2gKKDExLjQ3LjQ4KSBjcm9uMjogc28gaWYgd2Ugc2VuZCBhIHBhY2tldCB3aXRo
-IDE0MDAgYnl0ZXMsIGdldCBiYWNrIGEgInRvbyBiaWchIG1heCA9IDEwMDAiLCB3ZSdyZSBs
-b3N0LCBiZWNhdXNlIHdlIGNhbiBvbmx5IHJlLXNlbmQgdGhlIDE0MDAgYnl0ZSBwYWNrZXQ/
-CigxMS40OC4xOSkgcGxhaXN0aG9zOiB5ZXMKKDExLjQ4LjMxKSBjcm9uMjogdGhlcmUgZ29l
-cyBteSBob3BlIGZvciB3b3JraW5nIC0tbXR1LWRpc2MgZm9yIGNvbnRyb2wtcGxhbmUuLi4K
-KDExLjQ5LjQ3KSBwbGFpc3Rob3M6IHRoYXQgY2FuIG9mIGNvdXJzZSBhbGwgYmUgZml4ZWQv
-aW1wbGVtZW50ZWQgYnV0IGl0IHdpbGwgbm90IHdvcmsgd2l0aG91dCBwcm90b2NvbCBlbmhh
-bmNlbWVudHMKKDExLjUxLjAxKSBjcm9uMjogeWVwCigxMS41MS41OCkgY3JvbjI6IHNwZWFr
-aW5nIG9mIC0tbXR1LWRpc2MsIGV2ZW4gaWYgb2YgbGltaXRlZCB1c2UsIHdlIHN0aWxsIGRv
-bid0IGRvIHRoaXMgZm9yICJvdmVyIElQdjYiIHBhY2tldHMuLi4KKDExLjUyLjAwKSBwbGFp
-c3Rob3M6IGJ1dCB3aXRoIHRoZSBkZWZhdWx0IHRscy1tdHUgb2YgMTI1MCB3aGljaCBpbmNs
-dWRlcyBpcC91ZHAgb3ZlcmhlYWQgSSBkb24ndCB0aGluayB3ZSB3b3VsZCBydW4gaW50byB0
-aGF0IAooMTEuNTIuMDcpIGNyb24yOiB0aGVyZSBpcyBhIHBhdGNoIGluIHBhdGNod29yaywg
-d2FpdGluZyBmb3IgYW4gQUNLLi4uCigxMS41Mi4wOSkgY3JvbjI6IGh0dHBzOi8vcGF0Y2h3
-b3JrLm9wZW52cG4ubmV0L3BhdGNoLzIzMTgvCigxMS41Mi4xMCkgdnBuSGVscGVyOiBUaXRs
-ZTogW09wZW52cG4tZGV2ZWxdIEltcGxlbWVudCAtLW10dS1kaXNjIGZvciBJUHY2IFVEUCBz
-b2NrZXRzLiAtIFBhdGNod29yayAoYXQgcGF0Y2h3b3JrLm9wZW52cG4ubmV0KQooMTEuNTIu
-MjQpIHBsYWlzdGhvczogd2lsbCB0YWtlIGEgbG9vayBsYXRlcgooMTEuNTIuMjkpIGNyb24y
-OiB0aGFua3MKKDExLjUyLjM0KSBjcm9uMjogaXQncyBhY3R1YWxseSB2ZXJ5IHRyaXZpYWwK
-KDExLjUzLjI0KSBjcm9uMjogKGFuZCBpdCBpcyBhIHNoYW1lIHRoYXQgbm8gb3RoZXIgT1Mg
-aGFzIHRoaXMgc29ydCBvZiBleHRlbmRlZCBzb2NrZXQgZXJyb3IgcmVwb3J0aW5nKQooMTEu
-NTMuNTcpIHBsYWlzdGhvczogSSB3aWxsIGFsc28gdHJ5IHRvIGRvIGEgcGF0Y2ggdGhhdCBp
-bnRvcmR1Y2VzIGNvbnRyb2wgY2hhbm5lbCBleHBsaWNpdCBleGl0IG5vdGlmeSBmb3IgRENP
-CigxMS41NC4wNykgKioqY3JvbjIgbGlrZXMgdGhhdAooMTEuNTYuMTQpIGxldl9fOiBzb3Jy
-eSBJIGFtIGxhdGUuIEkgZ290IGZlZWRiYWNrIGZyb20gU2ltb24gcmVnYXJkaW5nIG15IGNo
-YW5nZSB0byB0YXAtd2luZG93czYgd2hpY2ggZml4ZXMgVENQIHByb2JsZW0gb24gV2luZG93
-cyBTZXJ2ZXIgMjAyMiwgaGUgdGhpbmtzIHRoaXMgaXMgdGhlIHdheSB0byBnbwooMTEuNTYu
-MjMpIGNyb24yOiBvaCwgY29vbAooMTEuNTYuMjkpIGxldl9fOiBzbyBJIHRoaW5rIHRoaXMg
-Y291bGQgYmUgbWVyZ2VkCigxMS41Ni41NikgbGV2X186IChhbmQgdGhleSBkaWRuJ3QgaGF2
-ZSBpc3N1ZXMgd2l0aCB0aGF0IGZsYWcgd2hlbiB0aGV5IHVzZWQgaXQgaW4gd2ludHVuKQoo
-MTEuNTcuMTIpIGNyb24yOiBodHRwczovL2dpdGh1Yi5jb20vT3BlblZQTi90YXAtd2luZG93
-czYvcHVsbC8xNDcKKDExLjU3LjEzKSBjcm9uMjogdGhpcyBvbmU/CigxMS41Ny4yNCkgbGV2
-X186IHllcwooMTEuNTcuNDkpIGxldl9fOiAoSSBjYW4gYXNrIGhpbSB0byBjb21tZW50IHRo
-ZXJlLCB0b28pCigxMS41OC41NSkgY3JvbjI6IHRoYXQgd291bGQgYmUgZ29vZAooMTEuNTku
-MTIpIGNyb24yOiBJJ20gZ2xhbmNpbmcgYXQgdGhlIGNoYW5nZSwgYW5kIGl0J3MgYmlnZ2Vy
-IHRoYW4gImp1c3QgYSBmbGFnIiwgc28gSSBuZWVkIHRvIGhhdmUgYSBnb29kIHN0YXJlCigx
-MS41OS41NCkgY3JvbjI6IGl0IHJlbW92ZXMgcXVpdGUgYSBiaXQgb2YgY29kZQooMTIuMDAu
-MDYpIGNyb24yOiAod2hpY2ggY2FuIGJlIGEgZ29vZCB0aGluZyA6KSApCigxMi4wMS40NCkg
-bGV2X186IHllYWgsIGl0IGhhcyByZW1vdmVkIHRoZSBjb2RlIHdoaWNoIGtlZXBzIHRyYWNr
-IG9mIE5CTHMKKDEyLjAyLjA1KSBjcm9uMjogd2hhdCBpcyBvdXIgdGFwIHBhY2thZ2luZyB2
-ZXJzaW9uIHNjaGVtZT8gIExpa2UsIHRoZXJlIGlzIGEgLnppcCBmaWxlIGZvciBkb3dubG9h
-ZGluZyBldGMgLSBpcyB0aGlzIG5hbWVkICI5LjI0LjciIG9yICI2MDEiPwooMTIuMDIuMTIp
-IGxldl9fOiBub3cgd2UgcGFzcyB0aGlzIGZsYWcgdG8gTkRJUyBhbmQgZnJlZSBOQkwgaW4g
-cGxhY2UgCigxMi4wMy4yNSkgbGV2X186IG5vdCBzdXJlLCBidXQgSSB3b3VsZCBnbyB3aXRo
-IDkuMjQuOCBvciA5LjI1CigxMi4wNC4xNCkgY3JvbjI6IHRoaXMgbW9yZSBhYm91dCAid2hh
-dCBnb2VzIGludG8gdGhlIGZpbGVuYW1lIHdoZW4gcGFja2luZyBmb3IgZG93bmxvYWQiIDot
-KSAtIEknbSBmaW5lIHdpdGggOS4yNC43IG90aGVyd2lzZQooMTIuMDQuMjApIGNyb24yOiAo
-eW91ciBwYXRjaCBidW1wcyBmcm9tIDkuMjQuNiAtPiA5LjI0LjcpCigxMi4wNS4xNSkgbGV2
-X186IGFoIHJpZ2h0LCB3ZWxsIHRoaXMgaXMgbm90IHRoYXQgdHJpdmlhbCBjaGFuZ2Ugc28g
-c29tZXRoaW5nIG5lZWRzIHRvIGJlIGJ1bXBlZAooMTIuMDUuMzQpIGNyb24yOiBzb21ldGhp
-bmcgbmVlZHMgdG8gYmUgYnVtcGVkIGFsd2F5cyBvbiBkcml2ZXIgcmUtcmVsZWFzZQooMTIu
-MDUuNDMpIGNyb24yOiBtYXR0b2NrOiBhbHJlYWR5IGdvbmU/CigxMi4wNi4wOCkgY3JvbjI6
-IHNvIHRoZSBxdWVzdGlvbiBpcyBub3QgImlmIiBidW1wLCBidXQgIndoYXQgdG8gYnVtcCIK
-KDEyLjA2LjIzKSBjcm9uMjogaWYgLjYtPi43IGlzIGdvb2Qgd2l0aCBwYWNrYWdpbmcsIGl0
-IGlzIGdvb2QgZm9yIG1lCigxMi4wOC41NCkgY3JvbjI6IHNvLi4uCigxMi4wOC41NSkgbGV2
-X186IHRoYXQgZHJpdmVyIGhhc24ndCBnb3QgbXVjaCBsb3ZlIGxhc3QgeWVhcnMsIG5vIGRl
-ZGljYXRlZCBtYWludGFpbmVyIAooMTIuMDkuNTYpIGNyb24yOiBiZWZvcmUgdGhhdCBwcm9i
-bGVtIGNhbWUgdXAsIHRoZXJlIHdhcyBubyByZWFsIG5lZWQKKDEyLjExLjIxKSBjcm9uMjog
-YW55d2F5LCBJJ2xsIHNlZSB0aGF0IEkgY2FuIGhhdmUgYSBjbG9zZSBsb29rLCBhbmQgaWYg
-U2ltb24gY2FuIGNvbW1lbnQgaW4gdGhlIFBSLCB0aGF0IHdvdWxkIGJlIGdyZWF0CigxMi4x
-MS4zNCkgY3JvbjI6IGFuZCBJJ2xsIGdyYWIgbWF0dG9jayByZWdhcmRpbmcgb3BlbnZwbi1i
-dWlsZCBhbmQgdmVyc2lvbiBudW1iZXJzIG5lZWRlZAooMTIuMTIuMzQpIGNyb24yOiBhbnl0
-aGluZyBlbHNlIG9uIDIuNj8KKDEyLjEyLjM5KSBjcm9uMjogb3Igb24gaXB2NiB0byBjb21t
-dW5pdHk/CigxMi4xNC4zMCkgcGxhaXN0aG9zOiBub3QgZnJvbSBteSBzaWRlLiBJIHN0aWxs
-IGhhdmUgYSBsb3Qgb2Ygc3R1ZmYgSSB3YW50IHRvIGRvIGJ1dCBtb3N0IGlzIG5vdCAyLjYK
-KDEyLjE3LjE0KSBjcm9uMjogdGhlbiBsZXQncyBjb25jbHVkZSB0aGUgbWVldGluZywgYW5k
-IHJldHVybiB0byB3b3JrIDotKQooMTIuMjAuMTMpIGQxMmZrOiBheWUgYW5kIGJ5ZQooMTIu
-MjAuNTEpIGRhem86IGNpYW8hCigxMi4yNi40MSkgbGV2X186IGFyaXZpZGVyY2hpCigxMi4y
-Ny4xMykgb3JkZXg6IGJ5ZSBieWUKKDEyLjI3LjI5KSBNYXhGOiBieWUKKDEyLjMwLjUzKSBw
-bGFpc3Rob3M6IE1heEY6IHRoZSB0bHMtY3J5cHQtdjIgY2hhbmdlcyBhcmUgYWxyZWFkeSBj
-b21taXRlZCBub3cgYnV0IG1heWJlIHlvdSBzdGlsbCB3YW50IHRvIGhhdmUgYSBsb29rIGFz
-IEZveEl0IHdhcyB0cmFkaXRpb25hbGx5IGhlYXZpbHkgaW52ZXN0ZWQgaW4gdGhhdAo=
-
---------------ZxFZykpS0Mu2L4NQHxMeNGg2--
 
