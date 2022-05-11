@@ -1,12 +1,12 @@
 MIME-Version: 1.0
-References: <20220510113055.1829260-1-arne@...1227...>
-In-Reply-To: <20220510113055.1829260-1-arne@...1227...>
+References: <20220504091305.434-1-lstipakov@...277...>
+In-Reply-To: <20220504091305.434-1-lstipakov@...277...>
 From: Selva Nair <selva.nair@...277...>
-Date: Wed, 11 May 2022 13:40:44 -0400
-Message-ID: <CAKuzo_iZCs0HoNjpa2PAJc=u_8T+7jm8RkVE5wSch_3cma_JAw@...278...>
-Content-Type: multipart/alternative; boundary="000000000000cc007605debff1a7"
-Subject: Re: [Openvpn-devel] [PATCH] Implement ED448 and ED25519 support in
- xkey_provider
+Date: Wed, 11 May 2022 14:13:43 -0400
+Message-ID: <CAKuzo_gm3GjD7SHTmt5e7z3JkFUgJtXXfNzyq1NvTKzXLrYohA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000cbc45c05dec067cb"
+Subject: Re: [Openvpn-devel] [PATCH release/2.5] Fix M_ERRNO behavior on
+ Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,902 +15,661 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
 
---000000000000cc007605debff1a7
+--000000000000cbc45c05dec067cb
 Content-Type: text/plain; charset="UTF-8"
 
-Hi,
+Acked-by: Selva Nair <selva.nair@...277...>
 
-On Tue, May 10, 2022 at 7:32 AM Arne Schwabe <arne@...1227...> wrote:
+Same as the patch 2429 <https://patchwork.openvpn.net/patch/2429/> for
+master except for the minor change in x_check_status() to match 2.5.
 
-> OpenSSL's implementation of ED448 and ED25519 has a few idiosyncrasies.
-> Instead of belonging to the eliptic curve type or to a common Edwards
-> curve type, ED448 and ED25519 have each their own type.
+On Wed, May 4, 2022 at 5:13 AM Lev Stipakov <lstipakov@...277...> wrote:
+
+> From: Lev Stipakov <lev@...515...>
 >
-> Also, OpenSSL excepts singatures using these curves to be done with the
+> We use M_ERRNO flag in logging to display error code
+> and error message. This has been broken on Windows,
+> where we use error code from GetLastError() and
+> error description from strerror(). strerror() expects
+> C runtime error code, which is quite different from
+> last error code from WinAPI call. As a result, we got
+> incorrect error description.
 >
-
-expects
-signatures
-
-(good to know I'm not the only one afflicted by transposition errors)
-
-
-> EVP_DigestSign API instead of the EVP_Sign API but using md=NULL.
-
-This has been tested using a "fake" external key that used a normal
-> software key instead of a hardware implementation but that makes no
-> difference from the perspective of xkey_provider/managment interface.
+> The ultimate fix would be introducing another flag
+> for WinAPI errors, like M_WINERR and use either that or
+> M_ERRNO depends on context. However, the change would be
+> quite intrusive and in some cases it is hard to say which
+> one to use without looking into internals.
 >
-
-management
-
-
+> Instead we stick to M_ERRNO and in Windows case we
+> first try to obtain error code from GetLastError() and
+> if it returns ERROR_SUCCESS (which is 0), we assume that
+> we have C runtime error and use errno. To get error
+> description we use strerror_win32() with GetLastError()
+> and strerror() with errno.
+>
+> strerror_win32() uses FormatMessage() internally, which
+> is the right way to get WinAPI error description.
 > ---
->  src/openvpn/xkey_helper.c                |   4 +
->  src/openvpn/xkey_provider.c              | 121 +++++++++++++++++++++--
->  tests/unit_tests/openvpn/test_provider.c |  21 ++--
->  3 files changed, 134 insertions(+), 12 deletions(-)
 >
-> diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
-> index ecc7b1204..d59b16858 100644
-> --- a/src/openvpn/xkey_helper.c
-> +++ b/src/openvpn/xkey_helper.c
-> @@ -206,6 +206,10 @@ xkey_management_sign(void *unused, unsigned char
-> *sig, size_t *siglen,
->              openvpn_snprintf(alg_str, sizeof(alg_str),
-> "ECDSA,hashalg=%s", alg.mdname);
+>  This is a backport of patch acked for master
+> (https://patchwork.openvpn.net/patch/2429/) with
+> a conflict resolved in x_check_status() in error.c.
+>
+>  src/openvpn/error.c    | 32 +++++++++++++++++++++++++-------
+>  src/openvpn/error.h    | 39 +++++++++++++++++++++++++++++----------
+>  src/openvpn/forward.c  |  9 ++++++++-
+>  src/openvpn/manage.c   |  5 +++--
+>  src/openvpn/platform.c |  2 +-
+>  src/openvpn/tun.h      |  4 ++--
+>  6 files changed, 68 insertions(+), 23 deletions(-)
+>
+> diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+> index 54796d03..7fbda844 100644
+> --- a/src/openvpn/error.c
+> +++ b/src/openvpn/error.c
+> @@ -220,6 +220,18 @@ x_msg(const unsigned int flags, const char *format,
+> ...)
+>      va_end(arglist);
+>  }
+>
+> +static const char*
+> +openvpn_strerror(int err, bool crt_error, struct gc_arena *gc)
+> +{
+> +#ifdef _WIN32
+> +    if (!crt_error)
+> +    {
+> +        return strerror_win32(err, gc);
+> +    }
+> +#endif
+> +    return strerror(err);
+> +}
+> +
+>  void
+>  x_msg_va(const unsigned int flags, const char *format, va_list arglist)
+>  {
+> @@ -244,7 +256,8 @@ x_msg_va(const unsigned int flags, const char *format,
+> va_list arglist)
+>      }
+>  #endif
+>
+> -    e = openvpn_errno();
+> +    bool crt_error = false;
+> +    e = openvpn_errno_maybe_crt(&crt_error);
+>
+>      /*
+>       * Apply muting filter.
+> @@ -268,7 +281,7 @@ x_msg_va(const unsigned int flags, const char *format,
+> va_list arglist)
+>      if ((flags & M_ERRNO) && e)
+>      {
+>          openvpn_snprintf(m2, ERR_BUF_SIZE, "%s: %s (errno=%d)",
+> -                         m1, strerror(e), e);
+> +                         m1, openvpn_strerror(e, crt_error, &gc), e);
+>          SWAP;
+>      }
+>
+> @@ -649,7 +662,6 @@ x_check_status(int status,
+>                 struct link_socket *sock,
+>                 struct tuntap *tt)
+>  {
+> -    const int my_errno = openvpn_errno();
+>      const char *extended_msg = NULL;
+>
+>      msg(x_cs_verbose_level, "%s %s returned %d",
+> @@ -672,26 +684,32 @@ x_check_status(int status,
+>                  sock->info.mtu_changed = true;
+>              }
 >          }
->      }
-> +    else if(!strcmp(alg.keytype, "ED448") || !strcmp(alg.keytype,
-> "ED25519"))
-> +    {
-> +        strncpynt(alg_str, alg.keytype, sizeof(alg_str));
-> +    }
->      /* else assume RSA key */
->      else if (!strcmp(alg.padmode, "pkcs1") && (flags &
-> MF_EXTERNAL_KEY_PKCS1PAD))
->      {
-> diff --git a/src/openvpn/xkey_provider.c b/src/openvpn/xkey_provider.c
-> index 46e57e0fe..e8ac3904b 100644
-> --- a/src/openvpn/xkey_provider.c
-> +++ b/src/openvpn/xkey_provider.c
-> @@ -99,12 +99,28 @@ typedef struct
->      int refcount;                /**< reference count */
->  } XKEY_KEYDATA;
->
-> -static int
-> -KEYTYPE(const XKEY_KEYDATA *key)
-> +static inline const char *
-> +get_keytype(const XKEY_KEYDATA *key)
->  {
-> -    return key->pubkey ? EVP_PKEY_get_id(key->pubkey) : 0;
-> +    int keytype = key->pubkey ? EVP_PKEY_get_id(key->pubkey) : 0;
+> -#elif defined(_WIN32)
+> +#endif /* EXTENDED_SOCKET_ERROR_CAPABILITY */
 > +
-> +    switch (keytype)
-> +    {
-> +        case EVP_PKEY_RSA:
-> +            return "RSA";
-> +
-> +        case EVP_PKEY_ED448:
-> +            return "ED448";
-> +
-> +        case EVP_PKEY_ED25519:
-> +            return "ED25519";
-> +
-> +        default:
-> +            return "EC";
-
-+    }
->  }
->
-> +
->  static int
->  KEYSIZE(const XKEY_KEYDATA *key)
->  {
-> @@ -310,6 +326,22 @@ ec_keymgmt_import(void *keydata, int selection, const
-> OSSL_PARAM params[])
->      return keymgmt_import(keydata, selection, params, "EC");
->  }
->
-> +static int
-> +ed448_keymgmt_import(void *keydata, int selection, const OSSL_PARAM
-> params[])
-> +{
-> +    xkey_dmsg(D_XKEY, "entry");
-> +
-> +    return keymgmt_import(keydata, selection, params, "ED448");
-> +}
-> +
-> +static int
-> +ed25519_keymgmt_import(void *keydata, int selection, const OSSL_PARAM
-> params[])
-> +{
-> +    xkey_dmsg(D_XKEY, "entry");
-> +
-> +    return keymgmt_import(keydata, selection, params, "ED25519");
-> +}
-> +
->  /* This function has to exist for key import to work
->   * though we do not support import of individual params
->   * like n or e. We simply return an empty list here for
-> @@ -449,7 +481,7 @@ keymgmt_import_helper(XKEY_KEYDATA *key, const
-> OSSL_PARAM *params)
->          ASSERT(pkey);
->
->          int id = EVP_PKEY_get_id(pkey);
-> -        if (id != EVP_PKEY_RSA && id != EVP_PKEY_EC)
-> +        if (id != EVP_PKEY_RSA && id != EVP_PKEY_EC && id !=
-> EVP_PKEY_ED25519 && id != EVP_PKEY_ED448)
+> +#ifdef _WIN32
+>          /* get possible driver error from TAP-Windows driver */
+>          if (tuntap_defined(tt))
 >          {
->              msg(M_WARN, "Error: xkey keymgmt_import: unknown key type
-> (%d)", id);
->              return 0;
-> @@ -556,6 +588,40 @@ ec_keymgmt_name(int id)
->      return "EC";
+>              extended_msg = tap_win_getinfo(tt, &gc);
+>          }
+>  #endif
+> -        if (!ignore_sys_error(my_errno))
+> +
+> +        bool crt_error = false;
+> +        int my_errno = openvpn_errno_maybe_crt(&crt_error);
+> +
+> +        if (!ignore_sys_error(my_errno, crt_error))
+>          {
+>              if (extended_msg)
+>              {
+>                  msg(x_cs_info_level, "%s %s [%s]: %s (code=%d)",
+> description,
+>                      sock ? proto2ascii(sock->info.proto, sock->info.af,
+> true) : "",
+> -                    extended_msg, strerror(my_errno), my_errno);
+> +                    extended_msg, openvpn_strerror(my_errno, crt_error,
+> &gc), my_errno);
+>              }
+>              else
+>              {
+>                  msg(x_cs_info_level, "%s %s: %s (code=%d)", description,
+>                      sock ? proto2ascii(sock->info.proto, sock->info.af,
+> true) : "",
+> -                    strerror(my_errno), my_errno);
+> +                    openvpn_strerror(my_errno, crt_error, &gc), my_errno);
+>              }
+>
+>              if (x_cs_err_delay_ms)
+> diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+> index d2d83c8a..fc878a56 100644
+> --- a/src/openvpn/error.h
+> +++ b/src/openvpn/error.h
+> @@ -71,13 +71,10 @@ struct gc_arena;
+>  /* String and Error functions */
+>
+>  #ifdef _WIN32
+> -#define openvpn_errno()             GetLastError()
+> -#define openvpn_strerror(e, gc)     strerror_win32(e, gc)
+> +#define openvpn_errno() GetLastError()
+>  const char *strerror_win32(DWORD errnum, struct gc_arena *gc);
+> -
+>  #else
+> -#define openvpn_errno()             errno
+> -#define openvpn_strerror(x, gc)     strerror(x)
+> +#define openvpn_errno() errno
+>  #endif
+>
+>  /*
+> @@ -363,20 +360,22 @@ msg_get_virtual_output(void)
+>   * which can be safely ignored.
+>   */
+>  static inline bool
+> -ignore_sys_error(const int err)
+> +ignore_sys_error(const int err, bool crt_error)
+>  {
+> -    /* I/O operation pending */
+>  #ifdef _WIN32
+> -    if (err == WSAEWOULDBLOCK || err == WSAEINVAL)
+> +    if (!crt_error && ((err == WSAEWOULDBLOCK || err == WSAEINVAL)))
+>      {
+>          return true;
+>      }
+>  #else
+> -    if (err == EAGAIN)
+> +    crt_error = true;
+> +#endif
+> +
+> +    /* I/O operation pending */
+> +    if (crt_error && (err == EAGAIN))
+>      {
+>          return true;
+>      }
+> -#endif
+>
+>  #if 0 /* if enabled, suppress ENOBUFS errors */
+>  #ifdef ENOBUFS
+> @@ -398,6 +397,26 @@ nonfatal(const unsigned int err)
+>      return err & M_FATAL ? (err ^ M_FATAL) | M_NONFATAL : err;
 >  }
 >
-> +static const char *
-> +ed448_keymgmt_name(int id)
+> +static inline int
+> +openvpn_errno_maybe_crt(bool *crt_error)
 > +{
-> +    xkey_dmsg(D_XKEY, "entry");
-> +
-> +    /* though we do not implement keyexch we could be queried for
-> +     * keyexch mechanism supported by EC keys
-> +     */
-> +    if (id == OSSL_OP_SIGNATURE || id == OSSL_OP_KEYEXCH)
+> +    int err = 0;
+> +    *crt_error = false;
+> +#ifdef _WIN32
+> +    err = GetLastError();
+> +    if (err == ERROR_SUCCESS)
 > +    {
-> +        return "ED448";
-
-+    }
-> +
-> +    msg(D_XKEY, "xkey ed448_keymgmt_name called with op_id != SIGNATURE
-> or KEYEXCH id=%d", id);
-> +    return "EC";
->
-
-I think this should be either "ED448" or NULL. The default provider does
-not define the query_operation function for this key type in the dispatch
-table --- likely because the name will then default to the keymgmt name
-(ED448). Also, I just realized that in the default provider, the
-query_operation_name (when defined) returns NULL for ids not recognized.
-That leads to triggering an error message in the library which is good.
-
-We could either return NULL here or "ED448" and then convert the above
-debug msg() to a warning. Or leave out this function altogether and remove
-it from the dispatch table.
-
-+}
-> +
-> +static const char *
-> +ed25519_keymgmt_name(int id)
-> +{
-> +    xkey_dmsg(D_XKEY, "entry");
-> +
-> +    /* though we do not implement keyexch we could be queried for
-> +     * keyexch mechanism supported by EC keys
-> +     */
-> +    if (id == OSSL_OP_SIGNATURE || id == OSSL_OP_KEYEXCH)
-> +    {
-> +        return "ED25519";
+> +        /* error is likely C runtime */
+> +        *crt_error = true;
+> +        err = errno;
 > +    }
-
-+
-> +    msg(D_XKEY, "xkey ed448_keymgmt_name called with op_id != SIGNATURE
-> or KEYEXCH id=%d", id);
-> +    return "EC";
->
-
-same comment as above with ED448 --> ED25519.
-
-
+> +#else
+> +    *crt_error = true;
+> +    err = errno;
+> +#endif
+> +    return err;
 > +}
 > +
->  static const OSSL_DISPATCH rsa_keymgmt_functions[] = {
->      {OSSL_FUNC_KEYMGMT_NEW, (void (*)(void))keymgmt_new},
->      {OSSL_FUNC_KEYMGMT_FREE, (void (*)(void))keymgmt_free},
-> @@ -588,10 +654,45 @@ static const OSSL_DISPATCH ec_keymgmt_functions[] = {
->      {0, NULL }
->  };
+>  #include "errlevel.h"
 >
-> +static const OSSL_DISPATCH ed448_keymgmt_functions[] = {
-> +    {OSSL_FUNC_KEYMGMT_NEW, (void (*)(void))keymgmt_new},
-> +    {OSSL_FUNC_KEYMGMT_FREE, (void (*)(void))keymgmt_free},
-> +    {OSSL_FUNC_KEYMGMT_LOAD, (void (*)(void))keymgmt_load},
-> +    {OSSL_FUNC_KEYMGMT_HAS, (void (*)(void))keymgmt_has},
-> +    {OSSL_FUNC_KEYMGMT_MATCH, (void (*)(void))keymgmt_match},
-> +    {OSSL_FUNC_KEYMGMT_IMPORT, (void (*)(void))ed448_keymgmt_import},
-> +    {OSSL_FUNC_KEYMGMT_IMPORT_TYPES, (void
-> (*)(void))keymgmt_import_types},
-> +    {OSSL_FUNC_KEYMGMT_GETTABLE_PARAMS, (void
-> (*)(void))keymgmt_gettable_params},
-> +    {OSSL_FUNC_KEYMGMT_GET_PARAMS, (void (*)(void))keymgmt_get_params},
-> +    {OSSL_FUNC_KEYMGMT_SET_PARAMS, (void (*)(void))keymgmt_set_params},
-> +    {OSSL_FUNC_KEYMGMT_SETTABLE_PARAMS, (void
-> (*)(void))keymgmt_gettable_params},       /* same as gettable */
-> +    {OSSL_FUNC_KEYMGMT_QUERY_OPERATION_NAME, (void
-> (*)(void))ed448_keymgmt_name},
+>  #endif /* ifndef ERROR_H */
+> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+> index 392a5c9f..de80dcff 100644
+> --- a/src/openvpn/forward.c
+> +++ b/src/openvpn/forward.c
+> @@ -1676,7 +1676,14 @@ process_outgoing_link(struct context *c)
+>          }
 >
-
-see above
-
-
-> +    {0, NULL }
-> +};
+>          /* for unreachable network and "connecting" state switch to the
+> next host */
+> -        if (size < 0 && ENETUNREACH == error_code && c->c2.tls_multi
 > +
-> +static const OSSL_DISPATCH ed25519_keymgmt_functions[] = {
-> +    {OSSL_FUNC_KEYMGMT_NEW, (void (*)(void))keymgmt_new},
-> +    {OSSL_FUNC_KEYMGMT_FREE, (void (*)(void))keymgmt_free},
-> +    {OSSL_FUNC_KEYMGMT_LOAD, (void (*)(void))keymgmt_load},
-> +    {OSSL_FUNC_KEYMGMT_HAS, (void (*)(void))keymgmt_has},
-> +    {OSSL_FUNC_KEYMGMT_MATCH, (void (*)(void))keymgmt_match},
-> +    {OSSL_FUNC_KEYMGMT_IMPORT, (void (*)(void))ed25519_keymgmt_import},
-> +    {OSSL_FUNC_KEYMGMT_IMPORT_TYPES, (void
-> (*)(void))keymgmt_import_types},
-> +    {OSSL_FUNC_KEYMGMT_GETTABLE_PARAMS, (void
-> (*)(void))keymgmt_gettable_params},
-> +    {OSSL_FUNC_KEYMGMT_GET_PARAMS, (void (*)(void))keymgmt_get_params},
-> +    {OSSL_FUNC_KEYMGMT_SET_PARAMS, (void (*)(void))keymgmt_set_params},
-> +    {OSSL_FUNC_KEYMGMT_SETTABLE_PARAMS, (void
-> (*)(void))keymgmt_gettable_params},       /* same as gettable */
-> +    {OSSL_FUNC_KEYMGMT_QUERY_OPERATION_NAME, (void
-> (*)(void))ed25519_keymgmt_name},
+> +        bool unreachable = error_code ==
+> +#ifdef _WIN32
+> +            WSAENETUNREACH;
+> +#else
+> +            ENETUNREACH;
+> +#endif
+> +        if (size < 0 && unreachable && c->c2.tls_multi
+>              && !tls_initial_packet_received(c->c2.tls_multi) &&
+> c->options.mode == MODE_POINT_TO_POINT)
+>          {
+>              msg(M_INFO, "Network unreachable, restarting");
+> diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+> index a4264056..8d2d9983 100644
+> --- a/src/openvpn/manage.c
+> +++ b/src/openvpn/manage.c
+> @@ -2082,9 +2082,10 @@ man_process_command(struct management *man, const
+> char *line)
+>  static bool
+>  man_io_error(struct management *man, const char *prefix)
+>  {
+> -    const int err = openvpn_errno();
+> +    bool crt_error = false;
+> +    int err = openvpn_errno_maybe_crt(&crt_error);
 >
-
-
-
-> +    {0, NULL }
-> +};
-> +
-> +
->  const OSSL_ALGORITHM keymgmts[] = {
->      {"RSA:rsaEncryption", XKEY_PROV_PROPS, rsa_keymgmt_functions,
-> "OpenVPN xkey RSA Key Manager"},
->      {"RSA-PSS:RSASSA-PSS", XKEY_PROV_PROPS, rsa_keymgmt_functions,
-> "OpenVPN xkey RSA-PSS Key Manager"},
->      {"EC:id-ecPublicKey", XKEY_PROV_PROPS, ec_keymgmt_functions, "OpenVPN
-> xkey EC Key Manager"},
-> +    {"ED448", XKEY_PROV_PROPS, ed448_keymgmt_functions, "OpenVPN xkey
-> ED448 Key Manager"},
-> +    {"ED25519", XKEY_PROV_PROPS, ed25519_keymgmt_functions, "OpenVPN xkey
-> ED25519 Key Manager"},
->      {NULL, NULL, NULL, NULL}
->  };
->
-> @@ -835,7 +936,7 @@ signature_sign_init(void *ctx, void *provkey, const
-> OSSL_PARAM params[])
->      }
->      sctx->keydata = provkey;
->      sctx->keydata->refcount++; /* we are keeping a copy */
-> -    sctx->sigalg.keytype = KEYTYPE(sctx->keydata) == EVP_PKEY_RSA ? "RSA"
-> : "EC";
-> +    sctx->sigalg.keytype = get_keytype(sctx->keydata);
->
->      signature_set_ctx_params(sctx, params);
->
-> @@ -929,13 +1030,19 @@ signature_digest_sign_init(void *ctx, const char
-> *mdname,
->      }
->      sctx->keydata = provkey; /* used by digest_sign */
->      sctx->keydata->refcount++;
-> -    sctx->sigalg.keytype = KEYTYPE(sctx->keydata) == EVP_PKEY_RSA ? "RSA"
-> : "EC";
-> +    sctx->sigalg.keytype = get_keytype(sctx->keydata);
->
->      signature_set_ctx_params(ctx, params);
->      if (mdname)
+> -    if (!ignore_sys_error(err))
+> +    if (!ignore_sys_error(err, crt_error))
 >      {
->          sctx->sigalg.mdname = xkey_mdname(mdname); /* get a string
-> literal pointer */
->      }
-> +    else if (!strcmp(sctx->sigalg.keytype, "ED448") ||
-> !strcmp(sctx->sigalg.keytype, "ED25519"))
-> +    {
-> +        /* EdDSA requires NULL as digest for the DigestSign API instead
-> +         * of using the normal Sign API */
-> +        sctx->sigalg.mdname = "none";
-> +    }
->
-
-Instead of this order, we have to assert that mdname must be NULL if
-keytype is ED25519 or ED448. OpenSSL does not impose this when the key is
-in provider, but docs for EVP_DigestSignInit() says mdname should be NULL
-for such keys. So I think we should return an error if mdname is not NULL.
-
-In fact we do call EVP_DigestSignInit() in our unit test with mdname=SHA256
-and Ed25519 key (after this patch) which exposes this issue (see below).
-
-
->      else
+>          struct gc_arena gc = gc_new();
+>          msg(D_MANAGEMENT, "MANAGEMENT: TCP %s error: %s", prefix,
+> diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
+> index 2604c27b..4921f035 100644
+> --- a/src/openvpn/platform.c
+> +++ b/src/openvpn/platform.c
+> @@ -471,7 +471,7 @@ platform_test_file(const char *filename)
+>          }
+>          else
+>          {
+> -            if (openvpn_errno() == EACCES)
+> +            if (errno == EACCES)
+>              {
+>                  msg( M_WARN | M_ERRNO, "Could not access file '%s'",
+> filename);
+>              }
+> diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+> index ea19620d..ae98966b 100644
+> --- a/src/openvpn/tun.h
+> +++ b/src/openvpn/tun.h
+> @@ -461,7 +461,7 @@ tuntap_stop(int status)
+>       */
+>      if (status < 0)
 >      {
->          msg(M_WARN, "xkey digest_sign_init: mdname is NULL.");
-> @@ -1073,6 +1180,8 @@ static const OSSL_DISPATCH signature_functions[] = {
->  const OSSL_ALGORITHM signatures[] = {
->      {"RSA:rsaEncryption", XKEY_PROV_PROPS, signature_functions, "OpenVPN
-> xkey RSA Signature"},
->      {"ECDSA", XKEY_PROV_PROPS, signature_functions, "OpenVPN xkey ECDSA
-> Signature"},
-> +    {"ED448", XKEY_PROV_PROPS, signature_functions, "OpenVPN xkey Ed448
-> Signature"},
-> +    {"ED25519", XKEY_PROV_PROPS, signature_functions, "OpenVPN xkey
-> Ed25519 Signature"},
->      {NULL, NULL, NULL, NULL}
->  };
->
-> diff --git a/tests/unit_tests/openvpn/test_provider.c
-> b/tests/unit_tests/openvpn/test_provider.c
-> index 0b0952ee2..e29252838 100644
-> --- a/tests/unit_tests/openvpn/test_provider.c
-> +++ b/tests/unit_tests/openvpn/test_provider.c
-> @@ -66,7 +66,11 @@ static const char *const pubkey2 = "-----BEGIN PUBLIC
-> KEY-----\n"
->
-> "u95ff1JiUaJIkYNIkZA+hwIPFVH5aJcSCv3SPIeDS2VUAESNKHZJBQ==\n"
->                                     "-----END PUBLIC KEY-----\n";
->
-> -static const char *pubkeys[] = {pubkey1, pubkey2};
-> +static const char *const pubkey3 = "-----BEGIN PUBLIC KEY-----\n"
-> +
->  "MCowBQYDK2VwAyEA+q5xjF5hGyyqYZidJdz/0saEQabL3N4wIZJBxNGbgJE=\n"
-> +                                   "-----END PUBLIC KEY-----";
-> +
-> +static const char *pubkeys[] = {pubkey1, pubkey2, pubkey3};
->
->  static const char *prov_name = "ovpn.xkey";
->
-> @@ -158,12 +162,17 @@ management_query_pk_sig(struct management *man,
-> const char *b64_data,
->      if (strstr(algorithm, "data=message"))
->      {
->          expected_tbs = test_msg_b64;
-> -        assert_non_null(strstr(algorithm, "hashalg=SHA256"));
-> +        /* ED25519 does not have a hash algorithm even though it goes via
-
-+         * the DigestSign path (data=message) */
-> +        if (!strstr(algorithm, "ED25519"))
-> +        {
-> +            assert_non_null(strstr(algorithm, "hashalg=SHA256"));
-> +        }
-
-     }
->      assert_string_equal(b64_data, expected_tbs); Though it still uses
-> digestSign()
->
-> -    /* We test using ECDSA or PSS with saltlen = digest */
-> -    if (!strstr(algorithm, "ECDSA"))
-> +    /* We test using ED25519, ECDSA or PSS with saltlen = digest */
-> +    if (!strstr(algorithm, "ECDSA") && !strstr(algorithm, "ED25519"))
->      {
->          assert_non_null(strstr(algorithm,
-> "RSA_PKCS1_PSS_PADDING,hashalg=SHA256,saltlen=digest"));
+> -        return openvpn_errno() == ERROR_FILE_NOT_FOUND;
+> +        return GetLastError() == ERROR_FILE_NOT_FOUND;
 >      }
-> @@ -328,13 +337,13 @@ xkey_sign(void *handle, unsigned char *sig, size_t
-> *siglen,
->          assert_memory_equal(tbs, test_digest, sizeof(test_digest));
->      }
->
-> -    /* For the test use sha256 and PSS padding for RSA */
-> +    /* For the test use sha256 and PSS padding for RSA and none for EDDSA
-> */
->      assert_int_equal(OBJ_sn2nid(s.mdname), NID_sha256);
->
-
-This works now because we wrongly call Ed25519 signature with mdname=sha256
-in the test. I think we want this to be something like
-
- if (!strcmp(s.keytype, "ED25519"))
- {
-     assert_string_equal(s.mdname, "none");
- }
-else
-{
-    assert_int_equal(OBJ_sn2nid(s.mdname), NID_sha256);
-}
-
-And, in digest_sign() we want to set mdname=NULL for Ed25519 key.. Like:
-
-diff --git a/tests/unit_tests/openvpn/test_provider.c
-b/tests/unit_tests/openvpn/test_provider.c
-index e2925283..aa2ac7b9 100644
---- a/tests/unit_tests/openvpn/test_provider.c
-+++ b/tests/unit_tests/openvpn/test_provider.c
-@@ -237,6 +237,10 @@ digest_sign(EVP_PKEY *pkey)
-         params[3] =
-OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_MGF1_DIGEST, (char
-*)saltlen, 0);
-         params[4] = OSSL_PARAM_construct_end();
-     }
-+    else if (EVP_PKEY_get_id(pkey) == EVP_PKEY_ED25519)
-+    {
-+        mdname = NULL;
-+    }
-
-
-     if (!strcmp(s.keytype, "RSA"))
+>      return false;
+>  }
+> @@ -474,7 +474,7 @@ tuntap_abort(int status)
+>       */
+>      if (status < 0)
 >      {
->          assert_string_equal(s.padmode, "pss"); /* we use PSS for the test
-> */
+> -        return openvpn_errno() == ERROR_OPERATION_ABORTED;
+> +        return GetLastError() == ERROR_OPERATION_ABORTED;
 >      }
-> -    else if (strcmp(s.keytype, "EC"))
-> +    else if (strcmp(s.keytype, "EC") && strcmp(s.keytype,"ED25519"))
->      {
->          fail_msg("Unknown keytype: %s", s.keytype);
->      }
+>      return false;
+>  }
+> --
+> 2.23.0.windows.1
+>
+>
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 >
 
-Finally, xkey_management_sign() in xkey_helper.c should not call
-xkey_digest() if mdname is "none". So line 182 in xkey_helper.c will have
-to become something like:
-
-if (!strcmp(alg.op, "DigestSign") && !(flags & MF_EXTERNAL_KEY_DIGEST) &&
-strcmp(alg.mdname,"none"))
-
-All look good otherwise.
-
-Regards,
-
-Selva
-
---000000000000cc007605debff1a7
+--000000000000cbc45c05dec067cb
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div>Hi,</div><div><br></div><div><div class=3D"gmail_quot=
-e"><div dir=3D"ltr" class=3D"gmail_attr">On Tue, May 10, 2022 at 7:32 AM Ar=
-ne Schwabe &lt;<a href=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1186...=
-.1227...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D=
-"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-le=
-ft:1ex">OpenSSL&#39;s implementation of ED448 and ED25519 has a few idiosyn=
-crasies.<br>
-Instead of belonging to the eliptic curve type or to a common Edwards<br>
-curve type, ED448 and ED25519 have each their own type.<br>
+<div dir=3D"ltr"><div>Acked-by: Selva Nair &lt;<a href=3D"mailto:selva.nair=
+@...277...">selva.nair@...277...</a>&gt;</div><div><br></div><div>Same as t=
+he patch=C2=A0<a href=3D"https://patchwork.openvpn.net/patch/2429/">2429</a=
+> for master except for the minor change in x_check_status() to match 2.5.<=
+/div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">O=
+n Wed, May 4, 2022 at 5:13 AM Lev Stipakov &lt;<a href=3D"mailto:lstipakov@=
+...277...">lstipakov@...277...</a>&gt; wrote:<br></div><blockquote class=3D=
+"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(2=
+04,204,204);padding-left:1ex">From: Lev Stipakov &lt;<a href=3D"mailto:lev@=
+...515..." target=3D"_blank">lev@...515...</a>&gt;<br>
 <br>
-Also, OpenSSL excepts singatures using these curves to be done with the<br>=
-</blockquote><div><br></div><div>expects</div><div>signatures</div><div><br=
-></div><div>(good to know I&#39;m not the only one afflicted by transpositi=
-on errors)</div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D=
-"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-le=
-ft:1ex">
-EVP_DigestSign API instead of the EVP_Sign API but using md=3DNULL.=C2=A0</=
-blockquote><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.=
-8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
-This has been tested using a &quot;fake&quot; external key that used a norm=
-al<br>
-software key instead of a hardware implementation but that makes no<br>
-difference from the perspective of xkey_provider/managment interface.<br></=
-blockquote><div><br></div><div>management</div><div>=C2=A0</div><blockquote=
- class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px so=
-lid rgb(204,204,204);padding-left:1ex">
+We use M_ERRNO flag in logging to display error code<br>
+and error message. This has been broken on Windows,<br>
+where we use error code from GetLastError() and<br>
+error description from strerror(). strerror() expects<br>
+C runtime error code, which is quite different from<br>
+last error code from WinAPI call. As a result, we got<br>
+incorrect error description.<br>
+<br>
+The ultimate fix would be introducing another flag<br>
+for WinAPI errors, like M_WINERR and use either that or<br>
+M_ERRNO depends on context. However, the change would be<br>
+quite intrusive and in some cases it is hard to say which<br>
+one to use without looking into internals.<br>
+<br>
+Instead we stick to M_ERRNO and in Windows case we<br>
+first try to obtain error code from GetLastError() and<br>
+if it returns ERROR_SUCCESS (which is 0), we assume that<br>
+we have C runtime error and use errno. To get error<br>
+description we use strerror_win32() with GetLastError()<br>
+and strerror() with errno.<br>
+<br>
+strerror_win32() uses FormatMessage() internally, which<br>
+is the right way to get WinAPI error description.<br>
 ---<br>
-=C2=A0src/openvpn/xkey_helper.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 |=C2=A0 =C2=A04 +<br>
-=C2=A0src/openvpn/xkey_provider.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 | 121 +++++++++++++++++++++--<br>
-=C2=A0tests/unit_tests/openvpn/test_provider.c |=C2=A0 21 ++--<br>
-=C2=A03 files changed, 134 insertions(+), 12 deletions(-)<br>
 <br>
-diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c<br>
-index ecc7b1204..d59b16858 100644<br>
---- a/src/openvpn/xkey_helper.c<br>
-+++ b/src/openvpn/xkey_helper.c<br>
-@@ -206,6 +206,10 @@ xkey_management_sign(void *unused, unsigned char *sig,=
- size_t *siglen,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0openvpn_snprintf(alg_str, s=
-izeof(alg_str), &quot;ECDSA,hashalg=3D%s&quot;, alg.mdname);<br>
+=C2=A0This is a backport of patch acked for master<br>
+(<a href=3D"https://patchwork.openvpn.net/patch/2429/" rel=3D"noreferrer" t=
+arget=3D"_blank">https://patchwork.openvpn.net/patch/2429/</a>) with<br>
+a conflict resolved in x_check_status() in error.c.<br>
+<br>
+=C2=A0src/openvpn/error.c=C2=A0 =C2=A0 | 32 +++++++++++++++++++++++++------=
+-<br>
+=C2=A0src/openvpn/error.h=C2=A0 =C2=A0 | 39 +++++++++++++++++++++++++++++--=
+--------<br>
+=C2=A0src/openvpn/forward.c=C2=A0 |=C2=A0 9 ++++++++-<br>
+=C2=A0src/openvpn/manage.c=C2=A0 =C2=A0|=C2=A0 5 +++--<br>
+=C2=A0src/openvpn/platform.c |=C2=A0 2 +-<br>
+=C2=A0src/openvpn/tun.h=C2=A0 =C2=A0 =C2=A0 |=C2=A0 4 ++--<br>
+=C2=A06 files changed, 68 insertions(+), 23 deletions(-)<br>
+<br>
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c<br>
+index 54796d03..7fbda844 100644<br>
+--- a/src/openvpn/error.c<br>
++++ b/src/openvpn/error.c<br>
+@@ -220,6 +220,18 @@ x_msg(const unsigned int flags, const char *format, ..=
+.)<br>
+=C2=A0 =C2=A0 =C2=A0va_end(arglist);<br>
+=C2=A0}<br>
+<br>
++static const char*<br>
++openvpn_strerror(int err, bool crt_error, struct gc_arena *gc)<br>
++{<br>
++#ifdef _WIN32<br>
++=C2=A0 =C2=A0 if (!crt_error)<br>
++=C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 return strerror_win32(err, gc);<br>
++=C2=A0 =C2=A0 }<br>
++#endif<br>
++=C2=A0 =C2=A0 return strerror(err);<br>
++}<br>
++<br>
+=C2=A0void<br>
+=C2=A0x_msg_va(const unsigned int flags, const char *format, va_list arglis=
+t)<br>
+=C2=A0{<br>
+@@ -244,7 +256,8 @@ x_msg_va(const unsigned int flags, const char *format, =
+va_list arglist)<br>
+=C2=A0 =C2=A0 =C2=A0}<br>
+=C2=A0#endif<br>
+<br>
+-=C2=A0 =C2=A0 e =3D openvpn_errno();<br>
++=C2=A0 =C2=A0 bool crt_error =3D false;<br>
++=C2=A0 =C2=A0 e =3D openvpn_errno_maybe_crt(&amp;crt_error);<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0/*<br>
+=C2=A0 =C2=A0 =C2=A0 * Apply muting filter.<br>
+@@ -268,7 +281,7 @@ x_msg_va(const unsigned int flags, const char *format, =
+va_list arglist)<br>
+=C2=A0 =C2=A0 =C2=A0if ((flags &amp; M_ERRNO) &amp;&amp; e)<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0openvpn_snprintf(m2, ERR_BUF_SIZE, &quot;=
+%s: %s (errno=3D%d)&quot;,<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0m1, strerror(e), e);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0m1, openvpn_strerror(e, crt_error, &amp;gc), e);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0SWAP;<br>
+=C2=A0 =C2=A0 =C2=A0}<br>
+<br>
+@@ -649,7 +662,6 @@ x_check_status(int status,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 struct link_socket =
+*sock,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 struct tuntap *tt)<=
+br>
+=C2=A0{<br>
+-=C2=A0 =C2=A0 const int my_errno =3D openvpn_errno();<br>
+=C2=A0 =C2=A0 =C2=A0const char *extended_msg =3D NULL;<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0msg(x_cs_verbose_level, &quot;%s %s returned %d&quot;,<=
+br>
+@@ -672,26 +684,32 @@ x_check_status(int status,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0sock-&gt;info=
+.mtu_changed =3D true;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
-+=C2=A0 =C2=A0 else if(!strcmp(alg.keytype, &quot;ED448&quot;) || !strcmp(a=
-lg.keytype, &quot;ED25519&quot;))<br>
-+=C2=A0 =C2=A0 {<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 strncpynt(alg_str, alg.keytype, sizeof(alg_str=
-));<br>
-+=C2=A0 =C2=A0 }<br>
-=C2=A0 =C2=A0 =C2=A0/* else assume RSA key */<br>
-=C2=A0 =C2=A0 =C2=A0else if (!strcmp(alg.padmode, &quot;pkcs1&quot;) &amp;&=
-amp; (flags &amp; MF_EXTERNAL_KEY_PKCS1PAD))<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
-diff --git a/src/openvpn/xkey_provider.c b/src/openvpn/xkey_provider.c<br>
-index 46e57e0fe..e8ac3904b 100644<br>
---- a/src/openvpn/xkey_provider.c<br>
-+++ b/src/openvpn/xkey_provider.c<br>
-@@ -99,12 +99,28 @@ typedef struct<br>
-=C2=A0 =C2=A0 =C2=A0int refcount;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 /**&lt; reference count */<br>
-=C2=A0} XKEY_KEYDATA;<br>
-<br>
--static int<br>
--KEYTYPE(const XKEY_KEYDATA *key)<br>
-+static inline const char *<br>
-+get_keytype(const XKEY_KEYDATA *key)<br>
-=C2=A0{<br>
--=C2=A0 =C2=A0 return key-&gt;pubkey ? EVP_PKEY_get_id(key-&gt;pubkey) : 0;=
-<br>
-+=C2=A0 =C2=A0 int keytype =3D key-&gt;pubkey ? EVP_PKEY_get_id(key-&gt;pub=
-key) : 0;<br>
+-#elif defined(_WIN32)<br>
++#endif /* EXTENDED_SOCKET_ERROR_CAPABILITY */<br>
 +<br>
-+=C2=A0 =C2=A0 switch (keytype)<br>
-+=C2=A0 =C2=A0 {<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 case EVP_PKEY_RSA:<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return &quot;RSA&quot;;<br>
-+<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 case EVP_PKEY_ED448:<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return &quot;ED448&quot;;<br>
-+<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 case EVP_PKEY_ED25519:<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return &quot;ED25519&quot;;<br>
-+<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 default:<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return &quot;EC&quot;;</blockquo=
-te><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bord=
-er-left:1px solid rgb(204,204,204);padding-left:1ex">
-+=C2=A0 =C2=A0 }<br>
-=C2=A0}<br>
-<br>
-+<br>
-=C2=A0static int<br>
-=C2=A0KEYSIZE(const XKEY_KEYDATA *key)<br>
-=C2=A0{<br>
-@@ -310,6 +326,22 @@ ec_keymgmt_import(void *keydata, int selection, const =
-OSSL_PARAM params[])<br>
-=C2=A0 =C2=A0 =C2=A0return keymgmt_import(keydata, selection, params, &quot=
-;EC&quot;);<br>
-=C2=A0}<br>
-<br>
-+static int<br>
-+ed448_keymgmt_import(void *keydata, int selection, const OSSL_PARAM params=
-[])<br>
-+{<br>
-+=C2=A0 =C2=A0 xkey_dmsg(D_XKEY, &quot;entry&quot;);<br>
-+<br>
-+=C2=A0 =C2=A0 return keymgmt_import(keydata, selection, params, &quot;ED44=
-8&quot;);<br>
-+}<br>
-+<br>
-+static int<br>
-+ed25519_keymgmt_import(void *keydata, int selection, const OSSL_PARAM para=
-ms[])<br>
-+{<br>
-+=C2=A0 =C2=A0 xkey_dmsg(D_XKEY, &quot;entry&quot;);<br>
-+<br>
-+=C2=A0 =C2=A0 return keymgmt_import(keydata, selection, params, &quot;ED25=
-519&quot;);<br>
-+}<br>
-+<br>
-=C2=A0/* This function has to exist for key import to work<br>
-=C2=A0 * though we do not support import of individual params<br>
-=C2=A0 * like n or e. We simply return an empty list here for<br>
-@@ -449,7 +481,7 @@ keymgmt_import_helper(XKEY_KEYDATA *key, const OSSL_PAR=
-AM *params)<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0ASSERT(pkey);<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0int id =3D EVP_PKEY_get_id(pkey);<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (id !=3D EVP_PKEY_RSA &amp;&amp; id !=3D EV=
-P_PKEY_EC)<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (id !=3D EVP_PKEY_RSA &amp;&amp; id !=3D EV=
-P_PKEY_EC &amp;&amp; id !=3D EVP_PKEY_ED25519 &amp;&amp; id !=3D EVP_PKEY_E=
-D448)<br>
++#ifdef _WIN32<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0/* get possible driver error from TAP-Win=
+dows driver */<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0if (tuntap_defined(tt))<br>
 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0msg(M_WARN, &quot;Error: xk=
-ey keymgmt_import: unknown key type (%d)&quot;, id);<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return 0;<br>
-@@ -556,6 +588,40 @@ ec_keymgmt_name(int id)<br>
-=C2=A0 =C2=A0 =C2=A0return &quot;EC&quot;;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0extended_msg =3D tap_win_ge=
+tinfo(tt, &amp;gc);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
+=C2=A0#endif<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!ignore_sys_error(my_errno))<br>
++<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 bool crt_error =3D false;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 int my_errno =3D openvpn_errno_maybe_crt(&amp;=
+crt_error);<br>
++<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!ignore_sys_error(my_errno, crt_error))<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0if (extended_msg)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0msg(x_cs_info=
+_level, &quot;%s %s [%s]: %s (code=3D%d)&quot;, description,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0sock ? proto2ascii(sock-&gt;info.proto, sock-&gt;<a href=3D"http://info.=
+af" rel=3D"noreferrer" target=3D"_blank">info.af</a>, true) : &quot;&quot;,=
+<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 exte=
+nded_msg, strerror(my_errno), my_errno);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 exte=
+nded_msg, openvpn_strerror(my_errno, crt_error, &amp;gc), my_errno);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0else<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0msg(x_cs_info=
+_level, &quot;%s %s: %s (code=3D%d)&quot;, description,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0sock ? proto2ascii(sock-&gt;info.proto, sock-&gt;<a href=3D"http://info.=
+af" rel=3D"noreferrer" target=3D"_blank">info.af</a>, true) : &quot;&quot;,=
+<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 stre=
+rror(my_errno), my_errno);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 open=
+vpn_strerror(my_errno, crt_error, &amp;gc), my_errno);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0if (x_cs_err_delay_ms)<br>
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h<br>
+index d2d83c8a..fc878a56 100644<br>
+--- a/src/openvpn/error.h<br>
++++ b/src/openvpn/error.h<br>
+@@ -71,13 +71,10 @@ struct gc_arena;<br>
+=C2=A0/* String and Error functions */<br>
+<br>
+=C2=A0#ifdef _WIN32<br>
+-#define openvpn_errno()=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Get=
+LastError()<br>
+-#define openvpn_strerror(e, gc)=C2=A0 =C2=A0 =C2=A0strerror_win32(e, gc)<b=
+r>
++#define openvpn_errno() GetLastError()<br>
+=C2=A0const char *strerror_win32(DWORD errnum, struct gc_arena *gc);<br>
+-<br>
+=C2=A0#else<br>
+-#define openvpn_errno()=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0err=
+no<br>
+-#define openvpn_strerror(x, gc)=C2=A0 =C2=A0 =C2=A0strerror(x)<br>
++#define openvpn_errno() errno<br>
+=C2=A0#endif<br>
+<br>
+=C2=A0/*<br>
+@@ -363,20 +360,22 @@ msg_get_virtual_output(void)<br>
+=C2=A0 * which can be safely ignored.<br>
+=C2=A0 */<br>
+=C2=A0static inline bool<br>
+-ignore_sys_error(const int err)<br>
++ignore_sys_error(const int err, bool crt_error)<br>
+=C2=A0{<br>
+-=C2=A0 =C2=A0 /* I/O operation pending */<br>
+=C2=A0#ifdef _WIN32<br>
+-=C2=A0 =C2=A0 if (err =3D=3D WSAEWOULDBLOCK || err =3D=3D WSAEINVAL)<br>
++=C2=A0 =C2=A0 if (!crt_error &amp;&amp; ((err =3D=3D WSAEWOULDBLOCK || err=
+ =3D=3D WSAEINVAL)))<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return true;<br>
+=C2=A0 =C2=A0 =C2=A0}<br>
+=C2=A0#else<br>
+-=C2=A0 =C2=A0 if (err =3D=3D EAGAIN)<br>
++=C2=A0 =C2=A0 crt_error =3D true;<br>
++#endif<br>
++<br>
++=C2=A0 =C2=A0 /* I/O operation pending */<br>
++=C2=A0 =C2=A0 if (crt_error &amp;&amp; (err =3D=3D EAGAIN))<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return true;<br>
+=C2=A0 =C2=A0 =C2=A0}<br>
+-#endif<br>
+<br>
+=C2=A0#if 0 /* if enabled, suppress ENOBUFS errors */<br>
+=C2=A0#ifdef ENOBUFS<br>
+@@ -398,6 +397,26 @@ nonfatal(const unsigned int err)<br>
+=C2=A0 =C2=A0 =C2=A0return err &amp; M_FATAL ? (err ^ M_FATAL) | M_NONFATAL=
+ : err;<br>
 =C2=A0}<br>
 <br>
-+static const char *<br>
-+ed448_keymgmt_name(int id)<br>
++static inline int<br>
++openvpn_errno_maybe_crt(bool *crt_error)<br>
 +{<br>
-+=C2=A0 =C2=A0 xkey_dmsg(D_XKEY, &quot;entry&quot;);<br>
-+<br>
-+=C2=A0 =C2=A0 /* though we do not implement keyexch we could be queried fo=
-r<br>
-+=C2=A0 =C2=A0 =C2=A0* keyexch mechanism supported by EC keys<br>
-+=C2=A0 =C2=A0 =C2=A0*/<br>
-+=C2=A0 =C2=A0 if (id =3D=3D OSSL_OP_SIGNATURE || id =3D=3D OSSL_OP_KEYEXCH=
-)<br>
++=C2=A0 =C2=A0 int err =3D 0;<br>
++=C2=A0 =C2=A0 *crt_error =3D false;<br>
++#ifdef _WIN32<br>
++=C2=A0 =C2=A0 err =3D GetLastError();<br>
++=C2=A0 =C2=A0 if (err =3D=3D ERROR_SUCCESS)<br>
 +=C2=A0 =C2=A0 {<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 return &quot;ED448&quot;;</blockquote><blockqu=
-ote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px=
- solid rgb(204,204,204);padding-left:1ex">
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* error is likely C runtime */<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 *crt_error =3D true;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 err =3D errno;<br>
 +=C2=A0 =C2=A0 }<br>
-+<br>
-+=C2=A0 =C2=A0 msg(D_XKEY, &quot;xkey ed448_keymgmt_name called with op_id =
-!=3D SIGNATURE or KEYEXCH id=3D%d&quot;, id);<br>
-+=C2=A0 =C2=A0 return &quot;EC&quot;;<br></blockquote><div><br></div><div>I=
- think this should be either &quot;ED448&quot; or NULL. The default provide=
-r does not define the query_operation function for this key type in the dis=
-patch table --- likely because the name will then default to the keymgmt na=
-me (ED448). Also, I just realized that in the default provider, the query_o=
-peration_name (when defined) returns NULL for ids not recognized. That lead=
-s to triggering an error message in the library which is good.=C2=A0</div><=
-div><br></div><div>We could either return NULL here or &quot;ED448&quot; an=
-d then convert the above debug msg() to a warning. Or leave out this functi=
-on altogether and remove it from the dispatch table.</div><div><br></div><b=
-lockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-le=
-ft:1px solid rgb(204,204,204);padding-left:1ex">
++#else<br>
++=C2=A0 =C2=A0 *crt_error =3D true;<br>
++=C2=A0 =C2=A0 err =3D errno;<br>
++#endif<br>
++=C2=A0 =C2=A0 return err;<br>
 +}<br>
 +<br>
-+static const char *<br>
-+ed25519_keymgmt_name(int id)<br>
-+{<br>
-+=C2=A0 =C2=A0 xkey_dmsg(D_XKEY, &quot;entry&quot;);<br>
+=C2=A0#include &quot;errlevel.h&quot;<br>
+<br>
+=C2=A0#endif /* ifndef ERROR_H */<br>
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c<br>
+index 392a5c9f..de80dcff 100644<br>
+--- a/src/openvpn/forward.c<br>
++++ b/src/openvpn/forward.c<br>
+@@ -1676,7 +1676,14 @@ process_outgoing_link(struct context *c)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0/* for unreachable network and &quot;conn=
+ecting&quot; state switch to the next host */<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (size &lt; 0 &amp;&amp; ENETUNREACH =3D=3D =
+error_code &amp;&amp; c-&gt;c2.tls_multi<br>
 +<br>
-+=C2=A0 =C2=A0 /* though we do not implement keyexch we could be queried fo=
-r<br>
-+=C2=A0 =C2=A0 =C2=A0* keyexch mechanism supported by EC keys<br>
-+=C2=A0 =C2=A0 =C2=A0*/<br>
-+=C2=A0 =C2=A0 if (id =3D=3D OSSL_OP_SIGNATURE || id =3D=3D OSSL_OP_KEYEXCH=
-)<br>
-+=C2=A0 =C2=A0 {<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 return &quot;ED25519&quot;;<br>
-+=C2=A0 =C2=A0 }=C2=A0</blockquote><blockquote class=3D"gmail_quote" style=
-=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding=
--left:1ex">
-+<br>
-+=C2=A0 =C2=A0 msg(D_XKEY, &quot;xkey ed448_keymgmt_name called with op_id =
-!=3D SIGNATURE or KEYEXCH id=3D%d&quot;, id);<br>
-+=C2=A0 =C2=A0 return &quot;EC&quot;;<br></blockquote><div><br></div><div>s=
-ame comment as above with ED448 --&gt; ED25519.</div><div>=C2=A0</div><bloc=
-kquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:=
-1px solid rgb(204,204,204);padding-left:1ex">
-+}<br>
-+<br>
-=C2=A0static const OSSL_DISPATCH rsa_keymgmt_functions[] =3D {<br>
-=C2=A0 =C2=A0 =C2=A0{OSSL_FUNC_KEYMGMT_NEW, (void (*)(void))keymgmt_new},<b=
-r>
-=C2=A0 =C2=A0 =C2=A0{OSSL_FUNC_KEYMGMT_FREE, (void (*)(void))keymgmt_free},=
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 bool unreachable =3D error_code =3D=3D<br>
++#ifdef _WIN32<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 WSAENETUNREACH;<br>
++#else<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ENETUNREACH;<br>
++#endif<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (size &lt; 0 &amp;&amp; unreachable &amp;&a=
+mp; c-&gt;c2.tls_multi<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0&amp;&amp; !tls_initial_pac=
+ket_received(c-&gt;c2.tls_multi) &amp;&amp; c-&gt;options.mode =3D=3D MODE_=
+POINT_TO_POINT)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0msg(M_INFO, &quot;Network u=
+nreachable, restarting&quot;);<br>
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c<br>
+index a4264056..8d2d9983 100644<br>
+--- a/src/openvpn/manage.c<br>
++++ b/src/openvpn/manage.c<br>
+@@ -2082,9 +2082,10 @@ man_process_command(struct management *man, const ch=
+ar *line)<br>
+=C2=A0static bool<br>
+=C2=A0man_io_error(struct management *man, const char *prefix)<br>
+=C2=A0{<br>
+-=C2=A0 =C2=A0 const int err =3D openvpn_errno();<br>
++=C2=A0 =C2=A0 bool crt_error =3D false;<br>
++=C2=A0 =C2=A0 int err =3D openvpn_errno_maybe_crt(&amp;crt_error);<br>
 <br>
-@@ -588,10 +654,45 @@ static const OSSL_DISPATCH ec_keymgmt_functions[] =3D=
- {<br>
-=C2=A0 =C2=A0 =C2=A0{0, NULL }<br>
-=C2=A0};<br>
-<br>
-+static const OSSL_DISPATCH ed448_keymgmt_functions[] =3D {<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_NEW, (void (*)(void))keymgmt_new},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_FREE, (void (*)(void))keymgmt_free},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_LOAD, (void (*)(void))keymgmt_load},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_HAS, (void (*)(void))keymgmt_has},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_MATCH, (void (*)(void))keymgmt_match},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_IMPORT, (void (*)(void))ed448_keymgmt_imp=
-ort},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_IMPORT_TYPES, (void (*)(void))keymgmt_imp=
-ort_types},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_GETTABLE_PARAMS, (void (*)(void))keymgmt_=
-gettable_params},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_GET_PARAMS, (void (*)(void))keymgmt_get_p=
-arams},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_SET_PARAMS, (void (*)(void))keymgmt_set_p=
-arams},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_SETTABLE_PARAMS, (void (*)(void))keymgmt_=
-gettable_params},=C2=A0 =C2=A0 =C2=A0 =C2=A0/* same as gettable */<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_QUERY_OPERATION_NAME, (void (*)(void))ed4=
-48_keymgmt_name},<br></blockquote><div><br></div><div>see above</div><div>=
-=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
-.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
-+=C2=A0 =C2=A0 {0, NULL }<br>
-+};<br>
-+<br>
-+static const OSSL_DISPATCH ed25519_keymgmt_functions[] =3D {<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_NEW, (void (*)(void))keymgmt_new},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_FREE, (void (*)(void))keymgmt_free},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_LOAD, (void (*)(void))keymgmt_load},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_HAS, (void (*)(void))keymgmt_has},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_MATCH, (void (*)(void))keymgmt_match},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_IMPORT, (void (*)(void))ed25519_keymgmt_i=
-mport},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_IMPORT_TYPES, (void (*)(void))keymgmt_imp=
-ort_types},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_GETTABLE_PARAMS, (void (*)(void))keymgmt_=
-gettable_params},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_GET_PARAMS, (void (*)(void))keymgmt_get_p=
-arams},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_SET_PARAMS, (void (*)(void))keymgmt_set_p=
-arams},<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_SETTABLE_PARAMS, (void (*)(void))keymgmt_=
-gettable_params},=C2=A0 =C2=A0 =C2=A0 =C2=A0/* same as gettable */<br>
-+=C2=A0 =C2=A0 {OSSL_FUNC_KEYMGMT_QUERY_OPERATION_NAME, (void (*)(void))ed2=
-5519_keymgmt_name},<br>
-</blockquote><div><br></div><div>=C2=A0</div><blockquote class=3D"gmail_quo=
-te" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204=
-);padding-left:1ex">+=C2=A0 =C2=A0 {0, NULL }<br>
-+};<br>
-+<br>
-+<br>
-=C2=A0const OSSL_ALGORITHM keymgmts[] =3D {<br>
-=C2=A0 =C2=A0 =C2=A0{&quot;RSA:rsaEncryption&quot;, XKEY_PROV_PROPS, rsa_ke=
-ymgmt_functions, &quot;OpenVPN xkey RSA Key Manager&quot;},<br>
-=C2=A0 =C2=A0 =C2=A0{&quot;RSA-PSS:RSASSA-PSS&quot;, XKEY_PROV_PROPS, rsa_k=
-eymgmt_functions, &quot;OpenVPN xkey RSA-PSS Key Manager&quot;},<br>
-=C2=A0 =C2=A0 =C2=A0{&quot;EC:id-ecPublicKey&quot;, XKEY_PROV_PROPS, ec_key=
-mgmt_functions, &quot;OpenVPN xkey EC Key Manager&quot;},<br>
-+=C2=A0 =C2=A0 {&quot;ED448&quot;, XKEY_PROV_PROPS, ed448_keymgmt_functions=
-, &quot;OpenVPN xkey ED448 Key Manager&quot;},<br>
-+=C2=A0 =C2=A0 {&quot;ED25519&quot;, XKEY_PROV_PROPS, ed25519_keymgmt_funct=
-ions, &quot;OpenVPN xkey ED25519 Key Manager&quot;},<br>
-=C2=A0 =C2=A0 =C2=A0{NULL, NULL, NULL, NULL}<br>
-=C2=A0};<br>
-<br>
-@@ -835,7 +936,7 @@ signature_sign_init(void *ctx, void *provkey, const OSS=
-L_PARAM params[])<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
-=C2=A0 =C2=A0 =C2=A0sctx-&gt;keydata =3D provkey;<br>
-=C2=A0 =C2=A0 =C2=A0sctx-&gt;keydata-&gt;refcount++; /* we are keeping a co=
-py */<br>
--=C2=A0 =C2=A0 sctx-&gt;sigalg.keytype =3D KEYTYPE(sctx-&gt;keydata) =3D=3D=
- EVP_PKEY_RSA ? &quot;RSA&quot; : &quot;EC&quot;;<br>
-+=C2=A0 =C2=A0 sctx-&gt;sigalg.keytype =3D get_keytype(sctx-&gt;keydata);<b=
-r>
-<br>
-=C2=A0 =C2=A0 =C2=A0signature_set_ctx_params(sctx, params);<br>
-<br>
-@@ -929,13 +1030,19 @@ signature_digest_sign_init(void *ctx, const char *md=
-name,<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
-=C2=A0 =C2=A0 =C2=A0sctx-&gt;keydata =3D provkey; /* used by digest_sign */=
-<br>
-=C2=A0 =C2=A0 =C2=A0sctx-&gt;keydata-&gt;refcount++;<br>
--=C2=A0 =C2=A0 sctx-&gt;sigalg.keytype =3D KEYTYPE(sctx-&gt;keydata) =3D=3D=
- EVP_PKEY_RSA ? &quot;RSA&quot; : &quot;EC&quot;;<br>
-+=C2=A0 =C2=A0 sctx-&gt;sigalg.keytype =3D get_keytype(sctx-&gt;keydata);<b=
-r>
-<br>
-=C2=A0 =C2=A0 =C2=A0signature_set_ctx_params(ctx, params);<br>
-=C2=A0 =C2=A0 =C2=A0if (mdname)<br>
+-=C2=A0 =C2=A0 if (!ignore_sys_error(err))<br>
++=C2=A0 =C2=A0 if (!ignore_sys_error(err, crt_error))<br>
 =C2=A0 =C2=A0 =C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0sctx-&gt;sigalg.mdname =3D xkey_mdname(md=
-name); /* get a string literal pointer */<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
-+=C2=A0 =C2=A0 else if (!strcmp(sctx-&gt;sigalg.keytype, &quot;ED448&quot;)=
- || !strcmp(sctx-&gt;sigalg.keytype, &quot;ED25519&quot;))<br>
-+=C2=A0 =C2=A0 {<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* EdDSA requires NULL as digest for the Diges=
-tSign API instead<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0* of using the normal Sign API */<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 sctx-&gt;sigalg.mdname =3D &quot;none&quot;;<b=
-r>
-+=C2=A0 =C2=A0 }<br></blockquote><div><br></div><div>Instead of this order,=
- we have to assert that mdname must be NULL if keytype is ED25519 or ED448.=
- OpenSSL does not impose this when the key is in provider, but docs for EVP=
-_DigestSignInit() says mdname should be NULL for such keys. So I think we s=
-hould return an error if mdname is not NULL.</div><div><br></div><div>In fa=
-ct we do call EVP_DigestSignInit() in our unit test with mdname=3DSHA256 an=
-d Ed25519 key (after this patch) which exposes this issue (see below).</div=
-><div>=C2=A0=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0=
-px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
-=C2=A0 =C2=A0 =C2=A0else<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0struct gc_arena gc =3D gc_new();<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0msg(D_MANAGEMENT, &quot;MANAGEMENT: TCP %=
+s error: %s&quot;, prefix,<br>
+diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c<br>
+index 2604c27b..4921f035 100644<br>
+--- a/src/openvpn/platform.c<br>
++++ b/src/openvpn/platform.c<br>
+@@ -471,7 +471,7 @@ platform_test_file(const char *filename)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0else<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (openvpn_errno() =3D=3D EACCE=
+S)<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (errno =3D=3D EACCES)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0msg( M_WARN |=
+ M_ERRNO, &quot;Could not access file &#39;%s&#39;&quot;, filename);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h<br>
+index ea19620d..ae98966b 100644<br>
+--- a/src/openvpn/tun.h<br>
++++ b/src/openvpn/tun.h<br>
+@@ -461,7 +461,7 @@ tuntap_stop(int status)<br>
+=C2=A0 =C2=A0 =C2=A0 */<br>
+=C2=A0 =C2=A0 =C2=A0if (status &lt; 0)<br>
 =C2=A0 =C2=A0 =C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0msg(M_WARN, &quot;xkey digest_sign_init: =
-mdname is NULL.&quot;);<br>
-@@ -1073,6 +1180,8 @@ static const OSSL_DISPATCH signature_functions[] =3D =
-{<br>
-=C2=A0const OSSL_ALGORITHM signatures[] =3D {<br>
-=C2=A0 =C2=A0 =C2=A0{&quot;RSA:rsaEncryption&quot;, XKEY_PROV_PROPS, signat=
-ure_functions, &quot;OpenVPN xkey RSA Signature&quot;},<br>
-=C2=A0 =C2=A0 =C2=A0{&quot;ECDSA&quot;, XKEY_PROV_PROPS, signature_function=
-s, &quot;OpenVPN xkey ECDSA Signature&quot;},<br>
-+=C2=A0 =C2=A0 {&quot;ED448&quot;, XKEY_PROV_PROPS, signature_functions, &q=
-uot;OpenVPN xkey Ed448 Signature&quot;},<br>
-+=C2=A0 =C2=A0 {&quot;ED25519&quot;, XKEY_PROV_PROPS, signature_functions, =
-&quot;OpenVPN xkey Ed25519 Signature&quot;},<br>
-=C2=A0 =C2=A0 =C2=A0{NULL, NULL, NULL, NULL}<br>
-=C2=A0};<br>
-<br>
-diff --git a/tests/unit_tests/openvpn/test_provider.c b/tests/unit_tests/op=
-envpn/test_provider.c<br>
-index 0b0952ee2..e29252838 100644<br>
---- a/tests/unit_tests/openvpn/test_provider.c<br>
-+++ b/tests/unit_tests/openvpn/test_provider.c<br>
-@@ -66,7 +66,11 @@ static const char *const pubkey2 =3D &quot;-----BEGIN PU=
-BLIC KEY-----\n&quot;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;u95ff1JiUaJIkYNI=
-kZA+hwIPFVH5aJcSCv3SPIeDS2VUAESNKHZJBQ=3D=3D\n&quot;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;-----END PUBLIC =
-KEY-----\n&quot;;<br>
-<br>
--static const char *pubkeys[] =3D {pubkey1, pubkey2};<br>
-+static const char *const pubkey3 =3D &quot;-----BEGIN PUBLIC KEY-----\n&qu=
-ot;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0&quot;MCowBQYDK2VwAyEA+=
-q5xjF5hGyyqYZidJdz/0saEQabL3N4wIZJBxNGbgJE=3D\n&quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0&quot;-----END PUBLIC K=
-EY-----&quot;;<br>
-+<br>
-+static const char *pubkeys[] =3D {pubkey1, pubkey2, pubkey3};<br>
-<br>
-=C2=A0static const char *prov_name =3D &quot;ovpn.xkey&quot;;<br>
-<br>
-@@ -158,12 +162,17 @@ management_query_pk_sig(struct management *man, const=
- char *b64_data,<br>
-=C2=A0 =C2=A0 =C2=A0if (strstr(algorithm, &quot;data=3Dmessage&quot;))<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0expected_tbs =3D test_msg_b64;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 assert_non_null(strstr(algorithm, &quot;hashal=
-g=3DSHA256&quot;));<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* ED25519 does not have a hash algorithm even=
- though it goes via</blockquote><blockquote class=3D"gmail_quote" style=3D"=
-margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-lef=
-t:1ex">
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0* the DigestSign path (data=3Dmessage) *=
-/<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!strstr(algorithm, &quot;ED25519&quot;))<b=
-r>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 assert_non_null(strstr(algorithm=
-, &quot;hashalg=3DSHA256&quot;));<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 }=C2=A0</blockquote><blockquote class=3D"gmail=
-_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204=
-,204);padding-left:1ex">
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 return openvpn_errno() =3D=3D ERROR_FILE_NOT_F=
+OUND;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastError() =3D=3D ERROR_FILE_NOT_FO=
+UND;<br>
 =C2=A0 =C2=A0 =C2=A0}<br>
-=C2=A0 =C2=A0 =C2=A0assert_string_equal(b64_data, expected_tbs); Though it =
-still uses digestSign()<br>
+=C2=A0 =C2=A0 =C2=A0return false;<br>
+=C2=A0}<br>
+@@ -474,7 +474,7 @@ tuntap_abort(int status)<br>
+=C2=A0 =C2=A0 =C2=A0 */<br>
+=C2=A0 =C2=A0 =C2=A0if (status &lt; 0)<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 return openvpn_errno() =3D=3D ERROR_OPERATION_=
+ABORTED;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastError() =3D=3D ERROR_OPERATION_A=
+BORTED;<br>
+=C2=A0 =C2=A0 =C2=A0}<br>
+=C2=A0 =C2=A0 =C2=A0return false;<br>
+=C2=A0}<br>
+-- <br>
+2.23.0.windows.1<br>
 <br>
--=C2=A0 =C2=A0 /* We test using ECDSA or PSS with saltlen =3D digest */<br>
--=C2=A0 =C2=A0 if (!strstr(algorithm, &quot;ECDSA&quot;))<br>
-+=C2=A0 =C2=A0 /* We test using ED25519, ECDSA or PSS with saltlen =3D dige=
-st */<br>
-+=C2=A0 =C2=A0 if (!strstr(algorithm, &quot;ECDSA&quot;) &amp;&amp; !strstr=
-(algorithm, &quot;ED25519&quot;))<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0assert_non_null(strstr(algorithm, &quot;R=
-SA_PKCS1_PSS_PADDING,hashalg=3DSHA256,saltlen=3Ddigest&quot;));<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
-@@ -328,13 +337,13 @@ xkey_sign(void *handle, unsigned char *sig, size_t *s=
-iglen,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0assert_memory_equal(tbs, test_digest, siz=
-eof(test_digest));<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
 <br>
--=C2=A0 =C2=A0 /* For the test use sha256 and PSS padding for RSA */<br>
-+=C2=A0 =C2=A0 /* For the test use sha256 and PSS padding for RSA and none =
-for EDDSA */<br>
-=C2=A0 =C2=A0 =C2=A0assert_int_equal(OBJ_sn2nid(s.mdname), NID_sha256);<br>=
-</blockquote><div><br></div><div>This works now because we wrongly call Ed2=
-5519 signature with mdname=3Dsha256 in the test. I think we want this to be=
- something like</div><div><br></div><div>=C2=A0if (!strcmp(s.keytype, &quot=
-;ED25519&quot;))</div>=C2=A0{</div><div class=3D"gmail_quote">=C2=A0 =C2=A0=
- =C2=A0assert_string_equal(s.mdname, &quot;none&quot;);<br>=C2=A0}<br>else<=
-/div><div class=3D"gmail_quote">{<br>=C2=A0 =C2=A0 assert_int_equal(OBJ_sn2=
-nid(s.mdname), NID_sha256);<br>}</div><div class=3D"gmail_quote"><br></div>=
-<div class=3D"gmail_quote">And, in digest_sign() we want to set mdname=3DNU=
-LL for Ed25519 key.. Like:</div><div class=3D"gmail_quote"><br></div><div c=
-lass=3D"gmail_quote">diff --git a/tests/unit_tests/openvpn/test_provider.c =
-b/tests/unit_tests/openvpn/test_provider.c<br>index e2925283..aa2ac7b9 1006=
-44<br>--- a/tests/unit_tests/openvpn/test_provider.c<br>+++ b/tests/unit_te=
-sts/openvpn/test_provider.c<br>@@ -237,6 +237,10 @@ digest_sign(EVP_PKEY *p=
-key)<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0params[3] =3D OSSL_PARAM_construc=
-t_utf8_string(OSSL_SIGNATURE_PARAM_MGF1_DIGEST, (char *)saltlen, 0);<br>=C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0params[4] =3D OSSL_PARAM_construct_end();<br=
->=C2=A0 =C2=A0 =C2=A0}<br>+ =C2=A0 =C2=A0else if (EVP_PKEY_get_id(pkey) =3D=
-=3D EVP_PKEY_ED25519)<br>+ =C2=A0 =C2=A0{<br>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0m=
-dname =3D NULL;<br>+ =C2=A0 =C2=A0}<br></div><div class=3D"gmail_quote"><br=
-></div><div class=3D"gmail_quote"><br><blockquote class=3D"gmail_quote" sty=
-le=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);paddi=
-ng-left:1ex">
-=C2=A0 =C2=A0 =C2=A0if (!strcmp(s.keytype, &quot;RSA&quot;))<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0assert_string_equal(s.padmode, &quot;pss&=
-quot;); /* we use PSS for the test */<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
--=C2=A0 =C2=A0 else if (strcmp(s.keytype, &quot;EC&quot;))<br>
-+=C2=A0 =C2=A0 else if (strcmp(s.keytype, &quot;EC&quot;) &amp;&amp; strcmp=
-(s.keytype,&quot;ED25519&quot;))<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0fail_msg(&quot;Unknown keytype: %s&quot;,=
- s.keytype);<br>
-=C2=A0 =C2=A0 =C2=A0}<br></blockquote><div>=C2=A0<br></div><div>Finally, xk=
-ey_management_sign() in xkey_helper.c should not call xkey_digest() if mdna=
-me is &quot;none&quot;. So line 182 in xkey_helper.c will have to become so=
-mething like:</div><div><br></div><div>if (!strcmp(alg.op, &quot;DigestSign=
-&quot;) &amp;&amp; !(flags &amp; MF_EXTERNAL_KEY_DIGEST) &amp;&amp; strcmp(=
-alg.mdname,&quot;none&quot;))<br></div><div><br></div><div>All look good ot=
-herwise.</div><div><br></div><div>Regards,</div><div><br></div><div>Selva=
-=C2=A0</div></div></div></div>
+<br>
+_______________________________________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
+envpn-devel@lists.sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
+nfo/openvpn-devel</a><br>
+</blockquote></div></div>
 
---000000000000cc007605debff1a7--
+--000000000000cbc45c05dec067cb--
 
