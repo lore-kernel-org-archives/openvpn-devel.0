@@ -1,13 +1,12 @@
-Date: Wed, 11 May 2022 12:17:33 +0200 (CEST)
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <1957647252.642516.1652264253337@...2642...>
-In-Reply-To: <20220422142953.3805364-18-arne@...1227...>
-References: <20220422134038.3801239-1-arne@...1227...>
- <20220422142953.3805364-1-arne@...1227...>
- <20220422142953.3805364-18-arne@...1227...>
+Content-Type: multipart/mixed; boundary="------------ZxFZykpS0Mu2L4NQHxMeNGg2"
+Message-ID: <43f61f64-9873-9f4a-1c0d-2af6424496a3@...515...>
+Date: Wed, 11 May 2022 13:26:02 +0300
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 27/28] Add unit test for
- reliable_get_num_output_sequenced_available
+Content-Language: en-US
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+References: <f1a750b0-dd27-c332-c538-d37642e2776f@...515...>
+In-Reply-To: <f1a750b0-dd27-c332-c538-d37642e2776f@...515...>
+Subject: [Openvpn-devel] Summary of the community meeting (11th May 2022)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,32 +15,219 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+To: openvpn-devel@lists.sourceforge.net
+
+This is a multi-part message in MIME format.
+--------------ZxFZykpS0Mu2L4NQHxMeNGg2
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Acked-By: Frank Lichtenheld <frank@...2641...>
+Hi,
 
-Not sure whether it should be concerning that reliable_get_num_output_sequenced_available
-is happy to give results given the complete garbage we put into the test
-buffer. But anyway, an UT is better than no UT and the test code looks
-correct to me.
+Here's the summary of the IRC meeting.
 
-Obviously depends on previous patches.
+---
 
-Regards,
-  Frank
+COMMUNITY MEETING
 
-> Arne Schwabe <arne@...1227...> hat am 22.04.2022 16:29 geschrieben:
-> 
->  
-> ---
->  tests/unit_tests/openvpn/Makefile.am       |  5 +-
->  tests/unit_tests/openvpn/mock_get_random.c | 10 ++++
->  tests/unit_tests/openvpn/test_packet_id.c  | 55 ++++++++++++++++++++++
->  3 files changed, 69 insertions(+), 1 deletion(-)
-> 
+Place: #openvpn-meeting on libera.chat
+Date: Wed 11th May 2022
+Time: 10:30 CEST (9:30 UTC)
 
---
-Frank Lichtenheld
+Planned meeting topics for this meeting were here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2022-05-11>
+
+Your local meeting time is easy to check from services such as
+
+<http://www.timeanddate.com/worldclock>
+
+SUMMARY
+
+cron2, dazo, d12fk, lev, mattock, MaxF, ordex and plaisthos participated 
+in this meeting.
+
+---
+
+Talked about OpenVPN 2.5.
+
+Mattock will spin up a new Windows installer to fix some OpenVPN-GUI 
+issues. Luckily OpenVPN was not affected by the OpenSSL issues fixed 
+since our previous installer release.
+
+---
+
+Talked about OpenVPN 2.6.
+
+D12fk will submit a path this week which add a --dns-support bit to 
+IV_PROTO. It is mostly for servers to be able to not push --dns to 
+non-compliant clients, to avoid warnings in log files, which reduces the 
+potential of clueless support tickets.
+
+The HMAC stuff is all in, thanks to djpig and ordex for lots of review 
+rounds + testing.
+
+The xkey patch is waiting for review (from Selva or someone else).
+
+---
+
+Talked about the fix to broken TCP connections on Windows Server 2022:
+
+<https://github.com/OpenVPN/tap-windows6/pull/147>
+
+Lev will ask Simon to give his feedback in the PR, in addition to 
+already having given it privately.
+
+-- 
+
+Full chatlog attached
+--------------ZxFZykpS0Mu2L4NQHxMeNGg2
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn_irc_meeting_chatlog_2022-05-11.txt"
+Content-Disposition: attachment;
+ filename="openvpn_irc_meeting_chatlog_2022-05-11.txt"
+Content-Transfer-Encoding: base64
+
+KDExLjI5LjU0KSBtYXR0b2NrOiBoaQooMTEuMzAuMjgpIGNyb24yOiB5byEKKDExLjMxLjA4
+KSBkMTJmazogaGVsbG8KKDExLjMyLjE3KSBNYXhGOiBoaSEKKDExLjMzLjQwKSBtYXR0b2Nr
+OiBJIGhhdmUgYWJvdXQgMjAgbWludXRlcywgdGhlbiBJIG5lZWQgdG8gaGVhZCB0byBsdW5j
+aCAtIGNhbiBmb2xsb3cgdGhlIGRpc2N1c3Npb24gd2l0aCBteSBtb2JpbGUgdGhvdWdoCigx
+MS4zMy41MykgY3JvbjI6IHlvdSBhbmQgeW91ciBmb29kIGRlc2lyZXMuLi4gOi0pCigxMS4z
+NC4wNikgY3JvbjIgaGEgc2NlbHRvIGNvbWUgYXJnb21lbnRvOiBodHRwczovL2NvbW11bml0
+eS5vcGVudnBuLm5ldC9vcGVudnBuL3dpa2kvVG9waWNzLTIwMjItMDUtMTEKKDExLjM0LjI3
+KSBkMTJmazogLmZpIGZvb2Qgc2NoZWR1bGUgaXMgc2xpZ2h0bHkgc2hpZnRlZCwgYm90aCB0
+aW1lem9uZSBhbmQgY3VsdHVyYWwgcmVhc29ucwooMTEuMzQuMzMpIG1hdHRvY2s6IGh0dHBz
+Oi8vY29tbXVuaXR5Lm9wZW52cG4ubmV0L29wZW52cG4vd2lraS9Ub3BpY3MtMjAyMi0wNS0x
+MQooMTEuMzYuMzkpIGNyb24yOiBzbyAtIDIuNSB1cGRhdGVzPwooMTEuMzYuNTEpIHBsYWlz
+dGhvczogICAgbW9pbiBtb2luCigxMS4zNi41OSkgZGF6bzogbW9pbgooMTEuMzcuMDkpIGQx
+MmZrOiBJJ2xsIHN1Ym1pdCBhIHBhdGggdGhpcyB3ZWVrIHdoaWNoIGFkZCBhIC0tZG5zLXN1
+cHBvcnQgYml0IHRvIElWX1BST1RPCigxMS4zNy4xMSkgbWF0dG9jazogMi41IGluc3RhbGxl
+ci12aXNlIG5vLCBidXQgSSdsbCBkbyBhIGJ1aWxkIGxhdGVyIHRvZGF5CigxMS4zNy4yMikg
+bWF0dG9jazogdGVzdGVkIGxldidzIG5ldyBXaW5kb3dzIGJ1aWxkIHByb2Nlc3MgYW5kIGl0
+IHNlZW1zIHRvIHdvcmsKKDExLjM3LjM0KSBtYXR0b2NrOiBpbnN0YWxsZXIgKyBuZXcgYnVp
+bGQgcHJvY2VzcyBhcmUgbm90IHN0cmljdGx5IHJlbGF0ZWQgdGhvdWdoCigxMS4zNy41Mykg
+Y3JvbjI6IGQxMmZrOiB3aHk/CigxMS4zOC4yNCkgY3JvbjI6IChhcyBpbiAidGhlIHNlcnZl
+ciBjYW4ganVzdCBwdXNoIGJvdGgsIHdpdGhvdXQgZG9pbmcgaGFybSIpCigxMS4zOC40NCkg
+ZDEyZms6IHllcywgcGxhaXN0aG9zIHJlcXVlc3RlZCBpdCBmb3IgQVMKKDExLjM5LjAzKSBj
+cm9uMjogc28geW91IHdhbnQgdG8gYXZvaWQgd2FybmluZ3MgaWYgcHVzaGluZyB0byBhbiAi
+b2xkIiBjbGllbnQ/CigxMS4zOS4yMCkgZDEyZms6IGNvbmNlcm4gaXN0IGN1c3RvbWVycyBn
+ZXR0aW5nIHdvcnJpZWQgZm9yIG5vIHJlYXNvbgooMTEuMzkuMjMpIGRhem86IGNyb24yOiBp
+dCdzIG1vcmUgZm9yIHNlcnZlcnMgdG8gYmUgYWJsZSB0byBub3QgcHVzaCAtLWRucyB0byBu
+b24tY29tcGxpYW50IGNsaWVudHMsIHRvIGF2b2lkIHdhcm5pbmdzIGluIGxvZyBmaWxlcywg
+d2hpY2ggcmVkdWNlcyB0aGUgcG90ZW50aWFsIG9mIGNsdWVsZXNzIHN1cHBvcnQgdGlja2V0
+cwooMTEuNDAuMDEpIGNyb24yOiBzbywgInllcyIgOikKKDExLjQwLjEwKSBjcm9uMjogKG5v
+dCBleGFjdGx5IGEgMi41IHRvcGljLCB0aG8pCigxMS40MC4yMCkgZDEyZms6IHllYWgsIG15
+IGZhdWx0CigxMS40MS4xNikgY3JvbjI6IGJ1dCB3ZSBzZWVtIHRvIGhhdmUgbm90aGluZyBl
+bHNlIG9uIDIuNSBhbnl3YXkgOy0pIChleGNlcHQsIGZvciB0aGUgbWludXRlcyAid2UgYXJl
+IG5vdCB2dWxuZXJhYmxlIHRvIHRoZSBuZXcgb3BlbnNzbCBzZWN1cml0eSBpc3N1ZXMsIGJ1
+dCB3ZSBzdGlsbCByZWxlYXNlIGEgbmV3IGluc3RhbGxlciBkdWUgdG8gb3VyIG93biBidWdz
+IikKKDExLjQxLjIyKSBjcm9uMjogc28sIDIuNgooMTEuNDEuMzMpIGNyb24yOiAidGhlcmUg
+d2lsbCBiZSBhbiBJVl9QUk9UTyBiaXQgZm9yIEROUyIgOy0pCigxMS40Mi4xNCkgY3JvbjI6
+IHRoZSBITUFDIHN0dWZmIGlzIGFsbCBpbiAodGhhbmtzLCBkanBpZyBhbmQgb3JkZXgsIGZv
+ciBsb3RzIG9mIHJldmlldyByb3VuZHMgKyB0ZXN0aW5nKQooMTEuNDIuMTgpIG9yZGV4OiBo
+aQooMTEuNDIuMjIpIHBsYWlzdGhvczogSSBtYWRlIGEgcGF0Y2ggZm9yIGVkNDQ4L2VkMjU1
+MTkgZm9yIHhrZXlfcHJvdmlkZXIKKDExLjQyLjUwKSBjcm9uMjogZnJlZWJzZCBvcGVudnBu
+LWRldmVsIHBvcnQgaGFzIGJlZW4gdXBkYXRlZCB0byBtYXN0ZXIgImFzIG9mIGxhc3QgZnJp
+ZGF5Iiwgc28gd2UgbWlnaHQgc2VlIGJ1ZyByZXBvcnRzCigxMS40My4xNCkgKioqY3JvbjIg
+aG9wZXMgU2VsdmEgZmluZHMgdGhlIHhrZXkgcGF0Y2ggaW50ZXJlc3RpbmcgYW5kIHRlc3Rz
+ICYgQUNLcyA6LSkKKDExLjQzLjIyKSBwbGFpc3Rob3M6IEkgc3RpbGwgbmVlZCB0byBkbyB0
+aGUgbXR1IDE0MDAgYnkgZGVmYXVsdCBwYXRjaAooMTEuNDMuMjkpIHBsYWlzdGhvczogY3Jv
+bjI6IHllYWggaXQgaXMgbm90IHNvbWV0aGluZyB1cmdlbnQKKDExLjQzLjQ3KSBwbGFpc3Ro
+b3M6IHdobyB5b3Ugd2lsbCBjdXJyZW50bHkgYmUgaGFyZHByZXNzZWQgdG8gZmluZCBzb21l
+dGhpbmcgdGhhdCBhbHJlYWR5IHN1cHBvcnRzIHRoZXNlIGNlcnRpZmljYXRlcwooMTEuNDMu
+NTYpIGNyb24yOiBhaCwgcGxhaXN0aG9zOiBkb2VzICItLW10dS1kaXNjIHllcyIgd29yayB3
+aXRoIHRoZSBjb250cm9sLWNoYW5uZWwgTVRVIHBhdGNoZXM/CigxMS40NC40MCkgY3JvbjI6
+IHNvLCBpZiBJIHNlbmQgYSBjb250cm9sLWNoYW5uZWwgcGFja2V0IGFuZCBnZXQgYmFjayBh
+IHNvY2tldCBlcnJvciAicGFja2V0IHRvbyBiaWciLCB3aWxsIGl0IGluZmx1ZW5jZSBib3Ro
+IGNvbnRyb2wrZGF0YSBjaGFubmVsIE1UVSBzZXR0aW5ncz8KKDExLjQ0LjU0KSBwbGFpc3Ro
+b3M6IG10dS1kaXNjIGlzIGRhdGEgY2hhbm5lbCBpaXJjCigxMS40NS4xMykgY3JvbjI6IG10
+dS1kaXNjIGlzICJtYWtlIHRoZSBzb2NrZXQgZG9uJ3QgZnJhZ21lbnQgYW5kIHJlcG9ydCBl
+cnJvcnMiLCBzbyB0aGF0IGFmZmVjdHMgY29udHJvbCBwYWNrZXRzIGFzIHdlbGwKKDExLjQ1
+LjEzKSBwbGFpc3Rob3M6IGJ1dCBpdCB3b24ndCBjaGFnbmUgY29udHJvbCBjaGFubmVsIHNl
+dHRpbmdzCigxMS40NS4yMCkgbWF0dG9jazIgW355YWFpY0Btb2JpbGUtYWNjZXNzLWJjZWUy
+NS0wLmRoY3AuaW5ldC5maV0gw6ggZW50cmF0byBuZWxsYSBzdGFuemEuCigxMS40NS4yMSkg
+Y3JvbjI6IG10dS10ZXN0IGlzICJEQ08iCigxMS40NS40OSkgcGxhaXN0aG9zOiBhbmQgaXQg
+bmV2ZXIgcmVhbGx5IHdvcmtlZAooMTEuNDYuMDcpIGNyb24yOiB3aGljaCBvbmU/CigxMS40
+Ni4yMCkgcGxhaXN0aG9zOiBiZWNhdXNlIGl0IGtpY2tzIGluIGFmdGVyIHRoZSBjb250cm9s
+IGNoYW5uZWwgaGFzIGJlZW4gYWxyZWFkeSBlc3RhYmxpc2hlZCBhbmQgT3BlblZQTiBsYWNr
+cyB0aGUgYWJpbGl0eSB0byByZXNlbmQgYW5kIHNwbGl0IHBhY2tldHMKKDExLjQ2LjI3KSBw
+bGFpc3Rob3M6IChvbiBhIHByb3RvY29sIGxldmVsKQooMTEuNDcuMDcpIHBsYWlzdGhvczog
+VENQIGRvZXMgQUNLIGJ5dGVzIGluc3RlYWQgb2YgcGFja2V0cyBmb3IgYSBnb29kIHJlYXNv
+biwgc28geW91IGNhbiB0cnkgc2VuZGluZyBsZXNzIHdpdGhvdXQgZ2V0dGluZyBjb25mdXNl
+ZCBhYm91dCBwYWNrZXQgaWQgYWNrcyAodGhpcyBpcyB0aGUgb3JpZ2luYWwgdG9vIGJpZyBw
+YWNrZXQgYmVpbmcgYWNrZWQgb3IgdGhlIHNtYWxsZXIgcmVzZW5kPykKKDExLjQ3LjIzKSBj
+cm9uMjogb2gKKDExLjQ3LjQ4KSBjcm9uMjogc28gaWYgd2Ugc2VuZCBhIHBhY2tldCB3aXRo
+IDE0MDAgYnl0ZXMsIGdldCBiYWNrIGEgInRvbyBiaWchIG1heCA9IDEwMDAiLCB3ZSdyZSBs
+b3N0LCBiZWNhdXNlIHdlIGNhbiBvbmx5IHJlLXNlbmQgdGhlIDE0MDAgYnl0ZSBwYWNrZXQ/
+CigxMS40OC4xOSkgcGxhaXN0aG9zOiB5ZXMKKDExLjQ4LjMxKSBjcm9uMjogdGhlcmUgZ29l
+cyBteSBob3BlIGZvciB3b3JraW5nIC0tbXR1LWRpc2MgZm9yIGNvbnRyb2wtcGxhbmUuLi4K
+KDExLjQ5LjQ3KSBwbGFpc3Rob3M6IHRoYXQgY2FuIG9mIGNvdXJzZSBhbGwgYmUgZml4ZWQv
+aW1wbGVtZW50ZWQgYnV0IGl0IHdpbGwgbm90IHdvcmsgd2l0aG91dCBwcm90b2NvbCBlbmhh
+bmNlbWVudHMKKDExLjUxLjAxKSBjcm9uMjogeWVwCigxMS41MS41OCkgY3JvbjI6IHNwZWFr
+aW5nIG9mIC0tbXR1LWRpc2MsIGV2ZW4gaWYgb2YgbGltaXRlZCB1c2UsIHdlIHN0aWxsIGRv
+bid0IGRvIHRoaXMgZm9yICJvdmVyIElQdjYiIHBhY2tldHMuLi4KKDExLjUyLjAwKSBwbGFp
+c3Rob3M6IGJ1dCB3aXRoIHRoZSBkZWZhdWx0IHRscy1tdHUgb2YgMTI1MCB3aGljaCBpbmNs
+dWRlcyBpcC91ZHAgb3ZlcmhlYWQgSSBkb24ndCB0aGluayB3ZSB3b3VsZCBydW4gaW50byB0
+aGF0IAooMTEuNTIuMDcpIGNyb24yOiB0aGVyZSBpcyBhIHBhdGNoIGluIHBhdGNod29yaywg
+d2FpdGluZyBmb3IgYW4gQUNLLi4uCigxMS41Mi4wOSkgY3JvbjI6IGh0dHBzOi8vcGF0Y2h3
+b3JrLm9wZW52cG4ubmV0L3BhdGNoLzIzMTgvCigxMS41Mi4xMCkgdnBuSGVscGVyOiBUaXRs
+ZTogW09wZW52cG4tZGV2ZWxdIEltcGxlbWVudCAtLW10dS1kaXNjIGZvciBJUHY2IFVEUCBz
+b2NrZXRzLiAtIFBhdGNod29yayAoYXQgcGF0Y2h3b3JrLm9wZW52cG4ubmV0KQooMTEuNTIu
+MjQpIHBsYWlzdGhvczogd2lsbCB0YWtlIGEgbG9vayBsYXRlcgooMTEuNTIuMjkpIGNyb24y
+OiB0aGFua3MKKDExLjUyLjM0KSBjcm9uMjogaXQncyBhY3R1YWxseSB2ZXJ5IHRyaXZpYWwK
+KDExLjUzLjI0KSBjcm9uMjogKGFuZCBpdCBpcyBhIHNoYW1lIHRoYXQgbm8gb3RoZXIgT1Mg
+aGFzIHRoaXMgc29ydCBvZiBleHRlbmRlZCBzb2NrZXQgZXJyb3IgcmVwb3J0aW5nKQooMTEu
+NTMuNTcpIHBsYWlzdGhvczogSSB3aWxsIGFsc28gdHJ5IHRvIGRvIGEgcGF0Y2ggdGhhdCBp
+bnRvcmR1Y2VzIGNvbnRyb2wgY2hhbm5lbCBleHBsaWNpdCBleGl0IG5vdGlmeSBmb3IgRENP
+CigxMS41NC4wNykgKioqY3JvbjIgbGlrZXMgdGhhdAooMTEuNTYuMTQpIGxldl9fOiBzb3Jy
+eSBJIGFtIGxhdGUuIEkgZ290IGZlZWRiYWNrIGZyb20gU2ltb24gcmVnYXJkaW5nIG15IGNo
+YW5nZSB0byB0YXAtd2luZG93czYgd2hpY2ggZml4ZXMgVENQIHByb2JsZW0gb24gV2luZG93
+cyBTZXJ2ZXIgMjAyMiwgaGUgdGhpbmtzIHRoaXMgaXMgdGhlIHdheSB0byBnbwooMTEuNTYu
+MjMpIGNyb24yOiBvaCwgY29vbAooMTEuNTYuMjkpIGxldl9fOiBzbyBJIHRoaW5rIHRoaXMg
+Y291bGQgYmUgbWVyZ2VkCigxMS41Ni41NikgbGV2X186IChhbmQgdGhleSBkaWRuJ3QgaGF2
+ZSBpc3N1ZXMgd2l0aCB0aGF0IGZsYWcgd2hlbiB0aGV5IHVzZWQgaXQgaW4gd2ludHVuKQoo
+MTEuNTcuMTIpIGNyb24yOiBodHRwczovL2dpdGh1Yi5jb20vT3BlblZQTi90YXAtd2luZG93
+czYvcHVsbC8xNDcKKDExLjU3LjEzKSBjcm9uMjogdGhpcyBvbmU/CigxMS41Ny4yNCkgbGV2
+X186IHllcwooMTEuNTcuNDkpIGxldl9fOiAoSSBjYW4gYXNrIGhpbSB0byBjb21tZW50IHRo
+ZXJlLCB0b28pCigxMS41OC41NSkgY3JvbjI6IHRoYXQgd291bGQgYmUgZ29vZAooMTEuNTku
+MTIpIGNyb24yOiBJJ20gZ2xhbmNpbmcgYXQgdGhlIGNoYW5nZSwgYW5kIGl0J3MgYmlnZ2Vy
+IHRoYW4gImp1c3QgYSBmbGFnIiwgc28gSSBuZWVkIHRvIGhhdmUgYSBnb29kIHN0YXJlCigx
+MS41OS41NCkgY3JvbjI6IGl0IHJlbW92ZXMgcXVpdGUgYSBiaXQgb2YgY29kZQooMTIuMDAu
+MDYpIGNyb24yOiAod2hpY2ggY2FuIGJlIGEgZ29vZCB0aGluZyA6KSApCigxMi4wMS40NCkg
+bGV2X186IHllYWgsIGl0IGhhcyByZW1vdmVkIHRoZSBjb2RlIHdoaWNoIGtlZXBzIHRyYWNr
+IG9mIE5CTHMKKDEyLjAyLjA1KSBjcm9uMjogd2hhdCBpcyBvdXIgdGFwIHBhY2thZ2luZyB2
+ZXJzaW9uIHNjaGVtZT8gIExpa2UsIHRoZXJlIGlzIGEgLnppcCBmaWxlIGZvciBkb3dubG9h
+ZGluZyBldGMgLSBpcyB0aGlzIG5hbWVkICI5LjI0LjciIG9yICI2MDEiPwooMTIuMDIuMTIp
+IGxldl9fOiBub3cgd2UgcGFzcyB0aGlzIGZsYWcgdG8gTkRJUyBhbmQgZnJlZSBOQkwgaW4g
+cGxhY2UgCigxMi4wMy4yNSkgbGV2X186IG5vdCBzdXJlLCBidXQgSSB3b3VsZCBnbyB3aXRo
+IDkuMjQuOCBvciA5LjI1CigxMi4wNC4xNCkgY3JvbjI6IHRoaXMgbW9yZSBhYm91dCAid2hh
+dCBnb2VzIGludG8gdGhlIGZpbGVuYW1lIHdoZW4gcGFja2luZyBmb3IgZG93bmxvYWQiIDot
+KSAtIEknbSBmaW5lIHdpdGggOS4yNC43IG90aGVyd2lzZQooMTIuMDQuMjApIGNyb24yOiAo
+eW91ciBwYXRjaCBidW1wcyBmcm9tIDkuMjQuNiAtPiA5LjI0LjcpCigxMi4wNS4xNSkgbGV2
+X186IGFoIHJpZ2h0LCB3ZWxsIHRoaXMgaXMgbm90IHRoYXQgdHJpdmlhbCBjaGFuZ2Ugc28g
+c29tZXRoaW5nIG5lZWRzIHRvIGJlIGJ1bXBlZAooMTIuMDUuMzQpIGNyb24yOiBzb21ldGhp
+bmcgbmVlZHMgdG8gYmUgYnVtcGVkIGFsd2F5cyBvbiBkcml2ZXIgcmUtcmVsZWFzZQooMTIu
+MDUuNDMpIGNyb24yOiBtYXR0b2NrOiBhbHJlYWR5IGdvbmU/CigxMi4wNi4wOCkgY3JvbjI6
+IHNvIHRoZSBxdWVzdGlvbiBpcyBub3QgImlmIiBidW1wLCBidXQgIndoYXQgdG8gYnVtcCIK
+KDEyLjA2LjIzKSBjcm9uMjogaWYgLjYtPi43IGlzIGdvb2Qgd2l0aCBwYWNrYWdpbmcsIGl0
+IGlzIGdvb2QgZm9yIG1lCigxMi4wOC41NCkgY3JvbjI6IHNvLi4uCigxMi4wOC41NSkgbGV2
+X186IHRoYXQgZHJpdmVyIGhhc24ndCBnb3QgbXVjaCBsb3ZlIGxhc3QgeWVhcnMsIG5vIGRl
+ZGljYXRlZCBtYWludGFpbmVyIAooMTIuMDkuNTYpIGNyb24yOiBiZWZvcmUgdGhhdCBwcm9i
+bGVtIGNhbWUgdXAsIHRoZXJlIHdhcyBubyByZWFsIG5lZWQKKDEyLjExLjIxKSBjcm9uMjog
+YW55d2F5LCBJJ2xsIHNlZSB0aGF0IEkgY2FuIGhhdmUgYSBjbG9zZSBsb29rLCBhbmQgaWYg
+U2ltb24gY2FuIGNvbW1lbnQgaW4gdGhlIFBSLCB0aGF0IHdvdWxkIGJlIGdyZWF0CigxMi4x
+MS4zNCkgY3JvbjI6IGFuZCBJJ2xsIGdyYWIgbWF0dG9jayByZWdhcmRpbmcgb3BlbnZwbi1i
+dWlsZCBhbmQgdmVyc2lvbiBudW1iZXJzIG5lZWRlZAooMTIuMTIuMzQpIGNyb24yOiBhbnl0
+aGluZyBlbHNlIG9uIDIuNj8KKDEyLjEyLjM5KSBjcm9uMjogb3Igb24gaXB2NiB0byBjb21t
+dW5pdHk/CigxMi4xNC4zMCkgcGxhaXN0aG9zOiBub3QgZnJvbSBteSBzaWRlLiBJIHN0aWxs
+IGhhdmUgYSBsb3Qgb2Ygc3R1ZmYgSSB3YW50IHRvIGRvIGJ1dCBtb3N0IGlzIG5vdCAyLjYK
+KDEyLjE3LjE0KSBjcm9uMjogdGhlbiBsZXQncyBjb25jbHVkZSB0aGUgbWVldGluZywgYW5k
+IHJldHVybiB0byB3b3JrIDotKQooMTIuMjAuMTMpIGQxMmZrOiBheWUgYW5kIGJ5ZQooMTIu
+MjAuNTEpIGRhem86IGNpYW8hCigxMi4yNi40MSkgbGV2X186IGFyaXZpZGVyY2hpCigxMi4y
+Ny4xMykgb3JkZXg6IGJ5ZSBieWUKKDEyLjI3LjI5KSBNYXhGOiBieWUKKDEyLjMwLjUzKSBw
+bGFpc3Rob3M6IE1heEY6IHRoZSB0bHMtY3J5cHQtdjIgY2hhbmdlcyBhcmUgYWxyZWFkeSBj
+b21taXRlZCBub3cgYnV0IG1heWJlIHlvdSBzdGlsbCB3YW50IHRvIGhhdmUgYSBsb29rIGFz
+IEZveEl0IHdhcyB0cmFkaXRpb25hbGx5IGhlYXZpbHkgaW52ZXN0ZWQgaW4gdGhhdAo=
+
+--------------ZxFZykpS0Mu2L4NQHxMeNGg2--
 
