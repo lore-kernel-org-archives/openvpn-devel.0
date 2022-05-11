@@ -1,12 +1,12 @@
-Date: Wed, 11 May 2022 11:59:07 +0200 (CEST)
+Date: Wed, 11 May 2022 12:04:47 +0200 (CEST)
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <623304717.640814.1652263147363@...2642...>
-In-Reply-To: <20220510170448.1856465-1-arne@...1227...>
-References: <20220422142953.3805364-16-arne@...1227...>
- <20220510170448.1856465-1-arne@...1227...>
+Message-ID: <299108472.641365.1652263487971@...2642...>
+In-Reply-To: <20220510170741.1856843-1-arne@...1227...>
+References: <20220422142953.3805364-17-arne@...1227...>
+ <20220510170741.1856843-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v2 25/28] Ensure that control channel
- packet are respecting tls-mtu
+Subject: Re: [Openvpn-devel] [PATCH v2 26/28] Allow setting control channel
+ packet size with tls-mtu
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,164 +19,127 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Typo/grammar fixes only for now.
-
-> Arne Schwabe <arne@...1227...> hat am 10.05.2022 19:04 geschrieben:
-> This ensure that control packets are actually  smaller than tls-mtu.
-
-"ensures"
-
-> Since OpenVPN will consider a control message packet complete
-> when the TLS record is complete, we have to ensure that the SSL library
-> will still write one record, so the receiving side will only be able
-> to get/read the control message content when a TLS record is
-> complete. To achieve this goal, this commit does:
-> 
-> - Splitting one read from TLS library into multiple control
-
-"split" to be consistent with other bullet points.
-
->   channel packets, splitting one TLS record into multiple
->   control packets.
-> - increase allowed number of outstanding packets to 6 from 4 on the
->   sender side. This is still okay with older implementation as
-
-"implementations"
-
->   receivers will have room for 8.
-> - calculate the overhead for control channel message to allow
->   staying below that threshold.
-> - remove maxlen from key_state_read_ciphertext and related functions
->   as we now always allow control channel messages to be up to
->   TLS_CHANNEL_BUF_SIZE in size and longer limit this by the mtu of
-
-"no longer"
-
->   control packets as the implemented splitting will take care of
->   larger payloads from the SSL library
-> 
-> Patch v2: avoid assertion about to large buffer by sticking to 1250 max control size
-
-"too"
-
->           in this commit and leaving larger sizes for the --tls-mtu commit. Also fix
->           various other small problems and grammer fixes.
-
-"grammar"
-
+> Arne Schwabe <arne@...1227...> hat am 10.05.2022 19:07 geschrieben:
 [...]
-> @@ -496,6 +489,38 @@ reliable_get_buf(struct reliable *rel)
->      return NULL;
->  }
+> diff --git a/Changes.rst b/Changes.rst
+> index 67a23c792..f40fc09ae 100644
+> --- a/Changes.rst
+> +++ b/Changes.rst
+> @@ -79,6 +79,12 @@ Cookie based handshake for UDP server
+>      shake. The tls-crypt-v2 option allows controlling if older clients are
+>      accepted.
 >  
-> +/* Counts the number of free buffers in output that can be potientially used
+> +Improved control channel packet size control (``--tls-mtu``)
+> +    The size of control channel is no longer tied to
+> +    ``--link-mtu``/``--tun-mtu`` and can be set using ``--tls-mtu``. Setting
+> +    the size to small sizes no longer breaks the OpenVPN protocol in certain
+> +    situation.
 
-"potentially"
+"situations"
 
-> + * for sending */
-> +int
-> +reliable_get_num_output_sequenced_available(struct reliable *rel)
-> +{
-[...]
-> diff --git a/src/openvpn/reliable.h b/src/openvpn/reliable.h
-> index b9863efe3..5b4f75c28 100644
-> --- a/src/openvpn/reliable.h
-> +++ b/src/openvpn/reliable.h
-[...]
-> @@ -385,6 +399,20 @@ void reliable_mark_deleted(struct reliable *rel, struct buffer *buf);
->   */
->  struct buffer *reliable_get_buf_output_sequenced(struct reliable *rel);
+> +
+>  Deprecated features
+>  -------------------
+>  ``inetd`` has been removed
+> @@ -141,6 +147,8 @@ User-visible Changes
+>  - Option ``--nobind`` is default when ``--client`` or ``--pull`` is used in the configuration
+>  - :code:`link_mtu` parameter is removed from environment or replaced with 0 when scripts are
+>    called with parameters. This parameter is unreliable and no longer internally calculated.
+> +- control channel packet maximum size is no longer influenced by ``--link-mtu``/``--tun-mtu``
+> +  and must be set by ``--tls-mtu`` now.
 >  
+>  Overview of changes in 2.5
+>  ==========================
+> diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
+> index 6473ad423..b084fe082 100644
+> --- a/doc/man-sections/link-options.rst
+> +++ b/doc/man-sections/link-options.rst
+> @@ -454,3 +454,10 @@ the local and the remote host.
+>       if mode server:
+>           socket-flags TCP_NODELAY
+>           push "socket-flags TCP_NODELAY"
 > +
-> +/**
-> + * Counts the number of free buffers in output that can be potientially used
+> +--tls-mtu size
+> +  This option sets the maximum size for control channel packets. OpenVPN will
+> +  try to keep its control channel messages below this size but due to some
+> +  constraints in the protocol this is not always possible. If the option is
+> +  not set, it default to 1250. Valid sizes are between 512 and 2048.
+> +  The maximum packet size includes encapsalution overhead like UDP and IP.
 
-"potentially"
+"encapsulation"
 
-> + * for sending
-> + *
-> + *  @param rel The reliable structure in which to search for a free
-> + *     entry.
-> + *
-> + *  @return the number of buffer that are available for sending without
-> + *             breaking ack sequence
-> + * */
-> +int
-> +reliable_get_num_output_sequenced_available(struct reliable *rel);
-> +
->  /**
->   * Mark the reliable entry associated with the given buffer as
->   *     active outgoing.
+> \ No newline at end of file
+[...]
+> @@ -6281,6 +6283,18 @@ add_option(struct options *options,
+>          options->ce.tun_mtu_extra = positive_atoi(p[1]);
+>          options->ce.tun_mtu_extra_defined = true;
+>      }
+> +    else if (streq(p[0], "tls-mtu") && p[1] && !p[2])
+> +    {
+> +        VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);
+> +        int tls_mtu = atoi(p[1]);
+> +        if (tls_mtu < 512 || tls_mtu > TLS_CHANNEL_BUF_SIZE)
+> +        {
+> +            msg(msglevel, "Bad tls-mtu value, must be between %d and %d",
+> +                512, TLS_CHANNEL_BUF_SIZE);
+
+Would it be useful to have a define for the 512 as well?
+
+> +            goto err;
+> +        }
+> +        options->ce.tls_mtu = positive_atoi(p[1]);
+> +    }
+>  #ifdef ENABLE_FRAGMENT
+>      else if (streq(p[0], "mtu-dynamic"))
+>      {
+[...]
 > diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 61dea996d..1e3c500d8 100644
+> index 1e3c500d8..d1708c19b 100644
 > --- a/src/openvpn/ssl.c
 > +++ b/src/openvpn/ssl.c
-[...]
-> @@ -334,6 +336,47 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
->      frame->tun_mtu = min_int(data_channel_frame->tun_mtu, 1250);
+> @@ -296,8 +296,7 @@ tls_limit_reneg_bytes(const char *ciphername, int *reneg_bytes)
 >  }
 >  
-> +/**
-> + * calculate the maximum overhead that control channel frames have
+>  void
+> -tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame,
+> -                                          struct frame *frame)
+> +tls_init_control_channel_frame_parameters(struct frame *frame, int tls_mtu)
+>  {
+>      /*
+>       * frame->extra_frame is already initialized with tls_auth buffer requirements,
+> @@ -322,18 +321,20 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
+>  
+>      /* Previous OpenVPN version calculated the maximum size and buffer of a
+>       * control frame depending on the overhead of the data channel frame
+> -     * overhead and limited its maximum size to 1250. We always allocate the
+> -     * TLS_CHANNEL_BUF_SIZE buffer size since a lot of code blindly assumes
+> -     * a large buffer (e.g. PUSH_BUNDLE_SIZE) and also our peer might have
+> -     * a higher size configured and we still want to be able to receive the
+> -     * packets. frame->mtu_mtu is set as suggestion for the maximum packet
+> -     * size */
+> -    frame->buf.payload_size = 1250 + overhead;
+> +     * overhead and limited its maximum size to 1250. Since control frame
+> +     * frames also need to fit into data channel buffer we have the same
+> +     * default of 1500 + 100 as data channel buffers have. Increasing
+> +     * tls-mtu beyond this limit also increases the data channel buffers */
+> +    frame->buf.payload_size = max_int(1500, tls_mtu) + 100;
+>  
+>      frame->buf.headroom = overhead;
+>      frame->buf.tailroom = overhead;
+>  
+> -    frame->tun_mtu = min_int(data_channel_frame->tun_mtu, 1250);
+> +    frame->tun_mtu = tls_mtu;
+> +
+> +    /* Ensure the tun-mtu stays in a valid range */
+> +    frame->tun_mtu = min_int(frame->tun_mtu, TLS_CHANNEL_BUF_SIZE);
+> +    frame->tun_mtu = max_int(frame->tun_mtu, 512);
 
-"."
+Is this 512 the same 512 as above? If yes, then I feel a define would definitely
+be a good idea.
 
-> + * This includes header, op code and everything apart from the
-> + * payload itself. This method is a bit pessimistic and might give higher
-> + * overhead than we actually have */
-> +static int
-> +calc_control_channel_frame_overhead(const struct tls_session *session)
-> +{
-[...]
-> @@ -2638,6 +2681,91 @@ read_incoming_tls_plaintext(struct key_state *ks, struct buffer *buf,
->      return true;
 >  }
 >  
-> +static bool
-> +write_outgoing_tls_ciphertext(struct tls_session *session, bool *state_change)
-> +{
-> +    struct key_state *ks = &session->key[KS_PRIMARY];
-> +
-> +    int rel_avail = reliable_get_num_output_sequenced_available(ks->send_reliable);
-> +    if (rel_avail == 0)
-> +    {
-> +        return true;
-> +    }
-> +
-> +    /* We need to determine how much space is actually available in the control
-> +     * channel frame */
-> +
-> +    int max_pkt_len = min_int(TLS_CHANNEL_BUF_SIZE, session->opt->frame.tun_mtu);
-> +
-> +
-> +    /* Subtract overhead */
-> +    max_pkt_len -= calc_control_channel_frame_overhead(session);
-> +
-> +    /* calculate total available length for outgoing tls ciphertext */
-> +    int maxlen = max_pkt_len * rel_avail;
-> +
-> +    /* Is first packet one that will have a WKC appended? */
-> +    if (control_packet_needs_wkc(ks))
-> +    {
-> +        maxlen -= buf_len(session->tls_wrap.tls_crypt_v2_wkc);
-> +    }
-> +
-> +    /* Not enough space available to send a full control channel packet */
-> +    if (maxlen < TLS_CHANNEL_BUF_SIZE)
-> +    {
-> +        if (rel_avail == TLS_RELIABLE_N_SEND_BUFFERS)
-> +        {
-> +            msg(D_TLS_ERRORS, "--tls-mtu setting to low. Unable to send TLS packets");
-
-"too"
-
---tls-mtu is not actually defined, yet. But not sure whether it is worth
-fixing this just to restore the text in the next commit.
-
-> +        }
-> +        msg(D_REL_LOW, "Reliable: Send queue full, postponing TLS send");
-> +        return true;
-> +    }
+>  /**
 [...]
 
 Regards,
