@@ -1,10 +1,9 @@
-Date: Thu, 12 May 2022 08:05:29 +0200 (CEST)
-Message-Id: <202205120605.24C65TZW013739@...2054...>
+Date: Thu, 12 May 2022 08:32:49 +0200 (CEST)
+Message-Id: <202205120632.24C6Wn76014604@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220222143514.3480-1-gert@...1296...>
-References: <20220222143514.3480-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Implement --mtu-disc for IPv6
- UDP sockets.
+In-Reply-To: <20220503002840.295-1-lstipakov@...277...>
+References: <20220503002840.295-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix M_ERRNO behavior on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,21 +14,48 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master branch.
+Your patch has been applied to the master branch.
 
-commit 043c67f36342969cd171d24c70ee6b62ebc95fee
-Author: Gert Doering
-Date:   Tue Feb 22 15:35:14 2022 +0100
+I've added the S-O-B line according to our developer documentation.
 
-     Implement --mtu-disc for IPv6 UDP sockets.
+I have come late to the party, but really, code like this should be
+avoided:
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20220222143514.3480-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23879.html
++        bool unreachable = error_code ==
++#ifdef _WIN32
++            WSAENETUNREACH;
++#else
++            ENETUNREACH;
++#endif
+
+what is wrong writing this as follows?
+
++#ifdef _WIN32
++        bool unreachable = (error_code == WSAENETUNREACH);
++#else
++        bool unreachable = (error_code == ENETUNREACH);
++#endif
+
+one line *less*, and very clear what happens in both branches, not
+"old style openvpn contortions with #ifdef in the middle of an 
+expression".
+
+Also, assignments of the type "a = b == c;" should use brackets, always 
+- even if the C compiler understands what this code does, humans need 
+extra brain cycles to make sense of it.
+
+commit 54800aa975418fe3570f3206a5f9b277dc59bd47
+Author: Lev Stipakov
+Date:   Tue May 3 03:28:40 2022 +0300
+
+     Fix M_ERRNO behavior on Windows
+
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <20220503002840.295-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24270.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
