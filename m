@@ -1,15 +1,10 @@
-Date: Thu, 12 May 2022 08:55:39 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <Ynyva2Kt9n52YDvE@...1296...>
-References: <20220503002840.295-1-lstipakov@...277...>
- <202205120632.24C6Wn76014604@...2054...>
+From: Arne Schwabe <arne@...1227...>
+Date: Thu, 12 May 2022 14:14:26 +0200
+Message-Id: <20220512121429.2096164-5-arne@...1227...>
+In-Reply-To: <20220512121429.2096164-1-arne@...1227...>
+References: <20220512121429.2096164-1-arne@...1227...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="vT453ZjpIaSzzc5F"
-Content-Disposition: inline
-In-Reply-To: <202205120632.24C6Wn76014604@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Fix M_ERRNO behavior on
- Windows
+Subject: [Openvpn-devel] [PATCH 4/7] Add macos OpenSSL 3.0 and ASAN builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,134 +13,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Gert Doering <gert@...1296...>
 
---vT453ZjpIaSzzc5F
-Content-Type: multipart/mixed; boundary="jRwJxC6RrmwDJ2QP"
-Content-Disposition: inline
-
---jRwJxC6RrmwDJ2QP
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-Hi,
-
-On Thu, May 12, 2022 at 08:32:49AM +0200, Gert Doering wrote:
-> I have come late to the party, but really, code like this should be
-> avoided:
->=20
-> +        bool unreachable =3D error_code =3D=3D
-> +#ifdef _WIN32
-> +            WSAENETUNREACH;
-> +#else
-> +            ENETUNREACH;
-> +#endif
-
-Even worse, this is also uncrustify-noncompliant...  and I forgot to
-double check.
-
-I have fixed the whitespace errors introduced in the M_ERRNO patch
-in commit 28557b50c6c9, as attached (and already pushed).
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---jRwJxC6RrmwDJ2QP
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment;
-	filename="0001-Fix-non-compliant-whitespace-introduced-by-commit-54.patch"
-Content-Transfer-Encoding: quoted-printable
-
-=46rom 28557b50c6c9354fa50b4a18374c064dc547ac25 Mon Sep 17 00:00:00 2001
-=46rom: Gert Doering <gert@...1296...>
-Date: Thu, 12 May 2022 08:53:04 +0200
-Subject: [PATCH] Fix non-compliant whitespace introduced by commit
- 54800aa975418fe35.
-
-Uncrustify fix.
-
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Gert Doering <gert@...1296...>
+Message-Id: <20211019183127.614175-21-arne@...1227...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23018.html
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
- src/openvpn/error.c   | 2 +-
- src/openvpn/error.h   | 2 +-
- src/openvpn/forward.c | 4 ++--
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ .github/workflows/build.yaml | 28 +++++++++++++++++++++++++---
+ 1 file changed, 25 insertions(+), 3 deletions(-)
 
-diff --git a/src/openvpn/error.c b/src/openvpn/error.c
-index 1b7f5cde..49ed1dbc 100644
---- a/src/openvpn/error.c
-+++ b/src/openvpn/error.c
-@@ -220,7 +220,7 @@ x_msg(const unsigned int flags, const char *format, ...)
-     va_end(arglist);
- }
-=20
--static const char*
-+static const char *
- openvpn_strerror(int err, bool crt_error, struct gc_arena *gc)
- {
- #ifdef _WIN32
-diff --git a/src/openvpn/error.h b/src/openvpn/error.h
-index be8d97e5..972619fe 100644
---- a/src/openvpn/error.h
-+++ b/src/openvpn/error.h
-@@ -399,7 +399,7 @@ openvpn_errno_maybe_crt(bool *crt_error)
-         *crt_error =3D true;
-         err =3D errno;
-     }
--#else
-+#else  /* ifdef _WIN32 */
-     *crt_error =3D true;
-     err =3D errno;
- #endif
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 04828a5c..6afe152b 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1663,9 +1663,9 @@ process_outgoing_link(struct context *c)
-=20
-         bool unreachable =3D error_code =3D=3D
- #ifdef _WIN32
--            WSAENETUNREACH;
-+                           WSAENETUNREACH;
- #else
--            ENETUNREACH;
-+                           ENETUNREACH;
- #endif
-         if (size < 0 && unreachable && c->c2.tls_multi
-             && !tls_initial_packet_received(c->c2.tls_multi) && c->options=
-=2Emode =3D=3D MODE_POINT_TO_POINT)
---=20
-2.36.0
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 4926c1f95..3bdf2aa9f 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -224,15 +224,37 @@ jobs:
+ 
+   macos:
+     runs-on: macos-latest
++    strategy:
++      fail-fast: false
++      matrix:
++        ossl: [ 1.1, 3 ]
++        build: [ normal, asan ]
++        include:
++          - build: asan
++            cflags: "-fsanitize=address -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
++            ldflags: -fsanitize=address
++            # Our build system ignores LDFLAGS for plugins
++            configureflags: --disable-plugin-auth-pam  --disable-plugin-down-root
++          - build: normal
++            cflags: "-O2 -g"
++            ldflags: ""
++            configureflags: ""
++
++    name: "macOS - OpenSSL ${{matrix.ossl}} - ${{matrix.build}}"
++    env:
++      CFLAGS: ${{ matrix.cflags }}
++      LDFLAGS: ${{ matrix.ldflags }}
++      OPENSSL_CFLAGS: -I/usr/local/opt/openssl@${{matrix.ossl}}/include
++      OPENSSL_LIBS: "-L/usr/local/opt/openssl@${{matrix.ossl}}/lib -lcrypto -lssl"
+     steps:
++      - name: Install dependencies
++        run: brew install openssl@...2560... openssl@...1554... lzo lz4 man2html cmocka libtool automake autoconf
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2620...
+-      - name: Install dependencies
+-        run: brew install openssl lzo lz4 man2html cmocka libtool automake autoconf
+       - name: autoconf
+         run: autoreconf -fvi
+       - name: configure
+-        run: OPENSSL_CFLAGS=-I/usr/local/opt/openssl@...2560.../include  OPENSSL_LIBS="-L/usr/local/opt/openssl@...2560.../lib -lcrypto -lssl" ./configure
++        run: ./configure ${{matrix.configureflags}}
+       - name: make all
+         run: make -j4
+       - name: make check
+-- 
+2.32.0 (Apple Git-132)
 
-
---jRwJxC6RrmwDJ2QP--
-
---vT453ZjpIaSzzc5F
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJifK9rAAoJEB2Cnv7KVigSvqkL/iQJBiKC30J05/cIfxtTmNP1
-hiEkcOkUPwuAOeBunjPWo4eSIvA8BfJ3W90T9E7/F+9CYSkyBXIbqB2teaDVdgQT
-xOod92JaDDFoxWeWs8wJTiYuMI42w1oShUQmQBssT/vUf51lSUdBdFzRPa04WRy5
-mDviWnXsqzBxgrLnviOIcKmm0jEDn+2iHGMuwG7PNpzbTySClnKDQOEnp/nQ4wO7
-8rBKqZFT0SCpXEERPwP1ZSUev2MLyZq24ztYR+rmKw16mhTADqfUocDiEqiOONO/
-u5iXCnr/xuExsX5bXll52ka26WCyslzqI1ZKo1V/Npg5KLqNDSq+QcKdjWsYkKYX
-wMZxP1v0jZaxSz6mg8QzQUF1udgt/DS/oomASXCKtoXK0rXPEkJ5We1lpo2RkU1G
-27P16Hu0HRIJAEY8bqN2on1jMerZcTyY2lZDNgAolxlHerMcxLTuxG1XKK03x5Kx
-7s9arPWZtNtm+dyj3+ZPjj151zZh4rnpj7ed2DfOwg==
-=zUV1
------END PGP SIGNATURE-----
-
---vT453ZjpIaSzzc5F--
 
