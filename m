@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 12 May 2022 14:14:23 +0200
-Message-Id: <20220512121429.2096164-2-arne@...1227...>
+Date: Thu, 12 May 2022 14:14:29 +0200
+Message-Id: <20220512121429.2096164-8-arne@...1227...>
 In-Reply-To: <20220512121429.2096164-1-arne@...1227...>
 References: <20220512121429.2096164-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/7] Refactor early initialisation and
- uninitialisation into methods
+Subject: [Openvpn-devel] [PATCH 7/7] Remove dependency on BF-CBC existance
+ from test_ncp
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,65 +17,56 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Max Fillinger <maximilian.fillinger@...2507...>, Gert Doering <gert@...1296...>
 
-This put the early initialisation and uninitialisation that needs to
-happen between option parsing and post processing into small methods.
-
-Cherry-pick of 97056dbf9 as prerequirement for the provider patch
+The test_check_ncp_ciphers_list test assumed that BF-CBC is always
+available, which is no longer the case with OpenSSL 3.0. Rewrite the
+test to not rely on BF-CBC to be available.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Max Fillinger <maximilian.fillinger@...2507...>
+Message-Id: <20211019183127.614175-14-arne@...1227...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg23003.html
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
- src/openvpn/openvpn.c | 23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
+ tests/unit_tests/openvpn/test_ncp.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
-index a21b21e23..e03d25450 100644
---- a/src/openvpn/openvpn.c
-+++ b/src/openvpn/openvpn.c
-@@ -105,6 +105,20 @@ tunnel_point_to_point(struct context *c)
+diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
+index e38a5738e..d4164ef7a 100644
+--- a/tests/unit_tests/openvpn/test_ncp.c
++++ b/tests/unit_tests/openvpn/test_ncp.c
+@@ -42,6 +42,7 @@
+ /* Defines for use in the tests and the mock parse_line() */
  
- #undef PROCESS_SIGNAL_P2P
+ const char *bf_chacha = "BF-CBC:CHACHA20-POLY1305";
++const char *aes_chacha = "AES-128-CBC:CHACHA20-POLY1305";
+ const char *aes_ciphers = "AES-256-GCM:AES-128-GCM";
  
-+void init_early(struct context *c)
-+{
-+    net_ctx_init(c, &c->net_ctx);
+ static void
+@@ -57,6 +58,11 @@ test_check_ncp_ciphers_list(void **state)
+ 
+     assert_string_equal(mutate_ncp_cipher_list(aes_ciphers, &gc), aes_ciphers);
+ 
++    if (have_chacha && have_blowfish)
++    {
++        assert_string_equal(mutate_ncp_cipher_list(aes_chacha, &gc), aes_chacha);
++    }
 +
-+    /* init verbosity and mute levels */
-+    init_verb_mute(c, IVM_LEVEL_1);
-+
-+}
-+
-+static void uninit_early(struct context *c)
-+{
-+    net_ctx_free(&c->net_ctx);
-+}
-+
- 
- /**************************************************************************/
- /**
-@@ -193,10 +207,9 @@ openvpn_main(int argc, char *argv[])
-             open_plugins(&c, true, OPENVPN_PLUGIN_INIT_PRE_CONFIG_PARSE);
- #endif
- 
--            net_ctx_init(&c, &c.net_ctx);
--
--            /* init verbosity and mute levels */
--            init_verb_mute(&c, IVM_LEVEL_1);
-+            /* Early initialisation that need to happen before option
-+             * post processing and other early startup but after parsing */
-+            init_early(&c);
- 
-             /* set dev options */
-             init_options_dev(&c.options);
-@@ -308,7 +321,7 @@ openvpn_main(int argc, char *argv[])
-             env_set_destroy(c.es);
-             uninit_options(&c.options);
-             gc_reset(&c.gc);
--            net_ctx_free(&c.net_ctx);
-+            uninit_early(&c);
-         }
-         while (c.sig->signal_received == SIGHUP);
+     if (have_chacha && have_blowfish)
+     {
+         assert_string_equal(mutate_ncp_cipher_list(bf_chacha, &gc), bf_chacha);
+@@ -73,8 +79,8 @@ test_check_ncp_ciphers_list(void **state)
+     bool have_chacha_mixed_case = cipher_kt_get("ChaCha20-Poly1305");
+     if (have_chacha_mixed_case)
+     {
+-        assert_string_equal(mutate_ncp_cipher_list("BF-CBC:ChaCha20-Poly1305", &gc),
+-                            bf_chacha);
++        assert_string_equal(mutate_ncp_cipher_list("AES-128-CBC:ChaCha20-Poly1305", &gc),
++                            aes_chacha);
      }
+ 
+     assert_ptr_equal(mutate_ncp_cipher_list("vollbit", &gc), NULL);
 -- 
 2.32.0 (Apple Git-132)
 
