@@ -1,10 +1,10 @@
-Date: Fri, 13 May 2022 09:23:43 +0200 (CEST)
-Message-Id: <202205130723.24D7NhI1093690@...2054...>
+Date: Fri, 13 May 2022 09:23:35 +0200 (CEST)
+Message-Id: <202205130723.24D7NZcX093636@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220512121429.2096164-7-arne@...1227...>
-References: <20220512121429.2096164-7-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix allowing/showing
- unsupported ciphers and digests
+In-Reply-To: <20220512121429.2096164-6-arne@...1227...>
+References: <20220512121429.2096164-6-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add --with-openssl-engine
+ autoconf option (auto|yes|no)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,36 +20,23 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Code is close enough to the master version, and it nicely does what it
-says ("openvpn --providers legacy --show-ciphers" vs. "--show-ciphers").
+This repairs the first part of "make check" for ossl 3.0 builds (... by 
+skipping the failing engine test).  The cipher loopback still fails.
 
-While this fixes the "cipher loopback test", it now breaks 
-tls_crypt_testdriver, as that one expects BF-CBC to be universally
-available...
-
-Unsupported cipher in --data-ciphers: BF-CBC
-Unsupported cipher in --data-ciphers: BF-CBC
-[  ERROR   ] --- Test failed with exception: Segmentation fault(11)
-
-.. to be fixed in 7/7.
-
-(Breakage only in 3.0.x builds, of course, 1.1.x builds are fine)
-
-Fixed one spurious newline, and another uncrustify complaint
-introduced by crypto_unload_provider().
+Moved the Changes.rst hunk to the 2.5.7 section I introduced with 2/7 :-)
 
 Your patch has been applied to the release/2.5 branch.
 
-commit 3690939126cf84b166157bad96e724caea61346d
+commit c5d61b345e21860b2357206848535a8452754ad8
 Author: Arne Schwabe
-Date:   Thu May 12 14:14:28 2022 +0200
+Date:   Thu May 12 14:14:27 2022 +0200
 
-     Fix allowing/showing unsupported ciphers and digests
+     Add --with-openssl-engine autoconf option (auto|yes|no)
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220512121429.2096164-7-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24334.html
+     Message-Id: <20220512121429.2096164-6-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24332.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
