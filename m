@@ -1,10 +1,12 @@
-Date: Fri, 13 May 2022 10:46:15 +0200 (CEST)
-Message-Id: <202205130846.24D8kF8A097719@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220513083635.2199131-1-arne@...1227...>
-References: <20220513083635.2199131-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove dependency on BF-CBC
- existance from test_ncp
+Message-ID: <93a42f95-e8a7-0134-e33f-c9d3ec479abb@...1227...>
+Date: Fri, 13 May 2022 10:55:32 +0200
+MIME-Version: 1.0
+Content-Language: en-GB
+References: <20220511121038.1002898-1-heiko@...2662...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20220511121038.1002898-1-heiko@...2662...>
+Subject: Re: [Openvpn-devel] [PATCH] doc: fix literal block in
+ tls-options.rst
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +15,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Heiko Hund <heiko@...2662...>, openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Am 11.05.22 um 14:10 schrieb Heiko Hund:
+> Signed-off-by: Heiko Hund <heiko@...2662...>
+> ---
+>   doc/man-sections/tls-options.rst | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
+> index c06ee335..d51aff77 100644
+> --- a/doc/man-sections/tls-options.rst
+> +++ b/doc/man-sections/tls-options.rst
+> @@ -487,8 +487,8 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
+>   
+>   --tls-crypt-v2 keyfile
+>   
+> -  Valid syntax:
+> -  ::
+> +  Valid syntax::
+> +
+>        tls-crypt-v2 keyfile
+>        tls-crypt-v2 keyfile force-cookie
+>        tls-crypt-v2 keyfile allow-noncookie
 
-Funny how "git cherry-pick" can sometimes do correct-looking-but-different
-stuff... now the code matches what is in the master commit.
 
-Plus, it passes "make check" with 3.0.x builds :-)
-
-Your patch has been applied to the release/2.5 branch.
-
-commit 263436fdb06cc2364f9667bc1adead70aeb93ecc
-Author: Arne Schwabe
-Date:   Fri May 13 10:36:35 2022 +0200
-
-     Remove dependency on BF-CBC existance from test_ncp
-
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220513083635.2199131-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24346.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+I don't understand this to be honest. I don't have a good about rst but 
+all other instances of Valid syntax use the form like what was before 
+the patch, e.g.
 
 
---
-kind regards,
+   Valid syntax:
+   ::
 
-Gert Doering
+     peer-fingerprint AD:B0:95:D8:09:...
+
+
+So why exactly does this one need to be different?
+
+Arne
 
 
