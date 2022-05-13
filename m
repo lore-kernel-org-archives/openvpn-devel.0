@@ -1,10 +1,12 @@
 From: Heiko Hund <heiko@...2662...>
-Date: Fri, 13 May 2022 11:37:40 +0200
-Message-Id: <20220513093740.1091639-1-heiko@...2662...>
-In-Reply-To: <20220512231105.1076835-1-heiko@...2662...>
-References: <20220512231105.1076835-1-heiko@...2662...>
+Date: Fri, 13 May 2022 11:46:04 +0200
+Message-ID: <1717201.NRGAxHBxdp@...2664...>
+In-Reply-To: <93a42f95-e8a7-0134-e33f-c9d3ec479abb@...1227...>
+References: <20220511121038.1002898-1-heiko@...2662...>
+ <93a42f95-e8a7-0134-e33f-c9d3ec479abb@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] signal --dns support in peer info
+Subject: Re: [Openvpn-devel] [PATCH] doc: fix literal block in
+ tls-options.rst
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,49 +16,34 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Have clients set a bit in IV_PROTO, so that servers can make an informed
-decision on whether to push --dns to the client. While unknown options
-are ignored by clients when pushed, they generate a warning in the log.
-That can be circumvented by server backends by checking if bit 7 is set.
+On Freitag, 13. Mai 2022 10:55:32 CEST Arne Schwabe wrote:
+> Am 11.05.22 um 14:10 schrieb Heiko Hund:
+> > +  Valid syntax::
+> 
+> I don't understand this to be honest. I don't have a good about rst but
+> all other instances of Valid syntax use the form like what was before
+> the patch, e.g.
+> 
+>    Valid syntax:
+> 
+>      peer-fingerprint AD:B0:95:D8:09:...
+> 
+> So why exactly does this one need to be different?
 
-Signed-off-by: Heiko Hund <heiko@...2662...>
----
- src/openvpn/ssl.c | 3 +++
- src/openvpn/ssl.h | 3 +++
- 2 files changed, 6 insertions(+)
+It doesn't need to. :: on an end of line are replaced by a single : and serve 
+the same formatting purpose as :: on a separate line followed by a blank line:
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 61dea996..24d7f3f4 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1940,6 +1940,9 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
-         /* support for P_DATA_V2 */
-         int iv_proto = IV_PROTO_DATA_V2;
- 
-+        /* support for the --dns option */
-+        iv_proto |= IV_PROTO_DNS_OPTION;
-+
-         /* support for receiving push_reply before sending
-          * push request, also signal that the client wants
-          * to get push-reply messages without without requiring a round
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 0ba86d3e..c8802707 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -93,6 +93,9 @@
-  * result. */
- #define IV_PROTO_NCP_P2P         (1<<5)
- 
-+/** Supports the --dns option introduced in version 2.6 */
-+#define IV_PROTO_DNS_OPTION      (1<<6)
-+
- /* Default field in X509 to be username */
- #define X509_USERNAME_FIELD_DEFAULT "CN"
- 
--- 
-2.32.0
+https://docutils.sourceforge.io/docs/user/rst/quickref.html#literal-blocks
+
+Thought it is easier on the eye here, because it is possible. The actual 
+problem is that a blank line after the :: is missing. Let me know if I should 
+send a version with :: separate.
+
+Cheers
+Heiko
+
 
 
