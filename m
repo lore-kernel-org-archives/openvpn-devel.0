@@ -1,10 +1,11 @@
-Date: Fri, 13 May 2022 09:23:35 +0200 (CEST)
-Message-Id: <202205130723.24D7NZcX093636@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220512121429.2096164-6-arne@...1227...>
-References: <20220512121429.2096164-6-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add --with-openssl-engine
- autoconf option (auto|yes|no)
+From: Arne Schwabe <arne@...1227...>
+Date: Fri, 13 May 2022 10:36:35 +0200
+Message-Id: <20220513083635.2199131-1-arne@...1227...>
+In-Reply-To: <20220512121429.2096164-1-arne@...1227...>
+References: <20220512121429.2096164-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2 7/7] Remove dependency on BF-CBC
+ existance from test_ncp
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,34 +16,56 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+The test_check_ncp_ciphers_list test assumed that BF-CBC is always
+available, which is no longer the case with OpenSSL 3.0. Rewrite the
+test to not rely on BF-CBC to be available.
 
-This repairs the first part of "make check" for ossl 3.0 builds (... by 
-skipping the failing engine test).  The cipher loopback still fails.
+This is a cherry-pick from c07f95f3
 
-Moved the Changes.rst hunk to the 2.5.7 section I introduced with 2/7 :-)
+Patch V2: manually fix if condition. Somehow the git cherry-pick ended up
+          with a broken if condition.
+---
+ tests/unit_tests/openvpn/test_ncp.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-Your patch has been applied to the release/2.5 branch.
-
-commit c5d61b345e21860b2357206848535a8452754ad8
-Author: Arne Schwabe
-Date:   Thu May 12 14:14:27 2022 +0200
-
-     Add --with-openssl-engine autoconf option (auto|yes|no)
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220512121429.2096164-6-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24332.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
+index e38a5738e..4337f6df7 100644
+--- a/tests/unit_tests/openvpn/test_ncp.c
++++ b/tests/unit_tests/openvpn/test_ncp.c
+@@ -42,6 +42,7 @@
+ /* Defines for use in the tests and the mock parse_line() */
+ 
+ const char *bf_chacha = "BF-CBC:CHACHA20-POLY1305";
++const char *aes_chacha = "AES-128-CBC:CHACHA20-POLY1305";
+ const char *aes_ciphers = "AES-256-GCM:AES-128-GCM";
+ 
+ static void
+@@ -57,6 +58,11 @@ test_check_ncp_ciphers_list(void **state)
+ 
+     assert_string_equal(mutate_ncp_cipher_list(aes_ciphers, &gc), aes_ciphers);
+ 
++    if (have_chacha)
++    {
++        assert_string_equal(mutate_ncp_cipher_list(aes_chacha, &gc), aes_chacha);
++    }
++
+     if (have_chacha && have_blowfish)
+     {
+         assert_string_equal(mutate_ncp_cipher_list(bf_chacha, &gc), bf_chacha);
+@@ -73,8 +79,8 @@ test_check_ncp_ciphers_list(void **state)
+     bool have_chacha_mixed_case = cipher_kt_get("ChaCha20-Poly1305");
+     if (have_chacha_mixed_case)
+     {
+-        assert_string_equal(mutate_ncp_cipher_list("BF-CBC:ChaCha20-Poly1305", &gc),
+-                            bf_chacha);
++        assert_string_equal(mutate_ncp_cipher_list("AES-128-CBC:ChaCha20-Poly1305", &gc),
++                            aes_chacha);
+     }
+ 
+     assert_ptr_equal(mutate_ncp_cipher_list("vollbit", &gc), NULL);
+-- 
+2.32.0 (Apple Git-132)
 
 
