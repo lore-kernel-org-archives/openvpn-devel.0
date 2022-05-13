@@ -1,12 +1,12 @@
-Message-ID: <93a42f95-e8a7-0134-e33f-c9d3ec479abb@...1227...>
-Date: Fri, 13 May 2022 10:55:32 +0200
+From: Heiko Hund <heiko@...2662...>
+Date: Fri, 13 May 2022 11:33:42 +0200
+Message-ID: <4848905.2GFlJNG000@...2664...>
+In-Reply-To: <d4f84c60-c926-867c-0f08-442ec513b335@...1227...>
+References: <20220512231105.1076835-1-heiko@...2662...>
+ <1e5fe75f-72b9-6bdc-d061-c18223ae92cf@...1227...>
+ <d4f84c60-c926-867c-0f08-442ec513b335@...1227...>
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <20220511121038.1002898-1-heiko@...2662...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20220511121038.1002898-1-heiko@...2662...>
-Subject: Re: [Openvpn-devel] [PATCH] doc: fix literal block in
- tls-options.rst
+Subject: Re: [Openvpn-devel] [PATCH] signal --dns support in peer info
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,46 +15,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-To: Heiko Hund <heiko@...2662...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Am 11.05.22 um 14:10 schrieb Heiko Hund:
-> Signed-off-by: Heiko Hund <heiko@...2662...>
-> ---
->   doc/man-sections/tls-options.rst | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+On Freitag, 13. Mai 2022 09:17:49 CEST Arne Schwabe wrote:
+> Am 13.05.2022 um 09:14 schrieb Arne Schwabe:
+> > Am 13.05.2022 um 01:11 schrieb Heiko Hund:
+> >> Have clients set a bit in IV_PROTO, so that servers can make an informed
+> >> decision on whether to push --dns to the client. While unknown options
+> >> are ignored by clients when pushed, they generate a warning in the log.
+> >> That can be circumvented by server backends by checking if bit 7 is set.
+> > 
+> > Acked-By: Arne Schwabe <arne@...1227...>
 > 
-> diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
-> index c06ee335..d51aff77 100644
-> --- a/doc/man-sections/tls-options.rst
-> +++ b/doc/man-sections/tls-options.rst
-> @@ -487,8 +487,8 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
->   
->   --tls-crypt-v2 keyfile
->   
-> -  Valid syntax:
-> -  ::
-> +  Valid syntax::
-> +
->        tls-crypt-v2 keyfile
->        tls-crypt-v2 keyfile force-cookie
->        tls-crypt-v2 keyfile allow-noncookie
+> I retract my ACK. David noticed that the & in the patch should be an |
+> and I didn't look closely enough.
+
+Quite stupid, v2 incoming.
 
 
-I don't understand this to be honest. I don't have a good about rst but 
-all other instances of Valid syntax use the form like what was before 
-the patch, e.g.
-
-
-   Valid syntax:
-   ::
-
-     peer-fingerprint AD:B0:95:D8:09:...
-
-
-So why exactly does this one need to be different?
-
-Arne
 
 
