@@ -1,11 +1,17 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri, 13 May 2022 15:04:37 +0200
-Message-Id: <20220513130437.2221164-1-arne@...1227...>
-In-Reply-To: <20220510113055.1829260-1-arne@...1227...>
-References: <20220510113055.1829260-1-arne@...1227...>
+Message-ID: <a00b2e86-b657-5e07-fc19-7b82fe388248@...2080...>
+Date: Fri, 13 May 2022 17:18:31 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Implement ED448 and ED25519 support in
- xkey_provider
+Content-Language: en-US
+References: <20220512231105.1076835-1-heiko@...2662...>
+ <20220513093740.1091639-1-heiko@...2662...>
+ <86eaf819-1fb2-126b-5cf0-ccd1d0472527@...2080...>
+ <021bffb8-0a02-5c63-3d90-81f21b831187@...1227...>
+From: David Sommerseth <openvpn@...2080...>
+In-Reply-To: <021bffb8-0a02-5c63-3d90-81f21b831187@...1227...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------bKZtiGWNTMCRTmjCoCr7piAf"
+Subject: Re: [Openvpn-devel] [PATCH v2] signal --dns support in peer info
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,311 +20,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-OpenSSL's implementation of ED448 and ED25519 has a few idiosyncrasies.
-Instead of belonging to the eliptic curve type or to a common Edwards
-curve type, ED448 and ED25519 have each their own type.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------bKZtiGWNTMCRTmjCoCr7piAf
+Content-Type: multipart/mixed; boundary="------------hGpLhdBYwu4TlrrayYv0zTwn";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <a00b2e86-b657-5e07-fc19-7b82fe388248@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH v2] signal --dns support in peer info
+References: <20220512231105.1076835-1-heiko@...2662...>
+ <20220513093740.1091639-1-heiko@...2662...>
+ <86eaf819-1fb2-126b-5cf0-ccd1d0472527@...2080...>
+ <021bffb8-0a02-5c63-3d90-81f21b831187@...1227...>
+In-Reply-To: <021bffb8-0a02-5c63-3d90-81f21b831187@...1227...>
 
-Also, OpenSSL expects signatures using these curves to be done with the
-EVP_DigestSign API instead of the EVP_Sign API but using md=NULL.
+--------------hGpLhdBYwu4TlrrayYv0zTwn
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: base64
 
-This has been tested using a "fake" external key that used a normal
-software key instead of a hardware implementation but that makes no
-difference from the perspective of xkey_provider/management interface.
+T24gMTMvMDUvMjAyMiAxMzo0MCwgQXJuZSBTY2h3YWJlIHdyb3RlOg0KPiBBbSAxMy4wNS4yMiB1
+bSAxMzoyMiBzY2hyaWViIERhdmlkIFNvbW1lcnNldGg6DQo+PiBPbiAxMy8wNS8yMDIyIDExOjM3
+LCBIZWlrbyBIdW5kIHdyb3RlOg0KPj4+IEhhdmUgY2xpZW50cyBzZXQgYSBiaXQgaW4gSVZfUFJP
+VE8sIHNvIHRoYXQgc2VydmVycyBjYW4gbWFrZSBhbiBpbmZvcm1lZA0KPj4+IGRlY2lzaW9uIG9u
+IHdoZXRoZXIgdG8gcHVzaCAtLWRucyB0byB0aGUgY2xpZW50LiBXaGlsZSB1bmtub3duIG9wdGlv
+bnMNCj4+PiBhcmUgaWdub3JlZCBieSBjbGllbnRzIHdoZW4gcHVzaGVkLCB0aGV5IGdlbmVyYXRl
+IGEgd2FybmluZyBpbiB0aGUgbG9nLg0KPj4+IFRoYXQgY2FuIGJlIGNpcmN1bXZlbnRlZCBieSBz
+ZXJ2ZXIgYmFja2VuZHMgYnkgY2hlY2tpbmcgaWYgYml0IDcgaXMgc2V0Lg0KPj4+DQo+Pj4gU2ln
+bmVkLW9mZi1ieTogSGVpa28gSHVuZCA8aGVpa29ALi4uMjY2Mi4uLj4NClsuLi5zbmlwLi4uXQ0K
+Pj4+ICvCoMKgwqDCoMKgwqDCoCAvKiBzdXBwb3J0IGZvciB0aGUgLS1kbnMgb3B0aW9uICovDQo+
+Pj4gK8KgwqDCoMKgwqDCoMKgIGl2X3Byb3RvIHw9IElWX1BST1RPX0ROU19PUFRJT047DQo+Pj4g
+Kw0KWy4uLnNuaXAuLi5dDQo+Pj4gKyNkZWZpbmUgSVZfUFJPVE9fRE5TX09QVElPTsKgwqDCoMKg
+wqAgKDE8PDYpDQo+Pj4gKw0KWy4uLnNuaXAuLi5dDQoNCj4gVG8gYmUgaG9uZXN0LCBJIHJlcXVl
+c3RlZCB0aGlzIGZsYWcgYnV0IEkgZG9uJ3QgdGhpbmsgdGhpcyBpcyByZWFsbHkgDQo+IHdoYXQg
+SSB3YW50L25lZWQgYW55IG1vcmUuIEkgd2FudGVkIHRvIGhhdmUgYSBmbGFnIHRoYXQgdGVsbHMg
+bWUgYXMgYSANCj4gc2VydmVyIHRoYXQgSSBjYW4gcHVzaCAtLWRucyBvcHRpb25zIGluc3RlYWQg
+b2YgLS1kaGNwLW9wdGlvbnMgYW5kIA0KPiBhY2NlcHQgdGhlIGNsaWVudCB0byBldmFsdWF0ZSB0
+aGVtLg0KPiANCj4gQnV0IGFmdGVyIHNvbWUgZGlnZ2luZywgSSBmb3VuZCB0aGF0IG9uIHBsYXRm
+b3JtcyB3aGVyZSBkaGNwLW9wdGlvbiBpcyANCj4gTk9UIHBhcnNlZCBieSBvcGVudnBuIGl0c2Vs
+ZiAoc28gYW55dGhpbmcgYnV0IEFuZHJvaWQgYW5kIFdpbmRvd3MpIGFuZCANCj4gc2NyaXB0cyBh
+cmUgdXNlZCB0byBzZXQgRE5TLCB0aGVzZSBzY3JpcHRzIHdpbGwgYWx3YXlzIHVzZSBkaGNwLW9w
+dGlvbnMgDQo+IGFzIHRoZXkgcmVseSBvbiBmb3JlaWduX29wdGlvbiBzdXBwb3J0LiBTbyB0aGV5
+IGVuZCB1cCB3aXRoIG5vIEROUyANCj4gY29uZmlndXJhdGlvbiBpZiBvbmx5IC0tZG5zIGlzIHB1
+c2hlZCBhbmQgdXNpbmcgLS1kaGNwLW9wdGlvbiBvcHRpb25zIGlmIA0KPiBib3RoIGFyZSBwdXNo
+ZWQgdW5sZXNzIHRoZSBzY3JpcHQgaXMgdXBkYXRlZC4NCkFzIEkgcmVtZW1iZXIgaXQsIHRoaXMg
+d2Fzbid0IGluaXRpYWxseSBhYm91dCBBbmRyb2lkIGFuZCBXaW5kb3dzIA0KY2xpZW50cy4gIEl0
+IHdhcyBhYm91dCB0aGUgc2VydmVyIHB1c2hpbmcgYm90aCAtLWRoY3Atb3B0aW9uIEROUyBhbmQg
+DQotLWRucyBhdCB0aGUgc2FtZSB0aW1lLCBhbmQgdGhhdCBPcGVuVlBOIDIuNSBhbmQgb2xkZXIg
+Y2xpZW50cyB3b3VsZCANCmNvbXBsYWluIGFib3V0IC0tZG5zIG9wdGlvbiB3YXJuaW5ncy4gIEJ5
+IHNpZ25hbGxpbmcgdG8gYSBzZXJ2ZXIgd2hvIA0Kd2FudHMgdG8gYXZvaWQgdGhpcyAobGlrZSB0
+aGUgQWNjZXNzIFNlcnZlciksIHRoZSBzZXJ2ZXIgY2FuIGNob3NlIGlmIGl0IA0Kd2FudHMgdG8g
+c2VuZCAtLWRucyBvciAtLWRoY3Atb3B0aW9ucywgYmFzZWQgb24gdGhpcyBmbGFnLg0KDQpSaWdo
+dD8NCg0KVGhhdCB0aGUgY2xpZW50IHNpZGUgaXNuJ3QgcGFyc2luZyAtLWRucyBvcHRpb25zIHBy
+b3Blcmx5IGlzIHRvIG15IA0KdW5kZXJzdGFuZGluZyBhIGRpZmZlcmVudCBpc3N1ZSwgd2hpY2gg
+YWxzbyBuZWVkcyBhIHNvbHV0aW9uLiAgQW5kIGlmIG15IA0KbWVtb3J5IGlzbid0IGNvbXBsZXRl
+bHkgY29ycnVwdGVkLCB3ZSBoYWQgc29tZSBicmllZiB0YWxrcyBhYm91dCB2Mi42IA0KY2xpZW50
+cyBhZGRpbmcgc29tZSBraW5kIG9mICJjb252ZXJzaW9uIiBmcm9tIC0tZG5zIHRvIC0tZGhjcC1v
+cHRpb25zIA0KKmRhdGEqIGZvciBzY3JpcHRzL3BsdWctaW5zIC0gYnV0IG9ubHkgaW4gYSBzaW1w
+bGlzdGljIGJlc3QtZWZmb3J0IA0KYXBwcm9hY2guICBJZiB0aGUgc3RyaWN0IC0tZGhjcC1vcHRp
+b24gYmVoYXZpb3IgaXMgbmVlZGVkLCB0aGF0IGNhbiBiZSANCnVzZWQgd2l0aCB2Mi42IGNsaWVu
+dHMgZm9yIHRoZSB0aW1lIGJlaW5nIGlmIC0tZG5zIGNhdXNlcyB0cm91Ymxlcy4NCg0KQnV0IGlm
+IGJvdGggLS1kbnMgYW5kIC0tZGhjcC1vcHRpb25zIGFyZSB1c2VkLCBhbmQgdGhlIC0tZGhjcC1v
+cHRpb24gDQpwcm92aWRlcyBhIHNldHRpbmcgLS1kbnMgc3VwcG9ydCwgLS1kbnMgc2hvdWxkIHRh
+a2UgcHJlY2VkZW5jZS4NCg0KVGhpcyBzaG91bGQgYWxzbyB3b3JrIGZpbmUsIGFzIHRoZSAtLWRu
+cyBvcHRpb24gaXMgZmFyIG1vcmUgZmxleGlibGUgaW4gDQp3aGF0IGl0IHN1cHBvcnRzLCB3aGls
+ZSAtLWRoY3Atb3B0aW9ucyBhcmUganVzdCBzaW1wbGVyIGJ5IGRlc2lnbiAtIGFuZCANCmRlc2ln
+bmVkIGFyb3VuZCBhIGxlc3NlciBkeW5hbWljIEludGVybmV0IHdvcmxkLg0KDQoNCi0tIA0Ka2lu
+ZCByZWdhcmRzLA0KDQpEYXZpZCBTb21tZXJzZXRoDQpPcGVuVlBOIEluYw0KDQo=
 
-Patch v2: remove name functions from ed448/ed25519, ensure md is NULL
-          for ed448/ed25519 and handle NULL/none better in general.
----
- src/openvpn/xkey_common.h                |  2 +-
- src/openvpn/xkey_helper.c                |  7 +-
- src/openvpn/xkey_provider.c              | 97 ++++++++++++++++++++++--
- tests/unit_tests/openvpn/test_provider.c | 37 +++++++--
- 4 files changed, 127 insertions(+), 16 deletions(-)
+--------------hGpLhdBYwu4TlrrayYv0zTwn--
 
-diff --git a/src/openvpn/xkey_common.h b/src/openvpn/xkey_common.h
-index 35cbcf576..e0e5ed5b2 100644
---- a/src/openvpn/xkey_common.h
-+++ b/src/openvpn/xkey_common.h
-@@ -43,7 +43,7 @@ OSSL_provider_init_fn xkey_provider_init;
- #define XKEY_PROV_PROPS "provider=ovpn.xkey"
- 
- /**
-- * Stuct to encapsulate signature algorithm parameters to pass
-+ * Struct to encapsulate signature algorithm parameters to pass
-  * to sign operation.
-  */
- typedef struct {
-diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
-index ecc7b1204..f47f7ffc7 100644
---- a/src/openvpn/xkey_helper.c
-+++ b/src/openvpn/xkey_helper.c
-@@ -179,7 +179,8 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
-     bool is_message = !strcmp(alg.op, "DigestSign"); /* tbs is message, not digest */
- 
-     /* if management client cannot do digest -- we do it here */
--    if (!strcmp(alg.op, "DigestSign") && !(flags & MF_EXTERNAL_KEY_DIGEST))
-+    if (!strcmp(alg.op, "DigestSign") && !(flags & MF_EXTERNAL_KEY_DIGEST)
-+        && strcmp(alg.mdname, "none") != 0)
-     {
-         dmsg(D_XKEY, "xkey_management_sign: computing digest");
-         if (xkey_digest(tbs, tbslen, buf, &buflen, alg.mdname))
-@@ -206,6 +207,10 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
-             openvpn_snprintf(alg_str, sizeof(alg_str), "ECDSA,hashalg=%s", alg.mdname);
-         }
-     }
-+    else if (!strcmp(alg.keytype, "ED448") || !strcmp(alg.keytype, "ED25519"))
-+    {
-+        strncpynt(alg_str, alg.keytype, sizeof(alg_str));
-+    }
-     /* else assume RSA key */
-     else if (!strcmp(alg.padmode, "pkcs1") && (flags & MF_EXTERNAL_KEY_PKCS1PAD))
-     {
-diff --git a/src/openvpn/xkey_provider.c b/src/openvpn/xkey_provider.c
-index 46e57e0fe..67000004e 100644
---- a/src/openvpn/xkey_provider.c
-+++ b/src/openvpn/xkey_provider.c
-@@ -99,12 +99,28 @@ typedef struct
-     int refcount;                /**< reference count */
- } XKEY_KEYDATA;
- 
--static int
--KEYTYPE(const XKEY_KEYDATA *key)
-+static inline const char *
-+get_keytype(const XKEY_KEYDATA *key)
- {
--    return key->pubkey ? EVP_PKEY_get_id(key->pubkey) : 0;
-+    int keytype = key->pubkey ? EVP_PKEY_get_id(key->pubkey) : 0;
-+
-+    switch (keytype)
-+    {
-+        case EVP_PKEY_RSA:
-+            return "RSA";
-+
-+        case EVP_PKEY_ED448:
-+            return "ED448";
-+
-+        case EVP_PKEY_ED25519:
-+            return "ED25519";
-+
-+        default:
-+            return "EC";
-+    }
- }
- 
-+
- static int
- KEYSIZE(const XKEY_KEYDATA *key)
- {
-@@ -310,6 +326,22 @@ ec_keymgmt_import(void *keydata, int selection, const OSSL_PARAM params[])
-     return keymgmt_import(keydata, selection, params, "EC");
- }
- 
-+static int
-+ed448_keymgmt_import(void *keydata, int selection, const OSSL_PARAM params[])
-+{
-+    xkey_dmsg(D_XKEY, "entry");
-+
-+    return keymgmt_import(keydata, selection, params, "ED448");
-+}
-+
-+static int
-+ed25519_keymgmt_import(void *keydata, int selection, const OSSL_PARAM params[])
-+{
-+    xkey_dmsg(D_XKEY, "entry");
-+
-+    return keymgmt_import(keydata, selection, params, "ED25519");
-+}
-+
- /* This function has to exist for key import to work
-  * though we do not support import of individual params
-  * like n or e. We simply return an empty list here for
-@@ -449,7 +481,7 @@ keymgmt_import_helper(XKEY_KEYDATA *key, const OSSL_PARAM *params)
-         ASSERT(pkey);
- 
-         int id = EVP_PKEY_get_id(pkey);
--        if (id != EVP_PKEY_RSA && id != EVP_PKEY_EC)
-+        if (id != EVP_PKEY_RSA && id != EVP_PKEY_EC && id != EVP_PKEY_ED25519 && id != EVP_PKEY_ED448)
-         {
-             msg(M_WARN, "Error: xkey keymgmt_import: unknown key type (%d)", id);
-             return 0;
-@@ -588,10 +620,43 @@ static const OSSL_DISPATCH ec_keymgmt_functions[] = {
-     {0, NULL }
- };
- 
-+static const OSSL_DISPATCH ed448_keymgmt_functions[] = {
-+    {OSSL_FUNC_KEYMGMT_NEW, (void (*)(void))keymgmt_new},
-+    {OSSL_FUNC_KEYMGMT_FREE, (void (*)(void))keymgmt_free},
-+    {OSSL_FUNC_KEYMGMT_LOAD, (void (*)(void))keymgmt_load},
-+    {OSSL_FUNC_KEYMGMT_HAS, (void (*)(void))keymgmt_has},
-+    {OSSL_FUNC_KEYMGMT_MATCH, (void (*)(void))keymgmt_match},
-+    {OSSL_FUNC_KEYMGMT_IMPORT, (void (*)(void))ed448_keymgmt_import},
-+    {OSSL_FUNC_KEYMGMT_IMPORT_TYPES, (void (*)(void))keymgmt_import_types},
-+    {OSSL_FUNC_KEYMGMT_GETTABLE_PARAMS, (void (*)(void))keymgmt_gettable_params},
-+    {OSSL_FUNC_KEYMGMT_GET_PARAMS, (void (*)(void))keymgmt_get_params},
-+    {OSSL_FUNC_KEYMGMT_SET_PARAMS, (void (*)(void))keymgmt_set_params},
-+    {OSSL_FUNC_KEYMGMT_SETTABLE_PARAMS, (void (*)(void))keymgmt_gettable_params},       /* same as gettable */
-+    {0, NULL }
-+};
-+
-+static const OSSL_DISPATCH ed25519_keymgmt_functions[] = {
-+    {OSSL_FUNC_KEYMGMT_NEW, (void (*)(void))keymgmt_new},
-+    {OSSL_FUNC_KEYMGMT_FREE, (void (*)(void))keymgmt_free},
-+    {OSSL_FUNC_KEYMGMT_LOAD, (void (*)(void))keymgmt_load},
-+    {OSSL_FUNC_KEYMGMT_HAS, (void (*)(void))keymgmt_has},
-+    {OSSL_FUNC_KEYMGMT_MATCH, (void (*)(void))keymgmt_match},
-+    {OSSL_FUNC_KEYMGMT_IMPORT, (void (*)(void))ed25519_keymgmt_import},
-+    {OSSL_FUNC_KEYMGMT_IMPORT_TYPES, (void (*)(void))keymgmt_import_types},
-+    {OSSL_FUNC_KEYMGMT_GETTABLE_PARAMS, (void (*)(void))keymgmt_gettable_params},
-+    {OSSL_FUNC_KEYMGMT_GET_PARAMS, (void (*)(void))keymgmt_get_params},
-+    {OSSL_FUNC_KEYMGMT_SET_PARAMS, (void (*)(void))keymgmt_set_params},
-+    {OSSL_FUNC_KEYMGMT_SETTABLE_PARAMS, (void (*)(void))keymgmt_gettable_params},       /* same as gettable */
-+    {0, NULL }
-+};
-+
-+
- const OSSL_ALGORITHM keymgmts[] = {
-     {"RSA:rsaEncryption", XKEY_PROV_PROPS, rsa_keymgmt_functions, "OpenVPN xkey RSA Key Manager"},
-     {"RSA-PSS:RSASSA-PSS", XKEY_PROV_PROPS, rsa_keymgmt_functions, "OpenVPN xkey RSA-PSS Key Manager"},
-     {"EC:id-ecPublicKey", XKEY_PROV_PROPS, ec_keymgmt_functions, "OpenVPN xkey EC Key Manager"},
-+    {"ED448", XKEY_PROV_PROPS, ed448_keymgmt_functions, "OpenVPN xkey ED448 Key Manager"},
-+    {"ED25519", XKEY_PROV_PROPS, ed25519_keymgmt_functions, "OpenVPN xkey ED25519 Key Manager"},
-     {NULL, NULL, NULL, NULL}
- };
- 
-@@ -649,6 +714,11 @@ static const char *saltlen_names[] = {"digest", "max", "auto", NULL};
- static const char *
- xkey_mdname(const char *name)
- {
-+    if (name == NULL)
-+    {
-+        return "none";
-+    }
-+
-     int i = 0;
- 
-     int nid = EVP_MD_get_type(EVP_get_digestbyname(name));
-@@ -835,7 +905,7 @@ signature_sign_init(void *ctx, void *provkey, const OSSL_PARAM params[])
-     }
-     sctx->keydata = provkey;
-     sctx->keydata->refcount++; /* we are keeping a copy */
--    sctx->sigalg.keytype = KEYTYPE(sctx->keydata) == EVP_PKEY_RSA ? "RSA" : "EC";
-+    sctx->sigalg.keytype = get_keytype(sctx->keydata);
- 
-     signature_set_ctx_params(sctx, params);
- 
-@@ -929,10 +999,21 @@ signature_digest_sign_init(void *ctx, const char *mdname,
-     }
-     sctx->keydata = provkey; /* used by digest_sign */
-     sctx->keydata->refcount++;
--    sctx->sigalg.keytype = KEYTYPE(sctx->keydata) == EVP_PKEY_RSA ? "RSA" : "EC";
-+    sctx->sigalg.keytype = get_keytype(sctx->keydata);
- 
-     signature_set_ctx_params(ctx, params);
--    if (mdname)
-+    if (!strcmp(sctx->sigalg.keytype, "ED448") || !strcmp(sctx->sigalg.keytype, "ED25519"))
-+    {
-+        /* EdDSA requires NULL as digest for the DigestSign API instead
-+         * of using the normal Sign API. Ensure it is actually NULL too */
-+        if (mdname != NULL)
-+        {
-+            msg(M_WARN, "xkey digest_sign_init: mdname must be NULL for ED448/ED25519.");
-+            return 0;
-+        }
-+        sctx->sigalg.mdname = "none";
-+    }
-+    else if (mdname)
-     {
-         sctx->sigalg.mdname = xkey_mdname(mdname); /* get a string literal pointer */
-     }
-@@ -1073,6 +1154,8 @@ static const OSSL_DISPATCH signature_functions[] = {
- const OSSL_ALGORITHM signatures[] = {
-     {"RSA:rsaEncryption", XKEY_PROV_PROPS, signature_functions, "OpenVPN xkey RSA Signature"},
-     {"ECDSA", XKEY_PROV_PROPS, signature_functions, "OpenVPN xkey ECDSA Signature"},
-+    {"ED448", XKEY_PROV_PROPS, signature_functions, "OpenVPN xkey Ed448 Signature"},
-+    {"ED25519", XKEY_PROV_PROPS, signature_functions, "OpenVPN xkey Ed25519 Signature"},
-     {NULL, NULL, NULL, NULL}
- };
- 
-diff --git a/tests/unit_tests/openvpn/test_provider.c b/tests/unit_tests/openvpn/test_provider.c
-index 0b0952ee2..86009b155 100644
---- a/tests/unit_tests/openvpn/test_provider.c
-+++ b/tests/unit_tests/openvpn/test_provider.c
-@@ -66,7 +66,11 @@ static const char *const pubkey2 = "-----BEGIN PUBLIC KEY-----\n"
-                                    "u95ff1JiUaJIkYNIkZA+hwIPFVH5aJcSCv3SPIeDS2VUAESNKHZJBQ==\n"
-                                    "-----END PUBLIC KEY-----\n";
- 
--static const char *pubkeys[] = {pubkey1, pubkey2};
-+static const char *const pubkey3 = "-----BEGIN PUBLIC KEY-----\n"
-+                                   "MCowBQYDK2VwAyEA+q5xjF5hGyyqYZidJdz/0saEQabL3N4wIZJBxNGbgJE=\n"
-+                                   "-----END PUBLIC KEY-----";
-+
-+static const char *pubkeys[] = {pubkey1, pubkey2, pubkey3};
- 
- static const char *prov_name = "ovpn.xkey";
- 
-@@ -158,12 +162,17 @@ management_query_pk_sig(struct management *man, const char *b64_data,
-     if (strstr(algorithm, "data=message"))
-     {
-         expected_tbs = test_msg_b64;
--        assert_non_null(strstr(algorithm, "hashalg=SHA256"));
-+        /* ED25519 does not have a hash algorithm even though it goes via
-+         * the DigestSign path (data=message) */
-+        if (!strstr(algorithm, "ED25519"))
-+        {
-+            assert_non_null(strstr(algorithm, "hashalg=SHA256"));
-+        }
-     }
-     assert_string_equal(b64_data, expected_tbs);
- 
--    /* We test using ECDSA or PSS with saltlen = digest */
--    if (!strstr(algorithm, "ECDSA"))
-+    /* We test using ED25519, ECDSA or PSS with saltlen = digest */
-+    if (!strstr(algorithm, "ECDSA") && !strstr(algorithm, "ED25519"))
-     {
-         assert_non_null(strstr(algorithm, "RSA_PKCS1_PSS_PADDING,hashalg=SHA256,saltlen=digest"));
-     }
-@@ -228,6 +237,13 @@ digest_sign(EVP_PKEY *pkey)
-         params[3] = OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_MGF1_DIGEST, (char *)saltlen, 0);
-         params[4] = OSSL_PARAM_construct_end();
-     }
-+    else if (EVP_PKEY_get_id(pkey) == EVP_PKEY_ED25519)
-+    {
-+        mdname = NULL;
-+        params[0] = OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_DIGEST, (char *)mdname, 0);
-+        params[1] = OSSL_PARAM_construct_end();
-+    }
-+
- 
-     EVP_PKEY_CTX *pctx = NULL;
-     EVP_MD_CTX *mctx = EVP_MD_CTX_new();
-@@ -328,13 +344,20 @@ xkey_sign(void *handle, unsigned char *sig, size_t *siglen,
-         assert_memory_equal(tbs, test_digest, sizeof(test_digest));
-     }
- 
--    /* For the test use sha256 and PSS padding for RSA */
--    assert_int_equal(OBJ_sn2nid(s.mdname), NID_sha256);
-+    /* For the test use sha256 and PSS padding for RSA and none for EDDSA */
-+    if (!strcmp(s.keytype,"ED25519"))
-+    {
-+        assert_string_equal(s.mdname, "none");
-+    }
-+    else
-+    {
-+        assert_int_equal(OBJ_sn2nid(s.mdname), NID_sha256);
-+    }
-     if (!strcmp(s.keytype, "RSA"))
-     {
-         assert_string_equal(s.padmode, "pss"); /* we use PSS for the test */
-     }
--    else if (strcmp(s.keytype, "EC"))
-+    else if (strcmp(s.keytype, "EC") && strcmp(s.keytype,"ED25519"))
-     {
-         fail_msg("Unknown keytype: %s", s.keytype);
-     }
--- 
-2.32.0 (Apple Git-132)
+--------------bKZtiGWNTMCRTmjCoCr7piAf
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmJ+dscACgkQhs+UTJZx
+/fI7WA/8CUpXs9soiODxh1zkhNN272MiKlmwYBRPkzi+xlbbZLkXuPcZTOp7il3R
+bWd+ciGh209aKOLPCXuYUboUy6M6v1rTdVJNkWWiVmtOEH45gOVNX6khqsJwtyXB
+cNJHizUIcn+h2LrVLW4KyO1z5/ORw/I3Wx3c1KRNwyx87sWNYXtdUnq8mZssEEPx
+3RH3L2h7frPn/Hk08GK/NOIP40zpX0vOdR18ZooFMYIfF3vwiJpcIql1GdF8BSH0
+MAPszxtCJth2u7fJzm8eYeoukZmyM6b2xHtV8gQSPtkQ/2AiBqTyHrBie1SnwFal
+iu6tTyuOqiMeFVpH+VfRTdeUWa1BU5PeSTfXN1G6R8b7Yy8xldhi/79Jv+HIcH3X
+Lcj5twbwUYW55rsjw8NSIKLJOQm342mPzDygiItILVfTTDiLOkM6Wa/1BsByQxEj
+DQQ8ThYo7YLE8n8wcQCRdm8UnTLOfJE9NlYIykbo+aGxXaeWM03LX6321+QSo2zl
+YcP9TmwsF+q7S/8fbkRowRB/30KS02O6LORXXMjJTfuDYjHcWesmOemGR+qTLsWX
+6i6AhukiwKfH4Q+vEuLRAWwbb2gs+jAzerxdTwxUf5CvTQcnB4BUQh8UJHX/aY7v
+2MBAu+Kz0q91luS91zcYlp+y3DTVbFR64ePuWLput2SoAYlgegA=
+=/9+i
+-----END PGP SIGNATURE-----
+
+--------------bKZtiGWNTMCRTmjCoCr7piAf--
 
