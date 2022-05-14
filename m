@@ -1,17 +1,11 @@
-Message-ID: <a00b2e86-b657-5e07-fc19-7b82fe388248@...2080...>
-Date: Fri, 13 May 2022 17:18:31 +0200
+From: Timo Rothenpieler <timo@...2669...>
+Date: Sat, 14 May 2022 12:37:17 +0200
+Message-Id: <20220514103717.235-1-timo@...2669...>
+In-Reply-To: <20220329192934.1415-1-timo@...2669...>
+References: <20220329192934.1415-1-timo@...2669...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20220512231105.1076835-1-heiko@...2662...>
- <20220513093740.1091639-1-heiko@...2662...>
- <86eaf819-1fb2-126b-5cf0-ccd1d0472527@...2080...>
- <021bffb8-0a02-5c63-3d90-81f21b831187@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-In-Reply-To: <021bffb8-0a02-5c63-3d90-81f21b831187@...1227...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------bKZtiGWNTMCRTmjCoCr7piAf"
-Subject: Re: [Openvpn-devel] [PATCH v2] signal --dns support in peer info
+Subject: [Openvpn-devel] [PATCH v5] platform: Retain CAP_NET_ADMIN when
+ dropping privileges
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,98 +14,319 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Timo Rothenpieler <timo@...2669...>, David Sommerseth <davids@...515...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------bKZtiGWNTMCRTmjCoCr7piAf
-Content-Type: multipart/mixed; boundary="------------hGpLhdBYwu4TlrrayYv0zTwn";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <a00b2e86-b657-5e07-fc19-7b82fe388248@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2] signal --dns support in peer info
-References: <20220512231105.1076835-1-heiko@...2662...>
- <20220513093740.1091639-1-heiko@...2662...>
- <86eaf819-1fb2-126b-5cf0-ccd1d0472527@...2080...>
- <021bffb8-0a02-5c63-3d90-81f21b831187@...1227...>
-In-Reply-To: <021bffb8-0a02-5c63-3d90-81f21b831187@...1227...>
+On Linux, when dropping privileges, interaction with
+the network configuration, such as tearing down routes
+or ovpn-dco interfaces will fail when --user/--group are
+used.
 
---------------hGpLhdBYwu4TlrrayYv0zTwn
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: base64
+This patch sets the CAP_NET_ADMIN capability, which grants
+the needed privileges during the lifetime of the OpenVPN
+process when dropping root privileges.
 
-T24gMTMvMDUvMjAyMiAxMzo0MCwgQXJuZSBTY2h3YWJlIHdyb3RlOg0KPiBBbSAxMy4wNS4yMiB1
-bSAxMzoyMiBzY2hyaWViIERhdmlkIFNvbW1lcnNldGg6DQo+PiBPbiAxMy8wNS8yMDIyIDExOjM3
-LCBIZWlrbyBIdW5kIHdyb3RlOg0KPj4+IEhhdmUgY2xpZW50cyBzZXQgYSBiaXQgaW4gSVZfUFJP
-VE8sIHNvIHRoYXQgc2VydmVycyBjYW4gbWFrZSBhbiBpbmZvcm1lZA0KPj4+IGRlY2lzaW9uIG9u
-IHdoZXRoZXIgdG8gcHVzaCAtLWRucyB0byB0aGUgY2xpZW50LiBXaGlsZSB1bmtub3duIG9wdGlv
-bnMNCj4+PiBhcmUgaWdub3JlZCBieSBjbGllbnRzIHdoZW4gcHVzaGVkLCB0aGV5IGdlbmVyYXRl
-IGEgd2FybmluZyBpbiB0aGUgbG9nLg0KPj4+IFRoYXQgY2FuIGJlIGNpcmN1bXZlbnRlZCBieSBz
-ZXJ2ZXIgYmFja2VuZHMgYnkgY2hlY2tpbmcgaWYgYml0IDcgaXMgc2V0Lg0KPj4+DQo+Pj4gU2ln
-bmVkLW9mZi1ieTogSGVpa28gSHVuZCA8aGVpa29ALi4uMjY2Mi4uLj4NClsuLi5zbmlwLi4uXQ0K
-Pj4+ICvCoMKgwqDCoMKgwqDCoCAvKiBzdXBwb3J0IGZvciB0aGUgLS1kbnMgb3B0aW9uICovDQo+
-Pj4gK8KgwqDCoMKgwqDCoMKgIGl2X3Byb3RvIHw9IElWX1BST1RPX0ROU19PUFRJT047DQo+Pj4g
-Kw0KWy4uLnNuaXAuLi5dDQo+Pj4gKyNkZWZpbmUgSVZfUFJPVE9fRE5TX09QVElPTsKgwqDCoMKg
-wqAgKDE8PDYpDQo+Pj4gKw0KWy4uLnNuaXAuLi5dDQoNCj4gVG8gYmUgaG9uZXN0LCBJIHJlcXVl
-c3RlZCB0aGlzIGZsYWcgYnV0IEkgZG9uJ3QgdGhpbmsgdGhpcyBpcyByZWFsbHkgDQo+IHdoYXQg
-SSB3YW50L25lZWQgYW55IG1vcmUuIEkgd2FudGVkIHRvIGhhdmUgYSBmbGFnIHRoYXQgdGVsbHMg
-bWUgYXMgYSANCj4gc2VydmVyIHRoYXQgSSBjYW4gcHVzaCAtLWRucyBvcHRpb25zIGluc3RlYWQg
-b2YgLS1kaGNwLW9wdGlvbnMgYW5kIA0KPiBhY2NlcHQgdGhlIGNsaWVudCB0byBldmFsdWF0ZSB0
-aGVtLg0KPiANCj4gQnV0IGFmdGVyIHNvbWUgZGlnZ2luZywgSSBmb3VuZCB0aGF0IG9uIHBsYXRm
-b3JtcyB3aGVyZSBkaGNwLW9wdGlvbiBpcyANCj4gTk9UIHBhcnNlZCBieSBvcGVudnBuIGl0c2Vs
-ZiAoc28gYW55dGhpbmcgYnV0IEFuZHJvaWQgYW5kIFdpbmRvd3MpIGFuZCANCj4gc2NyaXB0cyBh
-cmUgdXNlZCB0byBzZXQgRE5TLCB0aGVzZSBzY3JpcHRzIHdpbGwgYWx3YXlzIHVzZSBkaGNwLW9w
-dGlvbnMgDQo+IGFzIHRoZXkgcmVseSBvbiBmb3JlaWduX29wdGlvbiBzdXBwb3J0LiBTbyB0aGV5
-IGVuZCB1cCB3aXRoIG5vIEROUyANCj4gY29uZmlndXJhdGlvbiBpZiBvbmx5IC0tZG5zIGlzIHB1
-c2hlZCBhbmQgdXNpbmcgLS1kaGNwLW9wdGlvbiBvcHRpb25zIGlmIA0KPiBib3RoIGFyZSBwdXNo
-ZWQgdW5sZXNzIHRoZSBzY3JpcHQgaXMgdXBkYXRlZC4NCkFzIEkgcmVtZW1iZXIgaXQsIHRoaXMg
-d2Fzbid0IGluaXRpYWxseSBhYm91dCBBbmRyb2lkIGFuZCBXaW5kb3dzIA0KY2xpZW50cy4gIEl0
-IHdhcyBhYm91dCB0aGUgc2VydmVyIHB1c2hpbmcgYm90aCAtLWRoY3Atb3B0aW9uIEROUyBhbmQg
-DQotLWRucyBhdCB0aGUgc2FtZSB0aW1lLCBhbmQgdGhhdCBPcGVuVlBOIDIuNSBhbmQgb2xkZXIg
-Y2xpZW50cyB3b3VsZCANCmNvbXBsYWluIGFib3V0IC0tZG5zIG9wdGlvbiB3YXJuaW5ncy4gIEJ5
-IHNpZ25hbGxpbmcgdG8gYSBzZXJ2ZXIgd2hvIA0Kd2FudHMgdG8gYXZvaWQgdGhpcyAobGlrZSB0
-aGUgQWNjZXNzIFNlcnZlciksIHRoZSBzZXJ2ZXIgY2FuIGNob3NlIGlmIGl0IA0Kd2FudHMgdG8g
-c2VuZCAtLWRucyBvciAtLWRoY3Atb3B0aW9ucywgYmFzZWQgb24gdGhpcyBmbGFnLg0KDQpSaWdo
-dD8NCg0KVGhhdCB0aGUgY2xpZW50IHNpZGUgaXNuJ3QgcGFyc2luZyAtLWRucyBvcHRpb25zIHBy
-b3Blcmx5IGlzIHRvIG15IA0KdW5kZXJzdGFuZGluZyBhIGRpZmZlcmVudCBpc3N1ZSwgd2hpY2gg
-YWxzbyBuZWVkcyBhIHNvbHV0aW9uLiAgQW5kIGlmIG15IA0KbWVtb3J5IGlzbid0IGNvbXBsZXRl
-bHkgY29ycnVwdGVkLCB3ZSBoYWQgc29tZSBicmllZiB0YWxrcyBhYm91dCB2Mi42IA0KY2xpZW50
-cyBhZGRpbmcgc29tZSBraW5kIG9mICJjb252ZXJzaW9uIiBmcm9tIC0tZG5zIHRvIC0tZGhjcC1v
-cHRpb25zIA0KKmRhdGEqIGZvciBzY3JpcHRzL3BsdWctaW5zIC0gYnV0IG9ubHkgaW4gYSBzaW1w
-bGlzdGljIGJlc3QtZWZmb3J0IA0KYXBwcm9hY2guICBJZiB0aGUgc3RyaWN0IC0tZGhjcC1vcHRp
-b24gYmVoYXZpb3IgaXMgbmVlZGVkLCB0aGF0IGNhbiBiZSANCnVzZWQgd2l0aCB2Mi42IGNsaWVu
-dHMgZm9yIHRoZSB0aW1lIGJlaW5nIGlmIC0tZG5zIGNhdXNlcyB0cm91Ymxlcy4NCg0KQnV0IGlm
-IGJvdGggLS1kbnMgYW5kIC0tZGhjcC1vcHRpb25zIGFyZSB1c2VkLCBhbmQgdGhlIC0tZGhjcC1v
-cHRpb24gDQpwcm92aWRlcyBhIHNldHRpbmcgLS1kbnMgc3VwcG9ydCwgLS1kbnMgc2hvdWxkIHRh
-a2UgcHJlY2VkZW5jZS4NCg0KVGhpcyBzaG91bGQgYWxzbyB3b3JrIGZpbmUsIGFzIHRoZSAtLWRu
-cyBvcHRpb24gaXMgZmFyIG1vcmUgZmxleGlibGUgaW4gDQp3aGF0IGl0IHN1cHBvcnRzLCB3aGls
-ZSAtLWRoY3Atb3B0aW9ucyBhcmUganVzdCBzaW1wbGVyIGJ5IGRlc2lnbiAtIGFuZCANCmRlc2ln
-bmVkIGFyb3VuZCBhIGxlc3NlciBkeW5hbWljIEludGVybmV0IHdvcmxkLg0KDQoNCi0tIA0Ka2lu
-ZCByZWdhcmRzLA0KDQpEYXZpZCBTb21tZXJzZXRoDQpPcGVuVlBOIEluYw0KDQo=
+Signed-off-by: Timo Rothenpieler <timo@...2669...>
+Reviewed-By: David Sommerseth <davids@...515...>
+---
+ configure.ac                              |  19 +++
+ distro/systemd/openvpn-client@...2221... |   2 +-
+ distro/systemd/openvpn-server@...2221... |   2 +-
+ src/openvpn/init.c                        |   5 +-
+ src/openvpn/platform.c                    | 146 +++++++++++++++++++++-
+ src/openvpn/platform.h                    |  10 +-
+ 6 files changed, 175 insertions(+), 9 deletions(-)
 
---------------hGpLhdBYwu4TlrrayYv0zTwn--
+diff --git a/configure.ac b/configure.ac
+index 85921ddb..d2eb3426 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -794,6 +794,25 @@ dnl
+ 	esac
+ fi
+ 
++dnl
++dnl Depend on libcap-ng on Linux
++dnl
++case "$host" in
++	*-*-linux*)
++		PKG_CHECK_MODULES([LIBCAPNG],
++				  [libcap-ng],
++				  [],
++				  [AC_MSG_ERROR([libcap-ng package not found. Is the development package and pkg-config installed?])]
++		)
++		AC_CHECK_HEADER([sys/prctl.h],,[AC_MSG_ERROR([sys/prctl.h not found!])])
++
++		CFLAGS="${CFLAGS} ${LIBCAPNG_CFALGS}"
++		LIBS="${LIBS} ${LIBCAPNG_LIBS}"
++		AC_DEFINE(HAVE_LIBCAPNG, 1, [Enable libcap-ng support])
++	;;
++esac
++
++
+ if test "${with_crypto_library}" = "openssl"; then
+ 	AC_ARG_VAR([OPENSSL_CFLAGS], [C compiler flags for OpenSSL])
+ 	AC_ARG_VAR([OPENSSL_LIBS], [linker flags for OpenSSL])
+diff --git a/distro/systemd/openvpn-client@...2221... b/distro/systemd/openvpn-client@...2221...
+index cbcef653..159fb4dc 100644
+--- a/distro/systemd/openvpn-client@...2221...
++++ b/distro/systemd/openvpn-client@...2221...
+@@ -11,7 +11,7 @@ Type=notify
+ PrivateTmp=true
+ WorkingDirectory=/etc/openvpn/client
+ ExecStart=@sbindir@/openvpn --suppress-timestamps --nobind --config %i.conf
+-CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
++CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+ LimitNPROC=10
+ DeviceAllow=/dev/null rw
+ DeviceAllow=/dev/net/tun rw
+diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/openvpn-server@...2221...
+index d1cc72cb..6e8e7d94 100644
+--- a/distro/systemd/openvpn-server@...2221...
++++ b/distro/systemd/openvpn-server@...2221...
+@@ -11,7 +11,7 @@ Type=notify
+ PrivateTmp=true
+ WorkingDirectory=/etc/openvpn/server
+ ExecStart=@sbindir@/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
+-CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_AUDIT_WRITE
++CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SETPCAP CAP_SYS_CHROOT CAP_DAC_OVERRIDE CAP_AUDIT_WRITE
+ LimitNPROC=10
+ DeviceAllow=/dev/null rw
+ DeviceAllow=/dev/net/tun rw
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index a6c93038..39b8f77a 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1163,8 +1163,9 @@ do_uid_gid_chroot(struct context *c, bool no_delay)
+         {
+             if (no_delay)
+             {
+-                platform_group_set(&c0->platform_state_group);
+-                platform_user_set(&c0->platform_state_user);
++                platform_user_group_set(&c0->platform_state_user,
++                                        &c0->platform_state_group,
++                                        c);
+             }
+             else if (c->first_time)
+             {
+diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
+index 61afee83..56dca6e6 100644
+--- a/src/openvpn/platform.c
++++ b/src/openvpn/platform.c
+@@ -29,6 +29,9 @@
+ 
+ #include "syshead.h"
+ 
++#include "openvpn.h"
++#include "options.h"
++
+ #include "buffer.h"
+ #include "crypto.h"
+ #include "error.h"
+@@ -43,6 +46,11 @@
+ #include <direct.h>
+ #endif
+ 
++#ifdef HAVE_LIBCAPNG
++#include <cap-ng.h>
++#include <sys/prctl.h>
++#endif
++
+ /* Redefine the top level directory of the filesystem
+  * to restrict access to files for security */
+ void
+@@ -91,7 +99,7 @@ platform_user_get(const char *username, struct platform_state_user *state)
+     return ret;
+ }
+ 
+-void
++static void
+ platform_user_set(const struct platform_state_user *state)
+ {
+ #if defined(HAVE_GETPWNAM) && defined(HAVE_SETUID)
+@@ -130,7 +138,7 @@ platform_group_get(const char *groupname, struct platform_state_group *state)
+     return ret;
+ }
+ 
+-void
++static void
+ platform_group_set(const struct platform_state_group *state)
+ {
+ #if defined(HAVE_GETGRNAM) && defined(HAVE_SETGID)
+@@ -155,6 +163,140 @@ platform_group_set(const struct platform_state_group *state)
+ #endif
+ }
+ 
++/*
++ * Determine if we need to retain process capabilities. DCO and SITNL need it.
++ * Enforce it for DCO, but only try and soft-fail for SITNL to keep backwards compat.
++ *
++ * Returns the tri-state expected by platform_user_group_set.
++ * -1: try to keep caps, but continue if impossible
++ *  0: don't keep caps
++ *  1: keep caps, fail hard if impossible
++ */
++static int
++need_keep_caps(struct context *c)
++{
++    if (!c)
++    {
++        return -1;
++    }
++
++    if (dco_enabled(&c->options))
++    {
++#ifdef TARGET_LINUX
++        /* DCO on Linux does not work at all without CAP_NET_ADMIN */
++        return 1;
++#else
++        /* Windows/BSD/... has no equivalent capability mechanism */
++        return -1;
++#endif
++    }
++
++#ifdef ENABLE_SITNL
++    return -1;
++#else
++    return 0;
++#endif
++}
++
++/* Set user and group, retaining neccesary capabilities required by the platform.
++ *
++ * The keep_caps argument has 3 possible states:
++ *  >0: Retain capabilities, and fail hard on failure to do so.
++ * ==0: Don't attempt to retain any capabilities, just sitch user/group.
++ *  <0: Try to retain capabilities, but continue on failure.
++ */
++void platform_user_group_set(const struct platform_state_user *user_state,
++                             const struct platform_state_group *group_state,
++                             struct context *c)
++{
++    int keep_caps = need_keep_caps(c);
++    unsigned int err_flags = (keep_caps > 0) ? M_FATAL : M_NONFATAL;
++#ifdef HAVE_LIBCAPNG
++    int new_gid = -1, new_uid = -1;
++    int res;
++
++    if (keep_caps == 0)
++    {
++        goto fallback;
++    }
++
++    /*
++     * new_uid/new_gid defaults to -1, which will not make
++     * libcap-ng change the UID/GID unless configured
++     */
++    if (group_state->groupname && group_state->gr)
++    {
++        new_gid = group_state->gr->gr_gid;
++    }
++    if (user_state->username && user_state->pw)
++    {
++        new_uid = user_state->pw->pw_uid;
++    }
++
++    /* Prepare capabilities before dropping UID/GID */
++    capng_clear(CAPNG_SELECT_BOTH);
++    res = capng_update(CAPNG_ADD, CAPNG_EFFECTIVE | CAPNG_PERMITTED, CAP_NET_ADMIN);
++    if (res < 0)
++    {
++        msg(err_flags, "capng_update(CAP_NET_ADMIN) failed: %d", res);
++        goto fallback;
++    }
++
++    /* Change to new UID/GID.
++     * capng_change_id() internally calls capng_apply() to apply prepared capabilities.
++     */
++    res = capng_change_id(new_uid, new_gid, CAPNG_DROP_SUPP_GRP | CAPNG_CLEAR_BOUNDING);
++    if (res == -4 || res == -6)
++    {
++        /* -4 and -6 mean failure of setuid/gid respectively.
++           There is no point for us to continue if those failed. */
++        msg(M_ERR, "capng_change_id('%s','%s') failed: %d",
++            user_state->username, group_state->groupname, res);
++    }
++    else if (res == -3)
++    {
++        msg(M_NONFATAL | M_ERRNO, "capng_change_id() failed applying capabilities");
++        msg(err_flags, "NOTE: previous error likely due to missing capability CAP_SETPCAP.");
++        goto fallback;
++    }
++    else if (res < 0)
++    {
++        msg(err_flags | M_ERRNO, "capng_change_id('%s','%s') failed retaining capabilities: %d",
++            user_state->username, group_state->groupname, res);
++        goto fallback;
++    }
++
++    if (new_uid >= 0)
++    {
++         msg(M_INFO, "UID set to %s", user_state->username);
++    }
++    if (new_gid >= 0)
++    {
++         msg(M_INFO, "GID set to %s", group_state->groupname);
++    }
++
++    msg(M_INFO, "Capabilities retained: CAP_NET_ADMIN");
++    return;
++
++fallback:
++    /* capng_change_id() can leave this flag clobbered on failure
++     * This is working around a bug in libcap-ng, which can leave the flag set
++     * on failure: https://github.com/stevegrubb/libcap-ng/issues/33 */
++    if (prctl(PR_GET_KEEPCAPS) && prctl(PR_SET_KEEPCAPS, 0) < 0)
++    {
++        msg(M_ERR, "Clearing KEEPCAPS flag failed");
++    }
++#endif  /* HAVE_LIBCAPNG */
++
++    if (keep_caps)
++    {
++        msg(err_flags, "Unable to retain capabilities");
++    }
++
++    platform_group_set(group_state);
++    platform_user_set(user_state);
++}
++
+ /* Change process priority */
+ void
+ platform_nice(int niceval)
+diff --git a/src/openvpn/platform.h b/src/openvpn/platform.h
+index a3eec298..1ffd81e3 100644
+--- a/src/openvpn/platform.h
++++ b/src/openvpn/platform.h
+@@ -55,6 +55,9 @@
+ #include "basic.h"
+ #include "buffer.h"
+ 
++/* forward declared to avoid large amounts of extra includes */
++struct context;
++
+ /* Get/Set UID of process */
+ 
+ struct platform_state_user {
+@@ -79,11 +82,12 @@ struct platform_state_group {
+ 
+ bool platform_user_get(const char *username, struct platform_state_user *state);
+ 
+-void platform_user_set(const struct platform_state_user *state);
+-
+ bool platform_group_get(const char *groupname, struct platform_state_group *state);
+ 
+-void platform_group_set(const struct platform_state_group *state);
++void platform_user_group_set(const struct platform_state_user *user_state,
++                             const struct platform_state_group *group_state,
++                             struct context *c);
++
+ 
+ /*
+  * Extract UID or GID
+-- 
+2.25.1
 
---------------bKZtiGWNTMCRTmjCoCr7piAf
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmJ+dscACgkQhs+UTJZx
-/fI7WA/8CUpXs9soiODxh1zkhNN272MiKlmwYBRPkzi+xlbbZLkXuPcZTOp7il3R
-bWd+ciGh209aKOLPCXuYUboUy6M6v1rTdVJNkWWiVmtOEH45gOVNX6khqsJwtyXB
-cNJHizUIcn+h2LrVLW4KyO1z5/ORw/I3Wx3c1KRNwyx87sWNYXtdUnq8mZssEEPx
-3RH3L2h7frPn/Hk08GK/NOIP40zpX0vOdR18ZooFMYIfF3vwiJpcIql1GdF8BSH0
-MAPszxtCJth2u7fJzm8eYeoukZmyM6b2xHtV8gQSPtkQ/2AiBqTyHrBie1SnwFal
-iu6tTyuOqiMeFVpH+VfRTdeUWa1BU5PeSTfXN1G6R8b7Yy8xldhi/79Jv+HIcH3X
-Lcj5twbwUYW55rsjw8NSIKLJOQm342mPzDygiItILVfTTDiLOkM6Wa/1BsByQxEj
-DQQ8ThYo7YLE8n8wcQCRdm8UnTLOfJE9NlYIykbo+aGxXaeWM03LX6321+QSo2zl
-YcP9TmwsF+q7S/8fbkRowRB/30KS02O6LORXXMjJTfuDYjHcWesmOemGR+qTLsWX
-6i6AhukiwKfH4Q+vEuLRAWwbb2gs+jAzerxdTwxUf5CvTQcnB4BUQh8UJHX/aY7v
-2MBAu+Kz0q91luS91zcYlp+y3DTVbFR64ePuWLput2SoAYlgegA=
-=/9+i
------END PGP SIGNATURE-----
-
---------------bKZtiGWNTMCRTmjCoCr7piAf--
 
