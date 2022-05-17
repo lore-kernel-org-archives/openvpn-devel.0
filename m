@@ -1,14 +1,13 @@
-Message-ID: <4e3b8ab7-50f0-460c-085c-403b9eb8763a@...2181...>
-Date: Tue, 17 May 2022 13:51:20 +0200
+Message-ID: <05faa4ef-4d3a-986a-3c2a-647d27b6e2b5@...2181...>
+Date: Tue, 17 May 2022 15:25:40 +0200
 MIME-Version: 1.0
 Content-Language: en-US
 References: <20220516185621.6182-1-kprovost@...2661...>
- <20220516185621.6182-2-kprovost@...2661...>
- <a3ea68a6-fc22-e6ae-bdae-feb504320f3f@...1227...>
+ <20220516185621.6182-5-kprovost@...2661...>
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <a3ea68a6-fc22-e6ae-bdae-feb504320f3f@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 1/4] mtcp: Handle
- multi_create_instance() returning NULL
+In-Reply-To: <20220516185621.6182-5-kprovost@...2661...>
+Subject: Re: [Openvpn-devel] [PATCH 4/4] Set (DCO) timeouts as well for p2p
+ mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,32 +18,50 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, Kristof Provost <kprovost@...2661...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Kristof Provost <kprovost@...2661...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi all,
+Hi,
 
-On 16/05/2022 21:32, Arne Schwabe wrote:
+On 16/05/2022 20:56, Kristof Provost via Openvpn-devel wrote:
+> From: Kristof Provost <kp@...1376...>
 > 
-> Am 16.05.2022 um 20:56 schrieb Kristof Provost via Openvpn-devel:
->> From: Kristof Provost <kp@...1376...>
->>
->> multi_create_instance() can fail (i.e. return NULL).
->> multi_create_instance_tcp() is ready for this, but called
->> multi_assign_peer_id() without first checking if mi was non-NULL.
->> multi_assign_peer_id() assumed that mi is non-NULL, dereferencing it and
->> causing a crash.
->>
->> Move the call to multi_assign_peer_id() after the mi NULL check.
->>
-> I did add multi_assign_peer there iirc but Kristof is right.
+> Signed-off-by: Kristof Provost <kprovost@...2661...>
+> ---
+>   src/openvpn/init.c | 15 +++++++++++++++
+>   1 file changed, 15 insertions(+)
 > 
-> Acked-By: Arne Schwabe <arne@...1227...
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index 0d991ba4..701749cd 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -2232,6 +2232,21 @@ do_deferred_p2p_ncp(struct context *c)
+>           msg(D_TLS_ERRORS, "ERROR: failed to set crypto cipher");
+>           return false;
+>       }
+> +
+> +    if (dco_enabled(&c->options) && (c->options.ping_send_timeout || c->c2.frame.mss_fix))
+> +    {
+> +        int ret = dco_set_peer(&c->c1.tuntap->dco,
+> +                c->c2.tls_multi->peer_id,
+> +                c->options.ping_send_timeout,
+> +                c->options.ping_rec_timeout,
+> +                c->c2.frame.mss_fix);
+> +        if (ret < 0)
+> +        {
+> +            msg(D_DCO, "Cannot set DCO peer: %s", strerror(-ret));
+> +            return false;
+> +        }
+> +    }
+> +
 
-Thank you both.
+unless I am missing something, I don't think we need another 
+dco_set_peer call.
 
-I am pulling this patch in the dco branch.
+It should be enough to move the invocation of dco_set_peer in 
+finish_options at the very top, before any attempt of bailing out.
 
 Regards,
+
 
 -- 
 Antonio Quartulli
