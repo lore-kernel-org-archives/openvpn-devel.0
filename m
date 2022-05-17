@@ -1,13 +1,9 @@
-From: Kristof Provost <kprovost@...2661...>
-Date: Tue, 17 May 2022 18:28:00 +0200
-Message-ID: <25008C79-249A-42A5-B700-03B4D34D293F@...2661...>
-In-Reply-To: <05faa4ef-4d3a-986a-3c2a-647d27b6e2b5@...2181...>
-References: <20220516185621.6182-1-kprovost@...2661...>
- <20220516185621.6182-5-kprovost@...2661...>
- <05faa4ef-4d3a-986a-3c2a-647d27b6e2b5@...2181...>
+From: Heiko Hund <heiko@...2662...>
+Date: Tue, 17 May 2022 23:01:21 +0200
+Message-Id: <20220517210121.1312072-1-heiko@...2662...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 4/4] Set (DCO) timeouts as well for p2p
- mode
+Subject: [Openvpn-devel] [PATCH] pre-commit: uncrustify based on staged
+ changes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,56 +12,88 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On 17 May 2022, at 15:25, Antonio Quartulli wrote:
-> Hi,
->
-> On 16/05/2022 20:56, Kristof Provost via Openvpn-devel wrote:
->> From: Kristof Provost <kp@...1376...>
->>
->> Signed-off-by: Kristof Provost <kprovost@...2661...>
->> ---
->>   src/openvpn/init.c | 15 +++++++++++++++
->>   1 file changed, 15 insertions(+)
->>
->> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
->> index 0d991ba4..701749cd 100644
->> --- a/src/openvpn/init.c
->> +++ b/src/openvpn/init.c
->> @@ -2232,6 +2232,21 @@ do_deferred_p2p_ncp(struct context *c)
->>           msg(D_TLS_ERRORS, "ERROR: failed to set crypto cipher");
->>           return false;
->>       }
->> +
->> +    if (dco_enabled(&c->options) && (c->options.ping_send_timeout || c-=
->c2.frame.mss_fix))
->> +    {
->> +        int ret =3D dco_set_peer(&c->c1.tuntap->dco,
->> +                c->c2.tls_multi->peer_id,
->> +                c->options.ping_send_timeout,
->> +                c->options.ping_rec_timeout,
->> +                c->c2.frame.mss_fix);
->> +        if (ret < 0)
->> +        {
->> +            msg(D_DCO, "Cannot set DCO peer: %s", strerror(-ret));
->> +            return false;
->> +        }
->> +    }
->> +
->
-> unless I am missing something, I don't think we need another dco_set_peer=
- call.
->
-> It should be enough to move the invocation of dco_set_peer in finish_opti=
-ons at the very top, before any attempt of bailing out.
->
-Good point. I=E2=80=99ll update my patchset and include this in the next up=
-date.
+Previously the generated patch was based on the file(s) in the working
+directory. This is a problem if you have not to be commited changes
+there and these changes fix formatting issues that exist in the staging
+area. This effectively circumventes the script from rejecting the
+commit.
 
-Br,
-Kristof
+An example:
+   git add file.c
+   git commit
+   ... pre-commit hooks complains about formatting ...
+   ... you fix the file manually, forget to git add ...
+   git commit
+   ... succeeds, even though the commit still has issues ...
+
+Signed-off-by: Heiko Hund <heiko@...2662...>
+---
+ dev-tools/git-pre-commit-uncrustify.sh | 25 +++++++++----------------
+ 1 file changed, 9 insertions(+), 16 deletions(-)
+
+diff --git a/dev-tools/git-pre-commit-uncrustify.sh b/dev-tools/git-pre-commit-uncrustify.sh
+index a5cf3d41..9851c212 100755
+--- a/dev-tools/git-pre-commit-uncrustify.sh
++++ b/dev-tools/git-pre-commit-uncrustify.sh
+@@ -97,6 +97,7 @@ fi
+ 
+ # create a filename to store our generated patch
+ patch=$(mktemp /tmp/ovpn-fmt-XXXXXX)
++tmpout=$(mktemp /tmp/uncrustify-XXXXXX)
+ 
+ # create one patch containing all changes to the files
+ # sed to remove quotes around the filename, if inserted by the system
+@@ -106,21 +107,11 @@ sed -e 's/^"\(.*\)"$/\1/' | \
+ while read file
+ do
+     # ignore file if we do check for file extensions and the file
+-    # does not match any of the extensions specified in $FILE_EXTS
++    # does not match the extensions .c or .h
+     if ! matches_extension "$file"; then
+         continue;
+     fi
+ 
+-    # escape special characters in the source filename:
+-    # - '\': backslash needs to be escaped
+-    # - '*': used as matching string => '*' would mean expansion
+-    #        (curiously, '?' must not be escaped)
+-    # - '[': used as matching string => '[' would mean start of set
+-    # - '|': used as sed split char instead of '/', so it needs to be escaped
+-    #        in the filename
+-    # printf %s particularly important if the filename contains the % character
+-    file_escaped_source=$(printf "%s" "$file" | sed -e 's/[\*[|]/\\&/g')
+-
+     # escape special characters in the target filename:
+     # phase 1 (characters escaped in the output diff):
+     #     - '\': backslash needs to be escaped in the output diff
+@@ -136,15 +127,17 @@ do
+ 
+     # uncrustify our sourcefile, create a patch with diff and append it to our $patch
+     # The sed call is necessary to transform the patch from
+-    #    --- $file timestamp
+-    #    +++ - timestamp
++    #    --- - timestamp
++    #    +++ $tmpout timestamp
+     # to both lines working on the same file and having a a/ and b/ prefix.
+     # Else it can not be applied with 'git apply'.
+-    "$UNCRUSTIFY" -q -c "$UNCRUST_CONFIG" -f "$file" | \
+-        diff -u -- "$file" - | \
+-        sed -e "1s|--- $file_escaped_source|--- \"a/$file_escaped_target\"|" -e "2s|+++ -|+++ \"b/$file_escaped_target\"|" >> "$patch"
++    git show ":$file" | "$UNCRUSTIFY" -q -l C -c "$UNCRUST_CONFIG" -o "$tmpout"
++    git show ":$file" | diff -u -- - "$tmpout" | \
++        sed -e "1s|--- -|--- \"b/$file_escaped_target\"|" -e "2s|+++ $tmpout|+++ \"a/$file_escaped_target\"|" >> "$patch"
+ done
+ 
++rm -f "$tmpout"
++
+ # if no patch has been generated all is ok, clean up the file stub and exit
+ if [ ! -s "$patch" ] ; then
+     rm -f "$patch"
+-- 
+2.32.0
+
 
