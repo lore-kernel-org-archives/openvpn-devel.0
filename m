@@ -1,11 +1,12 @@
-Date: Wed, 18 May 2022 11:41:58 +0200 (CEST)
+Date: Wed, 18 May 2022 12:21:23 +0200 (CEST)
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <2008220979.1131565.1652866918794@...2642...>
-In-Reply-To: <20220517210121.1312072-1-heiko@...2662...>
-References: <20220517210121.1312072-1-heiko@...2662...>
+Message-ID: <1392233370.1135321.1652869283040@...2642...>
+In-Reply-To: <20220518093212.2802495-2-arne@...1227...>
+References: <20220518093212.2802495-1-arne@...1227...>
+ <20220518093212.2802495-2-arne@...1227...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] pre-commit: uncrustify based on staged
- changes
+Subject: Re: [Openvpn-devel] [PATCH 1/4] Implement exit notification via
+ control channel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,103 +17,178 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-To: Heiko Hund <heiko@...2662...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Acked-By: Frank Lichtenheld <frank@...2641...>
+> Arne Schwabe <arne@...1227...> hat am 18.05.2022 11:32 geschrieben:
+> Current exit notification relies on data channel messages with specific
+> prefix. Adding these to new data channel modules (DCO) adds uncessary
 
-Tested various combinations of workspace changes and index changes and
-it seems to do what it should do.
+"unnecessary"
 
-> Heiko Hund <heiko@...2662...> hat am 17.05.2022 23:01 geschrieben:
+> complexity for the data for messages that from their idea belong to the
+> control channel anyway.
 > 
+> This patch adds announcing support for control channel and sending/receving
+> it. We use the simple EXIT message for this.
+[...] 
+> diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
+> index 8e0e4f18a..5a906895b 100644
+> --- a/doc/man-sections/client-options.rst
+> +++ b/doc/man-sections/client-options.rst
+> @@ -220,9 +220,14 @@ configuration.
+>    immediately close its client instance object rather than waiting for a
+>    timeout.
 >  
-> Previously the generated patch was based on the file(s) in the working
-> directory. This is a problem if you have not to be commited changes
-> there and these changes fix formatting issues that exist in the staging
-> area. This effectively circumventes the script from rejecting the
-> commit.
-> 
-> An example:
->    git add file.c
->    git commit
->    ... pre-commit hooks complains about formatting ...
->    ... you fix the file manually, forget to git add ...
->    git commit
->    ... succeeds, even though the commit still has issues ...
-> 
-> Signed-off-by: Heiko Hund <heiko@...2662...>
-> ---
->  dev-tools/git-pre-commit-uncrustify.sh | 25 +++++++++----------------
->  1 file changed, 9 insertions(+), 16 deletions(-)
-> 
-> diff --git a/dev-tools/git-pre-commit-uncrustify.sh b/dev-tools/git-pre-commit-uncrustify.sh
-> index a5cf3d41..9851c212 100755
-> --- a/dev-tools/git-pre-commit-uncrustify.sh
-> +++ b/dev-tools/git-pre-commit-uncrustify.sh
-> @@ -97,6 +97,7 @@ fi
->  
->  # create a filename to store our generated patch
->  patch=$(mktemp /tmp/ovpn-fmt-XXXXXX)
-> +tmpout=$(mktemp /tmp/uncrustify-XXXXXX)
->  
->  # create one patch containing all changes to the files
->  # sed to remove quotes around the filename, if inserted by the system
-> @@ -106,21 +107,11 @@ sed -e 's/^"\(.*\)"$/\1/' | \
->  while read file
->  do
->      # ignore file if we do check for file extensions and the file
-> -    # does not match any of the extensions specified in $FILE_EXTS
-> +    # does not match the extensions .c or .h
->      if ! matches_extension "$file"; then
->          continue;
->      fi
->  
-> -    # escape special characters in the source filename:
-> -    # - '\': backslash needs to be escaped
-> -    # - '*': used as matching string => '*' would mean expansion
-> -    #        (curiously, '?' must not be escaped)
-> -    # - '[': used as matching string => '[' would mean start of set
-> -    # - '|': used as sed split char instead of '/', so it needs to be escaped
-> -    #        in the filename
-> -    # printf %s particularly important if the filename contains the % character
-> -    file_escaped_source=$(printf "%s" "$file" | sed -e 's/[\*[|]/\\&/g')
-> -
->      # escape special characters in the target filename:
->      # phase 1 (characters escaped in the output diff):
->      #     - '\': backslash needs to be escaped in the output diff
-> @@ -136,15 +127,17 @@ do
->  
->      # uncrustify our sourcefile, create a patch with diff and append it to our $patch
->      # The sed call is necessary to transform the patch from
-> -    #    --- $file timestamp
-> -    #    +++ - timestamp
-> +    #    --- - timestamp
-> +    #    +++ $tmpout timestamp
->      # to both lines working on the same file and having a a/ and b/ prefix.
->      # Else it can not be applied with 'git apply'.
-> -    "$UNCRUSTIFY" -q -c "$UNCRUST_CONFIG" -f "$file" | \
-> -        diff -u -- "$file" - | \
-> -        sed -e "1s|--- $file_escaped_source|--- \"a/$file_escaped_target\"|" -e "2s|+++ -|+++ \"b/$file_escaped_target\"|" >> "$patch"
-> +    git show ":$file" | "$UNCRUSTIFY" -q -l C -c "$UNCRUST_CONFIG" -o "$tmpout"
-> +    git show ":$file" | diff -u -- - "$tmpout" | \
-> +        sed -e "1s|--- -|--- \"b/$file_escaped_target\"|" -e "2s|+++ $tmpout|+++ \"a/$file_escaped_target\"|" >> "$patch"
->  done
->  
-> +rm -f "$tmpout"
+> +  If both server and client support sending this message using the control
+> +  channel, the message will be sent as control-channel message. Otherwise
+> +  the message is sent as data-channel message, which will be ignored by
+> +  data-channel offloaded peers.
 > +
->  # if no patch has been generated all is ok, clean up the file stub and exit
->  if [ ! -s "$patch" ] ; then
->      rm -f "$patch"
-> -- 
-> 2.32.0
-> 
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>    The **n** parameter (default :code:`1` if not present) controls the
+>    maximum number of attempts that the client will try to resend the exit
+> -  notification message.
+> +  notification message if messages are sent in data-channel mode.
+>  
+>    In UDP server mode, send :code:`RESTART` control channel command to
+>    connected clients. The ``n`` parameter (default :code:`1` if not present)
+> diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+> index 98e2c7664..8219d2b76 100644
+> --- a/src/openvpn/crypto.h
+> +++ b/src/openvpn/crypto.h
+> @@ -264,6 +264,11 @@ struct crypto_options
+>      /**< Bit-flag indicating that we do not allow clients that do
+>       * not support resending the wrapped client key (WKc) with the
+>       * third packet of the three-way handshake */
+> +#define CO_USE_CC_EXIT_NOTIFY       (1<<6)
+> +    /**< Bit-flag indicating that explicit exit notifies should be
+> +     * send via the control channel instead of using an OCC message
 
+"sent"
+
+> +     */
+> +
+>      unsigned int flags;         /**< Bit-flags determining behavior of
+>                                   *   security operation functions. */
+>  };
+[...]
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 9ff384d09..7913661c7 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -8338,6 +8338,20 @@ add_option(struct options *options,
+>              msg(msglevel, "Unknown key-derivation method %s", p[1]);
+>          }
+>      }
+> +    else if (streq(p[0], "protocol-flags") && p[1])
+
+I find it a bit irritating that this patch doesn't add any documentation for
+this new option. But we have other undocumented options, so I assume this
+is considered fine for options the user is not supposed to set manually?
+
+> +    {
+> +        for (size_t j = 1; j < MAX_PARMS && p[j] != NULL; j++)
+> +        {
+> +            if (streq(p[j], "cc-exit"))
+> +            {
+> +                options->data_channel_crypto_flags |= CO_USE_CC_EXIT_NOTIFY;
+> +            }
+> +            else
+> +            {
+> +                msg(msglevel, "Unknown protocol-flags flag: %s", p[j]);
+> +            }
+> +        }
+> +    }
+>      else if (streq(p[0], "prng") && p[1] && !p[3])
+>      {
+>          msg(M_WARN, "NOTICE: --prng option ignored (SSL library PRNG is used)");
+> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+> index 70fd1c3ce..51b8bd521 100644
+> --- a/src/openvpn/push.c
+> +++ b/src/openvpn/push.c
+> @@ -176,6 +176,21 @@ server_pushed_signal(struct context *c, const struct buffer *buffer, const bool
+>      }
+>  }
+>  
+> +void
+> +receive_exit_message(struct context *c, const struct buffer *buffer)
+
+buffer is not used, so we can probably remove it?
+
+> +{
+> +    dmsg(D_STREAM_ERRORS, "Exit message received by peer");
+> +    c->sig->signal_received = SIGTERM;
+> +    c->sig->signal_text = "remote-exit";
+> +#ifdef ENABLE_MANAGEMENT
+> +    if (management)
+> +    {
+> +        management_notify(management, "info", c->sig->signal_text, "EXIT");
+> +    }
+> +#endif
+> +}
+> +
+> +
+>  void
+>  server_pushed_info(struct context *c, const struct buffer *buffer,
+>                     const int adv)
+[...]
+> diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
+> index e06edd216..1fc9c6dca 100644
+> --- a/src/openvpn/sig.c
+> +++ b/src/openvpn/sig.c
+> @@ -321,20 +321,43 @@ print_status(const struct context *c, struct status_output *so)
+>      gc_free(&gc);
+>  }
+>  
+> +
+> +/* Small helper function to determine if we should be sending exit notifcation
+
+"should send" (not an error, just a simplification), "notification"
+
+> + * via control channel */
+> +static inline bool
+> +cc_exit_notify_enabled(struct context *c)
+> +{
+> +    /* Check if we have TLS active at all */
+> +    if (!c->c2.tls_multi)
+> +    {
+> +        return false;
+> +    }
+> +
+> +    const struct key_state *ks = get_primary_key(c->c2.tls_multi);
+> +    return (ks->crypto_options.flags & CO_USE_CC_EXIT_NOTIFY);
+> +}
+> +
+>  /*
+>   * Handle the triggering and time-wait of explicit
+>   * exit notification.
+>   */
+> -
+>  static void
+>  process_explicit_exit_notification_init(struct context *c)
+>  {
+>      msg(M_INFO, "SIGTERM received, sending exit notification to peer");
+>      event_timeout_init(&c->c2.explicit_exit_notification_interval, 1, 0);
+>      reset_coarse_timers(c);
+> +
+>      signal_reset(c->sig);
+>      halt_non_edge_triggered_signals();
+>      c->c2.explicit_exit_notification_time_wait = now;
+> +
+> +    /* Check if we are in TLS mode and should sent the notify via data
+
+"should send", "control"
+
+> +     * channel */
+> +    if (cc_exit_notify_enabled(c))
+> +    {
+> +        send_control_channel_string(c, "EXIT", D_PUSH);
+> +    }
+>  }
+>  
+>  void
+[...]
+
+Regards,
 --
 Frank Lichtenheld
 
