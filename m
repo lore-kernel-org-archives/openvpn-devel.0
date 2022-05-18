@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 18 May 2022 11:32:11 +0200
-Message-Id: <20220518093212.2802495-4-arne@...1227...>
+Date: Wed, 18 May 2022 11:32:09 +0200
+Message-Id: <20220518093212.2802495-2-arne@...1227...>
 In-Reply-To: <20220518093212.2802495-1-arne@...1227...>
 References: <20220518093212.2802495-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 3/4] Implement AUTH_FAIL,
- TEMP message support
+Subject: [Openvpn-devel] [PATCH 1/4] Implement exit notification via control
+ channel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,489 +18,271 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This allows a server to indicate a temporary problem on the server and
-allows the server to indicate how to proceed (i.e. move to the next server,
-retry the same server, wait a certain time,...)
+Current exit notification relies on data channel messages with specific
+prefix. Adding these to new data channel modules (DCO) adds uncessary
+complexity for the data for messages that from their idea belong to the
+control channel anyway.
 
-This adds options_utils.c/h to be able to unit test the new function.
+This patch adds announcing support for control channel and sending/receving
+it. We use the simple EXIT message for this.
 ---
- doc/man-sections/script-options.rst  |  30 ++++++++
- src/openvpn/Makefile.am              |   1 +
- src/openvpn/init.c                   |   9 ++-
- src/openvpn/openvpn.vcxproj          |   2 +
- src/openvpn/openvpn.vcxproj.filters  |   3 +
- src/openvpn/options.h                |   9 ++-
- src/openvpn/options_util.c           | 104 +++++++++++++++++++++++++++
- src/openvpn/options_util.h           |  33 +++++++++
- src/openvpn/push.c                   |  11 ++-
- src/openvpn/ssl.c                    |  13 ++--
- src/openvpn/ssl.h                    |   3 +
- tests/unit_tests/openvpn/Makefile.am |   1 +
- tests/unit_tests/openvpn/test_misc.c |  49 +++++++++++++
- 13 files changed, 260 insertions(+), 8 deletions(-)
- create mode 100644 src/openvpn/options_util.c
- create mode 100644 src/openvpn/options_util.h
+ doc/man-sections/client-options.rst |  7 ++++++-
+ src/openvpn/crypto.h                |  5 +++++
+ src/openvpn/forward.c               |  4 ++++
+ src/openvpn/multi.c                 |  5 +++++
+ src/openvpn/options.c               | 14 ++++++++++++++
+ src/openvpn/push.c                  | 19 +++++++++++++++++++
+ src/openvpn/push.h                  |  2 ++
+ src/openvpn/sig.c                   | 27 +++++++++++++++++++++++++--
+ src/openvpn/ssl.c                   |  3 +++
+ src/openvpn/ssl.h                   |  3 +++
+ src/openvpn/ssl_ncp.c               |  5 +++++
+ 11 files changed, 91 insertions(+), 3 deletions(-)
 
-diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
-index 6be0686d7..bacf6b381 100644
---- a/doc/man-sections/script-options.rst
-+++ b/doc/man-sections/script-options.rst
-@@ -97,6 +97,36 @@ SCRIPT HOOKS
-   the authentication, a :code:`1` or :code:`0` must be written to the
-   file specified by the :code:`auth_control_file`.
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
+index 8e0e4f18a..5a906895b 100644
+--- a/doc/man-sections/client-options.rst
++++ b/doc/man-sections/client-options.rst
+@@ -220,9 +220,14 @@ configuration.
+   immediately close its client instance object rather than waiting for a
+   timeout.
  
-+  If the file specified by :code:`auth_failed_reason` exists and has non-empty
-+  content, the content of this file will be used as AUTH_FAILED message. To
-+  avoid race condition, this file should be written before
-+  :code:`auth_control_file`.
++  If both server and client support sending this message using the control
++  channel, the message will be sent as control-channel message. Otherwise
++  the message is sent as data-channel message, which will be ignored by
++  data-channel offloaded peers.
 +
-+  This auth fail reason can be something simple like "User has permanently
-+  disabled" but there are also some special auth failed messages.
-+
-+  The ``TEMP`` message indicates that the authentication
-+  temporarily failed and that the client should continue to retry to connect.
-+  The server can optionally give a user readable message and hint the client a
-+  behavior how to proceed. The keywords of the ``AUTH_FAILED,TEMP`` message
-+  are comma separated keys/values. Currently defined are:
-+
-+  - ``backoff s`` - instructs the client to wait at least s seconds before the
-+                    next connection attempt. If the client has already a higher
-+                    delay before reconnecting, the delay will not be
-+                    shortened.
-+  - ``advance addr`` - Instructs the client to reconnect to the (IP)
-+                       address of the current server.
-+  - ``advance remote`` - Instructs the client to skip the remaining IP
-+                         addresses of the current server and instead connect to
-+                         the next server specified in the configuration file
-+  - ``advance no`` - Instructs the client to retry connecting to the same server
-+                    again.
-+
-+  For example, the message ``TEMP[backoff 42,advance no]: No free IP addresses``
-+  to indicates that the VPN connection can currently not succeed and instructs
-+  the client to retry in 42 seconds again.
-+
-   When deferred authentication is in use, the script can also request
-   pending authentication by writing to the file specified by the
-   :code:`auth_pending_file`. The first line must be the timeout in
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 577294804..a619aac38 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -95,6 +95,7 @@ openvpn_SOURCES = \
- 	pkcs11_mbedtls.c \
- 	openvpn.c openvpn.h \
- 	options.c options.h \
-+    options_util.c options_util.h \
- 	otime.c otime.h \
- 	packet_id.c packet_id.h \
- 	perf.c perf.h \
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index b0c62a859..b2a1e92a5 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -483,13 +483,15 @@ next_connection_entry(struct context *c)
-             /* Check if there is another resolved address to try for
-              * the current connection */
-             if (c->c1.link_socket_addr.current_remote
--                && c->c1.link_socket_addr.current_remote->ai_next)
-+                && c->c1.link_socket_addr.current_remote->ai_next
-+                && !c->options.advance_next_remote)
-             {
-                 c->c1.link_socket_addr.current_remote =
-                     c->c1.link_socket_addr.current_remote->ai_next;
-             }
-             else
-             {
-+                c->options.advance_next_remote = false;
-                 /* FIXME (schwabe) fix the persist-remote-ip option for real,
-                  * this is broken probably ever since connection lists and multiple
-                  * remote existed
-@@ -2357,6 +2359,11 @@ socket_restart_pause(struct context *c)
-             /* sec is less than 2^16; we can left shift it by up to 15 bits without overflow */
-             sec = max_int(sec, 1) << min_int(backoff, 15);
-         }
-+        if (c->options.server_backoff_time)
-+        {
-+            sec = max_int(sec, c->options.server_backoff_time);
-+            c->options.server_backoff_time = 0;
-+        }
+   The **n** parameter (default :code:`1` if not present) controls the
+   maximum number of attempts that the client will try to resend the exit
+-  notification message.
++  notification message if messages are sent in data-channel mode.
  
-         if (sec > c->options.ce.connect_retry_seconds_max)
+   In UDP server mode, send :code:`RESTART` control channel command to
+   connected clients. The ``n`` parameter (default :code:`1` if not present)
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 98e2c7664..8219d2b76 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -264,6 +264,11 @@ struct crypto_options
+     /**< Bit-flag indicating that we do not allow clients that do
+      * not support resending the wrapped client key (WKc) with the
+      * third packet of the three-way handshake */
++#define CO_USE_CC_EXIT_NOTIFY       (1<<6)
++    /**< Bit-flag indicating that explicit exit notifies should be
++     * send via the control channel instead of using an OCC message
++     */
++
+     unsigned int flags;         /**< Bit-flags determining behavior of
+                                  *   security operation functions. */
+ };
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 6afe152b4..50d3fd2b2 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -241,6 +241,10 @@ check_incoming_control_channel(struct context *c)
          {
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index 860ef8926..e82be2698 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -306,6 +306,7 @@
-     <ClCompile Include="occ.c" />
-     <ClCompile Include="openvpn.c" />
-     <ClCompile Include="options.c" />
-+    <ClCompile Include="options_util.c" />
-     <ClCompile Include="otime.c" />
-     <ClCompile Include="packet_id.c" />
-     <ClCompile Include="perf.c" />
-@@ -395,6 +396,7 @@
-     <ClInclude Include="occ.h" />
-     <ClInclude Include="openvpn.h" />
-     <ClInclude Include="options.h" />
-+    <ClInclude Include="options_util.h" />
-     <ClInclude Include="otime.h" />
-     <ClInclude Include="packet_id.h" />
-     <ClInclude Include="perf.h" />
-diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
-index f76e59235..616b71ab2 100644
---- a/src/openvpn/openvpn.vcxproj.filters
-+++ b/src/openvpn/openvpn.vcxproj.filters
-@@ -395,6 +395,9 @@
-     <ClInclude Include="options.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-+    <ClInclude Include="options_util.h">
-+      <Filter>Header Files</Filter>
-+    </ClInclude>
-     <ClInclude Include="otime.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index c2937dc37..0c1a31389 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -272,10 +272,17 @@ struct options
-     struct connection_list *connection_list;
- 
-     struct remote_list *remote_list;
--    /* Do not advanced the connection or remote addr list*/
-+    /* Do not advance the connection or remote addr list*/
-     bool no_advance;
-+    /* Advance directly to the next remote, skipping remaining addresses of the
-+     * current remote */
-+    bool advance_next_remote;
-     /* Counts the number of unsuccessful connection attempts */
-     unsigned int unsuccessful_attempts;
-+    /* the server can suggest a backoff time to the client, it
-+     * will still be capped by the max timeout between connections
-+     * (300s by default) */
-+    int server_backoff_time;
- 
- #if ENABLE_MANAGEMENT
-     struct http_proxy_options *http_proxy_override;
-diff --git a/src/openvpn/options_util.c b/src/openvpn/options_util.c
-new file mode 100644
-index 000000000..d8a7e2343
---- /dev/null
-+++ b/src/openvpn/options_util.c
-@@ -0,0 +1,104 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2022 OpenVPN Inc <sales@...515...>
-+ *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#elif defined(_MSC_VER)
-+#include "config-msvc.h"
-+#endif
-+
-+#include "syshead.h"
-+
-+#include "options_util.h"
-+
-+const char *
-+parse_auth_failed_temp(struct options *o, const struct buffer *buf)
-+{
-+    struct gc_arena gc = gc_new();
-+    char *m = string_alloc(BSTR(buf), &gc);
-+    /* skip TEMP */
-+    m += strlen("TEMP");
-+    const char *message = BSTR(buf) + 4;
-+
-+
-+    /* Check if the message uses the TEMP[flags]: message format*/
-+    char *endofflags = strstr(m, "]");
-+
-+    /* Temporary failure from the server */
-+    if (m[0] == '[' && endofflags)
-+    {
-+        message = strstr(BSTR(buf), "]") + 1;
-+        /* null terminate the substring to only looks for flags between [ and ] */
-+        *endofflags = '\x00';
-+        const char *token = strtok(m, "[,");
-+        while (token)
+             receive_auth_pending(c, &buf);
+         }
++        else if (buf_string_match_head_str(&buf, "EXIT"))
 +        {
-+            if (!strncmp(token, "backoff ", strlen("backoff ")))
++            receive_exit_message(c, &buf);
++        }
+         else
+         {
+             msg(D_PUSH_ERRORS, "WARNING: Received unknown control message: %s", BSTR(&buf));
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index ba2f6d581..e7c99f813 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1777,6 +1777,11 @@ multi_client_set_protocol_options(struct context *c)
+     }
+ #endif
+ 
++    if (proto & IV_PROTO_CC_EXIT_NOTIFY)
++    {
++        o->data_channel_crypto_flags |= CO_USE_CC_EXIT_NOTIFY;
++    }
++
+     /* Select cipher if client supports Negotiable Crypto Parameters */
+ 
+     /* if we have already created our key, we cannot *change* our own
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 9ff384d09..7913661c7 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -8338,6 +8338,20 @@ add_option(struct options *options,
+             msg(msglevel, "Unknown key-derivation method %s", p[1]);
+         }
+     }
++    else if (streq(p[0], "protocol-flags") && p[1])
++    {
++        for (size_t j = 1; j < MAX_PARMS && p[j] != NULL; j++)
++        {
++            if (streq(p[j], "cc-exit"))
 +            {
-+                if (sscanf(token, "backoff %d", &o->server_backoff_time) != 1)
-+                {
-+                    msg(D_PUSH, "invalid AUTH_FAIL,TEMP flag: %s", token);
-+                    o->server_backoff_time = 0;
-+                }
-+            }
-+            else if (!strncmp(token, "advance ", strlen("advance ")))
-+            {
-+                token += strlen("advance ");
-+                if (!strcmp(token, "no"))
-+                {
-+                    o->no_advance = true;
-+                }
-+                else if (!strcmp(token, "remote"))
-+                {
-+                    o->advance_next_remote = true;
-+                    o->no_advance = false;
-+                }
-+                else if (!strcmp(token, "addr"))
-+                {
-+                    /* Go on to the next remote */
-+                    o->no_advance = false;
-+                }
++                options->data_channel_crypto_flags |= CO_USE_CC_EXIT_NOTIFY;
 +            }
 +            else
 +            {
-+                msg(D_PUSH_ERRORS, "WARNING: unknown AUTH_FAIL,TEMP flag: %s", token);
++                msg(msglevel, "Unknown protocol-flags flag: %s", p[j]);
 +            }
-+            token = strtok(NULL, "[,");
 +        }
 +    }
-+
-+    /* Look for the message in the original buffer to safely be
-+     * able to return it */
-+    if (!message || message[0] != ':')
-+    {
-+        message = "";
-+    }
-+    else
-+    {
-+        /* Skip the : at the beginning */
-+        message += 1;
-+    }
-+    gc_free(&gc);
-+    return message;
-+}
-\ No newline at end of file
-diff --git a/src/openvpn/options_util.h b/src/openvpn/options_util.h
-new file mode 100644
-index 000000000..9785bb239
---- /dev/null
-+++ b/src/openvpn/options_util.h
-@@ -0,0 +1,33 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2022 OpenVPN Inc <sales@...515...>
-+ *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
-+
-+#ifndef OPTIONS_UTIL_H_
-+#define OPTIONS_UTIL_H_
-+
-+#include "options.h"
-+
-+const char *
-+parse_auth_failed_temp(struct options *o, const struct buffer *buf);
-+
-+#endif
-\ No newline at end of file
+     else if (streq(p[0], "prng") && p[1] && !p[3])
+     {
+         msg(M_WARN, "NOTICE: --prng option ignored (SSL library PRNG is used)");
 diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index be118831d..7d51ab477 100644
+index 70fd1c3ce..51b8bd521 100644
 --- a/src/openvpn/push.c
 +++ b/src/openvpn/push.c
-@@ -38,6 +38,7 @@
- 
- #include "memdbg.h"
- #include "ssl_util.h"
-+#include "options_util.h"
- 
- static char push_reply_cmd[] = "PUSH_REPLY";
- 
-@@ -51,7 +52,6 @@ void
- receive_auth_failed(struct context *c, const struct buffer *buffer)
- {
-     msg(M_VERB0, "AUTH: Received control message: %s", BSTR(buffer));
--    c->options.no_advance = true;
- 
-     if (!c->options.pull)
-     {
-@@ -64,15 +64,22 @@ receive_auth_failed(struct context *c, const struct buffer *buffer)
-      * contains further flags */
-     bool authfail_extended = buf_string_compare_advance(&buf, "AUTH_FAILED,");
- 
-+    if (authfail_extended && buf_string_match_head_str(&buf, "TEMP"))
-+    {
-+        parse_auth_failed_temp(&c->options, &buf);
-+        c->sig->signal_received = SIGUSR1;
-+        c->sig->signal_text = "auth-temp-failure (server temporary reject)";
-+    }
-     /* Before checking how to react on AUTH_FAILED, first check if the
-      * failed auth might be the result of an expired auth-token.
-      * Note that a server restart will trigger a generic AUTH_FAILED
-      * instead an AUTH_FAILED,SESSION so handle all AUTH_FAILED message
-      * identical for this scenario */
--    if (ssl_clean_auth_token())
-+    else if (ssl_clean_auth_token())
-     {
-         c->sig->signal_received = SIGUSR1;     /* SOFT-SIGUSR1 -- Auth failure error */
-         c->sig->signal_text = "auth-failure (auth-token)";
-+        c->options.no_advance = true;
+@@ -176,6 +176,21 @@ server_pushed_signal(struct context *c, const struct buffer *buffer, const bool
      }
-     else
+ }
+ 
++void
++receive_exit_message(struct context *c, const struct buffer *buffer)
++{
++    dmsg(D_STREAM_ERRORS, "Exit message received by peer");
++    c->sig->signal_received = SIGTERM;
++    c->sig->signal_text = "remote-exit";
++#ifdef ENABLE_MANAGEMENT
++    if (management)
++    {
++        management_notify(management, "info", c->sig->signal_text, "EXIT");
++    }
++#endif
++}
++
++
+ void
+ server_pushed_info(struct context *c, const struct buffer *buffer,
+                    const int adv)
+@@ -604,6 +619,10 @@ prepare_push_reply(struct context *c, struct gc_arena *gc,
      {
+         push_option_fmt(gc, push_list, M_USAGE, "key-derivation tls-ekm");
+     }
++    if (o->data_channel_crypto_flags & CO_USE_CC_EXIT_NOTIFY)
++    {
++        push_option_fmt(gc, push_list, M_USAGE, "protocol-flags cc-exit");
++    }
+     return true;
+ }
+ 
+diff --git a/src/openvpn/push.h b/src/openvpn/push.h
+index 62fad4a14..33e62120c 100644
+--- a/src/openvpn/push.h
++++ b/src/openvpn/push.h
+@@ -48,6 +48,8 @@ void receive_auth_failed(struct context *c, const struct buffer *buffer);
+ 
+ void server_pushed_signal(struct context *c, const struct buffer *buffer, const bool restart, const int adv);
+ 
++void receive_exit_message(struct context *c, const struct buffer *buffer);
++
+ void server_pushed_info(struct context *c, const struct buffer *buffer,
+                         const int adv);
+ 
+diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
+index e06edd216..1fc9c6dca 100644
+--- a/src/openvpn/sig.c
++++ b/src/openvpn/sig.c
+@@ -321,20 +321,43 @@ print_status(const struct context *c, struct status_output *so)
+     gc_free(&gc);
+ }
+ 
++
++/* Small helper function to determine if we should be sending exit notifcation
++ * via control channel */
++static inline bool
++cc_exit_notify_enabled(struct context *c)
++{
++    /* Check if we have TLS active at all */
++    if (!c->c2.tls_multi)
++    {
++        return false;
++    }
++
++    const struct key_state *ks = get_primary_key(c->c2.tls_multi);
++    return (ks->crypto_options.flags & CO_USE_CC_EXIT_NOTIFY);
++}
++
+ /*
+  * Handle the triggering and time-wait of explicit
+  * exit notification.
+  */
+-
+ static void
+ process_explicit_exit_notification_init(struct context *c)
+ {
+     msg(M_INFO, "SIGTERM received, sending exit notification to peer");
+     event_timeout_init(&c->c2.explicit_exit_notification_interval, 1, 0);
+     reset_coarse_timers(c);
++
+     signal_reset(c->sig);
+     halt_non_edge_triggered_signals();
+     c->c2.explicit_exit_notification_time_wait = now;
++
++    /* Check if we are in TLS mode and should sent the notify via data
++     * channel */
++    if (cc_exit_notify_enabled(c))
++    {
++        send_control_channel_string(c, "EXIT", D_PUSH);
++    }
+ }
+ 
+ void
+@@ -351,7 +374,7 @@ process_explicit_exit_notification_timer_wakeup(struct context *c)
+             c->sig->signal_received = SIGTERM;
+             c->sig->signal_text = "exit-with-notification";
+         }
+-        else
++        else if (!cc_exit_notify_enabled(c))
+         {
+             c->c2.occ_op = OCC_EXIT;
+         }
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 4506b7504..f11b3afb3 100644
+index 61dea996d..4506b7504 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -1943,14 +1943,19 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
-         /* support for exit notify via control channel */
-         iv_proto |= IV_PROTO_CC_EXIT_NOTIFY;
+@@ -1940,6 +1940,9 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+         /* support for P_DATA_V2 */
+         int iv_proto = IV_PROTO_DATA_V2;
  
--        /* support for receiving push_reply before sending
--         * push request, also signal that the client wants
--         * to get push-reply messages without without requiring a round
--         * trip for a push request message*/
-         if (session->opt->pull)
-         {
-+            /* support for receiving push_reply before sending
-+             * push request, also signal that the client wants
-+             * to get push-reply messages without requiring a round
-+             * trip for a push request message*/
-             iv_proto |= IV_PROTO_REQUEST_PUSH;
++        /* support for exit notify via control channel */
++        iv_proto |= IV_PROTO_CC_EXIT_NOTIFY;
 +
-+            /* Support keywords in the AUTH_PENDING control message */
-             iv_proto |= IV_PROTO_AUTH_PENDING_KW;
-+
-+            /* support for AUTH_FAIL,TEMP control message */
-+            iv_proto |= IV_PROTO_AUTH_FAIL_TEMP;
-         }
- 
-         /* support for Negotiable Crypto Parameters */
+         /* support for receiving push_reply before sending
+          * push request, also signal that the client wants
+          * to get push-reply messages without without requiring a round
 diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 1b8b736b9..981bb3403 100644
+index 0ba86d3e6..1b8b736b9 100644
 --- a/src/openvpn/ssl.h
 +++ b/src/openvpn/ssl.h
 @@ -93,6 +93,9 @@
   * result. */
  #define IV_PROTO_NCP_P2P         (1<<5)
  
-+/** Support for AUTH_FAIL,TEMP messages */
-+#define IV_PROTO_AUTH_FAIL_TEMP  (1<<6)
++/** Support for explicit exit notify via control channel */
++#define IV_PROTO_CC_EXIT_NOTIFY  (1<<7)
 +
- /** Support for explicit exit notify via control channel */
- #define IV_PROTO_CC_EXIT_NOTIFY  (1<<7)
+ /* Default field in X509 to be username */
+ #define X509_USERNAME_FIELD_DEFAULT "CN"
  
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index 63b53a6ac..65cf9549c 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -176,5 +176,6 @@ misc_testdriver_LDFLAGS = @TEST_LDFLAGS@
- misc_testdriver_SOURCES = test_misc.c mock_msg.c \
-     mock_get_random.c \
- 	$(openvpn_srcdir)/buffer.c \
-+	$(openvpn_srcdir)/options_util.c \
- 	$(openvpn_srcdir)/ssl_util.c \
- 	$(openvpn_srcdir)/platform.c
-diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvpn/test_misc.c
-index 636fc45d6..802307fb7 100644
---- a/tests/unit_tests/openvpn/test_misc.c
-+++ b/tests/unit_tests/openvpn/test_misc.c
-@@ -37,6 +37,7 @@
- #include <cmocka.h>
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index 5d7e6dd38..4a083e247 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -419,6 +419,11 @@ p2p_ncp_set_options(struct tls_multi *multi, struct tls_session *session)
+         multi->peer_id = 0x76706e; /* 'v' 'p' 'n' */
+     }
  
- #include "ssl_util.h"
-+#include "options_util.h"
- 
- static void
- test_compat_lzo_string(void **state)
-@@ -72,8 +73,56 @@ test_compat_lzo_string(void **state)
-     gc_free(&gc);
- }
- 
-+static void
-+test_auth_fail_temp_no_flags(void **state)
-+{
-+    struct options o;
++    if (iv_proto_peer & IV_PROTO_CC_EXIT_NOTIFY)
++    {
++        session->opt->crypto_flags |= CO_USE_CC_EXIT_NOTIFY;
++    }
 +
-+    struct buffer buf;
-+    const char *teststr = "TEMP:There are no flags here [really not]";
-+
-+    buf_set_read(&buf, (uint8_t *)teststr,strlen(teststr));
-+
-+    const char *msg = parse_auth_failed_temp(&o, &buf);
-+    assert_string_equal(msg, "There are no flags here [really not]");
-+}
-+
-+static void
-+test_auth_fail_temp_flags(void **state)
-+{
-+    struct options o;
-+
-+    struct buffer buf;
-+    const char *teststr = "TEMP[backoff 42,advance no]";
-+
-+    buf_set_read(&buf, (uint8_t *)teststr,strlen(teststr));
-+
-+    const char *msg = parse_auth_failed_temp(&o, &buf);
-+    assert_string_equal(msg, "");
-+    assert_int_equal(o.server_backoff_time, 42);
-+    assert_int_equal(o.no_advance, true);
-+}
-+
-+static void
-+test_auth_fail_temp_flags_msg(void **state)
-+{
-+    struct options o;
-+
-+    struct buffer buf;
-+    const char *teststr = "TEMP[advance remote,backoff 77]:go round and round";
-+
-+    buf_set_read(&buf, (uint8_t *)teststr,strlen(teststr));
-+
-+    const char *msg = parse_auth_failed_temp(&o, &buf);
-+    assert_string_equal(msg, "go round and round");
-+    assert_int_equal(o.server_backoff_time, 77);
-+}
-+
- const struct CMUnitTest misc_tests[] = {
-     cmocka_unit_test(test_compat_lzo_string),
-+    cmocka_unit_test(test_auth_fail_temp_no_flags),
-+    cmocka_unit_test(test_auth_fail_temp_flags),
-+    cmocka_unit_test(test_auth_fail_temp_flags_msg),
- };
- 
- int
+ #if defined(HAVE_EXPORT_KEYING_MATERIAL)
+     if (iv_proto_peer & IV_PROTO_TLS_KEY_EXPORT)
+     {
 -- 
 2.32.0 (Apple Git-132)
 
