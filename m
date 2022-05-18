@@ -1,15 +1,11 @@
-Date: Wed, 18 May 2022 11:37:11 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <YoS+R/bSOQYesTKb@...1296...>
-References: <20211019183127.614175-17-arne@...1227...>
- <202110210624.19L6Okf0035545@...2054...>
+Date: Wed, 18 May 2022 11:41:58 +0200 (CEST)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <2008220979.1131565.1652866918794@...2642...>
+In-Reply-To: <20220517210121.1312072-1-heiko@...2662...>
+References: <20220517210121.1312072-1-heiko@...2662...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="GPzUWkFLCFYElLmd"
-Content-Disposition: inline
-In-Reply-To: <202110210624.19L6Okf0035545@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add message when decoding
- PKCS12 file fails.
+Subject: Re: [Openvpn-devel] [PATCH] pre-commit: uncrustify based on staged
+ changes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,100 +14,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Heiko Hund <heiko@...2662...>, openvpn-devel@lists.sourceforge.net
 
---GPzUWkFLCFYElLmd
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Acked-By: Frank Lichtenheld <frank@...2641...>
 
-Hi,
+Tested various combinations of workspace changes and index changes and
+it seems to do what it should do.
 
-decided in the community meeting today that this should also be
-cherry-picked to 2.5 - I have not actually tested with a pkcs12 file,
-just run the basic compile/client test cycle (and the patch is
-trivial enough).
-
-commit 1f54811e92c89fe07d7cea8339e928980bfe0536 (HEAD -> release/2.5)
-Author: Arne Schwabe <arne@...1227...>
-Date:   Tue Oct 19 20:31:22 2021 +0200
-
-    Add message when decoding PKCS12 file fails.
-
-gert
-
-On Thu, Oct 21, 2021 at 08:24:46AM +0200, Gert Doering wrote:
-> Acked-by: Gert Doering <gert@...1296...>
->=20
-> "That was an easy one" :-) - error reporting is always useful, and
-> the code change is trivial enough.  Tested with "wrong password" only,
-> which now prints:
->=20
-> 2021-10-21 08:24:01 OpenSSL: error:23076071:PKCS12 routines:PKCS12_parse:=
-mac verify failure
-> 2021-10-21 08:24:01 OpenSSL: error:23076071:PKCS12 routines:PKCS12_parse:=
-mac verify failure
-> 2021-10-21 08:24:01 Decoding PKCS12 failed. Probably wrong password or un=
-supported/legacy encryption
-> 2021-10-21 08:24:01 SIGUSR1[soft,private-key-password-failure] received, =
-process restarting
->=20
-> Your patch has been applied to the master branch.
->=20
-> commit 6ac4e63c577986ec11eae3519fe8516e8ca8ac0f
-> Author: Arne Schwabe
-> Date:   Tue Oct 19 20:31:22 2021 +0200
->=20
->      Add message when decoding PKCS12 file fails.
->=20
->      Signed-off-by: Arne Schwabe <arne@...1227...>
->      Acked-by: Gert Doering <gert@...1296...>
->      Message-Id: <20211019183127.614175-17-arne@...1227...>
->      URL: https://www.mail-archive.com/openvpn-devel@...475...=
-t/msg23017.html
->      Signed-off-by: Gert Doering <gert@...1296...>
->=20
->=20
-> --
-> kind regards,
->=20
-> Gert Doering
->=20
->=20
->=20
+> Heiko Hund <heiko@...2662...> hat am 17.05.2022 23:01 geschrieben:
+> 
+>  
+> Previously the generated patch was based on the file(s) in the working
+> directory. This is a problem if you have not to be commited changes
+> there and these changes fix formatting issues that exist in the staging
+> area. This effectively circumventes the script from rejecting the
+> commit.
+> 
+> An example:
+>    git add file.c
+>    git commit
+>    ... pre-commit hooks complains about formatting ...
+>    ... you fix the file manually, forget to git add ...
+>    git commit
+>    ... succeeds, even though the commit still has issues ...
+> 
+> Signed-off-by: Heiko Hund <heiko@...2662...>
+> ---
+>  dev-tools/git-pre-commit-uncrustify.sh | 25 +++++++++----------------
+>  1 file changed, 9 insertions(+), 16 deletions(-)
+> 
+> diff --git a/dev-tools/git-pre-commit-uncrustify.sh b/dev-tools/git-pre-commit-uncrustify.sh
+> index a5cf3d41..9851c212 100755
+> --- a/dev-tools/git-pre-commit-uncrustify.sh
+> +++ b/dev-tools/git-pre-commit-uncrustify.sh
+> @@ -97,6 +97,7 @@ fi
+>  
+>  # create a filename to store our generated patch
+>  patch=$(mktemp /tmp/ovpn-fmt-XXXXXX)
+> +tmpout=$(mktemp /tmp/uncrustify-XXXXXX)
+>  
+>  # create one patch containing all changes to the files
+>  # sed to remove quotes around the filename, if inserted by the system
+> @@ -106,21 +107,11 @@ sed -e 's/^"\(.*\)"$/\1/' | \
+>  while read file
+>  do
+>      # ignore file if we do check for file extensions and the file
+> -    # does not match any of the extensions specified in $FILE_EXTS
+> +    # does not match the extensions .c or .h
+>      if ! matches_extension "$file"; then
+>          continue;
+>      fi
+>  
+> -    # escape special characters in the source filename:
+> -    # - '\': backslash needs to be escaped
+> -    # - '*': used as matching string => '*' would mean expansion
+> -    #        (curiously, '?' must not be escaped)
+> -    # - '[': used as matching string => '[' would mean start of set
+> -    # - '|': used as sed split char instead of '/', so it needs to be escaped
+> -    #        in the filename
+> -    # printf %s particularly important if the filename contains the % character
+> -    file_escaped_source=$(printf "%s" "$file" | sed -e 's/[\*[|]/\\&/g')
+> -
+>      # escape special characters in the target filename:
+>      # phase 1 (characters escaped in the output diff):
+>      #     - '\': backslash needs to be escaped in the output diff
+> @@ -136,15 +127,17 @@ do
+>  
+>      # uncrustify our sourcefile, create a patch with diff and append it to our $patch
+>      # The sed call is necessary to transform the patch from
+> -    #    --- $file timestamp
+> -    #    +++ - timestamp
+> +    #    --- - timestamp
+> +    #    +++ $tmpout timestamp
+>      # to both lines working on the same file and having a a/ and b/ prefix.
+>      # Else it can not be applied with 'git apply'.
+> -    "$UNCRUSTIFY" -q -c "$UNCRUST_CONFIG" -f "$file" | \
+> -        diff -u -- "$file" - | \
+> -        sed -e "1s|--- $file_escaped_source|--- \"a/$file_escaped_target\"|" -e "2s|+++ -|+++ \"b/$file_escaped_target\"|" >> "$patch"
+> +    git show ":$file" | "$UNCRUSTIFY" -q -l C -c "$UNCRUST_CONFIG" -o "$tmpout"
+> +    git show ":$file" | diff -u -- - "$tmpout" | \
+> +        sed -e "1s|--- -|--- \"b/$file_escaped_target\"|" -e "2s|+++ $tmpout|+++ \"a/$file_escaped_target\"|" >> "$patch"
+>  done
+>  
+> +rm -f "$tmpout"
+> +
+>  # if no patch has been generated all is ok, clean up the file stub and exit
+>  if [ ! -s "$patch" ] ; then
+>      rm -f "$patch"
+> -- 
+> 2.32.0
+> 
+> 
+> 
 > _______________________________________________
 > Openvpn-devel mailing list
 > Openvpn-devel@lists.sourceforge.net
 > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->=20
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---GPzUWkFLCFYElLmd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJihL5HAAoJEB2Cnv7KVigSgq4L/2ku0xus7bn/qMWbnf5MFKd+
-XBM1e1HJtP96DCPQjDShhGMPgcNiO5uf9iP7svklP8ib8FhY9AU/vA4lMjPhMD2p
-LHO1wHQ5teJEwF+RnkjUbn/ANK21EKTC52tUnRpI8jNCZI/f9vnP2BV7osdGR9m/
-M/v7HbbZdngikcwbiLtXUzPGfSQmx/FiIFFQvVgW4uJTc4JjvnycHqIpXYSo6ru0
-gQTDaxH03909qgAU1LhkcbTNAf1Xp0NXQtDmO8CPDxczjVV9ctS7mN9XUt73glte
-cVx9zc+PH4EPJVht8RUlhd322cGNKcVXG1oCuDWfOPdHhiWHYj5yQOl1FqZuYqa+
-cetIjFSmS2hLk3gHjWTkxTouj7wOrzMe+g8flKHI6EAwWorRDLkrlNds7KrFJs2V
-5Q809BAN7/mT5PG0OsNuix+uKRIxCh1a1+0YqaXDnrO69CjFjxh4ZW3rWUHnt8xv
-h1q+4VqKvMhxU7VfQGiGsfSOOirTCrIz2cCQM7f77A==
-=ULCM
------END PGP SIGNATURE-----
-
---GPzUWkFLCFYElLmd--
+--
+Frank Lichtenheld
 
