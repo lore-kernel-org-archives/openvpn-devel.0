@@ -1,11 +1,13 @@
+Date: Thu, 19 May 2022 10:06:31 +0200 (CEST)
 From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 18 May 2022 20:37:15 +0200
-Message-Id: <20220518183715.931-1-frank@...2641...>
-In-Reply-To: <2735E502-7F1F-48E9-8011-6740251E81DE@...2674...>
-References: <2735E502-7F1F-48E9-8011-6740251E81DE@...2674...>
+Message-ID: <1269254504.17688.1652947591399@...2642...>
+In-Reply-To: <1476138134.1141343.1652872343570@...2642...>
+References: <20220518093212.2802495-1-arne@...1227...>
+ <20220518093212.2802495-4-arne@...1227...>
+ <1476138134.1141343.1652872343570@...2642...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] cipher-negotiation.rst missing from
- doc/Makefile.am
+Subject: Re: [Openvpn-devel] [PATCH 3/4] Implement AUTH_FAIL,
+ TEMP message support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,35 +16,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-From: Jan Mikkelsen <janm@...2674...>
+Found one mistake in my previous review:
 
-Signed-off-by: Jan Mikkelsen <janm@...2674...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
- doc/Makefile.am | 1 +
- 1 file changed, 1 insertion(+)
+> Frank Lichtenheld <frank@...2641...> hat am 18.05.2022 13:12 geschrieben:
+> Documentation-only review.
+> > Arne Schwabe <arne@...1227...> hat am 18.05.2022 11:32 geschrieben:
+[...]
+> > +  are comma separated keys/values. Currently defined are:
+> > +
+> > +  - ``backoff s`` - instructs the client to wait at least s seconds before the
+> > +                    next connection attempt. If the client has already a higher
+> 
+> "has already" -> "already uses" ?
+> 
+> > +                    delay before reconnecting, the delay will not be
+> > +                    shortened.
+> > +  - ``advance addr`` - Instructs the client to reconnect to the (IP)
+> 
+> "to the" -> "to a specific"
 
-I have reformatted this with git-format-patch to make the patch
-easier to apply. Also checked that this is indeed the only missing
-file currently.
+After reading the code I see that I was mistaken. I thought that you would
+specify an actually address here. But it is literaly the string "addr".
+So the correct fix seems to be "to the" -> "to the next".
 
-diff --git a/doc/Makefile.am b/doc/Makefile.am
-index affe1b90..c9e83750 100644
---- a/doc/Makefile.am
-+++ b/doc/Makefile.am
-@@ -25,6 +25,7 @@ dist_doc_DATA = \
+I wonder whether there would be some good way to make clear that "s" above
+is a placeholder but "addr" is a literal string. "backoff <s>" maybe? Not sure.
  
- openvpn_sections = \
- 	man-sections/advanced-options.rst \
-+	man-sections/cipher-negotiation.rst \
- 	man-sections/client-options.rst \
- 	man-sections/connection-profiles.rst \
- 	man-sections/encryption-options.rst \
--- 
-2.30.2
+> > +                       address of the current server.
+> > +  - ``advance remote`` - Instructs the client to skip the remaining IP
+> > +                         addresses of the current server and instead connect to
+> > +                         the next server specified in the configuration file
+> 
+> Missing full stop.
+> 
+> > +  - ``advance no`` - Instructs the client to retry connecting to the same server
+> > +                    again.
+> > +
+> > +  For example, the message ``TEMP[backoff 42,advance no]: No free IP addresses``
+> > +  to indicates that the VPN connection can currently not succeed and instructs
+> 
+> Remove "to"
+> 
+> > +  the client to retry in 42 seconds again.
+> > +
+> >    When deferred authentication is in use, the script can also request
+> >    pending authentication by writing to the file specified by the
+> >    :code:`auth_pending_file`. The first line must be the timeout in
 
+--
+Frank Lichtenheld
 
