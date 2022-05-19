@@ -1,11 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Thu, 19 May 2022 11:31:50 +0200
-Message-Id: <20220519093153.18944-2-a@...2181...>
+Date: Thu, 19 May 2022 11:31:52 +0200
+Message-Id: <20220519093153.18944-4-a@...2181...>
 In-Reply-To: <20220519093153.18944-1-a@...2181...>
 References: <20220519093153.18944-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 2/5] tun: extract close_tun_handle into
- its own fucntion and print correct type
+Subject: [Openvpn-devel] [PATCH v3 4/5] GitHub Actions: add Linux DCO build
+ (on Ubuntu 20.04)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,123 +17,45 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne@...1227...>, Antonio Quartulli <a@...2181...>
+Cc: Antonio Quartulli <a@...2181...>
 
-From: Arne Schwabe <arne@...1227...>
-
-This moves closing the tun handle into its own function and also prints
-the adapter type we are operating on, instead hardcoding it to
-tap-windows.
-
-While at it, set the handle to NULL after closing, to prevent a double
-close due to multiple invocations of this helper.
-
-Signed-off-by: Arne Schwabe <arne@...1227...>
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
 
 Changes from v1:
 * rebased
 
- src/openvpn/tun.c | 75 ++++++++++++++++++++++++++---------------------
- 1 file changed, 41 insertions(+), 34 deletions(-)
+ .github/workflows/build.yaml | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index e4b27a13..e8ec0d6b 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -6766,6 +6766,46 @@ netsh_delete_address_dns(const struct tuntap *tt, bool ipv6, struct gc_arena *gc
-     argv_free(&argv);
- }
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 9301f76e..ef428db1 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -201,15 +201,22 @@ jobs:
+             libname: OpenSSL 1.1.1
+             ssllib: openssl
+             extraconf: "--disable-lzo --disable-lz4"
++          - os: ubuntu-20.04
++            sslpkg: "libssl-dev"
++            libname: OpenSSL 1.1.1
++            ssllib: openssl
++            extraconf: "--enable-dco"
++            nlpkg: "libnl-genl-3-dev"
  
-+static void
-+close_tun_handle(struct tuntap *tt)
-+{
-+    const char *adaptertype = print_windows_driver(tt->windows_driver);
-+    if (tt->hand != NULL)
-+    {
-+        dmsg(D_WIN32_IO_LOW, "Attempting CancelIO on %s adapter", adaptertype);
-+        if (!CancelIo(tt->hand))
-+        {
-+            msg(M_WARN | M_ERRNO, "Warning: CancelIO failed on %s adapter", adaptertype);
-+        }
-+    }
-+
-+    dmsg(D_WIN32_IO_LOW, "Attempting close of overlapped read event on %s adapter", adaptertype);
-+    overlapped_io_close(&tt->reads);
-+
-+    dmsg(D_WIN32_IO_LOW, "Attempting close of overlapped write event on %s adapter", adaptertype);
-+    overlapped_io_close(&tt->writes);
-+
-+    if (tt->hand != NULL)
-+    {
-+        dmsg(D_WIN32_IO_LOW, "Attempting CloseHandle on %s adapter", adaptertype);
-+        if (!CloseHandle(tt->hand))
-+        {
-+            msg(M_WARN | M_ERRNO, "Warning: CloseHandle failed on %s adapter", adaptertype);
-+        }
-+        tt->hand = NULL;
-+    }
-+
-+    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
-+    {
-+        CloseHandle(tt->rw_handle.read);
-+        CloseHandle(tt->rw_handle.write);
-+        UnmapViewOfFile(tt->wintun_send_ring);
-+        UnmapViewOfFile(tt->wintun_receive_ring);
-+        CloseHandle(tt->wintun_send_ring_handle);
-+        CloseHandle(tt->wintun_receive_ring_handle);
-+    }
-+}
-+
- void
- close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
- {
-@@ -6835,43 +6875,10 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+     name: "gcc - ${{matrix.os}} - ${{matrix.libname}} ${{matrix.extraconf}}"
+     env:
+       SSLPKG: "${{matrix.sslpkg}}"
++      NLPKG: "${{matrix.nlpkg}}"
  
-     dhcp_release(tt);
- 
--    if (tt->hand != NULL)
--    {
--        dmsg(D_WIN32_IO_LOW, "Attempting CancelIO on TAP-Windows adapter");
--        if (!CancelIo(tt->hand))
--        {
--            msg(M_WARN | M_ERRNO, "Warning: CancelIO failed on TAP-Windows adapter");
--        }
--    }
--
--    dmsg(D_WIN32_IO_LOW, "Attempting close of overlapped read event on TAP-Windows adapter");
--    overlapped_io_close(&tt->reads);
--
--    dmsg(D_WIN32_IO_LOW, "Attempting close of overlapped write event on TAP-Windows adapter");
--    overlapped_io_close(&tt->writes);
--
--    if (tt->hand != NULL)
--    {
--        dmsg(D_WIN32_IO_LOW, "Attempting CloseHandle on TAP-Windows adapter");
--        if (!CloseHandle(tt->hand))
--        {
--            msg(M_WARN | M_ERRNO, "Warning: CloseHandle failed on TAP-Windows adapter");
--        }
--    }
-+    close_tun_handle(tt);
- 
-     free(tt->actual_name);
- 
--    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
--    {
--        CloseHandle(tt->rw_handle.read);
--        CloseHandle(tt->rw_handle.write);
--        UnmapViewOfFile(tt->wintun_send_ring);
--        UnmapViewOfFile(tt->wintun_receive_ring);
--        CloseHandle(tt->wintun_send_ring_handle);
--        CloseHandle(tt->wintun_receive_ring_handle);
--    }
--
--
-     clear_tuntap(tt);
-     free(tt);
-     gc_free(&gc);
+     runs-on: ${{matrix.os}}
+     steps:
+       - name: Install dependencies
+-        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf ${SSLPKG}
++        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf ${SSLPKG} ${NLPKG}
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2620...
+       - name: autoconf
 -- 
 2.35.1
 
