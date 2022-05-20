@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 20 May 2022 23:32:50 +0200
-Message-Id: <20220520213250.3126372-5-arne@...1227...>
+Date: Fri, 20 May 2022 23:32:48 +0200
+Message-Id: <20220520213250.3126372-3-arne@...1227...>
 In-Reply-To: <20220520213250.3126372-1-arne@...1227...>
 References: <20220520213250.3126372-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 4/4] Allow scripts and plugins to set a
- custom AUTH_FAILED message
+Subject: [Openvpn-devel] [PATCH v2 2/4] Cleanup receive_auth_failed and
+ simplify method
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,167 +18,134 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is currently only possible when using the management interface
-and the client-deny functionality.
----
- src/openvpn/ssl_common.h |  1 +
- src/openvpn/ssl_verify.c | 74 ++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 73 insertions(+), 2 deletions(-)
+This simplifies the buffer handling in the method and adds a quick
+return instead of wrapping the whole method in a if (pull) block
 
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index cef2611b9..433563068 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -155,6 +155,7 @@ struct auth_deferred_status
- {
-     char *auth_control_file;
-     char *auth_pending_file;
-+    char *auth_failed_reason_file;
-     unsigned int auth_control_status;
- };
+Patch V2: remove uncessary ifdef/endif and unnecassary block
+---
+ src/openvpn/push.c | 99 ++++++++++++++++++++++++----------------------
+ 1 file changed, 51 insertions(+), 48 deletions(-)
+
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index fa0def7f8..1c4e637e4 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -53,64 +53,67 @@ receive_auth_failed(struct context *c, const struct buffer *buffer)
+     msg(M_VERB0, "AUTH: Received control message: %s", BSTR(buffer));
+     c->options.no_advance = true;
  
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index c01841fa9..4cf772fef 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -989,6 +989,12 @@ key_state_rm_auth_control_files(struct auth_deferred_status *ads)
-         free(ads->auth_control_file);
-         ads->auth_control_file = NULL;
-     }
-+    if (ads->auth_failed_reason_file)
-+    {
-+        platform_unlink(ads->auth_failed_reason_file);
-+        free(ads->auth_failed_reason_file);
-+        ads->auth_failed_reason_file = NULL;
-+    }
-     key_state_rm_auth_pending_file(ads);
- }
- 
-@@ -1007,19 +1013,47 @@ key_state_gen_auth_control_files(struct auth_deferred_status *ads,
-     key_state_rm_auth_control_files(ads);
-     const char *acf = platform_create_temp_file(opt->tmp_dir, "acf", &gc);
-     const char *apf = platform_create_temp_file(opt->tmp_dir, "apf", &gc);
-+    const char *afr = platform_create_temp_file(opt->tmp_dir, "afr", &gc);
- 
-     if (acf && apf)
+-    if (c->options.pull)
++    if (!c->options.pull)
      {
-         ads->auth_control_file = string_alloc(acf, NULL);
-         ads->auth_pending_file = string_alloc(apf, NULL);
-+        ads->auth_failed_reason_file = string_alloc(afr, NULL);
-+
-         setenv_str(opt->es, "auth_control_file", ads->auth_control_file);
-         setenv_str(opt->es, "auth_pending_file", ads->auth_pending_file);
-+        setenv_str(opt->es, "auth_failed_reason_file", ads->auth_failed_reason_file);
-     }
- 
-     gc_free(&gc);
-     return (acf && apf);
- }
- 
-+/**
-+ * Checks if the auth failed reason file has any content and if yes it will
-+ * be returned as string allocated in gc to the caller.
-+ */
-+static char *
-+key_state_check_auth_failed_message_file(const struct auth_deferred_status *ads,
-+                                         struct tls_multi *multi,
-+                                         struct gc_arena *gc)
-+{
-+    char *ret = NULL;
-+    if (ads->auth_failed_reason_file)
-+    {
-+        struct buffer reason = buffer_read_from_file(ads->auth_failed_reason_file, gc);
-+
-+        if (BLEN(&reason))
-+        {
-+            ret = BSTR(&reason);
-+        }
-+
+-        /* Before checking how to react on AUTH_FAILED, first check if the
+-         * failed auth might be the result of an expired auth-token.
+-         * Note that a server restart will trigger a generic AUTH_FAILED
+-         * instead an AUTH_FAILED,SESSION so handle all AUTH_FAILED message
+-         * identical for this scenario */
+-        if (ssl_clean_auth_token())
+-        {
+-            c->sig->signal_received = SIGUSR1; /* SOFT-SIGUSR1 -- Auth failure error */
+-            c->sig->signal_text = "auth-failure (auth-token)";
+-        }
+-        else
++        return;
 +    }
-+    return ret;
-+}
 +
++    struct buffer buf = *buffer;
 +
- /**
-  * Checks the auth control status from a file. The function will try
-  * to read and update the cached status if the status is still pending
-@@ -1184,6 +1218,20 @@ tls_authentication_status(struct tls_multi *multi)
- #endif
-     if (failed_auth)
-     {
-+        struct gc_arena gc = gc_new();
-+        const struct key_state *ks = get_primary_key(multi);
-+        const char *plugin_message = key_state_check_auth_failed_message_file(&ks->plugin_auth, multi, &gc);
-+        const char *script_message = key_state_check_auth_failed_message_file(&ks->script_auth, multi, &gc);
++    /* If the AUTH_FAIL message ends with a , it is an extended message that
++     * contains further flags */
++    bool authfail_extended = buf_string_compare_advance(&buf, "AUTH_FAILED,");
 +
-+        if (plugin_message)
-+        {
-+            auth_set_client_reason(multi, plugin_message);
-+        }
-+        if (script_message)
-+        {
-+            auth_set_client_reason(multi, script_message);
-+        }
-+
-         /* We have at least one session that failed authentication. There
-          * might be still another session with valid keys.
-          * Although our protocol allows keeping the VPN session alive
-@@ -1248,6 +1296,21 @@ tls_authenticate_key(struct tls_multi *multi, const unsigned int mda_key_id, con
-  * this is the place to start.
-  *************************************************************************** */
- 
-+/**
-+ * Check if the script/plugin left a message in the auth failed message
-+ * file and rely it to the user */
-+static void
-+check_for_client_reason(struct tls_multi *multi,
-+                        struct auth_deferred_status *status)
-+{
-+    struct gc_arena gc = gc_new();
-+    const char *msg = key_state_check_auth_failed_message_file(status, multi, &gc);
-+    if (msg)
++    /* Before checking how to react on AUTH_FAILED, first check if the
++     * failed auth might be the result of an expired auth-token.
++     * Note that a server restart will trigger a generic AUTH_FAILED
++     * instead an AUTH_FAILED,SESSION so handle all AUTH_FAILED message
++     * identical for this scenario */
++    if (ssl_clean_auth_token())
 +    {
-+        auth_set_client_reason(multi, msg);
++        c->sig->signal_received = SIGUSR1;     /* SOFT-SIGUSR1 -- Auth failure error */
++        c->sig->signal_text = "auth-failure (auth-token)";
 +    }
-+    gc_free(&gc);
-+}
- /*
-  * Verify the user name and password using a script
-  */
-@@ -1316,6 +1379,7 @@ verify_user_pass_script(struct tls_session *session, struct tls_multi *multi,
-             break;
- 
-         default:
-+            check_for_client_reason(multi, &ks->script_auth);
-             retval = OPENVPN_PLUGIN_FUNC_ERROR;
-             break;
-     }
-@@ -1376,6 +1440,7 @@ verify_user_pass_plugin(struct tls_session *session, struct tls_multi *multi,
-     /* call command */
-     retval = plugin_call(session->opt->plugins, OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY, NULL, NULL, session->opt->es);
- 
-+
-     if (retval == OPENVPN_PLUGIN_FUNC_DEFERRED)
-     {
-         /* Check if the plugin has written the pending auth control
-@@ -1383,10 +1448,15 @@ verify_user_pass_plugin(struct tls_session *session, struct tls_multi *multi,
-         if (!key_state_check_auth_pending_file(&ks->plugin_auth, multi))
++    else
++    {
++        switch (auth_retry_get())
          {
-             retval = OPENVPN_PLUGIN_FUNC_ERROR;
--            key_state_rm_auth_control_files(&ks->plugin_auth);
+-            switch (auth_retry_get())
+-            {
+-                case AR_NONE:
+-                    c->sig->signal_received = SIGTERM; /* SOFT-SIGTERM -- Auth failure error */
+-                    break;
++            case AR_NONE:
++                c->sig->signal_received = SIGTERM;     /* SOFT-SIGTERM -- Auth failure error */
++                break;
+ 
+-                case AR_INTERACT:
+-                    ssl_purge_auth(false);
++            case AR_INTERACT:
++                ssl_purge_auth(false);
+ 
+-                case AR_NOINTERACT:
+-                    c->sig->signal_received = SIGUSR1; /* SOFT-SIGUSR1 -- Auth failure error */
+-                    break;
++            case AR_NOINTERACT:
++                c->sig->signal_received = SIGUSR1;     /* SOFT-SIGUSR1 -- Auth failure error */
++                break;
+ 
+-                default:
+-                    ASSERT(0);
+-            }
+-            c->sig->signal_text = "auth-failure";
++            default:
++                ASSERT(0);
          }
-     }
--    else
-+
-+    if (retval == OPENVPN_PLUGIN_FUNC_ERROR)
-+    {
-+        check_for_client_reason(multi, &ks->plugin_auth);
++        c->sig->signal_text = "auth-failure";
 +    }
+ #ifdef ENABLE_MANAGEMENT
+-        if (management)
+-        {
+-            const char *reason = NULL;
+-            struct buffer buf = *buffer;
+-            if (buf_string_compare_advance(&buf, "AUTH_FAILED,") && BLEN(&buf))
+-            {
+-                reason = BSTR(&buf);
+-            }
+-            management_auth_failure(management, UP_TYPE_AUTH, reason);
+-        }
+-#endif
+-        /*
+-         * Save the dynamic-challenge text even when management is defined
+-         */
++    if (management)
++    {
++        const char *reason = NULL;
++        if (authfail_extended && BLEN(&buf))
+         {
+-#ifdef ENABLE_MANAGEMENT
+-            struct buffer buf = *buffer;
+-            if (buf_string_match_head_str(&buf, "AUTH_FAILED,CRV1:") && BLEN(&buf))
+-            {
+-                buf_advance(&buf, 12); /* Length of "AUTH_FAILED," substring */
+-                ssl_put_auth_challenge(BSTR(&buf));
+-            }
+-#endif
++            reason = BSTR(&buf);
+         }
++        management_auth_failure(management, UP_TYPE_AUTH, reason);
++    }
++    /*
++     * Save the dynamic-challenge text even when management is defined
++     */
++    if (authfail_extended
++        && buf_string_match_head_str(&buf, "CRV1:") && BLEN(&buf))
++    {
++        ssl_put_auth_challenge(BSTR(&buf));
+     }
++#endif
 +
-+    if (retval != OPENVPN_PLUGIN_FUNC_DEFERRED)
-     {
-         /* purge auth control filename (and file itself) for non-deferred returns */
-         key_state_rm_auth_control_files(&ks->plugin_auth);
+ }
+ 
+ /*
 -- 
 2.32.0 (Apple Git-132)
 
