@@ -1,10 +1,10 @@
-Date: Sun, 22 May 2022 17:16:22 +0200 (CEST)
-Message-Id: <202205221516.24MFGMbu006334@...2054...>
+Date: Sun, 22 May 2022 17:20:01 +0200 (CEST)
+Message-Id: <202205221520.24MFK1hp006420@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220518105157.9026-1-frank@...2641...>
-References: <20220518105157.9026-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: uncrustify: have exactly one
- newline at the end of files
+In-Reply-To: <20220517210121.1312072-1-heiko@...2662...>
+References: <20220517210121.1312072-1-heiko@...2662...>
+Subject: [Openvpn-devel] [PATCH applied] Re: pre-commit: uncrustify based on
+ staged changes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
+To: Heiko Hund <heiko@...2662...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks for digging up a way to make uncrustify fix these.  Annoying,
-and I did not always catch these...
+I have not tested this much - will use it soon :-) - but I'm fine
+if Frank and Antonio says this works now for "with stage" usage,
+too.
 
 Your patch has been applied to the master branch.
 
-commit a76153c1ca98c841b8c8cf3b6ade6c00ee3876a5
-Author: Frank Lichtenheld
-Date:   Wed May 18 12:51:57 2022 +0200
+commit d78c2a73a8f631f082ec03bb21b329d3e6fd00dd
+Author: Heiko Hund
+Date:   Tue May 17 23:01:21 2022 +0200
 
-     uncrustify: have exactly one newline at the end of files
+     pre-commit: uncrustify based on staged changes
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Signed-off-by: Heiko Hund <heiko@...2662...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20220518105157.9026-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24386.html
+     Message-Id: <20220517210121.1312072-1-heiko@...2662...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24376.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
