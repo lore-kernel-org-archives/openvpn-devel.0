@@ -1,9 +1,10 @@
-Date: Sun, 22 May 2022 13:09:41 +0200 (CEST)
-Message-Id: <202205221109.24MB9f4M002666@...2054...>
+Date: Sun, 22 May 2022 13:11:24 +0200 (CEST)
+Message-Id: <202205221111.24MBBOgS002786@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220519085428.6783-2-frank@...2641...>
-References: <20220519085428.6783-2-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Reformat for sp_after_comma=add
+In-Reply-To: <20220519085428.6783-3-frank@...2641...>
+References: <20220519085428.6783-3-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: uncrustify: add
+ sp_after_comma=add
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,26 +18,22 @@ Content-Transfer-Encoding: 8bit
 To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Yes, this is a good thing - "we do this", but uncrustify didn't check,
-and so inconsistencies sneaked in.
-
-I'll add this commit ID to .git-blame-ignore-revs in the next commit.
-
-Verified with "git show -w" that this is indeed just trivial whitespace
-changes, no line wraps, brackets, or anything.
+Good addition.  I have added the change to ignore the previous commit
+from "git blame" (.git-blame-ignore-revs) into this commit - no need
+for a 3rd one.
 
 Your patch has been applied to the master branch.
 
-commit e51d9a73693ee742b36e19fb1718e5e27167831d
+commit 63ba6b27ceb5972947175624a6a6f4a83cf67d8e
 Author: Frank Lichtenheld
-Date:   Thu May 19 10:54:27 2022 +0200
+Date:   Thu May 19 10:54:28 2022 +0200
 
-     Reformat for sp_after_comma=add
+     uncrustify: add sp_after_comma=add
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20220519085428.6783-2-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24399.html
+     Message-Id: <20220519085428.6783-3-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24397.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
