@@ -1,10 +1,12 @@
-Date: Sun, 22 May 2022 17:35:24 +0200 (CEST)
-Message-Id: <202205221535.24MFZO4u015764@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220516104807.2568937-1-arne@...1227...>
-References: <20220516104807.2568937-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Implement ED448 and ED25519
- support in xkey_provider
+Date: Mon, 23 May 2022 10:26:59 +0200 (CEST)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <225501426.243367.1653294419245@...2642...>
+In-Reply-To: <20220520213250.3126372-3-arne@...1227...>
+References: <20220520213250.3126372-1-arne@...1227...>
+ <20220520213250.3126372-3-arne@...1227...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH v2 2/4] Cleanup receive_auth_failed and
+ simplify method
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +15,147 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-I have only stared a bit at the code, and then run "make check" on 
-a FreeBSD / OpenSSL 3.0.3 - which passes, including test_provider
-(the t_client check succeeds, but does not excercise this code at all -
-so I'm not really testing it).
+Acked-By: Frank Lichtenheld <frank@...2641...>
 
-Uncrustify / pre-applypatch complained about the new ",<blank>" rules
-in test_provider.c, so I fixed them :-) - thanks, Frank!
+Best viewed with "git show -w" ;)
 
-Your patch has been applied to the master branch.
+AFAICT this is a good cleanup without any behavioral change.
 
-commit c0323aa63d638ee72eb73fcf2a6983b568f952f9
-Author: Arne Schwabe
-Date:   Mon May 16 12:48:07 2022 +0200
-
-     Implement ED448 and ED25519 support in xkey_provider
-
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <20220516104807.2568937-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24363.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
+> Arne Schwabe <arne@...1227...> hat am 20.05.2022 23:32 geschrieben:
+> This simplifies the buffer handling in the method and adds a quick
+> return instead of wrapping the whole method in a if (pull) block
+> 
+> Patch V2: remove uncessary ifdef/endif and unnecassary block
+> ---
+>  src/openvpn/push.c | 99 ++++++++++++++++++++++++----------------------
+>  1 file changed, 51 insertions(+), 48 deletions(-)
+> 
+> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+> index fa0def7f8..1c4e637e4 100644
+> --- a/src/openvpn/push.c
+> +++ b/src/openvpn/push.c
+> @@ -53,64 +53,67 @@ receive_auth_failed(struct context *c, const struct buffer *buffer)
+>      msg(M_VERB0, "AUTH: Received control message: %s", BSTR(buffer));
+>      c->options.no_advance = true;
+>  
+> -    if (c->options.pull)
+> +    if (!c->options.pull)
+>      {
+> -        /* Before checking how to react on AUTH_FAILED, first check if the
+> -         * failed auth might be the result of an expired auth-token.
+> -         * Note that a server restart will trigger a generic AUTH_FAILED
+> -         * instead an AUTH_FAILED,SESSION so handle all AUTH_FAILED message
+> -         * identical for this scenario */
+> -        if (ssl_clean_auth_token())
+> -        {
+> -            c->sig->signal_received = SIGUSR1; /* SOFT-SIGUSR1 -- Auth failure error */
+> -            c->sig->signal_text = "auth-failure (auth-token)";
+> -        }
+> -        else
+> +        return;
+> +    }
+> +
+> +    struct buffer buf = *buffer;
+> +
+> +    /* If the AUTH_FAIL message ends with a , it is an extended message that
+> +     * contains further flags */
+> +    bool authfail_extended = buf_string_compare_advance(&buf, "AUTH_FAILED,");
+> +
+> +    /* Before checking how to react on AUTH_FAILED, first check if the
+> +     * failed auth might be the result of an expired auth-token.
+> +     * Note that a server restart will trigger a generic AUTH_FAILED
+> +     * instead an AUTH_FAILED,SESSION so handle all AUTH_FAILED message
+> +     * identical for this scenario */
+> +    if (ssl_clean_auth_token())
+> +    {
+> +        c->sig->signal_received = SIGUSR1;     /* SOFT-SIGUSR1 -- Auth failure error */
+> +        c->sig->signal_text = "auth-failure (auth-token)";
+> +    }
+> +    else
+> +    {
+> +        switch (auth_retry_get())
+>          {
+> -            switch (auth_retry_get())
+> -            {
+> -                case AR_NONE:
+> -                    c->sig->signal_received = SIGTERM; /* SOFT-SIGTERM -- Auth failure error */
+> -                    break;
+> +            case AR_NONE:
+> +                c->sig->signal_received = SIGTERM;     /* SOFT-SIGTERM -- Auth failure error */
+> +                break;
+>  
+> -                case AR_INTERACT:
+> -                    ssl_purge_auth(false);
+> +            case AR_INTERACT:
+> +                ssl_purge_auth(false);
+>  
+> -                case AR_NOINTERACT:
+> -                    c->sig->signal_received = SIGUSR1; /* SOFT-SIGUSR1 -- Auth failure error */
+> -                    break;
+> +            case AR_NOINTERACT:
+> +                c->sig->signal_received = SIGUSR1;     /* SOFT-SIGUSR1 -- Auth failure error */
+> +                break;
+>  
+> -                default:
+> -                    ASSERT(0);
+> -            }
+> -            c->sig->signal_text = "auth-failure";
+> +            default:
+> +                ASSERT(0);
+>          }
+> +        c->sig->signal_text = "auth-failure";
+> +    }
+>  #ifdef ENABLE_MANAGEMENT
+> -        if (management)
+> -        {
+> -            const char *reason = NULL;
+> -            struct buffer buf = *buffer;
+> -            if (buf_string_compare_advance(&buf, "AUTH_FAILED,") && BLEN(&buf))
+> -            {
+> -                reason = BSTR(&buf);
+> -            }
+> -            management_auth_failure(management, UP_TYPE_AUTH, reason);
+> -        }
+> -#endif
+> -        /*
+> -         * Save the dynamic-challenge text even when management is defined
+> -         */
+> +    if (management)
+> +    {
+> +        const char *reason = NULL;
+> +        if (authfail_extended && BLEN(&buf))
+>          {
+> -#ifdef ENABLE_MANAGEMENT
+> -            struct buffer buf = *buffer;
+> -            if (buf_string_match_head_str(&buf, "AUTH_FAILED,CRV1:") && BLEN(&buf))
+> -            {
+> -                buf_advance(&buf, 12); /* Length of "AUTH_FAILED," substring */
+> -                ssl_put_auth_challenge(BSTR(&buf));
+> -            }
+> -#endif
+> +            reason = BSTR(&buf);
+>          }
+> +        management_auth_failure(management, UP_TYPE_AUTH, reason);
+> +    }
+> +    /*
+> +     * Save the dynamic-challenge text even when management is defined
+> +     */
+> +    if (authfail_extended
+> +        && buf_string_match_head_str(&buf, "CRV1:") && BLEN(&buf))
+> +    {
+> +        ssl_put_auth_challenge(BSTR(&buf));
+>      }
+> +#endif
+> +
+>  }
+>  
+>  /*
+> -- 
 
 --
-kind regards,
-
-Gert Doering
-
+Frank Lichtenheld
 
