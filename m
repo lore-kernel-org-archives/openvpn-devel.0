@@ -1,8 +1,8 @@
-Date: Mon, 23 May 2022 15:46:11 +0200 (CEST)
-Message-Id: <202205231346.24NDkBef045356@...2054...>
+Date: Mon, 23 May 2022 16:15:30 +0200 (CEST)
+Message-Id: <202205231415.24NEFUiR055127@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220523103546.3425388-2-arne@...1227...>
-References: <20220523103546.3425388-2-arne@...1227...>
+In-Reply-To: <20220523103546.3425388-1-arne@...1227...>
+References: <20220523103546.3425388-1-arne@...1227...>
 Subject: [Openvpn-devel] [PATCH applied] Re: Translate OpenSSL 3.0 digest
  names to OpenSSL 1.1 digest names
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,24 +18,25 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Wording mangled as instructed, and tested for the case reported today
-("ossl3 client with --auth sha256 talking to oss1.1 server, reporting
-mismatch on sha2-256 <-> sha2").
+This is basically the same change as commit 88342ed8277c5797 (master),
+just without the Big MD Refactoring.
 
---auth sha2-256 works as well (on the oss3 side), as expected.
+Tested, works :-) - --show-digests shows what to expect (without this
+patch, ossl 3 builds show "SHA2-256", with this patch, "SHA256"), and
+so does OCC.
 
-Your patch has been applied to the master branch.
+Your patch has been applied to the release/2.5 branch.
 
-commit 88342ed8277c579704c0e67feb4278aeaa544027
+commit b158125f67b49149ffd3e2617479fbd27860713c
 Author: Arne Schwabe
-Date:   Mon May 23 12:35:46 2022 +0200
+Date:   Mon May 23 12:35:45 2022 +0200
 
      Translate OpenSSL 3.0 digest names to OpenSSL 1.1 digest names
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20220523103546.3425388-2-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24423.html
+     Message-Id: <20220523103546.3425388-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24424.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
