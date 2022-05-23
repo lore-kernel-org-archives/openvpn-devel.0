@@ -1,9 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 23 May 2022 12:35:45 +0200
-Message-Id: <20220523103546.3425388-1-arne@...1227...>
+Date: Mon, 23 May 2022 12:35:46 +0200
+Message-Id: <20220523103546.3425388-2-arne@...1227...>
+In-Reply-To: <20220523103546.3425388-1-arne@...1227...>
+References: <20220523103546.3425388-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] [OpenVPN 2.5] Translate OpenSSL 3.0 digest
- names to OpenSSL 1.1 digest names
+Subject: [Openvpn-devel] [PATCH] Translate OpenSSL 3.0 digest names to
+ OpenSSL 1.1 digest names
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,26 +27,27 @@ md_kt_name
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/crypto_openssl.c | 39 ++++++++++++++++++++++++++++++++++--
- 1 file changed, 37 insertions(+), 2 deletions(-)
+ src/openvpn/crypto_openssl.c | 36 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 35 insertions(+), 1 deletion(-)
 
 diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 74685b386..8c28d2b5e 100644
+index 3bedc03f7..02b5f3ce5 100644
 --- a/src/openvpn/crypto_openssl.c
 +++ b/src/openvpn/crypto_openssl.c
-@@ -379,7 +379,7 @@ show_available_ciphers(void)
+@@ -404,7 +404,7 @@ show_available_ciphers(void)
  void
  print_digest(EVP_MD *digest, void *unused)
  {
--    printf("%s %d bit digest size\n", EVP_MD_name(digest),
-+    printf("%s %d bit digest size\n", md_kt_name(digest),
+-    printf("%s %d bit digest size\n", EVP_MD_get0_name(digest),
++    printf("%s %d bit digest size\n", md_kt_name(EVP_MD_get0_name(digest)),
             EVP_MD_size(digest) * 8);
  }
  
-@@ -982,6 +982,28 @@ md_kt_get(const char *digest)
-     return md;
+@@ -1055,6 +1055,29 @@ md_valid(const char *digest)
+     return valid;
  }
  
++
 +/* Since we used the OpenSSL <=1.1 names as part of our OCC message, they
 + * are now unfortunately part of our wire protocol.
 + *
@@ -68,15 +71,12 @@ index 74685b386..8c28d2b5e 100644
 +    sizeof(digest_name_translation_table) / sizeof(*digest_name_translation_table);
 +
  const char *
- md_kt_name(const EVP_MD *kt)
+ md_kt_name(const char *mdname)
  {
-@@ -989,7 +1011,20 @@ md_kt_name(const EVP_MD *kt)
-     {
-         return "[null-digest]";
+@@ -1064,6 +1087,17 @@ md_kt_name(const char *mdname)
      }
--    return EVP_MD_name(kt);
-+
-+    const char *name = EVP_MD_name(kt);
+     evp_md_type *kt = md_get(mdname);
+     const char *name = EVP_MD_get0_name(kt);
 +
 +    /* Search for a digest name translation */
 +    for (size_t i = 0; i < digest_name_translation_table_count; i++)
@@ -88,10 +88,9 @@ index 74685b386..8c28d2b5e 100644
 +        }
 +    }
 +
-+    return name;
+     EVP_MD_free(kt);
+     return name;
  }
- 
- unsigned char
 -- 
 2.32.0 (Apple Git-132)
 
