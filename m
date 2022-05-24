@@ -1,10 +1,7 @@
-Date: Tue, 24 May 2022 09:45:22 +0200 (CEST)
-Message-Id: <202205240745.24O7jMoB081153@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220523091724.3418887-1-arne@...1227...>
-References: <20220523091724.3418887-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix client-pending-auth error
- message to say ERROR instead of SUCCESS
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue, 24 May 2022 12:19:16 +0300
+Message-Id: <20220524091916.145-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] Set o->use_peer_id flag for p2p mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +12,40 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-"paramter" adjusted as suggested. SOB added.
+From: Lev Stipakov <lev@...515...>
 
-Your patch has been applied to the master and release/2.5 branch.
+There are two flags to indicate peer-id usage, one is
+in tls_multi struct and another one is in options.
 
-commit d681e9d42e11b08668fae6e7b61d6a040c93082d (master)
-commit 5288c578b8b45dc1486bd51811a3e4462a8a9597 (release/2.5)
-Author: Arne Schwabe
-Date:   Mon May 23 11:17:24 2022 +0200
+For P2P mode we don't set this flag in options,
+which is used in MTU calculation. As a result,
+automatically calculated MSS value in P2P mode is wrong,
 
-     Fix client-pending-auth error message to say ERROR instead of SUCCESS
+Fix by bring use_peer_id flag in options and tls_multi
+into sync for P2P.
 
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20220523091724.3418887-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24421.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/init.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index b0c62a85..bf01d3d6 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2144,6 +2144,8 @@ do_deferred_p2p_ncp(struct context *c)
+         return true;
+     }
+ 
++    c->options.use_peer_id = c->c2.tls_multi->use_peer_id;
++
+     struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
+ 
+     const char *ncp_cipher = get_p2p_ncp_cipher(session, c->c2.tls_multi->peer_info,
+-- 
+2.23.0.windows.1
 
 
