@@ -1,10 +1,10 @@
-Date: Fri, 27 May 2022 10:20:09 +0200 (CEST)
-Message-Id: <202205270820.24R8K9Gq047337@...2054...>
+Date: Fri, 27 May 2022 10:21:57 +0200 (CEST)
+Message-Id: <202205270821.24R8LvvC047451@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220527012457.1819262-3-heiko@...2662...>
-References: <20220527012457.1819262-3-heiko@...2662...>
-Subject: [Openvpn-devel] [PATCH applied] Re: remove dead foreign-option
- parsing code
+In-Reply-To: <20220527012457.1819262-4-heiko@...2662...>
+References: <20220527012457.1819262-4-heiko@...2662...>
+Subject: [Openvpn-devel] [PATCH applied] Re: rename foreign_option() and
+ move it up
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,21 +20,21 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Trivial.  Inside #if 0, has been like that since the dawn of times,
-so really nobody can ever miss that one.
+Slightly less trivial, but "git show --color-moved=zebra" helps
+visualize that it's indeed moved 1:1 and just gets a new name.
 
 Your patch has been applied to the master branch.
 
-commit ccdd7096ae9a5fe6f07451f525cbdd40885f3acc
+commit 2c2b22b370b239ae8311e8152ab0bb81cc66fe29
 Author: Heiko Hund
-Date:   Fri May 27 03:24:55 2022 +0200
+Date:   Fri May 27 03:24:56 2022 +0200
 
-     remove dead foreign-option parsing code
+     rename foreign_option() and move it up
 
      Signed-off-by: Heiko Hund <heiko@...2662...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220527012457.1819262-3-heiko@...2662...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24434.html
+     Message-Id: <20220527012457.1819262-4-heiko@...2662...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24436.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
