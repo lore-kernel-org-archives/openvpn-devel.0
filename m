@@ -1,8 +1,8 @@
 From: Max Fillinger <maximilian.fillinger@...2507...>
-Date: Mon, 30 May 2022 17:13:53 +0200
-Message-ID: <20220530151353.46435-1-maximilian.fillinger@...2507...>
+Date: Mon, 30 May 2022 17:49:15 +0200
+Message-ID: <20220530154915.47349-1-maximilian.fillinger@...2507...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Don't "undo" ifconfig on exit if it
+Subject: [Openvpn-devel] [PATCH v3] Don't "undo" ifconfig on exit if it
  wasn't done
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -26,24 +26,26 @@ do_ifconfig() are used.
 This change also allows us to drop the second argument from close_tun().
 
 v2: Fix tabs-vs-spaces.
+v3: Fix another style mistake.
 
 Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
 ---
- src/openvpn/init.c |  5 ++++-
+ src/openvpn/init.c |  6 +++++-
  src/openvpn/tun.c  | 37 +++++++++++++++++++++----------------
  src/openvpn/tun.h  | 10 +++++++++-
- 3 files changed, 34 insertions(+), 18 deletions(-)
+ 3 files changed, 35 insertions(+), 18 deletions(-)
 
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index b0c62a85..87f825c2 100644
+index b0c62a85..e52a084e 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -1858,7 +1858,10 @@ do_close_tun_simple(struct context *c)
+@@ -1858,7 +1858,11 @@ do_close_tun_simple(struct context *c)
      msg(D_CLOSE, "Closing TUN/TAP interface");
      if (c->c1.tuntap)
      {
 -        close_tun(c->c1.tuntap, &c->net_ctx);
-+        if (!c->options.ifconfig_noexec) {
++        if (!c->options.ifconfig_noexec)
++        {
 +            undo_ifconfig(c->c1.tuntap, &c->net_ctx);
 +        }
 +        close_tun(c->c1.tuntap);
