@@ -1,9 +1,10 @@
-Message-ID: <015a8189-edf8-1877-8930-1f7172464608@...515...>
-Date: Tue, 31 May 2022 15:02:51 +0300
+Message-ID: <e1b75d6f-1d70-0b07-d83e-96339be3ee6a@...515...>
+Date: Tue, 31 May 2022 16:21:33 +0300
 MIME-Version: 1.0
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
 Content-Language: en-US
-Subject: [Openvpn-devel] OpenVPN 2.5.7 released
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Subject: [Openvpn-devel] Debian 11 ("Bullseye") OpenVPN 2.5.7 packages also
+ available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,23 +15,20 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-The OpenVPN community project team is proud to release OpenVPN 2.5.7. 
-This is mostly a bugfix release, but adds limited support for OpenSSL 
-3.0. Full support will arrive in OpenVPN 2.6.
+Hi,
 
-<https://github.com/OpenVPN/openvpn/blob/release/2.5/Changes.rst>
-
-Source code and Windows installers can be downloaded from our download page:
-
-<https://openvpn.net/community-downloads/>
-
-Debian and Ubuntu packages are available in the official apt repositories:
+OpenVPN 2.5.7 has been packaged for Debian 11 and is available in our 
+Debian/Ubuntu apt repos:
 
 <https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
 
-On Red Hat derivatives we recommend using the Fedora Copr repository.
+If you have any issues with please let me know.
 
-<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release/>
+Ubuntu 22.04 package is also available for testing, but due to (current) 
+technical limitations not available in the apt repository. If you want 
+to give it a spin, let me know and I'll put it online somewhere.
+
+Samuli
 
