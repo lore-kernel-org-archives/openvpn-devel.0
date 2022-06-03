@@ -1,8 +1,9 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri,  3 Jun 2022 11:03:00 +0300
-Message-Id: <20220603080300.182-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH] GitHub Actions: trigger openvpn-build GHA
- on success
+From: Arne Schwabe <arne@...1227...>
+Date: Fri,  3 Jun 2022 11:52:19 +0200
+Message-Id: <20220603095219.637361-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] [OpenVPN 2.5] Allow running a default
+ configuration with TLS libraries without BF-CBC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,69 +15,160 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
+Modern TLS libraries might drop Blowfish by default or distributions
+might disable Blowfish in OpenSSL/mbed TLS. We still signal OCC
+options with BF-CBC compatible strings. To avoid requiring BF-CBC
+for this, special this one usage of BF-CBC enough to avoid a hard
+requirement on Blowfish in the default configuration.
 
-After successfult builds on all platforms,
-start openvpn-build GHA which produces
-Windows MSI installers.
+This patch is cherry-picked from 79ff3f79 and the missing
+ciphername = "none"; has been added in the OCC code.
 
-Signed-off-by: Lev Stipakov <lev@...515...>
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- .github/workflows/build.yaml | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+ src/openvpn/crypto_backend.h |  2 ++
+ src/openvpn/init.c           | 37 +++++++++++++++++++++------
+ src/openvpn/options.c        | 48 +++++++++++++++++++++++++++++++-----
+ 3 files changed, 73 insertions(+), 14 deletions(-)
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index d34f4e9a..99968aae 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -1,6 +1,7 @@
- # The name of our workflow
- name: Build
--on: [push, pull_request]
-+on:
-+  push:
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index a9bb38ed2..aebda3d65 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -256,6 +256,8 @@ const cipher_kt_t *cipher_kt_get(const char *ciphername);
+  * The returned name is normalised to the OpenVPN config name in case the
+  * name differs from the name used by the crypto library.
+  *
++ * Returns [null-cipher] in case the cipher_kt is NULL.
++ *
+  * @param cipher_kt     Static cipher parameters
+  *
+  * @return a statically allocated string describing the cipher.
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index da4d60afa..f1550e620 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2764,14 +2764,35 @@ do_init_crypto_tls_c1(struct context *c)
+ #endif /* if P2MP */
+         }
  
- jobs:
-   checkuncrustify:
-@@ -32,6 +33,7 @@ jobs:
-       - name: Set job status
-         run: test ! -s uncrustify-changes.patch
-         working-directory: openvpn
-+
-   mingw:
-     strategy:
-       fail-fast: false
-@@ -250,7 +252,6 @@ jobs:
-       - name: make check
-         run: make check
- 
+-        /* Do not warn if we only have BF-CBC in options->ciphername
+-         * because it is still the default cipher */
+-        bool warn = !streq(options->ciphername, "BF-CBC")
+-             || options->enable_ncp_fallback;
+-        /* Get cipher & hash algorithms */
+-        init_key_type(&c->c1.ks.key_type, options->ciphername, options->authname,
+-                      options->keysize, true, warn);
 -
-   macos:
-     runs-on: macos-latest
-     strategy:
-@@ -344,3 +345,19 @@ jobs:
-             ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.dll
-             ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.pdb
-             doc/openvpn.8.html
++       /*
++        * BF-CBC is allowed to be used only when explicitly configured
++        * as NCP-fallback or when NCP has been disabled or explicitly
++        * allowed in the in ncp_ciphers list.
++        * In all other cases do not attempt to initialize BF-CBC as it
++        * may not even be supported by the underlying SSL library.
++        *
++        * Therefore, the key structure has to be initialized when:
++        * - any non-BF-CBC cipher was selected; or
++        * - BF-CBC is selected and NCP is disabled (explicit request to
++        *   use the BF-CBC cipher); or
++        * - BF-CBC is selected, NCP is enabled and fallback is enabled
++        *   (BF-CBC will be the fallback).
++        * - BF-CBC is in data-ciphers and we negotiate to use BF-CBC:
++        *   If the negotiated cipher and options->ciphername are the
++        *   same we do not reinit the cipher
++        *
++        * Note that BF-CBC will still be part of the OCC string to retain
++        * backwards compatibility with older clients.
++        */
++        if (!streq(options->ciphername, "BF-CBC") || !options->ncp_enabled
++            || (options->ncp_enabled && tls_item_in_cipher_list("BF-CBC", options->ncp_ciphers))
++            || options->enable_ncp_fallback)
++        {
++            /* Do not warn if the if the cipher is used only in OCC */
++            bool warn = !options->ncp_enabled || options->enable_ncp_fallback;
++            init_key_type(&c->c1.ks.key_type, options->ciphername, options->authname,
++                          options->keysize, true, warn);
++        }
+         /* Initialize PRNG with config-specified digest */
+         prng_init(options->prng_hash, options->prng_nonce_secret_len);
+ 
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index f6ef02ae8..fd68537b6 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3681,9 +3681,30 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
+     {
+         struct frame fake_frame = *frame;
+         struct key_type fake_kt;
+-        init_key_type(&fake_kt, o->ciphername, o->authname, o->keysize, true,
+-                      false);
 +
-+  trigger_openvpn_build:
-+    runs-on: windows-latest
-+    needs: [checkuncrustify, mingw, ubuntu, ubuntu-clang-asan, macos, msvc]
-+    if: github.ref == 'refs/heads/master'
-+    env:
-+      REPO_DISPATCH: ${{ secrets.OPENVPN_BUILD_REPO_DISPATCH }}
+         frame_remove_from_extra_frame(&fake_frame, crypto_max_overhead());
 +
-+    steps:
-+    - name: Repository Dispatch
-+      if: "${{ env.REPO_DISPATCH != '' }}"
-+      uses: peter-evans/repository-dispatch@...2620...
-+      with:
-+        token: ${{ env.REPO_DISPATCH }}
-+        repository: openvpn/openvpn-build
-+        event-type: openvpn-commit
++
++        /* o->ciphername might be BF-CBC even though the underlying SSL library
++         * does not support it. For this reason we workaround this corner case
++         * by pretending to have no encryption enabled and by manually adding
++         * the required packet overhead to the MTU computation.
++         */
++        const char* ciphername = o->ciphername;
++
++        if (strcmp(o->ciphername, "BF-CBC") == 0)
++        {
++            /* none has no overhead, so use this to later add only --auth
++             * overhead */
++
++            /* overhead of BF-CBC: 64 bit block size, 64 bit IV size */
++            frame_add_to_extra_frame(&fake_frame, 64/8 + 64/8);
++            ciphername = "none";
++        }
++
++        init_key_type(&fake_kt, ciphername, o->authname, o->keysize, true,
++                      false);
++
+         crypto_adjust_frame_parameters(&fake_frame, &fake_kt, o->replay,
+                                        cipher_kt_mode_ofb_cfb(fake_kt.cipher));
+         frame_finalize(&fake_frame, o->ce.link_mtu_defined, o->ce.link_mtu,
+@@ -3853,18 +3874,33 @@ options_string(const struct options *o,
+                + (TLS_SERVER == true)
+                <= 1);
+ 
+-        init_key_type(&kt, o->ciphername, o->authname, o->keysize, true,
+-                      false);
++        /* Skip resolving BF-CBC to allow SSL libraries without BF-CBC
++         * to work here in the default configuration */
++        const char *ciphername = o->ciphername;
++        int keysize;
++
++        if (strcmp(o->ciphername, "BF-CBC") == 0)
++        {
++            init_key_type(&kt, "none", o->authname, o->keysize, true,
++                          false);
++            keysize = 128;
++        }
++        else
++        {
++            init_key_type(&kt, o->ciphername, o->authname, o->keysize, true,
++                          false);
++            ciphername = cipher_kt_name(kt.cipher);
++            keysize = kt.cipher_length * 8;
++        }
+         /* Only announce the cipher to our peer if we are willing to
+          * support it */
+-        const char *ciphername = cipher_kt_name(kt.cipher);
+         if (p2p_nopull || !o->ncp_enabled
+             || tls_item_in_cipher_list(ciphername, o->ncp_ciphers))
+         {
+             buf_printf(&out, ",cipher %s", ciphername);
+         }
+         buf_printf(&out, ",auth %s", md_kt_name(kt.digest));
+-        buf_printf(&out, ",keysize %d", kt.cipher_length * 8);
++        buf_printf(&out, ",keysize %d", keysize);
+         if (o->shared_secret_file)
+         {
+             buf_printf(&out, ",secret");
 -- 
-2.23.0.windows.1
+2.32.0 (Apple Git-132)
 
 
