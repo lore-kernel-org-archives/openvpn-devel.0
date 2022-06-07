@@ -1,10 +1,11 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Sun,  5 Jun 2022 03:40:13 +0300
-Message-Id: <20220605004013.319-1-lstipakov@...277...>
-In-Reply-To: <3363e69c-1788-2ced-e640-8523570b0d8c@...515...>
-References: <3363e69c-1788-2ced-e640-8523570b0d8c@...515...>
-Subject: [Openvpn-devel] [PATCH v2] GitHub Actions: trigger openvpn-build
- GHA on success
+From: Christopher Ng <facboy@...277...>
+Date: Tue,  7 Jun 2022 17:30:49 +0100
+Message-Id: <20220607163049.10056-2-facboy@...277...>
+In-Reply-To: <20220607163049.10056-1-facboy@...277...>
+References: <20220607163049.10056-1-facboy@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH OpenVPN3 2/2] omi: add support for
+ ovpn-dco-win
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,72 +17,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
-
-After successfult builds on all platforms,
-start openvpn-build GHA which produces
-Windows MSI installers.
-
-Signed-off-by: Lev Stipakov <lev@...515...>
+Signed-off-by: Christopher Ng <facboy@...277...>
 ---
- v2:
+ openvpn/omi/CMakeLists.txt | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-  - bring pull_request trigger back
-  - simplify trigger_openvpn_build run condition
-
- .github/workflows/build.yaml | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
-
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index d34f4e9a..6c267a61 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -1,6 +1,8 @@
- # The name of our workflow
- name: Build
--on: [push, pull_request]
-+on:
-+  push:
-+  pull_request:
+diff --git a/openvpn/omi/CMakeLists.txt b/openvpn/omi/CMakeLists.txt
+index d773da39..cd7cb8fd 100644
+--- a/openvpn/omi/CMakeLists.txt
++++ b/openvpn/omi/CMakeLists.txt
+@@ -1,3 +1,5 @@
++option(CLI_OVPNDCOWIN "Build ovpncli with ovpn-dco-win driver support" OFF)
++
+ add_executable(omicliagent openvpn.cpp)
+ add_core_dependencies(omicliagent)
+ add_json_library(omicliagent)
+@@ -5,3 +7,10 @@ target_compile_definitions(omicliagent PRIVATE -DOPENVPN_COMMAND_AGENT -DOVPNAGE
  
- jobs:
-   checkuncrustify:
-@@ -32,6 +34,7 @@ jobs:
-       - name: Set job status
-         run: test ! -s uncrustify-changes.patch
-         working-directory: openvpn
+ add_executable(omicli openvpn.cpp)
+ add_core_dependencies(omicli)
 +
-   mingw:
-     strategy:
-       fail-fast: false
-@@ -250,7 +253,6 @@ jobs:
-       - name: make check
-         run: make check
- 
--
-   macos:
-     runs-on: macos-latest
-     strategy:
-@@ -344,3 +346,16 @@ jobs:
-             ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.dll
-             ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.pdb
-             doc/openvpn.8.html
-+
-+  trigger_openvpn_build:
-+    runs-on: windows-latest
-+    needs: [checkuncrustify, mingw, ubuntu, ubuntu-clang-asan, macos, msvc]
-+    if: ${{ github.event_name != 'pull_request' && github.repository == 'openvpn/openvpn' && github.ref == 'refs/heads/master' }}
-+
-+    steps:
-+    - name: Repository Dispatch
-+      uses: peter-evans/repository-dispatch@...2620...
-+      with:
-+        token: ${{ secrets.OPENVPN_BUILD_REPO_DISPATCH }}
-+        repository: openvpn/openvpn-build
-+        event-type: openvpn-commit
++if (WIN32 AND ${CLI_OVPNDCOWIN})
++    target_compile_definitions(omicliagent PRIVATE ENABLE_OVPNDCOWIN)
++    target_compile_definitions(omicli PRIVATE ENABLE_OVPNDCOWIN)
++    target_link_libraries(omicliagent "bcrypt.lib")
++    target_link_libraries(omicli "bcrypt.lib")
++endif ()
 -- 
-2.23.0.windows.1
+2.34.1
 
 
