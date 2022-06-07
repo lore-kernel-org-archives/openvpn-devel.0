@@ -1,9 +1,12 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue,  7 Jun 2022 11:36:19 +0200
-Message-Id: <20220607093619.23066-1-gert@...1296...>
+Message-ID: <3363e69c-1788-2ced-e640-8523570b0d8c@...515...>
+Date: Tue, 7 Jun 2022 15:08:08 +0300
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix error message about extended errors for
- IPv4-only sockets.
+Content-Language: en-US
+References: <20220603080300.182-1-lstipakov@...277...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+In-Reply-To: <20220603080300.182-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] GitHub Actions: trigger openvpn-build
+ GHA on success
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,85 +15,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-The new code to enable IPv6 extended error reporting will cause
-an error ("Protocol not available (errno=92)") if trying to enable
-that setsockopt() option on an IPv4-only socket.
+Hi,
 
-Fix: pass sock->info.af to set_sock_extended_error_passing(), only
-apply to AF_INET6 sockets.
+Il 03/06/22 11:03, Lev Stipakov ha scritto:
+> From: Lev Stipakov <lev@...515...>
+> 
+> After successfult builds on all platforms,
+> start openvpn-build GHA which produces
+> Windows MSI installers.
+> 
+> Signed-off-by: Lev Stipakov <lev@...515...>
+> ---
+>   .github/workflows/build.yaml | 21 +++++++++++++++++++--
+>   1 file changed, 19 insertions(+), 2 deletions(-)
+> 
+> diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+> index d34f4e9a..99968aae 100644
+> --- a/.github/workflows/build.yaml
+> +++ b/.github/workflows/build.yaml
+> @@ -1,6 +1,7 @@
+>   # The name of our workflow
+>   name: Build
+> -on: [push, pull_request]
+> +on:
+> +  push:
 
-Add comments to make explicit that the asymmetry here (IPv4 extended
-socket error reporting is enabled on all sockets) is intentional.
+So, does this disable GHA for pull requests? Asking because we allow PRs 
+and testing those as well would be good.
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/mtu.c    | 13 +++++++++----
- src/openvpn/mtu.h    |  2 +-
- src/openvpn/socket.c |  2 +-
- 3 files changed, 11 insertions(+), 6 deletions(-)
+>   
+>   jobs:
+>     checkuncrustify:
+> @@ -32,6 +33,7 @@ jobs:
+>         - name: Set job status
+>           run: test ! -s uncrustify-changes.patch
+>           working-directory: openvpn
+> +
+>     mingw:
+>       strategy:
+>         fail-fast: false
+> @@ -250,7 +252,6 @@ jobs:
+>         - name: make check
+>           run: make check
+>   
+> -
+>     macos:
+>       runs-on: macos-latest
+>       strategy:
+> @@ -344,3 +345,19 @@ jobs:
+>               ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.dll
+>               ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.pdb
+>               doc/openvpn.8.html
+> +
+> +  trigger_openvpn_build:
+> +    runs-on: windows-latest
+> +    needs: [checkuncrustify, mingw, ubuntu, ubuntu-clang-asan, macos, msvc]
+> +    if: github.ref == 'refs/heads/master'
+> +    env:
+> +      REPO_DISPATCH: ${{ secrets.OPENVPN_BUILD_REPO_DISPATCH }}
+> +
+> +    steps:
+> +    - name: Repository Dispatch
+> +      if: "${{ env.REPO_DISPATCH != '' }}"
+> +      uses: peter-evans/repository-dispatch@...2620...
+> +      with:
+> +        token: ${{ env.REPO_DISPATCH }}
+> +        repository: openvpn/openvpn-build
+> +        event-type: openvpn-commit
 
-diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index 59b91798..f60f4853 100644
---- a/src/openvpn/mtu.c
-+++ b/src/openvpn/mtu.c
-@@ -413,17 +413,22 @@ exit:
- }
- 
- void
--set_sock_extended_error_passing(int sd)
-+set_sock_extended_error_passing(int sd, sa_family_t proto_af)
- {
-     int on = 1;
--    /* see "man 7 ip" (on Linux) */
-+    /* see "man 7 ip" (on Linux)
-+     * this works on IPv4 and IPv6(-dual-stack) sockets (v4-mapped)
-+     */
-     if (setsockopt(sd, SOL_IP, IP_RECVERR, (void *) &on, sizeof(on)) != 0)
-     {
-         msg(M_WARN | M_ERRNO,
-             "Note: enable extended error passing on TCP/UDP socket failed (IP_RECVERR)");
-     }
--    /* see "man 7 ipv6" (on Linux) */
--    if (setsockopt(sd, IPPROTO_IPV6, IPV6_RECVERR, (void *) &on, sizeof(on)) != 0)
-+    /* see "man 7 ipv6" (on Linux)
-+     * this only works on IPv6 sockets
-+     */
-+    if (proto_af == AF_INET6
-+        && setsockopt(sd, IPPROTO_IPV6, IPV6_RECVERR, (void *) &on, sizeof(on)) != 0)
-     {
-         msg(M_WARN | M_ERRNO,
-             "Note: enable extended error passing on TCP/UDP socket failed (IPV6_RECVERR)");
-diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index 7f967e06..ac3268f7 100644
---- a/src/openvpn/mtu.h
-+++ b/src/openvpn/mtu.h
-@@ -278,7 +278,7 @@ void alloc_buf_sock_tun(struct buffer *buf,
- 
- #if EXTENDED_SOCKET_ERROR_CAPABILITY
- 
--void set_sock_extended_error_passing(int sd);
-+void set_sock_extended_error_passing(int sd, sa_family_t proto_af);
- 
- const char *format_extended_socket_error(int fd, int *mtu, struct gc_arena *gc);
- 
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 4e4a3a2f..47f1ba27 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -1949,7 +1949,7 @@ phase2_set_socket_flags(struct link_socket *sock)
- 
- #if EXTENDED_SOCKET_ERROR_CAPABILITY
-     /* if the OS supports it, enable extended error passing on the socket */
--    set_sock_extended_error_passing(sock->sd);
-+    set_sock_extended_error_passing(sock->sd, sock->info.af);
- #endif
- }
- 
--- 
-2.35.1
+I have not really used GHA, but if this code works, I'm all for this 
+feature.
 
+Samuli
 
