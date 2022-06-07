@@ -1,11 +1,9 @@
 From: Christopher Ng <facboy@...277...>
-Date: Tue,  7 Jun 2022 17:30:49 +0100
-Message-Id: <20220607163049.10056-2-facboy@...277...>
-In-Reply-To: <20220607163049.10056-1-facboy@...277...>
-References: <20220607163049.10056-1-facboy@...277...>
+Date: Tue,  7 Jun 2022 17:30:48 +0100
+Message-Id: <20220607163049.10056-1-facboy@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH OpenVPN3 2/2] omi: add support for
- ovpn-dco-win
+Subject: [Openvpn-devel] [PATCH OpenVPN3 1/2] ovpnagent: fix quoting of
+ omiclient parameters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,30 +18,32 @@ To: openvpn-devel@lists.sourceforge.net
 
 Signed-off-by: Christopher Ng <facboy@...277...>
 ---
- openvpn/omi/CMakeLists.txt | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ openvpn/ovpnagent/win/ovpnagent.cpp | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/openvpn/omi/CMakeLists.txt b/openvpn/omi/CMakeLists.txt
-index d773da39..cd7cb8fd 100644
---- a/openvpn/omi/CMakeLists.txt
-+++ b/openvpn/omi/CMakeLists.txt
-@@ -1,3 +1,5 @@
-+option(CLI_OVPNDCOWIN "Build ovpncli with ovpn-dco-win driver support" OFF)
-+
- add_executable(omicliagent openvpn.cpp)
- add_core_dependencies(omicliagent)
- add_json_library(omicliagent)
-@@ -5,3 +7,10 @@ target_compile_definitions(omicliagent PRIVATE -DOPENVPN_COMMAND_AGENT -DOVPNAGE
+diff --git a/openvpn/ovpnagent/win/ovpnagent.cpp b/openvpn/ovpnagent/win/ovpnagent.cpp
+index 8a31b0aa..fa020e7d 100644
+--- a/openvpn/ovpnagent/win/ovpnagent.cpp
++++ b/openvpn/ovpnagent/win/ovpnagent.cpp
+@@ -444,14 +444,16 @@ public:
  
- add_executable(omicli openvpn.cpp)
- add_core_dependencies(omicli)
+       // create command line for openvpn process
+       std::ostringstream ss;
+-      ss << "client --config " << config_dir << "\\" << config_file << " --exit-event-name "
++      ss << "client --config \"" << config_dir << "\\" << config_file << "\" --exit-event-name "
+ 	 << exit_event_name << " --auth-retry interact --management " << management_host << " "
+ 	 << management_port << " stdin --management-query-passwords --management-hold " << "--log"
+-	 << (log_append ? "-append " : " ") << log;
++	 << (log_append ? "-append \"" : " \"") << log << "\"";
+       std::string cmd = ss.str();
+       std::unique_ptr<char[]> buf(new char[cmd.length() + 1]);
+       strcpy(buf.get(), cmd.c_str());
+ 
++      // OPENVPN_LOG("Launching omiclient: " << config.omiclient_exe.c_str() << " " << buf.get());
 +
-+if (WIN32 AND ${CLI_OVPNDCOWIN})
-+    target_compile_definitions(omicliagent PRIVATE ENABLE_OVPNDCOWIN)
-+    target_compile_definitions(omicli PRIVATE ENABLE_OVPNDCOWIN)
-+    target_link_libraries(omicliagent "bcrypt.lib")
-+    target_link_libraries(omicli "bcrypt.lib")
-+endif ()
+       STARTUPINFO startup_info = { 0 };
+       startup_info.cb = sizeof(startup_info);
+       startup_info.dwFlags = STARTF_USESTDHANDLES;
 -- 
 2.34.1
 
