@@ -1,11 +1,11 @@
 From: David Sommerseth <openvpn@...2080...>
-Date: Thu,  9 Jun 2022 01:53:58 +0200
-Message-Id: <20220608235358.52793-1-openvpn@...2080...>
-In-Reply-To: <20220607163049.10056-1-facboy@...277...>
-References: <20220607163049.10056-1-facboy@...277...>
+Date: Thu,  9 Jun 2022 01:55:03 +0200
+Message-Id: <20220608235503.52923-1-openvpn@...2080...>
+In-Reply-To: <20220607163049.10056-2-facboy@...277...>
+References: <20220607163049.10056-2-facboy@...277...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH applied OpenVPN3 1/2] ovpnagent: fix
- quoting of omiclient parameters
+Subject: Re: [Openvpn-devel] [PATCH applied OpenVPN3 2/2] omi: add support
+ for ovpn-dco-win
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,17 +23,17 @@ From: David Sommerseth <davids@...515...>
 
 Your patch has been applied to the master branch
 
-commit 452e7cb6259d40ae0a1ff749d22a1634c7100fc9 master
+commit 94848c3cc3f5ea1fec97ab6b18ba7eff6923561d master
 Author: Christopher Ng
-Date:   Tue, 07 Jun 2022 16:30:48 +0000
+Date:   Tue, 07 Jun 2022 16:30:49 +0000
 
-     ovpnagent: fix quoting of omiclient parameters
+     omi: add support for ovpn-dco-win
 
      Signed-off-by: Christopher Ng
      Acked-by: Lev Stipakov
-     Patchwork-Id: 2510
-     URL: https://patchwork.openvpn.net/patch/2510/
-     Message-Id: <20220607163049.10056-1-facboy@...277...>
+     Patchwork-Id: 2509
+     URL: https://patchwork.openvpn.net/patch/2509/
+     Message-Id: <20220607163049.10056-2-facboy@...277...>
      Signed-off-by: David Sommerseth
 
 
