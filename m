@@ -1,11 +1,10 @@
-From: David Sommerseth <openvpn@...2080...>
-Date: Thu,  9 Jun 2022 01:55:03 +0200
-Message-Id: <20220608235503.52923-1-openvpn@...2080...>
-In-Reply-To: <20220607163049.10056-2-facboy@...277...>
-References: <20220607163049.10056-2-facboy@...277...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH applied OpenVPN3 2/2] omi: add support
- for ovpn-dco-win
+Date: Thu, 9 Jun 2022 15:58:10 +0200 (CEST)
+Message-Id: <202206091358.259DwAUF017972@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220603095219.637361-1-arne@...1227...>
+References: <20220603095219.637361-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Allow running a default
+ configuration with TLS libraries without BF-CBC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,29 +15,52 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: facboy@...277...
-Cc: openvpn-devel@lists.sourceforge.net, David Sommerseth <davids@...515...>
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: David Sommerseth <davids@...515...>
+Acked-by: Gert Doering <gert@...1296...>
 
-Your patch has been applied to the master branch
+Stared at code, and tested with a 2.5+ossl3.0.x build - without the
+patch, it would fail before even trying to connect to the server
+(unless --providers legacy default is set):
 
-commit 94848c3cc3f5ea1fec97ab6b18ba7eff6923561d master
-Author: Christopher Ng
-Date:   Tue, 07 Jun 2022 16:30:49 +0000
+2022-06-09 12:00:50 library versions: OpenSSL 3.0.3 3 May 2022, LZO 2.10
+2022-06-09 12:00:50 Cipher BF-CBC not supported
+2022-06-09 12:00:50 Exiting due to fatal error
 
-     omi: add support for ovpn-dco-win
+With the patch, it connects fine, negotiates AES-256-GCM, and passes 
+all t_client tests (to "master" servers") without having to resort to
+"--providers legacy".
 
-     Signed-off-by: Christopher Ng
-     Acked-by: Lev Stipakov
-     Patchwork-Id: 2509
-     URL: https://patchwork.openvpn.net/patch/2509/
-     Message-Id: <20220607163049.10056-2-facboy@...277...>
-     Signed-off-by: David Sommerseth
+Connecting to a legacy server (2.3 or 2.4/2.5 with --disable-ncp, or
+restricting ciphers to BF-CBC for whatever other reasons) will try to 
+fallback to BF-CBC, and fail - unsurprisingly, but fixable with 
+--providers legacy.
+
+
+NOTE: uncrustify complained to me that "options.c" got modified and
+was not uncrustify clean before -> so I included these whitespace
+changes (not many, and only trivial stuff) in this commit.
+
+
+Your patch has been applied to the release/2.5 branch.
+
+commit 15bf49797130917d85837abd3e8c1fb0e9b528b7
+Author: Arne Schwabe
+Date:   Fri Jun 3 11:52:19 2022 +0200
+
+     Allow running a default configuration with TLS libraries without BF-CBC
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220603095219.637361-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24456.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
 kind regards,
 
-David Sommerseth
+Gert Doering
+
 
