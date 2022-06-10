@@ -1,13 +1,10 @@
-Message-ID: <f203baba-6be0-71b6-8a22-86190ebcdaf9@...2181...>
-Date: Thu, 9 Jun 2022 19:05:06 +0200
+Date: Fri, 10 Jun 2022 12:04:05 +0000
+From: =?utf-8?Q?Martin_Jan=C5=AF?= <martin.janu@...2282...>
+Reply-To: =?utf-8?Q?Martin_Jan=C5=AF?= <martin.janu@...2282...>
+Message-ID: <SVrvuTydxR6Qs_mvwvG7mqT8iLV0inlcCMXoenZTMI8M0LkosV4pZsH9m_XCTwcRWAPN5H8Zdro0ubhJrnSp6v5KC2ZNAL9So0Y2SKiSe7g=@protonmail.com>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <f1dde3516874c6b9bec11fcbd121fad9@...2675...>
- <6db98ba0-9f0b-54dc-6c8c-cf06b5b79016@...376...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <6db98ba0-9f0b-54dc-6c8c-cf06b5b79016@...376...>
-Subject: Re: [Openvpn-devel] Fwd: Bug#1012567: openvpn --mktun --dev-type
- tap --dev tap2 fails
+Subject: [Openvpn-devel] [PATCH] Update the replay-window backtrack log
+ message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,55 +13,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Bernhard Schmidt <berni@...376...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi Bernhard,
+The man pages reference a logging message which has been rephrased
+in ac1310528a248c99e039e7afaf48724ad1b7f10e. This commit updates the
+man page message to reflect the change for improved grep-ability.
 
-Thanks a lot for forwarding the bug - it's a nice catch.
+Signed-off-by: Martin Jan=C5=AF <martin.janu@...2282...>
+---
+ doc/man-sections/link-options.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Will work on a fix.
+diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-opti=
+ons.rst
+index 6473ad42..373193aa 100644
+--- a/doc/man-sections/link-options.rst
++++ b/doc/man-sections/link-options.rst
+@@ -378,7 +378,7 @@ the local and the remote host.
+   value for ``n``. Satellite links in particular often require this.
 
-Regards,
+   If you run OpenVPN at ``--verb 4``, you will see the message
+-  "Replay-window backtrack occurred [x]" every time the maximum sequence
++  "PID_ERR replay-window backtrack occurred [x]" every time the maximum se=
+quence
+   number backtrack seen thus far increases. This can be used to calibrate
+   ``n``.
 
-On 09/06/2022 17:24, Bernhard Schmidt wrote:
-> Hi,
-> 
-> I've received the following bug report for the dco-enabled OpenVPN 2.6 
-> build currently sitting in Debian unstable. It looks like DCO is 
-> interfering with the CLI option to create a tap interface.
-> 
-> Bernhard
-> 
-> 
-> 
-> ---
-> Package: openvpn
-> Version: 2.6.0~git20220518+dco-2
-> Severity: important
-> 
-> Since 2.6.0~git20220518+dco-2 the following command fails:
-> 
-> openvpn --mktun --dev-type tap --dev tap2
-> 
-> with
-> 
-> Assertion failed at dco_linux.c:442 (tt-type == DEV_TYPE_TUN)
-> Exit due to fatal error
-> 
-> 
-> I don't have dco support in the linux kernel.
-> 
-> 
-> openvpn --disable-dco --mktun --dev-type tap --dev tap2
-> 
-> 
-> works as a workaround, but I think --mktun --dev-type tap should 
-> continue to work without it.
-> 
-> Regards,
+--
+2.36.1
 
--- 
-Antonio Quartulli
 
