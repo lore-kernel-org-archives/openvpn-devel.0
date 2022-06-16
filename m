@@ -1,12 +1,12 @@
-Message-ID: <cc40b1aa-48df-341d-e292-bb399b55dadb@...2080...>
-Date: Wed, 15 Jun 2022 15:06:08 +0200
+Message-ID: <a0301891-d539-dc43-53c6-cf02432f8e01@...515...>
+Date: Thu, 16 Jun 2022 09:49:10 +0300
 MIME-Version: 1.0
 Content-Language: en-US
-References: <20220603095219.637361-1-arne@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-In-Reply-To: <20220603095219.637361-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] [OpenVPN 2.5] Allow running a default
- configuration with TLS libraries without BF-CBC
+References: <20220603080300.182-1-lstipakov@...277...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+In-Reply-To: <20220603080300.182-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] GitHub Actions: trigger openvpn-build
+ GHA on success
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,43 +17,79 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-On 03/06/2022 11:52, Arne Schwabe wrote:
-> Modern TLS libraries might drop Blowfish by default or distributions
-> might disable Blowfish in OpenSSL/mbed TLS. We still signal OCC
-> options with BF-CBC compatible strings. To avoid requiring BF-CBC
-> for this, special this one usage of BF-CBC enough to avoid a hard
-> requirement on Blowfish in the default configuration.
+Hi,
+
+Il 03/06/22 11:03, Lev Stipakov ha scritto:
+> From: Lev Stipakov <lev@...515...>
 > 
-> This patch is cherry-picked from 79ff3f79 and the missing
-> ciphername = "none"; has been added in the OCC code.
+> After successfult builds on all platforms,
+> start openvpn-build GHA which produces
+> Windows MSI installers.
 > 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+> Signed-off-by: Lev Stipakov <lev@...515...>
 > ---
->   src/openvpn/crypto_backend.h |  2 ++
->   src/openvpn/init.c           | 37 +++++++++++++++++++++------
->   src/openvpn/options.c        | 48 +++++++++++++++++++++++++++++++-----
->   3 files changed, 73 insertions(+), 14 deletions(-)
+>   .github/workflows/build.yaml | 21 +++++++++++++++++++--
+>   1 file changed, 19 insertions(+), 2 deletions(-)
+> 
+> diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+> index d34f4e9a..99968aae 100644
+> --- a/.github/workflows/build.yaml
+> +++ b/.github/workflows/build.yaml
+> @@ -1,6 +1,7 @@
+>   # The name of our workflow
+>   name: Build
+> -on: [push, pull_request]
+> +on:
+> +  push:
 
-Just for the record.  This patch has been included into Fedora 36 and 
-EPEL-9 builds, released as openvpn-2.5.7-2.
+I've understood that this change has no effect, but this is a commonly 
+used pattern. So ok with it.
 
-Fedora 36 users has reported that this patch resolves issues which 
-surfaced when upgrading to openvpn-2.5.7-1.
+>   
+>   jobs:
+>     checkuncrustify:
+> @@ -32,6 +33,7 @@ jobs:
+>         - name: Set job status
+>           run: test ! -s uncrustify-changes.patch
+>           working-directory: openvpn
+> +
+>     mingw:
+>       strategy:
+>         fail-fast: false
+> @@ -250,7 +252,6 @@ jobs:
+>         - name: make check
+>           run: make check
+>   
+> -
+>     macos:
+>       runs-on: macos-latest
+>       strategy:
+> @@ -344,3 +345,19 @@ jobs:
+>               ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.dll
+>               ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.pdb
+>               doc/openvpn.8.html
+> +
+> +  trigger_openvpn_build:
+> +    runs-on: windows-latest
+> +    needs: [checkuncrustify, mingw, ubuntu, ubuntu-clang-asan, macos, msvc]
+> +    if: github.ref == 'refs/heads/master'
+> +    env:
+> +      REPO_DISPATCH: ${{ secrets.OPENVPN_BUILD_REPO_DISPATCH }}
+> +
+> +    steps:
+> +    - name: Repository Dispatch
+> +      if: "${{ env.REPO_DISPATCH != '' }}"
+> +      uses: peter-evans/repository-dispatch@...2620...
+> +      with:
+> +        token: ${{ env.REPO_DISPATCH }}
+> +        repository: openvpn/openvpn-build
+> +        event-type: openvpn-commit
 
-A few references:
+Not having done much with GHA I can't tell if this is correct. But we do 
+want this feature and Lev has tested it, so ACK.
 
-<https://bodhi.fedoraproject.org/updates/FEDORA-2022-8ca0f56650>
-<https://bodhi.fedoraproject.org/updates/FEDORA-EPEL-2022-dd161a4d75>
-<https://bugzilla.redhat.com/show_bug.cgi?id=2092800>
-<https://bugzilla.redhat.com/show_bug.cgi?id=2093069>
-
-
--- 
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
+Samuli
 
