@@ -1,13 +1,9 @@
-Message-ID: <e01a4857-9dfa-7e47-cb38-4748776c8bde@...515...>
-Date: Thu, 16 Jun 2022 10:24:30 +0300
+From: Ilya Ponetayev <i.ponetaev@...2676...>
+Date: Fri, 17 Jun 2022 07:13:26 +0300
+Message-Id: <20220617041326.2744668-1-i.ponetaev@...2676...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <3363e69c-1788-2ced-e640-8523570b0d8c@...515...>
- <20220605004013.319-1-lstipakov@...277...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-In-Reply-To: <20220605004013.319-1-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v2] GitHub Actions: trigger
- openvpn-build GHA on success
+Subject: [Openvpn-devel] [PATCH] fix compilation issues with small and w/o
+ debug
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,75 +12,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Samuli Seppänen <samuli@...515...>
+---
+ src/openvpn/init.c      | 2 +-
+ src/openvpn/mtcp.c      | 2 ++
+ src/openvpn/packet_id.c | 2 ++
+ src/openvpn/reliable.c  | 2 ++
+ 4 files changed, 7 insertions(+), 1 deletion(-)
 
-Il 05/06/22 03:40, Lev Stipakov ha scritto:
-> From: Lev Stipakov <lev@...515...>
-> 
-> After successfult builds on all platforms,
-> start openvpn-build GHA which produces
-> Windows MSI installers.
-> 
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->   v2:
-> 
->    - bring pull_request trigger back
->    - simplify trigger_openvpn_build run condition
-> 
->   .github/workflows/build.yaml | 19 +++++++++++++++++--
->   1 file changed, 17 insertions(+), 2 deletions(-)
-> 
-> diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-> index d34f4e9a..6c267a61 100644
-> --- a/.github/workflows/build.yaml
-> +++ b/.github/workflows/build.yaml
-> @@ -1,6 +1,8 @@
->   # The name of our workflow
->   name: Build
-> -on: [push, pull_request]
-> +on:
-> +  push:
-> +  pull_request:
->   
->   jobs:
->     checkuncrustify:
-> @@ -32,6 +34,7 @@ jobs:
->         - name: Set job status
->           run: test ! -s uncrustify-changes.patch
->           working-directory: openvpn
-> +
->     mingw:
->       strategy:
->         fail-fast: false
-> @@ -250,7 +253,6 @@ jobs:
->         - name: make check
->           run: make check
->   
-> -
->     macos:
->       runs-on: macos-latest
->       strategy:
-> @@ -344,3 +346,16 @@ jobs:
->               ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.dll
->               ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.pdb
->               doc/openvpn.8.html
-> +
-> +  trigger_openvpn_build:
-> +    runs-on: windows-latest
-> +    needs: [checkuncrustify, mingw, ubuntu, ubuntu-clang-asan, macos, msvc]
-> +    if: ${{ github.event_name != 'pull_request' && github.repository == 'openvpn/openvpn' && github.ref == 'refs/heads/master' }}
-> +
-> +    steps:
-> +    - name: Repository Dispatch
-> +      uses: peter-evans/repository-dispatch@...2620...
-> +      with:
-> +        token: ${{ secrets.OPENVPN_BUILD_REPO_DISPATCH }}
-> +        repository: openvpn/openvpn-build
-> +        event-type: openvpn-commit
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index b0c62a85..f06afc29 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2491,7 +2491,7 @@ frame_finalize_options(struct context *c, const struct options *o)
+     size_t tailroom = headroom;
+ 
+ #ifdef USE_COMP
+-    msg(D_MTU_DEBUG, "MTU: adding %lu buffer tailroom for compression for %lu "
++    msg(D_MTU_DEBUG, "MTU: adding %zu buffer tailroom for compression for %zu "
+         "bytes of payload",
+         COMP_EXTRA_BUFFER(payload_size), payload_size);
+     tailroom += COMP_EXTRA_BUFFER(payload_size);
+diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
+index b725bebb..b3c153fe 100644
+--- a/src/openvpn/mtcp.c
++++ b/src/openvpn/mtcp.c
+@@ -72,6 +72,7 @@ struct ta_iow_flags
+     unsigned int sock;
+ };
+ 
++#ifdef ENABLE_DEBUG
+ static const char *
+ pract(int action)
+ {
+@@ -114,6 +115,7 @@ pract(int action)
+             return "?";
+     }
+ }
++#endif /* ENABLE_DEBUG */
+ 
+ static struct multi_instance *
+ multi_create_instance_tcp(struct multi_context *m)
+diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
+index e357909d..851b506c 100644
+--- a/src/openvpn/packet_id.c
++++ b/src/openvpn/packet_id.c
+@@ -53,11 +53,13 @@
+ #define SEQ_UNSEEN  ((time_t)0)
+ #define SEQ_EXPIRED ((time_t)1)
+ 
++#ifdef ENABLE_DEBUG
+ static void packet_id_debug_print(int msglevel,
+                                   const struct packet_id_rec *p,
+                                   const struct packet_id_net *pin,
+                                   const char *message,
+                                   int value);
++#endif /* ENABLE_DEBUG */
+ 
+ static inline void
+ packet_id_debug(int msglevel,
+diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
+index 37244435..73473625 100644
+--- a/src/openvpn/reliable.c
++++ b/src/openvpn/reliable.c
+@@ -394,6 +394,7 @@ reliable_send_purge(struct reliable *rel, const struct reliable_ack *ack)
+     }
+ }
+ 
++#ifdef ENABLE_DEBUG
+ /* print the current sequence of active packet IDs */
+ static const char *
+ reliable_print_ids(const struct reliable *rel, struct gc_arena *gc)
+@@ -412,6 +413,7 @@ reliable_print_ids(const struct reliable *rel, struct gc_arena *gc)
+     }
+     return BSTR(&out);
+ }
++#endif /* ENABLE_DEBUG */
+ 
+ /* true if at least one free buffer available */
+ bool
+-- 
+2.34.1
+
 
