@@ -1,9 +1,11 @@
-From: Ilya Ponetayev <i.ponetaev@...2676...>
-Date: Fri, 17 Jun 2022 07:13:26 +0300
-Message-Id: <20220617041326.2744668-1-i.ponetaev@...2676...>
+From: David Sommerseth <openvpn@...2080...>
+Date: Fri, 17 Jun 2022 13:06:40 +0200
+Message-Id: <20220617110640.13319-1-openvpn@...2080...>
+In-Reply-To: <20220605004013.319-1-lstipakov@...277...>
+References: <20220605004013.319-1-lstipakov@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] fix compilation issues with small and w/o
- debug
+Subject: Re: [Openvpn-devel] [PATCH applied v2] GitHub Actions: trigger
+ openvpn-build GHA on success
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,87 +16,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: lev@...515...
+Cc: openvpn-devel@lists.sourceforge.net, David Sommerseth <davids@...515...>
 
----
- src/openvpn/init.c      | 2 +-
- src/openvpn/mtcp.c      | 2 ++
- src/openvpn/packet_id.c | 2 ++
- src/openvpn/reliable.c  | 2 ++
- 4 files changed, 7 insertions(+), 1 deletion(-)
+From: David Sommerseth <davids@...515...>
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index b0c62a85..f06afc29 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2491,7 +2491,7 @@ frame_finalize_options(struct context *c, const struct options *o)
-     size_t tailroom = headroom;
- 
- #ifdef USE_COMP
--    msg(D_MTU_DEBUG, "MTU: adding %lu buffer tailroom for compression for %lu "
-+    msg(D_MTU_DEBUG, "MTU: adding %zu buffer tailroom for compression for %zu "
-         "bytes of payload",
-         COMP_EXTRA_BUFFER(payload_size), payload_size);
-     tailroom += COMP_EXTRA_BUFFER(payload_size);
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index b725bebb..b3c153fe 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -72,6 +72,7 @@ struct ta_iow_flags
-     unsigned int sock;
- };
- 
-+#ifdef ENABLE_DEBUG
- static const char *
- pract(int action)
- {
-@@ -114,6 +115,7 @@ pract(int action)
-             return "?";
-     }
- }
-+#endif /* ENABLE_DEBUG */
- 
- static struct multi_instance *
- multi_create_instance_tcp(struct multi_context *m)
-diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
-index e357909d..851b506c 100644
---- a/src/openvpn/packet_id.c
-+++ b/src/openvpn/packet_id.c
-@@ -53,11 +53,13 @@
- #define SEQ_UNSEEN  ((time_t)0)
- #define SEQ_EXPIRED ((time_t)1)
- 
-+#ifdef ENABLE_DEBUG
- static void packet_id_debug_print(int msglevel,
-                                   const struct packet_id_rec *p,
-                                   const struct packet_id_net *pin,
-                                   const char *message,
-                                   int value);
-+#endif /* ENABLE_DEBUG */
- 
- static inline void
- packet_id_debug(int msglevel,
-diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
-index 37244435..73473625 100644
---- a/src/openvpn/reliable.c
-+++ b/src/openvpn/reliable.c
-@@ -394,6 +394,7 @@ reliable_send_purge(struct reliable *rel, const struct reliable_ack *ack)
-     }
- }
- 
-+#ifdef ENABLE_DEBUG
- /* print the current sequence of active packet IDs */
- static const char *
- reliable_print_ids(const struct reliable *rel, struct gc_arena *gc)
-@@ -412,6 +413,7 @@ reliable_print_ids(const struct reliable *rel, struct gc_arena *gc)
-     }
-     return BSTR(&out);
- }
-+#endif /* ENABLE_DEBUG */
- 
- /* true if at least one free buffer available */
- bool
--- 
-2.34.1
+Your patch has been applied
 
+commit 6a26cb51297024b563603faf78a33298b5d59f30 master
+Author: Lev Stipakov
+Date:   Sun, 05 Jun 2022 00:40:13 +0000
+
+     GitHub Actions: trigger openvpn-build GHA on success
+
+     Signed-off-by: Lev Stipakov
+     Patchwork-Id: 2508
+     URL: https://patchwork.openvpn.net/patch/2508/
+     Signed-off-by: David Sommerseth
+
+
+--
+kind regards,
+
+David Sommerseth
 
