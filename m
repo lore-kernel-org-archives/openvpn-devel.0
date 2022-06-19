@@ -1,15 +1,12 @@
-Date: Sun, 19 Jun 2022 19:03:54 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <Yq9W+juHzDvkjzcx@...1296...>
-References: <20220607093619.23066-1-gert@...1296...>
- <80cdf6b1-f3c7-4a02-b7d5-05989749145e@...1227...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="5vQchDzIIApwZ+47"
-Content-Disposition: inline
-In-Reply-To: <80cdf6b1-f3c7-4a02-b7d5-05989749145e@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix error message about extended errors
- for IPv4-only sockets.
+References: <20210930113308.815777-1-mkh199740@...450...>
+In-Reply-To: <20210930113308.815777-1-mkh199740@...450...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 19 Jun 2022 13:28:58 -0400
+Message-ID: <CAKuzo_iWaTiKSeiTVrqkLfbPLp+ScvGm_m8stEUNOzunobXVUg@...278...>
+Content-Type: multipart/alternative; boundary="000000000000a2e2d305e1d053fe"
+Subject: Re: [Openvpn-devel] [PATCH] Add ability to specify initialize flags
+ for pkcs11 provider
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,70 +15,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: Petr Mikhalicin <mkh199740@...450...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---5vQchDzIIApwZ+47
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--000000000000a2e2d305e1d053fe
+Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
-On Sun, Jun 19, 2022 at 11:38:17AM +0200, Arne Schwabe wrote:
-> >   #if EXTENDED_SOCKET_ERROR_CAPABILITY
-> >       /* if the OS supports it, enable extended error passing on the so=
-cket */
-> > -    set_sock_extended_error_passing(sock->sd);
-> > +    set_sock_extended_error_passing(sock->sd, sock->info.af);
-> >   #endif
-> >   }
-> >=20=20=20
->=20
-> I have to NACK this patch. sock->info.af is not the actual address=20
-> familiy but the family we want to use and it might be 0 if there is no=20
-> udp4/udp6 in the config file.
->=20
-> For a client you can look at sock->info.lsa->actual.dest if that is=20
-> defined. For a server we seem to actually override/set that info.af=20
-> value according to my debugger but with a client I get 0 in that value.=20
-> It looks that set_mtu_discover_type in the same function has the same=20
-> problem, so it is easy to this mistake.
+On Thu, Sep 30, 2021 at 7:34 AM Petr Mikhalicin via Openvpn-devel <
+openvpn-devel@lists.sourceforge.net> wrote:
 
-So how do we know if this is a v4 or v6 socket, in a client?
+> New pkcs11-helper interface allows to setup pkcs11 provider via
+> properties:
+> https://github.com/alonbl/pkcs11-helper/commit/b78d21c7e26041746aa4ae3d08b95469e1714a85
+>
+> Also pkcs11-helper added ability to setup init args for pkcs11 provider:
+>
+> https://github.com/alonbl/pkcs11-helper/commit/133f893e30856eba1de715ecd6fe176722eb3097
+>
+> Signed-off-by: Petr Mikhalicin <mkh199740@...450...>
+>
 
-Phrased differently - I could do a v2 which will just ignore this
-particular errno value.  Maybe not "as clean" as not calling the
-"wrong" setsockopt() in the first place, but will keep the log free
-of non-useful error messages just fine...
+Sorry for the long delay in getting back on this. I somehow also missed the
+related discussion on Trac (
+https://community.openvpn.net/openvpn/ticket/1453)
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+I don't quite understand the need for exposing "init-args" to the user. The
+only two supported flags in the cryptoki docs are related to the use of
+threads. But we are the application and we should know what flags to pass
+--- not the user --- isn't it? If CKF_OS_LOCKING_OK is required, can't we
+just set it unconditionally?
 
-Gert Doering - Munich, Germany                             gert@...1296...
+That said, OpenVPN2 is single threaded, so why is there a "bug in openvpn"
+related to the use of pkcs11 library from multiple threads referred to in
+the trac ticket?
 
---5vQchDzIIApwZ+47
-Content-Type: application/pgp-signature; name="signature.asc"
+Selva
 
------BEGIN PGP SIGNATURE-----
+--000000000000a2e2d305e1d053fe
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-iQGcBAEBAgAGBQJir1b6AAoJEB2Cnv7KVigStKUL+wUe0sxma8nMbzNamOOgy1Lf
-AAD2rW+rc7xZqRan8lsnnD6IJZY9DMo64r5eecSOeGuxWuKABwFQISuxkFwLGmw/
-+DNPf28vLp4hc120284XrOb42Nio4chk970kan7qsCk7V7s/hKgL3gC/So6Mr1a7
-0TEcuoxIdtO73W/zHKwAQA8xPX3U/R2ndKAdTWc8uUgG1dg7maelLvm4k23BFJdM
-yM2fVgQO+9dr24/vajtN6K0E48AzAlimXRLfKHCMekIMYXhqbIdpj38122dSOGAP
-7n5PJYRy9a8diz4v5SraAaIgeAYBd+/vdn92ZTvCyjb/shLmwGGUbpeVSMjz4rv3
-P2UM99OSf16HDt+B0kSYoxSVj0dYcv7rZAR4f5ViPfkziJZ7kNjyGbTaBtai0FZU
-rAyOK7N5uIT7njOebkXHt/eF7X5NbXUfw9CwSssVn4OBXEDkBTpHFiCd4EDW6+Uv
-28xWgiAiyO0CAnL5tg28VE8Q6fN2x6s2ycvZ5maUNg==
-=rRiB
------END PGP SIGNATURE-----
+<div dir=3D"ltr"><div dir=3D"ltr">Hi,</div><br><div class=3D"gmail_quote"><=
+div dir=3D"ltr" class=3D"gmail_attr">On Thu, Sep 30, 2021 at 7:34 AM Petr M=
+ikhalicin via Openvpn-devel &lt;<a href=3D"mailto:openvpn-devel@...1011...=
+eforge.net" target=3D"_blank">openvpn-devel@lists.sourceforge.net</a>&gt; w=
+rote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0p=
+x 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">New pkcs11=
+-helper interface allows to setup pkcs11 provider via<br>
+properties: <a href=3D"https://github.com/alonbl/pkcs11-helper/commit/b78d2=
+1c7e26041746aa4ae3d08b95469e1714a85" rel=3D"noreferrer" target=3D"_blank">h=
+ttps://github.com/alonbl/pkcs11-helper/commit/b78d21c7e26041746aa4ae3d08b95=
+469e1714a85</a><br>
+<br>
+Also pkcs11-helper added ability to setup init args for pkcs11 provider:<br>
+<a href=3D"https://github.com/alonbl/pkcs11-helper/commit/133f893e30856eba1=
+de715ecd6fe176722eb3097" rel=3D"noreferrer" target=3D"_blank">https://githu=
+b.com/alonbl/pkcs11-helper/commit/133f893e30856eba1de715ecd6fe176722eb3097<=
+/a><br>
+<br>
+Signed-off-by: Petr Mikhalicin &lt;<a href=3D"mailto:mkh199740@...450..." t=
+arget=3D"_blank">mkh199740@...450...</a>&gt;<br></blockquote><div><br></div=
+><div>Sorry for the long delay in getting back on this. I somehow also miss=
+ed the related discussion on Trac (<a href=3D"https://community.openvpn.net=
+/openvpn/ticket/1453" target=3D"_blank">https://community.openvpn.net/openv=
+pn/ticket/1453</a>)</div><div><br></div><div>I don&#39;t quite understand t=
+he need for exposing &quot;init-args&quot; to the user. The only two suppor=
+ted flags in the cryptoki docs are related to the use of threads. But we ar=
+e the application and we should know what flags to pass --- not the user --=
+- isn&#39;t it? If CKF_OS_LOCKING_OK is required, can&#39;t we just set it =
+unconditionally?=C2=A0</div><div><br></div><div>That said, OpenVPN2 is sing=
+le threaded, so why is there=C2=A0a &quot;bug in openvpn&quot; related to t=
+he use of pkcs11 library from multiple threads referred to in the trac tick=
+et?</div><div><br></div><div>Selva</div></div></div>
 
---5vQchDzIIApwZ+47--
+--000000000000a2e2d305e1d053fe--
 
