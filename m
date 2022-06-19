@@ -1,13 +1,12 @@
-Message-ID: <9e605b83-809d-9bbb-7354-150b5884685a@...2080...>
-Date: Fri, 17 Jun 2022 13:27:03 +0200
+Message-ID: <80cdf6b1-f3c7-4a02-b7d5-05989749145e@...1227...>
+Date: Sun, 19 Jun 2022 11:38:17 +0200
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20220605004013.319-1-lstipakov@...277...>
- <20220617110640.13319-1-openvpn@...2080...>
-From: David Sommerseth <openvpn@...2080...>
-In-Reply-To: <20220617110640.13319-1-openvpn@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH applied v2] GitHub Actions: trigger
- openvpn-build GHA on success
+Content-Language: en-GB
+References: <20220607093619.23066-1-gert@...1296...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20220607093619.23066-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix error message about extended errors
+ for IPv4-only sockets.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,50 +15,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>, =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-
-On 17/06/2022 13:06, David Sommerseth wrote:
-> From: David Sommerseth <davids@...515...>
-> 
-> Your patch has been applied
-> 
-> commit 6a26cb51297024b563603faf78a33298b5d59f30 master
-> Author: Lev Stipakov
-> Date:   Sun, 05 Jun 2022 00:40:13 +0000
-> 
->       GitHub Actions: trigger openvpn-build GHA on success
-> 
->       Signed-off-by: Lev Stipakov
->       Patchwork-Id: 2508
->       URL: https://patchwork.openvpn.net/patch/2508/
->       Signed-off-by: David Sommerseth
-> 
-
-Unfortunately, my patchwork script failed when creating the reply 
-message and I spotted it too late.  The Acked-by line was stripped out.
-
-The proper reply message should have been:
-
-commit 6a26cb51297024b563603faf78a33298b5d59f30 master
-Author: Lev Stipakov
-Date:   Sun, 05 Jun 2022 00:40:13 +0000
-
-      GitHub Actions: trigger openvpn-build GHA on success
-
-      Signed-off-by: Lev Stipakov
-      Acked-by: Samuli Seppänen
-      Patchwork-Id: 2508
-      URL: https://patchwork.openvpn.net/patch/2508/
-      Signed-off-by: David Sommerseth
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
 
--- 
-kind regards,
+>   #if EXTENDED_SOCKET_ERROR_CAPABILITY
+>       /* if the OS supports it, enable extended error passing on the socket */
+> -    set_sock_extended_error_passing(sock->sd);
+> +    set_sock_extended_error_passing(sock->sd, sock->info.af);
+>   #endif
+>   }
+>   
 
-David Sommerseth
-OpenVPN Inc
+I have to NACK this patch. sock->info.af is not the actual address 
+familiy but the family we want to use and it might be 0 if there is no 
+udp4/udp6 in the config file.
 
+For a client you can look at sock->info.lsa->actual.dest if that is 
+defined. For a server we seem to actually override/set that info.af 
+value according to my debugger but with a client I get 0 in that value. 
+It looks that set_mtu_discover_type in the same function has the same 
+problem, so it is easy to this mistake.
+
+Arne
 
