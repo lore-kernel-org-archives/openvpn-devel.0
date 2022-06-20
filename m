@@ -1,9 +1,11 @@
-From: Paolo Cerrito <wardragon78@...277...>
-Date: Mon, 20 Jun 2022 14:21:27 +0200
-Message-Id: <20220620122126.2676755-1-wardragon78@...277...>
+Date: Mon, 20 Jun 2022 15:19:57 +0200 (CEST)
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <1398737843.386553.1655731197068@...2642...>
+In-Reply-To: <20220617041326.2744668-1-i.ponetaev@...2676...>
+References: <20220617041326.2744668-1-i.ponetaev@...2676...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Insert client connection data into PAM
- environment, upgraded
+Subject: Re: [Openvpn-devel] [PATCH] fix compilation issues with small and
+ w/o debug
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,97 +14,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: paolo <paolo.cerrito@...2517...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+To: Ilya Ponetayev <i.ponetaev@...2676...>, openvpn-devel@lists.sourceforge.net
 
-From: paolo <paolo.cerrito@...2517...>
+Acked-By: Frank Lichtenheld <frank@...2641...>
 
----
- src/plugins/auth-pam/auth-pam.c | 25 +++++++++++++++++++++----
- 1 file changed, 21 insertions(+), 4 deletions(-)
+I can confirm that this fixes issues seen with
 
-diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-index 70339445..c2e66e5c 100644
---- a/src/plugins/auth-pam/auth-pam.c
-+++ b/src/plugins/auth-pam/auth-pam.c
-@@ -49,7 +49,7 @@
- #include <syslog.h>
- #include <limits.h>
- #include "utils.h"
--
-+#include <arpa/inet.h>
- #include <openvpn-plugin.h>
- 
- #define DEBUG(verb) ((verb) >= 4)
-@@ -121,6 +121,7 @@ struct user_pass {
-     char password[128];
-     char common_name[128];
-     char response[128];
-+    char remote[INET6_ADDRSTRLEN];
- 
-     const struct name_value_list *name_value_list;
- };
-@@ -529,6 +530,11 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
-         const char *username = get_env("username", envp);
-         const char *password = get_env("password", envp);
-         const char *common_name = get_env("common_name", envp) ? get_env("common_name", envp) : "";
-+        const char *remote = get_env("untrusted_ip6", envp);
-+
-+        if (remote == NULL){
-+                remote = get_env("untrusted_ip", envp); //if Null, try to take ipv4 if not set ipv6
-+        }
- 
-         /* should we do deferred auth?
-          *  yes, if there is "auth_control_file" and "deferred_auth_pam" env
-@@ -554,7 +560,8 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
-                 || send_string(context->foreground_fd, username) == -1
-                 || send_string(context->foreground_fd, password) == -1
-                 || send_string(context->foreground_fd, common_name) == -1
--                || send_string(context->foreground_fd, auth_control_file) == -1)
-+                || send_string(context->foreground_fd, auth_control_file) == -1
-+                || send_string(context->foreground_fd, remote) == -1)
-             {
-                 plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "Error sending auth info to background process");
-             }
-@@ -789,8 +796,16 @@ pam_auth(const char *service, const struct user_pass *up)
-     status = pam_start(service, name_value_list_provided ? NULL : up->username, &conv, &pamh);
-     if (status == PAM_SUCCESS)
-     {
-+        /* Set PAM_RHOST environment variable */
-+        if (*(up->remote))
-+        {
-+            status = pam_set_item(pamh, PAM_RHOST, up->remote);
-+        }
-         /* Call PAM to verify username/password */
--        status = pam_authenticate(pamh, 0);
-+        if (status == PAM_SUCCESS)
-+        {
-+            status = pam_authenticate(pamh, 0);
-+        }
-         if (status == PAM_SUCCESS)
-         {
-             status = pam_acct_mgmt(pamh, 0);
-@@ -956,7 +971,8 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
-                 if (recv_string(fd, up.username, sizeof(up.username)) == -1
-                     || recv_string(fd, up.password, sizeof(up.password)) == -1
-                     || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1
--                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1)
-+                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1
-+                    || recv_string(fd, up.remote, sizeof(up.remote)) == -1)
-                 {
-                     plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: read error on command channel: code=%d, exiting",
-                                command);
-@@ -970,6 +986,7 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
-                                up.username, up.password);
- #else
-                     plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: USER: %s", up.username);
-+                    plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: REMOTE: %s", up.remote);
- #endif
-                 }
- 
--- 
-2.36.1
+./configure --enable-small --disable-debug --enable-werror
 
+(compile tested on Debian 11 amd64, gcc 10.2.1)
+
+The init.c change did not fix a warning for my compiler, but it looks correct
+and might be a warning with different compilers.
+
+Regards,
+  Frank
+
+> Ilya Ponetayev <i.ponetaev@...2676...> hat am 17.06.2022 06:13 CEST geschrieben:
+> 
+>  
+> ---
+>  src/openvpn/init.c      | 2 +-
+>  src/openvpn/mtcp.c      | 2 ++
+>  src/openvpn/packet_id.c | 2 ++
+>  src/openvpn/reliable.c  | 2 ++
+>  4 files changed, 7 insertions(+), 1 deletion(-)
+> 
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index b0c62a85..f06afc29 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -2491,7 +2491,7 @@ frame_finalize_options(struct context *c, const struct options *o)
+>      size_t tailroom = headroom;
+>  
+>  #ifdef USE_COMP
+> -    msg(D_MTU_DEBUG, "MTU: adding %lu buffer tailroom for compression for %lu "
+> +    msg(D_MTU_DEBUG, "MTU: adding %zu buffer tailroom for compression for %zu "
+>          "bytes of payload",
+>          COMP_EXTRA_BUFFER(payload_size), payload_size);
+>      tailroom += COMP_EXTRA_BUFFER(payload_size);
+> diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
+> index b725bebb..b3c153fe 100644
+> --- a/src/openvpn/mtcp.c
+> +++ b/src/openvpn/mtcp.c
+> @@ -72,6 +72,7 @@ struct ta_iow_flags
+>      unsigned int sock;
+>  };
+>  
+> +#ifdef ENABLE_DEBUG
+>  static const char *
+>  pract(int action)
+>  {
+> @@ -114,6 +115,7 @@ pract(int action)
+>              return "?";
+>      }
+>  }
+> +#endif /* ENABLE_DEBUG */
+>  
+>  static struct multi_instance *
+>  multi_create_instance_tcp(struct multi_context *m)
+> diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
+> index e357909d..851b506c 100644
+> --- a/src/openvpn/packet_id.c
+> +++ b/src/openvpn/packet_id.c
+> @@ -53,11 +53,13 @@
+>  #define SEQ_UNSEEN  ((time_t)0)
+>  #define SEQ_EXPIRED ((time_t)1)
+>  
+> +#ifdef ENABLE_DEBUG
+>  static void packet_id_debug_print(int msglevel,
+>                                    const struct packet_id_rec *p,
+>                                    const struct packet_id_net *pin,
+>                                    const char *message,
+>                                    int value);
+> +#endif /* ENABLE_DEBUG */
+>  
+>  static inline void
+>  packet_id_debug(int msglevel,
+> diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
+> index 37244435..73473625 100644
+> --- a/src/openvpn/reliable.c
+> +++ b/src/openvpn/reliable.c
+> @@ -394,6 +394,7 @@ reliable_send_purge(struct reliable *rel, const struct reliable_ack *ack)
+>      }
+>  }
+>  
+> +#ifdef ENABLE_DEBUG
+>  /* print the current sequence of active packet IDs */
+>  static const char *
+>  reliable_print_ids(const struct reliable *rel, struct gc_arena *gc)
+> @@ -412,6 +413,7 @@ reliable_print_ids(const struct reliable *rel, struct gc_arena *gc)
+>      }
+>      return BSTR(&out);
+>  }
+> +#endif /* ENABLE_DEBUG */
+>  
+>  /* true if at least one free buffer available */
+>  bool
+> -- 
+> 2.34.1
+> 
+> 
+> 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--
+Frank Lichtenheld
 
