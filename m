@@ -1,14 +1,9 @@
-Message-ID: <e889a2e1-ad2c-530c-5a92-e90957408715@...1227...>
-Date: Mon, 20 Jun 2022 11:01:26 +0200
+From: Paolo Cerrito <wardragon78@...277...>
+Date: Mon, 20 Jun 2022 12:25:56 +0200
+Message-Id: <20220620102556.2606520-1-wardragon78@...277...>
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <20220607093619.23066-1-gert@...1296...>
- <80cdf6b1-f3c7-4a02-b7d5-05989749145e@...1227...>
- <Yq9W+juHzDvkjzcx@...1296...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <Yq9W+juHzDvkjzcx@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix error message about extended errors
- for IPv4-only sockets.
+Subject: [Openvpn-devel] [PATCH] Insert client connection data into PAM
+ environment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,47 +12,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: paolo <paolo.cerrito@...2517...>
 
-Am 19.06.22 um 19:03 schrieb Gert Doering:
-> Hi,
-> 
-> On Sun, Jun 19, 2022 at 11:38:17AM +0200, Arne Schwabe wrote:
->>>    #if EXTENDED_SOCKET_ERROR_CAPABILITY
->>>        /* if the OS supports it, enable extended error passing on the socket */
->>> -    set_sock_extended_error_passing(sock->sd);
->>> +    set_sock_extended_error_passing(sock->sd, sock->info.af);
->>>    #endif
->>>    }
->>>    
->>
->> I have to NACK this patch. sock->info.af is not the actual address
->> familiy but the family we want to use and it might be 0 if there is no
->> udp4/udp6 in the config file.
->>
->> For a client you can look at sock->info.lsa->actual.dest if that is
->> defined. For a server we seem to actually override/set that info.af
->> value according to my debugger but with a client I get 0 in that value.
->> It looks that set_mtu_discover_type in the same function has the same
->> problem, so it is easy to this mistake.
-> 
-> So how do we know if this is a v4 or v6 socket, in a client?
-> 
-> Phrased differently - I could do a v2 which will just ignore this
-> particular errno value.  Maybe not "as clean" as not calling the
-> "wrong" setsockopt() in the first place, but will keep the log free
-> of non-useful error messages just fine...
+From: paolo <paolo.cerrito@...2517...>
 
-Two ways. Either fix that info.af is 0 for client sockets. You already 
-fixed that for MTU discovery and server sockets %) (commit ed5d0fe5097).
-For client socket, we should probably set the info.af in the 
-openvpn_connect/socket_connect path.
+---
+ src/plugins/auth-pam/auth-pam.c | 21 +++++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
 
-The other more hacky is to check info.af first and then check 
-lsa->actual.dest and see if one of them is non-zero.
+diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
+index 70339445..f91a2f02 100644
+--- a/src/plugins/auth-pam/auth-pam.c
++++ b/src/plugins/auth-pam/auth-pam.c
+@@ -49,7 +49,7 @@
+ #include <syslog.h>
+ #include <limits.h>
+ #include "utils.h"
+-
++#include <arpa/inet.h>
+ #include <openvpn-plugin.h>
+ 
+ #define DEBUG(verb) ((verb) >= 4)
+@@ -121,6 +121,7 @@ struct user_pass {
+     char password[128];
+     char common_name[128];
+     char response[128];
++    char remote[INET6_ADDRSTRLEN];
+ 
+     const struct name_value_list *name_value_list;
+ };
+@@ -529,6 +530,11 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
+         const char *username = get_env("username", envp);
+         const char *password = get_env("password", envp);
+         const char *common_name = get_env("common_name", envp) ? get_env("common_name", envp) : "";
++        const char *remote = get_env("untrusted_ip6", envp);
++
++        if (remote == NULL){
++                remote = get_env("untrusted_ip", envp); //if Null, try to take ipv4 if not set ipv6
++        }
+ 
+         /* should we do deferred auth?
+          *  yes, if there is "auth_control_file" and "deferred_auth_pam" env
+@@ -555,6 +561,7 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
+                 || send_string(context->foreground_fd, password) == -1
+                 || send_string(context->foreground_fd, common_name) == -1
+                 || send_string(context->foreground_fd, auth_control_file) == -1)
++                || send_string(context->foreground_fd, remote) == -1)
+             {
+                 plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "Error sending auth info to background process");
+             }
+@@ -789,8 +796,16 @@ pam_auth(const char *service, const struct user_pass *up)
+     status = pam_start(service, name_value_list_provided ? NULL : up->username, &conv, &pamh);
+     if (status == PAM_SUCCESS)
+     {
++        /* Set PAM_RHOST environment variable */
++        if (*(up->remote))
++        {
++            status = pam_set_item(pamh, PAM_RHOST, up->remote);
++        }
+         /* Call PAM to verify username/password */
+-        status = pam_authenticate(pamh, 0);
++        if (status == PAM_SUCCESS)
++        {
++            status = pam_authenticate(pamh, 0);
++        }
+         if (status == PAM_SUCCESS)
+         {
+             status = pam_acct_mgmt(pamh, 0);
+@@ -957,6 +972,7 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+                     || recv_string(fd, up.password, sizeof(up.password)) == -1
+                     || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1
+                     || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1)
++                    || recv_string(fd, up.remote, sizeof(up.remote)) == -1)
+                 {
+                     plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: read error on command channel: code=%d, exiting",
+                                command);
+@@ -970,6 +986,7 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+                                up.username, up.password);
+ #else
+                     plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: USER: %s", up.username);
++                    plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: REMOTE: %s", up.remote);
+ #endif
+                 }
+ 
+-- 
+2.36.1
 
-Arne
 
