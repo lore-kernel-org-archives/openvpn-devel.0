@@ -1,9 +1,9 @@
 From: Paolo Cerrito <wardragon78@...277...>
-Date: Mon, 20 Jun 2022 12:25:56 +0200
-Message-Id: <20220620102556.2606520-1-wardragon78@...277...>
+Date: Mon, 20 Jun 2022 14:21:27 +0200
+Message-Id: <20220620122126.2676755-1-wardragon78@...277...>
 MIME-Version: 1.0
 Subject: [Openvpn-devel] [PATCH] Insert client connection data into PAM
- environment
+ environment, upgraded
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,11 +20,11 @@ Cc: paolo <paolo.cerrito@...2517...>
 From: paolo <paolo.cerrito@...2517...>
 
 ---
- src/plugins/auth-pam/auth-pam.c | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+ src/plugins/auth-pam/auth-pam.c | 25 +++++++++++++++++++++----
+ 1 file changed, 21 insertions(+), 4 deletions(-)
 
 diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-index 70339445..f91a2f02 100644
+index 70339445..c2e66e5c 100644
 --- a/src/plugins/auth-pam/auth-pam.c
 +++ b/src/plugins/auth-pam/auth-pam.c
 @@ -49,7 +49,7 @@
@@ -56,10 +56,12 @@ index 70339445..f91a2f02 100644
  
          /* should we do deferred auth?
           *  yes, if there is "auth_control_file" and "deferred_auth_pam" env
-@@ -555,6 +561,7 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
+@@ -554,7 +560,8 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
+                 || send_string(context->foreground_fd, username) == -1
                  || send_string(context->foreground_fd, password) == -1
                  || send_string(context->foreground_fd, common_name) == -1
-                 || send_string(context->foreground_fd, auth_control_file) == -1)
+-                || send_string(context->foreground_fd, auth_control_file) == -1)
++                || send_string(context->foreground_fd, auth_control_file) == -1
 +                || send_string(context->foreground_fd, remote) == -1)
              {
                  plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "Error sending auth info to background process");
@@ -82,10 +84,12 @@ index 70339445..f91a2f02 100644
          if (status == PAM_SUCCESS)
          {
              status = pam_acct_mgmt(pamh, 0);
-@@ -957,6 +972,7 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+@@ -956,7 +971,8 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+                 if (recv_string(fd, up.username, sizeof(up.username)) == -1
                      || recv_string(fd, up.password, sizeof(up.password)) == -1
                      || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1
-                     || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1)
+-                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1)
++                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1
 +                    || recv_string(fd, up.remote, sizeof(up.remote)) == -1)
                  {
                      plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: read error on command channel: code=%d, exiting",
