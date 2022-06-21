@@ -1,10 +1,10 @@
-Date: Tue, 21 Jun 2022 14:17:15 +0200 (CEST)
-Message-Id: <202206211217.25LCHFrj076622@...2054...>
+Date: Tue, 21 Jun 2022 14:52:59 +0200 (CEST)
+Message-Id: <202206211252.25LCqxhL077279@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220617041326.2744668-1-i.ponetaev@...2676...>
-References: <20220617041326.2744668-1-i.ponetaev@...2676...>
-Subject: [Openvpn-devel] [PATCH applied] Re: fix compilation issues with
- small and w/o debug
+In-Reply-To: <SVrvuTydxR6Qs_mvwvG7mqT8iLV0inlcCMXoenZTMI8M0LkosV4pZsH9m_XCTwcRWAPN5H8Zdro0ubhJrnSp6v5KC2ZNAL9So0Y2SKiSe7g=@protonmail.com>
+References: <SVrvuTydxR6Qs_mvwvG7mqT8iLV0inlcCMXoenZTMI8M0LkosV4pZsH9m_XCTwcRWAPN5H8Zdro0ubhJrnSp6v5KC2ZNAL9So0Y2SKiSe7g=@protonmail.com>
+Subject: [Openvpn-devel] [PATCH applied] Re: Update the replay-window
+ backtrack log message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Ilya Ponetayev <i.ponetaev@...2676...>
+To: Martin Jan? <martin.janu@...2282...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I discussed the use of "%zu" and Windows/MinGW builds with Selva, who
-said this will work (it will create warnings, thus no -Werror builds,
-but since release builds are MSVC, this should be acceptable).
+Your patch has been applied to the master and release/2.5 branch (same
+mismatch between doc + code).
 
-Uncrustify said I have to add a newline before one of the #endif lines,
-so I did.
+commit 98cbd2914cb728bfaa6ce36a968e944555c57d53 (master)
+commit 70897fd139e84a64d6344bf6af28fe0b0b8087d3 (release/2.5)
+Author: Martin Jan?
+Date:   Fri Jun 10 12:04:05 2022 +0000
 
-Generally speaking: we're adding #ifdef again - maybe we should see how
-much of a difference this creates if we *remove* "--disable-debug" and
-all the ENABLE_DEBUG conditionals.  Resulting binary size, and runtime.
+     Update the replay-window backtrack log message
 
-Your patch has been applied to the master branch.
-
-commit 8c815699ba616151e6bc5074cd150f3ebf053d4a
-Author: Ilya Ponetayev
-Date:   Fri Jun 17 07:13:26 2022 +0300
-
-     fix compilation issues with small and w/o debug
-
+     Signed-off-by: Martin Jan? <martin.janu@...2282...>
      Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20220617041326.2744668-1-i.ponetaev@...2676...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24476.html
+     Message-Id: <SVrvuTydxR6Qs_mvwvG7mqT8iLV0inlcCMXoenZTMI8M0LkosV4pZsH9m_XCTwcRWAPN5H8Zdro0ubhJrnSp6v5KC2ZNAL9So0Y2SKiSe7g=@protonmail.com>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24472.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
