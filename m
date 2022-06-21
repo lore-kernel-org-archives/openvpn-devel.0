@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 21 Jun 2022 18:16:46 +0200
-Message-Id: <20220621161649.2872985-3-arne@...1227...>
+Date: Tue, 21 Jun 2022 18:16:48 +0200
+Message-Id: <20220621161649.2872985-5-arne@...1227...>
 In-Reply-To: <20220621161649.2872985-1-arne@...1227...>
 References: <20220621161649.2872985-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 3/6] Extract update_session_cipher into
- standalone function
+Subject: [Openvpn-devel] [PATCH 5/6] Change default MTU in server mode to
+ 1420 and push it to client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,86 +18,199 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This allow the code later to check if the cipher is okay to use and
-update it for the calculation for the max MTU size.
+This changes the default MTU of the tun-mtu to 1420 to avoid MTU related
+issues that are even more prominent when DCO server or clients are involved.
+
+To maximise compatibility to lie our MTU in the default OCC message and also
+push the real MTU to clients that support pushing the MTU.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/ssl.c     | 11 +----------
- src/openvpn/ssl_ncp.c | 22 ++++++++++++++++++++++
- src/openvpn/ssl_ncp.h |  8 ++++++++
- 3 files changed, 31 insertions(+), 10 deletions(-)
+ Changes.rst                              |  5 ++++
+ doc/man-sections/vpn-network-options.rst | 36 ++++++++++++++++++++----
+ src/openvpn/options.c                    | 31 ++++++++++++++++++--
+ src/openvpn/options.h                    |  1 +
+ src/openvpn/push.c                       | 16 +++++++++++
+ 5 files changed, 81 insertions(+), 8 deletions(-)
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 61dea996d..ddd90080b 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1678,17 +1678,8 @@ tls_session_update_crypto_params(struct tls_session *session,
-                                  struct frame *frame_fragment,
-                                  struct link_socket_info *lsi)
- {
--
--    bool cipher_allowed_as_fallback = options->enable_ncp_fallback
--                                      && streq(options->ciphername, session->opt->config_ciphername);
--
--    if (!session->opt->server && !cipher_allowed_as_fallback
--        && !tls_item_in_cipher_list(options->ciphername, options->ncp_ciphers))
-+    if (!update_session_cipher(session, options))
-     {
--        msg(D_TLS_ERRORS, "Error: negotiated cipher not allowed - %s not in %s",
--            options->ciphername, options->ncp_ciphers);
--        /* undo cipher push, abort connection setup */
--        options->ciphername = session->opt->config_ciphername;
-         return false;
-     }
+diff --git a/Changes.rst b/Changes.rst
+index 67a23c792..79b79d608 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -141,6 +141,11 @@ User-visible Changes
+ - Option ``--nobind`` is default when ``--client`` or ``--pull`` is used in the configuration
+ - :code:`link_mtu` parameter is removed from environment or replaced with 0 when scripts are
+   called with parameters. This parameter is unreliable and no longer internally calculated.
++- the default of ``--tun-mtu`` has been changed to ``--tun 1420 1500`` when
++  running in server mode. This will create an mtu mismatch with older client
++  (newer client allow pushable mtu) but the most common server platforms
++  (Linux and FreeBSD) allow receiving 1500 byte packets even tun-mtu is set
++  to 1420, still allowing larger packets from client with 1500 byte mtu.
  
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 564942503..c800f718f 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -490,3 +490,25 @@ p2p_mode_ncp(struct tls_multi *multi, struct tls_session *session)
+ Overview of changes in 2.5
+ ==========================
+diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
+index 5b2f84707..2e4fff5df 100644
+--- a/doc/man-sections/vpn-network-options.rst
++++ b/doc/man-sections/vpn-network-options.rst
+@@ -500,21 +500,45 @@ routing.
+   arguments of ``--ifconfig`` to mean "address netmask", no longer "local
+   remote".
  
-     gc_free(&gc);
- }
+---tun-mtu n
+-  Take the TUN device MTU to be **n** and derive the link MTU from it
+-  (default :code:`1500`). In most cases, you will probably want to leave
+-  this parameter set to its default value.
++--tun-mtu args
 +
++  Valid syntaxes:
++  ::
 +
-+bool
-+update_session_cipher(struct tls_session *session, struct options *options)
-+{
-+    bool cipher_allowed_as_fallback = options->enable_ncp_fallback
-+                                      && streq(options->ciphername, session->opt->config_ciphername);
++      tun-mtu tun-mtu
++      tun-mtu tun-mtu occ-mtu
 +
-+    if (!session->opt->server && !cipher_allowed_as_fallback
-+        && !tls_item_in_cipher_list(options->ciphername, options->ncp_ciphers))
++  Take the TUN device MTU to be ``tun-mtu`` and derive the link MTU from it.
++  In most cases, you will probably want to leave this parameter set to
++  its default value.
++
++  Starting with OpenVPN 2.6 in when running server mode (``--mode server``,
++  ``--server`` or ``-server-ipv6`` options present in the configuration),
++  the default will be 1420 for the tun mtu size and 1500 for the ``occ-mtu``.
++
++  The OCC MTU can be used to avoid warnings about mismatched MTU from
++  clients. If :code:`occ-mtu` is not specified, it will to default to the
++  tun-mtu
+ 
+   The MTU (Maximum Transmission Units) is the maximum datagram size in
+   bytes that can be sent unfragmented over a particular network path.
+   OpenVPN requires that packets on the control and data channels be sent
+   unfragmented.
+ 
++  It is generally advisable to set the tun MTU low enough that with the
++  encapsulation overhead is lower than the MTU of the network that is used
++  to transport the VPN packets.
++
+   MTU problems often manifest themselves as connections which hang during
+   periods of active usage.
+ 
+-  It's best to use the ``--fragment`` and/or ``--mssfix`` options to deal
+-  with MTU sizing issues.
++  If lowering the tun MTU to avoid MTU related problems (e.g. when tap is used
++  and an MTU of 1500 is rdquired), the ``--fragment`` and/or ``--mssfix``
++  options can be also used to deal with MTU sizing issues.
++
++  Note: Depending on the platform, the operating system allows to receive
++  packets larger than ``tun-mtu`` (e.g. Linux and FreeBSD) but other platforms
++  (like macOS) limit received packets to the same size as the MTU.
+ 
+ --tun-mtu-extra n
+   Assume that the TUN/TAP device might return as many as ``n`` bytes more
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 9a0634a5e..69c839fb6 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -814,6 +814,7 @@ init_options(struct options *o, const bool init_gc)
+     o->status_file_version = 1;
+     o->ce.bind_local = true;
+     o->ce.tun_mtu = TUN_MTU_DEFAULT;
++    o->ce.occ_mtu = 0;
+     o->ce.link_mtu = LINK_MTU_DEFAULT;
+     o->ce.mtu_discover_type = -1;
+     o->ce.mssfix = 0;
+@@ -3031,6 +3032,16 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
+         if (!ce->tun_mtu_defined && !ce->link_mtu_defined)
+         {
+             ce->tun_mtu_defined = true;
++            if (o->mode == MODE_SERVER)
++            {
++                /* If we are running in P2MP mode we default to a MTU
++                 * that is low enough by default to fit into a 1492
++                 * MTU UDP IPv6 packet:
++                 *
++                 */
++                ce->tun_mtu = frame_calculate_default_mtu(o);
++                ce->occ_mtu = TUN_MTU_DEFAULT;
++            }
+         }
+         if ((dev == DEV_TYPE_TAP) && !ce->tun_mtu_extra_defined)
+         {
+@@ -4018,7 +4029,15 @@ options_string(const struct options *o,
+     buf_printf(&out, ",link-mtu %u",
+                (unsigned int) calc_options_string_link_mtu(o, frame));
+ 
+-    buf_printf(&out, ",tun-mtu %d", frame->tun_mtu);
++    if (o->ce.occ_mtu != 0)
 +    {
-+        msg(D_TLS_ERRORS, "Error: negotiated cipher not allowed - %s not in %s",
-+            options->ciphername, options->ncp_ciphers);
-+        /* undo cipher push, abort connection setup */
-+        options->ciphername = session->opt->config_ciphername;
-+        return false;
++        buf_printf(&out, ",tun-mtu %d", o->ce.occ_mtu);
 +    }
 +    else
 +    {
-+        return true;
++        buf_printf(&out, ",tun-mtu %d", frame->tun_mtu);
 +    }
-+}
-diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h
-index 853017f5f..5ba2f7ae7 100644
---- a/src/openvpn/ssl_ncp.h
-+++ b/src/openvpn/ssl_ncp.h
-@@ -148,4 +148,12 @@ const char *
- get_p2p_ncp_cipher(struct tls_session *session, const char *peer_info,
-                    struct gc_arena *gc);
++
+     buf_printf(&out, ",proto %s",  proto_remote(o->ce.proto, remote));
  
+     bool p2p_nopull = o->mode == MODE_POINT_TO_POINT && !PULL_DEFINED(o);
+@@ -6262,11 +6281,19 @@ add_option(struct options *options,
+         options->ce.link_mtu = positive_atoi(p[1]);
+         options->ce.link_mtu_defined = true;
+     }
+-    else if (streq(p[0], "tun-mtu") && p[1] && !p[2])
++    else if (streq(p[0], "tun-mtu") && p[1] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);
+         options->ce.tun_mtu = positive_atoi(p[1]);
+         options->ce.tun_mtu_defined = true;
++        if (p[2])
++        {
++            options->ce.occ_mtu = positive_atoi(p[2]);
++        }
++        else
++        {
++            options->ce.occ_mtu = 0;
++        }
+     }
+     else if (streq(p[0], "tun-mtu-extra") && p[1] && !p[2])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index c2937dc37..1085a462a 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -118,6 +118,7 @@ struct connection_entry
+     const char *socks_proxy_authfile;
+ 
+     int tun_mtu;         /* MTU of tun device */
++    int occ_mtu;         /* if non-null, this is the MTU we announce to peers in OCC */
+     bool tun_mtu_defined; /* true if user overriding parm with command line option */
+     int tun_mtu_extra;
+     bool tun_mtu_extra_defined;
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 63257348a..463957a82 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -603,6 +603,22 @@ prepare_push_reply(struct context *c, struct gc_arena *gc,
+     {
+         push_option_fmt(gc, push_list, M_USAGE, "key-derivation tls-ekm");
+     }
 +
-+/**
-+ * Checks if the cipher is allowed and updates the TLS session cipher with it,
-+ * otherwise returns false
-+ */
-+bool
-+update_session_cipher(struct tls_session *session, struct options *options);
++    /* Push our mtu to the peer if it supports pushable MTUs */
++    int client_max_mtu = 0;
++    const char *iv_mtu = extract_var_peer_info(tls_multi->peer_info, "IV_MTU=", gc);
 +
- #endif /* ifndef OPENVPN_SSL_NCP_H */
++    if (iv_mtu &&  sscanf(iv_mtu, "%d", &client_max_mtu) == 1)
++    {
++        push_option_fmt(gc, push_list, M_USAGE, "tun-mtu %d", o->ce.tun_mtu);
++        if (client_max_mtu < o->ce.tun_mtu)
++        {
++            msg(M_WARN, "Warning reported maximum MTU from client (%d) is lower "
++                "than MTU used on the server (%d). Add tun-max-mtu %d "
++                "to client configuration.", client_max_mtu,
++                o->ce.tun_mtu, o->ce.tun_mtu);
++        }
++    }
+     return true;
+ }
+ 
 -- 
 2.32.1 (Apple Git-133)
 
