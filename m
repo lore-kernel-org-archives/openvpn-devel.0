@@ -1,10 +1,11 @@
-Date: Tue, 21 Jun 2022 22:55:58 +0200 (CEST)
-Message-Id: <202206212055.25LKtw4x084517@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220621161649.2872985-2-arne@...1227...>
-References: <20220621161649.2872985-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Inline frame_add_to_extra_tun
- function and remove frame_defined
+Message-ID: <47f1e614-6d45-0f58-6398-027a7c7d833b@...2181...>
+Date: Wed, 22 Jun 2022 11:16:45 +0200
+MIME-Version: 1.0
+Content-Language: en-US
+References: <20220524091916.145-1-lstipakov@...277...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20220524091916.145-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Set o->use_peer_id flag for p2p mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +14,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-Trivial enough.  Only compile tested (+stare at code).
+On 24/05/2022 11:19, Lev Stipakov wrote:
+> From: Lev Stipakov <lev@...515...>
+> 
+> There are two flags to indicate peer-id usage, one is
+> in tls_multi struct and another one is in options.
+> 
+> For P2P mode we don't set this flag in options,
+> which is used in MTU calculation. As a result,
+> automatically calculated MSS value in P2P mode is wrong,
+> 
+> Fix by bring use_peer_id flag in options and tls_multi
+> into sync for P2P.
+> 
+> Signed-off-by: Lev Stipakov <lev@...515...>
 
-Your patch has been applied to the master branch.
+Does what it says and creates no side effect.
+(It's easy to check where o->use_peer_id is used)
 
-commit 65c6308608e5a637564db0cf241a16501190342a
-Author: Arne Schwabe
-Date:   Tue Jun 21 18:16:45 2022 +0200
+Moreover, this patch is needed to ensure the p2p case in dco works as 
+expected.
 
-     Inline frame_add_to_extra_tun function and remove frame_defined
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220621161649.2872985-2-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24492.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Antonio Quartulli <a@...2181...>
 
 
---
-kind regards,
-
-Gert Doering
-
+-- 
+Antonio Quartulli
 
