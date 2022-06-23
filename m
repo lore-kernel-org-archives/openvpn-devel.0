@@ -1,10 +1,11 @@
-Date: Thu, 23 Jun 2022 18:17:30 +0200
-From: frank@...2641...
-Message-ID: <YrSSGjmdav75AiEN@...2678...>
-References: <20220512231901.1077306-1-heiko@...2662...>
+Message-ID: <e95c3934-9d05-7760-8cd5-bb42268a7ce8@...2080...>
+Date: Thu, 23 Jun 2022 20:39:47 +0200
 MIME-Version: 1.0
-In-Reply-To: <20220512231901.1077306-1-heiko@...2662...>
-Subject: Re: [Openvpn-devel] [PATCH] make %x destination unsigned
+Content-Language: en-US
+References: <20200106080426.40701-1-list@...1798...>
+From: David Sommerseth <openvpn@...2080...>
+In-Reply-To: <20200106080426.40701-1-list@...1798...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] configure.ac: replace set with env
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +14,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Christian Hesse <list@...1798...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-By: Frank Lichtenheld <frank@...2641...>
-
-Trivial and looks correct to me according to the
-man sscanf.
-
-On Fri, May 13, 2022 at 01:19:01AM +0200, Heiko Hund wrote:
-> The %x specifier requires for the argument to be an unsigned int.
+On 06/01/2020 09:04, Christian Hesse wrote:
+> From: Christian Hesse <mail@...1798...>
 > 
-> Signed-off-by: Heiko Hund <heiko@...2662...>
-> ---
->  src/openvpn/options.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> The shell builtin `set` produces different output for different shells:
 > 
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 9ff384d0..3dbd3fab 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -1104,7 +1104,7 @@ parse_hash_fingerprint(const char *str, int nbytes, int msglevel, struct gc_aren
->      ALLOC_OBJ_CLEAR_GC(ret, struct verify_hash_list, gc);
->  
->      char term = 0;
-> -    int byte;
-> +    unsigned int byte;
->  
->      while (*cp && i < nbytes)
->      {
-> -- 
-> 2.32.0
+> bash$ set | grep '^TERM='
+> TERM=xterm
+> dash$ set | grep '^TERM='
+> TERM='xterm'
+> 
+> This may break reproducible builds depending on what shell is used.
+> 
+> Let's replace `set` with `env`, which is a real command and always
+> produces identical output.
+
+Hi,
+
+Spotted this one now, lingering for way too long.  And it looked 
+trivial.  Except it doesn't give the expected outcome on my RHEL-8 
+machine.  The CONFIGURE_DEFINES macro in config.h ends up empty. 
+Reverting this patch alone, and it comes back again.
+
+So, I'm sorry, I can't ack this one.
+
+
+-- 
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
 
