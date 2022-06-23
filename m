@@ -1,13 +1,10 @@
-Message-ID: <9fc2869a-a42d-cbb2-9242-48d4972b02d3@...2080...>
-Date: Thu, 23 Jun 2022 14:43:14 +0200
-MIME-Version: 1.0
-Content-Language: en-US
-References: <20210930113308.815777-1-mkh199740@...450...>
- <CAKuzo_iWaTiKSeiTVrqkLfbPLp+ScvGm_m8stEUNOzunobXVUg@...278...>
-From: David Sommerseth <openvpn@...2080...>
-In-Reply-To: <CAKuzo_iWaTiKSeiTVrqkLfbPLp+ScvGm_m8stEUNOzunobXVUg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Add ability to specify initialize flags
- for pkcs11 provider
+Date: Thu, 23 Jun 2022 15:34:26 +0200 (CEST)
+Message-Id: <202206231334.25NDYQ30022342@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220524091916.145-1-lstipakov@...277...>
+References: <20220524091916.145-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Set o->use_peer_id flag for p2p
+ mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,61 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>, Petr Mikhalicin <mkh199740@...450...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 19/06/2022 19:28, Selva Nair wrote:
-> Hi,
-> 
-> On Thu, Sep 30, 2021 at 7:34 AM Petr Mikhalicin via Openvpn-devel 
-> <openvpn-devel@lists.sourceforge.net 
-> <mailto:openvpn-devel@lists.sourceforge.net>> wrote:
-> 
->     New pkcs11-helper interface allows to setup pkcs11 provider via
->     properties:
->     https://github.com/alonbl/pkcs11-helper/commit/b78d21c7e26041746aa4ae3d08b95469e1714a85
->     <https://github.com/alonbl/pkcs11-helper/commit/b78d21c7e26041746aa4ae3d08b95469e1714a85>
-> 
->     Also pkcs11-helper added ability to setup init args for pkcs11 provider:
->     https://github.com/alonbl/pkcs11-helper/commit/133f893e30856eba1de715ecd6fe176722eb3097
->     <https://github.com/alonbl/pkcs11-helper/commit/133f893e30856eba1de715ecd6fe176722eb3097>
-> 
->     Signed-off-by: Petr Mikhalicin <mkh199740@...450...
->     <mailto:mkh199740@...450...>>
-> 
-> 
-> Sorry for the long delay in getting back on this. I somehow also missed 
-> the related discussion on Trac 
-> (https://community.openvpn.net/openvpn/ticket/1453 
-> <https://community.openvpn.net/openvpn/ticket/1453>)
-> 
-> I don't quite understand the need for exposing "init-args" to the user. 
-> The only two supported flags in the cryptoki docs are related to the use 
-> of threads. But we are the application and we should know what flags to 
-> pass --- not the user --- isn't it? If CKF_OS_LOCKING_OK is required, 
-> can't we just set it unconditionally?
-> 
-> That said, OpenVPN2 is single threaded, so why is there a "bug in 
-> openvpn" related to the use of pkcs11 library from multiple threads 
-> referred to in the trac ticket?
+This is p2p NCP, which is all new in 2.6(-to-be) - and needed for DCO.
 
-I haven't dug too deep into the matter this time; and it depends also on 
-the OS you are on.  But there has been some issues with pkcs11-helper on 
-hosts with systemd, due to some intricacies with openvpn doing a fork to 
-kick off the password query mechanism with systemd colliding with some 
-pkcs11-helper implementation details.  For the systemd case, we added a 
-workaround which made most people happy.
+I have not tested this more than "it compiles", but Lev and Antonio have.
 
-For more details:
-<https://community.openvpn.net/openvpn/ticket/538>
+Your patch has been applied to the master branch.
+
+commit 0d46c4963ae47581eadd94dbd2190c66086b9ecb
+Author: Lev Stipakov
+Date:   Tue May 24 12:19:16 2022 +0300
+
+     Set o->use_peer_id flag for p2p mode
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <20220524091916.145-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24430.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
--- 
+--
 kind regards,
 
-David Sommerseth
-OpenVPN Inc
+Gert Doering
 
 
