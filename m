@@ -1,12 +1,11 @@
-Message-ID: <ba4093a6-f722-667f-68e5-5e0739dfba58@...2181...>
-Date: Fri, 24 Jun 2022 10:59:59 +0200
-MIME-Version: 1.0
-Content-Language: en-US
-References: <20220620122126.2676755-1-wardragon78@...277...>
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20220620122126.2676755-1-wardragon78@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Insert client connection data into PAM
- environment, upgraded
+Date: Fri, 24 Jun 2022 10:38:08 +0200
+Message-Id: <20220624083809.23487-25-a@...2181...>
+In-Reply-To: <20220624083809.23487-1-a@...2181...>
+References: <20220624083809.23487-1-a@...2181...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 24/25] dco-win: add documentation to
+ README.dco.md
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,127 +14,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Paolo Cerrito <wardragon78@...277...>, openvpn-devel@lists.sourceforge.net
-Cc: paolo <paolo.cerrito@...2517...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>, Arne Schwabe <arne@...1227...>, Lev Stipakov <lev@...515...>
 
-Hi Paolo,
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Signed-off-by: Lev Stipakov <lev@...515...>
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ README.dco.md | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-On 20/06/2022 14:21, Paolo Cerrito wrote:
-> From: paolo <paolo.cerrito@...2517...>
-
-Is this a new version of your previous patch having subject "Insert 
-client connection data into PAM environment"?
-
-If yes, you should send it as a v2 (i.e. with subject starting with 
-"[PATCH v2]") instead of appending ", upgraded".
-
-You can easily create a v2 patch by adding the argument "-v2" when 
-running "git format-patch".
-
-On top of that, when sending a v2 it'd be nice if you could specify what 
-has changed compared to the original version. Something like:
-
-"Changes from v1:
-* this and that
-* here and there"
-
-Also, when signing a patch you should put your name and surname, as if 
-you are signing a public document.
-
-Last, but not least, please add some text to your commit message, 
-explaining why you need to implement this change, what it does (high 
-level) and how you are going to do it.
-
-
-Best Regards,
-
-> 
-> ---
->   src/plugins/auth-pam/auth-pam.c | 25 +++++++++++++++++++++----
->   1 file changed, 21 insertions(+), 4 deletions(-)
-> 
-> diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-> index 70339445..c2e66e5c 100644
-> --- a/src/plugins/auth-pam/auth-pam.c
-> +++ b/src/plugins/auth-pam/auth-pam.c
-> @@ -49,7 +49,7 @@
->   #include <syslog.h>
->   #include <limits.h>
->   #include "utils.h"
-> -
-> +#include <arpa/inet.h>
->   #include <openvpn-plugin.h>
->   
->   #define DEBUG(verb) ((verb) >= 4)
-> @@ -121,6 +121,7 @@ struct user_pass {
->       char password[128];
->       char common_name[128];
->       char response[128];
-> +    char remote[INET6_ADDRSTRLEN];
->   
->       const struct name_value_list *name_value_list;
->   };
-> @@ -529,6 +530,11 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
->           const char *username = get_env("username", envp);
->           const char *password = get_env("password", envp);
->           const char *common_name = get_env("common_name", envp) ? get_env("common_name", envp) : "";
-> +        const char *remote = get_env("untrusted_ip6", envp);
-> +
-> +        if (remote == NULL){
-> +                remote = get_env("untrusted_ip", envp); //if Null, try to take ipv4 if not set ipv6
-> +        }
->   
->           /* should we do deferred auth?
->            *  yes, if there is "auth_control_file" and "deferred_auth_pam" env
-> @@ -554,7 +560,8 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
->                   || send_string(context->foreground_fd, username) == -1
->                   || send_string(context->foreground_fd, password) == -1
->                   || send_string(context->foreground_fd, common_name) == -1
-> -                || send_string(context->foreground_fd, auth_control_file) == -1)
-> +                || send_string(context->foreground_fd, auth_control_file) == -1
-> +                || send_string(context->foreground_fd, remote) == -1)
->               {
->                   plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "Error sending auth info to background process");
->               }
-> @@ -789,8 +796,16 @@ pam_auth(const char *service, const struct user_pass *up)
->       status = pam_start(service, name_value_list_provided ? NULL : up->username, &conv, &pamh);
->       if (status == PAM_SUCCESS)
->       {
-> +        /* Set PAM_RHOST environment variable */
-> +        if (*(up->remote))
-> +        {
-> +            status = pam_set_item(pamh, PAM_RHOST, up->remote);
-> +        }
->           /* Call PAM to verify username/password */
-> -        status = pam_authenticate(pamh, 0);
-> +        if (status == PAM_SUCCESS)
-> +        {
-> +            status = pam_authenticate(pamh, 0);
-> +        }
->           if (status == PAM_SUCCESS)
->           {
->               status = pam_acct_mgmt(pamh, 0);
-> @@ -956,7 +971,8 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
->                   if (recv_string(fd, up.username, sizeof(up.username)) == -1
->                       || recv_string(fd, up.password, sizeof(up.password)) == -1
->                       || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1
-> -                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1)
-> +                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1
-> +                    || recv_string(fd, up.remote, sizeof(up.remote)) == -1)
->                   {
->                       plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: read error on command channel: code=%d, exiting",
->                                  command);
-> @@ -970,6 +986,7 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
->                                  up.username, up.password);
->   #else
->                       plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: USER: %s", up.username);
-> +                    plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: REMOTE: %s", up.remote);
->   #endif
->                   }
->   
-
+diff --git a/README.dco.md b/README.dco.md
+index e73e0fc2..ef56f0fe 100644
+--- a/README.dco.md
++++ b/README.dco.md
+@@ -58,6 +58,13 @@ see a message like
+ in your log.
+ 
+ 
++Getting started (Windows)
++-------------------------
++Getting started under windows is currently for brave people having experience
++with windows development. You need to compile openvpn yourself and also need
++to get the test driver installed on your system.
++
++
+ DCO and P2P mode
+ ----------------
+ DCO is also available when running OpenVPN in P2P mode without --pull/--client option.
+@@ -109,6 +116,8 @@ Limitations by design
+ - topology subnet is the only supported `--topology` for servers
+ - iroute directives install routes on the host operating system, see also
+   Routing with ovpn-dco
++- (ovpn-dco-win) client and p2p mode only
++- (ovpn-dco-win) Chacha20-Poly1305 support available starting with Windows 11
+ 
+ 
+ Current implementation limitations
 -- 
-Antonio Quartulli
+2.35.1
+
 
