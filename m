@@ -1,11 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri, 24 Jun 2022 10:38:01 +0200
-Message-Id: <20220624083809.23487-18-a@...2181...>
+Date: Fri, 24 Jun 2022 10:38:02 +0200
+Message-Id: <20220624083809.23487-19-a@...2181...>
 In-Reply-To: <20220624083809.23487-1-a@...2181...>
 References: <20220624083809.23487-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 17/25] tun: extract close_tun_handle into
- its own fucntion and print correct type
+Subject: [Openvpn-devel] [PATCH 18/25] dco: turn supported ciphers list into
+ a function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,120 +17,100 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne@...1227...>, Antonio Quartulli <a@...2181...>
+Cc: Antonio Quartulli <a@...2181...>, Lev Stipakov <lev@...515...>
 
-From: Arne Schwabe <arne@...1227...>
+Other platforms may need more complex logic to decide whether a cipher
+is supported or not, therefore turn hardcoded list into a function that
+can be implemented by each platform independently.
 
-This moves closing the tun handle into its own function and also prints
-the adapter type we are operating on, instead hardcoding it to
-tap-windows.
-
-While at it, set the handle to NULL after closing, to prevent a double
-close due to multiple invocations of this helper.
-
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Signed-off-by: Lev Stipakov <lev@...515...>
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/tun.c | 76 ++++++++++++++++++++++++++---------------------
- 1 file changed, 42 insertions(+), 34 deletions(-)
+ src/openvpn/dco.c       |  4 ++--
+ src/openvpn/dco.h       | 13 +++++++++++++
+ src/openvpn/dco_linux.c |  6 ++++++
+ src/openvpn/dco_linux.h |  1 -
+ 4 files changed, 21 insertions(+), 3 deletions(-)
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 5eefb0c6..f324ac91 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -6767,6 +6767,47 @@ netsh_delete_address_dns(const struct tuntap *tt, bool ipv6, struct gc_arena *gc
-     argv_free(&argv);
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index 48e007ea..1612a64e 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -236,7 +236,7 @@ dco_check_option_conflict(int msglevel, const struct options *o)
+ 
+     /* At this point the ciphers have already been normalised */
+     if (o->enable_ncp_fallback
+-        && !tls_item_in_cipher_list(o->ciphername, DCO_SUPPORTED_CIPHERS))
++        && !tls_item_in_cipher_list(o->ciphername, dco_get_supported_ciphers()))
+     {
+         msg(msglevel, "Note: --data-cipher-fallback with cipher '%s' "
+             "disables data channel offload.", o->ciphername);
+@@ -288,7 +288,7 @@ dco_check_option_conflict(int msglevel, const struct options *o)
+     const char *token;
+     while ((token = strsep(&tmp_ciphers, ":")))
+     {
+-        if (!tls_item_in_cipher_list(token, DCO_SUPPORTED_CIPHERS))
++        if (!tls_item_in_cipher_list(token, dco_get_supported_ciphers()))
+         {
+             msg(msglevel, "Note: cipher '%s' in --data-ciphers is not supported "
+                 "by ovpn-dco, disabling data channel offload.", token);
+diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
+index 4b945b50..66ae444f 100644
+--- a/src/openvpn/dco.h
++++ b/src/openvpn/dco.h
+@@ -200,6 +200,13 @@ void dco_install_iroute(struct multi_context *m, struct multi_instance *mi,
+  */
+ void dco_delete_iroutes(struct multi_context *m, struct multi_instance *mi);
+ 
++/**
++ * Retrieve the list of ciphers supported by the current platform
++ *
++ * @return                   list of colon-separated ciphers
++ */
++const char *dco_get_supported_ciphers();
++
+ #else /* if defined(ENABLE_DCO) */
+ 
+ typedef void *dco_context_t;
+@@ -301,5 +308,11 @@ dco_delete_iroutes(struct multi_context *m, struct multi_instance *mi)
+ {
  }
  
-+static void
-+close_tun_handle(struct tuntap *tt)
++static inline const char *
++dco_get_supported_ciphers()
 +{
-+    const char *adaptertype = print_windows_driver(tt->windows_driver);
-+
-+    if (tt->hand)
-+    {
-+        dmsg(D_WIN32_IO_LOW, "Attempting CancelIO on %s adapter", adaptertype);
-+        if (!CancelIo(tt->hand))
-+        {
-+            msg(M_WARN | M_ERRNO, "Warning: CancelIO failed on %s adapter", adaptertype);
-+        }
-+    }
-+
-+    dmsg(D_WIN32_IO_LOW, "Attempting close of overlapped read event on %s adapter", adaptertype);
-+    overlapped_io_close(&tt->reads);
-+
-+    dmsg(D_WIN32_IO_LOW, "Attempting close of overlapped write event on %s adapter", adaptertype);
-+    overlapped_io_close(&tt->writes);
-+
-+    if (tt->hand)
-+    {
-+        dmsg(D_WIN32_IO_LOW, "Attempting CloseHandle on %s adapter", adaptertype);
-+        if (!CloseHandle(tt->hand))
-+        {
-+            msg(M_WARN | M_ERRNO, "Warning: CloseHandle failed on %s adapter", adaptertype);
-+        }
-+        tt->hand = NULL;
-+    }
-+
-+    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
-+    {
-+        CloseHandle(tt->rw_handle.read);
-+        CloseHandle(tt->rw_handle.write);
-+        UnmapViewOfFile(tt->wintun_send_ring);
-+        UnmapViewOfFile(tt->wintun_receive_ring);
-+        CloseHandle(tt->wintun_send_ring_handle);
-+        CloseHandle(tt->wintun_receive_ring_handle);
-+    }
++    return "";
 +}
 +
- void
- close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+ #endif /* defined(ENABLE_DCO) */
+ #endif /* ifndef DCO_H */
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index 5e77139a..f86ea819 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -931,4 +931,10 @@ dco_event_set(dco_context_t *dco, struct event_set *es, void *arg)
+     }
+ }
+ 
++const char *
++dco_get_supported_ciphers()
++{
++    return "AES-128-GCM:AES-256-GCM:AES-192-GCM:CHACHA20-POLY1305";
++}
++
+ #endif /* defined(ENABLE_DCO) && defined(TARGET_LINUX) */
+diff --git a/src/openvpn/dco_linux.h b/src/openvpn/dco_linux.h
+index e0e59fa6..416ea30a 100644
+--- a/src/openvpn/dco_linux.h
++++ b/src/openvpn/dco_linux.h
+@@ -34,7 +34,6 @@
+ typedef enum ovpn_key_slot dco_key_slot_t;
+ typedef enum ovpn_cipher_alg dco_cipher_t;
+ 
+-#define DCO_SUPPORTED_CIPHERS "AES-128-GCM:AES-256-GCM:AES-192-GCM:CHACHA20-POLY1305"
+ 
+ typedef struct
  {
-@@ -6836,43 +6877,10 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
- 
-     dhcp_release(tt);
- 
--    if (tt->hand != NULL)
--    {
--        dmsg(D_WIN32_IO_LOW, "Attempting CancelIO on TAP-Windows adapter");
--        if (!CancelIo(tt->hand))
--        {
--            msg(M_WARN | M_ERRNO, "Warning: CancelIO failed on TAP-Windows adapter");
--        }
--    }
--
--    dmsg(D_WIN32_IO_LOW, "Attempting close of overlapped read event on TAP-Windows adapter");
--    overlapped_io_close(&tt->reads);
--
--    dmsg(D_WIN32_IO_LOW, "Attempting close of overlapped write event on TAP-Windows adapter");
--    overlapped_io_close(&tt->writes);
--
--    if (tt->hand != NULL)
--    {
--        dmsg(D_WIN32_IO_LOW, "Attempting CloseHandle on TAP-Windows adapter");
--        if (!CloseHandle(tt->hand))
--        {
--            msg(M_WARN | M_ERRNO, "Warning: CloseHandle failed on TAP-Windows adapter");
--        }
--    }
-+    close_tun_handle(tt);
- 
-     free(tt->actual_name);
- 
--    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
--    {
--        CloseHandle(tt->rw_handle.read);
--        CloseHandle(tt->rw_handle.write);
--        UnmapViewOfFile(tt->wintun_send_ring);
--        UnmapViewOfFile(tt->wintun_receive_ring);
--        CloseHandle(tt->wintun_send_ring_handle);
--        CloseHandle(tt->wintun_receive_ring_handle);
--    }
--
--
-     clear_tuntap(tt);
-     free(tt);
-     gc_free(&gc);
 -- 
 2.35.1
 
