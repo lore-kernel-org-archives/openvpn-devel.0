@@ -1,11 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri, 24 Jun 2022 10:37:58 +0200
-Message-Id: <20220624083809.23487-15-a@...2181...>
+Date: Fri, 24 Jun 2022 10:37:57 +0200
+Message-Id: <20220624083809.23487-14-a@...2181...>
 In-Reply-To: <20220624083809.23487-1-a@...2181...>
 References: <20220624083809.23487-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 14/25] dco: implement dco support for
- p2mp/server code path
+Subject: [Openvpn-devel] [PATCH 13/25] dco: implement dco support for
+ p2p/client code path
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,815 +19,389 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>
 
-This change introduces ovpn-dco support along the p2mp/server code path.
-Some code seems to be duplicate of the p2p version, but details are
-different, so it couldn't be shared.
+With this change we introduce ovpn-dco support only along the p2p/client
+code path. Server codebase is still unchanged.
 
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/dco.c   | 203 ++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/dco.h   |  49 ++++++++++
- src/openvpn/mtcp.c  |  59 +++++++++---
- src/openvpn/mudp.c  |  13 +++
- src/openvpn/multi.c | 212 +++++++++++++++++++++++++++++++++++---------
- src/openvpn/multi.h |  14 ++-
- 6 files changed, 494 insertions(+), 56 deletions(-)
+ src/openvpn/dco.c     | 90 +++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/dco.h     | 48 +++++++++++++++++++++++
+ src/openvpn/event.h   |  3 ++
+ src/openvpn/forward.c | 63 ++++++++++++++++++++++++++++--
+ src/openvpn/init.c    | 34 +++++++++++++++-
+ src/openvpn/init.h    |  2 +-
+ src/openvpn/socket.h  |  1 +
+ 7 files changed, 236 insertions(+), 5 deletions(-)
 
 diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index 2919c46d..48e007ea 100644
+index 473eb564..2919c46d 100644
 --- a/src/openvpn/dco.c
 +++ b/src/openvpn/dco.c
-@@ -36,6 +36,7 @@
- #include "crypto.h"
- #include "dco.h"
- #include "errlevel.h"
-+#include "multi.h"
- #include "openvpn.h"
- #include "ssl_common.h"
- #include "ssl_ncp.h"
-@@ -390,4 +391,206 @@ dco_remove_peer(struct context *c)
-     }
+@@ -300,4 +300,94 @@ dco_check_option_conflict(int msglevel, const struct options *o)
+     return true;
  }
  
-+static bool
-+dco_multi_get_localaddr(struct multi_context *m, struct multi_instance *mi,
-+                        struct sockaddr_storage *local)
-+{
-+#if ENABLE_IP_PKTINFO
-+    struct context *c = &mi->context;
-+
-+    if (!(c->options.sockflags & SF_USE_IP_PKTINFO))
-+    {
-+        return false;
-+    }
-+
-+    struct link_socket_actual *actual = &c->c2.link_socket_info->lsa->actual;
-+
-+    switch (actual->dest.addr.sa.sa_family)
-+    {
-+        case AF_INET:
-+        {
-+            struct sockaddr_in *sock_in4 = (struct sockaddr_in *)local;
-+#if defined(HAVE_IN_PKTINFO) && defined(HAVE_IPI_SPEC_DST)
-+            sock_in4->sin_addr = actual->pi.in4.ipi_addr;
-+#elif defined(IP_RECVDSTADDR)
-+            sock_in4->sin_addr = actual->pi.in4;
-+#else
-+            /* source IP not available on this platform */
-+            return false;
-+#endif
-+            sock_in4->sin_family = AF_INET;
-+            break;
-+        }
-+
-+        case AF_INET6:
-+        {
-+            struct sockaddr_in6 *sock_in6 = (struct sockaddr_in6 *)local;
-+            sock_in6->sin6_addr = actual->pi.in6.ipi6_addr;
-+            sock_in6->sin6_family = AF_INET6;
-+            break;
-+        }
-+
-+        default:
-+            ASSERT(false);
-+    }
-+
-+    return true;
-+#else  /* if ENABLE_IP_PKTINFO */
-+    return false;
-+#endif /* if ENABLE_IP_PKTINFO */
-+}
-+
 +int
-+dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi)
++dco_p2p_add_new_peer(struct context *c)
 +{
-+    struct context *c = &mi->context;
-+
-+    int peer_id = mi->context.c2.tls_multi->peer_id;
-+    struct sockaddr *remoteaddr, *localaddr = NULL;
-+    struct sockaddr_storage local = { 0 };
-+    int sd = c->c2.link_socket->sd;
-+
-+    if (c->mode == CM_CHILD_TCP)
++    if (!dco_enabled(&c->options))
 +    {
-+        /* the remote address will be inferred from the TCP socket endpoint */
-+        remoteaddr = NULL;
-+    }
-+    else
-+    {
-+        ASSERT(c->c2.link_socket_info->connection_established);
-+        remoteaddr = &c->c2.link_socket_info->lsa->actual.dest.addr.sa;
++        return 0;
 +    }
 +
++
++    struct tls_multi *multi = c->c2.tls_multi;
++    struct link_socket *ls = c->c2.link_socket;
++
++    struct in6_addr remote_ip6 = { 0 };
 +    struct in_addr remote_ip4 = { 0 };
++
 +    struct in6_addr *remote_addr6 = NULL;
 +    struct in_addr *remote_addr4 = NULL;
 +
-+    /* In server mode we need to fetch the remote addresses from the push config */
-+    if (c->c2.push_ifconfig_defined)
++    const char *gw = NULL;
++
++    ASSERT(ls->info.connection_established);
++
++    /* In client mode if a P2P style topology is used we assume the
++     * remote-gateway is the IP of the peer */
++    if (c->options.topology == TOP_NET30 || c->options.topology == TOP_P2P)
 +    {
-+        remote_ip4.s_addr =  htonl(c->c2.push_ifconfig_local);
++        gw = c->options.ifconfig_remote_netmask;
++    }
++    if (c->options.route_default_gateway)
++    {
++        gw = c->options.route_default_gateway;
++    }
++
++    /* These inet_pton conversion are fatal since options.c already implements
++     * checks to have only valid addresses when setting the options */
++    if (c->options.ifconfig_ipv6_remote)
++    {
++        if (inet_pton(AF_INET6, c->options.ifconfig_ipv6_remote, &remote_ip6) != 1)
++        {
++            msg(M_FATAL,
++                "DCO peer init: problem converting IPv6 ifconfig remote address %s to binary",
++                c->options.ifconfig_ipv6_remote);
++        }
++        remote_addr6 = &remote_ip6;
++    }
++
++    if (gw)
++    {
++        if (inet_pton(AF_INET, gw, &remote_ip4) != 1)
++        {
++            msg(M_FATAL, "DCO peer init: problem converting IPv4 ifconfig gateway address %s to binary", gw);
++        }
 +        remote_addr4 = &remote_ip4;
 +    }
-+    if (c->c2.push_ifconfig_ipv6_defined)
++    else if (c->options.ifconfig_local)
 +    {
-+        remote_addr6 = &c->c2.push_ifconfig_ipv6_local;
++        msg(M_INFO, "DCO peer init: Need a peer VPN addresss to setup IPv4 (set --route-gateway)");
 +    }
 +
-+    if (dco_multi_get_localaddr(m, mi, &local))
-+    {
-+        localaddr = (struct sockaddr *)&local;
-+    }
++    struct sockaddr *remoteaddr = &ls->info.lsa->actual.dest.addr.sa;
 +
-+    int ret = dco_new_peer(&c->c1.tuntap->dco, peer_id, sd, localaddr,
-+                           remoteaddr, remote_addr4, remote_addr6);
++    int ret = dco_new_peer(&c->c1.tuntap->dco, multi->peer_id,
++                           c->c2.link_socket->sd, NULL, remoteaddr,
++                           remote_addr4, remote_addr6);
 +    if (ret < 0)
 +    {
 +        return ret;
 +    }
 +
 +    c->c2.tls_multi->dco_peer_added = true;
-+
-+    if (c->mode == CM_CHILD_TCP)
-+    {
-+        multi_tcp_dereference_instance(m->mtcp, mi);
-+        if (close(sd))
-+        {
-+            msg(D_DCO|M_ERRNO, "error closing TCP socket after DCO handover");
-+        }
-+        c->c2.link_socket->info.dco_installed = true;
-+        c->c2.link_socket->sd = SOCKET_UNDEFINED;
-+    }
++    c->c2.link_socket->info.dco_installed = true;
 +
 +    return 0;
 +}
 +
 +void
-+dco_install_iroute(struct multi_context *m, struct multi_instance *mi,
-+                   struct mroute_addr *addr)
++dco_remove_peer(struct context *c)
 +{
-+#if defined(TARGET_LINUX)
-+    if (!dco_enabled(&m->top.options))
++    if (!dco_enabled(&c->options))
 +    {
 +        return;
 +    }
 +
-+    int addrtype = (addr->type & MR_ADDR_MASK);
-+
-+    /* If we do not have local IP addr to install, skip the route */
-+    if ((addrtype == MR_ADDR_IPV6 && !mi->context.c2.push_ifconfig_ipv6_defined)
-+        || (addrtype == MR_ADDR_IPV4 && !mi->context.c2.push_ifconfig_defined))
++    if (c->c1.tuntap && c->c2.tls_multi && c->c2.tls_multi->dco_peer_added)
 +    {
-+        return;
++        dco_del_peer(&c->c1.tuntap->dco, c->c2.tls_multi->peer_id);
++        c->c2.tls_multi->dco_peer_added = false;
 +    }
-+
-+    struct context *c = &mi->context;
-+    const char *dev = c->c1.tuntap->actual_name;
-+
-+    if (addrtype == MR_ADDR_IPV6)
-+    {
-+        int netbits = 128;
-+        if (addr->type & MR_WITH_NETBITS)
-+        {
-+            netbits = addr->netbits;
-+        }
-+
-+        net_route_v6_add(&m->top.net_ctx, &addr->v6.addr, netbits,
-+                         &mi->context.c2.push_ifconfig_ipv6_local, dev, 0,
-+                         DCO_IROUTE_METRIC);
-+    }
-+    else if (addrtype == MR_ADDR_IPV4)
-+    {
-+        int netbits = 32;
-+        if (addr->type & MR_WITH_NETBITS)
-+        {
-+            netbits = addr->netbits;
-+        }
-+
-+        in_addr_t dest = htonl(addr->v4.addr);
-+        net_route_v4_add(&m->top.net_ctx, &dest, netbits,
-+                         &mi->context.c2.push_ifconfig_local, dev, 0,
-+                         DCO_IROUTE_METRIC);
-+    }
-+#endif /* if defined(TARGET_LINUX) */
-+}
-+
-+void
-+dco_delete_iroutes(struct multi_context *m, struct multi_instance *mi)
-+{
-+#if defined(TARGET_LINUX)
-+    if (!dco_enabled(&m->top.options))
-+    {
-+        return;
-+    }
-+    ASSERT(TUNNEL_TYPE(mi->context.c1.tuntap) == DEV_TYPE_TUN);
-+
-+    struct context *c = &mi->context;
-+    const char *dev = c->c1.tuntap->actual_name;
-+
-+    if (mi->context.c2.push_ifconfig_defined)
-+    {
-+        for (const struct iroute *ir = c->options.iroutes;
-+             ir;
-+             ir = ir->next)
-+        {
-+            net_route_v4_del(&m->top.net_ctx, &ir->network, ir->netbits,
-+                             &mi->context.c2.push_ifconfig_local, dev,
-+                             0, DCO_IROUTE_METRIC);
-+        }
-+    }
-+
-+    if (mi->context.c2.push_ifconfig_ipv6_defined)
-+    {
-+        for (const struct iroute_ipv6 *ir6 = c->options.iroutes_ipv6;
-+             ir6;
-+             ir6 = ir6->next)
-+        {
-+            net_route_v6_del(&m->top.net_ctx, &ir6->network, ir6->netbits,
-+                             &mi->context.c2.push_ifconfig_ipv6_local, dev,
-+                             0, DCO_IROUTE_METRIC);
-+        }
-+    }
-+#endif /* if defined(TARGET_LINUX) */
 +}
 +
  #endif /* defined(ENABLE_DCO) */
 diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
-index 33b91e29..4b945b50 100644
+index cb7f7e4f..33b91e29 100644
 --- a/src/openvpn/dco.h
 +++ b/src/openvpn/dco.h
-@@ -37,10 +37,14 @@
- struct event_set;
- struct key2;
- struct key_state;
-+struct multi_context;
-+struct multi_instance;
-+struct mroute_addr;
- struct options;
- struct tls_multi;
- struct tuntap;
- 
-+#define DCO_IROUTE_METRIC   100
- #define DCO_DEFAULT_METRIC  200
- 
- #if defined(ENABLE_DCO)
-@@ -168,6 +172,34 @@ int dco_set_peer(dco_context_t *dco, unsigned int peerid,
+@@ -138,6 +138,36 @@ int init_key_dco_bi(struct tls_multi *multi, struct key_state *ks,
   */
- void dco_remove_peer(struct context *c);
+ void dco_update_keys(dco_context_t *dco, struct tls_multi *multi);
  
 +/**
-+ * Install a new peer in DCO - to be called by a SERVER instance
++ * Install a new peer in DCO - to be called by a CLIENT (or P2P) instance
 + *
-+ * @param m         the server context
-+ * @param mi        the client instance
++ * @param c         the main instance context
 + * @return          0 on success or a negative error code otherwise
 + */
-+int dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi);
++int dco_p2p_add_new_peer(struct context *c);
 +
 +/**
-+ * Install an iroute in DCO, which means adding a route to the system routing
-+ * table. To be called by a SERVER instance only.
++ * Modify DCO peer options. Special values are 0 (disable)
++ * and -1 (do not touch).
 + *
-+ * @param m         the server context
-+ * @param mi        the client instance acting as nexthop for the route
-+ * @param addr      the route to add
++ * @param dco                DCO device context
++ * @param peer_id            the ID of the peer to be modified
++ * @param keepalive_interval keepalive interval in seconds
++ * @param keepalive_timeout  keepalive timeout in seconds
++ * @param mss                TCP MSS value
++ *
++ * @return                   0 on success or a negative error code otherwise
 + */
-+void dco_install_iroute(struct multi_context *m, struct multi_instance *mi,
-+                        struct mroute_addr *addr);
++int dco_set_peer(dco_context_t *dco, unsigned int peerid,
++                 int keepalive_interval, int keepalive_timeout, int mss);
 +
 +/**
-+ * Remove all routes added through the specified client
++ * Remove a peer from DCO
 + *
-+ * @param m         the server context
-+ * @param mi        the client instance for which routes have to be removed
++ * @param c         the main instance context of the peer to remove
 + */
-+void dco_delete_iroutes(struct multi_context *m, struct multi_instance *mi);
++void dco_remove_peer(struct context *c);
 +
  #else /* if defined(ENABLE_DCO) */
  
  typedef void *dco_context_t;
-@@ -252,5 +284,22 @@ dco_remove_peer(struct context *c)
- {
+@@ -204,5 +234,23 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
+     ASSERT(false);
  }
  
 +static inline bool
-+dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi)
++dco_p2p_add_new_peer(struct context *c)
 +{
 +    return true;
 +}
 +
-+static inline void
-+dco_install_iroute(struct multi_context *m, struct multi_instance *mi,
-+                   struct mroute_addr *addr)
++static inline int
++dco_set_peer(dco_context_t *dco, unsigned int peerid,
++             int keepalive_interval, int keepalive_timeout, int mss)
 +{
++    return 0;
 +}
 +
 +static inline void
-+dco_delete_iroutes(struct multi_context *m, struct multi_instance *mi)
++dco_remove_peer(struct context *c)
 +{
 +}
 +
  #endif /* defined(ENABLE_DCO) */
  #endif /* ifndef DCO_H */
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index b3c153fe..eb88a56a 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -61,6 +61,7 @@
- #define MTCP_SIG         ((void *)3) /* Only on Windows */
- #define MTCP_MANAGEMENT ((void *)4)
- #define MTCP_FILE_CLOSE_WRITE ((void *)5)
-+#define MTCP_DCO        ((void *)6)
+diff --git a/src/openvpn/event.h b/src/openvpn/event.h
+index a472afbe..f2438f97 100644
+--- a/src/openvpn/event.h
++++ b/src/openvpn/event.h
+@@ -72,6 +72,9 @@
+ #define MANAGEMENT_WRITE    (1 << (MANAGEMENT_SHIFT + WRITE_SHIFT))
+ #define FILE_SHIFT          8
+ #define FILE_CLOSED         (1 << (FILE_SHIFT + READ_SHIFT))
++#define DCO_SHIFT           10
++#define DCO_READ            (1 << (DCO_SHIFT + READ_SHIFT))
++#define DCO_WRITE           (1 << (DCO_SHIFT + WRITE_SHIFT))
  
- #define MTCP_N           ((void *)16) /* upper bound on MTCP_x */
- 
-@@ -131,6 +132,8 @@ multi_create_instance_tcp(struct multi_context *m)
-         const uint32_t hv = hash_value(hash, &mi->real);
-         struct hash_bucket *bucket = hash_bucket(hash, hv);
- 
-+        multi_assign_peer_id(m, mi);
-+
-         he = hash_lookup_fast(hash, bucket, &mi->real, hv);
- 
-         if (he)
-@@ -238,6 +241,7 @@ multi_tcp_dereference_instance(struct multi_tcp *mtcp, struct multi_instance *mi
-     if (ls && mi->socket_set_called)
-     {
-         event_del(mtcp->es, socket_event_handle(ls));
-+        mi->socket_set_called = false;
-     }
-     mtcp->n_esr = 0;
+ /*
+  * Initialization flags passed to event_set_init
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 99898e01..15bdbbae 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1103,6 +1103,39 @@ process_incoming_link(struct context *c)
+     perf_pop();
  }
-@@ -279,6 +283,9 @@ multi_tcp_wait(const struct context *c,
-     }
+ 
++static void
++process_incoming_dco(struct context *c)
++{
++#if defined(ENABLE_DCO) && defined(TARGET_LINUX)
++    struct link_socket_info *lsi = get_link_socket_info(c);
++    dco_context_t *dco = &c->c1.tuntap->dco;
++
++    dco_do_read(dco);
++
++    if (dco->dco_message_type == OVPN_CMD_DEL_PEER)
++    {
++        trigger_ping_timeout_signal(c);
++        return;
++    }
++
++    if (dco->dco_message_type != OVPN_CMD_PACKET)
++    {
++        msg(D_DCO_DEBUG, "%s: received message of type %u - ignoring", __func__,
++            dco->dco_message_type);
++        return;
++    }
++
++    struct buffer orig_buff = c->c2.buf;
++    c->c2.buf = dco->dco_packet_in;
++    c->c2.from = lsi->lsa->actual;
++
++    process_incoming_link(c);
++
++    c->c2.buf = orig_buff;
++    buf_init(&dco->dco_packet_in, 0);
++#endif /* if defined(ENABLE_DCO) && defined(TARGET_LINUX) */
++}
++
+ /*
+  * Output: c->c2.buf
+  */
+@@ -1626,9 +1659,17 @@ process_outgoing_link(struct context *c)
+                 socks_preprocess_outgoing_link(c, &to_addr, &size_delta);
+ 
+                 /* Send packet */
+-                size = link_socket_write(c->c2.link_socket,
+-                                         &c->c2.to_link,
+-                                         to_addr);
++                if (c->c2.link_socket->info.dco_installed)
++                {
++                    size = dco_do_write(&c->c1.tuntap->dco,
++                                        c->c2.tls_multi->peer_id,
++                                        &c->c2.to_link);
++                }
++                else
++                {
++                    size = link_socket_write(c->c2.link_socket, &c->c2.to_link,
++                                             to_addr);
++                }
+ 
+                 /* Undo effect of prepend */
+                 link_socket_write_post_size_adjust(&size, size_delta, &c->c2.to_link);
+@@ -1898,6 +1939,9 @@ io_wait_dowork(struct context *c, const unsigned int flags)
+ #ifdef ENABLE_ASYNC_PUSH
+     static int file_shift = FILE_SHIFT;
  #endif
-     tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, persistent);
++#ifdef TARGET_LINUX
++    static int dco_shift = DCO_SHIFT;    /* Event from DCO linux kernel module */
++#endif
+ 
+     /*
+      * Decide what kind of events we want to wait for.
+@@ -2005,6 +2049,12 @@ io_wait_dowork(struct context *c, const unsigned int flags)
+      */
+     socket_set(c->c2.link_socket, c->c2.event_set, socket, (void *)&socket_shift, NULL);
+     tun_set(c->c1.tuntap, c->c2.event_set, tuntap, (void *)&tun_shift, NULL);
 +#if defined(TARGET_LINUX)
-+    dco_event_set(&c->c1.tuntap->dco, mtcp->es, MTCP_DCO);
++    if (socket & EVENT_READ && c->c2.did_open_tun)
++    {
++        dco_event_set(&c->c1.tuntap->dco, c->c2.event_set, (void *)&dco_shift);
++    }
 +#endif
  
  #ifdef ENABLE_MANAGEMENT
      if (management)
-@@ -395,6 +402,18 @@ multi_tcp_wait_lite(struct multi_context *m, struct multi_instance *mi, const in
- 
-     tv_clear(&c->c2.timeval); /* ZERO-TIMEOUT */
- 
-+    if (mi && mi->context.c2.link_socket->info.dco_installed)
-+    {
-+        /* If we got a socket that has been handed over to the kernel
-+         * we must not call the normal socket function to figure out
-+         * if it is readable or writable */
-+        /* Assert that we only have the DCO exptected flags */
-+        ASSERT(action & (TA_SOCKET_READ | TA_SOCKET_WRITE));
-+
-+        /* We are always ready! */
-+        return action;
-+    }
-+
-     switch (action)
-     {
-         case TA_TUN_READ:
-@@ -518,7 +537,10 @@ multi_tcp_dispatch(struct multi_context *m, struct multi_instance *mi, const int
- 
-         case TA_INITIAL:
-             ASSERT(mi);
--            multi_tcp_set_global_rw_flags(m, mi);
-+            if (!mi->context.c2.link_socket->info.dco_installed)
-+            {
-+                multi_tcp_set_global_rw_flags(m, mi);
-+            }
-             multi_process_post(m, mi, mpp_flags);
-             break;
- 
-@@ -568,7 +590,10 @@ multi_tcp_post(struct multi_context *m, struct multi_instance *mi, const int act
-             }
-             else
-             {
--                multi_tcp_set_global_rw_flags(m, mi);
-+                if (!c->c2.link_socket->info.dco_installed)
-+                {
-+                    multi_tcp_set_global_rw_flags(m, mi);
-+                }
-             }
-             break;
- 
-@@ -625,23 +650,22 @@ multi_tcp_action(struct multi_context *m, struct multi_instance *mi, int action,
-         /*
-          * Dispatch the action
-          */
--        {
--            struct multi_instance *touched = multi_tcp_dispatch(m, mi, action);
-+        struct multi_instance *touched = multi_tcp_dispatch(m, mi, action);
- 
--            /*
--             * Signal received or TCP connection
--             * reset by peer?
--             */
--            if (touched && IS_SIG(&touched->context))
-+        /*
-+         * Signal received or TCP connection
-+         * reset by peer?
-+         */
-+        if (touched && IS_SIG(&touched->context))
-+        {
-+            if (mi == touched)
-             {
--                if (mi == touched)
--                {
--                    mi = NULL;
--                }
--                multi_close_instance_on_signal(m, touched);
-+                mi = NULL;
-             }
-+            multi_close_instance_on_signal(m, touched);
+@@ -2127,4 +2177,11 @@ process_io(struct context *c)
+             process_incoming_tun(c);
          }
- 
-+
-         /*
-          * If dispatch produced any pending output
-          * for a particular instance, point to
-@@ -739,6 +763,13 @@ multi_tcp_process_io(struct multi_context *m)
-                     multi_tcp_action(m, mi, TA_INITIAL, false);
-                 }
-             }
-+#if defined(ENABLE_DCO) && defined(TARGET_LINUX)
-+            /* incoming data on DCO? */
-+            else if (e->arg == MTCP_DCO)
-+            {
-+                multi_process_incoming_dco(m);
-+            }
-+#endif
-             /* signal received? */
-             else if (e->arg == MTCP_SIG)
-             {
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 0810fada..14aa7236 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -380,6 +380,19 @@ multi_process_io_udp(struct multi_context *m)
-         multi_process_file_closed(m, mpp_flags);
      }
- #endif
-+#if defined(ENABLE_DCO) && defined(TARGET_LINUX)
 +    else if (status & DCO_READ)
 +    {
-+        if (!IS_SIG(&m->top))
++        if (!IS_SIG(c))
 +        {
-+            bool ret = true;
-+            while (ret)
-+            {
-+                ret = multi_process_incoming_dco(m);
-+            }
++            process_incoming_dco(c);
 +        }
 +    }
-+#endif
  }
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 091cbd24..bdd2ad96 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2094,6 +2094,19 @@ do_up(struct context *c, bool pulled_options, unsigned int option_types_found)
+             }
+         }
  
- /*
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 34ab90b4..23472095 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -51,6 +51,7 @@
- 
- #include "crypto_backend.h"
- #include "ssl_util.h"
-+#include "dco.h"
- 
- /*#define MULTI_DEBUG_EVENT_LOOP*/
- 
-@@ -519,6 +520,9 @@ multi_del_iroutes(struct multi_context *m,
- {
-     const struct iroute *ir;
-     const struct iroute_ipv6 *ir6;
++        if (c->mode == MODE_POINT_TO_POINT)
++        {
++            /* ovpn-dco requires adding the peer now, before any option can be set,
++             * but *after* having parsed the pushed peer-id in do_deferred_options()
++             */
++            int ret = dco_p2p_add_new_peer(c);
++            if (ret < 0)
++            {
++                msg(D_DCO, "Cannot add peer to DCO: %s", strerror(-ret));
++                return false;
++            }
++        }
 +
-+    dco_delete_iroutes(m, mi);
-+
-     if (TUNNEL_TYPE(mi->context.c1.tuntap) == DEV_TYPE_TUN)
-     {
-         for (ir = mi->context.options.iroutes; ir != NULL; ir = ir->next)
-@@ -1224,16 +1228,20 @@ multi_learn_in_addr_t(struct multi_context *m,
-         addr.netbits = (uint8_t) netbits;
+         if (!pulled_options && c->mode == MODE_POINT_TO_POINT)
+         {
+             if (!do_deferred_p2p_ncp(c))
+@@ -2109,7 +2122,6 @@ do_up(struct context *c, bool pulled_options, unsigned int option_types_found)
+             return false;
+         }
+ 
+-
+         if (c->c2.did_open_tun)
+         {
+             c->c1.pulled_options_digest_save = c->c2.pulled_options_digest;
+@@ -2364,6 +2376,22 @@ finish_options(struct context *c)
+         return false;
      }
  
--    {
--        struct multi_instance *owner = multi_learn_addr(m, mi, &addr, 0);
-+    struct multi_instance *owner = multi_learn_addr(m, mi, &addr, 0);
- #ifdef ENABLE_MANAGEMENT
--        if (management && owner)
--        {
--            management_learn_addr(management, &mi->context.c2.mda_context, &addr, primary);
--        }
-+    if (management && owner)
++    if (dco_enabled(&c->options)
++        && (c->options.ping_send_timeout || c->c2.frame.mss_fix))
 +    {
-+        management_learn_addr(management, &mi->context.c2.mda_context, &addr, primary);
-+    }
- #endif
--        return owner;
-+    if (!primary)
-+    {
-+        /* We do not want to install IP -> IP dev ovpn-dco0 */
-+        dco_install_iroute(m, mi, &addr);
-     }
-+
-+    return owner;
- }
- 
- static struct multi_instance *
-@@ -1257,16 +1265,20 @@ multi_learn_in6_addr(struct multi_context *m,
-         mroute_addr_mask_host_bits( &addr );
-     }
- 
--    {
--        struct multi_instance *owner = multi_learn_addr(m, mi, &addr, 0);
-+    struct multi_instance *owner = multi_learn_addr(m, mi, &addr, 0);
- #ifdef ENABLE_MANAGEMENT
--        if (management && owner)
--        {
--            management_learn_addr(management, &mi->context.c2.mda_context, &addr, primary);
--        }
-+    if (management && owner)
-+    {
-+        management_learn_addr(management, &mi->context.c2.mda_context, &addr, primary);
-+    }
- #endif
--        return owner;
-+    if (!primary)
-+    {
-+        /* We do not want to install IP -> IP dev ovpn-dco0 */
-+        dco_install_iroute(m, mi, &addr);
-     }
-+
-+    return owner;
- }
- 
- /*
-@@ -1765,6 +1777,15 @@ multi_client_set_protocol_options(struct context *c)
-         tls_multi->use_peer_id = true;
-         o->use_peer_id = true;
-     }
-+    else if (dco_enabled(o))
-+    {
-+        msg(M_INFO, "Client does not support DATA_V2. Data channel offloaing "
-+            "requires DATA_V2. Dropping client.");
-+        auth_set_client_reason(tls_multi, "Data channel negotiation "
-+                               "failed (missing DATA_V2)");
-+        return false;
-+    }
-+
-     if (proto & IV_PROTO_REQUEST_PUSH)
-     {
-         c->c2.push_request_received = true;
-@@ -2276,8 +2297,9 @@ cleanup:
-  * Generates the data channel keys
-  */
- static bool
--multi_client_generate_tls_keys(struct context *c)
-+multi_client_generate_tls_keys(struct multi_context *m, struct multi_instance *mi)
- {
-+    struct context *c = &mi->context;
-     struct frame *frame_fragment = NULL;
- #ifdef ENABLE_FRAGMENT
-     if (c->options.ce.fragment)
-@@ -2285,6 +2307,17 @@ multi_client_generate_tls_keys(struct context *c)
-         frame_fragment = &c->c2.frame_fragment;
-     }
- #endif
-+
-+    if (dco_enabled(&c->options))
-+    {
-+        int ret = dco_multi_add_new_peer(m, mi);
++        int ret = dco_set_peer(&c->c1.tuntap->dco,
++                               c->c2.tls_multi->peer_id,
++                               c->options.ping_send_timeout,
++                               c->options.ping_rec_timeout,
++                               c->c2.frame.mss_fix);
 +        if (ret < 0)
 +        {
-+            msg(D_DCO, "Cannot add peer to DCO: %s", strerror(-ret));
++            msg(D_DCO, "Cannot set parameters for DCO peer (id=%u): %s",
++                c->c2.tls_multi->peer_id, strerror(-ret));
 +            return false;
 +        }
 +    }
 +
-     struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
-     if (!tls_session_update_crypto_params(c->c2.tls_multi, session, &c->options,
-                                           &c->c2.frame, frame_fragment,
-@@ -2401,7 +2434,7 @@ multi_client_connect_late_setup(struct multi_context *m,
-     }
-     /* Generate data channel keys only if setting protocol options
-      * has not failed */
--    else if (!multi_client_generate_tls_keys(&mi->context))
-+    else if (!multi_client_generate_tls_keys(m, mi))
-     {
-         mi->context.c2.tls_multi->multi_state = CAS_FAILED;
-     }
-@@ -2668,6 +2701,14 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
-         (*cur_handler_index)++;
-     }
- 
-+    /* Check if we have forbidding options in the current mode */
-+    if (dco_enabled(&mi->context.options)
-+        && !dco_check_option_conflict(D_MULTI_ERRORS, &mi->context.options))
-+    {
-+        msg(D_MULTI_ERRORS, "MULTI: client has been rejected due to incompatible DCO options");
-+        cc_succeeded = false;
-+    }
-+
-     if (cc_succeeded)
-     {
-         multi_client_connect_late_setup(m, mi, *option_types_found);
-@@ -3086,6 +3127,120 @@ done:
-     gc_free(&gc);
- }
- 
-+/*
-+ * Called when an instance should be closed due to the
-+ * reception of a soft signal.
-+ */
-+void
-+multi_close_instance_on_signal(struct multi_context *m, struct multi_instance *mi)
-+{
-+    remap_signal(&mi->context);
-+    set_prefix(mi);
-+    print_signal(mi->context.sig, "client-instance", D_MULTI_LOW);
-+    clear_prefix();
-+    multi_close_instance(m, mi, false);
-+}
-+
-+#if (defined(ENABLE_DCO) && defined(TARGET_LINUX)) || defined(ENABLE_MANAGEMENT)
-+static void
-+multi_signal_instance(struct multi_context *m, struct multi_instance *mi, const int sig)
-+{
-+    mi->context.sig->signal_received = sig;
-+    multi_close_instance_on_signal(m, mi);
-+}
-+#endif
-+
-+#if defined(ENABLE_DCO) && defined(TARGET_LINUX)
-+static void
-+process_incoming_dco_packet(struct multi_context *m, struct multi_instance *mi,  dco_context_t *dco)
-+{
-+    struct buffer orig_buf = mi->context.c2.buf;
-+    int peer_id = dco->dco_message_peer_id;
-+
-+    mi->context.c2.buf = dco->dco_packet_in;
-+
-+    multi_process_incoming_link(m, mi, 0);
-+
-+    mi->context.c2.buf = orig_buf;
-+    if (BLEN(&dco->dco_packet_in) < 1)
-+    {
-+        msg(D_DCO, "Received too short packet for peer %d", peer_id);
-+        goto done;
-+    }
-+
-+    uint8_t *ptr = BPTR(&dco->dco_packet_in);
-+    uint8_t op = ptr[0] >> P_OPCODE_SHIFT;
-+    if (op == P_DATA_V2 || op == P_DATA_V2)
-+    {
-+        msg(D_DCO, "DCO: received data channel packet for peer %d", peer_id);
-+        goto done;
-+    }
-+done:
-+    buf_init(&dco->dco_packet_in, 0);
-+}
-+
-+static void
-+process_incoming_del_peer(struct multi_context *m, struct multi_instance *mi, dco_context_t *dco)
-+{
-+    const char *reason = "(unknown reason by ovpn-dco)";
-+    switch (dco->dco_del_peer_reason)
-+    {
-+        case OVPN_DEL_PEER_REASON_EXPIRED:
-+            reason = "ovpn-dco: ping expired";
-+            break;
-+
-+        case OVPN_DEL_PEER_REASON_TRANSPORT_ERROR:
-+            reason = "ovpn-dco: transport error";
-+            break;
-+
-+        case OVPN_DEL_PEER_REASON_USERSPACE:
-+            /* This very likely ourselves but might be another process, so
-+             * still process it */
-+            reason = "ovpn-dco: userspace request";
-+            break;
-+    }
-+
-+    /* When kernel already deleted the peer, the socket is no longer
-+     * installed and we don't need to cleanup the state in the kernel */
-+    mi->context.c2.tls_multi->dco_peer_added = false;
-+    mi->context.sig->signal_text = reason;
-+    multi_signal_instance(m, mi, SIGTERM);
-+}
-+
-+bool
-+multi_process_incoming_dco(struct multi_context *m)
-+{
-+    dco_context_t *dco = &m->top.c1.tuntap->dco;
-+
-+    struct multi_instance *mi = NULL;
-+
-+    int ret = dco_do_read(&m->top.c1.tuntap->dco);
-+
-+    int peer_id = dco->dco_message_peer_id;
-+
-+    if ((peer_id >= 0) && (peer_id < m->max_clients) && (m->instances[peer_id]))
-+    {
-+        mi = m->instances[peer_id];
-+        if (dco->dco_message_type == OVPN_CMD_PACKET)
-+        {
-+            process_incoming_dco_packet(m, mi, dco);
-+        }
-+        else if (dco->dco_message_type == OVPN_CMD_DEL_PEER)
-+        {
-+            process_incoming_del_peer(m, mi, dco);
-+        }
-+    }
-+    else
-+    {
-+        msg(D_DCO, "Received packet for peer-id unknown to OpenVPN: %d", peer_id);
-+    }
-+
-+    dco->dco_message_type = 0;
-+    dco->dco_message_peer_id = -1;
-+    return ret > 0;
-+}
-+#endif /* if defined(ENABLE_DCO) && defined(TARGET_LINUX) */
-+
- /*
-  * Process packets in the TCP/UDP socket -> TUN/TAP interface direction,
-  * i.e. client -> server direction.
-@@ -3647,32 +3802,11 @@ multi_process_signal(struct multi_context *m)
      return true;
  }
  
--/*
-- * Called when an instance should be closed due to the
-- * reception of a soft signal.
-- */
--void
--multi_close_instance_on_signal(struct multi_context *m, struct multi_instance *mi)
--{
--    remap_signal(&mi->context);
--    set_prefix(mi);
--    print_signal(mi->context.sig, "client-instance", D_MULTI_LOW);
--    clear_prefix();
--    multi_close_instance(m, mi, false);
--}
--
+@@ -4337,6 +4365,10 @@ close_instance(struct context *c)
+         /* free buffers */
+         do_close_free_buf(c);
+ 
++        /* close peer for DCO if enabled, needs peer-id so must be done before
++         * closing TLS contexts */
++        dco_remove_peer(c);
++
+         /* close TLS */
+         do_close_tls(c);
+ 
+diff --git a/src/openvpn/init.h b/src/openvpn/init.h
+index 98e71d3a..5cc2a990 100644
+--- a/src/openvpn/init.h
++++ b/src/openvpn/init.h
+@@ -30,7 +30,7 @@
+  * Baseline maximum number of events
+  * to wait for.
+  */
+-#define BASE_N_EVENTS 4
++#define BASE_N_EVENTS 5
+ 
+ void context_clear(struct context *c);
+ 
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index a75adb00..0d521d22 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -120,6 +120,7 @@ struct link_socket_info
+     sa_family_t af;                     /* Address family like AF_INET, AF_INET6 or AF_UNSPEC*/
+     bool bind_ipv6_only;
+     int mtu_changed;            /* Set to true when mtu value is changed */
++    bool dco_installed;
+ };
+ 
  /*
-  * Management subsystem callbacks
-  */
- #ifdef ENABLE_MANAGEMENT
- 
--static void
--multi_signal_instance(struct multi_context *m, struct multi_instance *mi, const int sig)
--{
--    mi->context.sig->signal_received = sig;
--    multi_close_instance_on_signal(m, mi);
--}
--
- static void
- management_callback_status(void *arg, const int version, struct status_output *so)
- {
-@@ -3762,10 +3896,6 @@ management_delete_event(void *arg, event_t event)
-     }
- }
- 
--#endif /* ifdef ENABLE_MANAGEMENT */
--
--#ifdef ENABLE_MANAGEMENT
--
- static struct multi_instance *
- lookup_by_cid(struct multi_context *m, const unsigned long cid)
- {
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index f1e9ab91..370d795c 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -98,7 +98,9 @@ struct client_connect_defer_state
-  * server-mode.
-  */
- struct multi_instance {
--    struct schedule_entry se;  /* this must be the first element of the structure */
-+    struct schedule_entry se;  /* this must be the first element of the structure,
-+                                * We cast between this and schedule_entry so the
-+                                * beginning of the struct must be identical */
-     struct gc_arena gc;
-     bool halt;
-     int refcount;
-@@ -310,6 +312,16 @@ void multi_process_float(struct multi_context *m, struct multi_instance *mi);
-  */
- bool multi_process_post(struct multi_context *m, struct multi_instance *mi, const unsigned int flags);
- 
-+/**
-+ * Process an incoming DCO message (from kernel space).
-+ *
-+ * @param m            - The single \c multi_context structur.e
-+ *
-+ * @return
-+ *  - True, if the message was received correctly.
-+ *  - False, if there was an error while reading the message.
-+ */
-+bool multi_process_incoming_dco(struct multi_context *m);
- 
- /**************************************************************************/
- /**
 -- 
 2.35.1
 
