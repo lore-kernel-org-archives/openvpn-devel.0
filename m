@@ -1,14 +1,15 @@
-Message-ID: <a83d231f-2f4b-c51f-e71a-94f13b699ee2@...2181...>
-Date: Fri, 24 Jun 2022 11:13:40 +0200
+Message-ID: <97bd8269-172d-4dcd-49a5-aee3c9c19b01@...1227...>
+Date: Fri, 24 Jun 2022 12:25:54 +0200
 MIME-Version: 1.0
-Content-Language: en-US
-From: Antonio Quartulli <a@...2181...>
-References: <20181206171033.61310-1-gert@...1296...>
- <06dfe01b-95dd-ae08-4b30-96f85ac2bd9d@...1856...>
- <80e6882a-dd00-eeff-151b-1b67d6e61103@...2181...>
-In-Reply-To: <80e6882a-dd00-eeff-151b-1b67d6e61103@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Rate-limit incoming
- P_CONTROL_HARD_RESET_* packets.
+Content-Language: en-GB
+References: <20220621161649.2872985-1-arne@...1227...>
+ <20220621161649.2872985-5-arne@...1227...>
+ <YrV3TEqU1KF0Q+AB@...2678...>
+ <YrV4GkLwPbEiV0XU@...2678...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <YrV4GkLwPbEiV0XU@...2678...>
+Subject: Re: [Openvpn-devel] [PATCH 5/6] Change default MTU in server mode
+ to 1420 and push it to client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,14 +20,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Am 24.06.22 um 10:38 schrieb Frank Lichtenheld:
+> On Fri, Jun 24, 2022 at 10:35:24AM +0200, Frank Lichtenheld wrote:
+>> Code changes look fine to me, but several documentation suggestions.
+> 
+> Hmm, after reading the next patch might I suggest to move the
+> change to push.c actually to the next patch? Both references
+> to IV_MTU and tun-max-mtu only make sense then, right?
 
-do we still need this patch after having merged Arne's HMAC feature?
+Well basically this implements the server side functionality while the 
+next patch implements the client side. And the changes to push.c are 
+server side. I could also reorder these two to first introduce the 
+client side support and then make use of it.
 
-Regards,
-
--- 
-Antonio Quartulli
+Arne
 
