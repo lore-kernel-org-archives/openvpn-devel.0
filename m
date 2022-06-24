@@ -1,17 +1,19 @@
-Date: Fri, 24 Jun 2022 13:16:40 +0200
+Date: Fri, 24 Jun 2022 13:20:41 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <YrWdGK8/602Xnk90@...1296...>
-References: <20220621161649.2872985-1-arne@...1227...>
- <20220621161649.2872985-5-arne@...1227...>
- <YrWTg6ZnqgtkezEP@...1296...>
- <b00bd799-21b6-ebb3-3a70-5898cc20206a@...1227...>
+Message-ID: <YrWeCXDXPXR83997@...1296...>
+References: <20181206171033.61310-1-gert@...1296...>
+ <06dfe01b-95dd-ae08-4b30-96f85ac2bd9d@...1856...>
+ <80e6882a-dd00-eeff-151b-1b67d6e61103@...2181...>
+ <a83d231f-2f4b-c51f-e71a-94f13b699ee2@...2181...>
+ <YrWRSH5di07JxGmW@...1296...>
+ <0c27edad-d696-5857-02ee-d2ef8e6286d1@...1227...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="88dcYQJDmNBSqvUV"
+ protocol="application/pgp-signature"; boundary="kC4bRfamNSYlFPCE"
 Content-Disposition: inline
-In-Reply-To: <b00bd799-21b6-ebb3-3a70-5898cc20206a@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 5/6] Change default MTU in server mode
- to 1420 and push it to client
+In-Reply-To: <0c27edad-d696-5857-02ee-d2ef8e6286d1@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Rate-limit incoming
+ P_CONTROL_HARD_RESET_* packets.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,40 +23,39 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Arne Schwabe <arne@...1227...>
-Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: Gert Doering <gert@...1296...>, Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
---88dcYQJDmNBSqvUV
+--kC4bRfamNSYlFPCE
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Jun 24, 2022 at 12:52:23PM +0200, Arne Schwabe wrote:
-> I still think this is a reasonable change. Yes, it might break in some=20
-> very obscure setups but for those setups, people can still set the MTU=20
-> back to 1500. Tap still uses the 1500 default anyway.
+On Fri, Jun 24, 2022 at 01:15:05PM +0200, Arne Schwabe wrote:
+> > *This* patch won't apply anymore, but Arne said "we're now much faster
+> > in replying to packets than ever before" so we might indeed need a
+> > per-source-ip rate-limiter, to something like "10 per 10 seconds" or
+> > so (inventing arbitrary number that should be more than enough even
+> > for "5 users behind the same NAT reconnect at the same time", while
+> > at the same time too low to cause harm as a reflector) for the
+> > initial reply.
+>=20
+> Yeah. Keeping a per IP table is adding a lot of state to manage that.=20
+> Maybe instead to a (configurable) overall limit like 100/s?
 
-It will break all setups that have openvpn "in the path" and something
-else that throws away ICMP fragmentation required messages.
+This would permit an attacker sending 1000 packets/s to an openvpn server
+to drown out 90% of all legitimate connection requests from everyone=20
+else...
 
-Like
+So while I see your argument about "please do not introduce state again,
+we just got rid of it", I'm not convinced we can get away so easily ;-)
 
-  Host A ---(1500)--> OpenVPN --(1400)--> Host B
-
-if Host A sends a 1500 byte packet with DF bit (or IPv6), the network
-stack on the OpenVPN server needs to return an ICMP "packet too big"
-message.  If that gets lost - and there are too many folks that do throw
-away ICMP packets - we have a black hole.
-
-
-We see this in commercial VPN setups as well - having a large-enough
-MTU for the occasional UDP (or whatever else) packet, and ensuring TCP
-packets are of the desirable packet size by means of MSS manipulation
-is more robust.
-
-So, still NAK on changing the default.  Turning your argument around:=20
-whoever things they need this can enable this on their own.
+OTOH, 100/s inside OpenVPN, and good documentation how to offload the
+state to iptables...  can we teach iptables to recognize CLIENT_RESET
+(or whatever they are) packets - only - and apply per-source rate-limiting
+there?   iptables seems to be quite good at doing this for TCP SYNs
+already...
 
 gert
 --=20
@@ -67,22 +68,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---88dcYQJDmNBSqvUV
+--kC4bRfamNSYlFPCE
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJitZ0YAAoJEB2Cnv7KVigSO7IL/R1QhQoj1Grc0nBfZG3oYLZ4
-iQQDmSC6dqP95yBf0VgywcQjHPgnhSnA4DHmirw7CGQnwBwHZB4VjIJxMGzUi8W3
-RMe5bKyd8pnH3iscxw6OSZm2xMRbEiilF+m56HCCgDCRR3W0l5oFDHVtrypJW1BX
-TALu6dHnoWBKx28innLCdlwoAyA01M4VWokj02CIbkk+ye7BM0+nZ4oMdSEni39x
-A7rHYAJeBvyEmvtoUehXkkWHKEEwuoyi/CDvNXzCXBDE4v+JVBjWwnkwyrdYkD3+
-GQcdV48NPfwIj1XTU4eOwAMMRk8DnAZZChLP8Aiy87lcfWFv08GzLm+Fn0NM3o7D
-Jr8/M672tBQ4e0o4xbOGae1CEFWBArP4XHg/pyDAsqwVOU4Ick/COotYeeIE33p7
-JyEzLPfu/VDdmx5Mh/bsQaCPmJCOyRhf4HFE/Sq2mlBWycMDbNLB7J5MiRRfkgtj
-/QoE39xSQ/RLyXQRK2aP6xR6ST9kf/qRSnyCj+66pQ==
-=Kssz
+iQGcBAEBAgAGBQJitZ4JAAoJEB2Cnv7KVigSWMQMAJU8IMFYnJvrIdrrKLuX7JxT
+m2oHHPaxz4HXFt/j0+mMfTozJ2HrR+8F2c1aMRq7nFRE/dzwTwkujJiGlArFC63r
+X3znpKxVHTEzsNHTD1c66/qOsAhzditRdN6t2KWDIJiPA7xxcv+K/HRYL23Lx1py
+L3dyFWZBkvW892+3pkHdTg8bNRf0rEYmLDh032ThZ1TlXGp+tyJB6D4nfw/U8llk
+zFcMeSF2Oj8jqbHVBStHSrkS1GGKM6vEu8o6mShpcUmr4KAFh+Nx+t/jPVLqTS/a
+q79uvqNuusyTzMmnz/vsWLpIfnqf/qBqHb6+ccccJgCRkRWkBxaZ/J1FVY4YMOmT
+HEdwRBiH+pDWSzunUrnlxR1x3n7Rok+ptj9PiVKcG2xgyXgPu/cvnbEBAxYZkPTH
+ALkr+8g+PKjqFbD1D10T9pZX66leQ8+/QC+LcWtcNtzN32aESE2TzaBn1pF+LniJ
+G1v54JXfddWssRNQ/NwUUY/eH2rRewtPlSnYqMqScg==
+=6zxr
 -----END PGP SIGNATURE-----
 
---88dcYQJDmNBSqvUV--
+--kC4bRfamNSYlFPCE--
 
