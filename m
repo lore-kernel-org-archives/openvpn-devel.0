@@ -1,13 +1,9 @@
-Message-ID: <b00bd799-21b6-ebb3-3a70-5898cc20206a@...1227...>
-Date: Fri, 24 Jun 2022 12:52:23 +0200
+From: Paolo Cerrito <wardragon78@...277...>
+Date: Fri, 24 Jun 2022 12:49:41 +0200
+Message-Id: <20220624104940.2885435-1-wardragon78@...277...>
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <20220621161649.2872985-1-arne@...1227...>
- <20220621161649.2872985-5-arne@...1227...> <YrWTg6ZnqgtkezEP@...1296...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <YrWTg6ZnqgtkezEP@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH 5/6] Change default MTU in server mode
- to 1420 and push it to client
+Subject: [Openvpn-devel] [PATCH v2] Insert client connection data into PAM
+ environment v2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,41 +12,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: paolo <paolo.cerrito@...2517...>
 
-Am 24.06.22 um 12:35 schrieb Gert Doering:
-> Hi,
-> 
-> On Tue, Jun 21, 2022 at 06:16:48PM +0200, Arne Schwabe wrote:
->> This changes the default MTU of the tun-mtu to 1420 to avoid MTU related
->> issues that are even more prominent when DCO server or clients are involved.
-> 
-> I'm not convinced that this change "by default" is a desirable change.
-> 
-> Being able to do that (pushable MTU) is good, but changing the default is
-> fairly fundamental, and it will break use cases that rely on 1500 inner
-> MTU (and outside fragmentation).
-> 
-> Originally, it was said that "with DCO, outside fragmentation is not
-> possible", but if I remember right, this turned out to be incorrect,
-> and implementations handle outside fragmentation just fine.  So there
-> seems to be no hard pressing need to change the default (I am willing
-> to be corrected if I misremember something).
-> 
-> Not saying that outside fragmentation is *desirable*, so for TCP,
-> "mssfix 1492 mtu" will (already) ensure we have no fragmentation
-> issues - whatever tun-mtu we have.
+From: paolo <paolo.cerrito@...2517...>
 
-I understand that this is quite fundamental change but I think 
-alternative of always using a wrong MTU and hoping that mssfix and 
-outside fragmentation are going to save the day what we currently do, is 
-lying to ourselves.
+"Changes from v1:
+changed sprintf for logging to plugin_log
+"
 
-I still think this is a reasonable change. Yes, it might break in some 
-very obscure setups but for those setups, people can still set the MTU 
-back to 1500. Tap still uses the 1500 default anyway.
+change to reflect current head openvpn repository
 
-Arne
+this patch put remote host ip into pam environment, so this make pam
+module able to use it.
+
+in simple, this patch get ip (ipv4 and ipv6) from openvpn, put into pam
+environment and log this operation.
+
+---
+ src/plugins/auth-pam/auth-pam.c | 25 +++++++++++++++++++++----
+ 1 file changed, 21 insertions(+), 4 deletions(-)
+
+diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
+index 70339445..c2e66e5c 100644
+--- a/src/plugins/auth-pam/auth-pam.c
++++ b/src/plugins/auth-pam/auth-pam.c
+@@ -49,7 +49,7 @@
+ #include <syslog.h>
+ #include <limits.h>
+ #include "utils.h"
+-
++#include <arpa/inet.h>
+ #include <openvpn-plugin.h>
+ 
+ #define DEBUG(verb) ((verb) >= 4)
+@@ -121,6 +121,7 @@ struct user_pass {
+     char password[128];
+     char common_name[128];
+     char response[128];
++    char remote[INET6_ADDRSTRLEN];
+ 
+     const struct name_value_list *name_value_list;
+ };
+@@ -529,6 +530,11 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
+         const char *username = get_env("username", envp);
+         const char *password = get_env("password", envp);
+         const char *common_name = get_env("common_name", envp) ? get_env("common_name", envp) : "";
++        const char *remote = get_env("untrusted_ip6", envp);
++
++        if (remote == NULL){
++                remote = get_env("untrusted_ip", envp); //if Null, try to take ipv4 if not set ipv6
++        }
+ 
+         /* should we do deferred auth?
+          *  yes, if there is "auth_control_file" and "deferred_auth_pam" env
+@@ -554,7 +560,8 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
+                 || send_string(context->foreground_fd, username) == -1
+                 || send_string(context->foreground_fd, password) == -1
+                 || send_string(context->foreground_fd, common_name) == -1
+-                || send_string(context->foreground_fd, auth_control_file) == -1)
++                || send_string(context->foreground_fd, auth_control_file) == -1
++                || send_string(context->foreground_fd, remote) == -1)
+             {
+                 plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "Error sending auth info to background process");
+             }
+@@ -789,8 +796,16 @@ pam_auth(const char *service, const struct user_pass *up)
+     status = pam_start(service, name_value_list_provided ? NULL : up->username, &conv, &pamh);
+     if (status == PAM_SUCCESS)
+     {
++        /* Set PAM_RHOST environment variable */
++        if (*(up->remote))
++        {
++            status = pam_set_item(pamh, PAM_RHOST, up->remote);
++        }
+         /* Call PAM to verify username/password */
+-        status = pam_authenticate(pamh, 0);
++        if (status == PAM_SUCCESS)
++        {
++            status = pam_authenticate(pamh, 0);
++        }
+         if (status == PAM_SUCCESS)
+         {
+             status = pam_acct_mgmt(pamh, 0);
+@@ -956,7 +971,8 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+                 if (recv_string(fd, up.username, sizeof(up.username)) == -1
+                     || recv_string(fd, up.password, sizeof(up.password)) == -1
+                     || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1
+-                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1)
++                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1
++                    || recv_string(fd, up.remote, sizeof(up.remote)) == -1)
+                 {
+                     plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: read error on command channel: code=%d, exiting",
+                                command);
+@@ -970,6 +986,7 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+                                up.username, up.password);
+ #else
+                     plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: USER: %s", up.username);
++                    plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: REMOTE: %s", up.remote);
+ #endif
+                 }
+ 
+-- 
+2.36.1
+
 
