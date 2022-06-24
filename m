@@ -1,9 +1,9 @@
-From: Paolo Cerrito <wardragon78@...277...>
-Date: Fri, 24 Jun 2022 12:49:41 +0200
-Message-Id: <20220624104940.2885435-1-wardragon78@...277...>
+From: Arne Schwabe <arne@...1227...>
+Date: Fri, 24 Jun 2022 13:13:15 +0200
+Message-Id: <20220624111318.3219982-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Insert client connection data into PAM
- environment v2
+Subject: [Openvpn-devel] [PATCH v2 1/4] Extract update_session_cipher into
+ standalone function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,106 +15,88 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: paolo <paolo.cerrito@...2517...>
 
-From: paolo <paolo.cerrito@...2517...>
+This allow the code later to check if the cipher is okay to use and
+update it for the calculation for the max MTU size.
 
-"Changes from v1:
-changed sprintf for logging to plugin_log
-"
-
-change to reflect current head openvpn repository
-
-this patch put remote host ip into pam environment, so this make pam
-module able to use it.
-
-in simple, this patch get ip (ipv4 and ipv6) from openvpn, put into pam
-environment and log this operation.
-
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/plugins/auth-pam/auth-pam.c | 25 +++++++++++++++++++++----
- 1 file changed, 21 insertions(+), 4 deletions(-)
+ src/openvpn/ssl.c     | 11 +----------
+ src/openvpn/ssl_ncp.c | 22 ++++++++++++++++++++++
+ src/openvpn/ssl_ncp.h |  8 ++++++++
+ 3 files changed, 31 insertions(+), 10 deletions(-)
 
-diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-index 70339445..c2e66e5c 100644
---- a/src/plugins/auth-pam/auth-pam.c
-+++ b/src/plugins/auth-pam/auth-pam.c
-@@ -49,7 +49,7 @@
- #include <syslog.h>
- #include <limits.h>
- #include "utils.h"
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 61dea996d..ddd90080b 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1678,17 +1678,8 @@ tls_session_update_crypto_params(struct tls_session *session,
+                                  struct frame *frame_fragment,
+                                  struct link_socket_info *lsi)
+ {
 -
-+#include <arpa/inet.h>
- #include <openvpn-plugin.h>
- 
- #define DEBUG(verb) ((verb) >= 4)
-@@ -121,6 +121,7 @@ struct user_pass {
-     char password[128];
-     char common_name[128];
-     char response[128];
-+    char remote[INET6_ADDRSTRLEN];
- 
-     const struct name_value_list *name_value_list;
- };
-@@ -529,6 +530,11 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
-         const char *username = get_env("username", envp);
-         const char *password = get_env("password", envp);
-         const char *common_name = get_env("common_name", envp) ? get_env("common_name", envp) : "";
-+        const char *remote = get_env("untrusted_ip6", envp);
-+
-+        if (remote == NULL){
-+                remote = get_env("untrusted_ip", envp); //if Null, try to take ipv4 if not set ipv6
-+        }
- 
-         /* should we do deferred auth?
-          *  yes, if there is "auth_control_file" and "deferred_auth_pam" env
-@@ -554,7 +560,8 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
-                 || send_string(context->foreground_fd, username) == -1
-                 || send_string(context->foreground_fd, password) == -1
-                 || send_string(context->foreground_fd, common_name) == -1
--                || send_string(context->foreground_fd, auth_control_file) == -1)
-+                || send_string(context->foreground_fd, auth_control_file) == -1
-+                || send_string(context->foreground_fd, remote) == -1)
-             {
-                 plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "Error sending auth info to background process");
-             }
-@@ -789,8 +796,16 @@ pam_auth(const char *service, const struct user_pass *up)
-     status = pam_start(service, name_value_list_provided ? NULL : up->username, &conv, &pamh);
-     if (status == PAM_SUCCESS)
+-    bool cipher_allowed_as_fallback = options->enable_ncp_fallback
+-                                      && streq(options->ciphername, session->opt->config_ciphername);
+-
+-    if (!session->opt->server && !cipher_allowed_as_fallback
+-        && !tls_item_in_cipher_list(options->ciphername, options->ncp_ciphers))
++    if (!update_session_cipher(session, options))
      {
-+        /* Set PAM_RHOST environment variable */
-+        if (*(up->remote))
-+        {
-+            status = pam_set_item(pamh, PAM_RHOST, up->remote);
-+        }
-         /* Call PAM to verify username/password */
--        status = pam_authenticate(pamh, 0);
-+        if (status == PAM_SUCCESS)
-+        {
-+            status = pam_authenticate(pamh, 0);
-+        }
-         if (status == PAM_SUCCESS)
-         {
-             status = pam_acct_mgmt(pamh, 0);
-@@ -956,7 +971,8 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
-                 if (recv_string(fd, up.username, sizeof(up.username)) == -1
-                     || recv_string(fd, up.password, sizeof(up.password)) == -1
-                     || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1
--                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1)
-+                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1
-+                    || recv_string(fd, up.remote, sizeof(up.remote)) == -1)
-                 {
-                     plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: read error on command channel: code=%d, exiting",
-                                command);
-@@ -970,6 +986,7 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
-                                up.username, up.password);
- #else
-                     plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: USER: %s", up.username);
-+                    plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: REMOTE: %s", up.remote);
- #endif
-                 }
+-        msg(D_TLS_ERRORS, "Error: negotiated cipher not allowed - %s not in %s",
+-            options->ciphername, options->ncp_ciphers);
+-        /* undo cipher push, abort connection setup */
+-        options->ciphername = session->opt->config_ciphername;
+         return false;
+     }
  
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index 564942503..c800f718f 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -490,3 +490,25 @@ p2p_mode_ncp(struct tls_multi *multi, struct tls_session *session)
+ 
+     gc_free(&gc);
+ }
++
++
++bool
++update_session_cipher(struct tls_session *session, struct options *options)
++{
++    bool cipher_allowed_as_fallback = options->enable_ncp_fallback
++                                      && streq(options->ciphername, session->opt->config_ciphername);
++
++    if (!session->opt->server && !cipher_allowed_as_fallback
++        && !tls_item_in_cipher_list(options->ciphername, options->ncp_ciphers))
++    {
++        msg(D_TLS_ERRORS, "Error: negotiated cipher not allowed - %s not in %s",
++            options->ciphername, options->ncp_ciphers);
++        /* undo cipher push, abort connection setup */
++        options->ciphername = session->opt->config_ciphername;
++        return false;
++    }
++    else
++    {
++        return true;
++    }
++}
+diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h
+index 853017f5f..5ba2f7ae7 100644
+--- a/src/openvpn/ssl_ncp.h
++++ b/src/openvpn/ssl_ncp.h
+@@ -148,4 +148,12 @@ const char *
+ get_p2p_ncp_cipher(struct tls_session *session, const char *peer_info,
+                    struct gc_arena *gc);
+ 
++
++/**
++ * Checks if the cipher is allowed and updates the TLS session cipher with it,
++ * otherwise returns false
++ */
++bool
++update_session_cipher(struct tls_session *session, struct options *options);
++
+ #endif /* ifndef OPENVPN_SSL_NCP_H */
 -- 
-2.36.1
+2.32.1 (Apple Git-133)
 
 
