@@ -1,10 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri, 24 Jun 2022 10:37:55 +0200
-Message-Id: <20220624083809.23487-12-a@...2181...>
+Date: Fri, 24 Jun 2022 10:38:04 +0200
+Message-Id: <20220624083809.23487-21-a@...2181...>
 In-Reply-To: <20220624083809.23487-1-a@...2181...>
 References: <20220624083809.23487-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 11/25] dco: split option parsing routines
+Subject: [Openvpn-devel] [PATCH 20/25] dco-win: add platform dependant check
+ on incompatible options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,144 +17,79 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+Cc: Antonio Quartulli <a@...2181...>, Lev Stipakov <lev@...515...>
 
-DCO will try to install keys upon generating them, however, this happens
-when parsing pushed cipher options (due to NCP).
+Some platforms may have different constraints in terms of incompatible
+opions, therefore we add a function that explicitly checks those.
 
-For this reason we need to postpone parsing pushed cipher options to *after*
-the tunnel interface has been opened, otherwise we would have no DCO netdev
-object to operate on.
-
-At the same time we split the parsing code, so that we can ensure that
-the NEW_PEER call can happen after the received peer-id has been parsed
-(it is required by all DCO API calls).
+Also, add generic option check for when ovpn-dco-win is in use.
 
 Signed-off-by: Antonio Quartulli <a@...2181...>
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- src/openvpn/init.c  | 59 ++++++++++++++++++++++++++++-----------------
- src/openvpn/init.h  |  2 ++
- src/openvpn/multi.c |  7 ++++++
- 3 files changed, 46 insertions(+), 22 deletions(-)
+ src/openvpn/dco.c     | 25 +++++++++++++++++++++++++
+ src/openvpn/options.c |  5 +++++
+ 2 files changed, 30 insertions(+)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 06911cd0..b0a4b252 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2068,14 +2068,6 @@ do_up(struct context *c, bool pulled_options, unsigned int option_types_found)
-                 return false;
-             }
-         }
--        else if (c->mode == MODE_POINT_TO_POINT)
--        {
--            if (!do_deferred_p2p_ncp(c))
--            {
--                msg(D_TLS_ERRORS, "ERROR: Failed to apply P2P negotiated protocol options");
--                return false;
--            }
--        }
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index 1612a64e..448f29b5 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -190,6 +190,26 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
+     }
+ }
  
-         /* if --up-delay specified, open tun, do ifconfig, and run up script now */
-         if (c->options.up_delay || PULL_DEFINED(&c->options))
-@@ -2102,6 +2094,22 @@ do_up(struct context *c, bool pulled_options, unsigned int option_types_found)
-             }
-         }
- 
-+        if (!pulled_options && c->mode == MODE_POINT_TO_POINT)
-+        {
-+            if (!do_deferred_p2p_ncp(c))
-+            {
-+                msg(D_TLS_ERRORS, "ERROR: Failed to apply P2P negotiated protocol options");
-+                return false;
-+            }
-+        }
-+
-+        if (!finish_options(c))
-+        {
-+            msg(D_TLS_ERRORS, "ERROR: Failed to finish option processing");
-+            return false;
-+        }
-+
-+
-         if (c->c2.did_open_tun)
-         {
-             c->c1.pulled_options_digest_save = c->c2.pulled_options_digest;
-@@ -2307,23 +2315,30 @@ do_deferred_options(struct context *c, const unsigned int found)
-         {
-             return false;
-         }
--        struct frame *frame_fragment = NULL;
++static bool
++dco_check_option_conflict_platform(int msglevel, const struct options *o)
++{
++#if defined(_WIN32)
++    if (o->mode == MODE_SERVER)
++    {
++        msg(msglevel, "Only client and p2p data channel offload is supported "
++            "with ovpn-dco-win.");
++        return false;
 +    }
 +
++    if (o->persist_tun)
++    {
++        msg(msglevel, "--persist-tun is not supported with ovpn-dco-win.");
++        return false;
++    }
++#endif
 +    return true;
 +}
 +
-+bool
-+finish_options(struct context *c)
-+{
-+    struct frame *frame_fragment = NULL;
- #ifdef ENABLE_FRAGMENT
--        if (c->options.ce.fragment)
--        {
--            frame_fragment = &c->c2.frame_fragment;
--        }
-+    if (c->options.ce.fragment)
-+    {
-+        frame_fragment = &c->c2.frame_fragment;
-+    }
- #endif
+ static bool
+ dco_check_option_conflict_ce(const struct connection_entry *ce, int msglevel)
+ {
+@@ -228,6 +248,11 @@ dco_check_option_conflict(int msglevel, const struct options *o)
+         return false;
+     }
  
--        struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
--        if (!tls_session_update_crypto_params(c->c2.tls_multi, session,
--                                              &c->options, &c->c2.frame,
--                                              frame_fragment,
--                                              get_link_socket_info(c)))
--        {
--            msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
--            return false;
--        }
-+    struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
-+    if (!tls_session_update_crypto_params(c->c2.tls_multi, session,
-+                                          &c->options, &c->c2.frame,
-+                                          frame_fragment,
-+                                          get_link_socket_info(c)))
++    if (!dco_check_option_conflict_platform(msglevel, o))
 +    {
-+        msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
 +        return false;
-     }
- 
-     return true;
-diff --git a/src/openvpn/init.h b/src/openvpn/init.h
-index 2b8c2dcc..98e71d3a 100644
---- a/src/openvpn/init.h
-+++ b/src/openvpn/init.h
-@@ -97,6 +97,8 @@ void reset_coarse_timers(struct context *c);
- 
- bool do_deferred_options(struct context *c, const unsigned int found);
- 
-+bool finish_options(struct context *c);
-+
- void inherit_context_child(struct context *dest,
-                            const struct context *src);
- 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index c72575ae..34ab90b4 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -2405,6 +2405,13 @@ multi_client_connect_late_setup(struct multi_context *m,
-     {
-         mi->context.c2.tls_multi->multi_state = CAS_FAILED;
-     }
-+    /* Continue processing options only if authentication hasn't failed.
-+     * Otherwise it does not make sense and we may operate on a non-configured
-+     * client instance */
-+    else
-+    {
-+        finish_options(&mi->context);
 +    }
++
+     if (dev_type_enum(o->dev, o->dev_type) != DEV_TYPE_TUN)
+     {
+         msg(msglevel, "Note: dev-type not tun, disabling data channel offload.");
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 7b450296..d9da8b8b 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2376,6 +2376,11 @@ options_postprocess_verify_ce(const struct options *options,
+     {
+         msg(M_USAGE, "--windows-driver wintun requires --dev tun");
+     }
++
++    if (options->windows_driver == WINDOWS_DRIVER_WINDCO)
++    {
++        dco_check_option_conflict(M_USAGE, options);
++    }
+ #endif /* ifdef _WIN32 */
  
-     /* send push reply if ready */
-     if (mi->context.c2.push_request_received)
+     /*
 -- 
 2.35.1
 
