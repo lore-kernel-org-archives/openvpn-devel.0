@@ -1,11 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri, 24 Jun 2022 10:38:02 +0200
-Message-Id: <20220624083809.23487-19-a@...2181...>
+Date: Fri, 24 Jun 2022 10:38:03 +0200
+Message-Id: <20220624083809.23487-20-a@...2181...>
 In-Reply-To: <20220624083809.23487-1-a@...2181...>
 References: <20220624083809.23487-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 18/25] dco: turn supported ciphers list into
- a function
+Subject: [Openvpn-devel] [PATCH 19/25] dco-win: implement
+ GetOverlappedResultEx for mingw32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,98 +19,126 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>, Lev Stipakov <lev@...515...>
 
-Other platforms may need more complex logic to decide whether a cipher
-is supported or not, therefore turn hardcoded list into a function that
-can be implemented by each platform independently.
+GetOverlappedResultEx is not available on ming32 therefore we must
+provide some compat layer before being able to use this function.
 
-Signed-off-by: Lev Stipakov <lev@...515...>
 Signed-off-by: Antonio Quartulli <a@...2181...>
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- src/openvpn/dco.c       |  4 ++--
- src/openvpn/dco.h       | 13 +++++++++++++
- src/openvpn/dco_linux.c |  6 ++++++
- src/openvpn/dco_linux.h |  1 -
- 4 files changed, 21 insertions(+), 3 deletions(-)
+ src/compat/Makefile.am                        |  3 +-
+ src/compat/compat-dco_get_overlapped_result.c | 46 +++++++++++++++++++
+ src/compat/compat.h                           |  8 ++++
+ src/compat/compat.vcxproj                     |  1 +
+ src/compat/compat.vcxproj.filters             |  3 ++
+ 5 files changed, 60 insertions(+), 1 deletion(-)
+ create mode 100644 src/compat/compat-dco_get_overlapped_result.c
 
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index 48e007ea..1612a64e 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -236,7 +236,7 @@ dco_check_option_conflict(int msglevel, const struct options *o)
- 
-     /* At this point the ciphers have already been normalised */
-     if (o->enable_ncp_fallback
--        && !tls_item_in_cipher_list(o->ciphername, DCO_SUPPORTED_CIPHERS))
-+        && !tls_item_in_cipher_list(o->ciphername, dco_get_supported_ciphers()))
-     {
-         msg(msglevel, "Note: --data-cipher-fallback with cipher '%s' "
-             "disables data channel offload.", o->ciphername);
-@@ -288,7 +288,7 @@ dco_check_option_conflict(int msglevel, const struct options *o)
-     const char *token;
-     while ((token = strsep(&tmp_ciphers, ":")))
-     {
--        if (!tls_item_in_cipher_list(token, DCO_SUPPORTED_CIPHERS))
-+        if (!tls_item_in_cipher_list(token, dco_get_supported_ciphers()))
-         {
-             msg(msglevel, "Note: cipher '%s' in --data-ciphers is not supported "
-                 "by ovpn-dco, disabling data channel offload.", token);
-diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
-index 4b945b50..66ae444f 100644
---- a/src/openvpn/dco.h
-+++ b/src/openvpn/dco.h
-@@ -200,6 +200,13 @@ void dco_install_iroute(struct multi_context *m, struct multi_instance *mi,
-  */
- void dco_delete_iroutes(struct multi_context *m, struct multi_instance *mi);
- 
-+/**
-+ * Retrieve the list of ciphers supported by the current platform
+diff --git a/src/compat/Makefile.am b/src/compat/Makefile.am
+index 6eb991dc..6dba08aa 100644
+--- a/src/compat/Makefile.am
++++ b/src/compat/Makefile.am
+@@ -28,4 +28,5 @@ libcompat_la_SOURCES = \
+ 	compat-gettimeofday.c \
+ 	compat-daemon.c \
+ 	compat-strsep.c \
+-	compat-versionhelpers.h
++	compat-versionhelpers.h \
++	compat-dco_get_overlapped_result.c
+diff --git a/src/compat/compat-dco_get_overlapped_result.c b/src/compat/compat-dco_get_overlapped_result.c
+new file mode 100644
+index 00000000..e14ce976
+--- /dev/null
++++ b/src/compat/compat-dco_get_overlapped_result.c
+@@ -0,0 +1,46 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
 + *
-+ * @return                   list of colon-separated ciphers
++ *  Copyright (C) 2021-2022 Lev Stipakov <lev@...515...>
++ *  Copyright (C) 2021-2022 OpenVPN Inc <sales@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 + */
-+const char *dco_get_supported_ciphers();
 +
- #else /* if defined(ENABLE_DCO) */
- 
- typedef void *dco_context_t;
-@@ -301,5 +308,11 @@ dco_delete_iroutes(struct multi_context *m, struct multi_instance *mi)
- {
- }
- 
-+static inline const char *
-+dco_get_supported_ciphers()
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#elif defined(_MSC_VER)
++#include "config-msvc.h"
++#endif
++
++#include "compat.h"
++
++#if defined(__MINGW32__) && !defined(__MINGW64__)
++BOOL
++dco_get_overlapped_result(HANDLE handle, OVERLAPPED *ov, DWORD *transferred,
++                          DWORD delay_millisec, BOOL unused)
 +{
-+    return "";
++    BOOL res = GetOverlappedResult(handle, ov, transferred, FALSE);
++    if ((res == 0) && (GetLastError() == ERROR_IO_INCOMPLETE))
++    {
++        Sleep(delay_millisec);
++    }
++    return res;
 +}
++#endif
+diff --git a/src/compat/compat.h b/src/compat/compat.h
+index 026974a8..2b1ad6a6 100644
+--- a/src/compat/compat.h
++++ b/src/compat/compat.h
+@@ -62,4 +62,12 @@ char *strsep(char **stringp, const char *delim);
+ 
+ #endif
+ 
++#if defined(__MINGW32__) && !defined(__MINGW64__)
++BOOL dco_get_overlapped_result(HANDLE handle, OVERLAPPED *ov, DWORD *transferred,
++                               DWORD delay_millisec, BOOL unused);
 +
- #endif /* defined(ENABLE_DCO) */
- #endif /* ifndef DCO_H */
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index 5e77139a..f86ea819 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -931,4 +931,10 @@ dco_event_set(dco_context_t *dco, struct event_set *es, void *arg)
-     }
- }
- 
-+const char *
-+dco_get_supported_ciphers()
-+{
-+    return "AES-128-GCM:AES-256-GCM:AES-192-GCM:CHACHA20-POLY1305";
-+}
++#else
++#define dco_get_overlapped_result GetOverlappedResultEx
++#endif
 +
- #endif /* defined(ENABLE_DCO) && defined(TARGET_LINUX) */
-diff --git a/src/openvpn/dco_linux.h b/src/openvpn/dco_linux.h
-index e0e59fa6..416ea30a 100644
---- a/src/openvpn/dco_linux.h
-+++ b/src/openvpn/dco_linux.h
-@@ -34,7 +34,6 @@
- typedef enum ovpn_key_slot dco_key_slot_t;
- typedef enum ovpn_cipher_alg dco_cipher_t;
- 
--#define DCO_SUPPORTED_CIPHERS "AES-128-GCM:AES-256-GCM:AES-192-GCM:CHACHA20-POLY1305"
- 
- typedef struct
- {
+ #endif /* COMPAT_H */
+diff --git a/src/compat/compat.vcxproj b/src/compat/compat.vcxproj
+index fe03a51a..1dacb503 100644
+--- a/src/compat/compat.vcxproj
++++ b/src/compat/compat.vcxproj
+@@ -159,6 +159,7 @@
+   </ItemDefinitionGroup>
+   <ItemGroup>
+     <ClCompile Include="compat-basename.c" />
++    <ClCompile Include="compat-dco_get_overlapped_result.c" />
+     <ClCompile Include="compat-dirname.c" />
+     <ClCompile Include="compat-gettimeofday.c" />
+     <ClCompile Include="compat-daemon.c" />
+diff --git a/src/compat/compat.vcxproj.filters b/src/compat/compat.vcxproj.filters
+index 96ca026a..73fc9f91 100644
+--- a/src/compat/compat.vcxproj.filters
++++ b/src/compat/compat.vcxproj.filters
+@@ -30,6 +30,9 @@
+     <ClCompile Include="compat-strsep.c">
+       <Filter>Source Files</Filter>
+     </ClCompile>
++    <ClCompile Include="compat-dco_get_overlapped_result.c">
++      <Filter>Source Files</Filter>
++    </ClCompile>
+   </ItemGroup>
+   <ItemGroup>
+     <ClInclude Include="compat.h">
 -- 
 2.35.1
 
