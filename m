@@ -1,17 +1,15 @@
-Date: Fri, 24 Jun 2022 12:26:16 +0200
+Date: Fri, 24 Jun 2022 12:35:47 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <YrWRSH5di07JxGmW@...1296...>
-References: <20181206171033.61310-1-gert@...1296...>
- <06dfe01b-95dd-ae08-4b30-96f85ac2bd9d@...1856...>
- <80e6882a-dd00-eeff-151b-1b67d6e61103@...2181...>
- <a83d231f-2f4b-c51f-e71a-94f13b699ee2@...2181...>
+Message-ID: <YrWTg6ZnqgtkezEP@...1296...>
+References: <20220621161649.2872985-1-arne@...1227...>
+ <20220621161649.2872985-5-arne@...1227...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="vya+/yf7nDi0WUnn"
+ protocol="application/pgp-signature"; boundary="M94lheRE7h3f+p/7"
 Content-Disposition: inline
-In-Reply-To: <a83d231f-2f4b-c51f-e71a-94f13b699ee2@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Rate-limit incoming
- P_CONTROL_HARD_RESET_* packets.
+In-Reply-To: <20220621161649.2872985-5-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 5/6] Change default MTU in server mode
+ to 1420 and push it to client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,30 +18,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---vya+/yf7nDi0WUnn
+--M94lheRE7h3f+p/7
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Jun 24, 2022 at 11:13:40AM +0200, Antonio Quartulli wrote:
-> do we still need this patch after having merged Arne's HMAC feature?
+On Tue, Jun 21, 2022 at 06:16:48PM +0200, Arne Schwabe wrote:
+> This changes the default MTU of the tun-mtu to 1420 to avoid MTU related
+> issues that are even more prominent when DCO server or clients are involv=
+ed.
 
-Yes and no.=20=20
+I'm not convinced that this change "by default" is a desirable change.
 
-*This* patch won't apply anymore, but Arne said "we're now much faster=20
-in replying to packets than ever before" so we might indeed need a=20
-per-source-ip rate-limiter, to something like "10 per 10 seconds" or=20
-so (inventing arbitrary number that should be more than enough even=20
-for "5 users behind the same NAT reconnect at the same time", while=20
-at the same time too low to cause harm as a reflector) for the=20
-initial reply.
+Being able to do that (pushable MTU) is good, but changing the default is
+fairly fundamental, and it will break use cases that rely on 1500 inner
+MTU (and outside fragmentation).=20
+
+Originally, it was said that "with DCO, outside fragmentation is not
+possible", but if I remember right, this turned out to be incorrect,
+and implementations handle outside fragmentation just fine.  So there
+seems to be no hard pressing need to change the default (I am willing
+to be corrected if I misremember something).
+
+Not saying that outside fragmentation is *desirable*, so for TCP,=20
+"mssfix 1492 mtu" will (already) ensure we have no fragmentation
+issues - whatever tun-mtu we have.
 
 gert
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -54,22 +61,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---vya+/yf7nDi0WUnn
+--M94lheRE7h3f+p/7
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJitZFIAAoJEB2Cnv7KVigSVDgMAJBkTO0tDfMEgjr7mDeStXTM
-gpKkbFpEI6sM6uJBDyJUXqZicvWI9shn79rjNWIbQuIgKsjTdyMjzir8PlYS1jBp
-f1j9VcB4I9adCkbjhdIZLMUTcx6MIJreC/18HyUqYTTZwCNoOGqD9giSaj03MkGe
-j0Om6/DhjjHRbJ+cErwZDBNPUXYo9bcXWlgzbT/5h7F8fZ1TkAWQm8rc0SNubf5H
-JUJ6iquCGw6A2msZ21DVdMSI0gedXxCP+X8v/4WKF9P6a6eUNv90uWCo/7ZGjIkC
-dt+Ms3nYeDGvYsw4OIh2drDe84FymdsCBjVy843Wxsf8Aq7gCKvY3TnaqgGq8snH
-O8j8A0VJp1bI74hC8QO6PYD9oKfA/GFG5iI2Di4t/xY3NEkk5JrJLvGyDP6zgspS
-/BwHiH7ZcNOH4SS6v3L4M+/gJH5bYLbkDn2NLe17Z2DODtKtdcfrdF5llgmMBD87
-lOPEkM63mq15IfqD9oWvBWPgESujjK2bmQSzQl8/Bw==
-=P78q
+iQGcBAEBAgAGBQJitZODAAoJEB2Cnv7KVigSBt0L/0TPb1S0LYpdxjw9UyTqLF9A
+o8tbVrZvbbLen/emZtEjhXell6G3d6YOSOAPRhtv145qg4gvCV5uh+z33HqoFx5N
+xmrqj4x7Jw1VRypNzhO419hXBbMDHgBBN2KJd3Rb2u1k5Raxlb5fGAKv+day0JeH
+KICGxST5t+wqL6Z2l0BXeYnJWDzI9Tf4nVhdklr7Dhdmtt/PkDmiSxlBfN1HCTE+
+kdaj4InPa3VfxO/0exO6QTHWRZ2qI+pvpl0aVGlweyWIxB/Eig0eZV+R9t/BLDUs
+gmZaeMTXsi1aYpB/xM3sQcLdFnsqRnminh0HL8fj4dye0l2ubMeqSQ/xi6mPPaCX
+EGJ9QIBUYKjDIejeWvifLHQUuR9/lHWIrE+1VaZwzQ5fgS28kO1vGhOdjiscxWz0
+My1ln+xosBqecKXSQAdKR8iGsV7X+XYBnItzEowQxKxniX2OhiwXl7rp/5aiF52v
+cW+9g/iUaQj5wQsc0wKt4A6Ly1qnLT7pcTGAcfgz0A==
+=pDfg
 -----END PGP SIGNATURE-----
 
---vya+/yf7nDi0WUnn--
+--M94lheRE7h3f+p/7--
 
