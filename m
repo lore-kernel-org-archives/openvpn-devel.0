@@ -1,11 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri, 24 Jun 2022 10:38:00 +0200
-Message-Id: <20220624083809.23487-17-a@...2181...>
+Date: Fri, 24 Jun 2022 10:37:55 +0200
+Message-Id: <20220624083809.23487-12-a@...2181...>
 In-Reply-To: <20220624083809.23487-1-a@...2181...>
 References: <20220624083809.23487-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 16/25] GitHub Actions: add Linux DCO build
- (on Ubuntu 20.04)
+Subject: [Openvpn-devel] [PATCH 11/25] dco: split option parsing routines
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,39 +18,142 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>
 
+DCO will try to install keys upon generating them, however, this happens
+when parsing pushed cipher options (due to NCP).
+
+For this reason we need to postpone parsing pushed cipher options to *after*
+the tunnel interface has been opened, otherwise we would have no DCO netdev
+object to operate on.
+
+At the same time we split the parsing code, so that we can ensure that
+the NEW_PEER call can happen after the received peer-id has been parsed
+(it is required by all DCO API calls).
+
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- .github/workflows/build.yaml | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ src/openvpn/init.c  | 59 ++++++++++++++++++++++++++++-----------------
+ src/openvpn/init.h  |  2 ++
+ src/openvpn/multi.c |  7 ++++++
+ 3 files changed, 46 insertions(+), 22 deletions(-)
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 6c267a61..b905c0d2 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -209,15 +209,22 @@ jobs:
-             libname: OpenSSL 1.1.1
-             ssllib: openssl
-             extraconf: "--disable-lzo --disable-lz4"
-+          - os: ubuntu-20.04
-+            sslpkg: "libssl-dev"
-+            libname: OpenSSL 1.1.1
-+            ssllib: openssl
-+            extraconf: "--enable-dco"
-+            nlpkg: "libnl-genl-3-dev"
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 06911cd0..b0a4b252 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2068,14 +2068,6 @@ do_up(struct context *c, bool pulled_options, unsigned int option_types_found)
+                 return false;
+             }
+         }
+-        else if (c->mode == MODE_POINT_TO_POINT)
+-        {
+-            if (!do_deferred_p2p_ncp(c))
+-            {
+-                msg(D_TLS_ERRORS, "ERROR: Failed to apply P2P negotiated protocol options");
+-                return false;
+-            }
+-        }
  
-     name: "gcc - ${{matrix.os}} - ${{matrix.libname}} ${{matrix.extraconf}}"
-     env:
-       SSLPKG: "${{matrix.sslpkg}}"
-+      NLPKG: "${{matrix.nlpkg}}"
+         /* if --up-delay specified, open tun, do ifconfig, and run up script now */
+         if (c->options.up_delay || PULL_DEFINED(&c->options))
+@@ -2102,6 +2094,22 @@ do_up(struct context *c, bool pulled_options, unsigned int option_types_found)
+             }
+         }
  
-     runs-on: ${{matrix.os}}
-     steps:
-       - name: Install dependencies
--        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf ${SSLPKG}
-+        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf ${SSLPKG} ${NLPKG}
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2620...
-       - name: autoconf
++        if (!pulled_options && c->mode == MODE_POINT_TO_POINT)
++        {
++            if (!do_deferred_p2p_ncp(c))
++            {
++                msg(D_TLS_ERRORS, "ERROR: Failed to apply P2P negotiated protocol options");
++                return false;
++            }
++        }
++
++        if (!finish_options(c))
++        {
++            msg(D_TLS_ERRORS, "ERROR: Failed to finish option processing");
++            return false;
++        }
++
++
+         if (c->c2.did_open_tun)
+         {
+             c->c1.pulled_options_digest_save = c->c2.pulled_options_digest;
+@@ -2307,23 +2315,30 @@ do_deferred_options(struct context *c, const unsigned int found)
+         {
+             return false;
+         }
+-        struct frame *frame_fragment = NULL;
++    }
++
++    return true;
++}
++
++bool
++finish_options(struct context *c)
++{
++    struct frame *frame_fragment = NULL;
+ #ifdef ENABLE_FRAGMENT
+-        if (c->options.ce.fragment)
+-        {
+-            frame_fragment = &c->c2.frame_fragment;
+-        }
++    if (c->options.ce.fragment)
++    {
++        frame_fragment = &c->c2.frame_fragment;
++    }
+ #endif
+ 
+-        struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
+-        if (!tls_session_update_crypto_params(c->c2.tls_multi, session,
+-                                              &c->options, &c->c2.frame,
+-                                              frame_fragment,
+-                                              get_link_socket_info(c)))
+-        {
+-            msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
+-            return false;
+-        }
++    struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
++    if (!tls_session_update_crypto_params(c->c2.tls_multi, session,
++                                          &c->options, &c->c2.frame,
++                                          frame_fragment,
++                                          get_link_socket_info(c)))
++    {
++        msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
++        return false;
+     }
+ 
+     return true;
+diff --git a/src/openvpn/init.h b/src/openvpn/init.h
+index 2b8c2dcc..98e71d3a 100644
+--- a/src/openvpn/init.h
++++ b/src/openvpn/init.h
+@@ -97,6 +97,8 @@ void reset_coarse_timers(struct context *c);
+ 
+ bool do_deferred_options(struct context *c, const unsigned int found);
+ 
++bool finish_options(struct context *c);
++
+ void inherit_context_child(struct context *dest,
+                            const struct context *src);
+ 
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index c72575ae..34ab90b4 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -2405,6 +2405,13 @@ multi_client_connect_late_setup(struct multi_context *m,
+     {
+         mi->context.c2.tls_multi->multi_state = CAS_FAILED;
+     }
++    /* Continue processing options only if authentication hasn't failed.
++     * Otherwise it does not make sense and we may operate on a non-configured
++     * client instance */
++    else
++    {
++        finish_options(&mi->context);
++    }
+ 
+     /* send push reply if ready */
+     if (mi->context.c2.push_request_received)
 -- 
 2.35.1
 
