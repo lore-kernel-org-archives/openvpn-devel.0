@@ -1,12 +1,9 @@
-Date: Fri, 24 Jun 2022 14:18:23 +0200
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <YrWrj87UHMlpGt4S@...2678...>
-References: <20220624111318.3219982-1-arne@...1227...>
- <20220624111318.3219982-2-arne@...1227...>
+Date: Fri, 24 Jun 2022 14:26:57 +0200
+Message-Id: <20220624122657.28675-1-frank@...2641...>
 MIME-Version: 1.0
-In-Reply-To: <20220624111318.3219982-2-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v2 2/4] Implement a function to
- calculate the default MTU
+Subject: [Openvpn-devel] [PATCH] test_crypto: fix test_occ_mtu_calculation
+ with --disable-fragment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +12,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Fri, Jun 24, 2022 at 01:13:16PM +0200, Arne Schwabe wrote:
-> We could also just hardcode this value to 1420 but this approach does
-> not add much (complicated) code and it is a bit better than to have
-> a magic number to just be there.
-> 
-[...]
-> +/**
-> + * Function to calculate the default MTU for Layer 3 VPNs. The function
-> + * assumes that UDP packets should be a maximum of \c MTU_ENCAP_DEFAULT (1492)
-> + * with a AEAD cipher. This default comes out to be 1420.
-> + */
+Doesn't make sense to test with fragment, if the code
+ignores it.
 
-The result of the function is not always 1420.
-E.g. if options.ce.fragment == true.
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ tests/unit_tests/openvpn/test_crypto.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-> +int
-> +frame_calculate_default_mtu(struct options *o);
-> +
-> +
->  /*
->   * EXTENDED_SOCKET_ERROR_CAPABILITY functions -- print extra error info
->   * on socket errors, such as PMTU size.  As of 2003.05.11, only works
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
+index 83572b82..aec4e049 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -299,13 +299,15 @@ test_occ_mtu_calculation(void **state)
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+     assert_int_equal(linkmtu, 1445);
+ 
++#if defined(ENABLE_FRAGMENT)
+     /* secret, comp-lzo yes, cipher BF-CBC, auth SHA1, fragment 1200 */
+     o.ce.fragment = 1200;
+     linkmtu = calc_options_string_link_mtu(&o, &f);
+     assert_int_equal(linkmtu, 1449);
++    o.ce.fragment = 0;
++#endif
+ 
+     o.comp.alg = COMP_ALG_UNDEF;
+-    o.ce.fragment = 0;
+ #endif
+ 
+     /* TLS mode */
+@@ -350,7 +352,7 @@ test_occ_mtu_calculation(void **state)
+     assert_int_equal(linkmtu, 1449);
+ 
+ 
+-#if defined(USE_COMP)
++#if defined(USE_COMP) && defined(ENABLE_FRAGMENT)
+     o.comp.alg = COMP_ALG_LZO;
+ 
+     /* tls client, auth SHA1, cipher AES-256-GCM, fragment, comp-lzo yes */
+-- 
+2.30.2
+
 
