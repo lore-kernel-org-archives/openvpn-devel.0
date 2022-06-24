@@ -1,11 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri, 24 Jun 2022 10:38:06 +0200
-Message-Id: <20220624083809.23487-23-a@...2181...>
+Date: Fri, 24 Jun 2022 10:38:07 +0200
+Message-Id: <20220624083809.23487-24-a@...2181...>
 In-Reply-To: <20220624083809.23487-1-a@...2181...>
 References: <20220624083809.23487-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 22/25] dco-win: introduce low-level code for
- handling ovpn-dco-win in Windows
+Subject: [Openvpn-devel] [PATCH 23/25] dco-win: implement ovpn-dco support
+ in P2P Windows code path
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,773 +19,661 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>, Arne Schwabe <arne@...1227...>, Lev Stipakov <lev@...515...>
 
+With this change it is possible to use ovpn-dco-win when running OpenVPN
+in client or P2P mode.
+
 Signed-off-by: Arne Schwabe <arne@...1227...>
 Signed-off-by: Lev Stipakov <lev@...515...>
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- config-msvc.h                       |   2 +
- configure.ac                        |   9 +-
- dev-tools/special-files.lst         |   1 +
- src/openvpn/Makefile.am             |   4 +-
- src/openvpn/dco_internal.h          |   1 +
- src/openvpn/dco_win.c               | 402 ++++++++++++++++++++++++++++
- src/openvpn/dco_win.h               |  58 ++++
- src/openvpn/openvpn.vcxproj         |   3 +
- src/openvpn/openvpn.vcxproj.filters |   9 +
- src/openvpn/ovpn-dco-win.h          | 108 ++++++++
- 10 files changed, 593 insertions(+), 4 deletions(-)
- create mode 100644 src/openvpn/dco_win.c
- create mode 100644 src/openvpn/dco_win.h
- create mode 100644 src/openvpn/ovpn-dco-win.h
+ src/openvpn/forward.c |  7 ++++
+ src/openvpn/init.c    | 29 +++++++++++--
+ src/openvpn/options.c | 19 ++++++---
+ src/openvpn/options.h | 15 +++----
+ src/openvpn/socket.c  | 94 ++++++++++++++++++++++++++++++++++++++++---
+ src/openvpn/socket.h  | 25 ++++++++----
+ src/openvpn/tun.c     | 43 +++++++++++++++-----
+ src/openvpn/tun.h     | 58 ++++++++++++++++++--------
+ 8 files changed, 233 insertions(+), 57 deletions(-)
 
-diff --git a/config-msvc.h b/config-msvc.h
-index b08beb52..b621f3fb 100644
---- a/config-msvc.h
-+++ b/config-msvc.h
-@@ -87,3 +87,5 @@ typedef uint16_t in_port_t;
- #ifdef HAVE_CONFIG_MSVC_LOCAL_H
- #include <config-msvc-local.h>
- #endif
-+
-+#define ENABLE_DCO 1
-diff --git a/configure.ac b/configure.ac
-index 353da08c..bebed1ac 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -144,7 +144,7 @@ AC_ARG_ENABLE(
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 15bdbbae..1fbad43f 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -860,6 +860,13 @@ read_incoming_link(struct context *c)
+     /* check recvfrom status */
+     check_status(status, "read", c->c2.link_socket, NULL);
  
- AC_ARG_ENABLE(
- 	[dco],
--	[AS_HELP_STRING([--enable-dco], [enable data channel offload support using ovpn-dco kernel module @<:@default=no@:>@])],
-+	[AS_HELP_STRING([--enable-dco], [enable data channel offload support using the ovpn-dco kernel module (always enabled on Windows) @<:@default=no@:>@])],
- 	,
- 	[enable_dco="no"]
- )
-@@ -328,6 +328,7 @@ case "$host" in
- 		;;
- 	*-mingw*)
- 		AC_DEFINE([TARGET_WIN32], [1], [Are we running WIN32?])
-+		AC_DEFINE([ENABLE_DCO], [1], [DCO is always enabled on Windows])
- 		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["W"], [Target prefix])
- 		CPPFLAGS="${CPPFLAGS} -DWIN32_LEAN_AND_MEAN"
- 		CPPFLAGS="${CPPFLAGS} -DNTDDI_VERSION=NTDDI_VISTA -D_WIN32_WINNT=_WIN32_WINNT_VISTA"
-@@ -772,7 +773,6 @@ if test "$enable_dco" = "yes"; then
- dnl
- dnl Include generic netlink library used to talk to ovpn-dco
- dnl
--
- 	case "$host" in
- 		*-*-linux*)
- 			PKG_CHECK_MODULES([LIBNL_GENL],
-@@ -787,8 +787,11 @@ dnl
- 			AC_DEFINE(ENABLE_DCO, 1, [Enable shared data channel offload])
- 			AC_MSG_NOTICE([Enabled ovpn-dco support for Linux])
- 			;;
-+		*-mingw*)
-+			AC_MSG_NOTICE([NOTE: --enable-dco ignored on Windows because it's always enabled])
-+			;;
- 		*)
--			AC_MSG_NOTICE([Ignoring --enable-dco on non Linux platform])
-+			AC_MSG_NOTICE([Ignoring --enable-dco on non supported platform])
- 			;;
- 	esac
- fi
-diff --git a/dev-tools/special-files.lst b/dev-tools/special-files.lst
-index 33e830d7..6d0bc055 100644
---- a/dev-tools/special-files.lst
-+++ b/dev-tools/special-files.lst
-@@ -2,3 +2,4 @@ E:doc/doxygen/doc_key_generation.h     # @verbatim section gets mistreated, excl
- E:src/compat/compat-lz4.c              # Preserve LZ4 upstream formatting
- E:src/compat/compat-lz4.h              # Preserve LZ4 upstream formatting
- E:src/openvpn/ovpn_dco_linux.h         # Preserve ovpn-dco upstream formatting
-+E:src/openvpn/ovpn-dco-win.h           # Preserve ovpn-dco-win upstream formatting
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index aaa1dbce..8d0e66b4 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -55,6 +55,7 @@ openvpn_SOURCES = \
- 	crypto_mbedtls.c crypto_mbedtls.h \
- 	dco.c dco.h dco_internal.h \
- 	dco_linux.c dco_linux.h \
-+	dco_win.c dco_win.h \
- 	dhcp.c dhcp.h \
- 	dns.c dns.h \
- 	env_set.c env_set.h \
-@@ -77,6 +78,7 @@ openvpn_SOURCES = \
- 	mbuf.c mbuf.h \
- 	memdbg.h \
- 	misc.c misc.h \
-+	ovpn-dco-win.h \
- 	ovpn_dco_linux.h \
- 	platform.c platform.h \
- 	console.c console.h console_builtin.c console_systemd.c \
-@@ -151,5 +153,5 @@ openvpn_LDADD = \
- 	$(OPTIONAL_INOTIFY_LIBS)
- if WIN32
- openvpn_SOURCES += openvpn_win32_resources.rc block_dns.c block_dns.h ring_buffer.h
--openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4 -lncrypt -lsetupapi
-+openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4 -lncrypt -lsetupapi -lbcrypt
- endif
-diff --git a/src/openvpn/dco_internal.h b/src/openvpn/dco_internal.h
-index 3ceb26d6..968d4042 100644
---- a/src/openvpn/dco_internal.h
-+++ b/src/openvpn/dco_internal.h
-@@ -28,6 +28,7 @@
- #if defined(ENABLE_DCO)
- 
- #include "dco_linux.h"
-+#include "dco_win.h"
- 
- /**
-  * This file contains the internal DCO API definition.
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-new file mode 100644
-index 00000000..8dfe8ecb
---- /dev/null
-+++ b/src/openvpn/dco_win.c
-@@ -0,0 +1,402 @@
-+/*
-+ *  Interface to ovpn-win-dco networking code
-+ *
-+ *  Copyright (C) 2020-2022 Arne Schwabe <arne@...1227...>
-+ *  Copyright (C) 2020-2022 OpenVPN Inc <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#elif defined(_MSC_VER)
-+#include "config-msvc.h"
++#ifdef _WIN32
++    if (dco_enabled(&c->options) && (status < 0) && (openvpn_errno() == ERROR_NETNAME_DELETED))
++    {
++        trigger_ping_timeout_signal(c);
++    }
 +#endif
 +
+     /* Remove socks header if applicable */
+     socks_postprocess_incoming_link(c);
+ 
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index f95dcb93..77f36a1a 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1673,7 +1673,8 @@ do_init_tun(struct context *c)
+                             c->c1.link_socket_addr.remote_list,
+                             !c->options.ifconfig_nowarn,
+                             c->c2.es,
+-                            &c->net_ctx);
++                            &c->net_ctx,
++                            c->c1.tuntap);
+ 
+ #ifdef _WIN32
+     c->c1.tuntap->windows_driver = c->options.windows_driver;
+@@ -1787,9 +1788,12 @@ do_open_tun(struct context *c)
+             ovpn_dco_init(c->mode, &c->c1.tuntap->dco);
+         }
+ 
+-        /* open the tun device */
+-        open_tun(c->options.dev, c->options.dev_type, c->options.dev_node,
+-                 c->c1.tuntap, &c->net_ctx);
++        /* open the tun device (ovpn-dco-win already opened the device for the socket) */
++        if (!is_windco(c->c1.tuntap))
++        {
++            open_tun(c->options.dev, c->options.dev_type, c->options.dev_node,
++                     c->c1.tuntap, &c->net_ctx);
++        }
+ 
+         /* set the hardware address */
+         if (c->options.lladdr)
+@@ -3541,6 +3545,23 @@ do_close_free_key_schedule(struct context *c, bool free_ssl_ctx)
+ static void
+ do_close_link_socket(struct context *c)
+ {
 +#if defined(_WIN32)
++    if (is_windco(c->c1.tuntap) && c->c2.link_socket
++        && c->c2.link_socket->info.dco_installed)
++    {
++        ASSERT(c->c2.link_socket_owned);
 +
-+#include "syshead.h"
-+
-+#include "dco.h"
-+#include "tun.h"
-+#include "crypto.h"
-+#include "ssl_common.h"
-+
-+#include <bcrypt.h>
-+#include <winsock2.h>
-+#include <ws2tcpip.h>
-+
-+#if defined(__MINGW32__)
-+const IN_ADDR in4addr_any = { 0 };
++        /* We rely on the tun_close to close the handle if also setup
++         * routes etc, since they cannot be delete when the interface
++         * handle has been closed */
++        if (!c->c1.tuntap->dco.real_tun_init)
++        {
++            do_close_tun_simple(c);
++        }
++        c->c2.link_socket->sd = SOCKET_UNDEFINED;
++    }
 +#endif
 +
-+static struct tuntap
-+create_dco_handle(const char *devname, struct gc_arena *gc)
-+{
-+    struct tuntap tt = { .windows_driver = WINDOWS_DRIVER_WINDCO };
-+    const char *device_guid;
+     if (c->c2.link_socket && c->c2.link_socket_owned)
+     {
+         link_socket_close(c->c2.link_socket);
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index d9da8b8b..00823604 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3151,8 +3151,8 @@ options_postprocess_mutate_invariant(struct options *options)
+ #ifdef _WIN32
+     const int dev = dev_type_enum(options->dev, options->dev_type);
+ 
+-    /* when using wintun, kernel doesn't send DHCP requests, so don't use it */
+-    if (options->windows_driver == WINDOWS_DRIVER_WINTUN
++    /* when using wintun/ovpn-dco-win, kernel doesn't send DHCP requests, so don't use it */
++    if ((options->windows_driver == WINDOWS_DRIVER_WINTUN || options->windows_driver == WINDOWS_DRIVER_WINDCO)
+         && (options->tuntap_options.ip_win32_type == IPW32_SET_DHCP_MASQ || options->tuntap_options.ip_win32_type == IPW32_SET_ADAPTIVE))
+     {
+         options->tuntap_options.ip_win32_type = IPW32_SET_NETSH;
+@@ -3248,10 +3248,12 @@ options_postprocess_setdefault_ncpciphers(struct options *o)
+         /* custom --data-ciphers set, keep list */
+         return;
+     }
++#if !defined(_WIN32)
+     else if (cipher_valid("CHACHA20-POLY1305"))
+     {
+         o->ncp_ciphers = "AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
+     }
++#endif
+     else
+     {
+         o->ncp_ciphers = "AES-256-GCM:AES-128-GCM";
+@@ -4076,7 +4078,8 @@ options_string(const struct options *o,
+                       NULL,
+                       false,
+                       NULL,
+-                      ctx);
++                      ctx,
++                      NULL);
+         if (tt)
+         {
+             tt_local = true;
+@@ -4463,13 +4466,19 @@ parse_windows_driver(const char *str, const int msglevel)
+     {
+         return WINDOWS_DRIVER_WINTUN;
+     }
 +
-+    tun_open_device(&tt, devname, &device_guid, gc);
-+
-+    return tt;
-+}
-+
-+bool
-+ovpn_dco_init(int mode, dco_context_t *dco)
-+{
-+    return true;
-+}
-+
-+int
-+open_tun_dco(struct tuntap *tt, openvpn_net_ctx_t *ctx, const char *dev)
-+{
-+    ASSERT(0);
-+    return 0;
-+}
-+
++    else if (streq(str, "ovpn-dco-win"))
++    {
++        return WINDOWS_DRIVER_WINDCO;
++    }
+     else
+     {
+-        msg(msglevel, "--windows-driver must be tap-windows6 or wintun");
++        msg(msglevel, "--windows-driver must be tap-windows6, wintun "
++            "or ovpn-dco-win");
+         return WINDOWS_DRIVER_UNSPECIFIED;
+     }
+ }
+-#endif
++#endif /* ifdef _WIN32 */
+ 
+ /*
+  * parse/print topology coding
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 8152e755..3a5b433e 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -879,24 +879,19 @@ void options_string_import(struct options *options,
+ 
+ bool key_is_external(const struct options *options);
+ 
+-#if defined(ENABLE_DCO) && defined(TARGET_LINUX)
+-
+ /**
+  * Returns whether the current configuration has dco enabled.
+  */
+ static inline bool
+ dco_enabled(const struct options *o)
+ {
++#if defined(_WIN32)
++    return o->windows_driver == WINDOWS_DRIVER_WINDCO;
++#elif defined(ENABLE_DCO)
+     return !o->tuntap_options.disable_dco;
+-}
+-
+-#else /* if defined(ENABLE_DCO) && defined(TARGET_LINUX) */
+-
+-static inline bool
+-dco_enabled(const struct options *o)
+-{
++#else
+     return false;
++#endif /* defined(_WIN32) */
+ }
+ 
+-#endif
+ #endif /* ifndef OPTIONS_H */
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 4e4a3a2f..baca86c3 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -2119,6 +2119,38 @@ phase2_socks_client(struct link_socket *sock, struct signal_info *sig_info)
+     resolve_remote(sock, 1, NULL, &sig_info->signal_received);
+ }
+ 
++#if defined(_WIN32)
 +static void
-+dco_wait_ready(DWORD idx)
++create_socket_windco(struct context *c, struct link_socket *sock,
++                     volatile int *signal_received)
 +{
-+    for (int i = 0; i < 20; ++i)
-+    {
-+        MIB_IPINTERFACE_ROW row = {.InterfaceIndex = idx, .Family = AF_INET};
-+        if (GetIpInterfaceEntry(&row) != ERROR_NOT_FOUND)
-+        {
-+            break;
-+        }
-+        msg(D_DCO_DEBUG, "interface %ld not yet ready, retrying", idx);
-+        Sleep(50);
-+    }
-+}
-+
-+void
-+dco_start_tun(struct tuntap *tt)
-+{
-+    msg(D_DCO_DEBUG, "%s", __func__);
-+
-+    /* reference the tt object inside the DCO context, because the latter will
-+     * be passed around
-+     */
-+    tt->dco.tt = tt;
-+
-+    DWORD bytes_returned = 0;
-+    if (!DeviceIoControl(tt->hand, OVPN_IOCTL_START_VPN, NULL, 0, NULL, 0,
-+                         &bytes_returned, NULL))
-+    {
-+        msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_START_VPN) failed with code %lu",
-+            GetLastError());
-+    }
-+
-+    /* Sometimes IP Helper API, which we use for setting IP address etc,
-+     * complains that interface is not found. Give it some time to settle
-+     */
-+    dco_wait_ready(tt->adapter_index);
-+}
-+
-+static int
-+dco_connect_wait(HANDLE handle, OVERLAPPED *ov, int timeout, volatile int *signal_received)
-+{
-+    DWORD timeout_msec = timeout * 1000;
-+    const int poll_interval_ms = 50;
-+
-+    while (timeout_msec > 0)
-+    {
-+        timeout_msec -= poll_interval_ms;
-+
-+        DWORD transferred;
-+        if (dco_get_overlapped_result(handle, ov, &transferred, poll_interval_ms, FALSE) != 0)
-+        {
-+            /* TCP connection established by dco */
-+            return 0;
-+        }
-+
-+        DWORD err = GetLastError();
-+        if ((err != WAIT_TIMEOUT) && (err != ERROR_IO_INCOMPLETE))
-+        {
-+            /* dco reported connection error */
-+            struct gc_arena gc = gc_new();
-+            msg(M_NONFATAL, "%s: %s", __func__, strerror_win32(err, &gc));
-+            *signal_received = SIGUSR1;
-+            gc_free(&gc);
-+            return -1;
-+        }
-+
-+        get_signal(signal_received);
-+        if (*signal_received)
-+        {
-+            return -1;
-+        }
-+
-+        management_sleep(0);
-+    }
-+
-+    /* we end up here when timeout occurs in userspace */
-+    msg(M_NONFATAL, "%s: dco connect timeout", __func__);
-+    *signal_received = SIGUSR1;
-+
-+    return -1;
-+}
-+
-+struct tuntap
-+dco_create_socket(struct addrinfo *remoteaddr, bool bind_local,
-+                  struct addrinfo *bind, const char *devname,
-+                  struct gc_arena *gc, int timeout,
-+                  volatile int *signal_received)
-+{
-+    msg(D_DCO_DEBUG, "%s", __func__);
-+
-+    OVPN_NEW_PEER peer = { 0 };
-+
-+    struct sockaddr *local = NULL;
-+    struct sockaddr *remote = remoteaddr->ai_addr;
-+
-+    if (remoteaddr->ai_protocol == IPPROTO_TCP
-+        || remoteaddr->ai_socktype == SOCK_STREAM)
-+    {
-+        peer.Proto = OVPN_PROTO_TCP;
-+    }
-+    else
-+    {
-+        peer.Proto = OVPN_PROTO_UDP;
-+    }
-+
-+    if (bind_local)
-+    {
-+        /* Use first local address with correct address family */
-+        while (bind && !local)
-+        {
-+            if (bind->ai_family == remote->sa_family)
-+            {
-+                local = bind->ai_addr;
-+            }
-+            bind = bind->ai_next;
-+        }
-+    }
-+
-+    if (bind_local && !local)
-+    {
-+        msg(M_FATAL, "DCO: Socket bind failed: Address to bind lacks %s record",
-+            addr_family_name(remote->sa_family));
-+    }
-+
-+    if (remote->sa_family == AF_INET6)
-+    {
-+        peer.Remote.Addr6 = *((SOCKADDR_IN6 *)(remoteaddr->ai_addr));
-+        if (local)
-+        {
-+            peer.Local.Addr6 = *((SOCKADDR_IN6 *)local);
-+        }
-+        else
-+        {
-+            peer.Local.Addr6.sin6_addr = in6addr_any;
-+            peer.Local.Addr6.sin6_port = 0;
-+            peer.Local.Addr6.sin6_family = AF_INET6;
-+        }
-+    }
-+    else if (remote->sa_family == AF_INET)
-+    {
-+        peer.Remote.Addr4 = *((SOCKADDR_IN *)(remoteaddr->ai_addr));
-+        if (local)
-+        {
-+            peer.Local.Addr4 = *((SOCKADDR_IN *)local);
-+        }
-+        else
-+        {
-+            peer.Local.Addr4.sin_addr = in4addr_any;
-+            peer.Local.Addr4.sin_port = 0;
-+            peer.Local.Addr4.sin_family = AF_INET;
-+        }
-+    }
-+    else
-+    {
-+        ASSERT(0);
-+    }
-+
-+    struct tuntap tt = create_dco_handle(devname, gc);
-+
-+    OVERLAPPED ov = { 0 };
-+    if (!DeviceIoControl(tt.hand, OVPN_IOCTL_NEW_PEER, &peer, sizeof(peer), NULL, 0, NULL, &ov))
-+    {
-+        DWORD err = GetLastError();
-+        if (err != ERROR_IO_PENDING)
-+        {
-+            msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_NEW_PEER) failed with code %lu", err);
-+        }
-+        else
-+        {
-+            if (dco_connect_wait(tt.hand, &ov, timeout, signal_received) < 0)
-+            {
-+                close_tun_handle(&tt);
-+            }
-+        }
-+    }
-+    return tt;
-+}
-+
-+int
-+dco_new_peer(dco_context_t *dco, unsigned int peerid, int sd,
-+             struct sockaddr *localaddr, struct sockaddr *remoteaddr,
-+             struct in_addr *remote_in4, struct in6_addr *remote_in6)
-+{
-+    msg(D_DCO_DEBUG, "%s: peer-id %d, fd %d", __func__, peerid, sd);
-+    return 0;
-+}
-+
-+int
-+dco_del_peer(dco_context_t *dco, unsigned int peerid)
-+{
-+    msg(D_DCO_DEBUG, "%s: peer-id %d - not implemented", __func__, peerid);
-+    return 0;
-+}
-+
-+int
-+dco_set_peer(dco_context_t *dco, unsigned int peerid,
-+             int keepalive_interval, int keepalive_timeout, int mss)
-+{
-+    msg(D_DCO_DEBUG, "%s: peer-id %d, keepalive %d/%d, mss %d", __func__,
-+        peerid, keepalive_interval, keepalive_timeout, mss);
-+
-+    OVPN_SET_PEER peer;
-+
-+    peer.KeepaliveInterval =  keepalive_interval;
-+    peer.KeepaliveTimeout = keepalive_timeout;
-+    peer.MSS = mss;
-+
-+    DWORD bytes_returned = 0;
-+    if (!DeviceIoControl(dco->tt->hand, OVPN_IOCTL_SET_PEER, &peer,
-+                         sizeof(peer), NULL, 0, &bytes_returned, NULL))
-+    {
-+        msg(M_WARN, "DeviceIoControl(OVPN_IOCTL_SET_PEER) failed with code %lu", GetLastError());
-+        return -1;
-+    }
-+    return 0;
-+}
-+
-+int
-+dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid,
-+            dco_key_slot_t slot,
-+            const uint8_t *encrypt_key, const uint8_t *encrypt_iv,
-+            const uint8_t *decrypt_key, const uint8_t *decrypt_iv,
-+            const char *ciphername)
-+{
-+    msg(D_DCO_DEBUG, "%s: slot %d, key-id %d, peer-id %d, cipher %s",
-+        __func__, slot, keyid, peerid, ciphername);
-+
-+    const int nonce_len = 8;
-+    size_t key_len = cipher_kt_key_size(ciphername);
-+
-+    OVPN_CRYPTO_DATA crypto_data;
-+    ZeroMemory(&crypto_data, sizeof(crypto_data));
-+
-+    crypto_data.CipherAlg = dco_get_cipher(ciphername);
-+    crypto_data.KeyId = keyid;
-+    crypto_data.PeerId = peerid;
-+    crypto_data.KeySlot = slot;
-+
-+    CopyMemory(crypto_data.Encrypt.Key, encrypt_key, key_len);
-+    crypto_data.Encrypt.KeyLen = (char)key_len;
-+    CopyMemory(crypto_data.Encrypt.NonceTail, encrypt_iv, nonce_len);
-+
-+    CopyMemory(crypto_data.Decrypt.Key, decrypt_key, key_len);
-+    crypto_data.Decrypt.KeyLen = (char)key_len;
-+    CopyMemory(crypto_data.Decrypt.NonceTail, decrypt_iv, nonce_len);
-+
-+    ASSERT(crypto_data.CipherAlg > 0);
-+
-+    DWORD bytes_returned = 0;
-+
-+    if (!DeviceIoControl(dco->tt->hand, OVPN_IOCTL_NEW_KEY, &crypto_data,
-+                         sizeof(crypto_data), NULL, 0, &bytes_returned, NULL))
-+    {
-+        msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_NEW_KEY) failed with code %lu",
-+            GetLastError());
-+        return -1;
-+    }
-+    return 0;
-+}
-+int
-+dco_del_key(dco_context_t *dco, unsigned int peerid, dco_key_slot_t slot)
-+{
-+    msg(D_DCO, "%s: peer-id %d, slot %d called but ignored", __func__, peerid,
-+        slot);
-+    /* FIXME: Implement in driver first */
-+    return 0;
-+}
-+
-+int
-+dco_swap_keys(dco_context_t *dco, unsigned int peer_id)
-+{
-+    msg(D_DCO_DEBUG, "%s: peer-id %d", __func__, peer_id);
-+
-+    DWORD bytes_returned = 0;
-+    if (!DeviceIoControl(dco->tt->hand, OVPN_IOCTL_SWAP_KEYS, NULL, 0, NULL, 0,
-+                         &bytes_returned, NULL))
-+    {
-+        msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_SWAP_KEYS) failed with code %lu",
-+            GetLastError());
-+        return -1;
-+    }
-+    return 0;
-+}
-+
-+bool
-+dco_available(int msglevel)
-+{
-+    return true;
-+}
-+
-+int
-+dco_do_read(dco_context_t *dco)
-+{
-+    /* no-op on windows */
-+    return 0;
-+}
-+
-+int
-+dco_do_write(dco_context_t *dco, int peer_id, struct buffer *buf)
-+{
-+    /* no-op on windows */
-+    return 0;
-+}
-+
-+void
-+dco_event_set(dco_context_t *dco, struct event_set *es, void *arg)
-+{
-+    /* no-op on windows */
-+}
-+
-+const char *
-+dco_get_supported_ciphers()
-+{
-+    /*
-+     * this API can be called either from user mode or kernel mode,
-+     * which enables us to probe driver's chachapoly support
-+     * (available starting from Windows 11)
-+     */
-+
-+    BCRYPT_ALG_HANDLE h;
-+    NTSTATUS status = BCryptOpenAlgorithmProvider(&h, L"CHACHA20_POLY1305", NULL, 0);
-+    if (BCRYPT_SUCCESS(status))
-+    {
-+        BCryptCloseAlgorithmProvider(h, 0);
-+        return "AES-128-GCM:AES-256-GCM:AES-192-GCM:CHACHA20-POLY1305";
-+    }
-+    else
-+    {
-+        return "AES-128-GCM:AES-256-GCM:AES-192-GCM";
-+    }
-+}
-+
-+#endif /* defined(_WIN32) */
-diff --git a/src/openvpn/dco_win.h b/src/openvpn/dco_win.h
-new file mode 100644
-index 00000000..3b746dd8
---- /dev/null
-+++ b/src/openvpn/dco_win.h
-@@ -0,0 +1,58 @@
-+/*
-+ *  Interface to ovpn-win-dco networking code
-+ *
-+ *  Copyright (C) 2020-2022 Arne Schwabe <arne@...1227...>
-+ *  Copyright (C) 2020-2022 OpenVPN Inc <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
-+
-+#ifndef DCO_WIN_H
-+#define DCO_WIN_H
-+
-+#if defined(ENABLE_DCO) && defined(_WIN32)
-+
-+#include "buffer.h"
-+#include "ovpn-dco-win.h"
-+
-+typedef OVPN_KEY_SLOT dco_key_slot_t;
-+typedef OVPN_CIPHER_ALG dco_cipher_t;
-+
-+struct dco_context {
-+    bool real_tun_init;
 +    struct tuntap *tt;
-+};
++    /* In this case persist-tun is enabled, which we don't support yet */
++    ASSERT(!c->c1.tuntap);
 +
-+typedef struct dco_context dco_context_t;
++    ALLOC_OBJ(tt, struct tuntap);
 +
-+struct tuntap
-+dco_create_socket(struct addrinfo *remoteaddr, bool bind_local,
-+                  struct addrinfo *bind, const char *devname,
-+                  struct gc_arena *gc, int timeout,
-+                  volatile int *signal_received);
++    *tt = dco_create_socket(sock->info.lsa->current_remote,
++                            sock->bind_local,
++                            sock->info.lsa->bind_local,
++                            c->options.dev_node,
++                            &c->gc,
++                            get_server_poll_remaining_time(sock->server_poll_timeout),
++                            signal_received);
++    if (*signal_received)
++    {
++        return;
++    }
 +
++    c->c1.tuntap = tt;
++    sock->info.dco_installed = true;
++
++    /* Ensure we can "safely" cast the handle to a socket */
++    static_assert(sizeof(sock->sd) == sizeof(tt->hand), "HANDLE and SOCKET size differs");
++    sock->sd = (SOCKET)tt->hand;
++}
++#endif /* if defined(_WIN32) */
++
+ /* finalize socket initialization */
+ void
+ link_socket_init_phase2(struct context *c)
+@@ -2158,7 +2190,24 @@ link_socket_init_phase2(struct context *c)
+     /* If a valid remote has been found, create the socket with its addrinfo */
+     if (sock->info.lsa->current_remote)
+     {
+-        create_socket(sock, sock->info.lsa->current_remote);
++#if defined(_WIN32)
++        if (dco_enabled(&c->options))
++        {
++            create_socket_windco(c, sock, &sig_info->signal_received);
++            if (sig_info->signal_received)
++            {
++                goto done;
++            }
++
++            linksock_print_addr(sock);
++            goto done;
++        }
++        else
++#endif
++        {
++            create_socket(sock, sock->info.lsa->current_remote);
++        }
++
+     }
+ 
+     /* If socket has not already been created create it now */
+@@ -3459,7 +3508,14 @@ socket_recv_queue(struct link_socket *sock, int maxsize)
+         ASSERT(ResetEvent(sock->reads.overlapped.hEvent));
+         sock->reads.flags = 0;
+ 
+-        if (proto_is_udp(sock->info.proto))
++        if (sock->info.dco_installed)
++        {
++            status = ReadFile((HANDLE)sock->sd, wsabuf[0].buf, wsabuf[0].len,
++                              &sock->reads.size, &sock->reads.overlapped);
++            /* Readfile status is inverted from WSARecv */
++            status = !status;
++        }
++        else if (proto_is_udp(sock->info.proto))
+         {
+             sock->reads.addr_defined = true;
+             sock->reads.addrlen = sizeof(sock->reads.addr6);
+@@ -3512,7 +3568,14 @@ socket_recv_queue(struct link_socket *sock, int maxsize)
+         }
+         else
+         {
+-            status = WSAGetLastError();
++            if (sock->info.dco_installed)
++            {
++                status = GetLastError();
++            }
++            else
++            {
++                status = WSAGetLastError();
++            }
+             if (status == WSA_IO_PENDING) /* operation queued? */
+             {
+                 sock->reads.iostate = IOSTATE_QUEUED;
+@@ -3557,7 +3620,16 @@ socket_send_queue(struct link_socket *sock, struct buffer *buf, const struct lin
+         ASSERT(ResetEvent(sock->writes.overlapped.hEvent));
+         sock->writes.flags = 0;
+ 
+-        if (proto_is_udp(sock->info.proto))
++        if (sock->info.dco_installed)
++        {
++            status = WriteFile((HANDLE)sock->sd, wsabuf[0].buf, wsabuf[0].len,
++                               &sock->writes.size, &sock->writes.overlapped);
++
++            /* WriteFile status is inverted from WSASendTo */
++            status = !status;
++
++        }
++        else if (proto_is_udp(sock->info.proto))
+         {
+             /* set destination address for UDP writes */
+             sock->writes.addr_defined = true;
+@@ -3618,8 +3690,17 @@ socket_send_queue(struct link_socket *sock, struct buffer *buf, const struct lin
+         }
+         else
+         {
+-            status = WSAGetLastError();
+-            if (status == WSA_IO_PENDING) /* operation queued? */
++            if (sock->info.dco_installed)
++            {
++                status = GetLastError();
++            }
++            else
++            {
++                status = WSAGetLastError();
++            }
++
++            /* both status code have the identical value */
++            if (status == WSA_IO_PENDING || status == ERROR_IO_PENDING) /* operation queued? */
+             {
+                 sock->writes.iostate = IOSTATE_QUEUED;
+                 sock->writes.status = status;
+@@ -3644,6 +3725,7 @@ socket_send_queue(struct link_socket *sock, struct buffer *buf, const struct lin
+     return sock->writes.iostate;
+ }
+ 
++/* Returns the number of bytes successfully read */
+ int
+ sockethandle_finalize(sockethandle_t sh,
+                       struct overlapped_io *io,
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 0d521d22..462afa31 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -34,6 +34,7 @@
+ #include "proxy.h"
+ #include "socks.h"
+ #include "misc.h"
++#include "tun.h"
+ 
+ /*
+  * OpenVPN's default port number as assigned by IANA.
+@@ -937,7 +938,8 @@ socket_connection_reset(const struct link_socket *sock, int status)
+         {
+             const int err = openvpn_errno();
+ #ifdef _WIN32
+-            return err == WSAECONNRESET || err == WSAECONNABORTED;
++            return err == WSAECONNRESET || err == WSAECONNABORTED
++                   || err == ERROR_CONNECTION_ABORTED;
+ #else
+             return err == ECONNRESET;
+ #endif
+@@ -1048,6 +1050,11 @@ link_socket_read_udp_win32(struct link_socket *sock,
+                            struct link_socket_actual *from)
+ {
+     sockethandle_t sh = { .s = sock->sd };
++    if (sock->info.dco_installed)
++    {
++        addr_copy_sa(&from->dest, &sock->info.lsa->actual.dest);
++        sh.is_handle = true;
++    }
+     return sockethandle_finalize(sh, &sock->reads, buf, from);
+ }
+ 
+@@ -1057,7 +1064,7 @@ int link_socket_read_udp_posix(struct link_socket *sock,
+                                struct buffer *buf,
+                                struct link_socket_actual *from);
+ 
+-#endif
++#endif /* ifdef _WIN32 */
+ 
+ /* read a TCP or UDP packet from link */
+ static inline int
+@@ -1065,7 +1072,10 @@ link_socket_read(struct link_socket *sock,
+                  struct buffer *buf,
+                  struct link_socket_actual *from)
+ {
+-    if (proto_is_udp(sock->info.proto)) /* unified UDPv4 and UDPv6 */
++    if (proto_is_udp(sock->info.proto)
++        || sock->info.dco_installed)
++    /* unified UDPv4 and UDPv6, for DCO the kernel
++     * will strip the length header */
+     {
+         int res;
+ 
+@@ -1106,19 +1116,19 @@ link_socket_write_win32(struct link_socket *sock,
+ {
+     int err = 0;
+     int status = 0;
+-    sockethandle_t sh = { .s = sock->sd };
++    sockethandle_t sh = { .s = sock->sd, .is_handle = sock->info.dco_installed };
+     if (overlapped_io_active(&sock->writes))
+     {
+         status = sockethandle_finalize(sh, &sock->writes, NULL, NULL);
+         if (status < 0)
+         {
+-            err = WSAGetLastError();
++            err = SocketHandleGetLastError(sh);
+         }
+     }
+     socket_send_queue(sock, buf, to);
+     if (status < 0)
+     {
+-        WSASetLastError(err);
++        SocketHandleSetLastError(sh, err);
+         return status;
+     }
+     else
+@@ -1180,8 +1190,9 @@ link_socket_write(struct link_socket *sock,
+                   struct buffer *buf,
+                   struct link_socket_actual *to)
+ {
+-    if (proto_is_udp(sock->info.proto)) /* unified UDPv4 and UDPv6 */
++    if (proto_is_udp(sock->info.proto) || sock->info.dco_installed)
+     {
++        /* unified UDPv4 and UDPv6 and DCO (kernel adds size header) */
+         return link_socket_write_udp(sock, buf, to);
+     }
+     else if (proto_is_tcp(sock->info.proto)) /* unified TCPv4 and TCPv6 */
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index f324ac91..9b9725d7 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -742,13 +742,23 @@ init_tun(const char *dev,        /* --dev option */
+          struct addrinfo *remote_public,
+          const bool strict_warn,
+          struct env_set *es,
+-         openvpn_net_ctx_t *ctx)
++         openvpn_net_ctx_t *ctx,
++         struct tuntap *tt)
+ {
+     struct gc_arena gc = gc_new();
+-    struct tuntap *tt;
+ 
+-    ALLOC_OBJ(tt, struct tuntap);
+-    clear_tuntap(tt);
++    if (!tt)
++    {
++        ALLOC_OBJ(tt, struct tuntap);
++        clear_tuntap(tt);
++    }
++#if defined(_WIN32)
++    else
++    {
++        ASSERT(!tt->dco.real_tun_init);
++        tt->dco.real_tun_init = true;
++    }
++#endif
+ 
+     tt->type = dev_type_enum(dev, dev_type);
+     tt->topology = topology;
+@@ -891,6 +901,12 @@ init_tun_post(struct tuntap *tt,
+ {
+     tt->options = *options;
+ #ifdef _WIN32
++    if (tt->windows_driver == WINDOWS_DRIVER_WINDCO)
++    {
++        dco_start_tun(tt);
++        return;
++    }
++
+     overlapped_io_init(&tt->reads, frame, FALSE, true);
+     overlapped_io_init(&tt->writes, frame, TRUE, true);
+     tt->adapter_index = TUN_ADAPTER_INDEX_INVALID;
+@@ -3484,6 +3500,9 @@ print_windows_driver(enum windows_driver_type windows_driver)
+         case WINDOWS_DRIVER_WINTUN:
+             return "wintun";
+ 
++        case WINDOWS_DRIVER_WINDCO:
++            return "ovpn-dco-win";
++
+         default:
+             return "unspecified";
+     }
+@@ -3865,6 +3884,10 @@ get_tap_reg(struct gc_arena *gc)
+                     {
+                         windows_driver = WINDOWS_DRIVER_WINTUN;
+                     }
++                    else if (strcasecmp(component_id, "ovpn-dco") == 0)
++                    {
++                        windows_driver = WINDOWS_DRIVER_WINDCO;
++                    }
+ 
+                     if (windows_driver != WINDOWS_DRIVER_UNSPECIFIED)
+                     {
+@@ -4219,7 +4242,9 @@ at_least_one_tap_win(const struct tap_reg *tap_reg)
+ {
+     if (!tap_reg)
+     {
+-        msg(M_FATAL, "There are no TAP-Windows nor Wintun adapters on this system.  You should be able to create an adapter by using tapctl.exe utility.");
++        msg(M_FATAL, "There are no TAP-Windows, Wintun or ovpn-dco-win adapters "
++            "on this system.  You should be able to create an adapter "
++            "by using tapctl.exe utility.");
+     }
+ }
+ 
+@@ -6419,7 +6444,7 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
+     const char *path = NULL;
+     char tuntap_device_path[256];
+ 
+-    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
++    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN || tt->windows_driver == WINDOWS_DRIVER_WINDCO)
+     {
+         const struct device_instance_id_interface *dev_if;
+ 
+@@ -6439,7 +6464,7 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
+     }
+     else
+     {
+-        /* Open TAP-Windows adapter */
++        /* Open TAP-Windows or dco-win adapter */
+         openvpn_snprintf(tuntap_device_path, sizeof(tuntap_device_path), "%s%s%s",
+                          USERMODEDEVICEDIR,
+                          device_guid,
+@@ -6475,7 +6500,7 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
+     return true;
+ }
+ 
+-static void
 +void
-+dco_start_tun(struct tuntap *tt);
+ tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_guid, struct gc_arena *gc)
+ {
+     const struct tap_reg *tap_reg = get_tap_reg(gc);
+@@ -6767,7 +6792,7 @@ netsh_delete_address_dns(const struct tuntap *tt, bool ipv6, struct gc_arena *gc
+     argv_free(&argv);
+ }
+ 
+-static void
++void
+ close_tun_handle(struct tuntap *tt)
+ {
+     const char *adaptertype = print_windows_driver(tt->windows_driver);
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index cf02bf43..c4a61316 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -48,7 +48,8 @@
+ enum windows_driver_type {
+     WINDOWS_DRIVER_UNSPECIFIED,
+     WINDOWS_DRIVER_TAP_WINDOWS6,
+-    WINDOWS_DRIVER_WINTUN
++    WINDOWS_DRIVER_WINTUN,
++    WINDOWS_DRIVER_WINDCO
+ };
+ #endif
+ 
+@@ -64,6 +65,8 @@ struct tuntap_options {
+     /* --ip-win32 options */
+     bool ip_win32_defined;
+ 
++    bool disable_dco;
 +
-+#else /* if defined(ENABLE_DCO) && defined(_WIN32) */
+ #define IPW32_SET_MANUAL       0   /* "--ip-win32 manual" */
+ #define IPW32_SET_NETSH        1   /* "--ip-win32 netsh" */
+ #define IPW32_SET_IPAPI        2   /* "--ip-win32 ipapi" */
+@@ -242,6 +245,10 @@ tuntap_ring_empty(struct tuntap *tt)
+ {
+     return tuntap_is_wintun(tt) && (tt->wintun_send_ring->head == tt->wintun_send_ring->tail);
+ }
 +
-+static inline void
-+dco_start_tun(struct tuntap *tt)
++/* Low level function to open tun handle, used by DCO to create a handle for DCO*/
++void
++tun_open_device(struct tuntap *tt, const char *dev_node, const char **device_guid, struct gc_arena *gc);
+ #endif
+ 
+ /*
+@@ -253,6 +260,8 @@ void open_tun(const char *dev, const char *dev_type, const char *dev_node,
+ 
+ void close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx);
+ 
++void close_tun_handle(struct tuntap *tt);
++
+ int write_tun(struct tuntap *tt, uint8_t *buf, int len);
+ 
+ int read_tun(struct tuntap *tt, uint8_t *buf, int len);
+@@ -279,7 +288,8 @@ struct tuntap *init_tun(const char *dev,        /* --dev option */
+                         struct addrinfo *remote_public,
+                         const bool strict_warn,
+                         struct env_set *es,
+-                        openvpn_net_ctx_t *ctx);
++                        openvpn_net_ctx_t *ctx,
++                        struct tuntap *tt);
+ 
+ void init_tun_post(struct tuntap *tt,
+                    const struct frame *frame,
+@@ -624,6 +634,12 @@ write_tun_buffered(struct tuntap *tt, struct buffer *buf)
+     }
+ }
+ 
++static inline bool
++is_windco(struct tuntap *tt)
 +{
-+    ASSERT(false);
++    return tt->windows_driver == WINDOWS_DRIVER_WINDCO;
 +}
 +
-+#endif /* defined(_WIN32) */
-+#endif /* ifndef DCO_H */
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index 0b3db7c7..51e8fe79 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -278,6 +278,7 @@
-     <ClCompile Include="cryptoapi.c" />
-     <ClCompile Include="dco.c" />
-     <ClCompile Include="dco_linux.c" />
-+    <ClCompile Include="dco_win.c" />
-     <ClCompile Include="dhcp.c" />
-     <ClCompile Include="dns.c" />
-     <ClCompile Include="env_set.c" />
-@@ -367,6 +368,7 @@
-     <ClInclude Include="dco.h" />
-     <ClInclude Include="dco_internal.h" />
-     <ClInclude Include="dco_linux.h" />
-+    <ClInclude Include="dco_win.h" />
-     <ClInclude Include="dhcp.h" />
-     <ClInclude Include="dns.h" />
-     <ClInclude Include="env_set.h" />
-@@ -401,6 +403,7 @@
-     <ClInclude Include="openvpn.h" />
-     <ClInclude Include="options.h" />
-     <ClInclude Include="otime.h" />
-+    <ClInclude Include="ovpn-dco-win.h" />
-     <ClInclude Include="ovpn_dco_linux.h" />
-     <ClInclude Include="packet_id.h" />
-     <ClInclude Include="perf.h" />
-diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
-index 16905079..117270bb 100644
---- a/src/openvpn/openvpn.vcxproj.filters
-+++ b/src/openvpn/openvpn.vcxproj.filters
-@@ -42,6 +42,9 @@
-     <ClCompile Include="dco_linux.c">
-       <Filter>Source Files</Filter>
-     </ClCompile>
-+    <ClCompile Include="dco_win.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-     <ClCompile Include="dhcp.c">
-       <Filter>Source Files</Filter>
-     </ClCompile>
-@@ -314,6 +317,9 @@
-     <ClInclude Include="dco_linux.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-+    <ClInclude Include="dco_win.h">
-+      <Filter>Header Files</Filter>
-+    </ClInclude>
-     <ClInclude Include="dhcp.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-@@ -413,6 +419,9 @@
-     <ClInclude Include="otime.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-+    <ClInclude Include="ovpn-dco-win.h">
-+      <Filter>Header Files</Filter>
-+    </ClInclude>
-     <ClInclude Include="ovpn_dco_linux.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-diff --git a/src/openvpn/ovpn-dco-win.h b/src/openvpn/ovpn-dco-win.h
-new file mode 100644
-index 00000000..1ebd51a7
---- /dev/null
-+++ b/src/openvpn/ovpn-dco-win.h
-@@ -0,0 +1,108 @@
-+/*
-+ *  ovpn-dco-win OpenVPN protocol accelerator for Windows
-+ *
-+ *  Copyright (C) 2020-2021 OpenVPN Inc <sales@...515...>
-+ *
-+ *  Author:	Lev Stipakov <lev@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ *
-+ *  This particular file (uapi.h) is also licensed using the MIT license (see COPYRIGHT.MIT).
-+ */
+ #else  /* ifdef _WIN32 */
+ 
+ static inline bool
+@@ -649,6 +665,13 @@ tun_standby(struct tuntap *tt)
+     return true;
+ }
+ 
 +
-+#pragma once
-+#ifndef _KERNEL_MODE
-+#include <winsock2.h>
-+#endif
-+#include <ws2def.h>
-+#include <ws2ipdef.h>
-+
-+typedef enum {
-+	OVPN_PROTO_UDP,
-+	OVPN_PROTO_TCP
-+} OVPN_PROTO;
-+
-+typedef struct _OVPN_NEW_PEER {
-+	union {
-+		SOCKADDR_IN Addr4;
-+		SOCKADDR_IN6 Addr6;
-+	} Local;
-+
-+	union {
-+		SOCKADDR_IN Addr4;
-+		SOCKADDR_IN6 Addr6;
-+	} Remote;
-+
-+	OVPN_PROTO Proto;
-+} OVPN_NEW_PEER, * POVPN_NEW_PEER;
-+
-+typedef struct _OVPN_STATS {
-+	LONG LostInControlPackets;
-+	LONG LostOutControlPackets;
-+
-+	LONG LostInDataPackets;
-+	LONG LostOutDataPackets;
-+
-+	LONG ReceivedDataPackets;
-+	LONG ReceivedControlPackets;
-+
-+	LONG SentControlPackets;
-+	LONG SentDataPackets;
-+
-+	LONG64 TransportBytesSent;
-+	LONG64 TransportBytesReceived;
-+
-+	LONG64 TunBytesSent;
-+	LONG64 TunBytesReceived;
-+} OVPN_STATS, * POVPN_STATS;
-+
-+typedef enum _OVPN_KEY_SLOT {
-+	OVPN_KEY_SLOT_PRIMARY,
-+	OVPN_KEY_SLOT_SECONDARY
-+} OVPN_KEY_SLOT;
-+
-+typedef enum _OVPN_CIPHER_ALG {
-+	OVPN_CIPHER_ALG_NONE,
-+	OVPN_CIPHER_ALG_AES_GCM,
-+	OVPN_CIPHER_ALG_CHACHA20_POLY1305
-+} OVPN_CIPHER_ALG;
-+
-+typedef struct _OVPN_KEY_DIRECTION
++static inline bool
++is_windco(struct tuntap *tt)
 +{
-+	unsigned char Key[32];
-+	unsigned char KeyLen; // 16/24/32 -> AES-128-GCM/AES-192-GCM/AES-256-GCM
-+	unsigned char NonceTail[8];
-+} OVPN_KEY_DIRECTION;
++    return false;
++}
 +
-+typedef struct _OVPN_CRYPTO_DATA {
-+	OVPN_KEY_DIRECTION Encrypt;
-+	OVPN_KEY_DIRECTION Decrypt;
-+	OVPN_KEY_SLOT KeySlot;
-+	OVPN_CIPHER_ALG CipherAlg;
-+	unsigned char KeyId;
-+	int PeerId;
-+} OVPN_CRYPTO_DATA, * POVPN_CRYPTO_DATA;
+ #endif /* ifdef _WIN32 */
+ 
+ /*
+@@ -672,25 +695,28 @@ tun_set(struct tuntap *tt,
+         void *arg,
+         unsigned int *persistent)
+ {
+-    if (tuntap_defined(tt))
++    if (!tuntap_defined(tt) || is_windco(tt))
++    {
++        return;
++    }
 +
-+typedef struct _OVPN_SET_PEER {
-+	LONG KeepaliveInterval;
-+	LONG KeepaliveTimeout;
-+	LONG MSS;
-+} OVPN_SET_PEER, * POVPN_SET_PEER;
++    /* if persistent is defined, call event_ctl only if rwflags has changed since last call */
++    if (!persistent || *persistent != rwflags)
+     {
+-        /* if persistent is defined, call event_ctl only if rwflags has changed since last call */
+-        if (!persistent || *persistent != rwflags)
++        event_ctl(es, tun_event_handle(tt), rwflags, arg);
++        if (persistent)
+         {
+-            event_ctl(es, tun_event_handle(tt), rwflags, arg);
+-            if (persistent)
+-            {
+-                *persistent = rwflags;
+-            }
++            *persistent = rwflags;
+         }
++    }
+ #ifdef _WIN32
+-        if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6 && (rwflags & EVENT_READ))
+-        {
+-            tun_read_queue(tt, 0);
+-        }
+-#endif
+-        tt->rwflags_debug = rwflags;
++    if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6 && (rwflags & EVENT_READ))
++    {
++        tun_read_queue(tt, 0);
+     }
++#endif
++    tt->rwflags_debug = rwflags;
 +
-+#define OVPN_IOCTL_NEW_PEER     CTL_CODE(FILE_DEVICE_UNKNOWN, 1, METHOD_BUFFERED, FILE_ANY_ACCESS)
-+#define OVPN_IOCTL_GET_STATS    CTL_CODE(FILE_DEVICE_UNKNOWN, 2, METHOD_BUFFERED, FILE_ANY_ACCESS)
-+#define OVPN_IOCTL_NEW_KEY      CTL_CODE(FILE_DEVICE_UNKNOWN, 3, METHOD_BUFFERED, FILE_ANY_ACCESS)
-+#define OVPN_IOCTL_SWAP_KEYS    CTL_CODE(FILE_DEVICE_UNKNOWN, 4, METHOD_BUFFERED, FILE_ANY_ACCESS)
-+#define OVPN_IOCTL_SET_PEER     CTL_CODE(FILE_DEVICE_UNKNOWN, 5, METHOD_BUFFERED, FILE_ANY_ACCESS)
-+#define OVPN_IOCTL_START_VPN    CTL_CODE(FILE_DEVICE_UNKNOWN, 6, METHOD_BUFFERED, FILE_ANY_ACCESS)
+ }
+ 
+ const char *tun_stat(const struct tuntap *tt, unsigned int rwflags, struct gc_arena *gc);
 -- 
 2.35.1
 
