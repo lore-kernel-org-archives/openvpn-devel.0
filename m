@@ -1,11 +1,12 @@
-Date: Fri, 24 Jun 2022 10:51:15 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <YrV7AxHepE/xZqHq@...2678...>
-References: <20220621161649.2872985-1-arne@...1227...>
- <20220621161649.2872985-6-arne@...1227...>
+Message-ID: <ba4093a6-f722-667f-68e5-5e0739dfba58@...2181...>
+Date: Fri, 24 Jun 2022 10:59:59 +0200
 MIME-Version: 1.0
-In-Reply-To: <20220621161649.2872985-6-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 6/6] Allow tun-mtu to be pushed
+Content-Language: en-US
+References: <20220620122126.2676755-1-wardragon78@...277...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20220620122126.2676755-1-wardragon78@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Insert client connection data into PAM
+ environment, upgraded
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,167 +15,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Paolo Cerrito <wardragon78@...277...>, openvpn-devel@lists.sourceforge.net
+Cc: paolo <paolo.cerrito@...2517...>
 
-Only skimmed this. A few small typo fixes and the like.
+Hi Paolo,
 
-On Tue, Jun 21, 2022 at 06:16:49PM +0200, Arne Schwabe wrote:
-> This allows tun-mtu to pushed but only up to the size of the preallocated
-> buffers. This is not a perfect solution but should allow most of the use
-> cases where the mtu is close enough to 1500.
+On 20/06/2022 14:21, Paolo Cerrito wrote:
+> From: paolo <paolo.cerrito@...2517...>
+
+Is this a new version of your previous patch having subject "Insert 
+client connection data into PAM environment"?
+
+If yes, you should send it as a v2 (i.e. with subject starting with 
+"[PATCH v2]") instead of appending ", upgraded".
+
+You can easily create a v2 patch by adding the argument "-v2" when 
+running "git format-patch".
+
+On top of that, when sending a v2 it'd be nice if you could specify what 
+has changed compared to the original version. Something like:
+
+"Changes from v1:
+* this and that
+* here and there"
+
+Also, when signing a patch you should put your name and surname, as if 
+you are signing a public document.
+
+Last, but not least, please add some text to your commit message, 
+explaining why you need to implement this change, what it does (high 
+level) and how you are going to do it.
+
+
+Best Regards,
+
 > 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
 > ---
->  Changes.rst                              |  8 ++++
->  doc/man-sections/client-options.rst      |  4 ++
->  doc/man-sections/vpn-network-options.rst |  5 +++
->  src/openvpn/init.c                       | 52 ++++++++++++++++++++----
->  src/openvpn/mtu.c                        |  1 +
->  src/openvpn/mtu.h                        |  3 ++
->  src/openvpn/options.c                    | 15 ++++++-
->  src/openvpn/options.h                    |  2 +
->  src/openvpn/ssl.c                        |  3 ++
->  9 files changed, 85 insertions(+), 8 deletions(-)
+>   src/plugins/auth-pam/auth-pam.c | 25 +++++++++++++++++++++----
+>   1 file changed, 21 insertions(+), 4 deletions(-)
 > 
-> diff --git a/Changes.rst b/Changes.rst
-> index 79b79d608..e99671bcb 100644
-> --- a/Changes.rst
-> +++ b/Changes.rst
-> @@ -79,6 +79,14 @@ Cookie based handshake for UDP server
->      shake. The tls-crypt-v2 option allows controlling if older clients are
->      accepted.
->  
+> diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
+> index 70339445..c2e66e5c 100644
+> --- a/src/plugins/auth-pam/auth-pam.c
+> +++ b/src/plugins/auth-pam/auth-pam.c
+> @@ -49,7 +49,7 @@
+>   #include <syslog.h>
+>   #include <limits.h>
+>   #include "utils.h"
+> -
+> +#include <arpa/inet.h>
+>   #include <openvpn-plugin.h>
+>   
+>   #define DEBUG(verb) ((verb) >= 4)
+> @@ -121,6 +121,7 @@ struct user_pass {
+>       char password[128];
+>       char common_name[128];
+>       char response[128];
+> +    char remote[INET6_ADDRSTRLEN];
+>   
+>       const struct name_value_list *name_value_list;
+>   };
+> @@ -529,6 +530,11 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
+>           const char *username = get_env("username", envp);
+>           const char *password = get_env("password", envp);
+>           const char *common_name = get_env("common_name", envp) ? get_env("common_name", envp) : "";
+> +        const char *remote = get_env("untrusted_ip6", envp);
 > +
-> +Tun MTU can be pushed
-> +    As part of changing the ``--tun-mtu`` default to 1420 (see below), the
-> +    client can now also dynamically configure its MTU and the server will
-> +    try to push the client MTU when the client supports it. The directive
-> +    ``--tun-mtu-max`` has been introduced to specify the maximum pushable
-> +    MTU size.
-> +
->  Deprecated features
->  -------------------
->  ``inetd`` has been removed
-> diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
-> index 8e0e4f18a..230e51e8d 100644
-> --- a/doc/man-sections/client-options.rst
-> +++ b/doc/man-sections/client-options.rst
-> @@ -358,6 +358,10 @@ configuration.
->          The client announces the list of supported ciphers configured with the
->          ``--data-ciphers`` option to the server.
->  
-> +  :code:`IV_MTU=<max_mtu>`
-> +        The client announces the support of pushable MTU and the maximum MTU
-> +        the client is willing to accept.
-
-"it" instead of repeating "the client"?
-
-> +
->    :code:`IV_GUI_VER=<gui_id> <version>`
->          The UI version of a UI if one is running, for example
->          :code:`de.blinkt.openvpn 0.5.47` for the Android app.
-> diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
-> index 2e4fff5df..71aa3f4c7 100644
-> --- a/doc/man-sections/vpn-network-options.rst
-> +++ b/doc/man-sections/vpn-network-options.rst
-> @@ -540,6 +540,11 @@ routing.
->    packets larger than ``tun-mtu`` (e.g. Linux and FreeBSD) but other platforms
->    (like macOS) limit received packets to the same size as the MTU.
->  
-> +--tun-max-mtu maxmtu
-> +  This configures the maximum MTU size that a server can push to ``maxmtu``.
-> +  The default for ``maxmtu`` is 1600. This will increase internal buffers
-> +  allocation for larger packet sizes.
-> +
->  --tun-mtu-extra n
->    Assume that the TUN/TAP device might return as many as ``n`` bytes more
->    than the ``--tun-mtu`` size on read. This parameter defaults to 0, which
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index 6cdcef628..e9f9778a3 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -2126,7 +2126,8 @@ pull_permission_mask(const struct context *c)
->          | OPT_P_ECHO
->          | OPT_P_PULL_MODE
->          | OPT_P_PEER_ID
-> -        | OPT_P_NCP;
-> +        | OPT_P_NCP
-> +        | OPT_P_PUSH_MTU;
->  
->      if (!c->options.route_nopull)
->      {
-> @@ -2283,12 +2284,39 @@ do_deferred_options(struct context *c, const unsigned int found)
->  #endif
->  
->          struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
-> +        if (!update_session_cipher(session, &c->options))
-> +        {
-> +            /* The update_session_cipher method wil already print an error */
-
-"will"
-
-> +            return false;
+> +        if (remote == NULL){
+> +                remote = get_env("untrusted_ip", envp); //if Null, try to take ipv4 if not set ipv6
 > +        }
-> +
-> +        /* Cipher is considered safe, so we can use it to calculate the max
-> +         * MTU size */
-> +        if (found & OPT_P_PUSH_MTU)
+>   
+>           /* should we do deferred auth?
+>            *  yes, if there is "auth_control_file" and "deferred_auth_pam" env
+> @@ -554,7 +560,8 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
+>                   || send_string(context->foreground_fd, username) == -1
+>                   || send_string(context->foreground_fd, password) == -1
+>                   || send_string(context->foreground_fd, common_name) == -1
+> -                || send_string(context->foreground_fd, auth_control_file) == -1)
+> +                || send_string(context->foreground_fd, auth_control_file) == -1
+> +                || send_string(context->foreground_fd, remote) == -1)
+>               {
+>                   plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "Error sending auth info to background process");
+>               }
+> @@ -789,8 +796,16 @@ pam_auth(const char *service, const struct user_pass *up)
+>       status = pam_start(service, name_value_list_provided ? NULL : up->username, &conv, &pamh);
+>       if (status == PAM_SUCCESS)
+>       {
+> +        /* Set PAM_RHOST environment variable */
+> +        if (*(up->remote))
 > +        {
-> +            /* MTU has changed, check that the pushed MTU is small enough to
-> +             * be able to change it */
-> +            msg(D_PUSH, "OPTIONS IMPORT: tun-mtu set to %d", c->options.ce.tun_mtu);
-> +
-> +            struct frame *frame = &c->c2.frame;
-> +
-> +            if (c->options.ce.tun_mtu > frame->tun_max_mtu)
-> +            {
-> +                msg(D_PUSH_ERRORS, "Server pushed a large mtu, please add "
-> +                    "tun-mtu-max %d in the client configuration",
-> +                    c->options.ce.tun_mtu);
-> +            }
-> +            frame->tun_mtu = min_int(frame->tun_max_mtu, c->options.ce.tun_mtu);
+> +            status = pam_set_item(pamh, PAM_RHOST, up->remote);
 > +        }
-> +
->          if (!tls_session_update_crypto_params(session, &c->options, &c->c2.frame,
->                                                frame_fragment, get_link_socket_info(c)))
->          {
->              msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
->              return false;
->          }
-> +
-> +
+>           /* Call PAM to verify username/password */
+> -        status = pam_authenticate(pamh, 0);
+> +        if (status == PAM_SUCCESS)
+> +        {
+> +            status = pam_authenticate(pamh, 0);
+> +        }
+>           if (status == PAM_SUCCESS)
+>           {
+>               status = pam_acct_mgmt(pamh, 0);
+> @@ -956,7 +971,8 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+>                   if (recv_string(fd, up.username, sizeof(up.username)) == -1
+>                       || recv_string(fd, up.password, sizeof(up.password)) == -1
+>                       || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1
+> -                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1)
+> +                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1
+> +                    || recv_string(fd, up.remote, sizeof(up.remote)) == -1)
+>                   {
+>                       plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: read error on command channel: code=%d, exiting",
+>                                  command);
+> @@ -970,6 +986,7 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+>                                  up.username, up.password);
+>   #else
+>                       plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: USER: %s", up.username);
+> +                    plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: REMOTE: %s", up.remote);
+>   #endif
+>                   }
+>   
 
-Spurious whitespace change.
-
->      }
->  
->      return true;
-> @@ -2446,10 +2474,16 @@ frame_finalize_options(struct context *c, const struct options *o)
->      struct frame *frame = &c->c2.frame;
->  
->      frame->tun_mtu = get_frame_mtu(c, o);
-> +    frame->tun_max_mtu = o->ce.tun_mtu_max;
-> +
-> +    /* max mtu needs to be at least as large as the tun mtu */
-> +    frame->tun_max_mtu = max_int(frame->tun_mtu, frame->tun_max_mtu);
->  
-> -    /* We always allow at least 1500 MTU packets to be received in our buffer
-> -     * space */
-> -    size_t payload_size = max_int(1500, frame->tun_mtu);
-> +    /* We always allow at least 1600 MTU packets to be received in our buffer
-> +     * space to allow server to push "baby giant MTU sizes */
-
-Missing "
-
-> +    frame->tun_max_mtu = max_int(1600, frame->tun_max_mtu);
-> +
-> +    size_t payload_size = frame->tun_max_mtu;
->  
->      /* The extra tun needs to be added to the payload size */
->      if (o->ce.tun_mtu_defined)
-[...]
+-- 
+Antonio Quartulli
 
