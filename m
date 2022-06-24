@@ -1,11 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri, 24 Jun 2022 10:37:56 +0200
-Message-Id: <20220624083809.23487-13-a@...2181...>
+Date: Fri, 24 Jun 2022 10:38:09 +0200
+Message-Id: <20220624083809.23487-26-a@...2181...>
 In-Reply-To: <20220624083809.23487-1-a@...2181...>
 References: <20220624083809.23487-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 12/25] dco: check that pulled options are
- compatible
+Subject: [Openvpn-devel] [PATCH 25/25] dco-win: update GH Actions config file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,57 +16,39 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+Cc: Antonio Quartulli <a@...2181...>, Lev Stipakov <lev@...515...>
 
-A server may push options that are not compatible with DCO.
-In this case we should log a message and bail out.
-
+Signed-off-by: Lev Stipakov <lev@...515...>
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/init.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ .github/workflows/build.yaml | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index b0a4b252..091cbd24 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2219,6 +2219,19 @@ do_deferred_p2p_ncp(struct context *c)
-     return true;
- }
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index b905c0d2..536dd9d6 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -59,11 +59,6 @@ jobs:
+     steps:
+       - name: Install dependencies
+         run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip
+-      - name: Checkout ovpn-dco-win
+-        uses: actions/checkout@...2620...
+-        with:
+-          repository: OpenVPN/ovpn-dco-win
+-          path: ovpn-dco-win
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2620...
+         with:
+@@ -151,7 +146,7 @@ jobs:
+         run: cp ./tap-windows-${TAP_WINDOWS_VERSION}/include/tap-windows.h ${HOME}/mingw/opt/include/
  
-+
-+static bool
-+check_dco_pull_options(struct options *o)
-+{
-+    if (!o->use_peer_id)
-+    {
-+        msg(D_TLS_ERRORS, "OPTIONS IMPORT: Server did not request DATA_V2 packet "
-+            "format required for data channel offload");
-+        return false;
-+    }
-+    return true;
-+}
-+
- /*
-  * Handle non-tun-related pulled options.
-  */
-@@ -2341,6 +2354,16 @@ finish_options(struct context *c)
-         return false;
-     }
+       - name: configure OpenVPN
+-        run: PKG_CONFIG_PATH=${HOME}/mingw/opt/lib/pkgconfig DCO_SOURCEDIR=$(realpath ../ovpn-dco-win) LDFLAGS=-L$HOME/mingw/opt/lib CFLAGS=-I$HOME/mingw/opt/include OPENSSL_LIBS="-L${HOME}/opt/lib -lssl -lcrypto" OPENSSL_CFLAGS=-I$HOME/mingw/opt/include PREFIX=$HOME/mingw/opt LZO_CFLAGS=-I$HOME/mingw/opt/include LZO_LIBS="-L${HOME}/mingw/opt/lib -llzo2" ./configure  --host=${CHOST} --disable-lz4 --enable-dco
++        run: PKG_CONFIG_PATH=${HOME}/mingw/opt/lib/pkgconfig LDFLAGS=-L$HOME/mingw/opt/lib CFLAGS=-I$HOME/mingw/opt/include OPENSSL_LIBS="-L${HOME}/opt/lib -lssl -lcrypto" OPENSSL_CFLAGS=-I$HOME/mingw/opt/include PREFIX=$HOME/mingw/opt LZO_CFLAGS=-I$HOME/mingw/opt/include LZO_LIBS="-L${HOME}/mingw/opt/lib -llzo2" ./configure  --host=${CHOST} --disable-lz4
+         working-directory: openvpn
  
-+    /* Check if the pushed options are compatible with DCO if we have
-+     * DCO enabled */
-+    if (dco_enabled(&c->options) && !check_dco_pull_options(&c->options))
-+    {
-+        msg(D_TLS_ERRORS, "OPTIONS ERROR: pushed options are incompatible with "
-+            "data channel offload. Use --disable-dco to connect"
-+            "to this server");
-+        return false;
-+    }
-+
-     return true;
- }
- 
+       - name: build OpenVPN
 -- 
 2.35.1
 
