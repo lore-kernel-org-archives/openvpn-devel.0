@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sun, 26 Jun 2022 01:41:50 +0200
-Message-Id: <20220625234150.3398864-5-arne@...1227...>
+Date: Sun, 26 Jun 2022 01:41:49 +0200
+Message-Id: <20220625234150.3398864-4-arne@...1227...>
 In-Reply-To: <20220625234150.3398864-1-arne@...1227...>
 References: <20220625234150.3398864-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 5/5] Change default MTU in server mode to
- 1420
+Subject: [Openvpn-devel] [PATCH v3 4/5] Implement a function to calculate
+ the default MTU
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,67 +18,119 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This changes the default MTU of the tun-mtu to 1420 to avoid MTU related
-issues that are even more prominent when DCO server or clients are involved.
-
-To maximise compatibility to lie our MTU in the default OCC message and
-keep it at 1500.
+We could also just hardcode this value to 1420 but this approach does
+not add much (complicated) code and it is a bit better than to have
+a magic number to just be there.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- doc/man-sections/vpn-network-options.rst | 17 ++++++++++++-----
- src/openvpn/options.c                    | 10 ++++++++++
- 2 files changed, 22 insertions(+), 5 deletions(-)
+ src/openvpn/mtu.c                      | 22 ++++++++++++++++++++++
+ src/openvpn/mtu.h                      | 14 ++++++++++++++
+ tests/unit_tests/openvpn/test_crypto.c | 19 ++++++++++++++++++-
+ 3 files changed, 54 insertions(+), 1 deletion(-)
 
-diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
-index 9a09aef8b..1dda4912d 100644
---- a/doc/man-sections/vpn-network-options.rst
-+++ b/doc/man-sections/vpn-network-options.rst
-@@ -525,11 +525,18 @@ routing.
-   OpenVPN requires that packets on the control and data channels be sent
-   unfragmented.
+diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
+index 8fc45b341..e4d4a9cd5 100644
+--- a/src/openvpn/mtu.c
++++ b/src/openvpn/mtu.c
+@@ -205,6 +205,28 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
+     return payload + overhead;
+ }
  
--  MTU problems often manifest themselves as connections which hang during
--  periods of active usage.
--
--  It's best to use the ``--fragment`` and/or ``--mssfix`` options to deal
--  with MTU sizing issues.
-+  A VPN protocol like OpenVPN adds encapsulation overhead in each packet. If a
-+  VPN packet with the encapsulation becomes larger than the transport network
-+  MTU (typically 1500 or 1492) the packet will become fragmented or completely
-+  dropped. These problems can manifest themselves as connections which hang
-+  during periods of active usage or slower performance. To avoid these problems
-+  it is generally advisable to set the tun MTU small enough to avoid these
-+  problems. The default of 1420 is chosen to be safe with default parameters
-+  and a (transport) network MTU of 1492.
++int
++frame_calculate_default_mtu(struct options *o)
++{
++    struct options options = *o;
 +
-+  If lowering the tun MTU to avoid MTU related problems (e.g. when tap is used
-+  and an MTU of 1500 is required), the ``--fragment`` and/or ``--mssfix``
-+  options can be also used to deal with MTU sizing issues.
++    /* assume we have peer_id enabled */
++    options.use_peer_id = true;
++
++    /* We use IPv6+UDP here to have a consistent size for tun MTU no matter
++     * the combination of udp/tcp and IPv4/IPv6 */
++    int encap_overhead = datagram_overhead(AF_INET6, PROTO_UDP);
++
++    struct key_type kt;
++    init_key_type(&kt, "AES-256-GCM", "none", true, false);
++
++    size_t payload_overhead = frame_calculate_payload_overhead(0, &options, &kt, false);
++    size_t protocol_overhead = frame_calculate_protocol_header_size(&kt, &options, false);
++
++    return MTU_ENCAP_DEFAULT - encap_overhead - payload_overhead - protocol_overhead;
++
++}
++
+ void
+ frame_print(const struct frame *frame,
+             int level,
+diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
+index db6bddb42..e80d8bd01 100644
+--- a/src/openvpn/mtu.h
++++ b/src/openvpn/mtu.h
+@@ -79,6 +79,10 @@
+  */
+ #define MSSFIX_DEFAULT     1492
  
-   Note: Depending on the platform, the operating system allows to receive
-   packets larger than ``tun-mtu`` (e.g. Linux and FreeBSD) but other platforms
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index f162b0b41..d87c6595c 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3032,6 +3032,16 @@ options_postprocess_mutate_ce(struct options *o, struct connection_entry *ce)
-         if (!ce->tun_mtu_defined && !ce->link_mtu_defined)
-         {
-             ce->tun_mtu_defined = true;
-+            if (o->mode == MODE_SERVER && dev != DEV_TYPE_TAP)
-+            {
-+                /* If we are running in P2MP mode we default to a MTU
-+                 * that is low enough by default to fit into a 1492
-+                 * MTU UDP IPv6 packet:
-+                 *
-+                 */
-+                ce->tun_mtu = frame_calculate_default_mtu(o);
-+                ce->occ_mtu = TUN_MTU_DEFAULT;
-+            }
-         }
-         if ((dev == DEV_TYPE_TAP) && !ce->tun_mtu_extra_defined)
-         {
++/* The default size we aim to reach to with our VPN packets by setting
++ * the MTU accordingly */
++#define MTU_ENCAP_DEFAULT   1492
++
+ /*
+  * Alignment of payload data such as IP packet or
+  * ethernet frame.
+@@ -263,6 +267,16 @@ void alloc_buf_sock_tun(struct buffer *buf,
+                         const struct frame *frame,
+                         const bool tuntap_buffer);
+ 
++
++/**
++ * Function to calculate the default MTU for Layer 3 VPNs. The function
++ * assumes that UDP packets should be a maximum of \c MTU_ENCAP_DEFAULT (1492)
++ * with a AEAD cipher. This default comes out to be 1420.
++ */
++int
++frame_calculate_default_mtu(struct options *o);
++
++
+ /*
+  * EXTENDED_SOCKET_ERROR_CAPABILITY functions -- print extra error info
+  * on socket errors, such as PMTU size.  As of 2003.05.11, only works
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
+index 83572b827..ca595b0a5 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -477,6 +477,22 @@ test_mssfix_mtu_calculation(void **state)
+     gc_free(&gc);
+ }
+ 
++
++static void
++test_mtu_default_calculation(void **state)
++{
++    struct options o = {0};
++
++    /* common defaults */
++    o.ce.tun_mtu = 1400;
++    o.ce.mssfix = 1000;
++    o.replay = true;
++    o.ce.proto = PROTO_UDP;
++
++    size_t mtu = frame_calculate_default_mtu(&o);
++    assert_int_equal(1420, mtu);
++}
++
+ int
+ main(void)
+ {
+@@ -487,7 +503,8 @@ main(void)
+         cmocka_unit_test(crypto_test_hmac),
+         cmocka_unit_test(test_des_encrypt),
+         cmocka_unit_test(test_occ_mtu_calculation),
+-        cmocka_unit_test(test_mssfix_mtu_calculation)
++        cmocka_unit_test(test_mssfix_mtu_calculation),
++        cmocka_unit_test(test_mtu_default_calculation)
+     };
+ 
+ #if defined(ENABLE_CRYPTO_OPENSSL)
 -- 
 2.32.1 (Apple Git-133)
 
