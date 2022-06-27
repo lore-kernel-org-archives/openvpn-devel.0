@@ -1,12 +1,13 @@
-Date: Mon, 27 Jun 2022 10:36:02 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Yrlr8uhcV0rUMhT6@...2678...>
-References: <20220625234150.3398864-1-arne@...1227...>
- <20220625234150.3398864-4-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <20220625234150.3398864-4-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v3 4/5] Implement a function to
- calculate the default MTU
+References: <20220624083809.23487-1-a@...2181...>
+ <20220624083809.23487-20-a@...2181...>
+ <CAKuzo_hJcsXQ8UZzXDd_gSSch8wWHoQpp7xx7m99VLpgbDAMKA@...278...>
+In-Reply-To: <CAKuzo_hJcsXQ8UZzXDd_gSSch8wWHoQpp7xx7m99VLpgbDAMKA@...278...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 27 Jun 2022 13:30:16 +0300
+Message-ID: <CAGyAFMX47C4tAtwbhxcPc=17fpTOphkf+fBkWJsQZ1FvNhrh_g@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 19/25] dco-win: implement
+ GetOverlappedResultEx for mingw32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,54 +16,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: Antonio Quartulli <a@...2181...>, Lev Stipakov <lev@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-NACK. See below.
+Hi,
 
-On Sun, Jun 26, 2022 at 01:41:49AM +0200, Arne Schwabe wrote:
-> diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c
-> index 83572b827..ca595b0a5 100644
-> --- a/tests/unit_tests/openvpn/test_crypto.c
-> +++ b/tests/unit_tests/openvpn/test_crypto.c
-> @@ -477,6 +477,22 @@ test_mssfix_mtu_calculation(void **state)
->      gc_free(&gc);
->  }
->  
-> +
-> +static void
-> +test_mtu_default_calculation(void **state)
-> +{
-> +    struct options o = {0};
-> +
-> +    /* common defaults */
-> +    o.ce.tun_mtu = 1400;
-> +    o.ce.mssfix = 1000;
-> +    o.replay = true;
-> +    o.ce.proto = PROTO_UDP;
-> +
-> +    size_t mtu = frame_calculate_default_mtu(&o);
-> +    assert_int_equal(1420, mtu);
+The problem this patch solves appeared on mingw-w64 for 32bit version
+6.0.0, which is the latest version of mingw on Windows. When this
+patch was written (April 2021), we still used travis/appveyor which
+did mingw builds on Windows so back then patch made sense.
 
-As mentioned this is true for the specific options configured above.
-But you can easily also get different values out of this function by
-changing the options because frame_calculate_payload overhead does
-not always return the same value.
+Since we moved to GHa since the last summer and mingw builds are done
+on Linux with new enough mingw, this patch could be safely removed.
 
-There are various things you could do:
-1) you could add a test here to show that this is expected
-behavior.
-2) you could add a comment here to the same effect
-(although I would prefer an actual test)
-3) you could change the function so that it actually always
-returns the same value (e.g. by overriding fragment
-and comp settings like you do for use_peer_id)
+I dropped this commit and pushed changes to my fork and GHa is happy:
+https://github.com/lstipakov/openvpn/actions/runs/2567640010
 
-But doing nothing is not an option, IMHO. That will just
-confuse others in the future.
-
-Regards,
-  Frank
+-Lev
 
