@@ -1,9 +1,12 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Tue, 28 Jun 2022 10:20:24 +0200
-Message-Id: <20220628082024.19059-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] do not push route-ipv6 entries that are
- also in the iroute-ipv6 list
+References: <20220624083809.23487-1-a@...2181...>
+ <20220624083809.23487-23-a@...2181...>
+In-Reply-To: <20220624083809.23487-23-a@...2181...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue, 28 Jun 2022 11:36:21 +0300
+Message-ID: <CAGyAFMXO48aOzzEgTpn63WcH=hha1sT6bUr+Cv3DaAOB6Fcajg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 22/25] dco-win: introduce low-level code
+ for handling ovpn-dco-win in Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,87 +15,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>, Gert Doering <gert@...1296...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-A server should push a route to a client only if there is no matching
-iroute for the same client.
+Hi,
 
-While this logic works fine for IPv4, there is no IPv6 counterpart.
+I did some review / testing and suggest following changes to this patch:
 
-Implement the same check for IPv6 routes and discard matching ones
-from the push list.
+> +    if (!DeviceIoControl(tt->hand, OVPN_IOCTL_START_VPN, NULL, 0, NULL, 0,
+> +                         &bytes_returned, NULL))
+> +    {
+> +        msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_START_VPN) failed with code %lu",
+> +            GetLastError());
+> +    }
 
-Trac: #354
-Cc: Gert Doering <gert@...1296...>
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
+Since recently openvpn correctly handles Win32 errors (doesn't mix
+them with CRT errors)
+so this could be simplified like:
 
-Changes from v1:
-* add "&& o->iroutes{,_ipv6}" check before attempting to traverse
-  iroutes list. This way we avoid executing getaddr or get_ipv6_addr if
-  we already know that we have no iroutes to compare to.
+  msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_START_VPN) failed");
 
+M_ERR prints error message along with error code.
 
- src/openvpn/push.c | 28 ++++++++++++++++++++++++++--
- 1 file changed, 26 insertions(+), 2 deletions(-)
+<snip>
 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 63257348..e5b588bb 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -1002,7 +1002,7 @@ process_incoming_push_msg(struct context *c,
- void
- remove_iroutes_from_push_route_list(struct options *o)
- {
--    if (o && o->push_list.head && o->iroutes)
-+    if (o && o->push_list.head && (o->iroutes || o->iroutes_ipv6))
-     {
-         struct gc_arena gc = gc_new();
-         struct push_entry *e = o->push_list.head;
-@@ -1019,7 +1019,7 @@ remove_iroutes_from_push_route_list(struct options *o)
-                 && parse_line(e->option, p, SIZE(p), "[PUSH_ROUTE_REMOVE]", 1, D_ROUTE_DEBUG, &gc))
-             {
-                 /* is the push item a route directive? */
--                if (p[0] && !strcmp(p[0], "route") && !p[3])
-+                if (p[0] && !strcmp(p[0], "route") && !p[3] && o->iroutes)
-                 {
-                     /* get route parameters */
-                     bool status1, status2;
-@@ -1042,6 +1042,30 @@ remove_iroutes_from_push_route_list(struct options *o)
-                         }
-                     }
-                 }
-+                else if (p[0] && !strcmp(p[0], "route-ipv6") && !p[2]
-+                         && o->iroutes_ipv6)
-+                {
-+                    /* get route parameters */
-+                    struct in6_addr network;
-+                    unsigned int netbits;
-+
-+                    /* parse route-ipv6 arguments */
-+                    if (get_ipv6_addr(p[1], &network, &netbits, D_ROUTE_DEBUG))
-+                    {
-+                        struct iroute_ipv6 *ir;
-+
-+                        /* does this route-ipv6 match an iroute-ipv6? */
-+                        for (ir = o->iroutes_ipv6; ir != NULL; ir = ir->next)
-+                        {
-+                            if (!memcmp(&network, &ir->network, sizeof(network))
-+                                && netbits == ir->netbits)
-+                            {
-+                                enable = false;
-+                                break;
-+                            }
-+                        }
-+                    }
-+                }
- 
-                 /* should we copy the push item? */
-                 e->enable = enable;
--- 
-2.35.1
+> +            /* dco reported connection error */
+> +            struct gc_arena gc = gc_new();
+> +            msg(M_NONFATAL, "%s: %s", __func__, strerror_win32(err, &gc));
+> +            *signal_received = SIGUSR1;
+> +            gc_free(&gc);
 
+Ditto, so
+
+  msg(M_NONFATAL | M_ERRNO, "dco connect error");
+
+(no need to instantiate gc_arena)
+
+<snip>
+
+> +    /* we end up here when timeout occurs in userspace */
+> +    msg(M_NONFATAL, "%s: dco connect timeout", __func__);
+
+I would just use
+
+  msg(M_NONFATAL, "dco connect timeout");
+
+<snip>
+
+> +        if (err != ERROR_IO_PENDING)
+> +        {
+> +            msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_NEW_PEER) failed with code %lu", err);
+> +        }
+
+Ditto:
+
+  msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_NEW_PEER) failed");
+
+<snip>
+
+> +    DWORD bytes_returned = 0;
+> +    if (!DeviceIoControl(dco->tt->hand, OVPN_IOCTL_SET_PEER, &peer,
+> +                         sizeof(peer), NULL, 0, &bytes_returned, NULL))
+> +    {
+> +        msg(M_WARN, "DeviceIoControl(OVPN_IOCTL_SET_PEER) failed with code %lu", GetLastError());
+> +        return -1;
+> +    }
+
+Ditto:
+
+  msg(M_WARN | M_ERRNO, "DeviceIoControl(OVPN_IOCTL_SET_PEER) failed");
+
+<snip>
+
+> +        msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_NEW_KEY) failed with code %lu",
+> +            GetLastError());
+
+Same as above:
+
+  msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_NEW_KEY) failed");
+
+<snip>
+
+> +        msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_SWAP_KEYS) failed with code %lu",
+> +            GetLastError());
+
+Ditto:
+
+  msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_SWAP_KEYS) failed");
+
+We have discussed all those changes in chat and a new version with the
+changes is pushed to the dco branch.
+
+-Lev
 
