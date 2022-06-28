@@ -1,10 +1,11 @@
-Date: Tue, 28 Jun 2022 14:21:20 +0200 (CEST)
-Message-Id: <202206281221.25SCLKJa028140@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220513093740.1091639-1-heiko@...2662...>
-References: <20220513093740.1091639-1-heiko@...2662...>
-Subject: [Openvpn-devel] [PATCH applied] Re: signal --dns support in peer
- info
+From: Heiko Hund <heiko@...2662...>
+Date: Tue, 28 Jun 2022 14:36:51 +0200
+Message-ID: <10501487.6ZjQEG7bFu@...2664...>
+In-Reply-To: <20220628082024.19059-1-a@...2181...>
+References: <20220628082024.19059-1-a@...2181...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH v2] do not push route-ipv6 entries that
+ are also in the iroute-ipv6 list
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,37 +15,25 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Heiko Hund <heiko@...2662...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-We had the ACK for this since a long time, but then had discussions on
-"is this what we really want", leading to the "DNS foreign option" patch
-committed just now - so after checking with Arne, this is now making sense
-for the server side intent ("if IV_PROTO contains the DNS bit, the server
-can stop pushing dhcp-options, because --dns will do all the job, and 
-more, even for old-style platforms").
+On Dienstag, 28. Juni 2022 10:20:24 CEST Antonio Quartulli wrote:
+> A server should push a route to a client only if there is no matching
+> iroute for the same client.
+> 
+> While this logic works fine for IPv4, there is no IPv6 counterpart.
+> 
+> Implement the same check for IPv6 routes and discard matching ones
+> from the push list.
+> 
+> Trac: #354
+> Cc: Gert Doering <gert@...1296...>
+> Signed-off-by: Antonio Quartulli <a@...2181...>
 
-The patch itself is trivially correct "the bit is unique, and it is added" :-)
-
-Your patch has been applied to the master branch.
-
-commit 1f7f7d2a8943b5e33f86f208cce8f5d10c91a8f4
-Author: Heiko Hund
-Date:   Fri May 13 11:37:40 2022 +0200
-
-     signal --dns support in peer info
-
-     Signed-off-by: Heiko Hund <heiko@...2662...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20220513093740.1091639-1-heiko@...2662...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24350.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+ACK
 
 
---
-kind regards,
 
-Gert Doering
 
 
