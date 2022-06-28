@@ -1,9 +1,10 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Tue, 28 Jun 2022 11:41:44 +0200
-Message-Id: <20220628094144.17471-1-a@...2181...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] tls-crypt-v2: bail out if the client key is
- too small
+Date: Tue, 28 Jun 2022 14:13:29 +0200 (CEST)
+Message-Id: <202206281213.25SCDTvd027896@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220527012457.1819262-5-heiko@...2662...>
+References: <20220527012457.1819262-5-heiko@...2662...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dns: also (re)place foreign
+ dhcp options in env
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,37 +15,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: Heiko Hund <heiko@...2662...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The tls-crypt-v2 key should be at least 2 bytes long in order to read
-the actual length.
+I have stared at the code (... weeks ago already) but never came around
+to actually test this - so, happy to see the ACK from Frank :-)
 
-Bail out if the key is too short.
-Failing to do so will lead to a read out of the buffer boundary.
+Your patch has been applied to the master branch.
 
-While at it improve the error message a bit.
+commit 8d345ff16db8d797a1b8485c65361e2949fd15d3
+Author: Heiko Hund
+Date:   Fri May 27 03:24:57 2022 +0200
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- src/openvpn/tls_crypt.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+     dns: also (re)place foreign dhcp options in env
 
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 88730a99..2fc79111 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -557,7 +557,8 @@ tls_crypt_v2_extract_client_key(struct buffer *buf,
- 
-     if (BLEN(&wrapped_client_key) < sizeof(net_len))
-     {
--        msg(D_TLS_ERRORS, "failed to read length");
-+        msg(D_TLS_ERRORS, "Can not read tls-crypt-v2 client key length");
-+        return false;
-     }
-     memcpy(&net_len, BEND(&wrapped_client_key) - sizeof(net_len),
-            sizeof(net_len));
--- 
-2.35.1
+     Signed-off-by: Heiko Hund <heiko@...2662...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20220527012457.1819262-5-heiko@...2662...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24432.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
