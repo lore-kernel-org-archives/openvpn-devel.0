@@ -1,10 +1,10 @@
-Date: Tue, 28 Jun 2022 17:21:17 +0200 (CEST)
-Message-Id: <202206281521.25SFLHCi046584@...2054...>
+Date: Tue, 28 Jun 2022 17:33:34 +0200 (CEST)
+Message-Id: <202206281533.25SFXYl5046911@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220624083809.23487-5-a@...2181...>
-References: <20220624083809.23487-5-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco: create DCO interface using
- SITNL
+In-Reply-To: <20220628094144.17471-1-a@...2181...>
+References: <20220628094144.17471-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: tls-crypt-v2: bail out if the
+ client key is too small
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,23 +18,22 @@ Content-Transfer-Encoding: 8bit
 To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This does not really do anything yet, and it won't affect "non dco"
-builds.  For DCO builds, it looks reasonable and compiles without
-warning (and all it really does is "if dco, then add IFLA_OVPN_MODE"
-to the netlink message, passing in p2p / p2mp mode)
+I have taken the "why is this not a problem?" text from Arne's ACK and
+included it into the commit message.
 
-Your patch has been applied to the master branch.
+Your patch has been applied to the master and release/2.5 branch.
 
-commit 2a02c90a4501b04a43a25824fe9f7b980e10fc40
+commit 462339a45089ef655faf02232d7d792def9b8afb (master)
+commit ce24bec7e2518d4ea7aa931021454d1191f4906b (release/2.5)
 Author: Antonio Quartulli
-Date:   Fri Jun 24 10:37:48 2022 +0200
+Date:   Tue Jun 28 11:41:44 2022 +0200
 
-     dco: create DCO interface using SITNL
+     tls-crypt-v2: bail out if the client key is too small
 
      Signed-off-by: Antonio Quartulli <a@...2181...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20220624083809.23487-5-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24514.html
+     Message-Id: <20220628094144.17471-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24580.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
