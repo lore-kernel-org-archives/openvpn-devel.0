@@ -1,12 +1,12 @@
 MIME-Version: 1.0
 References: <20220624083809.23487-1-a@...2181...>
- <20220624083809.23487-23-a@...2181...>
-In-Reply-To: <20220624083809.23487-23-a@...2181...>
+ <20220624083809.23487-24-a@...2181...>
+In-Reply-To: <20220624083809.23487-24-a@...2181...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 28 Jun 2022 11:36:21 +0300
-Message-ID: <CAGyAFMXO48aOzzEgTpn63WcH=hha1sT6bUr+Cv3DaAOB6Fcajg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 22/25] dco-win: introduce low-level code
- for handling ovpn-dco-win in Windows
+Date: Tue, 28 Jun 2022 11:46:28 +0300
+Message-ID: <CAGyAFMWO0uBdXXpCv2UAmAFmOHvPTtROojNUjz5_h4buQTJTWw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 23/25] dco-win: implement ovpn-dco
+ support in P2P Windows code path
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,91 +22,49 @@ Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-I did some review / testing and suggest following changes to this patch:
+I did some testing and found out that this breaks when establishing
+TCP connection to a server which cannot be reached:
 
-> +    if (!DeviceIoControl(tt->hand, OVPN_IOCTL_START_VPN, NULL, 0, NULL, 0,
-> +                         &bytes_returned, NULL))
+> +    *tt = dco_create_socket(sock->info.lsa->current_remote,
+> +                            sock->bind_local,
+> +                            sock->info.lsa->bind_local,
+> +                            c->options.dev_node,
+> +                            &c->gc,
+> +                            get_server_poll_remaining_time(sock->server_poll_timeout),
+> +                            signal_received);
+> +    if (*signal_received)
 > +    {
-> +        msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_START_VPN) failed with code %lu",
-> +            GetLastError());
+> +        return;
 > +    }
+> +    c->c1.tuntap = tt;
+> +    sock->info.dco_installed = true;
 
-Since recently openvpn correctly handles Win32 errors (doesn't mix
-them with CRT errors)
-so this could be simplified like:
+If TCP server cannot be reached, the kernel reports it to userspace
+which triggers a signal. Signal handler calls
+teardown code which accesses c->c1.tuntap, which is not set (since
+return is above the assignment), causing access violation.
 
-  msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_START_VPN) failed");
+dco_installed flag should also be moved above return, since if not
+set, c->c1.tuntap won't be cleared
+which triggers this assert after reconnect:
 
-M_ERR prints error message along with error code.
+    /* In this case persist-tun is enabled, which we don't support yet */
+    ASSERT(!c->c1.tuntap);
 
-<snip>
+I suggest to change code like this:
 
-> +            /* dco reported connection error */
-> +            struct gc_arena gc = gc_new();
-> +            msg(M_NONFATAL, "%s: %s", __func__, strerror_win32(err, &gc));
-> +            *signal_received = SIGUSR1;
-> +            gc_free(&gc);
+    /* This state is used by signal handler which does teardown,
+     * so it has to be set before return */
+    c->c1.tuntap = tt;
+    sock->info.dco_installed = true;
 
-Ditto, so
+    if (*signal_received)
+    {
+        return;
+    }
 
-  msg(M_NONFATAL | M_ERRNO, "dco connect error");
-
-(no need to instantiate gc_arena)
-
-<snip>
-
-> +    /* we end up here when timeout occurs in userspace */
-> +    msg(M_NONFATAL, "%s: dco connect timeout", __func__);
-
-I would just use
-
-  msg(M_NONFATAL, "dco connect timeout");
-
-<snip>
-
-> +        if (err != ERROR_IO_PENDING)
-> +        {
-> +            msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_NEW_PEER) failed with code %lu", err);
-> +        }
-
-Ditto:
-
-  msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_NEW_PEER) failed");
-
-<snip>
-
-> +    DWORD bytes_returned = 0;
-> +    if (!DeviceIoControl(dco->tt->hand, OVPN_IOCTL_SET_PEER, &peer,
-> +                         sizeof(peer), NULL, 0, &bytes_returned, NULL))
-> +    {
-> +        msg(M_WARN, "DeviceIoControl(OVPN_IOCTL_SET_PEER) failed with code %lu", GetLastError());
-> +        return -1;
-> +    }
-
-Ditto:
-
-  msg(M_WARN | M_ERRNO, "DeviceIoControl(OVPN_IOCTL_SET_PEER) failed");
-
-<snip>
-
-> +        msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_NEW_KEY) failed with code %lu",
-> +            GetLastError());
-
-Same as above:
-
-  msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_NEW_KEY) failed");
-
-<snip>
-
-> +        msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_SWAP_KEYS) failed with code %lu",
-> +            GetLastError());
-
-Ditto:
-
-  msg(M_ERR, "DeviceIoControl(OVPN_IOCTL_SWAP_KEYS) failed");
-
-We have discussed all those changes in chat and a new version with the
-changes is pushed to the dco branch.
+Again, we discussed this in chat and suggested changes are already
+pushed to the dco branch.
 
 -Lev
 
