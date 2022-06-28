@@ -1,13 +1,11 @@
-Message-ID: <dc51c393-feec-7fb9-0205-25b2ca11ae03@...1227...>
-Date: Tue, 28 Jun 2022 16:32:15 +0200
+Date: Tue, 28 Jun 2022 16:41:10 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <YrsTBsdlITfcP178@...2678...>
+References: <20220505114322.6460-1-frank@...2641...>
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <20220624083809.23487-1-a@...2181...>
- <20220624083809.23487-13-a@...2181...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20220624083809.23487-13-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 12/25] dco: check that pulled options
- are compatible
+In-Reply-To: <20220505114322.6460-1-frank@...2641...>
+Subject: Re: [Openvpn-devel] [PATCH] Introduce macros for the returns values
+ of key_state_*
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,13 +14,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Am 24.06.22 um 10:37 schrieb Antonio Quartulli:
-> A server may push options that are not compatible with DCO.
-> In this case we should log a message and bail out.
+Note that this patch is wrong. Do not waste time reviewing it. Maybe at
+some point I will send a v2. But since it is not high priority it might
+take some time.
 
-Acked-By: Arne Schwabe <arne@...1227...>
+On Thu, May 05, 2022 at 01:43:22PM +0200, Frank Lichtenheld wrote:
+> I think that makes the code slightly more readable.
+> 
+> Signed-off-by: Frank Lichtenheld <frank@...2641...>
+> ---
+>  src/openvpn/ssl.c         | 20 +++++++++---------
+>  src/openvpn/ssl_backend.h | 35 ++++++++++++++++++-------------
+>  src/openvpn/ssl_mbedtls.c | 44 +++++++++++++++++++--------------------
+>  3 files changed, 52 insertions(+), 47 deletions(-)
+> 
+> Might conflict with some of Arne's handshake patches.
+> 
+[...]
+
+-- 
+  Frank Lichtenheld
 
