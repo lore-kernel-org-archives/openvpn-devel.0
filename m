@@ -1,12 +1,9 @@
+From: Antonio Quartulli <a@...2181...>
+Date: Tue, 28 Jun 2022 11:41:44 +0200
+Message-Id: <20220628094144.17471-1-a@...2181...>
 MIME-Version: 1.0
-References: <20220624083809.23487-1-a@...2181...>
- <20220624083809.23487-24-a@...2181...>
-In-Reply-To: <20220624083809.23487-24-a@...2181...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 28 Jun 2022 11:46:28 +0300
-Message-ID: <CAGyAFMWO0uBdXXpCv2UAmAFmOHvPTtROojNUjz5_h4buQTJTWw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 23/25] dco-win: implement ovpn-dco
- support in P2P Windows code path
+Subject: [Openvpn-devel] [PATCH] tls-crypt-v2: bail out if the client key is
+ too small
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,56 +12,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Hi,
+The tls-crypt-v2 key should be at least 2 bytes long in order to read
+the actual length.
 
-I did some testing and found out that this breaks when establishing
-TCP connection to a server which cannot be reached:
+Bail out if the key is too short.
+Failing to do so will lead to a read out of the buffer boundary.
 
-> +    *tt = dco_create_socket(sock->info.lsa->current_remote,
-> +                            sock->bind_local,
-> +                            sock->info.lsa->bind_local,
-> +                            c->options.dev_node,
-> +                            &c->gc,
-> +                            get_server_poll_remaining_time(sock->server_poll_timeout),
-> +                            signal_received);
-> +    if (*signal_received)
-> +    {
-> +        return;
-> +    }
-> +    c->c1.tuntap = tt;
-> +    sock->info.dco_installed = true;
+While at it improve the error message a bit.
 
-If TCP server cannot be reached, the kernel reports it to userspace
-which triggers a signal. Signal handler calls
-teardown code which accesses c->c1.tuntap, which is not set (since
-return is above the assignment), causing access violation.
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/tls_crypt.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-dco_installed flag should also be moved above return, since if not
-set, c->c1.tuntap won't be cleared
-which triggers this assert after reconnect:
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 88730a99..2fc79111 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -557,7 +557,8 @@ tls_crypt_v2_extract_client_key(struct buffer *buf,
+ 
+     if (BLEN(&wrapped_client_key) < sizeof(net_len))
+     {
+-        msg(D_TLS_ERRORS, "failed to read length");
++        msg(D_TLS_ERRORS, "Can not read tls-crypt-v2 client key length");
++        return false;
+     }
+     memcpy(&net_len, BEND(&wrapped_client_key) - sizeof(net_len),
+            sizeof(net_len));
+-- 
+2.35.1
 
-    /* In this case persist-tun is enabled, which we don't support yet */
-    ASSERT(!c->c1.tuntap);
-
-I suggest to change code like this:
-
-    /* This state is used by signal handler which does teardown,
-     * so it has to be set before return */
-    c->c1.tuntap = tt;
-    sock->info.dco_installed = true;
-
-    if (*signal_received)
-    {
-        return;
-    }
-
-Again, we discussed this in chat and suggested changes are already
-pushed to the dco branch.
-
--Lev
 
