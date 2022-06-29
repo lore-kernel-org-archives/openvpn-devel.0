@@ -1,10 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Wed, 29 Jun 2022 14:29:24 +0200
-Message-Id: <20220629122924.13031-1-a@...2181...>
-In-Reply-To: <20220628185841.4282-1-a@...2181...>
-References: <20220628185841.4282-1-a@...2181...>
+Date: Wed, 29 Jun 2022 14:49:45 +0200
+Message-Id: <20220629124945.13448-1-a@...2181...>
+In-Reply-To: <20220629122924.13031-1-a@...2181...>
+References: <20220629122924.13031-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] dco: let open_tun_generic handle the DCO
+Subject: [Openvpn-devel] [PATCH v4] dco: let open_tun_generic handle the DCO
  case
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -26,6 +26,10 @@ easily leverage on function and avoid code duplication.
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
 
+Changes from v3:
+* explicitly mention "DCO" in message when DCO device is successfully
+  opened, as per Arne's request
+
 Changes from v2:
 * do not abuse the dynamic_name variable. Rather use 'dev' when no
   dynamic name is requested
@@ -39,9 +43,9 @@ Changes from v1:
 
  src/openvpn/init.c    |   2 +-
  src/openvpn/options.c |   7 +++
- src/openvpn/tun.c     | 137 ++++++++++++++++++++++++++++++++----------
+ src/openvpn/tun.c     | 141 ++++++++++++++++++++++++++++++++----------
  src/openvpn/tun.h     |   2 +-
- 4 files changed, 113 insertions(+), 35 deletions(-)
+ 4 files changed, 116 insertions(+), 36 deletions(-)
 
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
 index 03221cbb..c9d05c31 100644
@@ -75,7 +79,7 @@ index 233c02e0..705bb79a 100644
       * Save certain parms before modifying options during connect, especially
       * when using --pull
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index e12f0369..3fdd8e43 100644
+index e12f0369..5e7b8c49 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
 @@ -1718,10 +1718,10 @@ read_tun_header(struct tuntap *tt, uint8_t *buf, int len)
@@ -114,7 +118,7 @@ index e12f0369..3fdd8e43 100644
                      if ((tt->fd = open(tunname, O_RDWR)) > 0)
                      {
                          dynamic_opened = true;
-@@ -1801,30 +1817,61 @@ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
+@@ -1801,30 +1817,63 @@ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
              }
          }
  
@@ -148,8 +152,9 @@ index e12f0369..3fdd8e43 100644
 +                    msg(M_ERR, "Cannot open DCO device %s: %d", dev, ret);
 +                }
              }
--
+ 
 -            if ((tt->fd = open(tunname, O_RDWR)) < 0)
++            msg(M_INFO, "DCO device %s opened", tunname);
 +        }
 +        else
 +#endif
@@ -169,14 +174,16 @@ index e12f0369..3fdd8e43 100644
 +                    msg(M_ERR, "Cannot open TUN/TAP dev %s", tunname);
 +                }
              }
-+
-+            set_nonblock(tt->fd);
-+            set_cloexec(tt->fd); /* don't pass fd to scripts */
-         }
+-        }
  
 -        set_nonblock(tt->fd);
 -        set_cloexec(tt->fd); /* don't pass fd to scripts */
-         msg(M_INFO, "TUN/TAP device %s opened", tunname);
+-        msg(M_INFO, "TUN/TAP device %s opened", tunname);
++            set_nonblock(tt->fd);
++            set_cloexec(tt->fd); /* don't pass fd to scripts */
++
++            msg(M_INFO, "TUN/TAP device %s opened", tunname);
++        }
  
          /* tt->actual_name is passed to up and down scripts and used as the ifconfig dev name */
          tt->actual_name = string_alloc(dynamic_opened ? dynamic_name : dev, NULL);
@@ -187,7 +194,7 @@ index e12f0369..3fdd8e43 100644
  
  #if !defined(_WIN32)
  static void
-@@ -1842,7 +1889,8 @@ close_tun_generic(struct tuntap *tt)
+@@ -1842,7 +1891,8 @@ close_tun_generic(struct tuntap *tt)
  
  #if defined (TARGET_ANDROID)
  void
@@ -197,7 +204,7 @@ index e12f0369..3fdd8e43 100644
  {
  #define ANDROID_TUNNAME "vpnservice-tun"
      struct user_pass up;
-@@ -1939,7 +1987,8 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+@@ -1939,7 +1989,8 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
  #if !PEDANTIC
  
  void
@@ -207,7 +214,7 @@ index e12f0369..3fdd8e43 100644
  {
      struct ifreq ifr;
  
-@@ -1950,6 +1999,12 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+@@ -1950,6 +2001,12 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
      {
          open_null(tt);
      }
@@ -220,7 +227,7 @@ index e12f0369..3fdd8e43 100644
      else
      {
          /*
-@@ -2056,7 +2111,8 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+@@ -2056,7 +2113,8 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
  #else  /* if !PEDANTIC */
  
  void
@@ -230,7 +237,7 @@ index e12f0369..3fdd8e43 100644
  {
      ASSERT(0);
  }
-@@ -2081,7 +2137,7 @@ tuncfg(const char *dev, const char *dev_type, const char *dev_node,
+@@ -2081,7 +2139,7 @@ tuncfg(const char *dev, const char *dev_type, const char *dev_node,
      clear_tuntap(tt);
      tt->type = dev_type_enum(dev, dev_type);
      tt->options = *options;
@@ -239,7 +246,7 @@ index e12f0369..3fdd8e43 100644
      if (ioctl(tt->fd, TUNSETPERSIST, persist_mode) < 0)
      {
          msg(M_ERR, "Cannot ioctl TUNSETPERSIST(%d) %s", persist_mode, dev);
-@@ -2199,6 +2255,12 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+@@ -2199,6 +2257,12 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
          net_ctx_reset(ctx);
      }
  
@@ -252,7 +259,7 @@ index e12f0369..3fdd8e43 100644
      close_tun_generic(tt);
      free(tt);
  }
-@@ -2222,7 +2284,8 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+@@ -2222,7 +2286,8 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
  #endif
  
  void
@@ -262,7 +269,7 @@ index e12f0369..3fdd8e43 100644
  {
      int if_fd, ip_muxid, arp_muxid, arp_fd, ppa = -1;
      struct lifreq ifr;
-@@ -2574,9 +2637,10 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+@@ -2574,9 +2639,10 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
  #elif defined(TARGET_OPENBSD)
  
  void
@@ -275,7 +282,7 @@ index e12f0369..3fdd8e43 100644
  
      /* Enable multicast on the interface */
      if (tt->fd >= 0)
-@@ -2668,9 +2732,10 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+@@ -2668,9 +2734,10 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
   */
  
  void
@@ -288,7 +295,7 @@ index e12f0369..3fdd8e43 100644
  
      if (tt->fd >= 0)
      {
-@@ -2808,9 +2873,10 @@ freebsd_modify_read_write_return(int len)
+@@ -2808,9 +2875,10 @@ freebsd_modify_read_write_return(int len)
  }
  
  void
@@ -301,7 +308,7 @@ index e12f0369..3fdd8e43 100644
  
      if (tt->fd >= 0 && tt->type == DEV_TYPE_TUN)
      {
-@@ -2936,9 +3002,10 @@ dragonfly_modify_read_write_return(int len)
+@@ -2936,9 +3004,10 @@ dragonfly_modify_read_write_return(int len)
  }
  
  void
@@ -314,7 +321,7 @@ index e12f0369..3fdd8e43 100644
  
      if (tt->fd >= 0)
      {
-@@ -3164,7 +3231,8 @@ open_darwin_utun(const char *dev, const char *dev_type, const char *dev_node, st
+@@ -3164,7 +3233,8 @@ open_darwin_utun(const char *dev, const char *dev_type, const char *dev_node, st
  #endif /* ifdef HAVE_NET_IF_UTUN_H */
  
  void
@@ -324,7 +331,7 @@ index e12f0369..3fdd8e43 100644
  {
  #ifdef HAVE_NET_IF_UTUN_H
      /* If dev_node does not start start with utun assume regular tun/tap */
-@@ -3190,7 +3258,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+@@ -3190,7 +3260,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
              {
                  /* No explicit utun and utun failed, try the generic way) */
                  msg(M_INFO, "Failed to open utun device. Falling back to /dev/tun device");
@@ -333,7 +340,7 @@ index e12f0369..3fdd8e43 100644
              }
              else
              {
-@@ -3213,7 +3281,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+@@ -3213,7 +3283,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
              dev_node = NULL;
          }
  
@@ -342,7 +349,7 @@ index e12f0369..3fdd8e43 100644
      }
  }
  
-@@ -3271,7 +3339,8 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+@@ -3271,7 +3341,8 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
  #elif defined(TARGET_AIX)
  
  void
@@ -352,7 +359,7 @@ index e12f0369..3fdd8e43 100644
  {
      char tunname[256];
      char dynamic_name[20];
-@@ -6580,7 +6649,8 @@ tuntap_post_open(struct tuntap *tt, const char *device_guid)
+@@ -6580,7 +6651,8 @@ tuntap_post_open(struct tuntap *tt, const char *device_guid)
  }
  
  void
@@ -362,7 +369,7 @@ index e12f0369..3fdd8e43 100644
  {
      const char *device_guid = NULL;
  
-@@ -6881,9 +6951,10 @@ ipset2ascii_all(struct gc_arena *gc)
+@@ -6881,9 +6953,10 @@ ipset2ascii_all(struct gc_arena *gc)
  #else /* generic */
  
  void
