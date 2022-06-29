@@ -1,11 +1,9 @@
-Message-ID: <2a5bf6c9-c54a-06bb-9649-f19ff5f2be31@...1227...>
-Date: Wed, 29 Jun 2022 17:15:38 +0200
+From: Max Fillinger <maximilian.fillinger@...2507...>
+Date: Wed, 29 Jun 2022 19:05:55 +0200
+Message-ID: <20220629170555.116087-1-maximilian.fillinger@...2507...>
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <20220628162848.20103-1-kprovost@...2661...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20220628162848.20103-1-kprovost@...2661...>
-Subject: Re: [Openvpn-devel] [PATCH DCO]: FreeBSD DCO support
+Subject: [Openvpn-devel] [Patch v5] Don't "undo" ifconfig on exit if it
+ wasn't done
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,123 +12,255 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Kristof Provost <kprovost@...2661...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 28.06.22 um 18:28 schrieb Kristof Provost via Openvpn-devel:
-> Hi,
-> 
-> Here's the most recent version of the FreeBSD DCO patch.
-> This is based on top of the dco branch, at
-> 480fa1c983aba9b0790ea94df209e1686f08336b.
-> 
-> Relatedly, the kernel side of that support has just landed in FreeBSD's
-> repo: https://cgit.freebsd.org/src/commit/?id=ab91feabcc6f9da21d5c75028153af16d06e679a
+When running with --ifconfig-noexec, OpenVPN does not execute ifconfig,
+but on exit, it still tries to "undo" the configuration it would have
+done. This patch fixes it by extracting an undo_ifconfig() function from
+close_tun(). The undo function is called before close_tun(), but only if
+--ifconfig-noexec isn't set. This is symmetric to how open_tun() and
+do_ifconfig() are used.
 
-I tested this on top of Antonios branch but got an error when connecting 
-from a test client:
+v2: Fix tabs-vs-spaces.
+v3: Fix another style mistake.
+v4: Move undo_ifconfig{4,6}() out of #ifdef TARGET_LINUX.
+v5: Keep ctx argument in close_tun().
 
-2022-06-29 17:10:57 us=506086 lethe/192.168.188.134:61923 dco_new_peer: 
-peer-id 0, fd 7
-2022-06-29 17:10:57 us=506125 lethe/192.168.188.134:61923 Failed to 
-create new peer 51
-2022-06-29 17:10:57 us=506137 lethe/192.168.188.134:61923 Cannot add 
-peer to DCO: Operation not permitted
+Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+---
+ src/openvpn/init.c |   4 ++
+ src/openvpn/tun.c  | 161 +++++++++++++++++++++++----------------------
+ src/openvpn/tun.h  |   8 +++
+ 3 files changed, 96 insertions(+), 77 deletions(-)
 
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index c9d05c31..f5ca2be8 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1873,6 +1873,10 @@ do_close_tun_simple(struct context *c)
+     msg(D_CLOSE, "Closing TUN/TAP interface");
+     if (c->c1.tuntap)
+     {
++        if (!c->options.ifconfig_noexec)
++        {
++            undo_ifconfig(c->c1.tuntap, &c->net_ctx);
++        }
+         close_tun(c->c1.tuntap, &c->net_ctx);
+         c->c1.tuntap = NULL;
+     }
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 5e7b8c49..feee83ef 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1605,6 +1605,89 @@ do_ifconfig(struct tuntap *tt, const char *ifname, int tun_mtu,
+     net_ctx_free(ctx);
+ }
+ 
++static void
++undo_ifconfig_ipv4(struct tuntap *tt, openvpn_net_ctx_t *ctx)
++{
++#if defined(TARGET_LINUX)
++    int netbits = netmask_to_netbits2(tt->remote_netmask);
++
++    if (is_tun_p2p(tt))
++    {
++        if (net_addr_ptp_v4_del(ctx, tt->actual_name, &tt->local,
++                                &tt->remote_netmask) < 0)
++        {
++            msg(M_WARN, "Linux can't del IP from iface %s",
++                tt->actual_name);
++        }
++    }
++    else
++    {
++        if (net_addr_v4_del(ctx, tt->actual_name, &tt->local, netbits) < 0)
++        {
++            msg(M_WARN, "Linux can't del IP from iface %s",
++                tt->actual_name);
++        }
++    }
++#elif !defined(_WIN32)  /* if !defined(TARGET_LINUX) && !defined(_WIN32) */
++    struct argv argv = argv_new();
++
++    argv_printf(&argv, "%s %s 0.0.0.0", IFCONFIG_PATH, tt->actual_name);
++
++    argv_msg(M_INFO, &argv);
++    openvpn_execve_check(&argv, NULL, 0, "Generic ip addr del failed");
++
++    argv_free(&argv);
++#endif /* ifdef TARGET_LINUX */
++       /* Empty for _WIN32. */
++}
++
++static void
++undo_ifconfig_ipv6(struct tuntap *tt, openvpn_net_ctx_t *ctx)
++{
++#if defined(TARGET_LINUX)
++    if (net_addr_v6_del(ctx, tt->actual_name, &tt->local_ipv6,
++                        tt->netbits_ipv6) < 0)
++    {
++        msg(M_WARN, "Linux can't del IPv6 from iface %s", tt->actual_name);
++    }
++#elif !defined(_WIN32)  /* if !defined(TARGET_LINUX) && !defined(_WIN32) */
++    struct gc_arena gc = gc_new();
++    const char *ifconfig_ipv6_local = print_in6_addr(tt->local_ipv6, 0, gc);
++    struct argv argv = argv_new();
++
++    argv_printf(&argv, "%s %s del %s/%d", IFCONFIG_PATH, tt->actual_name,
++                ifconfig_ipv6_local, tt->netbits_ipv6);
++
++    argv_msg(M_INFO, &argv);
++    openvpn_execve_check(&argv, NULL, 0, "Linux ip -6 addr del failed");
++
++    argv_free(&argv);
++    gc_free(&gc);
++#endif /* ifdef TARGET_LINUX */
++       /* Empty for _WIN32. */
++}
++
++void
++undo_ifconfig(struct tuntap *tt, openvpn_net_ctx_t *ctx)
++{
++    if (tt->type != DEV_TYPE_NULL)
++    {
++        if (tt->did_ifconfig_setup)
++        {
++            undo_ifconfig_ipv4(tt, ctx);
++        }
++
++        if (tt->did_ifconfig_ipv6_setup)
++        {
++            undo_ifconfig_ipv6(tt, ctx);
++        }
++
++        /* release resources potentially allocated during undo */
++        net_ctx_reset(ctx);
++    }
++
++}
++
+ static void
+ clear_tuntap(struct tuntap *tuntap)
+ {
+@@ -1846,7 +1929,7 @@ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
+             msg(M_INFO, "DCO device %s opened", tunname);
+         }
+         else
+-#endif
++#endif /* if defined(TARGET_LINUX) */
+         {
+             if (!dynamic_opened)
+             {
+@@ -2176,87 +2259,11 @@ tuncfg(const char *dev, const char *dev_type, const char *dev_node,
+ 
+ #endif /* ENABLE_FEATURE_TUN_PERSIST */
+ 
+-static void
+-undo_ifconfig_ipv4(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+-{
+-#if defined(TARGET_LINUX)
+-    int netbits = netmask_to_netbits2(tt->remote_netmask);
+-
+-    if (is_tun_p2p(tt))
+-    {
+-        if (net_addr_ptp_v4_del(ctx, tt->actual_name, &tt->local,
+-                                &tt->remote_netmask) < 0)
+-        {
+-            msg(M_WARN, "Linux can't del IP from iface %s",
+-                tt->actual_name);
+-        }
+-    }
+-    else
+-    {
+-        if (net_addr_v4_del(ctx, tt->actual_name, &tt->local, netbits) < 0)
+-        {
+-            msg(M_WARN, "Linux can't del IP from iface %s",
+-                tt->actual_name);
+-        }
+-    }
+-#else  /* ifndef TARGET_LINUX */
+-    struct argv argv = argv_new();
+-
+-    argv_printf(&argv, "%s %s 0.0.0.0", IFCONFIG_PATH, tt->actual_name);
+-
+-    argv_msg(M_INFO, &argv);
+-    openvpn_execve_check(&argv, NULL, 0, "Generic ip addr del failed");
+-
+-    argv_free(&argv);
+-#endif /* ifdef TARGET_LINUX */
+-}
+-
+-static void
+-undo_ifconfig_ipv6(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+-{
+-#if defined(TARGET_LINUX)
+-    if (net_addr_v6_del(ctx, tt->actual_name, &tt->local_ipv6,
+-                        tt->netbits_ipv6) < 0)
+-    {
+-        msg(M_WARN, "Linux can't del IPv6 from iface %s", tt->actual_name);
+-    }
+-#else  /* ifndef TARGET_LINUX */
+-    struct gc_arena gc = gc_new();
+-    const char *ifconfig_ipv6_local = print_in6_addr(tt->local_ipv6, 0, gc);
+-    struct argv argv = argv_new();
+-
+-    argv_printf(&argv, "%s %s del %s/%d", IFCONFIG_PATH, tt->actual_name,
+-                ifconfig_ipv6_local, tt->netbits_ipv6);
+-
+-    argv_msg(M_INFO, &argv);
+-    openvpn_execve_check(&argv, NULL, 0, "Linux ip -6 addr del failed");
+-
+-    argv_free(&argv);
+-    gc_free(&gc);
+-#endif /* ifdef TARGET_LINUX */
+-}
+-
+ void
+ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+ {
+     ASSERT(tt);
+ 
+-    if (tt->type != DEV_TYPE_NULL)
+-    {
+-        if (tt->did_ifconfig_setup)
+-        {
+-            undo_ifconfig_ipv4(tt, ctx);
+-        }
+-
+-        if (tt->did_ifconfig_ipv6_setup)
+-        {
+-            undo_ifconfig_ipv6(tt, ctx);
+-        }
+-
+-        /* release resources potentially allocated during undo */
+-        net_ctx_reset(ctx);
+-    }
+-
+ #ifdef TARGET_LINUX
+     if (!tt->options.disable_dco)
+     {
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index cf02bf43..6d4530f7 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -300,6 +300,14 @@ void do_ifconfig_setenv(const struct tuntap *tt,
+ void do_ifconfig(struct tuntap *tt, const char *ifname, int tun_mtu,
+                  const struct env_set *es, openvpn_net_ctx_t *ctx);
+ 
++/**
++ * undo_ifconfig - undo configuration of the tunnel interface
++ *
++ * @param tt    the tuntap interface context
++ * @param ctx   the networking API opaque context
++ */
++void undo_ifconfig(struct tuntap *tt, openvpn_net_ctx_t *ctx);
++
+ bool is_dev_type(const char *dev, const char *dev_type, const char *match_type);
+ 
+ int dev_type_enum(const char *dev, const char *dev_type);
+-- 
+2.30.2
 
-Any idea why I might get a permission denied from the kernel there?
-
-command line was (config fp only has fingerprint commands in it):
-
-sudo  ./src/openvpn/openvpn --server 10.0.0.0 255.255.255.0  --dev tun 
---dh none --config ~/ovpn/confs/fp  --cert 
-~/ovpn/confs/cert128serial.pem  --key ~/ovpn/confs/cert128serial.pem 
---verb 3 --max-clients 25000 --push "explicit-exit-notify 1" --keepalive 
-10 60  --explicit-exit-notify 1 --push "blaba bla" --tun-mtu 65000 
---topology subnet --verb 6
-
-
-2022-06-29 17:12:04 us=36114 192.168.188.134:54932 VERIFY OK: depth=0, 
-CN=lethe
-2022-06-29 17:12:04 us=36235 192.168.188.134:54932 VERIFY OK: depth=0, 
-CN=lethe
-2022-06-29 17:12:04 us=39002 192.168.188.134:54932 peer info: IV_VER=2.6_git
-2022-06-29 17:12:04 us=39034 192.168.188.134:54932 peer info: IV_PLAT=win
-2022-06-29 17:12:04 us=39041 192.168.188.134:54932 peer info: IV_TCPNL=1
-2022-06-29 17:12:04 us=39046 192.168.188.134:54932 peer info: IV_NCP=2
-2022-06-29 17:12:04 us=39052 192.168.188.134:54932 peer info: 
-IV_CIPHERS=AES-256-GCM:AES-128-GCM
-2022-06-29 17:12:04 us=39058 192.168.188.134:54932 peer info: IV_PROTO=30
-2022-06-29 17:12:04 us=39063 192.168.188.134:54932 peer info: IV_LZO_STUB=1
-2022-06-29 17:12:04 us=39068 192.168.188.134:54932 peer info: IV_COMP_STUB=1
-2022-06-29 17:12:04 us=39073 192.168.188.134:54932 peer info: 
-IV_COMP_STUBv2=1
-2022-06-29 17:12:04 us=39113 192.168.188.134:54932 WARNING: 'link-mtu' 
-is used inconsistently, local='link-mtu 65041', remote='link-mtu 1441'
-2022-06-29 17:12:04 us=39123 192.168.188.134:54932 WARNING: 'tun-mtu' is 
-used inconsistently, local='tun-mtu 65000', remote='tun-mtu 1400'
-2022-06-29 17:12:04 us=39182 192.168.188.134:54932 dco_update_keys: 
-peer_id=0
-2022-06-29 17:12:04 us=39210 192.168.188.134:54932 UDPv6 WRITE [184] to 
-[AF_INET6]::ffff:192.168.188.134:54932: P_CONTROL_V1 kid=0 [ 2 ] pid=3 
-DATA len=158
-2022-06-29 17:12:04 us=39254 192.168.188.134:54932 dco_update_keys: 
-peer_id=0
-2022-06-29 17:12:04 us=39268 192.168.188.134:54932 UDPv6 WRITE [216] to 
-[AF_INET6]::ffff:192.168.188.134:54932: P_CONTROL_V1 kid=0 [ ] pid=4 
-DATA len=202
-2022-06-29 17:12:04 us=39282 192.168.188.134:54932 dco_update_keys: 
-peer_id=0
-2022-06-29 17:12:04 us=40390 192.168.188.134:54932 UDPv6 READ [22] from 
-[AF_INET6]::ffff:192.168.188.134:54932: P_ACK_V1 kid=0 [ 3 ] DATA len=0
-2022-06-29 17:12:04 us=40440 192.168.188.134:54932 dco_update_keys: 
-peer_id=0
-2022-06-29 17:12:04 us=44123 192.168.188.134:54932 UDPv6 READ [22] from 
-[AF_INET6]::ffff:192.168.188.134:54932: P_ACK_V1 kid=0 [ 4 ] DATA len=0
-2022-06-29 17:12:04 us=44198 192.168.188.134:54932 Control Channel: 
-TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 384 
-bit EC, curve secp384r1, signature: ecdsa-with-SHA256
-2022-06-29 17:12:04 us=44219 192.168.188.134:54932 [lethe] Peer 
-Connection Initiated with [AF_INET6]::ffff:192.168.188.134:54932
-2022-06-29 17:12:04 us=44236 192.168.188.134:54932 dco_update_keys: 
-peer_id=0
-2022-06-29 17:12:04 us=44252 lethe/192.168.188.134:54932 MULTI_sva: pool 
-returned IPv4=10.0.0.2, IPv6=(Not enabled)
-2022-06-29 17:12:04 us=44364 lethe/192.168.188.134:54932 MULTI: Learn: 
-10.0.0.2 -> lethe/192.168.188.134:54932
-2022-06-29 17:12:04 us=44373 lethe/192.168.188.134:54932 MULTI: primary 
-virtual IP for lethe/192.168.188.134:54932: 10.0.0.2
-2022-06-29 17:12:04 us=44393 lethe/192.168.188.134:54932 dco_new_peer: 
-peer-id 0, fd 7
-2022-06-29 17:12:04 us=44492 lethe/192.168.188.134:54932 Failed to 
-create new peer 51
-2022-06-29 17:12:04 us=44530 lethe/192.168.188.134:54932 Cannot add peer 
-to DCO: Operation not permitted
-2022-06-29 17:12:04 us=44538 lethe/192.168.188.134:54932 Delayed exit in 
-5 seconds
-2022-06-29 17:12:04 us=44559 lethe/192.168.188.134:54932 SENT CONTROL 
-[lethe]: 'AUTH_FAILED' (status=1)
-2022-06-29 17:12:04 us=44589 lethe/192.168.188.134:54932 
-dco_update_keys: peer_id=0
-2022-06-29 17:12:04 us=44606 lethe/192.168.188.134:54932 UDPv6 WRITE 
-[48] to [AF_INET6]::ffff:192.168.188.134:54932: P_CONTROL_V1 kid=0 [ ] 
-pid=5 DATA len=34
-2022-06-29 17:12:04 us=44633 lethe/192.168.188.134:54932 
-dco_update_keys: peer_id=0
-2022-06-29 17:12:05 us=242725 lethe/192.168.188.134:54932 
-dco_update_keys: peer_id=0
-2022-06-29 17:12:06 us=508405 lethe/192.168.188.134:54932 
-dco_update_keys: peer_id=0
-2022-06-29 17:12:06 us=508569 lethe/192.168.188.134:54932 UDPv6 WRITE 
-[48] to [AF_INET6]::ffff:192.168.188.134:54932: P_CONTROL_V1 kid=0 [ ] 
-pid=5 DATA len=34
-2022-06-29 17:12:06 us=508616 lethe/192.168.188.134:54932 
-dco_update_keys: peer_id=0
-2022-06-29 17:12:07 us=729578 lethe/192.168.188.134:54932 
-dco_update_keys: peer_id=0
-2022-06-29 17:12:08 us=929417 lethe/192.168.188.134:54932 
-dco_update_keys: peer_id=0
-2022-06-29 17:12:10 us=142712 lethe/192.168.188.134:54932 
-SIGTERM[soft,delayed-exit] received, client-instance exiting
 
