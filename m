@@ -1,12 +1,11 @@
-Content-Type: multipart/mixed; boundary="------------IDky0X06xw61lLchva80MJcd"
-Message-ID: <51f00204-a6b6-47d8-3912-bcb9d5c4d426@...515...>
-Date: Wed, 29 Jun 2022 13:21:42 +0300
+From: Antonio Quartulli <a@...2181...>
+Date: Wed, 29 Jun 2022 14:29:24 +0200
+Message-Id: <20220629122924.13031-1-a@...2181...>
+In-Reply-To: <20220628185841.4282-1-a@...2181...>
+References: <20220628185841.4282-1-a@...2181...>
 MIME-Version: 1.0
-Content-Language: en-US
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-References: <dbab176c-e972-963a-d68f-35ddae6e7d9b@...515...>
-In-Reply-To: <dbab176c-e972-963a-d68f-35ddae6e7d9b@...515...>
-Subject: [Openvpn-devel] Summary of the community meeting (29th June 2022)
+Subject: [Openvpn-devel] [PATCH v3] dco: let open_tun_generic handle the DCO
+ case
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,291 +14,381 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-This is a multi-part message in MIME format.
---------------IDky0X06xw61lLchva80MJcd
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+open_tun_generic already contains the logic required to find a device
+name when not specified b the user. For this reason the DCO case can
+easily leverage on function and avoid code duplication.
 
-Hi,
-
-Here's the summary of the IRC meeting.
-
+Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
 
-COMMUNITY MEETING
+Changes from v2:
+* do not abuse the dynamic_name variable. Rather use 'dev' when no
+  dynamic name is requested
+* ignore dev-node when using DCO, to avoid messing up naming logic in
+  open_tun_generic. dev-node has sense when using DCO
+* add comment as to why we need to fill tunname
 
-Place: #openvpn-meeting on libera.chat
-Date: Wed 29th June 2022
-Time: 10:30 CEST (9:30 UTC)
+Changes from v1:
+* improved INFO message when device already exists as per Arne's request
 
-Planned meeting topics for this meeting were here:
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2022-06-29>
+ src/openvpn/init.c    |   2 +-
+ src/openvpn/options.c |   7 +++
+ src/openvpn/tun.c     | 137 ++++++++++++++++++++++++++++++++----------
+ src/openvpn/tun.h     |   2 +-
+ 4 files changed, 113 insertions(+), 35 deletions(-)
 
-Your local meeting time is easy to check from services such as
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 03221cbb..c9d05c31 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1763,7 +1763,7 @@ do_open_tun(struct context *c)
+ #endif
+     /* open the tun device */
+     open_tun(c->options.dev, c->options.dev_type, c->options.dev_node,
+-             c->c1.tuntap);
++             c->c1.tuntap, &c->net_ctx);
+ 
+     /* set the hardware address */
+     if (c->options.lladdr)
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 233c02e0..705bb79a 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3528,6 +3528,13 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
+         o->verify_hash_no_ca = true;
+     }
+ 
++    if (dco_enabled(o) && o->dev_node)
++    {
++        msg(M_WARN, "Note: ignoring --dev-node as it has no effect when using "
++            "data channel offload");
++        o->dev_node = NULL;
++    }
++
+     /*
+      * Save certain parms before modifying options during connect, especially
+      * when using --pull
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index e12f0369..3fdd8e43 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1718,10 +1718,10 @@ read_tun_header(struct tuntap *tt, uint8_t *buf, int len)
+ #endif /* if defined (TARGET_OPENBSD) || (defined(TARGET_DARWIN) && HAVE_NET_IF_UTUN_H) */
+ 
+ 
+-#if !(defined(_WIN32) || defined(TARGET_LINUX))
++#if !defined(_WIN32)
+ static void
+ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
+-                 bool dynamic, struct tuntap *tt)
++                 bool dynamic, struct tuntap *tt, openvpn_net_ctx_t *ctx)
+ {
+     char tunname[256];
+     char dynamic_name[256];
+@@ -1780,6 +1780,22 @@ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
+                                      "/dev/%s%d", dev, i);
+                     openvpn_snprintf(dynamic_name, sizeof(dynamic_name),
+                                      "%s%d", dev, i);
++#if defined(TARGET_LINUX)
++                    if (!tt->options.disable_dco)
++                    {
++                        if (open_tun_dco(tt, ctx, dynamic_name) == 0)
++                        {
++                            dynamic_opened = true;
++                            /* tunname is required when printing the message at
++                             * the end of the function
++                             */
++                            strncpynt(tunname, dynamic_name,
++                                      sizeof(dynamic_name));
++                            break;
++                        }
++                    }
++                    else
++#endif
+                     if ((tt->fd = open(tunname, O_RDWR)) > 0)
+                     {
+                         dynamic_opened = true;
+@@ -1801,30 +1817,61 @@ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
+             }
+         }
+ 
+-        if (!dynamic_opened)
++#if defined(TARGET_LINUX)
++        if (!tt->options.disable_dco)
+         {
+-            /* has named device existed before? if so, don't destroy at end */
+-            if (if_nametoindex( dev ) > 0)
++            if (!dynamic_opened)
+             {
+-                msg(M_INFO, "TUN/TAP device %s exists previously, keep at program end", dev );
+-                tt->persistent_if = true;
++                /* if dynamic_opened was true, then we already created the
++                 * interface named 'dynamic_name', otherwise we have to create
++                 * now the interface 'dev'.
++                 *
++                 * The variable 'dev_node' is totally ignored in the DCO case
++                 * because it is unset by options post-processing as it makes no
++                 * sense in this scenario.
++                 */
++                int ret = open_tun_dco(tt, ctx, dev);
++                if (ret == -EEXIST)
++                {
++                    msg(M_INFO, "DCO device %s already exists, won't be destroyed at shutdown",
++                        dev);
++                    tt->persistent_if = true;
++                }
++                else if (ret < 0)
++                {
++                    msg(M_ERR, "Cannot open DCO device %s: %d", dev, ret);
++                }
+             }
+-
+-            if ((tt->fd = open(tunname, O_RDWR)) < 0)
++        }
++        else
++#endif
++        {
++            if (!dynamic_opened)
+             {
+-                msg(M_ERR, "Cannot open TUN/TAP dev %s", tunname);
++                /* has named device existed before? if so, don't destroy at end */
++                if (if_nametoindex( dev ) > 0)
++                {
++                    msg(M_INFO, "TUN/TAP device %s exists previously, keep at program end", dev );
++                    tt->persistent_if = true;
++                }
++
++                if ((tt->fd = open(tunname, O_RDWR)) < 0)
++                {
++                    msg(M_ERR, "Cannot open TUN/TAP dev %s", tunname);
++                }
+             }
++
++            set_nonblock(tt->fd);
++            set_cloexec(tt->fd); /* don't pass fd to scripts */
+         }
+ 
+-        set_nonblock(tt->fd);
+-        set_cloexec(tt->fd); /* don't pass fd to scripts */
+         msg(M_INFO, "TUN/TAP device %s opened", tunname);
+ 
+         /* tt->actual_name is passed to up and down scripts and used as the ifconfig dev name */
+         tt->actual_name = string_alloc(dynamic_opened ? dynamic_name : dev, NULL);
+     }
+ }
+-#endif /* !_WIN32 && !TARGET_LINUX */
++#endif /* !_WIN32 */
+ 
+ #if !defined(_WIN32)
+ static void
+@@ -1842,7 +1889,8 @@ close_tun_generic(struct tuntap *tt)
+ 
+ #if defined (TARGET_ANDROID)
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+ #define ANDROID_TUNNAME "vpnservice-tun"
+     struct user_pass up;
+@@ -1939,7 +1987,8 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ #if !PEDANTIC
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+     struct ifreq ifr;
+ 
+@@ -1950,6 +1999,12 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+     {
+         open_null(tt);
+     }
++#if defined(TARGET_LINUX)
++    else if (!tt->options.disable_dco)
++    {
++        open_tun_generic(dev, dev_type, dev_node, true, tt, ctx);
++    }
++#endif
+     else
+     {
+         /*
+@@ -2056,7 +2111,8 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+ #else  /* if !PEDANTIC */
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+     ASSERT(0);
+ }
+@@ -2081,7 +2137,7 @@ tuncfg(const char *dev, const char *dev_type, const char *dev_node,
+     clear_tuntap(tt);
+     tt->type = dev_type_enum(dev, dev_type);
+     tt->options = *options;
+-    open_tun(dev, dev_type, dev_node, tt);
++    open_tun(dev, dev_type, dev_node, tt, ctx);
+     if (ioctl(tt->fd, TUNSETPERSIST, persist_mode) < 0)
+     {
+         msg(M_ERR, "Cannot ioctl TUNSETPERSIST(%d) %s", persist_mode, dev);
+@@ -2199,6 +2255,12 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+         net_ctx_reset(ctx);
+     }
+ 
++#ifdef TARGET_LINUX
++    if (!tt->options.disable_dco)
++    {
++        close_tun_dco(tt, ctx);
++    }
++#endif
+     close_tun_generic(tt);
+     free(tt);
+ }
+@@ -2222,7 +2284,8 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ #endif
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+     int if_fd, ip_muxid, arp_muxid, arp_fd, ppa = -1;
+     struct lifreq ifr;
+@@ -2574,9 +2637,10 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ #elif defined(TARGET_OPENBSD)
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+-    open_tun_generic(dev, dev_type, dev_node, true, tt);
++    open_tun_generic(dev, dev_type, dev_node, true, tt, ctx);
+ 
+     /* Enable multicast on the interface */
+     if (tt->fd >= 0)
+@@ -2668,9 +2732,10 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+  */
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+-    open_tun_generic(dev, dev_type, dev_node, true, tt);
++    open_tun_generic(dev, dev_type, dev_node, true, tt, ctx);
+ 
+     if (tt->fd >= 0)
+     {
+@@ -2808,9 +2873,10 @@ freebsd_modify_read_write_return(int len)
+ }
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+-    open_tun_generic(dev, dev_type, dev_node, true, tt);
++    open_tun_generic(dev, dev_type, dev_node, true, tt, ctx);
+ 
+     if (tt->fd >= 0 && tt->type == DEV_TYPE_TUN)
+     {
+@@ -2936,9 +3002,10 @@ dragonfly_modify_read_write_return(int len)
+ }
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+-    open_tun_generic(dev, dev_type, dev_node, true, tt);
++    open_tun_generic(dev, dev_type, dev_node, true, tt, ctx);
+ 
+     if (tt->fd >= 0)
+     {
+@@ -3164,7 +3231,8 @@ open_darwin_utun(const char *dev, const char *dev_type, const char *dev_node, st
+ #endif /* ifdef HAVE_NET_IF_UTUN_H */
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+ #ifdef HAVE_NET_IF_UTUN_H
+     /* If dev_node does not start start with utun assume regular tun/tap */
+@@ -3190,7 +3258,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+             {
+                 /* No explicit utun and utun failed, try the generic way) */
+                 msg(M_INFO, "Failed to open utun device. Falling back to /dev/tun device");
+-                open_tun_generic(dev, dev_type, NULL, true, tt);
++                open_tun_generic(dev, dev_type, NULL, true, tt, ctx);
+             }
+             else
+             {
+@@ -3213,7 +3281,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+             dev_node = NULL;
+         }
+ 
+-        open_tun_generic(dev, dev_type, dev_node, true, tt);
++        open_tun_generic(dev, dev_type, dev_node, true, tt, ctx);
+     }
+ }
+ 
+@@ -3271,7 +3339,8 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ #elif defined(TARGET_AIX)
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+     char tunname[256];
+     char dynamic_name[20];
+@@ -6580,7 +6649,8 @@ tuntap_post_open(struct tuntap *tt, const char *device_guid)
+ }
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+     const char *device_guid = NULL;
+ 
+@@ -6881,9 +6951,10 @@ ipset2ascii_all(struct gc_arena *gc)
+ #else /* generic */
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+-    open_tun_generic(dev, dev_type, dev_node, true, tt);
++    open_tun_generic(dev, dev_type, dev_node, true, tt, ctx);
+ }
+ 
+ void
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 5fcea590..cf02bf43 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -249,7 +249,7 @@ tuntap_ring_empty(struct tuntap *tt)
+  */
+ 
+ void open_tun(const char *dev, const char *dev_type, const char *dev_node,
+-              struct tuntap *tt);
++              struct tuntap *tt, openvpn_net_ctx_t *ctx);
+ 
+ void close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx);
+ 
+-- 
+2.35.1
 
-<http://www.timeanddate.com/worldclock>
-
-SUMMARY
-
-cron2, d12fk, dazo, djpig, lev, mattock, MaxF, ordex and plaisthos 
-participated in this meeting.
-
----
-
-Noted that nothing of importance has happened on the 2.5 front. As 
-discussed in previous meeting the recent OpenSSL 1.1.1p release is not 
-relevant for OpenVPN.
-
----
-
-Talked about 2.6. Noted that the essential DNS changes are now in. Also, 
-DCO review has progressed well.
-
----
-
-Talked about the next hackathon. MaxF will request Fox-IT to provide an 
-answer in two weeks to question "can OpenVPN hackathon be hosted at 
-Fox-IT?" (in Delft, Netherlands). Privately we are prepared to wait 
-until end of July for the answer.
-
-The backup location would be Helsinki, Finland. Lev has asked F-Secure 
-if they'd be willing to host the hackathon, but has not yet secured an 
-answer.
-
----
-
-Worked on getting cron2's buildbot workers to connect to the new 
-buildmaster.
-
---
-
-Full chatlog attached
---------------IDky0X06xw61lLchva80MJcd
-Content-Type: text/plain; charset=UTF-8;
- name="openvpn_irc_meeting_chatlog_2022-06-29.txt"
-Content-Disposition: attachment;
- filename="openvpn_irc_meeting_chatlog_2022-06-29.txt"
-Content-Transfer-Encoding: base64
-
-KDExOjI3OjEzKSBtYXR0b2NrMjogaGkKKDExOjI3OjU5KSBkanBpZyBbfmZsaWNodGVuaEBs
-b3ZlbGFjZS5saWNodGVuaGVsZC5jb21dIMOoIGVudHJhdG8gbmVsbGEgc3RhbnphLgooMTE6
-Mjg6NDEpIGRqcGlnOiB5YXksIEkgcmVtZW1iZXJlZCB0aGUgbWVldGluZyB0aW1lIDspCigx
-MTozMDoxOCkgTWF4RiBbfk1heEZAY3VzdC05NS0xMjgtOTEtMjQyLmJyZWVkYmFuZGRlbGZ0
-Lm5sXSDDqCBlbnRyYXRvIG5lbGxhIHN0YW56YS4KKDExOjMwOjQ1KSBkYXpvOiBvLwooMTE6
-MzE6MjEpIE1heEY6IFxvCigxMTozMTo0MSkgbWF0dG9jazI6IHllcwooMTE6MzI6MTQpIGQx
-MmZrOiBoaQooMTE6MzI6MzEpIGRqcGlnOiBtb2luCigxMTozMzo0MSkgY3JvbjI6IHlvCigx
-MTozNTowMikgY3JvbjIgaGEgc2NlbHRvIGNvbWUgYXJnb21lbnRvOiBodHRwczovL2NvbW11
-bml0eS5vcGVudnBuLm5ldC9vcGVudnBuL3dpa2kvVG9waWNzLTIwMjItMDYtMjkKKDExOjM2
-OjI3KSBtYXR0b2NrMjogc3luYyB1cD8KKDExOjM3OjAyKSBjcm9uMjogd2UgaGF2ZSBxdWl0
-ZSBhIGZldyB0b3BpY3MgZnJvbSAtMDEgYW5kIGZyb20gLTIyIHRoYXQgd2VyZSBub3QgZmlu
-aXNoZWQKKDExOjM3OjEzKSBjcm9uMjogYnV0IGFueXdheQooMTE6Mzc6MzYpIGNyb24yOiAy
-LjUgLT4gbm90aGluZyByZWFsbHkgaW50ZXJlc3RpbmcuICBPcmRleCBmb3VuZCBhIGJ1ZyB0
-aGF0IGxvb2tlZCBiYWQgYnV0IHR1cm5lZCBvdXQgImp1c3QgYSBidWciLCBzbyBubyBuZWVk
-IGZvciBhIHByZXNzaW5nIHJlbGVhc2UKKDExOjM3OjQ0KSBvcmRleDogYXkKKDExOjM3OjUw
-KSBjcm9uMjogb3BlbnNzbCByZWxlYXNlZCBzb21ldGhpbmcgbmV3IGluIDEuMS4xKiwgd2hp
-Y2ggaXMgYWxzbyBub3QgcmVsZXZhbnQgZm9yIHVzCigxMTozODo1OCkgY3JvbjI6IGFueXRo
-aW5nIGVsc2Ugb24gMi41PwooMTE6NDA6MjIpIGRhem86IERvbid0IHRoaW5rIHNvCigxMTo0
-MDo0NykgY3JvbjI6IHNvLCBtYXN0ZXIKKDExOjQxOjA0KSBjcm9uMjogInRoZSBETlMgdGhp
-bmdzIiBhcmUgZG9uZSwgSSB0aGluayAodGhhbmtzLCBkMTJmaykKKDExOjQxOjI0KSBkMTJm
-azogd2VsbCwgc3RhcnRlZAooMTE6NDE6NDMpIGNyb24yOiB3ZWxsLCB0aGUgIm11c3QgaGF2
-ZSBiaXRzIGZvciAyLjYiLCBhdCBsZWFzdCA7LSkKKDExOjQxOjU0KSAqKipkMTJmayBhZGQg
-Y2hlY2ttYXJrCigxMTo0MTo1NSkgcGxhaXN0aG9zOiBtb2luIG1vaW4KKDExOjQyOjA5KSBs
-ZXZfXzogZ3V0ZW4gdGFnCigxMTo0Mjo1MSkgY3JvbjI6IGRqcGlnIGhhcyBiZWVuIGVub3Jt
-b3VzbHkgaGVscGZ1bCB3aXRoIHJldmlld3MgKFRIQU5LUykgLSBoYXZpbmcgYSBkYW5nbGlu
-ZyBBQ0sgdGhlcmUgcmVhbGx5IGdldHMgbWUgbW92aW5nIDopCigxMTo0MzozMCkgb3JkZXg6
-IHdoZWVlCigxMTo0Mzo1NykgTWF4RjogSSdtIHN0aWxsIHdhaXRpbmcgZm9yIGEgcmV2aWV3
-IG9uIGh0dHBzOi8vcGF0Y2h3b3JrLm9wZW52cG4ubmV0L3BhdGNoLzI1MDIvCigxMTo0Mzo1
-OCkgdnBuSGVscGVyYDogVGl0bGU6IFtPcGVudnBuLWRldmVsLHY0XSBEb24ndCAidW5kbyIg
-aWZjb25maWcgb24gZXhpdCBpZiBpdCB3YXNuJ3QgZG9uZSAtIFBhdGNod29yayAoYXQgcGF0
-Y2h3b3JrLm9wZW52cG4ubmV0KQooMTE6NDQ6MDQpIGNyb24yOiBEQ08gaXMgcm9sbGluZyBh
-Z2Fpbi4uLiBub3cgZ2V0dGluZyByZWFsIGluLWRlcHRoIHJldmlld3MsIHNpbmNlIHdlIGhh
-dmUgbWFuYWdlYWJsZSBjaHVua3MgYWdhaW4KKDExOjQ2OjEwKSBkYXpvOiBNYXhGOiBJIHN0
-YXJ0ZWQgbG9va2luZyBpbnRvIGl0IC4uLi4gYW5kIGl0IHJlcXVpcmVzIGEgYml0IG9mIGRl
-ZXAgZGl2ZSBhcyB0aGVzZSBhcmUgbW9zdGx5IG5ldyBjb2RlIHBhdGhzIGZvciBtZS4gIEJ1
-dCBpdCdzIG9uIG15IGxpc3QgdW5sZXNzIHNvbWVvbmUgZWxzZSBpcyBxdWlja2VyIHRoYW4g
-bWUKKDExOjQ2OjM1KSBvcmRleDogSSBhbSBhbHNvIGEgY2FuZGlkYXRlIHJldmlld2VyIGZv
-ciB0aGF0IHBhdGNoIC0gYnV0IHdvbid0IGdldCB0byBpdCBiZWZvcmUgd2UncmUgZG9uZSB3
-aXRoIGRjbywgc29ycnkKKDExOjQ2OjQxKSBkYXpvOiBJJ20gZGl2aW5nIGludG8gbW9yZSBv
-ZiB0aGUgYXV0aCBjb2RlIHBhdGggcGF0Y2hlcyBmcm9tIHBsYWlzdGhvcyBhcyB3ZWxsLiAg
-aHR0cHM6Ly9wYXRjaHdvcmsub3BlbnZwbi5uZXQvcHJvamVjdC9vcGVudnBuMi9saXN0Lz9z
-ZXJpZXM9MTU4MAooMTE6NDY6NDIpIHZwbkhlbHBlcmA6IFRpdGxlOiBPcGVuVlBOIDIgLSBQ
-YXRjaHdvcmsgKGF0IHBhdGNod29yay5vcGVudnBuLm5ldCkKKDExOjQ3OjI2KSBjcm9uMjog
-dGhlIE1heEYgcGF0Y2ggaXMgaW4gb3JkZXgvY3JvbjIgbGFuZCwgSSB0aGluaywgYmVjYXVz
-ZSB3ZSBkaWQgdGhlIGN1cnJlbnQgY29kZSB3aGVuIHVudGFuZ2xpbmcgdjQvdjYgY29uZmln
-CigxMTo0Nzo0NikgY3JvbjI6IEkgdGhpbmsgaXQgbG9va3MgZ29vZCwgYnV0IHdhbnRlZCB0
-byB2ZXJpZnkgYWxsIHRoZSBwbGF0Zm9ybSBpbnRlcmFjdGlvbnMKKDExOjQ3OjUzKSBjcm9u
-Mjogc28gSSB0aHJldyBpdCB0byBvcmRleCA6LSkKKDExOjQ3OjU1KSBjcm9uMjogYnV0IGFu
-eXdheQooMTE6NDg6MTApIGNyb24yOiBtYXR0b2NrMjogY2FuIHlvdSB2ZXJpZnkgdGhhdCB0
-aGUgYnVpbGQgYXJteSBpcyByZWFsbHkgbG9va2luZyBhdCB0aGUgcmlnaHQgcmVwbz8KKDEx
-OjQ5OjAwKSBjcm9uMjogbm90aGluZyB3YXMgYnVpbHQgKGUuZy4gb24gIm5ldGJzZC04MS1p
-Mzg2LXN0YWJsZS1tYXN0ZXIiKSBzaW5jZSBNYXkgMzEKKDExOjQ5OjUxKSBjcm9uMjogc2lu
-Y2UgdGhlIERDTyBhbmQgdGhlICJ1bmRvIGlmY29uZmlnIiBwYXRjaCBtaWdodCBwb3NzaWJs
-eSBicmVhayBub24tbGludXgvbm9uLWZyZWVic2QgcGxhdGZvcm1zLCBpdCB3b3VsZCBiZSBp
-bXBvcnRhbnQgdG8gaGF2ZSB0aGUgYnVpbGRlcnMgYmFjawooMTE6NTQ6NTMpIG9yZGV4OiB0
-aGVuPwooMTE6NTU6MTkpIGNyb24yOiBkdW5ubywgdGhlIG1hdHRvY2sgdGhpbmcgaGFwcGVu
-ZAooMTE6NTc6MDMpIGNyb24yOiBJIGludGVuZCB0byBzcGVuZCBhIGZldyBtb3JlIGhvdXJz
-IG9uIERDTyB0aGlzIGFmdGVybm9vbiwgYW5kIHRoZW4gY2xvc2UgdG8gbm8gdGltZSBvbiBU
-aHUsIEZyaSwgU2F0IC0gZ3JhbmRwYXJlbnQgdGhpbmdzLCBraWRbMV0tPmJpcnRoZGF5X3Bh
-cnR5KCksIHRoYXQgc3R1ZmYKKDExOjU3OjE2KSBtYXR0b2NrOiBjcm9uMjogeW91IGhhdmUg
-bm90IG1pZ3JhdGVkIHlvdXIgYnVpbGRib3Qgd29ya2VycyB0byB0aGUgbmV3IG1hc3RlciB5
-ZXQKKDExOjU3OjMxKSBjcm9uMjogbWF0dG9jazogdGhlcmUgYXJlIG5vIGluc3RydWN0aW9u
-cyB3aGF0IEkgaGF2ZSB0byBkbwooMTE6NTc6NDQpIG1hdHRvY2s6IHlvdSBoYXZlIHRoZSBW
-UE4gY29uZmlncyBmb3IgYWxsIG9mIHRob3NlPwooMTE6NTc6NDcpIGNyb24yOiBubwooMTE6
-NTc6NTgpIGNyb24yOiBJIGhhdmUgYSBzaW5nbGUgVlBOIGNvbmZpZyBmb3IgIm1lIHBlcnNv
-bmFsbHkiLCBJIHRoaW5rCigxMTo1ODowNCkgbWF0dG9jazogbGV0IG1lIGNoZWNrIHRoZSBW
-UE4gc2l0dWF0aW9uIGZpcnN0CigxMTo1ODozMCkgY3JvbjI6IHNvIHRoZSBvbGQgYnVpbGQg
-bWFzdGVyIGlzIGRlYWQgbm93PwooMTE6NTk6MDMpIG1hdHRvY2s6IG5vLCBpdCBpcyBub3Qg
-ZGVhZAooMTE6NTk6MDcpIG1hdHRvY2s6IHlvdSBjYW4gc3RpbGwgcHVzaCB0aGVyZQooMTE6
-NTk6MjEpIG1hdHRvY2syIGhhIGFiYmFuZG9uYXRvIGxhIHN0YW56YSAocXVpdDogUmVhZCBl
-cnJvcjogQ29ubmVjdGlvbiByZXNldCBieSBwZWVyKS4KKDExOjU5OjI0KSBtYXR0b2NrOiB0
-aGUgRE5TIGlzIG1pc3NpbmcsIGJ1dCB0aGUgSVAgY2FuIGNlcnRhaW5seSBiZSBmaWd1cmVk
-IG91dCB3aXRoIHNvbWUgZWZmb3J0CigxMjowMDowMCkgbWF0dG9jazogSSBoYXZlIGNyZWF0
-ZWQgY29uZmlncyBmb3IgeW91ICpCU0Qgd29ya2VycwooMTI6MDA6MTApIG1hdHRvY2s6IEkn
-bGwgY29weSB0aG9zZSB0byBuZXcgYnVpbGQub3BlbnZwbi5uZXQgaW4geW91ciBob21lIGRp
-cmVjdG9yeQooMTI6MDA6MTEpIG1hdHRvY2s6IG9rPwooMTI6MDA6MjYpIGNyb24yOiBjb29s
-CigxMjowMjoyNSkgY3JvbjI6IGFuZCB0aGVuLCBpbnN0cnVjdGlvbnMsIGZvciBkdW1taWVz
-LCBwbGVhc2UgOikKKDEyOjAzOjM2KSBjcm9uMjogYWgKKDEyOjAzOjM2KSBtYXR0b2NrOiBj
-YW4geW91IGxvZyBpbiB3aXRoIFNTSCBvbiBidWlsZC5vcGVudnBuLmluICh2aWEgVlBOKT8g
-WW91ciBob21lIGRpcmVjdG9yeSB3aWxsIGdldCBjcmVhdGVkIGF0IHRoYXQgcG9pbnQKKDEy
-OjAzOjU3KSAqKipjcm9uMiByb2xscyBleWVzCigxMjowNDowOCkgbWF0dG9jazogcGFtX21r
-aG9tZWRpciBJIHRoaW5rCigxMjowNDoxMykgbWF0dG9jazogc3RhbmRhcmQgc3R1ZmYgd2l0
-aCBGcmVlSVBBCigxMjowNTozMSkgY3JvbjI6IHRoYXQncyBub3QgdGhlIHByaW1hcnkgaXNz
-dWUsICJzc2ggdXNpbmcgdnBuIiBpcywgbGlrZSBpZiBJIGhhdmVuJ3QgZW5vdWdoIG9wZW52
-cG4gc2Vzc2lvbnMgcnVubmluZyBvbiB0aGlzIGhvc3QKKDEyOjA2OjA0KSBtYXR0b2NrOiB5
-b3Ugb25seSBuZWVkIHRoaXMgdG8gZ2V0IHRoZSB2cG4gY29uZmlncywgYmFzZWQgb24gd2hh
-dCB5b3UgdG9sZCBhYm91dCB5b3VyIHVzYWdlIHBhdHRlcm5zCigxMjowNjo0OSkgbWF0dG9j
-azogSSBjYW4gc2VuZCBHUEcgZW1haWwgaWYgdGhhdCBpcyBwcmVmZXJhYmxlLCBpdCB3YXMg
-cHJvdmVuIHRvIHdvcmsKKDEyOjA2OjU5KSBjcm9uMjogaXB2NiB0byBjb21tdW5pdHktdnBu
-IGlzIGJyb2tlbiBhZ2FpbgooMTI6MDc6MDQpIG1hdHRvY2s6IHdoYXQ/CigxMjowNzowOSkg
-Y3JvbjI6IDIwMjItMDYtMjkgMTE6MDc6MDMgVURQIGxpbmsgcmVtb3RlOiBbQUZfSU5FVDZd
-MmEwNTpkMDE0OmRmYzo1ZjAyOmIzOTo4YWM4OjlhZTpmNjk5OjExOTQKKDEyOjA3OjExKSBj
-cm9uMjogYW5kIHRoZW4sIG5vdGhpbmcKKDEyOjA3OjI0KSBtYXR0b2NrOiBzb21ldGhpbmcg
-aXMgYnJlYWtpbmcgaXQgdGhlbgooMTI6MDc6MzMpIG1hdHRvY2s6ICJzb21ldGhpbmciIHRo
-YXQgaXMgbm90IGEgcGVyc29uCigxMjowNzo0MSkgbWF0dG9jazogdmVyeSBvZGQKKDEyOjA3
-OjUxKSBjcm9uMjogaXQgaXMgcGluZzYnaW5nIGZpbmUsIGp1c3Qgbm90IG9wZW52cG4naW5n
-CigxMjowNzo1NikgbWF0dG9jazogaG1tCigxMjowNzo1OSkgbWF0dG9jazogb2sKKDEyOjA4
-OjM1KSBtYXR0b2NrOiBsZXQgbWUgY2hlY2ssIG1heWJlIGFnYWluIHNvbWUgUFIgcGVuZGlu
-ZyB3aGljaCByZXN1bHRlZCBpbiBhIHRlbXBvcmFyaWx5IGluY29ycmVjdCBjb25maWd1cmF0
-aW9uCigxMjowODozOSkgY3JvbjI6IG1laCwgbm93IEkgaGF2ZSB0aGUgVlBOLCBidXQgdGhp
-cyBtYWNoaW5lIGRvZXMgbm90IGhhdmUgdGhlIGtleSBJIG5lZWQKKDEyOjA5OjE2KSBjcm9u
-MjogYnV0IGl0J3Mgbm90IGFjY2VwdGluZyB0aGUga2V5IGFueXdheQooMTI6MDk6NDcpIGNy
-b24yOiBhbSBJIHRhbGtpbmcgdG8gdGhlIHJpZ2h0IG1hY2hpbmU/CigxMjowOTo1NikgY3Jv
-bjI6IGdlcnQuZG9yaW5nQDEwLjcuMzkuMTM3CigxMjoxMDowMSkgbWF0dG9jazogd3JvbmcK
-KDEyOjEwOjMzKSBjcm9uMjogdGhpcyBpcyB3aGF0IEROUyBpcyBnaXZpbmcgbWUKKDEyOjEx
-OjAwKSBjcm9uMjogYWggKnNpZ2gqIGdsb2JhbCBETlMgaGFzIGJ1aWxkLm9wZW52cG4uaW4g
-d2l0aCBkaWZmZXJlbnQgYWRkcmVzcwooMTI6MTE6MDgpIG1hdHRvY2s6IHRoYXQncyB3cm9u
-ZyBETlMgdGhlbiAodGhlIEROUyBzaXR1YXRpb24gaXMgcmVhbGx5IGNyYXBweSwgQ2xvdWRm
-bGFyZSBoYXMgY29waWVzIG9mIGludGVybmFsIEROUyByZWNvcmRzIGFuZCBpdCBzZWVtcyB3
-ZSdyZSBub3QgZ29pbmcgdG8gZ2V0IHJpZCBvZiBpdCkKKDEyOjExOjExKSBtYXR0b2NrOiB5
-ZXMKKDEyOjExOjE5KSBkanBpZyBoYSBhYmJhbmRvbmF0byBsYSBzdGFuemEuCigxMjoxMToz
-NikgY3JvbjI6IG9oIHRoZSBmdW4KKDEyOjExOjQ5KSBtYXR0b2NrOiB5ZWFoLCB5ZWFycyBv
-ZiBoYWNrcyBwaWxlZCBvbiB0b3Agb2YgZWFjaCBvdGhlcgooMTI6MTE6NTEpIGNyb24yOiBu
-b3csIEkgaGF2ZSB0aGUga2V5LCB0aGUgSVAsIGFuZCB0aGUgbWFjaGluZSBraWNrcyBtZSBv
-dXQgYWZ0ZXIgc3VjY2Vzc2Z1bCBhdXRoCigxMjoxMjowMykgbWF0dG9jazogbGV0J3MgdHJ5
-IGJ1aWxkYm90LWhvc3Qub3BlbnZwbi5pbiB0aGVuCigxMjoxMjowNykgbWF0dG9jazogdGhl
-cmUgeW91IF9kb18gaGF2ZSBhY2Nlc3MKKDEyOjEyOjE3KSBtYXR0b2NrOiB0aGF0IG9uZSBk
-b2VzIF9ub3RfIGhhdmUgYW4gZW50cnkgaW4gQ2xvdWRmbGFyZQooMTI6MTI6MzApIHBsYWlz
-dGhvczogbWF0dG9jazogc2hvdWxkIHdlIG1ha2UgYW4gb3BzIHRpY2tldCB0byBmaXggdGhl
-IGNsb3VkZmxhcmUgZG5zPwooMTI6MTM6MDIpIGNyb24yOiBsb2dnZWQgaW4gdG8gYnVpbGRi
-b3QtaG9zdC4uLgooMTI6MTM6MTApIG1hdHRvY2s6IGNyb24yOiBncmVhdCwgSSdsbCBjb3B5
-IHRoZSBmaWxlcyB0aGVyZSB0aGVuCigxMjoxMzozNCkgbWF0dG9jazogcGxhaXN0aG9zOiBJ
-IGNhbiBqdXN0IGFzayBwZXRyaSB0byBnZXQgcmlkIG9mIHRob3NlIHBhcnRpY3VsYXIgZW50
-cmllcwooMTI6MTM6NTApIG1hdHRvY2s6ICJmaXhpbmcgY2xvdWRmbGFyZSIgb24gYSBnZW5l
-cmFsIGxldmVsIGlzIG5vdCBnb2luZyB0byBoYXBwZW4gaXQgc2VlbXMKKDEyOjEzOjU1KSBw
-bGFpc3Rob3M6IG1hdHRvY2s6IGl0IHdvdWxkIGJlIGJldHRlciB0byB1cGRhdGUgdGhlbQoo
-MTI6MTQ6MDMpIHBsYWlzdGhvczogc28gYWxsIEROUyBzZXJ2ZXIgZ2l2ZSBiYWNrIHRoZSBz
-YW1lIHJlc3VsdHMKKDEyOjE0OjI4KSBtYXR0b2NrOiBub2JvZHkgd2lsbCBuZWVkIGJ1aWxk
-Lm9wZW52cG4uaW4gaW4gY2xvdWRmbGFyZSwgbm9yIHBhdGNod29yay5vcGVudnBuLmluLCBv
-ciBhbnkgb3RoZXIgbmV3IGNvbW11bml0eSBWUEMgc3R1ZmYKKDEyOjE0OjI5KSBjcm9uMjog
-Im5vIHJlc3VsdCBpZiBub3QgVlBOIiB3b3VsZCBhdCBsZWFzdCBoYXZlIGEgY2xlYXIgc3Rh
-dGVtZW50CigxMjoxNDo0MCkgbWF0dG9jazogYmV0dGVyIG5vdCB0byBoYXZlIGR1cGxpY2F0
-ZSBhbmQgcG90ZW50aWFsbHkgY29udHJhZGljdG9yeSBETlMgZW50cmllcwooMTI6MTQ6NDQp
-IHBsYWlzdGhvczogb3RoZXJ3aXNlIHlvdSBlbmQgdXAgd2l0aCBzdHJhbmdlIHNpdHVhdGlv
-biB3aGVyZSBkbnMgcmVzb2x1dGlvbiBmYWlscyBzb21ldGltZXMKKDEyOjE1OjAxKSBtYXR0
-b2NrOiBlc3BlY2lhbGx5IGJlY2F1c2Ugd2UgY2FuJ3QgYXV0b21hdGUgdGhlIGNsb3VkZmxh
-cmUgcGFydCAiYmVjYXVzZSBvZiB0aGluZ3MiCigxMjoxNToyMCkgbWF0dG9jazogdGhlIC5p
-biBhZGRyZXNzZXMgYXJlIG5vdCBzdXBwb3NlZCB0byByZXNvbHZlIHVubGVzcyBvbmUgaXMg
-Y29ubmVjdGVkIHRvIGEgVlBOIChlLmcuIGNvbW11bml0eSBWUE4pCigxMjoxNjozNykgbWF0
-dG9jazogSSdtIG5vdCBzdXJlIHdoeSBWUE4gY29uZmlnIHdhcyB3cm9uZywgYnV0IG5vdyBh
-bGwgdGhlIGNvZGUgaXMgaW4gYW5kIHRoZSBjaGFuZ2VzIHNob3VsZCBzdGljawooMTI6MTY6
-NTIpIHBsYWlzdGhvczogd2hpY2ggYnJpbmdzIGl0cyBvd24gYmFnIG9mIHByb2JsZW1zIHNp
-bmNlIHdlIGRvbid0IHJlYWxseSBzdXBwb3J0IHNwbGl0IGRucyBpbiBvdXIgY29tbXVuaXR5
-IGNsaWVudHMKKDEyOjE4OjU3KSBtYXR0b2NrOiBjcm9uMjogdGhlIHZwbiBjb25maWdzIGFy
-ZSBub3cgaW4geW91ciBob21lIGRpciBvbiBidWlsZGJvdC1ob3N0CigxMjoxOTozOSkgbWF0
-dG9jazogb25jZSB5b3UgaGF2ZSB0aGVtIEkgd2lsbCBmaXggdGhlIFZQTiBzZXJ2ZXIgY29u
-ZmlnIGZvciBnb29kIChvbGQgcHJvYmxlbXMgaGFkIGFwcGVhcmVkLCBjYXVzZWQgYnkgdW5t
-ZXJnZWQgKHVuLUFDS2VkKSBmZWF0dXJlIGJyYW5jaGVzIGNvbWJpbmVkIHdpdGggIm90aGVy
-IG5lY2Vzc2FyeSBjaGFuZ2VzIikKKDEyOjE5OjU3KSBjcm9uMjogdjYgdnBuIGlzIHN0aWxs
-IG5vdCB3b3JraW5nCigxMjoyMDoxNykgY3JvbjI6IHRhcmJhbGwgaXMgdGhlcmUsIHRoYW5r
-cwooMTI6MjA6MjYpIG1hdHRvY2s6IEkgd2lsbCBmaXggaXQgb25jZSB5b3UndmUgY29waWVk
-IHRoZSBmaWxlcwooMTI6MjA6NDQpIGNyb24yOiBkb25lCigxMjoyMDo0NikgbWF0dG9jazog
-b2sKKDEyOjIzOjIwKSBjcm9uMjogKHdlIHNob3VsZCBmb3JtYWxseSBjbG9zZSB0aGUgbWVl
-dGluZywgSSB0aGluaywgYW5kIGV4Y2x1ZGUgdGhvc2UgbGFzdCAyMCBtaW51dGVzIGZyb20g
-dGhlIG1lZXRpbmcgbm90ZXMuLi4pCigxMjoyMzozMSkgY3JvbjI6IHVubGVzcyB0aGVyZSBp
-cyBzb21ldGhpbmcgZWxzZSBmb3IgdGhlIGdyb3VwPwooMTI6MjM6NDEpIE1heEY6IGNhbiB3
-ZSB0YWxrIGFib3V0IHRoZSBoYWNrYXRob24/CigxMjoyMzo0OCkgY3JvbjI6IHBsZWFzZSEK
-KDEyOjIzOjU3KSBtYXR0b2NrOiArMQooMTI6MjQ6MzQpIE1heEY6IFdoYXQga2luZCBvZiBp
-bnRlcm5ldCBzZXR1cCBkbyB5b3UgbmVlZD8gVGhleSdyZSBhc2tpbmcgaWYgd2UgY2FuIGp1
-c3QgdXNlIHRoZSBndWVzdCB3aWZpIGZvciBpbnRlcm5ldCBhY2Nlc3MKKDEyOjI1OjEzKSBv
-cmRleDogYXMgbG9uZyBhcyBpdCBhbGxvd3Mgc29tZSBvdXRnb2luZyBWUE4sIG1haWwsIHdl
-YiBhbmQgZ2l0LCB3ZSBhcmUgbm9ybWFsbHkgZ29vZCwgSSB0aGluawooMTI6MjU6MjUpIGNy
-b24yOiB3aGF0IG9yZGV4IHNheXMKKDEyOjI1OjQxKSBjcm9uMjogYWRkaW5nIC0gdG9uZ3Vl
-LWluLWNoZWVrIC0gdGhhdCBpZiBpdCBoYXMgbm8gSVB2NiwgSSB3aWxsIGNvbXBsYWluIGFs
-bCB0aGUgdGltZSA6LSkKKDEyOjI1OjQyKSBvcmRleDogdGhlIGhhY2thdGhvbiBpcyBub3Qg
-dGhyb3VnaHB1dCBpbnRlbnNlCigxMjoyNTo0Nykgb3JkZXg6IDpECigxMjoyNjowNSkgTWF4
-RjogaG0sIEkgbmVlZCB0byBjaGVjayB3aGF0IHRoZSBmaXJld2FsbCBydWxlcyBhcmUgb24g
-dGhlIGd1ZXN0IG5ldHdvcmsgdGhlbgooMTI6MjY6MzEpIE1heEY6IEknbSBvbiB0aGUgaW50
-ZXJuYWwgbmV0d29yayBhbmQgSSBoYXZlIHRvIHVzZSBhIHdlYmNsaWVudCBmb3IgZXh0ZXJu
-YWwgSVJDLCBhZnRlciBhbGwuLi4KKDEyOjI3OjMwKSBNYXhGOiBhbmQgaG93IGxvbmcgZG8g
-d2Ugc3RheSBpbiB0aGUgZXZlbmluZz8KKDEyOjI4OjEyKSBvcmRleDogbm9ybWFsbHkgd2Ug
-bGVhdmUgImJ5IGRpbm5lciB0aW1lIiBhbmQgZG9uJ3QgcmVhbGx5IGdvIGJhY2sgYWZ0ZXIg
-ZGlubmVyCigxMjoyODoyNSkgb3JkZXg6IHRoaXMgaXMgd2hhdCBJIGhhdmUgc2VlbiBpbiB0
-aGUgcGFzdAooMTI6Mjg6NTEpIE1heEY6IG9rLCB0aGF0IHNob3VsZG4ndCBiZSBhIHByb2Js
-ZW0gdGhlbgooMTI6Mjk6MjIpIE1heEY6IGxhc3QgdGhpbmcsIGRvIHlvdSBoYXZlIGEgZGVh
-ZGxpbmUgZm9yIHdoZW4gd2UgbmVlZCB0byB0ZWxsIHlvdSBpZiB3ZSBjYW4gaG9zdCBpdD8K
-KDEyOjI5OjM4KSBvcmRleDogbm9ybWFsbHkgaXQncyBtb3JlIHRoZSBvdGhlciB3YXkgYXJv
-dW5kOiB3ZSBhcmUgdG9sZCB3aGF0J3MgdGhlIHRpbWUgY29uc3RyYWludCBhbmQgc2VlIGlm
-IGl0IHdvcmtzIDopCigxMjozMDo1NykgY3JvbjI6IGluIG11bmljaCwgd2UgaGFkIHNvbWV0
-aGluZyBsaWtlICJvbiB3ZWRuZXNkYXkgYW5kIGZyaWRheSwgdGhlIGNsZWFuaW5nIHRpbWUg
-Y29tZXMgYXQgMTk6MDAsIHNvIHlvdSBuZWVkIHRvIGJlIG91dCBieSB0aGVuIiAob3Igc28p
-CigxMjozMTowMykgTWF4Rjogc29ycnksIHdhcyB0aGF0IGFuIGFuc3dlciB0byBteSBwcmV2
-aW91cyBxdWVzdGlvbiAoImhvdyBsb25nIGRvIHdlIHN0YXk/Iikgb3IgZGlkIHlvdSBtaXN1
-bmRlcnN0YW5kIG15IGxhc3Qgb25lPwooMTI6MzE6MTkpIE1heEY6IHdoYXQgSSBtZWFudCB3
-YXMsIHdoZW4gZG8geW91IG5lZWQgYSBkZWZpbml0aXZlIGFuc3dlciBpZiB3ZSBjYW4gaG9z
-dCB0aGUgaGFja2F0aG9uPwooMTI6MzE6NDIpIGNyb24yOiB0aGF0IHdhcyB0aGUgYW5zd2Vy
-IGZvciAiaG93IGxvbmcgZG8gd2Ugc3RheSIgOikgLSB3aGVuIHdlIG5lZWQgdG8gbGVhdmUs
-IHdlIGdvLCBhbmQgaWYgd2UgYXJlIGh1bmdyeSBiZWZvcmUgdGhhdCwgd2UgbGVhdmUgZWFy
-bGllcgooMTI6MzI6MDcpIGNyb24yOiBoYXZpbmcgYSBkZWZpbml0ZSBhbnN3ZXIgYmVmb3Jl
-IChwaWNraW5nIGEgZGF0ZSBmcm9tIHRoZSBhaXIpICJlbmQgb2YgSnVseSIgd291bGQgYmUg
-YmVzdAooMTI6MzI6MjIpIG9yZGV4OiBNYXhGOiBzYW1lLCBJIFdhcyB0YWxraW5nIGFib3V0
-IHRoZSAnaG93IGxvbmcgZG8gd2Ugc3RheScKKDEyOjMyOjI3KSBjcm9uMjogYmVjYXVzZSB0
-aGVuIGl0J3MgaG9saWRheSB0aW1lIGFuZCBmaW5kaW5nIG90aGVyIG9wdGlvbnMgd2lsbCBi
-ZSBoYXJkZXIKKDEyOjMyOjUyKSBvcmRleDogeWFwCigxMjozMjo1NSkgTWF4RjogZW5kIG9m
-IEp1bHksIGJ1dCBlYXJsaWVyIGlzIGJldHRlciwgcmlnaHQ/CigxMjozMjo1OCkgZDEyZms6
-IEkgdGhpbmsgd2UgYWltIGF0IE5vdmVtYmVyIGFnYWluLCBzbyB0aGVyZSBpcyB0aW1lCigx
-MjozMzo0OSkgY3JvbjI6IE1heEY6IHllcwooMTI6MzQ6MjApIGNyb24yOiBkMTJmazogYmFj
-a3VwIGxvY2F0aW9uIHNlZW1zIHRvIGJlIEhlbHNpbmtpLCBhbmQgdGhhdCBzaG91bGQgYmUg
-bW9yZSBsaWtlICJPY3RvYmVyIi4uLgooMTI6MzQ6NTMpIG9yZGV4OiBtYXR0b2NrOiBkaWQg
-eW91IG1hbmFnZSB0byBnZXQgc29tZSBpZGVhcyBvZiB3aG8gY291bGQgaGVscCBpbiBIRUw/
-CigxMjozNjowOSkgbWF0dG9jazogbGV2IGFza2VkIC8gd2FzIHN1cHBvc2VkIHRvIGFzayBp
-ZiBGLVNlY3VyZSBjb3VsZCBob3N0IHVzIGFnYWluCigxMjozODoyNykgbGV2X186IEkgYXNr
-ZWQgYnV0IGhhdmVuJ3QgZ290IGEgcmVzcG9uc2UgKHlldCkKKDEyOjM5OjQ1KSBtYXR0b2Nr
-OiBvawooMTI6NDA6MTYpIGxldl9fOiBKdWx5IGlzIHF1aWV0IGhlcmUKKDEyOjQzOjQ5KSBj
-cm9uMjogYW55dGhpbmcgZWxzZSBvbiBoYWNrYXRob24sIG9yIG1lZXRpbmc/CigxMjo0NDo0
-OCkgZDEyZms6IE1heEY6IGhvdyBsb25nIHlvdSB0aGluayBkbyB5b3UgbmVlZCB0byBnZXQg
-YW4gYW5zd2VyPwooMTI6NDY6MjgpIE1heEY6IGQxMmZrIEkgaGF2ZSBubyBpZGVhLCBJIGp1
-c3QgYXNrZWQgYWdhaW4gYW5kIHdoYXQgSSBnb3QgYmFjayB3YXMgIndoZW4gZG8geW91IG5l
-ZWQgYW4gYW5zd2VyPyIuIFNvIHRoYXQncyB3aGF0IEkgYXNrZWQgeW91CigxMjo0NjozNCkg
-bWF0dG9jazogOikKKDEyOjQ3OjAxKSBjcm9uMjogOikKKDEyOjQ3OjAxKSBtYXR0b2NrOiBs
-ZXQncyBkbyAiaW4gdHdvIHdlZWtzIHdlIG5lZWQgYW4gYW5zd2VyIiBhbmQgYmUgcHJlcGFy
-ZWQgdG8gYWNjZXB0IGFuIGFuc3dlciBieSBlbmQgb2YgSnVseSA6KQooMTI6NDc6MzQpIG1h
-dHRvY2s6IChmeWk6IGNvbmZ1c2luZyBidWlsZC5vcGVudnBuLmluIEROUyBlbnRyeSByZW1v
-dmVkIGZyb20gY2xvdWRmbGFyZSkKKDEyOjQ3OjM3KSBNYXhGOiBoYWhhLCBzb3VuZHMgZ29v
-ZCEKKDEyOjQ3OjUzKSBjcm9uMjogKmxpa2UqCigxMjo0ODoxOCkgZDEyZms6IGFsbCByaWdo
-dCB0aGVuID0pCg==
-
---------------IDky0X06xw61lLchva80MJcd--
 
