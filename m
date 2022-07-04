@@ -1,12 +1,14 @@
+Message-ID: <9c25be83-47c2-f392-8468-861fc889687f@...2181...>
+Date: Mon, 4 Jul 2022 10:33:21 +0200
 MIME-Version: 1.0
-References: <20220704025840.2558-1-selva.nair@...277...>
-In-Reply-To: <20220704025840.2558-1-selva.nair@...277...>
-From: Connor Edwards <connor.edwards@...2680...>
-Date: Mon, 4 Jul 2022 09:30:42 +0100
-Message-ID: <CAEYdzPH_W8-AOHkV6SZzY9pnXZyzWFKu4jN_H3K5MzPHKwzmcg@...278...>
-Content-Type: multipart/alternative; boundary="000000000000d2e5b705e2f68d63"
-Subject: Re: [Openvpn-devel] [PATCH] Fix auth-token usage with
- management-def-auth
+Content-Language: en-US
+References: <20220624083809.23487-1-a@...2181...>
+ <20220624083809.23487-16-a@...2181...>
+ <YsKlBU1KKqbSE/Ch@...2678...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <YsKlBU1KKqbSE/Ch@...2678...>
+Subject: Re: [Openvpn-devel] [PATCH 15/25] dco: add documentation for
+ ovpn-dco-linux
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,47 +17,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selva.nair@...277...
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---000000000000d2e5b705e2f68d63
-Content-Type: text/plain; charset="UTF-8"
+Hi,
 
-Looks good. Shortly after my last email about the issue I found this bit of
-code and also came to the conclusion it was faulty.
+On 04/07/2022 10:29, Frank Lichtenheld wrote:
+> On Fri, Jun 24, 2022 at 10:37:59AM +0200, Antonio Quartulli wrote:
+> [...]
+>> +Current implementation limitations
+>> +-------------------
+>> +- --persistent-tun not tested/supported
+>> +- fallback to non-dco in client mode missing
+>> +- IPv6 mapped IPv4 addresses need Linux 5.4.189+/5.10.110+/5.12+ to work
+>> +- Some incompatible options may not properly fallback to non-dco
+>> +- TCP performance with ovpn-dco can still exhibit bad behaviour and drop to a
+>> +  few megabits per seconds
+> 
+> Any way of qualifying this? Should one not use TCP mode at all currently? Or is
+> this rare? Any workarounds?
 
-Thanks for the patch Selva.
+Good point. It was fairly rare, but we never dug in too much.
+However, no extra tests were performed after ovpn-dco got quite 
+refactored, so the problem may have gone.
+
+More tests would be needed to confirm the issue.
+
+Cheers,
 
 -- 
-*This email and any files transmitted with it are confidential and intended 
-solely for the use of the individual or entity to whom they are addressed. 
-If you are not the named addressee you must not disseminate, distribute or 
-copy this e-mail. Please notify us on regulatory@...2681... 
-<mailto:regulatory@...2681...> immediately if you have received this e-mail 
-by mistake and delete this e-mail from your system. If you are not the 
-intended recipient you are notified that disclosing, copying, distributing 
-or taking any action in reliance on the contents of this information is 
-strictly prohibited.*
-
---000000000000d2e5b705e2f68d63
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Looks good. Shortly after my last email about the issue I =
-found this bit of code and also came to the conclusion it was faulty.<div><=
-br></div><div>Thanks for the patch Selva.</div><div><br></div></div>
-
-<br>
-<font face=3D"Arial, Helvetica, sans-serif"><span style=3D"font-size:13px">=
-<i>This email and any files transmitted with it are confidential and intend=
-ed solely for the use of the individual or entity to whom they are addresse=
-d. If you are not the named addressee you must not disseminate, distribute =
-or copy this e-mail. Please notify us on <a href=3D"mailto:regulatory@...2375...=
-81..." target=3D"_blank">regulatory@...2681...</a> immediately if you have =
-received this e-mail by mistake and delete this e-mail from your system. If=
- you are not the intended recipient you are notified that disclosing, copyi=
-ng, distributing or taking any action in reliance on the contents of this i=
-nformation is strictly prohibited.</i></span></font>=
-
---000000000000d2e5b705e2f68d63--
+Antonio Quartulli
 
