@@ -1,11 +1,9 @@
-Date: Fri, 01 Jul 2022 22:00:28 +0000
-From: tincantech <tincantech@...2282...>
-Reply-To: tincantech <tincantech@...2282...>
-Message-ID: <TA3jSqbyWUxf2jEJibKMT__pFOFMXbH4qSuKepUKiyDiZkoPktPstZVOHjigFvuSnTZ2YB8JOzoa423XMS3DQZHGkcYSI_oMAYq_et0ZU_8=@protonmail.com>
+From: selva.nair@...277...
+Date: Sun,  3 Jul 2022 22:58:40 -0400
+Message-Id: <20220704025840.2558-1-selva.nair@...277...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="b1_rTCJD8KYe4ymuUBxViqhWkAilAnY6QSZL2UQavpx0"
-Subject: [Openvpn-devel] New option --suppress-auth-cache-warning
+Subject: [Openvpn-devel] [PATCH] Fix auth-token usage with
+ management-def-auth
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,89 +12,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
-This is a multi-part message in MIME format.
-
---b1_rTCJD8KYe4ymuUBxViqhWkAilAnY6QSZL2UQavpx0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+From: Selva Nair <selva.nair@...277...>
 
-Hi,
+When auth-token verify succeeds during a reauth, other auth
+methods (plugin, script, management) are skipped unless
+external-auth is in effect (skip_auth gets set to true).
 
-ref: https://forums.openvpn.net/viewtopic.php?t=3D34461
+However, in this case, the status of management-def-auth
+(ks->mda_satus) stays at its default value of ACF_PENDING
+and will never change. This causes TLS keys to go out of sync
+and an eventual client disconnect.
 
-Food for thought..
+Further, a message saying username/password authentication is
+"deferred" gets logged which is misleading.
+For example:
 
-R
+test/127.0.0.1:35874 TLS: Username/auth-token authentication
+    succeeded for username 'test'
 
------BEGIN PGP SIGNATURE-----
-Version: ProtonMail
+followed by
 
-wsBzBAEBCAAGBQJiv25tACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ3+uQf8C4svn9uGUDXcjPAohtlnw0/w3WjQI1yY3cHjGTro6KhEJpmB
-G5og6sOD5jyT3f0wYy3sRaYxEpcA5+DR2XWKLrwtRJNfPPdAhJjs6nX8iI+e
-/aHvInARZ7ua8QUx07y60JLy+cXThZWWhX4KrAFCV45DQEZaHA/qYAenLL3X
-VcofwBNl2lXf9tr96wU8dcp3ntH0HOkB9wa1E6GpN8wyI36ZcLcx0niZUFBw
-4tKa75Mix4dPEd6Oxnh0mnDD0dVSfaV9mJTL86JwtYwnCUG9dLaj2dps2alt
-edpjMtYwTSiQPZi5YBxqc1ICoMzNyuZxEQOb4/bGCj3DJCioYy8r1A=3D=3D
-=3DAASZ
------END PGP SIGNATURE-----
+test/127.0.0.1:35874 TLS: Username/Password authentication
+    deferred for username 'test' [CN SET]
 
---b1_rTCJD8KYe4ymuUBxViqhWkAilAnY6QSZL2UQavpx0
-Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
+Fix by setting ks->mda_status to ACF_DISABLED, and do not
+set ks->authenticated = KS_AUTH_DEFERRED when skip_auth is true.
 
-LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tDQpWZXJzaW9uOiBPcGVuUEdQLmpz
-IHY0LjEwLjEwDQpDb21tZW50OiBodHRwczovL29wZW5wZ3Bqcy5vcmcNCg0KeHNCTkJGdndTY2NC
-Q0FET21IRW5RbExtT2pKUnRKTDJsNTNNTHd3RlR5N1huRXBzM2IxUTBVd1dZRkN2DQpMMm9OcDBu
-cmRHbEtLREpxNTBZMDlTUitVUllCUW1LbVkzRW16cHlVSUtNL3JnbzFSeXViSHBNUkhiRHANCjdK
-cDhMeGtmZkZCVkpqL3Q1Vk1wRDZlTVI2YVVjaVFqZ1JMOE5aZTYrVDd4ZlhYWHdWNWhvUmVaM2pP
-Kw0KekhpNlNSN3hUdkdYbGErTVF6NkVFcFdubGJMdmcyb3J0OUtzZXVWallycXZSTXhjZFAwbzlj
-WldKNWVwDQpKTm1nZUI2TTcrT1cwOFUxU3NYdEtycExSY0k2eUttVjM4amh6UHIyWmdQOXJtcmxF
-clIvMWlxUVFIWFkNCm84LzBEZlB5RjBtSDl5blFJaUxFL2wrRll1NHJzRzhWaUtseGhYY3plUHpB
-dExDamlCMGEwbVJWQUJFQg0KQUFITk55SjBhVzVqWVc1MFpXTm9RSEJ5YjNSdmJtMWhhV3d1WTI5
-dElpQThkR2x1WTJGdWRHVmphRUJ3DQpjbTkwYjI1dFlXbHNMbU52YlQ3Q3dIOEVFQUVJQUNrRkFs
-dndTY2NHQ3drSENBTUNDUkJQbDV6MmE1QzQNCm5RUVZDQW9DQXhZQ0FRSVpBUUliQXdJZUFRQUtD
-UkJQbDV6MmE1QzRuUUJEQi85WlVvOUJPWEpSNjFObQ0KMDJvWi84YVJYTzlOblVTRnQ2R0xPV2NE
-TnZBczRJSldNRFZFUWZZYW5iKzQyMVFOZC81ZDZIMWlYRitpDQo0TERLME02YWdDK2dzTkZKbmpQ
-R0l0dlB0ajdXeWp5blpSeDhENDBQUFhpZ2ZIWXV3Mm9SdTBscitQMXANCjFxZVVlNE5iY3FJdjhJ
-SXZMejJ6Q2xZWk9OZ0FzUVZjTkFIaTdaNG9ydFEyaW8yQkFWai84MTlKUFlNdA0KdEhnWTgxd1Mx
-Vjd2OEdEVFpnOG9hUGhYR2ZhQzRUWkZHdFpyL2J5YmNxcnNvMzVqYVFtQzU0eE1iWHBGDQpBVXJj
-M3VHVk9IK09kRy9CVzJnY1lxcHZVRkJ1a1h4Q1VCWUhQMk5mWGhOZnpHdDluQzF1bE5LWWVQMTkN
-ClRHbE9vckJNWUlBRUhvR3h2cGJVWGZiYU5XQ1V6c0JOQkZ2d1NjY0JDQUM5S3lWWlJTNWFNYUc1
-UGkwbg0KZng4YU5vczNiWXAyNDZNdGZhb0tCZlRRQXJkK0daVytXbkZ5SkVpU3lMZHowclV1dHlD
-QWRmNWxnVkgrDQpXdkx2SW1pR3JTcnpWcE1UMm5DUzA5THFMNTBRano4QTdncDVIL2hRenRaOGlO
-eXNHRDlOTzQ2T25JNzUNCjkwZEhmQ3JYalFQU0Z0RkdzVHpnRHhRSWlNdXp6OURSN0Jla0tQbXVP
-RkloQmU5ZUVacWJ4YzhSV2VRdA0KaGE3aS9EckpUUk5LMWFPQURRRlZ1VjEvQW01VGhHUFdGTS9Z
-SlV5VFloTVcweWVQaDQ1T2JXdVJRWmtzDQpsK2FPbTRMMEtHRERZbG0vRlF4L0VNQ3Vidmx6eS96
-eERkQjZucUZpaDJxWnJmeW1uaVNPS2FqRzBqb1QNCnBab3ovRXorNGZBdGc2eTBQc3BOUjZpZEFC
-RUJBQUhDd0drRUdBRUlBQk1GQWx2d1NjY0pFRStYblBacg0Ka0xpZEFoc01BQW9KRUUrWG5QWnJr
-TGlkUmUwSC9qNUNJRklBdWN1YWlFTWtMa05LRUFPNXM3eDQ3ZU55DQpHUGZac2x5WStIanpHVTBk
-MDdNa2tHbVZrUFRWendxVnpOWmJueTdaQXYxemxXMFV5MHlIcDFBUHB5WXQNCjhidVVwcFRCcTdk
-NDdvZ3hFUll6dC9MYzJMNWEvVktGTlJiaE4xL1hRbVBpejJFbGU0dHlpcGJUYXBjeQ0KK3pieWZ6
-QU1EMTNjSWRaMTNoVHNOUDBvbGdCaEFxVUFVVVlweFJsa0FIZUorRHQzTmJ6SFM0S1FLNTM4DQpO
-Si9sN2JYU0tzR3FvWXFKZVo4Vk5CeHdXV1VidUc0ampyaDQzTUlSZ1VaNVdzUFVZVjZIeDA1NmtN
-amINCi9iWUJqSTBURU12SDgxNjB1cXpGWGVIdll5VWxxMFNpbkQvWjlpb0llOFFkc0hHQkRVSVJZ
-WXViMXBPOA0KcXJDelJaeDBvTkE9DQo9L0RlYQ0KLS0tLS1FTkQgUEdQIFBVQkxJQyBLRVkgQkxP
-Q0stLS0tLQ0K
+Also log a warning message when token is marked as expired on
+missing the reneg window.
 
---b1_rTCJD8KYe4ymuUBxViqhWkAilAnY6QSZL2UQavpx0
-Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
+Reported by: Connor Edwards <connor.edwards@...2680...>
 
-wsBzBAABCAAGBQJiv25tACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec9muQuJ3mIQf8Dxbt
-xsJ089TapHU1S3bpzE6GwpxqJq4oUd8rsu0aORmg/YUQjIYafikFcKiI3OIZg9Ff5Ge0MKndfHwa
-BV3K/xQo/Rwx8okDKNuYud0OC3YyaOjQbSYi8+FL3px//dtEpm5+Bp3PjgBCy34u2SH78CD0VzfT
-XZ+Bl3guPEmlEFdpOzGnk9UysuM7NUBqH13MRARa3LupQn2o7jCqQghQUv1B+E8JWux56lbN2eM3
-VnoSMU+QtNRg4aErp14aQotjvK60p60vkAr742qJwBTkoa2M1EvyXQyLC7bgrHBjxBOG5gI2fAoz
-m7TU/jV/2a8aU9ilMiaHl3VAidIhzO2moA==
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/auth_token.c | 8 +++++---
+ src/openvpn/ssl_verify.c | 9 ++++++++-
+ 2 files changed, 13 insertions(+), 4 deletions(-)
 
---b1_rTCJD8KYe4ymuUBxViqhWkAilAnY6QSZL2UQavpx0--
+diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
+index 096edc75..b5f9f6dd 100644
+--- a/src/openvpn/auth_token.c
++++ b/src/openvpn/auth_token.c
+@@ -346,20 +346,22 @@ verify_auth_token(struct user_pass *up, struct tls_multi *multi,
+         return 0;
+     }
+ 
+-    /* Accept session tokens that not expired are in the acceptable range
+-     * for renogiations */
++    /* Accept session tokens only if their timestamp is in the acceptable range
++     * for renegotiations */
+     bool in_renegotiation_time = now >= timestamp
+                                  && now < timestamp + 2 * session->opt->renegotiate_seconds;
+ 
+     if (!in_renegotiation_time)
+     {
++        msg(M_WARN, "Timestamp (%" PRIu64 ") of auth-token is out of the renegotiation window",
++            timestamp);
+         ret |= AUTH_TOKEN_EXPIRED;
+     }
+ 
+     /* Sanity check the initial timestamp */
+     if (timestamp < timestamp_initial)
+     {
+-        msg(M_WARN, "Initial timestamp (%" PRIu64 " in token from client earlier than "
++        msg(M_WARN, "Initial timestamp (%" PRIu64 ") in token from client earlier than "
+             "current timestamp %" PRIu64 ". Broken/unsynchronised clock?",
+             timestamp_initial, timestamp);
+         ret |= AUTH_TOKEN_EXPIRED;
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index c01841fa..45eaf8ed 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -1599,7 +1599,14 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+ #ifdef ENABLE_MANAGEMENT
+         if (man_def_auth != KMDA_UNDEF)
+         {
+-            ks->authenticated = KS_AUTH_DEFERRED;
++            if (skip_auth)
++            {
++                ks->mda_status = ACF_DISABLED;
++            }
++            else
++            {
++                ks->authenticated = KS_AUTH_DEFERRED;
++            }
+         }
+ #endif
+         if ((session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME))
+-- 
+2.30.2
 
 
