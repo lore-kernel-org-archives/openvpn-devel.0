@@ -1,12 +1,12 @@
-Date: Mon, 4 Jul 2022 10:58:27 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <YsKrs3vb2MlCB27Z@...2678...>
-References: <20220624083809.23487-1-a@...2181...>
- <20220624083809.23487-17-a@...2181...>
+Message-ID: <0f37a675-519a-8223-70c1-23c1ef477347@...1227...>
+Date: Mon, 4 Jul 2022 11:50:25 +0200
 MIME-Version: 1.0
-In-Reply-To: <20220624083809.23487-17-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 16/25] GitHub Actions: add Linux DCO
- build (on Ubuntu 20.04)
+Content-Language: en-GB
+References: <20220704025840.2558-1-selva.nair@...277...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20220704025840.2558-1-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix auth-token usage with
+ management-def-auth
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +15,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 
-On Fri, Jun 24, 2022 at 10:38:00AM +0200, Antonio Quartulli wrote:
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
->  .github/workflows/build.yaml | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
+Am 04.07.22 um 04:58 schrieb selva.nair@...277...:
+> From: Selva Nair <selva.nair@...277...>
+> 
+> When auth-token verify succeeds during a reauth, other auth
+> methods (plugin, script, management) are skipped unless
+> external-auth is in effect (skip_auth gets set to true).
+> 
+> However, in this case, the status of management-def-auth
+> (ks->mda_satus) stays at its default value of ACF_PENDING
+
+ks->mda_status
+
+> and will never change. This causes TLS keys to go out of sync
+> and an eventual client disconnect.
+> 
+> Further, a message saying username/password authentication is
+> "deferred" gets logged which is misleading.
+> For example:
+> 
+> test/127.0.0.1:35874 TLS: Username/auth-token authentication
+>      succeeded for username 'test'
+> 
+> followed by
+> 
+> test/127.0.0.1:35874 TLS: Username/Password authentication
+>      deferred for username 'test' [CN SET]
+> 
+> Fix by setting ks->mda_status to ACF_DISABLED, and do not
+> set ks->authenticated = KS_AUTH_DEFERRED when skip_auth is true.
+> 
+> Also log a warning message when token is marked as expired on
+> missing the reneg window.
+> 
+> Reported by: Connor Edwards <connor.edwards@...2680...>
 > 
 
-Looks good to me. Also note that this can applied on current master
-without waiting for the rest of series, since --enable-dco is already
-available.
+Acked-By: Arne Schwabe <arne@...1227...>
 
-Acked-By: Frank Lichtenheld <frank@...2641...>
+Note that you need have management enabled for this bug to trigger. If 
+you go through all the effort to talk to management like this, you 
+probably want to use external-auth anyway.
 
-Regards,
--- 
-  Frank Lichtenheld
+Basically currently AS is the only management+server mode application 
+that active developer use, bugs like this tend to slip.
+
+Arne
 
