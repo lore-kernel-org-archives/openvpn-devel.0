@@ -1,12 +1,12 @@
 From: Heiko Hund <heiko@...2662...>
-Date: Tue, 05 Jul 2022 14:30:49 +0200
-Message-ID: <9760205.XyttyQAm76@...2664...>
-In-Reply-To: <20220624083809.23487-14-a@...2181...>
+Date: Tue, 05 Jul 2022 14:31:24 +0200
+Message-ID: <5439977.94X2OUf111@...2664...>
+In-Reply-To: <20220624083809.23487-15-a@...2181...>
 References: <20220624083809.23487-1-a@...2181...>
- <20220624083809.23487-14-a@...2181...>
+ <20220624083809.23487-15-a@...2181...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 13/25] dco: implement dco support for
- p2p/client code path
+Subject: Re: [Openvpn-devel] [PATCH 14/25] dco: implement dco support for
+ p2mp/server code path
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,24 +19,19 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-On Freitag, 24. Juni 2022 10:37:57 CEST Antonio Quartulli wrote:
-> +    /* These inet_pton conversion are fatal since options.c already
-> implements 
-> +     * checks to have only valid addresses when setting the
-> options */ 
-> +    if (c->options.ifconfig_ipv6_remote)
-> +    {
-> +        if (inet_pton(AF_INET6, c->options.ifconfig_ipv6_remote,
-> &remote_ip6) != 1) +        {
-> +            msg(M_FATAL,
-> +                "DCO peer init: problem converting IPv6 ifconfig remote
-> address %s to binary", +                c->options.ifconfig_ipv6_remote);
-> +        }
-> +        remote_addr6 = &remote_ip6;
-> +    }
+On Freitag, 24. Juni 2022 10:37:58 CEST Antonio Quartulli wrote:
+> +    uint8_t *ptr = BPTR(&dco->dco_packet_in);
+> +    uint8_t op = ptr[0] >> P_OPCODE_SHIFT;
+> +    if (op == P_DATA_V2 || op == P_DATA_V2)
 
-I'm undecided if these fatal errors are justified with respect to defensive 
-programming or overly paranoid, because they will never appear.
+This looks odd. Seems you wanted to check for a second opcode, or is it 
+obsolete?
+
+> +    const char *reason = "(unknown reason by ovpn-dco)";
+
+Wouldn't "ovpn-dco: unknown reason" be better?
+
+
 
 
 
