@@ -1,13 +1,13 @@
-Message-ID: <04f18d8f-0db0-cac5-d5fe-21ec424fdb32@...2181...>
-Date: Tue, 5 Jul 2022 16:09:17 +0200
+Message-ID: <e91f8966-1280-9263-be1f-b195a681c13c@...2181...>
+Date: Tue, 5 Jul 2022 16:53:46 +0200
 MIME-Version: 1.0
 Content-Language: en-US
 References: <20220624083809.23487-1-a@...2181...>
- <20220624083809.23487-16-a@...2181...> <5328690.mmUj8nBKDy@...2664...>
+ <20220624083809.23487-15-a@...2181...> <5439977.94X2OUf111@...2664...>
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <5328690.mmUj8nBKDy@...2664...>
-Subject: Re: [Openvpn-devel] [PATCH 15/25] dco: add documentation for
- ovpn-dco-linux
+In-Reply-To: <5439977.94X2OUf111@...2664...>
+Subject: Re: [Openvpn-devel] [PATCH 14/25] dco: implement dco support for
+ p2mp/server code path
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,35 +23,31 @@ To: Heiko Hund <heiko@...2662...>, openvpn-devel@lists.sourceforge.net
 Hi,
 
 On 05/07/2022 14:31, Heiko Hund wrote:
-> On Freitag, 24. Juni 2022 10:37:59 CEST Antonio Quartulli wrote:
->> +    application. Note that DCO will use DATA_V2 packets
->> in P2P mode, therefore,
->> +    this implies that peers must be running 2.6.0+
->> in order to have P2P-NCP
->> +    which brings DATA_V2 packet support.
-> [...]
->> +- OpenVPN 2.4.0 is the minimum peer version.
+> On Freitag, 24. Juni 2022 10:37:58 CEST Antonio Quartulli wrote:
+>> +    uint8_t *ptr = BPTR(&dco->dco_packet_in);
+>> +    uint8_t op = ptr[0] >> P_OPCODE_SHIFT;
+>> +    if (op == P_DATA_V2 || op == P_DATA_V2)
 > 
-> Now I'm not sure what the minimum version is. Maybe clarify.
+> This looks odd. Seems you wanted to check for a second opcode, or is it
+> obsolete?
 
-I think you removed the context which should clarify this.
-
-2.6.0 is required for P2P-NCP
-2.4.0 is required for standard client/server mode
-
-Cheers,
+we wanted want to bail out on DATA packets - not sure why this was 
+repeated twice. Removing one check.
 
 > 
+>> +    const char *reason = "(unknown reason by ovpn-dco)";
 > 
-> 
-> 
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
+> Wouldn't "ovpn-dco: unknown reason" be better?
+
+Yeah, I'll do as you suggested.
+
+While looking at this function, I realized that these checks should be 
+performed before calling multi_process_incoming_link().
+
+Fixing this in v2...
+
+Thanks!
+
 
 -- 
 Antonio Quartulli
