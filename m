@@ -1,13 +1,13 @@
-Message-ID: <3baf9d95-2d8b-d2b5-cbdb-411d75c3afd9@...1227...>
-Date: Tue, 5 Jul 2022 17:14:18 +0200
+Message-ID: <7bb3541f-1536-7010-66ad-f9f086b403b9@...2181...>
+Date: Tue, 5 Jul 2022 20:47:54 +0200
 MIME-Version: 1.0
+Content-Language: en-US
 References: <20220624083809.23487-1-a@...2181...>
- <20220624083809.23487-15-a@...2181...> <5439977.94X2OUf111@...2664...>
- <e91f8966-1280-9263-be1f-b195a681c13c@...2181...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <e91f8966-1280-9263-be1f-b195a681c13c@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 14/25] dco: implement dco support for
- p2mp/server code path
+ <20220624083809.23487-22-a@...2181...> <5014411.ky3J9OlI6s@...2664...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <5014411.ky3J9OlI6s@...2664...>
+Subject: Re: [Openvpn-devel] [PATCH 21/25] do_open_tun: restyle "can
+ preserve TUN" check
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,30 +16,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>, Heiko Hund <heiko@...2662...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Heiko Hund <heiko@...2662...>, openvpn-devel@lists.sourceforge.net
 
+Hi,
 
-Am 05.07.2022 um 16:53 schrieb Antonio Quartulli:
-> Hi,
->
-> On 05/07/2022 14:31, Heiko Hund wrote:
->> On Freitag, 24. Juni 2022 10:37:58 CEST Antonio Quartulli wrote:
->>> +    uint8_t *ptr = BPTR(&dco->dco_packet_in);
->>> +    uint8_t op = ptr[0] >> P_OPCODE_SHIFT;
->>> +    if (op == P_DATA_V2 || op == P_DATA_V2)
+On 05/07/2022 14:31, Heiko Hund wrote:
+> On Freitag, 24. Juni 2022 10:38:05 CEST Antonio Quartulli wrote:
+>> The current condition checking if the TUN interface was preserved is
+>> dependant on the platform being Android or not. This makes the code
+>> reasonably ugly, especially because uncrustify can't indent properly.
 >>
->> This looks odd. Seems you wanted to check for a second opcode, or is it
->> obsolete?
->
-> we wanted want to bail out on DATA packets - not sure why this was 
-> repeated twice. Removing one check.
->
+>> On top of that, we will require an extra condition only for windows+DCO,
+>> which will make the check even uglier.
+>>
+>> For this reason, factor out the check in a separate function which can
+>> keep the ifdefs craziness well hidden, while do_open_tun becomes
+>> (a bit) cleaner.
+>>
+>> Signed-off-by: Antonio Quartulli <a@...2181...>
+> 
+> Looks mighty, but is rather trivial. Two things:
 
-The first one should be P_DATA_V1
+Can also be reviewed with "git show -w" to highlight the real changes. 
+Most of the diff is reindenting.
 
+> 
+> I think the code could benefit from factoring out the call to run_up_down()
+> and block_outside_dns into two simple functions. Currently it's pretty much
+> duplicated in the if and else branch. Besides that:
 
-Arne
+meat for another patch ;)
 
+> 
+> Acked-by: Heiko Hund <heiko@...2662...>
+
+Thanks!
+
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> 
+
+-- 
+Antonio Quartulli
 
