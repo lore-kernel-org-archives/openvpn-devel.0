@@ -1,8 +1,12 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Tue,  5 Jul 2022 11:18:42 +0200
-Message-Id: <20220705091842.24053-1-a@...2181...>
+Date: Tue, 5 Jul 2022 11:32:06 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <YsQFFkxkn5BdEdTQ@...2678...>
+References: <20220624083809.23487-1-a@...2181...>
+ <20220624083809.23487-26-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] networking: fix doc for net_iface_new() API
+In-Reply-To: <20220624083809.23487-26-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 25/25] dco-win: update GH Actions config
+ file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,34 +15,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+Content-Disposition: inline
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
 
-Some auto correction must have sneaked in.
-Restore proper wording.
+I think this commit could use an additional sentence
+in the commit message on why exactly you remove this?
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- src/openvpn/networking.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Doesn't immediately make sense to me.
 
-diff --git a/src/openvpn/networking.h b/src/openvpn/networking.h
-index 647718e0..79963756 100644
---- a/src/openvpn/networking.h
-+++ b/src/openvpn/networking.h
-@@ -94,7 +94,8 @@ void net_ctx_free(openvpn_net_ctx_t *ctx);
-  * @param iface     interface to create
-  * @param type      string describing interface type
-  * @param arg       extra data required by the specific type
-- * @return int 0 on success, negative error code on error
-+ *
-+ * @return          0 on success, negative error code on error
-  */
- int net_iface_new(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
-                   const char *type, void *arg);
+On Fri, Jun 24, 2022 at 10:38:09AM +0200, Antonio Quartulli wrote:
+> Signed-off-by: Lev Stipakov <lev@...515...>
+> Signed-off-by: Antonio Quartulli <a@...2181...>
+> ---
+>  .github/workflows/build.yaml | 7 +------
+>  1 file changed, 1 insertion(+), 6 deletions(-)
+> 
+> diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+> index b905c0d2..536dd9d6 100644
+> --- a/.github/workflows/build.yaml
+> +++ b/.github/workflows/build.yaml
+> @@ -59,11 +59,6 @@ jobs:
+>      steps:
+>        - name: Install dependencies
+>          run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip
+> -      - name: Checkout ovpn-dco-win
+> -        uses: actions/checkout@...2620...
+> -        with:
+> -          repository: OpenVPN/ovpn-dco-win
+> -          path: ovpn-dco-win
+>        - name: Checkout OpenVPN
+>          uses: actions/checkout@...2620...
+>          with:
+> @@ -151,7 +146,7 @@ jobs:
+>          run: cp ./tap-windows-${TAP_WINDOWS_VERSION}/include/tap-windows.h ${HOME}/mingw/opt/include/
+>  
+>        - name: configure OpenVPN
+> -        run: PKG_CONFIG_PATH=${HOME}/mingw/opt/lib/pkgconfig DCO_SOURCEDIR=$(realpath ../ovpn-dco-win) LDFLAGS=-L$HOME/mingw/opt/lib CFLAGS=-I$HOME/mingw/opt/include OPENSSL_LIBS="-L${HOME}/opt/lib -lssl -lcrypto" OPENSSL_CFLAGS=-I$HOME/mingw/opt/include PREFIX=$HOME/mingw/opt LZO_CFLAGS=-I$HOME/mingw/opt/include LZO_LIBS="-L${HOME}/mingw/opt/lib -llzo2" ./configure  --host=${CHOST} --disable-lz4 --enable-dco
+> +        run: PKG_CONFIG_PATH=${HOME}/mingw/opt/lib/pkgconfig LDFLAGS=-L$HOME/mingw/opt/lib CFLAGS=-I$HOME/mingw/opt/include OPENSSL_LIBS="-L${HOME}/opt/lib -lssl -lcrypto" OPENSSL_CFLAGS=-I$HOME/mingw/opt/include PREFIX=$HOME/mingw/opt LZO_CFLAGS=-I$HOME/mingw/opt/include LZO_LIBS="-L${HOME}/mingw/opt/lib -llzo2" ./configure  --host=${CHOST} --disable-lz4
+>          working-directory: openvpn
+>  
+>        - name: build OpenVPN
+
+Regards,
 -- 
-2.35.1
-
+  Frank Lichtenheld
 
