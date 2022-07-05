@@ -1,12 +1,13 @@
-From: Heiko Hund <heiko@...2662...>
-Date: Tue, 05 Jul 2022 14:36:15 +0200
-Message-ID: <6059357.uOSKjd3mqY@...2664...>
-In-Reply-To: <20220624083809.23487-3-a@...2181...>
-References: <20220624083809.23487-1-a@...2181...>
- <20220624083809.23487-3-a@...2181...>
+Message-ID: <0354cc34-b89e-9af6-54d4-cb1358988cc8@...2181...>
+Date: Tue, 5 Jul 2022 14:38:37 +0200
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 02/25] dco: add helper function to
- detect if DCO is enabled or not
+Content-Language: en-US
+References: <20220624083809.23487-1-a@...2181...>
+ <20220624083809.23487-14-a@...2181...> <9760205.XyttyQAm76@...2664...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <9760205.XyttyQAm76@...2664...>
+Subject: Re: [Openvpn-devel] [PATCH 13/25] dco: implement dco support for
+ p2p/client code path
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +16,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Heiko Hund <heiko@...2662...>, openvpn-devel@lists.sourceforge.net
 
-On Freitag, 24. Juni 2022 10:37:46 CEST Antonio Quartulli wrote:
-> +/**
-> + * Returns whether the current configuration has dco enabled.
-> + */
-> +static inline bool
-> +dco_enabled(const struct options *o)
-> +{
-> +    return !o->tuntap_options.disable_dco;
-> +}
+Hi,
 
-I think it would be beneficial if this took a tun_options* instead, as it 
-could be used more widely and replace the many "!tt->options.disable_dco" 
-occurrences and alike.
+On 05/07/2022 14:30, Heiko Hund wrote:
+> On Freitag, 24. Juni 2022 10:37:57 CEST Antonio Quartulli wrote:
+>> +    /* These inet_pton conversion are fatal since options.c already
+>> implements
+>> +     * checks to have only valid addresses when setting the
+>> options */
+>> +    if (c->options.ifconfig_ipv6_remote)
+>> +    {
+>> +        if (inet_pton(AF_INET6, c->options.ifconfig_ipv6_remote,
+>> &remote_ip6) != 1) +        {
+>> +            msg(M_FATAL,
+>> +                "DCO peer init: problem converting IPv6 ifconfig remote
+>> address %s to binary", +                c->options.ifconfig_ipv6_remote);
+>> +        }
+>> +        remote_addr6 = &remote_ip6;
+>> +    }
+> 
+> I'm undecided if these fatal errors are justified with respect to defensive
+> programming or overly paranoid, because they will never appear.
+
+I'd say they are simply ASSERTs in disguise :-)
+
+When a function returns an error I think it is always good habit to 
+check it..then why not printing something meaningful at this point?
+
+Cheers,
 
 
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> 
+
+-- 
+Antonio Quartulli
 
