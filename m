@@ -1,13 +1,11 @@
-Message-ID: <0354cc34-b89e-9af6-54d4-cb1358988cc8@...2181...>
-Date: Tue, 5 Jul 2022 14:38:37 +0200
+From: Heiko Hund <heiko@...2662...>
+Date: Tue, 05 Jul 2022 14:38:22 +0200
+Message-ID: <5043494.lAjphJqujW@...2664...>
+In-Reply-To: <20220705091842.24053-1-a@...2181...>
+References: <20220705091842.24053-1-a@...2181...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20220624083809.23487-1-a@...2181...>
- <20220624083809.23487-14-a@...2181...> <9760205.XyttyQAm76@...2664...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <9760205.XyttyQAm76@...2664...>
-Subject: Re: [Openvpn-devel] [PATCH 13/25] dco: implement dco support for
- p2p/client code path
+Subject: Re: [Openvpn-devel] [PATCH] networking: fix doc for net_iface_new()
+ API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,50 +14,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-To: Heiko Hund <heiko@...2662...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-On 05/07/2022 14:30, Heiko Hund wrote:
-> On Freitag, 24. Juni 2022 10:37:57 CEST Antonio Quartulli wrote:
->> +    /* These inet_pton conversion are fatal since options.c already
->> implements
->> +     * checks to have only valid addresses when setting the
->> options */
->> +    if (c->options.ifconfig_ipv6_remote)
->> +    {
->> +        if (inet_pton(AF_INET6, c->options.ifconfig_ipv6_remote,
->> &remote_ip6) != 1) +        {
->> +            msg(M_FATAL,
->> +                "DCO peer init: problem converting IPv6 ifconfig remote
->> address %s to binary", +                c->options.ifconfig_ipv6_remote);
->> +        }
->> +        remote_addr6 = &remote_ip6;
->> +    }
+On Dienstag, 5. Juli 2022 11:18:42 CEST Antonio Quartulli wrote:
+> Some auto correction must have sneaked in.
+> Restore proper wording.
 > 
-> I'm undecided if these fatal errors are justified with respect to defensive
-> programming or overly paranoid, because they will never appear.
-
-I'd say they are simply ASSERTs in disguise :-)
-
-When a function returns an error I think it is always good habit to 
-check it..then why not printing something meaningful at this point?
-
-Cheers,
-
-
+> Signed-off-by: Antonio Quartulli <a@...2181...>
+> ---
+>  src/openvpn/networking.h | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> 
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
+> diff --git a/src/openvpn/networking.h b/src/openvpn/networking.h
+> index 647718e0..79963756 100644
+> --- a/src/openvpn/networking.h
+> +++ b/src/openvpn/networking.h
+> @@ -94,7 +94,8 @@ void net_ctx_free(openvpn_net_ctx_t *ctx);
+>   * @param iface     interface to create
+>   * @param type      string describing interface type
+>   * @param arg       extra data required by the specific type
+> - * @return int 0 on success, negative error code on error
+> + *
+> + * @return          0 on success, negative error code on error
+>   */
+>  int net_iface_new(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
+> const char *type, void *arg);
 
--- 
-Antonio Quartulli
+Acked-by: Heiko Hund <heiko@...2662...>
+
+
+
 
