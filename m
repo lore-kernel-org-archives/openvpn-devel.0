@@ -1,13 +1,10 @@
-Message-ID: <7bb3541f-1536-7010-66ad-f9f086b403b9@...2181...>
-Date: Tue, 5 Jul 2022 20:47:54 +0200
-MIME-Version: 1.0
-Content-Language: en-US
-References: <20220624083809.23487-1-a@...2181...>
- <20220624083809.23487-22-a@...2181...> <5014411.ky3J9OlI6s@...2664...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <5014411.ky3J9OlI6s@...2664...>
-Subject: Re: [Openvpn-devel] [PATCH 21/25] do_open_tun: restyle "can
- preserve TUN" check
+Date: Tue, 5 Jul 2022 22:29:30 +0200 (CEST)
+Message-Id: <202207052029.265KTUZQ004933@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220705091842.24053-1-a@...2181...>
+References: <20220705091842.24053-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: networking: fix doc for
+ net_iface_new() API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,54 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Heiko Hund <heiko@...2662...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Easy enough ;-) - Heiko just beat me to ACKing it.
 
-On 05/07/2022 14:31, Heiko Hund wrote:
-> On Freitag, 24. Juni 2022 10:38:05 CEST Antonio Quartulli wrote:
->> The current condition checking if the TUN interface was preserved is
->> dependant on the platform being Android or not. This makes the code
->> reasonably ugly, especially because uncrustify can't indent properly.
->>
->> On top of that, we will require an extra condition only for windows+DCO,
->> which will make the check even uglier.
->>
->> For this reason, factor out the check in a separate function which can
->> keep the ifdefs craziness well hidden, while do_open_tun becomes
->> (a bit) cleaner.
->>
->> Signed-off-by: Antonio Quartulli <a@...2181...>
-> 
-> Looks mighty, but is rather trivial. Two things:
+Have not tested anything!
 
-Can also be reviewed with "git show -w" to highlight the real changes. 
-Most of the diff is reindenting.
+Your patch has been applied to the master branch.
 
-> 
-> I think the code could benefit from factoring out the call to run_up_down()
-> and block_outside_dns into two simple functions. Currently it's pretty much
-> duplicated in the if and else branch. Besides that:
+commit d5315a5d7400a26f1113bbc44766d49dd0c3688f
+Author: Antonio Quartulli
+Date:   Tue Jul 5 11:18:42 2022 +0200
 
-meat for another patch ;)
+     networking: fix doc for net_iface_new() API
 
-> 
-> Acked-by: Heiko Hund <heiko@...2662...>
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Heiko Hund <heiko@...2662...>
+     Message-Id: <20220705091842.24053-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24636.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Thanks!
 
-> 
-> 
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
+--
+kind regards,
 
--- 
-Antonio Quartulli
+Gert Doering
+
 
