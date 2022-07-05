@@ -1,12 +1,12 @@
 From: Heiko Hund <heiko@...2662...>
-Date: Tue, 05 Jul 2022 14:32:34 +0200
-Message-ID: <6333729.aGGY2o4v80@...2664...>
-In-Reply-To: <20220624083809.23487-25-a@...2181...>
+Date: Tue, 05 Jul 2022 14:32:42 +0200
+Message-ID: <4973410.uatBhfvki3@...2664...>
+In-Reply-To: <20220624083809.23487-9-a@...2181...>
 References: <20220624083809.23487-1-a@...2181...>
- <20220624083809.23487-25-a@...2181...>
+ <20220624083809.23487-9-a@...2181...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 24/25] dco-win: add documentation to
- README.dco.md
+Subject: Re: [Openvpn-devel] [PATCH 08/25] dco: allow user to disable it at
+ runtime
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,16 +19,11 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-On Freitag, 24. Juni 2022 10:38:08 CEST Antonio Quartulli wrote:
-> +Getting started (Windows)
-> +-------------------------
-> +Getting started under windows is currently for brave people having
-> experience 
-> +with windows development. You need to compile openvpn yourself
-> and also need 
-> +to get the test driver installed on your system.
+On Freitag, 24. Juni 2022 10:37:52 CEST Antonio Quartulli wrote:
+> +    else if (streq(p[0], "disable-dco") || streq(p[0], "dco-disable"))
 
-Not so brave anymore, maybe rephrase with more concrete steps to perform.
+Don't think we need to be backwards compatible here, or do we?
+
 
 
 
