@@ -1,9 +1,8 @@
-Message-ID: <248a2779-a46d-6816-80cd-3c87d0cad489@...515...>
-Date: Tue, 5 Jul 2022 10:20:40 +0300
+From: Antonio Quartulli <a@...2181...>
+Date: Tue,  5 Jul 2022 11:18:42 +0200
+Message-Id: <20220705091842.24053-1-a@...2181...>
 MIME-Version: 1.0
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Content-Language: en-US
-Subject: [Openvpn-devel] Community meetings in July 2022
+Subject: [Openvpn-devel] [PATCH] networking: fix doc for net_iface_new() API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,25 +11,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Hi,
+Some auto correction must have sneaked in.
+Restore proper wording.
 
-Next community meetings have been scheduled to
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/networking.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-- Wed 6th July 2022 at 10:30 CEST
-- Wed 13th July 2022 at 10:30 CEST
-- Wed 20th July 2022 at 10:30 CEST
-- Wed 27th July 2022 at 10:30 CEST
-
-The place is #openvpn-meeting IRC channel at libera.chat Meeting agendas
-and summaries are in here:
-
-<https://community.openvpn.net/openvpn/wiki/IrcMeetings>
-
-Samuli
-
+diff --git a/src/openvpn/networking.h b/src/openvpn/networking.h
+index 647718e0..79963756 100644
+--- a/src/openvpn/networking.h
++++ b/src/openvpn/networking.h
+@@ -94,7 +94,8 @@ void net_ctx_free(openvpn_net_ctx_t *ctx);
+  * @param iface     interface to create
+  * @param type      string describing interface type
+  * @param arg       extra data required by the specific type
+- * @return int 0 on success, negative error code on error
++ *
++ * @return          0 on success, negative error code on error
+  */
+ int net_iface_new(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
+                   const char *type, void *arg);
+-- 
+2.35.1
 
 
