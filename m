@@ -1,10 +1,11 @@
-Date: Tue, 5 Jul 2022 22:29:30 +0200 (CEST)
-Message-Id: <202207052029.265KTUZQ004933@...2054...>
+Date: Wed, 6 Jul 2022 11:07:37 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220705091842.24053-1-a@...2181...>
-References: <20220705091842.24053-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: networking: fix doc for
- net_iface_new() API
+Message-ID: <YsVQ2clqGF73f+b0@...1296...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="zW06mXr5Rwu8GCpA"
+Content-Disposition: inline
+Subject: [Openvpn-devel] HEADS UP: removal of --mktun and --rmtun in 2.6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +14,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
 
-Easy enough ;-) - Heiko just beat me to ACKing it.
+--zW06mXr5Rwu8GCpA
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Have not tested anything!
+Hi,
 
-Your patch has been applied to the master branch.
+we are discussing to remove support for openvpn --mktun / --rmtun options
+in the upcoming 2.6 release - because it complicates the code, and we
+think there is no actual *need* for it anymore (and it's Linux only, etc).
 
-commit d5315a5d7400a26f1113bbc44766d49dd0c3688f
-Author: Antonio Quartulli
-Date:   Tue Jul 5 11:18:42 2022 +0200
+With "ip", there is a submode "ip tuntap", which does the same thing,
+so=20
 
-     networking: fix doc for net_iface_new() API
+  # openvpn --mktun --dev tun4
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Heiko Hund <heiko@...2662...>
-     Message-Id: <20220705091842.24053-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24636.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+becomes
+
+  # ip tuntap add mode tun name tun4
+
+and similar for tap stuff, "user / group" settings, etc.
 
 
---
-kind regards,
+So, this message is intended to do two things
 
-Gert Doering
+ - raise awareness "this will come in 2.6!"
+ - and also gather feedback: *if* you use openvpn --mktun today, please
+   test "ip tuntap..." and let us know if it gets the job done properly,
+   or of something is missing.
 
+The code is not removed yet, but will be, unless there are strong reasons
+to keep it.
+
+gert
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--zW06mXr5Rwu8GCpA
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJixVDZAAoJEB2Cnv7KVigSRLAMAJ/YOIyOOMU1+yvsLFw2J+Sb
+VH2d9IH3Uct+2sDikJFdLdB/XL+hGP8nFJufiz2xznj7yZuLnlEdyZsYnRsPldF3
+OtlHIw+1Z9AIYrs6Mervin/yGYlffmXaFPc4vV/ZE6nc6KGjq5ZCUDXDN7MNoYMU
+R862uqToUgQfbWG/BYsEe1EnLYlOP/In4ju6HvsDRj2BmlSe7v/fFtUmqpVoTJ4P
+jTqkIVZIKl+U8zT9MqmZDDJlgzShhoguQyPr1oCr/aaxomPCinI5ZefPYawiGuoI
+ziyClkL0AWMYEF+hoWXOtIJm6Hl7oLsdMoOBt1S3pfGHdN2Y0g3dBMtyLJ6zz/J2
+JsMhlVNdecHmmY9iNU6NOMsuqeT8drjU3M1N4mmbQSQwF7TLJ8+kUH+3EhJlP9Ql
+szciMiKwmQczurmnZilRBzLTcleVB57mcOUW1ESgY00IjzbXtN/KklfapinYete+
+3RxkjfV5vbQZcxnsp/gimZIDYyhXfB+OQwfW5IeGYA==
+=f9DR
+-----END PGP SIGNATURE-----
+
+--zW06mXr5Rwu8GCpA--
 
