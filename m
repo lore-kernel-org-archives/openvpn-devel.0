@@ -1,9 +1,8 @@
+From: selva.nair@...277...
+Date: Wed,  6 Jul 2022 23:51:51 -0400
+Message-Id: <20220707035151.25469-1-selva.nair@...277...>
 MIME-Version: 1.0
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 6 Jul 2022 23:06:44 -0400
-Message-ID: <CAKuzo_gRVh=Hsw_VLtjL40kbBo+tz+L39p3NjxBvW46aOFc9EA@...278...>
-Content-Type: multipart/alternative; boundary="000000000000117e1f05e32e61b9"
-Subject: [Openvpn-devel] Bug in msvc build of master + OpenSSL 3.0.x
+Subject: [Openvpn-devel] [PATCH] Fix crash in xkey-provider in msvc builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,93 +11,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---000000000000117e1f05e32e61b9
-Content-Type: text/plain; charset="UTF-8"
+From: Selva Nair <selva.nair@...277...>
 
-Hi,
+The function signature for xkey_load_generic_key had
+function pointers defined as function types that seems
+to work in gcc but not in msvc.
 
-As reported by Lev here:
-https://github.com/OpenVPN/openvpn-gui/pull/508#issuecomment-1174057372
+Fix it by changing the function signatures to what was
+intended.
+Also revert part of commit 627d1a3d28638... as that work-
+around should be no longer required.
 
-I think its due to this in xkey-provider:
+Reported by: Lev Stipakov https://github.com/lstipakov
 
-typedef void (XKEY_PRIVKEY_FREE_fn)(void *handle);
-(and a similar one for SIGN_fn)
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/xkey_common.h | 2 +-
+ src/openvpn/xkey_helper.c | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-EVP_PKEY *
-xkey_load_generic_key(OSSL_LIB_CTX *libctx, void *handle, EVP_PKEY *pubkey,
-XKEY_EXTERNAL_SIGN_fn sign_op, XKEY_PRIVKEY_FREE_fn free_op)
-{
-...
-<code to pass &sign_op and &free_op to openssl>
-...
-}
+diff --git a/src/openvpn/xkey_common.h b/src/openvpn/xkey_common.h
+index e0e5ed5b..6d6a1e2c 100644
+--- a/src/openvpn/xkey_common.h
++++ b/src/openvpn/xkey_common.h
+@@ -152,7 +152,7 @@ xkey_digest(const unsigned char *src, size_t srclen, unsigned char *buf,
+  */
+ EVP_PKEY *
+ xkey_load_generic_key(OSSL_LIB_CTX *libctx, void *handle, EVP_PKEY *pubkey,
+-                      XKEY_EXTERNAL_SIGN_fn sign_op, XKEY_PRIVKEY_FREE_fn free_op);
++                      XKEY_EXTERNAL_SIGN_fn *sign_op, XKEY_PRIVKEY_FREE_fn *free_op);
+ 
+ extern OSSL_LIB_CTX *tls_libctx; /* Global */
+ 
+diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
+index 14f074ae..73235fd6 100644
+--- a/src/openvpn/xkey_helper.c
++++ b/src/openvpn/xkey_helper.c
+@@ -115,7 +115,7 @@ xkey_load_management_key(OSSL_LIB_CTX *libctx, EVP_PKEY *pubkey)
+  */
+ EVP_PKEY *
+ xkey_load_generic_key(OSSL_LIB_CTX *libctx, void *handle, EVP_PKEY *pubkey,
+-                      XKEY_EXTERNAL_SIGN_fn sign_op, XKEY_PRIVKEY_FREE_fn free_op)
++                      XKEY_EXTERNAL_SIGN_fn *sign_op, XKEY_PRIVKEY_FREE_fn *free_op)
+ {
+     EVP_PKEY *pkey = NULL;
+     const char *origin = "external";
+@@ -125,8 +125,8 @@ xkey_load_generic_key(OSSL_LIB_CTX *libctx, void *handle, EVP_PKEY *pubkey,
+         {"xkey-origin", OSSL_PARAM_UTF8_STRING, (char *) origin, 0, 0},
+         {"pubkey", OSSL_PARAM_OCTET_STRING, &pubkey, sizeof(pubkey), 0},
+         {"handle", OSSL_PARAM_OCTET_PTR, &handle, sizeof(handle), 0},
+-        {"sign_op", OSSL_PARAM_OCTET_PTR, (void **) &sign_op, sizeof(void *), 0},
+-        {"free_op", OSSL_PARAM_OCTET_PTR, (void **) &free_op, sizeof(void *), 0},
++        {"sign_op", OSSL_PARAM_OCTET_PTR, (void **) &sign_op, sizeof(sign_op), 0},
++        {"free_op", OSSL_PARAM_OCTET_PTR, (void **) &free_op, sizeof(free_op), 0},
+         {NULL, 0, NULL, 0, 0}
+     };
+     msg(M_INFO, "%s: handle = %p sign_op = %p free_op = %p ", __FUNCTION__,
+-- 
+2.30.2
 
-(see xkey_helper. around line:120, and xkey_common.h for declarations).
-
-Note the lack of * before the sign_op and free_op variables in the function
-definition and declaration (not shown). The typedefs are without a * as
-well, but that is deliberate and intentional.
-
-This is not flagged as a bug by gcc or msvc, and it seems both
-automatically assign function pointers to sign_op and free_op as intended.
-Problem seems to be that when I take the pointer to sign_op to pass to
-OpenSSL, gcc does give a pointer to the function-ptr that we need, but msvc
-does something else which later gets dereferenced in the provider.
-
-In fact we had an error from msvc builds about sizeof(sign_op) not legal,
-which should have been a red-flag. But we worked around it in
-commit 627d1a3d28 by replacing it with sizeof(void *) --- typical
-cast-away-the-bug solution.
-
-Anyway, saying all this because I am not 100% sure that my analysis is
-correct. Changing the function signature does appear to fix it though. Will
-follow up with a patch.
-
-It's a pity that we do not have a way to run unit tests on Windows builds.
-I sometimes test mingw builds against some client-server setups, but msvc
-builds may not be getting exercised enough --- especially with OpenSSL 3.0.
-
-Thanks,
-
-Selva
-
---000000000000117e1f05e32e61b9
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div>Hi,</div><div><br></div><div>As reported by Lev here:=
-</div><div><a href=3D"https://github.com/OpenVPN/openvpn-gui/pull/508#issue=
-comment-1174057372" target=3D"_blank">https://github.com/OpenVPN/openvpn-gu=
-i/pull/508#issuecomment-1174057372</a></div><div><br></div><div>I think its=
- due to this in xkey-provider:</div><div><br></div>typedef void (XKEY_PRIVK=
-EY_FREE_fn)(void *handle);<br><div>(and a similar one for SIGN_fn)</div><di=
-v><br></div><div>EVP_PKEY *<br>xkey_load_generic_key(OSSL_LIB_CTX *libctx, =
-void *handle, EVP_PKEY *pubkey, XKEY_EXTERNAL_SIGN_fn sign_op, XKEY_PRIVKEY=
-_FREE_fn free_op)<br></div><div>{</div><div>...</div><div>&lt;code to pass =
-&amp;sign_op and &amp;free_op to openssl&gt;=C2=A0</div><div>...</div><div>=
-}</div><div><br></div><div>(see xkey_helper. around line:120, and xkey_comm=
-on.h for declarations).</div><div><br></div><div>Note the lack of * before =
-the sign_op and free_op variables in the function definition and declaratio=
-n (not shown). The typedefs are without a * as well, but that is deliberate=
- and intentional.=C2=A0</div><div><br></div><div>This is not flagged as a b=
-ug by gcc or msvc, and it seems both automatically assign function pointers=
- to sign_op and free_op as intended. Problem seems to be that when I take t=
-he pointer to sign_op to pass to OpenSSL, gcc does give a pointer to the fu=
-nction-ptr that we need, but msvc does something else which later gets dere=
-ferenced in the provider.</div><div><br></div><div>In fact we had an error =
-from msvc builds about sizeof(sign_op) not legal, which should have been a =
-red-flag. But we worked around it in commit=C2=A0627d1a3d28 by replacing it=
- with sizeof(void *) --- typical cast-away-the-bug solution.</div><div><br>=
-</div><div>Anyway, saying all this because I am not 100% sure that my analy=
-sis is correct. Changing the function signature does appear to fix it thoug=
-h. Will follow up with a patch.</div><div><br></div><div>It&#39;s a pity th=
-at we do not have a way to run unit tests on Windows builds. I sometimes te=
-st mingw builds against some client-server setups, but msvc builds may not =
-be getting exercised enough --- especially with OpenSSL 3.0.</div><div><br>=
-</div><div>Thanks,</div><div><br></div><div>Selva</div></div>
-
---000000000000117e1f05e32e61b9--
 
