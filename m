@@ -1,11 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Mon, 11 Jul 2022 15:12:42 +0200
-Message-Id: <20220711131242.8379-1-a@...2181...>
-In-Reply-To: <20220706142907.3962-2-a@...2181...>
-References: <20220706142907.3962-2-a@...2181...>
+Date: Mon, 11 Jul 2022 15:55:30 +0200
+Message-Id: <20220711135530.27418-1-a@...2181...>
+In-Reply-To: <20220711131242.8379-1-a@...2181...>
+References: 
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v7] dco: let open_tun_generic handle the DCO
- case
+Subject: [Openvpn-devel] [PATCH v8 05/25] dco: let open_tun_generic handle
+ the DCO case
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,6 +25,10 @@ easily leverage on function and avoid code duplication.
 
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
+
+Changes from v7:
+* enclose setting 'disable_dco' field within ifdef (in do_open_tun) to
+  ensure code compiles also on platforms with no DCO support at all
 
 Changes from v6:
 * do not touch tls_multi in do_open_tun as it's still NULL (caused crash)
@@ -60,15 +64,15 @@ Changes from v1:
 * improved INFO message when device already exists as per Arne's request
 
 
- src/openvpn/init.c    |  31 +++++++-
+ src/openvpn/init.c    |  33 ++++++++-
  src/openvpn/init.h    |   2 +-
  src/openvpn/options.c |   7 ++
  src/openvpn/tun.c     | 159 ++++++++++++++++++++++++++++++++----------
  src/openvpn/tun.h     |   2 +-
- 5 files changed, 162 insertions(+), 39 deletions(-)
+ 5 files changed, 164 insertions(+), 39 deletions(-)
 
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 03221cbb..1adc06c9 100644
+index 03221cbb..8b952552 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
 @@ -1054,7 +1054,7 @@ do_genkey(const struct options *options)
@@ -107,19 +111,21 @@ index 03221cbb..1adc06c9 100644
  #ifdef ENABLE_FEATURE_TUN_PERSIST
          tuncfg(options->dev, options->dev_type, options->dev_node,
                 options->persist_mode,
-@@ -1763,7 +1783,14 @@ do_open_tun(struct context *c)
+@@ -1763,7 +1783,16 @@ do_open_tun(struct context *c)
  #endif
      /* open the tun device */
      open_tun(c->options.dev, c->options.dev_type, c->options.dev_node,
 -             c->c1.tuntap);
 +             c->c1.tuntap, &c->net_ctx);
 +
++#if defined(ENABLE_DCO)
 +    /* DCO may have been disabled by open_tun(). propagate change */
 +    c->options.tuntap_options.disable_dco = c->c1.tuntap->options.disable_dco;
 +    if (c->options.pre_connect->tuntap_options_defined)
 +    {
 +        c->options.pre_connect->tuntap_options.disable_dco = c->c1.tuntap->options.disable_dco;
 +    }
++#endif
  
      /* set the hardware address */
      if (c->options.lladdr)
