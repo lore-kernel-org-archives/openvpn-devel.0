@@ -1,9 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Mon, 11 Jul 2022 14:23:48 +0200
-Message-Id: <20220711122348.8756-1-a@...2181...>
+Date: Mon, 11 Jul 2022 15:12:42 +0200
+Message-Id: <20220711131242.8379-1-a@...2181...>
+In-Reply-To: <20220706142907.3962-2-a@...2181...>
+References: <20220706142907.3962-2-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] options: don't export local function
- pre_connect_save()
+Subject: [Openvpn-devel] [PATCH v7] dco: let open_tun_generic handle the DCO
+ case
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,291 +17,484 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>, Arne Schwabe <arne@...1227...>
+Cc: Antonio Quartulli <a@...2181...>
 
-The pre_connect_save() function is not used outside of options.c,
-therefore it should not be exported.
+open_tun_generic already contains the logic required to find a device
+name when not specified b the user. For this reason the DCO case can
+easily leverage on function and avoid code duplication.
 
-Make it static and move definition before its invocation.
-Move also pre_connect_restore() along with it in order to keep the two
-close to each other.
-
-Cc: Arne Schwabe <arne@...1227...>
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/options.c | 238 +++++++++++++++++++++---------------------
- src/openvpn/options.h |   2 -
- 2 files changed, 119 insertions(+), 121 deletions(-)
 
+Changes from v6:
+* do not touch tls_multi in do_open_tun as it's still NULL (caused crash)
+* re-assign disable_dco field in pre_connect object, if DCO is disabled
+  by open_tun() in do_open_tun()
+
+Changes from v5:
+* create TUN device when invoking --mktun with DCO enabled. Current code
+  segfaults.
+* fix message printing "..device created" for DCO cases
+* print error string (and not just error code) when a DCO iface cannot
+  be created
+* when creating DCO device, if a TUN device with the same name is found,
+  disable DCO and use the existing device
+* don't use tunname as it contains the wrong string. Use dev or
+  dynamic_name instead
+
+Changes from v4:
+* in open_tun_generic() use sizeof(tunname) when copying to tunname
+
+Changes from v3:
+* explicitly mention "DCO" in message when DCO device is successfully
+  opened, as per Arne's request
+
+Changes from v2:
+* do not abuse the dynamic_name variable. Rather use 'dev' when no
+  dynamic name is requested
+* ignore dev-node when using DCO, to avoid messing up naming logic in
+  open_tun_generic. dev-node has sense when using DCO
+* add comment as to why we need to fill tunname
+
+Changes from v1:
+* improved INFO message when device already exists as per Arne's request
+
+
+ src/openvpn/init.c    |  31 +++++++-
+ src/openvpn/init.h    |   2 +-
+ src/openvpn/options.c |   7 ++
+ src/openvpn/tun.c     | 159 ++++++++++++++++++++++++++++++++----------
+ src/openvpn/tun.h     |   2 +-
+ 5 files changed, 162 insertions(+), 39 deletions(-)
+
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 03221cbb..1adc06c9 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1054,7 +1054,7 @@ do_genkey(const struct options *options)
+  * Persistent TUN/TAP device management mode?
+  */
+ bool
+-do_persist_tuntap(const struct options *options, openvpn_net_ctx_t *ctx)
++do_persist_tuntap(struct options *options, openvpn_net_ctx_t *ctx)
+ {
+     if (options->persist_config)
+     {
+@@ -1069,6 +1069,26 @@ do_persist_tuntap(const struct options *options, openvpn_net_ctx_t *ctx)
+             msg(M_FATAL|M_OPTERR,
+                 "options --mktun or --rmtun should only be used together with --dev");
+         }
++
++#if defined(ENABLE_DCO)
++        if (dco_enabled(options))
++        {
++            /* creating a DCO interface via --mktun is not supported as it does not
++             * make much sense. Since DCO is enabled by default, people may run into
++             * this without knowing, therefore this case should be properly handled.
++             *
++             * Disable DCO if --mktun was provided and print a message to let
++             * user know.
++             */
++            if (dev_type_enum(options->dev, options->dev_type) == DEV_TYPE_TUN)
++            {
++                msg(M_WARN, "Note: --mktun does not support DCO. Creating TUN interface.");
++            }
++
++            options->tuntap_options.disable_dco = true;
++        }
++#endif
++
+ #ifdef ENABLE_FEATURE_TUN_PERSIST
+         tuncfg(options->dev, options->dev_type, options->dev_node,
+                options->persist_mode,
+@@ -1763,7 +1783,14 @@ do_open_tun(struct context *c)
+ #endif
+     /* open the tun device */
+     open_tun(c->options.dev, c->options.dev_type, c->options.dev_node,
+-             c->c1.tuntap);
++             c->c1.tuntap, &c->net_ctx);
++
++    /* DCO may have been disabled by open_tun(). propagate change */
++    c->options.tuntap_options.disable_dco = c->c1.tuntap->options.disable_dco;
++    if (c->options.pre_connect->tuntap_options_defined)
++    {
++        c->options.pre_connect->tuntap_options.disable_dco = c->c1.tuntap->options.disable_dco;
++    }
+ 
+     /* set the hardware address */
+     if (c->options.lladdr)
+diff --git a/src/openvpn/init.h b/src/openvpn/init.h
+index 2b8c2dcc..5f412a33 100644
+--- a/src/openvpn/init.h
++++ b/src/openvpn/init.h
+@@ -56,7 +56,7 @@ bool print_openssl_info(const struct options *options);
+ 
+ bool do_genkey(const struct options *options);
+ 
+-bool do_persist_tuntap(const struct options *options, openvpn_net_ctx_t *ctx);
++bool do_persist_tuntap(struct options *options, openvpn_net_ctx_t *ctx);
+ 
+ bool possibly_become_daemon(const struct options *options);
+ 
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index fa66b513..6f83406b 100644
+index 233c02e0..705bb79a 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -3219,6 +3219,125 @@ remap_redirect_gateway_flags(struct options *opt)
+@@ -3528,6 +3528,13 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
+         o->verify_hash_no_ca = true;
+     }
+ 
++    if (dco_enabled(o) && o->dev_node)
++    {
++        msg(M_WARN, "Note: ignoring --dev-node as it has no effect when using "
++            "data channel offload");
++        o->dev_node = NULL;
++    }
++
+     /*
+      * Save certain parms before modifying options during connect, especially
+      * when using --pull
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index e12f0369..d75d75e3 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -37,6 +37,7 @@
+ 
+ #include "syshead.h"
+ 
++#include "openvpn.h"
+ #include "tun.h"
+ #include "fdmisc.h"
+ #include "common.h"
+@@ -1718,10 +1719,10 @@ read_tun_header(struct tuntap *tt, uint8_t *buf, int len)
+ #endif /* if defined (TARGET_OPENBSD) || (defined(TARGET_DARWIN) && HAVE_NET_IF_UTUN_H) */
+ 
+ 
+-#if !(defined(_WIN32) || defined(TARGET_LINUX))
++#if !defined(_WIN32)
+ static void
+ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
+-                 bool dynamic, struct tuntap *tt)
++                 bool dynamic, struct tuntap *tt, openvpn_net_ctx_t *ctx)
+ {
+     char tunname[256];
+     char dynamic_name[256];
+@@ -1780,6 +1781,18 @@ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
+                                      "/dev/%s%d", dev, i);
+                     openvpn_snprintf(dynamic_name, sizeof(dynamic_name),
+                                      "%s%d", dev, i);
++#if defined(TARGET_LINUX)
++                    if (!tt->options.disable_dco)
++                    {
++                        if (open_tun_dco(tt, ctx, dynamic_name) == 0)
++                        {
++                            dynamic_opened = true;
++                            msg(M_INFO, "DCO device %s opened", dynamic_name);
++                            break;
++                        }
++                    }
++                    else
++#endif /* if defined(TARGET_LINUX) */
+                     if ((tt->fd = open(tunname, O_RDWR)) > 0)
+                     {
+                         dynamic_opened = true;
+@@ -1801,30 +1814,81 @@ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
+             }
+         }
+ 
+-        if (!dynamic_opened)
++#if defined(TARGET_LINUX)
++        if (!tt->options.disable_dco)
+         {
+-            /* has named device existed before? if so, don't destroy at end */
+-            if (if_nametoindex( dev ) > 0)
++            if (!dynamic_opened)
+             {
+-                msg(M_INFO, "TUN/TAP device %s exists previously, keep at program end", dev );
+-                tt->persistent_if = true;
+-            }
++                /* if dynamic_opened was true, then we already created the
++                 * interface named 'dynamic_name', otherwise we have to create
++                 * now the interface 'dev'.
++                 *
++                 * The variable 'dev_node' is totally ignored in the DCO case
++                 * because it is unset by options post-processing as it makes no
++                 * sense in this context.
++                 */
++                int ret = open_tun_dco(tt, ctx, dev);
++                if (ret == -EEXIST)
++                {
++                    char type[IFACE_TYPE_LEN_MAX];
+ 
+-            if ((tt->fd = open(tunname, O_RDWR)) < 0)
+-            {
+-                msg(M_ERR, "Cannot open TUN/TAP dev %s", tunname);
++                    ret = net_iface_type(ctx, dev, type);
++                    if (ret < 0 || strcmp(type, "ovpn-dco") != 0)
++                    {
++                        msg(M_WARN, "Existing non-DCO device %s found. Disabling DCO",
++                            dev);
++                        tt->options.disable_dco = true;
++
++                        open_tun(dev, dev_type, dev_node, tt, ctx);
++                        return;
++                    }
++                    else
++                    {
++                        msg(M_INFO, "DCO device %s already exists, won't be destroyed at shutdown",
++                            dev);
++                    }
++                    tt->persistent_if = true;
++                }
++                else if (ret < 0)
++                {
++                    msg(M_ERR, "Cannot open DCO device %s: %s (%d)", dev,
++                        strerror(-ret), ret);
++                }
++                else
++                {
++                    msg(M_INFO, "DCO device %s opened", dev);
++                }
+             }
+         }
++        else
++#endif /* if defined(TARGET_LINUX) */
++        {
++            if (!dynamic_opened)
++            {
++                /* has named device existed before? if so, don't destroy at end */
++                if (if_nametoindex( dev ) > 0)
++                {
++                    msg(M_INFO, "TUN/TAP device %s exists previously, keep at program end", dev );
++                    tt->persistent_if = true;
++                }
+ 
+-        set_nonblock(tt->fd);
+-        set_cloexec(tt->fd); /* don't pass fd to scripts */
+-        msg(M_INFO, "TUN/TAP device %s opened", tunname);
++                if ((tt->fd = open(tunname, O_RDWR)) < 0)
++                {
++                    msg(M_ERR, "Cannot open TUN/TAP dev %s", tunname);
++                }
++            }
++
++            set_nonblock(tt->fd);
++            set_cloexec(tt->fd); /* don't pass fd to scripts */
++
++            msg(M_INFO, "TUN/TAP device %s opened", tunname);
++        }
+ 
+         /* tt->actual_name is passed to up and down scripts and used as the ifconfig dev name */
+         tt->actual_name = string_alloc(dynamic_opened ? dynamic_name : dev, NULL);
+     }
  }
+-#endif /* !_WIN32 && !TARGET_LINUX */
++#endif /* !_WIN32 */
+ 
+ #if !defined(_WIN32)
+ static void
+@@ -1842,7 +1906,8 @@ close_tun_generic(struct tuntap *tt)
+ 
+ #if defined (TARGET_ANDROID)
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+ #define ANDROID_TUNNAME "vpnservice-tun"
+     struct user_pass up;
+@@ -1939,7 +2004,8 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ #if !PEDANTIC
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+     struct ifreq ifr;
+ 
+@@ -1950,6 +2016,12 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+     {
+         open_null(tt);
+     }
++#if defined(TARGET_LINUX)
++    else if (!tt->options.disable_dco)
++    {
++        open_tun_generic(dev, dev_type, dev_node, true, tt, ctx);
++    }
++#endif
+     else
+     {
+         /*
+@@ -2056,7 +2128,8 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+ #else  /* if !PEDANTIC */
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+     ASSERT(0);
+ }
+@@ -2081,7 +2154,8 @@ tuncfg(const char *dev, const char *dev_type, const char *dev_node,
+     clear_tuntap(tt);
+     tt->type = dev_type_enum(dev, dev_type);
+     tt->options = *options;
+-    open_tun(dev, dev_type, dev_node, tt);
++
++    open_tun(dev, dev_type, dev_node, tt, ctx);
+     if (ioctl(tt->fd, TUNSETPERSIST, persist_mode) < 0)
+     {
+         msg(M_ERR, "Cannot ioctl TUNSETPERSIST(%d) %s", persist_mode, dev);
+@@ -2199,6 +2273,12 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
+         net_ctx_reset(ctx);
+     }
+ 
++#ifdef TARGET_LINUX
++    if (!tt->options.disable_dco)
++    {
++        close_tun_dco(tt, ctx);
++    }
++#endif
+     close_tun_generic(tt);
+     free(tt);
+ }
+@@ -2222,7 +2302,8 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
  #endif
  
-+/*
-+ * Save/Restore certain option defaults before --pull is applied.
-+ */
-+
-+static void
-+pre_connect_save(struct options *o)
-+{
-+    ALLOC_OBJ_CLEAR_GC(o->pre_connect, struct options_pre_connect, &o->gc);
-+    o->pre_connect->tuntap_options = o->tuntap_options;
-+    o->pre_connect->tuntap_options_defined = true;
-+    o->pre_connect->foreign_option_index = o->foreign_option_index;
-+
-+    if (o->routes)
-+    {
-+        o->pre_connect->routes = clone_route_option_list(o->routes, &o->gc);
-+        o->pre_connect->routes_defined = true;
-+    }
-+    if (o->routes_ipv6)
-+    {
-+        o->pre_connect->routes_ipv6 = clone_route_ipv6_option_list(o->routes_ipv6, &o->gc);
-+        o->pre_connect->routes_ipv6_defined = true;
-+    }
-+    if (o->client_nat)
-+    {
-+        o->pre_connect->client_nat = clone_client_nat_option_list(o->client_nat, &o->gc);
-+        o->pre_connect->client_nat_defined = true;
-+    }
-+
-+    o->pre_connect->route_default_gateway = o->route_default_gateway;
-+    o->pre_connect->route_ipv6_default_gateway = o->route_ipv6_default_gateway;
-+
-+    o->pre_connect->dns_options = clone_dns_options(o->dns_options, &o->gc);
-+
-+    /* NCP related options that can be overwritten by a push */
-+    o->pre_connect->ciphername = o->ciphername;
-+    o->pre_connect->authname = o->authname;
-+
-+    /* Ping related options should be reset to the config values on reconnect */
-+    o->pre_connect->ping_rec_timeout = o->ping_rec_timeout;
-+    o->pre_connect->ping_rec_timeout_action = o->ping_rec_timeout_action;
-+    o->pre_connect->ping_send_timeout = o->ping_send_timeout;
-+
-+    /* Miscellaneous Options */
-+#ifdef USE_COMP
-+    o->pre_connect->comp = o->comp;
-+#endif
-+}
-+
-+void
-+pre_connect_restore(struct options *o, struct gc_arena *gc)
-+{
-+    const struct options_pre_connect *pp = o->pre_connect;
-+    if (pp)
-+    {
-+        CLEAR(o->tuntap_options);
-+        if (pp->tuntap_options_defined)
-+        {
-+            o->tuntap_options = pp->tuntap_options;
-+        }
-+
-+        if (pp->routes_defined)
-+        {
-+            rol_check_alloc(o);
-+            copy_route_option_list(o->routes, pp->routes, gc);
-+        }
-+        else
-+        {
-+            o->routes = NULL;
-+        }
-+
-+        if (pp->routes_ipv6_defined)
-+        {
-+            rol6_check_alloc(o);
-+            copy_route_ipv6_option_list(o->routes_ipv6, pp->routes_ipv6, gc);
-+        }
-+        else
-+        {
-+            o->routes_ipv6 = NULL;
-+        }
-+
-+        o->route_default_gateway = pp->route_default_gateway;
-+        o->route_ipv6_default_gateway = pp->route_ipv6_default_gateway;
-+
-+        /* Free DNS options and reset them to pre-pull state */
-+        gc_free(&o->dns_options.gc);
-+        struct gc_arena dns_gc = gc_new();
-+        o->dns_options = clone_dns_options(pp->dns_options, &dns_gc);
-+        o->dns_options.gc = dns_gc;
-+
-+        if (pp->client_nat_defined)
-+        {
-+            cnol_check_alloc(o);
-+            copy_client_nat_option_list(o->client_nat, pp->client_nat);
-+        }
-+        else
-+        {
-+            o->client_nat = NULL;
-+        }
-+
-+        o->foreign_option_index = pp->foreign_option_index;
-+
-+        o->ciphername = pp->ciphername;
-+        o->authname = pp->authname;
-+
-+        o->ping_rec_timeout = pp->ping_rec_timeout;
-+        o->ping_rec_timeout_action = pp->ping_rec_timeout_action;
-+        o->ping_send_timeout = pp->ping_send_timeout;
-+
-+        /* Miscellaneous Options */
-+#ifdef USE_COMP
-+        o->comp = pp->comp;
-+#endif
-+    }
-+
-+    o->push_continuation = 0;
-+    o->push_option_types_found = 0;
-+    o->data_channel_crypto_flags = 0;
-+}
-+
- static void
- options_postprocess_mutate_invariant(struct options *options)
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
  {
-@@ -3946,125 +4065,6 @@ options_postprocess_pull(struct options *o, struct env_set *es)
-     return success;
+     int if_fd, ip_muxid, arp_muxid, arp_fd, ppa = -1;
+     struct lifreq ifr;
+@@ -2574,9 +2655,10 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ #elif defined(TARGET_OPENBSD)
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+-    open_tun_generic(dev, dev_type, dev_node, true, tt);
++    open_tun_generic(dev, dev_type, dev_node, true, tt, ctx);
+ 
+     /* Enable multicast on the interface */
+     if (tt->fd >= 0)
+@@ -2668,9 +2750,10 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+  */
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+-    open_tun_generic(dev, dev_type, dev_node, true, tt);
++    open_tun_generic(dev, dev_type, dev_node, true, tt, ctx);
+ 
+     if (tt->fd >= 0)
+     {
+@@ -2808,9 +2891,10 @@ freebsd_modify_read_write_return(int len)
  }
  
--/*
-- * Save/Restore certain option defaults before --pull is applied.
-- */
--
--void
--pre_connect_save(struct options *o)
--{
--    ALLOC_OBJ_CLEAR_GC(o->pre_connect, struct options_pre_connect, &o->gc);
--    o->pre_connect->tuntap_options = o->tuntap_options;
--    o->pre_connect->tuntap_options_defined = true;
--    o->pre_connect->foreign_option_index = o->foreign_option_index;
--
--    if (o->routes)
--    {
--        o->pre_connect->routes = clone_route_option_list(o->routes, &o->gc);
--        o->pre_connect->routes_defined = true;
--    }
--    if (o->routes_ipv6)
--    {
--        o->pre_connect->routes_ipv6 = clone_route_ipv6_option_list(o->routes_ipv6, &o->gc);
--        o->pre_connect->routes_ipv6_defined = true;
--    }
--    if (o->client_nat)
--    {
--        o->pre_connect->client_nat = clone_client_nat_option_list(o->client_nat, &o->gc);
--        o->pre_connect->client_nat_defined = true;
--    }
--
--    o->pre_connect->route_default_gateway = o->route_default_gateway;
--    o->pre_connect->route_ipv6_default_gateway = o->route_ipv6_default_gateway;
--
--    o->pre_connect->dns_options = clone_dns_options(o->dns_options, &o->gc);
--
--    /* NCP related options that can be overwritten by a push */
--    o->pre_connect->ciphername = o->ciphername;
--    o->pre_connect->authname = o->authname;
--
--    /* Ping related options should be reset to the config values on reconnect */
--    o->pre_connect->ping_rec_timeout = o->ping_rec_timeout;
--    o->pre_connect->ping_rec_timeout_action = o->ping_rec_timeout_action;
--    o->pre_connect->ping_send_timeout = o->ping_send_timeout;
--
--    /* Miscellaneous Options */
--#ifdef USE_COMP
--    o->pre_connect->comp = o->comp;
--#endif
--}
--
--void
--pre_connect_restore(struct options *o, struct gc_arena *gc)
--{
--    const struct options_pre_connect *pp = o->pre_connect;
--    if (pp)
--    {
--        CLEAR(o->tuntap_options);
--        if (pp->tuntap_options_defined)
--        {
--            o->tuntap_options = pp->tuntap_options;
--        }
--
--        if (pp->routes_defined)
--        {
--            rol_check_alloc(o);
--            copy_route_option_list(o->routes, pp->routes, gc);
--        }
--        else
--        {
--            o->routes = NULL;
--        }
--
--        if (pp->routes_ipv6_defined)
--        {
--            rol6_check_alloc(o);
--            copy_route_ipv6_option_list(o->routes_ipv6, pp->routes_ipv6, gc);
--        }
--        else
--        {
--            o->routes_ipv6 = NULL;
--        }
--
--        o->route_default_gateway = pp->route_default_gateway;
--        o->route_ipv6_default_gateway = pp->route_ipv6_default_gateway;
--
--        /* Free DNS options and reset them to pre-pull state */
--        gc_free(&o->dns_options.gc);
--        struct gc_arena dns_gc = gc_new();
--        o->dns_options = clone_dns_options(pp->dns_options, &dns_gc);
--        o->dns_options.gc = dns_gc;
--
--        if (pp->client_nat_defined)
--        {
--            cnol_check_alloc(o);
--            copy_client_nat_option_list(o->client_nat, pp->client_nat);
--        }
--        else
--        {
--            o->client_nat = NULL;
--        }
--
--        o->foreign_option_index = pp->foreign_option_index;
--
--        o->ciphername = pp->ciphername;
--        o->authname = pp->authname;
--
--        o->ping_rec_timeout = pp->ping_rec_timeout;
--        o->ping_rec_timeout_action = pp->ping_rec_timeout_action;
--        o->ping_send_timeout = pp->ping_send_timeout;
--
--        /* Miscellaneous Options */
--#ifdef USE_COMP
--        o->comp = pp->comp;
--#endif
--    }
--
--    o->push_continuation = 0;
--    o->push_option_types_found = 0;
--    o->data_channel_crypto_flags = 0;
--}
--
- /*
-  * Build an options string to represent data channel encryption options.
-  * This string must match exactly between peers.  The keysize is checked
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 1b30cedd..7acffc3d 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -817,8 +817,6 @@ void options_postprocess(struct options *options, struct env_set *es);
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+-    open_tun_generic(dev, dev_type, dev_node, true, tt);
++    open_tun_generic(dev, dev_type, dev_node, true, tt, ctx);
  
- bool options_postprocess_pull(struct options *o, struct env_set *es);
+     if (tt->fd >= 0 && tt->type == DEV_TYPE_TUN)
+     {
+@@ -2936,9 +3020,10 @@ dragonfly_modify_read_write_return(int len)
+ }
  
--void pre_connect_save(struct options *o);
--
- void pre_connect_restore(struct options *o, struct gc_arena *gc);
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+-    open_tun_generic(dev, dev_type, dev_node, true, tt);
++    open_tun_generic(dev, dev_type, dev_node, true, tt, ctx);
  
- bool apply_push_options(struct options *options,
+     if (tt->fd >= 0)
+     {
+@@ -3164,7 +3249,8 @@ open_darwin_utun(const char *dev, const char *dev_type, const char *dev_node, st
+ #endif /* ifdef HAVE_NET_IF_UTUN_H */
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+ #ifdef HAVE_NET_IF_UTUN_H
+     /* If dev_node does not start start with utun assume regular tun/tap */
+@@ -3190,7 +3276,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+             {
+                 /* No explicit utun and utun failed, try the generic way) */
+                 msg(M_INFO, "Failed to open utun device. Falling back to /dev/tun device");
+-                open_tun_generic(dev, dev_type, NULL, true, tt);
++                open_tun_generic(dev, dev_type, NULL, true, tt, ctx);
+             }
+             else
+             {
+@@ -3213,7 +3299,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
+             dev_node = NULL;
+         }
+ 
+-        open_tun_generic(dev, dev_type, dev_node, true, tt);
++        open_tun_generic(dev, dev_type, dev_node, true, tt, ctx);
+     }
+ }
+ 
+@@ -3271,7 +3357,8 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ #elif defined(TARGET_AIX)
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+     char tunname[256];
+     char dynamic_name[20];
+@@ -6580,7 +6667,8 @@ tuntap_post_open(struct tuntap *tt, const char *device_guid)
+ }
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+     const char *device_guid = NULL;
+ 
+@@ -6881,9 +6969,10 @@ ipset2ascii_all(struct gc_arena *gc)
+ #else /* generic */
+ 
+ void
+-open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
++open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
++         openvpn_net_ctx_t *ctx)
+ {
+-    open_tun_generic(dev, dev_type, dev_node, true, tt);
++    open_tun_generic(dev, dev_type, dev_node, true, tt, ctx);
+ }
+ 
+ void
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 5fcea590..cf02bf43 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -249,7 +249,7 @@ tuntap_ring_empty(struct tuntap *tt)
+  */
+ 
+ void open_tun(const char *dev, const char *dev_type, const char *dev_node,
+-              struct tuntap *tt);
++              struct tuntap *tt, openvpn_net_ctx_t *ctx);
+ 
+ void close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx);
+ 
 -- 
 2.35.1
 
