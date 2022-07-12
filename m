@@ -1,11 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Wed, 13 Jul 2022 00:13:41 +0200
-Message-Id: <20220712221341.16175-1-a@...2181...>
+Date: Wed, 13 Jul 2022 00:16:55 +0200
+Message-Id: <20220712221655.19333-1-a@...2181...>
 In-Reply-To: <20220624083809.23487-8-a@...2181...>
 References: 
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 07/25] dco: add option check - disable
- DCO if conflict is detected
+Subject: [Openvpn-devel] [PATCH pre-07/25] tun: create tun_name_is_fixed
+ helper
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,256 +19,80 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>
 
+This helper encloses the (simple) logic used by OpenVPN to determine if
+the name passed to --dev has to be considered a fixed interface name or
+just a pattern.
+
+Having a helper is useful because when this logic is required elsewhere,
+we can just re-use this logic without duplicating the code (which may
+mean introducing bugs if a future logic change should not update all
+spots).
+
+The logic is actually fairly simple: check if the name contains a number
+(i.e. tun0). If so, consider the name a fixed device name.
+
+While at it make has_digit() accept a signed argument because strings
+are normally signed (also isdigit() accepts a signed argument).
+
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
+ src/openvpn/buffer.h | 4 ++--
+ src/openvpn/tun.c    | 7 ++++++-
+ src/openvpn/tun.h    | 1 +
+ 3 files changed, 9 insertions(+), 3 deletions(-)
 
-Changes from v1:
-* add 'already existing device check' to dco_check_option_conflict_platform()
-  so that DCO can be pre-emptively disabled if the following are true:
-  - an iface with the same name as provided by the user exists
-  - the iface is non-DCO
-
- src/openvpn/Makefile.am             |   2 +-
- src/openvpn/dco.c                   | 189 ++++++++++++++++++++++++++++
- src/openvpn/openvpn.vcxproj         |   1 +
- src/openvpn/openvpn.vcxproj.filters |   3 +
- 4 files changed, 194 insertions(+), 1 deletion(-)
- create mode 100644 src/openvpn/dco.c
-
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 91635b67..aaa1dbce 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -53,7 +53,7 @@ openvpn_SOURCES = \
- 	crypto.c crypto.h crypto_backend.h \
- 	crypto_openssl.c crypto_openssl.h \
- 	crypto_mbedtls.c crypto_mbedtls.h \
--	dco.h dco_internal.h \
-+	dco.c dco.h dco_internal.h \
- 	dco_linux.c dco_linux.h \
- 	dhcp.c dhcp.h \
- 	dns.c dns.h \
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-new file mode 100644
-index 00000000..8d1ca37e
---- /dev/null
-+++ b/src/openvpn/dco.c
-@@ -0,0 +1,189 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2021-2022 Arne Schwabe <arne@...1227...>
-+ *  Copyright (C) 2021-2022 Antonio Quartulli <a@...2181...>
-+ *  Copyright (C) 2021-2022 OpenVPN Inc <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#elif defined(_MSC_VER)
-+#include "config-msvc.h"
-+#endif
-+
-+#if defined(ENABLE_DCO)
-+
-+#include "syshead.h"
-+#include "dco.h"
-+#include "networking.h"
-+#include "options.h"
-+#include "ssl_ncp.h"
-+#include "tun.h"
-+
-+static bool
-+dco_check_option_conflict_platform(int msglevel, const struct options *o)
-+{
-+#if defined(TARGET_LINUX)
-+    /* if the device name is fixed, we need to check if an interface with this
-+     * name already exists. IF it does, it must be a DCO interface, otherwise
-+     * DCO has to be disabled in order to continue.
-+     */
-+    if (tun_name_is_fixed(o->dev))
-+    {
-+        char iftype[IFACE_TYPE_LEN_MAX];
-+        /* we pass NULL as net_ctx because using DCO on Linux implies that we
-+         * are using SITNL and the latter does not need any context. This way we
-+         * don't need to have the net_ctx percolate all the way here
-+         */
-+        int ret = net_iface_type(NULL, o->dev, iftype);
-+        if ((ret == 0) && (strcmp(iftype, "ovpn-dco") != 0))
-+        {
-+            msg(msglevel, "Interface %s exists and is non-DCO. Disabling data channel offload",
-+                o->dev);
-+            return false;
-+        }
-+        else if ((ret < 0) && (ret != -ENODEV))
-+        {
-+            msg(msglevel, "Cannot retrieve type of device %s: %s (%d)", o->dev,
-+                strerror(-ret), ret);
-+        }
-+#endif /* if defined(TARGET_LINUX) */
-+    return true;
-+}
-+
-+static bool
-+dco_check_option_conflict_ce(const struct connection_entry *ce, int msglevel)
-+{
-+    if (ce->fragment)
-+    {
-+        msg(msglevel, "Note: --fragment disables data channel offload.");
-+        return false;
-+    }
-+
-+    if (ce->http_proxy_options)
-+    {
-+        msg(msglevel, "Note: --http-proxy disables data channel offload.");
-+        return false;
-+    }
-+
-+    if (ce->socks_proxy_server)
-+    {
-+        msg(msglevel, "Note: --socks-proxy disables data channel offload.");
-+        return false;
-+    }
-+
-+    return true;
-+}
-+
+diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
+index 231f1b0d..fece6336 100644
+--- a/src/openvpn/buffer.h
++++ b/src/openvpn/buffer.h
+@@ -356,9 +356,9 @@ strncpynt(char *dest, const char *src, size_t maxlen)
+ 
+ /* return true if string contains at least one numerical digit */
+ static inline bool
+-has_digit(const unsigned char *src)
++has_digit(const char *src)
+ {
+-    unsigned char c;
++    char c;
+     while ((c = *src++))
+     {
+         if (isdigit(c))
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index f17db280..108090d0 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1718,6 +1718,11 @@ read_tun_header(struct tuntap *tt, uint8_t *buf, int len)
+ }
+ #endif /* if defined (TARGET_OPENBSD) || (defined(TARGET_DARWIN) && HAVE_NET_IF_UTUN_H) */
+ 
 +bool
-+dco_check_option_conflict(int msglevel, const struct options *o)
++tun_name_is_fixed(const char *dev)
 +{
-+    if (o->tuntap_options.disable_dco)
-+    {
-+        /* already disabled by --disable-dco, no need to print warnings */
-+        return false;
-+    }
-+
-+    if (!dco_available(msglevel))
-+    {
-+        return false;
-+    }
-+
-+    if (!dco_check_option_conflict_platform(msglevel, o))
-+    {
-+        return false;
-+    }
-+
-+    if (dev_type_enum(o->dev, o->dev_type) != DEV_TYPE_TUN)
-+    {
-+        msg(msglevel, "Note: dev-type not tun, disabling data channel offload.");
-+        return false;
-+    }
-+
-+    /* At this point the ciphers have already been normalised */
-+    if (o->enable_ncp_fallback
-+        && !tls_item_in_cipher_list(o->ciphername, DCO_SUPPORTED_CIPHERS))
-+    {
-+        msg(msglevel, "Note: --data-cipher-fallback with cipher '%s' "
-+            "disables data channel offload.", o->ciphername);
-+        return false;
-+    }
-+
-+    if (o->connection_list)
-+    {
-+        const struct connection_list *l = o->connection_list;
-+        for (int i = 0; i < l->len; ++i)
-+        {
-+            if (!dco_check_option_conflict_ce(l->array[i], msglevel))
-+            {
-+                return false;
-+            }
-+        }
-+    }
-+    else
-+    {
-+        if (!dco_check_option_conflict_ce(&o->ce, msglevel))
-+        {
-+            return false;
-+        }
-+    }
-+
-+    if (o->mode == MODE_SERVER && o->topology != TOP_SUBNET)
-+    {
-+        msg(msglevel, "Note: NOT using '--topology subnet' disables data channel offload.");
-+        return false;
-+    }
-+
-+#if defined(USE_COMP)
-+    if (o->comp.alg != COMP_ALG_UNDEF)
-+    {
-+        msg(msglevel, "Note: Using compression disables data channel offload.");
-+
-+        if (o->mode == MODE_SERVER && !(o->comp.flags & COMP_F_MIGRATE))
-+        {
-+            /* We can end up here from the multi.c call, only print the
-+             * note if it is not already enabled */
-+            msg(msglevel, "Consider using the '--compress migrate' option.");
-+        }
-+        return false;
-+    }
-+#endif
-+
-+    struct gc_arena gc = gc_new();
-+    char *tmp_ciphers = string_alloc(o->ncp_ciphers, &gc);
-+    const char *token;
-+    while ((token = strsep(&tmp_ciphers, ":")))
-+    {
-+        if (!tls_item_in_cipher_list(token, DCO_SUPPORTED_CIPHERS))
-+        {
-+            msg(msglevel, "Note: cipher '%s' in --data-ciphers is not supported "
-+                "by ovpn-dco, disabling data channel offload.", token);
-+            gc_free(&gc);
-+            return false;
-+        }
-+    }
-+    gc_free(&gc);
-+
-+    return true;
++    return has_digit(dev);
 +}
-+
-+#endif /* defined(ENABLE_DCO) */
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index bc1a0300..0b3db7c7 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -276,6 +276,7 @@
-     <ClCompile Include="crypto.c" />
-     <ClCompile Include="crypto_openssl.c" />
-     <ClCompile Include="cryptoapi.c" />
-+    <ClCompile Include="dco.c" />
-     <ClCompile Include="dco_linux.c" />
-     <ClCompile Include="dhcp.c" />
-     <ClCompile Include="dns.c" />
-diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
-index 3c21a4c6..16905079 100644
---- a/src/openvpn/openvpn.vcxproj.filters
-+++ b/src/openvpn/openvpn.vcxproj.filters
-@@ -36,6 +36,9 @@
-     <ClCompile Include="cryptoapi.c">
-       <Filter>Source Files</Filter>
-     </ClCompile>
-+    <ClCompile Include="dco.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-     <ClCompile Include="dco_linux.c">
-       <Filter>Source Files</Filter>
-     </ClCompile>
+ 
+ #if !defined(_WIN32)
+ static void
+@@ -1772,7 +1777,7 @@ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
+             else
+ #endif
+ 
+-            if (dynamic && !has_digit((unsigned char *)dev))
++            if (dynamic && !tun_name_is_fixed(dev))
+             {
+                 int i;
+                 for (i = 0; i < 256; ++i)
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index cf02bf43..8ec8f51f 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -694,5 +694,6 @@ tun_set(struct tuntap *tt,
+ }
+ 
+ const char *tun_stat(const struct tuntap *tt, unsigned int rwflags, struct gc_arena *gc);
++bool tun_name_is_fixed(const char *dev);
+ 
+ #endif /* TUN_H */
 -- 
 2.35.1
 
