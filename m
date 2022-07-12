@@ -1,9 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Wed, 13 Jul 2022 00:09:17 +0200
-Message-Id: <20220712220917.4114-1-a@...2181...>
+Date: Wed, 13 Jul 2022 00:13:41 +0200
+Message-Id: <20220712221341.16175-1-a@...2181...>
+In-Reply-To: <20220624083809.23487-8-a@...2181...>
+References: 
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] networking_sitnl: standardize returned
- error when no ifindex can be retrieved
+Subject: [Openvpn-devel] [PATCH v2 07/25] dco: add option check - disable
+ DCO if conflict is detected
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,120 +19,256 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>
 
-if_nametoindex() sets errno to the related error code in case of
-failure.
-
-For this reason the caller function should rather propagate this value
-instead of coming up with its own.
-
-Right now instead we have:
-* return -1
-* return -ENOENT
-* return errno (positive value!!)
-
-Make all code behave the same and always return -errno in case of
-failure. Most common error will still be -ENODEV, when no device with
-the provided name could be found.
-
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/networking_sitnl.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
-index b2f3ac72..29b7d8c2 100644
---- a/src/openvpn/networking_sitnl.c
-+++ b/src/openvpn/networking_sitnl.c
-@@ -660,7 +660,7 @@ net_iface_up(openvpn_net_ctx_t *ctx, const char *iface, bool up)
-     {
-         msg(M_WARN, "%s: rtnl: cannot get ifindex for %s: %s", __func__, iface,
-             strerror(errno));
--        return -ENOENT;
-+        return -errno;
-     }
- 
-     req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.i));
-@@ -698,7 +698,7 @@ net_iface_mtu_set(openvpn_net_ctx_t *ctx, const char *iface,
-     {
-         msg(M_WARN | M_ERRNO, "%s: rtnl: cannot get ifindex for %s", __func__,
-             iface);
--        return -1;
-+        return -errno;
-     }
- 
-     req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.i));
-@@ -731,7 +731,7 @@ net_addr_ll_set(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
-     {
-         msg(M_WARN | M_ERRNO, "%s: rtnl: cannot get ifindex for %s", __func__,
-             iface);
--        return -1;
-+        return -errno;
-     }
- 
-     req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.i));
-@@ -839,7 +839,7 @@ sitnl_addr_ptp_add(sa_family_t af_family, const char *iface,
-     {
-         msg(M_WARN, "%s: cannot get ifindex for %s: %s", __func__, np(iface),
-             strerror(errno));
--        return -ENOENT;
-+        return -errno;
-     }
- 
-     return sitnl_addr_set(RTM_NEWADDR, NLM_F_CREATE | NLM_F_REPLACE, ifindex,
-@@ -872,7 +872,7 @@ sitnl_addr_ptp_del(sa_family_t af_family, const char *iface,
-     if (ifindex == 0)
-     {
-         msg(M_WARN | M_ERRNO, "%s: cannot get ifindex for %s", __func__, iface);
--        return -ENOENT;
-+        return -errno;
-     }
- 
-     return sitnl_addr_set(RTM_DELADDR, 0, ifindex, af_family, local, NULL, 0);
-@@ -979,7 +979,7 @@ sitnl_addr_add(sa_family_t af_family, const char *iface,
-     {
-         msg(M_WARN | M_ERRNO, "%s: rtnl: cannot get ifindex for %s", __func__,
-             iface);
--        return -ENOENT;
-+        return -errno;
-     }
- 
-     return sitnl_addr_set(RTM_NEWADDR, NLM_F_CREATE | NLM_F_REPLACE, ifindex,
-@@ -1013,7 +1013,7 @@ sitnl_addr_del(sa_family_t af_family, const char *iface, inet_address_t *addr,
-     {
-         msg(M_WARN | M_ERRNO, "%s: rtnl: cannot get ifindex for %s", __func__,
-             iface);
--        return -ENOENT;
-+        return -errno;
-     }
- 
-     return sitnl_addr_set(RTM_DELADDR, 0, ifindex, af_family, addr, NULL,
-@@ -1163,7 +1163,7 @@ sitnl_route_add(const char *iface, sa_family_t af_family, const void *dst,
-         {
-             msg(M_WARN | M_ERRNO, "%s: rtnl: can't get ifindex for %s",
-                 __func__, iface);
--            return -ENOENT;
-+            return -errno;
-         }
-     }
- 
-@@ -1256,7 +1256,7 @@ sitnl_route_del(const char *iface, sa_family_t af_family, inet_address_t *dst,
-         {
-             msg(M_WARN | M_ERRNO, "%s: rtnl: can't get ifindex for %s",
-                 __func__, iface);
--            return -ENOENT;
-+            return -errno;
-         }
-     }
- 
-@@ -1483,7 +1483,7 @@ net_iface_del(openvpn_net_ctx_t *ctx, const char *iface)
- 
-     if (!ifindex)
-     {
--        return errno;
-+        return -errno;
-     }
- 
-     req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.i));
+Changes from v1:
+* add 'already existing device check' to dco_check_option_conflict_platform()
+  so that DCO can be pre-emptively disabled if the following are true:
+  - an iface with the same name as provided by the user exists
+  - the iface is non-DCO
+
+ src/openvpn/Makefile.am             |   2 +-
+ src/openvpn/dco.c                   | 189 ++++++++++++++++++++++++++++
+ src/openvpn/openvpn.vcxproj         |   1 +
+ src/openvpn/openvpn.vcxproj.filters |   3 +
+ 4 files changed, 194 insertions(+), 1 deletion(-)
+ create mode 100644 src/openvpn/dco.c
+
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 91635b67..aaa1dbce 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -53,7 +53,7 @@ openvpn_SOURCES = \
+ 	crypto.c crypto.h crypto_backend.h \
+ 	crypto_openssl.c crypto_openssl.h \
+ 	crypto_mbedtls.c crypto_mbedtls.h \
+-	dco.h dco_internal.h \
++	dco.c dco.h dco_internal.h \
+ 	dco_linux.c dco_linux.h \
+ 	dhcp.c dhcp.h \
+ 	dns.c dns.h \
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+new file mode 100644
+index 00000000..8d1ca37e
+--- /dev/null
++++ b/src/openvpn/dco.c
+@@ -0,0 +1,189 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2021-2022 Arne Schwabe <arne@...1227...>
++ *  Copyright (C) 2021-2022 Antonio Quartulli <a@...2181...>
++ *  Copyright (C) 2021-2022 OpenVPN Inc <sales@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#elif defined(_MSC_VER)
++#include "config-msvc.h"
++#endif
++
++#if defined(ENABLE_DCO)
++
++#include "syshead.h"
++#include "dco.h"
++#include "networking.h"
++#include "options.h"
++#include "ssl_ncp.h"
++#include "tun.h"
++
++static bool
++dco_check_option_conflict_platform(int msglevel, const struct options *o)
++{
++#if defined(TARGET_LINUX)
++    /* if the device name is fixed, we need to check if an interface with this
++     * name already exists. IF it does, it must be a DCO interface, otherwise
++     * DCO has to be disabled in order to continue.
++     */
++    if (tun_name_is_fixed(o->dev))
++    {
++        char iftype[IFACE_TYPE_LEN_MAX];
++        /* we pass NULL as net_ctx because using DCO on Linux implies that we
++         * are using SITNL and the latter does not need any context. This way we
++         * don't need to have the net_ctx percolate all the way here
++         */
++        int ret = net_iface_type(NULL, o->dev, iftype);
++        if ((ret == 0) && (strcmp(iftype, "ovpn-dco") != 0))
++        {
++            msg(msglevel, "Interface %s exists and is non-DCO. Disabling data channel offload",
++                o->dev);
++            return false;
++        }
++        else if ((ret < 0) && (ret != -ENODEV))
++        {
++            msg(msglevel, "Cannot retrieve type of device %s: %s (%d)", o->dev,
++                strerror(-ret), ret);
++        }
++#endif /* if defined(TARGET_LINUX) */
++    return true;
++}
++
++static bool
++dco_check_option_conflict_ce(const struct connection_entry *ce, int msglevel)
++{
++    if (ce->fragment)
++    {
++        msg(msglevel, "Note: --fragment disables data channel offload.");
++        return false;
++    }
++
++    if (ce->http_proxy_options)
++    {
++        msg(msglevel, "Note: --http-proxy disables data channel offload.");
++        return false;
++    }
++
++    if (ce->socks_proxy_server)
++    {
++        msg(msglevel, "Note: --socks-proxy disables data channel offload.");
++        return false;
++    }
++
++    return true;
++}
++
++bool
++dco_check_option_conflict(int msglevel, const struct options *o)
++{
++    if (o->tuntap_options.disable_dco)
++    {
++        /* already disabled by --disable-dco, no need to print warnings */
++        return false;
++    }
++
++    if (!dco_available(msglevel))
++    {
++        return false;
++    }
++
++    if (!dco_check_option_conflict_platform(msglevel, o))
++    {
++        return false;
++    }
++
++    if (dev_type_enum(o->dev, o->dev_type) != DEV_TYPE_TUN)
++    {
++        msg(msglevel, "Note: dev-type not tun, disabling data channel offload.");
++        return false;
++    }
++
++    /* At this point the ciphers have already been normalised */
++    if (o->enable_ncp_fallback
++        && !tls_item_in_cipher_list(o->ciphername, DCO_SUPPORTED_CIPHERS))
++    {
++        msg(msglevel, "Note: --data-cipher-fallback with cipher '%s' "
++            "disables data channel offload.", o->ciphername);
++        return false;
++    }
++
++    if (o->connection_list)
++    {
++        const struct connection_list *l = o->connection_list;
++        for (int i = 0; i < l->len; ++i)
++        {
++            if (!dco_check_option_conflict_ce(l->array[i], msglevel))
++            {
++                return false;
++            }
++        }
++    }
++    else
++    {
++        if (!dco_check_option_conflict_ce(&o->ce, msglevel))
++        {
++            return false;
++        }
++    }
++
++    if (o->mode == MODE_SERVER && o->topology != TOP_SUBNET)
++    {
++        msg(msglevel, "Note: NOT using '--topology subnet' disables data channel offload.");
++        return false;
++    }
++
++#if defined(USE_COMP)
++    if (o->comp.alg != COMP_ALG_UNDEF)
++    {
++        msg(msglevel, "Note: Using compression disables data channel offload.");
++
++        if (o->mode == MODE_SERVER && !(o->comp.flags & COMP_F_MIGRATE))
++        {
++            /* We can end up here from the multi.c call, only print the
++             * note if it is not already enabled */
++            msg(msglevel, "Consider using the '--compress migrate' option.");
++        }
++        return false;
++    }
++#endif
++
++    struct gc_arena gc = gc_new();
++    char *tmp_ciphers = string_alloc(o->ncp_ciphers, &gc);
++    const char *token;
++    while ((token = strsep(&tmp_ciphers, ":")))
++    {
++        if (!tls_item_in_cipher_list(token, DCO_SUPPORTED_CIPHERS))
++        {
++            msg(msglevel, "Note: cipher '%s' in --data-ciphers is not supported "
++                "by ovpn-dco, disabling data channel offload.", token);
++            gc_free(&gc);
++            return false;
++        }
++    }
++    gc_free(&gc);
++
++    return true;
++}
++
++#endif /* defined(ENABLE_DCO) */
+diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
+index bc1a0300..0b3db7c7 100644
+--- a/src/openvpn/openvpn.vcxproj
++++ b/src/openvpn/openvpn.vcxproj
+@@ -276,6 +276,7 @@
+     <ClCompile Include="crypto.c" />
+     <ClCompile Include="crypto_openssl.c" />
+     <ClCompile Include="cryptoapi.c" />
++    <ClCompile Include="dco.c" />
+     <ClCompile Include="dco_linux.c" />
+     <ClCompile Include="dhcp.c" />
+     <ClCompile Include="dns.c" />
+diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
+index 3c21a4c6..16905079 100644
+--- a/src/openvpn/openvpn.vcxproj.filters
++++ b/src/openvpn/openvpn.vcxproj.filters
+@@ -36,6 +36,9 @@
+     <ClCompile Include="cryptoapi.c">
+       <Filter>Source Files</Filter>
+     </ClCompile>
++    <ClCompile Include="dco.c">
++      <Filter>Source Files</Filter>
++    </ClCompile>
+     <ClCompile Include="dco_linux.c">
+       <Filter>Source Files</Filter>
+     </ClCompile>
 -- 
 2.35.1
 
