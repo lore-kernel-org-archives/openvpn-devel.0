@@ -1,10 +1,10 @@
-From: Kristof Provost <kprovost@...2661...>
-Date: Wed, 13 Jul 2022 10:34:04 +0200
-Message-Id: <20220713083404.13227-2-kprovost@...2661...>
-In-Reply-To: <20220713083404.13227-1-kprovost@...2661...>
-References: <20220713083404.13227-1-kprovost@...2661...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Handle exceeding 'max-clients'
+Date: Wed, 13 Jul 2022 12:27:40 +0200 (CEST)
+Message-Id: <202207131027.26DARe66071279@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220711122348.8756-1-a@...2181...>
+References: <20220711122348.8756-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: options: don't export local
+ function pre_connect_save()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,53 +15,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Kristof Provost <kp@...1376...>
+"git show --color-moved=zebra" is very clear on this :-) - so I did not
+bother to do more testing than "does it really still compile?"
 
-If 'max-clients' is set multi_create_instance() can return NULL (for any
-client that would take us over the client limit).
+Your patch has been applied to the master branch.
 
-If mi is NULL we don't add it to the hash map, but we do potentially
-dereference it to increment the session count.
-Do not attempt to do so if 'mi == NULL'.
+commit ad085464b15d63324846d0a5151141f58ccb5a34
+Author: Antonio Quartulli
+Date:   Mon Jul 11 14:23:48 2022 +0200
 
-Signed-off-by: Kristof Provost <kprovost@...2661...>
----
- src/openvpn/mudp.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+     options: don't export local function pre_connect_save()
 
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 0810fada..0cbca1a9 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -241,15 +241,16 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
-                         hash_add_fast(hash, bucket, &mi->real, hv, mi);
-                         mi->did_real_hash = true;
-                         multi_assign_peer_id(m, mi);
--                    }
--                    /* If we have a session id already, ensure that the
--                     * state is using the same */
--                    if (session_id_defined(&state.server_session_id)
--                        && session_id_defined((&state.peer_session_id)))
--                    {
--                        mi->context.c2.tls_multi->n_sessions++;
--                        struct tls_session *session = &mi->context.c2.tls_multi->session[TM_ACTIVE];
--                        session_skip_to_pre_start(session, &state, &m->top.c2.from);
-+
-+                        /* If we have a session id already, ensure that the
-+                         * state is using the same */
-+                        if (session_id_defined(&state.server_session_id)
-+                            && session_id_defined((&state.peer_session_id)))
-+                        {
-+                            mi->context.c2.tls_multi->n_sessions++;
-+                            struct tls_session *session = &mi->context.c2.tls_multi->session[TM_ACTIVE];
-+                            session_skip_to_pre_start(session, &state, &m->top.c2.from);
-+                        }
-                     }
-                 }
-                 else
--- 
-2.37.0
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Heiko Hund <heiko@...2662...>
+     Message-Id: <20220711122348.8756-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24666.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
