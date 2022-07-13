@@ -1,15 +1,12 @@
-Date: Wed, 13 Jul 2022 14:05:43 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <Ys61F3NAxa62QFIW@...1296...>
-References: <20220713083404.13227-2-kprovost@...2661...>
- <202207131200.26DC0UW9083066@...2054...>
+Message-ID: <890909ef-8e23-be40-65ae-46eda6ebe7bd@...2181...>
+Date: Wed, 13 Jul 2022 14:08:29 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="ZLlzJlZcFXajD+/n"
-Content-Disposition: inline
-In-Reply-To: <202207131200.26DC0UW9083066@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Handle exceeding
- 'max-clients'
+Content-Language: en-US
+References: <20220712220917.4114-1-a@...2181...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20220712220917.4114-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] networking_sitnl: standardize returned
+ error when no ifindex can be retrieved
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,69 +15,135 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Kristof Provost <kp@...1249...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---ZLlzJlZcFXajD+/n
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Wed, Jul 13, 2022 at 02:00:30PM +0200, Gert Doering wrote:
-> Quite obvious in hindsight ;-) - good catch.
->=20
-> Your patch has been applied to the master branch.
->=20
-> commit 6e47cadd6219a8a9da8c2c1558652bbbbf274a10
+let's drop this patch as using errno after another syscall has been made 
+is not clean.
 
-Apologies.  My tree was not clean, so this commit ID is wrong.
+Will send a patch that fixes the errno/-errno alone.
 
-I noticed before pushing, but after having sent this e-mail - so the
-right commit ID for this is
+Cheers,
 
-commit ac14d90e7e5a80c57d064b1d3a5deb1db63b0911 (HEAD -> master)
-Author: Kristof Provost <kp@...1376...>
-Date:   Wed Jul 13 10:34:04 2022 +0200
+On 13/07/2022 00:09, Antonio Quartulli wrote:
+> if_nametoindex() sets errno to the related error code in case of
+> failure.
+> 
+> For this reason the caller function should rather propagate this value
+> instead of coming up with its own.
+> 
+> Right now instead we have:
+> * return -1
+> * return -ENOENT
+> * return errno (positive value!!)
+> 
+> Make all code behave the same and always return -errno in case of
+> failure. Most common error will still be -ENODEV, when no device with
+> the provided name could be found.
+> 
+> Signed-off-by: Antonio Quartulli <a@...2181...>
+> ---
+>   src/openvpn/networking_sitnl.c | 20 ++++++++++----------
+>   1 file changed, 10 insertions(+), 10 deletions(-)
+> 
+> diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
+> index b2f3ac72..29b7d8c2 100644
+> --- a/src/openvpn/networking_sitnl.c
+> +++ b/src/openvpn/networking_sitnl.c
+> @@ -660,7 +660,7 @@ net_iface_up(openvpn_net_ctx_t *ctx, const char *iface, bool up)
+>       {
+>           msg(M_WARN, "%s: rtnl: cannot get ifindex for %s: %s", __func__, iface,
+>               strerror(errno));
+> -        return -ENOENT;
+> +        return -errno;
+>       }
+>   
+>       req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.i));
+> @@ -698,7 +698,7 @@ net_iface_mtu_set(openvpn_net_ctx_t *ctx, const char *iface,
+>       {
+>           msg(M_WARN | M_ERRNO, "%s: rtnl: cannot get ifindex for %s", __func__,
+>               iface);
+> -        return -1;
+> +        return -errno;
+>       }
+>   
+>       req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.i));
+> @@ -731,7 +731,7 @@ net_addr_ll_set(openvpn_net_ctx_t *ctx, const openvpn_net_iface_t *iface,
+>       {
+>           msg(M_WARN | M_ERRNO, "%s: rtnl: cannot get ifindex for %s", __func__,
+>               iface);
+> -        return -1;
+> +        return -errno;
+>       }
+>   
+>       req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.i));
+> @@ -839,7 +839,7 @@ sitnl_addr_ptp_add(sa_family_t af_family, const char *iface,
+>       {
+>           msg(M_WARN, "%s: cannot get ifindex for %s: %s", __func__, np(iface),
+>               strerror(errno));
+> -        return -ENOENT;
+> +        return -errno;
+>       }
+>   
+>       return sitnl_addr_set(RTM_NEWADDR, NLM_F_CREATE | NLM_F_REPLACE, ifindex,
+> @@ -872,7 +872,7 @@ sitnl_addr_ptp_del(sa_family_t af_family, const char *iface,
+>       if (ifindex == 0)
+>       {
+>           msg(M_WARN | M_ERRNO, "%s: cannot get ifindex for %s", __func__, iface);
+> -        return -ENOENT;
+> +        return -errno;
+>       }
+>   
+>       return sitnl_addr_set(RTM_DELADDR, 0, ifindex, af_family, local, NULL, 0);
+> @@ -979,7 +979,7 @@ sitnl_addr_add(sa_family_t af_family, const char *iface,
+>       {
+>           msg(M_WARN | M_ERRNO, "%s: rtnl: cannot get ifindex for %s", __func__,
+>               iface);
+> -        return -ENOENT;
+> +        return -errno;
+>       }
+>   
+>       return sitnl_addr_set(RTM_NEWADDR, NLM_F_CREATE | NLM_F_REPLACE, ifindex,
+> @@ -1013,7 +1013,7 @@ sitnl_addr_del(sa_family_t af_family, const char *iface, inet_address_t *addr,
+>       {
+>           msg(M_WARN | M_ERRNO, "%s: rtnl: cannot get ifindex for %s", __func__,
+>               iface);
+> -        return -ENOENT;
+> +        return -errno;
+>       }
+>   
+>       return sitnl_addr_set(RTM_DELADDR, 0, ifindex, af_family, addr, NULL,
+> @@ -1163,7 +1163,7 @@ sitnl_route_add(const char *iface, sa_family_t af_family, const void *dst,
+>           {
+>               msg(M_WARN | M_ERRNO, "%s: rtnl: can't get ifindex for %s",
+>                   __func__, iface);
+> -            return -ENOENT;
+> +            return -errno;
+>           }
+>       }
+>   
+> @@ -1256,7 +1256,7 @@ sitnl_route_del(const char *iface, sa_family_t af_family, inet_address_t *dst,
+>           {
+>               msg(M_WARN | M_ERRNO, "%s: rtnl: can't get ifindex for %s",
+>                   __func__, iface);
+> -            return -ENOENT;
+> +            return -errno;
+>           }
+>       }
+>   
+> @@ -1483,7 +1483,7 @@ net_iface_del(openvpn_net_ctx_t *ctx, const char *iface)
+>   
+>       if (!ifindex)
+>       {
+> -        return errno;
+> +        return -errno;
+>       }
+>   
+>       req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.i));
 
-    Handle exceeding 'max-clients'
-
-which goes on top of
-
-commit ad085464b15d63324846d0a5151141f58ccb5a34
-Author: Antonio Quartulli <a@...2181...>
-Date:   Mon Jul 11 14:23:48 2022 +0200
-
-    options: don't export local function pre_connect_save()
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---ZLlzJlZcFXajD+/n
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJizrUXAAoJEB2Cnv7KVigS9zAL/258jvRSUZQ+edZEIZIvQxsU
-XMXj/Dnk9uZDqcfPSMNsKO6kHkHEcOhPY7EVY8qS8F6DKmIH+f3wQToWwtk+gKle
-tD3mS/VgGhoUYKX6GEgwXD+JVA810J2TGZEGAouz4RohVwgKCjo5/lUDQ9Z++ieh
-mmzF0sqcFVlJH+D4pARwRAt38A2lR4JmPFgPLPBgXNZQwYfHKAtIP7tzoQOgOfcA
-DK6nqBfudfq4WcWVK62r9D0GeO5+Fb8U2Acd+HLowbGl9bD5lFjYD8yGUc1RaKb4
-DbJEFNwIaeW2TXJuB7hq4Bjl/SMqR6W1K26CunzZKu3P3JAernBloBVuMv/yaRJF
-1Zesdkk1sJ7YRE8fxacyQD0IL6VNDVKbxa1jKwM4xbR4Av/jrHbLldHWUB8qkWlf
-KXMnGFE4qaaikej/eKoZ2ic9SQa5vfef38TbFbf+eX0DUdoF4qWBoUsnarn6seRz
-8ElGY6yASVvf3U5QQurDNCzwJ0wbUsz9S4ZC0C6gAg==
-=lBc1
------END PGP SIGNATURE-----
-
---ZLlzJlZcFXajD+/n--
+-- 
+Antonio Quartulli
 
