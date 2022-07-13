@@ -1,9 +1,10 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Wed, 13 Jul 2022 14:14:16 +0200
-Message-Id: <20220713121416.1912-1-a@...2181...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] networking_sitnl: always return negative
- error code in case of failure
+Date: Wed, 13 Jul 2022 14:28:13 +0200 (CEST)
+Message-Id: <202207131228.26DCSDon083705@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220713121416.1912-1-a@...2181...>
+References: <20220713121416.1912-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: networking_sitnl: always return
+ negative error code in case of failure
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,34 +15,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The API is designed to always return a negative error code in case of
-failure, therefore we should return '-errno' when ifindex has failed.
+Acked-by: Gert Doering <gert@...1296...>
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
+"obvious in hindsight" :-)
 
-** This patch should also go to 2.5 **
+Your patch has been applied to the master branch.
 
- src/openvpn/networking_sitnl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Not applicable to 2.5, as there is no net_iface_del() yet.
 
-diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
-index 0944ad0a..46db2361 100644
---- a/src/openvpn/networking_sitnl.c
-+++ b/src/openvpn/networking_sitnl.c
-@@ -1374,7 +1374,7 @@ net_iface_del(openvpn_net_ctx_t *ctx, const char *iface)
- 
-     if (!ifindex)
-     {
--        return errno;
-+        return -errno;
-     }
- 
-     req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.i));
--- 
-2.35.1
+commit dab9343a0530ee2468304823181372393d365675 (HEAD -> master)
+Author: Antonio Quartulli
+Date:   Wed Jul 13 14:14:16 2022 +0200
+
+     networking_sitnl: always return negative error code in case of failure
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220713121416.1912-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24686.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
