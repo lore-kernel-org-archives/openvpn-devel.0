@@ -1,15 +1,15 @@
-Date: Thu, 14 Jul 2022 16:11:16 +0200
+Date: Thu, 14 Jul 2022 16:27:51 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <YtAkBED+YTrTnvCx@...1296...>
-References: <20220711135530.27418-1-a@...2181...>
- <20220712214642.13533-1-a@...2181...>
+Message-ID: <YtAn53rzl8hUkECA@...1296...>
+References: <20220624083809.23487-1-a@...2181...>
+ <20220624083809.23487-7-a@...2181...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="+UpEQLDH/m0uNce4"
+ protocol="application/pgp-signature"; boundary="1TsBPj1t1QgE4rsz"
 Content-Disposition: inline
-In-Reply-To: <20220712214642.13533-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v9 05/25] dco: let open_tun_generic
- handle the DCO case
+In-Reply-To: <20220624083809.23487-7-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 06/25] dco: initialize context and save
+ pointer in TLS object
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,75 +21,52 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---+UpEQLDH/m0uNce4
+--1TsBPj1t1QgE4rsz
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Jul 12, 2022 at 11:46:42PM +0200, Antonio Quartulli wrote:
-> open_tun_generic already contains the logic required to find a device
-> name when not specified b the user. For this reason the DCO case can
-> easily leverage on function and avoid code duplication.
->=20
+On Fri, Jun 24, 2022 at 10:37:50AM +0200, Antonio Quartulli wrote:
 > Signed-off-by: Antonio Quartulli <a@...2181...>
+> ---
+>  src/openvpn/init.c       | 49 ++++++++++++++++++++++++++++++++--------
+>  src/openvpn/ssl_common.h | 23 +++++++++++++++++++
+>  2 files changed, 63 insertions(+), 9 deletions(-)
 
-NAK... I'm not sure what is happening, but if I apply this on top
-of current master, and build without(!) DCO, it will kill linux/sitnl
-operation hard for the "--dev tun30" case.
+Without trying to understand the code flow in init.c, is there a
+deeper reason why this happens twice?
 
-Running "openvpn --client ... --dev tun30" leads to
+> @@ -1708,6 +1717,12 @@ do_open_tun(struct context *c)
+>      /* initialize (but do not open) tun/tap object */
+>      do_init_tun(c);
+>=20=20
+> +    /* inherit the dco context from the tuntap object */
+> +    if (c->c2.tls_multi)
+> +    {
+> +        c->c2.tls_multi->dco =3D &c->c1.tuntap->dco;
+> +    }
+> +
+[..]
 
-2022-07-14 15:59:43 Incoming Data Channel: Cipher 'AES-256-GCM' initialized=
- with 256 bit key
-2022-07-14 15:59:43 net_route_v4_best_gw query: dst 0.0.0.0
-2022-07-14 15:59:43 net_route_v4_best_gw result: via 194.97.140.30 dev eno3=
-3554952
-2022-07-14 15:59:43 GDG6: remote_host_ipv6=3D2607:fc50:1001:5200::4
-2022-07-14 15:59:43 net_route_v6_best_gw query: dst 2607:fc50:1001:5200::4
-2022-07-14 15:59:43 net_route_v6_best_gw result: via 2001:608:0:814::ffff d=
-ev eno33554952
-2022-07-14 15:59:43 DCO device tun30 opened
-2022-07-14 15:59:43 net_iface_mtu_set: rtnl: cannot get ifindex for tun30: =
-No such device (errno=3D19)
-2022-07-14 15:59:43 Linux can't set mtu (1500) on tun30
-2022-07-14 15:59:43 Exiting due to fatal error
+> @@ -2979,12 +2999,20 @@ do_init_crypto_tls(struct context *c, const unsig=
+ned int flags)
+[..]
+>      /*
+>       * Initialize OpenVPN's master TLS-mode object.
+>       */
+>      if (flags & CF_INIT_TLS_MULTI)
+>      {
+>          c->c2.tls_multi =3D tls_multi_init(&to);
+> +        /* inherit the dco context from the tuntap object */
+> +        if (c->c1.tuntap)
+> +        {
+> +            c->c2.tls_multi->dco =3D &c->c1.tuntap->dco;
+> +        }
+>      }
 
-
-Building with --enable-dco breaks all operations on linux (because it=20
-gets confused between DCO and non DCO operation modes)...
-
-2022-07-14 16:04:05 Assertion failed at dco_linux.c:453 (tt->type =3D=3D DE=
-V_TYPE_TUN)
-
-and sometimes
-
-2022-07-14 16:06:26 sitnl_send: rtnl: generic error (-95): Operation not su=
-pported
-2022-07-14 16:06:26 net_iface_new: add tun255 type ovpn-dco
-2022-07-14 16:06:26 sitnl_send: rtnl: generic error (-95): Operation not su=
-pported
-2022-07-14 16:06:26 Cannot allocate TUN/TAP dev dynamically
-
-(isn't "-95" an indication of "no DCO module available" and we should not
-try to iterate up to tun255 in this case, but give up with a clear
-error indication instead?)
-
-thus
-
-Test sets succeeded: none.
-Test sets failed: 1 1a 1b 1c 1d 1e 2 2a 2b 2c 2d 2e 2f 3 4 4a 4b 5 6 8 8a 9=
- 9a 9b 9x 11 11a.
-
-... but since this is not default, I do not consider this a "this patch
-breaks things" problem.  It compiles.
-
-There is no --disable-dco option yet, so hard to test "would it work in
-that case?" - so I consider this part not really interesting yet.
-
-
-But the "not built with DCO, --dev tun30" part should really not fail.
+... and here again, but only sometimes?
 
 gert
 --=20
@@ -102,22 +79,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---+UpEQLDH/m0uNce4
+--1TsBPj1t1QgE4rsz
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJi0CQEAAoJEB2Cnv7KVigS05QL/iyh85QKo1W1L4R0YjPKRtHN
-kATsH1gJpjEmh8oqejsKTlWA2517MrSuEIPl5bt0xQPFfPBOs9zOLZzxfc9NmoFv
-Tuf1sjLDCvwOdQcuQbuggTsmTu1xB3/TidmFqmvYexH5I8E9IVjQlhCFGg7Lnu8D
-G+fwPYRs1XD8sKWclfWldP1cQHpVrmnLnul2bFzgJtwaLYKezHjQRyL6ripHN9Q9
-7cNjaeeaGVGJaWOw9xYAeK+ZnFMShfOObpPKjfwrWYJzcehqJaow8sit4Vlv1rKN
-lpb8N7BVvA/Y7C6Y4fsn6OLxQRU2GlDx+0FLbG9cGsbIy+0VNAO0E9ZvIu0bdkCr
-zJb+E8wxpgVobxKjZJs3el8oPjdz+rmDXR5XClGzCE3e/HLwL+8CTyKOHeOswJqb
-/x8UqKyNMZkfwcvA3PQoMywbGYdPHeFrYQVPZUM7lyIWhkXxpIYyuYEitk2suTAP
-VdFm+0I+rY+WaxFxVQpzMpQF9hs2KdlFlh6FNUVLLg==
-=jaYZ
+iQGcBAEBAgAGBQJi0CfnAAoJEB2Cnv7KVigS7TEL/R0sV+Nsll0bPn8HhUd6jRoD
+R0kRXGm+l6anyaDDnCSI4FrTHcE8lXWMYsSTUpj/WEjXjr0PtsUXm5ER6KEOpfng
+eUTE08o7aaABzTUn2K9OPqRVkXo/e416x6IzlsmpA+L3FqwKl7g6cZyZuNPMzDKG
+vrzTxBpG/ZsdmRNoLJXrddl31HM5kgVUgnOV8a5YT82iYgk2PJ0QAPD476lPQ5sF
+1Uf4NYigqpLuoX704hIM89jHJKDvy4IBBSFtYpkxnnDGQkBdT5D79Q2cAASbOnMu
+Jntob1EAY0B+iYV9VHV5VOQGPN2sX984SVI5FA1LzyBnguOMLHnNCm042ZClzz5h
+kGMrKi4RM5Em5HKH2wo5Za05UgdBVCIbZV+06gpVgc7ZqeIKHJN6BU1nyoVpXKQd
+ee/uMe+MJRURjRewzOx8YB+LflQWu1j9wMZ0y6hc5xrBztXVPRa/zEXZKl2PU09W
+pgBKUNfXJ9H9f/AxRrUwiFihgwWfRPYz9Y1Uyq8iAw==
+=M3LK
 -----END PGP SIGNATURE-----
 
---+UpEQLDH/m0uNce4--
+--1TsBPj1t1QgE4rsz--
 
