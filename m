@@ -1,10 +1,15 @@
-Date: Thu, 14 Jul 2022 20:55:01 +0200 (CEST)
-Message-Id: <202207141855.26EIt1Qx030490@...2054...>
+Date: Thu, 14 Jul 2022 22:14:55 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220630190549.16675-3-selva.nair@...277...>
-References: <20220630190549.16675-3-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Log address of management
- client on accept
+Message-ID: <YtB5P7DEHkHdQwGK@...1296...>
+References: <20220624083809.23487-1-a@...2181...>
+ <20220624083809.23487-13-a@...2181...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="b8IYzwZrhczQSKJ7"
+Content-Disposition: inline
+In-Reply-To: <20220624083809.23487-13-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 12/25] dco: check that pulled options
+ are compatible
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,52 +18,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+--b8IYzwZrhczQSKJ7
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Silly code, this...
+Hi,
 
-Before:
+On Fri, Jun 24, 2022 at 10:37:56AM +0200, Antonio Quartulli wrote:
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index b0a4b252..091cbd24 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -2219,6 +2219,19 @@ do_deferred_p2p_ncp(struct context *c)
+>      return true;
+>  }
+>=20=20
+> +
+> +static bool
+> +check_dco_pull_options(struct options *o)
+> +{
 
-2022-07-14 20:50:12 us=826150 MANAGEMENT: Client connected from [AF_INET]127.0.0.1:0
+Nitpicking a bit - the "other" DCO option check functions are in dco.c
+(not yet, but in the patches leading up to this), so why is this one in
+init.c?
 
-After:
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-2022-07-14 20:51:18 us=100211 MANAGEMENT: TCP Socket listening on [AF_INET]127.0.0.1:49334
-2022-07-14 20:51:22 us=443453 MANAGEMENT: Client connected from [AF_INET]127.0.0.1:50184
+Gert Doering - Munich, Germany                             gert@...1296...
 
-.. and also dual-stacked...
+--b8IYzwZrhczQSKJ7
+Content-Type: application/pgp-signature; name="signature.asc"
 
-2022-07-14 20:52:03 us=916048 MANAGEMENT: Client connected from [AF_INET6]::1:29800
-2022-07-14 20:52:09 us=636212 MANAGEMENT: Client connected from [AF_INET6]::ffff:127.0.0.1:30335
+-----BEGIN PGP SIGNATURE-----
 
-(Yeah, that one could be printed more pretty... we might have a _ex() thingie
-for it... but it's already much more useful than before)
+iQGcBAEBAgAGBQJi0Hk/AAoJEB2Cnv7KVigSafQL/0rEf3aTna+rPYJVljUyJeSH
+6iLLEv8pgJRPx2+C513euJl7G2l9uOauNCdBTP061NdNM0lrcpOOwoWnzp/pvRFH
+85jMyDaZGXKncQYrH6zT4/TzfOa8qb2SAQHh+eSKBgwBg+L0YUfkbSZ43EtDDh9G
+V90oA5cZjq5DLC1xzmxYGh3BzEwO4e9oyeSOQuTzNlHY/Jm3aMgIV8bk8ZNhEKbH
++ayL4SkAMAAh3qm3qANHyBP3n2CY/SpZt/enSLB6CLLC+qniyesN+8mr4eJb+nys
+jejViXnROGvkFJBsmJ4wluEnKUspCw4bbnSm7QCUQo0aLh0X60AQlXs3jwATBMhM
+EAygKWMXIiose1HBgJYFVtHP4USDnwHDgNLXGud1qYbl6cF45Vgj3VuMEG/Xc17z
+J05vZZm6tbEtgncP/VmB1Cae5VA6TtyKfFHoqcO/521Jp1JmZMHXM3LPIIcTIguS
+kVeNDdOKc3YLDdcZZLTqahp8/HkQuTU9U2Ia0UaFMA==
+=dc4+
+-----END PGP SIGNATURE-----
 
-New code looks good, and does what it promises.
-
-Your patch has been applied to the master branch.
-
-commit dd98c38b31c02cbca7f88ed0a709e68f24361195
-Author: Selva Nair
-Date:   Thu Jun 30 15:05:49 2022 -0400
-
-     Log address of management client on accept
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220630190549.16675-3-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24619.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+--b8IYzwZrhczQSKJ7--
 
