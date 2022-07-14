@@ -1,10 +1,10 @@
-Date: Thu, 14 Jul 2022 20:36:53 +0200 (CEST)
-Message-Id: <202207141836.26EIarhM028705@...2054...>
+Date: Thu, 14 Jul 2022 20:49:30 +0200 (CEST)
+Message-Id: <202207141849.26EInURC029964@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220701000726.8198-1-selva.nair@...277...>
-References: <20220701000726.8198-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove
- management_write_peer_info_file and related code
+In-Reply-To: <20220630190549.16675-1-selva.nair@...277...>
+References: <20220630190549.16675-1-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Log the actual management
+ interface port in use
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,25 +18,35 @@ Content-Transfer-Encoding: 8bit
 To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Nobody has spoken up so far "I REALLY NEED THIS!!", and if you say
-it hasn't worked anyway, out it goes... less code, less arguments,
-less variables...
+Acked-by: Gert Doering <gert@...1296...>
 
-I have only skimmed the code change and did a quick test build on
-FreeBSD.
+This looks like a useful addition, and it actually works :-)
+
+$ openvpn --verb 4 --dev tun --management :: 0 --management-hold
+..
+2022-07-14 20:43:01 us=644866 setsockopt(IPV6_V6ONLY=0)
+2022-07-14 20:43:01 us=644907 MANAGEMENT: TCP Socket listening on [AF_INET6][undef]:59291
+2022-07-14 20:43:01 us=644918 Need hold release from management interface, waiting...
+
+of course it also works for legacy IP...
+
+2022-07-14 20:43:39 us=245584 MANAGEMENT: TCP Socket listening on [AF_INET]127.0.0.1:63545
+
+Tested on FreeBSD and on OpenSolaris (because that's always the oddball
+"it is a real unix, but more pain than the rest" OS).
 
 Your patch has been applied to the master branch.
 
-commit 57d0046e8ab158a055c40a961d71cfe15656b27c
+commit 298f3bedbc42578d39055990669f7dda0f787d68
 Author: Selva Nair
-Date:   Thu Jun 30 20:07:26 2022 -0400
+Date:   Thu Jun 30 15:05:47 2022 -0400
 
-     Remove management_write_peer_info_file and related code
+     Log the actual management interface port in use
 
      Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20220701000726.8198-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24624.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220630190549.16675-1-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24617.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
