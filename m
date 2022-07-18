@@ -1,11 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Tue, 19 Jul 2022 00:17:57 +0200
-Message-Id: <20220718221757.545-1-a@...2181...>
-In-Reply-To: <20220712221341.16175-1-a@...2181...>
+Date: Tue, 19 Jul 2022 00:19:23 +0200
+Message-Id: <20220718221923.2033-1-a@...2181...>
+In-Reply-To: <20220624083809.23487-9-a@...2181...>
 References: 
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 07/25] dco: add option check - disable
- DCO if conflict is detected
+Subject: [Openvpn-devel] [PATCH v2 08/25] dco: allow user to disable it at
+ runtime
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,277 +22,124 @@ Cc: Antonio Quartulli <a@...2181...>
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
 
-** this patch should be applied before 05/27 **
-
-Changes from v2:
-* add actual invocation to dco_check_option_conflict() in options.c
-* add missing '}' in dco_check_option_conflict_ce()
-
 Changes from v1:
-* add 'already existing device check' to dco_check_option_conflict_platform()
-  so that DCO can be pre-emptively disabled if the following are true:
-  - an iface with the same name as provided by the user exists
-  - the iface is non-DCO
+* removed "--dco-disable" option: we just need "--disable-dco"
+* added text to manpage about --client-to-client being no-op
+* added text to manpage about --disable-dco
+* rebased on top of master+"dco: add option check - disable DCO if
+  conflict is detected"
 
- src/openvpn/Makefile.am             |   2 +-
- src/openvpn/dco.c                   | 190 ++++++++++++++++++++++++++++
- src/openvpn/openvpn.vcxproj         |   1 +
- src/openvpn/openvpn.vcxproj.filters |   3 +
- src/openvpn/options.c               |   5 +
- 5 files changed, 200 insertions(+), 1 deletion(-)
- create mode 100644 src/openvpn/dco.c
 
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 91635b67..aaa1dbce 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -53,7 +53,7 @@ openvpn_SOURCES = \
- 	crypto.c crypto.h crypto_backend.h \
- 	crypto_openssl.c crypto_openssl.h \
- 	crypto_mbedtls.c crypto_mbedtls.h \
--	dco.h dco_internal.h \
-+	dco.c dco.h dco_internal.h \
- 	dco_linux.c dco_linux.h \
- 	dhcp.c dhcp.h \
- 	dns.c dns.h \
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-new file mode 100644
-index 00000000..b3fd135f
---- /dev/null
-+++ b/src/openvpn/dco.c
-@@ -0,0 +1,190 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2021-2022 Arne Schwabe <arne@...1227...>
-+ *  Copyright (C) 2021-2022 Antonio Quartulli <a@...2181...>
-+ *  Copyright (C) 2021-2022 OpenVPN Inc <sales@...515...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
+ doc/man-sections/generic-options.rst |  9 +++++++++
+ doc/man-sections/server-options.rst  |  4 ++++
+ src/openvpn/options.c                | 24 ++++++++++++++++++++++++
+ 3 files changed, 37 insertions(+)
+
+diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
+index 9060a235..394c2186 100644
+--- a/doc/man-sections/generic-options.rst
++++ b/doc/man-sections/generic-options.rst
+@@ -171,6 +171,15 @@ which mode OpenVPN is configured as.
+   on console) and ``--auth-nocache`` will fail as soon as key
+   renegotiation (and reauthentication) occurs.
+ 
++--disable-dco
++  Disable "data channel offload" (DCO).
 +
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#elif defined(_MSC_VER)
-+#include "config-msvc.h"
-+#endif
++  On Linux don't use the ovpn-dco device driver, but rather rely on the
++  legacy tun module.
 +
-+#if defined(ENABLE_DCO)
++  You may want to use this option if your server needs to allow clients
++  older than version 2.4 to connect.
 +
-+#include "syshead.h"
-+#include "dco.h"
-+#include "networking.h"
-+#include "options.h"
-+#include "ssl_ncp.h"
-+#include "tun.h"
+ --disable-occ
+   Disable "options consistency check" (OCC).
+ 
+diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
+index 08ee7bd3..04f4b4fb 100644
+--- a/doc/man-sections/server-options.rst
++++ b/doc/man-sections/server-options.rst
+@@ -146,6 +146,10 @@ fast hardware. SSL/TLS authentication must be used in this mode.
+   server. Don't use this option if you want to firewall tunnel traffic
+   using custom, per-client rules.
+ 
++  Please note that when using data channel offload this option has no
++  effect. Packets are always sent to the tunnel interface and then
++  routed based on the system routing table.
 +
-+static bool
-+dco_check_option_conflict_platform(int msglevel, const struct options *o)
-+{
-+#if defined(TARGET_LINUX)
-+    /* if the device name is fixed, we need to check if an interface with this
-+     * name already exists. IF it does, it must be a DCO interface, otherwise
-+     * DCO has to be disabled in order to continue.
-+     */
-+    if (tun_name_is_fixed(o->dev))
-+    {
-+        char iftype[IFACE_TYPE_LEN_MAX];
-+        /* we pass NULL as net_ctx because using DCO on Linux implies that we
-+         * are using SITNL and the latter does not need any context. This way we
-+         * don't need to have the net_ctx percolate all the way here
-+         */
-+        int ret = net_iface_type(NULL, o->dev, iftype);
-+        if ((ret == 0) && (strcmp(iftype, "ovpn-dco") != 0))
-+        {
-+            msg(msglevel, "Interface %s exists and is non-DCO. Disabling data channel offload",
-+                o->dev);
-+            return false;
-+        }
-+        else if ((ret < 0) && (ret != -ENODEV))
-+        {
-+            msg(msglevel, "Cannot retrieve type of device %s: %s (%d)", o->dev,
-+                strerror(-ret), ret);
-+        }
-+    }
-+#endif /* if defined(TARGET_LINUX) */
-+    return true;
-+}
-+
-+static bool
-+dco_check_option_conflict_ce(const struct connection_entry *ce, int msglevel)
-+{
-+    if (ce->fragment)
-+    {
-+        msg(msglevel, "Note: --fragment disables data channel offload.");
-+        return false;
-+    }
-+
-+    if (ce->http_proxy_options)
-+    {
-+        msg(msglevel, "Note: --http-proxy disables data channel offload.");
-+        return false;
-+    }
-+
-+    if (ce->socks_proxy_server)
-+    {
-+        msg(msglevel, "Note: --socks-proxy disables data channel offload.");
-+        return false;
-+    }
-+
-+    return true;
-+}
-+
-+bool
-+dco_check_option_conflict(int msglevel, const struct options *o)
-+{
-+    if (o->tuntap_options.disable_dco)
-+    {
-+        /* already disabled by --disable-dco, no need to print warnings */
-+        return false;
-+    }
-+
-+    if (!dco_available(msglevel))
-+    {
-+        return false;
-+    }
-+
-+    if (!dco_check_option_conflict_platform(msglevel, o))
-+    {
-+        return false;
-+    }
-+
-+    if (dev_type_enum(o->dev, o->dev_type) != DEV_TYPE_TUN)
-+    {
-+        msg(msglevel, "Note: dev-type not tun, disabling data channel offload.");
-+        return false;
-+    }
-+
-+    /* At this point the ciphers have already been normalised */
-+    if (o->enable_ncp_fallback
-+        && !tls_item_in_cipher_list(o->ciphername, DCO_SUPPORTED_CIPHERS))
-+    {
-+        msg(msglevel, "Note: --data-cipher-fallback with cipher '%s' "
-+            "disables data channel offload.", o->ciphername);
-+        return false;
-+    }
-+
-+    if (o->connection_list)
-+    {
-+        const struct connection_list *l = o->connection_list;
-+        for (int i = 0; i < l->len; ++i)
-+        {
-+            if (!dco_check_option_conflict_ce(l->array[i], msglevel))
-+            {
-+                return false;
-+            }
-+        }
-+    }
-+    else
-+    {
-+        if (!dco_check_option_conflict_ce(&o->ce, msglevel))
-+        {
-+            return false;
-+        }
-+    }
-+
-+    if (o->mode == MODE_SERVER && o->topology != TOP_SUBNET)
-+    {
-+        msg(msglevel, "Note: NOT using '--topology subnet' disables data channel offload.");
-+        return false;
-+    }
-+
-+#if defined(USE_COMP)
-+    if (o->comp.alg != COMP_ALG_UNDEF)
-+    {
-+        msg(msglevel, "Note: Using compression disables data channel offload.");
-+
-+        if (o->mode == MODE_SERVER && !(o->comp.flags & COMP_F_MIGRATE))
-+        {
-+            /* We can end up here from the multi.c call, only print the
-+             * note if it is not already enabled */
-+            msg(msglevel, "Consider using the '--compress migrate' option.");
-+        }
-+        return false;
-+    }
-+#endif
-+
-+    struct gc_arena gc = gc_new();
-+    char *tmp_ciphers = string_alloc(o->ncp_ciphers, &gc);
-+    const char *token;
-+    while ((token = strsep(&tmp_ciphers, ":")))
-+    {
-+        if (!tls_item_in_cipher_list(token, DCO_SUPPORTED_CIPHERS))
-+        {
-+            msg(msglevel, "Note: cipher '%s' in --data-ciphers is not supported "
-+                "by ovpn-dco, disabling data channel offload.", token);
-+            gc_free(&gc);
-+            return false;
-+        }
-+    }
-+    gc_free(&gc);
-+
-+    return true;
-+}
-+
-+#endif /* defined(ENABLE_DCO) */
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index bc1a0300..0b3db7c7 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -276,6 +276,7 @@
-     <ClCompile Include="crypto.c" />
-     <ClCompile Include="crypto_openssl.c" />
-     <ClCompile Include="cryptoapi.c" />
-+    <ClCompile Include="dco.c" />
-     <ClCompile Include="dco_linux.c" />
-     <ClCompile Include="dhcp.c" />
-     <ClCompile Include="dns.c" />
-diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
-index 3c21a4c6..16905079 100644
---- a/src/openvpn/openvpn.vcxproj.filters
-+++ b/src/openvpn/openvpn.vcxproj.filters
-@@ -36,6 +36,9 @@
-     <ClCompile Include="cryptoapi.c">
-       <Filter>Source Files</Filter>
-     </ClCompile>
-+    <ClCompile Include="dco.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-     <ClCompile Include="dco_linux.c">
-       <Filter>Source Files</Filter>
-     </ClCompile>
+ --disable
+   Disable a particular client (based on the common name) from connecting.
+   Don't use this option to disable a client due to key or password
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 95d4008a..7b919a1e 100644
+index 7b919a1e..d864c6e2 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -3645,6 +3645,11 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
-         o->verify_hash_no_ca = true;
+@@ -61,6 +61,7 @@
+ #include "ssl_verify.h"
+ #include "platform.h"
+ #include "xkey_common.h"
++#include "dco.h"
+ #include <ctype.h>
+ 
+ #include "memdbg.h"
+@@ -106,6 +107,9 @@ const char title_string[] =
+ #endif
+ #endif
+     " [AEAD]"
++#ifdef ENABLE_DCO
++    " [DCO]"
++#endif
+     " built on " __DATE__
+ ;
+ 
+@@ -177,6 +181,9 @@ static const char usage_message[] =
+     "                  does not begin with \"tun\" or \"tap\".\n"
+     "--dev-node node : Explicitly set the device node rather than using\n"
+     "                  /dev/net/tun, /dev/tun, /dev/tap, etc.\n"
++#if defined(ENABLE_DCO) && defined(TARGET_LINUX)
++    "--disable-dco   : Do not attempt using Data Channel Offload.\n"
++#endif
+     "--lladdr hw     : Set the link layer address of the tap device.\n"
+     "--topology t    : Set --dev tun topology: 'net30', 'p2p', or 'subnet'.\n"
+ #ifdef ENABLE_IPROUTE
+@@ -1785,6 +1792,9 @@ show_settings(const struct options *o)
+     SHOW_STR(dev);
+     SHOW_STR(dev_type);
+     SHOW_STR(dev_node);
++#if defined(ENABLE_DCO) && defined(TARGET_LINUX)
++    SHOW_BOOL(tuntap_options.disable_dco);
++#endif
+     SHOW_STR(lladdr);
+     SHOW_INT(topology);
+     SHOW_STR(ifconfig_local);
+@@ -3401,6 +3411,14 @@ options_postprocess_verify(const struct options *o)
      }
  
-+    /* check if any option should force disabling DCO */
-+#if defined(TARGET_LINUX)
-+    o->tuntap_options.disable_dco = !dco_check_option_conflict(D_DCO, o);
-+#endif
+     dns_options_verify(M_FATAL, &o->dns_options);
 +
-     /*
-      * Save certain parms before modifying options during connect, especially
-      * when using --pull
++    if (dco_enabled(o) && o->enable_c2c)
++    {
++        msg(M_WARN, "Note: --client-to-client has no effect when using data "
++            "channel offload: packets are always sent to the VPN "
++            "interface and then routed based on the system routing "
++            "table");
++    }
+ }
+ 
+ /**
+@@ -5839,6 +5857,12 @@ add_option(struct options *options,
+         options->windows_driver = parse_windows_driver(p[1], M_FATAL);
+     }
+ #endif
++    else if (streq(p[0], "disable-dco"))
++    {
++#if defined(TARGET_LINUX)
++        options->tuntap_options.disable_dco = true;
++#endif
++    }
+     else if (streq(p[0], "dev-node") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
 -- 
 2.35.1
 
