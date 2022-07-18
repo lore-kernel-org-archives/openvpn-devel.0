@@ -1,13 +1,11 @@
-Message-ID: <370b8058-0015-56e1-8760-916e48982d3d@...2181...>
-Date: Tue, 19 Jul 2022 00:54:21 +0200
-MIME-Version: 1.0
-Content-Language: en-US
-References: <20220624083809.23487-1-a@...2181...>
- <20220624083809.23487-13-a@...2181...> <YtB5P7DEHkHdQwGK@...1296...>
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <YtB5P7DEHkHdQwGK@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH 12/25] dco: check that pulled options
- are compatible
+Date: Tue, 19 Jul 2022 01:12:40 +0200
+Message-Id: <20220718231240.15810-1-a@...2181...>
+In-Reply-To: <20220624083809.23487-13-a@...2181...>
+References: 
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2 12/25] dco: check that pulled options are
+ compatible
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,41 +14,107 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Hi,
+A server may push options that are not compatible with DCO.
+In this case we should log a message and bail out.
 
-On 14/07/2022 22:14, Gert Doering wrote:
-> Hi,
-> 
-> On Fri, Jun 24, 2022 at 10:37:56AM +0200, Antonio Quartulli wrote:
->> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
->> index b0a4b252..091cbd24 100644
->> --- a/src/openvpn/init.c
->> +++ b/src/openvpn/init.c
->> @@ -2219,6 +2219,19 @@ do_deferred_p2p_ncp(struct context *c)
->>       return true;
->>   }
->>   
->> +
->> +static bool
->> +check_dco_pull_options(struct options *o)
->> +{
-> 
-> Nitpicking a bit - the "other" DCO option check functions are in dco.c
-> (not yet, but in the patches leading up to this), so why is this one in
-> init.c?
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
 
-good point. will move it to dco.c and send v2
+Changes from v1:
+* move check_dco_pull_options() to dco.c (renamed to
+  dco_check_pull_options())
+* make options argument const
+* add msglevel as first argument
 
-Cheers,
+ src/openvpn/dco.c  | 12 ++++++++++++
+ src/openvpn/dco.h  | 17 +++++++++++++++++
+ src/openvpn/init.c | 11 +++++++++++
+ 3 files changed, 40 insertions(+)
 
-> 
-> gert
-
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index b39759e1..fa4a8487 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -339,4 +339,16 @@ dco_check_option_conflict(int msglevel, const struct options *o)
+     return true;
+ }
+ 
++bool
++dco_check_pull_options(int msglevel, const struct options *o)
++{
++    if (!o->use_peer_id)
++    {
++        msg(msglevel, "OPTIONS IMPORT: Server did not request DATA_V2 packet "
++            "format required for data channel offload");
++        return false;
++    }
++    return true;
++}
++
+ #endif /* defined(ENABLE_DCO) */
+diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
+index cb7f7e4f..a4bf6e37 100644
+--- a/src/openvpn/dco.h
++++ b/src/openvpn/dco.h
+@@ -65,6 +65,17 @@ bool dco_available(int msglevel);
+  */
+ bool dco_check_option_conflict(int msglevel, const struct options *o);
+ 
++/**
++ * Check whether any of the options pushed by the server is not supported by
++ * our current dco implementation. If so print a warning at warning level
++ * for the first conflicting option found and return false.
++ *
++ * @param msglevel  the msg level to use to print the warnings
++ * @param o         the options struct that hold the options
++ * @return          true if no conflict was detected, false otherwise
++ */
++bool dco_check_pull_options(int msglevel, const struct options *o);
++
+ /**
+  * Initialize the DCO context
+  *
+@@ -154,6 +165,12 @@ dco_check_option_conflict(int msglevel, const struct options *o)
+     return false;
+ }
+ 
++static inline bool
++dco_check_pull_options(int msglevel, const struct options *o)
++{
++    return false;
++}
++
+ static inline bool
+ ovpn_dco_init(int mode, dco_context_t *dco)
+ {
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 8e1221dd..ff2787d7 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2366,6 +2366,17 @@ finish_options(struct context *c)
+         return false;
+     }
+ 
++    /* Check if the pushed options are compatible with DCO if we have
++     * DCO enabled */
++    if (dco_enabled(&c->options) && !dco_check_pull_options(D_TLS_ERRORS,
++                                                            &c->options))
++    {
++        msg(D_TLS_ERRORS, "OPTIONS ERROR: pushed options are incompatible with "
++            "data channel offload. Use --disable-dco to connect"
++            "to this server");
++        return false;
++    }
++
+     return true;
+ }
+ 
 -- 
-Antonio Quartulli
+2.35.1
+
 
