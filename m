@@ -1,11 +1,13 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Tue, 19 Jul 2022 00:19:23 +0200
-Message-Id: <20220718221923.2033-1-a@...2181...>
-In-Reply-To: <20220624083809.23487-9-a@...2181...>
-References: 
+Message-ID: <c5b31e34-1b72-438a-8483-b9fce2c00eba@...2181...>
+Date: Tue, 19 Jul 2022 00:50:51 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 08/25] dco: allow user to disable it at
- runtime
+Content-Language: en-US
+References: <20220624083809.23487-1-a@...2181...>
+ <20220624083809.23487-7-a@...2181...> <YtAn53rzl8hUkECA@...1296...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <YtAn53rzl8hUkECA@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH 06/25] dco: initialize context and save
+ pointer in TLS object
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,133 +16,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
+Hi,
 
-Changes from v1:
-* removed "--dco-disable" option: we just need "--disable-dco"
-* added text to manpage about --client-to-client being no-op
-* added text to manpage about --disable-dco
-* rebased on top of master+"dco: add option check - disable DCO if
-  conflict is detected"
+On 14/07/2022 16:27, Gert Doering wrote:
+> Hi,
+> 
+> On Fri, Jun 24, 2022 at 10:37:50AM +0200, Antonio Quartulli wrote:
+>> Signed-off-by: Antonio Quartulli <a@...2181...>
+>> ---
+>>   src/openvpn/init.c       | 49 ++++++++++++++++++++++++++++++++--------
+>>   src/openvpn/ssl_common.h | 23 +++++++++++++++++++
+>>   2 files changed, 63 insertions(+), 9 deletions(-)
+> 
+> Without trying to understand the code flow in init.c, is there a
+> deeper reason why this happens twice?
+> 
+>> @@ -1708,6 +1717,12 @@ do_open_tun(struct context *c)
+>>       /* initialize (but do not open) tun/tap object */
+>>       do_init_tun(c);
+>>   
+>> +    /* inherit the dco context from the tuntap object */
+>> +    if (c->c2.tls_multi)
+>> +    {
+>> +        c->c2.tls_multi->dco = &c->c1.tuntap->dco;
+>> +    }
+>> +
 
+client code path. The server has no tls-multi object when passing here.
 
- doc/man-sections/generic-options.rst |  9 +++++++++
- doc/man-sections/server-options.rst  |  4 ++++
- src/openvpn/options.c                | 24 ++++++++++++++++++++++++
- 3 files changed, 37 insertions(+)
+> [..]
+> 
+>> @@ -2979,12 +2999,20 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+> [..]
+>>       /*
+>>        * Initialize OpenVPN's master TLS-mode object.
+>>        */
+>>       if (flags & CF_INIT_TLS_MULTI)
+>>       {
+>>           c->c2.tls_multi = tls_multi_init(&to);
+>> +        /* inherit the dco context from the tuntap object */
+>> +        if (c->c1.tuntap)
+>> +        {
+>> +            c->c2.tls_multi->dco = &c->c1.tuntap->dco;
+>> +        }
+>>       }
+> 
+> ... and here again, but only sometimes?
 
-diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
-index 9060a235..394c2186 100644
---- a/doc/man-sections/generic-options.rst
-+++ b/doc/man-sections/generic-options.rst
-@@ -171,6 +171,15 @@ which mode OpenVPN is configured as.
-   on console) and ``--auth-nocache`` will fail as soon as key
-   renegotiation (and reauthentication) occurs.
- 
-+--disable-dco
-+  Disable "data channel offload" (DCO).
-+
-+  On Linux don't use the ovpn-dco device driver, but rather rely on the
-+  legacy tun module.
-+
-+  You may want to use this option if your server needs to allow clients
-+  older than version 2.4 to connect.
-+
- --disable-occ
-   Disable "options consistency check" (OCC).
- 
-diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
-index 08ee7bd3..04f4b4fb 100644
---- a/doc/man-sections/server-options.rst
-+++ b/doc/man-sections/server-options.rst
-@@ -146,6 +146,10 @@ fast hardware. SSL/TLS authentication must be used in this mode.
-   server. Don't use this option if you want to firewall tunnel traffic
-   using custom, per-client rules.
- 
-+  Please note that when using data channel offload this option has no
-+  effect. Packets are always sent to the tunnel interface and then
-+  routed based on the system routing table.
-+
- --disable
-   Disable a particular client (based on the common name) from connecting.
-   Don't use this option to disable a client due to key or password
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 7b919a1e..d864c6e2 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -61,6 +61,7 @@
- #include "ssl_verify.h"
- #include "platform.h"
- #include "xkey_common.h"
-+#include "dco.h"
- #include <ctype.h>
- 
- #include "memdbg.h"
-@@ -106,6 +107,9 @@ const char title_string[] =
- #endif
- #endif
-     " [AEAD]"
-+#ifdef ENABLE_DCO
-+    " [DCO]"
-+#endif
-     " built on " __DATE__
- ;
- 
-@@ -177,6 +181,9 @@ static const char usage_message[] =
-     "                  does not begin with \"tun\" or \"tap\".\n"
-     "--dev-node node : Explicitly set the device node rather than using\n"
-     "                  /dev/net/tun, /dev/tun, /dev/tap, etc.\n"
-+#if defined(ENABLE_DCO) && defined(TARGET_LINUX)
-+    "--disable-dco   : Do not attempt using Data Channel Offload.\n"
-+#endif
-     "--lladdr hw     : Set the link layer address of the tap device.\n"
-     "--topology t    : Set --dev tun topology: 'net30', 'p2p', or 'subnet'.\n"
- #ifdef ENABLE_IPROUTE
-@@ -1785,6 +1792,9 @@ show_settings(const struct options *o)
-     SHOW_STR(dev);
-     SHOW_STR(dev_type);
-     SHOW_STR(dev_node);
-+#if defined(ENABLE_DCO) && defined(TARGET_LINUX)
-+    SHOW_BOOL(tuntap_options.disable_dco);
-+#endif
-     SHOW_STR(lladdr);
-     SHOW_INT(topology);
-     SHOW_STR(ifconfig_local);
-@@ -3401,6 +3411,14 @@ options_postprocess_verify(const struct options *o)
-     }
- 
-     dns_options_verify(M_FATAL, &o->dns_options);
-+
-+    if (dco_enabled(o) && o->enable_c2c)
-+    {
-+        msg(M_WARN, "Note: --client-to-client has no effect when using data "
-+            "channel offload: packets are always sent to the VPN "
-+            "interface and then routed based on the system routing "
-+            "table");
-+    }
- }
- 
- /**
-@@ -5839,6 +5857,12 @@ add_option(struct options *options,
-         options->windows_driver = parse_windows_driver(p[1], M_FATAL);
-     }
- #endif
-+    else if (streq(p[0], "disable-dco"))
-+    {
-+#if defined(TARGET_LINUX)
-+        options->tuntap_options.disable_dco = true;
-+#endif
-+    }
-     else if (streq(p[0], "dev-node") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
+server code path. The client has no tuntap object when passing here 
+(it's done quite early, so we need the previous snippet).
+The server executes this code for each new client.
+
+I hope this clarifies.
+
+Cheers,
+
 -- 
-2.35.1
-
+Antonio Quartulli
 
