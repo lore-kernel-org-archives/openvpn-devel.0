@@ -1,13 +1,13 @@
-Message-ID: <c5b31e34-1b72-438a-8483-b9fce2c00eba@...2181...>
-Date: Tue, 19 Jul 2022 00:50:51 +0200
+Message-ID: <370b8058-0015-56e1-8760-916e48982d3d@...2181...>
+Date: Tue, 19 Jul 2022 00:54:21 +0200
 MIME-Version: 1.0
 Content-Language: en-US
 References: <20220624083809.23487-1-a@...2181...>
- <20220624083809.23487-7-a@...2181...> <YtAn53rzl8hUkECA@...1296...>
+ <20220624083809.23487-13-a@...2181...> <YtB5P7DEHkHdQwGK@...1296...>
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <YtAn53rzl8hUkECA@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH 06/25] dco: initialize context and save
- pointer in TLS object
+In-Reply-To: <YtB5P7DEHkHdQwGK@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH 12/25] dco: check that pulled options
+ are compatible
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,58 +23,33 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 14/07/2022 16:27, Gert Doering wrote:
+On 14/07/2022 22:14, Gert Doering wrote:
 > Hi,
 > 
-> On Fri, Jun 24, 2022 at 10:37:50AM +0200, Antonio Quartulli wrote:
->> Signed-off-by: Antonio Quartulli <a@...2181...>
->> ---
->>   src/openvpn/init.c       | 49 ++++++++++++++++++++++++++++++++--------
->>   src/openvpn/ssl_common.h | 23 +++++++++++++++++++
->>   2 files changed, 63 insertions(+), 9 deletions(-)
-> 
-> Without trying to understand the code flow in init.c, is there a
-> deeper reason why this happens twice?
-> 
->> @@ -1708,6 +1717,12 @@ do_open_tun(struct context *c)
->>       /* initialize (but do not open) tun/tap object */
->>       do_init_tun(c);
+> On Fri, Jun 24, 2022 at 10:37:56AM +0200, Antonio Quartulli wrote:
+>> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+>> index b0a4b252..091cbd24 100644
+>> --- a/src/openvpn/init.c
+>> +++ b/src/openvpn/init.c
+>> @@ -2219,6 +2219,19 @@ do_deferred_p2p_ncp(struct context *c)
+>>       return true;
+>>   }
 >>   
->> +    /* inherit the dco context from the tuntap object */
->> +    if (c->c2.tls_multi)
->> +    {
->> +        c->c2.tls_multi->dco = &c->c1.tuntap->dco;
->> +    }
 >> +
-
-client code path. The server has no tls-multi object when passing here.
-
-> [..]
+>> +static bool
+>> +check_dco_pull_options(struct options *o)
+>> +{
 > 
->> @@ -2979,12 +2999,20 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
-> [..]
->>       /*
->>        * Initialize OpenVPN's master TLS-mode object.
->>        */
->>       if (flags & CF_INIT_TLS_MULTI)
->>       {
->>           c->c2.tls_multi = tls_multi_init(&to);
->> +        /* inherit the dco context from the tuntap object */
->> +        if (c->c1.tuntap)
->> +        {
->> +            c->c2.tls_multi->dco = &c->c1.tuntap->dco;
->> +        }
->>       }
-> 
-> ... and here again, but only sometimes?
+> Nitpicking a bit - the "other" DCO option check functions are in dco.c
+> (not yet, but in the patches leading up to this), so why is this one in
+> init.c?
 
-server code path. The client has no tuntap object when passing here 
-(it's done quite early, so we need the previous snippet).
-The server executes this code for each new client.
-
-I hope this clarifies.
+good point. will move it to dco.c and send v2
 
 Cheers,
+
+> 
+> gert
 
 -- 
 Antonio Quartulli
