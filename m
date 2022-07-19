@@ -1,10 +1,15 @@
-Date: Tue, 19 Jul 2022 22:13:47 +0200 (CEST)
-Message-Id: <202207192013.26JKDlfs043429@...2054...>
+Date: Tue, 19 Jul 2022 22:17:31 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220624083809.23487-18-a@...2181...>
-References: <20220624083809.23487-18-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tun: extract close_tun_handle
- into its own fucntion and print correct type
+Message-ID: <YtcRWzVsMARPQscP@...1296...>
+References: <20220624083809.23487-1-a@...2181...>
+ <20220624083809.23487-21-a@...2181...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="YEAo8B9Xux9u0o87"
+Content-Disposition: inline
+In-Reply-To: <20220624083809.23487-21-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 20/25] dco-win: add platform dependant
+ check on incompatible options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +18,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
 
-Code change looks good.  Did not actually test anything, but it *does*
-pass compilation on MinGW / Unbuntu 18.04 :-)
+--YEAo8B9Xux9u0o87
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-The change to print the actual adapter type confuses "--color-move=zebra", 
-but is a nice enhancement.
+Hi,
 
-Your patch has been applied to the master branch.
+this one has an ACK, but needs a v2 still, because...
 
-commit abceec65daed9aa6359314a0243246acc1cc25bf
-Author: Arne Schwabe
-Date:   Fri Jun 24 10:38:01 2022 +0200
+On Fri, Jun 24, 2022 at 10:38:04AM +0200, Antonio Quartulli wrote:
+> Some platforms may have different constraints in terms of incompatible
+> opions, therefore we add a function that explicitly checks those.
+>=20
+> Also, add generic option check for when ovpn-dco-win is in use.
+>=20
+> Signed-off-by: Antonio Quartulli <a@...2181...>
+> Signed-off-by: Lev Stipakov <lev@...515...>
+[..]
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -2376,6 +2376,11 @@ options_postprocess_verify_ce(const struct options=
+ *options,
+>      {
+>          msg(M_USAGE, "--windows-driver wintun requires --dev tun");
+>      }
+> +
+> +    if (options->windows_driver =3D=3D WINDOWS_DRIVER_WINDCO)
+> +    {
+> +        dco_check_option_conflict(M_USAGE, options);
+> +    }
+>  #endif /* ifdef _WIN32 */
 
-     tun: extract close_tun_handle into its own fucntion and print correct type
+... the WINDOWS_DRIVER_WINDCO enum is only introduced in one of the
+later hunks.
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20220624083809.23487-18-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24527.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
---
-kind regards,
+--YEAo8B9Xux9u0o87
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Gert Doering
+-----BEGIN PGP SIGNATURE-----
 
+iQGcBAEBAgAGBQJi1xFaAAoJEB2Cnv7KVigSzcML/1Bf6oYy6AGRIFGCVc+4CBF8
+TIaisVkT4dqgtASu9TnNcA+U//wRTlswneD1GknGDeDEuf2raxxZdRP6EG0eZHkf
+Oe9z1CANZvQbjOPBLHNr68YulcfNv4B4Pd44cDqWH6YE5x/e+Xp47swijSWftwSL
+3ITVgo7a2jsl+07yDroH1ZewrMf4eDmlHnLhvgVvm99AmKTPXYGXyYvQyG6BdiHM
+ri5NXcbTgREf5V2d8U/F0wxwShpkPSZ2VS6emaYlmrJ4ABhSahGwI/l5to+5r0U2
+0ViLlr/or+OF0c7+453nMkcech5jlImBgVzlX0M4lIc0wXfTlTuZZzt86b5XTYny
+nbe3t/amxLLhdR0CxrVGORjp/TBEQZloKU/HoaQkklyiqBOakAlYuSJ29nFiB0ei
+9lHEEITWgiJwdImNd55N/WIJ8hOvSaqjg7CXyNKP/A8TGD+FCCNB5rid1E8zOMS2
+p4zeowSclwYiVTPVHjO+413vnC60VGM783fHuCUVoA==
+=FXJR
+-----END PGP SIGNATURE-----
+
+--YEAo8B9Xux9u0o87--
 
