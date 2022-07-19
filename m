@@ -1,10 +1,10 @@
-Date: Tue, 19 Jul 2022 18:52:58 +0200 (CEST)
-Message-Id: <202207191652.26JGqwBm040623@...2054...>
+Date: Tue, 19 Jul 2022 22:13:47 +0200 (CEST)
+Message-Id: <202207192013.26JKDlfs043429@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220624083809.23487-17-a@...2181...>
-References: <20220624083809.23487-17-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: GitHub Actions: add Linux DCO
- build (on Ubuntu 20.04)
+In-Reply-To: <20220624083809.23487-18-a@...2181...>
+References: <20220624083809.23487-18-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: tun: extract close_tun_handle
+ into its own fucntion and print correct type
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,25 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Indeed, this one is independent from the rest *and* the current tree
-compiles fine with --enable-dco *and* we want to ensure it stays that
-way :-) -> in it goes!
+Code change looks good.  Did not actually test anything, but it *does*
+pass compilation on MinGW / Unbuntu 18.04 :-)
+
+The change to print the actual adapter type confuses "--color-move=zebra", 
+but is a nice enhancement.
 
 Your patch has been applied to the master branch.
 
-commit d2b0c011300c66055764b8f43c272342d2b82584
-Author: Antonio Quartulli
-Date:   Fri Jun 24 10:38:00 2022 +0200
+commit abceec65daed9aa6359314a0243246acc1cc25bf
+Author: Arne Schwabe
+Date:   Fri Jun 24 10:38:01 2022 +0200
 
-     GitHub Actions: add Linux DCO build (on Ubuntu 20.04)
+     tun: extract close_tun_handle into its own fucntion and print correct type
 
+     Signed-off-by: Arne Schwabe <arne@...1227...>
      Signed-off-by: Antonio Quartulli <a@...2181...>
      Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20220624083809.23487-17-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24523.html
+     Message-Id: <20220624083809.23487-18-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24527.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
