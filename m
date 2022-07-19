@@ -1,10 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Tue, 19 Jul 2022 01:12:40 +0200
-Message-Id: <20220718231240.15810-1-a@...2181...>
-In-Reply-To: <20220624083809.23487-13-a@...2181...>
+Date: Tue, 19 Jul 2022 10:07:15 +0200
+Message-Id: <20220719080715.1445-1-a@...2181...>
+In-Reply-To: 20220718231240.15810-1-a@...2181...
 References: 
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 12/25] dco: check that pulled options are
+Subject: [Openvpn-devel] [PATCH v3 12/25] dco: check that pulled options are
  compatible
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -24,6 +24,9 @@ In this case we should log a message and bail out.
 
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
+
+Changes from v2:
+* split if condition on two lines
 
 Changes from v1:
 * move check_dco_pull_options() to dco.c (renamed to
@@ -93,7 +96,7 @@ index cb7f7e4f..a4bf6e37 100644
  ovpn_dco_init(int mode, dco_context_t *dco)
  {
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 8e1221dd..ff2787d7 100644
+index 8e1221dd..81fd49fa 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
 @@ -2366,6 +2366,17 @@ finish_options(struct context *c)
@@ -102,8 +105,8 @@ index 8e1221dd..ff2787d7 100644
  
 +    /* Check if the pushed options are compatible with DCO if we have
 +     * DCO enabled */
-+    if (dco_enabled(&c->options) && !dco_check_pull_options(D_TLS_ERRORS,
-+                                                            &c->options))
++    if (dco_enabled(&c->options)
++        && !dco_check_pull_options(D_TLS_ERRORS, &c->options))
 +    {
 +        msg(D_TLS_ERRORS, "OPTIONS ERROR: pushed options are incompatible with "
 +            "data channel offload. Use --disable-dco to connect"
