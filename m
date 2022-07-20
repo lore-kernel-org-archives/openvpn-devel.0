@@ -1,15 +1,11 @@
-Date: Tue, 19 Jul 2022 22:17:31 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <YtcRWzVsMARPQscP@...1296...>
-References: <20220624083809.23487-1-a@...2181...>
- <20220624083809.23487-21-a@...2181...>
+From: Antonio Quartulli <a@...2181...>
+Date: Wed, 20 Jul 2022 14:30:21 +0200
+Message-Id: <20220720123021.24281-1-a@...2181...>
+In-Reply-To: <20220624083809.23487-7-a@...2181...>
+References: 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="YEAo8B9Xux9u0o87"
-Content-Disposition: inline
-In-Reply-To: <20220624083809.23487-21-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 20/25] dco-win: add platform dependant
- check on incompatible options
+Subject: [Openvpn-devel] [PATCH v2 06/25] dco: initialize context and save
+ pointer in TLS object
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,71 +14,194 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
---YEAo8B9Xux9u0o87
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
 
-Hi,
+Changes from v1:
+* renamed disable_dco to dco_enabled
 
-this one has an ACK, but needs a v2 still, because...
+ src/openvpn/init.c       | 49 ++++++++++++++++++++++++++++++++--------
+ src/openvpn/ssl_common.h | 23 +++++++++++++++++++
+ 2 files changed, 63 insertions(+), 9 deletions(-)
 
-On Fri, Jun 24, 2022 at 10:38:04AM +0200, Antonio Quartulli wrote:
-> Some platforms may have different constraints in terms of incompatible
-> opions, therefore we add a function that explicitly checks those.
->=20
-> Also, add generic option check for when ovpn-dco-win is in use.
->=20
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> Signed-off-by: Lev Stipakov <lev@...515...>
-[..]
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -2376,6 +2376,11 @@ options_postprocess_verify_ce(const struct options=
- *options,
->      {
->          msg(M_USAGE, "--windows-driver wintun requires --dev tun");
->      }
-> +
-> +    if (options->windows_driver =3D=3D WINDOWS_DRIVER_WINDCO)
-> +    {
-> +        dco_check_option_conflict(M_USAGE, options);
-> +    }
->  #endif /* ifdef _WIN32 */
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 779fc4a5..b6e1707f 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -55,6 +55,7 @@
+ #include "auth_token.h"
+ #include "mss.h"
+ #include "mudp.h"
++#include "dco.h"
+ 
+ #include "memdbg.h"
+ 
+@@ -1315,15 +1316,23 @@ do_init_timers(struct context *c, bool deferred)
+     }
+ 
+     /* initialize pings */
+-
+-    if (c->options.ping_send_timeout)
++    if (dco_enabled(&c->options))
+     {
+-        event_timeout_init(&c->c2.ping_send_interval, c->options.ping_send_timeout, 0);
++        /* The DCO kernel module will send the pings instead of user space */
++        event_timeout_clear(&c->c2.ping_rec_interval);
++        event_timeout_clear(&c->c2.ping_send_interval);
+     }
+-
+-    if (c->options.ping_rec_timeout)
++    else
+     {
+-        event_timeout_init(&c->c2.ping_rec_interval, c->options.ping_rec_timeout, now);
++        if (c->options.ping_send_timeout)
++        {
++            event_timeout_init(&c->c2.ping_send_interval, c->options.ping_send_timeout, 0);
++        }
++
++        if (c->options.ping_rec_timeout)
++        {
++            event_timeout_init(&c->c2.ping_rec_interval, c->options.ping_rec_timeout, now);
++        }
+     }
+ 
+     if (!deferred)
+@@ -1733,6 +1742,12 @@ do_open_tun(struct context *c)
+     /* initialize (but do not open) tun/tap object */
+     do_init_tun(c);
+ 
++    /* inherit the dco context from the tuntap object */
++    if (c->c2.tls_multi)
++    {
++        c->c2.tls_multi->dco = &c->c1.tuntap->dco;
++    }
++
+ #ifdef _WIN32
+     /* store (hide) interactive service handle in tuntap_options */
+     c->c1.tuntap->options.msg_channel = c->options.msg_channel;
+@@ -1781,6 +1796,11 @@ do_open_tun(struct context *c)
+     /* Store the old fd inside the fd so open_tun can use it */
+     c->c1.tuntap->fd = oldtunfd;
+ #endif
++    if (dco_enabled(&c->options))
++    {
++        ovpn_dco_init(c->mode, &c->c1.tuntap->dco);
++    }
++
+     /* open the tun device */
+     open_tun(c->options.dev, c->options.dev_type, c->options.dev_node,
+              c->c1.tuntap, &c->net_ctx);
+@@ -3004,12 +3024,20 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+         }
+     }
+ 
++    /* let the TLS engine know if keys have to be installed in DCO or not */
++    to.dco_enabled = dco_enabled(options);
++
+     /*
+      * Initialize OpenVPN's master TLS-mode object.
+      */
+     if (flags & CF_INIT_TLS_MULTI)
+     {
+         c->c2.tls_multi = tls_multi_init(&to);
++        /* inherit the dco context from the tuntap object */
++        if (c->c1.tuntap)
++        {
++            c->c2.tls_multi->dco = &c->c1.tuntap->dco;
++        }
+     }
+ 
+     if (flags & CF_INIT_TLS_AUTH_STANDALONE)
+@@ -4389,15 +4417,18 @@ inherit_context_child(struct context *dest,
+ #endif
+ 
+     /* context init */
++
++    /* inherit tun/tap interface object now as it may be required
++     * to initialize the DCO context in init_instance()
++     */
++    dest->c1.tuntap = src->c1.tuntap;
++
+     init_instance(dest, src->c2.es, CC_NO_CLOSE | CC_USR1_TO_HUP);
+     if (IS_SIG(dest))
+     {
+         return;
+     }
+ 
+-    /* inherit tun/tap interface object */
+-    dest->c1.tuntap = src->c1.tuntap;
+-
+     /* UDP inherits some extra things which TCP does not */
+     if (dest->mode == CM_CHILD_UDP)
+     {
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index cef2611b..c565d78c 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -167,6 +167,12 @@ enum auth_deferred_result {
+     ACF_FAILED        /**< deferred auth has failed */
+ };
+ 
++enum dco_key_status {
++    DCO_NOT_INSTALLED,
++    DCO_INSTALLED_PRIMARY,
++    DCO_INSTALLED_SECONDARY
++};
++
+ /**
+  * Security parameter state of one TLS and data channel %key session.
+  * @ingroup control_processor
+@@ -197,6 +203,12 @@ struct key_state
+      */
+     int key_id;
+ 
++    /**
++     * Key id for this key_state, inherited from struct tls_session.
++     * @see tls_multi::peer_id.
++     */
++    uint32_t peer_id;
++
+     struct key_state_ssl ks_ssl; /* contains SSL object and BIOs for the control channel */
+ 
+     time_t initial;             /* when we created this session */
+@@ -241,6 +253,8 @@ struct key_state
+ 
+     struct auth_deferred_status plugin_auth;
+     struct auth_deferred_status script_auth;
++
++    enum dco_key_status dco_status;
+ };
+ 
+ /** Control channel wrapping (--tls-auth/--tls-crypt) context */
+@@ -404,6 +418,8 @@ struct tls_options
+     const char *ekm_label;
+     size_t ekm_label_size;
+     size_t ekm_size;
++
++    bool dco_enabled; /**< Whether keys have to be installed in DCO or not */
+ };
+ 
+ /** @addtogroup control_processor
+@@ -636,6 +652,13 @@ struct tls_multi
+     /**< Array of \c tls_session objects
+      *   representing control channel
+      *   sessions with the remote peer. */
++
++    /* Only used when DCO is used to remember how many keys we installed
++     * for this session */
++    int dco_keys_installed;
++    bool dco_peer_added;
++
++    dco_context_t *dco;
+ };
+ 
+ /**  gets an item  of \c key_state objects in the
+-- 
+2.35.1
 
-... the WINDOWS_DRIVER_WINDCO enum is only introduced in one of the
-later hunks.
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---YEAo8B9Xux9u0o87
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJi1xFaAAoJEB2Cnv7KVigSzcML/1Bf6oYy6AGRIFGCVc+4CBF8
-TIaisVkT4dqgtASu9TnNcA+U//wRTlswneD1GknGDeDEuf2raxxZdRP6EG0eZHkf
-Oe9z1CANZvQbjOPBLHNr68YulcfNv4B4Pd44cDqWH6YE5x/e+Xp47swijSWftwSL
-3ITVgo7a2jsl+07yDroH1ZewrMf4eDmlHnLhvgVvm99AmKTPXYGXyYvQyG6BdiHM
-ri5NXcbTgREf5V2d8U/F0wxwShpkPSZ2VS6emaYlmrJ4ABhSahGwI/l5to+5r0U2
-0ViLlr/or+OF0c7+453nMkcech5jlImBgVzlX0M4lIc0wXfTlTuZZzt86b5XTYny
-nbe3t/amxLLhdR0CxrVGORjp/TBEQZloKU/HoaQkklyiqBOakAlYuSJ29nFiB0ei
-9lHEEITWgiJwdImNd55N/WIJ8hOvSaqjg7CXyNKP/A8TGD+FCCNB5rid1E8zOMS2
-p4zeowSclwYiVTPVHjO+413vnC60VGM783fHuCUVoA==
-=FXJR
------END PGP SIGNATURE-----
-
---YEAo8B9Xux9u0o87--
 
