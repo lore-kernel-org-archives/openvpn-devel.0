@@ -1,10 +1,9 @@
-Date: Fri, 22 Jul 2022 15:12:24 +0200 (CEST)
-Message-Id: <202207221312.26MDCO9q027059@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220722130224.2442759-1-arne@...1227...>
-References: <20220722130224.2442759-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Error out if both remap-usr1
- SIGHUP and config stdin are used
+From: Arne Schwabe <arne@...1227...>
+Date: Fri, 22 Jul 2022 15:46:52 +0200
+Message-Id: <20220722134652.2446598-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Fix segfault when no --config argument is
+ given
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,35 +14,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Commit 4df5003 introduced a check against options->config but
+did not ensure that this varialbe is non-null.
+---
+ src/openvpn/options.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-All bugs fixed, SOB added, v2 implied!  Does what it says on the lid...
-
-$ openvpn --config stdin --remap-usr1 SIGHUP --dev null
-<ctrl-d>
-Options error: Options 'config stdin' and 'remap-usr1 SIGHUP' are incompatible with each other.
-
-Your patch has been applied to the master branch.
-
-commit 4df50030fb7ef8b36fa7a6ef451603263c760f11
-Author: Arne Schwabe
-Date:   Fri Jul 22 15:02:24 2022 +0200
-
-     Error out if both remap-usr1 SIGHUP and config stdin are used
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220722130224.2442759-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24720.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index b9de2e5d0..a68a2991f 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3680,7 +3680,7 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
+         o->verify_hash_no_ca = true;
+     }
+ 
+-    if (streq(o->config, "stdin") && o->remap_sigusr1 == SIGHUP)
++    if (o->config && streq(o->config, "stdin") && o->remap_sigusr1 == SIGHUP)
+     {
+         msg(M_USAGE, "Options 'config stdin' and 'remap-usr1 SIGHUP' are "
+             "incompatible with each other.");
+-- 
+2.32.1 (Apple Git-133)
 
 
