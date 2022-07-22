@@ -1,9 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri, 22 Jul 2022 15:02:24 +0200
-Message-Id: <20220722130224.2442759-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Error out if both remap-usr1 SIGHUP and
- config stdin are used
+Date: Fri, 22 Jul 2022 15:12:24 +0200 (CEST)
+Message-Id: <202207221312.26MDCO9q027059@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220722130224.2442759-1-arne@...1227...>
+References: <20220722130224.2442759-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Error out if both remap-usr1
+ SIGHUP and config stdin are used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,37 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-OpenVPN for Android uses config stdin to avoid writing the config
-file containing private keys to 'disk'. However using stdin means
-that config cannot be reread using SIGHUP. While there might be other
-corner cases that trigger SIGHUP, this is an obvious one, so we
-error out if we detect this misconfiguration.
+Acked-by: Gert Doering <gert@...1296...>
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/options.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+All bugs fixed, SOB added, v2 implied!  Does what it says on the lid...
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index abda8c379..b9de2e5d0 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3680,6 +3680,12 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
-         o->verify_hash_no_ca = true;
-     }
- 
-+    if (streq(o->config, "stdin") && o->remap_sigusr1 == SIGHUP)
-+    {
-+        msg(M_USAGE, "Options 'config stdin' and 'remap-usr1 SIGHUP' are "
-+            "incompatible with each other.");
-+    }
-+
-     /* check if any option should force disabling DCO */
- #if defined(TARGET_LINUX)
-     o->tuntap_options.disable_dco = !dco_check_option_conflict(D_DCO, o);
--- 
-2.32.1 (Apple Git-133)
+$ openvpn --config stdin --remap-usr1 SIGHUP --dev null
+<ctrl-d>
+Options error: Options 'config stdin' and 'remap-usr1 SIGHUP' are incompatible with each other.
+
+Your patch has been applied to the master branch.
+
+commit 4df50030fb7ef8b36fa7a6ef451603263c760f11
+Author: Arne Schwabe
+Date:   Fri Jul 22 15:02:24 2022 +0200
+
+     Error out if both remap-usr1 SIGHUP and config stdin are used
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220722130224.2442759-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24720.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
