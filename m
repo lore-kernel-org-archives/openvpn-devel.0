@@ -1,8 +1,16 @@
-From: selva.nair@...277...
-Date: Fri, 22 Jul 2022 16:40:07 -0400
-Message-Id: <20220722204007.7537-1-selva.nair@...277...>
+Date: Fri, 22 Jul 2022 23:38:40 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <YtsY4AowFaIEgRqZ@...1296...>
+References: <CAGyAFMWSHhzpTzEe+TJXD6jasv+w+vGCYygH6uXjEm1k4L0qxQ@...278...>
+ <20220503002840.295-1-lstipakov@...277...>
+ <YtrND9EAUEoe4Lvv@...1296...>
+ <CAKuzo_gcZH=+igQ4dYpT4Gn1TRUJc6yYqOCA8H=EDCE0BRu4UA@...278...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] In x_check_status() read errno early
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="wxZuPdJHdRU/wy/G"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_gcZH=+igQ4dYpT4Gn1TRUJc6yYqOCA8H=EDCE0BRu4UA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Fix M_ERRNO behavior on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,49 +19,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: Gert Doering <gert@...1296...>, Lev Stipakov <lstipakov@...277...>, Lev Stipakov <lev@...515...>, openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+--wxZuPdJHdRU/wy/G
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-The correct errno can get overwritten by the call to
-format_extended_socket_error() which may set errno to EAGAIN
-losing the original error and cause to bypass the error reporting
-below. Fix by reading the errno of interest at the top of the
-function.
+Hi,
 
-Reported by: Gert Doering <gert@...1296...>
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/error.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+On Fri, Jul 22, 2022 at 04:34:40PM -0400, Selva Nair wrote:
+> This one is tricky -- though the patch appeared to be a no-op for
+> non-Windows, in error.c:x_check_status(), it did move down  the line
+> my_errno =3D openvpn_errno() and thus potentially lose the original error=
+. At
+> that time it looked like a good move (pun intended), though. So much for
+> C99 style..
 
-diff --git a/src/openvpn/error.c b/src/openvpn/error.c
-index 49ed1dbc..7cd35b17 100644
---- a/src/openvpn/error.c
-+++ b/src/openvpn/error.c
-@@ -658,6 +658,9 @@ x_check_status(int status,
- {
-     const char *extended_msg = NULL;
- 
-+    bool crt_error = false;
-+    int my_errno = openvpn_errno_maybe_crt(&crt_error);
-+
-     msg(x_cs_verbose_level, "%s %s returned %d",
-         sock ? proto2ascii(sock->info.proto, sock->info.af, true) : "",
-         description,
-@@ -688,9 +691,6 @@ x_check_status(int status,
-         }
- #endif
- 
--        bool crt_error = false;
--        int my_errno = openvpn_errno_maybe_crt(&crt_error);
--
-         if (!ignore_sys_error(my_errno, crt_error))
-         {
-             if (extended_msg)
--- 
-2.30.2
+;-)
 
+Thanks for your analysis and patch.  I'll stare at it a bit tomorrow
+and test (and then send the patch I had been working on, to get rid
+of the setsockopt() error message on IPv4-only sockets...)
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--wxZuPdJHdRU/wy/G
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJi2xjgAAoJEB2Cnv7KVigSnJgL/0Qe++fS+A30j8diwkdz6StE
+N4fhI9Y9eZnKLPH4+bWkPtYgzSudFB7GPeyLBw/fkvQM89maC84/C/Gg68kyklDw
+PT2I/i3BrOXbCnDOdmxvPD8lvzleEzwByx7iWcQuVkqBa8Z1InvJ8Q1nlYly+ui1
+R/BcnuKRAWOnczpC+KEZSa300Wl+KTrZ9xy8QUZp/C/pklMVgSF+AEoTq7Y6KHqI
+wVRX3tCBQWuqiNlc98Q86AwaqpzGHUMQfFwAVNHEPTo/R3hxeTbeMZCmZujqsGm/
+5/K4rXnlgyG5RsjDrbp2jKB2MtAo9g5102ZkPDKtZWx0AGRvU4jiMbOk8d6U2aAL
+44jTuTUXdcdJ1nDc9ah/LZ21WZeiXPuk5qqY946Igpxh2vV93/yMqQoBrB0GcFxF
+5RU3XY12iCwwKbQlrQbnThRVcgX7QjxTxebYb8y0n+fKvZVAaK3ytZD5uxi2W2rD
++0tzRQpCZoMRpoBcC0no981kNEN8IlJvBGpETDclkw==
+=MXIG
+-----END PGP SIGNATURE-----
+
+--wxZuPdJHdRU/wy/G--
 
