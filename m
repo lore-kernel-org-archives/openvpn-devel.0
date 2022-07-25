@@ -1,11 +1,12 @@
-Message-ID: <fd61879d-5154-6e5a-7c53-b700a0fefac0@...1227...>
-Date: Mon, 25 Jul 2022 12:17:58 +0200
+Date: Mon, 25 Jul 2022 14:02:00 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <Yt6GONS1kHbA0dFX@...2678...>
+References: <20220607093619.23066-1-gert@...1296...>
+ <20220723121909.21943-1-gert@...1296...>
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <Yt2Fdvaom94pVcOQ@...2684...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <Yt2Fdvaom94pVcOQ@...2684...>
-Subject: Re: [Openvpn-devel] [PATCH] PUSH_BUNDLE_SIZE is too short
+In-Reply-To: <20220723121909.21943-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Fix error message about extended
+ errors for IPv4-only sockets.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,42 +15,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Angel Abad <angel@...334...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Am 24.07.22 um 19:46 schrieb Angel Abad:
-> Description: PUSH_BUNDLE_SIZE is too short
-> Author: Angel Abad <angel@...334...>
-> ---
+On Sat, Jul 23, 2022 at 02:19:09PM +0200, Gert Doering wrote:
+> The new code to enable IPv6 extended error reporting will cause
+> an error ("Protocol not available (errno=92)") if trying to enable
+> that setsockopt() option on an IPv4-only socket.
 > 
-> Hello, we have problem with a large used openvpn server, our server push to clients
-> almos 150 routes, we havent problem with windows clients, but with linux clients push
-> options are cut, and the clients fail to configure beacouse the route commmands are cut.
+> Fix: pass sock->info.af to set_sock_extended_error_passing(), only
+> apply to AF_INET6 sockets.
 > 
-> We look code and verify that push bundle size is only 1024, so push options on linux are cut
-> on this size. We looked openvpn3 too, and there this limit is 2048
+> To make that work, ensure that sock->info.af is set to not only
+> the value coming from config (which might be AF_UNSPEC) but to the
+> actual value used in socket creation (credits: Arne Schwabe).
 > 
-> https://github.com/OpenVPN/openvpn3/blob/e1a35028a82acaf5ae6caeae321d83c36477d27c/openvpn/tun/linux/client/sitnl.hpp#L50
-
-That is the buffer size of the netlink socket. That has absolutely 
-nothing to do with PUSH bundle size.
-
-The maximum PUSH bundle size that OpenVPN3 will generate is also 1024:
-
-https://github.com/OpenVPN/openvpn3/blob/master/openvpn/options/continuation_fragment.hpp#L42
-
+> Add comments to make explicit that the asymmetry here (IPv4 extended
+> socket error reporting is enabled on all sockets) is intentional.
 > 
-> Could you please increase this limit on openvpn2 or provide a configuration option to
-> increase it?
+> Signed-off-by: Gert Doering <gert@...1296...>
 
-There are a patches from me for master that allow adjusting control 
-channel max size. However, our OpenVPN 2 server code should never send a 
-push message that exceeds the 1024 byte limit. Increasing this size for 
-both client and server will break existing setups. Can you explain your 
-setup and how to reproduce the bug?
+Acked-By: Frank Lichtenheld <frank@...2641...>
 
-In the current form this patch is a NAK from me.
+Tested that it indeed removes the spurious error.
+Code changes look good to me.
 
-Arne
+Regards,
+-- 
+  Frank Lichtenheld
 
