@@ -1,13 +1,10 @@
-Date: Sun, 24 Jul 2022 21:12:18 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <Yt2Zkt1K5ThfAaYn@...1296...>
-References: <Yt2Fdvaom94pVcOQ@...2684...>
- <Yt2Wqc2zTdyx5Zj5@...1296...>
+Message-ID: <fd61879d-5154-6e5a-7c53-b700a0fefac0@...1227...>
+Date: Mon, 25 Jul 2022 12:17:58 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="nBDQs5BvGCPomBfO"
-Content-Disposition: inline
-In-Reply-To: <Yt2Wqc2zTdyx5Zj5@...1296...>
+Content-Language: en-GB
+References: <Yt2Fdvaom94pVcOQ@...2684...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <Yt2Fdvaom94pVcOQ@...2684...>
 Subject: Re: [Openvpn-devel] [PATCH] PUSH_BUNDLE_SIZE is too short
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,51 +14,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Angel Abad <angel@...334...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Angel Abad <angel@...334...>, openvpn-devel@lists.sourceforge.net
 
---nBDQs5BvGCPomBfO
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Am 24.07.22 um 19:46 schrieb Angel Abad:
+> Description: PUSH_BUNDLE_SIZE is too short
+> Author: Angel Abad <angel@...334...>
+> ---
+> 
+> Hello, we have problem with a large used openvpn server, our server push to clients
+> almos 150 routes, we havent problem with windows clients, but with linux clients push
+> options are cut, and the clients fail to configure beacouse the route commmands are cut.
+> 
+> We look code and verify that push bundle size is only 1024, so push options on linux are cut
+> on this size. We looked openvpn3 too, and there this limit is 2048
+> 
+> https://github.com/OpenVPN/openvpn3/blob/e1a35028a82acaf5ae6caeae321d83c36477d27c/openvpn/tun/linux/client/sitnl.hpp#L50
 
-Hi,
+That is the buffer size of the netlink socket. That has absolutely 
+nothing to do with PUSH bundle size.
 
-On Sun, Jul 24, 2022 at 08:59:53PM +0200, Gert Doering wrote:
-> Can you please show a log file that demonstrates the problem?
+The maximum PUSH bundle size that OpenVPN3 will generate is also 1024:
 
-Oh, and "what software is running on the server side"?  Long push replys
-have to be split, and if there is something non-official which does not
-split the to-be-sent records as the official server does, it's not a
-client side bug.
+https://github.com/OpenVPN/openvpn3/blob/master/openvpn/options/continuation_fragment.hpp#L42
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+> 
+> Could you please increase this limit on openvpn2 or provide a configuration option to
+> increase it?
 
-Gert Doering - Munich, Germany                             gert@...1296...
+There are a patches from me for master that allow adjusting control 
+channel max size. However, our OpenVPN 2 server code should never send a 
+push message that exceeds the 1024 byte limit. Increasing this size for 
+both client and server will break existing setups. Can you explain your 
+setup and how to reproduce the bug?
 
---nBDQs5BvGCPomBfO
-Content-Type: application/pgp-signature; name="signature.asc"
+In the current form this patch is a NAK from me.
 
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJi3ZmSAAoJEB2Cnv7KVigSzrgMAKtzJwF8jtX86C53xfhWag2H
-toQcd4nJZTAUNeJgqMA+lvZdkwtADsc2M/KXfZvYEgE/Qv35xPuJ2CeGRNImJRK7
-hqrxYohUh85XRJmy0aQnHnRLZdAIBuRY0Sy91Iuy2YIlJt1k8Wklss+3eeUKXYWv
-pQqfPDUyUVxPJTtr8LfPNKSWCu3CClIMN1AIr+sCF07G+szj8L//UkwJJe0uUIsy
-lrkXmAShvI4PQH5e6+++DInQF8XooQO9gvoIOgbTfRHy+AynizF5OijbdUix/Gc9
-Ry8zwo1is4gdf25hECtnGCAQ1UliyVxwa9cMXVtnwLB3cABnjnci44na1Kma6bDO
-lDqS7feQOYEgw60SZ0XjFgdeln7iQo0cPhBqKMHBycaNME0JIYyHn0ZJVq1WKYol
-Qjz4/km4ivghAA20s0VYwesBR6DqqDCwpvT4bCrwqNymGaqb3jaQ7qkYdcN8UN7F
-NPk0EW32euEQLrey/MAy1aRoquqfP6aIE6QI+YwHGw==
-=OYL7
------END PGP SIGNATURE-----
-
---nBDQs5BvGCPomBfO--
+Arne
 
