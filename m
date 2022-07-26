@@ -1,11 +1,9 @@
+From: selva.nair@...277...
+Date: Tue, 26 Jul 2022 07:51:00 -0400
+Message-Id: <20220726115100.31449-1-selva.nair@...277...>
 MIME-Version: 1.0
-References: <Yt+QllThprcm+Vu6@...1296...>
-In-Reply-To: <Yt+QllThprcm+Vu6@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 26 Jul 2022 07:45:32 -0400
-Message-ID: <CAKuzo_hQ=-keb2nWmz4b=tsQNQtj6rUCpv1=D0m0MFqHFp+cvQ@...278...>
-Content-Type: multipart/alternative; boundary="0000000000007bd8db05e4b3d8c2"
-Subject: Re: [Openvpn-devel] OpenSSL 3.0 builds with --disable-management
+Subject: [Openvpn-devel] [PATCH] xkey_provider: fix building with
+ --disable-management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,43 +12,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---0000000000007bd8db05e4b3d8c2
-Content-Type: text/plain; charset="UTF-8"
+From: Selva Nair <selva.nair@...277...>
 
-Hi,
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/xkey_helper.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-On Tue, Jul 26, 2022 at 2:59 AM Gert Doering <gert@...1296...> wrote:
+diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
+index 81dd71dc..27e87d79 100644
+--- a/src/openvpn/xkey_helper.c
++++ b/src/openvpn/xkey_helper.c
+@@ -85,6 +85,7 @@ xkey_digest(const unsigned char *src, size_t srclen, unsigned char *buf,
+     return 1;
+ }
+ 
++#ifdef ENABLE_MANAGEMENT
+ /**
+  * Load external key for signing via management interface.
+  * The public key must be passed in by the caller as we may not
+@@ -107,6 +108,7 @@ xkey_load_management_key(OSSL_LIB_CTX *libctx, EVP_PKEY *pubkey)
+ 
+     return xkey_load_generic_key(libctx, dummy, pubkey, sign_op, NULL);
+ }
++#endif
+ 
+ /**
+  * Load a generic key into the xkey provider.
+@@ -147,6 +149,7 @@ xkey_load_generic_key(OSSL_LIB_CTX *libctx, void *handle, EVP_PKEY *pubkey,
+     return pkey;
+ }
+ 
++#ifdef ENABLE_MANAGEMENT
+ /**
+  * Signature callback for xkey_provider with management-external-key
+  *
+@@ -277,6 +280,7 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
+ 
+     return (*siglen > 0);
+ }
++#endif /* ENABLE MANAGEMENT */
+ 
+ /**
+  * Add PKCS1 DigestInfo to tbs and return the result in *enc.
+-- 
+2.30.2
 
->
-> I'm just relaying what buildbot found, not suggesting a particular fix
-> - not very familiar with these new code paths (do we need xkey at all
-> if management is disabled?).
->
-
-xkey handles all external keys including pkcs11 and cryptoapicert, so we
-need it even when management is disabled.
-
-Selva
-
---0000000000007bd8db05e4b3d8c2
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div>Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"l=
-tr" class=3D"gmail_attr">On Tue, Jul 26, 2022 at 2:59 AM Gert Doering &lt;<=
-a href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt; wrote:<br></div><=
-blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-l=
-eft:1px solid rgb(204,204,204);padding-left:1ex"><br>
-I&#39;m just relaying what buildbot found, not suggesting a particular fix<=
-br>
-- not very familiar with these new code paths (do we need xkey at all<br>
-if management is disabled?).<br></blockquote><div><br></div><div>xkey handl=
-es all external keys including pkcs11 and cryptoapicert, so we need it even=
- when management is disabled.</div><div><br></div><div>Selva</div></div></d=
-iv>
-
---0000000000007bd8db05e4b3d8c2--
 
