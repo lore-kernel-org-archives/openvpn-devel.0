@@ -1,9 +1,11 @@
+Date: Tue, 26 Jul 2022 08:58:30 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <Yt+QllThprcm+Vu6@...1296...>
 MIME-Version: 1.0
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 25 Jul 2022 22:36:02 -0400
-Message-ID: <CAKuzo_jd0jh8ZDKU2bsOric9Fef7uS+Nd+Ra3Tnkz1dSNUcoRg@...278...>
-Content-Type: multipart/alternative; boundary="0000000000004ddd5205e4ac2b2f"
-Subject: [Openvpn-devel] Response from management i/f lost in some cases.
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="at0yD82rLkX6Wk/a"
+Content-Disposition: inline
+Subject: [Openvpn-devel] OpenSSL 3.0 builds with --disable-management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,87 +14,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---0000000000004ddd5205e4ac2b2f
-Content-Type: text/plain; charset="UTF-8"
+--at0yD82rLkX6Wk/a
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-Generally we expect a response of "SUCCESS: ...." or "ERROR: ..." to every
-command sent to the management interface (in mult-line cases, a terminating
-line with "END" too). I've noticed a couple of situations where this is
-either missing or gets lost.
+buildbot found something new :-) - ossl 3.0 builds fail if --disable-manage=
+ment
+is set:
 
-(i) While in the hold state, sending "signal SIGHUP" returns only the
-following reply:
->HOLD:Waiting for hold release:0
-instead of "ERROR: signals are currently disabled", followed by the above
-line. (management signals are disabled when on hold).
+gcc -DHAVE_CONFIG_H -I. -I../.. -I../../include  -I../../include -I../../sr=
+c/compat        -DPLUGIN_LIBDIR=3D\"/usr/local/lib/openvpn/plugins\"  -Wall=
+ -Wno-stringop-truncation -g -O2 -std=3Dc99 -MT xkey_helper.o -MD -MP -MF .=
+deps/xkey_helper.Tpo -c -o xkey_helper.o xkey_helper.c
+xkey_helper.c: In function `xkey_management_sign':
+xkey_helper.c:178:26: error: `management' undeclared (first use in this fun=
+ction); did you mean `SN_Management'?
+  178 |     unsigned int flags =3D management->settings.flags;
+      |                          ^~~~~~~~~~
+      |                          SN_Management
+xkey_helper.c:178:26: note: each undeclared identifier is reported only onc=
+e for each function it appears in
+xkey_helper.c:182:52: error: `MF_EXTERNAL_KEY_DIGEST' undeclared (first use=
+ in this function)
+  182 |     if (!strcmp(alg.op, "DigestSign") && !(flags & MF_EXTERNAL_KEY_=
+DIGEST)
+      |                                                    ^~~~~~~~~~~~~~~~=
+~~~~~~
+xkey_helper.c:215:56: error: `MF_EXTERNAL_KEY_PKCS1PAD' undeclared (first u=
+se in this function)
+  215 |     else if (!strcmp(alg.padmode, "pkcs1") && (flags & MF_EXTERNAL_=
+KEY_PKCS1PAD))
+      |                                                        ^~~~~~~~~~~~=
+~~~~~~~~~~~~
+xkey_helper.c:235:55: error: `MF_EXTERNAL_KEY_NOPADDING' undeclared (first =
+use in this function)
+  235 |     else if (!strcmp(alg.padmode, "none") && (flags & MF_EXTERNAL_K=
+EY_NOPADDING)
+      |                                                       ^~~~~~~~~~~~~=
+~~~~~~~~~~~~
+xkey_helper.c:240:54: error: `MF_EXTERNAL_KEY_PSSPAD' undeclared (first use=
+ in this function)
+  240 |     else if (!strcmp(alg.padmode, "pss") && (flags & MF_EXTERNAL_KE=
+Y_PSSPAD))
+      |                                                      ^~~~~~~~~~~~~~=
+~~~~~~~~
+xkey_helper.c:267:19: warning: implicit declaration of function `management=
+_query_pk_sig' [-Wimplicit-function-declaration]
+  267 |         out_b64 =3D management_query_pk_sig(management, in_b64, alg=
+_str);
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~
+make[3]: *** [Makefile:762: xkey_helper.o] Error 1
+make[2]: *** [Makefile:437: all-recursive] Error 1
+make[1]: *** [Makefile:614: all-recursive] Error 1
+make: *** [Makefile:502: all] Error 2
+make[3]: Leaving directory '/buildbot/ubuntu-2204-factory--disable-lzo--dis=
+able-management/build/src/openvpn'
 
-(ii) The second case is somewhat complex -- at times the daemon does not
-send back any response. I've seen this happen only if a command is sent by
-the management client when the demon is busy sending LOG messages -- for
-example, the user wants to restart and we send "signal SIGHUP" -- if this
-gets no response we stall in the GUI waiting for the reply.
+... so it seems we're missing a few #ifdef ENABLE_MANAGEMENT here and=20
+there...
 
-I think this is what's happening:  M_CLIENT messages are dropped by
-virtual_output_callback() when it gets called recursively. When the daemon
-is outputting, say, log lines to the client the above function gets called,
-it then calls management_io() to send the message out. But, in
-management_io() we process both reads and writes and if a read comes in at
-that time, we process it synchronously, generate the response with
-flag=M_CLIENT, end up in recursing into virtual_output_callback(). The
-response gets dropped there because recursive_level > 0 (recursion not
-allowed).
+I'm just relaying what buildbot found, not suggesting a particular fix
+- not very familiar with these new code paths (do we need xkey at all
+if management is disabled?).
 
-As one cannot control when a user may hit reconnect, this needs to be
-fixed.
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Would it be okay to allow a few levels of recursion in
-virtual_output_callback? One seldom sends more than a couple of commands in
-a succession especially when not prompted by the daemon. Allowing
-recursive_level up to 5 (or even 3) would go a long way.
+Gert Doering - Munich, Germany                             gert@...1296...
 
-Regards,
+--at0yD82rLkX6Wk/a
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Selva
+-----BEGIN PGP SIGNATURE-----
 
---0000000000004ddd5205e4ac2b2f
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+iQGcBAEBAgAGBQJi35CWAAoJEB2Cnv7KVigScYsMAIsOZR340QLIa1yVT//ax01F
+O4twGGKqdjx9BUdP64PNHKxmwnykwwxq6mk8oRUc7nJ5S4Ydx3grIFT12+hr13TZ
+0hyaOvkldQMrwN7tc5X9OcTddmmo0J/p3osLyA0AIsWZlmPsfxVB0i8ERmxEuedg
+8oZ4/qUOwtu4MSEE1GhyE69Chib7u3hS77xCU8SjIV0M+CZ3ULZtT0aALY4louZf
+Wc9Uj1pA4xOpi7M26kXldiSDZ7SSKWDz4hh4L1BueR68X/v+Ns7SymYDeXoMm4bk
+otaQPwC5dpGYIgNcaRgOUP/Wm3YtL9fBA5B9VkFXglxZmA8xCO4Vvl6N/iNzrq/5
+brl/+ScNlyjBPJ45XX8WHY8NjtBOCf5LxN//FNx2QQqxyYbUNFTEuV7pKGnxcfQO
+bIH+smp0oLE2Y4iBV3ttRIxRIu62D7rySxYZFfw4AAjLHBc1LAtuzZscTjAuH912
+YIi/R8GsxbsiVs1zSmo6RpzxO0xOZlbL/fPoO2sibA==
+=eKbs
+-----END PGP SIGNATURE-----
 
-<div dir=3D"ltr"><div>Hi,</div><div><br></div><div>Generally we expect a re=
-sponse of &quot;SUCCESS: ....&quot; or &quot;ERROR: ...&quot; to every comm=
-and sent to the management interface (in <span class=3D"" id=3D":4cx.1" tab=
-index=3D"-1" role=3D"menuitem" aria-haspopup=3D"true" style=3D"">mult</span=
->-line=C2=A0cases, a terminating line with &quot;END&quot; too). I&#39;ve n=
-oticed a couple of situations where this is=C2=A0 either missing or gets lo=
-st.</div><div><br></div><div>(i) While in the hold state, sending &quot;sig=
-nal SIGHUP&quot; returns only the following reply:</div>&gt;HOLD:Waiting fo=
-r hold release:0<div>instead of &quot;ERROR: signals are currently disabled=
-&quot;, followed by the above line. (management signals are disabled when o=
-n hold).</div><div><div><br></div></div><div>(ii) The second case is somewh=
-at complex -- at times the daemon does not send back any response. I&#39;ve=
- seen this happen only if a command is sent by the management client when t=
-he demon=C2=A0is busy sending LOG messages -- for example, the user wants t=
-o restart and we send &quot;signal SIGHUP&quot; -- if this gets no response=
- we stall in the GUI waiting for the reply.</div><div><br></div><div>I thin=
-k this is what&#39;s happening:=C2=A0 M_CLIENT messages are dropped by virt=
-ual_output_callback() when it gets called recursively. When the daemon is o=
-utputting, say, log lines to the client the above function gets called, it =
-then calls management_io() to send the message out. But, in management_io()=
- we process both reads and writes and if a read comes in at that time, we p=
-rocess it synchronously, generate the response with flag=3DM_CLIENT, end up=
- in recursing into virtual_output_callback(). The response gets dropped the=
-re because recursive_level &gt; 0 (recursion not allowed).</div><div><br></=
-div><div>As one cannot control when a user may hit reconnect, this needs to=
- be fixed.=C2=A0=C2=A0</div><div><br></div><div>Would it be okay to allow a=
- few levels=C2=A0of recursion in virtual_output_callback? One seldom=C2=A0s=
-ends more than a couple of commands in a succession especially when not pro=
-mpted by the daemon. Allowing recursive_level up to 5 (or even 3) would go =
-a long way.</div><div><br></div><div>Regards,</div><div><br></div><div>Selv=
-a</div></div>
-
---0000000000004ddd5205e4ac2b2f--
+--at0yD82rLkX6Wk/a--
 
