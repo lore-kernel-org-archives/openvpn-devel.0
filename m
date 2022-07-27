@@ -1,10 +1,10 @@
-Date: Wed, 27 Jul 2022 20:14:50 +0200 (CEST)
-Message-Id: <202207271814.26RIEoDR045914@...2054...>
+Date: Wed, 27 Jul 2022 20:22:38 +0200 (CEST)
+Message-Id: <202207271822.26RIMcSq046164@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220720123021.24281-1-a@...2181...>
-References: <20220720123021.24281-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco: initialize context and
- save pointer in TLS object
+In-Reply-To: <20220726083313.14067-1-frank@...2641...>
+References: <20220726083313.14067-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: systemd: remove generated
+ service files on clean
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,34 +15,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-The change to init.c is easier viewed with "-w" - wrapping the existing
-code to initialize the ping intervals into "if (!dco_enabled)".
+Can't pass the chance to apply something that says "remove systemd" while
+David is not looking...
 
-The remainder does not really do much yet - introduce structure elements
-and enums, but they are not used yet.  Also, record the ACK from Arne
-on v1.
-
-Tested on linux without --enable-dco (works), and with --enable-dco
-but without kernel DCO (works as well).
+Joke aside, this seems to be a straightforward "make sure generated stuff
+is cleaned on 'make clean'" thing :-) - I have not tested it in earnest,
+though, as none of my primary Linuxes have systemd.
 
 Your patch has been applied to the master branch.
 
-commit a2d851d4fa69792f2bcde568e43ec0879d757788
-Author: Antonio Quartulli
-Date:   Wed Jul 20 14:30:21 2022 +0200
+commit 3fb5665ec5b70b665c0a8094de20042be0e392de
+Author: Frank Lichtenheld
+Date:   Tue Jul 26 10:33:13 2022 +0200
 
-     dco: initialize context and save pointer in TLS object
+     systemd: remove generated service files on clean
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-By: Arne Schwabe <arne@...1227...>
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220720123021.24281-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24714.html
+     Message-Id: <20220726083313.14067-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24740.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
