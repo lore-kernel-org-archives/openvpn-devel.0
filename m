@@ -1,14 +1,11 @@
-Date: Wed, 27 Jul 2022 20:58:08 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <YuGKwNinYLarY5v/@greenie.muc.de>
-References: <20220625234150.3398864-1-arne@...1227...>
+From: selva.nair@...277...
+Date: Wed, 27 Jul 2022 18:18:30 -0400
+Message-Id: <20220727221830.31861-1-selva.nair@...277...>
+In-Reply-To: <20220726115100.31449-1-selva.nair@...277...>
+References: <20220726115100.31449-1-selva.nair@...277...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="34hbv7YqHtvZlfXO"
-Content-Disposition: inline
-In-Reply-To: <20220625234150.3398864-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v3 1/5] Extract update_session_cipher
- into standalone function
+Subject: [Openvpn-devel] [PATCH v2] xkey_provider: fix building with
+ --disable-management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,59 +14,110 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---34hbv7YqHtvZlfXO
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Selva Nair <selva.nair@...277...>
 
-Hi,
+v2: also fix building test_provider
+ - ifdefs in test_provider.c
+ - include integer.h for min_int as manage.h
+   may not always pull it in
 
-On Sun, Jun 26, 2022 at 01:41:46AM +0200, Arne Schwabe wrote:
-> +
-> +/**
-> + * Checks if the cipher is allowed and updates the TLS session cipher wi=
-th it,
-> + * otherwise returns false
-> + */
-> +bool
-> +update_session_cipher(struct tls_session *session, struct options *optio=
-ns);
-> +
+Too many ifdefs, unfortunately..
 
-Is that comment correct?  I can't find any "updating" here, only "checking".
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/xkey_helper.c                | 4 ++++
+ tests/unit_tests/openvpn/test_provider.c | 7 +++++++
+ 2 files changed, 11 insertions(+)
 
-What am I overlooking?
+diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
+index 81dd71dc..27e87d79 100644
+--- a/src/openvpn/xkey_helper.c
++++ b/src/openvpn/xkey_helper.c
+@@ -85,6 +85,7 @@ xkey_digest(const unsigned char *src, size_t srclen, unsigned char *buf,
+     return 1;
+ }
+ 
++#ifdef ENABLE_MANAGEMENT
+ /**
+  * Load external key for signing via management interface.
+  * The public key must be passed in by the caller as we may not
+@@ -107,6 +108,7 @@ xkey_load_management_key(OSSL_LIB_CTX *libctx, EVP_PKEY *pubkey)
+ 
+     return xkey_load_generic_key(libctx, dummy, pubkey, sign_op, NULL);
+ }
++#endif
+ 
+ /**
+  * Load a generic key into the xkey provider.
+@@ -147,6 +149,7 @@ xkey_load_generic_key(OSSL_LIB_CTX *libctx, void *handle, EVP_PKEY *pubkey,
+     return pkey;
+ }
+ 
++#ifdef ENABLE_MANAGEMENT
+ /**
+  * Signature callback for xkey_provider with management-external-key
+  *
+@@ -277,6 +280,7 @@ xkey_management_sign(void *unused, unsigned char *sig, size_t *siglen,
+ 
+     return (*siglen > 0);
+ }
++#endif /* ENABLE MANAGEMENT */
+ 
+ /**
+  * Add PKCS1 DigestInfo to tbs and return the result in *enc.
+diff --git a/tests/unit_tests/openvpn/test_provider.c b/tests/unit_tests/openvpn/test_provider.c
+index 47e7e395..d146af62 100644
+--- a/tests/unit_tests/openvpn/test_provider.c
++++ b/tests/unit_tests/openvpn/test_provider.c
+@@ -30,6 +30,7 @@
+ 
+ #include "syshead.h"
+ #include "manage.h"
++#include "integer.h"
+ #include "xkey_common.h"
+ 
+ #ifdef HAVE_XKEY_PROVIDER
+@@ -127,7 +128,9 @@ init_test()
+     /* set default propq matching what we use in ssl_openssl.c */
+     EVP_set_default_properties(NULL, "?provider!=ovpn.xkey");
+ 
++#ifdef ENABLE_MANAGEMENT
+     management = test_calloc(sizeof(*management), 1);
++#endif
+ }
+ 
+ static void
+@@ -272,6 +275,7 @@ done:
+     return sig;
+ }
+ 
++#ifdef ENABLE_MANAGEMENT
+ /* Check loading of management external key and have sign callback exercised
+  * for RSA and EC keys with and without digest support in management client.
+  * Sha256 digest used for both cases with pss padding for RSA.
+@@ -310,6 +314,7 @@ again:
+         EVP_PKEY_free(privkey);
+     }
+ }
++#endif
+ 
+ /* helpers for testing generic key load and sign */
+ static int xkey_free_called;
+@@ -409,7 +414,9 @@ main(void)
+ 
+     const struct CMUnitTest tests[] = {
+         cmocka_unit_test(xkey_provider_test_fetch),
++#ifdef ENABLE_MANAGEMENT
+         cmocka_unit_test(xkey_provider_test_mgmt_sign_cb),
++#endif
+         cmocka_unit_test(xkey_provider_test_generic_sign_cb),
+     };
+ 
+-- 
+2.30.2
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---34hbv7YqHtvZlfXO
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJi4Yq/AAoJEB2Cnv7KVigSZhoL/jyJqrQtUzc+836INpS5hdTx
-tbAoeZGkPtrRN18R+O8wUQZgpLmlLChVBZF7Nai/ImHF53VlhCdFgXp78oJ9ljhp
-Qsc/w5/1Cpr2gb6NWOtON7XWhROX1LmI/Dto5js+87jwwcKgsnZvoFg6ThpGYW4j
-wwsi9NTlsSA3DFu/RPvDIP7BRYTTVQ8ypsbOTnpDRAUgTgNd98pFtjTFZLYv/YAw
-8e0nY4oFRgY2PrlpAq9+MwDBe/j+arNeilzWk0RmDsz+9LAI5/CYgxyI96GRMfwv
-hwL26mXXAiKzLAxeAHH94+2JRxFLZKGWDI9ijcC/uc1Jh4tlk2iJFXvQTxNsrbzr
-fd/YBUSWwAkTVE/RXgrP5Imyimj7omoBPXwwDt+cwEuG4KI+KJz4ydiiRo0tBEYJ
-8fqjQ38pnuDDW1RNDaWIS+Ulby7L8Ksbff6RqTEG3BX24Df2bf+ejM+Q7ZNZbsRx
-e8q3fg81Ormtc+PwG672OpAwM92iHyfNjzcwVdEfjg==
-=Q9C0
------END PGP SIGNATURE-----
-
---34hbv7YqHtvZlfXO--
 
