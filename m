@@ -1,11 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Thu, 28 Jul 2022 21:35:42 +0200
-Message-Id: <20220728193542.14801-1-a@...2181...>
-In-Reply-To: <20220624083809.23487-11-a@...2181...>
+Date: Thu, 28 Jul 2022 21:47:33 +0200
+Message-Id: <20220728194733.27721-1-a@...2181...>
+In-Reply-To: <20220624083809.23487-12-a@...2181...>
 References: 
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 10/25] dco: periodically check and
- possibly rotate/delete keys
+Subject: [Openvpn-devel] [PATCH v2 11/25] dco: split option parsing routines
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,212 +18,146 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>
 
-Data channel keys are periodically regenarated and installed in
-ovpn-dco.
-However, there is a certain moment when keys are rotated in order
-to elect the new primary one.
+DCO will try to install keys upon generating them, however, this happens
+when parsing pushed cipher options (due to NCP).
 
-Check the key status in userspace so that kernelspace can be informed as
-well when rotations happen.
+For this reason we need to postpone parsing pushed cipher options to *after*
+the tunnel interface has been opened, otherwise we would have no DCO netdev
+object to operate on.
+
+At the same time we split the parsing code, so that we can ensure that
+the NEW_PEER call can happen after the received peer-id has been parsed
+(it is required by all DCO API calls).
 
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
 
 Changes from v1:
-* added comments to ASSERT() in dco_update_keys()
+* removed error message in case of failure of finish_options(). The
+  latter already warns the user about the failure - no need to print
+  another generic message.
 ---
- src/openvpn/dco.c     | 101 ++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/dco.h     |  14 ++++++
- src/openvpn/forward.c |  19 ++++++++
- 3 files changed, 134 insertions(+)
+ src/openvpn/init.c  | 57 ++++++++++++++++++++++++++++-----------------
+ src/openvpn/init.h  |  2 ++
+ src/openvpn/multi.c |  7 ++++++
+ 3 files changed, 44 insertions(+), 22 deletions(-)
 
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index 0471e4d0..07c16de1 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -94,6 +94,107 @@ init_key_dco_bi(struct tls_multi *multi, struct key_state *ks,
-                            ciphername);
- }
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 338d797b..db42d540 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2093,14 +2093,6 @@ do_up(struct context *c, bool pulled_options, unsigned int option_types_found)
+                 return false;
+             }
+         }
+-        else if (c->mode == MODE_POINT_TO_POINT)
+-        {
+-            if (!do_deferred_p2p_ncp(c))
+-            {
+-                msg(D_TLS_ERRORS, "ERROR: Failed to apply P2P negotiated protocol options");
+-                return false;
+-            }
+-        }
  
-+/**
-+ * Find a usable key that is not the primary (i.e. the secondary key)
-+ *
-+ * @param multi     The TLS struct to retrieve keys from
-+ * @param primary   The primary key that should be skipped during the scan
-+ *
-+ * @return          The secondary key or NULL if none could be found
-+ */
-+static struct key_state *
-+dco_get_secondary_key(struct tls_multi *multi, const struct key_state *primary)
-+{
-+    for (int i = 0; i < KEY_SCAN_SIZE; ++i)
-+    {
-+        struct key_state *ks = get_key_scan(multi, i);
-+        struct key_ctx_bi *key = &ks->crypto_options.key_ctx_bi;
-+
-+        if (ks == primary)
+         /* if --up-delay specified, open tun, do ifconfig, and run up script now */
+         if (c->options.up_delay || PULL_DEFINED(&c->options))
+@@ -2127,6 +2119,20 @@ do_up(struct context *c, bool pulled_options, unsigned int option_types_found)
+             }
+         }
+ 
++        if (!pulled_options && c->mode == MODE_POINT_TO_POINT)
 +        {
-+            continue;
++            if (!do_deferred_p2p_ncp(c))
++            {
++                msg(D_TLS_ERRORS, "ERROR: Failed to apply P2P negotiated protocol options");
++                return false;
++            }
 +        }
 +
-+        if (ks->state >= S_GENERATED_KEYS && ks->authenticated == KS_AUTH_TRUE)
++        if (!finish_options(c))
 +        {
-+            ASSERT(key->initialized);
-+            return ks;
++            return false;
 +        }
++
+         if (c->c2.did_open_tun)
+         {
+             c->c1.pulled_options_digest_save = c->c2.pulled_options_digest;
+@@ -2332,23 +2338,30 @@ do_deferred_options(struct context *c, const unsigned int found)
+         {
+             return false;
+         }
+-        struct frame *frame_fragment = NULL;
 +    }
 +
-+    return NULL;
++    return true;
 +}
 +
-+void
-+dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
++bool
++finish_options(struct context *c)
 +{
-+    msg(D_DCO_DEBUG, "%s: peer_id=%d", __func__, multi->peer_id);
-+
-+    /* this function checks if keys have to be swapped or erased, therefore it
-+     * can't do much if we don't have any key installed
-+     */
-+    if (multi->dco_keys_installed == 0)
++    struct frame *frame_fragment = NULL;
+ #ifdef ENABLE_FRAGMENT
+-        if (c->options.ce.fragment)
+-        {
+-            frame_fragment = &c->c2.frame_fragment;
+-        }
++    if (c->options.ce.fragment)
 +    {
-+        return;
++        frame_fragment = &c->c2.frame_fragment;
 +    }
-+
-+    struct key_state *primary = tls_select_encryption_key(multi);
-+    /* either we have no primary key at all or, if we do, it must have been
-+     * installed already (keys are installed upon generation in the TLS code)
-+     */
-+    ASSERT(!primary || primary->dco_status != DCO_NOT_INSTALLED);
-+
-+    /* no primary key available -> no usable key exists, therefore we should
-+     * tell DCO to simply wipe all keys
-+     */
-+    if (!primary)
+ #endif
+ 
+-        struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
+-        if (!tls_session_update_crypto_params(c->c2.tls_multi, session,
+-                                              &c->options, &c->c2.frame,
+-                                              frame_fragment,
+-                                              get_link_socket_info(c)))
+-        {
+-            msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
+-            return false;
+-        }
++    struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
++    if (!tls_session_update_crypto_params(c->c2.tls_multi, session,
++                                          &c->options, &c->c2.frame,
++                                          frame_fragment,
++                                          get_link_socket_info(c)))
 +    {
-+        msg(D_DCO, "No encryption key found. Purging data channel keys");
-+
-+        dco_del_key(dco, multi->peer_id, OVPN_KEY_SLOT_PRIMARY);
-+        dco_del_key(dco, multi->peer_id, OVPN_KEY_SLOT_SECONDARY);
-+        multi->dco_keys_installed = 0;
-+        return;
-+    }
-+
-+    struct key_state *secondary = dco_get_secondary_key(multi, primary);
-+    /* same reason as the primary key above */
-+    ASSERT(!secondary || secondary->dco_status != DCO_NOT_INSTALLED);
-+
-+    /* the current primary key was installed as secondary in DCO, this means
-+     * that userspace has promoted it and we should tell DCO to swap keys
-+     */
-+    if (primary->dco_status == DCO_INSTALLED_SECONDARY)
-+    {
-+        msg(D_DCO_DEBUG, "Swapping primary and secondary keys, now: id1=%d id2=%d",
-+            primary->key_id, secondary ? secondary->key_id : -1);
-+
-+        dco_swap_keys(dco, multi->peer_id);
-+        primary->dco_status = DCO_INSTALLED_PRIMARY;
-+        if (secondary)
-+        {
-+            secondary->dco_status = DCO_INSTALLED_SECONDARY;
-+        }
-+    }
-+
-+    /* if we have no secondary key anymore, inform DCO about it */
-+    if (!secondary && multi->dco_keys_installed == 2)
-+    {
-+        dco_del_key(dco, multi->peer_id, OVPN_KEY_SLOT_SECONDARY);
-+        multi->dco_keys_installed = 1;
-+    }
-+
-+    /* all keys that are not installed are set to NOT installed */
-+    for (int i = 0; i < KEY_SCAN_SIZE; ++i)
-+    {
-+        struct key_state *ks = get_key_scan(multi, i);
-+        if (ks != primary && ks != secondary)
-+        {
-+            ks->dco_status = DCO_NOT_INSTALLED;
-+        }
-+    }
-+}
-+
- static bool
- dco_check_option_conflict_platform(int msglevel, const struct options *o)
- {
-diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
-index 1692f5c3..b926e236 100644
---- a/src/openvpn/dco.h
-+++ b/src/openvpn/dco.h
-@@ -132,6 +132,14 @@ int init_key_dco_bi(struct tls_multi *multi, struct key_state *ks,
-                     const struct key2 *key2, int key_direction,
-                     const char *ciphername, bool server);
- 
-+/**
-+ * Possibly swap or wipe keys from DCO
-+ *
-+ * @param dco           DCO device context
-+ * @param multi         TLS multi instance
-+ */
-+void dco_update_keys(dco_context_t *dco, struct tls_multi *multi);
-+
- #else /* if defined(ENABLE_DCO) */
- 
- typedef void *dco_context_t;
-@@ -192,5 +200,11 @@ init_key_dco_bi(struct tls_multi *multi, struct key_state *ks,
-     return 0;
- }
- 
-+static inline void
-+dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
-+{
-+    ASSERT(false);
-+}
-+
- #endif /* defined(ENABLE_DCO) */
- #endif /* ifndef DCO_H */
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 28f3c088..38d2683c 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -41,6 +41,7 @@
- #include "dhcp.h"
- #include "common.h"
- #include "ssl_verify.h"
-+#include "dco.h"
- 
- #include "memdbg.h"
- 
-@@ -140,6 +141,18 @@ context_reschedule_sec(struct context *c, int sec)
++        msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
++        return false;
      }
- }
  
-+void
-+check_dco_key_status(struct context *c)
-+{
-+    /* DCO context is not yet initialised or enabled */
-+    if (!dco_enabled(&c->options))
-+    {
-+        return;
-+    }
-+
-+    dco_update_keys(&c->c1.tuntap->dco, c->c2.tls_multi);
-+}
-+
- /*
-  * In TLS mode, let TLS level respond to any control-channel
-  * packets which were received, or prepare any packets for
-@@ -182,6 +195,12 @@ check_tls(struct context *c)
+     return true;
+diff --git a/src/openvpn/init.h b/src/openvpn/init.h
+index 5f412a33..9389e0db 100644
+--- a/src/openvpn/init.h
++++ b/src/openvpn/init.h
+@@ -97,6 +97,8 @@ void reset_coarse_timers(struct context *c);
  
-     interval_schedule_wakeup(&c->c2.tmp_int, &wakeup);
+ bool do_deferred_options(struct context *c, const unsigned int found);
  
-+    /* Our current code has no good hooks in the TLS machinery to update
-+     * DCO keys. So we check the key status after the whole TLS machinery
-+     * has been completed and potentially update them
-+     */
-+    check_dco_key_status(c);
++bool finish_options(struct context *c);
 +
-     if (wakeup)
+ void inherit_context_child(struct context *dest,
+                            const struct context *src);
+ 
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index c72575ae..34ab90b4 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -2405,6 +2405,13 @@ multi_client_connect_late_setup(struct multi_context *m,
      {
-         context_reschedule_sec(c, wakeup);
+         mi->context.c2.tls_multi->multi_state = CAS_FAILED;
+     }
++    /* Continue processing options only if authentication hasn't failed.
++     * Otherwise it does not make sense and we may operate on a non-configured
++     * client instance */
++    else
++    {
++        finish_options(&mi->context);
++    }
+ 
+     /* send push reply if ready */
+     if (mi->context.c2.push_request_received)
 -- 
 2.35.1
 
