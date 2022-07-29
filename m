@@ -1,12 +1,11 @@
-Date: Fri, 29 Jul 2022 12:33:51 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <YuO3j/n9Ojd+9ZA6@...2678...>
-References: <20220726115100.31449-1-selva.nair@...277...>
- <20220727221830.31861-1-selva.nair@...277...>
+From: Arne Schwabe <arne@...1227...>
+Date: Fri, 29 Jul 2022 14:37:48 +0200
+Message-Id: <20220729123748.3267207-1-arne@...1227...>
+In-Reply-To: <20220625234150.3398864-1-arne@...1227...>
+References: <20220625234150.3398864-1-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <20220727221830.31861-1-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v2] xkey_provider: fix building with
- --disable-management
+Subject: [Openvpn-devel] [PATCH v4 1/5] Extract check_session_cipher into
+ standalone function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,88 +14,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-On Wed, Jul 27, 2022 at 06:18:30PM -0400, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
-> 
-> v2: also fix building test_provider
->  - ifdefs in test_provider.c
->  - include integer.h for min_int as manage.h
->    may not always pull it in
+This allow the code later to check if the cipher is okay to use and
+update it for the calculation for the max MTU size.
 
-FTR, buildbot is happy now with these changes.
-uncrustify is not, see below, but that can probably
-be fixed on apply.
+Signed-off-by: Arne Schwabe <arne@...1227...>
 
-Acked-By: Frank Lichtenheld <frank@...2641...>
+Patch v2: Name function check_session_cipher to better reflect its
+          function
+---
+ src/openvpn/ssl.c     | 11 +----------
+ src/openvpn/ssl_ncp.c | 22 ++++++++++++++++++++++
+ src/openvpn/ssl_ncp.h |  8 ++++++++
+ 3 files changed, 31 insertions(+), 10 deletions(-)
 
-> diff --git a/tests/unit_tests/openvpn/test_provider.c b/tests/unit_tests/openvpn/test_provider.c
-> index 47e7e395..d146af62 100644
-> --- a/tests/unit_tests/openvpn/test_provider.c
-> +++ b/tests/unit_tests/openvpn/test_provider.c
-> @@ -30,6 +30,7 @@
->  
->  #include "syshead.h"
->  #include "manage.h"
-> +#include "integer.h"
->  #include "xkey_common.h"
->  
->  #ifdef HAVE_XKEY_PROVIDER
-> @@ -127,7 +128,9 @@ init_test()
->      /* set default propq matching what we use in ssl_openssl.c */
->      EVP_set_default_properties(NULL, "?provider!=ovpn.xkey");
->  
-> +#ifdef ENABLE_MANAGEMENT
->      management = test_calloc(sizeof(*management), 1);
-> +#endif
->  }
->  
->  static void
-> @@ -272,6 +275,7 @@ done:
->      return sig;
->  }
->  
-> +#ifdef ENABLE_MANAGEMENT
->  /* Check loading of management external key and have sign callback exercised
->   * for RSA and EC keys with and without digest support in management client.
->   * Sha256 digest used for both cases with pss padding for RSA.
-> @@ -310,6 +314,7 @@ again:
->          EVP_PKEY_free(privkey);
->      }
->  }
-> +#endif
-
-uncrustify wants this
---- "b/tests/unit_tests/openvpn/test_provider.c"        2022-07-29 11:34:20.067492200 +0200
-+++ "a/tests/unit_tests/openvpn/test_provider.c"        2022-07-29 11:34:20.054239000 +0200
-@@ -314,7 +314,7 @@
-         EVP_PKEY_free(privkey);
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 24d7f3f48..ee248b472 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1678,17 +1678,8 @@ tls_session_update_crypto_params(struct tls_session *session,
+                                  struct frame *frame_fragment,
+                                  struct link_socket_info *lsi)
+ {
+-
+-    bool cipher_allowed_as_fallback = options->enable_ncp_fallback
+-                                      && streq(options->ciphername, session->opt->config_ciphername);
+-
+-    if (!session->opt->server && !cipher_allowed_as_fallback
+-        && !tls_item_in_cipher_list(options->ciphername, options->ncp_ciphers))
++    if (!check_session_cipher(session, options))
+     {
+-        msg(D_TLS_ERRORS, "Error: negotiated cipher not allowed - %s not in %s",
+-            options->ciphername, options->ncp_ciphers);
+-        /* undo cipher push, abort connection setup */
+-        options->ciphername = session->opt->config_ciphername;
+         return false;
      }
+ 
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index 564942503..a58ced537 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -490,3 +490,25 @@ p2p_mode_ncp(struct tls_multi *multi, struct tls_session *session)
+ 
+     gc_free(&gc);
  }
--#endif
-+#endif /* ifdef ENABLE_MANAGEMENT */
-
- /* helpers for testing generic key load and sign */
- static int xkey_free_called;
-
->  /* helpers for testing generic key load and sign */
->  static int xkey_free_called;
-> @@ -409,7 +414,9 @@ main(void)
->  
->      const struct CMUnitTest tests[] = {
->          cmocka_unit_test(xkey_provider_test_fetch),
-> +#ifdef ENABLE_MANAGEMENT
->          cmocka_unit_test(xkey_provider_test_mgmt_sign_cb),
-> +#endif
->          cmocka_unit_test(xkey_provider_test_generic_sign_cb),
->      };
-
-
-
++
++
++bool
++check_session_cipher(struct tls_session *session, struct options *options)
++{
++    bool cipher_allowed_as_fallback = options->enable_ncp_fallback
++                                      && streq(options->ciphername, session->opt->config_ciphername);
++
++    if (!session->opt->server && !cipher_allowed_as_fallback
++        && !tls_item_in_cipher_list(options->ciphername, options->ncp_ciphers))
++    {
++        msg(D_TLS_ERRORS, "Error: negotiated cipher not allowed - %s not in %s",
++            options->ciphername, options->ncp_ciphers);
++        /* undo cipher push, abort connection setup */
++        options->ciphername = session->opt->config_ciphername;
++        return false;
++    }
++    else
++    {
++        return true;
++    }
++}
+diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h
+index 853017f5f..97c043029 100644
+--- a/src/openvpn/ssl_ncp.h
++++ b/src/openvpn/ssl_ncp.h
+@@ -148,4 +148,12 @@ const char *
+ get_p2p_ncp_cipher(struct tls_session *session, const char *peer_info,
+                    struct gc_arena *gc);
+ 
++
++/**
++ * Checks if the cipher is allowed, otherwise returns false and reset the
++ * cipher to the config cipher.
++ */
++bool
++check_session_cipher(struct tls_session *session, struct options *options);
++
+ #endif /* ifndef OPENVPN_SSL_NCP_H */
 -- 
-  Frank Lichtenheld
+2.32.1 (Apple Git-133)
+
 
