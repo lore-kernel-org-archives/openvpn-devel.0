@@ -1,11 +1,12 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Thu, 28 Jul 2022 21:55:01 +0200
-Message-Id: <20220728195501.3253-1-a@...2181...>
-In-Reply-To: <20220624083809.23487-15-a@...2181...>
-References: 
+Date: Fri, 29 Jul 2022 09:41:52 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <YuOPQGIC0A2aO1ud@...2678...>
+References: <20220624083809.23487-11-a@...2181...>
+ <20220728193542.14801-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 14/25] dco: implement dco support for
- p2mp/server code path
+In-Reply-To: <20220728193542.14801-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2 10/25] dco: periodically check and
+ possibly rotate/delete keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,623 +15,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
 
-This change introduces ovpn-dco support along the p2mp/server code path.
-Some code seems to be duplicate of the p2p version, but details are
-different, so it couldn't be shared.
+On Thu, Jul 28, 2022 at 09:35:42PM +0200, Antonio Quartulli wrote:
+> Data channel keys are periodically regenarated and installed in
+> ovpn-dco.
+> However, there is a certain moment when keys are rotated in order
+> to elect the new primary one.
+> 
+> Check the key status in userspace so that kernelspace can be informed as
+> well when rotations happen.
+[...]
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
+Small musings about the code comments:
 
-Changes from v1:
-* fix if condition P_DATA_V2 -> P_DATA_V1
-* fix unknown reason string
+> +void
+> +dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
+> +{
+> +    msg(D_DCO_DEBUG, "%s: peer_id=%d", __func__, multi->peer_id);
+> +
+> +    /* this function checks if keys have to be swapped or erased, therefore it
+> +     * can't do much if we don't have any key installed
+> +     */
+> +    if (multi->dco_keys_installed == 0)
+> +    {
+> +        return;
+> +    }
+> +
+> +    struct key_state *primary = tls_select_encryption_key(multi);
+> +    /* either we have no primary key at all or, if we do, it must have been
+> +     * installed already (keys are installed upon generation in the TLS code)
+> +     */
+> +    ASSERT(!primary || primary->dco_status != DCO_NOT_INSTALLED);
+> +
+> +    /* no primary key available -> no usable key exists, therefore we should
+> +     * tell DCO to simply wipe all keys
+> +     */
+> +    if (!primary)
+> +    {
+> +        msg(D_DCO, "No encryption key found. Purging data channel keys");
+> +
+> +        dco_del_key(dco, multi->peer_id, OVPN_KEY_SLOT_PRIMARY);
+> +        dco_del_key(dco, multi->peer_id, OVPN_KEY_SLOT_SECONDARY);
+> +        multi->dco_keys_installed = 0;
+> +        return;
+> +    }
+> +
+> +    struct key_state *secondary = dco_get_secondary_key(multi, primary);
+> +    /* same reason as the primary key above */
+> +    ASSERT(!secondary || secondary->dco_status != DCO_NOT_INSTALLED);
+> +
+> +    /* the current primary key was installed as secondary in DCO, this means
+> +     * that userspace has promoted it and we should tell DCO to swap keys
 
- src/openvpn/dco.c   |   1 +
- src/openvpn/dco.h   |  49 ++++++++++
- src/openvpn/mtcp.c  |  59 +++++++++---
- src/openvpn/mudp.c  |  13 +++
- src/openvpn/multi.c | 216 +++++++++++++++++++++++++++++++++++---------
- src/openvpn/multi.h |  14 ++-
- 6 files changed, 296 insertions(+), 56 deletions(-)
+I found the use of "userspace" here a bit confusing. This code is part of userspace,
+right? So wouldn't it be easier to say "we have promoted it"?
 
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index b5717a77..633dd7fd 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -36,6 +36,7 @@
- #include "crypto.h"
- #include "dco.h"
- #include "errlevel.h"
-+#include "multi.h"
- #include "networking.h"
- #include "openvpn.h"
- #include "options.h"
-diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
-index 602dafb7..72569083 100644
---- a/src/openvpn/dco.h
-+++ b/src/openvpn/dco.h
-@@ -37,10 +37,14 @@
- struct event_set;
- struct key2;
- struct key_state;
-+struct multi_context;
-+struct multi_instance;
-+struct mroute_addr;
- struct options;
- struct tls_multi;
- struct tuntap;
- 
-+#define DCO_IROUTE_METRIC   100
- #define DCO_DEFAULT_METRIC  200
- 
- #if defined(ENABLE_DCO)
-@@ -181,6 +185,34 @@ int dco_set_peer(dco_context_t *dco, unsigned int peerid,
-  */
- void dco_remove_peer(struct context *c);
- 
-+/**
-+ * Install a new peer in DCO - to be called by a SERVER instance
-+ *
-+ * @param m         the server context
-+ * @param mi        the client instance
-+ * @return          0 on success or a negative error code otherwise
-+ */
-+int dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi);
-+
-+/**
-+ * Install an iroute in DCO, which means adding a route to the system routing
-+ * table. To be called by a SERVER instance only.
-+ *
-+ * @param m         the server context
-+ * @param mi        the client instance acting as nexthop for the route
-+ * @param addr      the route to add
-+ */
-+void dco_install_iroute(struct multi_context *m, struct multi_instance *mi,
-+                        struct mroute_addr *addr);
-+
-+/**
-+ * Remove all routes added through the specified client
-+ *
-+ * @param m         the server context
-+ * @param mi        the client instance for which routes have to be removed
-+ */
-+void dco_delete_iroutes(struct multi_context *m, struct multi_instance *mi);
-+
- #else /* if defined(ENABLE_DCO) */
- 
- typedef void *dco_context_t;
-@@ -271,5 +303,22 @@ dco_remove_peer(struct context *c)
- {
- }
- 
-+static inline bool
-+dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi)
-+{
-+    return true;
-+}
-+
-+static inline void
-+dco_install_iroute(struct multi_context *m, struct multi_instance *mi,
-+                   struct mroute_addr *addr)
-+{
-+}
-+
-+static inline void
-+dco_delete_iroutes(struct multi_context *m, struct multi_instance *mi)
-+{
-+}
-+
- #endif /* defined(ENABLE_DCO) */
- #endif /* ifndef DCO_H */
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index b3c153fe..eb88a56a 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -61,6 +61,7 @@
- #define MTCP_SIG         ((void *)3) /* Only on Windows */
- #define MTCP_MANAGEMENT ((void *)4)
- #define MTCP_FILE_CLOSE_WRITE ((void *)5)
-+#define MTCP_DCO        ((void *)6)
- 
- #define MTCP_N           ((void *)16) /* upper bound on MTCP_x */
- 
-@@ -131,6 +132,8 @@ multi_create_instance_tcp(struct multi_context *m)
-         const uint32_t hv = hash_value(hash, &mi->real);
-         struct hash_bucket *bucket = hash_bucket(hash, hv);
- 
-+        multi_assign_peer_id(m, mi);
-+
-         he = hash_lookup_fast(hash, bucket, &mi->real, hv);
- 
-         if (he)
-@@ -238,6 +241,7 @@ multi_tcp_dereference_instance(struct multi_tcp *mtcp, struct multi_instance *mi
-     if (ls && mi->socket_set_called)
-     {
-         event_del(mtcp->es, socket_event_handle(ls));
-+        mi->socket_set_called = false;
-     }
-     mtcp->n_esr = 0;
- }
-@@ -279,6 +283,9 @@ multi_tcp_wait(const struct context *c,
-     }
- #endif
-     tun_set(c->c1.tuntap, mtcp->es, EVENT_READ, MTCP_TUN, persistent);
-+#if defined(TARGET_LINUX)
-+    dco_event_set(&c->c1.tuntap->dco, mtcp->es, MTCP_DCO);
-+#endif
- 
- #ifdef ENABLE_MANAGEMENT
-     if (management)
-@@ -395,6 +402,18 @@ multi_tcp_wait_lite(struct multi_context *m, struct multi_instance *mi, const in
- 
-     tv_clear(&c->c2.timeval); /* ZERO-TIMEOUT */
- 
-+    if (mi && mi->context.c2.link_socket->info.dco_installed)
-+    {
-+        /* If we got a socket that has been handed over to the kernel
-+         * we must not call the normal socket function to figure out
-+         * if it is readable or writable */
-+        /* Assert that we only have the DCO exptected flags */
-+        ASSERT(action & (TA_SOCKET_READ | TA_SOCKET_WRITE));
-+
-+        /* We are always ready! */
-+        return action;
-+    }
-+
-     switch (action)
-     {
-         case TA_TUN_READ:
-@@ -518,7 +537,10 @@ multi_tcp_dispatch(struct multi_context *m, struct multi_instance *mi, const int
- 
-         case TA_INITIAL:
-             ASSERT(mi);
--            multi_tcp_set_global_rw_flags(m, mi);
-+            if (!mi->context.c2.link_socket->info.dco_installed)
-+            {
-+                multi_tcp_set_global_rw_flags(m, mi);
-+            }
-             multi_process_post(m, mi, mpp_flags);
-             break;
- 
-@@ -568,7 +590,10 @@ multi_tcp_post(struct multi_context *m, struct multi_instance *mi, const int act
-             }
-             else
-             {
--                multi_tcp_set_global_rw_flags(m, mi);
-+                if (!c->c2.link_socket->info.dco_installed)
-+                {
-+                    multi_tcp_set_global_rw_flags(m, mi);
-+                }
-             }
-             break;
- 
-@@ -625,23 +650,22 @@ multi_tcp_action(struct multi_context *m, struct multi_instance *mi, int action,
-         /*
-          * Dispatch the action
-          */
--        {
--            struct multi_instance *touched = multi_tcp_dispatch(m, mi, action);
-+        struct multi_instance *touched = multi_tcp_dispatch(m, mi, action);
- 
--            /*
--             * Signal received or TCP connection
--             * reset by peer?
--             */
--            if (touched && IS_SIG(&touched->context))
-+        /*
-+         * Signal received or TCP connection
-+         * reset by peer?
-+         */
-+        if (touched && IS_SIG(&touched->context))
-+        {
-+            if (mi == touched)
-             {
--                if (mi == touched)
--                {
--                    mi = NULL;
--                }
--                multi_close_instance_on_signal(m, touched);
-+                mi = NULL;
-             }
-+            multi_close_instance_on_signal(m, touched);
-         }
- 
-+
-         /*
-          * If dispatch produced any pending output
-          * for a particular instance, point to
-@@ -739,6 +763,13 @@ multi_tcp_process_io(struct multi_context *m)
-                     multi_tcp_action(m, mi, TA_INITIAL, false);
-                 }
-             }
-+#if defined(ENABLE_DCO) && defined(TARGET_LINUX)
-+            /* incoming data on DCO? */
-+            else if (e->arg == MTCP_DCO)
-+            {
-+                multi_process_incoming_dco(m);
-+            }
-+#endif
-             /* signal received? */
-             else if (e->arg == MTCP_SIG)
-             {
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 0cbca1a9..ddb1efc9 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -381,6 +381,19 @@ multi_process_io_udp(struct multi_context *m)
-         multi_process_file_closed(m, mpp_flags);
-     }
- #endif
-+#if defined(ENABLE_DCO) && defined(TARGET_LINUX)
-+    else if (status & DCO_READ)
-+    {
-+        if (!IS_SIG(&m->top))
-+        {
-+            bool ret = true;
-+            while (ret)
-+            {
-+                ret = multi_process_incoming_dco(m);
-+            }
-+        }
-+    }
-+#endif
- }
- 
- /*
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 34ab90b4..4b671bb3 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -51,6 +51,7 @@
- 
- #include "crypto_backend.h"
- #include "ssl_util.h"
-+#include "dco.h"
- 
- /*#define MULTI_DEBUG_EVENT_LOOP*/
- 
-@@ -519,6 +520,9 @@ multi_del_iroutes(struct multi_context *m,
- {
-     const struct iroute *ir;
-     const struct iroute_ipv6 *ir6;
-+
-+    dco_delete_iroutes(m, mi);
-+
-     if (TUNNEL_TYPE(mi->context.c1.tuntap) == DEV_TYPE_TUN)
-     {
-         for (ir = mi->context.options.iroutes; ir != NULL; ir = ir->next)
-@@ -1224,16 +1228,20 @@ multi_learn_in_addr_t(struct multi_context *m,
-         addr.netbits = (uint8_t) netbits;
-     }
- 
--    {
--        struct multi_instance *owner = multi_learn_addr(m, mi, &addr, 0);
-+    struct multi_instance *owner = multi_learn_addr(m, mi, &addr, 0);
- #ifdef ENABLE_MANAGEMENT
--        if (management && owner)
--        {
--            management_learn_addr(management, &mi->context.c2.mda_context, &addr, primary);
--        }
-+    if (management && owner)
-+    {
-+        management_learn_addr(management, &mi->context.c2.mda_context, &addr, primary);
-+    }
- #endif
--        return owner;
-+    if (!primary)
-+    {
-+        /* We do not want to install IP -> IP dev ovpn-dco0 */
-+        dco_install_iroute(m, mi, &addr);
-     }
-+
-+    return owner;
- }
- 
- static struct multi_instance *
-@@ -1257,16 +1265,20 @@ multi_learn_in6_addr(struct multi_context *m,
-         mroute_addr_mask_host_bits( &addr );
-     }
- 
--    {
--        struct multi_instance *owner = multi_learn_addr(m, mi, &addr, 0);
-+    struct multi_instance *owner = multi_learn_addr(m, mi, &addr, 0);
- #ifdef ENABLE_MANAGEMENT
--        if (management && owner)
--        {
--            management_learn_addr(management, &mi->context.c2.mda_context, &addr, primary);
--        }
-+    if (management && owner)
-+    {
-+        management_learn_addr(management, &mi->context.c2.mda_context, &addr, primary);
-+    }
- #endif
--        return owner;
-+    if (!primary)
-+    {
-+        /* We do not want to install IP -> IP dev ovpn-dco0 */
-+        dco_install_iroute(m, mi, &addr);
-     }
-+
-+    return owner;
- }
- 
- /*
-@@ -1765,6 +1777,15 @@ multi_client_set_protocol_options(struct context *c)
-         tls_multi->use_peer_id = true;
-         o->use_peer_id = true;
-     }
-+    else if (dco_enabled(o))
-+    {
-+        msg(M_INFO, "Client does not support DATA_V2. Data channel offloaing "
-+            "requires DATA_V2. Dropping client.");
-+        auth_set_client_reason(tls_multi, "Data channel negotiation "
-+                               "failed (missing DATA_V2)");
-+        return false;
-+    }
-+
-     if (proto & IV_PROTO_REQUEST_PUSH)
-     {
-         c->c2.push_request_received = true;
-@@ -2276,8 +2297,9 @@ cleanup:
-  * Generates the data channel keys
-  */
- static bool
--multi_client_generate_tls_keys(struct context *c)
-+multi_client_generate_tls_keys(struct multi_context *m, struct multi_instance *mi)
- {
-+    struct context *c = &mi->context;
-     struct frame *frame_fragment = NULL;
- #ifdef ENABLE_FRAGMENT
-     if (c->options.ce.fragment)
-@@ -2285,6 +2307,17 @@ multi_client_generate_tls_keys(struct context *c)
-         frame_fragment = &c->c2.frame_fragment;
-     }
- #endif
-+
-+    if (dco_enabled(&c->options))
-+    {
-+        int ret = dco_multi_add_new_peer(m, mi);
-+        if (ret < 0)
-+        {
-+            msg(D_DCO, "Cannot add peer to DCO: %s", strerror(-ret));
-+            return false;
-+        }
-+    }
-+
-     struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
-     if (!tls_session_update_crypto_params(c->c2.tls_multi, session, &c->options,
-                                           &c->c2.frame, frame_fragment,
-@@ -2401,7 +2434,7 @@ multi_client_connect_late_setup(struct multi_context *m,
-     }
-     /* Generate data channel keys only if setting protocol options
-      * has not failed */
--    else if (!multi_client_generate_tls_keys(&mi->context))
-+    else if (!multi_client_generate_tls_keys(m, mi))
-     {
-         mi->context.c2.tls_multi->multi_state = CAS_FAILED;
-     }
-@@ -2668,6 +2701,14 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
-         (*cur_handler_index)++;
-     }
- 
-+    /* Check if we have forbidding options in the current mode */
-+    if (dco_enabled(&mi->context.options)
-+        && !dco_check_option_conflict(D_MULTI_ERRORS, &mi->context.options))
-+    {
-+        msg(D_MULTI_ERRORS, "MULTI: client has been rejected due to incompatible DCO options");
-+        cc_succeeded = false;
-+    }
-+
-     if (cc_succeeded)
-     {
-         multi_client_connect_late_setup(m, mi, *option_types_found);
-@@ -3086,6 +3127,124 @@ done:
-     gc_free(&gc);
- }
- 
-+/*
-+ * Called when an instance should be closed due to the
-+ * reception of a soft signal.
-+ */
-+void
-+multi_close_instance_on_signal(struct multi_context *m, struct multi_instance *mi)
-+{
-+    remap_signal(&mi->context);
-+    set_prefix(mi);
-+    print_signal(mi->context.sig, "client-instance", D_MULTI_LOW);
-+    clear_prefix();
-+    multi_close_instance(m, mi, false);
-+}
-+
-+#if (defined(ENABLE_DCO) && defined(TARGET_LINUX)) || defined(ENABLE_MANAGEMENT)
-+static void
-+multi_signal_instance(struct multi_context *m, struct multi_instance *mi, const int sig)
-+{
-+    mi->context.sig->signal_received = sig;
-+    multi_close_instance_on_signal(m, mi);
-+}
-+#endif
-+
-+#if defined(ENABLE_DCO) && defined(TARGET_LINUX)
-+static void
-+process_incoming_dco_packet(struct multi_context *m, struct multi_instance *mi,
-+                            dco_context_t *dco)
-+{
-+    if (BLEN(&dco->dco_packet_in) < 1)
-+    {
-+        msg(D_DCO, "Received too short packet for peer %d",
-+            dco->dco_message_peer_id);
-+        goto done;
-+    }
-+
-+    uint8_t *ptr = BPTR(&dco->dco_packet_in);
-+    uint8_t op = ptr[0] >> P_OPCODE_SHIFT;
-+    if ((op == P_DATA_V1) || (op == P_DATA_V2))
-+    {
-+        msg(D_DCO, "DCO: received data channel packet for peer %d",
-+            dco->dco_message_peer_id);
-+        goto done;
-+    }
-+
-+    struct buffer orig_buf = mi->context.c2.buf;
-+    mi->context.c2.buf = dco->dco_packet_in;
-+
-+    multi_process_incoming_link(m, mi, 0);
-+
-+    mi->context.c2.buf = orig_buf;
-+
-+done:
-+    buf_init(&dco->dco_packet_in, 0);
-+}
-+
-+static void
-+process_incoming_del_peer(struct multi_context *m, struct multi_instance *mi,
-+                          dco_context_t *dco)
-+{
-+    const char *reason = "ovpn-dco: unknown reason";
-+    switch (dco->dco_del_peer_reason)
-+    {
-+        case OVPN_DEL_PEER_REASON_EXPIRED:
-+            reason = "ovpn-dco: ping expired";
-+            break;
-+
-+        case OVPN_DEL_PEER_REASON_TRANSPORT_ERROR:
-+            reason = "ovpn-dco: transport error";
-+            break;
-+
-+        case OVPN_DEL_PEER_REASON_USERSPACE:
-+            /* This very likely ourselves but might be another process, so
-+             * still process it */
-+            reason = "ovpn-dco: userspace request";
-+            break;
-+    }
-+
-+    /* When kernel already deleted the peer, the socket is no longer
-+     * installed and we don't need to cleanup the state in the kernel */
-+    mi->context.c2.tls_multi->dco_peer_added = false;
-+    mi->context.sig->signal_text = reason;
-+    multi_signal_instance(m, mi, SIGTERM);
-+}
-+
-+bool
-+multi_process_incoming_dco(struct multi_context *m)
-+{
-+    dco_context_t *dco = &m->top.c1.tuntap->dco;
-+
-+    struct multi_instance *mi = NULL;
-+
-+    int ret = dco_do_read(&m->top.c1.tuntap->dco);
-+
-+    int peer_id = dco->dco_message_peer_id;
-+
-+    if ((peer_id >= 0) && (peer_id < m->max_clients) && (m->instances[peer_id]))
-+    {
-+        mi = m->instances[peer_id];
-+        if (dco->dco_message_type == OVPN_CMD_PACKET)
-+        {
-+            process_incoming_dco_packet(m, mi, dco);
-+        }
-+        else if (dco->dco_message_type == OVPN_CMD_DEL_PEER)
-+        {
-+            process_incoming_del_peer(m, mi, dco);
-+        }
-+    }
-+    else
-+    {
-+        msg(D_DCO, "Received packet for peer-id unknown to OpenVPN: %d", peer_id);
-+    }
-+
-+    dco->dco_message_type = 0;
-+    dco->dco_message_peer_id = -1;
-+    return ret > 0;
-+}
-+#endif /* if defined(ENABLE_DCO) && defined(TARGET_LINUX) */
-+
- /*
-  * Process packets in the TCP/UDP socket -> TUN/TAP interface direction,
-  * i.e. client -> server direction.
-@@ -3647,32 +3806,11 @@ multi_process_signal(struct multi_context *m)
-     return true;
- }
- 
--/*
-- * Called when an instance should be closed due to the
-- * reception of a soft signal.
-- */
--void
--multi_close_instance_on_signal(struct multi_context *m, struct multi_instance *mi)
--{
--    remap_signal(&mi->context);
--    set_prefix(mi);
--    print_signal(mi->context.sig, "client-instance", D_MULTI_LOW);
--    clear_prefix();
--    multi_close_instance(m, mi, false);
--}
--
- /*
-  * Management subsystem callbacks
-  */
- #ifdef ENABLE_MANAGEMENT
- 
--static void
--multi_signal_instance(struct multi_context *m, struct multi_instance *mi, const int sig)
--{
--    mi->context.sig->signal_received = sig;
--    multi_close_instance_on_signal(m, mi);
--}
--
- static void
- management_callback_status(void *arg, const int version, struct status_output *so)
- {
-@@ -3762,10 +3900,6 @@ management_delete_event(void *arg, event_t event)
-     }
- }
- 
--#endif /* ifdef ENABLE_MANAGEMENT */
--
--#ifdef ENABLE_MANAGEMENT
--
- static struct multi_instance *
- lookup_by_cid(struct multi_context *m, const unsigned long cid)
- {
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index f1e9ab91..370d795c 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -98,7 +98,9 @@ struct client_connect_defer_state
-  * server-mode.
-  */
- struct multi_instance {
--    struct schedule_entry se;  /* this must be the first element of the structure */
-+    struct schedule_entry se;  /* this must be the first element of the structure,
-+                                * We cast between this and schedule_entry so the
-+                                * beginning of the struct must be identical */
-     struct gc_arena gc;
-     bool halt;
-     int refcount;
-@@ -310,6 +312,16 @@ void multi_process_float(struct multi_context *m, struct multi_instance *mi);
-  */
- bool multi_process_post(struct multi_context *m, struct multi_instance *mi, const unsigned int flags);
- 
-+/**
-+ * Process an incoming DCO message (from kernel space).
-+ *
-+ * @param m            - The single \c multi_context structur.e
-+ *
-+ * @return
-+ *  - True, if the message was received correctly.
-+ *  - False, if there was an error while reading the message.
-+ */
-+bool multi_process_incoming_dco(struct multi_context *m);
- 
- /**************************************************************************/
- /**
+> +     */
+> +    if (primary->dco_status == DCO_INSTALLED_SECONDARY)
+> +    {
+> +        msg(D_DCO_DEBUG, "Swapping primary and secondary keys, now: id1=%d id2=%d",
+> +            primary->key_id, secondary ? secondary->key_id : -1);
+> +
+> +        dco_swap_keys(dco, multi->peer_id);
+> +        primary->dco_status = DCO_INSTALLED_PRIMARY;
+> +        if (secondary)
+> +        {
+> +            secondary->dco_status = DCO_INSTALLED_SECONDARY;
+> +        }
+> +    }
+> +
+> +    /* if we have no secondary key anymore, inform DCO about it */
+> +    if (!secondary && multi->dco_keys_installed == 2)
+> +    {
+> +        dco_del_key(dco, multi->peer_id, OVPN_KEY_SLOT_SECONDARY);
+> +        multi->dco_keys_installed = 1;
+> +    }
+> +
+> +    /* all keys that are not installed are set to NOT installed */
+> +    for (int i = 0; i < KEY_SCAN_SIZE; ++i)
+> +    {
+> +        struct key_state *ks = get_key_scan(multi, i);
+> +        if (ks != primary && ks != secondary)
+> +        {
+> +            ks->dco_status = DCO_NOT_INSTALLED;
+> +        }
+> +    }
+> +}
+> +
+>  static bool
+>  dco_check_option_conflict_platform(int msglevel, const struct options *o)
+>  {
+> diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
+> index 1692f5c3..b926e236 100644
+> --- a/src/openvpn/dco.h
+> +++ b/src/openvpn/dco.h
+> @@ -132,6 +132,14 @@ int init_key_dco_bi(struct tls_multi *multi, struct key_state *ks,
+>                      const struct key2 *key2, int key_direction,
+>                      const char *ciphername, bool server);
+>  
+> +/**
+> + * Possibly swap or wipe keys from DCO
+
+I would actually prefer to be a bit more explicit here:
+"Sync our key status to DCO, potentially swapping or wiping keys"
+
+> + *
+> + * @param dco           DCO device context
+> + * @param multi         TLS multi instance
+> + */
+> +void dco_update_keys(dco_context_t *dco, struct tls_multi *multi);
+> +
+>  #else /* if defined(ENABLE_DCO) */
+>  
+>  typedef void *dco_context_t;
+[...]
+
+
+Regards,
 -- 
-2.35.1
-
+  Frank Lichtenheld
 
