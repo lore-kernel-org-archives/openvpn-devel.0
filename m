@@ -1,11 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri, 29 Jul 2022 14:37:48 +0200
-Message-Id: <20220729123748.3267207-1-arne@...1227...>
-In-Reply-To: <20220625234150.3398864-1-arne@...1227...>
-References: <20220625234150.3398864-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4 1/5] Extract check_session_cipher into
- standalone function
+Date: Mon, 1 Aug 2022 10:22:36 +0200 (CEST)
+Message-Id: <202208010822.2718Maod045623@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220729123748.3267207-1-arne@...1227...>
+References: <20220729123748.3267207-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Extract check_session_cipher
+ into standalone function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,92 +15,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This allow the code later to check if the cipher is okay to use and
-update it for the calculation for the max MTU size.
+This is technically the same as 1/5 in v3, except s/update/check/, and
+*that* one is is exactly the same patch as "3/6" in the earlier patch series
+(20220621161649.2872985-3-arne@...1227...) which had an ACK from Frank
+-> applying that ACK here, adding my own.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Stare-at-code and --color-moved=zebra confirms "trivial code move"
 
-Patch v2: Name function check_session_cipher to better reflect its
-          function
----
- src/openvpn/ssl.c     | 11 +----------
- src/openvpn/ssl_ncp.c | 22 ++++++++++++++++++++++
- src/openvpn/ssl_ncp.h |  8 ++++++++
- 3 files changed, 31 insertions(+), 10 deletions(-)
+Passes t_client tests.
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 24d7f3f48..ee248b472 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1678,17 +1678,8 @@ tls_session_update_crypto_params(struct tls_session *session,
-                                  struct frame *frame_fragment,
-                                  struct link_socket_info *lsi)
- {
--
--    bool cipher_allowed_as_fallback = options->enable_ncp_fallback
--                                      && streq(options->ciphername, session->opt->config_ciphername);
--
--    if (!session->opt->server && !cipher_allowed_as_fallback
--        && !tls_item_in_cipher_list(options->ciphername, options->ncp_ciphers))
-+    if (!check_session_cipher(session, options))
-     {
--        msg(D_TLS_ERRORS, "Error: negotiated cipher not allowed - %s not in %s",
--            options->ciphername, options->ncp_ciphers);
--        /* undo cipher push, abort connection setup */
--        options->ciphername = session->opt->config_ciphername;
-         return false;
-     }
- 
-diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 564942503..a58ced537 100644
---- a/src/openvpn/ssl_ncp.c
-+++ b/src/openvpn/ssl_ncp.c
-@@ -490,3 +490,25 @@ p2p_mode_ncp(struct tls_multi *multi, struct tls_session *session)
- 
-     gc_free(&gc);
- }
-+
-+
-+bool
-+check_session_cipher(struct tls_session *session, struct options *options)
-+{
-+    bool cipher_allowed_as_fallback = options->enable_ncp_fallback
-+                                      && streq(options->ciphername, session->opt->config_ciphername);
-+
-+    if (!session->opt->server && !cipher_allowed_as_fallback
-+        && !tls_item_in_cipher_list(options->ciphername, options->ncp_ciphers))
-+    {
-+        msg(D_TLS_ERRORS, "Error: negotiated cipher not allowed - %s not in %s",
-+            options->ciphername, options->ncp_ciphers);
-+        /* undo cipher push, abort connection setup */
-+        options->ciphername = session->opt->config_ciphername;
-+        return false;
-+    }
-+    else
-+    {
-+        return true;
-+    }
-+}
-diff --git a/src/openvpn/ssl_ncp.h b/src/openvpn/ssl_ncp.h
-index 853017f5f..97c043029 100644
---- a/src/openvpn/ssl_ncp.h
-+++ b/src/openvpn/ssl_ncp.h
-@@ -148,4 +148,12 @@ const char *
- get_p2p_ncp_cipher(struct tls_session *session, const char *peer_info,
-                    struct gc_arena *gc);
- 
-+
-+/**
-+ * Checks if the cipher is allowed, otherwise returns false and reset the
-+ * cipher to the config cipher.
-+ */
-+bool
-+check_session_cipher(struct tls_session *session, struct options *options);
-+
- #endif /* ifndef OPENVPN_SSL_NCP_H */
--- 
-2.32.1 (Apple Git-133)
+Your patch has been applied to the master branch.
+
+commit dd1837ca549e0494164fb4633d61a317529778b4
+Author: Arne Schwabe
+Date:   Fri Jul 29 14:37:48 2022 +0200
+
+     Extract check_session_cipher into standalone function
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220729123748.3267207-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24766.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
