@@ -1,11 +1,10 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Tue,  2 Aug 2022 15:03:12 +0200
-Message-Id: <20220802130312.18871-1-a@...2181...>
-In-Reply-To: <20220802082316.1424-1-a@...2181...>
-References: 
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] dco: move availability check to the end
- of check_option_conflict() function
+Date: Tue, 2 Aug 2022 15:26:36 +0200 (CEST)
+Message-Id: <202208021326.272DQaeO072511@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220520213250.3126372-3-arne@...1227...>
+References: <20220520213250.3126372-3-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Cleanup receive_auth_failed and
+ simplify method
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,71 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-To better arrange the order DCO option conflict messages are printed, we
-decided to first perform all needed checks on provided options and, only
-at the end, if no conflict was detected, to check if DCO is really
-available on the system.
+As Frank said, "best viewed with diff -w" :-) - the cleanup bits are
+also straightforward.
 
-This way a user gets prompted with all warnings about their
-configuration first and, when everything is fixed, they will see if DCO
-is available or not.
+I do not have a good test case for this - but my usual client tests with
+"expect AUTH_FAILED..." all pass.
 
-While at it, compress the first check in just one if to make the code
-simpler.
+Your patch has been applied to the master branch.
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
+commit 88823adebac31958cee83572241cff9fc775a601
+Author: Arne Schwabe
+Date:   Fri May 20 23:32:48 2022 +0200
 
-Changes from v1:
-* pass proper argument to dco_available()
----
- src/openvpn/dco.c | 22 +++++++++-------------
- 1 file changed, 9 insertions(+), 13 deletions(-)
+     Cleanup receive_auth_failed and simplify method
 
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index a6912d4e..0877f0af 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -268,18 +268,11 @@ dco_check_option_conflict_ce(const struct connection_entry *ce, int msglevel)
- bool
- dco_check_option_conflict(int msglevel, const struct options *o)
- {
--    if (o->tuntap_options.disable_dco)
--    {
--        /* already disabled by --disable-dco, no need to print warnings */
--        return false;
--    }
--
--    if (!dco_available(msglevel))
--    {
--        return false;
--    }
--
--    if (!o->dev)
-+    /* check if DCO was already disabled by the user or if no dev name was
-+     * specified at all. In the latter case, later logic will most likely stop
-+     * OpenVPN, so no need to print any message here.
-+     */
-+    if (o->tuntap_options.disable_dco || !o->dev)
-     {
-         return false;
-     }
-@@ -361,7 +354,10 @@ dco_check_option_conflict(int msglevel, const struct options *o)
-     }
-     gc_free(&gc);
- 
--    return true;
-+    /* now that all options have been confirmed to be supported, check if DCO is
-+     * truly available on the system
-+     */
-+    return dco_available(msglevel);
- }
- 
- bool
--- 
-2.35.1
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20220520213250.3126372-3-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24412.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
