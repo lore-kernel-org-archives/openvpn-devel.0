@@ -1,14 +1,11 @@
-Date: Tue, 2 Aug 2022 14:27:32 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <YukYNOwpaIeA7j80@...1296...>
-References: <20211213162841.15763-1-frank@...2641...>
+From: Antonio Quartulli <a@...2181...>
+Date: Tue,  2 Aug 2022 15:03:12 +0200
+Message-Id: <20220802130312.18871-1-a@...2181...>
+In-Reply-To: <20220802082316.1424-1-a@...2181...>
+References: 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="pGX+Q8ervBbkUoVn"
-Content-Disposition: inline
-In-Reply-To: <20211213162841.15763-1-frank@...2641...>
-Subject: Re: [Openvpn-devel] [PATCH] Make build deterministic,
- remove __DATE__
+Subject: [Openvpn-devel] [PATCH v2] dco: move availability check to the end
+ of check_option_conflict() function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,69 +14,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
---pGX+Q8ervBbkUoVn
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To better arrange the order DCO option conflict messages are printed, we
+decided to first perform all needed checks on provided options and, only
+at the end, if no conflict was detected, to check if DCO is really
+available on the system.
 
-Hi,
+This way a user gets prompted with all warnings about their
+configuration first and, when everything is fixed, they will see if DCO
+is available or not.
 
-On Mon, Dec 13, 2021 at 05:28:41PM +0100, Frank Lichtenheld wrote:
-> The information provided by this is minimal
-> and it makes it more difficult to provide
-> deterministic builds. There are work-arounds
-> for that but I think it is easier to just remove
-> it completely.
->=20
-> Allows the build to pass with -Wdate-time -Werror.
->=20
-> Signed-off-by: Frank Lichtenheld <frank@...2641...>
+While at it, compress the first check in just one if to make the code
+simpler.
 
-I see that this patch has two ACKs, but I feel I'd lose visibility
-into my heap of test binaries all over the place.
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
 
-OTOH, I do see the argument about deterministic (release) builds.
+Changes from v1:
+* pass proper argument to dco_available()
+---
+ src/openvpn/dco.c | 22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
 
-What we already do today is to include the git commit ID *iff* this
-is built from git into CONFIGURE_GIT_REVISION (version.h) - maybe
-this could be done in a similar way?
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index a6912d4e..0877f0af 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -268,18 +268,11 @@ dco_check_option_conflict_ce(const struct connection_entry *ce, int msglevel)
+ bool
+ dco_check_option_conflict(int msglevel, const struct options *o)
+ {
+-    if (o->tuntap_options.disable_dco)
+-    {
+-        /* already disabled by --disable-dco, no need to print warnings */
+-        return false;
+-    }
+-
+-    if (!dco_available(msglevel))
+-    {
+-        return false;
+-    }
+-
+-    if (!o->dev)
++    /* check if DCO was already disabled by the user or if no dev name was
++     * specified at all. In the latter case, later logic will most likely stop
++     * OpenVPN, so no need to print any message here.
++     */
++    if (o->tuntap_options.disable_dco || !o->dev)
+     {
+         return false;
+     }
+@@ -361,7 +354,10 @@ dco_check_option_conflict(int msglevel, const struct options *o)
+     }
+     gc_free(&gc);
+ 
+-    return true;
++    /* now that all options have been confirmed to be supported, check if DCO is
++     * truly available on the system
++     */
++    return dco_available(msglevel);
+ }
+ 
+ bool
+-- 
+2.35.1
 
- - if there is no .git around (and/or $condition?), build without
-   commit ID and no build date
-
- - if there is, add build date + git revision to "openvpn --version"
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---pGX+Q8ervBbkUoVn
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJi6Rg0AAoJEB2Cnv7KVigSkW8L/iL/EITuXyoR/TNyOpMCouED
-3HLNH7x5/YMOrINzU5p8ShvIsomPYvxfUj4rwoc/RvCDbiLId3VylPs8T+mNnuJG
-0zWOpe4iW2uWqYlSg6YnviypN7qnDIEm7Gqasu0+CAzD5JTMAICGBRhXCWUos2zP
-LXzm+KwyFGtmTCwPoD13gIeWjDY4LZsXGDqk9xWuB0IWI2J6q+MFAztv5uvRBKRm
-Wh5FB80EigALsv1fhLBJxchBNHM+Vb58ajvvMVIlBTUnLPwlA4nr31XSyohTFlLH
-0c/LhsiqzNh9s3NOtmwDh9tpR0solUOSQESs6RKEpCkynf3Ppd4clUpOX6ZeclHL
-DBXi9yXqPb+tAtyYyZT/P71dQoqIvhdBTUuPa2RvSyA2bsb4A0k2jQmq9ZdTdon0
-FWphMDrvm5Uu7Y/s3thLxTClaD2iizvQt0IvGRVx3T9YNbM6Vz1wBSQNUYqZiYbM
-riX5vGOVNubSaND3LWqK+KiZGj9SWYy4LhKxqJtAMg==
-=ojeL
------END PGP SIGNATURE-----
-
---pGX+Q8ervBbkUoVn--
 
