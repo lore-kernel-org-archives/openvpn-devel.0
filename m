@@ -1,10 +1,12 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Wed,  3 Aug 2022 11:50:12 +0200
-Message-Id: <20220803095012.24975-1-a@...2181...>
-In-Reply-To: <20220803085114.15117-1-a@...2181...>
-References: 
+Content-Type: multipart/mixed; boundary="------------y3gcllhrFEa0gO5ypbp6Wdvt"
+Message-ID: <afee7965-5fd2-c770-f8fd-966a89bf0658@...515...>
+Date: Wed, 3 Aug 2022 13:09:42 +0300
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4 11/25] dco: split option parsing routines
+Content-Language: en-US
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+References: <87129f59-3b5a-8574-843d-8edbb82b4ace@...515...>
+In-Reply-To: <87129f59-3b5a-8574-843d-8edbb82b4ace@...515...>
+Subject: [Openvpn-devel] Summary of the community meeting (3rd August 2022)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,159 +15,208 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
 
-DCO will try to install keys upon generating them, however, this happens
-when parsing pushed cipher options (due to NCP).
+This is a multi-part message in MIME format.
+--------------y3gcllhrFEa0gO5ypbp6Wdvt
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-For this reason we need to postpone parsing pushed cipher options to *after*
-the tunnel interface has been opened, otherwise we would have no DCO netdev
-object to operate on.
+Hi,
 
-At the same time we split the parsing code, so that we can ensure that
-the NEW_PEER call can happen after the received peer-id has been parsed
-(it is required by all DCO API calls).
+Here's the summary of the IRC meeting.
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
 
-Changes from v3:
-* call do_deferred_options_part2() only if !pulled_options. This is the
-  same condition that triggered the call to do_deferred_options() in the
-  first place, therefore part2 must follow the same logic.
-* add extra comment in do_up to explain "step2" after open_tun()
+COMMUNITY MEETING
 
-Changes from v2:
-* rename finish_options() to do_deferred_options_part2()
-* add comments to explain why this new function is required
-* remove invocation in multi.c: we already perform key generation as
-  last step
+Place: #openvpn-meeting on libera.chat
+Date: Wed 3rd August 2022
+Time: 10:30 CEST (9:30 UTC)
 
-Changes from v1:
-* removed error message in case of failure of finish_options(). The
-  latter already warns the user about the failure - no need to print
-  another generic message.
+Planned meeting topics for this meeting were here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2022-08-03>
+
+Your local meeting time is easy to check from services such as
+
+<http://www.timeanddate.com/worldclock>
+
+SUMMARY
+
+cron2, d12fk, dazo, djpig, lev, kp, mattock, MaxF and ordex participated 
+in this meeting.
+
 ---
- src/openvpn/init.c | 81 ++++++++++++++++++++++++++++++++--------------
- 1 file changed, 56 insertions(+), 25 deletions(-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 338d797b..de8faeb4 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2078,6 +2078,37 @@ options_hash_changed_or_zero(const struct sha256_digest *a,
-            || !memcmp(a, &zero, sizeof(struct sha256_digest));
- }
- 
-+/**
-+ * This function is expected to be invoked after open_tun() was performed.
-+ *
-+ * This kind of behaviour is required by DCO, because the following operations
-+ * can be done only after the DCO device was created and the new peer was
-+ * properly added.
-+ */
-+static bool
-+do_deferred_options_part2(struct context *c)
-+{
-+    struct frame *frame_fragment = NULL;
-+#ifdef ENABLE_FRAGMENT
-+    if (c->options.ce.fragment)
-+    {
-+        frame_fragment = &c->c2.frame_fragment;
-+    }
-+#endif
-+
-+    struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
-+    if (!tls_session_update_crypto_params(c->c2.tls_multi, session,
-+                                          &c->options, &c->c2.frame,
-+                                          frame_fragment,
-+                                          get_link_socket_info(c)))
-+    {
-+        msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
-+        return false;
-+    }
-+
-+    return true;
-+}
-+
- bool
- do_up(struct context *c, bool pulled_options, unsigned int option_types_found)
- {
-@@ -2093,14 +2124,6 @@ do_up(struct context *c, bool pulled_options, unsigned int option_types_found)
-                 return false;
-             }
-         }
--        else if (c->mode == MODE_POINT_TO_POINT)
--        {
--            if (!do_deferred_p2p_ncp(c))
--            {
--                msg(D_TLS_ERRORS, "ERROR: Failed to apply P2P negotiated protocol options");
--                return false;
--            }
--        }
- 
-         /* if --up-delay specified, open tun, do ifconfig, and run up script now */
-         if (c->options.up_delay || PULL_DEFINED(&c->options))
-@@ -2127,6 +2150,31 @@ do_up(struct context *c, bool pulled_options, unsigned int option_types_found)
-             }
-         }
- 
-+        /* do_deferred_options_part2() and do_deferred_p2p_ncp() *must* be
-+         * invoked after open_tun().
-+         * This is required by DCO because we must have created the interface
-+         * and added the peer before we can fiddle with the keys or any other
-+         * data channel per-peer setting.
-+         */
-+        if (pulled_options)
-+        {
-+            if (!do_deferred_options_part2(c))
-+            {
-+                return false;
-+            }
-+        }
-+        else
-+        {
-+            if (c->mode == MODE_POINT_TO_POINT)
-+            {
-+                if (!do_deferred_p2p_ncp(c))
-+                {
-+                    msg(D_TLS_ERRORS, "ERROR: Failed to apply P2P negotiated protocol options");
-+                    return false;
-+                }
-+            }
-+        }
-+
-         if (c->c2.did_open_tun)
-         {
-             c->c1.pulled_options_digest_save = c->c2.pulled_options_digest;
-@@ -2332,23 +2380,6 @@ do_deferred_options(struct context *c, const unsigned int found)
-         {
-             return false;
-         }
--        struct frame *frame_fragment = NULL;
--#ifdef ENABLE_FRAGMENT
--        if (c->options.ce.fragment)
--        {
--            frame_fragment = &c->c2.frame_fragment;
--        }
--#endif
--
--        struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
--        if (!tls_session_update_crypto_params(c->c2.tls_multi, session,
--                                              &c->options, &c->c2.frame,
--                                              frame_fragment,
--                                              get_link_socket_info(c)))
--        {
--            msg(D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
--            return false;
--        }
-     }
- 
-     return true;
+Talked about buildbot. After latest djpig's changes (including 
+increasing number of CPU cores on the docker host) gitpoller seems to 
+have become stable.
+
+---
+
+Noted that djpig needs t_client keys for his MacOS buildbot worker. 
+Cron2 can grant him access, or mattock can get him the keys.
+
+---
+
+Noted that nothing important has been happening in OpenVPN's release/2.5 
+branch.
+
+---
+
+Talked about the ifconfig-noexec patch. Noted that because buildbot was 
+not operating properly the patch could not yet be tested properly. 
+Agreed that ifconfig-noexec patch will be exposed to the now working 
+buildbot after the DCO hassle is done.
+
+---
+
+kp will repost the FreeBSD DCO patches once the latest Linux DCO patches 
+have landed.
+
+---
+
+Agreed to remove the --disable-managent option.
+
 -- 
-2.35.1
 
+Full chatlog attached
+
+--------------y3gcllhrFEa0gO5ypbp6Wdvt
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn_irc_meeting_chatlog_2022-08-03.txt"
+Content-Disposition: attachment;
+ filename="openvpn_irc_meeting_chatlog_2022-08-03.txt"
+Content-Transfer-Encoding: base64
+
+KDExOjMwOjA0KSBkYXpvOiBvLwooMTE6MzA6MTMpIGNyb24yX186IEkgYW0gaGVyZQooMTE6
+MzA6MTYpIGNyb24yX186IGFuZCBJIGFtIG5vdCBoZXJlLi4uCigxMTozMDoyMCkgbWF0dG9j
+azogaGkKKDExOjMwOjM4KSBkYXpvOiBzY2hyw7ZkaW5nZXJzIGNyb24yX18gLi4uLi4KKDEx
+OjMwOjM5KSBjcm9uMl9fOiBJIGp1c3QgcmVjZWl2ZWQgYSBjYWxsIHRoYXQgSSBuZWVkIHRv
+IGxlYXZlICpub3cqIHRvIHBpY2sgdXAgJGtpZCBhdCB0cmFpbiBzdGF0aW9uLCBhdCAxMTox
+NSwgYW5kIGl0IHRha2VzIG1lIDMwKyBtaW51dGVzIHRvIGdldCB0aGVyZS4uLgooMTE6MzA6
+NTkpIGRhem86IG5vIHdvcnJpZXMKKDExOjMxOjAzKSBjcm9uMl9fOiBJIGRvIG5vdCBoYXZl
+IGFueXRoaW5nIHRoYXQgb3JkZXggb3IgZGpwaWcgY291bGRuJ3QgcmVwb3J0IG9uCigxMToz
+MTozMSkgZGpwaWc6IGhleSwgSSdtIHB1bmN0dWFsIHRvIGEgY29tbXVuaXR5IG1lZXRpbmcg
+OikKKDExOjMxOjMyKSBjcm9uMl9fOiBkYXpvOiBzb21ldGhpbmcgZm9yIHlvdSAtIHRoaXMg
+S2EgTG9rIFd1IHBlcnNvbiBzZW50IGEgbWFpbCB0byBzZWN1cml0eUAgdGhhdCBub25lIG9m
+IHVzIGNhbiBkZWNyeXB0LiAgTWF5YmUgd2UgbmVlZCBuZXcgc2VjdXJpdHlAIGtleXM/Cigx
+MTozMTo0MCkgY3JvbjJfXzogZGpwaWc6IGhpIGFuZCBjaWFvIDstKQooMTE6MzE6NTApIE1h
+eEY6IGhpIQooMTE6MzE6NTcpICoqKmNyb24yX18gd2F2ZXMgYW5kIHJ1bnMKKDExOjMyOjAz
+KSBkYXpvOiBjcm9uMl9fOiBJJ2xsIGhhbmRsZSB0aGF0IC4uLiBJIHRob3VnaHQgSSBoYWQg
+c2VudCB5b3UgdGhlIDIwMjIga2V5cyBmb3Igc2VjdXJpdHkgbGlzdAooMTE6MzI6MTgpIG1h
+dHRvY2s6IGhpIGd1eXMhCigxMTozMjoyNykgY3JvbjJfXzogZGF6bzogaWYgeW91IGhhdmUs
+IHRoZXkgaGF2ZW4ndCBtYWRlIGl0IDotKCAtIHBsZWFzZSByZS1zZW5kCigxMTozMzowMSkg
+KioqcGxhaXN0aG9zIGlzIGhlcmUKKDExOjMzOjI5KSBkMTJmazogaGkKKDExOjM0OjEzKSBk
+anBpZzogZmlyc3QgdG9waWMgc2VlbXMgdG8gYmUgZm9yIG1lIHRvIGdpdmUgYSBidWlsZGJv
+dCBzdGF0dXMgdXBkYXRlPwooMTE6MzQ6MjMpIG1hdHRvY2s6IEknbSBpbnRlcmVzdGVkIGlu
+IHRoYXQgYWxzbwooMTE6MzQ6MzUpIG1hdHRvY2s6IGFsc28sIHRoYW5rcyB0byBkanBpZyBm
+b3Igc2F2aW5nIHdoYXQgcmVtYWluZWQgb2YgbXkgdmFjYXRpb24hIDopCigxMTozNDo0Mykg
+ZGpwaWc6IG9rYXksIEkgd2lsbCBnZXQgc3RhcnRlZAooMTE6MzU6MTgpIGRqcGlnOiAtIGJ1
+aWxkYm90IGdpdHBvbGxlciB3b3JrcyByZWxpYWJsZSBzaW5jZSB1cGRhdGUgdG8gMy41LjAK
+KDExOjM1OjQyKSBkanBpZzogLSBJIGFkZGVkIHdvcmtlcnMgZm9yIFVidW50dSAyMiBhbmQg
+RmVkb3JhIDM2LiBJZiB5b3UgaGF2ZSBhbnkgd29ya2VycyB5b3UncmUgbWlzc2luZyBsZXQg
+bWUga25vdwooMTE6MzY6MDQpIG1hdHRvY2s6IGRqcGlnOiBkaWQgeW91IHVwZ3JhZGUgdGhl
+IEVDMiBpbnN0YW5jZSBhbHNvPwooMTE6MzY6MTEpIG1hdHRvY2s6IGFuZC9vciBhbGxvY2F0
+ZSBtb3JlIG1lbW9yeSBmb3IgdGhlIGNvbnRhaW5lcj8KKDExOjM2OjE0KSBtYXR0b2NrOiBi
+dWlsZG1hc3RlciBjb250YWluZXIKKDExOjM2OjE4KSBvcmRleDogYXkKKDExOjM2OjIzKSBk
+anBpZzogLSBJIGFkZGVkIGEgbWFjT1Mgd29ya2VyIHllc3RlcmRheSB3aGljaCBzaG91bGQg
+YmUgbW9zdGx5IGZ1bmN0aW9uYWwgbm93LiBNaXNzaW5nIHRfY2xpZW50IHNldHVwCigxMToz
+Njo0NSkgZGpwaWc6IG1hdHRvY2s6IHllYWgsIHVwZ3JhZGVkIGZyb20gMiB2Q1BVcyB0byA0
+IHZDUFVzCigxMTozNjo1MCkgbWF0dG9jazogKzEKKDExOjM3OjE0KSBkanBpZzogbWVtb3J5
+IGlzIG5vdCBhIHByb2JsZW0gc28gZmFyLCBzbyBJIHVzZWQgdGhlIG0gaW5zdGFuY2UgdHlw
+ZSBmb3Igbm93LgooMTE6Mzc6MjUpIGRqcGlnOiBDIGJ1aWxkcyByZWFsbHkgZG9uJ3QgcmVx
+dWlyZSBhIGxvdCBvZiBtZW1vcnkKKDExOjM4OjAwKSBtYXR0b2NrOiBjdXJyZW50IGJ1aWxk
+Ym90IGNvbmZpZyB1c2VzIGxvY2tpbmcgdG8gZW5zdXJlIHRoYXQsIGF0IGFueSBnaXZlbiB0
+aW1lLCBvbmx5IHR3byBkb2NrZXItYmFzZWQgYnVpbGRzIGFyZSBydW5uaW5nIGF0IHRoZSBz
+YW1lIHRpbWUKKDExOjM4OjIxKSBtYXR0b2NrOiB0aGlzIHByZXZlbnRzIGJ1aWxkYm90IGRv
+Y2tlciBob3N0IGZyb20gY2hva2luZyBvbiB0cnlpbmcgdG8gbGF1bmNoIDx4PiBjb250YWlu
+ZXJzIGF0IG9uY2UKKDExOjM4OjM1KSBtYXR0b2NrOiB0aGlzIHNob3VsZCBlbnN1cmUgdGhh
+dCBtZW1vcnkgY29uc3VtcHRpb24gcmVtYWlucyByZWFzb25hYmxlCigxMTozODo0OCkgZGpw
+aWc6IGNyb24yX186IG1hdHRvY2sgc2FpZCBmb3IgZ2V0dGluZyBhY2Nlc3MgdG8gdGhlIHRf
+Y2xpZW50IENBIHRvIGdlbmVyYXRlIGEgbmV3IGNsaWVudCBjZXJ0IGZvciB0aGUgbWFjT1Mg
+d29ya2VyIEkgbmVlZCB5b3VyIGFzc2lzdGFuY2U/CigxMTozOToyMykgZGpwaWc6IG1hdHRv
+Y2s6IGFjdHVhbGx5IGl0IGlzIG51bSBvZiBDUFVzLCBub3QgMi4gQnV0IGV2ZW4gd2l0aCBm
+b3VyIGJ1aWxkcyBtZW1vcnkgaXMgc3RpbGwgcGxlbnR5CigxMTo0MDozOCkgZGpwaWc6IEkg
+dGhpbmsgdGhhdCdzIGl0IGFzIGFuIHVwZGF0ZS4gTGV0IG1lIGtub3cgaWYgeW91IGhhdmUg
+cXVlc3Rpb25zLiBPdGhlcndpc2Ugd2UgY2FuIG1vdmUgb24gdG8gdGhlIG5leHQgdG9waWMs
+IEkgZ3Vlc3MKKDExOjQwOjQ5KSBtYXR0b2NrOiBhaCBvawooMTE6NDI6MTUpIG1hdHRvY2s6
+IGRqcGlnOiBJIGNhbiBhbHNvIGdlbmVyYXRlIHRfY2xpZW50IGtleXMgZm9yIHlvdSwgb3Ig
+Y3JvbjIgY291bGQgZ3JhbnQgeW91IGFjY2VzcyB0byB0aGUgb3BlbnZwbiB0ZXN0L2NhIHNl
+cnZlcgooMTE6NDI6NTUpIG1hdHRvY2s6IG5leHQgdG9waWM6ICJIYWNrYXRob24iCigxMTo0
+MzowNCkgbWF0dG9jazogYW55IG5ld3MgZnJvbSBNYXhGIG9yIGxldj8KKDExOjQzOjQ5KSBs
+ZXZfXzogeWVhaCB3ZSdyZSB3ZWxjb21lZCBpbiBIa2ksIEkgaGF2ZW4ndCBjYW5jZWxsZWQg
+aXQgeWV0CigxMTo0NDoyNykgbGV2X186IGFwcGFyZW50bHkgaW4gRGVsZnQgd2UgbmVlZCBm
+aXJzdCBhaWQgZ3V5CigxMTo0NTowOCkgTWF4RjogT25lIG9mIHRoZSBwZW9wbGUgd2hvIGFy
+ZSBoZWxwaW5nIG91dCBoYWQgdGhlIEJIViB0cmFpbmluZy4gSSdsbCB0cnkgdG8gbG9vayBm
+b3Igb25lIG1vcmUgaW4gY2FzZSB0aGV5IGNhbid0IGJlIHRoZXJlIHRoZSB3aG9sZSB0aW1l
+CigxMTo0NjoxMSkgb3JkZXg6IGNvdWxkIHdlIHN0YXJ0IGEgcG9sbCBmb3IgdGhlIGRhdGVz
+PyBvciB3ZSBuZWVkIG1vcmUgcGllY2VzIGZpcnN0PwooMTE6NDc6MjMpIE1heEY6IEknbGwg
+Y2hlY2sgdG9kYXkgd2l0aCB0aGUgZmlyc3QgYWlkIHBlcnNvbiBpZiB0aGVyZSBhcmUgc29t
+ZSBkYXRlcyB3aGVyZSB0aGV5IGFyZW4ndCBhdmFpbGFibGUKKDExOjQ3OjQ2KSBNYXhGOiB0
+aGVuIEkgY2FuIGV4Y2x1ZGUgdGhvc2UgZGF0ZXMgZnJvbSB0aGUgcG9sbCByaWdodCBhd2F5
+CigxMTo0ODozNykgTWF4RjogZmlyc3QgZGF0ZSBTZXB0ZW1iZXIgMjQsIGxhc3QgZGF0ZSBO
+b3ZlbWJlciAyNj8KKDExOjQ5OjAyKSBiZWNtXyBbflRodW5kZXJiaUAyMTcuMTEwLjY4LjQy
+XSDDqCBlbnRyYXRvIG5lbGxhIHN0YW56YS4KKDExOjQ5OjIyKSBvcmRleDogSSB0aGluayBp
+dCBtYWtlcyBzZW5zZQooMTE6NTA6MjkpIGRhem86ICsxCigxMTo1MToxMykgbWF0dG9jazog
+KzEKKDExOjUyOjExKSBtYXR0b2NrOiBzeW5jIHVwIG9uIDIuNS8yLjY/CigxMTo1Mjo0NCkg
+bWF0dG9jazogKEkgaGF2ZSB0byBnbyB0byBsdW5jaCBpbiA8MjAgbWlucywgdHJhdmVsaW5n
+IGluIGNhcikKKDExOjU0OjEyKSBvcmRleDogZm9yIDIuNSBJIGFtIG5vdCBzdXJlIHRoZXJl
+IGlzIG11Y2g/CigxMTo1NDoyNikgb3JkZXg6IGZvciAyLjYgd2UgYXJlIG9uIERDTyBwYXRj
+aCAxMCBhbmQgMTEgYXQgdGhlIG1vbWVudAooMTE6NTQ6MzkpIG9yZGV4OiAxMCBpcyBjbG9z
+ZSB0byBiZSBtZXJnZWQgLSBjcm9uMl9fIHdhcyBhc2tpbmcgc29tZSBleHRyYSBmZWVkYmFj
+ayB0byBkanBpZyAKKDExOjU0OjQ5KSBvcmRleDogd2hpbGUgMTEgaGFzIGp1c3QgYmVlbiBz
+dWJqZWN0IG9mIG1vZGlmaWNhdGlvbgooMTE6NTU6MTQpIGQxMmZrOiBJJ2xsIGhhdmUgc3Rh
+cnRlZCByZXZpZXdpbmcgbW9yZSBmcm9tIHBsYWlzdGhvcyBieSBuZXh0IHdlZWssIHNvIHRo
+ZXJlIHdpbGwgYmUgbW9yZSBpbmNvbWluZyBmb3IgMi42CigxMTo1NjowNCkga3A6IEknbSBw
+bGFubmluZyB0byByZS1wb3N0IHRoZSBmcmVlYnNkIHBhdGNoZXMgd2hlbiBtb3N0L2FsbCBv
+ZiB0aGUgY3VycmVudCBkY28gcGF0Y2hlcyBoYXZlIGxhbmRlZC4gRG9lcyB0aGF0IG1ha2Ug
+c2Vuc2UgdG8gZXZlcnlvbmU/CigxMTo1NjoyNCkgb3JkZXg6IGtwOiB5ZWFoLCB0aGVyZSBp
+cyBjdXJyZW50bHkgcXVpdGUgc29tZSBhY3Rpdml0eSBzbyByZXBvcnRpbmcgbm93IHdpbGwg
+b25seSBsZWFkIHRvIC0+IHJlcG9ydCBhZ2FpbiBsYXRlcgooMTE6NTc6MDQpIE1heEY6IHNv
+cnJ5IGlmIEknbSBhbm5veWluZywgYnV0IHdoYXQgYWJvdXQgdGhlIGlmY29uZmlnLW5vZXhl
+YyBidWc/CigxMTo1NzoyOSkga3A6IEknbSBub3QgZmFtaWxpYXIgd2l0aCB0aGF0IGlzc3Vl
+LgooMTE6NTc6NTkpIE1heEY6IGh0dHBzOi8vcGF0Y2h3b3JrLm9wZW52cG4ubmV0L3BhdGNo
+LzI1NjcvCigxMTo1ODoxMikgdnBuSGVscGVyOiBUaXRsZTogW09wZW52cG4tZGV2ZWwsdjVd
+IERvbid0ICJ1bmRvIiBpZmNvbmZpZyBvbiBleGl0IGlmIGl0IHdhc24ndCBkb25lIC0gUGF0
+Y2h3b3JrIChhdCBwYXRjaHdvcmsub3BlbnZwbi5uZXQpCigxMTo1ODoyNCkgb3JkZXg6IE1h
+eEY6IEkgYWNrZWQgdGhhdCBwYXRjaCB3aXRoIHJlc2VydmUgYnV0IGl0IGNvdWxkbid0IGJl
+IHRlc3RlZCBmdXJ0aGVyIGJlY2F1c2Ugd2Ugd2VyZSBpbiB0ZSBtaWRkbGUgb2YgYSBidWls
+ZGJvdCByZXNodWZmbGluZwooMTE6NTg6MzUpIG9yZGV4OiBzbyBjb3VsZG4ndCB0ZXN0IG9u
+IHZhcmlvdXMgcGxhdGZvcm1zIGxpa2UgKmJzZAooMTE6NTg6MzUpIFBpcHBpbl8gW35QaXBw
+aW5fQG9wZW52cG4vY29tbXVuaXR5L1BpcHBpbl0gw6ggZW50cmF0byBuZWxsYSBzdGFuemEu
+CigxMTo1ODo0Nykgb3JkZXg6IHRoZSBidWlsZGJvdCBpcyBiYWNrIG9wZXJhdGlvbiBzaW5j
+ZSBhIGZldyBkYXlzLCBidXQgbm93IGNyb24yX18gaXMgc3RpbGwgZGVlcCBpbnRvIERDTwoo
+MTE6NTg6NTkpIG9yZGV4OiBzbyBJIGd1ZXNzIHlvdXIgcGF0Y2ggd2lsbCBiZSBwb2tlZCBh
+Z2FpbiBvbmNlIHdlJ3JlIGRvbmUgd2l0aCBEQ08KKDExOjU5OjE1KSBvcmRleDogb3BlcmF0
+aW9uYWwqCigxMTo1OToxNykgbWF0dG9jazogdGhlcmUgYXJlIHN0aWxsIHNvbWUgYnVpbGRi
+b3QgYnVpbGQgZmFpbHVyZXMsIGJ1dCB0aG9zZSBzZWVtIGdlbnVpbmUgaXNzdWVzLCBub3Qg
+YnVpbGRib3QtcmVsYXRlZCAoYmFzZWQgb24gYSBjdXJzb3J5IGdsYW5jZSkKKDExOjU5OjI5
+KSBNYXhGOiBJIGhhdmUgYW4gT3BlbkJTRCBtYWNoaW5lLCB3b3VsZCBpdCBoZWxwIGlmIEkg
+dGVzdCBpdCBtYW51YWxseSBvbiB0aGVyZT8KKDExOjU5OjMwKSBvcmRleDogeWFwLCBzb21l
+IG9mIHRob3NlIGFyZSBvbiBjcm9uMl9fJ3MgYWdlbmRhIHRvIGZpeAooMTE6NTk6NTMpIG9y
+ZGV4OiBNYXhGOiBpdCBkZWZpbml0ZWx5IHdvdWxkLCBidXQgd2UnZCBzdGlsbCB3YW50IHRv
+IGhhdmUgdGhlIHBhdGNoIGdvIHRocm91Z2ggdGhlIGZ1bGwgYnVpbGRib3QgbWFjaGluZXJ5
+IGJlZm9yZSBtZXJnaW5nCigxMjowMDowNykgb3JkZXg6IGJ1dCB5ZWFoLCB0ZXN0aW5nIHRo
+ZXJlIGlzIGRlZmluaXRlbHkgYWRkZWQgdmFsdWUgKHlvdSBtYXkgZmluZCBhIGJ1ZyA6cCkK
+KDEyOjAwOjI3KSBNYXhGOiBvayEKKDEyOjA1OjE2KSBtYXR0b2NrOiBJIGhhdmUgMTAgbWlu
+cyAtIG5leHQgdG9waWM/CigxMjowNToyOCkgbWF0dG9jazogPDEwIG1pbnMKKDEyOjA2OjQy
+KSBtYXR0b2NrOiByZW1vdmUgLS1kaXNhYmxlLW1hbmFnZW1lbnQ/IAooMTI6MDc6MTEpIGRh
+em86IFllcywgcmVtb3ZlLgooMTI6MDg6MTYpIG9yZGV4OiByZW1vdmUhCigxMjowODozMSkg
+b3JkZXg6IGNyb24yX18gd2FzIGxvb2tpbmcgYXJvdW5kIGFuZCBzYXcgdGhhdCBpdCByZWFs
+bHkgYnJpbmdzIGEgbG90IG9mIGNvZGUKKDEyOjA4OjQ0KSBvcmRleDogYnV0IEkgYWdyZWUg
+dGhhdCBpdCBtYWtlcyBtb3JlIHNlbnNlIHRvIHJlbW92ZSB0aGUgaWZkZWYgY3JhemluZXNz
+IGFuZCBtYXliZSB3ZSBjYW4gc2ltcGxpZnkgdGhlIGNvZGUgbGF0ZXIgb24KKDEyOjA4OjQ2
+KSBwbGFpc3Rob3M6IEkgYWxzbyBkb24ndCB0aGluayB0aGUgZGlmZmVyZW5jZSBpcyBzaXpl
+IGlzIHdvcnRoIGl0IAooMTI6MDk6MDkpIG9yZGV4OiBbMTY0Mi41M10gPEBjcm9uMl9fPiAt
+LWRpc2FibGUtbWFuYWdlbWVudCBzYXZlcyA3MCBrYnl0ZXMKKDEyOjA5OjExKSBwbGFpc3Ro
+b3M6IGFuZCB0aGUgbWFpbnRhaW5hbmNlIGhlYWRhY2hlIGZvciB1cwooMTI6MDk6MTYpIG9y
+ZGV4OiBpdCdzIG5vdCByZWFsbHkgbmVnbGlnaWJsZQooMTI6MDk6MjApIHBsYWlzdGhvczog
+SSBrbm93LgooMTI6MDk6MjYpIG9yZGV4OiBidXQgeWVhaCwgd2UgY2FuIHN1cnZpdmUKKDEy
+OjA5OjMwKSBwbGFpc3Rob3M6IEJ1dCBvcGVudnBuIGluIHRvdGFsIGlzIG5vdCBiaWcgYnkg
+dG9kYXkncyBzdGFuZGFyZHMKKDEyOjEwOjIyKSBtYXR0b2NrOiBvaywgc28gcmVtb3ZlIGl0
+IGlzCigxMjoxMDoyNikgbWF0dG9jazogSSBuZWVkIHRvIHNwbGl0IG5vdwo=
+
+--------------y3gcllhrFEa0gO5ypbp6Wdvt--
 
