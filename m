@@ -1,9 +1,10 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Wed,  3 Aug 2022 17:40:49 +0200
-Message-Id: <20220803154049.1213-1-a@...2181...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] push: fix compilation with
- --disable-management and --enable-werror
+Date: Wed, 3 Aug 2022 17:56:22 +0200 (CEST)
+Message-Id: <202208031556.273FuMUk009231@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220803095012.24975-1-a@...2181...>
+References: <20220803095012.24975-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco: split option parsing
+ routines
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,53 +15,65 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>, Arne Schwabe <arne@...1227...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The authfail_extended and buf variables are only used when
-ENABLE_MANAGEMENT is defined. However, they are currently declared
-outside of any ifdefs, thus triggering a warning.
+Acked-by: Gert Doering <gert@...1296...>
 
-Move the declaration of these 2 down, right before their usage (within
-the existing "#ifdef ENABLE_MANAGEMENT" block.
+Subjected to the full set of server side tests that so nicely crashed
+11/25 v2 :-) (passed) and to client Linux/FreeBSD t_client tests including
+P2P NCP (passes as well).
 
-Fixes: ("Cleanup receive_auth_failed and simplify method")
-Cc: Arne Schwabe <arne@...1227...>
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- src/openvpn/push.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+The code looks good, and more correct as well.  Thanks for all the
+comments and for renaming the function - if it helps my brain, future
+contributors might benefit from it as well.
 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index d0038795..51dc8359 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -58,12 +58,6 @@ receive_auth_failed(struct context *c, const struct buffer *buffer)
-         return;
-     }
- 
--    struct buffer buf = *buffer;
--
--    /* If the AUTH_FAIL message ends with a , it is an extended message that
--     * contains further flags */
--    bool authfail_extended = buf_string_compare_advance(&buf, "AUTH_FAILED,");
--
-     /* Before checking how to react on AUTH_FAILED, first check if the
-      * failed auth might be the result of an expired auth-token.
-      * Note that a server restart will trigger a generic AUTH_FAILED
-@@ -95,6 +89,11 @@ receive_auth_failed(struct context *c, const struct buffer *buffer)
-         c->sig->signal_text = "auth-failure";
-     }
- #ifdef ENABLE_MANAGEMENT
-+    struct buffer buf = *buffer;
-+    /* If the AUTH_FAIL message ends with a , it is an extended message that
-+     * contains further flags */
-+    bool authfail_extended = buf_string_compare_advance(&buf, "AUTH_FAILED,");
-+
-     if (management)
-     {
-         const char *reason = NULL;
--- 
-2.35.1
+Just for reference: do_deferred_p2p_ncp() is all "part2" type stuff,
+so it gets moved as a whole, not split.
+
+NOTE: there is a small change in behaviour, which I'm not sure if 
+problematic or not.  The "part2" behaviour was previously encapsulated
+in
+
+ if (c->options.pull)
+ {
+    ...
+ }
+
+and is no longer checking this in "_part2()".
+
+This makes (as far as I can see) a difference if and only if a client
+*without* --pull (-> c->options.pull) will receive a PUSH_REPLY from
+a server that is behaving different from what we do - we only send
+PUSH_REPLY in reply to a PUSH_REQUEST, or to IV_PROTO=IV_PROTO_REQUEST_PUSH
+(and that is only happening if --pull / --client is set on the client).
+
+In the server instance - which is called from multi.c - this would
+make a difference *if* we called _part2() from multi.c - but we do not(!),
+as that code path calls multi_client_generate_tls_keys(), which does
+the tls_session_update_crypto_params() for us...  so, server would
+not call it before (!options.pull) and doesn't call it now (no call
+to _part2()) -> no change here.
+
+
+Your patch has been applied to the master branch.
+
+commit 6b9f4d71d859c27a9a71699aa899c9a2c5c3b680
+Author: Antonio Quartulli
+Date:   Wed Aug 3 11:50:12 2022 +0200
+
+     dco: split option parsing routines
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220803095012.24975-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24789.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
