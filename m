@@ -1,10 +1,9 @@
-Date: Wed, 3 Aug 2022 16:30:45 +0200 (CEST)
-Message-Id: <202208031430.273EUjoo003758@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220802151604.2801-1-a@...2181...>
-References: <20220802151604.2801-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco: periodically check and
- possibly rotate/delete keys
+From: Antonio Quartulli <a@...2181...>
+Date: Wed,  3 Aug 2022 17:40:49 +0200
+Message-Id: <20220803154049.1213-1-a@...2181...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] push: fix compilation with
+ --disable-management and --enable-werror
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,42 +14,53 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>, Arne Schwabe <arne@...1227...>
 
-Acked-by: Gert Doering <gert@...1296...>
+The authfail_extended and buf variables are only used when
+ENABLE_MANAGEMENT is defined. However, they are currently declared
+outside of any ifdefs, thus triggering a warning.
 
-The review of that was a combined effort, mostly Frank on mail and
-Antonio and I on IRC - but the v3 is now easier to understand, and
-"should work nicely".
+Move the declaration of these 2 down, right before their usage (within
+the existing "#ifdef ENABLE_MANAGEMENT" block.
 
-I have slightly extended the comment before "swapping primary and
-secondary keys" to make a bit clearer how we end there (we discussed
-that comment on IRC).
+Fixes: ("Cleanup receive_auth_failed and simplify method")
+Cc: Arne Schwabe <arne@...1227...>
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/push.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-This said, I have only tested the "no DCO in kernel" cases, as the
-rest is still missing functinality - and for "no DCO", this becomes
-fairly much "no change", as the only new code otherwise is guarded
-with "if (!dco_enabled(&c->options))".
-
-Your patch has been applied to the master branch.
-
-commit cd4ba9279d9c4cf13cdc3d8c49143c57eb0fe448
-Author: Antonio Quartulli
-Date:   Tue Aug 2 17:16:04 2022 +0200
-
-     dco: periodically check and possibly rotate/delete keys
-
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220802151604.2801-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24785.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index d0038795..51dc8359 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -58,12 +58,6 @@ receive_auth_failed(struct context *c, const struct buffer *buffer)
+         return;
+     }
+ 
+-    struct buffer buf = *buffer;
+-
+-    /* If the AUTH_FAIL message ends with a , it is an extended message that
+-     * contains further flags */
+-    bool authfail_extended = buf_string_compare_advance(&buf, "AUTH_FAILED,");
+-
+     /* Before checking how to react on AUTH_FAILED, first check if the
+      * failed auth might be the result of an expired auth-token.
+      * Note that a server restart will trigger a generic AUTH_FAILED
+@@ -95,6 +89,11 @@ receive_auth_failed(struct context *c, const struct buffer *buffer)
+         c->sig->signal_text = "auth-failure";
+     }
+ #ifdef ENABLE_MANAGEMENT
++    struct buffer buf = *buffer;
++    /* If the AUTH_FAIL message ends with a , it is an extended message that
++     * contains further flags */
++    bool authfail_extended = buf_string_compare_advance(&buf, "AUTH_FAILED,");
++
+     if (management)
+     {
+         const char *reason = NULL;
+-- 
+2.35.1
 
 
