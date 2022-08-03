@@ -1,8 +1,10 @@
+Date: Wed, 3 Aug 2022 21:47:02 +0200 (CEST)
+Message-Id: <202208031947.273Jl2uJ012737@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed,  3 Aug 2022 21:42:11 +0200
-Message-Id: <20220803194211.1727822-1-gert@...1296...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Break 'try 256 dco devices' loop on EPERM
+In-Reply-To: <20220803154049.1213-1-a@...2181...>
+References: <20220803154049.1213-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: push: fix compilation with
+ --disable-management and --enable-werror
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,46 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-If we get a permission denied error on one DCO device, trying 255 more
-times will not succeed, and just fill the log file with errors.
+Acked-by: Gert Doering <gert@...1296...>
 
-Also, remove the msg() call there because it was at debug level
-(needed --verb 4 to be seen), didn't see the correct errno, and the
-sitnl code already prints the error.
+"So simple" :-) - test compiled on linux, with and without
+--disable-management, and with -Werror.
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/tun.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+Uncrustify complains that the extra lines now require an "#endif /* ..."
+comment -> added.
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 02ded4d7..90cfc3bd 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1883,13 +1883,18 @@ open_tun_dco_generic(const char *dev, const char *dev_type,
-         {
-             openvpn_snprintf(dynamic_name, sizeof(dynamic_name),
-                              "%s%d", dev, i);
--            if (open_tun_dco(tt, ctx, dynamic_name) == 0)
-+            int ret = open_tun_dco(tt, ctx, dynamic_name);
-+            if (ret == 0)
-             {
-                 dynamic_opened = true;
-                 msg(M_INFO, "DCO device %s opened", dynamic_name);
-                 break;
-             }
--            msg(D_READ_WRITE | M_ERRNO, "Tried opening %s (failed)", dynamic_name);
-+            /* "permission denied" won't succeed if we try 256 times */
-+            if (ret == -EPERM)
-+            {
-+                break;
-+            }
-         }
-         if (!dynamic_opened)
-         {
--- 
-2.25.1
+Your patch has been applied to the master branch.
+
+commit bb44e87f6a51318547a94a47ebc8f1523a29bb03
+Author: Antonio Quartulli
+Date:   Wed Aug 3 17:40:49 2022 +0200
+
+     push: fix compilation with --disable-management and --enable-werror
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220803154049.1213-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24792.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
