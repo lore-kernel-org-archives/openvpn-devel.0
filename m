@@ -1,8 +1,11 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Fri,  5 Aug 2022 17:13:25 +0200
-Message-Id: <20220805151325.14021-1-a@...2181...>
+Message-ID: <5f4bad2e-7707-b7e2-7930-a7dfe0a48167@...1227...>
+Date: Fri, 5 Aug 2022 17:16:28 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] dco: disable DCO if --allow-compress
+Content-Language: en-GB
+References: <20220805151325.14021-1-a@...2181...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20220805151325.14021-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] dco: disable DCO if --allow-compress
  yes/asym was specified
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -12,40 +15,17 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
-Allowing compression means that we may accept a pushable compress
-setting.
-This scenario can't work with DCO therefore disable it when compression
-is allowed.
+Am 05.08.22 um 17:13 schrieb Antonio Quartulli:
+> Allowing compression means that we may accept a pushable compress
+> setting.
+> This scenario can't work with DCO therefore disable it when compression
+> is allowed.
+> 
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- src/openvpn/dco.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index c40fe96f..31f8737f 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -352,9 +352,11 @@ dco_check_option_conflict(int msglevel, const struct options *o)
-     }
- 
- #if defined(USE_COMP)
--    if (o->comp.alg != COMP_ALG_UNDEF)
-+    if (o->comp.alg != COMP_ALG_UNDEF
-+        || o->comp.flags & COMP_F_ALLOW_ASYM
-+        || o->comp.flags & COMP_F_ALLOW_COMPRESS)
-     {
--        msg(msglevel, "Note: Using compression disables data channel offload.");
-+        msg(msglevel, "Note: Allowing or using compression disables data channel offload.");
- 
-         if (o->mode == MODE_SERVER && !(o->comp.flags & COMP_F_MIGRATE))
-         {
--- 
-2.35.1
+Acked-By: Arne Schwabe <arne@...1227...>
 
 
