@@ -1,10 +1,10 @@
-Date: Fri, 5 Aug 2022 12:58:16 +0200 (CEST)
-Message-Id: <202208051058.275AwGZF052235@...2054...>
+Date: Fri, 5 Aug 2022 13:01:59 +0200 (CEST)
+Message-Id: <202208051101.275B1xlY052439@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220805093703.27940-1-a@...2181...>
-References: <20220805093703.27940-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco: add documentation for
- ovpn-dco-linux
+In-Reply-To: <20220804082502.1750074-1-gert@...1296...>
+References: <20220804082502.1750074-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Break 'try 256 dco devices'
+ loop on EPERM
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Taking an easy one out of sequence... (but it means I have to tackle
-14/ really quick now, otherwise this is all wrong).
+Of course I have tested this, very scientifically, like "do two runs
+with and without sufficient permissions on a DCO-enabled system" :-)
 
-Your patch has been applied to the master branch.
+Patch has been applied to the master branch.
 
-commit fba724e3fc958b5704dc22dd14ec93f4bb4d9e34
-Author: Antonio Quartulli
-Date:   Fri Aug 5 11:37:03 2022 +0200
+commit 78c02dd12bcfe7c4b4e96ea534b39ade9ee2c4d6
+Author: Gert Doering
+Date:   Thu Aug 4 10:25:02 2022 +0200
 
-     dco: add documentation for ovpn-dco-linux
+     Break 'try 256 dco devices' loop on EPERM
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20220805093703.27940-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24817.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <20220804082502.1750074-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24799.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
