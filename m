@@ -1,12 +1,12 @@
-Date: Fri, 5 Aug 2022 10:12:34 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <YuzQ8rjfgPxUmP17@...2685...>
-References: <20220624083809.23487-16-a@...2181...>
- <20220805065844.15471-1-a@...2181...>
+Message-ID: <d8beb891-bbdf-3bd1-4176-d2febbea6299@...1227...>
+Date: Fri, 5 Aug 2022 10:27:27 +0200
 MIME-Version: 1.0
-In-Reply-To: <20220805065844.15471-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2 15/25] dco: add documentation for
- ovpn-dco-linux
+References: <Yt2Fdvaom94pVcOQ@...2684...> <Yt2Wqc2zTdyx5Zj5@...1296...>
+ <Yt2Zkt1K5ThfAaYn@...1296...>
+ <CAHV-TD7uaLPC=FcQisWJDL4VWSQx=65r8mAsHJBZMYSk0K7+Cg@...278...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <CAHV-TD7uaLPC=FcQisWJDL4VWSQx=65r8mAsHJBZMYSk0K7+Cg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] PUSH_BUNDLE_SIZE is too short
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +15,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: Angel Abad <angel@...334...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Fri, Aug 05, 2022 at 08:58:44AM +0200, Antonio Quartulli wrote:
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
-> 
-> Changes from v1:
-> * removed text about TCP drop (cannot reproduce at the moment)
-> * clarified version requirements for p2p and client mode
-> ---
->  Changes.rst                           |   9 ++
->  README.dco.md                         | 121 ++++++++++++++++++++++++++
->  doc/man-sections/advanced-options.rst |  13 +++
->  doc/man-sections/server-options.rst   |   6 ++
->  4 files changed, 149 insertions(+)
->  create mode 100644 README.dco.md
 
-Acked-By: Frank Lichtenheld <frank@...2641...>
+Am 05.08.2022 um 08:58 schrieb Angel Abad:
+> Hi, sorry for my late reply!
+>
+> We use on server side managed AWS Clientvpn product[1], but we 
+> havent the problem with macosX or windows laptops, only with linux 
+> (ubuntu, centos and debian).
+>
+OpenVPN Connect which is based on OpenVPN 3.x might be more tolerant 
+which accepting oversized PUSH replys. That however still does not make 
+it a legal packet. You should complain to Amazon. This is a bug on their 
+side that they have to fix.
 
-Regards,
--- 
-  Frank Lichtenheld
+
+Arne
+
 
