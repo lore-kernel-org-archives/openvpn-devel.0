@@ -1,10 +1,10 @@
-Date: Sun, 7 Aug 2022 12:23:52 +0200 (CEST)
-Message-Id: <202208071023.277ANqVH099833@...2054...>
+Date: Sun, 7 Aug 2022 16:58:46 +0200 (CEST)
+Message-Id: <202208071458.277Ewk1W003677@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220807095329.28819-1-a@...2181...>
-References: <20220807095329.28819-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco: disable DCO if
- --allow-compress yes/asym was specified
+In-Reply-To: <20220807100404.8618-1-a@...2181...>
+References: <20220807100404.8618-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco: turn supported ciphers
+ list into a function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,42 +18,23 @@ Content-Transfer-Encoding: 8bit
 To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
-
-Same functionality as v1, wording as suggested.  Tested, does the job :-)
-
-Client with "--allow-compression yes --comp-lzo" -> 
-
- 2022-08-07 12:20:16 Note: '--allow-compression' is not set to 'no', disabling data channel offload.
-
-Client with "--allow-compression no --comp-lzo" -> 
-
-  Options error: Cannot set comp-lzo to '(null)', allow-compression is set to 'no'
-
-(this error message could use a bit of improvement, though)
-
-Client with "--allow-compression no #--comp-lzo" -> 
-
- 2022-08-07 12:22:15 DCO device tun7 opened
-
-
-We might find ourselves returning here, and the release notes for 2.6 need
-careful tending to ensure the interaction of DCO with "all these options" is
-communicated really well.
-
+As this is really identical to 18/25 v1 (just offsets and context) I've
+taken the ACK from Heiko, and not done very much testing of my own, just
+one round of "client tests with DCO in kernel" (unchanged).
 
 Your patch has been applied to the master branch.
 
-commit c984d0b17056f87cd580260edd2e89874c601566
+commit f9aafa3580a84e2e74a220e6482170130f43bc81
 Author: Antonio Quartulli
-Date:   Sun Aug 7 11:53:29 2022 +0200
+Date:   Sun Aug 7 12:04:04 2022 +0200
 
-     dco: disable DCO if --allow-compress yes/asym was specified
+     dco: turn supported ciphers list into a function
 
+     Signed-off-by: Lev Stipakov <lev@...515...>
      Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220807095329.28819-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24834.html
+     Acked-by: Heiko Hund <heiko@...2662...>
+     Message-Id: <20220807100404.8618-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24835.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
