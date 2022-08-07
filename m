@@ -1,13 +1,11 @@
-Message-ID: <81f268ca-10cc-ff0b-1915-f44319ba722b@...1227...>
-Date: Sat, 6 Aug 2022 18:55:12 +0200
+From: Antonio Quartulli <a@...2181...>
+Date: Sun,  7 Aug 2022 11:53:29 +0200
+Message-Id: <20220807095329.28819-1-a@...2181...>
+In-Reply-To: <20220805151325.14021-1-a@...2181...>
+References: 
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <20220627114337.10994-1-frank@...2641...>
- <20220628080814.745-1-frank@...2641...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20220628080814.745-1-frank@...2641...>
-Subject: Re: [Openvpn-devel] [PATCH v4] doc: cleanup for --data-ciphers and
- related
+Subject: [Openvpn-devel] [PATCH v2] dco: disable DCO if --allow-compress
+ yes/asym was specified
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,44 +14,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Frank Lichtenheld <frank@...2641...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Am 28.06.22 um 10:08 schrieb Frank Lichtenheld:
-> -these two ciphers. When a OpenVPN servers try to use `AES-256-GCM` or
-> +these two ciphers. When a OpenVPN server tries to use `AES-256-GCM` or
+Allowing compression means that we may accept a pushable compress
+setting.
+This scenario can't work with DCO therefore disable it when compression
+is allowed.
 
-Fix from one wrong thing to another less wrong %)
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
 
-I think I wanted to say When OpenVPN servers try. It got corrected to a 
-OpenVPN server but should really an OpenVPN server when you use singular.
+Changes from v1:
+* improve wording for message
+---
+ src/openvpn/dco.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index c40fe96f..3fd8f82a 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -352,9 +352,11 @@ dco_check_option_conflict(int msglevel, const struct options *o)
+     }
+ 
+ #if defined(USE_COMP)
+-    if (o->comp.alg != COMP_ALG_UNDEF)
++    if (o->comp.alg != COMP_ALG_UNDEF
++        || o->comp.flags & COMP_F_ALLOW_ASYM
++        || o->comp.flags & COMP_F_ALLOW_COMPRESS)
+     {
+-        msg(msglevel, "Note: Using compression disables data channel offload.");
++        msg(msglevel, "Note: '--allow-compression' is not set to 'no', disabling data channel offload.");
+ 
+         if (o->mode == MODE_SERVER && !(o->comp.flags & COMP_F_MIGRATE))
+         {
+-- 
+2.35.1
 
->    Cipher negotiation is enabled in client-server mode only. I.e. if
-> -  ``--mode`` is set to 'server' (server-side, implied by setting
-> +  ``--mode`` is set to `server` (server-side, implied by setting
->    ``--server`` ), or if ``--pull`` is specified (client-side, implied by
-> -  setting --client).
-> +  setting ``--client``).
-
-While that fixes the grammar/syntax the whole paragraph is still wrong 
-for 2.6.
-
-Cipher negotiation is available in client-server mode only for versions 
-older than 2.6.
-
-> -  Note for using NCP with an OpenVPN 2.4 peer: This list must include the
-> -  :code:`AES-256-GCM` and :code:`AES-128-GCM` ciphers.
-
-I am not sure why this is removed. That is still very true as OpenVPN 
-2.4 only understands IV_NCP=2 and if you don't have those two ciphers in 
-the list, it breaks NCP with 2.4.
-
-The rest looks good. We can do a follow up patch to correct the P2P NCP 
-stuff.
-
-Acked-By: Arne Schwabe <arne@...1227...>
-
-Arne
 
