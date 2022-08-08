@@ -1,8 +1,10 @@
 From: Kristof Provost <kprovost@...2661...>
-Date: Mon,  8 Aug 2022 16:34:21 +0200
-Message-Id: <20220808143424.65924-1-kprovost@...2661...>
+Date: Mon,  8 Aug 2022 16:34:22 +0200
+Message-Id: <20220808143424.65924-2-kprovost@...2661...>
+In-Reply-To: <20220808143424.65924-1-kprovost@...2661...>
+References: <20220808143424.65924-1-kprovost@...2661...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH]: FreeBSD DCO support
+Subject: [Openvpn-devel] [PATCH] Handle exceeding 'max-clients'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,15 +17,51 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+From: Kristof Provost <kp@...1376...>
 
-Now that the Linux DCO support has landed in the master tree I've
-re-based the FreeBSD DCO support code.
-This patch series also includes a patch to support adding iroutes on
-FreeBSD.
+If 'max-clients' is set multi_create_instance() can return NULL (for any
+client that would take us over the client limit).
 
-Best regards,
-Kristof
+If mi is NULL we don't add it to the hash map, but we do potentially
+dereference it to increment the session count.
+Do not attempt to do so if 'mi == NULL'.
 
+Signed-off-by: Kristof Provost <kprovost@...2661...>
+---
+ src/openvpn/mudp.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index 0810fada..0cbca1a9 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -241,15 +241,16 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
+                         hash_add_fast(hash, bucket, &mi->real, hv, mi);
+                         mi->did_real_hash = true;
+                         multi_assign_peer_id(m, mi);
+-                    }
+-                    /* If we have a session id already, ensure that the
+-                     * state is using the same */
+-                    if (session_id_defined(&state.server_session_id)
+-                        && session_id_defined((&state.peer_session_id)))
+-                    {
+-                        mi->context.c2.tls_multi->n_sessions++;
+-                        struct tls_session *session = &mi->context.c2.tls_multi->session[TM_ACTIVE];
+-                        session_skip_to_pre_start(session, &state, &m->top.c2.from);
++
++                        /* If we have a session id already, ensure that the
++                         * state is using the same */
++                        if (session_id_defined(&state.server_session_id)
++                            && session_id_defined((&state.peer_session_id)))
++                        {
++                            mi->context.c2.tls_multi->n_sessions++;
++                            struct tls_session *session = &mi->context.c2.tls_multi->session[TM_ACTIVE];
++                            session_skip_to_pre_start(session, &state, &m->top.c2.from);
++                        }
+                     }
+                 }
+                 else
+-- 
+2.37.0
 
 
