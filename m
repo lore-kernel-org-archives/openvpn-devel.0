@@ -1,10 +1,8 @@
-Date: Mon, 8 Aug 2022 18:09:31 +0200 (CEST)
-Message-Id: <202208081609.278G9V7A031506@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220808085411.9159-1-frank@...2641...>
-References: <20220808085411.9159-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: config-version.h: remove unused
- includes
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue,  9 Aug 2022 10:22:20 +0300
+Message-Id: <20220809072220.255-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] tun.c: remove unused gc_arena from
+ init_tun()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +13,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Acked-by: Gert Doering <gert@...1296...>
+From: Lev Stipakov <lev@...515...>
 
-Test compiled on ubuntu18/mingw.
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/tun.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-Your patch has been applied to the master branch.
-
-commit d92075e0ae6dba84a2e30e4ec12ca29250945371
-Author: Frank Lichtenheld
-Date:   Mon Aug 8 10:54:11 2022 +0200
-
-     config-version.h: remove unused includes
-
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220808085411.9159-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24839.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 54f7d72c..f3152a52 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -745,7 +745,6 @@ init_tun(const char *dev,        /* --dev option */
+          struct env_set *es,
+          openvpn_net_ctx_t *ctx)
+ {
+-    struct gc_arena gc = gc_new();
+     struct tuntap *tt;
+ 
+     ALLOC_OBJ(tt, struct tuntap);
+@@ -878,7 +877,6 @@ init_tun(const char *dev,        /* --dev option */
+         do_ifconfig_setenv(tt, es);
+     }
+ 
+-    gc_free(&gc);
+     return tt;
+ }
+ 
+-- 
+2.23.0.windows.1
 
 
