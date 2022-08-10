@@ -1,12 +1,13 @@
-Message-ID: <11241e28-c90e-daf2-321e-3bda92850669@...2181...>
-Date: Wed, 10 Aug 2022 14:54:51 +0200
+Message-ID: <aa15d573-6998-4b7c-f364-251c439ffaac@...2669...>
+Date: Wed, 10 Aug 2022 15:57:28 +0200
 MIME-Version: 1.0
 Content-Language: en-US
-References: <20220810094605.123072-1-frank@...2641...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20220810094605.123072-1-frank@...2641...>
-Subject: Re: [Openvpn-devel] [PATCH] dco_p2p_add_new_peer: do not warn about
- missing default gw
+References: <20220329192934.1415-1-timo@...2669...>
+ <20220514103717.235-1-timo@...2669...>
+From: Timo Rothenpieler <timo@...2669...>
+In-Reply-To: <20220514103717.235-1-timo@...2669...>
+Subject: Re: [Openvpn-devel] [PATCH v5] platform: Retain CAP_NET_ADMIN when
+ dropping privileges
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,46 +18,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Frank Lichtenheld <frank@...2641...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-On 10/08/2022 11:46, Frank Lichtenheld wrote:
-> Currently we issue a message when using --ifconfig but
-> not specifying a default gateway. This seems to be misleading,
-> the setup will still work fine since in P2P we now send
-> all traffic to the peer anyway. Or it might be irrelevant
-> if all route specifications include a gateway anyway.
+On 14/05/2022 12:37, Timo Rothenpieler wrote:
+> On Linux, when dropping privileges, interaction with
+> the network configuration, such as tearing down routes
+> or ovpn-dco interfaces will fail when --user/--group are
+> used.
 > 
-> Since it is probably better to have no message than a
-> misleading one, remove it.
+> This patch sets the CAP_NET_ADMIN capability, which grants
+> the needed privileges during the lifetime of the OpenVPN
+> process when dropping root privileges.
 > 
-> Signed-off-by: Frank Lichtenheld <frank@...2641...>
+> Signed-off-by: Timo Rothenpieler <timo@...2669...>
+> Reviewed-By: David Sommerseth <davids@...515...>
 
-Acked-by: Antonio Quartulli <a@...2181...>
-
-Regards,
-
-> ---
->   src/openvpn/dco.c | 4 ----
->   1 file changed, 4 deletions(-)
-> 
-> diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-> index 4f40255e..8aa7e896 100644
-> --- a/src/openvpn/dco.c
-> +++ b/src/openvpn/dco.c
-> @@ -438,10 +438,6 @@ dco_p2p_add_new_peer(struct context *c)
->           }
->           remote_addr4 = &remote_ip4;
->       }
-> -    else if (c->options.ifconfig_local)
-> -    {
-> -        msg(M_INFO, "DCO peer init: Need a peer VPN addresss to setup IPv4 (set --route-gateway)");
-> -    }
->   
->       struct sockaddr *remoteaddr = &ls->info.lsa->actual.dest.addr.sa;
->   
-
--- 
-Antonio Quartulli
+With Linux DCO now fully merged, this patch is ready to land.
+It still applies cleanly for all I can tell.
 
