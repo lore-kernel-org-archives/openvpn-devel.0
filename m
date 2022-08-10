@@ -1,13 +1,14 @@
-From: Kristof Provost <kprovost@...2661...>
-Date: Wed, 10 Aug 2022 20:00:33 +0200
-Message-ID: <EB06CA31-9F28-43C9-B63E-A579A977D3AE@...2661...>
-In-Reply-To: <YvPdlCSxQ6wvfIna@...1296...>
-References: <20220808143424.65924-1-kprovost@...2661...>
- <20220808143424.65924-3-kprovost@...2661...>
- <YvPdlCSxQ6wvfIna@...1296...>
+Date: Wed, 10 Aug 2022 21:12:33 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <YvQDITD3EGxTw2e2@...1296...>
+References: <20220810094605.123072-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 1/2] ovpn-dco: introduce FreeBSD
- data-channel offload support
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="bHUDy6DoWgl5NbkX"
+Content-Disposition: inline
+In-Reply-To: <20220810094605.123072-1-frank@...2641...>
+Subject: Re: [Openvpn-devel] [PATCH] dco_p2p_add_new_peer: do not warn about
+ missing default gw
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,75 +17,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--bHUDy6DoWgl5NbkX
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-Thanks!
+Hi,
 
-On 10 Aug 2022, at 18:32, Gert Doering wrote:
-> Test results:
->
->  - running openvpn over TCP gives me a kernel panic - this is not so
->    nice... (see attached .png from the vmware console) - userland seems
->    to assume "kernel can do TCP", kernel panics on "if !udp, panic()"
->    (so intentional panic, not corruption panic).
->
->    This is on freebsd git FreeBSD 14.0-CURRENT #1 main-n257130-c0665d5c824
->
-I think I see what the problem is. I=E2=80=99m writing up a test case to re=
-produce it and will commit a fix soon. Hopefully tomorrow.
+On Wed, Aug 10, 2022 at 11:46:05AM +0200, Frank Lichtenheld wrote:
+> diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+> index 4f40255e..8aa7e896 100644
+> --- a/src/openvpn/dco.c
+> +++ b/src/openvpn/dco.c
+> @@ -438,10 +438,6 @@ dco_p2p_add_new_peer(struct context *c)
+>          }
+>          remote_addr4 =3D &remote_ip4;
+>      }
+> -    else if (c->options.ifconfig_local)
+> -    {
+> -        msg(M_INFO, "DCO peer init: Need a peer VPN addresss to setup IP=
+v4 (set --route-gateway)");
+> -    }
 
->  - running openvpn over UDP has issues with fragmentation - almost all
->    t_client tests that *do* use DCO fail the "big ping" test
->
-I=E2=80=99m going to have to do some digging here.
+Looking more closely, this is a really nice gem you found here :-)
 
-> - tcpdump'ing on the DCO interface gave me complains from the kernel
->   about locking on ctrl-c'ing
->
->     Aug 10 17:28:41 fbsd14 kernel: lock order bpf global lock -> iflib ct=
-x lock attempted at:
->     Aug 10 17:28:41 fbsd14 kernel: #0 0xffffffff80c5c3dd at witness_check=
-order+0xbfd
->     Aug 10 17:28:41 fbsd14 kernel: #1 0xffffffff80bf5303 at _sx_xlock+0x63
->     Aug 10 17:28:41 fbsd14 kernel: #2 0xffffffff80d3874f at iflib_if_ioct=
-l+0x2df
->     Aug 10 17:28:41 fbsd14 kernel: #3 0xffffffff80d19b5e at if_setflag+0x=
-de
->     Aug 10 17:28:41 fbsd14 kernel: #4 0xffffffff80d19a2a at ifpromisc+0x2a
->     Aug 10 17:28:41 fbsd14 kernel: #5 0xffffffff80d0e72b at bpf_detachd_l=
-ocked+0x27b
->     Aug 10 17:28:41 fbsd14 kernel: #6 0xffffffff80d111f7 at bpf_dtor+0x87
->     Aug 10 17:28:41 fbsd14 kernel: #7 0xffffffff80a7818b at devfs_destroy=
-_cdevpriv+0xab
->     Aug 10 17:28:41 fbsd14 kernel: #8 0xffffffff80a7bda4 at devfs_close_f=
-+0x64
->     Aug 10 17:28:41 fbsd14 kernel: #9 0xffffffff80b876eb at _fdrop+0x1b
->     Aug 10 17:28:41 fbsd14 kernel: #10 0xffffffff80b8af3b at closef+0x1db
->     Aug 10 17:28:41 fbsd14 kernel: #11 0xffffffff80b8ec97 at closefp_impl=
-+0x77
->     Aug 10 17:28:41 fbsd14 kernel: #12 0xffffffff810c733e at amd64_syscal=
-l+0x12e
->     Aug 10 17:28:41 fbsd14 kernel: #13 0xffffffff8109ae0b at fast_syscall=
-_common+0xf8
->
->    ... so while this is outside "openvpn source code patches", it's
->    still something that smells like it needs to be addressed.
->
-That appears to be unrelated to DCO. It=E2=80=99s a problem with iflib, and=
- I think I=E2=80=99ve seen it before.
-Out of scope for DCO, at least.
+The kernel should not care at all for remote_addr4 or remote_addr6 in
+p2p mode ("it is never used for anything") *but* it does - so, if you
+twist openvpn into setting up an ipv4-only tunnel, with topology subnet,
+and no --route-gateway in the config (which would trigger the message
+above), DCO actually refuses to bring up the interface:
 
-> Now, coding style ;-) - as promised, I went through the code for things
-> that need to be done in a certain way in OpenVPN land, due to agreed
-> convention... inline (things I do not comment could go in "as is").
->
-I=E2=80=99ll fix those once I=E2=80=99ve dealt with the panic and fragmenta=
-tion issues.
+2022-08-10 21:09:31 dco_new_peer: netlink reports error (-7): Invalid input=
+ data or parameter
+2022-08-10 21:09:31 dco_new_peer: failed to send netlink message: Invalid a=
+rgument (-22)
+2022-08-10 21:09:31 Cannot add peer to DCO: Invalid argument (-22)
 
-Thanks for the review.
+... we did not see this in the t_client tests, as this needs *v4-only*,
+and I never tested this ("3a" does now), and the kernel was happy with
+"either v4 or v6, as long as I can ignore one of them"...
 
-Kristof
+
+So, I think that for p2p, the whole remote_addr4/remote_addr6 thing=20
+can be removed - more than just the message :-) - but first the kernel
+needs to understand this as well.
+
+FreeBSD DCO is happy with v4 and no route-gateway...
+
+gert
+
+
+PS:
+
+# Test 3a: UDP / p2mp tun, topology subnet, IPv4-only inside, over IPv6
+# (no route-gateway, explicit gateway on routes)
+#
+# triggers (Linux) DCO mishap "needs v4 or v6 remote VPN address even on p2=
+p"
+#
+RUN_TITLE_3a=3D"udp / p2pm / top subnet / IPv4-only, no 'route-gateway'"
+OPENVPN_CONF_3a=3D"$OPENVPN_BASE_P2MP --dev tun --proto udp --remote $REMOT=
+E --port 51195 --pull-filter ignore ifconfig-ipv6 --pull-filter ignore rout=
+e-ipv6 --pull-filter ignore route-gateway --route 10.194.0.0 255.255.0.0 10=
+.194.3.1"
+EXPECT_IFCONFIG4_3a=3D$EXPECT_IFCONFIG4_3
+EXPECT_IFCONFIG6_3a=3D-
+PING4_HOSTS_3a=3D"10.194.3.1 10.194.0.1"
+PING6_HOSTS_3a=3D
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--bHUDy6DoWgl5NbkX
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJi9AMhAAoJEB2Cnv7KVigSSo8L/2HugnC9s3ArIu+IYEBvBHER
+iyZFkyC45UV/NWtbe8aIK/lll5UKzh00/6Qf/R78/lNYcXgCD4Zi+bjcGQMqdUug
++C54jiIlrfbs+qErTgzp66443Li1bMyNxaedlq2KhXZltrjy2q8Oiw+LnAxX/fuw
+6X+Rg8+ALsxQbyTwTfcyTYrdHpvYN0RPauM6h6u2cPFUs6bSmCY6NamNhaUFmG5J
+aRWAHy9r648WE52fzug2dbzFTVgYp+vhn+obIVOfoNKNv58U3KnGI+GKVx2GkDTG
+iZJCi+sBTNGN2wEt9fCB2gyTx6PjIX1Itsb3QDWytsyenuvp0c612hu0kmZiBbst
+Dn8HkUH54JJmn93R2/aQQrniqvF0tyEKCSNYvZu9ldeiKYVCR8pBhl9ysofWC2aj
+KaYxGQfO02JU8L2sggHWx7R9yOZdeCmfNOkgw8MHPLWfteMZ2PO5IAAsF8RGGszq
+tYiTf8Aih3nTCPRChUE9MIXFBvwrLoDtlHxorpyo1Q==
+=omIi
+-----END PGP SIGNATURE-----
+
+--bHUDy6DoWgl5NbkX--
 
