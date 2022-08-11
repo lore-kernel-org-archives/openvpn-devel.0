@@ -1,13 +1,15 @@
+Date: Thu, 11 Aug 2022 22:58:14 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <YvVtZnwurH7sepM/@greenie.muc.de>
+References: <20220624083809.23487-1-a@...2181...>
+ <20220624083809.23487-21-a@...2181...>
 MIME-Version: 1.0
-References: <20220728034508.15180-2-selva.nair@...277...>
- <202208021202.272C2dmm071125@...2054...>
-In-Reply-To: <202208021202.272C2dmm071125@...2054...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 11 Aug 2022 16:03:48 -0400
-Message-ID: <CAKuzo_hzrRRnakFZ7C00yAfeZJ387GT3xa7KXhGf1pTK1G6Vwg@...278...>
-Content-Type: multipart/alternative; boundary="000000000000f2843505e5fcae2d"
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Allow a few levels of
- recursion in virtual_output_callback()
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="gRAh38WcwqZ/PJ/1"
+Content-Disposition: inline
+In-Reply-To: <20220624083809.23487-21-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 20/25] dco-win: add platform dependant
+ check on incompatible options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,87 +18,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
 
---000000000000f2843505e5fcae2d
-Content-Type: text/plain; charset="UTF-8"
+--gRAh38WcwqZ/PJ/1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Tue, Aug 2, 2022 at 8:02 AM Gert Doering <gert@...1296...> wrote:
+On Fri, Jun 24, 2022 at 10:38:04AM +0200, Antonio Quartulli wrote:
+> Some platforms may have different constraints in terms of incompatible
+> opions, therefore we add a function that explicitly checks those.
+>=20
+> Also, add generic option check for when ovpn-dco-win is in use.
 
-> Acked-by: Gert Doering <gert@...1296...>
->
-> I cannot test this (beyond "compile", but that is trivial) but the
-> description in
->
->
-> https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24738.html
->
-> makes sense, so allowing "a limited amount" of recursion plus actually
-> logging when this is hit should make management more robust against
-> overlapping timing issues aka "race conditions".
->
-> Your patch has been applied to the master branch.
->
+Looking more closely at this, this patch needs a carefuly rebase :-)
 
-Can we also apply this to 2.5? I see this trigerred easily with the new
-persistent connection / PLAP support. I haven't figured the exact reason
-but hitting reconnect or disconnect at certain instances triggers this --
-like when the connection is almost complete and the daemon is doing
-slow-ish netsh commands. The same code-path is not traversed when
-interactive service is in use and it seems hitting the "race condition" is
-much harder in that case.
+> --- a/src/openvpn/dco.c
+> +++ b/src/openvpn/dco.c
+> @@ -190,6 +190,26 @@ dco_update_keys(dco_context_t *dco, struct tls_multi=
+ *multi)
+>      }
+>  }
+>=20=20
+> +static bool
+> +dco_check_option_conflict_platform(int msglevel, const struct options *o)
+> +{
+> +#if defined(_WIN32)
+> +    if (o->mode =3D=3D MODE_SERVER)
+> +    {
 
-Otherwise we have to limit these new GUI features to 2.6 which  would
-require a new branch in the GUI and some changes to the build process.
+... it *introduces* dco_check_option_conflict_platform() with "only
+windows" content, but in the current master tree, this function already
+exists, with Linux content...
 
-In some sense this is a "bug fix" though the fix itself is a band-aid as
-opposed to implementing a command queue to save these write actions instead
-of dropping them.
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-Selva
+Gert Doering - Munich, Germany                             gert@...1296...
 
---000000000000f2843505e5fcae2d
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--gRAh38WcwqZ/PJ/1
+Content-Type: application/pgp-signature; name="signature.asc"
 
-<div dir=3D"ltr"><div>Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"l=
-tr" class=3D"gmail_attr">On Tue, Aug 2, 2022 at 8:02 AM Gert Doering &lt;<a=
- href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt; wrote:<br></div><b=
-lockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-le=
-ft:1px solid rgb(204,204,204);padding-left:1ex">Acked-by: Gert Doering &lt;=
-<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt=
-;<br>
-<br>
-I cannot test this (beyond &quot;compile&quot;, but that is trivial) but th=
-e<br>
-description in <br>
-<br>
-=C2=A0<a href=3D"https://www.mail-archive.com/openvpn-devel@...1768...=
-ge.net/msg24738.html" rel=3D"noreferrer" target=3D"_blank">https://www.mail=
--archive.com/openvpn-devel@lists.sourceforge.net/msg24738.html</a><br>
-<br>
-makes sense, so allowing &quot;a limited amount&quot; of recursion plus act=
-ually<br>
-logging when this is hit should make management more robust against <br>
-overlapping timing issues aka &quot;race conditions&quot;.<br>
-<br>
-Your patch has been applied to the master branch.<br></blockquote><div><br>=
-</div><div>Can we also apply this to 2.5? I see this trigerred=C2=A0easily =
-with the new persistent connection / PLAP support. I haven&#39;t figured th=
-e exact reason but hitting reconnect or disconnect at certain instances tri=
-ggers this -- like when the connection is almost complete and the daemon is=
- doing slow-ish netsh commands. The same code-path is not traversed when in=
-teractive service is in use and it seems hitting the &quot;race condition&q=
-uot; is much harder in that case.</div><div><br></div><div>Otherwise we hav=
-e to limit these new GUI features to 2.6 which=C2=A0 would require a new br=
-anch in the GUI and some changes to the build process.</div><div><br></div>=
-<div>In some sense this is a &quot;bug fix&quot; though the fix itself is a=
- band-aid as opposed to implementing a command queue to save these write ac=
-tions instead of dropping them.</div><div><br></div><div>Selva</div></div><=
-/div>
+-----BEGIN PGP SIGNATURE-----
 
---000000000000f2843505e5fcae2d--
+iQGcBAEBAgAGBQJi9W1mAAoJEB2Cnv7KVigStEwL/3OAgq42VcPiYOvVdnarhUY4
+h0ng1XNcXntFAlOeGNdhn6VFRiMq7s71qzCNamIRxSYF35UhakfzehMKgaRGC5CC
+fUWBDgwyRKVFIC85vgIdD1vVYJLgtWxn2h8mmG76yJ6RY3R/zowcepRwMVnIVNBY
+ZjsFTIZsHMZvfNQPB4E7OCqBRf9OqRPT7LP4F1D0M2/2+aUredVDH/cUezQhj4sW
+oBNZxEHqHEnsmdDLt3/IvQ/2DX5UArnzYRelrdUDlK/kGpZt8OlYxdYLpkuoVpVb
+umnC6uD/JzsEVwL1mTLHgcJ8HMAWZwYKcqCq+RrIbStQWL43jZ3Rjs0cvMXLcMUD
+TXgGx65rJA3tqtwuLbjubaQpLMjhKw1AwkwI0JuOFi3DpepOjVLNocgYC/0g7PWZ
+31aGBcwT3qoURVuhi3D0EvVo+TOd2CBCw44TKYV3i6bVnbo8wxeSLtTu/kVsnGW7
+4BqUIrpKoD0fMMpcFAvBIuEF0kllvSszEQQA5M3zxw==
+=OcSe
+-----END PGP SIGNATURE-----
+
+--gRAh38WcwqZ/PJ/1--
 
