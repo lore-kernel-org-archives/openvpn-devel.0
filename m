@@ -1,12 +1,10 @@
-Date: Thu, 11 Aug 2022 11:30:39 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <YvTMP9/QSmBeE5Nf@...2685...>
-References: <20220329192934.1415-1-timo@...2669...>
- <20220514103717.235-1-timo@...2669...>
-MIME-Version: 1.0
+Date: Thu, 11 Aug 2022 12:03:45 +0200 (CEST)
+Message-Id: <202208111003.27BA3jBP091528@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20220514103717.235-1-timo@...2669...>
-Subject: Re: [Openvpn-devel] [PATCH v5] platform: Retain CAP_NET_ADMIN when
- dropping privileges
+References: <20220514103717.235-1-timo@...2669...>
+Subject: [Openvpn-devel] [PATCH applied] Re: platform: Retain CAP_NET_ADMIN
+ when dropping privileges
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,57 +13,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
 To: Timo Rothenpieler <timo@...2669...>
-Cc: openvpn-devel@lists.sourceforge.net, David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Sat, May 14, 2022 at 12:37:17PM +0200, Timo Rothenpieler wrote:
-> On Linux, when dropping privileges, interaction with
-> the network configuration, such as tearing down routes
-> or ovpn-dco interfaces will fail when --user/--group are
-> used.
-> 
-> This patch sets the CAP_NET_ADMIN capability, which grants
-> the needed privileges during the lifetime of the OpenVPN
-> process when dropping root privileges.
-> 
-> Signed-off-by: Timo Rothenpieler <timo@...2669...>
-> Reviewed-By: David Sommerseth <davids@...515...>
-> ---
->  configure.ac                              |  19 +++
->  distro/systemd/openvpn-client@...2221... |   2 +-
->  distro/systemd/openvpn-server@...2221... |   2 +-
->  src/openvpn/init.c                        |   5 +-
->  src/openvpn/platform.c                    | 146 +++++++++++++++++++++-
->  src/openvpn/platform.h                    |  10 +-
->  6 files changed, 175 insertions(+), 9 deletions(-)
+I have not tested this myself, but if I had, the test setup would have
+been very similar to what Frank did (so, big thanks) - run a DCO 
+environment with "owner nobody", and see if things still work.
+
+I will add this to my DCO server test environment - run one of the
+iroute-using instances with "nobody", so it is continuously tested.
+
+I did have a stare-at-code a few weeks ago, and we did discuss this
+a few months ago, and the approach chosen seems to make sense.
+
+Uncrustify complained about two lines with tabs -> fixed.
+
+Your patch has been applied to the master branch.
+
+commit 2e359a088226ab1e5ee41fbab27d38d8a8d192ac
+Author: Timo Rothenpieler
+Date:   Sat May 14 12:37:17 2022 +0200
+
+     platform: Retain CAP_NET_ADMIN when dropping privileges
+
+     Signed-off-by: Timo Rothenpieler <timo@...2669...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20220514103717.235-1-timo@...2669...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24360.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-I ran several t_client test runs with --user nobody on a DCO-enabled system.
+--
+kind regards,
 
-Without the patch:
- - errors on teardown in all tests (sitnl)
- - test 11 fails (which actually uses DCO, since no comp)
+Gert Doering
 
-With the patch:
- - errors on teardown gone
- - test 11 passes
-
-With the patch and --disable-dco --enable-iproute2:
- - no cap retained
- - errors on teardown (ip)
-
-Looks to me like it does what it is supposed to do.
-
-Acked-By: Frank Lichtenheld <frank@...2641...>
-
-That said, maybe we should add some hint about this
-behavior to the actual documentation? Maybe to
---user documentation? Or at least Changes?
-
-Regards,
--- 
-  Frank Lichtenheld
 
