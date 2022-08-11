@@ -1,14 +1,13 @@
-From: Maximilian Fillinger <maximilian.fillinger@...2507...>
-Date: Thu, 11 Aug 2022 12:36:58 +0000
-Message-ID: <c86991121a864eec8a06e0670bc20ffc@...2507...>
-References: <20220811120722.29168-1-maximilian.fillinger@...2507...>
- <20220811120722.29168-2-maximilian.fillinger@...2507...>
- <1da7a43c-d5d2-69dd-7f07-b412568083d1@...1227...>
-In-Reply-To: <1da7a43c-d5d2-69dd-7f07-b412568083d1@...1227...>
-Content-Language: en-US
+From: Kristof Provost <kprovost@...2661...>
+Date: Thu, 11 Aug 2022 17:25:05 +0200
+Message-ID: <2DCBB302-1FB4-4EC0-8B4A-8D6EA075B0FD@...2661...>
+In-Reply-To: <YvPdlCSxQ6wvfIna@...1296...>
+References: <20220808143424.65924-1-kprovost@...2661...>
+ <20220808143424.65924-3-kprovost@...2661...>
+ <YvPdlCSxQ6wvfIna@...1296...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Handle EVP_MD_CTX as an opaque
- struct
+Subject: Re: [Openvpn-devel] [PATCH 1/2] ovpn-dco: introduce FreeBSD
+ data-channel offload support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,32 +16,110 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Arne Schwabe <arne@...1227...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBcm5lIFNjaHdhYmUgW21haWx0
-bzphcm5lQC4uLjEyMjcuLi5dDQo+IFNlbnQ6IGRvbmRlcmRhZyAxMSBhdWd1c3R1cyAyMDIyIDE0
-OjIxDQo+IFRvOiBNYXhpbWlsaWFuIEZpbGxpbmdlciA8bWF4aW1pbGlhbi5maWxsaW5nZXJALi4u
-MjUwNy4uLj47IG9wZW52cG4tDQo+IGRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldA0KPiBTdWJq
-ZWN0OiBSZTogW09wZW52cG4tZGV2ZWxdIFtQQVRDSCAyLzJdIEhhbmRsZSBFVlBfTURfQ1RYIGFz
-IGFuIG9wYXF1ZQ0KPiBzdHJ1Y3QNCj4gDQo+IEFtIDExLjA4LjIyIHVtIDE0OjA3IHNjaHJpZWIg
-TWF4IEZpbGxpbmdlcjoNCj4gPiBCdWlsZGluZyBPcGVuVlBOIG9uIHRoZSBsYXRlc3QgT3BlbkJT
-RCBzbmFwc2hvdCBmYWlsZWQgYmVjYXVzZQ0KPiBFVlBfTURfQ1RYDQo+ID4gaXMgYW4gb3BhcXVl
-IHN0cnVjdCBpbiBMaWJyZVNTTCBub3cuIFRoZXJlZm9yZSwgY2FsbCBtZF9jdHhfbmV3KCkNCj4g
-aW5zdGVhZA0KPiA+IG9mIGRlY2xhcmluZyB0aGVtIG9uIHRoZSBzdGFjay4gV2hlbiB0aGV5J3Jl
-IG5vdCBvbiB0aGUgc3RhY2sgYW55bW9yZSwNCj4gd2UNCj4gPiBkb24ndCBoYXZlIHRvIGNhbGwg
-RVZQX01EX0NUWF9pbml0KCkgYW55bW9yZSwgYnV0IHdlIG5lZWQgdG8gY2FsbA0KPiA+IEVWUF9N
-RF9DVFhfZnJlZSgpIGluc3RlYWQgb2YgY2xlYW51cC4NCj4gDQo+IFVyZ2guIFRoZSB3aG9sZSBy
-ZWFzb24gSSBsZWZ0IHRoaXMgY29kZSB3aXRoIHRoZSBFVlBfTURfQ1RYIGlzIHRoYXQgaXQNCj4g
-aXMgT3BlblNTTCAxLjAuMiBvbmx5IGFuZCBJIGV4cGVjdGVkIHRvIGJlIGFibGUgdG8gcmVtb3Zl
-IGl0IHNvb25lciBvcg0KPiBsYXRlci4gU28gTGlicmVTU0wgZG9lZHMgbm90IHN1cHBvcnQgdGhl
-IGFsdGVybmF0aXZlIEFQSSBmb3IgdGhhdD8NCj4gDQo+ICAgICAgRVZQX1BLRVlfQ1RYICpwY3R4
-ID0gRVZQX1BLRVlfQ1RYX25ld19pZChFVlBfUEtFWV9UTFMxX1BSRiwgTlVMTCk7DQo+IA0KPiBp
-cyB3aGF0IHdlIHVzZSBmb3IgT3BlblNTTCAxLjEuMCsNCj4gDQo+IEkgYW0gbm90IGhhcHB5IHRv
-IHNvb24gaGF2ZSBMaWJyZVNTTCBzcGVjaWZpYyBjb2RlIGluIG91ciBjb2RlIGJ1dCBpdA0KPiBz
-ZWVtcyBsaWtlIGlmIHdhbnQgdG8gY29udGludWUgdGhhdCBsaWJyYXJ5LCB3ZSBoYXZlIHRvLg0K
-PiANCj4gVGhlIGNoYW5nZSBsb29rcyBnb29kIGl0c2VsZi4NCj4gDQo+IEFja2VkLUJ5OiBBcm5l
-IFNjaHdhYmUgPGFybmVALi4uMTIyNy4uLj4NCg0KTGlicmVTU0wgbm93IGhhcyBFVlBfUEtFWV9D
-VFhfbmV3X2lkKCksIGJ1dCBpdCBkb2VzIG5vdCBkZWZpbmUgRVZQX1BLRVlfVExTMV9QUkYuDQo=
+On 10 Aug 2022, at 18:32, Gert Doering wrote:
+> as promised, here's test results and code review.
+>
+> Test results:
+>
+>  - running openvpn over TCP gives me a kernel panic - this is not so
+>    nice... (see attached .png from the vmware console) - userland seems
+>    to assume "kernel can do TCP", kernel panics on "if !udp, panic()"
+>    (so intentional panic, not corruption panic).
+>
+>    This is on freebsd git FreeBSD 14.0-CURRENT #1 main-n257130-c0665d5c824
+>
+I=E2=80=99ve pushed a fix for this panic in fd6b3bede5a5c210f327e5c9bd3e415=
+ee905048b.
+I simply didn=E2=80=99t think that user space might give us a non-UDP socke=
+t, so checking for that and rejecting the peer in that case fixes the panic=
+. Thanks for finding that.
+
+>  - running openvpn over UDP has issues with fragmentation - almost all
+>    t_client tests that *do* use DCO fail the "big ping" test
+>
+>     run IPv4 ping tests (want_ok), 64 byte packets...
+>     run IPv4 ping tests (want_ok), 1440 byte packets...
+>     run IPv4 ping tests (want_ok), 3000 byte packets...
+>
+>     FAIL: IPv4 ping test (3000 bytes) failed, but should succeed.
+>     run IPv6 ping tests (want_ok), 64 byte packets...
+>     run IPv6 ping tests (want_ok), 1440 byte packets...
+>     run IPv6 ping tests (want_ok), 3000 byte packets...
+>
+>     FAIL: IPv6 ping test (3000 bytes) failed, but should succeed.
+>
+>    this is "with no special mtu related options to OpenVPN", so the
+>    tun interface is MTU 1500, and the pings are created by
+>
+>         fping -b 3000 -C 20 -p 250 -q -C 5 -p 400 10.194.5.1 10.194.0.1
+>         fping6 -b 3000 -C 20 -p 250 -q -C 5 -p 400 fd00:abcd:194:5::1 fd0=
+0:abcd:194:0::1
+>
+>    (testing the host "on the p2p link" and "something behind a --route
+>     pushed by the server")
+>
+I=E2=80=99m failing to reproduce this in my own test setup. With a simple =
+=E2=80=98ping -c 2000=E2=80=99 on a 1500 MTU tunnel I see two layers of fra=
+gmentation (the ICMP packet gets fragmented before it goes through the tunn=
+el, and then the outer UDP packet gets fragmented as well), as I=E2=80=99d =
+expect. Traffic flows in both directions. (i.e. the ping succeeds).
+
+Is there any documentation on how t_client.sh works? It=E2=80=99s not at al=
+l clear to me what goes in t_client.in (e.g. in OPENVPN_BASE_P2P).
+
+>    I have not investigated exactly what happens at which point yet, but
+>    with Linux DCO, we had a similar effect where a fragmented *inside*
+>    packet ("ICMP") carried over a flag in the sk_buff that resulted in
+>    the kernel refusing to fragment the resulting *outside* packet.
+>
+>    (Inside MTU 1500 -> fping -s 3000 -> 3 "inside" fragments,
+>     1500+1500+68, adding openvpn overhead -> packet > 1500 ->
+>     external fragmentation needed for the first two)
+>
+>    Inside tcpdump (tun0):
+>
+> 17:28:37.342050 IP (tos 0x0, ttl 64, id 50758, offset 0, flags [+], proto=
+ ICMP (1), length 1500)
+>     10.194.5.222 > 10.194.5.1: ICMP echo request, id 2433, seq 0, length =
+1480
+> 17:28:37.342142 IP (tos 0x0, ttl 64, id 50758, offset 1480, flags [+], pr=
+oto ICMP (1), length 1500)
+>     10.194.5.222 > 10.194.5.1: ip-proto-1
+> 17:28:37.342270 IP (tos 0x0, ttl 64, id 50758, offset 2960, flags [none],=
+ proto ICMP (1), length 68)
+>     10.194.5.222 > 10.194.5.1: ip-proto-1
+>
+>    Outside tcpdump (em0):
+>
+> 17:28:37.342103 IP (tos 0x0, ttl 64, id 50759, offset 0, flags [+], proto=
+ UDP (17), length 1500)
+>     194.97.140.5.15738 > 199.102.77.82.51197: UDP, bad length 1528 > 1472
+> 17:28:37.342123 IP (tos 0x0, ttl 64, id 50759, offset 1480, flags [none],=
+ proto UDP (17), length 76)
+>     194.97.140.5 > 199.102.77.82: ip-proto-17
+> 17:28:37.342185 IP (tos 0x0, ttl 64, id 50760, offset 0, flags [+], proto=
+ UDP (17), length 1500)
+>     194.97.140.5.15738 > 199.102.77.82.51197: UDP, bad length 1528 > 1472
+> 17:28:37.342228 IP (tos 0x0, ttl 64, id 50760, offset 1480, flags [none],=
+ proto UDP (17), length 76)
+>     194.97.140.5 > 199.102.77.82: ip-proto-17
+> 17:28:37.342300 IP (tos 0x0, ttl 64, id 50761, offset 0, flags [none], pr=
+oto UDP (17), length 132)
+>     194.97.140.5.15738 > 199.102.77.82.51197: UDP, length 104
+>
+>
+>    ... this *does* look correct, but there is never a reply from the other
+>    end, so something is not right.  Either inside or outside.
+>
+Is your server in this scenario a FreeBSD DCO machine, or Linux DCO or some=
+thing else?
+In my setup the server is non-DCO FreeBSD.
+
+Best regards,
+Kristof
+
