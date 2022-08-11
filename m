@@ -1,9 +1,10 @@
-From: Timo Rothenpieler <timo@...2669...>
-Date: Thu, 11 Aug 2022 13:34:22 +0200
-Message-Id: <20220811113422.451-1-timo@...2669...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] GitHub Actions: Add new libcap-ng-dev
- dependency
+Date: Thu, 11 Aug 2022 14:00:53 +0200 (CEST)
+Message-Id: <202208111200.27BC0rCB093398@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220811113422.451-1-timo@...2669...>
+References: <20220811113422.451-1-timo@...2669...>
+Subject: [Openvpn-devel] [PATCH applied] Re: GitHub Actions: Add new
+ libcap-ng-dev dependency
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,36 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Timo Rothenpieler <timo@...2669...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Linux builds need this now in order to retain capabilities when dropping root privileges.
----
- .github/workflows/build.yaml | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Acked-by: Gert Doering <gert@...1296...>
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index b905c0d2..c89d3c8c 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -224,7 +224,7 @@ jobs:
-     runs-on: ${{matrix.os}}
-     steps:
-       - name: Install dependencies
--        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf ${SSLPKG} ${NLPKG}
-+        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf ${SSLPKG} ${NLPKG}
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2620...
-       - name: autoconf
-@@ -248,7 +248,7 @@ jobs:
-     runs-on: ${{matrix.os}}
-     steps:
-       - name: Install dependencies
--        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automake autoconf libmbedtls-dev
-+        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automake autoconf libmbedtls-dev
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2620...
-       - name: autoconf
--- 
-2.34.1
+Haven't tested anything, but it looks like it will fix the build - and
+GHA will tell me very soon :-)
+
+Your patch has been applied to the master branch.
+
+commit 4fb4d295d647292c6bc0c036a061f3f60aaa1278
+Author: Timo Rothenpieler
+Date:   Thu Aug 11 13:34:22 2022 +0200
+
+     GitHub Actions: Add new libcap-ng-dev dependency
+
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220811113422.451-1-timo@...2669...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24870.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
