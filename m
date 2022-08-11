@@ -1,10 +1,12 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 11 Aug 2022 11:43:30 +0300
-Message-Id: <20220811084330.187-1-lstipakov@...277...>
-In-Reply-To: <20220811083549.101-1-lstipakov@...277...>
-References: <20220811083549.101-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH v2] tun: properly handle device interface
- list
+Date: Thu, 11 Aug 2022 11:30:39 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <YvTMP9/QSmBeE5Nf@...2685...>
+References: <20220329192934.1415-1-timo@...2669...>
+ <20220514103717.235-1-timo@...2669...>
+MIME-Version: 1.0
+In-Reply-To: <20220514103717.235-1-timo@...2669...>
+Subject: Re: [Openvpn-devel] [PATCH v5] platform: Retain CAP_NET_ADMIN when
+ dropping privileges
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,97 +15,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+Content-Disposition: inline
+To: Timo Rothenpieler <timo@...2669...>
+Cc: openvpn-devel@lists.sourceforge.net, David Sommerseth <davids@...515...>
 
-From: Lev Stipakov <lev@...515...>
+On Sat, May 14, 2022 at 12:37:17PM +0200, Timo Rothenpieler wrote:
+> On Linux, when dropping privileges, interaction with
+> the network configuration, such as tearing down routes
+> or ovpn-dco interfaces will fail when --user/--group are
+> used.
+> 
+> This patch sets the CAP_NET_ADMIN capability, which grants
+> the needed privileges during the lifetime of the OpenVPN
+> process when dropping root privileges.
+> 
+> Signed-off-by: Timo Rothenpieler <timo@...2669...>
+> Reviewed-By: David Sommerseth <davids@...515...>
+> ---
+>  configure.ac                              |  19 +++
+>  distro/systemd/openvpn-client@...2221... |   2 +-
+>  distro/systemd/openvpn-server@...2221... |   2 +-
+>  src/openvpn/init.c                        |   5 +-
+>  src/openvpn/platform.c                    | 146 +++++++++++++++++++++-
+>  src/openvpn/platform.h                    |  10 +-
+>  6 files changed, 175 insertions(+), 9 deletions(-)
 
-Some adapters create multiple device interfaces
-and we need to enumerate all of them.
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- v2: uncrustify
+I ran several t_client test runs with --user nobody on a DCO-enabled system.
 
- src/openvpn/tun.c | 35 ++++++++++++++++++++---------------
- src/openvpn/tun.h |  2 +-
- 2 files changed, 21 insertions(+), 16 deletions(-)
+Without the patch:
+ - errors on teardown in all tests (sitnl)
+ - test 11 fails (which actually uses DCO, since no comp)
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index d9a01704..d48681a2 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -3776,21 +3776,27 @@ get_device_instance_id_interface(struct gc_arena *gc)
-             goto next;
-         }
- 
--        struct device_instance_id_interface *dev_if;
--        ALLOC_OBJ_CLEAR_GC(dev_if, struct device_instance_id_interface, gc);
--        dev_if->net_cfg_instance_id = (unsigned char *)string_alloc((char *)net_cfg_instance_id, gc);
--        dev_if->device_interface_list = string_alloc(BSTR(&dev_interface_list), gc);
--
--        /* link into return list */
--        if (!first)
--        {
--            first = dev_if;
--        }
--        if (last)
-+        char *dev_if = BSTR(&dev_interface_list);
-+        while (strlen(dev_if) > 0)
-         {
--            last->next = dev_if;
-+            struct device_instance_id_interface *dev_iif;
-+            ALLOC_OBJ_CLEAR_GC(dev_iif, struct device_instance_id_interface, gc);
-+            dev_iif->net_cfg_instance_id = (unsigned char *)string_alloc((char *)net_cfg_instance_id, gc);
-+            dev_iif->device_interface = string_alloc(dev_if, gc);
-+
-+            /* link into return list */
-+            if (!first)
-+            {
-+                first = dev_iif;
-+            }
-+            if (last)
-+            {
-+                last->next = dev_iif;
-+            }
-+            last = dev_iif;
-+
-+            dev_if += strlen(dev_if) + 1;
-         }
--        last = dev_if;
- 
- next:
-         RegCloseKey(dev_key);
-@@ -6466,12 +6472,11 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
-     {
-         const struct device_instance_id_interface *dev_if;
- 
--        /* Open Wintun adapter */
-         for (dev_if = device_instance_id_interface; dev_if != NULL; dev_if = dev_if->next)
-         {
-             if (strcmp((const char *)dev_if->net_cfg_instance_id, device_guid) == 0)
-             {
--                path = dev_if->device_interface_list;
-+                path = dev_if->device_interface;
-                 break;
-             }
-         }
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 8ec8f51f..f55315ee 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -382,7 +382,7 @@ struct panel_reg
- struct device_instance_id_interface
- {
-     LPBYTE net_cfg_instance_id;
--    const char *device_interface_list;
-+    const char *device_interface;
-     struct device_instance_id_interface *next;
- };
- 
+With the patch:
+ - errors on teardown gone
+ - test 11 passes
+
+With the patch and --disable-dco --enable-iproute2:
+ - no cap retained
+ - errors on teardown (ip)
+
+Looks to me like it does what it is supposed to do.
+
+Acked-By: Frank Lichtenheld <frank@...2641...>
+
+That said, maybe we should add some hint about this
+behavior to the actual documentation? Maybe to
+--user documentation? Or at least Changes?
+
+Regards,
 -- 
-2.23.0.windows.1
-
+  Frank Lichtenheld
 
