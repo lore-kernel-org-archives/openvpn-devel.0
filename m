@@ -1,7 +1,10 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 11 Aug 2022 11:35:49 +0300
-Message-Id: <20220811083549.101-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH] tun: properly handle device interface list
+Date: Thu, 11 Aug 2022 11:43:30 +0300
+Message-Id: <20220811084330.187-1-lstipakov@...277...>
+In-Reply-To: <20220811083549.101-1-lstipakov@...277...>
+References: <20220811083549.101-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH v2] tun: properly handle device interface
+ list
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,15 +25,17 @@ and we need to enumerate all of them.
 
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- src/openvpn/tun.c | 37 +++++++++++++++++++++----------------
+ v2: uncrustify
+
+ src/openvpn/tun.c | 35 ++++++++++++++++++++---------------
  src/openvpn/tun.h |  2 +-
- 2 files changed, 22 insertions(+), 17 deletions(-)
+ 2 files changed, 21 insertions(+), 16 deletions(-)
 
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 8a31bb04..76774e51 100644
+index d9a01704..d48681a2 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
-@@ -3788,21 +3788,27 @@ get_device_instance_id_interface(struct gc_arena *gc)
+@@ -3776,21 +3776,27 @@ get_device_instance_id_interface(struct gc_arena *gc)
              goto next;
          }
  
@@ -49,9 +54,9 @@ index 8a31bb04..76774e51 100644
 +        while (strlen(dev_if) > 0)
          {
 -            last->next = dev_if;
-+            struct device_instance_id_interface* dev_iif;
++            struct device_instance_id_interface *dev_iif;
 +            ALLOC_OBJ_CLEAR_GC(dev_iif, struct device_instance_id_interface, gc);
-+            dev_iif->net_cfg_instance_id = (unsigned char*)string_alloc((char*)net_cfg_instance_id, gc);
++            dev_iif->net_cfg_instance_id = (unsigned char *)string_alloc((char *)net_cfg_instance_id, gc);
 +            dev_iif->device_interface = string_alloc(dev_if, gc);
 +
 +            /* link into return list */
@@ -71,7 +76,7 @@ index 8a31bb04..76774e51 100644
  
  next:
          RegCloseKey(dev_key);
-@@ -6484,12 +6490,11 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
+@@ -6466,12 +6472,11 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
      {
          const struct device_instance_id_interface *dev_if;
  
@@ -85,20 +90,11 @@ index 8a31bb04..76774e51 100644
                  break;
              }
          }
-@@ -6500,7 +6505,7 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
-     }
-     else
-     {
--        /* Open TAP-Windows or dco-win adapter */
-+        /* Open TAP-Windows adapter */
-         openvpn_snprintf(tuntap_device_path, sizeof(tuntap_device_path), "%s%s%s",
-                          USERMODEDEVICEDIR,
-                          device_guid,
 diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 10792eff..effcfca4 100644
+index 8ec8f51f..f55315ee 100644
 --- a/src/openvpn/tun.h
 +++ b/src/openvpn/tun.h
-@@ -392,7 +392,7 @@ struct panel_reg
+@@ -382,7 +382,7 @@ struct panel_reg
  struct device_instance_id_interface
  {
      LPBYTE net_cfg_instance_id;
