@@ -1,10 +1,9 @@
-Date: Thu, 11 Aug 2022 14:00:53 +0200 (CEST)
-Message-Id: <202208111200.27BC0rCB093398@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220811113422.451-1-timo@...2669...>
-References: <20220811113422.451-1-timo@...2669...>
-Subject: [Openvpn-devel] [PATCH applied] Re: GitHub Actions: Add new
- libcap-ng-dev dependency
+From: Max Fillinger <maximilian.fillinger@...2507...>
+Date: Thu, 11 Aug 2022 14:07:21 +0200
+Message-ID: <20220811120722.29168-1-maximilian.fillinger@...2507...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 1/2] Update openssl_compat.h for newer
+ LibreSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +14,47 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Timo Rothenpieler <timo@...2669...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+LibreSSL has added some of the functions that are defined here. However,
+we still need RSA_F_RSA_OSSL_PRIVATE_ENCRYPT.
 
-Haven't tested anything, but it looks like it will fix the build - and
-GHA will tell me very soon :-)
+Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+---
+ src/openvpn/openssl_compat.h | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-Your patch has been applied to the master branch.
-
-commit 4fb4d295d647292c6bc0c036a061f3f60aaa1278
-Author: Timo Rothenpieler
-Date:   Thu Aug 11 13:34:22 2022 +0200
-
-     GitHub Actions: Add new libcap-ng-dev dependency
-
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220811113422.451-1-timo@...2669...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24870.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index b3ee94f1..38eb760b 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -51,8 +51,8 @@
+ #define SSL_CTX_set1_groups SSL_CTX_set1_curves
+ #endif
+ 
+-/* Functionality missing in LibreSSL and OpenSSL 1.0.2 */
+-#if (OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)) && !defined(ENABLE_CRYPTO_WOLFSSL)
++/* Functionality missing in LibreSSL before 3.5 and OpenSSL 1.0.2 */
++#if (OPENSSL_VERSION_NUMBER < 0x10100000L || (defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER < 0x3050000fL)) && !defined(ENABLE_CRYPTO_WOLFSSL)
+ /**
+  * Destroy a X509 object
+  *
+@@ -68,11 +68,13 @@ X509_OBJECT_free(X509_OBJECT *obj)
+     }
+ }
+ 
+-#define RSA_F_RSA_OSSL_PRIVATE_ENCRYPT       RSA_F_RSA_EAY_PRIVATE_ENCRYPT
+ #define EVP_CTRL_AEAD_SET_TAG                EVP_CTRL_GCM_SET_TAG
+ #define EVP_CTRL_AEAD_GET_TAG                EVP_CTRL_GCM_GET_TAG
+ #endif
+ 
++#if !defined(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT)
++#define RSA_F_RSA_OSSL_PRIVATE_ENCRYPT       RSA_F_RSA_EAY_PRIVATE_ENCRYPT
++#endif
+ 
+ /* Functionality missing in 1.0.2 */
+ #if OPENSSL_VERSION_NUMBER < 0x10100000L && !defined(ENABLE_CRYPTO_WOLFSSL)
+-- 
+2.30.2
 
 
