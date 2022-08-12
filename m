@@ -1,11 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri, 12 Aug 2022 15:06:50 +0200
-Message-Id: <20220812130657.29899-4-a@...2181...>
+Date: Fri, 12 Aug 2022 15:06:54 +0200
+Message-Id: <20220812130657.29899-8-a@...2181...>
 In-Reply-To: <20220812130657.29899-1-a@...2181...>
 References: <20220812130657.29899-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v100 03/10] dco-win: add platform dependant
- check on incompatible options
+Subject: [Openvpn-devel] [PATCH v100 07/10] dco-win: ensure the DCO API is
+ not used when running on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,71 +17,80 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>, Lev Stipakov <lev@...515...>
+Cc: Antonio Quartulli <a@...2181...>
 
-Some platforms may have different constraints in terms of incompatible
-opions, therefore we add a function that explicitly checks those.
-
-Also, add generic option check for when ovpn-dco-win is in use.
+On Windows the high level API should still use the link_socket object to
+read and write packets. For this reason, even if dco_installed is true,
+we still need to rely on the classic link_socket object.
 
 Signed-off-by: Antonio Quartulli <a@...2181...>
-Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- src/openvpn/dco.c     | 17 +++++++++++++++--
- src/openvpn/options.c |  5 +++++
- 2 files changed, 20 insertions(+), 2 deletions(-)
+ src/openvpn/dco_win.c |  4 ++--
+ src/openvpn/forward.c | 23 ++++++++++++++++++++++-
+ 2 files changed, 24 insertions(+), 3 deletions(-)
 
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index ac694d18..d330d917 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -221,7 +221,20 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
- static bool
- dco_check_option_conflict_platform(int msglevel, const struct options *o)
+diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
+index f1160c7d..18ce9f3a 100644
+--- a/src/openvpn/dco_win.c
++++ b/src/openvpn/dco_win.c
+@@ -355,14 +355,14 @@ dco_available(int msglevel)
+ int
+ dco_do_read(dco_context_t *dco)
  {
--#if defined(TARGET_LINUX)
-+#if defined(_WIN32)
-+    if (o->mode == MODE_SERVER)
-+    {
-+        msg(msglevel, "Only client and p2p data channel offload is supported "
-+            "with ovpn-dco-win.");
-+        return false;
-+    }
-+
-+    if (o->persist_tun)
-+    {
-+        msg(msglevel, "--persist-tun is not supported with ovpn-dco-win.");
-+        return false;
-+    }
-+#elif defined(TARGET_LINUX)
-     /* if the device name is fixed, we need to check if an interface with this
-      * name already exists. IF it does, it must be a DCO interface, otherwise
-      * DCO has to be disabled in order to continue.
-@@ -246,7 +259,7 @@ dco_check_option_conflict_platform(int msglevel, const struct options *o)
-                 strerror(-ret), ret);
-         }
-     }
--#endif /* if defined(TARGET_LINUX) */
-+#endif /* if defined(_WIN32) */
-     return true;
+-    /* no-op on windows */
++    ASSERT(false);
+     return 0;
  }
  
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 0ce3158b..90e59582 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2450,6 +2450,11 @@ options_postprocess_verify_ce(const struct options *options,
-     {
-         msg(M_USAGE, "--windows-driver wintun requires --dev tun");
-     }
-+
-+    if (options->windows_driver == WINDOWS_DRIVER_DCO)
-+    {
-+        dco_check_option_conflict(M_USAGE, options);
-+    }
- #endif /* ifdef _WIN32 */
+ int
+ dco_do_write(dco_context_t *dco, int peer_id, struct buffer *buf)
+ {
+-    /* no-op on windows */
++    ASSERT(false);
+     return 0;
+ }
  
-     /*
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 650f7c59..8af41072 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1601,6 +1601,27 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
+     }
+ }
+ 
++/* Depending on the platform, we may have to not use the DCO socket, even if DCO
++ * is being used for a specific link.
++ *
++ * This happens with Windows, where the standard link_socket API have to be used
++ * also with DCO.
++ *
++ * For this reason we must make the right decision and not always look at
++ * dco_installed. Note that on Windows the dco_installed field is still supposed
++ * to be true, because it is used in the lower level code to use the proper API
++ * (socket vs handle). This is why we need this function with some ifdef sauce
++ */
++static bool
++should_use_dco_socket(struct link_socket *sock)
++{
++#if defined(TARGET_LINUX)
++    return sock->info.dco_installed;
++#else
++    return false;
++#endif
++}
++
+ /*
+  * Input: c->c2.to_link
+  */
+@@ -1674,7 +1695,7 @@ process_outgoing_link(struct context *c)
+                 socks_preprocess_outgoing_link(c, &to_addr, &size_delta);
+ 
+                 /* Send packet */
+-                if (c->c2.link_socket->info.dco_installed)
++                if (should_use_dco_socket(c->c2.link_socket))
+                 {
+                     size = dco_do_write(&c->c1.tuntap->dco,
+                                         c->c2.tls_multi->peer_id,
 -- 
 2.35.1
 
