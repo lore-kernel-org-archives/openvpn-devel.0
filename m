@@ -1,10 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri, 12 Aug 2022 15:06:56 +0200
-Message-Id: <20220812130657.29899-10-a@...2181...>
+Date: Fri, 12 Aug 2022 15:06:55 +0200
+Message-Id: <20220812130657.29899-9-a@...2181...>
 In-Reply-To: <20220812130657.29899-1-a@...2181...>
 References: <20220812130657.29899-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v100 09/10] dco: properly name variables
+Subject: [Openvpn-devel] [PATCH v100 08/10] ovpn-dco: print some netlink
+ messages to debug level
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,55 +19,28 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>
 
-renamed remote_addrX variables to vpn_addrX to make it clear that they
-refer to the address over the VPN/tunnel
+Netlink errors detected during dco availability detection are not really
+required and can confuse the user.
+Have them printed to the dco debug level.
 
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/dco.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ src/openvpn/dco_linux.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index d330d917..2b7b742a 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -553,19 +553,20 @@ dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi)
-         remoteaddr = &c->c2.link_socket_info->lsa->actual.dest.addr.sa;
-     }
- 
--    struct in_addr remote_ip4 = { 0 };
--    struct in6_addr *remote_addr6 = NULL;
--    struct in_addr *remote_addr4 = NULL;
--
-     /* In server mode we need to fetch the remote addresses from the push config */
-+
-+    struct in_addr vpn_ip4 = { 0 };
-+    struct in_addr *vpn_addr4 = NULL;
-     if (c->c2.push_ifconfig_defined)
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index f86ea819..9212339e 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -913,7 +913,7 @@ nla_put_failure:
+ bool
+ dco_available(int msglevel)
+ {
+-    if (resolve_ovpn_netlink_id(msglevel) < 0)
++    if (resolve_ovpn_netlink_id(D_DCO_DEBUG) < 0)
      {
--        remote_ip4.s_addr =  htonl(c->c2.push_ifconfig_local);
--        remote_addr4 = &remote_ip4;
-+        vpn_ip4.s_addr =  htonl(c->c2.push_ifconfig_local);
-+        vpn_addr4 = &vpn_ip4;
-     }
-+
-+    struct in6_addr *vpn_addr6 = NULL;
-     if (c->c2.push_ifconfig_ipv6_defined)
-     {
--        remote_addr6 = &c->c2.push_ifconfig_ipv6_local;
-+        vpn_addr6 = &c->c2.push_ifconfig_ipv6_local;
-     }
- 
-     if (dco_multi_get_localaddr(m, mi, &local))
-@@ -574,7 +575,7 @@ dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi)
-     }
- 
-     int ret = dco_new_peer(&c->c1.tuntap->dco, peer_id, sd, localaddr,
--                           remoteaddr, remote_addr4, remote_addr6);
-+                           remoteaddr, vpn_addr4, vpn_addr6);
-     if (ret < 0)
-     {
-         return ret;
+         msg(msglevel,
+             "Note: Kernel support for ovpn-dco missing, disabling data channel offload.");
 -- 
 2.35.1
 
