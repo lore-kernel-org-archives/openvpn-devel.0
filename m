@@ -1,13 +1,15 @@
-MIME-Version: 1.0
+Date: Fri, 12 Aug 2022 20:32:08 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <YvacqICTVasVJKi3@...1296...>
 References: <20220812130657.29899-1-a@...2181...>
- <20220812130657.29899-6-a@...2181...>
-In-Reply-To: <20220812130657.29899-6-a@...2181...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 12 Aug 2022 19:59:30 +0300
-Message-ID: <CAGyAFMUwZcfmQB6KKCw8zA2XWtd64cPvcmN_ZDJi_55J4MDR_A@...278...>
-Content-Type: multipart/alternative; boundary="0000000000004bc85e05e60e353a"
-Subject: Re: [Openvpn-devel] [PATCH v100 05/10] dco-win: add documentation
- to README.dco.md
+ <20220812130657.29899-3-a@...2181...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="eGKwTSAn3iFg9rUf"
+Content-Disposition: inline
+In-Reply-To: <20220812130657.29899-3-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v100 02/10] dco-win: introduce low-level
+ code for handling ovpn-dco-win in Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,59 +19,50 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
 
---0000000000004bc85e05e60e353a
-Content-Type: text/plain; charset="UTF-8"
+--eGKwTSAn3iFg9rUf
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-+Getting started (Windows)
-> +-------------------------
-> +Getting started under windows is currently for brave people having
-> experience
-> +with windows development. You need to compile openvpn yourself and also
-> need
-> +to get the test driver installed on your system.
->
+On Fri, Aug 12, 2022 at 03:06:49PM +0200, Antonio Quartulli wrote:
+>  	mbuf.c mbuf.h \
+>  	memdbg.h \
+>  	misc.c misc.h \
+> +	ovpn-dco-win.h \
 
-While I consider building openvpn and installing test-signed drivers as
-common knowledge,
-this is not necessarily needed to try out dco-win.
+Can we please make this ovpn_dco_win.h, with underscores?
 
-We have GHA-based automation which builds openvpn, builds MSI installers for
-x86/x64/arm64 and uploads those to build.openvpn.net.
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-So to try out dco-win, one just needs to get installation package from
+Gert Doering - Munich, Germany                             gert@...1296...
 
-https://build.openvpn.net/downloads/snapshots/github-actions/openvpn2/
+--eGKwTSAn3iFg9rUf
+Content-Type: application/pgp-signature; name="signature.asc"
 
--Lev
+-----BEGIN PGP SIGNATURE-----
 
---0000000000004bc85e05e60e353a
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+iQGcBAEBAgAGBQJi9pyoAAoJEB2Cnv7KVigSlgEL/1QJpA0DgSf5vnHFc2PYPHZV
+utUVP56I0b5ALlinhxkwY8NRFmeBc4Pygy7bZB/Vddy+N6ZWLpfo8Gea03FBKRof
+VKvLg7joBSkGZfMiVvuQnMDT+Oq44KK+M52THstQ3PuRO9bqQOHcjyqZtJ4vhB7T
+7n0zT9cWElmKqmHlATcKltNu6Rl4dd4ORxaN1oILtjikhgXIMhaMIUSWtqCm9aBr
+UmUHCSRDv/TeUe1/vlGHzaiSQx7vBszkdqAtVn/YHfHL9qo0TufRhfP28zwwQPlE
+fysourJWinCzsD4mPSHcRytkscYqtLn24pNU572DDHs7S4l5s8s9+Yf5f1v1wenh
+NbowySsmK/wN+N45Vbk9xl4fG4Xd8OnD9at7c1G0frbEyDWUk+Gsfrc/aA+cV0aU
+J9Znar9xY/4d448/smicRODUEiWT8h7VH39iXlZU018xT+d8jJgF+f4KXO3K6W73
+3W4lRmFUJNhJ6j6W+oR2ORAd+vQQgpYsPHWxdIm6pw==
+=DFdj
+-----END PGP SIGNATURE-----
 
-<div dir=3D"ltr"><div dir=3D"ltr">Hi,</div><div dir=3D"ltr"><br></div><div =
-class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0px=
- 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
-+Getting started (Windows)<br>
-+-------------------------<br>
-+Getting started under windows is currently for brave people having experie=
-nce<br>
-+with windows development. You need to compile openvpn yourself and also ne=
-ed<br>
-+to get the test driver installed on your system.<br></blockquote><div><br>=
-</div><div>While I consider building openvpn and installing test-signed dri=
-vers as common knowledge,</div><div>this is not necessarily=C2=A0needed to =
-try out dco-win.</div><div><br></div><div>We have GHA-based automation whic=
-h builds openvpn, builds MSI installers for</div><div>x86/x64/arm64 and upl=
-oads those to <a href=3D"http://build.openvpn.net">build.openvpn.net</a>.</=
-div><div><br></div><div>So to try out dco-win, one just needs to get instal=
-lation package from=C2=A0 =C2=A0</div><div><br></div><div><a href=3D"https:=
-//build.openvpn.net/downloads/snapshots/github-actions/openvpn2/">https://b=
-uild.openvpn.net/downloads/snapshots/github-actions/openvpn2/</a></div><div=
-><br></div><div>-Lev</div></div></div>
-
---0000000000004bc85e05e60e353a--
+--eGKwTSAn3iFg9rUf--
 
