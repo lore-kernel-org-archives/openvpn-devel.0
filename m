@@ -1,11 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Sat, 13 Aug 2022 22:42:23 +0200
-Message-Id: <20220813204224.22576-6-a@...2181...>
+Date: Sat, 13 Aug 2022 22:42:22 +0200
+Message-Id: <20220813204224.22576-5-a@...2181...>
 In-Reply-To: <20220813204224.22576-1-a@...2181...>
 References: <20220813204224.22576-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v101 6/7] dco-win: ensure the DCO API is not
- used when running on Windows
+Subject: [Openvpn-devel] [PATCH v101 5/7] dco-win: update GH Actions config
+ file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,61 +17,39 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+Cc: Antonio Quartulli <a@...2181...>, Lev Stipakov <lev@...515...>
 
-On Windows the high level API should still use the link_socket object to
-read and write packets. For this reason, even if dco_installed is true,
-we still need to rely on the classic link_socket object.
-
+Signed-off-by: Lev Stipakov <lev@...515...>
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
-Changes from v100:
-* removed ASSERTs (moved to previous patch)
-* improve comment text in forward.c
----
- src/openvpn/forward.c | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+ .github/workflows/build.yaml | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index f6d416a3..1ee42197 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1601,6 +1601,26 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
-     }
- }
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index c89d3c8c..6bd108b9 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -59,11 +59,6 @@ jobs:
+     steps:
+       - name: Install dependencies
+         run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip
+-      - name: Checkout ovpn-dco-win
+-        uses: actions/checkout@...2620...
+-        with:
+-          repository: OpenVPN/ovpn-dco-win
+-          path: ovpn-dco-win
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2620...
+         with:
+@@ -151,7 +146,7 @@ jobs:
+         run: cp ./tap-windows-${TAP_WINDOWS_VERSION}/include/tap-windows.h ${HOME}/mingw/opt/include/
  
-+/* Linux-like DCO implementations pass the socket to the kernel and
-+ * disallow usage of it from userland, so (control) packets sent and
-+ * received by OpenVPN need to go through the DCO interface.
-+ *
-+ * Windows DCO needs control packets to be sent via the normal
-+ * Socket API.
-+ *
-+ * Hide that complexity (...especially if more platforms show up
-+ * in future...) in a small inline function.
-+ */
-+static bool
-+should_use_dco_socket(struct link_socket *sock)
-+{
-+#if defined(TARGET_LINUX)
-+    return sock->info.dco_installed;
-+#else
-+    return false;
-+#endif
-+}
-+
- /*
-  * Input: c->c2.to_link
-  */
-@@ -1674,7 +1694,7 @@ process_outgoing_link(struct context *c)
-                 socks_preprocess_outgoing_link(c, &to_addr, &size_delta);
+       - name: configure OpenVPN
+-        run: PKG_CONFIG_PATH=${HOME}/mingw/opt/lib/pkgconfig DCO_SOURCEDIR=$(realpath ../ovpn-dco-win) LDFLAGS=-L$HOME/mingw/opt/lib CFLAGS=-I$HOME/mingw/opt/include OPENSSL_LIBS="-L${HOME}/opt/lib -lssl -lcrypto" OPENSSL_CFLAGS=-I$HOME/mingw/opt/include PREFIX=$HOME/mingw/opt LZO_CFLAGS=-I$HOME/mingw/opt/include LZO_LIBS="-L${HOME}/mingw/opt/lib -llzo2" ./configure  --host=${CHOST} --disable-lz4 --enable-dco
++        run: PKG_CONFIG_PATH=${HOME}/mingw/opt/lib/pkgconfig LDFLAGS=-L$HOME/mingw/opt/lib CFLAGS=-I$HOME/mingw/opt/include OPENSSL_LIBS="-L${HOME}/opt/lib -lssl -lcrypto" OPENSSL_CFLAGS=-I$HOME/mingw/opt/include PREFIX=$HOME/mingw/opt LZO_CFLAGS=-I$HOME/mingw/opt/include LZO_LIBS="-L${HOME}/mingw/opt/lib -llzo2" ./configure  --host=${CHOST} --disable-lz4
+         working-directory: openvpn
  
-                 /* Send packet */
--                if (c->c2.link_socket->info.dco_installed)
-+                if (should_use_dco_socket(c->c2.link_socket))
-                 {
-                     size = dco_do_write(&c->c1.tuntap->dco,
-                                         c->c2.tls_multi->peer_id,
+       - name: build OpenVPN
 -- 
 2.35.1
 
