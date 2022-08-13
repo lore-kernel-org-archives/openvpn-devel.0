@@ -1,9 +1,7 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Sat, 13 Aug 2022 23:11:04 +0200
-Message-Id: <20220813211104.411554-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Allow querying DCO status via management
- status
+From: Lev Stipakov <lstipakov@...277...>
+Date: Sun, 14 Aug 2022 00:20:40 +0300
+Message-Id: <20220813212040.113-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] error.c: remove unused crash() function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,39 +13,55 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-This is allows querying the DCO status without doing an error-prone
-parsing of the startup log.
+From: Lev Stipakov <lev@...515...>
 
-Also remove comment that serves no purpose anymore.
+This has been added in 2006 and as of now not used.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- src/openvpn/multi.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ src/openvpn/error.c | 9 ---------
+ src/openvpn/error.h | 5 -----
+ 2 files changed, 14 deletions(-)
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 53ee3e1a1..95414429f 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -837,7 +837,7 @@ multi_print_status(struct multi_context *m, struct status_output *so, const int
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index 7cd35b17..c8c77358 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -808,15 +808,6 @@ msg_flags_string(const unsigned int flags, struct gc_arena *gc)
+     return BSTR(&out);
+ }
  
-         status_reset(so);
+-#ifdef ENABLE_DEBUG
+-void
+-crash(void)
+-{
+-    char *null = NULL;
+-    *null = 0;
+-}
+-#endif
+-
+ #ifdef _WIN32
  
--        if (version == 1) /* WAS: m->status_file_version */
-+        if (version == 1)
-         {
-             /*
-              * Status file version 1
-@@ -984,6 +984,7 @@ multi_print_status(struct multi_context *m, struct status_output *so, const int
-                               sep, sep, mbuf_maximum_queued(m->mbuf));
-             }
+ const char *
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+index 972619fe..89adb3e6 100644
+--- a/src/openvpn/error.h
++++ b/src/openvpn/error.h
+@@ -220,11 +220,6 @@ __attribute__((__noreturn__))
+     [!!sizeof(struct { int __error_if_negative : (expr) ? 2 : -1; })]
+ #endif
  
-+            status_printf(so, "GLOBAL_STATS%cdco_enabled%c%d", sep, sep, dco_enabled(&m->top.options));
-             status_printf(so, "END");
-         }
-         else
+-#ifdef ENABLE_DEBUG
+-void crash(void);  /* force a segfault (debugging only) */
+-
+-#endif
+-
+ /* Inline functions */
+ 
+ static inline bool
 -- 
-2.32.1 (Apple Git-133)
+2.23.0.windows.1
 
 
