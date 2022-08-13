@@ -1,11 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Sat, 13 Aug 2022 22:42:22 +0200
-Message-Id: <20220813204224.22576-5-a@...2181...>
+Date: Sat, 13 Aug 2022 22:42:21 +0200
+Message-Id: <20220813204224.22576-4-a@...2181...>
 In-Reply-To: <20220813204224.22576-1-a@...2181...>
 References: <20220813204224.22576-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v101 5/7] dco-win: update GH Actions config
- file
+Subject: [Openvpn-devel] [PATCH v101 4/7] dco-win: add documentation to
+ README.dco.md
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,39 +17,47 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>, Lev Stipakov <lev@...515...>
+Cc: Antonio Quartulli <a@...2181...>, Arne Schwabe <arne@...1227...>, Lev Stipakov <lev@...515...>
 
+Signed-off-by: Arne Schwabe <arne@...1227...>
 Signed-off-by: Lev Stipakov <lev@...515...>
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- .github/workflows/build.yaml | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+Changes from v100:
+* add URL to windows installer (openvpn+dco) and modify text
+---
+ README.dco.md | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index c89d3c8c..6bd108b9 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -59,11 +59,6 @@ jobs:
-     steps:
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip
--      - name: Checkout ovpn-dco-win
--        uses: actions/checkout@...2620...
--        with:
--          repository: OpenVPN/ovpn-dco-win
--          path: ovpn-dco-win
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2620...
-         with:
-@@ -151,7 +146,7 @@ jobs:
-         run: cp ./tap-windows-${TAP_WINDOWS_VERSION}/include/tap-windows.h ${HOME}/mingw/opt/include/
+diff --git a/README.dco.md b/README.dco.md
+index c38d3de3..aa93d667 100644
+--- a/README.dco.md
++++ b/README.dco.md
+@@ -57,6 +57,13 @@ see a message like
+ in your log.
  
-       - name: configure OpenVPN
--        run: PKG_CONFIG_PATH=${HOME}/mingw/opt/lib/pkgconfig DCO_SOURCEDIR=$(realpath ../ovpn-dco-win) LDFLAGS=-L$HOME/mingw/opt/lib CFLAGS=-I$HOME/mingw/opt/include OPENSSL_LIBS="-L${HOME}/opt/lib -lssl -lcrypto" OPENSSL_CFLAGS=-I$HOME/mingw/opt/include PREFIX=$HOME/mingw/opt LZO_CFLAGS=-I$HOME/mingw/opt/include LZO_LIBS="-L${HOME}/mingw/opt/lib -llzo2" ./configure  --host=${CHOST} --disable-lz4 --enable-dco
-+        run: PKG_CONFIG_PATH=${HOME}/mingw/opt/lib/pkgconfig LDFLAGS=-L$HOME/mingw/opt/lib CFLAGS=-I$HOME/mingw/opt/include OPENSSL_LIBS="-L${HOME}/opt/lib -lssl -lcrypto" OPENSSL_CFLAGS=-I$HOME/mingw/opt/include PREFIX=$HOME/mingw/opt LZO_CFLAGS=-I$HOME/mingw/opt/include LZO_LIBS="-L${HOME}/mingw/opt/lib -llzo2" ./configure  --host=${CHOST} --disable-lz4
-         working-directory: openvpn
  
-       - name: build OpenVPN
++Getting started (Windows)
++-------------------------
++The simplest way to test DCO under Windows is to download the latest installer
++from https://build.openvpn.net/downloads/snapshots/github-actions/openvpn2/ .
++This installer contains the latest OpenVPN code and the ovpn-dco-win driver.
++
++
+ DCO and P2P mode
+ ----------------
+ DCO is also available when running OpenVPN in P2P mode without `--pull` /
+@@ -111,7 +118,9 @@ Limitations by design
+   - older versions are missing support for the AEAD ciphers;
+ - topology subnet is the only supported `--topology` for servers;
+ - iroute directives install routes on the host operating system, see also
+-  Routing with ovpn-dco.
++  Routing with ovpn-dco;
++- (ovpn-dco-win) client and p2p mode only;
++- (ovpn-dco-win) Chacha20-Poly1305 support available starting with Windows 11.
+ 
+ 
+ Current implementation limitations
 -- 
 2.35.1
 
