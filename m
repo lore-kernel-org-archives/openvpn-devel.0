@@ -1,15 +1,17 @@
-Date: Fri, 12 Aug 2022 20:32:08 +0200
+Date: Sat, 13 Aug 2022 10:10:33 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <YvacqICTVasVJKi3@...1296...>
-References: <20220812130657.29899-1-a@...2181...>
- <20220812130657.29899-3-a@...2181...>
+Message-ID: <Yvdcec3CsvyYUKUx@...1296...>
+References: <20220808143424.65924-1-kprovost@...2661...>
+ <20220808143424.65924-3-kprovost@...2661...>
+ <YvPdlCSxQ6wvfIna@...1296...>
+ <2DCBB302-1FB4-4EC0-8B4A-8D6EA075B0FD@...2661...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="eGKwTSAn3iFg9rUf"
+ protocol="application/pgp-signature"; boundary="henCjble42UayWvW"
 Content-Disposition: inline
-In-Reply-To: <20220812130657.29899-3-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v100 02/10] dco-win: introduce low-level
- code for handling ovpn-dco-win in Windows
+In-Reply-To: <2DCBB302-1FB4-4EC0-8B4A-8D6EA075B0FD@...2661...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] ovpn-dco: introduce FreeBSD
+ data-channel offload support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,23 +20,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+To: Kristof Provost <kprovost@...2661...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---eGKwTSAn3iFg9rUf
+--henCjble42UayWvW
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Aug 12, 2022 at 03:06:49PM +0200, Antonio Quartulli wrote:
->  	mbuf.c mbuf.h \
->  	memdbg.h \
->  	misc.c misc.h \
-> +	ovpn-dco-win.h \
+On Thu, Aug 11, 2022 at 05:25:05PM +0200, Kristof Provost via Openvpn-devel=
+ wrote:
+> >  - running openvpn over TCP gives me a kernel panic - this is not so
+> >    nice... (see attached .png from the vmware console) - userland seems
+> >    to assume "kernel can do TCP", kernel panics on "if !udp, panic()"
+> >    (so intentional panic, not corruption panic).
+> >
+> >    This is on freebsd git FreeBSD 14.0-CURRENT #1 main-n257130-c0665d5c=
+824
+> >
+> I???ve pushed a fix for this panic in fd6b3bede5a5c210f327e5c9bd3e415ee90=
+5048b.
+> I simply didn???t think that user space might give us a non-UDP
+> socket, so checking for that and rejecting the peer in that case
+> fixes the panic. Thanks for finding that.
 
-Can we please make this ovpn_dco_win.h, with underscores?
+JFTR, I have tested "main-n257320-3a3af6b2a16" with the old DCO userland
+patch, and it no longer crashes.  Of course the TCP tests failed, because
+userland only sees "mmmh, it fails!" but has no idea it should fall back
+to non-DCO  (with the new userland patches, this works).
+
+In case you plan to include kernel TCP support, it would be good to
+have this "soonish" - like, before FreeBSD 14 and OpenVPN 2.6.0 release,
+because otherwise this will be a bit painful to synchronize.
 
 gert
 --=20
@@ -47,22 +66,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---eGKwTSAn3iFg9rUf
+--henCjble42UayWvW
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJi9pyoAAoJEB2Cnv7KVigSlgEL/1QJpA0DgSf5vnHFc2PYPHZV
-utUVP56I0b5ALlinhxkwY8NRFmeBc4Pygy7bZB/Vddy+N6ZWLpfo8Gea03FBKRof
-VKvLg7joBSkGZfMiVvuQnMDT+Oq44KK+M52THstQ3PuRO9bqQOHcjyqZtJ4vhB7T
-7n0zT9cWElmKqmHlATcKltNu6Rl4dd4ORxaN1oILtjikhgXIMhaMIUSWtqCm9aBr
-UmUHCSRDv/TeUe1/vlGHzaiSQx7vBszkdqAtVn/YHfHL9qo0TufRhfP28zwwQPlE
-fysourJWinCzsD4mPSHcRytkscYqtLn24pNU572DDHs7S4l5s8s9+Yf5f1v1wenh
-NbowySsmK/wN+N45Vbk9xl4fG4Xd8OnD9at7c1G0frbEyDWUk+Gsfrc/aA+cV0aU
-J9Znar9xY/4d448/smicRODUEiWT8h7VH39iXlZU018xT+d8jJgF+f4KXO3K6W73
-3W4lRmFUJNhJ6j6W+oR2ORAd+vQQgpYsPHWxdIm6pw==
-=DFdj
+iQGcBAEBAgAGBQJi91x5AAoJEB2Cnv7KVigS5lwL/iXaJxMRnuWTPtUb9wI2h1J9
+emDXRRWmCBsnLnJTy5s0bSdenWlMQsK3noDMsRKUiRj+IaxdJl0St0QLzInYdN30
+qW23BxpSe4EZrulcXRSIVAma2IaiQGXE7bB0iNZnzTe9a+4QHEQSKPuUgVmWiY23
+bBVCyi5Y4YFB9Rt18Nb78CtdRtZka/uegbOFuS+x0fyNNRtHn6Gi/Wu+34HoXJnl
+Lg0KlJ5A6aFK3BUc9CrxPLJ7vtxg+LI84+YH1nAOw6O4H/t21od94yqnEIcmUWJC
+in7RN/XfCn8ol3mN7BIRdCsucRceOjWEAVSZTt849nKHlr+W/2xsTF7S5WeGz5OA
+YQDqFg+I3TTfYYa85dTynyv8WrRJtqR0UxtEI0wzK1RM9AtgVxSH10FO2DGcgvr9
+GpZDPw/QvnJeS1XlTEkaaBmo/+y5r4k61daalM9u7C27nWypyAE9dyYybx+wIy/4
+phmSAZVgEbO8/qke/OUmfhKD+D4ULdCWsUHzecWQhA==
+=2s5j
 -----END PGP SIGNATURE-----
 
---eGKwTSAn3iFg9rUf--
+--henCjble42UayWvW--
 
