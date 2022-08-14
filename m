@@ -1,12 +1,10 @@
-MIME-Version: 1.0
-References: <20220813204224.22576-6-a@...2181...>
- <20220813213920.18959-1-a@...2181...>
-In-Reply-To: <20220813213920.18959-1-a@...2181...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Sun, 14 Aug 2022 11:18:30 +0300
-Message-ID: <CAGyAFMX+Xb=XO8jAyjSbD8NrSJ7FnLJEoscL_xPwUf2YHrR5yw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v102 6/7] dco-win: ensure the DCO API is
- not used when running on Windows
+Date: Sun, 14 Aug 2022 10:47:15 +0200 (CEST)
+Message-Id: <202208140847.27E8lFgV066507@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220813212040.113-1-lstipakov@...277...>
+References: <20220813212040.113-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: error.c: remove unused crash()
+ function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,37 +13,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Acked-by: Gert Doering <gert@...1296...>
 
-> On Windows the high level API should still use the link_socket object to
-> read and write packets. For this reason, even if dco_installed is true,
-> we still need to rely on the classic link_socket object.
+Dead code indeed.  And if we want to crash, we can do this without help!
 
-This is true.
+Test compiled on Linux.
 
->
-> + *
-> + * Windows DCO needs control packets to be sent via the normal
-> + * Socket API.
+Your patch has been applied to the master branch.
 
-This is a bit confusing IMHO. What does "Socket API" mean here?
-To read/write control packets we use what Windows calls "Overlapped I/O",
-basically asynchronous IO with Write/ReadFile and events. We do not use
-Winsock API, even though the OpenVPN function we use is called
-"link_socket_write_win32()".
+commit 1e1ec038168f22afa584aea79a0323a9fdf45095
+Author: Lev Stipakov
+Date:   Sun Aug 14 00:20:40 2022 +0300
 
-I would change the above mentioned comment to "normal Overlapped I/O".
-Maybe this could be done at commit.
+     error.c: remove unused crash() function
 
-Also, as mentioned in chat, this should be merged before 3/7
-("dco-win: implement ovpn-dco support in P2P Windows code path").
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220813212040.113-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24924.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Acked-by: Lev Stipakov <lstipakov@...277...>
 
--Lev
+--
+kind regards,
+
+Gert Doering
+
 
