@@ -1,10 +1,11 @@
-Date: Sun, 14 Aug 2022 10:47:15 +0200 (CEST)
-Message-Id: <202208140847.27E8lFgV066507@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220813212040.113-1-lstipakov@...277...>
-References: <20220813212040.113-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: error.c: remove unused crash()
- function
+From: Antonio Quartulli <a@...2181...>
+Date: Sun, 14 Aug 2022 10:51:17 +0200
+Message-Id: <20220814085117.7128-1-a@...2181...>
+In-Reply-To: <20220813213920.18959-1-a@...2181...>
+References: 
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v103 6/7] dco-win: ensure the DCO API is not
+ used when running on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +16,70 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Acked-by: Gert Doering <gert@...1296...>
+On Windows the high level API should still use the link_socket object to
+read and write packets. For this reason, even if dco_installed is true,
+we still need to rely on the classic link_socket object.
 
-Dead code indeed.  And if we want to crash, we can do this without help!
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+Changes from v102:
+* mark helper as 'inline'
+* improve comment wording (by Lev)
 
-Test compiled on Linux.
+Changes from v101:
+* add defined(TARGET_FREEBSD) to the #if guard
 
-Your patch has been applied to the master branch.
+Changes from v100:
+* removed ASSERTs (moved to previous patch)
+* improve comment text in forward.c
+---
+ src/openvpn/forward.c | 22 +++++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
 
-commit 1e1ec038168f22afa584aea79a0323a9fdf45095
-Author: Lev Stipakov
-Date:   Sun Aug 14 00:20:40 2022 +0300
-
-     error.c: remove unused crash() function
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220813212040.113-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24924.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index f6d416a3..e45aa0f9 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1601,6 +1601,26 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
+     }
+ }
+ 
++/* Linux-like DCO implementations pass the socket to the kernel and
++ * disallow usage of it from userland, so (control) packets sent and
++ * received by OpenVPN need to go through the DCO interface.
++ *
++ * Windows DCO needs control packets to be sent via the normal
++ * standard Overlapped I/O.
++ *
++ * Hide that complexity (...especially if more platforms show up
++ * in future...) in a small inline function.
++ */
++static inline bool
++should_use_dco_socket(struct link_socket *sock)
++{
++#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
++    return sock->info.dco_installed;
++#else
++    return false;
++#endif
++}
++
+ /*
+  * Input: c->c2.to_link
+  */
+@@ -1674,7 +1694,7 @@ process_outgoing_link(struct context *c)
+                 socks_preprocess_outgoing_link(c, &to_addr, &size_delta);
+ 
+                 /* Send packet */
+-                if (c->c2.link_socket->info.dco_installed)
++                if (should_use_dco_socket(c->c2.link_socket))
+                 {
+                     size = dco_do_write(&c->c1.tuntap->dco,
+                                         c->c2.tls_multi->peer_id,
+-- 
+2.35.1
 
 
