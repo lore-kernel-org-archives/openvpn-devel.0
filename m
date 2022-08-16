@@ -1,10 +1,12 @@
-Date: Tue, 16 Aug 2022 08:20:47 +0200 (CEST)
-Message-Id: <202208160620.27G6KlFp011610@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220814215303.305-1-lstipakov@...277...>
-References: <20220814215303.305-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tun: properly handle device
- interface list
+From: Heiko Hund <heiko@...2662...>
+Date: Tue, 16 Aug 2022 11:17:22 +0200
+Message-ID: <1668834.5Bb9KXznsC@...2664...>
+In-Reply-To: <20210304114018.8442-1-arne@...1227...>
+References: <20210125125628.30364-12-arne@...1227...>
+ <20210304114018.8442-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH v3] Add example script demonstrating
+ TOTP via auth-pending
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,36 +16,20 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-Did a bit of "staring at the code", all looks quite reasonable.
+On Donnerstag, 4. M=C3=A4rz 2021 12:40:18 CEST Arne Schwabe wrote:
+> +  For a sample script that implement TOTP (RFC 6238) based two-factor
+> +  authentication, see :code:`sample-scripts/totp.py`.
 
-My Ubuntu 18/mingw test rig exploded after commit 2e359a088226a (for
-the "make dist" part, it requires libpcap-ng-dev, but apt refuses to
-install that...) so I could not compile-test.
+This filename doesn't match with below.
 
-Commit message extended with "use gc_malloc()..."
+> diff --git a/sample/sample-scripts/totpauth.py
+> b/sample/sample-scripts/totpauth.py new file mode 100755
 
-Your patch has been applied to the master branch.
+Have not looked at the Python code much, but David already did.
+More of a Perl guy anyway. ;-)
 
-commit 5c4fa12b0be29dcb18edac62c8c29f91f4ff59b1
-Author: Lev Stipakov
-Date:   Sun Aug 14 23:53:03 2022 +0200
-
-     tun: properly handle device interface list
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20220814215303.305-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24938.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
 
 
