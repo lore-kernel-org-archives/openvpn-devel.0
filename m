@@ -1,14 +1,19 @@
-Date: Tue, 16 Aug 2022 11:29:21 +0200
+Date: Tue, 16 Aug 2022 11:33:09 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <YvtjcRgdVEt9q8h7@...1296...>
+Message-ID: <YvtkVb8uYifVdEOr@...1296...>
 References: <20220514103717.235-1-timo@...2669...>
  <202208111003.27BA3jBP091528@...2054...>
  <YvoXzZNWGa49RJ6D@...1296...>
+ <41d3a297-83f3-5b13-49f7-dd70b0d8daee@...2669...>
+ <YvogFJdhB+8n3qrK@...1296...>
+ <e7ad101d-4a46-72b2-7eec-5be5e8d636f4@...2669...>
+ <YvokdcW8oF9ur/mm@...1296...>
+ <CAA1Abx+YF51w6QQJaFqrNL9s3Q_Gp08jiZR7-WLsbTQaUqmZhA@...278...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="EnjUJzFhapcAHjAr"
+ protocol="application/pgp-signature"; boundary="4fmQ+PWSwNogiEaB"
 Content-Disposition: inline
-In-Reply-To: <YvoXzZNWGa49RJ6D@...1296...>
+In-Reply-To: <CAA1Abx+YF51w6QQJaFqrNL9s3Q_Gp08jiZR7-WLsbTQaUqmZhA@...278...>
 Subject: Re: [Openvpn-devel] [PATCH applied] Re: platform: Retain
  CAP_NET_ADMIN when dropping privileges
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,63 +24,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Timo Rothenpieler <timo@...2669...>, berni@...376...
-Cc: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: Gert Doering <gert@...1296...>, Timo Rothenpieler <timo@...2669...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---EnjUJzFhapcAHjAr
+--4fmQ+PWSwNogiEaB
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Aug 15, 2022 at 11:54:21AM +0200, Gert Doering wrote:
-> [..]
-> > commit 2e359a088226ab1e5ee41fbab27d38d8a8d192ac
-> > Author: Timo Rothenpieler
-> > Date:   Sat May 14 12:37:17 2022 +0200
-> >=20
-> >      platform: Retain CAP_NET_ADMIN when dropping privileges
->=20
-> Unfortunately, it seems that our approach to "if SITNL is used, we hard
-> require that setting CAP_NET_ADMIN succeeds" is too strong for the twisted
-> ways that people use openvpn.
->=20
-> Namely, network-manager...
->=20
->   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D1017379
->=20
-> ... runs openvpn with --ifconfig-noexec / --route-noexec, and insists
-> on doing all that itself.  I do not like NM's way of trying to control
-> everything (up to the point that it defaults to redirecting a default
-> route to OpenVPN even if config and server do not want that), but this
-> is what Linux people seem to be stuck with, so we need to handle it.
+On Tue, Aug 16, 2022 at 11:16:50AM +0200, Steffan Karger wrote:
+> So I'm really not in favour of retaining CAP_NET_ADMIN "just in case".
+> I would even like to be able to not retain it at all.
 
-We've discussed this quite a bit in #openvpn-devel, and it's more complicat=
-ed
-than "just ifconfig and route".
+I hear what you say, and I support that line of thought.
 
-Namely, there is more operations OpenVPN needs to do if running with
-the DCO kernel module, which all needs CAP_NET_ADMIN
+Alas, with current Linux-DCO, we need this for fiddling all the DCO bits
+(keys / key renewal! / peer-id / install/update peers), as this is done
+via netlink, and netlink requires CAP_NET_ADMIN.
 
-  - renegotiate on TLS session expiry (control channel communication is
-    done through kernel module, not directly on socket)
-  - install / swap keys
-  - reconfigure the kernel peer on reconnect (peer-id / remote IP)
-
-So, running in an environment that prevents use of CAP_NET_ADMIN (how
-does it do that, in the first place?) *and* forces a non-root user
-means "DCO will break".  Not immediately, but openvpn will abort on
-each of these envents - NM might hide that by just restarting it, but
-it's still broken.
-
-
-So the discussion seems to run towards two options
-
-  - disable DCO if CAP_NET_ADMIN can not be retained
-  - fix this in NM
-
-Preferably, fix this in NM...
+To get around that we'd need to find a communication channel to=20
+(Linux-)DCO that does not require privileges after initial setup=20
+("hey, DCO, give me a socket that does not need privileges") and=20
+rewrite quite a bit...  I'm sure that Antonio will be thrilled by
+that new challenge... :-)
 
 gert
 
@@ -89,22 +62,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---EnjUJzFhapcAHjAr
+--4fmQ+PWSwNogiEaB
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJi+2NxAAoJEB2Cnv7KVigS7EkMAIKSKyI6E4B4vpIC5B8zqUlx
-NX9ODX/npx7tm7Y0B7f61nPu6Rc1x9mUQcWfYjAs8/bAdbixPgORIAAxj3voB2qp
-45QGnel66Zh3zvEjirMQyfyHddbI1KGnZnoG/toMHFHoP5CXKX9gDBqauwuevjVm
-g0F+V4ZMihVaiz6nGCy4PU3jiEWklNXU28tDgOKSIjwnCYGuggrN111lmVOplmMI
-BrG3jPwz/ZzMQdujMaCS541tZLvsANG6ob0OvczQn+Ds6SKpmahvSRe0E7GyZE+o
-KuTVeCDM5WySH5idPp609PomeopPqfhTWBbzxyLqnQBSnoQZ/bDVSr1nJZdNq0kI
-cc1u4Qd2UKEYNyxWRu+dAURzIw7E0M3ShkMPNogp5vJvvRTZzy6CRCxbhURlBpyc
-c31+tNPdeof0yBmUO+/4zwOwmkU3jQ04QEO+zysYjJhjtqmBhhMeVU7nNxOj5kdK
-C9Y2k+KNjjnU5k29Ei1Gfusun5XBEqSbjjWmk+fdog==
-=51Q0
+iQGcBAEBAgAGBQJi+2RVAAoJEB2Cnv7KVigSYNEL/jVVbyWCjtYvaewcnqhMDFQa
+SlB5AXsROeEpR4Zk2YMMu4jXmM3gPgpxw5YDN8q49zuiBSyBwnPrO7QQsVKha+KD
+01cMtKQT9HaITojFP8d6VSQSQUy1vRVb6jh4MGXTV+iR+GgxGhbe/oM96aUXZITG
+W6XHBHddKwbzIqIrp7fsPYatgFnV6F0HR1MoNI5pDkxkUoDOz2w5PZG9dqKaUPaw
+O4Bu9tz7NYgv7iVgH0iJLAUEZ/TnxAQIWnQG9GB4s4q6BpHP75SAN5nEsJWpsEUN
+f2XaHXUEzufXpTaef6reHDIz7yEUFXS2oDk/LXZeIgo59JvdzrFChWj5kBwsEiEX
+Feswb2BUEsHFJiOTIpYNsHeCcfBXgW9G8JSbT44XiQhTJ/+zEJ2vK3OKxr9PnUrQ
+1LpHEQL4qq6upept4bH4dPvaQwZpROXZHGlGcGrm7QB2xv7h6bCMaODnztw6nZBh
+pcxvkTEu11yfHNW8oXPnyxnHGbOF/92G/5Ig7X7nQA==
+=Hchv
 -----END PGP SIGNATURE-----
 
---EnjUJzFhapcAHjAr--
+--4fmQ+PWSwNogiEaB--
 
