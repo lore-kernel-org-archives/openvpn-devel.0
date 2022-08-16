@@ -1,6 +1,4 @@
-Date: Tue, 16 Aug 2022 11:33:09 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <YvtkVb8uYifVdEOr@...1296...>
+MIME-Version: 1.0
 References: <20220514103717.235-1-timo@...2669...>
  <202208111003.27BA3jBP091528@...2054...>
  <YvoXzZNWGa49RJ6D@...1296...>
@@ -8,12 +6,10 @@ References: <20220514103717.235-1-timo@...2669...>
  <YvogFJdhB+8n3qrK@...1296...>
  <e7ad101d-4a46-72b2-7eec-5be5e8d636f4@...2669...>
  <YvokdcW8oF9ur/mm@...1296...>
- <CAA1Abx+YF51w6QQJaFqrNL9s3Q_Gp08jiZR7-WLsbTQaUqmZhA@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="4fmQ+PWSwNogiEaB"
-Content-Disposition: inline
-In-Reply-To: <CAA1Abx+YF51w6QQJaFqrNL9s3Q_Gp08jiZR7-WLsbTQaUqmZhA@...278...>
+In-Reply-To: <YvokdcW8oF9ur/mm@...1296...>
+From: Steffan Karger <steffan@...1856...>
+Date: Tue, 16 Aug 2022 11:16:50 +0200
+Message-ID: <CAA1Abx+YF51w6QQJaFqrNL9s3Q_Gp08jiZR7-WLsbTQaUqmZhA@...278...>
 Subject: Re: [Openvpn-devel] [PATCH applied] Re: platform: Retain
  CAP_NET_ADMIN when dropping privileges
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -24,60 +20,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: Gert Doering <gert@...1296...>, Timo Rothenpieler <timo@...2669...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---4fmQ+PWSwNogiEaB
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: Timo Rothenpieler <timo@...2669...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Tue, Aug 16, 2022 at 11:16:50AM +0200, Steffan Karger wrote:
-> So I'm really not in favour of retaining CAP_NET_ADMIN "just in case".
-> I would even like to be able to not retain it at all.
+On Mon, 15 Aug 2022 at 12:50, Gert Doering <gert@...1296...> wrote:
+> On Mon, Aug 15, 2022 at 12:40:55PM +0200, Timo Rothenpieler wrote:
+> > or don't even try to retain capabilities, since
+> > they're not needed either way. I'd prefer the later, since fewer
+> > capabilities is generally better.
+>
+> I could see arguments for "we want to do the ifconfig/route setup in
+> an --up script" - for example to do VRF/NetNS stuff that OpenVPN can not
+> do itself.  So for these scenarios having the capability around would
+> be useful (= thus, try-and-warn)...
+>
+> Different scenario, same options.  We don't always know what users want.
 
-I hear what you say, and I support that line of thought.
+Let me just second the "fewer capabilities is generally better"
+argument. CAP_NET_ADMIN is a broad set of effective capabilties and
+has been a popular path for privilege escalation vulnerabilities in
+the past. See for example these two recent CVEs:
 
-Alas, with current Linux-DCO, we need this for fiddling all the DCO bits
-(keys / key renewal! / peer-id / install/update peers), as this is done
-via netlink, and netlink requires CAP_NET_ADMIN.
+CVE-2022-2586
 
-To get around that we'd need to find a communication channel to=20
-(Linux-)DCO that does not require privileges after initial setup=20
-("hey, DCO, give me a socket that does not need privileges") and=20
-rewrite quite a bit...  I'm sure that Antonio will be thrilled by
-that new challenge... :-)
+    A use-after-free in the Netfilter subsystem may result in local
+    privilege escalation for a user with the CAP_NET_ADMIN capability in
+    any user or network namespace.
 
-gert
+CVE-2022-2588
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+    Zhenpeng Lin discovered a use-after-free flaw in the cls_route
+    filter implementation which may result in local privilege escalation
+    for a user with the CAP_NET_ADMIN capability in any user or network
+    namespace.
 
-Gert Doering - Munich, Germany                             gert@...1296...
+So I'm really not in favour of retaining CAP_NET_ADMIN "just in case".
+I would even like to be able to not retain it at all.
 
---4fmQ+PWSwNogiEaB
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJi+2RVAAoJEB2Cnv7KVigSYNEL/jVVbyWCjtYvaewcnqhMDFQa
-SlB5AXsROeEpR4Zk2YMMu4jXmM3gPgpxw5YDN8q49zuiBSyBwnPrO7QQsVKha+KD
-01cMtKQT9HaITojFP8d6VSQSQUy1vRVb6jh4MGXTV+iR+GgxGhbe/oM96aUXZITG
-W6XHBHddKwbzIqIrp7fsPYatgFnV6F0HR1MoNI5pDkxkUoDOz2w5PZG9dqKaUPaw
-O4Bu9tz7NYgv7iVgH0iJLAUEZ/TnxAQIWnQG9GB4s4q6BpHP75SAN5nEsJWpsEUN
-f2XaHXUEzufXpTaef6reHDIz7yEUFXS2oDk/LXZeIgo59JvdzrFChWj5kBwsEiEX
-Feswb2BUEsHFJiOTIpYNsHeCcfBXgW9G8JSbT44XiQhTJ/+zEJ2vK3OKxr9PnUrQ
-1LpHEQL4qq6upept4bH4dPvaQwZpROXZHGlGcGrm7QB2xv7h6bCMaODnztw6nZBh
-pcxvkTEu11yfHNW8oXPnyxnHGbOF/92G/5Ig7X7nQA==
-=Hchv
------END PGP SIGNATURE-----
-
---4fmQ+PWSwNogiEaB--
+-Steffan
 
