@@ -1,12 +1,11 @@
-Message-ID: <961abfa6-b755-3f0b-531b-e1418ee78bee@...1227...>
-Date: Wed, 17 Aug 2022 15:29:06 +0200
-MIME-Version: 1.0
-Content-Language: en-GB
-References: <20220817130955.450-1-timo@...2669...>
- <20220817132302.538-1-timo@...2669...>
 From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20220817132302.538-1-timo@...2669...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Github Actions: update used actions
+Date: Wed, 17 Aug 2022 15:53:48 +0200
+Message-Id: <20220817135348.844178-1-arne@...1227...>
+In-Reply-To: <20220316102317.3356246-1-arne@...1227...>
+References: <20220316102317.3356246-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2] Fix IV_PLAT_VER and UV_ variables sent
+ without push-peer-info
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +14,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Timo Rothenpieler <timo@...2669...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 17.08.22 um 15:23 schrieb Timo Rothenpieler:
-> In the case of the Microsoft action, this fixes security relevant issues according to their release notes:
-> https://github.com/microsoft/setup-msbuild/releases
-> 
-> Unfortunately they don't appear to be following the usual scheme of v1 referring to all v1.x.x, but instead v1 just points to v1.0.0.
-> 
-> The primary change with all the Github-Provided actions is the switch to a more up-to-date NodeJS version (16). Not all that relevant when you just use the action as is, but on top of that, the old versions are in low-maintenance mode, and basically are considered obsolete.
-> Github is actively migrating people to the latest ones via dependabot wherever they can.
->
+Commit 8c72d7981 changed the push_peer_info_detail to have an
+additional level for P2P NCP and shifting most of the other levels
+with 1. The check for UV_ and IV_PLAT_VER was not changed accordingly.
 
-Thanks for the quick update.
+Fixes: 8c72d7981 ("Support NCP in pure P2P VPN setups")
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/ssl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Acked-By: Arne Schwabe <arne@...1227...>
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 77f572a40..33e145b3f 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2036,7 +2036,7 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+                 {
+                     if ((((strncmp(e->string, "UV_", 3) == 0
+                            || strncmp(e->string, "IV_PLAT_VER=", sizeof("IV_PLAT_VER=") - 1) == 0)
+-                          && session->opt->push_peer_info_detail >= 2)
++                          && session->opt->push_peer_info_detail > 2)
+                          || (strncmp(e->string, "IV_GUI_VER=", sizeof("IV_GUI_VER=") - 1) == 0)
+                          || (strncmp(e->string, "IV_SSO=", sizeof("IV_SSO=") - 1) == 0)
+                          )
+-- 
+2.32.1 (Apple Git-133)
 
-Arne
 
