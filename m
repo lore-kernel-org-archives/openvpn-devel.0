@@ -1,9 +1,10 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 17 Aug 2022 13:03:19 +0200
-Message-Id: <20220817110319.195-1-lstipakov@...277...>
+Message-ID: <f5044f8b-f1eb-9f34-0fa8-1700cea6b7aa@...2181...>
+Date: Wed, 17 Aug 2022 14:03:49 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] dco.h: fix return type when DCO is not
- enabled
+Content-Language: en-US
+From: Antonio Quartulli <a@...2181...>
+Subject: Re: [Openvpn-devel] Fix IV_PLAT_VER and UV_ variables sent without
+ push-peer-info
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,49 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
+Patch is easy and by looking at the "breaking" commit it is easy to 
+understand what happened: peer-info-detail levels have been shifted by 
+one and what was "2" before is now "3".
 
-The correct return type for those functions is int,
-so adjust return type accordingly for the cases
-when DCO is not defined.
+So the check that decides to append the extra info should check for ">= 
+3" (or "> 2") now.
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- src/openvpn/dco.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+This patch makes this change.
 
-diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
-index 6b5c016a..04556471 100644
---- a/src/openvpn/dco.h
-+++ b/src/openvpn/dco.h
-@@ -292,7 +292,7 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
-     ASSERT(false);
- }
- 
--static inline bool
-+static inline int
- dco_p2p_add_new_peer(struct context *c)
- {
-     return true;
-@@ -310,10 +310,10 @@ dco_remove_peer(struct context *c)
- {
- }
- 
--static inline bool
-+static inline int
- dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi)
- {
--    return true;
-+    return 0;
- }
- 
- static inline void
+Note that this patch is lacking the SoB line.
+
+Wouldn't be bad to also add some 'Fixes: ID ("commit title")' line
+
+
+But........Arne, could you resend this patch rebased on top of latest 
+master? It doesn't apply right now :-)
+
+Cheers,
+
+
 -- 
-2.23.0.windows.1
-
+Antonio Quartulli
 
