@@ -1,12 +1,9 @@
-Message-ID: <956745e3-7958-6c6d-eada-d686bd1adec7@...2181...>
-Date: Thu, 18 Aug 2022 00:52:21 +0200
-MIME-Version: 1.0
-Content-Language: en-US
-References: <20220817210857.1558-1-timo@...2669...>
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20220817210857.1558-1-timo@...2669...>
-Subject: Re: [Openvpn-devel] [PATCH] dco: turn platform config checks into
- separate function
+Date: Thu, 18 Aug 2022 01:32:48 +0200
+Message-Id: <20220817233248.137722-1-a@...2181...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] push-peer-info: rearrange function
+ generating peer info
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,109 +12,307 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Timo Rothenpieler <timo@...2669...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Hi,
+This patch is supposed to implement no function change.
+The only change in behaviour that can be observed is the IV_/UV_ variables
+being printed in different order compared to before applying this patch.
 
-On 17/08/2022 23:08, Timo Rothenpieler wrote:
-> All the checks in there are only relevant during startup, and
-> specifically the capability check might cause issues when checking a CCD
-> config later at runtime.
-> 
-> So move them to their own function and call it only during startup.
+However, order does not matter, so we don't need to retain it.
 
-simple enough and does what we discussed on IRC.
-Should we require platform specific option check on pushed options, then 
-we can re-introduce the _platform() variant again.
+What this change really does is rearranging the push_peer_info() function
+so that it becomes much more clear which variable is printed depending on
+the peer-info detail level. The original code was mixed up, and figuring
+the above out required reading this function multiple times.
 
-Acked-by: Antonio Quartulli <a@...2181...>
+This rearrangement puts everything in a switch/case block with sorted
+peer-info details levels appearing one after the other.
 
-> ---
->   src/openvpn/dco.c     |  9 ++-------
->   src/openvpn/dco.h     | 18 ++++++++++++++++++
->   src/openvpn/options.c |  3 ++-
->   3 files changed, 22 insertions(+), 8 deletions(-)
-> 
-> diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-> index f21997de..9eb2685c 100644
-> --- a/src/openvpn/dco.c
-> +++ b/src/openvpn/dco.c
-> @@ -222,8 +222,8 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
->       }
->   }
->   
-> -static bool
-> -dco_check_option_conflict_platform(int msglevel, const struct options *o)
-> +bool
-> +dco_check_startup_option_conflict(int msglevel, const struct options *o)
->   {
->   #if defined(TARGET_LINUX)
->       /* if the device name is fixed, we need to check if an interface with this
-> @@ -327,11 +327,6 @@ dco_check_option_conflict(int msglevel, const struct options *o)
->           return false;
->       }
->   
-> -    if (!dco_check_option_conflict_platform(msglevel, o))
-> -    {
-> -        return false;
-> -    }
-> -
->       if (dev_type_enum(o->dev, o->dev_type) != DEV_TYPE_TUN)
->       {
->           msg(msglevel, "Note: dev-type not tun, disabling data channel offload.");
-> diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
-> index 6b5c016a..e296cf27 100644
-> --- a/src/openvpn/dco.h
-> +++ b/src/openvpn/dco.h
-> @@ -69,6 +69,18 @@ bool dco_available(int msglevel);
->    */
->   bool dco_check_option_conflict(int msglevel, const struct options *o);
->   
-> +/**
-> + * Check whether the options struct has any further option that is not supported
-> + * by our current dco implementation during early startup.
-> + * If so print a warning at warning level for the first conflicting option
-> + * found and return false.
-> + *
-> + * @param msglevel  the msg level to use to print the warnings
-> + * @param o         the options struct that hold the options
-> + * @return          true if no conflict was detected, false otherwise
-> + */
-> +bool dco_check_startup_option_conflict(int msglevel, const struct options *o);
-> +
->   /**
->    * Check whether any of the options pushed by the server is not supported by
->    * our current dco implementation. If so print a warning at warning level
-> @@ -236,6 +248,12 @@ dco_check_option_conflict(int msglevel, const struct options *o)
->       return false;
->   }
->   
-> +static inline bool
-> +dco_check_startup_option_conflict(int msglevel, const struct options *o)
-> +{
-> +    return false;
-> +}
-> +
->   static inline bool
->   dco_check_pull_options(int msglevel, const struct options *o)
->   {
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index bd6db826..2415c1a8 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -3671,7 +3671,8 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
->   
->       /* check if any option should force disabling DCO */
->   #if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-> -    o->tuntap_options.disable_dco = !dco_check_option_conflict(D_DCO, o);
-> +    o->tuntap_options.disable_dco = !dco_check_option_conflict(D_DCO, o)
-> +                                    || !dco_check_startup_option_conflict(D_DCO, o);
->   #endif
->   
->       if (dco_enabled(o) && o->dev_node)
+While at it, the for loop extracting the wanted env variables has been
+restructured a bit to avoid uber long conditions and extreme indentation.
 
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/ssl.c | 229 +++++++++++++++++++++++++++-------------------
+ 1 file changed, 134 insertions(+), 95 deletions(-)
+
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 33e145b3..45e76024 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1932,134 +1932,173 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+     bool ret = false;
+     struct buffer out = alloc_buf_gc(512 * 3, &gc);
+ 
+-    if (session->opt->push_peer_info_detail > 1)
++    switch (session->opt->push_peer_info_detail)
+     {
+-        /* push version */
+-        buf_printf(&out, "IV_VER=%s\n", PACKAGE_VERSION);
++        case 3:
++        {
++            /* push mac addr */
++            struct route_gateway_info rgi;
++            get_default_gateway(&rgi, session->opt->net_ctx);
++            if (rgi.flags & RGI_HWADDR_DEFINED)
++            {
++                buf_printf(&out, "IV_HWADDR=%s\n", format_hex_ex(rgi.hwaddr, 6, 0, 1, ":", &gc));
++            }
++            buf_printf(&out, "IV_SSL=%s\n", get_ssl_library_version() );
++#if defined(_WIN32)
++            buf_printf(&out, "IV_PLAT_VER=%s\n", win32_version_string(&gc, false));
++#endif
++
++            struct env_set *es = session->opt->es;
++            /* push env vars that begin with UV_, IV_PLAT_VER= */
++            for (struct env_item *e = es->list; e != NULL; e = e->next)
++            {
++                /* ensure we have a string */
++                if (!e->string)
++                {
++                    continue;
++                }
+ 
+-        /* push platform */
++                /* ensure string will fit output buffer */
++                if (!buf_safe(&out, strlen(e->string) + 1))
++                {
++                    continue;
++                }
++
++                /* don't accept any var except for those starting with UV_ or
++                 * IV_PLAT_VER= only
++                 */
++                if ((strncmp(e->string, "UV_", sizeof("UV_") - 1) != 0)
++                    && (strncmp(e->string, "IV_PLAT_VER=", sizeof("IV_PLAT_VER=") - 1) != 0))
++                {
++                    continue;
++                }
++
++                buf_printf(&out, "%s\n", e->string);
++            }
++        }
++        /* fall through */
++        case 2:
++        {
++            /* push version */
++            buf_printf(&out, "IV_VER=%s\n", PACKAGE_VERSION);
++
++            /* push platform */
+ #if defined(TARGET_LINUX)
+-        buf_printf(&out, "IV_PLAT=linux\n");
++            buf_printf(&out, "IV_PLAT=linux\n");
+ #elif defined(TARGET_SOLARIS)
+-        buf_printf(&out, "IV_PLAT=solaris\n");
++            buf_printf(&out, "IV_PLAT=solaris\n");
+ #elif defined(TARGET_OPENBSD)
+-        buf_printf(&out, "IV_PLAT=openbsd\n");
++            buf_printf(&out, "IV_PLAT=openbsd\n");
+ #elif defined(TARGET_DARWIN)
+-        buf_printf(&out, "IV_PLAT=mac\n");
++            buf_printf(&out, "IV_PLAT=mac\n");
+ #elif defined(TARGET_NETBSD)
+-        buf_printf(&out, "IV_PLAT=netbsd\n");
++            buf_printf(&out, "IV_PLAT=netbsd\n");
+ #elif defined(TARGET_FREEBSD)
+-        buf_printf(&out, "IV_PLAT=freebsd\n");
++            buf_printf(&out, "IV_PLAT=freebsd\n");
+ #elif defined(TARGET_ANDROID)
+-        buf_printf(&out, "IV_PLAT=android\n");
++            buf_printf(&out, "IV_PLAT=android\n");
+ #elif defined(_WIN32)
+-        buf_printf(&out, "IV_PLAT=win\n");
++            buf_printf(&out, "IV_PLAT=win\n");
+ #endif
+-        /* Announce that we do not require strict sequence numbers with
+-         * TCP. (TCP non-linear) */
+-        buf_printf(&out, "IV_TCPNL=1\n");
+-    }
+ 
+-    /* These are the IV variable that are sent to peers in p2p mode */
+-    if (session->opt->push_peer_info_detail > 0)
+-    {
+-        /* support for P_DATA_V2 */
+-        int iv_proto = IV_PROTO_DATA_V2;
++            /* Announce that we do not require strict sequence numbers with
++             * TCP. (TCP non-linear) */
++            buf_printf(&out, "IV_TCPNL=1\n");
+ 
+-        /* support for the --dns option */
+-        iv_proto |= IV_PROTO_DNS_OPTION;
+-
+-        /* support for receiving push_reply before sending
+-         * push request, also signal that the client wants
+-         * to get push-reply messages without without requiring a round
+-         * trip for a push request message*/
+-        if (session->opt->pull)
+-        {
+-            iv_proto |= IV_PROTO_REQUEST_PUSH;
+-            iv_proto |= IV_PROTO_AUTH_PENDING_KW;
+-        }
++            /* push compression status */
++#ifdef USE_COMP
++            comp_generate_peer_info_string(&session->opt->comp_options, &out);
++#endif
+ 
+-        /* support for Negotiable Crypto Parameters */
+-        if (session->opt->mode == MODE_SERVER || session->opt->pull)
+-        {
+-            if (tls_item_in_cipher_list("AES-128-GCM", session->opt->config_ncp_ciphers)
+-                && tls_item_in_cipher_list("AES-256-GCM", session->opt->config_ncp_ciphers))
++            struct env_set *es = session->opt->es;
++            /* push env vars that begin with IV_GUI_VER= and IV_SSO= */
++            for (struct env_item *e = es->list; e != NULL; e = e->next)
+             {
++                /* ensure we have a string */
++                if (!e->string)
++                {
++                    continue;
++                }
++
++                /* ensure string will fit output buffer */
++                if (!buf_safe(&out, strlen(e->string) + 1))
++                {
++                    continue;
++                }
+ 
+-                buf_printf(&out, "IV_NCP=2\n");
++                /* don't accept any var except for those starting with
++                 * IV_GUI_VER= or IV_SSO= only
++                 */
++                if ((strncmp(e->string, "IV_GUI_VER=", sizeof("IV_GUI_VER=") - 1) != 0)
++                    && (strncmp(e->string, "IV_SSO=", sizeof("IV_SSO=") - 1) != 0))
++                {
++                    continue;
++                }
++
++                buf_printf(&out, "%s\n", e->string);
+             }
+         }
+-        else
++        /* fall through */
++        case 1:
+         {
+-            /* We are not using pull or p2mp server, instead do P2P NCP */
+-            iv_proto |= IV_PROTO_NCP_P2P;
+-        }
++            /* support for P_DATA_V2 */
++            int iv_proto = IV_PROTO_DATA_V2;
+ 
+-        buf_printf(&out, "IV_CIPHERS=%s\n", session->opt->config_ncp_ciphers);
++            /* support for the --dns option */
++            iv_proto |= IV_PROTO_DNS_OPTION;
++
++            /* support for receiving push_reply before sending
++             * push request, also signal that the client wants
++             * to get push-reply messages without without requiring a round
++             * trip for a push request message*/
++            if (session->opt->pull)
++            {
++                iv_proto |= IV_PROTO_REQUEST_PUSH;
++                iv_proto |= IV_PROTO_AUTH_PENDING_KW;
++            }
++
++            /* support for Negotiable Crypto Parameters */
++            if (session->opt->mode == MODE_SERVER || session->opt->pull)
++            {
++                if (tls_item_in_cipher_list("AES-128-GCM", session->opt->config_ncp_ciphers)
++                    && tls_item_in_cipher_list("AES-256-GCM", session->opt->config_ncp_ciphers))
++                {
++
++                    buf_printf(&out, "IV_NCP=2\n");
++                }
++            }
++            else
++            {
++                /* We are not using pull or p2mp server, instead do P2P NCP */
++                iv_proto |= IV_PROTO_NCP_P2P;
++            }
+ 
+ #ifdef HAVE_EXPORT_KEYING_MATERIAL
+-        iv_proto |= IV_PROTO_TLS_KEY_EXPORT;
++            iv_proto |= IV_PROTO_TLS_KEY_EXPORT;
+ #endif
+ 
+-        buf_printf(&out, "IV_PROTO=%d\n", iv_proto);
++            buf_printf(&out, "IV_PROTO=%d\n", iv_proto);
+ 
+-        if (session->opt->push_peer_info_detail > 1)
+-        {
+-            /* push compression status */
+-#ifdef USE_COMP
+-            comp_generate_peer_info_string(&session->opt->comp_options, &out);
+-#endif
+-        }
++            buf_printf(&out, "IV_CIPHERS=%s\n", session->opt->config_ncp_ciphers);
+ 
+-        if (session->opt->push_peer_info_detail > 2)
+-        {
+-            /* push mac addr */
+-            struct route_gateway_info rgi;
+-            get_default_gateway(&rgi, session->opt->net_ctx);
+-            if (rgi.flags & RGI_HWADDR_DEFINED)
++            if (!write_string(buf, BSTR(&out), -1))
+             {
+-                buf_printf(&out, "IV_HWADDR=%s\n", format_hex_ex(rgi.hwaddr, 6, 0, 1, ":", &gc));
++                goto error;
+             }
+-            buf_printf(&out, "IV_SSL=%s\n", get_ssl_library_version() );
+-#if defined(_WIN32)
+-            buf_printf(&out, "IV_PLAT_VER=%s\n", win32_version_string(&gc, false));
+-#endif
++            break;
+         }
+-
+-        if (session->opt->push_peer_info_detail > 1)
+-        {
+-            struct env_set *es = session->opt->es;
+-            /* push env vars that begin with UV_, IV_PLAT_VER and IV_GUI_VER */
+-            for (struct env_item *e = es->list; e != NULL; e = e->next)
++        case 0:
++            if (!write_empty_string(buf))
+             {
+-                if (e->string)
+-                {
+-                    if ((((strncmp(e->string, "UV_", 3) == 0
+-                           || strncmp(e->string, "IV_PLAT_VER=", sizeof("IV_PLAT_VER=") - 1) == 0)
+-                          && session->opt->push_peer_info_detail > 2)
+-                         || (strncmp(e->string, "IV_GUI_VER=", sizeof("IV_GUI_VER=") - 1) == 0)
+-                         || (strncmp(e->string, "IV_SSO=", sizeof("IV_SSO=") - 1) == 0)
+-                         )
+-                        && buf_safe(&out, strlen(e->string) + 1))
+-                    {
+-                        buf_printf(&out, "%s\n", e->string);
+-                    }
+-                }
++                goto error;
+             }
+-        }
+-
+-        if (!write_string(buf, BSTR(&out), -1))
+-        {
+-            goto error;
+-        }
+-    }
+-    else
+-    {
+-        if (!write_empty_string(buf)) /* no peer info */
+-        {
++            break;
++        /* invalid value configured */
++        default:
++            msg(M_WARN, "Invalid peer-info-detail level %d", session->opt->push_peer_info_detail);
+             goto error;
+-        }
+     }
++
+     ret = true;
+ 
+ error:
 -- 
-Antonio Quartulli
+2.30.2
+
 
