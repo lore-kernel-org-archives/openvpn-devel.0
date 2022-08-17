@@ -1,16 +1,15 @@
-Date: Wed, 17 Aug 2022 17:31:12 +0200
+Date: Wed, 17 Aug 2022 21:07:20 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <Yv0JwEtcda9CmV2P@...1296...>
-References: <20220514103717.235-1-timo@...2669...>
- <202208111003.27BA3jBP091528@...2054...>
- <YvoXzZNWGa49RJ6D@...1296...>
+Message-ID: <Yv08aDKqUMOwJ4Us@...1296...>
+References: <20220817131817.467-1-timo@...2669...>
+ <202208171418.27HEIdol040022@...2054...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="sqvfkL+7tEmhjVuI"
+ protocol="application/pgp-signature"; boundary="fkwrYCtWy7dAO8C/"
 Content-Disposition: inline
-In-Reply-To: <YvoXzZNWGa49RJ6D@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: platform: Retain
- CAP_NET_ADMIN when dropping privileges
+In-Reply-To: <202208171418.27HEIdol040022@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: dco: disable DCO if --user
+ specified but unable to retain capabilities
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,57 +21,61 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Timo Rothenpieler <timo@...2669...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---sqvfkL+7tEmhjVuI
+--fkwrYCtWy7dAO8C/
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Aug 15, 2022 at 11:54:21AM +0200, Gert Doering wrote:
-> [..]
-> > commit 2e359a088226ab1e5ee41fbab27d38d8a8d192ac
-> > Author: Timo Rothenpieler
-> > Date:   Sat May 14 12:37:17 2022 +0200
-> >=20
-> >      platform: Retain CAP_NET_ADMIN when dropping privileges
+On Wed, Aug 17, 2022 at 04:18:39PM +0200, Gert Doering wrote:
+> Acked-by: Gert Doering <gert@...1296...>
 >=20
-> Unfortunately, it seems that our approach to "if SITNL is used, we hard
-> require that setting CAP_NET_ADMIN succeeds" is too strong for the twisted
-> ways that people use openvpn.
+> Thanks.  Bernhard has already tested this on his Debian/NM testing=20
+> environment and confirms it fixes the issues seen in=20
 >=20
-> Namely, network-manager...
+> https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D1017379
 >=20
->   https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D1017379
+> I've added a bit of explanatory text to the commit message (quite a=20
+> bit of blurb, actually, but the issue was confusing us enough that
+> this might help future readers).
+>=20
+> Your patch has been applied to the master branch.
+>=20
+> commit da31c1654c8534658157cfe9c9de5750ee752608
+> Author: Timo Rothenpieler
+> Date:   Wed Aug 17 15:18:17 2022 +0200
+>=20
+>      dco: disable DCO if --user specified but unable to retain capabiliti=
+es
 
-For the sake of the list archives: *this* particular problem has been
-solved by=20
+I really hate to say this... but... we seem to be calling this function
+for incoming MULTI connects:
 
-commit da31c1654c8534658157cfe9c9de5750ee752608
-Author: Timo Rothenpieler <timo@...2669...>
-Date:   Wed Aug 17 15:18:17 2022 +0200
+I have an UDP p2mp server with "--user nobody + DCO", which starts up=20
+fine (because it has root and can set CAP_NET_ADMIN), but on incoming
+client connects, it goes there *again*, and then fails:
 
-    dco: disable DCO if --user specified but unable to retain capabilities
+Aug 17 21:00:18 ubuntu2004 tun-udp-p2mp[2167001]: freebsd-14-amd64/194.97.1=
+40.5:23821 --user specified but lacking CAP_SETPCAP. Cannot retain CAP_NET_=
+ADMIN. Disabling data channel offload
+Aug 17 21:00:18 ubuntu2004 tun-udp-p2mp[2167001]: freebsd-14-amd64/194.97.1=
+40.5:23821 MULTI: client has been rejected due to incompatible DCO options
+Aug 17 21:00:19 ubuntu2004 tun-udp-p2mp[2167001]: freebsd-14-amd64/194.97.1=
+40.5:23821 PUSH: Received control message: 'PUSH_REQUEST'
+Aug 17 21:00:19 ubuntu2004 tun-udp-p2mp[2167001]: freebsd-14-amd64/194.97.1=
+40.5:23821 Delayed exit in 5 seconds
+Aug 17 21:00:19 ubuntu2004 tun-udp-p2mp[2167001]: freebsd-14-amd64/194.97.1=
+40.5:23821 SENT CONTROL [freebsd-14-amd64]: 'AUTH_FAILED' (status=3D1)
 
 
-so if we detect "the caller wants us to go to --user $notroot but we do
-not have the necessary capabilities to retain CAP_NET_ADMIN, disable DCO".
+This is hairy mess of checks, double checks, and too many checks...
+(a quick fix would be to add "if (getuid() =3D=3D 0 && o->user && ...)" to
+ensure this is only called if we haven't already changed user id, but
+it still feels wrong)
 
-This is basically the only thing we can do - if we have no CAP_NET_ADMIN,
-DCO will be unable to function today.
-
-
-Next steps are
-
- - talk to the NM maintainers to get them to call OpenVPN with something
-   like "CAP_NET_ADMIN and uid !=3D 0" (and no --user config) - so we can
-   just do our thing, without root privs.  David :-)
-
- - figure out if we can do Linux DCO without CAP_NET_ADMIN, at least=20
-   "after startup" (open with privs, get a ticket, continue without privs,
-   something mumble mumble).  Antonio :-)
-
-Thanks for all the enlightenment that happened here.
+Better suggestions where to move "this is something we only care at
+startup, not at per-instance config" checks?
 
 gert
 
@@ -86,22 +89,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---sqvfkL+7tEmhjVuI
+--fkwrYCtWy7dAO8C/
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJi/QnAAAoJEB2Cnv7KVigSLcgMAKbM6ZWmhv0Oh1eM2MI8Fj+8
-Kj01qYMeNTRpsVkVASOTjXaG4kGB5kuIyZZEyA25zteHettNgv6FcdIq48ITbPVR
-wc9E6NCacAG//dethXj4OiFoeUV/RdaidbB+Zkx7piTgWjYQ30VGBzVL4QANdkZB
-0KoEAXzMdSaxCdSb2fTjA/1V9kCCxR+PD5zETyvaZ4RcliESjjIMKGOADpm6ddHB
-n8l0QgzJol0aEfcpvHlM8czYIkgnihLkOFOFul0vg3BJE4elddS+OwOAQsqb6oBX
-g896yZSxePhQiXipjj6dEccL9oMGz393BOOiKP66QaFuVGTcpaKidh9fHfrqFJb7
-7G2JJnoAR30xvs9qdE6JkCqY9X2kEGlVwLSh6nUria1s89RoXpz7G/qki+jCChh4
-yervFvDMUSz4alpoIrlHXH/enpbGl3D/9Es0XU6InSElNBcKdNj+647Yda3NQdlQ
-byehz1EV1kBKkiX2EHVPjDdEzSmttyCtJ98bsCmvqg==
-=jw9h
+iQGcBAEBAgAGBQJi/TxoAAoJEB2Cnv7KVigS5m0MAKt6tGh8lkrBFmOlUs4Ge035
+72bU63ZzVAdRHsKlqJgNZogtnZYrWroUb9JrRfmMQ5zfosHNYqtLy1r+HVMk84hp
+i82mSROvdV8sqgbmtDs3Ndv81qfj5Z5oNB4/oeo5Cm+ZbaSxsQar1NrPXIDdyrqD
+oEaslD5lFPgMdr+P9tq5BhpSTW2vnKimH1erP484V9i/qJIt2AK4eNeENt6DoVC8
+/RPvvEpqc+wIYQHcca2H/9iW1MUBFF4LT80FfmVsTwtEK4nDyjCfPpfmWhZHrhtK
+a+P/2SFxuPfcwz9ua28MOwwZgtjOWxg5NenPZ1uoVvExDOFt35z7bAv516sTIdWc
+VaVqMDpxoBYFV4CNZrfoIIDUjeBYLruz/k/YCsYsmAIYrGZFBRngsfMXZQG7mDRx
+ZiyozdN1F+7l7Hc5Agtws5UkdWBfqp6Sr8dBPFazGLWHGiwMAA6PDorDDGU/BML6
+d/s7KhyWRzd/wCjp1ir+CWYna8nz7PLec7x3MPhZew==
+=05Ug
 -----END PGP SIGNATURE-----
 
---sqvfkL+7tEmhjVuI--
+--fkwrYCtWy7dAO8C/--
 
