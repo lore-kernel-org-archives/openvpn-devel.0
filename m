@@ -1,10 +1,10 @@
-Date: Wed, 17 Aug 2022 16:39:43 +0200 (CEST)
-Message-Id: <202208171439.27HEdhtt040527@...2054...>
+Date: Wed, 17 Aug 2022 16:54:54 +0200 (CEST)
+Message-Id: <202208171454.27HEss7C040907@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220817135348.844178-1-arne@...1227...>
-References: <20220817135348.844178-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix IV_PLAT_VER and UV_
- variables sent without push-peer-info
+In-Reply-To: <20220817075925.815184-1-arne@...1227...>
+References: <20220817075925.815184-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Rename OPT_P_IPWIN32 to
+ OPT_P_DHCPDNS and include --dns in it
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,21 +18,31 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I have not tested this, but it's obvious enough from the changes in
-said commit.
+Acked-by: Gert Doering <gert@...1296...>
+
+Looks like a reasonable change (so, feature-ACK), and stare-at-code
+agrees.
+
+Basically, this renames OPT_P_IPWIN32 to OPT_P_DHCPDNS and mechanically 
+changes this in all the code, adds "DNS" to the --route-nopull help text,
+and changes the "dns" permissions from DEFAULT to DHCPDNS - which is
+the only "real" code change.
+
+I do not have a working windows build environment right now, so I pushed
+to my GH repo and let GHA build this - which is all green, so I didn't
+overlook anything.
 
 Your patch has been applied to the master branch.
 
-commit e0dbe5c4e290c0c24a26a9e5c19957ebaca09543
+commit 8a7d0005860d2227c8d0e63ee73131e8188b7c18
 Author: Arne Schwabe
-Date:   Wed Aug 17 15:53:48 2022 +0200
+Date:   Wed Aug 17 09:59:25 2022 +0200
 
-     Fix IV_PLAT_VER and UV_ variables sent without push-peer-info
+     Rename OPT_P_IPWIN32 to OPT_P_DHCPDNS and include --dns in it
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20220817135348.844178-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24956.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220817075925.815184-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24946.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
