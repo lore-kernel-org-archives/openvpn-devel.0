@@ -1,10 +1,11 @@
-Date: Wed, 17 Aug 2022 21:33:38 +0200 (CEST)
-Message-Id: <202208171933.27HJXcqb045246@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220813211104.411554-1-arne@...1227...>
-References: <20220813211104.411554-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Include DCO status in
- GLOBAL_STATS status v2 output
+From: Lev Stipakov <lstipakov@...277...>
+Date: Wed, 17 Aug 2022 22:12:23 +0200
+Message-Id: <20220817201223.302-1-lstipakov@...277...>
+In-Reply-To: <Yv0CHd2TYMtR9xk3@...1296...>
+References: <Yv0CHd2TYMtR9xk3@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2] dco.h: fix return type when DCO is not
+ enabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,43 +16,53 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-I have lightly tested it, by sending SIGUSR2 as Lev has suggested.  It's
-not visible in the client GLOBAL_STATS (unsurprisingly, since added to 
-multi_print_status()... but maybe a followup patch?) but on the servers
-it nicely shows...
+From: Lev Stipakov <lev@...515...>
 
-Aug 17 21:31:59 ubuntu2004 tap-udp-p2mp[2183229]: GLOBAL_STATS,dco_enabled,0
-Aug 17 21:32:01 ubuntu2004 tun-tcp-p2mp[2183195]: GLOBAL_STATS,dco_enabled,1
-Aug 17 21:32:05 ubuntu2004 tun-udp-p2mp-fragment[2183260]: GLOBAL_STATS,dco_enabled,0
-Aug 17 21:32:09 ubuntu2004 tun-udp-p2mp-topology-subnet[2183217]: GLOBAL_STATS,dco_enabled,1
-Aug 17 21:32:11 ubuntu2004 tun-udp-p2mp[2183208]: GLOBAL_STATS,dco_enabled,1
+The correct return type for those functions is int,
+so adjust return type accordingly for the cases
+when DCO is not defined.
 
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ v2: also do "return 0" in dco_p2p_add_new_peer()
 
-Did not test management interface, but that's the same code anyway.
+ src/openvpn/dco.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-I have adjusted the commit message + subject as suggested by Lev.
-
-Your patch has been applied to the master branch.
-
-commit b421a0d55afc6e7a566b97cf9b687824be5a9118
-Author: Arne Schwabe
-Date:   Sat Aug 13 23:11:04 2022 +0200
-
-     Include DCO status in GLOBAL_STATS status v2 output
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20220813211104.411554-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24923.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
+index 6b5c016a..e063853c 100644
+--- a/src/openvpn/dco.h
++++ b/src/openvpn/dco.h
+@@ -292,10 +292,10 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
+     ASSERT(false);
+ }
+ 
+-static inline bool
++static inline int
+ dco_p2p_add_new_peer(struct context *c)
+ {
+-    return true;
++    return 0;
+ }
+ 
+ static inline int
+@@ -310,10 +310,10 @@ dco_remove_peer(struct context *c)
+ {
+ }
+ 
+-static inline bool
++static inline int
+ dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi)
+ {
+-    return true;
++    return 0;
+ }
+ 
+ static inline void
+-- 
+2.23.0.windows.1
 
 
