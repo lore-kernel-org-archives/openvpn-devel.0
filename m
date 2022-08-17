@@ -1,11 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed, 17 Aug 2022 15:53:48 +0200
-Message-Id: <20220817135348.844178-1-arne@...1227...>
-In-Reply-To: <20220316102317.3356246-1-arne@...1227...>
-References: <20220316102317.3356246-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Fix IV_PLAT_VER and UV_ variables sent
- without push-peer-info
+Date: Wed, 17 Aug 2022 16:02:05 +0200 (CEST)
+Message-Id: <202208171402.27HE25s5039692@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220817132302.538-1-timo@...2669...>
+References: <20220817132302.538-1-timo@...2669...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Github Actions: update used
+ actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,32 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Timo Rothenpieler <timo@...2669...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Commit 8c72d7981 changed the push_peer_info_detail to have an
-additional level for P2P NCP and shifting most of the other levels
-with 1. The check for UV_ and IV_PLAT_VER was not changed accordingly.
+Applied :-) - had a look, looks as discused, GHA has to do the testing.
 
-Fixes: 8c72d7981 ("Support NCP in pure P2P VPN setups")
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/ssl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Your patch has been applied to the master branch.
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 77f572a40..33e145b3f 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2036,7 +2036,7 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
-                 {
-                     if ((((strncmp(e->string, "UV_", 3) == 0
-                            || strncmp(e->string, "IV_PLAT_VER=", sizeof("IV_PLAT_VER=") - 1) == 0)
--                          && session->opt->push_peer_info_detail >= 2)
-+                          && session->opt->push_peer_info_detail > 2)
-                          || (strncmp(e->string, "IV_GUI_VER=", sizeof("IV_GUI_VER=") - 1) == 0)
-                          || (strncmp(e->string, "IV_SSO=", sizeof("IV_SSO=") - 1) == 0)
-                          )
--- 
-2.32.1 (Apple Git-133)
+commit 9b17fed14bc534353d9a5e2d90d902bb093df3c2
+Author: Timo Rothenpieler
+Date:   Wed Aug 17 15:23:02 2022 +0200
+
+     Github Actions: update used actions
+
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20220817132302.538-1-timo@...2669...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24954.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
