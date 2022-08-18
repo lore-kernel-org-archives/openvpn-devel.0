@@ -1,12 +1,9 @@
-From: Heiko Hund <heiko@...2662...>
-Date: Thu, 18 Aug 2022 16:39:16 +0200
-Message-ID: <8703215.ESkQ3JELAO@...2664...>
-In-Reply-To: <20220520213250.3126372-5-arne@...1227...>
-References: <20220520213250.3126372-1-arne@...1227...>
- <20220520213250.3126372-5-arne@...1227...>
+From: Antonio Quartulli <a@...2181...>
+Date: Thu, 18 Aug 2022 16:44:31 +0200
+Message-Id: <20220818144431.208337-1-a@...2181...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v2 4/4] Allow scripts and plugins to set
- a custom AUTH_FAILED message
+Subject: [Openvpn-devel] [PATCH] dco: trigger ping timeout event only if the
+ peer expired
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,23 +13,34 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-What Frank said, and the nitpick about this hunk which should be removed:
+DEL_PEER events can be sent by ovpn-dco to userspace for various reasons.
+We should trigger the ping timeout reaction only if the reason was
+"peer has expired".
 
-On Freitag, 20. Mai 2022 23:32:50 CEST Arne Schwabe wrote:
-> @@ -1376,6 +1440,7 @@ verify_user_pass_plugin(struct tls_session *session,
-> struct tls_multi *multi, /* call command */
->      retval = plugin_call(session->opt->plugins,
-> OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY, NULL, NULL, session->opt->es);
-> 
-> +
->      if (retval == OPENVPN_PLUGIN_FUNC_DEFERRED)
->      {
->          /* Check if the plugin has written the pending auth control
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/forward.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-
-
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index d70b4f52..970be3bf 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1119,7 +1119,8 @@ process_incoming_dco(struct context *c)
+ 
+     dco_do_read(dco);
+ 
+-    if (dco->dco_message_type == OVPN_CMD_DEL_PEER)
++    if ((dco->dco_message_type == OVPN_CMD_DEL_PEER)
++        && (dco->dco_del_peer_reason == OVPN_DEL_PEER_REASON_EXPIRED))
+     {
+         trigger_ping_timeout_signal(c);
+         return;
+-- 
+2.30.2
 
 
