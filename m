@@ -1,11 +1,14 @@
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
-From: Magnus Larsson <list@...2692...>
-In-Reply-To: <_uM8yZ4irz2llJwaaxyuSL85KKacU344R3Rx0VWBZRbYJwai-A2aCE5SPLhSUbzC-jg3och9rt1J7RdgzBkj9vAlPrI6p-rwka9bYGapdI8=@protonmail.com>
-Date: Thu, 18 Aug 2022 07:53:24 -0400
-Message-Id: <35DD1515-30B5-48DB-A6E7-6B504C5C7912@...2692...>
-References: <6900ED88-65D7-450E-8A3A-3D9509D206AD@...2692...>
- <_uM8yZ4irz2llJwaaxyuSL85KKacU344R3Rx0VWBZRbYJwai-A2aCE5SPLhSUbzC-jg3och9rt1J7RdgzBkj9vAlPrI6p-rwka9bYGapdI8=@protonmail.com>
-Subject: Re: [Openvpn-devel] Possible bug?
+Date: Thu, 18 Aug 2022 16:06:47 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <Yv5HdwmRA6b6PWmw@...1296...>
+References: <20220808112738.1908633-1-gert@...1296...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="6Lm4jmLpWFcjeXO4"
+Content-Disposition: inline
+In-Reply-To: <20220808112738.1908633-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Ensure outer IPv6 (proto udp6) packets
+ can be fragmitted on sending.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,164 +17,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: openvpn-devel@lists.sourceforge.net
+
+--6Lm4jmLpWFcjeXO4
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: tincantech <tincantech@...2282...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
 
-Thanks a lot, will do!
+Hi,
 
-On August 18, 2022, at 05:10, tincantech <tincantech@...2282...> wrote:
+On Mon, Aug 08, 2022 at 01:27:38PM +0200, Gert Doering wrote:
+> If the inside packet is fragmented already, Linux kernel hands us
+> packets with skb->ignore_df=3D0.  Since this is applied to the encapsulat=
+ed
+> packet, the kernel will then refuse to fragment the resulting UDP/IPv6
+> packet (for IPv4, it seems to look at the actual DF bit, which does
+> not exist for IPv6).
+>=20
+> Always set ignore_df=3D1 in the udp6 output path.
+>=20
+> Fixes t_client tests with "ping -s 3000" across UDP6 tunnels.
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+For the sake of the archives, this made it in into the ovpn-dco repo
+in slightly modified form, as=20
 
-Hi Magnus,
+commit 3ba6c07ababd4d491c77f5327f8105bead6ddccc (HEAD -> master, origin/mas=
+ter, origin/HEAD)
+Author: Gert Doering <gert@...1296...>
+Date:   Mon Aug 8 13:27:38 2022 +0200
 
-can you report this as an issue on github, please ?
+    ovpn-dco: ensure outer IPv6 (proto udp6) packets can be fragmitted on s=
+ending
 
-https://github.com/OpenVPN/easy-rsa/issues
+so, closing on patchwork.
 
-My first guess would be the version of openssl 3.0.1 is at fault.
+Thanks, Antonio.
 
-Thanks,
-Richard
+gert
 
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
-Sent with Proton Mail secure email.
+--6Lm4jmLpWFcjeXO4
+Content-Type: application/pgp-signature; name="signature.asc"
 
-------- Original Message -------
-On Thursday, August 18th, 2022 at 02:37, Magnus Larsson via Openvpn-devel <=
-openvpn-devel@lists.sourceforge.net> wrote:
-
-
-> Hi,
-> I just moved from Ubuntu 20.04 LTS (where the exact command works fine an=
-d does not prompt for pass phrase) to Red Hat Enterprise Linux 9 and instal=
-led Easy-RSA via EPEL.
->=20
-> When I run ./easyrsa build-ca nopass as root, it still prompts for PEM pa=
-ss phrase:
->=20
->=20
-> # ./easyrsa build-ca nopass
-> Using SSL: openssl OpenSSL 3.0.1 14 Dec 2021 (Library: OpenSSL 3.0.1 14 D=
-ec 2021)
-> Enter PEM pass phrase:
-> Enter PEM pass phrase:
-> Enter PEM pass phrase:
-> Enter PEM pass phrase:
-> 80DB8DBF7D7F0000:error:0480006D:PEM routines:PEM_def_callback:problems ge=
-tting password:crypto/pem/pem_lib.c:62:
-> 80DB8DBF7D7F0000:error:07880109:common libcrypto routines:do_ui_passphras=
-e:interrupted or cancelled:crypto/passphrase.c:175:
-> 80DB8DBF7D7F0000:error:1C80009F:Provider routines:p8info_to_encp8:unable =
-to get passphrase:providers/implementations/encode_decode/encode_key2any.c:=
-116:
->=20
->=20
->=20
->=20
-> # ./easyrsa --version
-> EasyRSA Version Information
-> Version:     3.0.8
-> Generated:   Wed Sep  9 15:59:45 CDT 2020
-> SSL Lib:     OpenSSL 3.0.1 14 Dec 2021 (Library: OpenSSL 3.0.1 14 Dec 202=
-1)
-> Git Commit:  f12e00e53b4f486ce3d119ca429198780fa694ac
-> Source Repo: https://github.com/OpenVPN/easy-rsa
->=20
->=20
->=20
->=20
-> # ls -l
-> total 8
-> lrwxrwxrwx 1 root root   29 Aug 17 18:56 easyrsa -> /usr/share/easy-rsa/3=
-/easyrsa
-> lrwxrwxrwx 1 root root   41 Aug 17 18:56 openssl-easyrsa.cnf -> /usr/shar=
-e/easy-rsa/3/openssl-easyrsa.cnf
-> drwx------ 9 root root 4096 Aug 17 20:10 pki
-> -rw-r--r-- 1 root root  332 Aug 17 18:56 vars
-> lrwxrwxrwx 1 root root   36 Aug 17 18:56 vars.example -> /usr/share/doc/e=
-asy-rsa/vars.example
-> lrwxrwxrwx 1 root root   32 Aug 17 18:56 x509-types -> /usr/share/easy-rs=
-a/3/x509-types
->=20
->=20
->=20
->=20
-> # cat /etc/os-release
-> NAME=3D"Red Hat Enterprise Linux"
-> VERSION=3D"9.0 (Plow)"
-> ID=3D"rhel"
-> ID_LIKE=3D"fedora"
-> VERSION_ID=3D"9.0"
-> PLATFORM_ID=3D"platform:el9"
-> PRETTY_NAME=3D"Red Hat Enterprise Linux 9.0 (Plow)"
-> ANSI_COLOR=3D"0;31"
-> LOGO=3D"fedora-logo-icon"
-> CPE_NAME=3D"cpe:/o:redhat:enterprise_linux:9::baseos"
-> HOME_URL=3D"https://www.redhat.com/"
-> DOCUMENTATION_URL=3D"https://access.redhat.com/documentation/red_hat_ente=
-rprise_linux/9/"
-> BUG_REPORT_URL=3D"https://bugzilla.redhat.com/"
->=20
->=20
-> REDHAT_BUGZILLA_PRODUCT=3D"Red Hat Enterprise Linux 9"
-> REDHAT_BUGZILLA_PRODUCT_VERSION=3D9.0
-> REDHAT_SUPPORT_PRODUCT=3D"Red Hat Enterprise Linux"
-> REDHAT_SUPPORT_PRODUCT_VERSION=3D"9.0"
->=20
->=20
->=20
->=20
-> # dnf repolist
-> Updating Subscription Management repositories.
-> repo id                                                                  =
-  repo name
-> codeready-builder-for-rhel-9-x86_64-rpms                                 =
-  Red Hat CodeReady Linux Builder for RHEL 9 x86_64 (RPMs)
-> epel                                                                     =
-  Extra Packages for Enterprise Linux 9 - x86_64
-> rhel-9-for-x86_64-appstream-rpms                                         =
-  Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs)
-> rhel-9-for-x86_64-baseos-rpms                                            =
-  Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs)
->=20
->=20
->=20
->=20
-> # getenforce
-> Disabled
->=20
->=20
->=20
->=20
-> # uname -a
-> Linux test 5.14.0-70.22.1.el9_0.x86_64 #1 SMP PREEMPT Tue Aug 2 10:02:12 =
-EDT 2022 x86_64 x86_64 x86_64 GNU/Linux
->=20
->=20
->=20
-> Let me know if you need additional information.
->=20
-> Thanks,
-> Magnus
->=20
 -----BEGIN PGP SIGNATURE-----
-Version: ProtonMail
 
-wsBzBAEBCAAGBQJi/gHXACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
-9muQuJ3FpAf9FRWGhWLwzc8ONkqdMM0yts3GHGMhQ6ZqzILJjLh4Udgn5NlI
-IV7InwTHZZm7IE6q4IWhzSqGA/KjIc23Xydsz29Vh0BDoDDZemeXkjYdxCQd
-gRDIMuzMLTqCQIoI9FqeWKKQW9r5cG9qwIpUwiBh2BUmub2D0hb7P0SVEWur
-+moGPLU1neXIhlL2F6hbTqtl/wNxr2V5qLfODrRJpiEyKQNa1C8GvvqXJR2r
-BYRA2vyoFIGn+krBMBb2lcExGhioWr4gzecFolqOin9e/i3pCCii1Xl4/XI5
-BqHP31VoNmc88CLmOhSn/At3kagcnou9WDsA8DbJabW1/MPeGjKpXQ=3D=3D
-=3DukTL
+iQGcBAEBAgAGBQJi/kd3AAoJEB2Cnv7KVigS0OIL/3iADVwoU6Ph0gE312u7/1N/
+OjTQOwVWN9n55u4SEA2UHcLCrzUre6+fCyGVV/jXDuS/5p0K+syQpJaoA7RO7gg+
+JdU3JmAg1waRR9kC2NBTsJoGpO2IFGAd4N4a41a4jNPYeI7VDRsZAsqN1JZ15WqB
+EogAi5Ek+iABpeshY9IIWRMvhpmIYZ5sMUEqlauX2tuLBtkd8sqIhgiLbgQrC+4x
+3RaeTIZTsQ+slbCq4cUdbBveLomX0V9K8vZvJwJDKJl0/hQWaNpJAiUENCSyMHlD
+RB4EpOFaVbX6XR/65RcB5TlI9VDJQP093dhnBScS+WFqnolpg/c1pH/yKtWfolA6
+cM1Th0W2MHcaCr9J1RhvXIViQE4+rbVomV9zfc+W++ZAjQPgAFBNNDNZBDPaWXp/
+1/wCx0nkikhecLmGYZ4evKUPd31FcZ1Hh6ScAmOO9NP9JmlRMaZ8WR3jlDKXjxON
++zir+Y90Bs/YODd4rSPjE9+rxZadVWLfuwm8PE3/MA==
+=pQva
 -----END PGP SIGNATURE-----
-<publickey - tincantech@...2282... - 0x09BC3D44.asc><publickey - tincantech=
-@...2282... - 0x09BC3D44.asc.sig>
 
+--6Lm4jmLpWFcjeXO4--
 
