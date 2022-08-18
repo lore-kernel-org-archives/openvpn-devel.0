@@ -1,11 +1,13 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Thu, 18 Aug 2022 10:48:25 +0200
-Message-Id: <20220818084825.187755-1-a@...2181...>
-In-Reply-To: <20220818001905.176039-1-a@...2181...>
-References: 
+Date: Thu, 18 Aug 2022 09:10:01 +0000
+From: tincantech <tincantech@...2282...>
+Reply-To: tincantech <tincantech@...2282...>
+Message-ID: <_uM8yZ4irz2llJwaaxyuSL85KKacU344R3Rx0VWBZRbYJwai-A2aCE5SPLhSUbzC-jg3och9rt1J7RdgzBkj9vAlPrI6p-rwka9bYGapdI8=@protonmail.com>
+In-Reply-To: <6900ED88-65D7-450E-8A3A-3D9509D206AD@...2692...>
+References: <6900ED88-65D7-450E-8A3A-3D9509D206AD@...2692...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] push-peer-info: rearrange function
- generating peer info
+Content-Type: multipart/mixed;
+ boundary="b1_s8YaYYIX9V7nOdStcjDvrRti3QdnzcXuOvpZTnNtZg"
+Subject: Re: [Openvpn-devel] Possible bug?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,317 +16,225 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Magnus Larsson <list@...2692...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+This is a multi-part message in MIME format.
+
+--b1_s8YaYYIX9V7nOdStcjDvrRti3QdnzcXuOvpZTnNtZg
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+Content-Transfer-Encoding: quoted-printable
 
-This patch is supposed to implement no function change.
-The only change in behaviour that can be observed is the IV_/UV_ variables
-being printed in different order compared to before applying this patch.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
 
-However, order does not matter, so we don't need to retain it.
+Hi Magnus,
 
-What this change really does is rearranging the push_peer_info() function
-so that it becomes much more clear which variable is printed depending on
-the peer-info detail level. The original code was mixed up, and figuring
-the above out required reading this function multiple times.
+can you report this as an issue on github, please ?
 
-This rearrangement puts everything in a switch/case block with sorted
-peer-info details levels appearing one after the other.
+https://github.com/OpenVPN/easy-rsa/issues
 
-While at it, the for loop extracting the wanted env variables has been
-restructured a bit to avoid uber long conditions and extreme indentation.
+My first guess would be the version of openssl 3.0.1 is at fault.
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
+Thanks,
+Richard
 
-NOTE: I tried to move this function to ssh_util.c to make it possible to
-unit-test it. However, it requires a bunch of headers which make the whole
-dependency chain explode..so I gave up.
 
-Changes from v2:
-* create helper function to push variable from env-set
 
-Changes from v1:
-* add spaces before case/default labels in switch block
----
- src/openvpn/ssl.c | 219 ++++++++++++++++++++++++++--------------------
- 1 file changed, 126 insertions(+), 93 deletions(-)
+Sent with Proton Mail secure email.
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 33e145b3..4ff36d40 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1910,6 +1910,44 @@ read_string_alloc(struct buffer *buf)
-     return str;
- }
- 
-+/**
-+ * Searches the environment variables set for variables starting with the
-+ * specified pattern. If found, the variable string (i.e. VAR=VALUE) is
-+ * copied to the out buffer provided as argument
-+ *
-+ * @param out       the output buffer where variables should be written to
-+ * @param es        the environment variables set to search
-+ * @param pattern   the pattern used to match variable names
-+ */
-+static void
-+push_peer_info_env_var(struct buffer *out, const struct env_set *es, const char *pattern)
-+{
-+    for (const struct env_item *e = es->list; e; e = e->next)
-+    {
-+        /* ensure we have a string */
-+        if (!e->string)
-+        {
-+            continue;
-+        }
-+
-+        /* ensure string will fit output buffer */
-+        if (!buf_safe(out, strlen(e->string) + 1))
-+        {
-+            continue;
-+        }
-+
-+        /* don't accept any var except for those starting with the specified
-+         * pattern
-+         */
-+        if (strncmp(e->string, pattern, strlen(pattern)) != 0)
-+        {
-+            continue;
-+        }
-+
-+        buf_printf(out, "%s\n", e->string);
-+    }
-+}
-+
- /**
-  * Prepares the IV_ and UV_ variables that are part of the
-  * exchange to signal the peer's capabilities. The amount
-@@ -1932,134 +1970,129 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
-     bool ret = false;
-     struct buffer out = alloc_buf_gc(512 * 3, &gc);
- 
--    if (session->opt->push_peer_info_detail > 1)
-+    switch (session->opt->push_peer_info_detail)
-     {
--        /* push version */
--        buf_printf(&out, "IV_VER=%s\n", PACKAGE_VERSION);
-+        case 3:
-+        {
-+            /* push mac addr */
-+            struct route_gateway_info rgi;
-+            get_default_gateway(&rgi, session->opt->net_ctx);
-+            if (rgi.flags & RGI_HWADDR_DEFINED)
-+            {
-+                buf_printf(&out, "IV_HWADDR=%s\n", format_hex_ex(rgi.hwaddr, 6, 0, 1, ":", &gc));
-+            }
-+            buf_printf(&out, "IV_SSL=%s\n", get_ssl_library_version() );
-+#if defined(_WIN32)
-+            buf_printf(&out, "IV_PLAT_VER=%s\n", win32_version_string(&gc, false));
-+#endif
-+
-+            /* push env vars that begin with UV_, IV_PLAT_VER= */
-+            push_peer_info_env_var(&out, session->opt->es, "UV_");
-+            push_peer_info_env_var(&out, session->opt->es, "IV_PLAT_VER=");
-+        }
-+
-+        /* fall through */
-+        case 2:
-+        {
-+            /* push version */
-+            buf_printf(&out, "IV_VER=%s\n", PACKAGE_VERSION);
- 
--        /* push platform */
-+            /* push platform */
- #if defined(TARGET_LINUX)
--        buf_printf(&out, "IV_PLAT=linux\n");
-+            buf_printf(&out, "IV_PLAT=linux\n");
- #elif defined(TARGET_SOLARIS)
--        buf_printf(&out, "IV_PLAT=solaris\n");
-+            buf_printf(&out, "IV_PLAT=solaris\n");
- #elif defined(TARGET_OPENBSD)
--        buf_printf(&out, "IV_PLAT=openbsd\n");
-+            buf_printf(&out, "IV_PLAT=openbsd\n");
- #elif defined(TARGET_DARWIN)
--        buf_printf(&out, "IV_PLAT=mac\n");
-+            buf_printf(&out, "IV_PLAT=mac\n");
- #elif defined(TARGET_NETBSD)
--        buf_printf(&out, "IV_PLAT=netbsd\n");
-+            buf_printf(&out, "IV_PLAT=netbsd\n");
- #elif defined(TARGET_FREEBSD)
--        buf_printf(&out, "IV_PLAT=freebsd\n");
-+            buf_printf(&out, "IV_PLAT=freebsd\n");
- #elif defined(TARGET_ANDROID)
--        buf_printf(&out, "IV_PLAT=android\n");
-+            buf_printf(&out, "IV_PLAT=android\n");
- #elif defined(_WIN32)
--        buf_printf(&out, "IV_PLAT=win\n");
-+            buf_printf(&out, "IV_PLAT=win\n");
- #endif
--        /* Announce that we do not require strict sequence numbers with
--         * TCP. (TCP non-linear) */
--        buf_printf(&out, "IV_TCPNL=1\n");
--    }
- 
--    /* These are the IV variable that are sent to peers in p2p mode */
--    if (session->opt->push_peer_info_detail > 0)
--    {
--        /* support for P_DATA_V2 */
--        int iv_proto = IV_PROTO_DATA_V2;
-+            /* Announce that we do not require strict sequence numbers with
-+             * TCP. (TCP non-linear) */
-+            buf_printf(&out, "IV_TCPNL=1\n");
- 
--        /* support for the --dns option */
--        iv_proto |= IV_PROTO_DNS_OPTION;
-+            /* push compression status */
-+#ifdef USE_COMP
-+            comp_generate_peer_info_string(&session->opt->comp_options, &out);
-+#endif
- 
--        /* support for receiving push_reply before sending
--         * push request, also signal that the client wants
--         * to get push-reply messages without without requiring a round
--         * trip for a push request message*/
--        if (session->opt->pull)
--        {
--            iv_proto |= IV_PROTO_REQUEST_PUSH;
--            iv_proto |= IV_PROTO_AUTH_PENDING_KW;
-+            /* push env vars that begin with IV_GUI_VER= and IV_SSO= */
-+            push_peer_info_env_var(&out, session->opt->es, "IV_GUI_VER=");
-+            push_peer_info_env_var(&out, session->opt->es, "IV_SSO=");
-         }
- 
--        /* support for Negotiable Crypto Parameters */
--        if (session->opt->mode == MODE_SERVER || session->opt->pull)
-+        /* fall through */
-+        case 1:
-         {
--            if (tls_item_in_cipher_list("AES-128-GCM", session->opt->config_ncp_ciphers)
--                && tls_item_in_cipher_list("AES-256-GCM", session->opt->config_ncp_ciphers))
--            {
-+            /* support for P_DATA_V2 */
-+            int iv_proto = IV_PROTO_DATA_V2;
-+
-+            /* support for the --dns option */
-+            iv_proto |= IV_PROTO_DNS_OPTION;
- 
--                buf_printf(&out, "IV_NCP=2\n");
-+            /* support for receiving push_reply before sending
-+             * push request, also signal that the client wants
-+             * to get push-reply messages without without requiring a round
-+             * trip for a push request message*/
-+            if (session->opt->pull)
-+            {
-+                iv_proto |= IV_PROTO_REQUEST_PUSH;
-+                iv_proto |= IV_PROTO_AUTH_PENDING_KW;
-             }
--        }
--        else
--        {
--            /* We are not using pull or p2mp server, instead do P2P NCP */
--            iv_proto |= IV_PROTO_NCP_P2P;
--        }
- 
--        buf_printf(&out, "IV_CIPHERS=%s\n", session->opt->config_ncp_ciphers);
-+            /* support for Negotiable Crypto Parameters */
-+            if (session->opt->mode == MODE_SERVER || session->opt->pull)
-+            {
-+                if (tls_item_in_cipher_list("AES-128-GCM", session->opt->config_ncp_ciphers)
-+                    && tls_item_in_cipher_list("AES-256-GCM", session->opt->config_ncp_ciphers))
-+                {
-+
-+                    buf_printf(&out, "IV_NCP=2\n");
-+                }
-+            }
-+            else
-+            {
-+                /* We are not using pull or p2mp server, instead do P2P NCP */
-+                iv_proto |= IV_PROTO_NCP_P2P;
-+            }
- 
- #ifdef HAVE_EXPORT_KEYING_MATERIAL
--        iv_proto |= IV_PROTO_TLS_KEY_EXPORT;
-+            iv_proto |= IV_PROTO_TLS_KEY_EXPORT;
- #endif
- 
--        buf_printf(&out, "IV_PROTO=%d\n", iv_proto);
-+            buf_printf(&out, "IV_PROTO=%d\n", iv_proto);
- 
--        if (session->opt->push_peer_info_detail > 1)
--        {
--            /* push compression status */
--#ifdef USE_COMP
--            comp_generate_peer_info_string(&session->opt->comp_options, &out);
--#endif
--        }
-+            buf_printf(&out, "IV_CIPHERS=%s\n", session->opt->config_ncp_ciphers);
- 
--        if (session->opt->push_peer_info_detail > 2)
--        {
--            /* push mac addr */
--            struct route_gateway_info rgi;
--            get_default_gateway(&rgi, session->opt->net_ctx);
--            if (rgi.flags & RGI_HWADDR_DEFINED)
-+            if (!write_string(buf, BSTR(&out), -1))
-             {
--                buf_printf(&out, "IV_HWADDR=%s\n", format_hex_ex(rgi.hwaddr, 6, 0, 1, ":", &gc));
-+                goto error;
-             }
--            buf_printf(&out, "IV_SSL=%s\n", get_ssl_library_version() );
--#if defined(_WIN32)
--            buf_printf(&out, "IV_PLAT_VER=%s\n", win32_version_string(&gc, false));
--#endif
-+            break;
-         }
- 
--        if (session->opt->push_peer_info_detail > 1)
--        {
--            struct env_set *es = session->opt->es;
--            /* push env vars that begin with UV_, IV_PLAT_VER and IV_GUI_VER */
--            for (struct env_item *e = es->list; e != NULL; e = e->next)
-+        case 0:
-+            if (!write_empty_string(buf))
-             {
--                if (e->string)
--                {
--                    if ((((strncmp(e->string, "UV_", 3) == 0
--                           || strncmp(e->string, "IV_PLAT_VER=", sizeof("IV_PLAT_VER=") - 1) == 0)
--                          && session->opt->push_peer_info_detail > 2)
--                         || (strncmp(e->string, "IV_GUI_VER=", sizeof("IV_GUI_VER=") - 1) == 0)
--                         || (strncmp(e->string, "IV_SSO=", sizeof("IV_SSO=") - 1) == 0)
--                         )
--                        && buf_safe(&out, strlen(e->string) + 1))
--                    {
--                        buf_printf(&out, "%s\n", e->string);
--                    }
--                }
-+                goto error;
-             }
--        }
-+            break;
- 
--        if (!write_string(buf, BSTR(&out), -1))
--        {
--            goto error;
--        }
--    }
--    else
--    {
--        if (!write_empty_string(buf)) /* no peer info */
--        {
-+        /* invalid value configured */
-+        default:
-+            msg(M_WARN, "Invalid peer-info-detail level %d", session->opt->push_peer_info_detail);
-             goto error;
--        }
-     }
-+
-     ret = true;
- 
- error:
--- 
-2.30.2
+------- Original Message -------
+On Thursday, August 18th, 2022 at 02:37, Magnus Larsson via Openvpn-devel <=
+openvpn-devel@lists.sourceforge.net> wrote:
+
+
+> Hi,
+> I just moved from Ubuntu 20.04 LTS (where the exact command works fine an=
+d does not prompt for pass phrase) to Red Hat Enterprise Linux 9 and instal=
+led Easy-RSA via EPEL.
+>
+> When I run=C2=A0./easyrsa=C2=A0build-ca nopass as root, it still prompts =
+for PEM pass phrase:
+>
+>
+> # ./easyrsa build-ca nopass
+> Using SSL: openssl OpenSSL 3.0.1 14 Dec 2021 (Library: OpenSSL 3.0.1 14 D=
+ec 2021)
+> Enter PEM pass phrase:
+> Enter PEM pass phrase:
+> Enter PEM pass phrase:
+> Enter PEM pass phrase:
+> 80DB8DBF7D7F0000:error:0480006D:PEM routines:PEM_def_callback:problems ge=
+tting password:crypto/pem/pem_lib.c:62:
+> 80DB8DBF7D7F0000:error:07880109:common libcrypto routines:do_ui_passphras=
+e:interrupted or cancelled:crypto/passphrase.c:175:
+> 80DB8DBF7D7F0000:error:1C80009F:Provider routines:p8info_to_encp8:unable =
+to get passphrase:providers/implementations/encode_decode/encode_key2any.c:=
+116:
+>
+>
+>
+>
+> #=C2=A0./easyrsa --version
+> EasyRSA Version Information
+> Version: =C2=A0 =C2=A0 3.0.8
+> Generated: =C2=A0 Wed Sep =C2=A09 15:59:45 CDT 2020
+> SSL Lib: =C2=A0 =C2=A0 OpenSSL 3.0.1 14 Dec 2021 (Library: OpenSSL 3.0.1 =
+14 Dec 2021)
+> Git Commit: =C2=A0f12e00e53b4f486ce3d119ca429198780fa694ac
+> Source Repo: https://github.com/OpenVPN/easy-rsa
+>
+>
+>
+>
+> #=C2=A0ls -l
+> total 8
+> lrwxrwxrwx 1 root root =C2=A0 29 Aug 17 18:56 easyrsa -> /usr/share/easy-=
+rsa/3/easyrsa
+> lrwxrwxrwx 1 root root =C2=A0 41 Aug 17 18:56 openssl-easyrsa.cnf -> /usr=
+/share/easy-rsa/3/openssl-easyrsa.cnf
+> drwx------ 9 root root 4096 Aug 17 20:10 pki
+> -rw-r--r-- 1 root root =C2=A0332 Aug 17 18:56 vars
+> lrwxrwxrwx 1 root root =C2=A0 36 Aug 17 18:56 vars.example -> /usr/share/=
+doc/easy-rsa/vars.example
+> lrwxrwxrwx 1 root root =C2=A0 32 Aug 17 18:56 x509-types -> /usr/share/ea=
+sy-rsa/3/x509-types
+>
+>
+>
+>
+> # cat /etc/os-release
+> NAME=3D"Red Hat Enterprise Linux"
+> VERSION=3D"9.0 (Plow)"
+> ID=3D"rhel"
+> ID_LIKE=3D"fedora"
+> VERSION_ID=3D"9.0"
+> PLATFORM_ID=3D"platform:el9"
+> PRETTY_NAME=3D"Red Hat Enterprise Linux 9.0 (Plow)"
+> ANSI_COLOR=3D"0;31"
+> LOGO=3D"fedora-logo-icon"
+> CPE_NAME=3D"cpe:/o:redhat:enterprise_linux:9::baseos"
+> HOME_URL=3D"https://www.redhat.com/"
+> DOCUMENTATION_URL=3D"https://access.redhat.com/documentation/red_hat_ente=
+rprise_linux/9/"
+> BUG_REPORT_URL=3D"https://bugzilla.redhat.com/"
+>
+>
+> REDHAT_BUGZILLA_PRODUCT=3D"Red Hat Enterprise Linux 9"
+> REDHAT_BUGZILLA_PRODUCT_VERSION=3D9.0
+> REDHAT_SUPPORT_PRODUCT=3D"Red Hat Enterprise Linux"
+> REDHAT_SUPPORT_PRODUCT_VERSION=3D"9.0"
+>
+>
+>
+>
+> #=C2=A0dnf repolist
+> Updating Subscription Management repositories.
+> repo id =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0repo name
+> codeready-builder-for-rhel-9-x86_64-rpms =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 Red Hat CodeReady Linux Builder for RHEL 9 x86_64 (RPMs)
+> epel =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 Extra Packages for Enterprise Linux 9 - x86=
+_64
+> rhel-9-for-x86_64-appstream-rpms =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 Red Hat Enterprise Linux 9 for x86_64 - =
+AppStream (RPMs)
+> rhel-9-for-x86_64-baseos-rpms =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Red Hat Enterprise Linux 9 for=
+ x86_64 - BaseOS (RPMs)
+>
+>
+>
+>
+> #=C2=A0getenforce
+> Disabled
+>
+>
+>
+>
+> #=C2=A0uname -a
+> Linux test 5.14.0-70.22.1.el9_0.x86_64 #1 SMP PREEMPT Tue Aug 2 10:02:12 =
+EDT 2022 x86_64 x86_64 x86_64 GNU/Linux
+>
+>
+>
+> Let me know if you need additional information.
+>
+> Thanks,
+> Magnus
+>
+-----BEGIN PGP SIGNATURE-----
+Version: ProtonMail
+
+wsBzBAEBCAAGBQJi/gHXACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec
+9muQuJ3FpAf9FRWGhWLwzc8ONkqdMM0yts3GHGMhQ6ZqzILJjLh4Udgn5NlI
+IV7InwTHZZm7IE6q4IWhzSqGA/KjIc23Xydsz29Vh0BDoDDZemeXkjYdxCQd
+gRDIMuzMLTqCQIoI9FqeWKKQW9r5cG9qwIpUwiBh2BUmub2D0hb7P0SVEWur
++moGPLU1neXIhlL2F6hbTqtl/wNxr2V5qLfODrRJpiEyKQNa1C8GvvqXJR2r
+BYRA2vyoFIGn+krBMBb2lcExGhioWr4gzecFolqOin9e/i3pCCii1Xl4/XI5
+BqHP31VoNmc88CLmOhSn/At3kagcnou9WDsA8DbJabW1/MPeGjKpXQ=3D=3D
+=3DukTL
+-----END PGP SIGNATURE-----
+
+--b1_s8YaYYIX9V7nOdStcjDvrRti3QdnzcXuOvpZTnNtZg
+Content-Type: application/pgp-keys; name="publickey - tincantech@...2282... - 0x09BC3D44.asc"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc"
+
+LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tDQpWZXJzaW9uOiBPcGVuUEdQLmpz
+IHY0LjEwLjEwDQpDb21tZW50OiBodHRwczovL29wZW5wZ3Bqcy5vcmcNCg0KeHNCTkJGdndTY2NC
+Q0FET21IRW5RbExtT2pKUnRKTDJsNTNNTHd3RlR5N1huRXBzM2IxUTBVd1dZRkN2DQpMMm9OcDBu
+cmRHbEtLREpxNTBZMDlTUitVUllCUW1LbVkzRW16cHlVSUtNL3JnbzFSeXViSHBNUkhiRHANCjdK
+cDhMeGtmZkZCVkpqL3Q1Vk1wRDZlTVI2YVVjaVFqZ1JMOE5aZTYrVDd4ZlhYWHdWNWhvUmVaM2pP
+Kw0KekhpNlNSN3hUdkdYbGErTVF6NkVFcFdubGJMdmcyb3J0OUtzZXVWallycXZSTXhjZFAwbzlj
+WldKNWVwDQpKTm1nZUI2TTcrT1cwOFUxU3NYdEtycExSY0k2eUttVjM4amh6UHIyWmdQOXJtcmxF
+clIvMWlxUVFIWFkNCm84LzBEZlB5RjBtSDl5blFJaUxFL2wrRll1NHJzRzhWaUtseGhYY3plUHpB
+dExDamlCMGEwbVJWQUJFQg0KQUFITk55SjBhVzVqWVc1MFpXTm9RSEJ5YjNSdmJtMWhhV3d1WTI5
+dElpQThkR2x1WTJGdWRHVmphRUJ3DQpjbTkwYjI1dFlXbHNMbU52YlQ3Q3dIOEVFQUVJQUNrRkFs
+dndTY2NHQ3drSENBTUNDUkJQbDV6MmE1QzQNCm5RUVZDQW9DQXhZQ0FRSVpBUUliQXdJZUFRQUtD
+UkJQbDV6MmE1QzRuUUJEQi85WlVvOUJPWEpSNjFObQ0KMDJvWi84YVJYTzlOblVTRnQ2R0xPV2NE
+TnZBczRJSldNRFZFUWZZYW5iKzQyMVFOZC81ZDZIMWlYRitpDQo0TERLME02YWdDK2dzTkZKbmpQ
+R0l0dlB0ajdXeWp5blpSeDhENDBQUFhpZ2ZIWXV3Mm9SdTBscitQMXANCjFxZVVlNE5iY3FJdjhJ
+SXZMejJ6Q2xZWk9OZ0FzUVZjTkFIaTdaNG9ydFEyaW8yQkFWai84MTlKUFlNdA0KdEhnWTgxd1Mx
+Vjd2OEdEVFpnOG9hUGhYR2ZhQzRUWkZHdFpyL2J5YmNxcnNvMzVqYVFtQzU0eE1iWHBGDQpBVXJj
+M3VHVk9IK09kRy9CVzJnY1lxcHZVRkJ1a1h4Q1VCWUhQMk5mWGhOZnpHdDluQzF1bE5LWWVQMTkN
+ClRHbE9vckJNWUlBRUhvR3h2cGJVWGZiYU5XQ1V6c0JOQkZ2d1NjY0JDQUM5S3lWWlJTNWFNYUc1
+UGkwbg0KZng4YU5vczNiWXAyNDZNdGZhb0tCZlRRQXJkK0daVytXbkZ5SkVpU3lMZHowclV1dHlD
+QWRmNWxnVkgrDQpXdkx2SW1pR3JTcnpWcE1UMm5DUzA5THFMNTBRano4QTdncDVIL2hRenRaOGlO
+eXNHRDlOTzQ2T25JNzUNCjkwZEhmQ3JYalFQU0Z0RkdzVHpnRHhRSWlNdXp6OURSN0Jla0tQbXVP
+RkloQmU5ZUVacWJ4YzhSV2VRdA0KaGE3aS9EckpUUk5LMWFPQURRRlZ1VjEvQW01VGhHUFdGTS9Z
+SlV5VFloTVcweWVQaDQ1T2JXdVJRWmtzDQpsK2FPbTRMMEtHRERZbG0vRlF4L0VNQ3Vidmx6eS96
+eERkQjZucUZpaDJxWnJmeW1uaVNPS2FqRzBqb1QNCnBab3ovRXorNGZBdGc2eTBQc3BOUjZpZEFC
+RUJBQUhDd0drRUdBRUlBQk1GQWx2d1NjY0pFRStYblBacg0Ka0xpZEFoc01BQW9KRUUrWG5QWnJr
+TGlkUmUwSC9qNUNJRklBdWN1YWlFTWtMa05LRUFPNXM3eDQ3ZU55DQpHUGZac2x5WStIanpHVTBk
+MDdNa2tHbVZrUFRWendxVnpOWmJueTdaQXYxemxXMFV5MHlIcDFBUHB5WXQNCjhidVVwcFRCcTdk
+NDdvZ3hFUll6dC9MYzJMNWEvVktGTlJiaE4xL1hRbVBpejJFbGU0dHlpcGJUYXBjeQ0KK3pieWZ6
+QU1EMTNjSWRaMTNoVHNOUDBvbGdCaEFxVUFVVVlweFJsa0FIZUorRHQzTmJ6SFM0S1FLNTM4DQpO
+Si9sN2JYU0tzR3FvWXFKZVo4Vk5CeHdXV1VidUc0ampyaDQzTUlSZ1VaNVdzUFVZVjZIeDA1NmtN
+amINCi9iWUJqSTBURU12SDgxNjB1cXpGWGVIdll5VWxxMFNpbkQvWjlpb0llOFFkc0hHQkRVSVJZ
+WXViMXBPOA0KcXJDelJaeDBvTkE9DQo9L0RlYQ0KLS0tLS1FTkQgUEdQIFBVQkxJQyBLRVkgQkxP
+Q0stLS0tLQ0K
+
+--b1_s8YaYYIX9V7nOdStcjDvrRti3QdnzcXuOvpZTnNtZg
+Content-Type: application/pgp-signature; name="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="publickey - tincantech@...2282... - 0x09BC3D44.asc.sig"
+
+wsBzBAABCAAGBQJi/gHXACEJEE+XnPZrkLidFiEECbw9RGejjXJ5xVVVT5ec9muQuJ2xtwf+MDxf
+Inqyv890YgWFK0xdRDqcBlvCq940lrqAiVu/chc5DjbMNasvYa5HMVrfubGIfPSdfxg+peNBLLbT
+XR1QgL0RNGibpNVTd1Ut2nKz0jRH6i6gq6XK6zTOvRWENX+zZhReiwdE0k85gRsIRTmYra27d6Eg
+iu8VwZ6OyJGNsbMKxLCbaeBdXR1BIXsBljL1xIg1yNky8TQPHWdoxumoJfWkAbmAYgW33pcsAAfC
+6QbVg1dEQ3UBSpfK79kx0nsehoL6RlAFNlijhowOZjRXADuBohWnIbhIDO27lUd1yy/aOa27+h6E
+GiVAu/dHHYJwYcv05occKA2bDiR3tepxbg==
+
+--b1_s8YaYYIX9V7nOdStcjDvrRti3QdnzcXuOvpZTnNtZg--
 
 
