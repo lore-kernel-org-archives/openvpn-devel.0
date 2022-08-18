@@ -1,10 +1,10 @@
-Date: Thu, 18 Aug 2022 08:28:44 +0200 (CEST)
-Message-Id: <202208180628.27I6SitM055924@...2054...>
+Date: Thu, 18 Aug 2022 09:35:22 +0200 (CEST)
+Message-Id: <202208180735.27I7ZMY2057080@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220817210857.1558-1-timo@...2669...>
-References: <20220817210857.1558-1-timo@...2669...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco: turn platform config
- checks into separate function
+In-Reply-To: <20220814085117.7128-1-a@...2181...>
+References: <20220814085117.7128-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco-win: ensure the DCO API is
+ not used when running on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,41 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Timo Rothenpieler <timo@...2669...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Tested this on the Linux / DCO server test rig that found the issue
-yesterday - the "no root" server now does no longer reject clients
-on connect, so that problem is fixed.  Thanks :-)
+Taking the ACK from Lev on 102, applying to 103 - which mostly has
+"better wording".  I have tested this on the DCO test rig, and it's
+fine with the change.
 
-To verify that the startup function is actually used, I triggered
-it with
- 
-  - openvpn --mktun --dev tun99
-  - openvpn --dev tun99 ...
-    (pre-existing tun device -> disable DCO)
-
-    2022-08-18 07:57:30 net_iface_type: type of tun99: tun
-    2022-08-18 07:57:30 Interface tun99 exists and is non-DCO. Disabling data channel offload
-
-  - openvpn --user nobody ...
-    (started as non-root user - failed, of course, but told me "you no DCO!"
-    first :-) )
-
-    2022-08-18 07:56:27 --user specified but lacking CAP_SETPCAP. Cannot retain CAP_NET_ADMIN. Disabling data channel offload
-
+I wouldn't be surprised to see more work in this area for "we need to
+be able to send packets to not-yet-authenticated remotes in p2p mode",
+though... :-)
 
 Your patch has been applied to the master branch.
 
-commit 897728ff7141c367c5ea1e02918c8487ccafef16
-Author: Timo Rothenpieler
-Date:   Wed Aug 17 23:08:57 2022 +0200
+commit d4f2209cdb4dfda32f36fa750d97b7e1ba751a4d
+Author: Antonio Quartulli
+Date:   Sun Aug 14 10:51:17 2022 +0200
 
-     dco: turn platform config checks into separate function
+     dco-win: ensure the DCO API is not used when running on Windows
 
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20220817210857.1558-1-timo@...2669...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24969.html
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20220814085117.7128-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24929.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
