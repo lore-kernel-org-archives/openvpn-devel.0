@@ -1,16 +1,10 @@
-Date: Thu, 18 Aug 2022 19:20:33 +0200
+Date: Thu, 18 Aug 2022 20:14:38 +0200 (CEST)
+Message-Id: <202208181814.27IIEc5W071386@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <Yv504aAMxqguVLNP@...1296...>
-References: <20220520213250.3126372-1-arne@...1227...>
- <20220520213250.3126372-3-arne@...1227...>
- <1970912.abQj5cvHqE@...2664...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="iQNvyNm9IU48YBZb"
-Content-Disposition: inline
-In-Reply-To: <1970912.abQj5cvHqE@...2664...>
-Subject: Re: [Openvpn-devel] [PATCH v2 2/4] Cleanup receive_auth_failed and
- simplify method
+In-Reply-To: <20220802130312.18871-1-a@...2181...>
+References: <20220802130312.18871-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco: move availability check to
+ the end of check_option_conflict() function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,63 +13,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Heiko Hund <heiko@...2662...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---iQNvyNm9IU48YBZb
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Thanks.  This was left hanging in the cold for some reason... merged
+now.  I've subjected it to the usual test for DCO related stuff (client
+with no-dco kernel, client with dco, server with dco) and verified that
+the same instances have DCO enabled that had before - glad for Arne's
+GLOBAL_STATS patch now :-)
 
-Hi,
+This *should* be safe even on windows, as windows patch 1/7 changes
+the first condition to "if (!dco_enabled(o) ...)" so it won't abort on
+DCO-incompatible option in a config that does not have "windows-driver dco"
+in the first place.
 
-On Thu, Aug 18, 2022 at 04:39:07PM +0200, Heiko Hund wrote:
-> On Freitag, 20. Mai 2022 23:32:48 CEST Arne Schwabe wrote:
-> > This simplifies the buffer handling in the method and adds a quick
-> > return instead of wrapping the whole method in a if (pull) block
-> >=20
-> > Patch V2: remove uncessary ifdef/endif and unnecassary block
->=20
-> Acked-by: Heiko Hund <heiko@...2662...>
+I have rewrapped the comment to better fit into 80 char line constraints
+(since the second line was quite short)
 
-Thanks for the extra ACK :-) - this got already merged as
+Your patch has been applied to the master branch.
 
-commit 88823adebac31958cee83572241cff9fc775a601
-Author: Arne Schwabe <arne@...1227...>
-Date:   Fri May 20 23:32:48 2022 +0200
+commit 78b8d0e162e1fa34780ee3d3ea84691539a0b1f3
+Author: Antonio Quartulli
+Date:   Tue Aug 2 15:03:12 2022 +0200
 
-    Cleanup receive_auth_failed and simplify method
+     dco: move availability check to the end of check_option_conflict() function
 
-with an ACK from Frank.
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20220802130312.18871-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24783.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-gert
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+--
+kind regards,
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Gert Doering
 
---iQNvyNm9IU48YBZb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJi/nThAAoJEB2Cnv7KVigSF8IL/jfVFeyQ+FSKsQmwPGeWXVqA
-qkfYxleMQ/1WM4+WxaTR5VW6cGTFtslh//WrwOReW1CCynk9wHBuarXc65AJOmvZ
-whX1I0rSEWNgeP1sJhef68sTALuoiWaD0uy6rN1sSbBBRgttbFT2RDq0dW8GIId3
-NqIMe8u0FrubmYtHBy/GyuCRy+j74q8Hen37ZL20TvKdbgCmchGaTUJxR+I52zV1
-jhdSAr4g/ltwYhdjRl5roS5Td3WLkSHLjmMBF4euH40BFCvSi9i/v4xGbVRqVwPz
-omqnMkq4MHb/0SAD6jnyqH3VY2mWpkpaxGEKrMKCSuOciNHP8hSvMscqzdzJpRr7
-aAOAg2X6IWymBjQHCyrNXMVH1YpuQPVoBSoAWVyqOV0dSiW6kPBT4PoKqz6leKd5
-qypOwjbD/Y0QGRmLwXc2SVYkaFwm7rmoUc2MB8Y6MS5p+sVeZgscnMTm8NBz/S3b
-JdgKvBlCB5SAht5DP0FqjfS7fU7bpzFHEufeMU763g==
-=1fY3
------END PGP SIGNATURE-----
-
---iQNvyNm9IU48YBZb--
 
