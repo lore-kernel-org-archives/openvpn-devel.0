@@ -1,14 +1,15 @@
-Date: Thu, 18 Aug 2022 07:52:00 +0200
+Date: Thu, 18 Aug 2022 07:55:05 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <Yv3TgJOqYyyz9LcE@...1296...>
-References: <20220818001358.175361-1-a@...2181...>
+Message-ID: <Yv3UOco92s2j57dy@...1296...>
+References: <20220817233248.137722-1-a@...2181...>
+ <20220818001905.176039-1-a@...2181...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="6wyAztf2uMeIVhja"
+ protocol="application/pgp-signature"; boundary="XPjR02UnnPFtm1Bs"
 Content-Disposition: inline
-In-Reply-To: <20220818001358.175361-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] close_tun: print interface type
- consistently in message
+In-Reply-To: <20220818001905.176039-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2] push-peer-info: rearrange function
+ generating peer info
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,49 +21,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---6wyAztf2uMeIVhja
+--XPjR02UnnPFtm1Bs
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-Hi,
+HI,
 
-On Thu, Aug 18, 2022 at 02:13:58AM +0200, Antonio Quartulli wrote:
-> When closing the tunnel interface we know if we were using DCO or not.
-> for this reason we can customize the closing message and make it
-> consistent with the opening one.
->=20
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
->  src/openvpn/init.c | 10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
->=20
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index e8335c53..92c4cab9 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -1921,7 +1921,15 @@ do_open_tun(struct context *c)
->  static void
->  do_close_tun_simple(struct context *c)
->  {
-> -    msg(D_CLOSE, "Closing TUN/TAP interface");
-> +    if (dco_enabled(&c->options))
-> +    {
-> +        msg(D_CLOSE, "Closing DCO interface");
-> +    }
-> +    else
-> +    {
-> +        msg(D_CLOSE, "Closing TUN/TAP interface");
-> +    }
+On Thu, Aug 18, 2022 at 02:19:05AM +0200, Antonio Quartulli wrote:
+> This patch is supposed to implement no function change.
+> The only change in behaviour that can be observed is the IV_/UV_ variables
+> being printed in different order compared to before applying this patch.
 
-I find this is a bit excessive in lines of code...=20=20
-
-If we really want this, I think we should do
-
- +    msg(D_CLOSE, "Closing %s interface",
-          dco_enabled(&c->options)? "DCO": "TUN/TAP");
+I agree with the goal of making this more readable, but that we now have
+*two* loops through the environment is not improving things.  It's just
+making the function loooong.
 
 gert
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -73,22 +49,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---6wyAztf2uMeIVhja
+--XPjR02UnnPFtm1Bs
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJi/dOAAAoJEB2Cnv7KVigSLiwL/1r1BiDExNMZ1FX8nRmrc4Ju
-ayK3aPGI7ze0Mrfy7lqZvWIU847Ya6EBFFQTAP9IgZrk3ZKGp7eR/FxlCWk5vkAe
-Lyo7d0bjpDedrXhI2rLyZ7sRYkdlVGLuULsR8yOgMEus8txiJB+Bm9OuurqEEHQD
-i4SGBrCt3+IXaK+4WzZCBEyCeGsW5Wo9T8p7wa5CWqDVHlOJbRYQFCghy7r8OYk4
-hay5fQ5zXFzfNXFKtFMCsQ7BBSYSnrkLeB6R3UgyZImZTNftPibix2/S06hV0VIc
-owBnAEJGcKcMN2ESTjVEiKTaeHVOevc8Y5vJ/U9jsHSwvgtmgWGDD9yOor1Zx59h
-h2mWSmamOsXO/GuekgOSb+WK1r6VIi0hRnma2rg4AzIdXHPLtjXpcEypiGflVPVz
-7AreeoziWpOOkzgVj1GTDK8f+XGa0K0yaaA6xv2jNwqKO1MitQ5YGBoEra0i25pl
-gDS7SY3+ufqMSmCCRucKZJ5IDr9suUHBe24drjo/lw==
-=8wmU
+iQGcBAEBAgAGBQJi/dQ5AAoJEB2Cnv7KVigSakAMAIZ+2Ap/ESBkjziufqFSunth
+DAVTgMA8ZtxjYKsBGO1WCyFP3bxABD8tjKXVZu6uqOnu/Vwx9cRs7yEDwUcn76zo
+Y/pmhw7YRPSFbwr7ouTOE/l1NLunIDe/0eQbIXbwVe1pv/yYjb5WHkUbKIkcBpIM
+Vgd2WUmwWC0mMsWke+Dm+lLufKrpmlz7Obgj7OzKO4umDgCrUzMYbIp6SB1g9Lhc
+l2jjdYZa7dWUdbd8g7voumTAqRnMDWJwnlOwmlEM/HQjLf3IMicgXau0Lg1EsbZJ
+Q5rnO1J+WcrqI8mXO4tBf3q/h2gE6WUe1wY3hj/6sQRXVcpiuWG9l0TYm3iszLMs
+CysAyXJXCipmFSAtieYyKMXWfC6XstMIQXAz0d6dc3PDrEvhqqrfB5nGY9+66FAZ
+LiHhpzxB+AXN6FYChhYPkbtC23xdsKP4t7aODPCWtHkbbNiBCVFJYqGUeDkZ2d/H
+omr0LlFYvw6TYE2dAUgAhsUBeK9ZYCzNFviAGGf7SA==
+=6pzi
 -----END PGP SIGNATURE-----
 
---6wyAztf2uMeIVhja--
+--XPjR02UnnPFtm1Bs--
 
