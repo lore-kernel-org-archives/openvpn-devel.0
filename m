@@ -1,13 +1,11 @@
-Message-ID: <6b261e98-96bc-5a51-5241-fa20b405fbcf@...1227...>
-Date: Thu, 18 Aug 2022 21:48:02 +0200
+Message-ID: <9aa6d1f8-642f-dd5b-d7cd-ac607f9ee774@...1227...>
+Date: Thu, 18 Aug 2022 21:49:33 +0200
 MIME-Version: 1.0
 Content-Language: en-GB
 References: <20220520213250.3126372-1-arne@...1227...>
- <e39f7b53-b24d-0ce9-8685-767d2eb71d40@...2080...>
- <b14e6399-1735-041f-4d91-3285fe6ea5c5@...1227...>
- <7591466.7VjxKKiAKM@...2664...>
+ <20220520213250.3126372-2-arne@...1227...> <1737786.5VJy9bbnOH@...2664...>
 From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <7591466.7VjxKKiAKM@...2664...>
+In-Reply-To: <1737786.5VJy9bbnOH@...2664...>
 Subject: Re: [Openvpn-devel] [PATCH v2 1/4] Implement exit notification via
  control channel
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,18 +20,46 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 To: Heiko Hund <heiko@...2662...>, openvpn-devel@lists.sourceforge.net
 
-Am 18.08.22 um 16:38 schrieb Heiko Hund:
-> On Freitag, 1. Juli 2022 00:42:55 CEST Arne Schwabe wrote:
->> Basically if I had been a bit more forwarding looking we would now have
->> protocol-flags ekm cc-exit instead of key-derivation ekm and
->> protocol-flags cc-exit
+Am 18.08.22 um 16:39 schrieb Heiko Hund:
+> Patch and thus series doesn't apply anymore, in addition to eventual changes
+> also please rebase.
 > 
-> Then maybe also add support for handling ekm via --protocol-flags and
-> deprecate/remove sending --key-derivation?
+> On Freitag, 20. Mai 2022 23:32:47 CEST Arne Schwabe wrote:
+>> +  If both server and client support sending this message using the control
+>> +  channel, the message will be sent as control-channel message. Otherwise
+>> +  the message is sent as data-channel message, which will be ignored by
+>> +  data-channel offloaded peers.
+>> +
+>>     The **n** parameter (default :code:`1` if not present) controls the
+>>     maximum number of attempts that the client will try to resend the exit
+>> -  notification message.
+>> +  notification message if messages are sent in data-channel mode.
+> 
+> You don't need the "n" for the control channel exit notification because of
+> the reliability layer, right?!
+> 
+>> +    if (proto & IV_PROTO_CC_EXIT_NOTIFY)
+>> +    {
+>> +        o->data_channel_crypto_flags |= CO_USE_CC_EXIT_NOTIFY;
+>> +    }
+> 
+> The flags variable is named confusingly now. Is renaming an option?
+
+Yes it is. But it is also still fitting, because it is affecting data 
+channel to not send it via this :P
+
+> 
+>>   static void
+>>   process_explicit_exit_notification_init(struct context *c)
+>>   {
+>>       msg(M_INFO, "SIGTERM received, sending exit notification to peer");
+>>       event_timeout_init(&c->c2.explicit_exit_notification_interval, 1, 0);
+>>       reset_coarse_timers(c);
+> 
+> Do we need to timer event if !cc_exit_notify_enabled(c)?
 > 
 
-Yeah, I can do that in follow up patch to add ekm as accepted in 
-protocol-flags
+Iirc yes. The timer will will trigger the dealyed exit.
 
 Arne
 
