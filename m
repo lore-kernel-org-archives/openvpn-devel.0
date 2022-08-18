@@ -1,13 +1,10 @@
-Date: Thu, 18 Aug 2022 08:10:11 +0200
+Date: Thu, 18 Aug 2022 08:28:44 +0200 (CEST)
+Message-Id: <202208180628.27I6SitM055924@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <Yv3Xw2voNQk+0WoR@...1296...>
-References: <48db419f-0d5d-a9b9-6f55-dffc5d4fbbe5@...1227...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="xEB3jPu5AYIT5Sh9"
-Content-Disposition: inline
-In-Reply-To: <48db419f-0d5d-a9b9-6f55-dffc5d4fbbe5@...1227...>
-Subject: Re: [Openvpn-devel] wolfSSL unit test failures
+In-Reply-To: <20220817210857.1558-1-timo@...2669...>
+References: <20220817210857.1558-1-timo@...2669...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco: turn platform config
+ checks into separate function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,57 +13,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Juliusz Sosinowicz <juliusz@...2525...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Timo Rothenpieler <timo@...2669...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---xEB3jPu5AYIT5Sh9
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Tested this on the Linux / DCO server test rig that found the issue
+yesterday - the "no root" server now does no longer reject clients
+on connect, so that problem is fixed.  Thanks :-)
 
-Hi,
+To verify that the startup function is actually used, I triggered
+it with
+ 
+  - openvpn --mktun --dev tun99
+  - openvpn --dev tun99 ...
+    (pre-existing tun device -> disable DCO)
 
-On Thu, Aug 18, 2022 at 12:40:09AM +0200, Arne Schwabe wrote:
-> From 02d4c4d8444188bdf32a054171ea7e20cc7c12ff Mon Sep 17 00:00:00 2001
-> From: Arne Schwabe <arne@...1227...>
-> Date: Thu, 11 Aug 2022 19:27:12 +0200
-> Subject: [PATCH] Add wolfSSL to github actions
->=20
-> I just want to see the world burn a little bit
+    2022-08-18 07:57:30 net_iface_type: type of tun99: tun
+    2022-08-18 07:57:30 Interface tun99 exists and is non-DCO. Disabling data channel offload
 
-I'm not merging this as of today, because I do not really want to get
-an error notification from GH on every build.
+  - openvpn --user nobody ...
+    (started as non-root user - failed, of course, but told me "you no DCO!"
+    first :-) )
 
-As soon as this is fixed in upstream WolfSSL, it's a good addition to
-our test suite.
+    2022-08-18 07:56:27 --user specified but lacking CAP_SETPCAP. Cannot retain CAP_NET_ADMIN. Disabling data channel offload
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Your patch has been applied to the master branch.
 
---xEB3jPu5AYIT5Sh9
-Content-Type: application/pgp-signature; name="signature.asc"
+commit 897728ff7141c367c5ea1e02918c8487ccafef16
+Author: Timo Rothenpieler
+Date:   Wed Aug 17 23:08:57 2022 +0200
 
------BEGIN PGP SIGNATURE-----
+     dco: turn platform config checks into separate function
 
-iQGcBAEBAgAGBQJi/dfDAAoJEB2Cnv7KVigSXRAL/ipgFxgCGZg/p4rNqrAYDReU
-WFttzKRWSUtHCJMVCbBf8CJPcrkLS1Mrey0wU96HahbNB+S0SxCuBBZFilZL7jwp
-vRkYggZTc+otzRg5kmjHsazHWPYutowtxeRFgWA+6SkFWe4FicNhydV9oYlnlW2K
-FeWjPMTrtpaYMsEI6sIxdAqj5pjstUc+BBMRBK9/et5vI84OxHO+UkYAYQu+rHzc
-4WDZMP/fAipuOkaeby457cDtYKxfCj9di+yDF3p1sGmv7LDef4qy8uK5L2xwooIb
-N+R5dBqblLpFQP41wYDOda1pD509MLzxsy0cG1NcK7NGcE7kJs839SWKsafz/+mi
-oRbKGYnLH54f9+bKkM4ervfNO3kA4Z5Ta3lzBdxt1r8+5RStMOIPK0QMN3Q3ebfi
-wls9N/4+FpPnI6sfFnk6YiyTYJYlnflKW0b4TcQqRdLmSs6DMfy0OOK/k70enYwD
-3GVPVgzfj2a/xt7jnEq/4r7q9WgKW73Cst89ib2JaA==
-=/an2
------END PGP SIGNATURE-----
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <20220817210857.1558-1-timo@...2669...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24969.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---xEB3jPu5AYIT5Sh9--
+
+--
+kind regards,
+
+Gert Doering
+
 
