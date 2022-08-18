@@ -1,10 +1,11 @@
-Date: Thu, 18 Aug 2022 09:35:22 +0200 (CEST)
-Message-Id: <202208180735.27I7ZMY2057080@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220814085117.7128-1-a@...2181...>
-References: <20220814085117.7128-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco-win: ensure the DCO API is
- not used when running on Windows
+Message-ID: <d5b618ef-1611-3c65-586c-bc881bcf09ab@...1227...>
+Date: Thu, 18 Aug 2022 09:51:45 +0200
+MIME-Version: 1.0
+Content-Language: en-GB
+References: <6900ED88-65D7-450E-8A3A-3D9509D206AD@...2692...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <6900ED88-65D7-450E-8A3A-3D9509D206AD@...2692...>
+Subject: Re: [Openvpn-devel] Possible bug?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +14,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Magnus Larsson <list@...2692...>, openvpn-devel@lists.sourceforge.net
 
-Taking the ACK from Lev on 102, applying to 103 - which mostly has
-"better wording".  I have tested this on the DCO test rig, and it's
-fine with the change.
+Am 18.08.22 um 03:37 schrieb Magnus Larsson via Openvpn-devel:
+> Hi,
+> 
+> I just moved from Ubuntu 20.04 LTS (where the exact command works fine 
+> and does not prompt for pass phrase) to Red Hat Enterprise Linux 9 and 
+> installed Easy-RSA via EPEL.
 
-I wouldn't be surprised to see more work in this area for "we need to
-be able to send packets to not-yet-authenticated remotes in p2p mode",
-though... :-)
+Probably old keys with now unsupported RC4 encryption in OpenSSL 3. You 
+will have to make OpenSSL to load the legacy provider.
 
-Your patch has been applied to the master branch.
-
-commit d4f2209cdb4dfda32f36fa750d97b7e1ba751a4d
-Author: Antonio Quartulli
-Date:   Sun Aug 14 10:51:17 2022 +0200
-
-     dco-win: ensure the DCO API is not used when running on Windows
-
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20220814085117.7128-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24929.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Arne
 
