@@ -1,10 +1,9 @@
-Date: Thu, 18 Aug 2022 16:12:51 +0200 (CEST)
-Message-Id: <202208181412.27IECp06067690@...2054...>
+Date: Thu, 18 Aug 2022 16:19:23 +0200 (CEST)
+Message-Id: <202208181419.27IEJNgq067880@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220817201223.302-1-lstipakov@...277...>
-References: <20220817201223.302-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco.h: fix return type when DCO
- is not enabled
+In-Reply-To: <20220818080550.177771-1-a@...2181...>
+References: <20220818080550.177771-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: ssl_util: fix prototype style
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,25 +14,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Test compiled on Linux and FreeBSD, just to be sure.
+Seems we need an uncrustify option to enforce this for new code
+(*most* prototypes have the "all-in-one-line" approach, some follow
+the "return type on previous line" as for functions).
+
+Subject fixed, ssl_util, not ssh_util :-)
 
 Your patch has been applied to the master branch.
 
-commit 329cb7ed2cb8503e99bed5bf3499f2194536d6ce
-Author: Lev Stipakov
-Date:   Wed Aug 17 22:12:23 2022 +0200
+commit 31346b8d8df6fb09faa56d53508205a8b74c15df
+Author: Antonio Quartulli
+Date:   Thu Aug 18 10:05:50 2022 +0200
 
-     dco.h: fix return type when DCO is not enabled
+     ssl_util: fix prototype style
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
+     Signed-off-by: Antonio Quartulli <a@...2181...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220817201223.302-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24968.html
+     Message-Id: <20220818080550.177771-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24983.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
