@@ -1,13 +1,15 @@
-Date: Fri, 19 Aug 2022 19:37:18 +0200
+Date: Fri, 19 Aug 2022 20:26:57 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <Yv/KTuu8IUbiPlCv@...1296...>
-References: <20220812134154.16729-1-kprovost@...2661...>
+Message-ID: <Yv/V8QJjWJle0Btx@...1296...>
+References: <20220629170555.116087-1-maximilian.fillinger@...2507...>
+ <202208191704.27JH4gnC095081@...2054...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Kr0WeMdGpirqOp1p"
+ protocol="application/pgp-signature"; boundary="Te7niG+sRVbeFCYm"
 Content-Disposition: inline
-In-Reply-To: <20220812134154.16729-1-kprovost@...2661...>
-Subject: Re: [Openvpn-devel] [PATCHv2]: FreeBSD DCO support
+In-Reply-To: <202208191704.27JH4gnC095081@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Don't undo ifconfig on exit
+ if it wasn't done
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,52 +18,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Kristof Provost <kprovost@...2661...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Max Fillinger <maximilian.fillinger@...2507...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---Kr0WeMdGpirqOp1p
+--Te7niG+sRVbeFCYm
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Aug 12, 2022 at 03:41:52PM +0200, Kristof Provost via Openvpn-devel=
- wrote:
-> Here's the updated version of the FreeBSD DCO patch. It should address
-> all remarks on the userspace side of things.
+On Fri, Aug 19, 2022 at 07:04:42PM +0200, Gert Doering wrote:
+> I had to apply a bit of pressure to get the patch to apply - it had
+> one hunk trying to fix an #endif which never existed :-) - and the context
+> of the last tun.c hunk needed adjustment (if (tun_dco_enabled(tt))) -
+> both fairly trivial, and no actual code change.
 
-As I said, I only tested the client side of things so far.  Now I started
-building a server test rig, to see what I could break :-) - and then
-see if the iroute patch does what it should (looks generally good).
+"This mail escaped".  Of course I have only applied v6, but I had the
+mail for v5 still sitting around, and never sent it when I discovered
+that &gc was missing the "&"...
 
-Before getting to routing, I discovered something that "upstream changes"
-might have broken in your patch:
+> commit 054f60fc5eaeacb90333e6b5e183459eb39a6d4f
 
-Namely, if I run multiple instances with --dev tun, the first one
-grabs "tun0", and the next one will *fail*
-
-2022-08-19 19:21:08 us=3D399955 OpenVPN 2.6_git [git:vw/master/d7f16eea8e93=
-9b42] amd64-unknown-freebsd14.0 [SSL (OpenSSL)] [LZO] [LZ4] [MH/RECVDA] [AE=
-AD] [DCO] built on Aug 13 2022
-2022-08-19 19:21:08 us=3D399974 library versions: OpenSSL 1.1.1q-freebsd  5=
- Jul 2022, LZO 2.10
-[...]
-2022-08-19 19:21:08 us=3D403141 GDG6: remote_host_ipv6=3Dn/a
-2022-08-19 19:21:08 us=3D403225 ROUTE6_GATEWAY 2001:608:0:814::ffff IFACE=
-=3Dem0
-2022-08-19 19:21:08 us=3D414627 Failed to create interface tun0: File exist=
-s (errno=3D17)
-2022-08-19 19:21:08 us=3D414703 Exiting due to fatal error
-
-This is because of a misunderstanding between tun.c:open_tun_dco_generic()
-and FreeBSD's open_tun_dco() / create_interface() - tun.c expects the
-return code to be "-errno", and gives up on -EPERM - which happens to
-be "-1" on FreeBSD ("if we can not create a single interface due to
-*permission*, break the loop").
-
-Changing the flow to return -errno makes it succeed.  I will send a patch
-for that in a few minutes (feed family first).
+This commit does not exist (outside of my tree).
 
 gert
 --=20
@@ -74,22 +53,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---Kr0WeMdGpirqOp1p
+--Te7niG+sRVbeFCYm
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJi/8pNAAoJEB2Cnv7KVigS3fkMAKSxzV30mpTwhXqrGpGIK967
-4GnmDf6sbUkxqIFBlwAT8bU0cPKeMORk3GWcHWaCJeDMGdoX1qvRWrF//unNRyAz
-eRKxWLk/O8dNl8bYV3Qzw6OYFBVSUfzusBtkyHGR7kMqn91dmtkuBHbOCGvNXELo
-Yq/ODjopd9Tj//j2+fRdEQeW5DZYzNEHvYYWnLM8UwV9hS3ZOMvlUJDAIRPR0Z0p
-JTN5lQgB0YuRZtmNsMspV5Hc9oQa/7lol5RqI4EzNsY6BuZSZHxFdqOPzcsc63cX
-NUMdIJbW/uRDspNsafilknJJN2fI/OWksB/TCgNqPJSH+RxrXq7CYzirsjB4gMtl
-EV2Kk3wZyNz3wqG9Niz9MInxuJZH8BzipY4mSYN5mAJ566CjWot7oTGwvohPHhAZ
-EhBKXd2XWGYGdFV9rewASGeOGR1QGbp9I2rrcOeNUdVI7TVuLj49kmG5yvt6M1RQ
-7VVmynhbh4p7Fpwa2oIquluDrZms3FkI1fzSEgRfNw==
-=RWa4
+iQGcBAEBAgAGBQJi/9XxAAoJEB2Cnv7KVigSdaYL/293WTc1pgjXsCCLpUDS71l4
+oYnaLNCXA+pb23/aIEusuFxTogOPbREzmGRs27BaSBtEf9726px66Y+g4Oj1L6zY
+KyyczStVVCxwz+Cw1yKXns5J9l2img8OEL/P0+LbogD8XRf/enY9MKwvGeD5HpSq
+ohpMcVsVJ0zJufueVsB186Gqx4YfKy02KN1NlGxfCxvduR6Cy1QzYjHgHk6Y4bMO
+x4wrze/3RUCHXqu+8IoFaQpDGuES8cWjXYej4wbzGjBc4YYeY1MPFcZZlNaJDBAE
+y4EdwZahk/WmsVBjr2A9AV4pplmI0/O9dYiXwFLPBlzQmk3QHVmSXiWX2KA2FIh5
+oazJkIfWM1kvZrNmMJfb0zoN0/KGlqtgKDjv0/tHNLSHD++Disu5BdMK4AGCANgq
+jETJs1F34SU9eWtG3/6OSrn+UdSso9rgqA78fLaZ80egeWfcuLrkewmYLKOO/Xl5
+LkCXnQSWc8XIp4Yfjc9L6xODwWeyfV/gNFs3zmGLAA==
+=DkKu
 -----END PGP SIGNATURE-----
 
---Kr0WeMdGpirqOp1p--
+--Te7niG+sRVbeFCYm--
 
