@@ -1,8 +1,8 @@
-Date: Fri, 19 Aug 2022 19:04:42 +0200 (CEST)
-Message-Id: <202208191704.27JH4gnC095081@...2054...>
+Date: Fri, 19 Aug 2022 19:04:52 +0200 (CEST)
+Message-Id: <202208191704.27JH4qSZ095097@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220629170555.116087-1-maximilian.fillinger@...2507...>
-References: <20220629170555.116087-1-maximilian.fillinger@...2507...>
+In-Reply-To: <20220810153006.18860-1-maximilian.fillinger@...2507...>
+References: <20220810153006.18860-1-maximilian.fillinger@...2507...>
 Subject: [Openvpn-devel] [PATCH applied] Re: Don't undo ifconfig on exit if
  it wasn't done
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,13 +18,15 @@ Content-Transfer-Encoding: 8bit
 To: Max Fillinger <maximilian.fillinger@...2507...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I had to apply a bit of pressure to get the patch to apply - it had
-one hunk trying to fix an #endif which never existed :-) - and the context
-of the last tun.c hunk needed adjustment (if (tun_dco_enabled(tt))) -
-both fairly trivial, and no actual code change.
+Acked-by: Gert Doering <gert@...1296...>
+
+I had to apply a bit of pressure to get the patch to apply - the 
+context in tun.c got changed ( || TARGET_FREEBSD) in the meantime...
+fairly trivial, and no actual code change.
 
 Pushed to the new and renovated buildbot army, to see if it would break
-any platforms (very convenient, this ;-) ).
+any platforms (very convenient, this ;-) ).  Didn't!  Thanks for the v6
+update!
 
 The change is as we have discussed, and I still think it's a good and
 clean way forward.  The "undo_ifconfig_ipv4() / _ipv6()" functions
@@ -36,18 +38,26 @@ undo_ifconfig() function.  tun.c is still a mess, but this helps a bit.
 While staring at the diff, I kicked a spurious blank line from the
 end of undo_ifconfig()... :-)
 
+
+I'm a bit unsure if we want to pull this up to release/2.5 - it won't
+apply "as is" (due to all the DCO bits around it), but the actual change
+could be done the same.  It's a bugfix, and brings back the 2.4 
+"undo ifconfig" behaviour to all non-linux/non-Win32 platforms 
+(which was an unintended change in 2.5.0).  So maybe we should?
+
+
 Your patch has been applied to the master branch.
 
-commit 054f60fc5eaeacb90333e6b5e183459eb39a6d4f
+commit 0c4d40cb838eb0fad4a82bbed1198f6d359d445a
 Author: Max Fillinger
-Date:   Wed Jun 29 19:05:55 2022 +0200
+Date:   Wed Aug 10 17:30:06 2022 +0200
 
      Don't undo ifconfig on exit if it wasn't done
 
      Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20220629170555.116087-1-maximilian.fillinger@...2507...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24610.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220810153006.18860-1-maximilian.fillinger@...2507...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24860.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
