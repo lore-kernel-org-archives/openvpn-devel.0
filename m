@@ -1,15 +1,15 @@
-Date: Fri, 19 Aug 2022 12:56:44 +0200
+Date: Fri, 19 Aug 2022 12:59:42 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <Yv9sbNTaD21mSsDC@...1296...>
+Message-ID: <Yv9tHvsCjJ7PsM9z@...1296...>
 References: <20220813204224.22576-1-a@...2181...>
- <20220813204224.22576-5-a@...2181...>
+ <20220813204224.22576-4-a@...2181...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="hPxagKUkQJowYEOw"
+ protocol="application/pgp-signature"; boundary="urVnoWpmrRLU61WT"
 Content-Disposition: inline
-In-Reply-To: <20220813204224.22576-5-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v101 5/7] dco-win: update GH Actions
- config file
+In-Reply-To: <20220813204224.22576-4-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v101 4/7] dco-win: add documentation to
+ README.dco.md
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,63 +21,72 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
 
---hPxagKUkQJowYEOw
+--urVnoWpmrRLU61WT
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sat, Aug 13, 2022 at 10:42:22PM +0200, Antonio Quartulli wrote:
+this looks good to me - will apply as soon as 3/7 goes in (to avoid
+having documentation that says "it's in" while it isn't).
+
+Acked-By: Gert Doering <gert@...1296...>
+
+On Sat, Aug 13, 2022 at 10:42:21PM +0200, Antonio Quartulli wrote:
+> Signed-off-by: Arne Schwabe <arne@...1227...>
 > Signed-off-by: Lev Stipakov <lev@...515...>
 > Signed-off-by: Antonio Quartulli <a@...2181...>
 > ---
->  .github/workflows/build.yaml | 7 +------
->  1 file changed, 1 insertion(+), 6 deletions(-)
-
-I do not understand this commit.  Not at all.
-
-It seems to take an existing setup that builds an installer *with* DCO,
-and remove the DCO bits?
-
-> @@ -59,11 +59,6 @@ jobs:
->      steps:
->        - name: Install dependencies
->          run: sudo apt update && sudo apt install -y mingw-w64 libtool au=
-tomake autoconf man2html unzip
-> -      - name: Checkout ovpn-dco-win
-> -        uses: actions/checkout@...2620...
-> -        with:
-> -          repository: OpenVPN/ovpn-dco-win
-> -          path: ovpn-dco-win
-
-... so maybe we can have a better commit message that explains this?
-
-
-> @@ -151,7 +146,7 @@ jobs:
->          run: cp ./tap-windows-${TAP_WINDOWS_VERSION}/include/tap-windows=
-.h ${HOME}/mingw/opt/include/
+> Changes from v100:
+> * add URL to windows installer (openvpn+dco) and modify text
+> ---
+>  README.dco.md | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/README.dco.md b/README.dco.md
+> index c38d3de3..aa93d667 100644
+> --- a/README.dco.md
+> +++ b/README.dco.md
+> @@ -57,6 +57,13 @@ see a message like
+>  in your log.
 >=20=20
->        - name: configure OpenVPN
-> -        run: PKG_CONFIG_PATH=3D${HOME}/mingw/opt/lib/pkgconfig DCO_SOURC=
-EDIR=3D$(realpath ../ovpn-dco-win) LDFLAGS=3D-L$HOME/mingw/opt/lib CFLAGS=
-=3D-I$HOME/mingw/opt/include OPENSSL_LIBS=3D"-L${HOME}/opt/lib -lssl -lcryp=
-to" OPENSSL_CFLAGS=3D-I$HOME/mingw/opt/include PREFIX=3D$HOME/mingw/opt LZO=
-_CFLAGS=3D-I$HOME/mingw/opt/include LZO_LIBS=3D"-L${HOME}/mingw/opt/lib -ll=
-zo2" ./configure  --host=3D${CHOST} --disable-lz4 --enable-dco
-> +        run: PKG_CONFIG_PATH=3D${HOME}/mingw/opt/lib/pkgconfig LDFLAGS=
-=3D-L$HOME/mingw/opt/lib CFLAGS=3D-I$HOME/mingw/opt/include OPENSSL_LIBS=3D=
-"-L${HOME}/opt/lib -lssl -lcrypto" OPENSSL_CFLAGS=3D-I$HOME/mingw/opt/inclu=
-de PREFIX=3D$HOME/mingw/opt LZO_CFLAGS=3D-I$HOME/mingw/opt/include LZO_LIBS=
-=3D"-L${HOME}/mingw/opt/lib -llzo2" ./configure  --host=3D${CHOST} --disabl=
-e-lz4
->          working-directory: openvpn
+>=20=20
+> +Getting started (Windows)
+> +-------------------------
+> +The simplest way to test DCO under Windows is to download the latest ins=
+taller
+> +from https://build.openvpn.net/downloads/snapshots/github-actions/openvp=
+n2/ .
+> +This installer contains the latest OpenVPN code and the ovpn-dco-win dri=
+ver.
+> +
+> +
+>  DCO and P2P mode
+>  ----------------
+>  DCO is also available when running OpenVPN in P2P mode without `--pull` /
+> @@ -111,7 +118,9 @@ Limitations by design
+>    - older versions are missing support for the AEAD ciphers;
+>  - topology subnet is the only supported `--topology` for servers;
+>  - iroute directives install routes on the host operating system, see also
+> -  Routing with ovpn-dco.
+> +  Routing with ovpn-dco;
+> +- (ovpn-dco-win) client and p2p mode only;
+> +- (ovpn-dco-win) Chacha20-Poly1305 support available starting with Windo=
+ws 11.
+>=20=20
+>=20=20
+>  Current implementation limitations
+> --=20
+> 2.35.1
+>=20
+>=20
+>=20
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
-This, I think, is clear - "--enable-dco is default for windows builds",
-and maybe also "no DCO_SOURCEDIR neccesary anymore, since ovpn_dco_win.h
-is now part of our tree", right?
-
-gert
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -88,22 +97,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---hPxagKUkQJowYEOw
+--urVnoWpmrRLU61WT
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJi/2xsAAoJEB2Cnv7KVigSuF8L/iC60gDcNRSPSlauF3aTKhec
-B/JhRf2qVaVHInLVN6mewyJD1cuDpiA9yxzPirnucSy5FFM6cLz+kouuPslB/EvP
-mS2C9+jp8qrWhVJ28s7w4G8rzJ/IRrPlzKJTs0Psr8v6aZCQ1Ed75f5G5YNACkT9
-EoGaskSYBb/C0v+feJyE4pbPrKzUaKUhO82TkIbOLfiU31dBk3XYVh7Q5S+OhB7c
-go/2uhh4PPHr5JJTM2Lv8oGCHmue11D9sJhA2lKK1B/fbbCBM/116XUGrQbNFXKK
-dRITWEQG66QvxPn7LOobJqdEVDL2E6hvPDsjgU+b3xjkR7ac6CGeVeJLNcQ+UPp/
-MCC56LIEkC8mG2um88/um+L0pNFRlNnXaH3+naM9jw7/xogdlhH40B07ptFYesr6
-yekCy3sHZGLm6mefNWBuNwGOzXK21RFeH+aik+KxJDSTPFysHnO46DtdN4JQKqy8
-8yiL88ha+31hl69l4sO29RkrcZOOIunBpRf3+i4zuw==
-=Z9Kx
+iQGcBAEBAgAGBQJi/20eAAoJEB2Cnv7KVigSgVAL/0jRDYVQaBCVQcVqyakwo4UQ
+zEkOGktu7Iiem3m03L/Op3BoeNDypNTThxc+1T4RvNiEgdal9gBK246ZJmldCS/N
+bMs1tM7POCQ18RDU6KPC4ADXZ5LH9YgTeyLJgYgJ2IXLF70P3X8A7TJS7w3TXTdA
+fgrQrq6ZUvU0cgMudMNJUE6rTHNV+bwXaznOiL8ku2tuESPboArOu8mcQqNxwfp/
+/E7qVmfO0T4WYJd/yNXIl3/wLhPvFLzB18I4OWKaewF10jeCmT00fNZPUc4X0OIR
+RYVcFfgyg8ub8nUVRPjZqz4g89YbdfKUAkslg1bHVSYnz3G8rwnzL46H63Ai/xag
+yslsXkWO7s8EsCJS7Lix8nixuFi6ExuE7jPSnUggrCFK/NEn6vrLhRwB+mpw97VK
+xvEKNnirIBQAU7OKHNaP31yPvxTJQaUjzGs54zLuIRJdV043M9p+557t/D787JLp
+H0aHB4jUc/zIHcqfQrDD/CLnKEf4OnZgwAmcN9a+bg==
+=RFii
 -----END PGP SIGNATURE-----
 
---hPxagKUkQJowYEOw--
+--urVnoWpmrRLU61WT--
 
