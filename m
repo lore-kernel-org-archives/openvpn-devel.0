@@ -1,10 +1,13 @@
-Date: Fri, 19 Aug 2022 15:14:43 +0200 (CEST)
-Message-Id: <202208191314.27JDEhMk091491@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220704025840.2558-1-selva.nair@...277...>
-References: <20220704025840.2558-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix auth-token usage with
- management-def-auth
+From: Maximilian Fillinger <maximilian.fillinger@...2507...>
+Date: Fri, 19 Aug 2022 13:39:13 +0000
+Message-ID: <95a456920c2e4ca1b5400850dd210ea6@...2507...>
+References: <20220811171120.59361-1-maximilian.fillinger@...2507...>
+ <2ec56ba7-4628-eafc-1ccd-bc8b5c2a164d@...1227...>
+In-Reply-To: <2ec56ba7-4628-eafc-1ccd-bc8b5c2a164d@...1227...>
+Content-Language: en-US
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH v2 1/2] Update openssl_compat.h for
+ newer LibreSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,44 +17,48 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: base64
+To: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Sorry for leaving this ACKed-but-unmerged since July.  It got heaped-over
-by DCO patches...
-
-Anyway.  I have no current test rig where I could recreate and test this,
-but if Arne as resident management interface expert is happy with this,
-this is fine for me.  (The comment / message updates are easy to review
-and make sense).
-
-I have test compiled it :-) - and lightly tested, knowing that the
-interesting code path is not excercised.  Just to be sure.
-
-Cherrypicking to 2.5 caused a funny conflict, as the variable is called
-"in_renog_time" there, and got renamed to "in_renegotiation_time" somewhere
-later...  but solved easily enough.
-
-Your patch has been applied to the master and release/2.5 branch.
-
-commit ddbe6a6fc26586d09f5a9105f13124c479b4d993 (master)
-commit 5b178f591c882a6600414104a77a9240f7a29331 (release/2.5)
-Author: Selva Nair
-Date:   Sun Jul 3 22:58:40 2022 -0400
-
-     Fix auth-token usage with management-def-auth
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20220704025840.2558-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24627.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBcm5lIFNjaHdhYmUgW21haWx0
+bzphcm5lQC4uLjEyMjcuLi5dDQo+IFNlbnQ6IGRvbmRlcmRhZyAxOCBhdWd1c3R1cyAyMDIyIDIy
+OjE2DQo+IFRvOiBNYXhpbWlsaWFuIEZpbGxpbmdlciA8bWF4aW1pbGlhbi5maWxsaW5nZXJALi4u
+MjUwNy4uLj47IG9wZW52cG4tDQo+IGRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldA0KPiBTdWJq
+ZWN0OiBSZTogW09wZW52cG4tZGV2ZWxdIFtQQVRDSCB2MiAxLzJdIFVwZGF0ZSBvcGVuc3NsX2Nv
+bXBhdC5oIGZvcg0KPiBuZXdlciBMaWJyZVNTTA0KPiANCj4gQW0gMTEuMDguMjIgdW0gMTk6MTEg
+c2NocmllYiBNYXggRmlsbGluZ2VyOg0KPiA+IExpYnJlU1NMIGhhcyBhZGRlZCBzb21lIG9mIHRo
+ZSBmdW5jdGlvbnMgdGhhdCBhcmUgZGVmaW5lZCBoZXJlLg0KPiBIb3dldmVyLA0KPiA+IHdlIHN0
+aWxsIG5lZWQgUlNBX0ZfUlNBX09TU0xfUFJJVkFURV9FTkNSWVBULg0KPiA+DQo+ID4gdjI6IENo
+YW5nZSBpZmRlZiBjb25kaXRpb24gZm9yIFJTQV9GX1JTQV9PU1NMX1BSSVZBVEVfRU5DUllQVC4N
+Cj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IE1heCBGaWxsaW5nZXIgPG1heGltaWxpYW4uZmlsbGlu
+Z2VyQC4uLjI1MDcuLi4+DQo+ID4gLS0tDQo+ID4gICBzcmMvb3BlbnZwbi9vcGVuc3NsX2NvbXBh
+dC5oIHwgOCArKysrKy0tLQ0KPiA+ICAgMSBmaWxlIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKSwg
+MyBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9vcGVuc3Ns
+X2NvbXBhdC5oDQo+IGIvc3JjL29wZW52cG4vb3BlbnNzbF9jb21wYXQuaA0KPiA+IGluZGV4IGIz
+ZWU5NGYxLi5jNzhkMjIyOSAxMDA2NDQNCj4gPiAtLS0gYS9zcmMvb3BlbnZwbi9vcGVuc3NsX2Nv
+bXBhdC5oDQo+ID4gKysrIGIvc3JjL29wZW52cG4vb3BlbnNzbF9jb21wYXQuaA0KPiA+IEBAIC01
+MSw4ICs1MSw4IEBADQo+ID4gICAjZGVmaW5lIFNTTF9DVFhfc2V0MV9ncm91cHMgU1NMX0NUWF9z
+ZXQxX2N1cnZlcw0KPiA+ICAgI2VuZGlmDQo+ID4NCj4gPiAtLyogRnVuY3Rpb25hbGl0eSBtaXNz
+aW5nIGluIExpYnJlU1NMIGFuZCBPcGVuU1NMIDEuMC4yICovDQo+ID4gLSNpZiAoT1BFTlNTTF9W
+RVJTSU9OX05VTUJFUiA8IDB4MTAxMDAwMDBMIHx8DQo+IGRlZmluZWQoTElCUkVTU0xfVkVSU0lP
+Tl9OVU1CRVIpKSAmJiAhZGVmaW5lZChFTkFCTEVfQ1JZUFRPX1dPTEZTU0wpDQo+ID4gKy8qIEZ1
+bmN0aW9uYWxpdHkgbWlzc2luZyBpbiBMaWJyZVNTTCBiZWZvcmUgMy41IGFuZCBPcGVuU1NMIDEu
+MC4yICovDQo+ID4gKyNpZiAoT1BFTlNTTF9WRVJTSU9OX05VTUJFUiA8IDB4MTAxMDAwMDBMIHx8
+DQo+IChkZWZpbmVkKExJQlJFU1NMX1ZFUlNJT05fTlVNQkVSKSAmJiBMSUJSRVNTTF9WRVJTSU9O
+X05VTUJFUiA8DQo+IDB4MzA1MDAwMGZMKSkgJiYgIWRlZmluZWQoRU5BQkxFX0NSWVBUT19XT0xG
+U1NMKQ0KPiA+ICAgLyoqDQo+ID4gICAgKiBEZXN0cm95IGEgWDUwOSBvYmplY3QNCj4gPiAgICAq
+DQo+ID4gQEAgLTY4LDExICs2OCwxMyBAQCBYNTA5X09CSkVDVF9mcmVlKFg1MDlfT0JKRUNUICpv
+YmopDQo+ID4gICAgICAgfQ0KPiA+ICAgfQ0KPiA+DQo+ID4gLSNkZWZpbmUgUlNBX0ZfUlNBX09T
+U0xfUFJJVkFURV9FTkNSWVBUDQo+IFJTQV9GX1JTQV9FQVlfUFJJVkFURV9FTkNSWVBUDQo+ID4g
+ICAjZGVmaW5lIEVWUF9DVFJMX0FFQURfU0VUX1RBRyAgICAgICAgICAgICAgICBFVlBfQ1RSTF9H
+Q01fU0VUX1RBRw0KPiA+ICAgI2RlZmluZSBFVlBfQ1RSTF9BRUFEX0dFVF9UQUcgICAgICAgICAg
+ICAgICAgRVZQX0NUUkxfR0NNX0dFVF9UQUcNCj4gPiAgICNlbmRpZg0KPiA+DQo+ID4gKyNpZiBP
+UEVOU1NMX1ZFUlNJT05fTlVNQkVSIDwgMHgxMDEwMDAwMEwgfHwNCj4gZGVmaW5lZChMSUJSRVNT
+TF9WRVJTSU9OX05VTUJFUikNCj4gPiArI2RlZmluZSBSU0FfRl9SU0FfT1NTTF9QUklWQVRFX0VO
+Q1JZUFQNCj4gUlNBX0ZfUlNBX0VBWV9QUklWQVRFX0VOQ1JZUFQNCj4gPiArI2VuZGlmDQo+ID4N
+Cj4gDQo+IFRoZSBwYXRjaCBiYXNpY2FsbHkgcmVtb3ZlcyB0aGUgIWRlZmluZWQoRU5BQkxFX0NS
+WVBUT19XT0xGU1NMKSBmcm9tDQo+IHRoaXMgcGFydCBvZiB0aGUgaWZkZWYgYW5kIHRoYXQgYnJl
+YWtzIHdvbGZTU0wuIFdoaWxlIEkgZG9uJ3QgdGhpbmsgd2UNCj4gc2hvdWxkIG11Y2ggZWZmb3J0
+IGludG8gd29sZlNTTCwgd2Ugc2hvdWxkIGFsc28gbm90IGJyZWFrIGl0IG9uIHB1cnBvc2UuDQo+
+IA0KPiBBcm5lDQoNCllvdSB0b2xkIG1lIHRvIGlnbm9yZSBpdCBpbiBJUkMuIEJ1dCBzdXJlLCBJ
+IGNhbiBtYWtlIGEgdjMuDQo=
