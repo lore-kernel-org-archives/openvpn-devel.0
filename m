@@ -1,12 +1,10 @@
-From: Heiko Hund <heiko@...2662...>
-Date: Fri, 19 Aug 2022 10:55:36 +0200
-Message-ID: <20763615.n4MWhAHuyg@...2664...>
-In-Reply-To: <Yv504aAMxqguVLNP@...1296...>
-References: <20220520213250.3126372-1-arne@...1227...>
- <1970912.abQj5cvHqE@...2664...> <Yv504aAMxqguVLNP@...1296...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v2 2/4] Cleanup receive_auth_failed and
- simplify method
+Date: Fri, 19 Aug 2022 11:07:00 +0200 (CEST)
+Message-Id: <202208190907.27J9709J087381@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220819065250.222590-1-a@...2181...>
+References: <20220819065250.222590-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco-win: check for incompatible
+ options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,21 +14,40 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Donnerstag, 18. August 2022 19:20:33 CEST Gert Doering wrote:
-> On Thu, Aug 18, 2022 at 04:39:07PM +0200, Heiko Hund wrote:
-> > On Freitag, 20. Mai 2022 23:32:48 CEST Arne Schwabe wrote:
-> > > Patch V2: remove uncessary ifdef/endif and unnecassary block
-> > 
-> > Acked-by: Heiko Hund <heiko@...2662...>
-> 
-> Thanks for the extra ACK :-) - this got already merged as
-> 
-> commit 88823adebac31958cee83572241cff9fc775a601
+Acked-by: Gert Doering <gert@...1296...>
 
-Hm, was still showing in patchwork.
+"This one is better" :-)
 
+Test built via GHA for MSVC, tested on Linux non-DCO / DCO client and 
+DCO server.  This time, neither "non DCO" nor "DCO build" exhibited 
+any surprises (as expected).
+
+Not tested actual Windows build, but the checks match the commit
+message (and the discussions on what works and what doesn't).
+
+Your patch has been applied to the master branch.
+
+commit 8c3b7c11d1212a6521e84a1d423abe75b974741e
+Author: Antonio Quartulli
+Date:   Fri Aug 19 08:52:50 2022 +0200
+
+     dco-win: check for incompatible options
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220819065250.222590-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25014.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
