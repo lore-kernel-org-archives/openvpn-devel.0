@@ -1,17 +1,15 @@
-Date: Fri, 19 Aug 2022 12:18:06 +0200
+Date: Fri, 19 Aug 2022 12:56:44 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <Yv9jXk9r5Zc9ut5c@...1296...>
-References: <20220818201505.656149-1-frank@...2641...>
- <20220818201505.656149-2-frank@...2641...>
- <6e140f92-f71f-35e8-cd3b-914949ef24b5@...2181...>
- <52da546c-3890-c073-aea7-a620db92520d@...1227...>
+Message-ID: <Yv9sbNTaD21mSsDC@...1296...>
+References: <20220813204224.22576-1-a@...2181...>
+ <20220813204224.22576-5-a@...2181...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="31R/3dkhd58VM5Ey"
+ protocol="application/pgp-signature"; boundary="hPxagKUkQJowYEOw"
 Content-Disposition: inline
-In-Reply-To: <52da546c-3890-c073-aea7-a620db92520d@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] uncrustify: remove newlines after
- return type of function prototype
+In-Reply-To: <20220813204224.22576-5-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v101 5/7] dco-win: update GH Actions
+ config file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,68 +18,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Antonio Quartulli <a@...2181...>, Frank Lichtenheld <frank@...2641...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
 
---31R/3dkhd58VM5Ey
+--hPxagKUkQJowYEOw
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Aug 19, 2022 at 11:50:04AM +0200, Arne Schwabe wrote:
-> Am 18.08.22 um 22:43 schrieb Antonio Quartulli:
-> > yes! This is what we need!
-> >=20
-> > Acked-by: Antonio Quartulli <a@...2181...>
->=20
-> I am out of the loop here. Could you two explain why we need this? I.e.=20
-> what is wrong with the current style is and what the plan is to change?
->=20
-> If often struggle to properly format function with the soft limit of 80=20
-> without being allowed to put the return type on a separate line. So I am=
-=20
-> not sure what the improvement of this change is.
+On Sat, Aug 13, 2022 at 10:42:22PM +0200, Antonio Quartulli wrote:
+> Signed-off-by: Lev Stipakov <lev@...515...>
+> Signed-off-by: Antonio Quartulli <a@...2181...>
+> ---
+>  .github/workflows/build.yaml | 7 +------
+>  1 file changed, 1 insertion(+), 6 deletions(-)
 
-This is the conclusion that I arrived to as well, when reviewing the
-changes in 1/2.  Forcing the prototype on the return type while at
-the same time permitting enums, structs, etc., will cause cases like
+I do not understand this commit.  Not at all.
 
-enum some_special_type special_function_with_descriptive_name(int arg1,
-                                                              char * arg2);
+It seems to take an existing setup that builds an installer *with* DCO,
+and remove the DCO bits?
 
-which is definitely less readable than=20
+> @@ -59,11 +59,6 @@ jobs:
+>      steps:
+>        - name: Install dependencies
+>          run: sudo apt update && sudo apt install -y mingw-w64 libtool au=
+tomake autoconf man2html unzip
+> -      - name: Checkout ovpn-dco-win
+> -        uses: actions/checkout@...2620...
+> -        with:
+> -          repository: OpenVPN/ovpn-dco-win
+> -          path: ovpn-dco-win
 
-enum some_special_type=20
-special_function_with_descriptive_name(int arg1, char * arg2);
-
-or maybe
-
-enum some_special_type=20
-  special_function_with_descriptive_name(int arg1, char * arg2);
+... so maybe we can have a better commit message that explains this?
 
 
-Now, for other cases,
+> @@ -151,7 +146,7 @@ jobs:
+>          run: cp ./tap-windows-${TAP_WINDOWS_VERSION}/include/tap-windows=
+.h ${HOME}/mingw/opt/include/
+>=20=20
+>        - name: configure OpenVPN
+> -        run: PKG_CONFIG_PATH=3D${HOME}/mingw/opt/lib/pkgconfig DCO_SOURC=
+EDIR=3D$(realpath ../ovpn-dco-win) LDFLAGS=3D-L$HOME/mingw/opt/lib CFLAGS=
+=3D-I$HOME/mingw/opt/include OPENSSL_LIBS=3D"-L${HOME}/opt/lib -lssl -lcryp=
+to" OPENSSL_CFLAGS=3D-I$HOME/mingw/opt/include PREFIX=3D$HOME/mingw/opt LZO=
+_CFLAGS=3D-I$HOME/mingw/opt/include LZO_LIBS=3D"-L${HOME}/mingw/opt/lib -ll=
+zo2" ./configure  --host=3D${CHOST} --disable-lz4 --enable-dco
+> +        run: PKG_CONFIG_PATH=3D${HOME}/mingw/opt/lib/pkgconfig LDFLAGS=
+=3D-L$HOME/mingw/opt/lib CFLAGS=3D-I$HOME/mingw/opt/include OPENSSL_LIBS=3D=
+"-L${HOME}/opt/lib -lssl -lcrypto" OPENSSL_CFLAGS=3D-I$HOME/mingw/opt/inclu=
+de PREFIX=3D$HOME/mingw/opt LZO_CFLAGS=3D-I$HOME/mingw/opt/include LZO_LIBS=
+=3D"-L${HOME}/mingw/opt/lib -llzo2" ./configure  --host=3D${CHOST} --disabl=
+e-lz4
+>          working-directory: openvpn
 
-int
-somefunc(void);
-
-I find the other style
-
-int somefunc(void);
-
-much easier to grok ("have a single look and see what this is about").
-
-
-... so, my suggestion is that we permit both styles for function prototypes,
-based on overall type + function name + parameter length.
-
-It would be cool if uncrustify had a magic flag for that, like "if=20
-return type + function name is < 40 characters, put on a single line,
-and if over, split" :-)
-
-Am I making sense?
+This, I think, is clear - "--enable-dco is default for windows builds",
+and maybe also "no DCO_SOURCEDIR neccesary anymore, since ovpn_dco_win.h
+is now part of our tree", right?
 
 gert
 --=20
@@ -94,22 +88,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---31R/3dkhd58VM5Ey
+--hPxagKUkQJowYEOw
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJi/2NeAAoJEB2Cnv7KVigSVKcL/1GsW1QoMKRV80sSCPikqZ0A
-o8UsafHIkgfAZ1sTOgMZo2F4Ugvd65HoEZ6c3yx5cRIWyahKf8y4UCdQg6YxNV+a
-Xoit0LdyWJcfyxzvbOyapwmtsJm74O22msU/ewJqSYLx8cPlBG7MeWtaOONsvkqZ
-K1+XlCPB4Wo4Yvyen3vnB5rw7FAuHMgvw25WW4OQve7iRmZMjJ6PQHc3WVS2PO+e
-jlw+o2RhxrA6FVrxcqj5ArBfcnBQHNVa8mWi1deLyubG5n5XqVt3olpn4R06ghNK
-UiXiTgKVsJs6tdX1+r3oRhhKUCK4k2jJJn2OTMg7Gq+2jxo/WmfHgmV91jjv0lJT
-xP/vMAWlLulwR3p3UJdxIDQk5Cgp73fK8TCZdmx2k+j7Ir20e8BNJ8vQfTnFFlzV
-DFboA0ODUuWtoH0TtOvb/eyWJejlYska7vKXBDH6L+UQXIZXy0ALaA1rWTdii3Ku
-t2IWY3tKy4KBYkVg8AQ3NKXYUNbbKTydjPFZHFpCow==
-=7mHu
+iQGcBAEBAgAGBQJi/2xsAAoJEB2Cnv7KVigSuF8L/iC60gDcNRSPSlauF3aTKhec
+B/JhRf2qVaVHInLVN6mewyJD1cuDpiA9yxzPirnucSy5FFM6cLz+kouuPslB/EvP
+mS2C9+jp8qrWhVJ28s7w4G8rzJ/IRrPlzKJTs0Psr8v6aZCQ1Ed75f5G5YNACkT9
+EoGaskSYBb/C0v+feJyE4pbPrKzUaKUhO82TkIbOLfiU31dBk3XYVh7Q5S+OhB7c
+go/2uhh4PPHr5JJTM2Lv8oGCHmue11D9sJhA2lKK1B/fbbCBM/116XUGrQbNFXKK
+dRITWEQG66QvxPn7LOobJqdEVDL2E6hvPDsjgU+b3xjkR7ac6CGeVeJLNcQ+UPp/
+MCC56LIEkC8mG2um88/um+L0pNFRlNnXaH3+naM9jw7/xogdlhH40B07ptFYesr6
+yekCy3sHZGLm6mefNWBuNwGOzXK21RFeH+aik+KxJDSTPFysHnO46DtdN4JQKqy8
+8yiL88ha+31hl69l4sO29RkrcZOOIunBpRf3+i4zuw==
+=Z9Kx
 -----END PGP SIGNATURE-----
 
---31R/3dkhd58VM5Ey--
+--hPxagKUkQJowYEOw--
 
