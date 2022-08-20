@@ -1,10 +1,10 @@
-Date: Sat, 20 Aug 2022 11:20:27 +0200 (CEST)
-Message-Id: <202208200920.27K9KRvo009688@...2054...>
+Date: Sat, 20 Aug 2022 11:29:55 +0200 (CEST)
+Message-Id: <202208200929.27K9Tt1M009928@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220819182439.71531-1-gert@...1296...>
-References: <20220819182439.71531-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: FreeBSD-DCO: repair device
- iteration to find first free interface.
+In-Reply-To: <20220820084719.243-1-lstipakov@...277...>
+References: <20220820084719.243-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco-win: use run-time dynamic
+ linking for GetOverlappedResultEx
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-To avoid any fat fingers on my side, I've merged this and then subjected
-the resulting branch to a round of FreeBSD DCO server tests, which all
-behaved quite nicely :-)  (iroute missing, because not merged yet, but
-the rest works - TCP [no DCO], UDP [DCO, if topology subnet], etc)
+Acked-by: Gert Doering <gert@...1296...>
 
-Aug 20 11:18:59 fbsd14 tun-udp-p2mp[79256]: GLOBAL_STATS,dco_enabled,1
-Aug 20 11:18:59 fbsd14 tun-udp-p2mp-topology-subnet[79278]: GLOBAL_STATS,dco_enabled,1
+I have *not* tested this, but we've discussed the patch on IRC, and the
+code matches what we want to achieve.  We've had GetProcAddress() dynamic
+resolution in the code before (some IPv6 vs XP/Vista stuff, IIRC) and
+this all looks reasonable.  GHA claims it compiles, and Lev said he has
+tested on Win7+Win10.
 
-Patch has been applied to the master branch.
+(The intention is "have one single openvpn.exe binary for Win7 + Win10/11,
+which will do non-dco stuff on Win7 - no driver - and DCO stuff on 
+Win10/11" - much simpler than having to build extra Win7 installers, and
+we still want to support Win7 "unless it's getting too costly")
 
-commit efebdfe2de8dd5125fb42d646d03a958b7dc3eea
-Author: Gert Doering
-Date:   Fri Aug 19 20:24:39 2022 +0200
+Your patch has been applied to the master branch.
 
-     FreeBSD-DCO: repair device iteration to find first free interface.
+commit 2f8053f9a97584b759d11d05a668d38653508617
+Author: Lev Stipakov
+Date:   Sat Aug 20 11:47:19 2022 +0300
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Kristof Provost <kprovost@...2661...>
-     Message-Id: <20220819182439.71531-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25034.html
+     dco-win: use run-time dynamic linking for GetOverlappedResultEx
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220820084719.243-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25038.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
