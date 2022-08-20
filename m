@@ -1,13 +1,14 @@
-Date: Sat, 20 Aug 2022 23:02:46 +0200
+Date: Sat, 20 Aug 2022 23:07:00 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <YwFL9rEyCr+RfaaV@...1296...>
+Message-ID: <YwFM9NwntsRr5+F/@greenie.muc.de>
 References: <20220810153006.18860-1-maximilian.fillinger@...2507...>
  <202208191704.27JH4qSZ095097@...2054...>
+ <YwFL9rEyCr+RfaaV@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="FcgQBLzIYRJlNGQ1"
+ protocol="application/pgp-signature"; boundary="LpeQ1tZz3we3L5JI"
 Content-Disposition: inline
-In-Reply-To: <202208191704.27JH4qSZ095097@...2054...>
+In-Reply-To: <YwFL9rEyCr+RfaaV@...1296...>
 Subject: Re: [Openvpn-devel] Followup work on "Don't undo ifconfig on exit
  if it wasn't done"
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,45 +21,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---FcgQBLzIYRJlNGQ1
+--LpeQ1tZz3we3L5JI
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-Hi,
+HI,
 
-On Fri, Aug 19, 2022 at 07:04:52PM +0200, Gert Doering wrote:
-> The change is as we have discussed, and I still think it's a good and
-> clean way forward.  The "undo_ifconfig_ipv4() / _ipv6()" functions
-> are as they have been before (except that they now get compiled for
-> all platforms except WIN32 - the "linux only" part was a 2.5.0 oversight),
-> and the calls moved 1:1 from (TARGET_LINUX) close_tun() to a new
-> undo_ifconfig() function.  tun.c is still a mess, but this helps a bit.
+On Sat, Aug 20, 2022 at 11:02:46PM +0200, Gert Doering wrote:
+> I did lots of testing on FreeBSD today, and it turns out that the
+> generic "undo" code is just a mess and clutters the log with garbage...
+>=20
+> 2022-08-20 22:58:02 /sbin/ifconfig tun4 0.0.0.0
+> ifconfig: ioctl (SIOCAIFADDR): Destination address required
 
-I did lots of testing on FreeBSD today, and it turns out that the
-generic "undo" code is just a mess and clutters the log with garbage...
+... interesting enough, on *tap* interfaces, OpenVPN can do that...
 
-2022-08-20 22:58:02 /sbin/ifconfig tun4 0.0.0.0
-ifconfig: ioctl (SIOCAIFADDR): Destination address required
-2022-08-20 22:58:02 Generic ip addr del failed: external program exited wit=
-h error status: 1
-2022-08-20 22:58:02 /sbin/ifconfig tun4 del fd00:abcd:194:2::103d/64
-ifconfig: del: bad value
-2022-08-20 22:58:02 Generic ip -6 addr del failed: external program exited =
-with error status: 1
+2022-08-20 23:05:34 /sbin/ifconfig tap0 0.0.0.0
+ifconfig: WARNING: setting interface address without mask is deprecated,
+default mask may not be correct.
 
-... not Max' fault, but I wonder if this ever did something useful...
+... but the kernel logs a warning...
 
-(I'm fairly sure "set ipv4 address to 0.0.0.0" was a valid way to undo
-IPv4 ifconfig, but I do not think "del" was ever a valid ifconfig IPv6
-syntax on *BSD)
+Aug 20 23:05:34 fbsd14 kernel: tap0: set address: WARNING: network mask sho=
+uld be specified; using historical default
 
-So - this needs fixing, and platform-by-platform testing...
-
-Technically, for most cases this won't be actually needed - if the
-tun/tap interface is destroyed at program end ("ifconfig tun4 destroy"),
-the IPv4/IPv6 config is gone anyway.   Only for persistant interfaces
-it makes a difference.
+*shake head*
 
 gert
 
@@ -72,22 +60,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---FcgQBLzIYRJlNGQ1
+--LpeQ1tZz3we3L5JI
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJjAUv2AAoJEB2Cnv7KVigSii8MAJbq8Z5tcErkM4NKpNbK7pkE
-PmtKlsBzijG61SVeTB0s587imUwIFNZRmDg9eQ4vIYuoZeZe/UqcAILCC05obCza
-Tq30vdW9sOg5mhgroPtdr0kxS9TMt6vU7ZrTotbWUkhg8wHbnNRcxTevorJXJwQz
-l9UHzjHgeO7PCxQbJeWtiIZgXikBAzXMpT/jNWPvvPX9XLMXqTTAUV+mCWwjF5Cg
-ANutU9lwDjkjdmvIILZasNR2ErFr4++y9W6ovQuFwDBWE0mmMYxBJzAR8oo7ww/m
-f3wQXXP3x2ZsxtUjzgcINGxYZmGne3JRhbVAYM8Sya8goB6XaysQOCw0PbhAxtoz
-l9CK9UZ0f0g7t/ZJxchvtckbeJkAeYIt9S43aSWfH0Nu8EEEW6eU42fdEc7wATIU
-7ML7ZCS/vmYpuleWYtqd9IQsgamvLNsp8GZE8596YabRYlqJaOiSsGmwbKRFoZNQ
-i0B9EZeypBqZ7oybtU95udhF3x6LFhO+jffATVexwQ==
-=0GHM
+iQGcBAEBAgAGBQJjAUzzAAoJEB2Cnv7KVigSwZwL/j5fpnftdPa8ohUDzqjOjBvy
+TMN2Kl69WfX0UA9yGlKfoeNEzOoSKUMcoXZmcVY9Lmcf38rfTxHdTHi4N6Tfa46d
+LpxWeShs/6jW3Ng2mO3CKEZnUnIWQx24C/MHSGJ5vAzgamE61UzuayXlu0iHjVyJ
+p8a0s9SUr+I/JIFiDccAXCiy7YQDPe9anSU8sVuD6zAtYYSYcMSvl2JgaJHHMw8z
+ZbC+qMKaml5qefneYAuBlixLKwg6r726y8XaiZgdd2AE//zYxBk7vJ2JkRGTCjib
+2w9Vg5K4+q1GQRySG3mHxsXphf0CbPAa9TXTEF1IoAMugukW7Rw6u662WL0l+gTo
+GdQJaaBfstD1qeL7i+z8wNvnCIj/GVv+iFv9NEc/LxYWIqGsTszFjHgg66HZX9Zv
+8enNOrANSxlYlNtLz7ep7/HRR9ohXS79r9xEIAMi+tnTIgTHQXHT8uAup64ZU9cp
+2SaUDevtSnTgQ4XIuu3g5D2WTCAOJJSdWy28nrHchQ==
+=5VrH
 -----END PGP SIGNATURE-----
 
---FcgQBLzIYRJlNGQ1--
+--LpeQ1tZz3we3L5JI--
 
