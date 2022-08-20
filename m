@@ -1,14 +1,11 @@
-Message-ID: <dc9cefd6-3785-4344-a7ef-7949f98cde6f@...1227...>
-Date: Fri, 19 Aug 2022 22:31:54 +0200
+From: Kristof Provost <kprovost@...2661...>
+Date: Sat, 20 Aug 2022 10:27:49 +0200
+Message-ID: <1BF1FEB3-A217-407F-94F3-EA44D4C1A6A5@...2661...>
+In-Reply-To: <20220819182439.71531-1-gert@...1296...>
+References: <20220819182439.71531-1-gert@...1296...>
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <20220811171120.59361-1-maximilian.fillinger@...2507...>
- <2ec56ba7-4628-eafc-1ccd-bc8b5c2a164d@...1227...>
- <95a456920c2e4ca1b5400850dd210ea6@...2507...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <95a456920c2e4ca1b5400850dd210ea6@...2507...>
-Subject: Re: [Openvpn-devel] [PATCH v2 1/2] Update openssl_compat.h for
- newer LibreSSL
+Subject: Re: [Openvpn-devel] [PATCH] FreeBSD-DCO: repair device iteration to
+ find first free interface.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,20 +14,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Maximilian Fillinger <maximilian.fillinger@...2507...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
+Acked-by: Kristof Provost <kprovost@...2661...>
 
->> The patch basically removes the !defined(ENABLE_CRYPTO_WOLFSSL) from
->> this part of the ifdef and that breaks wolfSSL. While I don't think we
->> should much effort into wolfSSL, we should also not break it on purpose.
->>
->> Arne
-> 
-> You told me to ignore it in IRC. But sure, I can make a v3.
+Thanks!
 
-Ignore but not break on purpose :)
+Kristof
 
-Arne
+On 19 Aug 2022, at 20:24, Gert Doering wrote:
+> During review/update phase, FreeBSD/DCO's ability to find the first
+> free tun interface on "--dev tun" got broken, due to two issues:
+>
+>  - create_interface() called msg(M_ERR|...), which is a fatal error
+>    and aborts OpenVPN, so "no retry with 'tun1' after 'tun0' failed"
+>
+>    Change to M_WARN|M_ERRNO (= warning level, add strerror(errno), return).
+>
+>  - open_tun_dco_generic() expects "-errno" as return value of
+>    open_tun_dco(), and breaks the loop on -EPERM.  create_interface()
+>    was returning "-1" instead (ioctl() error signalling), which happens
+>    to be "-EPERM" on FreeBSD.
+>
+>    Change create_interface() to return -errno.
+>
+> While at it, remove logging of errors from dco_freebsd.c::open_tun_dco()
+> (because all errors from create_interface() would be already logged there),
+> reducing open_tun_dco() to just a wrapper around create_interface().
+>
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  src/openvpn/dco_freebsd.c | 17 +++++------------
+>  1 file changed, 5 insertions(+), 12 deletions(-)
+>
+> diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+> index 06b4d6a9..c6da6ce3 100644
+> --- a/src/openvpn/dco_freebsd.c
+> +++ b/src/openvpn/dco_freebsd.c
+> @@ -178,7 +178,8 @@ create_interface(struct tuntap *tt, const char *dev)
+>      ret = ioctl(tt->dco.fd, SIOCIFCREATE2, &ifr);
+>      if (ret)
+>      {
+> -        msg(M_ERR | M_ERRNO, "Failed to create interface %s", ifr.ifr_name);
+> +        ret = -errno;
+> +        msg(M_WARN|M_ERRNO, "Failed to create interface %s (SIOCIFCREATE2)", ifr.ifr_name);
+>          return ret;
+>      }
+>
+> @@ -194,9 +195,10 @@ create_interface(struct tuntap *tt, const char *dev)
+>      ret = ioctl(tt->dco.fd, SIOCSIFNAME, &ifr);
+>      if (ret)
+>      {
+> +        ret = -errno;
+>          /* Delete the created interface again. */
+>          (void)ioctl(tt->dco.fd, SIOCIFDESTROY, &ifr);
+> -        msg(M_ERR | M_ERRNO, "Failed to create interface %s", ifr.ifr_data);
+> +        msg(M_WARN|M_ERRNO, "Failed to create interface %s (SIOCSIFNAME)", ifr.ifr_data);
+>          return ret;
+>      }
+>
+> @@ -229,16 +231,7 @@ remove_interface(struct tuntap *tt)
+>  int
+>  open_tun_dco(struct tuntap *tt, openvpn_net_ctx_t *ctx, const char *dev)
+>  {
+> -    int ret;
+> -
+> -    ret = create_interface(tt, dev);
+> -
+> -    if (ret < 0)
+> -    {
+> -        msg(M_ERR, "Failed to create interface");
+> -    }
+> -
+> -    return ret;
+> +    return create_interface(tt, dev);
+>  }
+>
+>  void
+> -- 
+> 2.37.1
 
