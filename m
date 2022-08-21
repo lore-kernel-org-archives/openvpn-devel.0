@@ -1,16 +1,13 @@
-Date: Sat, 20 Aug 2022 23:07:00 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <YwFM9NwntsRr5+F/@greenie.muc.de>
-References: <20220810153006.18860-1-maximilian.fillinger@...2507...>
- <202208191704.27JH4qSZ095097@...2054...>
- <YwFL9rEyCr+RfaaV@...1296...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="LpeQ1tZz3we3L5JI"
-Content-Disposition: inline
-In-Reply-To: <YwFL9rEyCr+RfaaV@...1296...>
-Subject: Re: [Openvpn-devel] Followup work on "Don't undo ifconfig on exit
- if it wasn't done"
+References: <Yv9fczYCUEM3i6V4@...1296...>
+ <20220819193005.210-1-lstipakov@...277...>
+ <YwEGlqATPpa7ATpb@...1296...>
+In-Reply-To: <YwEGlqATPpa7ATpb@...1296...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Sun, 21 Aug 2022 09:16:59 +0300
+Message-ID: <CAGyAFMUX9suAfWWsDanhk=ZYbQW2tY8hmpbj3sbsCJf0_qU+tQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v102 3/7] dco-win: implement ovpn-dco
+ support in P2P Windows code path
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,63 +16,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>, Selva <selva.nair@...277...>, Simon Rozman <simon@...2293...>, =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Antonio Quartulli <a@...2181...>
 
---LpeQ1tZz3we3L5JI
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+(adding Selva, Simon and Samuli just in case :)
 
-HI,
+If anyone could / want to test it - MSI installers could be found here:
 
-On Sat, Aug 20, 2022 at 11:02:46PM +0200, Gert Doering wrote:
-> I did lots of testing on FreeBSD today, and it turns out that the
-> generic "undo" code is just a mess and clutters the log with garbage...
->=20
-> 2022-08-20 22:58:02 /sbin/ifconfig tun4 0.0.0.0
-> ifconfig: ioctl (SIOCAIFADDR): Destination address required
+  https://github.com/lstipakov/openvpn-build/actions/runs/2894560760
 
-... interesting enough, on *tap* interfaces, OpenVPN can do that...
+To enable dco driver, add
 
-2022-08-20 23:05:34 /sbin/ifconfig tap0 0.0.0.0
-ifconfig: WARNING: setting interface address without mask is deprecated,
-default mask may not be correct.
+  --windows-driver ovpn-dco-win
 
-... but the kernel logs a warning...
+I myself tested it on my Windows 10 laptop (udp / tcp), will check
+today later on the Windows Server 2022 VM and my son's Windows 11 PC.
 
-Aug 20 23:05:34 fbsd14 kernel: tap0: set address: WARNING: network mask sho=
-uld be specified; using historical default
+But since I contributed to the client code and the driver, it would be
+great to get confirmation from someone else :)
 
-*shake head*
+I'll also try to get some QA resources from the corp side on Monday.
 
-gert
+la 20. elok. 2022 klo 19.06 Gert Doering (gert@...1296...) kirjoitti:
+>
+> Hi,
+>
+> On Fri, Aug 19, 2022 at 10:30:05PM +0300, Lev Stipakov wrote:
+> > From: Antonio Quartulli <a@...2181...>
+> >
+> > With this change it is possible to use ovpn-dco-win when running OpenVPN
+> > in client or P2P mode.
+> >
+> > Signed-off-by: Arne Schwabe <arne@...1227...>
+> > Signed-off-by: Lev Stipakov <lev@...515...>
+> > Signed-off-by: Antonio Quartulli <a@...2181...>
+>
+> I am fine with the code changes, and I have tested this on FreeBSD
+> and Linux with/without DCO (full set takes like ~2 hours now) - so
+> what worked before still works.
+>
+>
+> I am *not* going to merge this "just based on this", because I want to
+> be sure it actually works on Win10/Win111 with dco... can I get a
+> tester?  Richard refuses to do Win10, so, no DCO for him... :-(
+>
+> (But I have confirmation that the resulting installers still work fine
+> for tun/tap and wintun on Win7, so that's at least reassuring :-) ).
+>
+> gert
+> --
+> "If was one thing all people took for granted, was conviction that if you
+>  feed honest figures into a computer, honest figures come out. Never doubted
+>  it myself till I met a computer with a sense of humor."
+>                              Robert A. Heinlein, The Moon is a Harsh Mistress
+>
+> Gert Doering - Munich, Germany                             gert@...1296...
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---LpeQ1tZz3we3L5JI
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjAUzzAAoJEB2Cnv7KVigSwZwL/j5fpnftdPa8ohUDzqjOjBvy
-TMN2Kl69WfX0UA9yGlKfoeNEzOoSKUMcoXZmcVY9Lmcf38rfTxHdTHi4N6Tfa46d
-LpxWeShs/6jW3Ng2mO3CKEZnUnIWQx24C/MHSGJ5vAzgamE61UzuayXlu0iHjVyJ
-p8a0s9SUr+I/JIFiDccAXCiy7YQDPe9anSU8sVuD6zAtYYSYcMSvl2JgaJHHMw8z
-ZbC+qMKaml5qefneYAuBlixLKwg6r726y8XaiZgdd2AE//zYxBk7vJ2JkRGTCjib
-2w9Vg5K4+q1GQRySG3mHxsXphf0CbPAa9TXTEF1IoAMugukW7Rw6u662WL0l+gTo
-GdQJaaBfstD1qeL7i+z8wNvnCIj/GVv+iFv9NEc/LxYWIqGsTszFjHgg66HZX9Zv
-8enNOrANSxlYlNtLz7ep7/HRR9ohXS79r9xEIAMi+tnTIgTHQXHT8uAup64ZU9cp
-2SaUDevtSnTgQ4XIuu3g5D2WTCAOJJSdWy28nrHchQ==
-=5VrH
------END PGP SIGNATURE-----
-
---LpeQ1tZz3we3L5JI--
+-- 
+-Lev
 
