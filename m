@@ -1,8 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 22 Aug 2022 20:41:46 +0200
-Message-Id: <20220822184147.281142-1-arne@...1227...>
+Date: Mon, 22 Aug 2022 20:41:47 +0200
+Message-Id: <20220822184147.281142-2-arne@...1227...>
+In-Reply-To: <20220822184147.281142-1-arne@...1227...>
+References: <20220822184147.281142-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/2] Github Actions: Add libreSSL actions
+Subject: [Openvpn-devel] [PATCH 2/2] Include libressl and macOS 12 to macOS
+ github actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,84 +18,68 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Also we don't officially support it, it is nice to know when we break it.
-
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- .github/workflows/build.yaml | 63 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 63 insertions(+)
+ .github/workflows/build.yaml | 24 +++++++++++++++++-------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
 diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index f42469af6..dfa3953f0 100644
+index dfa3953f0..6c2c3ef3e 100644
 --- a/.github/workflows/build.yaml
 +++ b/.github/workflows/build.yaml
-@@ -366,3 +366,66 @@ jobs:
-         token: ${{ secrets.OPENVPN_BUILD_REPO_DISPATCH }}
-         repository: openvpn/openvpn-build
-         event-type: openvpn-commit
-+
-+  libressl:
-+    strategy:
-+      fail-fast: false
-+      matrix:
-+        os: [ubuntu-22.04]
-+        ssllib: [libressl]
-+        build: [ normal, asan ]
-+        configureflags: ["--with-openssl-engine=no"]
-+        include:
-+          - build: asan
-+            cflags: "-fsanitize=address -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
-+            ldflags: -fsanitize=address
-+            cc: clang
-+          - build: normal
-+            cflags: "-O2 -g"
-+            ldflags: ""
-+            cc: gcc
-+
-+    name: "${{matrix.cc}} ${{matrix.build}} - ${{matrix.os}} - ${{matrix.ssllib}}"
+@@ -261,12 +261,12 @@ jobs:
+         run: make check
+ 
+   macos:
+-    runs-on: macos-latest
+     strategy:
+       fail-fast: false
+       matrix:
+-        ossl: [ 1.1, 3 ]
++        ssllib: [ openssl11, openssl3, libressl]
+         build: [ normal, asan ]
++        os: [macos-11, macos-12]
+         include:
+           - build: asan
+             cflags: "-fsanitize=address -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
+@@ -277,22 +277,32 @@ jobs:
+             cflags: "-O2 -g"
+             ldflags: ""
+             configureflags: ""
++          - ssllib: openssl11
++            libdir: openssl@...2560...
++            configuressllib: ""
++          - ssllib: openssl3
++            libdir: openssl@...1554...
++            configuressllib: ""
++          - ssllib: libressl
++            libdir: libressl
++            configuressllib: "--with-openssl-engine=no"
+ 
+-    name: "macOS - OpenSSL ${{matrix.ossl}} - ${{matrix.build}}"
 +    runs-on: ${{matrix.os}}
-+    env:
-+      CFLAGS: ${{ matrix.cflags }}
-+      LDFLAGS: ${{ matrix.ldflags }}
-+      CC: ${{matrix.cc}}
-+
-+    steps:
-+      - name: Install dependencies
-+        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automake autoconf pkg-config libcap-ng-dev
-+      - name: "libressl: checkout"
-+        uses: actions/checkout@...2689...
-+        with:
-+          path: libressl
-+          repository: libressl-portable/portable
-+          ref: v3.5.3
-+      - name: "libressl: autogen.sh"
-+        run: ./autogen.sh
-+        working-directory: libressl
-+      - name: "libressl: autoconf"
-+        run: autoreconf -fvi
-+        working-directory: libressl
-+      - name: "libressl: configure"
-+        run: ./configure --enable-openvpn
-+        working-directory: libressl
-+      - name: "libressl: make all"
-+        run: make -j3
-+        working-directory: libressl
-+      - name: "libressl: make install"
-+        run: sudo make install
-+        working-directory: libressl
-+      - name: "ldconfig"
-+        run: sudo ldconfig
-+      - name: Checkout OpenVPN
-+        uses: actions/checkout@...2689...
-+      - name: autoconf
-+        run: autoreconf -fvi
-+      - name: configure
-+        run: ./configure --with-crypto-library=openssl ${{matrix.configureflags}}
-+      - name: make all
-+        run: make -j3
-+      - name: make check
-+        run: make check
-+
++    name: "${{matrix.os}} - ${{matrix.libdir}} - ${{matrix.build}}"
+     env:
+       CFLAGS: ${{ matrix.cflags }}
+       LDFLAGS: ${{ matrix.ldflags }}
+-      OPENSSL_CFLAGS: -I/usr/local/opt/openssl@${{matrix.ossl}}/include
+-      OPENSSL_LIBS: "-L/usr/local/opt/openssl@${{matrix.ossl}}/lib -lcrypto -lssl"
++      OPENSSL_CFLAGS: "-I/usr/local/opt/${{matrix.libdir}}/include"
++      OPENSSL_LIBS: "-L/usr/local/opt/${{matrix.libdir}}/lib -lcrypto -lssl"
+     steps:
+       - name: Install dependencies
+-        run: brew install openssl@...2560... openssl@...1554... lzo lz4 man2html cmocka libtool automake autoconf
++        run: brew install openssl@...2560... openssl@...1554... lzo lz4 man2html cmocka libtool automake autoconf libressl
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2689...
+       - name: autoconf
+         run: autoreconf -fvi
+       - name: configure
+-        run: ./configure ${{matrix.configureflags}}
++        run: ./configure ${{matrix.configureflags}} ${{matrix.configuressllib}}
+       - name: make all
+         run: make -j4
+       - name: make check
 -- 
 2.32.1 (Apple Git-133)
 
