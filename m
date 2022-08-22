@@ -1,10 +1,10 @@
-Date: Mon, 22 Aug 2022 20:48:11 +0200 (CEST)
-Message-Id: <202208221848.27MImBMO012920@...2054...>
+Date: Mon, 22 Aug 2022 21:16:39 +0200 (CEST)
+Message-Id: <202208221916.27MJGd7C013426@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220811120722.29168-2-maximilian.fillinger@...2507...>
-References: <20220811120722.29168-2-maximilian.fillinger@...2507...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Handle EVP_MD_CTX as an opaque
- struct
+In-Reply-To: <20220822184147.281142-1-arne@...1227...>
+References: <20220822184147.281142-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Github Actions: Add libreSSL
+ actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Max Fillinger <maximilian.fillinger@...2507...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Same as for the previous patch, I have not tested this on a recent-enough
-OpenBSD or OpenSSL 1.0.x (no time to build or find such a system) but I
-have tested on FreeBSD with 1.1.1l and 3.0.3 - both OpenSSL builds still
-work fine and pass client side tests.
+Acked-by: Gert Doering <gert@...1296...>
 
-Arne says this does not apply cleanly to 2.5, so if we want it there,
-please send a (tested :-) ) backport.
+Looks reasonable, and more test are always good.  Tested by pushing to
+my GH repo, and it builds all green today (no good starting with 
+"already broken" when nobody has much interest in working on it)
 
 Your patch has been applied to the master branch.
 
-commit 5a9d5dbf5c2d0fc979a05c84afd05689f2ad99b0
-Author: Max Fillinger
-Date:   Thu Aug 11 14:07:22 2022 +0200
+commit a79f8034cc6797e39615d35bc7c6f601eec2f6ae
+Author: Arne Schwabe
+Date:   Mon Aug 22 20:41:46 2022 +0200
 
-     Handle EVP_MD_CTX as an opaque struct
+     Github Actions: Add libreSSL actions
 
-     Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20220811120722.29168-2-maximilian.fillinger@...2507...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24873.html
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220822184147.281142-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25064.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
