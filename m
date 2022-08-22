@@ -1,8 +1,9 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Mon, 22 Aug 2022 16:18:06 +0200
-Message-Id: <20220822141806.39406-1-frank@...2641...>
+From: Max Fillinger <maximilian.fillinger@...2507...>
+Date: Mon, 22 Aug 2022 17:40:37 +0200
+Message-ID: <20220822154037.44320-1-maximilian.fillinger@...2507...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] t_client.sh: do not require fping6
+Subject: [Openvpn-devel] [Patch v2 1/2] Update openssl_compat.h for newer
+ LibreSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,64 +16,48 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-fping and fping6 were merged in version 4.0,
-released in 2017. Many recent distributions do
-not include the compatibility symlink anymore.
+LibreSSL has added some of the functions that are defined here. However,
+we still need RSA_F_RSA_OSSL_PRIVATE_ENCRYPT.
 
-So if we find fping but not fping6 do not error
-out but assume that fping is capable of IPv6.
+v2: Change ifdef condition for RSA_F_RSA_OSSL_PRIVATE_ENCRYPT.
+v3: Don't break WolfSSL.
 
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
 ---
- tests/t_client.sh.in | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ src/openvpn/openssl_compat.h | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
-index 465c3a33..76ac9b22 100755
---- a/tests/t_client.sh.in
-+++ b/tests/t_client.sh.in
-@@ -9,7 +9,7 @@
- # - writable current directory to create subdir for logs
- # - t_client.rc in current directory OR source dir that specifies tests
- # - for "ping4" checks: fping binary in $PATH
--# - for "ping6" checks: fping6 binary in $PATH
-+# - for "ping6" checks: fping (4.0+) or fping6 binary in $PATH
- #
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index b3ee94f1..9d89bd0a 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -51,8 +51,8 @@
+ #define SSL_CTX_set1_groups SSL_CTX_set1_curves
+ #endif
  
- # by changing this to 1 we can force automated builds to fail
-@@ -29,6 +29,8 @@ else
- fi
+-/* Functionality missing in LibreSSL and OpenSSL 1.0.2 */
+-#if (OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)) && !defined(ENABLE_CRYPTO_WOLFSSL)
++/* Functionality missing in LibreSSL before 3.5 and OpenSSL 1.0.2 */
++#if (OPENSSL_VERSION_NUMBER < 0x10100000L || (defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER < 0x3050000fL)) && !defined(ENABLE_CRYPTO_WOLFSSL)
+ /**
+  * Destroy a X509 object
+  *
+@@ -68,11 +68,13 @@ X509_OBJECT_free(X509_OBJECT *obj)
+     }
+ }
  
- # Check for external dependencies
-+FPING="fping"
-+FPING6="fping6"
- which fping > /dev/null
- if [ $? -ne 0 ]; then
-     echo "$0: fping is not available in \$PATH" >&2
-@@ -36,8 +38,9 @@ if [ $? -ne 0 ]; then
- fi
- which fping6 > /dev/null
- if [ $? -ne 0 ]; then
--    echo "$0: fping6 is not available in \$PATH" >&2
--    exit "${TCLIENT_SKIP_RC}"
-+    echo "$0: fping6 is not available in \$PATH, assuming fping 4.0 or later" >&2
-+    FPING="fping -4"
-+    FPING6="fping -6"
- fi
+-#define RSA_F_RSA_OSSL_PRIVATE_ENCRYPT       RSA_F_RSA_EAY_PRIVATE_ENCRYPT
+ #define EVP_CTRL_AEAD_SET_TAG                EVP_CTRL_GCM_SET_TAG
+ #define EVP_CTRL_AEAD_GET_TAG                EVP_CTRL_GCM_GET_TAG
+ #endif
  
- KILL_EXEC=`which kill`
-@@ -220,8 +223,8 @@ run_ping_tests()
-     if [ -z "$targetlist" ] ; then return ; fi
++#if (OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)) && !defined(ENABLE_CRYPTO_WOLFSSL)
++#define RSA_F_RSA_OSSL_PRIVATE_ENCRYPT       RSA_F_RSA_EAY_PRIVATE_ENCRYPT
++#endif
  
-     case $proto in
--	4) cmd=fping ;;
--	6) cmd=fping6 ;;
-+	4) cmd="$FPING" ;;
-+	6) cmd="$FPING6" ;;
- 	*) echo "internal error in run_ping_tests arg 1: '$proto'" >&2
- 	   exit 1 ;;
-     esac
+ /* Functionality missing in 1.0.2 */
+ #if OPENSSL_VERSION_NUMBER < 0x10100000L && !defined(ENABLE_CRYPTO_WOLFSSL)
 -- 
-2.34.1
+2.30.2
 
 
