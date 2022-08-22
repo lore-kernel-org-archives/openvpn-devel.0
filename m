@@ -1,10 +1,10 @@
-Date: Mon, 22 Aug 2022 20:47:58 +0200 (CEST)
-Message-Id: <202208221847.27MIlwEH012890@...2054...>
+Date: Mon, 22 Aug 2022 20:48:11 +0200 (CEST)
+Message-Id: <202208221848.27MImBMO012920@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220822154037.44320-1-maximilian.fillinger@...2507...>
-References: <20220822154037.44320-1-maximilian.fillinger@...2507...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Update openssl_compat.h for
- newer LibreSSL
+In-Reply-To: <20220811120722.29168-2-maximilian.fillinger@...2507...>
+References: <20220811120722.29168-2-maximilian.fillinger@...2507...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Handle EVP_MD_CTX as an opaque
+ struct
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,26 +18,26 @@ Content-Transfer-Encoding: 8bit
 To: Max Fillinger <maximilian.fillinger@...2507...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I have not tested this on a recent-enough OpenBSD or OpenSSL 1.0.x 
-(no time to build or find such a system) but I have tested on FreeBSD
-with 1.1.1l - unsurprisingly (the #ifdef say so) no difference.
+Same as for the previous patch, I have not tested this on a recent-enough
+OpenBSD or OpenSSL 1.0.x (no time to build or find such a system) but I
+have tested on FreeBSD with 1.1.1l and 3.0.3 - both OpenSSL builds still
+work fine and pass client side tests.
 
-I'm a bit unsure if we need this for 2.5 - it's "long term compat" 
-and not very intrusive, but on the other hand, not too many people
-seem to care about LibreSSL.
+Arne says this does not apply cleanly to 2.5, so if we want it there,
+please send a (tested :-) ) backport.
 
 Your patch has been applied to the master branch.
 
-commit 6d9695de9fd125cced72b531559c2bdf0c4e0966
+commit 5a9d5dbf5c2d0fc979a05c84afd05689f2ad99b0
 Author: Max Fillinger
-Date:   Mon Aug 22 17:40:37 2022 +0200
+Date:   Thu Aug 11 14:07:22 2022 +0200
 
-     Update openssl_compat.h for newer LibreSSL
+     Handle EVP_MD_CTX as an opaque struct
 
      Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20220822154037.44320-1-maximilian.fillinger@...2507...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20220822154037.44320-1-maximilian.fillinger@...2507...
+     Message-Id: <20220811120722.29168-2-maximilian.fillinger@...2507...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24873.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
