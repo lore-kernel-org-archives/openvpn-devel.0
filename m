@@ -1,12 +1,15 @@
+From: Kristof Provost <kp@...1376...>
+Date: Mon, 22 Aug 2022 14:55:09 +0200
+Message-ID: <21B552DE-38FE-41F0-8FC7-606EA4C06093@...1376...>
+In-Reply-To: <YwDwvG++hK0nJI2F@...1296...>
+References: <20220812134154.16729-3-kprovost@...2661...>
+ <202208201401.27KE12Cm014083@...2054...>
+ <YwDwvG++hK0nJI2F@...1296...>
 MIME-Version: 1.0
-References: <CAKuzo_hyreVwf5DEDGQNOXNtci8pE8Kf=tBCnhw0X+Xh0PEEFQ@...278...>
- <20220822085647.389-1-lstipakov@...277...>
-In-Reply-To: <20220822085647.389-1-lstipakov@...277...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 22 Aug 2022 15:39:18 +0300
-Message-ID: <CAGyAFMUg+s++qWhayRKp-LGek2zUXVXga37JKMaRmqqRyk6RCA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v103] dco-win: implement ovpn-dco
- support in P2P Windows code path
+Content-Type: multipart/alternative;
+ boundary="=_MailMate_C427DE8D-62AB-4CCF-BAE5-EAC24188FEEF_="
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Openvpn-devel] route/iroute handling on FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,750 +18,651 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--=_MailMate_C427DE8D-62AB-4CCF-BAE5-EAC24188FEEF_=
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Cc: Antonio Quartulli <a@...2181...>, Arne Schwabe <arne@...1227...>, Lev Stipakov <lev@...515...>
 
-Fo the reference - I have tested the installer
+On 20 Aug 2022, at 16:33, Gert Doering wrote:
+>>  - iroute installation works for the easy cases (--route in 
+>> server.conf,
+>>    --iroute with a more-specific of that in ccd/).  It does not work
+>>    for the nasty cases (--route and --iroute with same netbits).
+>>
+>>    I will send a followup e-mail with more details on this soon.
+>
+> *This* is the bit I want to cover separately, because this e-mail is
+> going to be long :-)
+>
+> So, here's my test cases, to see if I could get DCO to misbehave.
+>
+> Server config has:
+>
+> # grep ^route server.conf
+> route 10.114.200.0 255.255.255.0
+> route-ipv6 fd00:abcd:114:200::/64
+> route 10.114.201.0 255.255.255.0
+> route-ipv6 fd00:abcd:114:201::/64
+>
+> ("pull two /24 and two /64 towards the tun interface")
+>
+> There is one particular client which has many addresses configured on
+> its loopback
+>
+> lo0: flags=8049<UP,LOOPBACK,RUNNING,MULTICAST> metric 0 mtu 16384
+>         inet 10.114.200.74 netmask 0xffffffff
+>         inet 10.114.201.74 netmask 0xffffffff
+>         inet 10.114.202.74 netmask 0xffffffff
+>         inet6 fd00:abcd:114:200::74 prefixlen 128
+>         inet6 fd00:abcd:114:201::74 prefixlen 128
+>         inet6 fd00:abcd:114:202::74 prefixlen 128
+>
+> ... and when that client connects, the expectation is that *other* 
+> clients
+> can ping these 6 addresses (note it's 200, 201, 202 for v4 and v6).
+>
+> Here's the ccd file for this client:
+>
+> # cat /root/t_server/tun-udp-p2mp/ccd/freebsd-74-amd64
+> # Host iroute
+> iroute 10.114.200.74 255.255.255.255
+> iroute-ipv6 fd00:abcd:114:200::74/128
+> # Subnet-iroute
+> iroute 10.114.201.0 255.255.255.0
+> iroute-ipv6 fd00:abcd:114:201::/64
+> # iroute-without-route
+> # 10.114.202, fd00:abcd:114:202::/64
+> iroute 10.114.202.74 255.255.255.255
+> iroute-ipv6 fd00:abcd:114:202::74/128
+>
+>
+> So the "200" routes are "install a host route for IPv4 or IPv6 that is
+> part of an aggregate".  This works fine.
+>
+> The "202" routes are "install a host route for IPv4 or IPv6 where 
+> there
+> is no covering --route" - this is basically something OpenVPN could 
+> not
+> do before DCO (update host routes on-demand on client connect), but is
+> something I've long waited for :-) - this also works fine.
+>
+> Now, the 201 routes are "there whole network specified in --route is
+> routed to a single client".  This is not such an unusual setup in
+> cases like "there is a central office OpenVPN server, and one of the
+> branch offices wants it 192.168.77.0/24 reachable from the other
+> clients".  This *fails*.
+>
+> For IPv4, we end up with "netstat -rn" looking like this:
+>
+> 10.114.201.0/24    10.114.2.2         UGS        tun1
+> 10.114.201.0/24    10.114.2.8         UGS        tun1
+>
+> and "route get" telling us the the first one is preferred
+>
+> $ route get 10.114.201.74
+>    route to: 10.114.201.74
+> destination: 10.114.201.0
+>        mask: 255.255.255.0
+>     gateway: 10.114.2.2
+>         fib: 0
+>   interface: tun1
+>
+> so packets loop... (10.114.2.2 is not an address that belongs to an
+> actual client, but "the tun interface peer") the client is 10.114.2.8.
+>
+> $ traceroute 10.114.201.74
+> traceroute to 10.114.201.74 (10.114.201.74), 64 hops max, 40 byte 
+> packets
+>  1  10.114.2.2 (10.114.2.2)  1.706 ms  1.240 ms  0.921 ms
+>  2  localhost (127.0.0.1)  0.865 ms  0.809 ms  0.807 ms
+>  3  10.114.2.2 (10.114.2.2)  1.603 ms  1.605 ms  1.595 ms
+>  4  localhost (127.0.0.1)  1.533 ms  1.383 ms  1.768 ms
+>
+>
+> For IPv6, things look different - route installation fails
+>
+> 2022-08-20 15:47:24 freebsd-74-amd64/2001:608:0:814::f000:3 
+> /sbin/route -6 add -net fd00:abcd:114:201::/64 fd00:abcd:114:2::1006 
+> -fib 0
+> add net fd00:abcd:114:201::/64: gateway fd00:abcd:114:2::1006 fib 0: 
+> route already in table
+>
+> so, the iroute never makes it to kernel, "netstat -rn" remains at
+>
+> fd00:abcd:114:201::/64            link#14                       US     
+>     tun1
+>
+> and packets loop as well
+>
+> $ traceroute6 fd00:abcd:114:201::74
+> traceroute6 to fd00:abcd:114:201::74 (fd00:abcd:114:201::74) from 
+> fd00:abcd:114:2::1, 64 hops max, 28 byte packets
+>  1  fd00:abcd:114:2::1000  1.749 ms  1.246 ms  0.930 ms
+>  2  fd00:abcd:114:2::1  0.836 ms  1.225 ms  1.067 ms
+>  3  fd00:abcd:114:2::1000  1.555 ms  1.631 ms  1.575 ms
+>  4  fd00:abcd:114:2::1  1.472 ms  1.531 ms  1.677 ms
+>
+>
+>
+> So, what we do on *Linux* to handle this, is to work with route 
+> metrics
+> (10.220.* = "same instances, different host, so different address 
+> range")
+>
+> linux$ ip route |grep tun1
+> 10.220.200.0/24 via 10.220.2.2 dev tun1 metric 200
+> 10.220.200.74 via 10.220.2.8 dev tun1 metric 100
+> 10.220.201.0/24 via 10.220.2.8 dev tun1 metric 100
+> 10.220.201.0/24 via 10.220.2.2 dev tun1 metric 200
+> 10.220.202.74 via 10.220.2.8 dev tun1 metric 100
+> linux$ ip -6 route |grep tun1
+> fd00:abcd:220:200::74 via fd00:abcd:220:2::1006 dev tun1 metric 100 
+> pref medium
+> fd00:abcd:220:200::/64 dev tun1 metric 200 pref medium
+> fd00:abcd:220:201::/64 via fd00:abcd:220:2::1006 dev tun1 metric 100 
+> pref medium
+> fd00:abcd:220:201::/64 dev tun1 metric 200 pref medium
+> fd00:abcd:220:202::74 via fd00:abcd:220:2::1006 dev tun1 metric 100 
+> pref medium
+>
+> so there's always 5 routes in the active table - 2 "--route" routes
+> (according to server.conf) with *metric 200*, and then 3 "--iroute" 
+> routes
+> (from ccd/) with metric DCO_IROUTE_METRIC = 100.
+>
+> Linux handles this as would a "Cisco router" do - if there are two
+> identical routes with different metric, the lower-metric route is
+> used, and the other one is ignored.  So this works very nicely.
+>
+>
+> Now, back to FreeBSD.
+>
+>   - our code does not try to set metrics on FreeBSD
+>   - my reading of route(8) does not show me anything in that direction
+>     (metric, preference, administrative distance, ...)
+>   - I do not understand FreeBSD internals well enough to know whether
+>     it can be done at all, or not.
+>
+It’s rather poorly (i.e. not) documented, but it is possible to set a 
+route metric. It’s called a ‘weight’, and not actually mentioned 
+in the man page. Or shown in netstat output.
 
-  https://github.com/lstipakov/openvpn-build/actions/runs/2902240643
+But:
 
-(which includes openvpn-build dco changes and openvpn master branch
-with this patch)
+	$ sudo route add 172.16.2.0/24 10.0.2.1
+	add net 172.16.2.0: gateway 10.0.2.1
+	$ sudo route add 172.16.2.0/24 -weight 2 10.0.2.254
+	add net 172.16.2.0: gateway 10.0.2.254
 
-on Windows 11 (VMware ESXi) - dco-win/tap-windows6/wintun drivers work
-as expected.
+So we can add multiple routes for the same network, as long as they have 
+a different gateway.
 
-I also verified that ChaCha20-Poly1305 (cipher supported starting from
-Windows 11) works fine with the dco-win driver ,
-as well as the good old AES-256-GCM.
+The usual `netstat -rn` doesn’t show the weight. You have to use the 
+json/xml output to get it:
 
-More testers are very welcomed.
+	$ netstat -rn --libxo json | jq
+	…
+               {
+                 "destination": "172.16.2.0/24",
+                 "gateway": "10.0.2.1",
+                 "flags": "UGS",
+                 "flags_pretty": [
+                   "up",
+                   "gateway",
+                   "static"
+                 ],
+                 "weight": 1,
+                 "interface-name": "bnxt0"
+               },
+               {
+                 "destination": "172.16.2.0/24",
+                 "gateway": "10.0.2.254",
+                 "flags": "UGS",
+                 "flags_pretty": [
+                   "up",
+                   "gateway",
+                   "static"
+                 ],
+                 "weight": 2,
+                 "interface-name": "bnxt0"
+               },
 
-ma 22. elok. 2022 klo 11.56 Lev Stipakov (lstipakov@...277...) kirjoitti:
->
-> From: Antonio Quartulli <a@...2181...>
->
-> With this change it is possible to use ovpn-dco-win when running OpenVPN
-> in client or P2P mode.
->
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
->  Changes from v102:
->  * use "windows-driver ovpn-dco" without trailing "-win", since
->    "windows" is already implied by option name.
->
->  Changes from v101:
->  * move tuntap_is_dco_win() check from init.c to open_tun() in tun.c
->  * move linksock_print_addr() into create_socket_dco_win() to simplify
->    link_socket_init_phase2()
->  * fix chachapoly support on Windows for non-DCO case
->
->  Changes from v100:
->  * rebased (fixed conflicts in options.h and tun.h)
->
->  Changes from v3:
->  * rename WINDOWS_DRIVER_WINDCO to WINDOWS_DRIVER_DCO
->  * add reference string check
->
->  Changes from v2:
->  * added is_tun_type_set() and removed real_tun_init flag
->  * moved link-close to do_close_tun()
->
->  Changes from v1:
->  * use suffix _dco_win instead of _windco
->  * create helper function to retrieve last error from socket object
->
->  src/openvpn/dco.c     |  4 +-
->  src/openvpn/forward.c |  8 ++++
->  src/openvpn/init.c    | 24 +++++++++++-
->  src/openvpn/options.c | 25 +++++++++---
->  src/openvpn/options.h | 15 +++-----
->  src/openvpn/socket.c  | 89 ++++++++++++++++++++++++++++++++++++++++---
->  src/openvpn/socket.h  | 25 ++++++++----
->  src/openvpn/tun.c     | 58 ++++++++++++++++++++++------
->  src/openvpn/tun.h     | 66 ++++++++++++++++++++++++--------
->  9 files changed, 255 insertions(+), 59 deletions(-)
->
-> diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-> index 99b544a5..ad35fee8 100644
-> --- a/src/openvpn/dco.c
-> +++ b/src/openvpn/dco.c
-> @@ -229,13 +229,13 @@ dco_check_startup_option_conflict(int msglevel, const struct options *o)
->      if (o->mode == MODE_SERVER)
->      {
->          msg(msglevel, "Only client and p2p data channel offload is supported "
-> -            "with ovpn-dco-win.");
-> +            "with ovpn-dco.");
->          return false;
->      }
->
->      if (o->persist_tun)
->      {
-> -        msg(msglevel, "--persist-tun is not supported with ovpn-dco-win.");
-> +        msg(msglevel, "--persist-tun is not supported with ovpn-dco.");
->          return false;
->      }
->  #elif defined(TARGET_LINUX)
-> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-> index d70b4f52..e45aa0f9 100644
-> --- a/src/openvpn/forward.c
-> +++ b/src/openvpn/forward.c
-> @@ -864,9 +864,17 @@ read_incoming_link(struct context *c)
->          return;
->      }
->
-> +    /* check_status() call below resets last-error code */
-> +    bool dco_win_timeout = tuntap_is_dco_win_timeout(c->c1.tuntap, status);
-> +
->      /* check recvfrom status */
->      check_status(status, "read", c->c2.link_socket, NULL);
->
-> +    if (dco_win_timeout)
-> +    {
-> +        trigger_ping_timeout_signal(c);
-> +    }
-> +
->      /* Remove socks header if applicable */
->      socks_postprocess_incoming_link(c);
->
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index 1da21710..9917cefe 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -1699,7 +1699,8 @@ do_init_tun(struct context *c)
->                              c->c1.link_socket_addr.remote_list,
->                              !c->options.ifconfig_nowarn,
->                              c->c2.es,
-> -                            &c->net_ctx);
-> +                            &c->net_ctx,
-> +                            c->c1.tuntap);
->
->  #ifdef _WIN32
->      c->c1.tuntap->windows_driver = c->options.windows_driver;
-> @@ -1723,7 +1724,7 @@ can_preserve_tun(struct tuntap *tt)
->  #ifdef TARGET_ANDROID
->      return false;
->  #else
-> -    return tt;
-> +    return is_tun_type_set(tt);
->  #endif
->  }
->
-> @@ -1934,6 +1935,16 @@ do_close_tun_simple(struct context *c)
->  static void
->  do_close_tun(struct context *c, bool force)
->  {
-> +    /* With dco-win we open tun handle in the very beginning.
-> +     * In case when tun wasn't opened - like we haven't connected,
-> +     * we still need to close tun handle
-> +     */
-> +    if (tuntap_is_dco_win(c->c1.tuntap) && !is_tun_type_set(c->c1.tuntap))
-> +    {
-> +        do_close_tun_simple(c);
-> +        return;
-> +    }
-> +
->      if (!c->c1.tuntap || !c->c1.tuntap_owned)
->      {
->          return;
-> @@ -3574,6 +3585,15 @@ do_close_free_key_schedule(struct context *c, bool free_ssl_ctx)
->  static void
->  do_close_link_socket(struct context *c)
->  {
-> +    /* in dco-win case, link socket is a tun handle which is
-> +     * closed in do_close_tun(). Set it to UNDEFINED so
-> +     * we won't use WinSock API to close it. */
-> +    if (tuntap_is_dco_win(c->c1.tuntap) && c->c2.link_socket
-> +        && c->c2.link_socket->info.dco_installed)
-> +    {
-> +        c->c2.link_socket->sd = SOCKET_UNDEFINED;
-> +    }
-> +
->      if (c->c2.link_socket && c->c2.link_socket_owned)
->      {
->          link_socket_close(c->c2.link_socket);
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 2b0bb20c..703dca29 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -3338,9 +3338,11 @@ options_postprocess_mutate_invariant(struct options *options)
->  #ifdef _WIN32
->      const int dev = dev_type_enum(options->dev, options->dev_type);
->
-> -    /* when using wintun, kernel doesn't send DHCP requests, so don't use it */
-> -    if (options->windows_driver == WINDOWS_DRIVER_WINTUN
-> -        && (options->tuntap_options.ip_win32_type == IPW32_SET_DHCP_MASQ || options->tuntap_options.ip_win32_type == IPW32_SET_ADAPTIVE))
-> +    /* when using wintun/ovpn-dco, kernel doesn't send DHCP requests, so don't use it */
-> +    if ((options->windows_driver == WINDOWS_DRIVER_WINTUN
-> +         || options->windows_driver == WINDOWS_DRIVER_DCO)
-> +        && (options->tuntap_options.ip_win32_type == IPW32_SET_DHCP_MASQ
-> +            || options->tuntap_options.ip_win32_type == IPW32_SET_ADAPTIVE))
->      {
->          options->tuntap_options.ip_win32_type = IPW32_SET_NETSH;
->      }
-> @@ -3434,6 +3436,10 @@ options_postprocess_setdefault_ncpciphers(struct options *o)
->          /* custom --data-ciphers set, keep list */
->          return;
->      }
-> +    else if (dco_enabled(o))
-> +    {
-> +        o->ncp_ciphers = dco_get_supported_ciphers();
-> +    }
->      else if (cipher_valid("CHACHA20-POLY1305"))
->      {
->          o->ncp_ciphers = "AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
-> @@ -4167,7 +4173,8 @@ options_string(const struct options *o,
->                        NULL,
->                        false,
->                        NULL,
-> -                      ctx);
-> +                      ctx,
-> +                      NULL);
->          if (tt)
->          {
->              tt_local = true;
-> @@ -4554,13 +4561,19 @@ parse_windows_driver(const char *str, const int msglevel)
->      {
->          return WINDOWS_DRIVER_WINTUN;
->      }
-> +
-> +    else if (streq(str, "ovpn-dco"))
-> +    {
-> +        return WINDOWS_DRIVER_DCO;
-> +    }
->      else
->      {
-> -        msg(msglevel, "--windows-driver must be tap-windows6 or wintun");
-> +        msg(msglevel, "--windows-driver must be tap-windows6, wintun "
-> +            "or ovpn-dco");
->          return WINDOWS_DRIVER_UNSPECIFIED;
->      }
->  }
-> -#endif
-> +#endif /* ifdef _WIN32 */
->
->  /*
->   * parse/print topology coding
-> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-> index 83c97ded..6d9174a4 100644
-> --- a/src/openvpn/options.h
-> +++ b/src/openvpn/options.h
-> @@ -876,24 +876,19 @@ void options_string_import(struct options *options,
->
->  bool key_is_external(const struct options *options);
->
-> -#if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD))
-> -
->  /**
->   * Returns whether the current configuration has dco enabled.
->   */
->  static inline bool
->  dco_enabled(const struct options *o)
->  {
-> +#if defined(_WIN32)
-> +    return o->windows_driver == WINDOWS_DRIVER_DCO;
-> +#elif defined(ENABLE_DCO)
->      return !o->tuntap_options.disable_dco;
-> -}
-> -
-> -#else /* if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD))*/
-> -
-> -static inline bool
-> -dco_enabled(const struct options *o)
-> -{
-> +#else
->      return false;
-> +#endif /* defined(_WIN32) */
->  }
->
-> -#endif
->  #endif /* ifndef OPTIONS_H */
-> diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-> index b4c20f69..4e29327b 100644
-> --- a/src/openvpn/socket.c
-> +++ b/src/openvpn/socket.c
-> @@ -2123,6 +2123,43 @@ phase2_socks_client(struct link_socket *sock, struct signal_info *sig_info)
->      resolve_remote(sock, 1, NULL, &sig_info->signal_received);
->  }
->
-> +#if defined(_WIN32)
-> +static void
-> +create_socket_dco_win(struct context *c, struct link_socket *sock,
-> +                      volatile int *signal_received)
-> +{
-> +    struct tuntap *tt;
-> +    /* In this case persist-tun is enabled, which we don't support yet */
-> +    ASSERT(!c->c1.tuntap);
-> +
-> +    ALLOC_OBJ(tt, struct tuntap);
-> +
-> +    *tt = dco_create_socket(sock->info.lsa->current_remote,
-> +                            sock->bind_local,
-> +                            sock->info.lsa->bind_local,
-> +                            c->options.dev_node,
-> +                            &c->gc,
-> +                            get_server_poll_remaining_time(sock->server_poll_timeout),
-> +                            signal_received);
-> +
-> +    /* This state is used by signal handler which does teardown,
-> +     * so it has to be set before return */
-> +    c->c1.tuntap = tt;
-> +    sock->info.dco_installed = true;
-> +
-> +    if (*signal_received)
-> +    {
-> +        return;
-> +    }
-> +
-> +    /* Ensure we can "safely" cast the handle to a socket */
-> +    static_assert(sizeof(sock->sd) == sizeof(tt->hand), "HANDLE and SOCKET size differs");
-> +    sock->sd = (SOCKET)tt->hand;
-> +
-> +    linksock_print_addr(sock);
-> +}
-> +#endif /* if defined(_WIN32) */
-> +
->  /* finalize socket initialization */
->  void
->  link_socket_init_phase2(struct context *c)
-> @@ -2162,7 +2199,18 @@ link_socket_init_phase2(struct context *c)
->      /* If a valid remote has been found, create the socket with its addrinfo */
->      if (sock->info.lsa->current_remote)
->      {
-> -        create_socket(sock, sock->info.lsa->current_remote);
-> +#if defined(_WIN32)
-> +        if (dco_enabled(&c->options))
-> +        {
-> +            create_socket_dco_win(c, sock, &sig_info->signal_received);
-> +            goto done;
-> +        }
-> +        else
-> +#endif
-> +        {
-> +            create_socket(sock, sock->info.lsa->current_remote);
-> +        }
-> +
->      }
->
->      /* If socket has not already been created create it now */
-> @@ -3430,6 +3478,17 @@ link_socket_write_udp_posix_sendmsg(struct link_socket *sock,
->
->  #ifdef _WIN32
->
-> +static int
-> +socket_get_last_error(const struct link_socket *sock)
-> +{
-> +    if (sock->info.dco_installed)
-> +    {
-> +        return GetLastError();
-> +    }
-> +
-> +    return WSAGetLastError();
-> +}
-> +
->  int
->  socket_recv_queue(struct link_socket *sock, int maxsize)
->  {
-> @@ -3463,7 +3522,14 @@ socket_recv_queue(struct link_socket *sock, int maxsize)
->          ASSERT(ResetEvent(sock->reads.overlapped.hEvent));
->          sock->reads.flags = 0;
->
-> -        if (proto_is_udp(sock->info.proto))
-> +        if (sock->info.dco_installed)
-> +        {
-> +            status = ReadFile((HANDLE)sock->sd, wsabuf[0].buf, wsabuf[0].len,
-> +                              &sock->reads.size, &sock->reads.overlapped);
-> +            /* Readfile status is inverted from WSARecv */
-> +            status = !status;
-> +        }
-> +        else if (proto_is_udp(sock->info.proto))
->          {
->              sock->reads.addr_defined = true;
->              sock->reads.addrlen = sizeof(sock->reads.addr6);
-> @@ -3516,7 +3582,7 @@ socket_recv_queue(struct link_socket *sock, int maxsize)
->          }
->          else
->          {
-> -            status = WSAGetLastError();
-> +            status = socket_get_last_error(sock);
->              if (status == WSA_IO_PENDING) /* operation queued? */
->              {
->                  sock->reads.iostate = IOSTATE_QUEUED;
-> @@ -3561,7 +3627,16 @@ socket_send_queue(struct link_socket *sock, struct buffer *buf, const struct lin
->          ASSERT(ResetEvent(sock->writes.overlapped.hEvent));
->          sock->writes.flags = 0;
->
-> -        if (proto_is_udp(sock->info.proto))
-> +        if (sock->info.dco_installed)
-> +        {
-> +            status = WriteFile((HANDLE)sock->sd, wsabuf[0].buf, wsabuf[0].len,
-> +                               &sock->writes.size, &sock->writes.overlapped);
-> +
-> +            /* WriteFile status is inverted from WSASendTo */
-> +            status = !status;
-> +
-> +        }
-> +        else if (proto_is_udp(sock->info.proto))
->          {
->              /* set destination address for UDP writes */
->              sock->writes.addr_defined = true;
-> @@ -3622,8 +3697,9 @@ socket_send_queue(struct link_socket *sock, struct buffer *buf, const struct lin
->          }
->          else
->          {
-> -            status = WSAGetLastError();
-> -            if (status == WSA_IO_PENDING) /* operation queued? */
-> +            status = socket_get_last_error(sock);
-> +            /* both status code have the identical value */
-> +            if (status == WSA_IO_PENDING || status == ERROR_IO_PENDING) /* operation queued? */
->              {
->                  sock->writes.iostate = IOSTATE_QUEUED;
->                  sock->writes.status = status;
-> @@ -3648,6 +3724,7 @@ socket_send_queue(struct link_socket *sock, struct buffer *buf, const struct lin
->      return sock->writes.iostate;
->  }
->
-> +/* Returns the number of bytes successfully read */
->  int
->  sockethandle_finalize(sockethandle_t sh,
->                        struct overlapped_io *io,
-> diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-> index 0d521d22..462afa31 100644
-> --- a/src/openvpn/socket.h
-> +++ b/src/openvpn/socket.h
-> @@ -34,6 +34,7 @@
->  #include "proxy.h"
->  #include "socks.h"
->  #include "misc.h"
-> +#include "tun.h"
->
->  /*
->   * OpenVPN's default port number as assigned by IANA.
-> @@ -937,7 +938,8 @@ socket_connection_reset(const struct link_socket *sock, int status)
->          {
->              const int err = openvpn_errno();
->  #ifdef _WIN32
-> -            return err == WSAECONNRESET || err == WSAECONNABORTED;
-> +            return err == WSAECONNRESET || err == WSAECONNABORTED
-> +                   || err == ERROR_CONNECTION_ABORTED;
->  #else
->              return err == ECONNRESET;
->  #endif
-> @@ -1048,6 +1050,11 @@ link_socket_read_udp_win32(struct link_socket *sock,
->                             struct link_socket_actual *from)
->  {
->      sockethandle_t sh = { .s = sock->sd };
-> +    if (sock->info.dco_installed)
-> +    {
-> +        addr_copy_sa(&from->dest, &sock->info.lsa->actual.dest);
-> +        sh.is_handle = true;
-> +    }
->      return sockethandle_finalize(sh, &sock->reads, buf, from);
->  }
->
-> @@ -1057,7 +1064,7 @@ int link_socket_read_udp_posix(struct link_socket *sock,
->                                 struct buffer *buf,
->                                 struct link_socket_actual *from);
->
-> -#endif
-> +#endif /* ifdef _WIN32 */
->
->  /* read a TCP or UDP packet from link */
->  static inline int
-> @@ -1065,7 +1072,10 @@ link_socket_read(struct link_socket *sock,
->                   struct buffer *buf,
->                   struct link_socket_actual *from)
->  {
-> -    if (proto_is_udp(sock->info.proto)) /* unified UDPv4 and UDPv6 */
-> +    if (proto_is_udp(sock->info.proto)
-> +        || sock->info.dco_installed)
-> +    /* unified UDPv4 and UDPv6, for DCO the kernel
-> +     * will strip the length header */
->      {
->          int res;
->
-> @@ -1106,19 +1116,19 @@ link_socket_write_win32(struct link_socket *sock,
->  {
->      int err = 0;
->      int status = 0;
-> -    sockethandle_t sh = { .s = sock->sd };
-> +    sockethandle_t sh = { .s = sock->sd, .is_handle = sock->info.dco_installed };
->      if (overlapped_io_active(&sock->writes))
->      {
->          status = sockethandle_finalize(sh, &sock->writes, NULL, NULL);
->          if (status < 0)
->          {
-> -            err = WSAGetLastError();
-> +            err = SocketHandleGetLastError(sh);
->          }
->      }
->      socket_send_queue(sock, buf, to);
->      if (status < 0)
->      {
-> -        WSASetLastError(err);
-> +        SocketHandleSetLastError(sh, err);
->          return status;
->      }
->      else
-> @@ -1180,8 +1190,9 @@ link_socket_write(struct link_socket *sock,
->                    struct buffer *buf,
->                    struct link_socket_actual *to)
->  {
-> -    if (proto_is_udp(sock->info.proto)) /* unified UDPv4 and UDPv6 */
-> +    if (proto_is_udp(sock->info.proto) || sock->info.dco_installed)
->      {
-> +        /* unified UDPv4 and UDPv6 and DCO (kernel adds size header) */
->          return link_socket_write_udp(sock, buf, to);
->      }
->      else if (proto_is_tcp(sock->info.proto)) /* unified TCPv4 and TCPv6 */
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index 7a320512..94803acd 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -743,12 +743,14 @@ init_tun(const char *dev,        /* --dev option */
->           struct addrinfo *remote_public,
->           const bool strict_warn,
->           struct env_set *es,
-> -         openvpn_net_ctx_t *ctx)
-> +         openvpn_net_ctx_t *ctx,
-> +         struct tuntap *tt)
->  {
-> -    struct tuntap *tt;
-> -
-> -    ALLOC_OBJ(tt, struct tuntap);
-> -    clear_tuntap(tt);
-> +    if (!tt)
-> +    {
-> +        ALLOC_OBJ(tt, struct tuntap);
-> +        clear_tuntap(tt);
-> +    }
->
->      tt->type = dev_type_enum(dev, dev_type);
->      tt->topology = topology;
-> @@ -890,6 +892,12 @@ init_tun_post(struct tuntap *tt,
->  {
->      tt->options = *options;
->  #ifdef _WIN32
-> +    if (tt->windows_driver == WINDOWS_DRIVER_DCO)
-> +    {
-> +        dco_start_tun(tt);
-> +        return;
-> +    }
-> +
->      overlapped_io_init(&tt->reads, frame, FALSE, true);
->      overlapped_io_init(&tt->writes, frame, TRUE, true);
->      tt->adapter_index = TUN_ADAPTER_INDEX_INVALID;
-> @@ -3542,6 +3550,9 @@ print_windows_driver(enum windows_driver_type windows_driver)
->          case WINDOWS_DRIVER_WINTUN:
->              return "wintun";
->
-> +        case WINDOWS_DRIVER_DCO:
-> +            return "ovpn-dco";
-> +
->          default:
->              return "unspecified";
->      }
-> @@ -3930,6 +3941,10 @@ get_tap_reg(struct gc_arena *gc)
->                      {
->                          windows_driver = WINDOWS_DRIVER_WINTUN;
->                      }
-> +                    else if (strcasecmp(component_id, "ovpn-dco") == 0)
-> +                    {
-> +                        windows_driver = WINDOWS_DRIVER_DCO;
-> +                    }
->
->                      if (windows_driver != WINDOWS_DRIVER_UNSPECIFIED)
->                      {
-> @@ -4284,7 +4299,9 @@ at_least_one_tap_win(const struct tap_reg *tap_reg)
->  {
->      if (!tap_reg)
->      {
-> -        msg(M_FATAL, "There are no TAP-Windows nor Wintun adapters on this system.  You should be able to create an adapter by using tapctl.exe utility.");
-> +        msg(M_FATAL, "There are no TAP-Windows, Wintun or ovpn-dco adapters "
-> +            "on this system.  You should be able to create an adapter "
-> +            "by using tapctl.exe utility.");
->      }
->  }
->
-> @@ -6484,17 +6501,30 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
->      const char *path = NULL;
->      char tuntap_device_path[256];
->
-> -    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
-> +    if (tt->windows_driver == WINDOWS_DRIVER_WINTUN
-> +        || tt->windows_driver == WINDOWS_DRIVER_DCO)
->      {
->          const struct device_instance_id_interface *dev_if;
->
->          for (dev_if = device_instance_id_interface; dev_if != NULL; dev_if = dev_if->next)
->          {
-> -            if (strcmp((const char *)dev_if->net_cfg_instance_id, device_guid) == 0)
-> +            if (strcmp((const char *)dev_if->net_cfg_instance_id, device_guid) != 0)
->              {
-> -                path = dev_if->device_interface;
-> -                break;
-> +                continue;
-> +            }
-> +
-> +            if (tt->windows_driver == WINDOWS_DRIVER_DCO)
-> +            {
-> +                char *last_sep = strrchr(dev_if->device_interface, '\\');
-> +                if (!last_sep
-> +                    || strcmp(last_sep + 1, DCO_WIN_REFERENCE_STRING) != 0)
-> +                {
-> +                    continue;
-> +                }
->              }
-> +
-> +            path = dev_if->device_interface;
-> +            break;
->          }
->          if (path == NULL)
->          {
-> @@ -6503,7 +6533,7 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
->      }
->      else
->      {
-> -        /* Open TAP-Windows adapter */
-> +        /* Open TAP-Windows */
->          openvpn_snprintf(tuntap_device_path, sizeof(tuntap_device_path), "%s%s%s",
->                           USERMODEDEVICEDIR,
->                           device_guid,
-> @@ -6710,6 +6740,12 @@ void
->  open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
->           openvpn_net_ctx_t *ctx)
->  {
-> +    /* dco-win already opened the device, which handle we treat as socket */
-> +    if (tuntap_is_dco_win(tt))
-> +    {
-> +        return;
-> +    }
-> +
->      const char *device_guid = NULL;
->
->      /*netcmd_semaphore_lock ();*/
-> diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-> index de9a09f8..1cca1cfb 100644
-> --- a/src/openvpn/tun.h
-> +++ b/src/openvpn/tun.h
-> @@ -44,6 +44,7 @@
->
->  #ifdef _WIN32
->  #define WINTUN_COMPONENT_ID "wintun"
-> +#define DCO_WIN_REFERENCE_STRING "ovpn-dco"
->
->  enum windows_driver_type {
->      WINDOWS_DRIVER_UNSPECIFIED,
-> @@ -293,7 +294,8 @@ struct tuntap *init_tun(const char *dev,        /* --dev option */
->                          struct addrinfo *remote_public,
->                          const bool strict_warn,
->                          struct env_set *es,
-> -                        openvpn_net_ctx_t *ctx);
-> +                        openvpn_net_ctx_t *ctx,
-> +                        struct tuntap *tt);
->
->  void init_tun_post(struct tuntap *tt,
->                     const struct frame *frame,
-> @@ -646,6 +648,18 @@ write_tun_buffered(struct tuntap *tt, struct buffer *buf)
->      }
->  }
->
-> +static inline bool
-> +tuntap_is_dco_win(struct tuntap *tt)
-> +{
-> +    return tt && tt->windows_driver == WINDOWS_DRIVER_DCO;
-> +}
-> +
-> +static inline bool
-> +tuntap_is_dco_win_timeout(struct tuntap *tt, int status)
-> +{
-> +    return tuntap_is_dco_win(tt) && (status < 0) && (openvpn_errno() == ERROR_NETNAME_DELETED);
-> +}
-> +
->  #else  /* ifdef _WIN32 */
->
->  static inline bool
-> @@ -671,6 +685,19 @@ tun_standby(struct tuntap *tt)
->      return true;
->  }
->
-> +
-> +static inline bool
-> +tuntap_is_dco_win(struct tuntap *tt)
-> +{
-> +    return false;
-> +}
-> +
-> +static inline bool
-> +tuntap_is_dco_win_timeout(struct tuntap *tt, int status)
-> +{
-> +    return false;
-> +}
-> +
->  #endif /* ifdef _WIN32 */
->
->  /*
-> @@ -694,28 +721,37 @@ tun_set(struct tuntap *tt,
->          void *arg,
->          unsigned int *persistent)
->  {
-> -    if (tuntap_defined(tt))
-> +    if (!tuntap_defined(tt) || tuntap_is_dco_win(tt))
->      {
-> -        /* if persistent is defined, call event_ctl only if rwflags has changed since last call */
-> -        if (!persistent || *persistent != rwflags)
-> +        return;
-> +    }
-> +
-> +    /* if persistent is defined, call event_ctl only if rwflags has changed since last call */
-> +    if (!persistent || *persistent != rwflags)
-> +    {
-> +        event_ctl(es, tun_event_handle(tt), rwflags, arg);
-> +        if (persistent)
->          {
-> -            event_ctl(es, tun_event_handle(tt), rwflags, arg);
-> -            if (persistent)
-> -            {
-> -                *persistent = rwflags;
-> -            }
-> +            *persistent = rwflags;
->          }
-> +    }
->  #ifdef _WIN32
-> -        if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6 && (rwflags & EVENT_READ))
-> -        {
-> -            tun_read_queue(tt, 0);
-> -        }
-> -#endif
-> -        tt->rwflags_debug = rwflags;
-> +    if (tt->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6 && (rwflags & EVENT_READ))
-> +    {
-> +        tun_read_queue(tt, 0);
->      }
-> +#endif
-> +    tt->rwflags_debug = rwflags;
-> +
->  }
->
->  const char *tun_stat(const struct tuntap *tt, unsigned int rwflags, struct gc_arena *gc);
->  bool tun_name_is_fixed(const char *dev);
->
-> +static inline bool
-> +is_tun_type_set(const struct tuntap *tt)
-> +{
-> +    return tt && tt->type != DEV_TYPE_UNDEF;
-> +}
-> +
->  #endif /* TUN_H */
-> --
-> 2.23.0.windows.1
->
+A higher weight gives a higher priority, so that’s the opposite of 
+what Linux does with metric, I believe.
 
+> If it can not be done, we need to document this as "one of the issues
+> with FreeBSD DCO", and it can of course be easily workarounded in most
+> cases
+>
+>   --route 10.114.201.0/24
+>     --iroute 10.114.201.0/25
+>     --iroute 10.114.201.128/25
+>
+> will get the same thing done "when client is online route the whole 
+> /25
+> down there", but it's harder to get into people's heads :-)  (adding
+> code to auto-split such a prefix is technically possible but would be
+> quite a complication, so I'd rather solve this "with documentation").
+>
+> So, what shall we do?
+>
+If I’m understanding everything correctly it should be relatively 
+simple to extend networking_freebsd.c to also set a weight for each 
+route it installs.
+We’d have to convert the metric into a weight, which I think we could 
+do as `weight = RT_MAX_WEIGHT - metric` (RT_MAX_WEIGHT is 16777215 /* 3 
+bytes */).
 
--- 
--Lev
+Can you try this?
+
+	diff --git a/src/openvpn/networking_freebsd.c 
+b/src/openvpn/networking_freebsd.c
+	index 0633dce7..e79af2bf 100644
+	--- a/src/openvpn/networking_freebsd.c
+	+++ b/src/openvpn/networking_freebsd.c
+	@@ -10,6 +10,8 @@
+
+	 #if defined(TARGET_FREEBSD)
+
+	+#include <net/route.h>
+	+
+	 static int
+	 net_route_v4(const char *op, const in_addr_t *dst, int prefixlen,
+	              const in_addr_t *gw, const char *iface, uint32_t table,
+	@@ -23,12 +25,13 @@ net_route_v4(const char *op, const in_addr_t *dst, 
+int prefixlen,
+	     _dst = ntohl(*dst);
+	     _gw = ntohl(*gw);
+
+	-    argv_printf(&argv, "%s %s -net %s/%d %s -fib %d",
+	+    argv_printf(&argv, "%s %s -net %s/%d %s -fib %d -weight %d",
+	                 ROUTE_PATH, op,
+	                 inet_ntop(AF_INET, &_dst, buf1, sizeof(buf1)),
+	                 prefixlen,
+	                 inet_ntop(AF_INET, &_gw, buf2, sizeof(buf2)),
+	-                table);
+	+                table,
+	+                RT_MAX_WEIGHT - metric);
+
+	     argv_msg(M_INFO, &argv);
+	     status = openvpn_execve_check(&argv, NULL, 0,
+	@@ -48,12 +51,13 @@ net_route_v6(const char *op, const struct in6_addr 
+*dst,
+	     struct argv argv = argv_new();
+	     bool status;
+
+	-    argv_printf(&argv, "%s -6 %s -net %s/%d %s -fib %d",
+	+    argv_printf(&argv, "%s -6 %s -net %s/%d %s -fib %d -weight %d",
+	                 ROUTE_PATH, op,
+	                 inet_ntop(AF_INET6, dst, buf1, sizeof(buf1)),
+	                 prefixlen,
+	                 inet_ntop(AF_INET6, gw, buf2, sizeof(buf2)),
+	-                table);
+	+                table,
+	+                RT_MAX_WEIGHT - metric);
+
+	     argv_msg(M_INFO, &argv);
+	     status = openvpn_execve_check(&argv, NULL, 0,
+
+Kristof
+--=_MailMate_C427DE8D-62AB-4CCF-BAE5-EAC24188FEEF_=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/xhtml; charset=3Dutf-8">
+</head>
+<body><div style=3D"font-family: sans-serif;"><div class=3D"markdown" style=
+=3D"white-space: normal;">
+<p dir=3D"auto">On 20 Aug 2022, at 16:33, Gert Doering wrote:</p>
+</div><div class=3D"plaintext" style=3D"white-space: normal;"><blockquote s=
+tyle=3D"margin: 0 0 5px; padding-left: 5px; border-left: 2px solid #136BCE;=
+ color: #136BCE;"><blockquote style=3D"margin: 0 0 5px; padding-left: 5px; =
+border-left: 2px solid #136BCE; border-left-color: #4B89CF; color: #4B89CF;=
+"><p dir=3D"auto"> - iroute installation works for the easy cases (--route =
+in server.conf,
+<br>
+   --iroute with a more-specific of that in ccd/).  It does not work
+<br>
+   for the nasty cases (--route and --iroute with same netbits).</p>
+<p dir=3D"auto">   I will send a followup e-mail with more details on this =
+soon.</p>
+</blockquote><p dir=3D"auto">*This* is the bit I want to cover separately, =
+because this e-mail is
+<br>
+going to be long :-)</p>
+<p dir=3D"auto">So, here's my test cases, to see if I could get DCO to misb=
+ehave.</p>
+<p dir=3D"auto">Server config has:</p>
+<p dir=3D"auto"># grep ^route server.conf
+<br>
+route 10.114.200.0 255.255.255.0
+<br>
+route-ipv6 fd00:abcd:114:200::/64
+<br>
+route 10.114.201.0 255.255.255.0
+<br>
+route-ipv6 fd00:abcd:114:201::/64</p>
+<p dir=3D"auto">("pull two /24 and two /64 towards the tun interface")</p>
+<p dir=3D"auto">There is one particular client which has many addresses con=
+figured on
+<br>
+its loopback</p>
+<p dir=3D"auto">lo0: flags=3D8049&lt;UP,LOOPBACK,RUNNING,MULTICAST&gt; metr=
+ic 0 mtu 16384
+<br>
+        inet 10.114.200.74 netmask 0xffffffff
+<br>
+        inet 10.114.201.74 netmask 0xffffffff
+<br>
+        inet 10.114.202.74 netmask 0xffffffff
+<br>
+        inet6 fd00:abcd:114:200::74 prefixlen 128
+<br>
+        inet6 fd00:abcd:114:201::74 prefixlen 128
+<br>
+        inet6 fd00:abcd:114:202::74 prefixlen 128</p>
+<p dir=3D"auto">... and when that client connects, the expectation is that =
+*other* clients
+<br>
+can ping these 6 addresses (note it's 200, 201, 202 for v4 and v6).</p>
+<p dir=3D"auto">Here's the ccd file for this client:</p>
+<p dir=3D"auto"># cat /root/t_server/tun-udp-p2mp/ccd/freebsd-74-amd64
+<br>
+# Host iroute
+<br>
+iroute 10.114.200.74 255.255.255.255
+<br>
+iroute-ipv6 fd00:abcd:114:200::74/128
+<br>
+# Subnet-iroute
+<br>
+iroute 10.114.201.0 255.255.255.0
+<br>
+iroute-ipv6 fd00:abcd:114:201::/64
+<br>
+# iroute-without-route
+<br>
+# 10.114.202, fd00:abcd:114:202::/64
+<br>
+iroute 10.114.202.74 255.255.255.255
+<br>
+iroute-ipv6 fd00:abcd:114:202::74/128</p>
+<p dir=3D"auto">So the "200" routes are "install a host route for IPv4 or I=
+Pv6 that is
+<br>
+part of an aggregate".  This works fine.</p>
+<p dir=3D"auto">The "202" routes are "install a host route for IPv4 or IPv6=
+ where there
+<br>
+is no covering --route" - this is basically something OpenVPN could not
+<br>
+do before DCO (update host routes on-demand on client connect), but is
+<br>
+something I've long waited for :-) - this also works fine.</p>
+<p dir=3D"auto">Now, the 201 routes are "there whole network specified in -=
+-route is
+<br>
+routed to a single client".  This is not such an unusual setup in
+<br>
+cases like "there is a central office OpenVPN server, and one of the
+<br>
+branch offices wants it 192.168.77.0/24 reachable from the other
+<br>
+clients".  This *fails*.</p>
+<p dir=3D"auto">For IPv4, we end up with "netstat -rn" looking like this:</=
+p>
+<p dir=3D"auto">10.114.201.0/24    10.114.2.2         UGS        tun1
+<br>
+10.114.201.0/24    10.114.2.8         UGS        tun1</p>
+<p dir=3D"auto">and "route get" telling us the the first one is preferred</=
+p>
+<p dir=3D"auto">$ route get 10.114.201.74
+<br>
+   route to: 10.114.201.74
+<br>
+destination: 10.114.201.0
+<br>
+       mask: 255.255.255.0
+<br>
+    gateway: 10.114.2.2
+<br>
+        fib: 0
+<br>
+  interface: tun1</p>
+<p dir=3D"auto">so packets loop... (10.114.2.2 is not an address that belon=
+gs to an
+<br>
+actual client, but "the tun interface peer") the client is 10.114.2.8.</p>
+<p dir=3D"auto">$ traceroute 10.114.201.74
+<br>
+traceroute to 10.114.201.74 (10.114.201.74), 64 hops max, 40 byte packets
+<br>
+ 1  10.114.2.2 (10.114.2.2)  1.706 ms  1.240 ms  0.921 ms
+<br>
+ 2  localhost (127.0.0.1)  0.865 ms  0.809 ms  0.807 ms
+<br>
+ 3  10.114.2.2 (10.114.2.2)  1.603 ms  1.605 ms  1.595 ms
+<br>
+ 4  localhost (127.0.0.1)  1.533 ms  1.383 ms  1.768 ms</p>
+<p dir=3D"auto">For IPv6, things look different - route installation fails<=
+/p>
+<p dir=3D"auto">2022-08-20 15:47:24 freebsd-74-amd64/2001:608:0:814::f000:3=
+ /sbin/route -6 add -net fd00:abcd:114:201::/64 fd00:abcd:114:2::1006 -fib 0
+<br>
+add net fd00:abcd:114:201::/64: gateway fd00:abcd:114:2::1006 fib 0: route =
+already in table</p>
+<p dir=3D"auto">so, the iroute never makes it to kernel, "netstat -rn" rema=
+ins at</p>
+<p dir=3D"auto">fd00:abcd:114:201::/64            link#14                  =
+     US         tun1</p>
+<p dir=3D"auto">and packets loop as well</p>
+<p dir=3D"auto">$ traceroute6 fd00:abcd:114:201::74
+<br>
+traceroute6 to fd00:abcd:114:201::74 (fd00:abcd:114:201::74) from fd00:abcd=
+:114:2::1, 64 hops max, 28 byte packets
+<br>
+ 1  fd00:abcd:114:2::1000  1.749 ms  1.246 ms  0.930 ms
+<br>
+ 2  fd00:abcd:114:2::1  0.836 ms  1.225 ms  1.067 ms
+<br>
+ 3  fd00:abcd:114:2::1000  1.555 ms  1.631 ms  1.575 ms
+<br>
+ 4  fd00:abcd:114:2::1  1.472 ms  1.531 ms  1.677 ms</p>
+<p dir=3D"auto">So, what we do on *Linux* to handle this, is to work with r=
+oute metrics
+<br>
+(10.220.* =3D "same instances, different host, so different address range")=
+</p>
+<p dir=3D"auto">linux$ ip route |grep tun1
+<br>
+10.220.200.0/24 via 10.220.2.2 dev tun1 metric 200
+<br>
+10.220.200.74 via 10.220.2.8 dev tun1 metric 100
+<br>
+10.220.201.0/24 via 10.220.2.8 dev tun1 metric 100
+<br>
+10.220.201.0/24 via 10.220.2.2 dev tun1 metric 200
+<br>
+10.220.202.74 via 10.220.2.8 dev tun1 metric 100
+<br>
+linux$ ip -6 route |grep tun1
+<br>
+fd00:abcd:220:200::74 via fd00:abcd:220:2::1006 dev tun1 metric 100 pref me=
+dium
+<br>
+fd00:abcd:220:200::/64 dev tun1 metric 200 pref medium
+<br>
+fd00:abcd:220:201::/64 via fd00:abcd:220:2::1006 dev tun1 metric 100 pref m=
+edium
+<br>
+fd00:abcd:220:201::/64 dev tun1 metric 200 pref medium
+<br>
+fd00:abcd:220:202::74 via fd00:abcd:220:2::1006 dev tun1 metric 100 pref me=
+dium</p>
+<p dir=3D"auto">so there's always 5 routes in the active table - 2 "--route=
+" routes
+<br>
+(according to server.conf) with *metric 200*, and then 3 "--iroute" routes
+<br>
+(from ccd/) with metric DCO_IROUTE_METRIC =3D 100.</p>
+<p dir=3D"auto">Linux handles this as would a "Cisco router" do - if there =
+are two
+<br>
+identical routes with different metric, the lower-metric route is
+<br>
+used, and the other one is ignored.  So this works very nicely.</p>
+<p dir=3D"auto">Now, back to FreeBSD.</p>
+<p dir=3D"auto">  - our code does not try to set metrics on FreeBSD
+<br>
+  - my reading of route(8) does not show me anything in that direction
+<br>
+    (metric, preference, administrative distance, ...)
+<br>
+  - I do not understand FreeBSD internals well enough to know whether
+<br>
+    it can be done at all, or not.</p>
+<br></blockquote></div>
+<div class=3D"markdown" style=3D"white-space: normal;">
+<p dir=3D"auto">It=E2=80=99s rather poorly (i.e. not) documented, but it is=
+ possible to set a route metric. It=E2=80=99s called a =E2=80=98weight=E2=
+=80=99, and not actually mentioned in the man page. Or shown in netstat out=
+put.</p>
+<p dir=3D"auto">But:</p>
+<pre style=3D"margin-left: 15px; margin-right: 15px; padding: 5px; border: =
+thin solid gray; overflow-x: auto; max-width: 90vw; background-color: #E4E4=
+E4;"><code>$ sudo route add 172.16.2.0/24 10.0.2.1
+add net 172.16.2.0: gateway 10.0.2.1
+$ sudo route add 172.16.2.0/24 -weight 2 10.0.2.254
+add net 172.16.2.0: gateway 10.0.2.254
+</code></pre>
+<p dir=3D"auto">So we can add multiple routes for the same network, as long=
+ as they have a different gateway.</p>
+<p dir=3D"auto">The usual <code>netstat -rn</code> doesn=E2=80=99t show the=
+ weight. You have to use the json/xml output to get it:</p>
+<pre style=3D"margin-left: 15px; margin-right: 15px; padding: 5px; border: =
+thin solid gray; overflow-x: auto; max-width: 90vw; background-color: #E4E4=
+E4;"><code>$ netstat -rn --libxo json | jq
+=E2=80=A6
+          {
+            &quot;destination&quot;: &quot;172.16.2.0/24&quot;,
+            &quot;gateway&quot;: &quot;10.0.2.1&quot;,
+            &quot;flags&quot;: &quot;UGS&quot;,
+            &quot;flags_pretty&quot;: [
+              &quot;up&quot;,
+              &quot;gateway&quot;,
+              &quot;static&quot;
+            ],
+            &quot;weight&quot;: 1,
+            &quot;interface-name&quot;: &quot;bnxt0&quot;
+          },
+          {
+            &quot;destination&quot;: &quot;172.16.2.0/24&quot;,
+            &quot;gateway&quot;: &quot;10.0.2.254&quot;,
+            &quot;flags&quot;: &quot;UGS&quot;,
+            &quot;flags_pretty&quot;: [
+              &quot;up&quot;,
+              &quot;gateway&quot;,
+              &quot;static&quot;
+            ],
+            &quot;weight&quot;: 2,
+            &quot;interface-name&quot;: &quot;bnxt0&quot;
+          },
+</code></pre>
+<p dir=3D"auto">A higher weight gives a higher priority, so that=E2=80=99s =
+the opposite of what Linux does with metric, I believe.</p>
+</div><div class=3D"plaintext" style=3D"white-space: normal;"><blockquote s=
+tyle=3D"margin: 0 0 5px; padding-left: 5px; border-left: 2px solid #136BCE;=
+ color: #136BCE;"><p dir=3D"auto">If it can not be done, we need to documen=
+t this as "one of the issues
+<br>
+with FreeBSD DCO", and it can of course be easily workarounded in most
+<br>
+cases</p>
+<p dir=3D"auto">  --route 10.114.201.0/24
+<br>
+    --iroute 10.114.201.0/25
+<br>
+    --iroute 10.114.201.128/25</p>
+<p dir=3D"auto">will get the same thing done "when client is online route t=
+he whole /25
+<br>
+down there", but it's harder to get into people's heads :-)  (adding
+<br>
+code to auto-split such a prefix is technically possible but would be
+<br>
+quite a complication, so I'd rather solve this "with documentation").</p>
+<p dir=3D"auto">So, what shall we do?</p>
+<br></blockquote></div>
+<div class=3D"markdown" style=3D"white-space: normal;">
+<p dir=3D"auto">If I=E2=80=99m understanding everything correctly it should=
+ be relatively simple to extend networking_freebsd.c to also set a weight f=
+or each route it installs.<br>
+We=E2=80=99d have to convert the metric into a weight, which I think we cou=
+ld do as <code>weight =3D RT_MAX_WEIGHT - metric</code> (RT_MAX_WEIGHT is 1=
+6777215 /* 3 bytes */).</p>
+<p dir=3D"auto">Can you try this?</p>
+<pre style=3D"margin-left: 15px; margin-right: 15px; padding: 5px; border: =
+thin solid gray; overflow-x: auto; max-width: 90vw; background-color: #E4E4=
+E4;"><code>diff --git a/src/openvpn/networking_freebsd.c b/src/openvpn/netw=
+orking_freebsd.c
+index 0633dce7..e79af2bf 100644
+--- a/src/openvpn/networking_freebsd.c
++++ b/src/openvpn/networking_freebsd.c
+@@ -10,6 +10,8 @@
+
+ #if defined(TARGET_FREEBSD)
+
++#include &lt;net/route.h&gt;
++
+ static int
+ net_route_v4(const char *op, const in_addr_t *dst, int prefixlen,
+              const in_addr_t *gw, const char *iface, uint32_t table,
+@@ -23,12 +25,13 @@ net_route_v4(const char *op, const in_addr_t *dst, int =
+prefixlen,
+     _dst =3D ntohl(*dst);
+     _gw =3D ntohl(*gw);
+
+-    argv_printf(&amp;argv, &quot;%s %s -net %s/%d %s -fib %d&quot;,
++    argv_printf(&amp;argv, &quot;%s %s -net %s/%d %s -fib %d -weight %d&qu=
+ot;,
+                 ROUTE_PATH, op,
+                 inet_ntop(AF_INET, &amp;_dst, buf1, sizeof(buf1)),
+                 prefixlen,
+                 inet_ntop(AF_INET, &amp;_gw, buf2, sizeof(buf2)),
+-                table);
++                table,
++                RT_MAX_WEIGHT - metric);
+
+     argv_msg(M_INFO, &amp;argv);
+     status =3D openvpn_execve_check(&amp;argv, NULL, 0,
+@@ -48,12 +51,13 @@ net_route_v6(const char *op, const struct in6_addr *dst,
+     struct argv argv =3D argv_new();
+     bool status;
+
+-    argv_printf(&amp;argv, &quot;%s -6 %s -net %s/%d %s -fib %d&quot;,
++    argv_printf(&amp;argv, &quot;%s -6 %s -net %s/%d %s -fib %d -weight %d=
+&quot;,
+                 ROUTE_PATH, op,
+                 inet_ntop(AF_INET6, dst, buf1, sizeof(buf1)),
+                 prefixlen,
+                 inet_ntop(AF_INET6, gw, buf2, sizeof(buf2)),
+-                table);
++                table,
++                RT_MAX_WEIGHT - metric);
+
+     argv_msg(M_INFO, &amp;argv);
+     status =3D openvpn_execve_check(&amp;argv, NULL, 0,
+</code></pre>
+<p dir=3D"auto">Kristof</p>
+
+</div></div></body>
+
+</html>
+
+--=_MailMate_C427DE8D-62AB-4CCF-BAE5-EAC24188FEEF_=--
 
