@@ -1,11 +1,15 @@
-Message-ID: <e6f1f8b6-d486-4e27-3bef-b1e247c05c80@...2181...>
-Date: Tue, 23 Aug 2022 22:23:14 +0200
+Message-ID: <3ef4ed64-e30d-35c0-b067-1562ee75ca28@...1227...>
+Date: Wed, 24 Aug 2022 00:46:18 +0200
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20220822141806.39406-1-frank@...2641...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20220822141806.39406-1-frank@...2641...>
-Subject: Re: [Openvpn-devel] [PATCH] t_client.sh: do not require fping6
+Content-Language: en-GB
+References: <20220822154037.44320-1-maximilian.fillinger@...2507...>
+ <202208221832.27MIWLif003899@...2054...>
+ <66bcce76f7df4aa1861a3f44fb723ac7@...2507...>
+ <YwUinOP01/bMpf6l@...1296...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <YwUinOP01/bMpf6l@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Update openssl_compat.h for
+ newer LibreSSL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,31 +20,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Frank Lichtenheld <frank@...2641...>, openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, Maximilian Fillinger <maximilian.fillinger@...2507...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-
-On 22/08/2022 16:18, Frank Lichtenheld wrote:
-> fping and fping6 were merged in version 4.0,
-> released in 2017. Many recent distributions do
-> not include the compatibility symlink anymore.
+Am 23.08.22 um 20:55 schrieb Gert Doering:
+> Hi,
 > 
-> So if we find fping but not fping6 do not error
-> out but assume that fping is capable of IPv6.
+> On Tue, Aug 23, 2022 at 10:21:30AM +0000, Maximilian Fillinger wrote:
+>>> I'm a bit unsure if we need this for 2.5 - it's "long term compat"
+>>> and not very intrusive, but on the other hand, not too many people
+>>> seem to care about LibreSSL.
+>>
+>> OpenBSD has packaged 2.5.7 for snapshots, so they must already have a workaround.
 > 
-> Signed-off-by: Frank Lichtenheld <frank@...2641...>
-
-Quickly checked the behaviour of fping on gentoo (fping v5.0) and I can 
-confirm what Frank said.
-
-Also, on GH it is possible to read when the merge happened: 
-https://github.com/schweikert/fping/releases/tag/v4.0
+> Might be worth looking at their ports tree and see what patches they
+> apply...  (putting that on my heap of things to do "really soon")
 
 
-Acked-by: Antonio Quartulli <a@...2181...>
+So here is a git mirror of their CVS (sic!) tree:
 
+https://github.com/openbsd/ports/tree/master/net/openvpn
 
+- They patch sample config to use user _nobody and enable that.
+- Something in route, removing RTA_IFP
+- some stuff in tun.c
 
--- 
-Antonio Quartulli
+but they think the revamped OpenSSL 3.0 way of calculating the TLS1 PRF 
+might actually not be in 2.5 yet, so they do not need a patch for that.
+
+Arne
 
