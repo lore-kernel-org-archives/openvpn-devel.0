@@ -1,12 +1,8 @@
-Message-ID: <a6de8a2b-feea-fe02-0162-2f70d23190f1@...2181...>
-Date: Wed, 24 Aug 2022 00:51:37 +0200
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 24 Aug 2022 11:37:23 +0200
+Message-Id: <20220824093723.64618-1-arne@...1227...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20220820140124.11325-1-gert@...1296...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20220820140124.11325-1-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] DCO: require valid netbits setting for
- non-primary iroutes.
+Subject: [Openvpn-devel] [PATCH] Improve data key id not found error message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,59 +11,140 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+With delayed data key generation now with deferred auth, NCP and similar
+mechanism the "TLS Error: local/remote TLS keys are out of sync" is shown
+much too frequent and confuses a lot of people.
 
-On 20/08/2022 16:01, Gert Doering wrote:
-> The existing DCO code had extra logic for "if this is not
-> MR_WITH_NETBITS, set 32/128 as address length", but only for
-> iroute addition.  For iroute deletion, this was missing, and
-> subsequently iroute deletion for IPv4 host routes failed on
-> FreeBSD DCO (commit 3433577a99).
-> 
-> Iroute handling differenciates between "primary" iroutes (coming
-> from anm IP pool or ccd/ifconfig-push), and "non-primary" iroutes,
-> coming from --iroute and --iroute-ipv6 statements in per-client config.
-> 
-> "Primary" iroutes always use "-1" for their netbits, but since these
-> are not installed via DCO, this is of no concern here.  Whether these
-> can and should be changed needs further study on internal route
-> learning and cleanup.
-> 
-> Refactor options.c and multi.c to ensure that netbits is always set
-> for non-primary iroutes - and ASSERT() on this in the DCO path, so we can
-> find out if there might be other code violating this.
-> 
-> Change options.c::option_iroute() to always set netbits=32 for IPv4
-> host routes (options_iroute_ipv6() never differenciated).  Since
-> netmask_to_netbits() also insists on "-1" for host routes, change
-> to netmask_to_netbits2().
-> 
-> Remove all the extra MR_WITH_NETBITS logic from dco.c, where it should
-> have never appeared.
-> 
-> Signed-off-by: Gert Doering <gert@...1296...>
+This also removes the dead code of printing multi not ready keys and
+replace it with an assert.
 
-Thanks for this. It indeed makes sense and helps cleaning up a bit this 
-netbits madness.
+Factor out printing of error messages into an extra function to make
+the code easier to understand and also to only call into that function
+in the case that a key is not found and avoid the overhead.
 
-I agree with Kristof that you need to have spaces around boolean 
-operator. (How come that uncrustify did not complain? we may need to add 
-another toggle..)
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/ssl.c | 74 +++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 56 insertions(+), 18 deletions(-)
 
-sitnl does the right thing:
-
-2022-08-24 00:50:50 net_route_v4_add: 8.8.8.8/32 via 10.10.0.3 dev tun0 
-table 0 metric 100
-
-So, other than the space issue:
-
-Acked-by: Antonio Quartulli <a@...2181...>
-
-
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 33e145b3f..6a3473944 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -3202,11 +3202,61 @@ nohard:
+     return (tas == TLS_AUTHENTICATION_FAILED) ? TLSMP_KILL : active;
+ }
+ 
+-/*
+- * Pre and post-process the encryption & decryption buffers in order
+- * to implement a multiplexed TLS channel over the TCP/UDP port.
++/**
++ * We have not found a matching key to decrypt data channel packet,
++ * try to generate a sensible error message and print it
+  */
++static void
++print_key_id_not_found_reason(struct tls_multi *multi,
++                              const struct link_socket_actual *from, int key_id)
++{
++    struct gc_arena gc = gc_new();
++    const char *source = print_link_socket_actual(from, &gc);
++
++
++    for (int i = 0; i < KEY_SCAN_SIZE; ++i)
++    {
++        struct key_state *ks = get_key_scan(multi, i);
++        /*
++         * Our key state has been progressed far enough to be part of an valid
++         * session but has not generated keys. Since there can
++         * be multiple valid/semi valid key states with key id 0 (especially in
++         * p2p mode when a client reconnects), we still need
++         * to loop through all keys and only remember here that there is at
++         * least one key that is not ready yet*/
++        if (ks->state >= S_INITIAL && key_id < S_GENERATED_KEYS)
++        {
++            msg(D_MULTI_DROPPED,
++                "Key %s [%d] not initialized (yet), dropping packet.",
++                source, key_id);
++            gc_free(&gc);
++            return;
++        }
++        if (ks->state >= S_ACTIVE && ks->authenticated == KS_AUTH_FALSE)
++        {
++            msg(D_MULTI_DROPPED,
++                "Key %s [%d] no longer authorized (yet), dropping packet.",
++                source, key_id);
++            gc_free(&gc);
++            return;
++        }
++    }
+ 
++    msg(D_TLS_ERRORS,
++        "TLS Error: local/remote TLS keys are out of sync: %s "
++        "(received key id: %d, known key ids: %s)",
++        source, key_id,
++        print_key_id(multi, &gc));
++    gc_free(&gc);
++}
++
++/**
++ * Check the keyid of the an incoming data channel packet and
++ * return the matching crypto parameters in \c opt if found.
++ * Also move the \c buf to the start of the encrypted data, skipping
++ * the opcode and peer id header and setting also set \c ad_start for
++ * AEAD ciphers to the start of the authenticated data.
++ */
+ static inline void
+ handle_data_channel_packet(struct tls_multi *multi,
+                            const struct link_socket_actual *from,
+@@ -3221,7 +3271,6 @@ handle_data_channel_packet(struct tls_multi *multi,
+     int op = c >> P_OPCODE_SHIFT;
+     int key_id = c & P_KEY_ID_MASK;
+ 
+-    /* data channel packet */
+     for (int i = 0; i < KEY_SCAN_SIZE; ++i)
+     {
+         struct key_state *ks = get_key_scan(multi, i);
+@@ -3243,14 +3292,7 @@ handle_data_channel_packet(struct tls_multi *multi,
+             && ks->authenticated == KS_AUTH_TRUE
+             && (floated || link_socket_actual_match(from, &ks->remote_addr)))
+         {
+-            if (!ks->crypto_options.key_ctx_bi.initialized)
+-            {
+-                msg(D_MULTI_DROPPED,
+-                    "Key %s [%d] not initialized (yet), dropping packet.",
+-                    print_link_socket_actual(from, &gc), key_id);
+-                goto done;
+-            }
+-
++            ASSERT(ks->crypto_options.key_ctx_bi.initialized);
+             /* return appropriate data channel decrypt key in opt */
+             *opt = &ks->crypto_options;
+             if (op == P_DATA_V2)
+@@ -3284,17 +3326,13 @@ handle_data_channel_packet(struct tls_multi *multi,
+         }
+     }
+ 
+-    msg(D_TLS_ERRORS,
+-        "TLS Error: local/remote TLS keys are out of sync: %s "
+-        "(received key id: %d, known key ids: %s)",
+-        print_link_socket_actual(from, &gc), key_id,
+-        print_key_id(multi, &gc));
++    print_key_id_not_found_reason(multi, from, key_id);
+ 
+ done:
++    gc_free(&gc);
+     tls_clear_error();
+     buf->len = 0;
+     *opt = NULL;
+-    gc_free(&gc);
+ }
+ 
+ /*
 -- 
-Antonio Quartulli
+2.32.1 (Apple Git-133)
+
 
