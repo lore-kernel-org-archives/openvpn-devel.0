@@ -1,13 +1,10 @@
-Message-ID: <8e8cb534-445d-2f4f-c991-bc0e93175961@...1227...>
-Date: Wed, 24 Aug 2022 14:56:49 +0200
-MIME-Version: 1.0
-Content-Language: en-GB
-References: <20220520213250.3126372-1-arne@...1227...>
- <20220520213250.3126372-4-arne@...1227...> <2695184.KalutWefUj@...2664...>
 From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <2695184.KalutWefUj@...2664...>
-Subject: Re: [Openvpn-devel] [PATCH v2 3/4] Implement AUTH_FAIL,
- TEMP message support
+Date: Wed, 24 Aug 2022 14:58:58 +0200
+Message-Id: <20220824125858.81885-1-arne@...1227...>
+In-Reply-To: <20220520213250.3126372-1-arne@...1227...>
+References: <20220520213250.3126372-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v3] Implement AUTH_FAIL, TEMP message support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,59 +13,522 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Heiko Hund <heiko@...2662...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+This allows a server to indicate a temporary problem on the server and
+allows the server to indicate how to proceed (i.e. move to the next server,
+retry the same server, wait a certain time,...)
 
->> diff --git a/doc/man-sections/script-options.rst
-> 
-> This is more related to 4/4 and should go there for code archaeology reasons.
-> 
->> +    /* the server can suggest a backoff time to the client, it
->> +     * will still be capped by the max timeout between connections
->> +     * (300s by default) */
->> +    int server_backoff_time;
-> 
-> This should be (parsed as) an unsigned value. Negative backup requires too
-> advanced physics. ;-)
+This adds options_utils.c/h to be able to unit test the new function.
 
-*All* other connect related settings (connect_retry_seconds, 
-connect_retry_seconds_max, connect_timeout, ...) are int. Making this
-single one unsigned int means mixing integer types and having to cast
-one parameter of max_int(a, b), so I would rather be consistent in 
-having all the same type.
+Patch v2: Improve documentation, format man page better, comment that
+          protocol-flags is not a user usable option.
 
+Patch v3: cleanup parse_auth_failed_temp to use a simple const string
+          instead of a buffer
 
-> 
->> +++ b/src/openvpn/options_util.h
->> \ No newline at end of file
-> 
-> Again
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ doc/man-sections/script-options.rst  |  36 ++++++++++
+ src/openvpn/Makefile.am              |   1 +
+ src/openvpn/init.c                   |   9 ++-
+ src/openvpn/openvpn.vcxproj          |   2 +
+ src/openvpn/openvpn.vcxproj.filters  |   3 +
+ src/openvpn/options.h                |   9 ++-
+ src/openvpn/options_util.c           | 102 +++++++++++++++++++++++++++
+ src/openvpn/options_util.h           |  33 +++++++++
+ src/openvpn/push.c                   |  33 +++++----
+ src/openvpn/ssl.c                    |  13 ++--
+ src/openvpn/ssl.h                    |   3 +
+ tests/unit_tests/openvpn/Makefile.am |   1 +
+ tests/unit_tests/openvpn/test_misc.c |  40 +++++++++++
+ 13 files changed, 267 insertions(+), 18 deletions(-)
+ create mode 100644 src/openvpn/options_util.c
+ create mode 100644 src/openvpn/options_util.h
 
-uncrustify does not complain about that. Will add manually
-
-> 
->> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
->> index 1c4e637e4..3b3dce642 100644
->> --- a/src/openvpn/push.c
->> +++ b/src/openvpn/push.c
->> @@ -51,7 +52,6 @@ void
->>   receive_auth_failed(struct context *c, const struct buffer *buffer)
->>   {
->>       msg(M_VERB0, "AUTH: Received control message: %s", BSTR(buffer));
->> -    c->options.no_advance = true;
->>
->>       if (!c->options.pull)
->>       {
-> 
-> I think we want to keep this as the default. If I read the code correctly, at
-> the moment the default behavior is "advance addr" if none is given, which feel
-> wrong to me, given what I have read about the feature.
-> 
-
-That looks like a mistake
-
-Arne
+diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
+index 74c6a1fc6..be718ef26 100644
+--- a/doc/man-sections/script-options.rst
++++ b/doc/man-sections/script-options.rst
+@@ -102,6 +102,42 @@ SCRIPT HOOKS
+   the authentication, a :code:`1` or :code:`0` must be written to the
+   file specified by the :code:`auth_control_file`.
+ 
++  If the file specified by :code:`auth_failed_reason` exists and has non-empty
++  content, the content of this file will be used as AUTH_FAILED message. To
++  avoid race conditions, this file should be written before
++  :code:`auth_control_file`.
++
++  This auth fail reason can be something simple like "User has been permanently
++  disabled" but there are also some special auth failed messages.
++
++  The ``TEMP`` message indicates that the authentication
++  temporarily failed and that the client should continue to retry to connect.
++  The server can optionally give a user readable message and hint the client a
++  behavior how to proceed. The keywords of the ``AUTH_FAILED,TEMP`` message
++  are comma separated keys/values and provide a hint to the client how to
++  proceed. Currently defined keywords are:
++
++  ``backoff`` :code:`s`
++        instructs the client to wait at least :code:`s` seconds before the next
++        connection attempt. If the client already uses a higher delay for
++        reconnection attempt, the delay will not be shortened.
++
++  ``advance addr``
++        Instructs the client to reconnect to the next (IP) address of the
++        current server.
++
++  ``advance remote``
++        Instructs the client to skip the remaining IP addresses of the current
++        server and instead connect to the next server specified in the
++        configuration file.
++
++  ``advance no``
++        Instructs the client to retry connecting to the same server again.
++
++  For example, the message ``TEMP[backoff 42,advance no]: No free IP addresses``
++  indicates that the VPN connection can currently not succeed and instructs
++  the client to retry in 42 seconds again.
++
+   When deferred authentication is in use, the script can also request
+   pending authentication by writing to the file specified by the
+   :code:`auth_pending_file`. The first line must be the timeout in
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 5dbff4c6c..957494b10 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -102,6 +102,7 @@ openvpn_SOURCES = \
+ 	pkcs11_mbedtls.c \
+ 	openvpn.c openvpn.h \
+ 	options.c options.h \
++    options_util.c options_util.h \
+ 	otime.c otime.h \
+ 	packet_id.c packet_id.h \
+ 	perf.c perf.h \
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 977f0f96c..f400495f0 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -484,13 +484,15 @@ next_connection_entry(struct context *c)
+             /* Check if there is another resolved address to try for
+              * the current connection */
+             if (c->c1.link_socket_addr.current_remote
+-                && c->c1.link_socket_addr.current_remote->ai_next)
++                && c->c1.link_socket_addr.current_remote->ai_next
++                && !c->options.advance_next_remote)
+             {
+                 c->c1.link_socket_addr.current_remote =
+                     c->c1.link_socket_addr.current_remote->ai_next;
+             }
+             else
+             {
++                c->options.advance_next_remote = false;
+                 /* FIXME (schwabe) fix the persist-remote-ip option for real,
+                  * this is broken probably ever since connection lists and multiple
+                  * remote existed
+@@ -2528,6 +2530,11 @@ socket_restart_pause(struct context *c)
+             /* sec is less than 2^16; we can left shift it by up to 15 bits without overflow */
+             sec = max_int(sec, 1) << min_int(backoff, 15);
+         }
++        if (c->options.server_backoff_time)
++        {
++            sec = max_int(sec, c->options.server_backoff_time);
++            c->options.server_backoff_time = 0;
++        }
+ 
+         if (sec > c->options.ce.connect_retry_seconds_max)
+         {
+diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
+index ccd29cd87..04dda0edb 100644
+--- a/src/openvpn/openvpn.vcxproj
++++ b/src/openvpn/openvpn.vcxproj
+@@ -309,6 +309,7 @@
+     <ClCompile Include="occ.c" />
+     <ClCompile Include="openvpn.c" />
+     <ClCompile Include="options.c" />
++    <ClCompile Include="options_util.c" />
+     <ClCompile Include="otime.c" />
+     <ClCompile Include="packet_id.c" />
+     <ClCompile Include="perf.c" />
+@@ -402,6 +403,7 @@
+     <ClInclude Include="occ.h" />
+     <ClInclude Include="openvpn.h" />
+     <ClInclude Include="options.h" />
++    <ClInclude Include="options_util.h" />
+     <ClInclude Include="otime.h" />
+     <ClInclude Include="ovpn_dco_linux.h" />
+     <ClInclude Include="ovpn_dco_win.h" />
+diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
+index bf0ba7082..9c53c01ab 100644
+--- a/src/openvpn/openvpn.vcxproj.filters
++++ b/src/openvpn/openvpn.vcxproj.filters
+@@ -416,6 +416,9 @@
+     <ClInclude Include="options.h">
+       <Filter>Header Files</Filter>
+     </ClInclude>
++    <ClInclude Include="options_util.h">
++      <Filter>Header Files</Filter>
++    </ClInclude>
+     <ClInclude Include="otime.h">
+       <Filter>Header Files</Filter>
+     </ClInclude>
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index a9015e121..9f98184fe 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -275,10 +275,17 @@ struct options
+     struct connection_list *connection_list;
+ 
+     struct remote_list *remote_list;
+-    /* Do not advanced the connection or remote addr list*/
++    /* Do not advance the connection or remote addr list*/
+     bool no_advance;
++    /* Advance directly to the next remote, skipping remaining addresses of the
++     * current remote */
++    bool advance_next_remote;
+     /* Counts the number of unsuccessful connection attempts */
+     unsigned int unsuccessful_attempts;
++    /* the server can suggest a backoff time to the client, it
++     * will still be capped by the max timeout between connections
++     * (300s by default) */
++    int server_backoff_time;
+ 
+ #if ENABLE_MANAGEMENT
+     struct http_proxy_options *http_proxy_override;
+diff --git a/src/openvpn/options_util.c b/src/openvpn/options_util.c
+new file mode 100644
+index 000000000..ff5ff6cb1
+--- /dev/null
++++ b/src/openvpn/options_util.c
+@@ -0,0 +1,102 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2022 OpenVPN Inc <sales@...515...>
++ *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#elif defined(_MSC_VER)
++#include "config-msvc.h"
++#endif
++
++#include "syshead.h"
++
++#include "options_util.h"
++
++const char *
++parse_auth_failed_temp(struct options *o, const char *reason)
++{
++    struct gc_arena gc = gc_new();
++    /* skip TEMP */
++    const char *message = reason + strlen("TEMP");
++    char *m = string_alloc(message, &gc);
++
++    /* Check if the message uses the TEMP[flags]: message format*/
++    char *endofflags = strstr(m, "]");
++
++    /* Temporary failure from the server */
++    if (m[0] == '[' && endofflags)
++    {
++        message = strstr(reason, "]") + 1;
++        /* null terminate the substring to only looks for flags between [ and ] */
++        *endofflags = '\x00';
++        const char *token = strtok(m, "[,");
++        while (token)
++        {
++            if (!strncmp(token, "backoff ", strlen("backoff ")))
++            {
++                if (sscanf(token, "backoff %d", &o->server_backoff_time) != 1)
++                {
++                    msg(D_PUSH, "invalid AUTH_FAIL,TEMP flag: %s", token);
++                    o->server_backoff_time = 0;
++                }
++            }
++            else if (!strncmp(token, "advance ", strlen("advance ")))
++            {
++                token += strlen("advance ");
++                if (!strcmp(token, "no"))
++                {
++                    o->no_advance = true;
++                }
++                else if (!strcmp(token, "remote"))
++                {
++                    o->advance_next_remote = true;
++                    o->no_advance = false;
++                }
++                else if (!strcmp(token, "addr"))
++                {
++                    /* Go on to the next remote */
++                    o->no_advance = false;
++                }
++            }
++            else
++            {
++                msg(D_PUSH_ERRORS, "WARNING: unknown AUTH_FAIL,TEMP flag: %s", token);
++            }
++            token = strtok(NULL, "[,");
++        }
++    }
++
++    /* Look for the message in the original buffer to safely be
++     * able to return it */
++    if (!message || message[0] != ':')
++    {
++        message = "";
++    }
++    else
++    {
++        /* Skip the : at the beginning */
++        message += 1;
++    }
++    gc_free(&gc);
++    return message;
++}
+diff --git a/src/openvpn/options_util.h b/src/openvpn/options_util.h
+new file mode 100644
+index 000000000..17d62047b
+--- /dev/null
++++ b/src/openvpn/options_util.h
+@@ -0,0 +1,33 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2022 OpenVPN Inc <sales@...515...>
++ *  Copyright (C) 2010-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#ifndef OPTIONS_UTIL_H_
++#define OPTIONS_UTIL_H_
++
++#include "options.h"
++
++const char *
++parse_auth_failed_temp(struct options *o, const char *reason);
++
++#endif
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 27a9e0a79..0a66902a8 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -38,6 +38,7 @@
+ 
+ #include "memdbg.h"
+ #include "ssl_util.h"
++#include "options_util.h"
+ 
+ static char push_reply_cmd[] = "PUSH_REPLY";
+ 
+@@ -58,15 +59,34 @@ receive_auth_failed(struct context *c, const struct buffer *buffer)
+         return;
+     }
+ 
++    struct buffer buf = *buffer;
++
++    /* If the AUTH_FAIL message ends with a , it is an extended message that
++     * contains further flags */
++    bool authfail_extended = buf_string_compare_advance(&buf, "AUTH_FAILED,");
++
++    const char *reason = NULL;
++    if (authfail_extended && BLEN(&buf))
++    {
++        reason = BSTR(&buf);
++    }
++
++    if (authfail_extended && buf_string_match_head_str(&buf, "TEMP"))
++    {
++        parse_auth_failed_temp(&c->options, reason);
++        c->sig->signal_received = SIGUSR1;
++        c->sig->signal_text = "auth-temp-failure (server temporary reject)";
++    }
+     /* Before checking how to react on AUTH_FAILED, first check if the
+      * failed auth might be the result of an expired auth-token.
+      * Note that a server restart will trigger a generic AUTH_FAILED
+      * instead an AUTH_FAILED,SESSION so handle all AUTH_FAILED message
+      * identical for this scenario */
+-    if (ssl_clean_auth_token())
++    else if (ssl_clean_auth_token())
+     {
+         c->sig->signal_received = SIGUSR1;     /* SOFT-SIGUSR1 -- Auth failure error */
+         c->sig->signal_text = "auth-failure (auth-token)";
++        c->options.no_advance = true;
+     }
+     else
+     {
+@@ -89,19 +109,8 @@ receive_auth_failed(struct context *c, const struct buffer *buffer)
+         c->sig->signal_text = "auth-failure";
+     }
+ #ifdef ENABLE_MANAGEMENT
+-    struct buffer buf = *buffer;
+-
+-    /* If the AUTH_FAIL message ends with a , it is an extended message that
+-     * contains further flags */
+-    bool authfail_extended = buf_string_compare_advance(&buf, "AUTH_FAILED,");
+-
+     if (management)
+     {
+-        const char *reason = NULL;
+-        if (authfail_extended && BLEN(&buf))
+-        {
+-            reason = BSTR(&buf);
+-        }
+         management_auth_failure(management, UP_TYPE_AUTH, reason);
+     }
+     /*
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 0dd723f30..f7c8d6f4c 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1972,17 +1972,22 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+         /* support for exit notify via control channel */
+         iv_proto |= IV_PROTO_CC_EXIT_NOTIFY;
+ 
+-        /* support for receiving push_reply before sending
+-         * push request, also signal that the client wants
+-         * to get push-reply messages without without requiring a round
+-         * trip for a push request message*/
+         if (session->opt->pull)
+         {
++            /* support for receiving push_reply before sending
++             * push request, also signal that the client wants
++             * to get push-reply messages without requiring a round
++             * trip for a push request message*/
+             iv_proto |= IV_PROTO_REQUEST_PUSH;
++
++            /* Support keywords in the AUTH_PENDING control message */
+             iv_proto |= IV_PROTO_AUTH_PENDING_KW;
+ 
+             /* support for tun-mtu as part of the push message */
+             buf_printf(&out, "IV_MTU=%d\n", session->opt->frame.tun_max_mtu);
++
++            /* support for AUTH_FAIL,TEMP control message */
++            iv_proto |= IV_PROTO_AUTH_FAIL_TEMP;
+         }
+ 
+         /* support for Negotiable Crypto Parameters */
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 12ffd44d7..8ca4c4aa8 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -100,6 +100,9 @@
+  *  This also includes support for the protocol-flags pushed option */
+ #define IV_PROTO_CC_EXIT_NOTIFY  (1<<7)
+ 
++/** Support for AUTH_FAIL,TEMP messages */
++#define IV_PROTO_AUTH_FAIL_TEMP  (1<<8)
++
+ /* Default field in X509 to be username */
+ #define X509_USERNAME_FIELD_DEFAULT "CN"
+ 
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index 63b53a6ac..65cf9549c 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -176,5 +176,6 @@ misc_testdriver_LDFLAGS = @TEST_LDFLAGS@
+ misc_testdriver_SOURCES = test_misc.c mock_msg.c \
+     mock_get_random.c \
+ 	$(openvpn_srcdir)/buffer.c \
++	$(openvpn_srcdir)/options_util.c \
+ 	$(openvpn_srcdir)/ssl_util.c \
+ 	$(openvpn_srcdir)/platform.c
+diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvpn/test_misc.c
+index 636fc45d6..589b0bcd2 100644
+--- a/tests/unit_tests/openvpn/test_misc.c
++++ b/tests/unit_tests/openvpn/test_misc.c
+@@ -37,6 +37,7 @@
+ #include <cmocka.h>
+ 
+ #include "ssl_util.h"
++#include "options_util.h"
+ 
+ static void
+ test_compat_lzo_string(void **state)
+@@ -72,8 +73,47 @@ test_compat_lzo_string(void **state)
+     gc_free(&gc);
+ }
+ 
++static void
++test_auth_fail_temp_no_flags(void **state)
++{
++    struct options o;
++
++    const char *teststr = "TEMP:There are no flags here [really not]";
++
++    const char *msg = parse_auth_failed_temp(&o, teststr);
++    assert_string_equal(msg, "There are no flags here [really not]");
++}
++
++static void
++test_auth_fail_temp_flags(void **state)
++{
++    struct options o;
++
++    const char *teststr = "TEMP[backoff 42,advance no]";
++
++    const char *msg = parse_auth_failed_temp(&o, teststr);
++    assert_string_equal(msg, "");
++    assert_int_equal(o.server_backoff_time, 42);
++    assert_int_equal(o.no_advance, true);
++}
++
++static void
++test_auth_fail_temp_flags_msg(void **state)
++{
++    struct options o;
++
++    const char *teststr = "TEMP[advance remote,backoff 77]:go round and round";
++
++    const char *msg = parse_auth_failed_temp(&o, teststr);
++    assert_string_equal(msg, "go round and round");
++    assert_int_equal(o.server_backoff_time, 77);
++}
++
+ const struct CMUnitTest misc_tests[] = {
+     cmocka_unit_test(test_compat_lzo_string),
++    cmocka_unit_test(test_auth_fail_temp_no_flags),
++    cmocka_unit_test(test_auth_fail_temp_flags),
++    cmocka_unit_test(test_auth_fail_temp_flags_msg),
+ };
+ 
+ int
+-- 
+2.32.1 (Apple Git-133)
 
 
