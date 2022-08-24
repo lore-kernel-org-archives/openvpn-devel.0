@@ -1,15 +1,12 @@
-Date: Wed, 24 Aug 2022 13:42:28 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <YwYOpETWRZV/nYh8@...2685...>
-References: <20220818201505.656149-1-frank@...2641...>
- <20220818201505.656149-2-frank@...2641...>
- <6e140f92-f71f-35e8-cd3b-914949ef24b5@...2181...>
- <52da546c-3890-c073-aea7-a620db92520d@...1227...>
- <Yv9jXk9r5Zc9ut5c@...1296...>
+Message-ID: <d948db75-b3ae-e922-7247-25556d04ba73@...1227...>
+Date: Wed, 24 Aug 2022 14:27:21 +0200
 MIME-Version: 1.0
-In-Reply-To: <Yv9jXk9r5Zc9ut5c@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] uncrustify: remove newlines after
- return type of function prototype
+Content-Language: en-GB
+References: <20220824105311.71288-1-arne@...1227...>
+ <CAFHpkQFi+--ZwcGpr=O+tiy3j1=xU6h0tu=5DYNbqoHj_7i+mA@...278...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <CAFHpkQFi+--ZwcGpr=O+tiy3j1=xU6h0tu=5DYNbqoHj_7i+mA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Add OpenSSL 3.0 to mingw build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,30 +15,22 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Gert Doering <gert@...1296...>
-Cc: Arne Schwabe <arne@...1227...>, Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Fri, Aug 19, 2022 at 12:18:06PM +0200, Gert Doering wrote:
-> Hi,
-[...] 
-> It would be cool if uncrustify had a magic flag for that, like "if 
-> return type + function name is < 40 characters, put on a single line,
-> and if over, split" :-)
+Am 24.08.22 um 13:26 schrieb Илья Шипицин:
+> if this is not too late, can we add --libdir=mingw/opt/lib to keep 
+> current behaviour ?
+> 
+> 
+> +      # OpenSSL 3.0.5 installs itself into mingw/opt/lib64 instead of
+> +      # mingw/opt/lib, so we include both dirs in the following steps
+> +      # (pkcs11-helper and OpenVPN) so the libraries will be found
+> 
 
-Pretty sure there is nothing like that. So should we mark this patch
-just as rejected in patchwork and move on?
+We could but I am not sure why we should force it to be in the other 
+directory and deviate from the default of how the libraries are build.
 
-> Am I making sense?
-
-I understand your reasoning. I wouldn't agree that it is worth clinging
-to a style that can't be enforced just because it is slightly prettier.
-But definitely not going to waste further time arguing about this
-specific bikeshed ;)
-
-Regards,
--- 
-  Frank Lichtenheld
+Arne
 
