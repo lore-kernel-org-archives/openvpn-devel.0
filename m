@@ -1,12 +1,8 @@
-Content-Type: multipart/mixed; boundary="------------MHlBPz0HKsSNNsg3w0gq5hHy"
-Message-ID: <e4dd062b-c900-b5cb-1d15-e41461fb8e60@...515...>
-Date: Wed, 24 Aug 2022 13:47:41 +0300
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 24 Aug 2022 12:53:11 +0200
+Message-Id: <20220824105311.71288-1-arne@...1227...>
 MIME-Version: 1.0
-Content-Language: en-US
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-References: <87129f59-3b5a-8574-843d-8edbb82b4ace@...515...>
-In-Reply-To: <87129f59-3b5a-8574-843d-8edbb82b4ace@...515...>
-Subject: [Openvpn-devel] Summary of the community meeting (24th August 2022)
+Subject: [Openvpn-devel] [PATCH] Add OpenSSL 3.0 to mingw build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,260 +11,124 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------MHlBPz0HKsSNNsg3w0gq5hHy
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+This also updates the host system to ubuntu 22.04 and remove the ovpn-dco-win
+checkout as we now include the required headers in our own repository.
 
-Hi,
-
-Here's the summary of the IRC meeting.
-
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
+ .github/workflows/build.yaml | 31 ++++++++++++++-----------------
+ 1 file changed, 14 insertions(+), 17 deletions(-)
 
-COMMUNITY MEETING
-
-Place: #openvpn-meeting on libera.chat
-Date: Wed 24th August 2022
-Time: 10:30 CEST (9:30 UTC)
-
-Planned meeting topics for this meeting were here:
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2022-08-24>
-
-Your local meeting time is easy to check from services such as
-
-<http://www.timeanddate.com/worldclock>
-
-SUMMARY
-
-d12fk, dazo, djpig, kp, lev, mattock, MaxF, ordex, Pippin and plaisthos 
-participated in this meeting.
-
----
-
-Agreed that ommunity services migration tomorrow (Thursday) during EET 
-working time (9-17) is ok. Mattock will take care of it.
-
----
-
-Talked about the hackathon. It seems like November 26th is the best 
-option right now.
-
----
-
-Talked about OpenVPN 2.5. The next release, which is not urgent, should 
-include an updated tap-windows6 driver.
-
----
-
-Talked about OpenVPN 2.6. Lev had dco-win pretty comprehensively tested 
-by OpenVPN Inc. internal QA. A report of the results has been sent to 
-the mailing list. On the Linux dco side some changes were made which 
-required simultaneous userspace (openvpn) and kernel-space (ovpn-dco) 
-changes to maintain compatibility.
-
-Set the tentative release schedule for first 2.6 RC to mid-September, 
-which would make 2.6.0 November 1st a possibility.
-
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index b0f67a785..f2472fdcf 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -39,31 +39,25 @@ jobs:
+     strategy:
+       fail-fast: false
+       matrix:
++        osslver: [1.1.1q, 3.0.5]
++        target: [mingw64, mingw]
+         include:
+           - target: mingw64
+             chost: x86_64-w64-mingw32
+           - target: mingw
+             chost: i686-w64-mingw32
+ 
+-    name: "gcc-mingw - ${{matrix.target}}"
+-
+-    runs-on: ubuntu-20.04
++    name: "gcc-mingw - ${{matrix.target}} - OSSL ${{ matrix.osslver }}"
++    runs-on: ubuntu-22.04
+     env:
+       MAKEFLAGS: -j3
+       LZO_VERSION: "2.10"
+       PKCS11_HELPER_VERSION: "1.29.0"
+-      OPENSSL_VERSION: "1.1.1n"
++      OPENSSL_VERSION: "${{ matrix.osslver }}"
+       TAP_WINDOWS_VERSION: "9.23.3"
+-      CHOST: ${{ matrix.chost }}
+-      TARGET: ${{ matrix.target }}
+     steps:
+       - name: Install dependencies
+         run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip
+-      - name: Checkout ovpn-dco-win
+-        uses: actions/checkout@...2689...
+-        with:
+-          repository: OpenVPN/ovpn-dco-win
+-          path: ovpn-dco-win
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2689...
+         with:
+@@ -78,7 +72,7 @@ jobs:
+         uses: actions/cache@...2689...
+         with:
+           path: '~/mingw/'
+-          key: ${{ matrix.target }}-mingw-${{ env.OPENSSL_VERSION }}-${{ env.LZO_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSION }}
++          key: ${{ matrix.target }}-mingw-${{ matrix.osslver }}-${{ env.LZO_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSION }}
+ 
+       # Repeating  if: steps.cache.outputs.cache-hit != 'true'
+       # on every step for building dependencies is ugly but
+@@ -90,15 +84,15 @@ jobs:
+           wget -c -P download-cache/ "https://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip"
+           wget -c -P download-cache/ "https://www.oberhumer.com/opensource/lzo/download/lzo-${LZO_VERSION}.tar.gz"
+           wget -c -P download-cache/ "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11-helper-${PKCS11_HELPER_VERSION}/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
+-          wget -c -P download-cache/ "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
+           tar jxf "download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
++          wget -c -P download-cache/ "https://www.openssl.org/source/old/1.1.1/openssl-${OPENSSL_VERSION}.tar.gz" || wget -c -P download-cache/ "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz" 
+           tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
+           tar zxf "download-cache/lzo-${LZO_VERSION}.tar.gz"
+           unzip download-cache/tap-windows-${TAP_WINDOWS_VERSION}.zip
+ 
+       - name: Configure OpenSSL
+         if: steps.cache.outputs.cache-hit != 'true'
+-        run: ./Configure --cross-compile-prefix=${CHOST}- shared ${{ matrix.target }} no-capieng --prefix="${HOME}/mingw/opt" --openssldir="${HOME}/mingw/opt" -static-libgcc
++        run: ./Configure --cross-compile-prefix=${{ matrix.chost }}- shared ${{ matrix.target }} no-capieng --prefix="${HOME}/mingw/opt" --openssldir="${HOME}/mingw/opt" -static-libgcc
+         working-directory: "./openssl-${{ env.OPENSSL_VERSION }}"
+ 
+       - name: Build OpenSSL
+@@ -106,6 +100,9 @@ jobs:
+         run: make
+         working-directory: "./openssl-${{ env.OPENSSL_VERSION }}"
+ 
++      # OpenSSL 3.0.5 installs itself into mingw/opt/lib64 instead of
++      # mingw/opt/lib, so we include both dirs in the following steps
++      # (pkcs11-helper and OpenVPN) so the libraries will be found
+       - name: Install OpenSSL
+         if: steps.cache.outputs.cache-hit != 'true'
+         run: make install
+@@ -118,7 +115,7 @@ jobs:
+ 
+       - name: configure pkcs11-helper
+         if: steps.cache.outputs.cache-hit != 'true'
+-        run: OPENSSL_LIBS="-L${HOME}/mingw/opt/lib -lssl -lcrypto" OPENSSL_CFLAGS=-I$HOME/mingw/opt/include PKG_CONFIG_PATH=${HOME}/mingw/opt/lib/pkgconfig ./configure --host=${CHOST} --program-prefix='' --libdir=${HOME}/mingw/opt/lib --prefix=${HOME}/mingw/opt --build=x86_64-pc-linux-gnu --disable-crypto-engine-gnutls --disable-crypto-engine-nss --disable-crypto-engine-polarssl --disable-crypto-engine-mbedtls
++        run: OPENSSL_LIBS="-L${HOME}/mingw/opt/lib -L${HOME}/mingw/opt/lib64 -lssl -lcrypto" OPENSSL_CFLAGS=-I$HOME/mingw/opt/include PKG_CONFIG_PATH=${HOME}/mingw/opt/lib/pkgconfig ./configure --host=${{ matrix.chost }} --program-prefix='' --libdir=${HOME}/mingw/opt/lib --prefix=${HOME}/mingw/opt --build=x86_64-pc-linux-gnu --disable-crypto-engine-gnutls --disable-crypto-engine-nss --disable-crypto-engine-polarssl --disable-crypto-engine-mbedtls
+         working-directory: "./pkcs11-helper-${{ env.PKCS11_HELPER_VERSION }}"
+ 
+       - name: build pkcs11-helper
+@@ -133,7 +130,7 @@ jobs:
+ 
+       - name: Configure lzo
+         if: steps.cache.outputs.cache-hit != 'true'
+-        run: ./configure --host=${CHOST} --program-prefix='' --libdir=${HOME}/mingw/opt/lib --prefix=${HOME}/mingw/opt --build=x86_64-pc-linux-gnu
++        run: ./configure --host=${{ matrix.chost }} --program-prefix='' --libdir=${HOME}/mingw/opt/lib --prefix=${HOME}/mingw/opt --build=x86_64-pc-linux-gnu
+         working-directory: "./lzo-${{ env.LZO_VERSION }}"
+ 
+       - name: build lzo
+@@ -151,7 +148,7 @@ jobs:
+         run: cp ./tap-windows-${TAP_WINDOWS_VERSION}/include/tap-windows.h ${HOME}/mingw/opt/include/
+ 
+       - name: configure OpenVPN
+-        run: PKG_CONFIG_PATH=${HOME}/mingw/opt/lib/pkgconfig DCO_SOURCEDIR=$(realpath ../ovpn-dco-win) LDFLAGS=-L$HOME/mingw/opt/lib CFLAGS=-I$HOME/mingw/opt/include OPENSSL_LIBS="-L${HOME}/opt/lib -lssl -lcrypto" OPENSSL_CFLAGS=-I$HOME/mingw/opt/include PREFIX=$HOME/mingw/opt LZO_CFLAGS=-I$HOME/mingw/opt/include LZO_LIBS="-L${HOME}/mingw/opt/lib -llzo2" ./configure  --host=${CHOST} --disable-lz4 --enable-dco
++        run: PKG_CONFIG_PATH=${HOME}/mingw/opt/lib/pkgconfig DCO_SOURCEDIR=$(realpath ../ovpn-dco-win) LDFLAGS="-L$HOME/mingw/opt/lib -L$HOME/mingw/opt/lib64" CFLAGS=-I$HOME/mingw/opt/include OPENSSL_LIBS="-L${HOME}/opt/lib -lssl -lcrypto" OPENSSL_CFLAGS=-I$HOME/mingw/opt/include PREFIX=$HOME/mingw/opt LZO_CFLAGS=-I$HOME/mingw/opt/include LZO_LIBS="-L${HOME}/mingw/opt/lib -llzo2" ./configure  --host=${{ matrix.chost }} --disable-lz4 --enable-dco
+         working-directory: openvpn
+ 
+       - name: build OpenVPN
 -- 
+2.32.1 (Apple Git-133)
 
-Full chatlog attached
-
---------------MHlBPz0HKsSNNsg3w0gq5hHy
-Content-Type: text/plain; charset=UTF-8;
- name="openvpn_irc_meeting_chatlog_2022-08-24.txt"
-Content-Disposition: attachment;
- filename="openvpn_irc_meeting_chatlog_2022-08-24.txt"
-Content-Transfer-Encoding: base64
-
-KDExOjMwOjQ0KSBvcmRleDogYXkKKDExOjMwOjUyKSBNYXhGOiBoaSEKKDExOjMwOjU3KSBt
-YXR0b2NrOiBoaSEKKDExOjMzOjE4KSBtYXR0b2NrOiB3aG8gZG8gd2UgaGF2ZSBoZXJlIHRv
-ZGF5PwooMTE6MzM6NDEpIGRhem86IG8vCigxMTozMzo0NikgbWF0dG9jazogaHR0cHM6Ly9j
-b21tdW5pdHkub3BlbnZwbi5uZXQvb3BlbnZwbi93aWtpL1RvcGljcy0yMDIyLTA4LTI0Cigx
-MTozMzo1MCkgbGV2X186IGd1dGVuIHRhZwooMTE6MzQ6MDApIG1hdHRvY2s6IEkgaGF2ZSBv
-bmUgdG9waWMgSSB3YW50IHRvIGRpc2N1c3MgYmVmb3JlIEkgaGVhZCB0byBteSBjdXN0b21h
-cnkgbHVuY2gKKDExOjM0OjIzKSBtYXR0b2NrOiAiQ29tbXVuaXR5IHNlcnZpY2VzIG1pZ3Jh
-dGlvbiB0b21vcnJvdyAoVGh1cnNkYXkpIGR1cmluZyBFRVQgd29ya2luZyB0aW1lICg5LTE3
-KSBpcyBvaz8iCigxMTozNDozMikgbWF0dG9jazogbW9yZSBkZXRhaWxzIG9uIHRoZSB0b3Bp
-YyBwYWdlCigxMTozNTowMikgbWF0dG9jazogdHJhYyB3aWxsIGJlIGFmZmVjdGVkIGJyaWVm
-bHkgdG9tb3Jyb3csIG90aGVyd2lzZSB5b3UgKD1kZXZlbG9wZXJzKSBzaG91bGQgbm90IG5v
-dGljZSBhbnl0aGluZwooMTE6MzU6MDYpIG1hdHRvY2s6IHdpbGwvd291bGQKKDExOjM1OjIy
-KSBvcmRleDogZmluZSB3aXRoIG1lLCBhcyBsb25nIGFzIHdlIGhhdmUgc29tZSB0aW1lIHRv
-IGRvdWJsZSBjaGVjayB0aGF0IHRoaW5ncyBhcmUgd29ya2luZyBiZWZvcmUgeW91IGRpc2Fw
-cGVhciA6RAooMTE6MzU6MzYpIG1hdHRvY2s6IEkndmUgYWxsb2NhdGVkIGEgZnVsbCBkYXkg
-KHBsdXMgRnJpZGF5KSBmb3IgZml4aW5nIGFueSBpc3N1ZXMKKDExOjM2OjAzKSBtYXR0b2Nr
-OiBJIGNhbiB0eXBpY2FsbHkgZm9jdXMgb24gVGh1cnNkYXlzIGZyb20gbW9ybmluZyB0byBs
-YXRlIGV2ZW5pbmcKKDExOjM2OjEwKSBkYXpvOiBMR1RNOyBhbmQgSSBhZ3JlZSB3aXRoIG9y
-ZGV4CigxMTozNjoxNCkgb3JkZXg6IDotRAooMTE6MzY6MTYpIG1hdHRvY2s6ICsxCigxMToz
-Njo1MikgbWF0dG9jazogaGFja2F0aG9uPwooMTE6MzY6NTQpIGQxMmZrOiBvb2ggbGF0ZSwg
-aGkKKDExOjM3OjA1KSBtYXR0b2NrOiBoaSEKKDExOjM3OjI4KSBNYXhGOiBoYWNrYXRob24h
-IEhhcyBldmVyeW9uZSByZXNwb25kZWQgdG8gdGhlIHBvbGw/CigxMTozNzozNikgbWF0dG9j
-azogSSBoYXZlIG5vdCEKKDExOjM3OjM4KSBtYXR0b2NrOiBmb3Jnb3QKKDExOjM3OjQwKSBt
-YXR0b2NrOiBsaW5rPwooMTE6Mzc6NDMpIG1hdHRvY2s6IEknbGwgZG8gaXQgbm93CigxMToz
-ODowNikgUGlwcGluXzogaHR0cHM6Ly9kb29kbGUuY29tL21lZXRpbmcvcGFydGljaXBhdGUv
-aWQvZFJnRXdFUmUKKDExOjM4OjA3KSB2cG5IZWxwZXI6IFRpdGxlOiBEb29kbGUgKGF0IGRv
-b2RsZS5jb20pCigxMTozODoxNSkgbWF0dG9jazogdGhhbmtzIQooMTE6NDA6MTIpIG1hdHRv
-Y2s6IGRvbmUKKDExOjQwOjQxKSBNYXhGOiBsb29rcyBsaWtlIG5vdiAyNiBpcyB0aGUgbGVh
-c3Qgd29yc3QKKDExOjQwOjU4KSBtYXR0b2NrOiB0aGF0IGxhdGUgd2UgY291bGQgYWxsIHN0
-YXkgZm9yIENocmlzdG1hcyA6KQooMTE6NDE6MzgpIGRhem86IHllYWggLi4uIHRoYXQgZGF0
-ZSBtaWdodCBtZWFuIEkgbmVlZCB0byBsZWF2ZSBsYXRlIG9uIFNhdHVyZGF5IC4uLi4gSSds
-bCBzZWUgd2hhdCBJIGNhbiBtYW5hZ2UKKDExOjQyOjQwKSBtYXR0b2NrOiBTeW5jIHVwIG9u
-IE9wZW5WUE4gMi41IGFuZCAyLjY/IAooMTE6NDI6NDIpIE1heEY6IGlzIHRoaXMgZXZlcnlv
-bmU/IHdoYXQgYWJvdXQgY29ycCBwZW9wbGU/CigxMTo0NToxNykgcGxhaXN0aG9zOiBIbXBm
-IEkgc3RpbGwgZG9uJ3Qgc2VlIHRoZSBvdmVydmlldwooMTE6NDU6NTkpIGRhem86IE1heEY6
-IENoYXJsaWUsIEphbWVzLCBKb2hhbiBhbmQgTWFyayBhcmUgdGhlIGNvcnAgZm9sa3MgbWlz
-c2luZyAuLi4gSSdsbCBmb2xsb3cgdXAgaW50ZXJuYWxseSwgYnV0IEknZCBzYXkgdGhlIGNv
-bW11bml0eSBmb2xrcyBhcmUgbW9yZSBpbXBvcnRhbnQgaW4gdGhpcyBjb250ZXh0CigxMTo0
-NzoxNCkgcGxhaXN0aG9zOiBhcmdoIGFuZCBub3cgSSByZW1vdmVkIG15IGNob2ljZXMKKDEx
-OjQ3OjE1KSBNYXhGOiB0aGUgbWFpbiBwb2ludCBpcywgSSBuZWVkIHRvIGhhdmUgYSBsaXN0
-IHdpdGggZXZlcnlvbmUncyBuYW1lIG9uIGl0LCBhbmQgaWYgeW91J3JlIG5vdCBvbiBpdCwg
-SSBjYW4ndCBsZXQgeW91IGluCigxMTo0Nzo0Mykgb3JkZXg6IGJ5IHdoZW4gaXMgdGhpcyBy
-ZXF1aXJlZD8KKDExOjQ4OjE3KSBNYXhGOiBub3Qgc3VyZSwgYnV0IGlmIHdlIHNldHRsZSBv
-biBhIGRhdGUgaW4gTm92ZW1iZXIsIEkgZG9uJ3QgbmVlZCBpdCByaWdodCBub3cKKDExOjQ5
-OjIwKSBwbGFpc3Rob3M6IHllYWggSSB0aGluayB3ZSBjYW4gZ2V0IHRoYXQgdmVyeSBzb29u
-IGFmdGVyIHdlIGZpbmFsaXNlIHRoZSBkYXRlCigxMTo0OToyNikgZDEyZms6IGNhbiB3ZSBm
-aXggdGhlIGRhdGUgdG9kYXk/CigxMTo1MToyMSkgcGxhaXN0aG9zOiB5ZWFoIEkgd291bGQg
-c2F5IHdlIHNob3VsZAooMTE6NTM6MjkpIGRhem86ICsxCigxMTo1NDoyNCkgTWF4Rjogbm92
-IDI2IGxvb2tzIHRoZSBiZXN0IHdpdGggb25lICJjYW5ub3QgYXR0ZW5kIiBhbmQgb25lICJp
-ZiBuZWVkIGJlIiAoZGF6byBtaWdodCBsZWF2ZSBvbiBTYXR1cmRheSBldmVuaW5nKQooMTE6
-NTQ6NDApIE1heEY6IG5vdiAxMiBoYXMgb25lICJjYW5ub3QgYXR0ZW5kIiBhbmQgdHdvICJp
-ZiBuZWVkIGJlIgooMTE6NTU6MDcpIGRhem86IHllYWggLi4uIEp1c3QgY2hlY2tlZCBmbGln
-aHRzIGFuZCB0cmFpbnMsIGlmIEkgbmVlZCB0byBsZWF2ZSBvbiBTYXQsIEkgbmVlZCB0byBm
-ZXRjaCBhIHRyYWluIDE3OjI0IGZyb20gRGVsZnQKKDExOjU1OjIxKSBvcmRleDogd2UgZG9u
-J3QgaGF2ZSBtdWNoIGNob2ljZSB0aGVuLCB1bmxlc3Mgd2UgYXNrIHRoZSAiaWYgbmVlZCBi
-ZSIgb24gdGhlIDEyIGlmIHRoZXkgY2FuIHN0aWxsIG1ha2UgaXQgdG8gdGhlIHdob2xlIG1l
-dGluZwooMTE6NTU6MjgpIGRhem86IGFuZCBhcnJpdmUgMTI6MDAtMTI6MzAtaXNoCigxMTo1
-NToyOSkgb3JkZXg6IHRoZW4gMTIgd291bGQgYmUgYmV0dGVyIHRvIHdlIHJlYWxseSBoYXZl
-IGV2ZXJ5Ym9keSBmb3IgdGhlIHdob2xlIG1lZXRpbmcKKDExOjU1OjI5KSBNYXhGOiB0aGF0
-IHNvdW5kcyBwcmV0dHkgY2xvc2UgdG8gY2Fubm90IGF0dGVuZAooMTE6NTU6NTIpIGRhem86
-IChhcnJpdmUgb24gRnJpZGF5KQooMTE6NTY6MjIpIG9yZGV4OiBzdGlsbCBzdHJldGNoZWQg
-SSdkIHNheS4gd2hhdCBhYm91dCBhc2tpbmcgY3JvbjJfXyBhbmQga3AgdGhlaXIgcGxhbiBv
-biBOb3YgMTJ0aD8gbWF5YmUgdGhleSBjYW4gc3RpbGwgZG8gaXQgcmVhc29uYWJseQooMTE6
-NTY6MjMpIE1heEY6IEkgaGF2ZW4ndCBoZWFyZCBmcm9tIHRoZSAiaWYgbmVlZCBiZSJzIG9u
-IG5vdiAxMi4gSWYgdGhlcmUncyAqdHdvKiBwZW9wbGUgd2hvIGhhdmUgdG8gbGVhdmUgYXQg
-MTcuMDAsIHRoYXQncyB3b3JzZQooMTE6NTY6MzgpIGRhem86IDEydGggaGFzIDIgIm5lZWQg
-YmUiLCAyNnRoIGhhcyAxCigxMTo1Njo0NCkgb3JkZXg6IE1heEY6IGl0IG1heSBiZSB0aGV5
-IGRvbid0IGZhdm91ciB0aGF0IGRhdGUsIGJ1dCBzdGlsbCBjYW4gam9pbiB0aGUgd2hvbGUg
-bWVldGluZyBpZiBkZWNpZGVkIHRvIGJlIG9uIHRoYXQgZGF0ZQooMTE6NTY6NTYpIGRhem86
-IDI2dGggaXMgdGhlIGJlc3QsIGhvdyBJIHNlZSBpdAooMTE6NTc6MjUpIG9yZGV4OiBkYXpv
-OiB0aGUgIm5lZWQgYmUiIGlzIGdyZXkuIHlvdXIgc2l0dWF0aW9uIGlzIGNsZWFyLCBidXQg
-a3AncyBhbmQgY3JvbjJfXydzIGlzIG5vdC4gbWF5YmUgdGhleSBjYW4gZWFzaWx5IG1ha2Ug
-aXQKKDExOjU3OjM2KSBvcmRleDogaWYgdGhleSBhbHNvIGhhdmUgYmlnIHRyb3VibGVzLCB0
-aGVuIHdlIGdvIGZvciAyNnRoCigxMTo1Nzo0MCkgb3JkZXg6IGJ1dCBJJ2Qgc3VnZ2VzdCB0
-byBhc2sgdGhlbQooMTE6NTc6NTgpIG9yZGV4OiBubz8KKDExOjU4OjEzKSBrcDogSG1tLCBJ
-J20gbm90IHN1cmUgd2h5IEkgZGlkbid0IG1hcmsgdGhlIE5vdi4gMTJ0aC4gTXkgY2FsZW5k
-YXIgaXMgY2xlYXIgb24gdGhhdCBkYXkuCigxMTo1ODoxNCkgTWF4RjogYWdyZWUhIGFyZSB0
-aGV5IGhlcmU/CigxMTo1ODoyNSkgTWF4Rjogb25lIGRvd24gOikKKDExOjU4OjI1KSBvcmRl
-eDoga3AganVzdCBlbWVyZ2VkIDopCigxMTo1ODozNykgb3JkZXg6IGNyb24yX18gaXMgb24g
-dmFjYXRpb24gc28gbm90IGhlcmUgLSBlYXNpZXIgdG8gcmVhY2ggdmlhIGVtYWlsIEkgdGhp
-bmsKKDExOjU4OjUyKSBvcmRleDogYnV0IG1heSBub3QgcmVwbHkgc29vbgooMTE6NTg6NTkp
-IG9yZGV4OiBzbyB3ZSBhcmUgYXQgMSB2cyAxIG5lZWQgYmUKKDExOjU5OjMzKSBvcmRleDog
-a3A6IHlvdSBtYXJrZWQgbm92IDEydGggKGZyaSB0byBzdW4pIGFzICJpZiBuZWVkIGJlIiwg
-YnV0IHlvdSdyZSBzYXlpbmcgaXQgaXMgYWN0dWFsbHkgYSBncmVlbiBkYXRlIGZvciB5b3U/
-CigxMTo1OTo1MCkga3A6IFllYWguCigxMTo1OTo1Nikgb3JkZXg6IGNvb2whCigxMjowMDox
-MCkgb3JkZXg6IE1heEY6IHRoZW4gbWF5YmUgeW91IGNvdWxkIHNlbmQgYW4gZW1haWwgdG8g
-Y3JvbjJfXyBhbmQgYWZ0ZXIgdGhhdCB3ZSBtYWtlIGEgZGVjaXNpb24/CigxMjowMDoxMikg
-cGxhaXN0aG9zOiBrcDogaXQgaXMgdGhlIHdob2xlIHdlZWtlbmQgCigxMjowMDoxMykgb3Jk
-ZXg6IGRhem86IG1ha2VzIHNlbnNlIHRvIHlvdT8KKDEyOjAwOjE4KSBtYXR0b2NrMiBbfnlh
-YWljQG1vYmlsZS1hY2Nlc3MtYmNlZTQ1LTIyMC5kaGNwLmluZXQuZmldIMOoIGVudHJhdG8g
-bmVsbGEgc3RhbnphLgooMTI6MDA6MjApIHBsYWlzdGhvczoga3A6IHRoZSBkb29kbGUgaGFz
-IG9ubHkgb25lIGRheQooMTI6MDA6MjEpIGtwOiBJIHRoaW5rIEkgbWVhbnQgdGhlIHdlZWtl
-bmQgYWZ0ZXIsIHRoZSAxOXRoLCBiZWNhdXNlIEknbGwgYmUgYXQgY29uY2VydCBvbiB0aGUg
-MjB0aCwgYnV0IEkgY291bGQgbWFrZSB0aGF0IHdvcmsgaWYgSSBoYWQgdG8uCigxMjowMDoy
-MykgTWF4Rjogb3JkZXggc291bmRzIGdvb2QKKDEyOjAwOjI3KSBkYXpvOiBvcmRleDogbWFr
-ZXMgc2Vuc2UhCigxMjowMDoyOSkga3A6IFRoZSB3aG9sZSB3ZWVrZW5kIHdvcmtzLgooMTI6
-MDA6MzApIG9yZGV4OiBjb29sIQooMTI6MDA6MzgpIG9yZGV4OiBrcDogY29vbCwgdGhhbmtz
-CigxMjowMToxMykgb3JkZXg6IGFueXRoaW5nIGVsc2UgZm9yIHRoZSBoYWNrYXRob24/Cigx
-MjowMToyMCkgTWF4RjogYWxzbywgaWYgd2UgYWxyZWFkeSBrbm93IGl0J3MgaW4gTm92ZW1i
-ZXIsIHRoZW4gSSBjYW4gdGVsbCB0aGF0IHRvIHBlb3BsZSBhdCB3b3JrLCBzbyBpdCdzIGxl
-c3MgdXJnZW50CigxMjowMTozNSkgTWF4Rjogc28gbm8gYmlnIGRlYWwgaWYgd2UgZG9uJ3Qg
-c2VsZWN0IHRoZSBkYXRlIHRvZGF5CigxMjowMTo0Mykgb3JkZXg6IGl0IHNlZW1zIHRob3Nl
-IHR3byBkYXRlcyBhcmUgdGhlIHJlYWwgY2FuZGlkYXRlcwooMTI6MDI6MDYpIG9yZGV4OiBN
-YXhGOiB3b3VsZCB5b3UgYmUgYWJsZSB0byBvZmZlciBhIGNvdXBsZSBvZiBvcHRpb25zIGZv
-ciB0aGUgYWNjb21tb2RhdGlvbj8gKHNpbWlsYXJseSBhcyBkb25lIG9uIHRoZSB3aWtpIGZv
-ciB0aGUgcGFzdCBlZGl0aW9ucykKKDEyOjAyOjE1KSBvcmRleDogc28gd2Uga25vdyB3aGF0
-J3MgbW9yZSBjb252ZW5pZW50L2Nsb3NlcgooMTI6MDI6MjIpIE1heEY6IHN1cmUhCigxMjow
-MzoyNCkgcGxhaXN0aG9zOiB0aGUgaWtlYSBob3RlbCB3YXMgbmljZQooMTI6MDM6MzEpIGQx
-MmZrOiBvX08KKDEyOjAzOjU4KSBvcmRleDogOkQKKDEyOjA0OjAxKSBvcmRleDogbmV4dD8K
-KDEyOjA0OjI1KSBtYXR0b2NrOiB5ZXMKKDEyOjA0OjQyKSBtYXR0b2NrOiBzeW5jLXVwPwoo
-MTI6MDQ6NDUpIG9yZGV4OiB5YXAKKDEyOjA0OjUzKSBvcmRleDogMi41OiBuZXcgd2luZG93
-cyBidW5kbGUgbmVlZGVkPwooMTI6MDY6MTEpIGxldl9fOiB3ZWxsIG5vdCB1cmdlbnQKKDEy
-OjA2OjMyKSBsZXZfXzogYnV0IG5leHQgdGltZSB3ZSBkbyByZWxlYXNlIHdlIGNvdWxkIGlu
-Y2x1ZGUgbmV3IHRhcCBkcml2ZXIKKDEyOjA2OjM0KSBvcmRleDogb2sKKDEyOjA2OjQ1KSBt
-YXR0b2NrOiArMQooMTI6MTM6MzEpIGRhem86IG9uIDIuNiAuLi4gSSdtIGdvaW5nIHRvIGZv
-bGxvdyB1cCB3aXRoIE5NIGZvbGtzIHRoaXMgd2VlazsgbGFzdCB3ZWVrIHdhcyB0b28gYnVz
-eQooMTI6MTQ6MTQpIGRhem86IG9uZSBxdWVzdGlvbiBhYm91dCB0aGUgIkxpbnV4IHBvcnQg
-YnVpbGRlcnMgYXdhcmUiIC4uLi4gd2hhdCdzIHRoYXQgYWJvdXQsIG5lZWRpbmcgbmV3ZXIg
-a2VybmVsIHBhY2thZ2U/CigxMjoxNzowOCkgZGF6bzogbm9ib2R5IHdhbnRzIHRvIGRvIHN5
-bmMtdXBzIGl0IHNlZW1zIC4uLi4gOi1QCigxMjoxNzozOCkgbGV2X186IG9uIDIuNiAgLSBJ
-IGFza2VkIGNvcnAgUUEgdG8gdGVzdCBkY28td2luIGFudCBpdCBsb29rcyBnb29kIC0gaGUg
-aGFzIGNvdmVyZWQgbWFueSBzY2VuYXJpb3MgLSBJJ3ZlIHNlbnQgcmVwb3J0IHRvIG1haWxp
-bmcgbGlzdCAKKDEyOjIwOjExKSBsZXZfXzogYWxzbyByb2IwIHZvbHVudGVlcmVkIHRvIHRl
-c3QgaXQKKDEyOjIxOjA3KSBvcmRleDogZGF6bzogdGhhdCBwb3J0cyB0aGluZyBpcyBzb21l
-dGhpbmcgY3JvbjJfXyBhZGRlZCBhbmQgaXQgaXMgYnNkIHNwZWNpZmljLCBzby4uLm5vIGNs
-dWUgOkQKKDEyOjIxOjI2KSBvcmRleDogYWxzbywgSSByZXZpZXdlZCBjcm9uMl9fIE1SX1dJ
-VEhfTkVUQklUUyBwYXRjaC4gc28gdGhhdCdzIGdvb2QgZm9yIG5vdwooMTI6MjI6MDApIE1h
-eEY6IGRjby13aW4gaXMgcmVsZXZhbnQgZm9yIG1lIGFzIHdlbGwsIGJ1dCBpdCB3aWxsIGJl
-IHNvbWUgdGltZSBiZWZvcmUgSSBjYW4gZ2V0IGFyb3VuZCB0byB0ZXN0aW5nIGl0CigxMjoy
-MjoxOCkgTWF4RjogMi41IHdlZWtzIG9yIHNvCigxMjoyMjo0MCkgcGxhaXN0aG9zOiBkYXpv
-OiBBUEkgY2hhbmdlZCBiYXNpY2FsbHkKKDEyOjIzOjM3KSBkYXpvOiBwbGFpc3Rob3M6IG92
-cG4tZGNvIG9yIGNvcmUga2VybmVsIEFQSXM/CigxMjoyNDoyNikgb3JkZXg6IHdlbGwsIG5v
-dCByZWFsIEFQSSBjaGFuZ2UKKDEyOjI0OjMzKSBvcmRleDogYnV0IHdlIGltcGxlbWVudGVk
-IHNvbWUgZml4ZXMKKDEyOjI0OjQzKSBvcmRleDogd2hpY2ggd2VyZSBkdWFsIHNpZGUgKGNo
-YW5nZSBhIGJpdCB1c2Vyc3BhY2UgYW5kIGNoYW5nZSBvdnBuLWRjbyB0b28pCigxMjoyNDo1
-Nykgb3JkZXg6IHNvIGNyb24yX18gd2FudHMgdG8gbWFrZSBzdXJlIHRoYXQgd2hlbiB1c2Vy
-c3BhY2UgaXMgdXBncmFkZWQsIHdlIGFsc28gdXBncmFkZSBvdnBuLWRjbyB0byBiZSBzdXJl
-CigxMjoyNTowOSkgZGF6bzogSWYgaXQgaXMgdGllZCB0byB0aGUgb3Zwbi1kY28ga2VybmVs
-IG1vZHVsZSwgdGhlbiBpdCdzIGVhc3kgdG8gZml4IHRoYXQuICBJZiB0aGUga2VybmVsIHBh
-Y2thZ2UgbmVlZHMgdG8gYmUgdXBkYXRlZCwgdGhhdCdzIGEgZGlmZmVyZW50IGJlYXN0Cigx
-MjoyNToyNSkgb3JkZXg6IG5vIEkgdGhpbmsgaXQgd2FzIGFib3V0IG92cG4tZGNvIHBhY2th
-Z2Ugb25seQooMTI6MjU6NDYpIGRhem86IGFoaCwgb2theSAuLi4gdGhlIGJ1bGxldCBwb2lu
-dCBzYWlkICJrZXJuZWwgcGFja2FnZSIsIHdoaWNoIG1hZGUgbWUgY29uY2VybmVkCigxMjoy
-NTo1MCkgb3JkZXg6IGJhc2ljYWxseSB3ZSBjaGFuZ2VkIHNvbWV0aGluZyBpbiBvdnBuLWRj
-IGFuZCB0aGF0IHNvbWV0aGluZyBhbGxvd2VkIHRvIG1ha2UgY29kZSBpbiB1c2Vyc3BhY2Ug
-ZWFzaWVyLiBub3cgaWYgeW91IHVwZGF0ZSBvbmx5IHVzZXJzcGFjZSB3aXRob3V0IHRoZSBj
-aGFuZ2UgaW4gb3Zwbi1kY286IGthYm9vbQooMTI6MjU6NTMpIG9yZGV4OiB5ZWFoCigxMjoy
-NjowMSkgb3JkZXg6IGJ1dCBoZSBpcyBwcm9iYWJseSByZWZlcnJpbmcgdG8gb3Zwbi1kY28K
-KDEyOjI2OjA1KSBkYXpvOiBCdXQgd2l0aCBvdnBuLWRjbyB1cGRhdGVzLCBJIG5lZWQgdG8g
-dGhyZWFkIGNhcmVmdWxseSB0aG91Z2gsIHNvIEkgZG9uJ3QgYnJlYWsgb3BlbnZwbjMtbGlu
-dXggdXNlcnMgd2l0aCBEQ08gKHNvbWUgQ2xvdWQgdXNlcnMgaGFzIGNsYWltZWQgdGhleSB3
-YW50ZWQgdG8gdGVzdCBpdCkKKDEyOjI2OjI3KSBvcmRleDogdGhlcmUgd2FzIG5vIEFQSSBi
-cmVha2luZyBjaGFuZ2UKKDEyOjI2OjQ3KSBkYXpvOiBva2F5LCBnb29kIC4uLiB0aGVuIEkn
-bGwgc3BpbiB1cCBzb21lIG5ldyBvdnBuLWRjbyBSUE1zCigxMjoyNzoxMikgb3JkZXg6IGp1
-c3Qgb3BlbnZwbjIgcmVxdWlyZWQgYSBuZXdlciBvdnBuLWRjbyB0byBtYWtlIHVzZSBvZiBh
-IG5ldyBiZWhhdmlvdXIgKGkuZS4gYmVpbmcgYWxsb3dlZCB0byBub3Qgc2VuZCBzb21lIGF0
-dHJpYnV0ZXMgaW4gTkVXX1BFRVIpCigxMjoyNzoxNSkgbWF0dG9jazogLT4gbHVuY2gsIHdp
-bGwgZm9sbG93IHRoZSBkaXNjdXNzaW9uIG9uIG15IG1vYmlsZQooMTI6Mjc6MjUpIG9yZGV4
-OiBzbyB5ZWFoLCBub3RoaW5nIGJyZWFraW5nCigxMjoyNzozNikgb3JkZXg6IHNob3VsZCB3
-ZSB0cnkgdG8gYWdyZWUgb24gYSByZWxlYXNlIGRhdGUgZm9yIDIuNiA/CigxMjoyNzo0NSkg
-b3JkZXg6IGNyb24yX18gcHJvcG9zZWQgTm92IDFzdAooMTI6Mjg6MDYpIGRhem86IGJyYXZl
-ISBCdXQgSSBhZ3JlZQooMTI6Mjg6NTMpIGxldl9fOiBNYXhGOiBwaW5nIG1lIGlmIHlvdSBo
-YXZlIGFueSBkY28td2luIHJlbGF0ZWQgcXVlc3Rpb25zCigxMjoyOTowMCkgb3JkZXg6IHRo
-YXQgd291bGQgYmUgbmljZSBhcyBpdCB3aWxsIGFsbG93IHBlcmZlY3Qgc3luYyB3aXRoIHNv
-bWUgbGludXggZGlzdHJvcwooMTI6Mjk6MTApIGxldl9fOiBwZXJmZWN0IHN5bmMhCigxMjoy
-OToxNikgb3JkZXg6IGluIG9yZGVyIHRvIGdldCB0aGVyZSwgYnkgd2hlbiBzaG91bGQgd2Ug
-ZnJlZXplL2JyYW5jaCBtYXN0ZXI/CigxMjozMTowMCkgZGF6bzogd2l0aCBOb3YgMXN0IGFz
-IHRhcmdldCByZWxlYXNlIGRhdGUgLi4uIEknZCBzYXkgbWlkLXNlcHRlbWJlciB0byBnbyB0
-aHJvdWdoIHRoZSBSQyBjeWNsZXMKKDEyOjMyOjM2KSBvcmRleDogYXkhCigxMjozMjo1MCkg
-b3JkZXg6IHRoYXQnZCBiZSBuaWNlIHRvIGFjaGlldmUKKDEyOjMzOjA3KSBvcmRleDogYW55
-d2F5LCBmb3IgZGNvICsgb3NzbCAzLjAgYnVpbGQgaXNzdWU6IEkgd2lsbCBwcm9iYWJseSBz
-ZW5kIGEgcGF0Y2ggYXNhcAooMTI6MzM6MjEpIG9yZGV4OiBub3RoaW5nIG1ham9yLCBqdXN0
-IHVidW50dSBoYXMgYSBicm9rZW4gLnBjIGZpbGUgYW5kIHdlIHdhbnQgdG8gd29ya2Fyb3Vu
-ZCB0aGluZ3MgbGlrZSB0aGlzCigxMjozNDoyNCkgZGF6bzogb2ggZnVuIC4uLi4gOi8KKDEy
-OjM1OjAxKSBvcmRleDogeWVhaCwgYnV0IGl0IHdlIHJldmVydCB0aGUgd2F5IExERkxBR1Mg
-KG9yIHNpbWlsYXIpIGFyZSBwcm92aWRlZCwgd2Ugc2hvdWxkIGJlIGFibGUgdG8gZWFzaWx5
-IG92ZXJjb21lIHRoZSBpc3N1ZQooMTI6MzU6NTQpIGRhem86IHJldmVydCBvciByZXZlcnNl
-PwooMTI6Mzk6MDApIGRhem86IEkgYmVsaWV2ZSBJIHByb3Bvc2VkIGEgZml4IHNvbWV3aGVy
-ZSwgd2hlcmUgc29tZSBmbGFncyB3YXMgbm90IGFwcGVuZGVkIHRvIHRoZSBtYWluIENGTEFH
-Uy9MREZMQUdTIC4uLiBidXQgYWRkZWQgaW4gYWR2YW5jZSBpbiBzb21lIE1ha2VmaWxlLmFt
-IGZpbGVzIHdoZXJlIG5lZWRlZAooMTI6Mzk6MzApIGRhem86IElJUkM7IHRoaXMgd2FzIG9u
-IHNvbWUgc3lzdGVtcyB3aGljaCBoYWQgYm90aCBkaXN0cm8gb3BlbnNzbCBwYWNrYWdlIGlu
-c3RhbGxlZCArIHNlbGYtYnVpbHQgYW5kIGluc3RhbGxlZCBvcGVuc3NsIDMuMCBpbiAvdXNy
-L2xvY2FsCigxMjo1Mjo1MykgKioqZGF6byB0YWtlIGl0IHRoZSBtZWV0aW5nIGhhcyBjb25j
-bHVkZWQK
-
---------------MHlBPz0HKsSNNsg3w0gq5hHy--
 
