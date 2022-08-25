@@ -1,15 +1,15 @@
-Date: Thu, 25 Aug 2022 22:20:28 +0200
+Date: Thu, 25 Aug 2022 22:33:04 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <YwfZjPRBjHwOTDSB@...1296...>
-References: <20220813204224.22576-1-a@...2181...>
- <20220813204224.22576-5-a@...2181...>
+Message-ID: <YwfcgJal2d7iqMc4@...1296...>
+References: <20220722134902.22092-1-frank@...2641...>
+ <202207221509.26MF98lA032041@...2054...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="iIFHIp+zwdKq08NE"
+ protocol="application/pgp-signature"; boundary="FwDPFHCG+7RZe1LM"
 Content-Disposition: inline
-In-Reply-To: <20220813204224.22576-5-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v101 5/7] dco-win: update GH Actions
- config file
+In-Reply-To: <202207221509.26MF98lA032041@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: t_client: Allow to force
+ FAIL on prerequisite fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,35 +18,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---iIFHIp+zwdKq08NE
+--FwDPFHCG+7RZe1LM
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sat, Aug 13, 2022 at 10:42:22PM +0200, Antonio Quartulli wrote:
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
->  .github/workflows/build.yaml | 7 +------
->  1 file changed, 1 insertion(+), 6 deletions(-)
+On Fri, Jul 22, 2022 at 05:09:08PM +0200, Gert Doering wrote:
+> Acked-by: Gert Doering <gert@...1296...>
 >=20
-> diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-> index c89d3c8c..6bd108b9 100644
-> --- a/.github/workflows/build.yaml
-> +++ b/.github/workflows/build.yaml
+> "makes sense" - in a buildbot (or any other CI) environment, do not=20
+> silently skip missing prereqs, but fail hard.
+>=20
+> Tested with "make check" ;-) - with and without TCLIENT_SKIP_RC=3D1
+> and RUN_SUDO=3Ddoas / RUN_SUDO=3Dfalse, etc.
+>=20
+> Your patch has been applied to the master branch.
+>=20
+> commit 79932b94513303567fdd5d1c4e0abb79e6642b6e
+> Author: Frank Lichtenheld
+> Date:   Fri Jul 22 15:49:02 2022 +0200
+>=20
+>      t_client: Allow to force FAIL on prerequisite fails
 
-This does no longer apply (Arne has sneaked in other updates to build.yaml).
+Because it makes sense, applied to release/2.5 as well now...
 
-When you send a rebase, please include something resembling a commit
-message :-) - otherwise the "empty commit message whitespace dragon"
-will eat the patch.
+commit 26b04fce5a17f8a8670c005d66e9260dbdc88cfe
+Author: Frank Lichtenheld <frank@...2641...>
+Date:   Fri Jul 22 15:49:02 2022 +0200
 
-gert
+    t_client: Allow to force FAIL on prerequisite fails
+=20=20=20=20
+    (cherry picked from commit 79932b94513303567fdd5d1c4e0abb79e6642b6e)
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -57,22 +65,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---iIFHIp+zwdKq08NE
+--FwDPFHCG+7RZe1LM
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJjB9mMAAoJEB2Cnv7KVigSF3cL+wTcd/ziLn2oo0LsUaNTSmzF
-qftVFbtFc9Qe/bYqUGQ0wHZ9tH+WYePt7+GksAMmmiBscdVu0Mo+CIi5iSJgj6jo
-htYthfSYb32q/EnkwRUpa/Z+PcPUPd2dGisBTnq4pV7FMS0zP5WNHYNOUaIToYwE
-wJoVwzBmNm5t6//FWdHfgMObCt9/qiXdNJWkhFbtZkTUoCpsDj9qmOcPCr6eye2T
-b8jO/BzfqEY91Gj5TLw+6NgJwYB9a8bpPB8PGsxBck+wFIXMM9dIR7S0OlhTORCU
-I/EMG77+6OEE+A2qHtbsqCxfpEVv3lZd84zC2pdPX4U1UEFvikflE6gHTrzJHLpV
-xnQ9ebwiXYSgU1YoV2qlqpTBe3CyfwR5b6UDNYbA8YYkqg2R6suuJTFTQ9NmRzFq
-zAG8sKj1GpvzdSdl6ejPmL0NecpCkmkfJ63J0njuiv99PUN65c+kUhEqA8AE8Wn3
-ZW9T4WVdbRNJxRQX6yceYAJRVF51r3Rj6+yugX5j/w==
-=2LBu
+iQGcBAEBAgAGBQJjB9yAAAoJEB2Cnv7KVigSUkEL/0wiAxniHfVat+Cj4dOduX9b
+DQe9qfgcAp8mZKJcZ8ehgfWtMbvzcPwprSBEo3wwnXFjqRdMGN6BDHWFB7KwXLs+
+adUqSLZ5iDBrqP/PC6eoBfvAir/8XG9CwVyYKj1YLZ7XeOFRYSbTq+N87PrKsPJQ
+B6MwFmNe8Jnb26RUx6sJOe0ioq0YwAOd/bZRlD8iYw/cxXjIxOYYU4GNf9JH+yHQ
+nH2dLwF5n562lpWR+vamjXcNXEULhsOq31Ym6lIOtluZEH4J3JEI4V2M6ObgGPEr
+Qk5R0lIYQTp7dA4pXLPzRmQ/3MsExe15UE5y8z6aaK+eHB9DPcPALsZu5dPOqDyV
+pI1UgbQrOOEflKUXBVjwGXqcv6krSPmjDeRDB6uTKVhdFm1Qsdks4qUVsJBhEzXn
+aXCJwy30z77Ztw8uouCSWVDm5GfWCpnM0pcZG8SVw8uX2Gg+BjdZtZ6kn+CkLpdr
+OoxSEaEMJCrGqqwkGVxcMJTAV8snxQPRV0mRUlG7rA==
+=y0Lh
 -----END PGP SIGNATURE-----
 
---iIFHIp+zwdKq08NE--
+--FwDPFHCG+7RZe1LM--
 
