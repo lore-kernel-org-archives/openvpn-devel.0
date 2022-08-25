@@ -1,10 +1,14 @@
-Date: Thu, 25 Aug 2022 22:33:23 +0200 (CEST)
-Message-Id: <202208252033.27PKXNDK084241@...2054...>
+Date: Thu, 25 Aug 2022 22:36:21 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220822141806.39406-1-frank@...2641...>
-References: <20220822141806.39406-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: t_client.sh: do not require
- fping6
+Message-ID: <YwfdRXTtp91VfJYd@...1296...>
+References: <20220824165718.102002-1-arne@...1227...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="m2+w/4P1CNHkSpDe"
+Content-Disposition: inline
+In-Reply-To: <20220824165718.102002-1-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix delcarion of pubkeys in
+ test_provider.c in MSVC builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,42 +17,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks for working on that ancient script :-) - so far I mostly just
-fixed the buildslaves by adding wrapper scripts, but of course this
-is nicer.
+--m2+w/4P1CNHkSpDe
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-I have not actually *tested* this yet, but the change looks reasonable,
-and the buildbots will tell us soon enough...
+Hi,
 
-To avoid the conflict when pulling up to release/2.5, I've just
-applied the "Allow to force FAIL on prerequisite fails" (79932b94)
-to 2.5 as well... since we do want good testing for 2.5, that one
-is useful, too.
+On Wed, Aug 24, 2022 at 06:57:18PM +0200, Arne Schwabe wrote:
+>   Error: test_provider.c(74): error C2099: initializer is not a constant
+>=20
+> Fix this issue by making the const char* to const char[]. This is probably
+> of one the weird array decay corner cases
 
-Your patch has been applied to the master and release/2.5 branch.
+Out of curiosity - does the error go away if you just remove all these
+"const" from the declaration?  Making this just a "static char *"?
 
-commit fb06c9f026a78b879f264ab8e67de09d725b5540 (master)
-commit 64cac790b9d64b3c07fa5222bf46754a04ea1659 (release/2.5)
-Author: Frank Lichtenheld
-Date:   Mon Aug 22 16:18:06 2022 +0200
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-     t_client.sh: do not require fping6
+Gert Doering - Munich, Germany                             gert@...1296...
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20220822141806.39406-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25058.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+--m2+w/4P1CNHkSpDe
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
---
-kind regards,
+iQGcBAEBAgAGBQJjB91FAAoJEB2Cnv7KVigS3zwL+wZgyn4/zw66mcYfWqi/BqOj
+EFH9GU9BFE3G88M6DboensJDNVRwavDi4UkgP1/QJgUPytjhCCaVdJGf94ptaSIc
+Z8V0SoAE1tPrTk5VEhvjjNEXTdKcdBteqLU6eTLayJmS6Tk9Hrc9w2BDlnn35LkN
+/1mhY8yqs5bvNz+/CFwQI9vXE4AVNS8zIBO9zWnLOVNoA1qSN3qUnaX9AVDFa4pI
+t1elN1iSwAhZi4Mi+1Yt49U4pFRIYNZIsF3shFRgHo8Ov8NtIXuvmo+B2TQqV0NB
+Dvmcr/LufJN6l71QenUhpDXGKHr578icIwgoN9ptXEuQ4DmzID9nNP8HxxcJgsEV
+cD8tFpL/NfngqGepad6nHP/e+vmj/2hnn9EvxTjXrUPbqsn65PvOEuoIq5lPP8s9
+Ta8PpRV/StnXkSIu0I2FtduPr4lH9qZo/EDSTsghWUKgi+sDo9D+0s6gMErohyIv
+6SsUsXKOTl92qREkXa8VEGTQO6TfAYrboYrq/b/g2g==
+=U3e3
+-----END PGP SIGNATURE-----
 
-Gert Doering
-
+--m2+w/4P1CNHkSpDe--
 
