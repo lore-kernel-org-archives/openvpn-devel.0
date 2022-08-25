@@ -1,10 +1,10 @@
-Date: Thu, 25 Aug 2022 22:47:22 +0200 (CEST)
-Message-Id: <202208252047.27PKlMQk084586@...2054...>
+Date: Thu, 25 Aug 2022 22:54:00 +0200 (CEST)
+Message-Id: <202208252054.27PKs0WN084878@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220824165718.102002-1-arne@...1227...>
-References: <20220824165718.102002-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix declaration of pubkeys in
- test_provider.c in MSVC builds
+In-Reply-To: <20220820140124.11325-1-gert@...1296...>
+References: <20220820140124.11325-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: DCO: require valid netbits
+ setting for non-primary iroutes.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,25 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I have removed the godbolt reference, and fixed "declaration" :-) - the
-godbolt thing is not truly relevant in git history, but can be found via
-the URL: when going to the discussion (if someone is really interested)
+Thanks for the reviewes.  Dunno why I thought that "we must have no
+spaces around operators" :-) - so, fixed that whitespace plus 3 tabs
+that escaped.
 
-Your patch has been applied to the master branch.
+Patch has been applied to the master branch.
 
-commit 7286a7e1a23146607ce94841afae8b1f4b75859e
-Author: Arne Schwabe
-Date:   Wed Aug 24 18:57:18 2022 +0200
+commit 104e4ef1e3d49cccb3bc677bab9c24158f91b97b
+Author: Gert Doering
+Date:   Sat Aug 20 16:01:24 2022 +0200
 
-     Fix declaration of pubkeys in test_provider.c in MSVC builds
+     DCO: require valid netbits setting for non-primary iroutes.
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20220824165718.102002-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25102.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Kristof Provost <kprovost@...2661...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <20220820140124.11325-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25044.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
