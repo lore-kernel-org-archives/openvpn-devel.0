@@ -1,10 +1,12 @@
-Date: Fri, 26 Aug 2022 11:10:44 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <YwiOFGImmAdwYEtF@...2685...>
+Message-ID: <a86c5fa5-b20b-6287-b6c1-9abe1f34a89d@...2181...>
+Date: Fri, 26 Aug 2022 13:57:05 +0200
+MIME-Version: 1.0
+Content-Language: en-US
 References: <20220826085427.25302-1-frank@...2641...>
  <20220826085427.25302-7-frank@...2641...>
-MIME-Version: 1.0
-In-Reply-To: <20220826085427.25302-7-frank@...2641...>
+ <YwiOFGImmAdwYEtF@...2685...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <YwiOFGImmAdwYEtF@...2685...>
 Subject: Re: [Openvpn-devel] [PATCH 6/6] reformat for sp_arith=add
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,52 +16,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Frank Lichtenheld <frank@...2641...>, openvpn-devel@lists.sourceforge.net
 
-On Fri, Aug 26, 2022 at 10:54:27AM +0200, Frank Lichtenheld wrote:
-> Signed-off-by: Frank Lichtenheld <frank@...2641...>
+On 26/08/2022 11:10, Frank Lichtenheld wrote:
+> So this seems to misinterpret '*' and '&' after ')'.
+> This doesn't break compilation but is really ugly and confusing.
+> 
+> So NAKing my own patch ;)
 
-Looking a bit closer at the changes this one seems slightly broken.
+This seems to be a bug in uncrustify :-(
 
-Examples:
+Basically it thinks that & and * are arithmetic operators in some 
+contexts and so it adds spaces around them. darn.
 
-> diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-> index 2a6c0b8b..7ad19bf7 100644
-> --- a/src/openvpn/misc.h
-> +++ b/src/openvpn/misc.h
-[...]
-> @@ -217,7 +217,7 @@ prepend_dir(const char *dir, const char *path, struct gc_arena *gc);
->  /* *INDENT-ON* */
->  #define MAC_PRINT_ARG(_mac) _mac[0], _mac[1], _mac[2],  \
->      _mac[3], _mac[4], _mac[5]
-> -#define MAC_SCAN_ARG(_mac) &_mac[0], &_mac[1], &_mac[2], \
-> +#define MAC_SCAN_ARG(_mac) & _mac[0], &_mac[1], &_mac[2], \
->      &_mac[3], &_mac[4], &_mac[5]
->  
->  #endif /* ifndef MISC_H */
-[...]
-> diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-> index 9d89bd0a..26e99f24 100644
-> --- a/src/openvpn/openssl_compat.h
-> +++ b/src/openvpn/openssl_compat.h
-> @@ -211,7 +211,7 @@ X509_get0_pubkey(const X509 *x)
->   * @return                   the X509 object stack
->   */
->  static inline STACK_OF(X509_OBJECT)
-> -*X509_STORE_get0_objects(X509_STORE *store)
-> +* X509_STORE_get0_objects(X509_STORE * store)
->  {
->      return store ? store->objs : NULL;
->  }
+What version are you using?
 
-So this seems to misinterpret '*' and '&' after ')'.
-This doesn't break compilation but is really ugly and confusing.
+Cheers,
 
-So NAKing my own patch ;)
-
-Regards,
-  Frank
+-- 
+Antonio Quartulli
 
