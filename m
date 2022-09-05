@@ -1,8 +1,10 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Mon,  5 Sep 2022 14:35:34 +0300
-Message-Id: <20220905113534.277-1-lstipakov@...277...>
+Date: Mon,  5 Sep 2022 14:56:39 +0300
+Message-Id: <20220905115639.379-1-lstipakov@...277...>
+In-Reply-To: <20220905113534.277-1-lstipakov@...277...>
+References: <20220905113534.277-1-lstipakov@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] msvc: remove .filters file
+Subject: [Openvpn-devel] [PATCH v2] msvc: remove .filters files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,17 +22,103 @@ From: Lev Stipakov <lev@...515...>
 
 Filters file defines custom logical folders in
 Solution Explorer. We don't use this functionality
-and it requires maintenance, so let's remove it.
+and it requires maintenance, so let's remove those.
 
 While on it, remove dco linux files from VS project.
 
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- src/openvpn/openvpn.vcxproj         |   5 +-
- src/openvpn/openvpn.vcxproj.filters | 574 ----------------------------
- 2 files changed, 1 insertion(+), 578 deletions(-)
- delete mode 100644 src/openvpn/openvpn.vcxproj.filters
+ v2: remove .filters files from other projects
+ and makefiles.
 
+ src/compat/Makefile.am                        |   1 -
+ src/compat/compat.vcxproj.filters             |  39 --
+ src/openvpn/Makefile.am                       |   1 -
+ src/openvpn/openvpn.vcxproj                   |   5 +-
+ src/openvpn/openvpn.vcxproj.filters           | 574 ------------------
+ src/openvpnmsica/Makefile.am                  |   1 -
+ src/openvpnmsica/openvpnmsica.vcxproj.filters |  62 --
+ src/openvpnserv/Makefile.am                   |   3 +-
+ src/openvpnserv/openvpnserv.vcxproj.filters   |  53 --
+ src/tapctl/Makefile.am                        |   1 -
+ src/tapctl/tapctl.vcxproj.filters             |  49 --
+ 11 files changed, 2 insertions(+), 787 deletions(-)
+ delete mode 100644 src/compat/compat.vcxproj.filters
+ delete mode 100644 src/openvpn/openvpn.vcxproj.filters
+ delete mode 100644 src/openvpnmsica/openvpnmsica.vcxproj.filters
+ delete mode 100644 src/openvpnserv/openvpnserv.vcxproj.filters
+ delete mode 100644 src/tapctl/tapctl.vcxproj.filters
+
+diff --git a/src/compat/Makefile.am b/src/compat/Makefile.am
+index 6eb991dc..23346be5 100644
+--- a/src/compat/Makefile.am
++++ b/src/compat/Makefile.am
+@@ -14,7 +14,6 @@ MAINTAINERCLEANFILES = \
+ 
+ EXTRA_DIST = \
+ 	compat.vcxproj \
+-	compat.vcxproj.filters \
+ 	PropertySheet.props \
+ 	Debug.props \
+ 	Release.props
+diff --git a/src/compat/compat.vcxproj.filters b/src/compat/compat.vcxproj.filters
+deleted file mode 100644
+index 96ca026a..00000000
+--- a/src/compat/compat.vcxproj.filters
++++ /dev/null
+@@ -1,39 +0,0 @@
+-﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+-  <ItemGroup>
+-    <Filter Include="Source Files">
+-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+-    </Filter>
+-    <Filter Include="Header Files">
+-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+-    </Filter>
+-    <Filter Include="Resource Files">
+-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+-    </Filter>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ClCompile Include="compat-basename.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-    <ClCompile Include="compat-dirname.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-    <ClCompile Include="compat-gettimeofday.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-    <ClCompile Include="compat-daemon.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-    <ClCompile Include="compat-strsep.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ClInclude Include="compat.h">
+-      <Filter>Header Files</Filter>
+-    </ClInclude>
+-  </ItemGroup>
+-</Project>
+\ No newline at end of file
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 5dbff4c6..71648ef1 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -16,7 +16,6 @@ MAINTAINERCLEANFILES = \
+ 
+ EXTRA_DIST = \
+ 	openvpn.vcxproj \
+-	openvpn.vcxproj.filters \
+ 	openvpn.manifest
+ 
+ AM_CPPFLAGS = \
 diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
 index ccd29cd8..a45fb993 100644
 --- a/src/openvpn/openvpn.vcxproj
@@ -646,7 +734,230 @@ index bf0ba708..00000000
 -    </Manifest>
 -  </ItemGroup>
 -</Project>
+diff --git a/src/openvpnmsica/Makefile.am b/src/openvpnmsica/Makefile.am
+index 95482940..d3053c42 100644
+--- a/src/openvpnmsica/Makefile.am
++++ b/src/openvpnmsica/Makefile.am
+@@ -24,7 +24,6 @@ MAINTAINERCLEANFILES = $(srcdir)/Makefile.in
+ 
+ EXTRA_DIST = \
+ 	openvpnmsica.vcxproj \
+-	openvpnmsica.vcxproj.filters \
+ 	openvpnmsica.props \
+ 	openvpnmsica-Debug.props \
+ 	openvpnmsica-Release.props
+diff --git a/src/openvpnmsica/openvpnmsica.vcxproj.filters b/src/openvpnmsica/openvpnmsica.vcxproj.filters
+deleted file mode 100644
+index cb050f97..00000000
+--- a/src/openvpnmsica/openvpnmsica.vcxproj.filters
++++ /dev/null
+@@ -1,62 +0,0 @@
+-﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+-  <ItemGroup>
+-    <Filter Include="Source Files">
+-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+-    </Filter>
+-    <Filter Include="Header Files">
+-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+-    </Filter>
+-    <Filter Include="Resource Files">
+-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+-    </Filter>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ClCompile Include="dllmain.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-    <ClCompile Include="..\tapctl\error.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-    <ClCompile Include="msiex.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-    <ClCompile Include="openvpnmsica.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-    <ClCompile Include="msica_arg.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-    <ClCompile Include="..\tapctl\tap.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ClInclude Include="openvpnmsica.h">
+-      <Filter>Header Files</Filter>
+-    </ClInclude>
+-    <ClInclude Include="msiex.h">
+-      <Filter>Header Files</Filter>
+-    </ClInclude>
+-    <ClInclude Include="msica_arg.h">
+-      <Filter>Header Files</Filter>
+-    </ClInclude>
+-    <ClInclude Include="..\tapctl\tap.h">
+-      <Filter>Header Files</Filter>
+-    </ClInclude>
+-    <ClInclude Include="..\tapctl\error.h">
+-      <Filter>Header Files</Filter>
+-    </ClInclude>
+-    <ClInclude Include="..\tapctl\basic.h">
+-      <Filter>Header Files</Filter>
+-    </ClInclude>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ResourceCompile Include="openvpnmsica_resources.rc">
+-      <Filter>Resource Files</Filter>
+-    </ResourceCompile>
+-  </ItemGroup>
+-</Project>
+\ No newline at end of file
+diff --git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.am
+index c230acd8..b79b3a34 100644
+--- a/src/openvpnserv/Makefile.am
++++ b/src/openvpnserv/Makefile.am
+@@ -14,8 +14,7 @@ include $(top_srcdir)/build/ltrc.inc
+ MAINTAINERCLEANFILES = $(srcdir)/Makefile.in
+ 
+ EXTRA_DIST = \
+-	openvpnserv.vcxproj \
+-	openvpnserv.vcxproj.filters
++	openvpnserv.vcxproj
+ 
+ AM_CPPFLAGS = \
+ 	-I$(top_srcdir)/include -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/src/compat
+diff --git a/src/openvpnserv/openvpnserv.vcxproj.filters b/src/openvpnserv/openvpnserv.vcxproj.filters
+deleted file mode 100644
+index 389dac31..00000000
+--- a/src/openvpnserv/openvpnserv.vcxproj.filters
++++ /dev/null
+@@ -1,53 +0,0 @@
+-﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+-  <ItemGroup>
+-    <Filter Include="Source Files">
+-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+-    </Filter>
+-    <Filter Include="Header Files">
+-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+-    </Filter>
+-    <Filter Include="Resource Files">
+-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+-    </Filter>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ClCompile Include="service.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-    <ClCompile Include="common.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-    <ClCompile Include="interactive.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-    <ClCompile Include="validate.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-    <ClCompile Include="..\openvpn\block_dns.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ClInclude Include="service.h">
+-      <Filter>Header Files</Filter>
+-    </ClInclude>
+-    <ClInclude Include="validate.h">
+-      <Filter>Header Files</Filter>
+-    </ClInclude>
+-    <ClInclude Include="..\openvpn\block_dns.h">
+-      <Filter>Header Files</Filter>
+-    </ClInclude>
+-    <ClInclude Include="..\openvpn\ring_buffer.h">
+-      <Filter>Header Files</Filter>
+-    </ClInclude>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ResourceCompile Include="openvpnserv_resources.rc">
+-      <Filter>Resource Files</Filter>
+-    </ResourceCompile>
+-  </ItemGroup>
+-</Project>
+\ No newline at end of file
+diff --git a/src/tapctl/Makefile.am b/src/tapctl/Makefile.am
+index 305181bf..ff61fb7f 100644
+--- a/src/tapctl/Makefile.am
++++ b/src/tapctl/Makefile.am
+@@ -24,7 +24,6 @@ MAINTAINERCLEANFILES = $(srcdir)/Makefile.in
+ 
+ EXTRA_DIST = \
+ 	tapctl.vcxproj \
+-	tapctl.vcxproj.filters \
+ 	tapctl.props \
+ 	tapctl.exe.manifest
+ 
+diff --git a/src/tapctl/tapctl.vcxproj.filters b/src/tapctl/tapctl.vcxproj.filters
+deleted file mode 100644
+index c7f71e9c..00000000
+--- a/src/tapctl/tapctl.vcxproj.filters
++++ /dev/null
+@@ -1,49 +0,0 @@
+-﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+-  <ItemGroup>
+-    <Filter Include="Source Files">
+-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+-    </Filter>
+-    <Filter Include="Header Files">
+-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+-    </Filter>
+-    <Filter Include="Resource Files">
+-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+-    </Filter>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ClCompile Include="tap.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-    <ClCompile Include="main.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-    <ClCompile Include="error.c">
+-      <Filter>Source Files</Filter>
+-    </ClCompile>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ClInclude Include="tap.h">
+-      <Filter>Header Files</Filter>
+-    </ClInclude>
+-    <ClInclude Include="error.h">
+-      <Filter>Header Files</Filter>
+-    </ClInclude>
+-    <ClInclude Include="basic.h">
+-      <Filter>Header Files</Filter>
+-    </ClInclude>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ResourceCompile Include="tapctl_resources.rc">
+-      <Filter>Resource Files</Filter>
+-    </ResourceCompile>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <Manifest Include="tapctl.exe.manifest">
+-      <Filter>Resource Files</Filter>
+-    </Manifest>
+-  </ItemGroup>
+-</Project>
+\ No newline at end of file
 -- 
-2.34.1
+2.23.0.windows.1
 
 
