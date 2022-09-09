@@ -1,12 +1,10 @@
-Message-ID: <f7ba0a2f-ffcc-cf37-cb8b-61897ab9adbe@...2181...>
-Date: Fri, 9 Sep 2022 08:58:58 +0200
-MIME-Version: 1.0
-Content-Language: en-US
-References: <20220909064126.482-1-lstipakov@...277...>
-From: Antonio Quartulli <a@...2181...>
+Date: Fri, 9 Sep 2022 10:17:17 +0200 (CEST)
+Message-Id: <202209090817.2898HH8Z083189@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20220909064126.482-1-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] do_persist_tuntap: remove indentation
- level
+References: <20220909064126.482-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: do_persist_tuntap: remove
+ indentation level
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Best viewed with "-w" :-) - mildly client-side tested.
 
-On 09/09/2022 08:41, Lev Stipakov wrote:
-> From: Lev Stipakov <lev@...515...>
-> 
-> Reverse if condition - this allows us to get rid of
-> indentation level, which makes code easier to read.
-> 
-> Signed-off-by: Lev Stipakov <lev@...515...>
+Your patch has been applied to the master branch.
 
-Thanks for this change. I also firmly believe this style makes the code 
-easier to read (and to brain process, imho).
+commit 84099782cfa61c9e06781ff31c4a57d65b8594d3
+Author: Lev Stipakov
+Date:   Fri Sep 9 09:41:26 2022 +0300
 
-Acked-by: Antonio Quartulli <a@...2181...>
+     do_persist_tuntap: remove indentation level
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20220909064126.482-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25153.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
--- 
-Antonio Quartulli
+--
+kind regards,
+
+Gert Doering
+
 
