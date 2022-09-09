@@ -1,10 +1,8 @@
-Date: Thu, 8 Sep 2022 18:43:57 +0200 (CEST)
-Message-Id: <202209081643.288GhvKD090273@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220908161435.327109-1-frank@...2641...>
-References: <20220908161435.327109-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Change command help to match
- man page and implementation
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri,  9 Sep 2022 09:41:26 +0300
+Message-Id: <20220909064126.482-1-lstipakov@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] do_persist_tuntap: remove indentation level
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +13,127 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-"Because it does"... :-)
+From: Lev Stipakov <lev@...515...>
 
-Your patch has been applied to the master and release/2.5 branch.
+Reverse if condition - this allows us to get rid of
+indentation level, which makes code easier to read.
 
-commit 2b4f3ea880377401275baf965ff603f30cde36f1 (master)
-commit 997df07a98ee01dfdf6e2b360dd06f61580b5a1c (release/2.5)
-Author: Arne Schwabe
-Date:   Thu Sep 8 18:14:35 2022 +0200
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/init.c | 88 ++++++++++++++++++++++++----------------------
+ 1 file changed, 45 insertions(+), 43 deletions(-)
 
-     Change command help to match man page and implementation
-
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220908161435.327109-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25151.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 84d95c21..d94b781e 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1057,57 +1057,59 @@ do_genkey(const struct options *options)
+ bool
+ do_persist_tuntap(struct options *options, openvpn_net_ctx_t *ctx)
+ {
+-    if (options->persist_config)
+-    {
+-        /* sanity check on options for --mktun or --rmtun */
+-        notnull(options->dev, "TUN/TAP device (--dev)");
+-        if (options->ce.remote || options->ifconfig_local
+-            || options->ifconfig_remote_netmask
+-            || options->shared_secret_file
+-            || options->tls_server || options->tls_client
+-            )
+-        {
+-            msg(M_FATAL|M_OPTERR,
+-                "options --mktun or --rmtun should only be used together with --dev");
+-        }
++    if (!options->persist_config)
++    {
++        return false;
++    }
+ 
+-#if defined(ENABLE_DCO)
+-        if (dco_enabled(options))
+-        {
+-            /* creating a DCO interface via --mktun is not supported as it does not
+-             * make much sense. Since DCO is enabled by default, people may run into
+-             * this without knowing, therefore this case should be properly handled.
+-             *
+-             * Disable DCO if --mktun was provided and print a message to let
+-             * user know.
+-             */
+-            if (dev_type_enum(options->dev, options->dev_type) == DEV_TYPE_TUN)
+-            {
+-                msg(M_WARN, "Note: --mktun does not support DCO. Creating TUN interface.");
+-            }
++    /* sanity check on options for --mktun or --rmtun */
++    notnull(options->dev, "TUN/TAP device (--dev)");
++    if (options->ce.remote || options->ifconfig_local
++        || options->ifconfig_remote_netmask
++        || options->shared_secret_file
++        || options->tls_server || options->tls_client
++        )
++    {
++        msg(M_FATAL|M_OPTERR,
++            "options --mktun or --rmtun should only be used together with --dev");
++    }
+ 
+-            options->tuntap_options.disable_dco = true;
++#if defined(ENABLE_DCO)
++    if (dco_enabled(options))
++    {
++        /* creating a DCO interface via --mktun is not supported as it does not
++         * make much sense. Since DCO is enabled by default, people may run into
++         * this without knowing, therefore this case should be properly handled.
++         *
++         * Disable DCO if --mktun was provided and print a message to let
++         * user know.
++         */
++        if (dev_type_enum(options->dev, options->dev_type) == DEV_TYPE_TUN)
++        {
++            msg(M_WARN, "Note: --mktun does not support DCO. Creating TUN interface.");
+         }
++
++        options->tuntap_options.disable_dco = true;
++    }
+ #endif
+ 
+ #ifdef ENABLE_FEATURE_TUN_PERSIST
+-        tuncfg(options->dev, options->dev_type, options->dev_node,
+-               options->persist_mode,
+-               options->username, options->groupname, &options->tuntap_options,
+-               ctx);
+-        if (options->persist_mode && options->lladdr)
+-        {
+-            set_lladdr(ctx, options->dev, options->lladdr, NULL);
+-        }
+-        return true;
++    tuncfg(options->dev, options->dev_type, options->dev_node,
++           options->persist_mode,
++           options->username, options->groupname, &options->tuntap_options,
++           ctx);
++    if (options->persist_mode && options->lladdr)
++    {
++        set_lladdr(ctx, options->dev, options->lladdr, NULL);
++    }
++    return true;
+ #else  /* ifdef ENABLE_FEATURE_TUN_PERSIST */
+-        msg( M_FATAL|M_OPTERR,
+-             "options --mktun and --rmtun are not available on your operating "
+-             "system.  Please check 'man tun' (or 'tap'), whether your system "
+-             "supports using 'ifconfig %s create' / 'destroy' to create/remove "
+-             "persistent tunnel interfaces.", options->dev );
++    msg(M_FATAL|M_OPTERR,
++        "options --mktun and --rmtun are not available on your operating "
++        "system.  Please check 'man tun' (or 'tap'), whether your system "
++        "supports using 'ifconfig %s create' / 'destroy' to create/remove "
++        "persistent tunnel interfaces.", options->dev );
+ #endif
+-    }
+     return false;
+ }
+ 
+-- 
+2.23.0.windows.1
 
 
