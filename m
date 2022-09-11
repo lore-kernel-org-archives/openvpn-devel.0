@@ -1,10 +1,10 @@
-Date: Sun, 11 Sep 2022 18:12:41 +0200 (CEST)
-Message-Id: <202209111612.28BGCfF9036216@...2054...>
+Date: Sun, 11 Sep 2022 22:30:51 +0200 (CEST)
+Message-Id: <202209112030.28BKUpXL039882@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220818144431.208337-1-a@...2181...>
-References: <20220818144431.208337-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco: trigger ping timeout event
- only if the peer expired
+In-Reply-To: <20220909121841.646-1-lstipakov@...277...>
+References: <20220909121841.646-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco.c: check certain options
+ only on startup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Quite a bit of shuffling around... fed to the DCO test servers on Linux
+and FreeBSD, which intentinally run a few instances with dco-incompatible
+options (both as client and server).  Test results look good - so all
+tests that are expected to pass do so (p2p renegotion...?), and it
+claims to be using DCO on some of the tunnels :-)
 
-"This seems to make sense" :-)  (aka, do what the commit message says)
+Sep 11 20:27:32 ubuntu2004 tun-tcp-p2mp[2950149]: GLOBAL_STATS,dco_enabled,1
+Sep 11 20:27:32 ubuntu2004 tun-udp-p2mp[2950158]: GLOBAL_STATS,dco_enabled,1
+Sep 11 20:27:32 ubuntu2004 tun-udp-p2mp-topology-subnet[2950167]: GLOBAL_STATS,dco_enabled,1
+Sep 11 20:27:32 ubuntu2004 tun-udp-p2mp-fragment[2950207]: GLOBAL_STATS,dco_enabled,0
+Sep 11 06:58:19 ubuntu2004 tap-udp-p2mp[2906314]: Note: dev-type not tun, disabling data channel offload.
 
-Tested on the Ubuntu/DCO client/server test bench.
+(etc.)
 
 Your patch has been applied to the master branch.
 
-commit a179d788c77d537b3a302320ebc476ca412c4e44
-Author: Antonio Quartulli
-Date:   Thu Aug 18 16:44:31 2022 +0200
+commit f7b2817b8999d3ee846bfbafe11e05eda6501e96
+Author: Lev Stipakov
+Date:   Fri Sep 9 15:18:41 2022 +0300
 
-     dco: trigger ping timeout event only if the peer expired
+     dco.c: check certain options only on startup
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20220818144431.208337-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25000.html
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <20220909121841.646-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25158.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
