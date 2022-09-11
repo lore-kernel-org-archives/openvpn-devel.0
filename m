@@ -1,11 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri,  9 Sep 2022 21:59:01 +0200
-Message-Id: <20220909195902.2011798-2-arne@...1227...>
-In-Reply-To: <20220909195902.2011798-1-arne@...1227...>
-References: <20220909195902.2011798-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/3] Use buffer to prepare protocol-flags
- push-reply
+Date: Sun, 11 Sep 2022 12:02:42 +0200 (CEST)
+Message-Id: <202209111002.28BA2gYe031416@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220824110930.73009-1-arne@...1227...>
+References: <20220824110930.73009-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Implement --client-crresponse
+ script options and plugin interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,55 +15,50 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The current approach of checking a string buffer is a bit clunky and
-also not very extensible. Refactor this by collecting the flags in
-a buffer.
+I have tested this on the server test bed, to ensure it does not
+"drive by" break anything else (doesn't look like it, but testing is
+better).  Doesn't :-) - I have not actually tested the CRRESPONSE script
+functionality.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/push.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+I have slightly changed the commit message, to fix grammar/typo.
 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 0a66902a8..989316130 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -647,14 +647,18 @@ prepare_push_reply(struct context *c, struct gc_arena *gc,
-         }
-     }
- 
-+    struct buffer proto_flags = alloc_buf_gc(128, gc);
-+
-     if (o->imported_protocol_flags & CO_USE_CC_EXIT_NOTIFY)
-     {
--        const char *ekm = "";
-+        buf_printf(&proto_flags, " cc-exit");
-+
-+        /* if the cc exit flag is supported, pushing tls-ekm via protocol-flags
-+         * is also supported */
-         if (o->imported_protocol_flags & CO_USE_TLS_KEY_MATERIAL_EXPORT)
-         {
--            ekm = " tls-ekm";
-+            buf_printf(&proto_flags, " tls-ekm");
-         }
--        push_option_fmt(gc, push_list, M_USAGE, "protocol-flags cc-exit%s", ekm);
-     }
-     else if (o->imported_protocol_flags & CO_USE_TLS_KEY_MATERIAL_EXPORT)
-     {
-@@ -662,6 +666,10 @@ prepare_push_reply(struct context *c, struct gc_arena *gc,
-     }
- 
- 
-+    if (buf_len(&proto_flags) > 0)
-+    {
-+        push_option_fmt(gc, push_list, M_USAGE, "protocol-flags%s", buf_str(&proto_flags));
-+    }
- 
-     return true;
- }
--- 
-2.32.1 (Apple Git-133)
+Looking at the discussions around the error message and the resulting
+code (why not exit early on "if (!tmp_file)"?) I wonder why we do not
+have a more generic "create a tmp_file, fill it with $string, do
+proper error messages, return true/false" function for this... and 
+what this "status_open()" stuff is about, for wrting a plain text file.
+
+But this is for a separate cleanup/refactoring patch.
+
+
+On the patch itself, since this does not introduce new asynchronous
+authentication, just extra hooks that are done (or not) and can succeed
+synchronously (or not), the changes should be fine.  Heiko and David
+already reviewed this.
+
+Next: 11/11 v4 + ACK, please :-)
+
+Your patch has been applied to the master branch.
+
+commit 23eec2d29435a51771dcd4f85d71f33465a174ff
+Author: Arne Schwabe
+Date:   Wed Aug 24 13:09:30 2022 +0200
+
+     Implement --client-crresponse script options and plugin interface
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Heiko Hund <heiko@...2662...>
+     Message-Id: <20220824110930.73009-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25089.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
