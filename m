@@ -1,10 +1,10 @@
-Date: Sun, 11 Sep 2022 22:30:51 +0200 (CEST)
-Message-Id: <202209112030.28BKUpXL039882@...2054...>
+Date: Sun, 11 Sep 2022 22:34:18 +0200 (CEST)
+Message-Id: <202209112034.28BKYIdL040029@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220909121841.646-1-lstipakov@...277...>
-References: <20220909121841.646-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco.c: check certain options
- only on startup
+In-Reply-To: <20210304114018.8442-1-arne@...1227...>
+References: <20210304114018.8442-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add example script
+ demonstrating TOTP via auth-pending
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,35 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Quite a bit of shuffling around... fed to the DCO test servers on Linux
-and FreeBSD, which intentinally run a few instances with dco-incompatible
-options (both as client and server).  Test results look good - so all
-tests that are expected to pass do so (p2p renegotion...?), and it
-claims to be using DCO on some of the tunnels :-)
+I have not tested this, no proper testbed, no client support.  But it's
+not changing OpenVPN code, just adding a script, and David has ACKed it.
 
-Sep 11 20:27:32 ubuntu2004 tun-tcp-p2mp[2950149]: GLOBAL_STATS,dco_enabled,1
-Sep 11 20:27:32 ubuntu2004 tun-udp-p2mp[2950158]: GLOBAL_STATS,dco_enabled,1
-Sep 11 20:27:32 ubuntu2004 tun-udp-p2mp-topology-subnet[2950167]: GLOBAL_STATS,dco_enabled,1
-Sep 11 20:27:32 ubuntu2004 tun-udp-p2mp-fragment[2950207]: GLOBAL_STATS,dco_enabled,0
-Sep 11 06:58:19 ubuntu2004 tap-udp-p2mp[2906314]: Note: dev-type not tun, disabling data channel offload.
-
-(etc.)
+I *have* changed the reference to match the script name, as instructed :-)
 
 Your patch has been applied to the master branch.
 
-commit f7b2817b8999d3ee846bfbafe11e05eda6501e96
-Author: Lev Stipakov
-Date:   Fri Sep 9 15:18:41 2022 +0300
+commit 20ce5e3173cf1b086e1241619e8d949f0a6d0687
+Author: Arne Schwabe
+Date:   Thu Mar 4 12:40:18 2021 +0100
 
-     dco.c: check certain options only on startup
+     Add example script demonstrating TOTP via auth-pending
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20220909121841.646-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25158.html
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <20210304114018.8442-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg21603.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
