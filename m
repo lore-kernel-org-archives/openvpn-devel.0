@@ -1,11 +1,15 @@
-Date: Mon, 12 Sep 2022 11:29:16 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <Yx777KEuFf7/+rPQ@...1296...>
+Message-ID: <8e2fcd75-09a7-6ea1-1bf2-ecbd11f4ecdd@...2525...>
+Date: Mon, 12 Sep 2022 12:01:16 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="5c/Vb7bu49SDDgHX"
-Content-Disposition: inline
-Subject: [Openvpn-devel] Dragonfly BSD
+Content-Language: en-US
+From: Juliusz Sosinowicz <juliusz@...2525...>
+References: <20200429145132.28424-1-juliusz@...2525...>
+ <41fef456-3ced-7cb3-7888-46a3522080b2@...2181...>
+ <196ab7ef-4a2f-dc82-45a7-59295b5c36e7@...2525...>
+ <7a019859-7884-f278-2463-b07e9ee4e747@...1227...>
+ <7c11f7c6-46c1-bf0c-ff88-67ad0c9e3cda@...2525...>
+In-Reply-To: <7c11f7c6-46c1-bf0c-ff88-67ad0c9e3cda@...2525...>
+Subject: Re: [Openvpn-devel] [PATCH] Support for wolfSSL in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,48 +18,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>, Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
---5c/Vb7bu49SDDgHX
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Arne,
 
-Hi,
+the type casting warning was fixed in 
+https://github.com/wolfSSL/wolfssl/pull/5571. OpenVPN should now compile 
+without any warnings.
 
-are there still Dragonfly BSD users around?
+Juliusz
 
-We have code to support that OS, but I suspect that it might have
-rotted a bit - so it should get proper testing before 2.6.0 release...
-
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---5c/Vb7bu49SDDgHX
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjHvvsAAoJEB2Cnv7KVigShaUL/3cuchvnndVkn7XUqBed79wP
-/4HTvAuzeEl+IKb/Em7YinLnlSdOzHDTus649HGavh6xnnzOyOwTka89sFXFGMVn
-MPFOinC6RkGL87bdwDsyhqqdT5UJlsl664YDKT4otiMa63pxmp6sOFyUMyqLAxY6
-dGmGkKFcWAGYw5Kd8vkXMK1kWWjntUXBZeWx/qyHps2TLY5dWQhmK9x1BnodzCKE
-/9+atn+0yf/3qqi+/TsQZcRZOfWHGt5jaYcJFHgpm6u2yztcIlAyxG02urrNUXwW
-o3D0o2I3Rl4fXOEBNT+/5C9wOHYR1PV+WEPBS7zlfb0x7O7CETJPNZFvBKFXQsLW
-TPPesoFdJ8bDb7AVHFPUtW8OBz6lV7wEolJRs+I2ZAfuOmUHqSdUhuI/OqB0JnWd
-OZOdpTk0UP8lgoBvzSz0HuEujYvgngucB0uFvihdp3uk9DhVjx6YHishszGW7A+1
-K6aEo+Dic5TM04ceGDwZ7S1LwQX4zF6FqWoSK2/BeQ==
-=KbpG
------END PGP SIGNATURE-----
-
---5c/Vb7bu49SDDgHX--
+On 02/09/2022 11:50, Juliusz Sosinowicz wrote:
+> I'll try to propose a solution to avoid this warning.
+>
+> Juliusz
+>
+> On 01/09/2022 14:39, Arne Schwabe wrote:
+>>>> (*)(const X509_NAME * const*, const X509_NAME * const*) {aka int
+>>>> (*)(const struct WOLFSSL_X509_NAME * const*, const struct
+>>>> WOLFSSL_X509_NAME * const*)}
+>>>> In file included from /usr/local/include/wolfssl/openssl/ssl.h:35,
+>>>>                   from ssl_openssl.h:32,
+>>>>                   from ssl_backend.h:36,
+>>>>                   from ssl_openssl.c:44:
+>>>> /usr/local/include/wolfssl/ssl.h:3534:47: note: expected
+>>>> ‘wolf_sk_compare_cb’ {aka ‘int (*)(const void * const*, const void *
+>>>> const*)’} but argument is of type ‘int (*)(const X509_NAME * const*,
+>>>> const X509_NAME * const*)’ {aka ‘int (*)(const struct 
+>>>> WOLFSSL_X509_NAME
+>>>> * const*, const struct WOLFSSL_X509_NAME * const*)’}
+>>>>   3534 | WOLFSSL_API WOLF_STACK_OF(WOLFSSL_X509_NAME)*
+>>>> wolfSSL_sk_X509_NAME_new(
+>>>>        |
+>>>> ^~~~~~~~~~~~~~~~~~~~~~~~
+>>> To make wolfSSL_sk_X509_NAME_new more universal we accept a function 
+>>> with void* parameters. This will unfortunately generate a warning 
+>>> when compiling with wolfSSL but won't affect functionality.
+>>
+>>
+>> This issue is still present and still breaks compiling with -Werror . 
+>> Are there any plans to address this?
+>>
+>> Arne
 
