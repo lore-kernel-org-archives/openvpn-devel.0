@@ -1,15 +1,9 @@
-Message-ID: <8e2fcd75-09a7-6ea1-1bf2-ecbd11f4ecdd@...2525...>
-Date: Mon, 12 Sep 2022 12:01:16 +0200
-MIME-Version: 1.0
-Content-Language: en-US
-From: Juliusz Sosinowicz <juliusz@...2525...>
-References: <20200429145132.28424-1-juliusz@...2525...>
- <41fef456-3ced-7cb3-7888-46a3522080b2@...2181...>
- <196ab7ef-4a2f-dc82-45a7-59295b5c36e7@...2525...>
- <7a019859-7884-f278-2463-b07e9ee4e747@...1227...>
- <7c11f7c6-46c1-bf0c-ff88-67ad0c9e3cda@...2525...>
-In-Reply-To: <7c11f7c6-46c1-bf0c-ff88-67ad0c9e3cda@...2525...>
-Subject: Re: [Openvpn-devel] [PATCH] Support for wolfSSL in OpenVPN
+Date: Mon, 12 Sep 2022 12:26:58 +0200 (CEST)
+Message-Id: <202209121026.28CAQwKW063532@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220822092834.14231-2-kprovost@...2661...>
+References: <20220822092834.14231-2-kprovost@...2661...>
+Subject: [Openvpn-devel] [PATCH applied] Re: FreeBSD networking cleanup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,48 +12,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>, Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+To: Kristof Provost <kp@...1376...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Arne,
+Acked-by: Gert Doering <gert@...1296...>
 
-the type casting warning was fixed in 
-https://github.com/wolfSSL/wolfssl/pull/5571. OpenVPN should now compile 
-without any warnings.
+Thanks.  Tested on FreeBSD with and without DCO (the latter is more
+for good measure, as the changes only influence the FreeBSD-iroute part).
 
-Juliusz
+Your patch has been applied to the master branch.
 
-On 02/09/2022 11:50, Juliusz Sosinowicz wrote:
-> I'll try to propose a solution to avoid this warning.
->
-> Juliusz
->
-> On 01/09/2022 14:39, Arne Schwabe wrote:
->>>> (*)(const X509_NAME * const*, const X509_NAME * const*) {aka int
->>>> (*)(const struct WOLFSSL_X509_NAME * const*, const struct
->>>> WOLFSSL_X509_NAME * const*)}
->>>> In file included from /usr/local/include/wolfssl/openssl/ssl.h:35,
->>>>                   from ssl_openssl.h:32,
->>>>                   from ssl_backend.h:36,
->>>>                   from ssl_openssl.c:44:
->>>> /usr/local/include/wolfssl/ssl.h:3534:47: note: expected
->>>> ‘wolf_sk_compare_cb’ {aka ‘int (*)(const void * const*, const void *
->>>> const*)’} but argument is of type ‘int (*)(const X509_NAME * const*,
->>>> const X509_NAME * const*)’ {aka ‘int (*)(const struct 
->>>> WOLFSSL_X509_NAME
->>>> * const*, const struct WOLFSSL_X509_NAME * const*)’}
->>>>   3534 | WOLFSSL_API WOLF_STACK_OF(WOLFSSL_X509_NAME)*
->>>> wolfSSL_sk_X509_NAME_new(
->>>>        |
->>>> ^~~~~~~~~~~~~~~~~~~~~~~~
->>> To make wolfSSL_sk_X509_NAME_new more universal we accept a function 
->>> with void* parameters. This will unfortunately generate a warning 
->>> when compiling with wolfSSL but won't affect functionality.
->>
->>
->> This issue is still present and still breaks compiling with -Werror . 
->> Are there any plans to address this?
->>
->> Arne
+commit b5b132c1ba36e6d2ca261d15a9d70648890021f7
+Author: Kristof Provost
+Date:   Mon Aug 22 11:28:34 2022 +0200
+
+     FreeBSD networking cleanup
+
+     Signed-off-by: Kristof Provost <kprovost@...2661...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220822092834.14231-2-kprovost@...2661...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25054.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
