@@ -1,14 +1,18 @@
-Date: Mon, 12 Sep 2022 15:32:43 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <Yx80+3Yqzz2S11YR@...1296...>
-References: <Yx8lzUfCcOiSytek@...1296...> <Yx8n4/VLK8TPU8N2@...1296...>
- <83F9EF68-40E1-4F6F-B2E8-4B5B6919EE01@...2661...>
+From: Kristof Provost <kprovost@...2661...>
+Date: Mon, 12 Sep 2022 15:41:45 +0200
+Message-ID: <F8FECA50-5958-471F-A3CF-F5B0498DE272@...2661...>
+In-Reply-To: <Yx8p6LeIUVUeFPMD@...1296...>
+References: <20220808143424.65924-1-kprovost@...2661...>
+ <20220808143424.65924-3-kprovost@...2661...>
+ <YvPdlCSxQ6wvfIna@...1296...>
+ <2DCBB302-1FB4-4EC0-8B4A-8D6EA075B0FD@...2661...>
+ <YvVwcBtzGagtUgOA@...1296...>
+ <8E0AADE4-350B-46A5-B4BD-5E97ADA642F4@...2661...>
+ <YveWP9xh9XwsjwPY@...1296...> <Yve0gy+SuH+7unUj@...1296...>
+ <7CB2FF09-EE1D-427E-BBD1-4128EAE1ED4A@...2661...>
+ <Yx8hkCs4tOK5+dBl@...1296...> <Yx8p6LeIUVUeFPMD@...1296...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="vgu2r5QHXdwSxYJf"
-Content-Disposition: inline
-In-Reply-To: <83F9EF68-40E1-4F6F-B2E8-4B5B6919EE01@...2661...>
-Subject: Re: [Openvpn-devel] more crashes with FreeBSD DCO...
+Subject: Re: [Openvpn-devel] big packet loss with FreeBSD DCO
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,131 +21,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Kristof Provost <kprovost@...2661...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
-
---vgu2r5QHXdwSxYJf
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+On 12 Sep 2022, at 14:45, Gert Doering wrote:
+> Hi,
+>
+> On Mon, Sep 12, 2022 at 02:09:52PM +0200, Gert Doering wrote:
+>> So, observation suggests "it's happening inside the DCO module".  I'll
+>> go instrument my kernel with printf()'s now... and will report if I find
+>> anything useful.
+>
+> ok... so at the beginning of ovpn_transmit_to_peer(), I have
+>
+> ping -s 1460
+> Sep 12 14:36:34 fbsd14 kernel: GERT: ovpn_transmit_to_peer, tunnel_len=3D=
+1488
+>
+> ping -s 1461
+> Sep 12 14:36:43 fbsd14 kernel: GERT: ovpn_transmit_to_peer, tunnel_len=3D=
+1489
+>
+> -> check!
+>
+> ... and then there is code that deals with rounding up...?!
+>
+> --------------- snip --------------
+> printf( "GERT: ovpn_transmit_to_peer, real_len=3D%d\n", (int) real_len );
+>
+>         ovpn_hdr_len =3D sizeof(struct ovpn_wire_header);
+>         if (key->encrypt->cipher =3D=3D OVPN_CIPHER_ALG_NONE)
+>                 ovpn_hdr_len -=3D 16; /* No auth tag. */
+>         else {
+>                 /* Round up the len to a multiple of our block size. */
+>                 len =3D roundup2(real_len, AES_BLOCK_LEN);
+>
+>                 /* Now extend the mbuf. */
+>                 m_append(m, len - real_len, EMPTY_BUFFER);
+>         }
+>
+> printf( "GERT: ovpn_transmit_to_peer, len=3D%d\n", (int) len );
+> --------------- snip --------------
+>
+> and after this block:
+>
+> Sep 12 14:40:40 fbsd14 kernel: GERT: ovpn_transmit_to_peer, tunnel_len=3D=
+1489
+> Sep 12 14:40:40 fbsd14 kernel: GERT: ovpn_transmit_to_peer, real_len=3D14=
+89
+> Sep 12 14:40:40 fbsd14 kernel: GERT: ovpn_transmit_to_peer, len=3D1504
+>
+> Wohoo, 1504!  +16!
+>
+>
+> Now, I have no idea about crypto, *and* I have no idea about OpenVPN
+> wire format (Arne is the resident expert on this), but Arne tells me
+> "there is no padding needed"
+>
+> 14:00 <@cron2__> is there padding with AES-GCM?
+> 14:04 <@plaisthos> cron2__: no. AES-GCM is basically CTR and a stream cip=
+her
+>
+> ... so, not sure what that code does.
+>
+> If I just kill it :-)
+>
+>                 /* Round up the len to a multiple of our block size. */
+>                 // len =3D roundup2(real_len, AES_BLOCK_LEN);
+>
+> I can ping just fine...
+>
+> gert@...2695...:/usr/obj $ SU ping -s 1461 10.194.0.1
+> PING 10.194.0.1 (10.194.0.1): 1461 data bytes
+> 1469 bytes from 10.194.0.1: icmp_seq=3D0 ttl=3D64 time=3D124.774 ms
+> 1469 bytes from 10.194.0.1: icmp_seq=3D1 ttl=3D64 time=3D124.930 ms
+>
+> and with double fragmentation too...
+>
+> gert@...2695...:/usr/obj $ SU ping -s 3000 10.194.0.1
+> PING 10.194.0.1 (10.194.0.1): 3000 data bytes
+> 3008 bytes from 10.194.0.1: icmp_seq=3D0 ttl=3D64 time=3D126.363 ms
+> 3008 bytes from 10.194.0.1: icmp_seq=3D1 ttl=3D64 time=3D126.642 ms
+> 3008 bytes from 10.194.0.1: icmp_seq=3D2 ttl=3D64 time=3D126.200 ms
+>
+>
+> Now, I'm not submitting a patch for that, because usually there is
+> a good reason for rounding up and doing blocks and all that - so, I
+> found the offending lines, but do not feel qualified for a correct
+> fix.
+>
+The offending code is almost certainly wrong.
+I know the guy who wrote them and =E2=80=A6 he means well ;)
 
-On Mon, Sep 12, 2022 at 03:06:47PM +0200, Kristof Provost via Openvpn-devel=
- wrote:
-> Can you reproduce the panic?
+I think I was confused about what was needed in packet size. I=E2=80=99ll t=
+ry to test your patch in the next couple of days.
 
-Yes, very easy.
-
-Start a handful of OpenVPN instances, some with DCO
-
-gert@...2695...:~/t_server.git $ SU /root/t_server/start
-starting tun-tcp-p2mp/server.conf...
-starting tun-udp-p2mp/server.conf...
-starting tun-udp-p2mp-topology-subnet/server.conf...
-starting tap-udp-p2mp/server.conf...
-starting tun-udp-p2mp-112-mask/server.conf...
-starting tun-udp-p2mp-fragment/server.conf...
-starting tun-udp-p2p/server.conf...
-starting tun-udp-p2mp-hash-defscript/server.conf...
-starting tap-tcp-p2p/server.conf...
-starting tun-udp-p2p-tls-sha256/server.conf...
-
-(I think 4 of them are using DCO, the others regular tuntap)
-
-... then unload the module
-
-gert@...2695...:/usr/obj $ SU kldunload if_ovpn
-gert@...2695...:/usr/obj $=20
-
-and it freezes right after the prompt reappears.
-
-Kernel says:
-
-tun0: link state changed to DOWN
-tun0: link state changed to UP
-ovpn0: changing name to 'tun1'
-[fib_algo] inet.0 (bsearch4#589) rebuild_fd_flm: switching algo to radix4_l=
-ockless
-ovpn1: changing name to 'tun2'
-tap9: Ethernet address: 58:9c:fc:10:e1:05
-tap9: link state changed to UP
-tun3: link state changed to UP
-tun4: link state changed to UP
-ovpn2: changing name to 'tun5'
-tun6: link state changed to UP
-tap99: Ethernet address: 58:9c:fc:10:ff:d7
-tap99: link state changed to UP
-ovpn3: changing name to 'tun11'
-Warning: memory type ovpn leaked memory on destroy (1 allocations, 2048 byt=
-es leaked).
-
-Fatal trap 12: page fault while in kernel mode
-cpuid =3D 2; apic id =3D 04
-fault virtual address   =3D 0xffffffff83180db0
-fault code              =3D supervisor read instruction, page not present
-instruction pointer     =3D 0x20:0xffffffff83180db0
-stack pointer           =3D 0x28:0xfffffe00085a3df8
-frame pointer           =3D 0x28:0xfffffe00085a3e40
-code segment            =3D base 0x0, limit 0xfffff, type 0x1b
-                        =3D DPL 0, pres 1, long 1, def32 0, gran 1
-processor eflags        =3D interrupt enabled, resume, IOPL =3D 0
-current process         =3D 0 (softirq_2)
-trap number             =3D 12
-panic: page fault
-cpuid =3D 2
-time =3D 1662989293
-KDB: stack backtrace:
-db_trace_self_wrapper() at db_trace_self_wrapper+0x2b/frame 0xfffffe00085a3=
-bb0
-vpanic() at vpanic+0x151/frame 0xfffffe00085a3c00
-panic() at panic+0x43/frame 0xfffffe00085a3c60
-trap_fatal() at trap_fatal+0x387/frame 0xfffffe00085a3cc0
-trap_pfault() at trap_pfault+0xab/frame 0xfffffe00085a3d20
-calltrap() at calltrap+0x8/frame 0xfffffe00085a3d20
---- trap 0xc, rip =3D 0xffffffff83180db0, rsp =3D 0xfffffe00085a3df8, rbp =
-=3D 0xfffffe00085a3e40 ---
-__stop_set_sysinit_set() at __stop_set_sysinit_set+0x4390/frame 0xfffffe000=
-85a3e40
-gtaskqueue_run_locked() at gtaskqueue_run_locked+0xa7/frame 0xfffffe00085a3=
-ec0
-gtaskqueue_thread_loop() at gtaskqueue_thread_loop+0xc2/frame 0xfffffe00085=
-a3ef0
-fork_exit() at fork_exit+0x80/frame 0xfffffe00085a3f30
-fork_trampoline() at fork_trampoline+0xe/frame 0xfffffe00085a3f30
---- trap 0x106000d1, rip =3D 0x110c0000025010f4, rsp =3D 0x118a0000025d116a=
-, rbp =3D 0xf7c0000022f ---
-KDB: enter: panic
----<<BOOT>>---
-
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---vgu2r5QHXdwSxYJf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjHzT7AAoJEB2Cnv7KVigS3VIMAIx8RL5XNM5os5IAW9AFJsYP
-H4n7PB6MHJwiiMQi5QXaH4UT++3CE5fe7FyG0QhlI6ofnLoLdg96OvDK8ixf9uhV
-/Uis3eSLZGtVTdoagMPUiHs+hgxvsgsQCG6GjYjOL/wcCPhwX8S4kw4Mwy/TkXR7
-k3Hv95e6u03tUyeLl+Zok0pEE5ia6nph7TU6oMcT0qAga0mbqBSpoA9ii7SFXQ3v
-HLRVzrACtb8WY5rgYiNjyYh0bxfeVF+W5e1vOuSSOH0jH2Bnn9BHSuW8rRBqAN18
-E3hQtgVPCavwuuQSiBlnxPigbwh/YP3mW6JS7rOoxAhfRuWHATkQAtvZVMeTkusb
-Ij+vgKUuEWj5tFFG7vXL0uttPkXCRF+kQ5kF8ANBvLUdQltJ74xFRJPZT1UVvghR
-TFu+EPh74ha19RyeqZVqDq8HvPuiTP/bRiIrTw+LXWtLHjfrOXJ5ymqNO7qfvjaW
-cWlDQ231cuTMFsDJ/2gST2UuTt2zpXlIT2dfHem7pQ==
-=DmNI
------END PGP SIGNATURE-----
-
---vgu2r5QHXdwSxYJf--
+Kristof
 
