@@ -1,6 +1,6 @@
-Date: Mon, 12 Sep 2022 14:50:30 +0200
+Date: Mon, 12 Sep 2022 14:55:36 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <Yx8rFmv7B7vlXJYs@...1296...>
+Message-ID: <Yx8sSIICV0jmFbPk@...1296...>
 References: <20220808143424.65924-3-kprovost@...2661...>
  <YvPdlCSxQ6wvfIna@...1296...>
  <2DCBB302-1FB4-4EC0-8B4A-8D6EA075B0FD@...2661...>
@@ -12,7 +12,7 @@ References: <20220808143424.65924-3-kprovost@...2661...>
  <F65A9C36-1FA7-44E2-8A13-8573DD3FEAA7@...2661...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="bfVZL2nouIrHqJpt"
+ protocol="application/pgp-signature"; boundary="OZmD3CrT2NQsvwl4"
 Content-Disposition: inline
 In-Reply-To: <F65A9C36-1FA7-44E2-8A13-8573DD3FEAA7@...2661...>
 Subject: Re: [Openvpn-devel] big packet loss with FreeBSD DCO
@@ -27,7 +27,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Kristof Provost <kprovost@...2661...>
 Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---bfVZL2nouIrHqJpt
+--OZmD3CrT2NQsvwl4
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
@@ -36,33 +36,26 @@ Hi,
 
 On Mon, Sep 12, 2022 at 02:43:09PM +0200, Kristof Provost via Openvpn-devel=
  wrote:
-> That???s very interesting information. You may be closing in on the cause.
-> What version do you run on the t_client server? Perhaps that will help me=
- to reproduce it.
+> > it *does* bump the outside packet length up by +16 bytes ("bad length 1=
+512" ->
+> > "1528").  Smells cipher algorithm padding or so - but why 16?  And why =
+pad
+> > at all (AES-256-GCM used, so I think we should not pad)?
+> >
+> I would still expect padding. AES will operate on 16 byte blocks, so no m=
+atter the block chaining mode we???re going to have that multiple-of-16-byt=
+es thing.
 
-OpenVPN 2.6_git [git:master/26e40c48b89478cb
+Asking the expert again :-)
 
-but I don't think that's actually needed, just looking at the difference
-in packet size increase between DCO and non-DCO was already a good=20
-indication :-)
+14:51 <@plaisthos> aes-ctr generates a multiple of 16 bytes as stream
+14:52 <@plaisthos> then you xor the message to that and just use the len of=
+ the=20
+                   message
 
-So, see other mail, it's padding/rounding up, and for whatever reason,
-this increases the encapsulated packet size for DCO - which normally gets
-ignored on the receiving end, it seems, but for this particular packet
-size range, the result is just too big.
-
-[..]
-> I???m on my way to Vienna for EuroBSDCon now, so I will be distracted unt=
-il early next week, but when I???m back I should be able to dig into this a=
-s well.
-
-Enjoy!  I've been to EuroBSDcon in Belgrade a few years back, and it was
-definitely one of the nicest conferences I've been to - good talks, and
-very nice and friendly (and interesting!) people everywhere.  This year,
-I need to get other stuff done...
+so yes, 16 byte block, but the message length does not increase.
 
 gert
-
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -73,22 +66,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---bfVZL2nouIrHqJpt
+--OZmD3CrT2NQsvwl4
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGbBAEBAgAGBQJjHysVAAoJEB2Cnv7KVigSmO8L+ODZWjqknDg/s5Upp2JN1BX9
-ZeMIkq9t5eLlBR2lpYHoh32FBhyG8I5qw3BrEYbqIEZ5xXwZw50mnlIZjzu61DRQ
-jAn216rmzEcc6ZtX+tC7Iq3V061KeFLc+PXQ+espJJBa638/8A4PbTcAvNbzGpZV
-mz2rRytuvDpeIOS/8+xHdKh91bx0s3ISNqbu/Kw+/Zktdo6gjz/0hacuSvxFTqHl
-YefbgfPjv+j7IFV5b6TUmfh3RCl5g+3ISX9Nf2bkQQY9rkq9HaLjjgXVSvBeiPR2
-C2owQPrvZSGSs+bWenPv16h1YRqoyDT3fk3a8Osg9XAQyRx9mja4jUf1bnMN8PqU
-XjwqdiyZon1Cn9ysBgnGHaN+++bRHcrd58l70D9d1Gm8yowkZRAssiP92wg7W+pM
-fzg9fV+pJK7IOfzE7bMWIH+9h0PGubFSieK7eJKTmKWoWaiunKxw0T3zcQgVj3kN
-SA1NKmMO/Qj28tQdwwPIA97QRe3c5cZt3e9D7Fds
-=vEgR
+iQGcBAEBAgAGBQJjHyxIAAoJEB2Cnv7KVigSnoEL/R97ZM5zi3aT2X1ggfCEp1Ra
+BAPVwjfiq/BLf6psy1OAT8hEAn3WZbrbzcRsbf5Nqm81vyVouui0/Pr+TOo1IvtN
+BS861+4UZwgFkCH4YULk1xzpMQD83EEdiiphQ2KeTXFkt//Yz2BgD1f9hNn/7b4+
+jxwFJylLDD/PwJ+N/e+7yK5H4jj+WQfL6v1XDV0+TkwBMbluG4hu2ez9wHhTB/ZO
+ADGHddEMVdwT6nM4pAhk4+JsV8P1ihmjG2rgg46dsmcfuYXQMaqh6xQDAmJAJYFs
+2LqiFQRhrn/6otzWlBo/qcQrojMcEtUK06WsLx46QVmGQEQi4Y+SiAak2IxqVYYA
+fiyfAGczRLhtaW+WbbYKGvvHomtHl9rKUhQ520A2bDqdZizXDMP+GXyThga5KN8E
+HMOnkyyvd6kiJl7ylk9CUZ1i5xfcRdbcqh2Aq/iW+fayhKZTEjbnVQdJY+2BWgJp
+Udx6ituCbHOiXbqoa9oxTD589DEOFGayMRm5okwpvA==
+=kAuG
 -----END PGP SIGNATURE-----
 
---bfVZL2nouIrHqJpt--
+--OZmD3CrT2NQsvwl4--
 
