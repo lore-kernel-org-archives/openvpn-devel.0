@@ -1,8 +1,7 @@
-Date: Mon, 12 Sep 2022 14:45:28 +0200
+Date: Mon, 12 Sep 2022 14:50:30 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <Yx8p6LeIUVUeFPMD@...1296...>
-References: <20220808143424.65924-1-kprovost@...2661...>
- <20220808143424.65924-3-kprovost@...2661...>
+Message-ID: <Yx8rFmv7B7vlXJYs@...1296...>
+References: <20220808143424.65924-3-kprovost@...2661...>
  <YvPdlCSxQ6wvfIna@...1296...>
  <2DCBB302-1FB4-4EC0-8B4A-8D6EA075B0FD@...2661...>
  <YvVwcBtzGagtUgOA@...1296...>
@@ -10,11 +9,12 @@ References: <20220808143424.65924-1-kprovost@...2661...>
  <YveWP9xh9XwsjwPY@...1296...> <Yve0gy+SuH+7unUj@...1296...>
  <7CB2FF09-EE1D-427E-BBD1-4128EAE1ED4A@...2661...>
  <Yx8hkCs4tOK5+dBl@...1296...>
+ <F65A9C36-1FA7-44E2-8A13-8573DD3FEAA7@...2661...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="rYqaiFZ8tSf3Ldcp"
+ protocol="application/pgp-signature"; boundary="bfVZL2nouIrHqJpt"
 Content-Disposition: inline
-In-Reply-To: <Yx8hkCs4tOK5+dBl@...1296...>
+In-Reply-To: <F65A9C36-1FA7-44E2-8A13-8573DD3FEAA7@...2661...>
 Subject: Re: [Openvpn-devel] big packet loss with FreeBSD DCO
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -27,93 +27,39 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Kristof Provost <kprovost@...2661...>
 Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---rYqaiFZ8tSf3Ldcp
+--bfVZL2nouIrHqJpt
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Sep 12, 2022 at 02:09:52PM +0200, Gert Doering wrote:
-> So, observation suggests "it's happening inside the DCO module".  I'll
-> go instrument my kernel with printf()'s now... and will report if I find
-> anything useful.
+On Mon, Sep 12, 2022 at 02:43:09PM +0200, Kristof Provost via Openvpn-devel=
+ wrote:
+> That???s very interesting information. You may be closing in on the cause.
+> What version do you run on the t_client server? Perhaps that will help me=
+ to reproduce it.
 
-ok... so at the beginning of ovpn_transmit_to_peer(), I have
+OpenVPN 2.6_git [git:master/26e40c48b89478cb
 
-ping -s 1460
-Sep 12 14:36:34 fbsd14 kernel: GERT: ovpn_transmit_to_peer, tunnel_len=3D14=
-88
+but I don't think that's actually needed, just looking at the difference
+in packet size increase between DCO and non-DCO was already a good=20
+indication :-)
 
-ping -s 1461
-Sep 12 14:36:43 fbsd14 kernel: GERT: ovpn_transmit_to_peer, tunnel_len=3D14=
-89
+So, see other mail, it's padding/rounding up, and for whatever reason,
+this increases the encapsulated packet size for DCO - which normally gets
+ignored on the receiving end, it seems, but for this particular packet
+size range, the result is just too big.
 
--> check!
+[..]
+> I???m on my way to Vienna for EuroBSDCon now, so I will be distracted unt=
+il early next week, but when I???m back I should be able to dig into this a=
+s well.
 
-... and then there is code that deals with rounding up...?!
-
---------------- snip --------------
-printf( "GERT: ovpn_transmit_to_peer, real_len=3D%d\n", (int) real_len );
-
-        ovpn_hdr_len =3D sizeof(struct ovpn_wire_header);
-        if (key->encrypt->cipher =3D=3D OVPN_CIPHER_ALG_NONE)
-                ovpn_hdr_len -=3D 16; /* No auth tag. */
-        else {
-                /* Round up the len to a multiple of our block size. */
-                len =3D roundup2(real_len, AES_BLOCK_LEN);
-
-                /* Now extend the mbuf. */
-                m_append(m, len - real_len, EMPTY_BUFFER);
-        }
-
-printf( "GERT: ovpn_transmit_to_peer, len=3D%d\n", (int) len );
---------------- snip --------------
-
-and after this block:
-
-Sep 12 14:40:40 fbsd14 kernel: GERT: ovpn_transmit_to_peer, tunnel_len=3D14=
-89
-Sep 12 14:40:40 fbsd14 kernel: GERT: ovpn_transmit_to_peer, real_len=3D1489
-Sep 12 14:40:40 fbsd14 kernel: GERT: ovpn_transmit_to_peer, len=3D1504
-
-Wohoo, 1504!  +16!
-
-
-Now, I have no idea about crypto, *and* I have no idea about OpenVPN
-wire format (Arne is the resident expert on this), but Arne tells me
-"there is no padding needed"
-
-14:00 <@cron2__> is there padding with AES-GCM?
-14:04 <@plaisthos> cron2__: no. AES-GCM is basically CTR and a stream cipher
-
-... so, not sure what that code does.
-
-If I just kill it :-)
-
-                /* Round up the len to a multiple of our block size. */
-                // len =3D roundup2(real_len, AES_BLOCK_LEN);
-
-I can ping just fine...
-
-gert@...2695...:/usr/obj $ SU ping -s 1461 10.194.0.1
-PING 10.194.0.1 (10.194.0.1): 1461 data bytes
-1469 bytes from 10.194.0.1: icmp_seq=3D0 ttl=3D64 time=3D124.774 ms
-1469 bytes from 10.194.0.1: icmp_seq=3D1 ttl=3D64 time=3D124.930 ms
-
-and with double fragmentation too...
-
-gert@...2695...:/usr/obj $ SU ping -s 3000 10.194.0.1
-PING 10.194.0.1 (10.194.0.1): 3000 data bytes
-3008 bytes from 10.194.0.1: icmp_seq=3D0 ttl=3D64 time=3D126.363 ms
-3008 bytes from 10.194.0.1: icmp_seq=3D1 ttl=3D64 time=3D126.642 ms
-3008 bytes from 10.194.0.1: icmp_seq=3D2 ttl=3D64 time=3D126.200 ms
-
-
-Now, I'm not submitting a patch for that, because usually there is
-a good reason for rounding up and doing blocks and all that - so, I
-found the offending lines, but do not feel qualified for a correct
-fix.
+Enjoy!  I've been to EuroBSDcon in Belgrade a few years back, and it was
+definitely one of the nicest conferences I've been to - good talks, and
+very nice and friendly (and interesting!) people everywhere.  This year,
+I need to get other stuff done...
 
 gert
 
@@ -127,22 +73,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---rYqaiFZ8tSf3Ldcp
+--bfVZL2nouIrHqJpt
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJjHynoAAoJEB2Cnv7KVigSvTsL/jeVvoJte+nd1r+zdvp4SFu1
-kTqwj49QxgafCkj4j6ZrD08+IJ/RD81TEXtrT6dOe9lq2IwQR3we76A5y23RP2Qi
-0jFrpz3GMGPsWwrML6ZnEpdV1YL3Cdg8L7swpuxdHSlcIQ7U1pyRxpCjHtpPntUj
-ZoKkOw/oAe0nlK0lUfkkv7zoPwEPQI+uuNGNd9wXBPdtW0R7e9dmF5zAyoPgjTUu
-Zc7uVE/Kxqv2XJoqVh9A2wdQgbGtrG6EJZDQj8uev2SI+ggGPwm2fFx7X6FTwOgV
-3foBY3GPwdGDIDiX4HOPOlHGf/wJKGBDbPVNbarzECgYMNBUaTv3HslSH7dGZIRI
-IYwZp6sTJ6qu/pNZXzrKjC/tUmFDegked9k7le/lCSIbxDT61UzX8R/w3A6eoM/9
-Vznppq/Moms8T82vHKIBYTG8okZVVmWW1Vt3r+fobncUEhL8JZ4vyicBOr8pTyPx
-ZLwCUS7mqChnkB8DYReDbyedNVck77Po5HmKj4XzrA==
-=Ms5G
+iQGbBAEBAgAGBQJjHysVAAoJEB2Cnv7KVigSmO8L+ODZWjqknDg/s5Upp2JN1BX9
+ZeMIkq9t5eLlBR2lpYHoh32FBhyG8I5qw3BrEYbqIEZ5xXwZw50mnlIZjzu61DRQ
+jAn216rmzEcc6ZtX+tC7Iq3V061KeFLc+PXQ+espJJBa638/8A4PbTcAvNbzGpZV
+mz2rRytuvDpeIOS/8+xHdKh91bx0s3ISNqbu/Kw+/Zktdo6gjz/0hacuSvxFTqHl
+YefbgfPjv+j7IFV5b6TUmfh3RCl5g+3ISX9Nf2bkQQY9rkq9HaLjjgXVSvBeiPR2
+C2owQPrvZSGSs+bWenPv16h1YRqoyDT3fk3a8Osg9XAQyRx9mja4jUf1bnMN8PqU
+XjwqdiyZon1Cn9ysBgnGHaN+++bRHcrd58l70D9d1Gm8yowkZRAssiP92wg7W+pM
+fzg9fV+pJK7IOfzE7bMWIH+9h0PGubFSieK7eJKTmKWoWaiunKxw0T3zcQgVj3kN
+SA1NKmMO/Qj28tQdwwPIA97QRe3c5cZt3e9D7Fds
+=vEgR
 -----END PGP SIGNATURE-----
 
---rYqaiFZ8tSf3Ldcp--
+--bfVZL2nouIrHqJpt--
 
