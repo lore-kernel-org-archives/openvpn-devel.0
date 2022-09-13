@@ -1,11 +1,13 @@
-Message-ID: <9a825c98-7066-9beb-20cf-28ee9fc0c4b4@...2181...>
-Date: Tue, 13 Sep 2022 23:33:20 +0200
+Message-ID: <a0668e8c-897d-c360-e501-89a246de4bd6@...2181...>
+Date: Tue, 13 Sep 2022 23:38:29 +0200
 MIME-Version: 1.0
-References: <20220808152344.17539-1-gert@...1296...>
 Content-Language: en-US
+References: <202208301957.27UJv74w093000@...2054...>
+ <20220912074149.31160-1-gert@...1296...>
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20220808152344.17539-1-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] cleanup open_tun() for TARGET_NETBSD
+In-Reply-To: <20220912074149.31160-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Improve documentation for --dev and
+ --dev-node.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,144 +20,97 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
 
-On 08/08/2022 17:23, Gert Doering wrote:
-> - NetBSD "dynamic tap" (--dev tap -> tap<number>) handling had special
->    #ifdef'ed code inside open_tun_generic() - pull out, move to NetBSD
->    open_tun().  Roughly the same amount of code, less #ifdef, code flow
->    is more clear.
+
+On 12/09/2022 09:41, Gert Doering wrote:
+> During the research for commit a5cf4cfb77f745 it turned out that
+> OpenVPN's behaviour regarding "--dev arbitrary-name" is very
+> platform-specific and not very well documented.
 > 
-> - fix one spurious warning about "remote" not being initialized
-> 
-> - adjust NetBSD do_open() comments to actual code - the "pre NetBSD 4.0"
->    code has long be removed, but the comment was still there.
+> The referenced commit fixed DCO behaviour to be in line with non-DCO
+> linux behaviour, this commit catches up on the documentation.
 > 
 > Signed-off-by: Gert Doering <gert@...1296...>
 > ---
->   src/openvpn/tun.c | 72 +++++++++++++++++++++++++----------------------
->   1 file changed, 38 insertions(+), 34 deletions(-)
+>   doc/man-sections/vpn-network-options.rst | 38 +++++++++++++++++++-----
+>   1 file changed, 31 insertions(+), 7 deletions(-)
 > 
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index 54f7d72c..9cba1c3a 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -1380,7 +1380,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
->       }
+> diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
+> index 5b2f8470..559b2464 100644
+> --- a/doc/man-sections/vpn-network-options.rst
+> +++ b/doc/man-sections/vpn-network-options.rst
+> @@ -69,15 +69,34 @@ routing.
+>        dev tap4
+>        dev ovpn
 >   
->   #elif defined(TARGET_NETBSD)
-> -    in_addr_t remote_end;           /* for "virtual" subnet topology */
-> +    in_addr_t remote_end = INADDR_ANY;	/* for "virtual" subnet topology */
+> -  When the device name starts with :code:`tun` or :code:`tap`, the device
+> -  type is extracted automatically.  Otherwise the ``--dev-type`` option
+> -  needs to be added as well.
+> +  What happens if the device name is not :code:`tun` or :code:`tap` is
+> +  platform dependent.
+> +
+> +  On most platforms, :code:`tunN` (e.g. tun2, tun30) and :code:`tapN`
+> +  (e.g. tap3) will create a numbered tun/tap interface with the number
+> +  specified - this is useful if multiple OpenVPN instances are active,
+> +  and the instance-to-device mapping needs to be known.  Some platforms
+> +  do not support "numbered tap", so trying ``--dev tap3`` will fail.
+> +
+> +  Arbitrary names (e.g. ``--dev home``) will not work on most platforms,
+> +  with the exception of Linux and FreeBSD with the DCO kernel driver.
+> +
+> +  There, arbitrary names are allowed, and will create a tun or DCO
+> +  device named as requested.
+> +
+> +  Linux also supports arbitrary named tap devices, if TAP is requested
+> +  with ``--dev somename --dev-type tap``.
+> +
+> +  On Windows, only the names :code:`tun` and :code:`tap` are supported.
+> +  Selection among multiple installed drivers or driver instances is done
+> +  with ``--dev-node`` and ``--windows-driver``.
 >   
->       if (tun)
->       {
-> @@ -1762,29 +1762,6 @@ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
->                * explicit unit number.  Try opening /dev/[dev]n
->                * where n = [0, 255].
->                */
-> -#ifdef TARGET_NETBSD
-> -            /* on NetBSD, tap (but not tun) devices are opened by
-> -             * opening /dev/tap and then querying the system about the
-> -             * actual device name (tap0, tap1, ...) assigned
-> -             */
-> -            if (strcmp(dev, "tap") == 0)
-> -            {
-> -                struct ifreq ifr;
-> -                if ((tt->fd = open( "/dev/tap", O_RDWR)) < 0)
-> -                {
-> -                    msg(M_FATAL, "Cannot allocate NetBSD TAP dev dynamically");
-> -                }
-> -                if (ioctl( tt->fd, TAPGIFNAME, (void *)&ifr ) < 0)
-> -                {
-> -                    msg(M_FATAL, "Cannot query NetBSD TAP device name");
-> -                }
-> -                CLEAR(dynamic_name);
-> -                strncpy( dynamic_name, ifr.ifr_name, sizeof(dynamic_name)-1 );
-> -                dynamic_opened = true;
-> -                openvpn_snprintf(tunname, sizeof(tunname), "/dev/%s", dynamic_name );
-> -            }
-> -            else
-> -#endif
+>   --dev-node node
+> -  Explicitly set the device node rather than using :code:`/dev/net/tun`,
+> -  :code:`/dev/tun`, :code:`/dev/tap`, etc. If OpenVPN cannot figure out
+> -  whether ``node`` is a TUN or TAP device based on the name, you should
+> -  also specify ``--dev-type tun`` or ``--dev-type tap``.
+> +  This is a highly system dependent option to influence tun/tap driver
+> +  selection.
+> +
+> +  On Linux, tun/tap devices are created by accessing :code:`/dev/net/tun`,
+> +  and this device name can be changed using ``--dev-node ...``.
 >   
->               if (!tun_name_is_fixed(dev))
->               {
-> @@ -2759,24 +2736,51 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
->   #elif defined(TARGET_NETBSD)
+>     Under Mac OS X this option can be used to specify the default tun
+>     implementation. Using ``--dev-node utun`` forces usage of the native
+> @@ -93,6 +112,11 @@ routing.
+>     both the network connections control panel name and the GUID for each
+>     TAP-Win32 adapter.
 >   
->   /*
-> - * NetBSD before 4.0 does not support IPv6 on tun out of the box,
-> - * but there exists a patch (sys/net/if_tun.c, 1.79->1.80, see PR 32944).
-> - *
-> - * NetBSD 4.0 and up do, but we need to put the tun interface into
-> - * "multi_af" mode, which will prepend the address family to all packets
-> - * (same as OpenBSD and FreeBSD).  If this is not enabled, the kernel
-> - * silently drops all IPv6 packets on output and gets confused on input.
-> + * NetBSD 4.0 and up support IPv6 on tun interfaces, but we need to put
-> + * the tun interface into "multi_af" mode, which will prepend the address
-> + * family to all packets (same as OpenBSD and FreeBSD).
->    *
-> - * On earlier versions, multi_af is not available at all, so we have
-> - * two different NetBSD code variants here :-(
-> + * If this is not enabled, the kernel silently drops all IPv6 packets on
-> + * output and gets confused on input.
->    *
-> + * Note: --dev tap3 works *if* the interface is created externally by
-> + *         "ifconfig tap3 create"
-> + *         (and for devices beyond tap3, "mknod /dev/tapN c ...")
-> + *       but we do not have code to do that inside OpenVPN
->    */
->   
->   void
->   open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
->            openvpn_net_ctx_t *ctx)
->   {
-> -    open_tun_generic(dev, dev_type, dev_node, tt);
-> +    /* on NetBSD, tap (but not tun) devices are opened by
-> +     * opening /dev/tap and then querying the system about the
-> +     * actual device name (tap0, tap1, ...) assigned
-> +     */
-> +    if (strcmp(dev, "tap") == 0)
+> +  On other platforms, ``--dev-node node`` will influence the naming of the
+> +  created tun/tap device, if supported on that platform.  If OpenVPN cannot
+> +  figure out whether ``node`` is a TUN or TAP device based on the name,
+> +  you should also specify ``--dev-type tun`` or ``--dev-type tap``.
+> +
+>   --dev-type device-type
+>     Which device type are we using? ``device-type`` should be :code:`tun`
+>     (OSI Layer 3) or :code:`tap` (OSI Layer 2). Use this option only if
 
-in open_tun_generic() there is a check *before* reaching the code above:
 
-"if (dev_node)"
+I like this improved version as it tries to bring clarity. However, I 
+feel it is too vague as to which platform does what.
 
-After your patch this check becomes secondary and won't be reached if 
-$dev == "tap".
+For example the last paragraph starts with "On other platform", but what 
+are these "other platforms"?
 
-Is this wanted? It sounds like dev_node is now ignored if $dev is tap.
+Maybe it's just me, but saying "other platforms" or "some platforms" or 
+"most platforms" without explicitly saying which ones is the same as to 
+not really documenting the behaviour. Because I am still unable to 
+understand which platform does what.
 
-Other than that the patch looks good and the new comment for open_tun is 
-easy to digest, also for non bsders like me.
+Should we rather split this platform by platform with related paragraphs?
+
+What do you think?
 
 Cheers,
-
-> +    {
-> +        struct ifreq ifr;
-> +        if ((tt->fd = open( "/dev/tap", O_RDWR)) < 0)
-> +        {
-> +            msg(M_FATAL, "Cannot allocate NetBSD TAP dev dynamically");
-> +        }
-> +        if (ioctl( tt->fd, TAPGIFNAME, (void *)&ifr ) < 0)
-> +        {
-> +            msg(M_FATAL, "Cannot query NetBSD TAP device name");
-> +        }
-> +        set_nonblock(tt->fd);
-> +        set_cloexec(tt->fd); /* don't pass fd to scripts */
-> +        msg(M_INFO, "TUN/TAP device %s opened", ifr.ifr_name);
-> +
-> +        tt->actual_name = string_alloc(ifr.ifr_name, NULL);
-> +    }
-> +    else
-> +    {
-> +        /* dynamic / named tun can be handled by the generic function
-> +         * named tap ("tap3") is handled there as well, if pre-created
-> +         */
-> +        open_tun_generic(dev, dev_type, dev_node, tt);
-> +    }
->   
->       if (tt->fd >= 0)
->       {
 
 -- 
 Antonio Quartulli
