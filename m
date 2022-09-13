@@ -1,18 +1,11 @@
-From: Kristof Provost <kprovost@...2661...>
-Date: Mon, 12 Sep 2022 15:41:45 +0200
-Message-ID: <F8FECA50-5958-471F-A3CF-F5B0498DE272@...2661...>
-In-Reply-To: <Yx8p6LeIUVUeFPMD@...1296...>
-References: <20220808143424.65924-1-kprovost@...2661...>
- <20220808143424.65924-3-kprovost@...2661...>
- <YvPdlCSxQ6wvfIna@...1296...>
- <2DCBB302-1FB4-4EC0-8B4A-8D6EA075B0FD@...2661...>
- <YvVwcBtzGagtUgOA@...1296...>
- <8E0AADE4-350B-46A5-B4BD-5E97ADA642F4@...2661...>
- <YveWP9xh9XwsjwPY@...1296...> <Yve0gy+SuH+7unUj@...1296...>
- <7CB2FF09-EE1D-427E-BBD1-4128EAE1ED4A@...2661...>
- <Yx8hkCs4tOK5+dBl@...1296...> <Yx8p6LeIUVUeFPMD@...1296...>
+Message-ID: <9a825c98-7066-9beb-20cf-28ee9fc0c4b4@...2181...>
+Date: Tue, 13 Sep 2022 23:33:20 +0200
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] big packet loss with FreeBSD DCO
+References: <20220808152344.17539-1-gert@...1296...>
+Content-Language: en-US
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20220808152344.17539-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] cleanup open_tun() for TARGET_NETBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,102 +14,149 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-On 12 Sep 2022, at 14:45, Gert Doering wrote:
-> Hi,
->
-> On Mon, Sep 12, 2022 at 02:09:52PM +0200, Gert Doering wrote:
->> So, observation suggests "it's happening inside the DCO module".  I'll
->> go instrument my kernel with printf()'s now... and will report if I find
->> anything useful.
->
-> ok... so at the beginning of ovpn_transmit_to_peer(), I have
->
-> ping -s 1460
-> Sep 12 14:36:34 fbsd14 kernel: GERT: ovpn_transmit_to_peer, tunnel_len=3D=
-1488
->
-> ping -s 1461
-> Sep 12 14:36:43 fbsd14 kernel: GERT: ovpn_transmit_to_peer, tunnel_len=3D=
-1489
->
-> -> check!
->
-> ... and then there is code that deals with rounding up...?!
->
-> --------------- snip --------------
-> printf( "GERT: ovpn_transmit_to_peer, real_len=3D%d\n", (int) real_len );
->
->         ovpn_hdr_len =3D sizeof(struct ovpn_wire_header);
->         if (key->encrypt->cipher =3D=3D OVPN_CIPHER_ALG_NONE)
->                 ovpn_hdr_len -=3D 16; /* No auth tag. */
->         else {
->                 /* Round up the len to a multiple of our block size. */
->                 len =3D roundup2(real_len, AES_BLOCK_LEN);
->
->                 /* Now extend the mbuf. */
->                 m_append(m, len - real_len, EMPTY_BUFFER);
->         }
->
-> printf( "GERT: ovpn_transmit_to_peer, len=3D%d\n", (int) len );
-> --------------- snip --------------
->
-> and after this block:
->
-> Sep 12 14:40:40 fbsd14 kernel: GERT: ovpn_transmit_to_peer, tunnel_len=3D=
-1489
-> Sep 12 14:40:40 fbsd14 kernel: GERT: ovpn_transmit_to_peer, real_len=3D14=
-89
-> Sep 12 14:40:40 fbsd14 kernel: GERT: ovpn_transmit_to_peer, len=3D1504
->
-> Wohoo, 1504!  +16!
->
->
-> Now, I have no idea about crypto, *and* I have no idea about OpenVPN
-> wire format (Arne is the resident expert on this), but Arne tells me
-> "there is no padding needed"
->
-> 14:00 <@cron2__> is there padding with AES-GCM?
-> 14:04 <@plaisthos> cron2__: no. AES-GCM is basically CTR and a stream cip=
-her
->
-> ... so, not sure what that code does.
->
-> If I just kill it :-)
->
->                 /* Round up the len to a multiple of our block size. */
->                 // len =3D roundup2(real_len, AES_BLOCK_LEN);
->
-> I can ping just fine...
->
-> gert@...2695...:/usr/obj $ SU ping -s 1461 10.194.0.1
-> PING 10.194.0.1 (10.194.0.1): 1461 data bytes
-> 1469 bytes from 10.194.0.1: icmp_seq=3D0 ttl=3D64 time=3D124.774 ms
-> 1469 bytes from 10.194.0.1: icmp_seq=3D1 ttl=3D64 time=3D124.930 ms
->
-> and with double fragmentation too...
->
-> gert@...2695...:/usr/obj $ SU ping -s 3000 10.194.0.1
-> PING 10.194.0.1 (10.194.0.1): 3000 data bytes
-> 3008 bytes from 10.194.0.1: icmp_seq=3D0 ttl=3D64 time=3D126.363 ms
-> 3008 bytes from 10.194.0.1: icmp_seq=3D1 ttl=3D64 time=3D126.642 ms
-> 3008 bytes from 10.194.0.1: icmp_seq=3D2 ttl=3D64 time=3D126.200 ms
->
->
-> Now, I'm not submitting a patch for that, because usually there is
-> a good reason for rounding up and doing blocks and all that - so, I
-> found the offending lines, but do not feel qualified for a correct
-> fix.
->
-The offending code is almost certainly wrong.
-I know the guy who wrote them and =E2=80=A6 he means well ;)
+Hi,
 
-I think I was confused about what was needed in packet size. I=E2=80=99ll t=
-ry to test your patch in the next couple of days.
+On 08/08/2022 17:23, Gert Doering wrote:
+> - NetBSD "dynamic tap" (--dev tap -> tap<number>) handling had special
+>    #ifdef'ed code inside open_tun_generic() - pull out, move to NetBSD
+>    open_tun().  Roughly the same amount of code, less #ifdef, code flow
+>    is more clear.
+> 
+> - fix one spurious warning about "remote" not being initialized
+> 
+> - adjust NetBSD do_open() comments to actual code - the "pre NetBSD 4.0"
+>    code has long be removed, but the comment was still there.
+> 
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>   src/openvpn/tun.c | 72 +++++++++++++++++++++++++----------------------
+>   1 file changed, 38 insertions(+), 34 deletions(-)
+> 
+> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+> index 54f7d72c..9cba1c3a 100644
+> --- a/src/openvpn/tun.c
+> +++ b/src/openvpn/tun.c
+> @@ -1380,7 +1380,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
+>       }
+>   
+>   #elif defined(TARGET_NETBSD)
+> -    in_addr_t remote_end;           /* for "virtual" subnet topology */
+> +    in_addr_t remote_end = INADDR_ANY;	/* for "virtual" subnet topology */
+>   
+>       if (tun)
+>       {
+> @@ -1762,29 +1762,6 @@ open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
+>                * explicit unit number.  Try opening /dev/[dev]n
+>                * where n = [0, 255].
+>                */
+> -#ifdef TARGET_NETBSD
+> -            /* on NetBSD, tap (but not tun) devices are opened by
+> -             * opening /dev/tap and then querying the system about the
+> -             * actual device name (tap0, tap1, ...) assigned
+> -             */
+> -            if (strcmp(dev, "tap") == 0)
+> -            {
+> -                struct ifreq ifr;
+> -                if ((tt->fd = open( "/dev/tap", O_RDWR)) < 0)
+> -                {
+> -                    msg(M_FATAL, "Cannot allocate NetBSD TAP dev dynamically");
+> -                }
+> -                if (ioctl( tt->fd, TAPGIFNAME, (void *)&ifr ) < 0)
+> -                {
+> -                    msg(M_FATAL, "Cannot query NetBSD TAP device name");
+> -                }
+> -                CLEAR(dynamic_name);
+> -                strncpy( dynamic_name, ifr.ifr_name, sizeof(dynamic_name)-1 );
+> -                dynamic_opened = true;
+> -                openvpn_snprintf(tunname, sizeof(tunname), "/dev/%s", dynamic_name );
+> -            }
+> -            else
+> -#endif
+>   
+>               if (!tun_name_is_fixed(dev))
+>               {
+> @@ -2759,24 +2736,51 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+>   #elif defined(TARGET_NETBSD)
+>   
+>   /*
+> - * NetBSD before 4.0 does not support IPv6 on tun out of the box,
+> - * but there exists a patch (sys/net/if_tun.c, 1.79->1.80, see PR 32944).
+> - *
+> - * NetBSD 4.0 and up do, but we need to put the tun interface into
+> - * "multi_af" mode, which will prepend the address family to all packets
+> - * (same as OpenBSD and FreeBSD).  If this is not enabled, the kernel
+> - * silently drops all IPv6 packets on output and gets confused on input.
+> + * NetBSD 4.0 and up support IPv6 on tun interfaces, but we need to put
+> + * the tun interface into "multi_af" mode, which will prepend the address
+> + * family to all packets (same as OpenBSD and FreeBSD).
+>    *
+> - * On earlier versions, multi_af is not available at all, so we have
+> - * two different NetBSD code variants here :-(
+> + * If this is not enabled, the kernel silently drops all IPv6 packets on
+> + * output and gets confused on input.
+>    *
+> + * Note: --dev tap3 works *if* the interface is created externally by
+> + *         "ifconfig tap3 create"
+> + *         (and for devices beyond tap3, "mknod /dev/tapN c ...")
+> + *       but we do not have code to do that inside OpenVPN
+>    */
+>   
+>   void
+>   open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
+>            openvpn_net_ctx_t *ctx)
+>   {
+> -    open_tun_generic(dev, dev_type, dev_node, tt);
+> +    /* on NetBSD, tap (but not tun) devices are opened by
+> +     * opening /dev/tap and then querying the system about the
+> +     * actual device name (tap0, tap1, ...) assigned
+> +     */
+> +    if (strcmp(dev, "tap") == 0)
 
-Kristof
+in open_tun_generic() there is a check *before* reaching the code above:
+
+"if (dev_node)"
+
+After your patch this check becomes secondary and won't be reached if 
+$dev == "tap".
+
+Is this wanted? It sounds like dev_node is now ignored if $dev is tap.
+
+Other than that the patch looks good and the new comment for open_tun is 
+easy to digest, also for non bsders like me.
+
+Cheers,
+
+> +    {
+> +        struct ifreq ifr;
+> +        if ((tt->fd = open( "/dev/tap", O_RDWR)) < 0)
+> +        {
+> +            msg(M_FATAL, "Cannot allocate NetBSD TAP dev dynamically");
+> +        }
+> +        if (ioctl( tt->fd, TAPGIFNAME, (void *)&ifr ) < 0)
+> +        {
+> +            msg(M_FATAL, "Cannot query NetBSD TAP device name");
+> +        }
+> +        set_nonblock(tt->fd);
+> +        set_cloexec(tt->fd); /* don't pass fd to scripts */
+> +        msg(M_INFO, "TUN/TAP device %s opened", ifr.ifr_name);
+> +
+> +        tt->actual_name = string_alloc(ifr.ifr_name, NULL);
+> +    }
+> +    else
+> +    {
+> +        /* dynamic / named tun can be handled by the generic function
+> +         * named tap ("tap3") is handled there as well, if pre-created
+> +         */
+> +        open_tun_generic(dev, dev_type, dev_node, tt);
+> +    }
+>   
+>       if (tt->fd >= 0)
+>       {
+
+-- 
+Antonio Quartulli
 
