@@ -1,11 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed, 14 Sep 2022 19:25:27 +0200
-Message-Id: <20220914172527.2661529-1-arne@...1227...>
-In-Reply-To: <20220824093723.64618-1-arne@...1227...>
-References: <20220824093723.64618-1-arne@...1227...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Wed, 14 Sep 2022 21:43:37 +0300
+Message-Id: <20220914184337.158-1-lstipakov@...277...>
+In-Reply-To: <YyH6RL7q13+juVuJ@...2685...>
+References: <YyH6RL7q13+juVuJ@...2685...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Improve data key id not found error
- message
+Subject: [Openvpn-devel] [PATCH v3] Use DCO on Windows by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,141 +16,318 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-With delayed data key generation now with deferred auth, NCP and similar
-mechanism the "TLS Error: local/remote TLS keys are out of sync" is shown
-much too frequent and confuses a lot of people.
+From: Lev Stipakov <lev@...515...>
 
-This also removes the dead code of printing multi not ready keys and
-replace it with an assert.
+On startup, check following conditions:
 
-Factor out printing of error messages into an extra function to make
-the code easier to understand and also to only call into that function
-in the case that a key is not found and avoid the overhead.
+ - ovpn-dco-win driver is installed. Perform this check
+by trying to open adapter by symbolic name.
 
-Patch v2: fix comparing key_id to state value, improve message
-Patch v3: also take key_id into account
+ - options are compatible with dco. Same checks as on
+Linux and FreeBSD. In addition, check that --mode server
+is not used and --windows-driver is not set to tap-windows6/wintun.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
+If both checks are passed, use DCO.
+
+Move options_postprocess_mutate_invariant() call
+below since it depends on selected windows driver.
+
+dco_check_option() has side effect on Windows -
+if dco is not used, it might complain "cipher chachapoly
+not supported by dco, disabling dco" if chachapoly
+support is missing system-wide. To not to see this,
+check dco options only if dco is enabled. This means
+moving dco_enabled() from dco_check_startup_option()
+to one level above. We do similar thing in
+multi_connection_established() before checking ccd options.
+
+
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- src/openvpn/ssl.c | 75 +++++++++++++++++++++++++++++++++++------------
- 1 file changed, 57 insertions(+), 18 deletions(-)
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 672cd9c84..c0d8add97 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -3210,11 +3210,62 @@ nohard:
-     return (tas == TLS_AUTHENTICATION_FAILED) ? TLSMP_KILL : active;
- }
+ v3:
+  - simplify #ifdefs, as per Frank's suggestions
+
+ v2:
+
+  - initialize disable_dco to true if ENABLE_DCO is not set,
+  this allows to get rid of "else" branch in options_postprocess_mutate()
+
+  - use dco_enabled() wrapper instead of accessing o->tt.disable_dco
  
--/*
-- * Pre and post-process the encryption & decryption buffers in order
-- * to implement a multiplexed TLS channel over the TCP/UDP port.
-+/**
-+ * We have not found a matching key to decrypt data channel packet,
-+ * try to generate a sensible error message and print it
-  */
-+static void
-+print_key_id_not_found_reason(struct tls_multi *multi,
-+                              const struct link_socket_actual *from, int key_id)
-+{
-+    struct gc_arena gc = gc_new();
-+    const char *source = print_link_socket_actual(from, &gc);
-+
- 
-+    for (int i = 0; i < KEY_SCAN_SIZE; ++i)
-+    {
-+        struct key_state *ks = get_key_scan(multi, i);
-+        if (ks->key_id != key_id)
-+        {
-+            continue;
-+        }
-+
-+        /* Our key state has been progressed far enough to be part of a valid
-+         * session but has not generated keys. */
-+        if (ks->state >= S_INITIAL && ks->state < S_GENERATED_KEYS)
-+        {
-+            msg(D_MULTI_DROPPED,
-+                "Key %s [%d] not initialized (yet), dropping packet.",
-+                source, key_id);
-+            gc_free(&gc);
-+            return;
-+        }
-+        if (ks->state >= S_ACTIVE && ks->authenticated != KS_AUTH_TRUE)
-+        {
-+            msg(D_MULTI_DROPPED,
-+                "Key %s [%d] not authorized%s, dropping packet.",
-+                source, key_id,
-+                (ks->authenticated == KS_AUTH_DEFERRED) ? " (deferred)" : "");
-+            gc_free(&gc);
-+            return;
-+        }
+ src/openvpn/dco.c     | 19 ++++++++++++------
+ src/openvpn/dco_win.c | 23 +++++++++++++++++++++-
+ src/openvpn/options.c | 46 ++++++++++++++++++++++++++++---------------
+ src/openvpn/options.h |  6 ++----
+ src/openvpn/tun.c     | 19 ------------------
+ src/openvpn/tun.h     | 20 +++++++++++++++++++
+ 6 files changed, 87 insertions(+), 46 deletions(-)
+
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index d9e49781..a76cdd0c 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -257,11 +257,11 @@ dco_check_option_ce(const struct connection_entry *ce, int msglevel)
+ bool
+ dco_check_startup_option(int msglevel, const struct options *o)
+ {
+-    /* check if DCO was already disabled by the user or if no dev name was
+-     * specified at all. In the latter case, later logic will most likely stop
+-     * OpenVPN, so no need to print any message here.
++    /* check if no dev name was specified at all. In the case,
++     * later logic will most likely stop OpenVPN, so no need to
++     * print any message here.
+      */
+-    if (!dco_enabled(o) || !o->dev)
++    if (!o->dev)
+     {
+         return false;
+     }
+@@ -294,8 +294,15 @@ dco_check_startup_option(int msglevel, const struct options *o)
+ #if defined(_WIN32)
+     if (o->mode == MODE_SERVER)
+     {
+-        msg(msglevel, "Only client and p2p data channel offload is supported "
+-            "with ovpn-dco.");
++        msg(msglevel, "--mode server is set. Disabling Data Channel Offload");
++        return false;
 +    }
 +
-+    msg(D_TLS_ERRORS,
-+        "TLS Error: local/remote TLS keys are out of sync: %s "
-+        "(received key id: %d, known key ids: %s)",
-+        source, key_id,
-+        print_key_id(multi, &gc));
-+    gc_free(&gc);
-+}
-+
-+/**
-+ * Check the keyid of the an incoming data channel packet and
-+ * return the matching crypto parameters in \c opt if found.
-+ * Also move the \c buf to the start of the encrypted data, skipping
-+ * the opcode and peer id header and setting also set \c ad_start for
-+ * AEAD ciphers to the start of the authenticated data.
-+ */
- static inline void
- handle_data_channel_packet(struct tls_multi *multi,
-                            const struct link_socket_actual *from,
-@@ -3229,7 +3280,6 @@ handle_data_channel_packet(struct tls_multi *multi,
-     int op = c >> P_OPCODE_SHIFT;
-     int key_id = c & P_KEY_ID_MASK;
- 
--    /* data channel packet */
-     for (int i = 0; i < KEY_SCAN_SIZE; ++i)
-     {
-         struct key_state *ks = get_key_scan(multi, i);
-@@ -3251,14 +3301,7 @@ handle_data_channel_packet(struct tls_multi *multi,
-             && ks->authenticated == KS_AUTH_TRUE
-             && (floated || link_socket_actual_match(from, &ks->remote_addr)))
-         {
--            if (!ks->crypto_options.key_ctx_bi.initialized)
--            {
--                msg(D_MULTI_DROPPED,
--                    "Key %s [%d] not initialized (yet), dropping packet.",
--                    print_link_socket_actual(from, &gc), key_id);
--                goto done;
--            }
--
-+            ASSERT(ks->crypto_options.key_ctx_bi.initialized);
-             /* return appropriate data channel decrypt key in opt */
-             *opt = &ks->crypto_options;
-             if (op == P_DATA_V2)
-@@ -3292,17 +3335,13 @@ handle_data_channel_packet(struct tls_multi *multi,
-         }
++    if ((o->windows_driver == WINDOWS_DRIVER_WINTUN)
++        || (o->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6))
++    {
++        msg(msglevel, "--windows-driver is set to '%s'. Disabling Data Channel Offload",
++            print_windows_driver(o->windows_driver));
+         return false;
      }
  
--    msg(D_TLS_ERRORS,
--        "TLS Error: local/remote TLS keys are out of sync: %s "
--        "(received key id: %d, known key ids: %s)",
--        print_link_socket_actual(from, &gc), key_id,
--        print_key_id(multi, &gc));
-+    print_key_id_not_found_reason(multi, from, key_id);
- 
- done:
-+    gc_free(&gc);
-     tls_clear_error();
-     buf->len = 0;
-     *opt = NULL;
--    gc_free(&gc);
+diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
+index 22f30280..48a1755a 100644
+--- a/src/openvpn/dco_win.c
++++ b/src/openvpn/dco_win.c
+@@ -359,7 +359,28 @@ dco_swap_keys(dco_context_t *dco, unsigned int peer_id)
+ bool
+ dco_available(int msglevel)
+ {
+-    return true;
++    /* try to open device by symbolic name */
++    HANDLE h = CreateFile("\\\\.\\ovpn-dco", GENERIC_READ | GENERIC_WRITE,
++                          0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, NULL);
++
++    if (h != INVALID_HANDLE_VALUE)
++    {
++        CloseHandle(h);
++        return true;
++    }
++
++    DWORD err = GetLastError();
++    if (err == ERROR_ACCESS_DENIED)
++    {
++        /* this likely means that device exists but is already in use,
++         * don't bail out since later we try to open all existing dco
++         * devices and then bail out if all devices are in use
++         */
++        return true;
++    }
++
++    msg(msglevel, "Note: ovpn-dco-win driver is missing, disabling data channel offload.");
++    return false;
  }
  
- /*
+ int
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 2e567571..e615a71e 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -183,7 +183,7 @@ static const char usage_message[] =
+     "                  does not begin with \"tun\" or \"tap\".\n"
+     "--dev-node node : Explicitly set the device node rather than using\n"
+     "                  /dev/net/tun, /dev/tun, /dev/tap, etc.\n"
+-#if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD))
++#if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(_WIN32))
+     "--disable-dco   : Do not attempt using Data Channel Offload.\n"
+ #endif
+     "--lladdr hw     : Set the link layer address of the tap device.\n"
+@@ -851,7 +851,7 @@ init_options(struct options *o, const bool init_gc)
+     o->tuntap_options.dhcp_masq_offset = 0;     /* use network address as internal DHCP server address */
+     o->route_method = ROUTE_METHOD_ADAPTIVE;
+     o->block_outside_dns = false;
+-    o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
++    o->windows_driver = WINDOWS_DRIVER_UNSPECIFIED;
+ #endif
+     o->vlan_accept = VLAN_ALL;
+     o->vlan_pvid = 1;
+@@ -903,6 +903,10 @@ init_options(struct options *o, const bool init_gc)
+     }
+ #endif /* _WIN32 */
+     o->allow_recursive_routing = false;
++
++#ifndef ENABLE_DCO
++    o->tuntap_options.disable_dco = true;
++#endif /* ENABLE_DCO */
+ }
+ 
+ void
+@@ -3606,8 +3610,6 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
+     options_set_backwards_compatible_options(o);
+ 
+     options_postprocess_cipher(o);
+-    options_postprocess_mutate_invariant(o);
+-
+     o->ncp_ciphers = mutate_ncp_cipher_list(o->ncp_ciphers, &o->gc);
+     if (o->ncp_ciphers == NULL)
+     {
+@@ -3683,18 +3685,29 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
+             "incompatible with each other.");
+     }
+ 
+-#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
+-    /* check if any option should force disabling DCO */
+-    o->tuntap_options.disable_dco = !dco_check_option(D_DCO, o)
+-                                    || !dco_check_startup_option(D_DCO, o);
+-#elif defined(_WIN32)
+-    /* in Windows we have no 'fallback to non-DCO' strategy, so if a conflicting
+-     * option is found, we simply bail out by means of M_USAGE
+-     */
+     if (dco_enabled(o))
+     {
+-        dco_check_option(M_USAGE, o);
+-        dco_check_startup_option(M_USAGE, o);
++        /* check if any option should force disabling DCO */
++        o->tuntap_options.disable_dco = !dco_check_option(D_DCO, o)
++                                        || !dco_check_startup_option(D_DCO, o);
++    }
++
++#ifdef _WIN32
++    if (dco_enabled(o))
++    {
++        o->windows_driver = WINDOWS_DRIVER_DCO;
++    }
++    else
++    {
++        if (o->windows_driver == WINDOWS_DRIVER_DCO)
++        {
++            msg(M_WARN, "Option --windows-driver ovpn-dco is ignored because Data Channel Offload is disabled");
++            o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
++        }
++        else if (o->windows_driver == WINDOWS_DRIVER_UNSPECIFIED)
++        {
++            o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
++        }
+     }
+ #endif
+ 
+@@ -3705,6 +3718,9 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
+         o->dev_node = NULL;
+     }
+ 
++    /* this depends on o->windows_driver, which is set above */
++    options_postprocess_mutate_invariant(o);
++
+     /*
+      * Save certain parms before modifying options during connect, especially
+      * when using --pull
+@@ -5903,9 +5919,7 @@ add_option(struct options *options,
+ #endif
+     else if (streq(p[0], "disable-dco"))
+     {
+-#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
+         options->tuntap_options.disable_dco = true;
+-#endif
+     }
+     else if (streq(p[0], "dev-node") && p[1] && !p[2])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 6d9174a4..3543308a 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -882,13 +882,11 @@ bool key_is_external(const struct options *options);
+ static inline bool
+ dco_enabled(const struct options *o)
+ {
+-#if defined(_WIN32)
+-    return o->windows_driver == WINDOWS_DRIVER_DCO;
+-#elif defined(ENABLE_DCO)
++#ifdef ENABLE_DCO
+     return !o->tuntap_options.disable_dco;
+ #else
+     return false;
+-#endif /* defined(_WIN32) */
++#endif /* ENABLE_DCO */
+ }
+ 
+ #endif /* ifndef OPTIONS_H */
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 94803acd..cb2a8fb6 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -3539,25 +3539,6 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
+ 
+ #elif defined(_WIN32)
+ 
+-static const char *
+-print_windows_driver(enum windows_driver_type windows_driver)
+-{
+-    switch (windows_driver)
+-    {
+-        case WINDOWS_DRIVER_TAP_WINDOWS6:
+-            return "tap-windows6";
+-
+-        case WINDOWS_DRIVER_WINTUN:
+-            return "wintun";
+-
+-        case WINDOWS_DRIVER_DCO:
+-            return "ovpn-dco";
+-
+-        default:
+-            return "unspecified";
+-    }
+-}
+-
+ int
+ tun_read_queue(struct tuntap *tt, int maxsize)
+ {
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 1cca1cfb..24d52670 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -156,6 +156,7 @@ struct tuntap_options {
+ 
+ struct tuntap_options {
+     int dummy; /* not used */
++    bool disable_dco; /* not used, but removes the need in #ifdefs */
+ };
+ 
+ #endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */
+@@ -660,6 +661,25 @@ tuntap_is_dco_win_timeout(struct tuntap *tt, int status)
+     return tuntap_is_dco_win(tt) && (status < 0) && (openvpn_errno() == ERROR_NETNAME_DELETED);
+ }
+ 
++static const char *
++print_windows_driver(enum windows_driver_type windows_driver)
++{
++    switch (windows_driver)
++    {
++        case WINDOWS_DRIVER_TAP_WINDOWS6:
++            return "tap-windows6";
++
++        case WINDOWS_DRIVER_WINTUN:
++            return "wintun";
++
++        case WINDOWS_DRIVER_DCO:
++            return "ovpn-dco";
++
++        default:
++            return "unspecified";
++    }
++}
++
+ #else  /* ifdef _WIN32 */
+ 
+ static inline bool
 -- 
-2.37.0 (Apple Git-136)
+2.23.0.windows.1
 
 
