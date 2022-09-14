@@ -1,10 +1,9 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 14 Sep 2022 21:43:37 +0300
-Message-Id: <20220914184337.158-1-lstipakov@...277...>
-In-Reply-To: <YyH6RL7q13+juVuJ@...2685...>
-References: <YyH6RL7q13+juVuJ@...2685...>
+From: Antonio Quartulli <a@...2181...>
+Date: Wed, 14 Sep 2022 20:59:36 +0200
+Message-Id: <20220914185937.31423-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Use DCO on Windows by default
+Subject: [Openvpn-devel] [PATCH 1/2] auth-user-pass: add support for inline
+ credentials
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,318 +15,235 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+Cc: Antonio Quartulli <a@...2181...>
 
-From: Lev Stipakov <lev@...515...>
+--auth-user-pass is probably the only option expecting a filename as
+argument that cannot be inline'd as of today.
 
-On startup, check following conditions:
+This patch allows specifying username and password inline in the config
+file within the <auth-user-pass></auth-user-pass> tag.
 
- - ovpn-dco-win driver is installed. Perform this check
-by trying to open adapter by symbolic name.
+This logic was already implemented for --http-proxy-user-pass, therefore
+it was just about applying it to this specific option as well.
+Note that the current logic expects username and password to always be
+specified when inline. Therefore omitting the password will result in
+storing an empty password.
 
- - options are compatible with dco. Same checks as on
-Linux and FreeBSD. In addition, check that --mode server
-is not used and --windows-driver is not set to tap-windows6/wintun.
+A later patch will change this behaviour to make it consistent with the
+classic case (username writte in file), where the password is requested
+via stdin when missing.
 
-If both checks are passed, use DCO.
+While a it, add an empty line between prototypes in init.c to make
+uncrustify happy.
 
-Move options_postprocess_mutate_invariant() call
-below since it depends on selected windows driver.
-
-dco_check_option() has side effect on Windows -
-if dco is not used, it might complain "cipher chachapoly
-not supported by dco, disabling dco" if chachapoly
-support is missing system-wide. To not to see this,
-check dco options only if dco is enabled. This means
-moving dco_enabled() from dco_check_startup_option()
-to one level above. We do similar thing in
-multi_connection_established() before checking ccd options.
-
-
-Signed-off-by: Lev Stipakov <lev@...515...>
+Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
+ Changes.rst              |  4 ++++
+ src/openvpn/init.c       |  9 +++++++--
+ src/openvpn/options.c    | 12 +++++++-----
+ src/openvpn/options.h    |  1 +
+ src/openvpn/ssl.c        | 24 ++++++++++++++++++------
+ src/openvpn/ssl.h        |  6 ++++--
+ src/openvpn/ssl_common.h |  1 +
+ 7 files changed, 42 insertions(+), 15 deletions(-)
 
- v3:
-  - simplify #ifdefs, as per Frank's suggestions
-
- v2:
-
-  - initialize disable_dco to true if ENABLE_DCO is not set,
-  this allows to get rid of "else" branch in options_postprocess_mutate()
-
-  - use dco_enabled() wrapper instead of accessing o->tt.disable_dco
+diff --git a/Changes.rst b/Changes.rst
+index 275f8d64..2967533a 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -87,6 +87,10 @@ Data channel offloading with ovpn-dco
+     this implies that peers must be running 2.6.0+ in order to have P2P-NCP
+     which brings DATA_V2 packet support.
  
- src/openvpn/dco.c     | 19 ++++++++++++------
- src/openvpn/dco_win.c | 23 +++++++++++++++++++++-
- src/openvpn/options.c | 46 ++++++++++++++++++++++++++++---------------
- src/openvpn/options.h |  6 ++----
- src/openvpn/tun.c     | 19 ------------------
- src/openvpn/tun.h     | 20 +++++++++++++++++++
- 6 files changed, 87 insertions(+), 46 deletions(-)
-
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index d9e49781..a76cdd0c 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -257,11 +257,11 @@ dco_check_option_ce(const struct connection_entry *ce, int msglevel)
- bool
- dco_check_startup_option(int msglevel, const struct options *o)
- {
--    /* check if DCO was already disabled by the user or if no dev name was
--     * specified at all. In the latter case, later logic will most likely stop
--     * OpenVPN, so no need to print any message here.
-+    /* check if no dev name was specified at all. In the case,
-+     * later logic will most likely stop OpenVPN, so no need to
-+     * print any message here.
-      */
--    if (!dco_enabled(o) || !o->dev)
-+    if (!o->dev)
-     {
-         return false;
-     }
-@@ -294,8 +294,15 @@ dco_check_startup_option(int msglevel, const struct options *o)
- #if defined(_WIN32)
-     if (o->mode == MODE_SERVER)
-     {
--        msg(msglevel, "Only client and p2p data channel offload is supported "
--            "with ovpn-dco.");
-+        msg(msglevel, "--mode server is set. Disabling Data Channel Offload");
-+        return false;
-+    }
++Inline auth username and password
++    Username and password can now be specified inline in the configuration file
++    within the <auth-user-pass></auth-user-pass> tags.
 +
-+    if ((o->windows_driver == WINDOWS_DRIVER_WINTUN)
-+        || (o->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6))
-+    {
-+        msg(msglevel, "--windows-driver is set to '%s'. Disabling Data Channel Offload",
-+            print_windows_driver(o->windows_driver));
-         return false;
-     }
  
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 22f30280..48a1755a 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -359,7 +359,28 @@ dco_swap_keys(dco_context_t *dco, unsigned int peer_id)
- bool
- dco_available(int msglevel)
- {
--    return true;
-+    /* try to open device by symbolic name */
-+    HANDLE h = CreateFile("\\\\.\\ovpn-dco", GENERIC_READ | GENERIC_WRITE,
-+                          0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, NULL);
-+
-+    if (h != INVALID_HANDLE_VALUE)
-+    {
-+        CloseHandle(h);
-+        return true;
-+    }
-+
-+    DWORD err = GetLastError();
-+    if (err == ERROR_ACCESS_DENIED)
-+    {
-+        /* this likely means that device exists but is already in use,
-+         * don't bail out since later we try to open all existing dco
-+         * devices and then bail out if all devices are in use
-+         */
-+        return true;
-+    }
-+
-+    msg(msglevel, "Note: ovpn-dco-win driver is missing, disabling data channel offload.");
-+    return false;
- }
+ Deprecated features
+ -------------------
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index f3770477..d3afa9a6 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -71,6 +71,7 @@ static const char *saved_pid_file_name; /* GLOBAL */
+ #define CF_INIT_TLS_AUTH_STANDALONE (1<<2)
  
- int
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 2e567571..e615a71e 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -183,7 +183,7 @@ static const char usage_message[] =
-     "                  does not begin with \"tun\" or \"tap\".\n"
-     "--dev-node node : Explicitly set the device node rather than using\n"
-     "                  /dev/net/tun, /dev/tun, /dev/tap, etc.\n"
--#if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD))
-+#if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(_WIN32))
-     "--disable-dco   : Do not attempt using Data Channel Offload.\n"
- #endif
-     "--lladdr hw     : Set the link layer address of the tap device.\n"
-@@ -851,7 +851,7 @@ init_options(struct options *o, const bool init_gc)
-     o->tuntap_options.dhcp_masq_offset = 0;     /* use network address as internal DHCP server address */
-     o->route_method = ROUTE_METHOD_ADAPTIVE;
-     o->block_outside_dns = false;
--    o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
-+    o->windows_driver = WINDOWS_DRIVER_UNSPECIFIED;
- #endif
-     o->vlan_accept = VLAN_ALL;
-     o->vlan_pvid = 1;
-@@ -903,6 +903,10 @@ init_options(struct options *o, const bool init_gc)
-     }
- #endif /* _WIN32 */
-     o->allow_recursive_routing = false;
+ static void do_init_first_time(struct context *c);
 +
-+#ifndef ENABLE_DCO
-+    o->tuntap_options.disable_dco = true;
-+#endif /* ENABLE_DCO */
- }
+ static bool do_deferred_p2p_ncp(struct context *c);
  
  void
-@@ -3606,8 +3610,6 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
-     options_set_backwards_compatible_options(o);
- 
-     options_postprocess_cipher(o);
--    options_postprocess_mutate_invariant(o);
--
-     o->ncp_ciphers = mutate_ncp_cipher_list(o->ncp_ciphers, &o->gc);
-     if (o->ncp_ciphers == NULL)
+@@ -593,9 +594,12 @@ init_query_passwords(const struct context *c)
+     if (c->options.auth_user_pass_file)
      {
-@@ -3683,18 +3685,29 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
-             "incompatible with each other.");
-     }
- 
--#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
--    /* check if any option should force disabling DCO */
--    o->tuntap_options.disable_dco = !dco_check_option(D_DCO, o)
--                                    || !dco_check_startup_option(D_DCO, o);
--#elif defined(_WIN32)
--    /* in Windows we have no 'fallback to non-DCO' strategy, so if a conflicting
--     * option is found, we simply bail out by means of M_USAGE
--     */
-     if (dco_enabled(o))
-     {
--        dco_check_option(M_USAGE, o);
--        dco_check_startup_option(M_USAGE, o);
-+        /* check if any option should force disabling DCO */
-+        o->tuntap_options.disable_dco = !dco_check_option(D_DCO, o)
-+                                        || !dco_check_startup_option(D_DCO, o);
-+    }
-+
-+#ifdef _WIN32
-+    if (dco_enabled(o))
-+    {
-+        o->windows_driver = WINDOWS_DRIVER_DCO;
-+    }
-+    else
-+    {
-+        if (o->windows_driver == WINDOWS_DRIVER_DCO)
-+        {
-+            msg(M_WARN, "Option --windows-driver ovpn-dco is ignored because Data Channel Offload is disabled");
-+            o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
-+        }
-+        else if (o->windows_driver == WINDOWS_DRIVER_UNSPECIFIED)
-+        {
-+            o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
-+        }
-     }
+ #ifdef ENABLE_MANAGEMENT
+-        auth_user_pass_setup(c->options.auth_user_pass_file, &c->options.sc_info);
++        auth_user_pass_setup(c->options.auth_user_pass_file,
++                             c->options.auth_user_pass_file,
++                             &c->options.sc_info);
+ #else
+-        auth_user_pass_setup(c->options.auth_user_pass_file, NULL);
++        auth_user_pass_setup(c->options.auth_user_pass_file,
++                             c->options.auth_user_pass_file, NULL);
  #endif
- 
-@@ -3705,6 +3718,9 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
-         o->dev_node = NULL;
      }
- 
-+    /* this depends on o->windows_driver, which is set above */
-+    options_postprocess_mutate_invariant(o);
-+
-     /*
-      * Save certain parms before modifying options during connect, especially
-      * when using --pull
-@@ -5903,9 +5919,7 @@ add_option(struct options *options,
- #endif
-     else if (streq(p[0], "disable-dco"))
-     {
--#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-         options->tuntap_options.disable_dco = true;
--#endif
+ }
+@@ -3061,6 +3065,7 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+         to.client_config_dir_exclusive = options->client_config_dir;
      }
-     else if (streq(p[0], "dev-node") && p[1] && !p[2])
+     to.auth_user_pass_file = options->auth_user_pass_file;
++    to.auth_user_pass_file_inline = options->auth_user_pass_file_inline;
+     to.auth_token_generate = options->auth_token_generate;
+     to.auth_token_lifetime = options->auth_token_lifetime;
+     to.auth_token_call_auth = options->auth_token_call_auth;
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 765695da..2786c28b 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1556,7 +1556,7 @@ show_p2mp_parms(const struct options *o)
+ 
+     SHOW_BOOL(client);
+     SHOW_BOOL(pull);
+-    SHOW_STR(auth_user_pass_file);
++    SHOW_STR_INLINE(auth_user_pass_file);
+ 
+     gc_free(&gc);
+ }
+@@ -4027,9 +4027,10 @@ options_postprocess_filechecks(struct options *options)
+                               options->management_user_pass, R_OK,
+                               "--management user/password file");
+ #endif /* ENABLE_MANAGEMENT */
+-    errs |= check_file_access(CHKACC_FILE|CHKACC_ACPTSTDIN|CHKACC_PRIVATE,
+-                              options->auth_user_pass_file, R_OK,
+-                              "--auth-user-pass");
++    errs |= check_file_access_inline(options->auth_user_pass_file_inline,
++                                     CHKACC_FILE|CHKACC_ACPTSTDIN|CHKACC_PRIVATE,
++                                     options->auth_user_pass_file, R_OK,
++                                     "--auth-user-pass");
+     /* ** System related ** */
+     errs |= check_file_access(CHKACC_FILE, options->chroot_dir,
+                               R_OK|X_OK, "--chroot directory");
+@@ -7705,10 +7706,11 @@ add_option(struct options *options,
+     }
+     else if (streq(p[0], "auth-user-pass") && !p[2])
      {
+-        VERIFY_PERMISSION(OPT_P_GENERAL);
++        VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_INLINE);
+         if (p[1])
+         {
+             options->auth_user_pass_file = p[1];
++            options->auth_user_pass_file_inline = is_inline;
+         }
+         else
+         {
 diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 6d9174a4..3543308a 100644
+index 5488db31..c9144154 100644
 --- a/src/openvpn/options.h
 +++ b/src/openvpn/options.h
-@@ -882,13 +882,11 @@ bool key_is_external(const struct options *options);
- static inline bool
- dco_enabled(const struct options *o)
+@@ -523,6 +523,7 @@ struct options
+     int push_continuation;
+     unsigned int push_option_types_found;
+     const char *auth_user_pass_file;
++    bool auth_user_pass_file_inline;
+     struct options_pre_connect *pre_connect;
+ 
+     int scheduled_exit_interval;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 15c8defc..b166da6d 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -396,23 +396,32 @@ static char *auth_challenge; /* GLOBAL */
+ #endif
+ 
+ void
+-auth_user_pass_setup(const char *auth_file, const struct static_challenge_info *sci)
++auth_user_pass_setup(const char *auth_file, bool is_inline,
++                     const struct static_challenge_info *sci)
  {
--#if defined(_WIN32)
--    return o->windows_driver == WINDOWS_DRIVER_DCO;
--#elif defined(ENABLE_DCO)
-+#ifdef ENABLE_DCO
-     return !o->tuntap_options.disable_dco;
- #else
-     return false;
--#endif /* defined(_WIN32) */
-+#endif /* ENABLE_DCO */
- }
- 
- #endif /* ifndef OPTIONS_H */
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 94803acd..cb2a8fb6 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -3539,25 +3539,6 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
- 
- #elif defined(_WIN32)
- 
--static const char *
--print_windows_driver(enum windows_driver_type windows_driver)
--{
--    switch (windows_driver)
--    {
--        case WINDOWS_DRIVER_TAP_WINDOWS6:
--            return "tap-windows6";
--
--        case WINDOWS_DRIVER_WINTUN:
--            return "wintun";
--
--        case WINDOWS_DRIVER_DCO:
--            return "ovpn-dco";
--
--        default:
--            return "unspecified";
--    }
--}
--
- int
- tun_read_queue(struct tuntap *tt, int maxsize)
- {
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 1cca1cfb..24d52670 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -156,6 +156,7 @@ struct tuntap_options {
- 
- struct tuntap_options {
-     int dummy; /* not used */
-+    bool disable_dco; /* not used, but removes the need in #ifdefs */
- };
- 
- #endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */
-@@ -660,6 +661,25 @@ tuntap_is_dco_win_timeout(struct tuntap *tt, int status)
-     return tuntap_is_dco_win(tt) && (status < 0) && (openvpn_errno() == ERROR_NETNAME_DELETED);
- }
- 
-+static const char *
-+print_windows_driver(enum windows_driver_type windows_driver)
-+{
-+    switch (windows_driver)
++    unsigned int flags = GET_USER_PASS_MANAGEMENT;
++
++    if (is_inline)
 +    {
-+        case WINDOWS_DRIVER_TAP_WINDOWS6:
-+            return "tap-windows6";
-+
-+        case WINDOWS_DRIVER_WINTUN:
-+            return "wintun";
-+
-+        case WINDOWS_DRIVER_DCO:
-+            return "ovpn-dco";
-+
-+        default:
-+            return "unspecified";
++        flags |= GET_USER_PASS_INLINE_CREDS;
 +    }
-+}
 +
- #else  /* ifdef _WIN32 */
+     auth_user_pass_enabled = true;
+     if (!auth_user_pass.defined && !auth_token.defined)
+     {
+ #ifdef ENABLE_MANAGEMENT
+         if (auth_challenge) /* dynamic challenge/response */
+         {
++            flags |= GET_USER_PASS_DYNAMIC_CHALLENGE;
+             get_user_pass_cr(&auth_user_pass,
+                              auth_file,
+                              UP_TYPE_AUTH,
+-                             GET_USER_PASS_MANAGEMENT|GET_USER_PASS_DYNAMIC_CHALLENGE,
++                             flags,
+                              auth_challenge);
+         }
+         else if (sci) /* static challenge response */
+         {
+-            int flags = GET_USER_PASS_MANAGEMENT|GET_USER_PASS_STATIC_CHALLENGE;
++            flags |= GET_USER_PASS_STATIC_CHALLENGE;
+             if (sci->flags & SC_ECHO)
+             {
+                 flags |= GET_USER_PASS_STATIC_CHALLENGE_ECHO;
+@@ -425,7 +434,7 @@ auth_user_pass_setup(const char *auth_file, const struct static_challenge_info *
+         }
+         else
+ #endif /* ifdef ENABLE_MANAGEMENT */
+-        get_user_pass(&auth_user_pass, auth_file, UP_TYPE_AUTH, GET_USER_PASS_MANAGEMENT);
++        get_user_pass(&auth_user_pass, auth_file, UP_TYPE_AUTH, flags);
+     }
+ }
  
- static inline bool
+@@ -2165,9 +2174,12 @@ key_method_2_write(struct buffer *buf, struct tls_multi *multi, struct tls_sessi
+     if (auth_user_pass_enabled || (auth_token.token_defined && auth_token.defined))
+     {
+ #ifdef ENABLE_MANAGEMENT
+-        auth_user_pass_setup(session->opt->auth_user_pass_file, session->opt->sci);
++        auth_user_pass_setup(session->opt->auth_user_pass_file,
++                             session->opt->auth_user_pass_file_inline,
++                             session->opt->sci);
+ #else
+-        auth_user_pass_setup(session->opt->auth_user_pass_file, NULL);
++        auth_user_pass_setup(session->opt->auth_user_pass_file,
++                             session->opt->auth_user_pass_file_inline, NULL);
+ #endif
+         struct user_pass *up = &auth_user_pass;
+ 
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index ec0d2862..8a8a299f 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -367,9 +367,11 @@ void pem_password_setup(const char *auth_file);
+ 
+ /*
+  * Setup authentication username and password. If auth_file is given, use the
+- * credentials stored in the file.
++ * credentials stored in the file, however, if is_inline is true then auth_file
++ * contains the username/password inline.
+  */
+-void auth_user_pass_setup(const char *auth_file, const struct static_challenge_info *sc_info);
++void auth_user_pass_setup(const char *auth_file, bool is_inline,
++                          const struct static_challenge_info *sc_info);
+ 
+ /*
+  * Ensure that no caching is performed on authentication information
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index bf3ac67a..eb91de15 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -366,6 +366,7 @@ struct tls_options
+     bool auth_user_pass_verify_script_via_file;
+     const char *tmp_dir;
+     const char *auth_user_pass_file;
++    bool auth_user_pass_file_inline;
+ 
+     bool auth_token_generate;   /**< Generate auth-tokens on successful
+                                  * user/pass auth,seet via
 -- 
-2.23.0.windows.1
+2.35.1
 
 
