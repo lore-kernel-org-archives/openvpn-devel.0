@@ -1,10 +1,10 @@
-Date: Wed, 14 Sep 2022 10:12:15 +0200 (CEST)
-Message-Id: <202209140812.28E8CFQZ005343@...2054...>
+Date: Wed, 14 Sep 2022 10:22:02 +0200 (CEST)
+Message-Id: <202209140822.28E8M2PC005633@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220808152344.17539-1-gert@...1296...>
-References: <20220808152344.17539-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: cleanup open_tun() for
- TARGET_NETBSD
+In-Reply-To: <20220628080814.745-1-frank@...2641...>
+References: <20220628080814.745-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: doc: cleanup for --data-ciphers
+ and related
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master branch.
+I have not proofread these changes - Arne is the expert, and has ACKed.
 
-One whitespace error fixed (tab before end-of-line comment) that uncrustify
-complained about on merge.
+(I have looked at the actual code changes, and it's only text and
+comments, so no further testing done)
 
-commit 6e3fc642b74180f0e8e7ef63c0d6ca4e0c5537f4
-Author: Gert Doering
-Date:   Mon Aug 8 17:23:44 2022 +0200
+There was a comment about removal of some still-valid sections for 2.4
+clients, and missing P2P NCP updates... -> so pointing this out here for
+future work.
 
-     cleanup open_tun() for TARGET_NETBSD
+Your patch has been applied to the master branch.
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20220808152344.17539-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24849.html
+commit bbcc17a7350dae81b43de1d84c14a8d4739b5b1a
+Author: Frank Lichtenheld
+Date:   Tue Jun 28 10:08:14 2022 +0200
+
+     doc: cleanup for --data-ciphers and related
+
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20220628080814.745-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24575.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
