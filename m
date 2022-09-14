@@ -1,13 +1,11 @@
-Message-ID: <7986ab95-4904-2092-522a-e238923b0ce5@...2181...>
-Date: Wed, 14 Sep 2022 09:20:52 +0200
+Message-ID: <432af4cc-081c-f20c-ec3c-72d9589786b6@...2080...>
+Date: Wed, 14 Sep 2022 09:33:46 +0200
 MIME-Version: 1.0
 Content-Language: en-US
 References: <202208301957.27UJv74w093000@...2054...>
  <20220912074149.31160-1-gert@...1296...>
- <a0668e8c-897d-c360-e501-89a246de4bd6@...2181...>
- <YyFzfzdi1Mk3Fe7n@...1296...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <YyFzfzdi1Mk3Fe7n@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+In-Reply-To: <20220912074149.31160-1-gert@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH] Improve documentation for --dev and
  --dev-node.
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,68 +21,73 @@ Content-Transfer-Encoding: 7bit
 To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+On 12/09/2022 09:41, Gert Doering wrote:
+> During the research for commit a5cf4cfb77f745 it turned out that
+> OpenVPN's behaviour regarding "--dev arbitrary-name" is very
+> platform-specific and not very well documented.
+> 
+> The referenced commit fixed DCO behaviour to be in line with non-DCO
+> linux behaviour, this commit catches up on the documentation.
+> 
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>   doc/man-sections/vpn-network-options.rst | 38 +++++++++++++++++++-----
+>   1 file changed, 31 insertions(+), 7 deletions(-)
+> 
+> diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
+> index 5b2f8470..559b2464 100644
+> --- a/doc/man-sections/vpn-network-options.rst
+> +++ b/doc/man-sections/vpn-network-options.rst
+> @@ -69,15 +69,34 @@ routing.
+>        dev tap4
+>        dev ovpn
+>   
+> -  When the device name starts with :code:`tun` or :code:`tap`, the device
+> -  type is extracted automatically.  Otherwise the ``--dev-type`` option
+> -  needs to be added as well.
+> +  What happens if the device name is not :code:`tun` or :code:`tap` is
+> +  platform dependent.
+> +
+> +  On most platforms, :code:`tunN` (e.g. tun2, tun30) and :code:`tapN`
+> +  (e.g. tap3) will create a numbered tun/tap interface with the number
+> +  specified - this is useful if multiple OpenVPN instances are active,
+> +  and the instance-to-device mapping needs to be known.  Some platforms
+> +  do not support "numbered tap", so trying ``--dev tap3`` will fail.
+> +
+> +  Arbitrary names (e.g. ``--dev home``) will not work on most platforms,
+> +  with the exception of Linux and FreeBSD with the DCO kernel driver.
+> +
+> +  There, arbitrary names are allowed, and will create a tun or DCO
+> +  device named as requested.
+> +
 
-On 14/09/2022 08:23, Gert Doering wrote:
-> Hi,
-> 
-> On Tue, Sep 13, 2022 at 11:38:29PM +0200, Antonio Quartulli wrote:
->>> +  On other platforms, ``--dev-node node`` will influence the naming of the
->>> +  created tun/tap device, if supported on that platform.  If OpenVPN cannot
->>> +  figure out whether ``node`` is a TUN or TAP device based on the name,
->>> +  you should also specify ``--dev-type tun`` or ``--dev-type tap``.
->>> +
->>>    --dev-type device-type
->>>      Which device type are we using? ``device-type`` should be :code:`tun`
->>>      (OSI Layer 3) or :code:`tap` (OSI Layer 2). Use this option only if
->>
->>
->> I like this improved version as it tries to bring clarity. However, I
->> feel it is too vague as to which platform does what.
->>
->> For example the last paragraph starts with "On other platform", but what
->> are these "other platforms"?
-> 
-> The intent was to list the 3 platforms where --dev-node does something
-> special, and then "other platforms" is "everything else" (technically,
-> all platforms that call open_tun_generic(), so I'm not absolutely sure
-> if AIX or Solaris qualify... but I'm not going to mention AIX or Solaris
-> there, as it's way too unimportant and will just increase text length).
-> 
-> Especially as it's not even working on "all other platforms" due to
-> limitations, the documentation won't get less vague than the actual
-> implementation...
-> 
->> Maybe it's just me, but saying "other platforms" or "some platforms" or
->> "most platforms" without explicitly saying which ones is the same as to
->> not really documenting the behaviour. Because I am still unable to
->> understand which platform does what.
->>
->> Should we rather split this platform by platform with related paragraphs?
->>
->> What do you think?
-> 
-> We could do that, and nobody would really read it - it would just get
-> long, with quite some repetitions (the BSDs are all very similar, except
-> when they are not)...
-> 
-> I'm still for "on platforms that are not Windows, MacOS or Linux, --dev-node
-> will usually not do what you want, so forget about it right away" - wrapped
-> in a slightly longer text :-)
+This is confusing and not quite right.  I've used "--dev home" for a 
+long time on Linux with tun devices.  But it requires "--dev-type tun". 
+There are no dependencies on DCO in this use case.
 
-Ok, so it's not the comment that is vague, but it's the implementation 
-itself that is not clean.
+[...snip...]
 
-Well, then let's go with your new doc and let's see if we can improve 
-the implementation after 2.6 is done.
+> @@ -93,6 +112,11 @@ routing.
+>     both the network connections control panel name and the GUID for each
+>     TAP-Win32 adapter.
+>   
+> +  On other platforms, ``--dev-node node`` will influence the naming of the
+> +  created tun/tap device, if supported on that platform.  If OpenVPN cannot
+> +  figure out whether ``node`` is a TUN or TAP device based on the name,
+> +  you should also specify ``--dev-type tun`` or ``--dev-type tap``.
 
-Acked-by: Antonio Quartulli <a@...2181...>
+IIRC correctly on Windows (too many years since last time with a more 
+advanced setup there), --dev-node does not influence the naming of the 
+tap-windows6 interface, but is a reference to the pre-created interface. 
+  Windows didn't use to create interfaces on-the-fly like on 
+Linux/BSD/macOS.  Not sure if that has changed with tap-windows6 and 
+neither how this is with wintun or ovpn-dco-win.
 
-Cheers,
-
-> 
-> gert
 
 -- 
-Antonio Quartulli
+kind regards,
+
+David Sommerseth
+OpenVPN Inc
+
 
