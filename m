@@ -1,11 +1,11 @@
-Date: Wed, 14 Sep 2022 17:59:00 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <YyH6RL7q13+juVuJ@...2685...>
-References: <Yx5JdRcEXh2tTqPE@...1296...>
- <20220912091057.752-1-lstipakov@...277...>
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 14 Sep 2022 18:50:41 +0200
+Message-Id: <20220914165041.2658423-1-arne@...1227...>
+In-Reply-To: <20220520213250.3126372-1-arne@...1227...>
+References: <20220520213250.3126372-1-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <20220912091057.752-1-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Use DCO on Windows by default
+Subject: [Openvpn-devel] [PATCH v4] Implement exit notification via control
+ channel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,155 +14,374 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+To: openvpn-devel@lists.sourceforge.net
 
-So, to be more specific about the suggested changes
+Current exit notification relies on data channel messages with specific
+prefix. Adding these to new data channel modules (DCO) adds unncessary
+complexity for the data for messages that from their idea belong to the
+control channel anyway.
 
-On Mon, Sep 12, 2022 at 12:10:57PM +0300, Lev Stipakov wrote:
-[...]
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 2e567571..2a379f94 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -183,7 +183,7 @@ static const char usage_message[] =
->      "                  does not begin with \"tun\" or \"tap\".\n"
->      "--dev-node node : Explicitly set the device node rather than using\n"
->      "                  /dev/net/tun, /dev/tun, /dev/tap, etc.\n"
-> -#if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD))
-> +#if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(_WIN32))
+This patch adds announcing support for control channel and sending/receving
+it. We use the simple EXIT message for this.
 
-As Antonio said, here the part after the && is redundant with ENABLE_DCO now.
+Patch v2: add comment about protocol-flags to be not a user visible option,
+          fix various grammar mistakes, remove unused argument to
+          receive_exit_message
 
->      "--disable-dco   : Do not attempt using Data Channel Offload.\n"
->  #endif
->      "--lladdr hw     : Set the link layer address of the tap device.\n"
-> @@ -851,7 +851,7 @@ init_options(struct options *o, const bool init_gc)
->      o->tuntap_options.dhcp_masq_offset = 0;     /* use network address as internal DHCP server address */
->      o->route_method = ROUTE_METHOD_ADAPTIVE;
->      o->block_outside_dns = false;
-> -    o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
-> +    o->windows_driver = WINDOWS_DRIVER_UNSPECIFIED;
->  #endif
->      o->vlan_accept = VLAN_ALL;
->      o->vlan_pvid = 1;
-> @@ -903,6 +903,10 @@ init_options(struct options *o, const bool init_gc)
->      }
->  #endif /* _WIN32 */
->      o->allow_recursive_routing = false;
-> +
-> +#if !defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(_WIN32))
+Patch v3: rename data_channel_crypto_flags to imported_protocol_flags
+          add tls-ekm to protocol-flags.
 
-Here I would definitely say it would be better to just always have a disable_dco in tuntap_options
-instead of limiting this to platforms that have DCO.
+Patch v4: rebase, use a buffer for the code that prepares the push reply
 
-> +    o->tuntap_options.disable_dco = true;
-> +#endif /* !defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(_WIN32)) */
->  }
->  
->  void
-> @@ -3606,8 +3610,6 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
->      options_set_backwards_compatible_options(o);
->  
->      options_postprocess_cipher(o);
-> -    options_postprocess_mutate_invariant(o);
-> -
->      o->ncp_ciphers = mutate_ncp_cipher_list(o->ncp_ciphers, &o->gc);
->      if (o->ncp_ciphers == NULL)
->      {
-> @@ -3683,18 +3685,31 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
->              "incompatible with each other.");
->      }
->  
-> -#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-> -    /* check if any option should force disabling DCO */
-> -    o->tuntap_options.disable_dco = !dco_check_option(D_DCO, o)
-> -                                    || !dco_check_startup_option(D_DCO, o);
-> -#elif defined(_WIN32)
-> -    /* in Windows we have no 'fallback to non-DCO' strategy, so if a conflicting
-> -     * option is found, we simply bail out by means of M_USAGE
-> -     */
-> +#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(_WIN32)
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ doc/man-sections/client-options.rst |  7 +++++-
+ src/openvpn/crypto.h                |  5 ++++
+ src/openvpn/forward.c               |  4 ++++
+ src/openvpn/multi.c                 |  7 +++++-
+ src/openvpn/options.c               | 30 +++++++++++++++++++++--
+ src/openvpn/options.h               |  2 +-
+ src/openvpn/push.c                  | 37 ++++++++++++++++++++++++++++-
+ src/openvpn/push.h                  |  2 ++
+ src/openvpn/sig.c                   | 30 +++++++++++++++++++++--
+ src/openvpn/ssl.c                   |  5 +++-
+ src/openvpn/ssl.h                   |  4 ++++
+ src/openvpn/ssl_ncp.c               |  5 ++++
+ 12 files changed, 129 insertions(+), 9 deletions(-)
 
-Here the #if seems redundant with dco_enabled, which will already return false
-if ENABLE_DCO is not set.
-
-> +    if (dco_enabled(o))
-> +    {
-> +        /* check if any option should force disabling DCO */
-> +        o->tuntap_options.disable_dco = !dco_check_option(D_DCO, o)
-> +                                        || !dco_check_startup_option(D_DCO, o);
-> +    }
-> +#endif
-> +
-> +#ifdef _WIN32
->      if (dco_enabled(o))
->      {
-> -        dco_check_option(M_USAGE, o);
-> -        dco_check_startup_option(M_USAGE, o);
-> +        o->windows_driver = WINDOWS_DRIVER_DCO;
-> +    }
-> +    else
-> +    {
-> +        if (o->windows_driver == WINDOWS_DRIVER_DCO)
-> +        {
-> +            msg(M_WARN, "Option --windows-driver ovpn-dco is ignored because Data Channel Offload is disabled");
-> +            o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
-> +        }
-> +        else if (o->windows_driver == WINDOWS_DRIVER_UNSPECIFIED)
-> +        {
-> +            o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
-> +        }
->      }
->  #endif
->  
-> @@ -3705,6 +3720,9 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
->          o->dev_node = NULL;
->      }
->  
-> +    /* this depends on o->windows_driver, which is set above */
-> +    options_postprocess_mutate_invariant(o);
-> +
->      /*
->       * Save certain parms before modifying options during connect, especially
->       * when using --pull
-> @@ -5903,7 +5921,7 @@ add_option(struct options *options,
->  #endif
->      else if (streq(p[0], "disable-dco"))
->      {
-> -#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-> +#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD) || defined(_WIN32)
-
-Again, no need to limit this by platform.
-
->          options->tuntap_options.disable_dco = true;
->  #endif
->      }
-> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-> index 6d9174a4..557054ba 100644
-> --- a/src/openvpn/options.h
-> +++ b/src/openvpn/options.h
-> @@ -882,9 +882,7 @@ bool key_is_external(const struct options *options);
->  static inline bool
->  dco_enabled(const struct options *o)
->  {
-> -#if defined(_WIN32)
-> -    return o->windows_driver == WINDOWS_DRIVER_DCO;
-> -#elif defined(ENABLE_DCO)
-> +#if defined(ENABLE_DCO)
->      return !o->tuntap_options.disable_dco;
->  #else
->      return false;
-
-BTW, you can't see it in the diff, but there is a wrong
-#endif /* defined(_WIN32) */
-now immediately afterwards. I wonder why uncrustify didn't
-complain?
-
-Regards,
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
+index 8e0e4f18a..5a906895b 100644
+--- a/doc/man-sections/client-options.rst
++++ b/doc/man-sections/client-options.rst
+@@ -220,9 +220,14 @@ configuration.
+   immediately close its client instance object rather than waiting for a
+   timeout.
+ 
++  If both server and client support sending this message using the control
++  channel, the message will be sent as control-channel message. Otherwise
++  the message is sent as data-channel message, which will be ignored by
++  data-channel offloaded peers.
++
+   The **n** parameter (default :code:`1` if not present) controls the
+   maximum number of attempts that the client will try to resend the exit
+-  notification message.
++  notification message if messages are sent in data-channel mode.
+ 
+   In UDP server mode, send :code:`RESTART` control channel command to
+   connected clients. The ``n`` parameter (default :code:`1` if not present)
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 98e2c7664..5ea889081 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -264,6 +264,11 @@ struct crypto_options
+     /**< Bit-flag indicating that we do not allow clients that do
+      * not support resending the wrapped client key (WKc) with the
+      * third packet of the three-way handshake */
++#define CO_USE_CC_EXIT_NOTIFY       (1<<6)
++    /**< Bit-flag indicating that explicit exit notifies should be
++     * sent via the control channel instead of using an OCC message
++     */
++
+     unsigned int flags;         /**< Bit-flags determining behavior of
+                                  *   security operation functions. */
+ };
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 468eeee01..6a45b9e91 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -260,6 +260,10 @@ check_incoming_control_channel(struct context *c)
+         {
+             receive_auth_pending(c, &buf);
+         }
++        else if (buf_string_match_head_str(&buf, "EXIT"))
++        {
++            receive_exit_message(c);
++        }
+         else
+         {
+             msg(D_PUSH_ERRORS, "WARNING: Received unknown control message: %s", BSTR(&buf));
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 1bbeab7d4..b9b087e01 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1801,10 +1801,15 @@ multi_client_set_protocol_options(struct context *c)
+ #ifdef HAVE_EXPORT_KEYING_MATERIAL
+     if (proto & IV_PROTO_TLS_KEY_EXPORT)
+     {
+-        o->data_channel_crypto_flags |= CO_USE_TLS_KEY_MATERIAL_EXPORT;
++        o->imported_protocol_flags |= CO_USE_TLS_KEY_MATERIAL_EXPORT;
+     }
+ #endif
+ 
++    if (proto & IV_PROTO_CC_EXIT_NOTIFY)
++    {
++        o->imported_protocol_flags |= CO_USE_CC_EXIT_NOTIFY;
++    }
++
+     /* Select cipher if client supports Negotiable Crypto Parameters */
+ 
+     /* if we have already created our key, we cannot *change* our own
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 765695daf..e702f18f7 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -3336,7 +3336,7 @@ pre_connect_restore(struct options *o, struct gc_arena *gc)
+ 
+     o->push_continuation = 0;
+     o->push_option_types_found = 0;
+-    o->data_channel_crypto_flags = 0;
++    o->imported_protocol_flags = 0;
+ }
+ 
+ static void
+@@ -8481,11 +8481,13 @@ add_option(struct options *options,
+     }
+     else if (streq(p[0], "key-derivation") && p[1])
+     {
++        /* NCP only option that is pushed by the server to enable EKM,
++         * should not be used by normal users in config files*/
+         VERIFY_PERMISSION(OPT_P_NCP)
+ #ifdef HAVE_EXPORT_KEYING_MATERIAL
+         if (streq(p[1], "tls-ekm"))
+         {
+-            options->data_channel_crypto_flags |= CO_USE_TLS_KEY_MATERIAL_EXPORT;
++            options->imported_protocol_flags |= CO_USE_TLS_KEY_MATERIAL_EXPORT;
+         }
+         else
+ #endif
+@@ -8493,6 +8495,30 @@ add_option(struct options *options,
+             msg(msglevel, "Unknown key-derivation method %s", p[1]);
+         }
+     }
++    else if (streq(p[0], "protocol-flags") && p[1])
++    {
++        /* NCP only option that is pushed by the server to enable protocol
++         * features that are negotiated, should not be used by normal users
++         * in config files */
++        VERIFY_PERMISSION(OPT_P_NCP)
++        for (size_t j = 1; j < MAX_PARMS && p[j] != NULL; j++)
++        {
++            if (streq(p[j], "cc-exit"))
++            {
++                options->imported_protocol_flags |= CO_USE_CC_EXIT_NOTIFY;
++            }
++#ifdef HAVE_EXPORT_KEYING_MATERIAL
++            else if (streq(p[j], "tls-ekm"))
++            {
++                options->imported_protocol_flags |= CO_USE_TLS_KEY_MATERIAL_EXPORT;
++            }
++#endif
++            else
++            {
++                msg(msglevel, "Unknown protocol-flags flag: %s", p[j]);
++            }
++        }
++    }
+     else if (streq(p[0], "prng") && p[1] && !p[3])
+     {
+         msg(M_WARN, "NOTICE: --prng option ignored (SSL library PRNG is used)");
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 5488db310..f4549edba 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -681,7 +681,7 @@ struct options
+     bool allow_recursive_routing;
+ 
+     /* data channel crypto flags set by push/pull. Reuses the CO_* crypto_flags */
+-    unsigned int data_channel_crypto_flags;
++    unsigned int imported_protocol_flags;
+ };
+ 
+ #define streq(x, y) (!strcmp((x), (y)))
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 4cbc89e4c..47a799282 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -179,6 +179,21 @@ server_pushed_signal(struct context *c, const struct buffer *buffer, const bool
+     }
+ }
+ 
++void
++receive_exit_message(struct context *c)
++{
++    dmsg(D_STREAM_ERRORS, "Exit message received by peer");
++    c->sig->signal_received = SIGTERM;
++    c->sig->signal_text = "remote-exit";
++#ifdef ENABLE_MANAGEMENT
++    if (management)
++    {
++        management_notify(management, "info", c->sig->signal_text, "EXIT");
++    }
++#endif
++}
++
++
+ void
+ server_pushed_info(struct context *c, const struct buffer *buffer,
+                    const int adv)
+@@ -606,10 +621,30 @@ prepare_push_reply(struct context *c, struct gc_arena *gc,
+     {
+         push_option_fmt(gc, push_list, M_USAGE, "cipher %s", o->ciphername);
+     }
+-    if (o->data_channel_crypto_flags & CO_USE_TLS_KEY_MATERIAL_EXPORT)
++
++    struct buffer proto_flags = alloc_buf_gc(128, gc);
++
++    if (o->imported_protocol_flags & CO_USE_CC_EXIT_NOTIFY)
++    {
++        buf_printf(&proto_flags, " cc-exit");
++
++        /* if the cc exit flag is supported, pushing tls-ekm via protocol-flags
++         * is also supported */
++        if (o->imported_protocol_flags & CO_USE_TLS_KEY_MATERIAL_EXPORT)
++        {
++            buf_printf(&proto_flags, " tls-ekm");
++        }
++    }
++    else if (o->imported_protocol_flags & CO_USE_TLS_KEY_MATERIAL_EXPORT)
+     {
+         push_option_fmt(gc, push_list, M_USAGE, "key-derivation tls-ekm");
+     }
++
++    if (buf_len(&proto_flags) > 0)
++    {
++        push_option_fmt(gc, push_list, M_USAGE, "protocol-flags%s", buf_str(&proto_flags));
++    }
++
+     return true;
+ }
+ 
+diff --git a/src/openvpn/push.h b/src/openvpn/push.h
+index 62fad4a14..7138055a7 100644
+--- a/src/openvpn/push.h
++++ b/src/openvpn/push.h
+@@ -48,6 +48,8 @@ void receive_auth_failed(struct context *c, const struct buffer *buffer);
+ 
+ void server_pushed_signal(struct context *c, const struct buffer *buffer, const bool restart, const int adv);
+ 
++void receive_exit_message(struct context *c);
++
+ void server_pushed_info(struct context *c, const struct buffer *buffer,
+                         const int adv);
+ 
+diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
+index e06edd216..65cd25c65 100644
+--- a/src/openvpn/sig.c
++++ b/src/openvpn/sig.c
+@@ -321,20 +321,46 @@ print_status(const struct context *c, struct status_output *so)
+     gc_free(&gc);
+ }
+ 
++
++/* Small helper function to determine if we should send the exit notification
++ * via control channel */
++static inline bool
++cc_exit_notify_enabled(struct context *c)
++{
++    /* Check if we have TLS active at all */
++    if (!c->c2.tls_multi)
++    {
++        return false;
++    }
++
++    const struct key_state *ks = get_primary_key(c->c2.tls_multi);
++    return (ks->crypto_options.flags & CO_USE_CC_EXIT_NOTIFY);
++}
++
+ /*
+  * Handle the triggering and time-wait of explicit
+  * exit notification.
+  */
+-
+ static void
+ process_explicit_exit_notification_init(struct context *c)
+ {
+     msg(M_INFO, "SIGTERM received, sending exit notification to peer");
++    /* init the timeout to send the OCC_EXIT messages if cc exit is not
++     * enabled and also to exit after waiting for retries of resending of
++     * exit messages */
+     event_timeout_init(&c->c2.explicit_exit_notification_interval, 1, 0);
+     reset_coarse_timers(c);
++
+     signal_reset(c->sig);
+     halt_non_edge_triggered_signals();
+     c->c2.explicit_exit_notification_time_wait = now;
++
++    /* Check if we are in TLS mode and should send the notification via data
++     * channel */
++    if (cc_exit_notify_enabled(c))
++    {
++        send_control_channel_string(c, "EXIT", D_PUSH);
++    }
+ }
+ 
+ void
+@@ -351,7 +377,7 @@ process_explicit_exit_notification_timer_wakeup(struct context *c)
+             c->sig->signal_received = SIGTERM;
+             c->sig->signal_text = "exit-with-notification";
+         }
+-        else
++        else if (!cc_exit_notify_enabled(c))
+         {
+             c->c2.occ_op = OCC_EXIT;
+         }
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 33e145b3f..d3f7a0203 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1719,7 +1719,7 @@ tls_session_update_crypto_params(struct tls_multi *multi,
+     }
+ 
+     /* Import crypto settings that might be set by pull/push */
+-    session->opt->crypto_flags |= options->data_channel_crypto_flags;
++    session->opt->crypto_flags |= options->imported_protocol_flags;
+ 
+     return tls_session_update_crypto_params_do_work(multi, session, options,
+                                                     frame, frame_fragment, lsi);
+@@ -1969,6 +1969,9 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+         /* support for the --dns option */
+         iv_proto |= IV_PROTO_DNS_OPTION;
+ 
++        /* support for exit notify via control channel */
++        iv_proto |= IV_PROTO_CC_EXIT_NOTIFY;
++
+         /* support for receiving push_reply before sending
+          * push request, also signal that the client wants
+          * to get push-reply messages without without requiring a round
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 76b1b6743..12ffd44d7 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -96,6 +96,10 @@
+ /** Supports the --dns option introduced in version 2.6 */
+ #define IV_PROTO_DNS_OPTION      (1<<6)
+ 
++/** Support for explicit exit notify via control channel
++ *  This also includes support for the protocol-flags pushed option */
++#define IV_PROTO_CC_EXIT_NOTIFY  (1<<7)
++
+ /* Default field in X509 to be username */
+ #define X509_USERNAME_FIELD_DEFAULT "CN"
+ 
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index a58ced537..fe8491925 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -419,6 +419,11 @@ p2p_ncp_set_options(struct tls_multi *multi, struct tls_session *session)
+         multi->peer_id = 0x76706e; /* 'v' 'p' 'n' */
+     }
+ 
++    if (iv_proto_peer & IV_PROTO_CC_EXIT_NOTIFY)
++    {
++        session->opt->crypto_flags |= CO_USE_CC_EXIT_NOTIFY;
++    }
++
+ #if defined(HAVE_EXPORT_KEYING_MATERIAL)
+     if (iv_proto_peer & IV_PROTO_TLS_KEY_EXPORT)
+     {
 -- 
-  Frank Lichtenheld
+2.37.0 (Apple Git-136)
+
 
