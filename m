@@ -1,10 +1,8 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 15 Sep 2022 13:40:28 +0300
-Message-Id: <20220915104028.188-1-lstipakov@...277...>
-In-Reply-To: <YyL9Eu3Q3m4fDmmL@...2678...>
-References: <YyL9Eu3Q3m4fDmmL@...2678...>
+Date: Thu, 15 Sep 2022 15:03:49 +0300
+Message-Id: <20220915120349.239-1-lstipakov@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] Use DCO on Windows by default
+Subject: [Openvpn-devel] [PATCH] doc: add "ovpn-dco" to usage and man page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,325 +18,44 @@ Cc: Lev Stipakov <lev@...515...>
 
 From: Lev Stipakov <lev@...515...>
 
-On startup, check following conditions:
-
- - ovpn-dco-win driver is installed. Perform this check
-by trying to open adapter by symbolic name.
-
- - options are compatible with dco. Same checks as on
-Linux and FreeBSD. In addition, check that --mode server
-is not used and --windows-driver is not set to tap-windows6/wintun.
-
-If both checks are passed, use DCO.
-
-Move options_postprocess_mutate_invariant() call
-below since it depends on selected windows driver.
-
-dco_check_option() has side effect on Windows -
-if dco is not used, it might complain "cipher chachapoly
-not supported by dco, disabling dco" if chachapoly
-support is missing system-wide. To not to see this,
-check dco options only if dco is enabled. This means
-moving dco_enabled() from dco_check_startup_option()
-to one level above. We do similar thing in
-multi_connection_established() before checking ccd options.
+While on it, remove redundant sentence
+and quotation from --windows-driver man
+description.
 
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
+ doc/man-sections/windows-options.rst | 8 ++++----
+ src/openvpn/options.c                | 1 +
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-v4:
- - simplify #ifdef in usage_message() in options.c
- - simplify #ifdef in show_settings() in options.c
-
-v3:
- - Simplify #ifdefs, as per Frank suggestions
-
-v2:
-
- - initialize disable_dco to true if ENABLE_DCO is not set,
-this allows yo get rid of "else" branch in options_postprocess_mutate()
-
- - use dco_enabled() wrapper instead of accessing o->tt.disable_dco
-
- src/openvpn/dco.c     | 19 +++++++++++------
- src/openvpn/dco_win.c | 23 ++++++++++++++++++++-
- src/openvpn/options.c | 48 ++++++++++++++++++++++++++++---------------
- src/openvpn/options.h |  6 ++----
- src/openvpn/tun.c     | 19 -----------------
- src/openvpn/tun.h     | 20 ++++++++++++++++++
- 6 files changed, 88 insertions(+), 47 deletions(-)
-
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index d9e49781..a76cdd0c 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -257,11 +257,11 @@ dco_check_option_ce(const struct connection_entry *ce, int msglevel)
- bool
- dco_check_startup_option(int msglevel, const struct options *o)
- {
--    /* check if DCO was already disabled by the user or if no dev name was
--     * specified at all. In the latter case, later logic will most likely stop
--     * OpenVPN, so no need to print any message here.
-+    /* check if no dev name was specified at all. In the case,
-+     * later logic will most likely stop OpenVPN, so no need to
-+     * print any message here.
-      */
--    if (!dco_enabled(o) || !o->dev)
-+    if (!o->dev)
-     {
-         return false;
-     }
-@@ -294,8 +294,15 @@ dco_check_startup_option(int msglevel, const struct options *o)
- #if defined(_WIN32)
-     if (o->mode == MODE_SERVER)
-     {
--        msg(msglevel, "Only client and p2p data channel offload is supported "
--            "with ovpn-dco.");
-+        msg(msglevel, "--mode server is set. Disabling Data Channel Offload");
-+        return false;
-+    }
-+
-+    if ((o->windows_driver == WINDOWS_DRIVER_WINTUN)
-+        || (o->windows_driver == WINDOWS_DRIVER_TAP_WINDOWS6))
-+    {
-+        msg(msglevel, "--windows-driver is set to '%s'. Disabling Data Channel Offload",
-+            print_windows_driver(o->windows_driver));
-         return false;
-     }
+diff --git a/doc/man-sections/windows-options.rst b/doc/man-sections/windows-options.rst
+index c389fbc4..0c7cfc1d 100644
+--- a/doc/man-sections/windows-options.rst
++++ b/doc/man-sections/windows-options.rst
+@@ -238,7 +238,7 @@ Windows-Specific Options
+   logged when this is found in the configuration file.
  
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 22f30280..48a1755a 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -359,7 +359,28 @@ dco_swap_keys(dco_context_t *dco, unsigned int peer_id)
- bool
- dco_available(int msglevel)
- {
--    return true;
-+    /* try to open device by symbolic name */
-+    HANDLE h = CreateFile("\\\\.\\ovpn-dco", GENERIC_READ | GENERIC_WRITE,
-+                          0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, NULL);
-+
-+    if (h != INVALID_HANDLE_VALUE)
-+    {
-+        CloseHandle(h);
-+        return true;
-+    }
-+
-+    DWORD err = GetLastError();
-+    if (err == ERROR_ACCESS_DENIED)
-+    {
-+        /* this likely means that device exists but is already in use,
-+         * don't bail out since later we try to open all existing dco
-+         * devices and then bail out if all devices are in use
-+         */
-+        return true;
-+    }
-+
-+    msg(msglevel, "Note: ovpn-dco-win driver is missing, disabling data channel offload.");
-+    return false;
- }
- 
- int
+ --windows-driver drv
+-  Specifies which tun driver to use. Values are :code:`tap-windows6`
+-  (default) and :code:`wintun`.  This is a Windows-only option.
+-  :code:`wintun`" requires ``--dev tun`` and the OpenVPN process to run
+-  elevated, or be invoked using the Interactive Service.
++  Specifies which tun driver to use. Values are :code:`ovpn-dco`,
++  :code:`tap-windows6` (default) and :code:`wintun`. :code:`wintun` requires
++  ``--dev tun`` and the OpenVPN process to run elevated, or be invoked using
++  the Interactive Service.
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 2e567571..25f9dbee 100644
+index d7954ebc..0eef3b3d 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -183,7 +183,7 @@ static const char usage_message[] =
-     "                  does not begin with \"tun\" or \"tap\".\n"
-     "--dev-node node : Explicitly set the device node rather than using\n"
-     "                  /dev/net/tun, /dev/tun, /dev/tap, etc.\n"
--#if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD))
-+#if defined(ENABLE_DCO)
-     "--disable-dco   : Do not attempt using Data Channel Offload.\n"
- #endif
-     "--lladdr hw     : Set the link layer address of the tap device.\n"
-@@ -851,7 +851,7 @@ init_options(struct options *o, const bool init_gc)
-     o->tuntap_options.dhcp_masq_offset = 0;     /* use network address as internal DHCP server address */
-     o->route_method = ROUTE_METHOD_ADAPTIVE;
-     o->block_outside_dns = false;
--    o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
-+    o->windows_driver = WINDOWS_DRIVER_UNSPECIFIED;
- #endif
-     o->vlan_accept = VLAN_ALL;
-     o->vlan_pvid = 1;
-@@ -903,6 +903,10 @@ init_options(struct options *o, const bool init_gc)
-     }
- #endif /* _WIN32 */
-     o->allow_recursive_routing = false;
-+
-+#ifndef ENABLE_DCO
-+    o->tuntap_options.disable_dco = true;
-+#endif /* ENABLE_DCO */
- }
- 
- void
-@@ -1796,7 +1800,7 @@ show_settings(const struct options *o)
-     SHOW_STR(dev);
-     SHOW_STR(dev_type);
-     SHOW_STR(dev_node);
--#if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD))
-+#if defined(ENABLE_DCO)
-     SHOW_BOOL(tuntap_options.disable_dco);
- #endif
-     SHOW_STR(lladdr);
-@@ -3606,8 +3610,6 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
-     options_set_backwards_compatible_options(o);
- 
-     options_postprocess_cipher(o);
--    options_postprocess_mutate_invariant(o);
--
-     o->ncp_ciphers = mutate_ncp_cipher_list(o->ncp_ciphers, &o->gc);
-     if (o->ncp_ciphers == NULL)
-     {
-@@ -3683,18 +3685,29 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
-             "incompatible with each other.");
-     }
- 
--#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
--    /* check if any option should force disabling DCO */
--    o->tuntap_options.disable_dco = !dco_check_option(D_DCO, o)
--                                    || !dco_check_startup_option(D_DCO, o);
--#elif defined(_WIN32)
--    /* in Windows we have no 'fallback to non-DCO' strategy, so if a conflicting
--     * option is found, we simply bail out by means of M_USAGE
--     */
-     if (dco_enabled(o))
-     {
--        dco_check_option(M_USAGE, o);
--        dco_check_startup_option(M_USAGE, o);
-+        /* check if any option should force disabling DCO */
-+        o->tuntap_options.disable_dco = !dco_check_option(D_DCO, o)
-+                                        || !dco_check_startup_option(D_DCO, o);
-+    }
-+
-+#ifdef _WIN32
-+    if (dco_enabled(o))
-+    {
-+        o->windows_driver = WINDOWS_DRIVER_DCO;
-+    }
-+    else
-+    {
-+        if (o->windows_driver == WINDOWS_DRIVER_DCO)
-+        {
-+            msg(M_WARN, "Option --windows-driver ovpn-dco is ignored because Data Channel Offload is disabled");
-+            o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
-+        }
-+        else if (o->windows_driver == WINDOWS_DRIVER_UNSPECIFIED)
-+        {
-+            o->windows_driver = WINDOWS_DRIVER_TAP_WINDOWS6;
-+        }
-     }
- #endif
- 
-@@ -3705,6 +3718,9 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
-         o->dev_node = NULL;
-     }
- 
-+    /* this depends on o->windows_driver, which is set above */
-+    options_postprocess_mutate_invariant(o);
-+
-     /*
-      * Save certain parms before modifying options during connect, especially
-      * when using --pull
-@@ -5903,9 +5919,7 @@ add_option(struct options *options,
- #endif
-     else if (streq(p[0], "disable-dco"))
-     {
--#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-         options->tuntap_options.disable_dco = true;
--#endif
-     }
-     else if (streq(p[0], "dev-node") && p[1] && !p[2])
-     {
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 6d9174a4..3543308a 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -882,13 +882,11 @@ bool key_is_external(const struct options *options);
- static inline bool
- dco_enabled(const struct options *o)
- {
--#if defined(_WIN32)
--    return o->windows_driver == WINDOWS_DRIVER_DCO;
--#elif defined(ENABLE_DCO)
-+#ifdef ENABLE_DCO
-     return !o->tuntap_options.disable_dco;
- #else
-     return false;
--#endif /* defined(_WIN32) */
-+#endif /* ENABLE_DCO */
- }
- 
- #endif /* ifndef OPTIONS_H */
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 94803acd..cb2a8fb6 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -3539,25 +3539,6 @@ read_tun(struct tuntap *tt, uint8_t *buf, int len)
- 
- #elif defined(_WIN32)
- 
--static const char *
--print_windows_driver(enum windows_driver_type windows_driver)
--{
--    switch (windows_driver)
--    {
--        case WINDOWS_DRIVER_TAP_WINDOWS6:
--            return "tap-windows6";
--
--        case WINDOWS_DRIVER_WINTUN:
--            return "wintun";
--
--        case WINDOWS_DRIVER_DCO:
--            return "ovpn-dco";
--
--        default:
--            return "unspecified";
--    }
--}
--
- int
- tun_read_queue(struct tuntap *tt, int maxsize)
- {
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 1cca1cfb..24d52670 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -156,6 +156,7 @@ struct tuntap_options {
- 
- struct tuntap_options {
-     int dummy; /* not used */
-+    bool disable_dco; /* not used, but removes the need in #ifdefs */
- };
- 
- #endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */
-@@ -660,6 +661,25 @@ tuntap_is_dco_win_timeout(struct tuntap *tt, int status)
-     return tuntap_is_dco_win(tt) && (status < 0) && (openvpn_errno() == ERROR_NETNAME_DELETED);
- }
- 
-+static const char *
-+print_windows_driver(enum windows_driver_type windows_driver)
-+{
-+    switch (windows_driver)
-+    {
-+        case WINDOWS_DRIVER_TAP_WINDOWS6:
-+            return "tap-windows6";
-+
-+        case WINDOWS_DRIVER_WINTUN:
-+            return "wintun";
-+
-+        case WINDOWS_DRIVER_DCO:
-+            return "ovpn-dco";
-+
-+        default:
-+            return "unspecified";
-+    }
-+}
-+
- #else  /* ifdef _WIN32 */
- 
- static inline bool
+@@ -749,6 +749,7 @@ static const char usage_message[] =
+     "--show-net-up   : Show " PACKAGE_NAME "'s view of routing table and net adapter list\n"
+     "                  after TAP adapter is up and routes have been added.\n"
+     "--windows-driver   : Which tun driver to use?\n"
++    "                     ovpn-dco\n"
+     "                     tap-windows6 (default)\n"
+     "                     wintun\n"
+     "--block-outside-dns   : Block DNS on other network adapters to prevent DNS leaks\n"
 -- 
 2.23.0.windows.1
 
