@@ -1,12 +1,12 @@
-Date: Thu, 15 Sep 2022 16:19:04 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <YyM0WAn0tZ1vj4N6@...2678...>
-References: <20220824093723.64618-1-arne@...1227...>
- <20220914172527.2661529-1-arne@...1227...>
+From: Heiko Hund <heiko@...2662...>
+Date: Fri, 16 Sep 2022 02:47:59 +0200
+Message-ID: <2553370.Lt9SDvczpP@...2664...>
+In-Reply-To: <20220511110810.1944975-1-arne@...1227...>
+References: <20220422142953.3805364-17-arne@...1227...>
+ <20220511110810.1944975-1-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <20220914172527.2661529-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v3] Improve data key id not found error
- message
+Subject: Re: [Openvpn-devel] [PATCH v3 26/28] Allow setting control channel
+ packet size with tls-mtu
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +15,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Wed, Sep 14, 2022 at 07:25:27PM +0200, Arne Schwabe wrote:
-> With delayed data key generation now with deferred auth, NCP and similar
-> mechanism the "TLS Error: local/remote TLS keys are out of sync" is shown
-> much too frequent and confuses a lot of people.
-> 
-> This also removes the dead code of printing multi not ready keys and
-> replace it with an assert.
-> 
-> Factor out printing of error messages into an extra function to make
-> the code easier to understand and also to only call into that function
-> in the case that a key is not found and avoid the overhead.
-> 
-> Patch v2: fix comparing key_id to state value, improve message
-> Patch v3: also take key_id into account
+This patch need to be rebased again, does not apply to master anymore:
+checking file src/openvpn/ssl.c
+Hunk #1 succeeded at 297 (offset 1 line).
+Hunk #2 FAILED at 321.
+Hunk #3 succeeded at 1256 (offset -42 lines).
 
-Code looks good to me now. Is there any way of testing this?
+On Mittwoch, 11. Mai 2022 13:08:10 CEST Arne Schwabe wrote:
+> @@ -141,6 +147,8 @@ User-visible Changes
+> +- control channel packet maximum size is no longer influenced by ``--link-
+mtu``/``--tun-mtu``
+> +  and must be set by ``--tls-mtu`` now.
 
-Regards,
--- 
-  Frank Lichtenheld
+Must it or is there still some cc-mtu derivation in place in case it is not 
+given? If not, wouldn't it make sense to at least catch obvious breakage. 
+Usually link/tun-mtu is lowered for that reason. Further down in the patch 
+there are min/max_int() calls in tls_init_control_channel_frame_parameters(), 
+do they do what I suggested here already?
+
+> diff --git a/doc/man-sections/link-options.rst
+> +--tls-mtu size
+
+Is --tls-mtu the best name for the option we can come up with? From my outside 
+perspective (can hardly spell mtu right) the "tls" part is somewhat misnamed, 
+as this is an SSL VPN after all. When you know that the framing for the data 
+channel is not TLS you can make sense of it, but who does.
+
+> +  The maximum packet size includes encapsulation overhead like UDP
+> and IP. 
+> \ No newline at end of file
+
+^ this
+
+> +    int tls_mtu;         /* Maximum MTU for the
+> control channel messages */
+
+The "M" already stands for "Maximum".
+
+
 
