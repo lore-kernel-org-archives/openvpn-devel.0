@@ -1,14 +1,14 @@
-Date: Sat, 17 Sep 2022 14:27:21 +0200
+Date: Sat, 17 Sep 2022 14:37:51 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <YyW9KVe/pSLZDiTl@...1296...>
-References: <20220915120349.239-1-lstipakov@...277...>
+Message-ID: <YyW/n82ircKgjsFR@...1296...>
+References: <20220914185937.31423-1-a@...2181...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="iy7+V6/+KRj7DhwU"
+ protocol="application/pgp-signature"; boundary="1FTwVXsXT4ltzAIU"
 Content-Disposition: inline
-In-Reply-To: <20220915120349.239-1-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] doc: add "ovpn-dco" to usage and man
- page
+In-Reply-To: <20220914185937.31423-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] auth-user-pass: add support for
+ inline credentials
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,40 +17,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---iy7+V6/+KRj7DhwU
+--1FTwVXsXT4ltzAIU
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Thu, Sep 15, 2022 at 03:03:49PM +0300, Lev Stipakov wrote:
-> From: Lev Stipakov <lev@...515...>
->=20
-> While on it, remove redundant sentence
-> and quotation from --windows-driver man
-> description.
+On Wed, Sep 14, 2022 at 08:59:36PM +0200, Antonio Quartulli wrote:
+>  #ifdef ENABLE_MANAGEMENT
+> -        auth_user_pass_setup(c->options.auth_user_pass_file, &c->options=
+.sc_info);
+> +        auth_user_pass_setup(c->options.auth_user_pass_file,
+> +                             c->options.auth_user_pass_file,
+> +                             &c->options.sc_info);
+>  #else
+> -        auth_user_pass_setup(c->options.auth_user_pass_file, NULL);
+> +        auth_user_pass_setup(c->options.auth_user_pass_file,
+> +                             c->options.auth_user_pass_file, NULL);
+>  #endif
 
-As Frank said, we should have a v2 of this, which moves the (default)
-to "ovpn-dco" while at it.
+This does not look like it would work...  the second "..._pass_file"
+arguments wants to be "..._inline", no?
 
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index d7954ebc..0eef3b3d 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -749,6 +749,7 @@ static const char usage_message[] =3D
->      "--show-net-up   : Show " PACKAGE_NAME "'s view of routing table and=
- net adapter list\n"
->      "                  after TAP adapter is up and routes have been adde=
-d.\n"
->      "--windows-driver   : Which tun driver to use?\n"
-> +    "                     ovpn-dco\n"
->      "                     tap-windows6 (default)\n"
 
-... in here, that is :-)
+> @@ -2165,9 +2174,12 @@ key_method_2_write(struct buffer *buf, struct tls_=
+multi *multi, struct tls_sessi
+>      if (auth_user_pass_enabled || (auth_token.token_defined && auth_toke=
+n.defined))
+>      {
+>  #ifdef ENABLE_MANAGEMENT
+> -        auth_user_pass_setup(session->opt->auth_user_pass_file, session-=
+>opt->sci);
+> +        auth_user_pass_setup(session->opt->auth_user_pass_file,
+> +                             session->opt->auth_user_pass_file_inline,
+> +                             session->opt->sci);
+>  #else
+> -        auth_user_pass_setup(session->opt->auth_user_pass_file, NULL);
+> +        auth_user_pass_setup(session->opt->auth_user_pass_file,
+> +                             session->opt->auth_user_pass_file_inline, N=
+ULL);
+>  #endif
+
+This one is better :-)
+
+This aside, the change is surprisingly simple.  Seems proxy-user-pass did
+the grunt work for us...
 
 gert
 --=20
@@ -63,22 +78,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---iy7+V6/+KRj7DhwU
+--1FTwVXsXT4ltzAIU
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJjJb0pAAoJEB2Cnv7KVigSsM8L+wXYNAKDLWqFgbWaKI5lzIYL
-kaK2YcAyOIG5RZq2D5sWg7lPHboWp1TxJDX4heiULbC31sJXfPLbHIT+C7S+vLvK
-4yoJIV4VbfRmyJnmOtA3LGnBeRLFUXRwVX4HP5Sb1x8EXOo5aJxletPuHAk/NeTx
-4NzU9oPI0pTy0vfJ0dKQyZ15BulBK/Mp4gCGd81r1uJYMFyh89AsvexE0/1KdFK8
-dZLOsHGpKS4TuwzognrBC/qjDZtd6xUjqxZSuzCHgS23LlE+iR8xeip1g1wdiWoz
-sSjnTut371+HyphN33UNKDeZk5OlWASUmC2z4GQTXeIqv6GzccR+Ijs1YOg+Yfda
-r8rUzstpSTK2qkMFOT6FrrL9YiYvQHqXzaCxIU+zG49mSIKEJCdYswLElK7H/5BF
-2cNVhW66yY0OFUXJ1Aqf8nb2UhLZcHhVPqq5e2DOBqA+otzOGYEwI+J0FEZZylza
-3iMvLKpAEBtbJakUh6IHOCdmYhoitbHHCFfzyGWVLQ==
-=j3GP
+iQGcBAEBAgAGBQJjJb+fAAoJEB2Cnv7KVigSZ5kL/02zqrQR1UOrAut4lXOcO3D0
+X377InBFCKRj8gZ3ERzoByKGYV1HhT/K1wEg6R78O07QIkotZhY5+mA9tGLvbviM
+R5YQ7FSgL31pNvRhH1Y7FUPhET1FAPbvgxRJCV85JEnmZK3W2Tl48VTAMXUH5iob
+zWVvGSrVGlXxoDu2pM1nZMWxN9JDvFYxZLugMagYeyzcdzh9X1KvB/fgJgcgs40j
+QHrhZvIhd72182m+JA6ImrsyADthph0/JD2+sbrJGA7C0vziNpA9ufrFC4u8zqAZ
+8YtdZHFvbXrDrnlXz6hotg4Cxt7Gx1kyyubAv1fxP6h8BIZZfqKGiX1p0p6jiDvB
+Rp90v9LKKDVToW8wbUSRRliUmdNv6qACkvsJYUCGGTlTZVaIirBBfDyOWAQmpVPk
+DlokLZw068/SaSFL7vE+t4X47N0bBWn7F/DMMomPmwhPRnoHiKnLCcS0nzGudiXo
+w7ve2aengckkmX2Y/HNRhQz0M/M6TtiRUg/a8Ljzyg==
+=oNlj
 -----END PGP SIGNATURE-----
 
---iy7+V6/+KRj7DhwU--
+--1FTwVXsXT4ltzAIU--
 
