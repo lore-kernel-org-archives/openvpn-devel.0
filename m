@@ -1,13 +1,10 @@
-Date: Sat, 17 Sep 2022 16:40:29 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <YyXcXbpO6wGR49KF@...1296...>
-References: <20220917140518.2497-1-a@...2181...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Sat, 17 Sep 2022 19:34:25 +0300
+Message-Id: <20220917163425.351-1-lstipakov@...277...>
+In-Reply-To: <openvpn-devel@lists.sourceforge.net>
+References: <openvpn-devel@lists.sourceforge.net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="2xy4QWE2qpLPz6XZ"
-Content-Disposition: inline
-In-Reply-To: <20220917140518.2497-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Changes open vpn exit code defines
+Subject: [Openvpn-devel] [PATCH v2] doc: add "ovpn-dco" to usage and man page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,54 +13,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net, Alexandr Kutashov <kutashov.alexandr@...1411...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
---2xy4QWE2qpLPz6XZ
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Lev Stipakov <lev@...515...>
 
-Hi,
+While on it, remove redundant sentence
+and quotation mark from --windows-driver man
+description.
 
-On Sat, Sep 17, 2022 at 04:05:18PM +0200, Antonio Quartulli wrote:
-> From: Alexandr Kutashov <kutashov.alexandr@...1411...>
->=20
-> It's better to have distinct enums for more straightforward debug of exit=
- function.
->=20
-> Signed-off-by: Alexandr Kutashov <kutashov.alexandr@...1411...>
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
 
-Not sure this is important.  But if we do so, we should document which
-exit code means what (outside error.h)
+v2:
+ - mark ovpn-dco adapter as default, instead
+of tap-windows6
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+ - mention that ovpn-dco requires --dev tun
 
-Gert Doering - Munich, Germany                             gert@...1296...
+ doc/man-sections/windows-options.rst | 6 +++---
+ src/openvpn/options.c                | 3 ++-
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
---2xy4QWE2qpLPz6XZ
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/doc/man-sections/windows-options.rst b/doc/man-sections/windows-options.rst
+index c389fbc4..368f7b19 100644
+--- a/doc/man-sections/windows-options.rst
++++ b/doc/man-sections/windows-options.rst
+@@ -238,7 +238,7 @@ Windows-Specific Options
+   logged when this is found in the configuration file.
+ 
+ --windows-driver drv
+-  Specifies which tun driver to use. Values are :code:`tap-windows6`
+-  (default) and :code:`wintun`.  This is a Windows-only option.
+-  :code:`wintun`" requires ``--dev tun`` and the OpenVPN process to run
++  Specifies which tun driver to use. Values are :code:`ovpn-dco` (default),
++  :code:`tap-windows6` and :code:`wintun`. :code:`ovpn-dco` and :code:`wintun`
++  require ``--dev tun``. :code:`wintun` also requires OpenVPN process to run
+   elevated, or be invoked using the Interactive Service.
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index d7954ebc..45fbb634 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -749,7 +749,8 @@ static const char usage_message[] =
+     "--show-net-up   : Show " PACKAGE_NAME "'s view of routing table and net adapter list\n"
+     "                  after TAP adapter is up and routes have been added.\n"
+     "--windows-driver   : Which tun driver to use?\n"
+-    "                     tap-windows6 (default)\n"
++    "                     ovpn-dco (default)\n"
++    "                     tap-windows6\n"
+     "                     wintun\n"
+     "--block-outside-dns   : Block DNS on other network adapters to prevent DNS leaks\n"
+     "Windows Standalone Options:\n"
+-- 
+2.23.0.windows.1
 
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjJdxdAAoJEB2Cnv7KVigS4c4MAIoU/6gpLBCwdkJre1d/DkPl
-iE2nGLnw2RCT0hEy2V3+D1n11OYCxi2oKxrsAtWsUrX6+vElfLQTPJiTPiySg7rx
-dEcYcuFXFHTRpHnHA0PzLMatfyNjomrAV5kvHpLq46KJN9X8YM+cvwZs6cGhwrhX
-pwmoZrv0D/B+PSDpQecQDhtauiOgppMNADQZjVp0szynfxqdDtJuS3/n3BUHDXcc
-j8SYWj/XmiJr1zju61QaHWaQRsNOunKysEZoWFp+Ub6M2BIVvmygBAPHyWlB6Omp
-9bTVV1i/cRkqL7zor4a8CA+bySRwOlxkjONMNXiTM29/KQvMQ0pIDlB4mTFDOMZJ
-VhSnTISVZNVUadT0qw5u/+aeNahi0dAt8CsEivjofrSo+M+3xHkAYeo/7ObJa0yX
-eJYpiIGgqhhEesBHOPRg1gPQckKQhVqJyIOgbvSXf55QOFN1JdbumAzYgDz2RB7u
-HMxMBvwaFJjMyZE6qJHdid66A/xRMAURBu1HHLLzRw==
-=c38G
------END PGP SIGNATURE-----
-
---2xy4QWE2qpLPz6XZ--
 
