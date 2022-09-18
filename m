@@ -1,15 +1,12 @@
-Date: Sun, 18 Sep 2022 18:25:33 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <YydGffOjq1jROPN2@...1296...>
-References: <20220520213250.3126372-1-arne@...1227...>
- <20220914170134.2659433-1-arne@...1227...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="joUg3bTtlC5Zduh8"
-Content-Disposition: inline
-In-Reply-To: <20220914170134.2659433-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v4] Implement AUTH_FAIL,
- TEMP message support
+References: <20220917140818.6155-1-a@...2181...>
+In-Reply-To: <20220917140818.6155-1-a@...2181...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 18 Sep 2022 14:30:14 -0400
+Message-ID: <CAKuzo_ihm3qrRXE6z=A3hz4bGzmaWpK11pjf_WqHGORQEfsP=A@...278...>
+Content-Type: multipart/alternative; boundary="000000000000ffc62205e8f7cc0a"
+Subject: Re: [Openvpn-devel] [PATCH] Add common_name to the conv method.
+ This allows the common_name to be accessible in PAM.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,80 +15,125 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net, Michael Karvan <Michael.Karvan@...277...>
 
---joUg3bTtlC5Zduh8
-Content-Type: text/plain; charset="us-ascii"
+--000000000000ffc62205e8f7cc0a
+Content-Type: text/plain; charset="UTF-8"
+
+On Sat, Sep 17, 2022 at 10:09 AM Antonio Quartulli <a@...2181...> wrote:
+
+> From: Michael Karvan <Michael.Karvan@...277...>
+>
+> Signed-off-by: Michael Karvan <Michael.Karvan@...277...>
+> ---
+>  src/plugins/auth-pam/auth-pam.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+>
+> diff --git a/src/plugins/auth-pam/auth-pam.c
+> b/src/plugins/auth-pam/auth-pam.c
+> index 70339445..9f37c8c0 100644
+> --- a/src/plugins/auth-pam/auth-pam.c
+> +++ b/src/plugins/auth-pam/auth-pam.c
+> @@ -746,8 +746,15 @@ my_conv(int n, const struct pam_message **msg_array,
+>                      }
+>                      break;
+>
+> -                case PAM_ERROR_MSG:
+>                  case PAM_TEXT_INFO:
+> +                    aresp[i].resp = strdup(up->common_name);
+> +                    if (aresp[i].resp == NULL)
+> +                    {
+> +                        ret = PAM_CONV_ERR;
+> +                    }
+> +                    break;
+> +
+> +                case PAM_ERROR_MSG:
+>                      break;
+>
+>
+To add to what Gert's comment, we already support COMMONNAME in addition to
+USERNAME, PASSWORD and
+OTP via text replacements for pam prompts specified in the config file.
+Like:
+
+ plugin openvpn-auth-pam.so "openvpn user USERNAME password PASSWORD cn
+COMMONNAME"
+
+and have the PAM module prompt for "user', "password" and "cn", for example.
+
+So why do we need this non-standard stuff ?
+
+In fact, IMO, we should be getting rid of this whole "else {}" clause
+starting line 728 that tries to guess the prompts based on echo-off ( to
+mean password) echo-on (to mean username) etc. Instead, require that the
+plugin line in the config file must specify expected prompts and
+replacement strings as above.
+
+Selva
+
+--000000000000ffc62205e8f7cc0a
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
+<div dir=3D"ltr" class=3D"gmail_attr">On Sat, Sep 17, 2022 at 10:09 AM Anto=
+nio Quartulli &lt;<a href=3D"mailto:a@...2181...">a@...2181...</a>&gt; wrot=
+e:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
+.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">From: Michael=
+ Karvan &lt;<a href=3D"mailto:Michael.Karvan@...277..." target=3D"_blank">M=
+ichael.Karvan@...277...</a>&gt;<br>
+<br>
+Signed-off-by: Michael Karvan &lt;<a href=3D"mailto:Michael.Karvan@...1663...=
+." target=3D"_blank">Michael.Karvan@...277...</a>&gt;<br>
+---<br>
+=C2=A0src/plugins/auth-pam/auth-pam.c | 9 ++++++++-<br>
+=C2=A01 file changed, 8 insertions(+), 1 deletion(-)<br>
+<br>
+diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pa=
+m.c<br>
+index 70339445..9f37c8c0 100644<br>
+--- a/src/plugins/auth-pam/auth-pam.c<br>
++++ b/src/plugins/auth-pam/auth-pam.c<br>
+@@ -746,8 +746,15 @@ my_conv(int n, const struct pam_message **msg_array,<b=
+r>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0}<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0break;<br>
+<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 case PAM_ERROR_MSG=
+:<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0case PAM_TEXT=
+_INFO:<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ares=
+p[i].resp =3D strdup(up-&gt;common_name);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (=
+aresp[i].resp =3D=3D NULL)<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 ret =3D PAM_CONV_ERR;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 brea=
+k;<br>
++<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 case PAM_ERROR_MSG=
+:<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0break;<br>
+<br></blockquote><div><br></div><div>To add to what Gert&#39;s comment, we =
+already support COMMONNAME=C2=A0in addition to USERNAME, PASSWORD and</div>=
+<div>OTP via text replacements for pam prompts specified in the config file=
+. Like:</div><div><br></div><div>=C2=A0plugin openvpn-auth-pam.so &quot;ope=
+nvpn user USERNAME password PASSWORD cn COMMONNAME&quot;</div><div><br></di=
+v><div>and have the PAM module prompt for &quot;user&#39;, &quot;password&q=
+uot; and &quot;cn&quot;, for example.</div><div><br></div><div>So why do we=
+ need this non-standard stuff ?=C2=A0</div><div><br></div><div>In fact, IMO=
+, we should be getting rid of this whole &quot;else {}&quot; clause startin=
+g line 728 that tries to guess the prompts based on echo-off ( to mean pass=
+word) echo-on (to mean username) etc. Instead, require that the plugin line=
+ in the config file must specify expected prompts and replacement strings a=
+s above.</div><div><br></div><div>Selva=C2=A0</div></div></div>
 
-On Wed, Sep 14, 2022 at 07:01:34PM +0200, Arne Schwabe wrote:
->  src/openvpn/openvpn.vcxproj          |   2 +
-
-This file is still gone, so the hunk also needs to go.  But I can=20
-ignore this.
-
-> diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/scrip=
-t-options.rst
-> index 61c89b0ad..2a2e70fca 100644
-> --- a/doc/man-sections/script-options.rst
-> +++ b/doc/man-sections/script-options.rst
-> @@ -102,6 +102,42 @@ SCRIPT HOOKS
->    the authentication, a :code:`1` or :code:`0` must be written to the
->    file specified by the :code:`auth_control_file`.
->=20=20
-> +  If the file specified by :code:`auth_failed_reason` exists and has non=
--empty
-
-If this is referring to the environment variable, it needs to be
-"auth_failed_reason_file".  If you agree, I'll change that on merge.
-
-[..]
-
-> diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-> index 71648ef18..79a3f9574 100644
-> --- a/src/openvpn/Makefile.am
-> +++ b/src/openvpn/Makefile.am
-> @@ -101,6 +101,7 @@ openvpn_SOURCES =3D \
->  	pkcs11_mbedtls.c \
->  	openvpn.c openvpn.h \
->  	options.c options.h \
-> +    options_util.c options_util.h \
-
-Makefile wants a real TAB here, which I'll fix on commit.
-
-More detailed stare-at-code and test to follow.
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---joUg3bTtlC5Zduh8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjJ0Z9AAoJEB2Cnv7KVigS4VoL/Rv95Euy5qJjC/kdT2QC1up3
-AZbX3sR+WL0ZAA0oG+QaVU35t/nCrMrEqRof5FgZ9n/0cFCoGGjk+UQuPltMZKg0
-8lExT5YgCPwpsYV0cRgt//YlI1liYhpFA74pPkxDwmmKwr1uABftwKMuZhhrNLwU
-rt5KjXa5e4HQMf+h0WROTU0c/EmXTOvWVaS9fXYt3W2TGUEkFTNmNEVyz3T5fzMy
-9EZJvYdYPk6qUH5FWcnMS1HGxvdfQk/RLOqABb3tccbE027EDzYyPtnVOZcnd+eX
-aKEPqvfTS7zBEQ6BZ4ooZOfzNy1l6Fv0abxId9S+KEngkpWKgJ0tQ4LpCy5sKGn5
-yaBT1g+78XxomJcG7dw5skdyfYK8TZarZUXXo6YTSf3XGmWCWyyZLzyNuvi1owsE
-LuwIPvkt/eT8Xg8KgplK4Mrt9uKCSucAIH0ygM/cdJ0TwktzluUHjT0K4J9PSbtu
-8z5d1F5x9h2pCMheQGi8N7B8BJrkK8iaDLA5fv7u5w==
-=E7D2
------END PGP SIGNATURE-----
-
---joUg3bTtlC5Zduh8--
+--000000000000ffc62205e8f7cc0a--
 
