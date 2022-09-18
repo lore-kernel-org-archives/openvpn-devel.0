@@ -1,11 +1,12 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Mon, 19 Sep 2022 00:07:40 +0200
-Message-Id: <20220918220740.32549-1-a@...2181...>
-In-Reply-To: <20220917233244.13774-1-a@...2181...>
-References: 
+Message-ID: <dca91e77-175c-9540-7993-112ca7a4661b@...2181...>
+Date: Mon, 19 Sep 2022 00:29:20 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] openssl: alternative names support for
- --verify-x509-name CN checks
+Content-Language: en-US
+References: <20220917231030.22565-1-a@...2181...>
+ <Yyb07u4pG0Ii9vQf@...1296...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <Yyb07u4pG0Ii9vQf@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] implement --session-timeout
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,224 +15,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
+Cc: Dmitry Zelenkovsky <Dmitry.Zelenkovskiy@...1719...>, openvpn-devel@lists.sourceforge.net
 
-From: Mateusz Markowicz <poniekad@...2282...>
 
-When using "--verify-x509-name [hostname] subject-alt-name" hostname
-will now be accepted also when matched against one of the
-X509v3 Subject Alternative Name IP or DNS entries (instead of just
-Subject's CN).
 
-While at it, fix a few uncrustify complaints to allow committing this
-change.
+On 18/09/2022 12:37, Gert Doering wrote:
+> HI,
+> 
+> On Sun, Sep 18, 2022 at 01:10:30AM +0200, Antonio Quartulli wrote:
+>> From: Dmitry Zelenkovsky <Dmitry.Zelenkovskiy@...1719...>
+>>
+>> Disconnect clients after session-timeout expires.
+>> session-timeout can be defined in ccd files in order to limit
+>> per-user connection time.
+> 
+> I find this implementation needlessly complicated.
+> 
+>> +/*
+>> + * Should we exit due to session timeout?
+>> + */
+>> +static void
+>> +check_session_timeout(struct context *c)
+>> +{
+>> +    if (c->options.session_timeout
+>> +        && event_timeout_trigger(&c->c2.session_interval, &c->c2.timeval,
+>> +                                 ETT_DEFAULT))
+>> +    {
+>> +        msg(M_INFO, "Session timeout, exiting");
+>> +        register_signal(c, SIGTERM, "session-timeout");
+>> +    }
+>> +}
+> 
+> Why are we working with event triggers here, if all we *want* to do is
+> a single-shot
+> 
+>   if ( now > $somectx->session_must_end_at_this_time )
+>   {
+>        /* kick out this user now */
+>        ...
+>   }
+> 
 
-Signed-off-by: Mateusz Markowicz <poniekad@...2282...>
----
+we don't get here at all, if we have no event object that is timing out.
+So, although one shot, we still need to setup a timer object that will 
+trigger the machinery upon timeout.
 
-Changes from v1:
-* added missing hunks
----
- doc/man-sections/tls-options.rst |  9 ++++---
- src/openvpn/options.c            |  4 +++
- src/openvpn/ssl_verify.c         | 32 +++++++++++++++++------
- src/openvpn/ssl_verify.h         |  1 +
- src/openvpn/ssl_verify_backend.h |  9 +++++++
- src/openvpn/ssl_verify_mbedtls.c | 12 +++++++++
- src/openvpn/ssl_verify_openssl.c | 45 ++++++++++++++++++++++++++++++++
- 7 files changed, 100 insertions(+), 12 deletions(-)
+>> +    else if (streq(p[0], "session-timeout") && p[1] && !p[2])
+>> +    {
+>> +        VERIFY_PERMISSION(OPT_P_TIMER);
+> 
+> OPT_P_INSTANCE?
 
-diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
-index d51aff77..257c779a 100644
---- a/doc/man-sections/tls-options.rst
-+++ b/doc/man-sections/tls-options.rst
-@@ -647,10 +647,11 @@ If the option is inlined, ``algo`` is always :code:`SHA256`.
- 
-   Which X.509 name is compared to ``name`` depends on the setting of type.
-   ``type`` can be :code:`subject` to match the complete subject DN
--  (default), :code:`name` to match a subject RDN or :code:`name-prefix` to
--  match a subject RDN prefix. Which RDN is verified as name depends on the
--  ``--x509-username-field`` option. But it defaults to the common name
--  (CN), e.g. a certificate with a subject DN
-+  (default), :code:`name` to match a subject RDN, :code:`name-prefix` to
-+  match a subject RDN prefix or :code:`subject-alt-name` to match the subject
-+  SAN (or the CN if SAN is not specified). Which RDN is verified as name
-+  depends on the ``--x509-username-field`` option. But it defaults to the
-+  common name (CN), e.g. a certificate with a subject DN
-   ::
- 
-      C=KG, ST=NA, L=Bishkek, CN=Server-1
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 4566172b..02f91259 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -8935,6 +8935,10 @@ add_option(struct options *options,
-             {
-                 type = VERIFY_X509_SUBJECT_RDN_PREFIX;
-             }
-+            else if (streq(p[2], "subject-alt-name"))
-+            {
-+                type = VERIFY_X509_SAN;
-+            }
-             else
-             {
-                 msg(msglevel, "unknown X.509 name type: %s", p[2]);
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 76cb9f19..c13f1c45 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -377,15 +377,31 @@ verify_peer_cert(const struct tls_options *opt, openvpn_x509_cert_t *peer_cert,
-     /* verify X509 name or username against --verify-x509-[user]name */
-     if (opt->verify_x509_type != VERIFY_X509_NONE)
-     {
--        if ( (opt->verify_x509_type == VERIFY_X509_SUBJECT_DN
--              && strcmp(opt->verify_x509_name, subject) == 0)
--             || (opt->verify_x509_type == VERIFY_X509_SUBJECT_RDN
--                 && strcmp(opt->verify_x509_name, common_name) == 0)
--             || (opt->verify_x509_type == VERIFY_X509_SUBJECT_RDN_PREFIX
--                 && strncmp(opt->verify_x509_name, common_name,
--                            strlen(opt->verify_x509_name)) == 0) )
-+        bool match;
-+        if (opt->verify_x509_type == VERIFY_X509_SAN)
-         {
--            msg(D_HANDSHAKE, "VERIFY X509NAME OK: %s", subject);
-+            bool have_alt_names;
-+            match = x509v3_is_host_in_alternative_names(peer_cert, opt->verify_x509_name,
-+                                                        &have_alt_names);
-+            if (!match && !have_alt_names)
-+            {
-+                match = (strcmp(opt->verify_x509_name, common_name) == 0);
-+            }
-+        }
-+        else
-+        {
-+            match = (opt->verify_x509_type == VERIFY_X509_SUBJECT_DN
-+                     && strcmp(opt->verify_x509_name, subject) == 0)
-+                    || (opt->verify_x509_type == VERIFY_X509_SUBJECT_RDN
-+                        && strcmp(opt->verify_x509_name, common_name) == 0)
-+                    || (opt->verify_x509_type == VERIFY_X509_SUBJECT_RDN_PREFIX
-+                        && strncmp(opt->verify_x509_name, common_name,
-+                                   strlen(opt->verify_x509_name)) == 0);
-+        }
-+
-+        if (match)
-+        {
-+            msg(D_HANDSHAKE, "VERIFY X509NAME OK: %s", opt->verify_x509_name);
-         }
-         else
-         {
-diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h
-index 30dfc9bc..214243d8 100644
---- a/src/openvpn/ssl_verify.h
-+++ b/src/openvpn/ssl_verify.h
-@@ -64,6 +64,7 @@ struct cert_hash_set {
- #define VERIFY_X509_SUBJECT_DN          1
- #define VERIFY_X509_SUBJECT_RDN         2
- #define VERIFY_X509_SUBJECT_RDN_PREFIX  3
-+#define VERIFY_X509_SAN                 4
- 
- enum tls_auth_status
- {
-diff --git a/src/openvpn/ssl_verify_backend.h b/src/openvpn/ssl_verify_backend.h
-index be857960..948daae2 100644
---- a/src/openvpn/ssl_verify_backend.h
-+++ b/src/openvpn/ssl_verify_backend.h
-@@ -268,4 +268,13 @@ result_t x509_write_pem(FILE *peercert_file, openvpn_x509_cert_t *peercert);
-  */
- bool tls_verify_crl_missing(const struct tls_options *opt);
- 
-+/**
-+ * Return true iff {host} was found in {cert} Subject Alternative Names DNS or
-+ * IP entries.
-+ * If has_alt_names is not NULL it'll be set to true iff Subject Alternative
-+ * Names were defined for cert.
-+ */
-+bool x509v3_is_host_in_alternative_names(openvpn_x509_cert_t *cert,
-+                                         const char *host, bool *has_alt_name);
-+
- #endif /* SSL_VERIFY_BACKEND_H_ */
-diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
-index 5463c8da..228e7fb6 100644
---- a/src/openvpn/ssl_verify_mbedtls.c
-+++ b/src/openvpn/ssl_verify_mbedtls.c
-@@ -262,6 +262,18 @@ x509_get_subject(mbedtls_x509_crt *cert, struct gc_arena *gc)
-     return subject;
- }
- 
-+bool
-+x509v3_is_host_in_alternative_names(mbedtls_x509_crt *cert, const char *host,
-+                                    bool *has_alt_names)
-+{
-+    msg(M_WARN, "Missing support for subject alternative names in mbedtls.");
-+    if (has_alt_names)
-+    {
-+        *has_alt_names = false;
-+    }
-+    return false;
-+}
-+
- static void
- do_setenv_x509(struct env_set *es, const char *name, char *value, int depth)
- {
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index 78efa70a..3c6f629b 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -376,6 +376,51 @@ err:
-     return subject;
- }
- 
-+bool
-+x509v3_is_host_in_alternative_names(X509 *cert, const char *host,
-+                                    bool *has_alt_names)
-+{
-+    GENERAL_NAMES *altnames = X509_get_ext_d2i(cert, NID_subject_alt_name, NULL, NULL);
-+    if (has_alt_names)
-+    {
-+        *has_alt_names = (altnames != NULL);
-+    }
-+    if (altnames == NULL)
-+    {
-+        return false;
-+    }
-+
-+    int n = sk_GENERAL_NAME_num(altnames);
-+    for (int i = 0; i < n; i++)
-+    {
-+        GENERAL_NAME *altname = sk_GENERAL_NAME_value(altnames, i);
-+        ASN1_STRING *altname_asn1 = NULL;
-+        if (altname->type == GEN_DNS)
-+        {
-+            altname_asn1 = altname->d.dNSName;
-+        }
-+        else if (altname->type == GEN_IPADD)
-+        {
-+            altname_asn1 = altname->d.iPAddress;
-+        }
-+
-+        if (altname_asn1 != NULL)
-+        {
-+            char *altname_cstr = NULL;
-+            if (ASN1_STRING_to_UTF8((unsigned char **)&altname_cstr, altname_asn1) >= 0)
-+            {
-+                bool match = strcmp(host, altname_cstr) == 0;
-+                OPENSSL_free(altname_cstr);
-+                if (match)
-+                {
-+                    return true;
-+                }
-+            }
-+        }
-+    }
-+    return false;
-+}
-+
- 
- /*
-  * x509-track implementation -- save X509 fields to environment,
+makes sense to add OPT_P_INSTANCE, although I wonder why other 
+activity/timeout knobs are not marks as such, i.e. --inactivity)
+
+Cheers,
+
+> 
+> gert
+> 
+> 
+> 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
 -- 
-2.35.1
-
+Antonio Quartulli
 
