@@ -1,11 +1,10 @@
-Date: Sun, 18 Sep 2022 18:06:56 +0200
+Date: Sun, 18 Sep 2022 18:13:20 +0200 (CEST)
+Message-Id: <202209181613.28IGDKVV006183@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <YydCIP5l0WwH5OX+@greenie.muc.de>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="JtWfgC047OP71yRL"
-Content-Disposition: inline
-Subject: [Openvpn-devel] --explicit-exit-notify and P2P mode (trac #1337)
+In-Reply-To: <20220914165041.2658423-1-arne@...1227...>
+References: <20220914165041.2658423-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Implement exit notification via
+ control channel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,64 +13,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---JtWfgC047OP71yRL
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Acked-by: Gert Doering <gert@...1296...>
 
-Hi,
+Adding my ACK to Heiko's, because the push_option_fmt() thing is sufficiently
+different from v3 so I had a very close look.
 
-we have a long standing open ticket, #1337, about --explicit-exit-notify
-together with peer-to-peer mode.
+Testing this is not very easy with the current test framework, as it needs
+this patch on both ends to become effective.
 
-My understanding of --explicit-exit-notify comes from p2mp mode, where
-it notifies the other end "I have been SIGINTR'ed, and will go away now",
-so the other end can stop sending packets (multi-instance is killed on
-the server, and client reconnects / goes to next server).
+This said, I've subjected this to extensive client/server tests against
+2.3...master peers, to see if it would break compat with anything 
+(no tls-ekm, old tls-ekm, new tls-ekm) - seems not so :-)
 
-I have learned much later that --explicit-exit-notify in p2p mode does
-something else - it kills the peer.  So you press ctrl-c on one end
-of the OpenVPN connection, and *both* sides exit.
+Testing client and server both with this patch leads to the expected
+protocol-flags message:
 
-David tells me "it has always been that way", but I wonder if we should
-keep it (=3D close #1337, do not change anything), or do something else,=20
-like "ignore incoming EEN (control-channel EXIT or OCC_EXIT) if not
-in server mode" (*)
+ ... peer info: IV_PROTO=222
+ ... SENT CONTROL ... protocol-flags cc-exit tls-ekm' (status=1)
 
-gert
+and on ctrl-c, to 
 
-(*) p2mp server-to-client is not signaled as EXIT/OCC_EXIT but with
-control-channel restart
+client:
+ 2022-09-18 17:10:59 SIGTERM received, sending exit notification to peer
+ 2022-09-18 17:10:59 SENT CONTROL [server]: 'EXIT' (status=1)
 
-(**) https://community.openvpn.net/openvpn/ticket/1337
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+server:
 
-Gert Doering - Munich, Germany                             gert@...1296...
+ Sep 18 17:10:59 ... Exit message received by peer
+ Sep 18 17:10:59 ... SIGTERM[soft,remote-exit] received, client-instance exiting
 
---JtWfgC047OP71yRL
-Content-Type: application/pgp-signature; name="signature.asc"
+(and of course, --explicit-exit-notify with old<->new client/server
+combinations also still works, showing the "old" messages)
 
------BEGIN PGP SIGNATURE-----
+Testing this against a DCO enabled p2mp server also makes client-to-server
+--explicit-exit-notify work now.  Did not test DCO P2P.
 
-iQGcBAEBAgAGBQJjJ0IgAAoJEB2Cnv7KVigS9V0L/1UDK6O02EDM6cBeAONViXe6
-demCaKb+0hKQua2XWIDwsQHs8L3BeU3S/RFRQgYA+G911DUDNX6O/3tpCw8Z9L7G
-2OFzQ15ZncLU24BMKwlbyyzZP8gfTQ0PB+bAHKUTEvIOgeORtG2dujTb7tzIZq/y
-oNlPyBaS8v/Gm29SFgRWXx0OS21dOM49BrXP7pgf7cWvyoROmDbc16IQFYXKcrEt
-w7j34ZbCmzb9vOerurT3GxzGoQpAwaKsLGXI5P+Je6r4h570isay4pcwyU/cG3tO
-FDZz7j3ojZ95aoXYm8rIn1+nmBDIoXNkVDx9U15ZpwDooRycs9TT24QYredSL6JH
-77ufLjvBzcph5bMw7QMfEb4qauuOHzc5ERVb4ZLIsdpd8cFvMgPG4xFg4O1o/XYH
-3Ume4a2U8pvdNRmTTF1zhtLrk6IpTg1Z57rOFomIMjKVRmFNKrqoCumlWgO9gUst
-MrjWEpewqgunA4XQLcdgxUrYTchGsONE1Do6KDVgxQ==
-=QES6
------END PGP SIGNATURE-----
 
---JtWfgC047OP71yRL--
+NOTE: the commit message does not mention this, but the manpage says
+so, without it being clear to the uninvited - p2mp server to client
+will never use this new EXIT message or the old OCC_EXIT signalling,
+and has always sent "RESTART..." control-channel messages.  This was not
+really clear to me before I started untangling this...
+
+NOTE2: p2p peers still exit() on receipt of --explicit-exit-notify
+messages.  Not sure if we consider this reasonable behaviour (see
+separate mail thread).
+
+
+Your patch has been applied to the master branch.
+
+commit 179b3728b71013413885e453e477997f5a396f78
+Author: Arne Schwabe
+Date:   Wed Sep 14 18:50:41 2022 +0200
+
+     Implement exit notification via control channel
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Heiko Hund <heiko@...2662...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220914165041.2658423-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25209.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
