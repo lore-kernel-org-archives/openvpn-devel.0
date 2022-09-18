@@ -1,11 +1,10 @@
-Date: Sun, 18 Sep 2022 12:46:11 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <Yyb280l0bg3RbjAF@...1296...>
-References: <CAJXQW9Vzf_ypQGSez8X96imiy2Hat0buoY2fp3gmsYs1EXdcpg@...278...>
+Content-Type: multipart/alternative;
+ boundary="------------60HzNyvEJdvjFa3dqEfG0N0I"
+Message-ID: <ad48914b-d0a9-5267-1b27-b6120c3f4d07@...1227...>
+Date: Sun, 18 Sep 2022 12:51:14 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="axJ8kweW9WUOEjba"
-Content-Disposition: inline
+References: <CAJXQW9Vzf_ypQGSez8X96imiy2Hat0buoY2fp3gmsYs1EXdcpg@...278...>
+From: Arne Schwabe <arne@...1227...>
 In-Reply-To: <CAJXQW9Vzf_ypQGSez8X96imiy2Hat0buoY2fp3gmsYs1EXdcpg@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] Allow DNS autoconf by passing hostname
  by IV variables when using push-peer-info
@@ -17,54 +16,176 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Ricardo Manriquez <ricardo.manriquez@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Ricardo Manriquez <ricardo.manriquez@...277...>, openvpn-devel@lists.sourceforge.net
 
---axJ8kweW9WUOEjba
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This is a multi-part message in MIME format.
+--------------60HzNyvEJdvjFa3dqEfG0N0I
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-Hi,
 
-On Sun, Sep 18, 2022 at 10:23:14AM +0900, Ricardo Manriquez wrote:
+Am 18.09.2022 um 03:23 schrieb Ricardo Manriquez:
+> Author: Ricardo Manríquez <ricardo.manriquez@...277...>
+>
+> To enable the possibility of DNS autoconfiguration the IP address and 
+> hostname of the client are needed to register at the DNS level, this 
+> patch adds this information when using push-peer-info.
+>
+> The motivation is that the domain name is as intrusive as the MAC 
+> address and DNS autoconfiguration is helpful to be able to communicate 
+> back to the clients, this generates a problem when the client connects 
+> to the network directly and then uses the VPN connection, now the DNS 
+> records do not match and when using remote assistance or remote 
+> management tools the benefits of DNS are negated.
+
+Could you expain why this needs to be in OpenVPN itself and cannot be 
+done with something like starting openvpn with an additional parameter 
+like --setenv UV_HOSTNAME "$(hostname)" or derived from another 
+parameter/variable from the client like CN, username etc? Space in the 
+packet carrying IV_/UV_ variables is already limited and I am not sure 
+if spending another 64 for the hostname is a good thing.
+
+
+> ---
+>   src/openvpn/ssl.c | 5 +++++
+>   1 file changed, 5 insertions(+)
+>
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index 80e0d5acb4..3031566585 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -2321,6 +2321,11 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+>               {
+>                   buf_printf(&out, "IV_HWADDR=%s\n", format_hex_ex(rgi.hwaddr, 6, 0, 1, ":", &gc));
+>               }
 > +
 > +            char hostname[64];
 > +            gethostname(hostname, 63);
-> +            buf_printf(&out, "IV_HOSTNAME=3D%s\n", hostname );
+> +            buf_printf(&out, "IV_HOSTNAME=%s\n", hostname );
+Isn't there a MAX_HOSTNAME define or similar instead of hardcoding 64 here?
 
-Without entering the discussion if this is a useful addition, the
-implementation definitely lacks error handling - gethostname() can
-fail, and then we have an unintialized buffer passed to buf_printf().
+The handling of the string of hostname is not very well here. The man 
+page of the function (gethostname(2) - Linux manual page (man7.org) 
+<https://man7.org/linux/man-pages/man2/sethostname.2.html>) says null 
+termination is not guaranteed for long hostnames.
 
-gert
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+> +
+>               buf_printf(&out, "IV_SSL=%s\n", get_ssl_library_version() );
+>   #if defined(_WIN32)
+>               buf_printf(&out, "IV_PLAT_VER=%s\n", win32_version_string(&gc, false));
+>
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+--------------60HzNyvEJdvjFa3dqEfG0N0I
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-Gert Doering - Munich, Germany                             gert@...1296...
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p><br>
+    </p>
+    <div class="moz-cite-prefix">Am 18.09.2022 um 03:23 schrieb Ricardo
+      Manriquez:<br>
+    </div>
+    <blockquote type="cite"
+cite="mid:CAJXQW9Vzf_ypQGSez8X96imiy2Hat0buoY2fp3gmsYs1EXdcpg@...278...">
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <div dir="ltr">
+        <div>Author: Ricardo Manríquez &lt;<a
+            href="mailto:ricardo.manriquez@...277..."
+            moz-do-not-send="true" class="moz-txt-link-freetext">ricardo.manriquez@...277...</a>&gt;
+        </div>
+        <div><br>
+        </div>
+        <div>To enable the possibility of DNS autoconfiguration the IP
+          address and hostname of the client are needed to register at
+          the DNS level, this patch adds this information when using
+          push-peer-info.</div>
+        <div><br>
+        </div>
+        <div>The motivation is that the domain name is as intrusive as
+          the MAC address and DNS autoconfiguration is helpful to be
+          able to communicate back to the clients, this generates a
+          problem when the client connects to the network directly and
+          then uses the VPN connection, now the DNS records do not match
+          and when using remote assistance or remote management tools
+          the benefits of DNS are negated.<br>
+        </div>
+      </div>
+    </blockquote>
+    <p>Could you expain why this needs to be in OpenVPN itself and
+      cannot be done with something like starting openvpn with an
+      additional parameter like --setenv UV_HOSTNAME "$(hostname)" or
+      derived from another parameter/variable from the client like CN,
+      username etc? Space in the packet carrying IV_/UV_ variables is
+      already limited and I am not sure if spending another 64 for the
+      hostname is a good thing.<br>
+    </p>
+    <p><br>
+    </p>
+    <blockquote type="cite"
+cite="mid:CAJXQW9Vzf_ypQGSez8X96imiy2Hat0buoY2fp3gmsYs1EXdcpg@...278...">
+      <div dir="ltr">
+        <div>
+          <pre>---
+ src/openvpn/ssl.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---axJ8kweW9WUOEjba
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 80e0d5acb4..3031566585 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2321,6 +2321,11 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+             {
+                 buf_printf(&amp;out, "IV_HWADDR=%s\n", format_hex_ex(rgi.hwaddr, 6, 0, 1, ":", &amp;gc));
+             }
++
++            char hostname[64];
++            gethostname(hostname, 63);
++            buf_printf(&amp;out, "IV_HOSTNAME=%s\n", hostname );</pre>
+        </div>
+      </div>
+    </blockquote>
+    Isn't there a MAX_HOSTNAME define or similar instead of hardcoding
+    64 here?<br>
+    <p>The handling of the string of hostname is not very well here. The
+      man page of the function (<a
+        href="https://man7.org/linux/man-pages/man2/sethostname.2.html">gethostname(2)
+        - Linux manual page (man7.org)</a>) says null termination is not
+      guaranteed for long hostnames.<br>
+    </p>
+    <p><br>
+    </p>
+    <blockquote type="cite"
+cite="mid:CAJXQW9Vzf_ypQGSez8X96imiy2Hat0buoY2fp3gmsYs1EXdcpg@...278...">
+      <div dir="ltr">
+        <div>
+          <pre>
++
+             buf_printf(&amp;out, "IV_SSL=%s\n", get_ssl_library_version() );
+ #if defined(_WIN32)
+             buf_printf(&amp;out, "IV_PLAT_VER=%s\n", win32_version_string(&amp;gc, false));</pre>
+        </div>
+      </div>
+      <br>
+      <fieldset class="moz-mime-attachment-header"></fieldset>
+      <br>
+      <fieldset class="moz-mime-attachment-header"></fieldset>
+      <pre class="moz-quote-pre" wrap="">_______________________________________________
+Openvpn-devel mailing list
+<a class="moz-txt-link-abbreviated" href="mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net</a>
+<a class="moz-txt-link-freetext" href="https://lists.sourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a>
+</pre>
+    </blockquote>
+  </body>
+</html>
 
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjJvbzAAoJEB2Cnv7KVigS9foL/i2xc1KUZbtXRd/npf6QOefJ
-yDAgLtrzOErCFt3WKcxmy7rMuellsGq9fMIyZSHQCW4N1AxOBdOk46wXGrd1NXRL
-bGnrRQ8MCPtSEJscwYEhlTjkmrPcDyBnRPeWXA6syZ9WwqTpFcncQsRAKg7+fotW
-/VxfDxDSQGyNFZ6L9/g1Z9tO+QqU27UowUYtkyBt3yG527PaCI+NqF0bUndo7ecO
-5OK/HUsWhfbuONc+SkQRO99pA/3WxrIn2g/xU8oD11Cyzg0Am6KfU3goAZbCPtf8
-FArz+v2kSJ04j9aaIX4Dr7WQY+7FKUmFUlyicn9Fdt/ScPEdwqKf8Aim32R+cpO1
-+mxo58LLRs0CLYBsadVp/k1hSEEj69NJnY14K07xiO8KpibGvaNXibg++ybVLJdh
-ip7XMOqjNqPVB3P/eqwG+NBh3XkYnaLORFIqlkQ/el41l198GKO2wpVRI+ERpk+A
-zu6vIZpLm1B++aIQYM2DMQVeNhGnqyFq9vysQ2olvA==
-=2LH3
------END PGP SIGNATURE-----
-
---axJ8kweW9WUOEjba--
+--------------60HzNyvEJdvjFa3dqEfG0N0I--
 
