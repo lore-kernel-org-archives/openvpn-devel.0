@@ -1,11 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Mon, 19 Sep 2022 00:06:18 +0200
-Message-Id: <20220918220618.31112-1-a@...2181...>
-In-Reply-To: <20220818084825.187755-1-a@...2181...>
+Date: Mon, 19 Sep 2022 00:07:40 +0200
+Message-Id: <20220918220740.32549-1-a@...2181...>
+In-Reply-To: <20220917233244.13774-1-a@...2181...>
 References: 
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] push-peer-info: rearrange function
- generating peer info
+Subject: [Openvpn-devel] [PATCH v2] openssl: alternative names support for
+ --verify-x509-name CN checks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,323 +17,220 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
 
-This patch is supposed to implement no function change.
-The only change in behaviour that can be observed is the IV_/UV_ variables
-being printed in different order compared to before applying this patch.
+From: Mateusz Markowicz <poniekad@...2282...>
 
-However, order does not matter, so we don't need to retain it.
+When using "--verify-x509-name [hostname] subject-alt-name" hostname
+will now be accepted also when matched against one of the
+X509v3 Subject Alternative Name IP or DNS entries (instead of just
+Subject's CN).
 
-What this change really does is rearranging the push_peer_info() function
-so that it becomes much more clear which variable is printed depending on
-the peer-info detail level. The original code was mixed up, and figuring
-the above out required reading this function multiple times.
+While at it, fix a few uncrustify complaints to allow committing this
+change.
 
-This rearrangement puts everything in a switch/case block with sorted
-peer-info details levels appearing one after the other.
-
-While at it, the for loop extracting the wanted env variables has been
-restructured a bit to avoid uber long conditions and extreme indentation.
-
-Signed-off-by: Antonio Quartulli <a@...2181...>
+Signed-off-by: Mateusz Markowicz <poniekad@...2282...>
 ---
-
-NOTE: I tried to move this function to ssh_util.c to make it possible to
-unit-test it. However, it requires a bunch of headers which make the whole
-dependency chain explode..so I gave up.
-
-Chanegs from v3:
-* rebased on top of master (conflicted with "Implement exit notification
-  via control channel")
-
-Changes from v2:
-* create helper function to push variable from env-set
 
 Changes from v1:
-* add spaces before case/default labels in switch block
+* added missing hunks
 ---
- src/openvpn/ssl.c | 225 ++++++++++++++++++++++++++--------------------
- 1 file changed, 129 insertions(+), 96 deletions(-)
+ doc/man-sections/tls-options.rst |  9 ++++---
+ src/openvpn/options.c            |  4 +++
+ src/openvpn/ssl_verify.c         | 32 +++++++++++++++++------
+ src/openvpn/ssl_verify.h         |  1 +
+ src/openvpn/ssl_verify_backend.h |  9 +++++++
+ src/openvpn/ssl_verify_mbedtls.c | 12 +++++++++
+ src/openvpn/ssl_verify_openssl.c | 45 ++++++++++++++++++++++++++++++++
+ 7 files changed, 100 insertions(+), 12 deletions(-)
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index d3f7a020..32579150 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1910,6 +1910,44 @@ read_string_alloc(struct buffer *buf)
-     return str;
- }
+diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
+index d51aff77..257c779a 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -647,10 +647,11 @@ If the option is inlined, ``algo`` is always :code:`SHA256`.
+ 
+   Which X.509 name is compared to ``name`` depends on the setting of type.
+   ``type`` can be :code:`subject` to match the complete subject DN
+-  (default), :code:`name` to match a subject RDN or :code:`name-prefix` to
+-  match a subject RDN prefix. Which RDN is verified as name depends on the
+-  ``--x509-username-field`` option. But it defaults to the common name
+-  (CN), e.g. a certificate with a subject DN
++  (default), :code:`name` to match a subject RDN, :code:`name-prefix` to
++  match a subject RDN prefix or :code:`subject-alt-name` to match the subject
++  SAN (or the CN if SAN is not specified). Which RDN is verified as name
++  depends on the ``--x509-username-field`` option. But it defaults to the
++  common name (CN), e.g. a certificate with a subject DN
+   ::
+ 
+      C=KG, ST=NA, L=Bishkek, CN=Server-1
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 4566172b..02f91259 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -8935,6 +8935,10 @@ add_option(struct options *options,
+             {
+                 type = VERIFY_X509_SUBJECT_RDN_PREFIX;
+             }
++            else if (streq(p[2], "subject-alt-name"))
++            {
++                type = VERIFY_X509_SAN;
++            }
+             else
+             {
+                 msg(msglevel, "unknown X.509 name type: %s", p[2]);
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 76cb9f19..c13f1c45 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -377,15 +377,31 @@ verify_peer_cert(const struct tls_options *opt, openvpn_x509_cert_t *peer_cert,
+     /* verify X509 name or username against --verify-x509-[user]name */
+     if (opt->verify_x509_type != VERIFY_X509_NONE)
+     {
+-        if ( (opt->verify_x509_type == VERIFY_X509_SUBJECT_DN
+-              && strcmp(opt->verify_x509_name, subject) == 0)
+-             || (opt->verify_x509_type == VERIFY_X509_SUBJECT_RDN
+-                 && strcmp(opt->verify_x509_name, common_name) == 0)
+-             || (opt->verify_x509_type == VERIFY_X509_SUBJECT_RDN_PREFIX
+-                 && strncmp(opt->verify_x509_name, common_name,
+-                            strlen(opt->verify_x509_name)) == 0) )
++        bool match;
++        if (opt->verify_x509_type == VERIFY_X509_SAN)
+         {
+-            msg(D_HANDSHAKE, "VERIFY X509NAME OK: %s", subject);
++            bool have_alt_names;
++            match = x509v3_is_host_in_alternative_names(peer_cert, opt->verify_x509_name,
++                                                        &have_alt_names);
++            if (!match && !have_alt_names)
++            {
++                match = (strcmp(opt->verify_x509_name, common_name) == 0);
++            }
++        }
++        else
++        {
++            match = (opt->verify_x509_type == VERIFY_X509_SUBJECT_DN
++                     && strcmp(opt->verify_x509_name, subject) == 0)
++                    || (opt->verify_x509_type == VERIFY_X509_SUBJECT_RDN
++                        && strcmp(opt->verify_x509_name, common_name) == 0)
++                    || (opt->verify_x509_type == VERIFY_X509_SUBJECT_RDN_PREFIX
++                        && strncmp(opt->verify_x509_name, common_name,
++                                   strlen(opt->verify_x509_name)) == 0);
++        }
++
++        if (match)
++        {
++            msg(D_HANDSHAKE, "VERIFY X509NAME OK: %s", opt->verify_x509_name);
+         }
+         else
+         {
+diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h
+index 30dfc9bc..214243d8 100644
+--- a/src/openvpn/ssl_verify.h
++++ b/src/openvpn/ssl_verify.h
+@@ -64,6 +64,7 @@ struct cert_hash_set {
+ #define VERIFY_X509_SUBJECT_DN          1
+ #define VERIFY_X509_SUBJECT_RDN         2
+ #define VERIFY_X509_SUBJECT_RDN_PREFIX  3
++#define VERIFY_X509_SAN                 4
+ 
+ enum tls_auth_status
+ {
+diff --git a/src/openvpn/ssl_verify_backend.h b/src/openvpn/ssl_verify_backend.h
+index be857960..948daae2 100644
+--- a/src/openvpn/ssl_verify_backend.h
++++ b/src/openvpn/ssl_verify_backend.h
+@@ -268,4 +268,13 @@ result_t x509_write_pem(FILE *peercert_file, openvpn_x509_cert_t *peercert);
+  */
+ bool tls_verify_crl_missing(const struct tls_options *opt);
  
 +/**
-+ * Searches the environment variables set for variables starting with the
-+ * specified pattern. If found, the variable string (i.e. VAR=VALUE) is
-+ * copied to the out buffer provided as argument
-+ *
-+ * @param out       the output buffer where variables should be written to
-+ * @param es        the environment variables set to search
-+ * @param pattern   the pattern used to match variable names
++ * Return true iff {host} was found in {cert} Subject Alternative Names DNS or
++ * IP entries.
++ * If has_alt_names is not NULL it'll be set to true iff Subject Alternative
++ * Names were defined for cert.
 + */
-+static void
-+push_peer_info_env_var(struct buffer *out, const struct env_set *es, const char *pattern)
++bool x509v3_is_host_in_alternative_names(openvpn_x509_cert_t *cert,
++                                         const char *host, bool *has_alt_name);
++
+ #endif /* SSL_VERIFY_BACKEND_H_ */
+diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
+index 5463c8da..228e7fb6 100644
+--- a/src/openvpn/ssl_verify_mbedtls.c
++++ b/src/openvpn/ssl_verify_mbedtls.c
+@@ -262,6 +262,18 @@ x509_get_subject(mbedtls_x509_crt *cert, struct gc_arena *gc)
+     return subject;
+ }
+ 
++bool
++x509v3_is_host_in_alternative_names(mbedtls_x509_crt *cert, const char *host,
++                                    bool *has_alt_names)
 +{
-+    for (const struct env_item *e = es->list; e; e = e->next)
++    msg(M_WARN, "Missing support for subject alternative names in mbedtls.");
++    if (has_alt_names)
 +    {
-+        /* ensure we have a string */
-+        if (!e->string)
-+        {
-+            continue;
-+        }
-+
-+        /* ensure string will fit output buffer */
-+        if (!buf_safe(out, strlen(e->string) + 1))
-+        {
-+            continue;
-+        }
-+
-+        /* don't accept any var except for those starting with the specified
-+         * pattern
-+         */
-+        if (strncmp(e->string, pattern, strlen(pattern)) != 0)
-+        {
-+            continue;
-+        }
-+
-+        buf_printf(out, "%s\n", e->string);
++        *has_alt_names = false;
 +    }
++    return false;
 +}
 +
- /**
-  * Prepares the IV_ and UV_ variables that are part of the
-  * exchange to signal the peer's capabilities. The amount
-@@ -1932,137 +1970,132 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
-     bool ret = false;
-     struct buffer out = alloc_buf_gc(512 * 3, &gc);
+ static void
+ do_setenv_x509(struct env_set *es, const char *name, char *value, int depth)
+ {
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index 78efa70a..3c6f629b 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -376,6 +376,51 @@ err:
+     return subject;
+ }
  
--    if (session->opt->push_peer_info_detail > 1)
-+    switch (session->opt->push_peer_info_detail)
-     {
--        /* push version */
--        buf_printf(&out, "IV_VER=%s\n", PACKAGE_VERSION);
-+        case 3:
-+        {
-+            /* push mac addr */
-+            struct route_gateway_info rgi;
-+            get_default_gateway(&rgi, session->opt->net_ctx);
-+            if (rgi.flags & RGI_HWADDR_DEFINED)
-+            {
-+                buf_printf(&out, "IV_HWADDR=%s\n", format_hex_ex(rgi.hwaddr, 6, 0, 1, ":", &gc));
-+            }
-+            buf_printf(&out, "IV_SSL=%s\n", get_ssl_library_version() );
-+#if defined(_WIN32)
-+            buf_printf(&out, "IV_PLAT_VER=%s\n", win32_version_string(&gc, false));
-+#endif
++bool
++x509v3_is_host_in_alternative_names(X509 *cert, const char *host,
++                                    bool *has_alt_names)
++{
++    GENERAL_NAMES *altnames = X509_get_ext_d2i(cert, NID_subject_alt_name, NULL, NULL);
++    if (has_alt_names)
++    {
++        *has_alt_names = (altnames != NULL);
++    }
++    if (altnames == NULL)
++    {
++        return false;
++    }
 +
-+            /* push env vars that begin with UV_, IV_PLAT_VER= */
-+            push_peer_info_env_var(&out, session->opt->es, "UV_");
-+            push_peer_info_env_var(&out, session->opt->es, "IV_PLAT_VER=");
++    int n = sk_GENERAL_NAME_num(altnames);
++    for (int i = 0; i < n; i++)
++    {
++        GENERAL_NAME *altname = sk_GENERAL_NAME_value(altnames, i);
++        ASN1_STRING *altname_asn1 = NULL;
++        if (altname->type == GEN_DNS)
++        {
++            altname_asn1 = altname->d.dNSName;
 +        }
- 
--        /* push platform */
-+        /* fall through */
-+        case 2:
++        else if (altname->type == GEN_IPADD)
 +        {
-+            /* push version */
-+            buf_printf(&out, "IV_VER=%s\n", PACKAGE_VERSION);
++            altname_asn1 = altname->d.iPAddress;
++        }
 +
-+            /* push platform */
- #if defined(TARGET_LINUX)
--        buf_printf(&out, "IV_PLAT=linux\n");
-+            buf_printf(&out, "IV_PLAT=linux\n");
- #elif defined(TARGET_SOLARIS)
--        buf_printf(&out, "IV_PLAT=solaris\n");
-+            buf_printf(&out, "IV_PLAT=solaris\n");
- #elif defined(TARGET_OPENBSD)
--        buf_printf(&out, "IV_PLAT=openbsd\n");
-+            buf_printf(&out, "IV_PLAT=openbsd\n");
- #elif defined(TARGET_DARWIN)
--        buf_printf(&out, "IV_PLAT=mac\n");
-+            buf_printf(&out, "IV_PLAT=mac\n");
- #elif defined(TARGET_NETBSD)
--        buf_printf(&out, "IV_PLAT=netbsd\n");
-+            buf_printf(&out, "IV_PLAT=netbsd\n");
- #elif defined(TARGET_FREEBSD)
--        buf_printf(&out, "IV_PLAT=freebsd\n");
-+            buf_printf(&out, "IV_PLAT=freebsd\n");
- #elif defined(TARGET_ANDROID)
--        buf_printf(&out, "IV_PLAT=android\n");
-+            buf_printf(&out, "IV_PLAT=android\n");
- #elif defined(_WIN32)
--        buf_printf(&out, "IV_PLAT=win\n");
-+            buf_printf(&out, "IV_PLAT=win\n");
- #endif
--        /* Announce that we do not require strict sequence numbers with
--         * TCP. (TCP non-linear) */
--        buf_printf(&out, "IV_TCPNL=1\n");
--    }
- 
--    /* These are the IV variable that are sent to peers in p2p mode */
--    if (session->opt->push_peer_info_detail > 0)
--    {
--        /* support for P_DATA_V2 */
--        int iv_proto = IV_PROTO_DATA_V2;
--
--        /* support for the --dns option */
--        iv_proto |= IV_PROTO_DNS_OPTION;
-+            /* Announce that we do not require strict sequence numbers with
-+             * TCP. (TCP non-linear) */
-+            buf_printf(&out, "IV_TCPNL=1\n");
- 
--        /* support for exit notify via control channel */
--        iv_proto |= IV_PROTO_CC_EXIT_NOTIFY;
-+            /* push compression status */
-+#ifdef USE_COMP
-+            comp_generate_peer_info_string(&session->opt->comp_options, &out);
-+#endif
- 
--        /* support for receiving push_reply before sending
--         * push request, also signal that the client wants
--         * to get push-reply messages without without requiring a round
--         * trip for a push request message*/
--        if (session->opt->pull)
--        {
--            iv_proto |= IV_PROTO_REQUEST_PUSH;
--            iv_proto |= IV_PROTO_AUTH_PENDING_KW;
-+            /* push env vars that begin with IV_GUI_VER= and IV_SSO= */
-+            push_peer_info_env_var(&out, session->opt->es, "IV_GUI_VER=");
-+            push_peer_info_env_var(&out, session->opt->es, "IV_SSO=");
-         }
- 
--        /* support for Negotiable Crypto Parameters */
--        if (session->opt->mode == MODE_SERVER || session->opt->pull)
-+        /* fall through */
-+        case 1:
-         {
--            if (tls_item_in_cipher_list("AES-128-GCM", session->opt->config_ncp_ciphers)
--                && tls_item_in_cipher_list("AES-256-GCM", session->opt->config_ncp_ciphers))
--            {
-+            /* support for P_DATA_V2 */
-+            int iv_proto = IV_PROTO_DATA_V2;
-+
-+            /* support for the --dns option */
-+            iv_proto |= IV_PROTO_DNS_OPTION;
- 
--                buf_printf(&out, "IV_NCP=2\n");
-+            /* support for exit notify via control channel */
-+            iv_proto |= IV_PROTO_CC_EXIT_NOTIFY;
-+
-+            /* support for receiving push_reply before sending
-+             * push request, also signal that the client wants
-+             * to get push-reply messages without without requiring a round
-+             * trip for a push request message*/
-+            if (session->opt->pull)
++        if (altname_asn1 != NULL)
++        {
++            char *altname_cstr = NULL;
++            if (ASN1_STRING_to_UTF8((unsigned char **)&altname_cstr, altname_asn1) >= 0)
 +            {
-+                iv_proto |= IV_PROTO_REQUEST_PUSH;
-+                iv_proto |= IV_PROTO_AUTH_PENDING_KW;
-             }
--        }
--        else
--        {
--            /* We are not using pull or p2mp server, instead do P2P NCP */
--            iv_proto |= IV_PROTO_NCP_P2P;
--        }
- 
--        buf_printf(&out, "IV_CIPHERS=%s\n", session->opt->config_ncp_ciphers);
-+            /* support for Negotiable Crypto Parameters */
-+            if (session->opt->mode == MODE_SERVER || session->opt->pull)
-+            {
-+                if (tls_item_in_cipher_list("AES-128-GCM", session->opt->config_ncp_ciphers)
-+                    && tls_item_in_cipher_list("AES-256-GCM", session->opt->config_ncp_ciphers))
++                bool match = strcmp(host, altname_cstr) == 0;
++                OPENSSL_free(altname_cstr);
++                if (match)
 +                {
-+
-+                    buf_printf(&out, "IV_NCP=2\n");
++                    return true;
 +                }
 +            }
-+            else
-+            {
-+                /* We are not using pull or p2mp server, instead do P2P NCP */
-+                iv_proto |= IV_PROTO_NCP_P2P;
-+            }
- 
- #ifdef HAVE_EXPORT_KEYING_MATERIAL
--        iv_proto |= IV_PROTO_TLS_KEY_EXPORT;
-+            iv_proto |= IV_PROTO_TLS_KEY_EXPORT;
- #endif
- 
--        buf_printf(&out, "IV_PROTO=%d\n", iv_proto);
-+            buf_printf(&out, "IV_PROTO=%d\n", iv_proto);
- 
--        if (session->opt->push_peer_info_detail > 1)
--        {
--            /* push compression status */
--#ifdef USE_COMP
--            comp_generate_peer_info_string(&session->opt->comp_options, &out);
--#endif
--        }
-+            buf_printf(&out, "IV_CIPHERS=%s\n", session->opt->config_ncp_ciphers);
- 
--        if (session->opt->push_peer_info_detail > 2)
--        {
--            /* push mac addr */
--            struct route_gateway_info rgi;
--            get_default_gateway(&rgi, session->opt->net_ctx);
--            if (rgi.flags & RGI_HWADDR_DEFINED)
-+            if (!write_string(buf, BSTR(&out), -1))
-             {
--                buf_printf(&out, "IV_HWADDR=%s\n", format_hex_ex(rgi.hwaddr, 6, 0, 1, ":", &gc));
-+                goto error;
-             }
--            buf_printf(&out, "IV_SSL=%s\n", get_ssl_library_version() );
--#if defined(_WIN32)
--            buf_printf(&out, "IV_PLAT_VER=%s\n", win32_version_string(&gc, false));
--#endif
-+            break;
-         }
- 
--        if (session->opt->push_peer_info_detail > 1)
--        {
--            struct env_set *es = session->opt->es;
--            /* push env vars that begin with UV_, IV_PLAT_VER and IV_GUI_VER */
--            for (struct env_item *e = es->list; e != NULL; e = e->next)
-+        case 0:
-+            if (!write_empty_string(buf))
-             {
--                if (e->string)
--                {
--                    if ((((strncmp(e->string, "UV_", 3) == 0
--                           || strncmp(e->string, "IV_PLAT_VER=", sizeof("IV_PLAT_VER=") - 1) == 0)
--                          && session->opt->push_peer_info_detail > 2)
--                         || (strncmp(e->string, "IV_GUI_VER=", sizeof("IV_GUI_VER=") - 1) == 0)
--                         || (strncmp(e->string, "IV_SSO=", sizeof("IV_SSO=") - 1) == 0)
--                         )
--                        && buf_safe(&out, strlen(e->string) + 1))
--                    {
--                        buf_printf(&out, "%s\n", e->string);
--                    }
--                }
-+                goto error;
-             }
--        }
-+            break;
- 
--        if (!write_string(buf, BSTR(&out), -1))
--        {
--            goto error;
--        }
--    }
--    else
--    {
--        if (!write_empty_string(buf)) /* no peer info */
--        {
-+        /* invalid value configured */
-+        default:
-+            msg(M_WARN, "Invalid peer-info-detail level %d", session->opt->push_peer_info_detail);
-             goto error;
--        }
-     }
++        }
++    }
++    return false;
++}
 +
-     ret = true;
  
- error:
+ /*
+  * x509-track implementation -- save X509 fields to environment,
 -- 
 2.35.1
 
