@@ -1,10 +1,14 @@
+Date: Sun, 18 Sep 2022 12:12:01 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <Yybu8YT8PGGUvDTx@...1296...>
+References: <20220917213154.29285-1-a@...2181...>
 MIME-Version: 1.0
-From: Ricardo Manriquez <ricardo.manriquez@...277...>
-Date: Sun, 18 Sep 2022 10:23:14 +0900
-Message-ID: <CAJXQW9Vzf_ypQGSez8X96imiy2Hat0buoY2fp3gmsYs1EXdcpg@...278...>
-Content-Type: multipart/alternative; boundary="0000000000001155eb05e8e97156"
-Subject: [Openvpn-devel] [PATCH] Allow DNS autoconf by passing hostname by
- IV variables when using push-peer-info
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="F1LbDLQRtTLibV1f"
+Content-Disposition: inline
+In-Reply-To: <20220917213154.29285-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] is_ipv_X: improve packet consistency
+ checks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,97 +17,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---0000000000001155eb05e8e97156
-Content-Type: text/plain; charset="UTF-8"
+--F1LbDLQRtTLibV1f
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Author: Ricardo Manr=C3=ADquez <ricardo.manriquez@...277...>
+Hi,
 
-To enable the possibility of DNS autoconfiguration the IP address and
-hostname of the client are needed to register at the DNS level, this patch
-adds this information when using push-peer-info.
+On Sat, Sep 17, 2022 at 11:31:54PM +0200, Antonio Quartulli wrote:
+> This patch brings the following improvements:
+> * check that ETH proto and version in IP header are consistent;
+> * check that length of the packet is enough to store the expected IP
+>   header (it may be an IPv4 or an IPv6 header)
 
-The motivation is that the domain name is as intrusive as the MAC address
-and DNS autoconfiguration is helpful to be able to communicate back to the
-clients, this generates a problem when the client connects to the network
-directly and then uses the VPN connection, now the DNS records do not match
-and when using remote assistance or remote management tools the benefits of
-DNS are negated.
+Since this is in the fast path - what is the motivation behind adding
+all these extra checks?
 
-Signed-off-by: Ricardo Manr=C3=ADquez <ricardo.manriquez@...277...>
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
----
- src/openvpn/ssl.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Gert Doering - Munich, Germany                             gert@...1296...
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 80e0d5acb4..3031566585 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2321,6 +2321,11 @@ push_peer_info(struct buffer *buf, struct
-tls_session *session)
-             {
-                 buf_printf(&out, "IV_HWADDR=3D%s\n",
-format_hex_ex(rgi.hwaddr, 6, 0, 1, ":", &gc));
-             }
-+
-+            char hostname[64];
-+            gethostname(hostname, 63);
-+            buf_printf(&out, "IV_HOSTNAME=3D%s\n", hostname );
-+
-             buf_printf(&out, "IV_SSL=3D%s\n", get_ssl_library_version() );
- #if defined(_WIN32)
-             buf_printf(&out, "IV_PLAT_VER=3D%s\n",
-win32_version_string(&gc, false));
+--F1LbDLQRtTLibV1f
+Content-Type: application/pgp-signature; name="signature.asc"
 
---0000000000001155eb05e8e97156
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+-----BEGIN PGP SIGNATURE-----
 
-<div dir=3D"ltr"><div>Author: Ricardo Manr=C3=ADquez
- &lt;<a href=3D"mailto:ricardo.manriquez@...277...">ricardo.manriquez@...1664...=
-7...</a>&gt;
+iQGcBAEBAgAGBQJjJu7xAAoJEB2Cnv7KVigSTaYL/A87yT3j+xbESatnRC9JH5R5
+wIchXyJaMCh6LnJOB/5PWyNVQO7cdLE9Sz7ncpQMA77kc4XB+JBts2hLfxBiamOE
+HNyUvNCOqKTrp7ronSVblvGNOUl8eDI4lOiQQFq4Qg6UQEW5pLGlIWCTz9LuxRHz
+2qXh8OtXKf7wJ93AtAuqU/Gs6PZ0kdZGMiH+ZttIwOp/TCYNQm70gNJxWVYO4lmt
+gZ+Z+g0kuMzbp7u/5+mUQ8tOsW6UVYiRUdf7Pth+0O8JP5VwJDbV+PX1u62+Isxe
+LjHwsf44MLZinJr5loXskkBcIQ3DeVLeSe5LPddn6ivPtLt+LsaQBJtOjcqnBtg9
+zKI1KnUPuZSoV6FQQUpGzkmWpcOKVkoqkdHtuOWOj1m+3PXJ7zrXq8I5Hy9nHbm4
+MQ6kjuFHgTA7VzmBmtmazwcCKK6m+xKW0yyE8XshAy9+LTJ/7My/6ODaRa/8maCl
+2riKaFF2VPSKJbTgsyN9KroYj2J6C7MH+8R6ad03QA==
+=1BfX
+-----END PGP SIGNATURE-----
 
-</div><div><br></div><div>To enable the possibility of DNS autoconfiguratio=
-n the IP address and hostname of the client are needed to register at the D=
-NS level, this patch adds this information when using push-peer-info.</div>=
-<div><br></div><div>The motivation is that the domain name is as intrusive =
-as the MAC address and DNS autoconfiguration is helpful to be able to commu=
-nicate back to the clients, this generates a problem when the client connec=
-ts to the network directly and then uses the VPN connection, now the DNS re=
-cords do not match and when using remote assistance or remote management to=
-ols the benefits of DNS are negated.<br></div><div><br></div><div>Signed-of=
-f-by: Ricardo Manr=C3=ADquez &lt;<a href=3D"mailto:ricardo.manriquez@...1482...=
-...">ricardo.manriquez@...277...</a>&gt;<br></div><div>
-<pre>---
- src/openvpn/ssl.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 80e0d5acb4..3031566585 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2321,6 +2321,11 @@ push_peer_info(struct buffer *buf, struct tls_sessio=
-n *session)
-             {
-                 buf_printf(&amp;out, &quot;IV_HWADDR=3D%s\n&quot;, format_=
-hex_ex(rgi.hwaddr, 6, 0, 1, &quot;:&quot;, &amp;gc));
-             }
-+
-+            char hostname[64];
-+            gethostname(hostname, 63);
-+            buf_printf(&amp;out, &quot;IV_HOSTNAME=3D%s\n&quot;, hostname =
-);
-+
-             buf_printf(&amp;out, &quot;IV_SSL=3D%s\n&quot;, get_ssl_librar=
-y_version() );
- #if defined(_WIN32)
-             buf_printf(&amp;out, &quot;IV_PLAT_VER=3D%s\n&quot;, win32_ver=
-sion_string(&amp;gc, false));</pre>
-
-</div></div>
-
---0000000000001155eb05e8e97156--
+--F1LbDLQRtTLibV1f--
 
