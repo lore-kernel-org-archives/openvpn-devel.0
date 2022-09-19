@@ -1,12 +1,13 @@
-Message-ID: <65eac3b8-9269-b60d-f8fb-6274ff92fd28@...2181...>
-Date: Mon, 19 Sep 2022 21:13:10 +0200
+Message-ID: <b66df962-e5ba-0862-86e8-0e934eee8dfc@...2181...>
+Date: Mon, 19 Sep 2022 21:23:14 +0200
 MIME-Version: 1.0
 Content-Language: en-US
-References: <20211123083758.15933-1-fkooman@...2318...>
+References: <20220917140818.6155-1-a@...2181...>
+ <CAKuzo_ihm3qrRXE6z=A3hz4bGzmaWpK11pjf_WqHGORQEfsP=A@...278...>
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20211123083758.15933-1-fkooman@...2318...>
-Subject: Re: [Openvpn-devel] [PATCH] implement net_gateway_ipv6 for
- --route-ipv6
+In-Reply-To: <CAKuzo_ihm3qrRXE6z=A3hz4bGzmaWpK11pjf_WqHGORQEfsP=A@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Add common_name to the conv method.
+ This allows the common_name to be accessible in PAM.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,154 +18,76 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>
+To: Selva Nair <selva.nair@...277...>
+Cc: Michael Karvan <Michael.Karvan@...277...>, openvpn-devel@lists.sourceforge.net
 
-For the records, the following changes were requested to this patch 
-(some via GH):
+Hi,
 
-1) improve (add?) commit message;
-2) add comments/documentation to ipv6_get_special_addr()
-3) get rid of the ipv6_is_special_addr() wrapper as it is not really 
-doing much.
+On 18/09/2022 20:30, Selva Nair wrote:
+> 
+> 
+> On Sat, Sep 17, 2022 at 10:09 AM Antonio Quartulli <a@...2181... 
+> <mailto:a@...2181...>> wrote:
+> 
+>     From: Michael Karvan <Michael.Karvan@...277...
+>     <mailto:Michael.Karvan@...277...>>
+> 
+>     Signed-off-by: Michael Karvan <Michael.Karvan@...277...
+>     <mailto:Michael.Karvan@...277...>>
+>     ---
+>       src/plugins/auth-pam/auth-pam.c | 9 ++++++++-
+>       1 file changed, 8 insertions(+), 1 deletion(-)
+> 
+>     diff --git a/src/plugins/auth-pam/auth-pam.c
+>     b/src/plugins/auth-pam/auth-pam.c
+>     index 70339445..9f37c8c0 100644
+>     --- a/src/plugins/auth-pam/auth-pam.c
+>     +++ b/src/plugins/auth-pam/auth-pam.c
+>     @@ -746,8 +746,15 @@ my_conv(int n, const struct pam_message
+>     **msg_array,
+>                           }
+>                           break;
+> 
+>     -                case PAM_ERROR_MSG:
+>                       case PAM_TEXT_INFO:
+>     +                    aresp[i].resp = strdup(up->common_name);
+>     +                    if (aresp[i].resp == NULL)
+>     +                    {
+>     +                        ret = PAM_CONV_ERR;
+>     +                    }
+>     +                    break;
+>     +
+>     +                case PAM_ERROR_MSG:
+>                           break;
+> 
+> 
+> To add to what Gert's comment, we already support COMMONNAME in addition 
+> to USERNAME, PASSWORD and
+> OTP via text replacements for pam prompts specified in the config file. 
+> Like:
+> 
+>   plugin openvpn-auth-pam.so "openvpn user USERNAME password PASSWORD cn 
+> COMMONNAME"
+> 
+> and have the PAM module prompt for "user', "password" and "cn", for example.
+> 
+> So why do we need this non-standard stuff ?
+
+Right. This means that this patch is *obsolete*, as we already have a 
+way to convey the common name.
+
+> 
+> In fact, IMO, we should be getting rid of this whole "else {}" clause 
+> starting line 728 that tries to guess the prompts based on echo-off ( to 
+> mean password) echo-on (to mean username) etc. Instead, require that the 
+> plugin line in the config file must specify expected prompts and 
+> replacement strings as above.
+
+Agreed. If we have a "clean" way to gather those details, we should get 
+rid of the hack.
 
 Cheers,
 
-On 23/11/2021 09:37, François Kooman wrote:
-> fix for #1161
-> 
-> Signed-off-by: François Kooman <fkooman@...2318...>
-> ---
->   src/openvpn/options.c |  2 +-
->   src/openvpn/route.c   | 67 +++++++++++++++++++++++++++++++++++++++++--
->   src/openvpn/route.h   |  1 +
->   3 files changed, 67 insertions(+), 3 deletions(-)
-> 
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index cc3d9fa0..3d530d7a 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -6558,7 +6558,7 @@ add_option(struct options *options,
->                   msg(msglevel, "route-ipv6 parameter network/IP '%s' must be a valid address", p[1]);
->                   goto err;
->               }
-> -            if (p[2] && !ipv6_addr_safe(p[2]))
-> +            if (p[2] && !ipv6_addr_safe(p[2]) && !ipv6_is_special_addr(p[2]))
->               {
->                   msg(msglevel, "route-ipv6 parameter gateway '%s' must be a valid address", p[2]);
->                   goto err;
-> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-> index fd1125ef..bd62b99a 100644
-> --- a/src/openvpn/route.c
-> +++ b/src/openvpn/route.c
-> @@ -287,6 +287,38 @@ get_special_addr(const struct route_list *rl,
->       return false;
->   }
->   
-> +static bool
-> +ipv6_get_special_addr(const struct route_ipv6_list *rl,
-> +                 const char *string,
-> +                 struct in6_addr *out,
-> +                 bool *status)
-> +{
-> +    if (status)
-> +    {
-> +        *status = true;
-> +    }
-> +    if (!strcmp(string, "net_gateway_ipv6"))
-> +    {
-> +        if (rl)
-> +        {
-> +            if (rl->rgi6.flags & RGI_ADDR_DEFINED)
-> +            {
-> +                *out = rl->rgi6.gateway.addr_ipv6;
-> +            }
-> +            else
-> +            {
-> +                msg(M_INFO, PACKAGE_NAME " ROUTE: net_gateway_ipv6 undefined -- unable to get default gateway from system");
-> +                if (status)
-> +                {
-> +                    *status = false;
-> +                }
-> +            }
-> +        }
-> +        return true;
-> +    }
-> +    return false;
-> +}
-> +
->   bool
->   is_special_addr(const char *addr_str)
->   {
-> @@ -300,6 +332,19 @@ is_special_addr(const char *addr_str)
->       }
->   }
->   
-> +bool
-> +ipv6_is_special_addr(const char *addr_str)
-> +{
-> +    if (addr_str)
-> +    {
-> +        return ipv6_get_special_addr(NULL, addr_str, NULL, NULL);
-> +    }
-> +    else
-> +    {
-> +        return false;
-> +    }
-> +}
-> +
->   static bool
->   init_route(struct route_ipv4 *r,
->              struct addrinfo **network_list,
-> @@ -438,6 +483,7 @@ init_route_ipv6(struct route_ipv6 *r6,
->                   const struct route_ipv6_option *r6o,
->                   const struct route_ipv6_list *rl6 )
->   {
-> +    bool status;
->       CLEAR(*r6);
->   
->       if (!get_ipv6_addr( r6o->prefix, &r6->network, &r6->netbits, M_WARN ))
-> @@ -448,9 +494,26 @@ init_route_ipv6(struct route_ipv6 *r6,
->       /* gateway */
->       if (is_route_parm_defined(r6o->gateway))
->       {
-> -        if (inet_pton( AF_INET6, r6o->gateway, &r6->gateway ) != 1)
-> +        if (ipv6_get_special_addr(rl6, r6o->gateway, &r6->gateway, &status))
->           {
-> -            msg( M_WARN, PACKAGE_NAME "ROUTE6: cannot parse gateway spec '%s'", r6o->gateway );
-> +            r6->metric = 1;
-> +#ifdef _WIN32
-> +            r6->adapter_index = rl6->rgi6.adapter_index;
-> +#else
-> +            r6->iface = rl6->rgi6.iface;
-> +#endif
-> +            r6->flags = RT_DEFINED | RT_METRIC_DEFINED;
-> +        }
-> +        else
-> +        {
-> +            if (inet_pton( AF_INET6, r6o->gateway, &r6->gateway ) != 1)
-> +            {
-> +                msg( M_WARN, PACKAGE_NAME "ROUTE6: cannot parse gateway spec '%s'", r6o->gateway );
-> +            }
-> +        }
-> +        if (!status)
-> +        {
-> +            goto fail;
->           }
->       }
->       else if (rl6->spec_flags & RTSA_REMOTE_ENDPOINT)
-> diff --git a/src/openvpn/route.h b/src/openvpn/route.h
-> index dc448c74..bbb8d2f8 100644
-> --- a/src/openvpn/route.h
-> +++ b/src/openvpn/route.h
-> @@ -320,6 +320,7 @@ void setenv_routes(struct env_set *es, const struct route_list *rl);
->   void setenv_routes_ipv6(struct env_set *es, const struct route_ipv6_list *rl6);
->   
->   bool is_special_addr(const char *addr_str);
-> +bool ipv6_is_special_addr(const char *addr_str);
->   
->   void get_default_gateway(struct route_gateway_info *rgi,
->                            openvpn_net_ctx_t *ctx);
 
 -- 
 Antonio Quartulli
