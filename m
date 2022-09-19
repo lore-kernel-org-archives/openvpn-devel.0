@@ -1,11 +1,12 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Mon, 19 Sep 2022 17:35:41 +0200
-Message-Id: <20220919153541.9991-1-a@...2181...>
-In-Reply-To: <20220919141757.9336-1-a@...2181...>
-References: 
+Message-ID: <65eac3b8-9269-b60d-f8fb-6274ff92fd28@...2181...>
+Date: Mon, 19 Sep 2022 21:13:10 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] p2p/dco: renew peer in P2P mode upon
- reconnection
+Content-Language: en-US
+References: <20211123083758.15933-1-fkooman@...2318...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20211123083758.15933-1-fkooman@...2318...>
+Subject: Re: [Openvpn-devel] [PATCH] implement net_gateway_ipv6 for
+ --route-ipv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,189 +15,157 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>, Arne Schwabe <arne@...1227...>
+Cc: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>
 
-In P2P mode when the peer reconnects we have to renew the state in DCO
-in order to inform it about the new peer-id.
+For the records, the following changes were requested to this patch 
+(some via GH):
 
-Cc: Arne Schwabe <arne@...1227...>
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
-Changes from v1:
-* remove useless arguments from tls_multi_process() (and descendant
-  calls) as we now pass 'c' directly
----
- src/openvpn/forward.c |  4 +---
- src/openvpn/ssl.c     | 54 +++++++++++++++++++++++++++++++++----------
- src/openvpn/ssl.h     |  6 +----
- 3 files changed, 44 insertions(+), 20 deletions(-)
+1) improve (add?) commit message;
+2) add comments/documentation to ipv6_get_special_addr()
+3) get rid of the ipv6_is_special_addr() wrapper as it is not really 
+doing much.
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 810cb8a7..41593fc9 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -170,9 +170,7 @@ check_tls(struct context *c)
- 
-     if (interval_test(&c->c2.tmp_int))
-     {
--        const int tmp_status = tls_multi_process
--                                   (c->c2.tls_multi, &c->c2.to_link, &c->c2.to_link_addr,
--                                   get_link_socket_info(c), &wakeup);
-+        const int tmp_status = tls_multi_process(c, &wakeup);
-         if (tmp_status == TLSMP_ACTIVE)
-         {
-             update_time();
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 3116fa4b..10691f0c 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -45,9 +45,11 @@
- 
- #include "error.h"
- #include "common.h"
-+#include "openvpn.h"
- #include "socket.h"
- #include "misc.h"
- #include "fdmisc.h"
-+#include "forward.h"
- #include "interval.h"
- #include "perf.h"
- #include "status.h"
-@@ -2717,13 +2719,14 @@ read_incoming_tls_plaintext(struct key_state *ks, struct buffer *buf,
- 
- 
- static bool
--tls_process_state(struct tls_multi *multi,
-+tls_process_state(struct context *c,
-                   struct tls_session *session,
--                  struct buffer *to_link,
-                   struct link_socket_actual **to_link_addr,
-                   struct link_socket_info *to_link_socket_info,
-                   interval_t *wakeup)
- {
-+    struct tls_multi *multi = c->c2.tls_multi;
-+    struct buffer *to_link = &c->c2.to_link;
-     bool state_change = false;
-     struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
- 
-@@ -2827,6 +2830,20 @@ tls_process_state(struct tls_multi *multi,
-         state_change = true;
-         dmsg(D_TLS_DEBUG_MED, "STATE S_SENT_KEY");
-         ks->state = S_SENT_KEY;
-+
-+        /* In P2P mode we have to renew the peer in DCO in case of
-+         * reconnection (--tls-server case)
-+         */
-+        if (session->opt->server && (session->opt->mode != MODE_SERVER)
-+            && (ks->key_id == 0) && multi->dco_peer_added)
-+        {
-+            msg(D_DCO, "Renewing P2P peer in tls-server mode");
-+            int ret = dco_p2p_add_new_peer(c);
-+            if (ret < 0)
-+            {
-+                msg(D_DCO, "Cannot renew peer in DCO: %s (%d)", strerror(-ret), ret);
-+            }
-+        }
-     }
- 
-     /* Receive Key */
-@@ -2843,6 +2860,20 @@ tls_process_state(struct tls_multi *multi,
-         state_change = true;
-         dmsg(D_TLS_DEBUG_MED, "STATE S_GOT_KEY");
-         ks->state = S_GOT_KEY;
-+
-+        /* In P2P mode we have to renew the peer in DCO in case of
-+         * reconnection (--tls-client case)
-+         */
-+        if (!session->opt->server && !session->opt->pull && (ks->key_id == 0)
-+            && multi->dco_peer_added)
-+        {
-+            msg(D_DCO, "Renewing P2P peer in tls-client mode");
-+            int ret = dco_p2p_add_new_peer(c);
-+            if (ret < 0)
-+            {
-+                msg(D_DCO, "Cannot renew peer in DCO: %s (%d)", strerror(-ret), ret);
-+            }
-+        }
-     }
- 
-     /* Write outgoing plaintext to TLS object */
-@@ -2911,15 +2942,16 @@ error:
-  * want to send to our peer.
-  */
- static bool
--tls_process(struct tls_multi *multi,
-+tls_process(struct context *c,
-             struct tls_session *session,
--            struct buffer *to_link,
-             struct link_socket_actual **to_link_addr,
-             struct link_socket_info *to_link_socket_info,
-             interval_t *wakeup)
- {
-     struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
-     struct key_state *ks_lame = &session->key[KS_LAME_DUCK]; /* retiring key */
-+    struct tls_multi *multi = c->c2.tls_multi;
-+    struct buffer *to_link = &c->c2.to_link;
- 
-     /* Make sure we were initialized and that we're not in an error state */
-     ASSERT(ks->state != S_UNDEF);
-@@ -2962,7 +2994,7 @@ tls_process(struct tls_multi *multi,
-              state_name(ks_lame->state),
-              to_link->len,
-              *wakeup);
--        state_change = tls_process_state(multi, session, to_link, to_link_addr,
-+        state_change = tls_process_state(c, session, to_link_addr,
-                                          to_link_socket_info, wakeup);
- 
-         if (ks->state == S_ERROR)
-@@ -3055,12 +3087,11 @@ tls_process(struct tls_multi *multi,
-  */
- 
- int
--tls_multi_process(struct tls_multi *multi,
--                  struct buffer *to_link,
--                  struct link_socket_actual **to_link_addr,
--                  struct link_socket_info *to_link_socket_info,
--                  interval_t *wakeup)
-+tls_multi_process(struct context *c, interval_t *wakeup)
- {
-+    struct link_socket_info *to_link_socket_info = get_link_socket_info(c);
-+    struct link_socket_actual **to_link_addr = &c->c2.to_link_addr;
-+    struct tls_multi *multi = c->c2.tls_multi;
-     struct gc_arena gc = gc_new();
-     int active = TLSMP_INACTIVE;
-     bool error = false;
-@@ -3101,8 +3132,7 @@ tls_multi_process(struct tls_multi *multi,
- 
-             update_time();
- 
--            if (tls_process(multi, session, to_link, &tla,
--                            to_link_socket_info, wakeup))
-+            if (tls_process(c, session, &tla, to_link_socket_info, wakeup))
-             {
-                 active = TLSMP_ACTIVE;
-             }
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index a2724470..13b44f20 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -218,11 +218,7 @@ void tls_multi_free(struct tls_multi *multi, bool clear);
-  * Basically decides if we should call tls_process for
-  * the active or untrusted sessions.
-  */
--int tls_multi_process(struct tls_multi *multi,
--                      struct buffer *to_link,
--                      struct link_socket_actual **to_link_addr,
--                      struct link_socket_info *to_link_socket_info,
--                      interval_t *wakeup);
-+int tls_multi_process(struct context *c, interval_t *wakeup);
- 
- 
- /**************************************************************************/
+Cheers,
+
+On 23/11/2021 09:37, François Kooman wrote:
+> fix for #1161
+> 
+> Signed-off-by: François Kooman <fkooman@...2318...>
+> ---
+>   src/openvpn/options.c |  2 +-
+>   src/openvpn/route.c   | 67 +++++++++++++++++++++++++++++++++++++++++--
+>   src/openvpn/route.h   |  1 +
+>   3 files changed, 67 insertions(+), 3 deletions(-)
+> 
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index cc3d9fa0..3d530d7a 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -6558,7 +6558,7 @@ add_option(struct options *options,
+>                   msg(msglevel, "route-ipv6 parameter network/IP '%s' must be a valid address", p[1]);
+>                   goto err;
+>               }
+> -            if (p[2] && !ipv6_addr_safe(p[2]))
+> +            if (p[2] && !ipv6_addr_safe(p[2]) && !ipv6_is_special_addr(p[2]))
+>               {
+>                   msg(msglevel, "route-ipv6 parameter gateway '%s' must be a valid address", p[2]);
+>                   goto err;
+> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+> index fd1125ef..bd62b99a 100644
+> --- a/src/openvpn/route.c
+> +++ b/src/openvpn/route.c
+> @@ -287,6 +287,38 @@ get_special_addr(const struct route_list *rl,
+>       return false;
+>   }
+>   
+> +static bool
+> +ipv6_get_special_addr(const struct route_ipv6_list *rl,
+> +                 const char *string,
+> +                 struct in6_addr *out,
+> +                 bool *status)
+> +{
+> +    if (status)
+> +    {
+> +        *status = true;
+> +    }
+> +    if (!strcmp(string, "net_gateway_ipv6"))
+> +    {
+> +        if (rl)
+> +        {
+> +            if (rl->rgi6.flags & RGI_ADDR_DEFINED)
+> +            {
+> +                *out = rl->rgi6.gateway.addr_ipv6;
+> +            }
+> +            else
+> +            {
+> +                msg(M_INFO, PACKAGE_NAME " ROUTE: net_gateway_ipv6 undefined -- unable to get default gateway from system");
+> +                if (status)
+> +                {
+> +                    *status = false;
+> +                }
+> +            }
+> +        }
+> +        return true;
+> +    }
+> +    return false;
+> +}
+> +
+>   bool
+>   is_special_addr(const char *addr_str)
+>   {
+> @@ -300,6 +332,19 @@ is_special_addr(const char *addr_str)
+>       }
+>   }
+>   
+> +bool
+> +ipv6_is_special_addr(const char *addr_str)
+> +{
+> +    if (addr_str)
+> +    {
+> +        return ipv6_get_special_addr(NULL, addr_str, NULL, NULL);
+> +    }
+> +    else
+> +    {
+> +        return false;
+> +    }
+> +}
+> +
+>   static bool
+>   init_route(struct route_ipv4 *r,
+>              struct addrinfo **network_list,
+> @@ -438,6 +483,7 @@ init_route_ipv6(struct route_ipv6 *r6,
+>                   const struct route_ipv6_option *r6o,
+>                   const struct route_ipv6_list *rl6 )
+>   {
+> +    bool status;
+>       CLEAR(*r6);
+>   
+>       if (!get_ipv6_addr( r6o->prefix, &r6->network, &r6->netbits, M_WARN ))
+> @@ -448,9 +494,26 @@ init_route_ipv6(struct route_ipv6 *r6,
+>       /* gateway */
+>       if (is_route_parm_defined(r6o->gateway))
+>       {
+> -        if (inet_pton( AF_INET6, r6o->gateway, &r6->gateway ) != 1)
+> +        if (ipv6_get_special_addr(rl6, r6o->gateway, &r6->gateway, &status))
+>           {
+> -            msg( M_WARN, PACKAGE_NAME "ROUTE6: cannot parse gateway spec '%s'", r6o->gateway );
+> +            r6->metric = 1;
+> +#ifdef _WIN32
+> +            r6->adapter_index = rl6->rgi6.adapter_index;
+> +#else
+> +            r6->iface = rl6->rgi6.iface;
+> +#endif
+> +            r6->flags = RT_DEFINED | RT_METRIC_DEFINED;
+> +        }
+> +        else
+> +        {
+> +            if (inet_pton( AF_INET6, r6o->gateway, &r6->gateway ) != 1)
+> +            {
+> +                msg( M_WARN, PACKAGE_NAME "ROUTE6: cannot parse gateway spec '%s'", r6o->gateway );
+> +            }
+> +        }
+> +        if (!status)
+> +        {
+> +            goto fail;
+>           }
+>       }
+>       else if (rl6->spec_flags & RTSA_REMOTE_ENDPOINT)
+> diff --git a/src/openvpn/route.h b/src/openvpn/route.h
+> index dc448c74..bbb8d2f8 100644
+> --- a/src/openvpn/route.h
+> +++ b/src/openvpn/route.h
+> @@ -320,6 +320,7 @@ void setenv_routes(struct env_set *es, const struct route_list *rl);
+>   void setenv_routes_ipv6(struct env_set *es, const struct route_ipv6_list *rl6);
+>   
+>   bool is_special_addr(const char *addr_str);
+> +bool ipv6_is_special_addr(const char *addr_str);
+>   
+>   void get_default_gateway(struct route_gateway_info *rgi,
+>                            openvpn_net_ctx_t *ctx);
+
 -- 
-2.35.1
-
+Antonio Quartulli
 
