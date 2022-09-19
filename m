@@ -1,14 +1,12 @@
-Message-ID: <db3d305c-ed53-0ca7-a165-85d99619dd5a@...2181...>
-Date: Mon, 19 Sep 2022 10:17:29 +0200
+Message-ID: <f0fd6585-91e5-1b87-1710-91e4654037b7@...2181...>
+Date: Mon, 19 Sep 2022 11:10:46 +0200
 MIME-Version: 1.0
-References: <20220917231030.22565-1-a@...2181...>
- <Yyb07u4pG0Ii9vQf@...1296...>
- <dca91e77-175c-9540-7993-112ca7a4661b@...2181...>
- <YygN5ZRAAMA1xdrj@...1296...> <YygWLIqh1MIdiZ0m@...1296...>
 Content-Language: en-US
+References: <20220917114158.20687-1-gert@...1296...>
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <YygWLIqh1MIdiZ0m@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] implement --session-timeout
+In-Reply-To: <20220917114158.20687-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] introduce V= level to manage
+ t_client.sh output verbosity
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,54 +17,257 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 19/09/2022 09:11, Gert Doering wrote:
-> Hi,
+On 17/09/2022 13:41, Gert Doering wrote:
+> If t_client.sh is run interactively, more verbose output is useful
+> to quickly see what it is doing.  If run from a CI environment, going
+> through lots of output for successful tests just to find the one that
+> failed is non-useful.
 > 
-> On Mon, Sep 19, 2022 at 08:36:21AM +0200, Gert Doering wrote:
->>> we don't get here at all, if we have no event object that is timing out.
->>
->> process_coarse_timers() is run once per second, and does not need
->> additional timers to be called.
->>
->> This new check is added to process_coarse_timers().
->>
->> Why do we need an extra event object, again?
+> Introduce V=<n> environment variable to control output verbosity
 > 
-> Mmmmh.  I think we actually might need one, to ensure that this fires
-> only *once*, and we can then do what is needed (like, explicit-exit-notify,
-> reliable TLS processing, etc.) without raising more SIGTERM on every
-> future visit here.
+>   V=0 - do not print any per-test output at all, just overall summary
+>   V=1 - print single header line for each successful test
+>         print full output for failing tests
+>   V=99 - print full output, always, as before
 > 
-> (Of course we could avoid this by resetting the session end time, but
-> then it might be easier to understand if we use the existing mechanisms,
-> even if a bit heavyweight)
+> default is V=1 now
+> 
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>   tests/t_client.sh.in | 89 +++++++++++++++++++++++++++++---------------
+>   1 file changed, 59 insertions(+), 30 deletions(-)
+> 
+> diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
+> index 76ac9b22..4c217645 100755
+> --- a/tests/t_client.sh.in
+> +++ b/tests/t_client.sh.in
+> @@ -121,17 +121,43 @@ else
+>       exit 1
+>   fi
+>   
+> +# verbosity, defaults to "1"
+> +V="${V:-1}"
+> +
+>   exit_code=0
+>   
+>   # ----------------------------------------------------------
+>   # helper functions
+>   # ----------------------------------------------------------
+>   
+> +# output progress information
+> +#  depending on verbosity level, collect & print only on failure
+> +output_start()
+> +{
+> +    outbuf="\n";
+> +    case $V in
+> +	0) outbuf="" ;;			# no per-test output at all
+> +	1) echo -e "$@" ;;		# compact, details only on failure
+> +	*) echo -e "\n$@\n" ;;		# print all, with a bit formatting
+> +    esac
+> +}
+> +
+> +output()
+> +{
+> +    NO_NL=''; if [ "X$1" = "-n" ] ; then NO_NL=$1 ; shift ; fi
 
-I went down the multi-rabbit-hole and managed to get back alive.
+as mentioned on RIC, I think the check should be '[ "X$1" = "X-n" ]'.
 
-The coarse timer is set to the lowest needed value across all the active 
-timers (through event_timer_trigger()) or required TLS action. However 
-we don't have specific code to handle a bunch of "one-shot" events.
 
-For this reason the simplest approach is to set an event object and 
-simply not rearm it after it is triggered. The rearm happens via 
-_reset(), which we don't call. So this patch looks good to me as is.
+> +    case $V in
+> +	0) ;;				# no per-test output at all
+> +	1) outbuf="$outbuf\n$@" 	# print details only on failure
+> +	   test -z "$NO_NL" && outbuf="$outbuf\n"
+> +           ;;
+> +	*) echo -e $NO_NL "$@" ;;	# print everything
+> +    esac
+> +}
+> +
+>   # print failure message, increase FAIL counter
+>   fail()
+>   {
+> -    echo ""
+> -    echo "FAIL: $@" >&2
+> +    output "\nFAIL: $@"
+>       fail_count=$(( $fail_count + 1 ))
+>   }
+>   
+> @@ -236,7 +262,7 @@ run_ping_tests()
+>   
+>       for bytes in $sizes_list
+>       do
+> -	echo "run IPv$proto ping tests ($want), $bytes byte packets..."
+> +	output "run IPv$proto ping tests ($want), $bytes byte packets..."
+>   
+>   	echo "$cmd -b $bytes -C 20 -p 250 -q $FPING_EXTRA_ARGS $targetlist" >>$LOGDIR/$SUF:fping.out
+>   	$cmd -b $bytes -C 20 -p 250 -q $FPING_EXTRA_ARGS $targetlist >>$LOGDIR/$SUF:fping.out 2>&1
+> @@ -287,32 +313,32 @@ do
+>           up=""
+>       fi
+>   
+> -    echo -e "\n### test run $SUF: '$test_run_title' ###\n"
+> +    output_start "### test run $SUF: '$test_run_title' ###"
+>       fail_count=0
+>   
+>       if [ -n "$test_prep" ]; then
+> -        echo -e "running preparation: '$test_prep'"
+> +        output "running preparation: '$test_prep'"
+>           eval $test_prep
+>       fi
+>   
+> -    echo "save pre-openvpn ifconfig + route"
+> +    output "save pre-openvpn ifconfig + route"
+>       get_ifconfig_route >$LOGDIR/$SUF:ifconfig_route_pre.txt
+>   
+> -    echo -e "\nrun pre-openvpn ping tests - targets must not be reachable..."
+> +    output "\nrun pre-openvpn ping tests - targets must not be reachable..."
+>       run_ping_tests 4 want_fail "$ping4_hosts"
+>       run_ping_tests 6 want_fail "$ping6_hosts"
+>       if [ "$fail_count" = 0 ] ; then
+> -        echo -e "OK.\n"
+> +        output "OK.\n"
+>       else
+> -	echo -e "FAIL: make sure that ping hosts are ONLY reachable via VPN, SKIP test $SUF".
+> +	fail "make sure that ping hosts are ONLY reachable via VPN, SKIP test $SUF."
+>   	SUMMARY_FAIL="$SUMMARY_FAIL $SUF"
+>   	exit_code=31
+> -	continue
+> +	echo -e "$outbuf" ; continue
+>       fi
+>   
+>       pidfile="${top_builddir}/tests/$LOGDIR/openvpn-$SUF.pid"
+>       openvpn_conf="$openvpn_conf --writepid $pidfile $up"
+> -    echo " run openvpn $openvpn_conf"
+> +    output " run openvpn $openvpn_conf"
+>       echo "# src/openvpn/openvpn $openvpn_conf" >$LOGDIR/$SUF:openvpn.log
+>       umask 022
+>       $RUN_SUDO "${top_builddir}/src/openvpn/openvpn" $openvpn_conf >>$LOGDIR/$SUF:openvpn.log &
+> @@ -335,25 +361,25 @@ do
+>   
+>       opid=`cat $pidfile`
+>       if [ -n "$opid" ]; then
+> -        echo "  OpenVPN running with PID $opid"
+> +        output "  OpenVPN running with PID $opid"
+>       else
+> -        echo "  Could not read OpenVPN PID file" >&2
+> +        output "  Could not read OpenVPN PID file"
+>       fi
+>   
+>       # If OpenVPN did not start
+>       if [ $ovpn_init_success -ne 1 -o -z "$opid" ]; then
+> -        echo "$0:  OpenVPN did not initialize in a reasonable time" >&2
+> +        output "$0:  OpenVPN did not initialize in a reasonable time"
+>           if [ -n "$opid" ]; then
+>              $RUN_SUDO $KILL_EXEC $opid
+>           fi
+>           $RUN_SUDO $KILL_EXEC $sudopid
+> -	echo "tail -5 $SUF:openvpn.log" >&2
+> -	tail -5 $LOGDIR/$SUF:openvpn.log >&2
+> -	echo -e "\nFAIL. skip rest of sub-tests for test run $SUF.\n" >&2
+> +	output "tail -5 $SUF:openvpn.log"
+> +	output "`tail -5 $LOGDIR/$SUF:openvpn.log`"
+> +	fail "skip rest of sub-tests for test run $SUF."
+>   	trap - 0 1 2 3 15
+>   	SUMMARY_FAIL="$SUMMARY_FAIL $SUF"
+>   	exit_code=30
+> -	continue
+> +	echo -e "$outbuf" ; continue
+>       fi
+>   
+>       # make sure openvpn client is terminated in case shell exits
+> @@ -361,21 +387,21 @@ do
+>       trap "$RUN_SUDO $KILL_EXEC $opid ; trap - 0 ; exit 1" 1 2 3 15
+>   
+>       # compare whether anything changed in ifconfig/route setup?
+> -    echo "save ifconfig+route"
+> +    output "save ifconfig+route"
+>       get_ifconfig_route >$LOGDIR/$SUF:ifconfig_route.txt
+>   
+> -    echo -n "compare pre-openvpn ifconfig+route with current values..."
+> +    output -n "compare pre-openvpn ifconfig+route with current values..."
+>       if diff $LOGDIR/$SUF:ifconfig_route_pre.txt \
+>   	    $LOGDIR/$SUF:ifconfig_route.txt >/dev/null
+>       then
+>   	fail "no differences between ifconfig/route before OpenVPN start and now."
+>       else
+> -	echo -e " OK!\n"
+> +	output " OK!\n"
+>       fi
+>   
+>       # post init script needed?
+>       if [ -n "$test_postinit" ]; then
+> -        echo -e "running post-init cmd: '$test_postinit'"
+> +        output "running post-init cmd: '$test_postinit'"
+>           eval $test_postinit
+>       fi
+>   
+> @@ -385,9 +411,9 @@ do
+>   
+>       run_ping_tests 4 want_ok "$ping4_hosts"
+>       run_ping_tests 6 want_ok "$ping6_hosts"
+> -    echo -e "ping tests done.\n"
+> +    output "ping tests done.\n"
+>   
+> -    echo "stopping OpenVPN"
+> +    output "stopping OpenVPN"
+>       $RUN_SUDO $KILL_EXEC $opid
+>       wait $!
+>       rc=$?
+> @@ -395,23 +421,26 @@ do
+>   	fail "OpenVPN return code $rc, expect 0"
+>       fi
+>   
+> -    echo -e "\nsave post-openvpn ifconfig + route..."
+> +    output "\nsave post-openvpn ifconfig + route..."
+>       get_ifconfig_route >$LOGDIR/$SUF:ifconfig_route_post.txt
+>   
+> -    echo -n "compare pre- and post-openvpn ifconfig + route..."
+> +    output -n "compare pre- and post-openvpn ifconfig + route..."
+>       if diff $LOGDIR/$SUF:ifconfig_route_pre.txt \
+>   	    $LOGDIR/$SUF:ifconfig_route_post.txt >$LOGDIR/$SUF:ifconfig_route_diff.txt
+>       then
+> -	echo -e " OK.\n"
+> +	output " OK.\n"
+>       else
+> -	cat $LOGDIR/$SUF:ifconfig_route_diff.txt >&2
+> +	output `cat $LOGDIR/$SUF:ifconfig_route_diff.txt`
+>   	fail "differences between pre- and post-ifconfig/route"
+>       fi
+>       if [ "$fail_count" = 0 ] ; then
+> -        echo -e "test run $SUF: all tests OK.\n"
+> +        output "test run $SUF: all tests OK.\n"
+>   	SUMMARY_OK="$SUMMARY_OK $SUF"
+>       else
+> -	echo -e "test run $SUF: $fail_count test failures. FAIL.\n";
+> +	if [ "$V" -gt 0 ] ; then
+
+To avoid confusing the poor reader, isn't it better to change this test 
+to '-eq 1' ?
+
+if $V is 0, we don't print.
+
+if $V is greater then 1, we have already printed everything.
+
+'1' is the only missing case, where we buffered the output and waited 
+for a failure.
+
+The rest looks good and makes sense to me.
+
+Acked-by: Antonio Quartulli <a@...2181...>
+
+However, I couldn't test it because I have no working t_client.sh rig.
 
 Cheers,
 
-> 
-> gert
-> 
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> +	    echo -e "$outbuf"
+> +	    echo "test run $SUF: $fail_count test failures. FAIL.\n"
+> +        fi
+>   	SUMMARY_FAIL="$SUMMARY_FAIL $SUF"
+>   	exit_code=30
+>       fi
 
 -- 
 Antonio Quartulli
