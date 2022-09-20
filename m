@@ -1,13 +1,11 @@
-Message-ID: <b66df962-e5ba-0862-86e8-0e934eee8dfc@...2181...>
-Date: Mon, 19 Sep 2022 21:23:14 +0200
+Date: Tue, 20 Sep 2022 13:07:31 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <Yyme87V7yRotruuG@...2678...>
+References: <300C4042-73A3-4B19-8CE1-F55E30873C37@...277...>
+ <20220830104958.91-1-lstipakov@...277...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20220917140818.6155-1-a@...2181...>
- <CAKuzo_ihm3qrRXE6z=A3hz4bGzmaWpK11pjf_WqHGORQEfsP=A@...278...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <CAKuzo_ihm3qrRXE6z=A3hz4bGzmaWpK11pjf_WqHGORQEfsP=A@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Add common_name to the conv method.
- This allows the common_name to be accessible in PAM.
+In-Reply-To: <20220830104958.91-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v2] dco-win: support for --persist-tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,79 +14,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: Michael Karvan <Michael.Karvan@...277...>, openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
 
-Hi,
+On Tue, Aug 30, 2022 at 01:49:58PM +0300, Lev Stipakov wrote:
+> From: Lev Stipakov <lev@...515...>
+> 
+> Since version 0.8.0, dco-win driver added support for
+> DEL_PEER command, which enabled --persist-tun
+> implementation on client side.
+> 
+> Add real implementation for dco_del_peer on Windows,
+> which calls DEL_PEER, which clears peer state
+> on the driver without tearing tunnel down.
+> 
+> When pulled options are changed on restart,
+> we need to close and reopen tun device. This
+> is not yes supported for dco-win, so we close
+> tun and trigger reconnect.
 
-On 18/09/2022 20:30, Selva Nair wrote:
-> 
-> 
-> On Sat, Sep 17, 2022 at 10:09 AM Antonio Quartulli <a@...2181... 
-> <mailto:a@...2181...>> wrote:
-> 
->     From: Michael Karvan <Michael.Karvan@...277...
->     <mailto:Michael.Karvan@...277...>>
-> 
->     Signed-off-by: Michael Karvan <Michael.Karvan@...277...
->     <mailto:Michael.Karvan@...277...>>
->     ---
->       src/plugins/auth-pam/auth-pam.c | 9 ++++++++-
->       1 file changed, 8 insertions(+), 1 deletion(-)
-> 
->     diff --git a/src/plugins/auth-pam/auth-pam.c
->     b/src/plugins/auth-pam/auth-pam.c
->     index 70339445..9f37c8c0 100644
->     --- a/src/plugins/auth-pam/auth-pam.c
->     +++ b/src/plugins/auth-pam/auth-pam.c
->     @@ -746,8 +746,15 @@ my_conv(int n, const struct pam_message
->     **msg_array,
->                           }
->                           break;
-> 
->     -                case PAM_ERROR_MSG:
->                       case PAM_TEXT_INFO:
->     +                    aresp[i].resp = strdup(up->common_name);
->     +                    if (aresp[i].resp == NULL)
->     +                    {
->     +                        ret = PAM_CONV_ERR;
->     +                    }
->     +                    break;
->     +
->     +                case PAM_ERROR_MSG:
->                           break;
-> 
-> 
-> To add to what Gert's comment, we already support COMMONNAME in addition 
-> to USERNAME, PASSWORD and
-> OTP via text replacements for pam prompts specified in the config file. 
-> Like:
-> 
->   plugin openvpn-auth-pam.so "openvpn user USERNAME password PASSWORD cn 
-> COMMONNAME"
-> 
-> and have the PAM module prompt for "user', "password" and "cn", for example.
-> 
-> So why do we need this non-standard stuff ?
+Code looks good to me. And I have lightly tested it against
+my AS with a MSI provided by Lev.
 
-Right. This means that this patch is *obsolete*, as we already have a 
-way to convey the common name.
+One thing of note is that I first tried to test it
+with a new openvpn binary against a slightly older driver
+and that sent openvpn into a restart loop where the
+NEW_PEER call failed but then it just tried it again.
 
-> 
-> In fact, IMO, we should be getting rid of this whole "else {}" clause 
-> starting line 728 that tries to guess the prompts based on echo-off ( to 
-> mean password) echo-on (to mean username) etc. Instead, require that the 
-> plugin line in the config file must specify expected prompts and 
-> replacement strings as above.
+Would it be a good idea (and possible) to improve the
+error handling in a way that if the soft-restart fails it
+instead tries a hard-restart?
 
-Agreed. If we have a "clean" way to gather those details, we should get 
-rid of the hack.
+Anyway, since I do not think this specific problem is caused
+by this patch:
 
-Cheers,
+Acked-By: Frank Lichtenheld <frank@...2641...>
 
-
+Regards,
 -- 
-Antonio Quartulli
+  Frank Lichtenheld
 
