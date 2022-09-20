@@ -1,10 +1,15 @@
-Date: Tue, 20 Sep 2022 15:49:06 +0200 (CEST)
-Message-Id: <202209201349.28KDn6HE052758@...2054...>
+Date: Tue, 20 Sep 2022 18:42:04 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220830104958.91-1-lstipakov@...277...>
-References: <20220830104958.91-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco-win: support for
- --persist-tun
+Message-ID: <YyntXHQMcmih8aLE@...1296...>
+References: <20220818084825.187755-1-a@...2181...>
+ <20220918220618.31112-1-a@...2181...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="ThYXSmfXmQEtipR6"
+Content-Disposition: inline
+In-Reply-To: <20220918220618.31112-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v4] push-peer-info: rearrange function
+ generating peer info
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,39 +18,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-As with everything related to DCO, I've fed this to the Linux and
-FreeBSD DCO client/server testbeds (and it fails in the usual places,
-with p2p DCO reconnection).  Haven't tested Windows -> thanks, Frank :-)
+--ThYXSmfXmQEtipR6
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Stare-at-code wise, this is an interesting excercise in moving around
-initializations, return types, etc. :-)
+Hi,
 
-The code in init.c isn't exactly becoming easier to read over time, 
-though... :-/
+On Mon, Sep 19, 2022 at 12:06:18AM +0200, Antonio Quartulli wrote:
+> +    switch (session->opt->push_peer_info_detail)
+>      {
+> -        /* push version */
+> -        buf_printf(&out, "IV_VER=3D%s\n", PACKAGE_VERSION);
+> +        case 3:
+> +        {
+...
+> +        }
+>=20=20
+> +        /* fall through */
 
-Your patch has been applied to the master branch.
+These {} brackets are not needed by C or our style guide.
 
-commit cac18de7a1245918431d1677618a2f50dc79643f
-Author: Lev Stipakov
-Date:   Tue Aug 30 13:49:58 2022 +0300
+Is this for uncrustify appeasement?  (I find them irritating)
 
-     dco-win: support for --persist-tun
+gert
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20220830104958.91-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25136.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
---
-kind regards,
+--ThYXSmfXmQEtipR6
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Gert Doering
+-----BEGIN PGP SIGNATURE-----
 
+iQGcBAEBAgAGBQJjKe1cAAoJEB2Cnv7KVigSW98MAKbyGdiETbGtwwMTB0E5CNvr
+GkpTzjPDmGMt8roaSawpjC3sasL1rhcsh83bwWJ1U6VijrfzQ9owYmcAbXBvT5Iz
+NUO5AdtbOtCJFqUzOta0ijqnWU28wLZdfhn1X1uEQYHj19hOD6eemNJthDdn5jim
+KhW9QXHI2YKAzg/5pU8qBznjbaZY2NCeLb34YzzgpVoaYR+CWfrlO2M/d9AtH/pC
+6epAOIdy27c7RXOlakqhscgViCumOrVhzhqgxonlYh2ldBtjZUp5V5xlFBSGRJLe
+w6Q7LTiAKx8Hr303PZTRR/6RHysW5QQe+hUtmubk2qhAFJyJ19nCz3UaGMMlDGxo
+7F/ubq1boRQ6lW5y91sgoI/BMZXREaZBQidlBf/Dh6ECs4llazEvs4aRfVxldi+G
+Eof7ULoxaQxs8cod8Gy0bIw8K2SC5eGjWXhOwejZxKSfv4nHEG4YKrosioN9LrH6
+eRl9tzvjoi2PuQmgC8AUiOgYG4SOpFNK0tuG11Braw==
+=c2mr
+-----END PGP SIGNATURE-----
+
+--ThYXSmfXmQEtipR6--
 
