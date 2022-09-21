@@ -1,9 +1,13 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed, 21 Sep 2022 12:49:28 +0200
-Message-Id: <20220921104930.3452270-1-arne@...1227...>
+Content-Type: multipart/mixed; boundary="------------d3rN1LNNciAZcEGYuQbp2oPV"
+Message-ID: <f7018588-1e14-7307-87ca-a89327ca5185@...515...>
+Date: Wed, 21 Sep 2022 13:50:11 +0300
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4 1/3] Ensure that control channel packet
- are respecting maximum packet size
+Content-Language: en-US
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+References: <57a87fb1-05d3-63e8-3cd8-c4c05aec3d62@...515...>
+In-Reply-To: <57a87fb1-05d3-63e8-3cd8-c4c05aec3d62@...515...>
+Subject: [Openvpn-devel] Summary of the community meeting (21st September
+ 2022)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,558 +16,241 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This ensures that control packets are actually smaller than the maximum
-control channel packet size.
+This is a multi-part message in MIME format.
+--------------d3rN1LNNciAZcEGYuQbp2oPV
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Since OpenVPN will consider a control message packet complete
-when the TLS record is complete, we have to ensure that the SSL library
-will still write one record, so the receiving side will only be able
-to get/read the control message content when a TLS record is
-complete. To achieve this goal, this commit does:
+Hi,
 
-- Split one read from TLS library into multiple control
-  channel packets, splitting one TLS record into multiple
-  control packets.
-- increase allowed number of outstanding packets to 6 from 4 on the
-  sender side. This is still okay with older implementations as
-  receivers will have room for 8.
-- calculate the overhead for control channel message to allow
-  staying below that threshold.
-- remove maxlen from key_state_read_ciphertext and related functions
-  as we now always allow control channel messages to be up to
-  TLS_CHANNEL_BUF_SIZE in size and no longer limit this by the mtu of
-  control packets as the implemented splitting will take care of
-  larger payloads from the SSL library
+Here's the summary of the IRC meeting.
 
-Note this commit has a warning message that references max-packet-size that
-is introduced in the next commit. In this commit the packet size is not yet
-configurable.
-
-Patch v2: avoid assertion about to large buffer by sticking to 1250 max
-          control size in this commit and leaving larger sizes for the
-          --max-packet-size commit. Also fix
-          various other small problems and grammar fixes.
-Patch v3: grammar fixes
-Patch v4: adjust tls-mtu to max-packet-size in message.
-
-Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/reliable.c    |  55 ++++++++++----
- src/openvpn/reliable.h    |  32 +++++++-
- src/openvpn/ssl.c         | 155 ++++++++++++++++++++++++++++++++------
- src/openvpn/ssl_backend.h |   8 +-
- src/openvpn/ssl_mbedtls.c |  14 +---
- src/openvpn/ssl_openssl.c |  16 ++--
- src/openvpn/ssl_pkt.h     |   4 +-
- 7 files changed, 215 insertions(+), 69 deletions(-)
 
-diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
-index 734736256..3ccb73976 100644
---- a/src/openvpn/reliable.c
-+++ b/src/openvpn/reliable.c
-@@ -41,6 +41,14 @@
- 
- #include "memdbg.h"
- 
-+/* calculates test - base while allowing for base or test wraparound. test is
-+ * assumed to be higher than base */
-+static inline packet_id_type
-+subtract_pid(const packet_id_type test, const packet_id_type base)
-+{
-+    return test - base;
-+}
-+
- /*
-  * verify that test - base < extent while allowing for base or test wraparound
-  */
-@@ -49,22 +57,7 @@ reliable_pid_in_range1(const packet_id_type test,
-                        const packet_id_type base,
-                        const unsigned int extent)
- {
--    if (test >= base)
--    {
--        if (test - base < extent)
--        {
--            return true;
--        }
--    }
--    else
--    {
--        if ((test+0x80000000u) - (base+0x80000000u) < extent)
--        {
--            return true;
--        }
--    }
--
--    return false;
-+    return subtract_pid(test, base) < extent;
- }
- 
- /*
-@@ -498,6 +491,36 @@ reliable_get_buf(struct reliable *rel)
-     return NULL;
- }
- 
-+int
-+reliable_get_num_output_sequenced_available(struct reliable *rel)
-+{
-+    struct gc_arena gc = gc_new();
-+    packet_id_type min_id = 0;
-+    bool min_id_defined = false;
-+
-+    /* find minimum active packet_id */
-+    for (int i = 0; i < rel->size; ++i)
-+    {
-+        const struct reliable_entry *e = &rel->array[i];
-+        if (e->active)
-+        {
-+            if (!min_id_defined || reliable_pid_min(e->packet_id, min_id))
-+            {
-+                min_id_defined = true;
-+                min_id = e->packet_id;
-+            }
-+        }
-+    }
-+
-+    int ret = rel->size;
-+    if (min_id_defined)
-+    {
-+        ret -= subtract_pid(rel->packet_id, min_id);
-+    }
-+    gc_free(&gc);
-+    return ret;
-+}
-+
- /* grab a free buffer, fail if buffer clogged by unacknowledged low packet IDs */
- struct buffer *
- reliable_get_buf_output_sequenced(struct reliable *rel)
-diff --git a/src/openvpn/reliable.h b/src/openvpn/reliable.h
-index b9863efe3..7fffe397d 100644
---- a/src/openvpn/reliable.h
-+++ b/src/openvpn/reliable.h
-@@ -46,7 +46,7 @@
-                                  *   be stored in one \c reliable_ack
-                                  *   structure. */
- 
--#define RELIABLE_CAPACITY 8     /**< The maximum number of packets that
-+#define RELIABLE_CAPACITY 12    /**< The maximum number of packets that
-                                  *   the reliability layer for one VPN
-                                  *   tunnel in one direction can store. */
- 
-@@ -93,7 +93,7 @@ struct reliable
-     int size;
-     interval_t initial_timeout;
-     packet_id_type packet_id;
--    int offset;
-+    int offset; /**< Offset of the bufs in the reliable_entry array */
-     bool hold; /* don't xmit until reliable_schedule_now is called */
-     struct reliable_entry array[RELIABLE_CAPACITY];
- };
-@@ -178,6 +178,20 @@ reliable_ack_empty(struct reliable_ack *ack)
-     return !ack->len;
- }
- 
-+/**
-+ * Returns the number of packets that need to be acked.
-+ *
-+ * @param ack The acknowledgment structure to check.
-+ *
-+ * @returns the number of outstanding acks
-+ */
-+static inline int
-+reliable_ack_outstanding(struct reliable_ack *ack)
-+{
-+    return ack->len;
-+}
-+
-+
- /**
-  * Write a packet ID acknowledgment record to a buffer.
-  *
-@@ -385,6 +399,20 @@ void reliable_mark_deleted(struct reliable *rel, struct buffer *buf);
-  */
- struct buffer *reliable_get_buf_output_sequenced(struct reliable *rel);
- 
-+
-+/**
-+ * Counts the number of free buffers in output that can be potentially used
-+ * for sending
-+ *
-+ *  @param rel The reliable structure in which to search for a free
-+ *     entry.
-+ *
-+ *  @return the number of buffer that are available for sending without
-+ *             breaking ack sequence
-+ * */
-+int
-+reliable_get_num_output_sequenced_available(struct reliable *rel);
-+
- /**
-  * Mark the reliable entry associated with the given buffer as
-  *     active outgoing.
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 672cd9c84..b69258be8 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -305,7 +305,7 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
-      * if --tls-auth is enabled.
-      */
- 
--    /* calculate the maximum overhead that control channel frames may have */
-+    /* calculates the maximum overhead that control channel frames can have */
-     int overhead = 0;
- 
-     /* Socks */
-@@ -324,8 +324,10 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
-     /* Previous OpenVPN version calculated the maximum size and buffer of a
-      * control frame depending on the overhead of the data channel frame
-      * overhead and limited its maximum size to 1250. We always allocate the
--     * 1250 buffer size since a lot of code blindly assumes a large buffer
--     * (e.g. PUSH_BUNDLE_SIZE) and set frame->mtu_mtu as suggestion for the
-+     * TLS_CHANNEL_BUF_SIZE buffer size since a lot of code blindly assumes
-+     * a large buffer (e.g. PUSH_BUNDLE_SIZE) and also our peer might have
-+     * a higher size configured and we still want to be able to receive the
-+     * packets. frame->mtu_mtu is set as suggestion for the maximum packet
-      * size */
-     frame->buf.payload_size = 1250 + overhead;
- 
-@@ -335,6 +337,47 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
-     frame->tun_mtu = min_int(data_channel_frame->tun_mtu, 1250);
- }
- 
-+/**
-+ * calculate the maximum overhead that control channel frames have
-+ * This includes header, op code and everything apart from the
-+ * payload itself. This method is a bit pessimistic and might give higher
-+ * overhead than we actually have */
-+static int
-+calc_control_channel_frame_overhead(const struct tls_session *session)
-+{
-+    const struct key_state *ks = &session->key[KS_PRIMARY];
-+    int overhead = 0;
-+
-+    /* TCP length field and opcode */
-+    overhead += 3;
-+
-+    /* our own session id */
-+    overhead += SID_SIZE;
-+
-+    /* ACK array and remote SESSION ID (part of the ACK array) */
-+    overhead += ACK_SIZE(min_int(reliable_ack_outstanding(ks->rec_ack), CONTROL_SEND_ACK_MAX));
-+
-+    /* Message packet id */
-+    overhead += sizeof(packet_id_type);
-+
-+    if (session->tls_wrap.mode == TLS_WRAP_CRYPT)
-+    {
-+        overhead += tls_crypt_buf_overhead();
-+    }
-+    else if (session->tls_wrap.mode == TLS_WRAP_AUTH)
-+    {
-+        overhead += hmac_ctx_size(session->tls_wrap.opt.key_ctx_bi.encrypt.hmac);
-+        overhead += packet_id_size(true);
-+    }
-+
-+    /* Add the typical UDP overhead for an IPv6 UDP packet. TCP+IPv6 has a
-+     * larger overhead but the risk of a TCP connection getting dropped because
-+     * we try to send a too large packet is basically zero */
-+    overhead += datagram_overhead(AF_INET6, PROTO_UDP);
-+
-+    return overhead;
-+}
-+
- void
- init_ssl_lib(void)
- {
-@@ -2656,7 +2699,7 @@ read_incoming_tls_plaintext(struct key_state *ks, struct buffer *buf,
- {
-     ASSERT(buf_init(buf, 0));
- 
--    int status = key_state_read_plaintext(&ks->ks_ssl, buf, TLS_CHANNEL_BUF_SIZE);
-+    int status = key_state_read_plaintext(&ks->ks_ssl, buf);
- 
-     update_time();
-     if (status == -1)
-@@ -2675,6 +2718,92 @@ read_incoming_tls_plaintext(struct key_state *ks, struct buffer *buf,
-     return true;
- }
- 
-+static bool
-+write_outgoing_tls_ciphertext(struct tls_session *session, bool *state_change)
-+{
-+    struct key_state *ks = &session->key[KS_PRIMARY];
-+
-+    int rel_avail = reliable_get_num_output_sequenced_available(ks->send_reliable);
-+    if (rel_avail == 0)
-+    {
-+        return true;
-+    }
-+
-+    /* We need to determine how much space is actually available in the control
-+     * channel frame */
-+
-+    int max_pkt_len = min_int(TLS_CHANNEL_BUF_SIZE, session->opt->frame.tun_mtu);
-+
-+
-+    /* Subtract overhead */
-+    max_pkt_len -= calc_control_channel_frame_overhead(session);
-+
-+    /* calculate total available length for outgoing tls ciphertext */
-+    int maxlen = max_pkt_len * rel_avail;
-+
-+    /* Is first packet one that will have a WKC appended? */
-+    if (control_packet_needs_wkc(ks))
-+    {
-+        maxlen -= buf_len(session->tls_wrap.tls_crypt_v2_wkc);
-+    }
-+
-+    /* Not enough space available to send a full control channel packet */
-+    if (maxlen < TLS_CHANNEL_BUF_SIZE)
-+    {
-+        if (rel_avail == TLS_RELIABLE_N_SEND_BUFFERS)
-+        {
-+            msg(D_TLS_ERRORS, "--max-packet-size setting too low. Unable to "
-+                "send control channel message.");
-+        }
-+        msg(D_REL_LOW, "Reliable: Send queue full, postponing TLS send");
-+        return true;
-+    }
-+
-+    /* This seems a bit wasteful to allocate every time */
-+    struct gc_arena gc = gc_new();
-+    struct buffer tmp = alloc_buf_gc(TLS_CHANNEL_BUF_SIZE, &gc);
-+
-+    int status = key_state_read_ciphertext(&ks->ks_ssl, &tmp);
-+
-+    if (status == -1)
-+    {
-+        msg(D_TLS_ERRORS,
-+            "TLS Error: Ciphertext -> reliable TCP/UDP transport read error");
-+        gc_free(&gc);
-+        return false;
-+    }
-+    if (status == 1)
-+    {
-+        /* Split the TLS ciphertext (TLS record) into multiple small packets
-+         * that respect tls_mtu */
-+        while (tmp.len)
-+        {
-+            int len = max_pkt_len;
-+            int opcode = P_CONTROL_V1;
-+            if (control_packet_needs_wkc(ks))
-+            {
-+                opcode = P_CONTROL_WKC_V1;
-+                len = max_int(0, len - buf_len(session->tls_wrap.tls_crypt_v2_wkc));
-+            }
-+            /* do not send more than available */
-+            len = min_int(len, tmp.len);
-+
-+            struct buffer *buf = reliable_get_buf_output_sequenced(ks->send_reliable);
-+            /* we assert here since we checked for its availibility before */
-+            ASSERT(buf);
-+            buf_copy_n(buf, &tmp, len);
-+
-+            reliable_mark_active_outgoing(ks->send_reliable, buf, opcode);
-+            INCR_GENERATED;
-+            *state_change = true;
-+        }
-+        dmsg(D_TLS_DEBUG, "Outgoing Ciphertext -> Reliable");
-+    }
-+
-+    gc_free(&gc);
-+    return true;
-+}
-+
- 
- static bool
- tls_process_state(struct tls_multi *multi,
-@@ -2829,26 +2958,10 @@ tls_process_state(struct tls_multi *multi,
-         buf = reliable_get_buf_output_sequenced(ks->send_reliable);
-         if (buf)
-         {
--            int status = key_state_read_ciphertext(&ks->ks_ssl, buf, multi->opt.frame.tun_mtu);
--
--            if (status == -1)
-+            if (!write_outgoing_tls_ciphertext(session, &state_change))
-             {
--                msg(D_TLS_ERRORS,
--                    "TLS Error: Ciphertext -> reliable TCP/UDP transport read error");
-                 goto error;
-             }
--            if (status == 1)
--            {
--                int opcode = P_CONTROL_V1;
--                if (control_packet_needs_wkc(ks))
--                {
--                    opcode = P_CONTROL_WKC_V1;
--                }
--                reliable_mark_active_outgoing(ks->send_reliable, buf, opcode);
--                INCR_GENERATED;
--                state_change = true;
--                dmsg(D_TLS_DEBUG, "Outgoing Ciphertext -> Reliable");
--            }
-         }
-     }
- 
-diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-index 1bd336999..215425d41 100644
---- a/src/openvpn/ssl_backend.h
-+++ b/src/openvpn/ssl_backend.h
-@@ -461,7 +461,6 @@ int key_state_write_plaintext_const(struct key_state_ssl *ks_ssl,
-  * @param ks_ssl       - The security parameter state for this %key
-  *                       session.
-  * @param buf          - A buffer in which to store the ciphertext.
-- * @param maxlen       - The maximum number of bytes to extract.
-  *
-  * @return The return value indicates whether the data was successfully
-  *     processed:
-@@ -470,8 +469,8 @@ int key_state_write_plaintext_const(struct key_state_ssl *ks_ssl,
-  *   later to retry.
-  * - \c -1: An error occurred.
-  */
--int key_state_read_ciphertext(struct key_state_ssl *ks_ssl, struct buffer *buf,
--                              int maxlen);
-+int key_state_read_ciphertext(struct key_state_ssl *ks_ssl, struct buffer *buf);
-+
- 
- /** @} name Functions for packets to be sent to a remote OpenVPN peer */
- 
-@@ -517,8 +516,7 @@ int key_state_write_ciphertext(struct key_state_ssl *ks_ssl,
-  *   later to retry.
-  * - \c -1: An error occurred.
-  */
--int key_state_read_plaintext(struct key_state_ssl *ks_ssl, struct buffer *buf,
--                             int maxlen);
-+int key_state_read_plaintext(struct key_state_ssl *ks_ssl, struct buffer *buf);
- 
- /** @} name Functions for packets received from a remote OpenVPN peer */
- 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index b0785bae9..ea06cf703 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1285,8 +1285,7 @@ key_state_write_plaintext_const(struct key_state_ssl *ks, const uint8_t *data, i
- }
- 
- int
--key_state_read_ciphertext(struct key_state_ssl *ks, struct buffer *buf,
--                          int maxlen)
-+key_state_read_ciphertext(struct key_state_ssl *ks, struct buffer *buf)
- {
-     int retval = 0;
-     int len = 0;
-@@ -1304,10 +1303,6 @@ key_state_read_ciphertext(struct key_state_ssl *ks, struct buffer *buf,
-     }
- 
-     len = buf_forward_capacity(buf);
--    if (maxlen < len)
--    {
--        len = maxlen;
--    }
- 
-     retval = endless_buf_read(&ks->bio_ctx->out, BPTR(buf), len);
- 
-@@ -1388,8 +1383,7 @@ key_state_write_ciphertext(struct key_state_ssl *ks, struct buffer *buf)
- }
- 
- int
--key_state_read_plaintext(struct key_state_ssl *ks, struct buffer *buf,
--                         int maxlen)
-+key_state_read_plaintext(struct key_state_ssl *ks, struct buffer *buf)
- {
-     int retval = 0;
-     int len = 0;
-@@ -1407,10 +1401,6 @@ key_state_read_plaintext(struct key_state_ssl *ks, struct buffer *buf,
-     }
- 
-     len = buf_forward_capacity(buf);
--    if (maxlen < len)
--    {
--        len = maxlen;
--    }
- 
-     retval = mbedtls_ssl_read(ks->ctx, BPTR(buf), len);
- 
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 710c9c06d..cd6d84246 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -1871,7 +1871,7 @@ bio_write_post(const int status, struct buffer *buf)
-  * Read from an OpenSSL BIO in non-blocking mode.
-  */
- static int
--bio_read(BIO *bio, struct buffer *buf, int maxlen, const char *desc)
-+bio_read(BIO *bio, struct buffer *buf, const char *desc)
- {
-     int i;
-     int ret = 0;
-@@ -1882,10 +1882,6 @@ bio_read(BIO *bio, struct buffer *buf, int maxlen, const char *desc)
-     else
-     {
-         int len = buf_forward_capacity(buf);
--        if (maxlen < len)
--        {
--            len = maxlen;
--        }
- 
-         /*
-          * BIO_read brackets most of the serious RSA
-@@ -2012,15 +2008,14 @@ key_state_write_plaintext_const(struct key_state_ssl *ks_ssl, const uint8_t *dat
- }
- 
- int
--key_state_read_ciphertext(struct key_state_ssl *ks_ssl, struct buffer *buf,
--                          int maxlen)
-+key_state_read_ciphertext(struct key_state_ssl *ks_ssl, struct buffer *buf)
- {
-     int ret = 0;
-     perf_push(PERF_BIO_READ_CIPHERTEXT);
- 
-     ASSERT(NULL != ks_ssl);
- 
--    ret = bio_read(ks_ssl->ct_out, buf, maxlen, "tls_read_ciphertext");
-+    ret = bio_read(ks_ssl->ct_out, buf, "tls_read_ciphertext");
- 
-     perf_pop();
-     return ret;
-@@ -2042,15 +2037,14 @@ key_state_write_ciphertext(struct key_state_ssl *ks_ssl, struct buffer *buf)
- }
- 
- int
--key_state_read_plaintext(struct key_state_ssl *ks_ssl, struct buffer *buf,
--                         int maxlen)
-+key_state_read_plaintext(struct key_state_ssl *ks_ssl, struct buffer *buf)
- {
-     int ret = 0;
-     perf_push(PERF_BIO_READ_PLAINTEXT);
- 
-     ASSERT(NULL != ks_ssl);
- 
--    ret = bio_read(ks_ssl->ssl_bio, buf, maxlen, "tls_read_plaintext");
-+    ret = bio_read(ks_ssl->ssl_bio, buf, "tls_read_plaintext");
- 
-     perf_pop();
-     return ret;
-diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
-index 45e0a81f5..9bb3ca958 100644
---- a/src/openvpn/ssl_pkt.h
-+++ b/src/openvpn/ssl_pkt.h
-@@ -67,8 +67,8 @@
- /*
-  * Define number of buffers for send and receive in the reliability layer.
-  */
--#define TLS_RELIABLE_N_SEND_BUFFERS  4 /* also window size for reliability layer */
--#define TLS_RELIABLE_N_REC_BUFFERS   8
-+#define TLS_RELIABLE_N_SEND_BUFFERS  6 /* also window size for reliability layer */
-+#define TLS_RELIABLE_N_REC_BUFFERS   12
- 
- /*
-  * Used in --mode server mode to check tls-auth signature on initial
+COMMUNITY MEETING
+
+Place: #openvpn-meeting on libera.chat
+Date: Wed 21st September 2022
+Time: 10:30 CEST (9:30 UTC)
+
+Planned meeting topics for this meeting were here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2022-09-21>
+
+Your local meeting time is easy to check from services such as
+
+<http://www.timeanddate.com/worldclock>
+
+SUMMARY
+
+cron2, d12fk, djpig, lev, mattock, MaxF, novaflash, ordex and plaisthos 
+participated in this meeting.
+
+---
+
+Talked about the hackathon. MaxF said that it is possible to use the 
+meeting room also on Friday during office hours. Some people may arrive 
+on Thursday evening. Novaflash promised take the role of a taxi driver 
+for other people. Agreed to go to the Westcord hotel just like the last 
+time.
+
+---
+
+Noted that plaisthos is on vacation for two weeks, but he should have 
+some time for OpenVPN 2.
+
+---
+
+Talked about automated testing. Noted that GitHub Actions has usage 
+limits on the free GitHub tier. Not sure what those limits are exactly.
+
+---
+
+Talked about OpenVPN 2.6. Lev noted that the dco-win code has been 
+merged and is now the default driver on Windows when possible.
+
 -- 
-2.37.0 (Apple Git-136)
 
+Full chatlog attached
+
+--------------d3rN1LNNciAZcEGYuQbp2oPV
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn_irc_meeting_chatlog_2022-09-21.txt"
+Content-Disposition: attachment;
+ filename="openvpn_irc_meeting_chatlog_2022-09-21.txt"
+Content-Transfer-Encoding: base64
+
+KDExOjI5OjA4KSBtYXR0b2NrOiBoaQooMTE6Mjk6MTApIG1hdHRvY2s6IGFueW9uZSBoZXJl
+PwooMTE6Mjk6MzYpIGNyb24yX186IGFjdHVhbGx5IEkgYW0gOi0pIC0gZG9jIHNlbnQgbWUg
+aG9tZSBhZ2FpbiAid2UnbGwgY2FsbCB5b3Ugd2hlbiAka2lkIGlzIHJlYWR5Iiwgc28gSSdt
+IGFib3V0IHRvIGxlYXZlIGFueSBtaW51dGUuLi4KKDExOjI5OjUxKSBNYXhGOiBoaSEKKDEx
+OjI5OjU1KSBNYXhGOiBJJ20gaGVyZSEKKDExOjMwOjA3KSBtYXR0b2NrOiBoaSEKKDExOjMw
+OjIzKSBwbGFpc3Rob3M6IEkgYW0gb24gdmFjYXRpb24gYW5kIG9ubHkgc2VtaSBwcmVzZW50
+CigxMTozMDoyNCkgZDEyZms6IGhpCigxMTozMDo1MikgY3JvbjJfXzogaG8KKDExOjMxOjEw
+KSBjcm9uMl9fOiBwbGFpc3Rob3M6IGhvdyBsb25nIGFyZSB5b3Ugb24gdmFjdGlvbj8KKDEx
+OjMxOjE2KSBjcm9uMl9fOiB2YWNhdGlvbiBldmVuCigxMTozMToyMCkgbWF0dG9jazogaHR0
+cHM6Ly9jb21tdW5pdHkub3BlbnZwbi5uZXQvb3BlbnZwbi93aWtpL1RvcGljcy0yMDIyLTA5
+LTIxCigxMTozMjowMikgbWF0dG9jazogc3RhcnQgZnJvbSB0aGUgdG9wPyAjMSBoYWNrYXRo
+b24KKDExOjMyOjI1KSBNYXhGOiB5ZXMhIFlvdSBjYW4gY29tZSBvbiBGcmlkYXkKKDExOjMy
+OjM1KSBkMTJmazogZXhjZWxsZW50CigxMTozMzowNSkgbWF0dG9jazogYW55dGhpbmcgZWxz
+ZSBvbiBoYWNrYXRob24/CigxMTozMzozMCkgbm92YWZsYXNoIFt+bm92YWZsYXNoQDE4NS0y
+MjctNzUtMjQxLmRzbC5jYW1icml1bS5ubF0gw6ggZW50cmF0byBuZWxsYSBzdGFuemEuCigx
+MTozMzozOCkgbm92YWZsYXNoOiBCb29wPwooMTE6MzM6NTQpIGNyb24yX186IE1heEY6IHRo
+YXQgaXMgdmVyeSBuaWNlIDotKSAtIHNvICJGcmlkYXkgd2hlbmV2ZXIgcGxhbmVzIGxhbmQi
+IChhbmQvb3IgbmlnaHQgdHJhaW4pPwooMTE6MzQ6MjQpIE1heEY6IHVoIG5vLCBJIGNhbid0
+IGxldCB5b3UgaW4gYWZ0ZXIgb2ZmaWNlIGhvdXJzCigxMTozNDozMykgY3JvbjJfXzogImRh
+eXRpbWUiCigxMTozNDo0MCkgY3JvbjJfXzogb2YgY291cnNlIDopCigxMTozNDo0NykgY3Jv
+bjJfXzogYWZ0ZXIgb2ZmaWNlIGhvdXJzLCBiZWVyCigxMTozNTowOCkgTWF4Rjogb2gsIEkg
+bWlzcmVhZCBpdCwgSSB0aG91Z2h0IHlvdSBzYWlkIGFycml2aW5nIGF0IG5pZ2h0CigxMToz
+NTozMikgbm92YWZsYXNoOiBJIGFsc28gaGF2ZSBzb21ldGhpbmcgZWxzZSB3aXRoIDQgbGV0
+dGVycyBhbmQgZWUgaW4gdGhlIG1pZGRsZQooMTE6MzU6MzkpIGNyb24yX186IG5pZ2h0IHRy
+YWluID0gbGVhdmVzIG11bmljaCB0aHVyc2RheSBldmVuaW5nLCBhcnJpdmVzIGluIEFtc3Rl
+cmRhbSBvbiBGcmlkYXkgOTozMC1pc2gsIHNvIEkgY291bGQgdGFrZSB0aGF0IG9uZSBhbmQg
+YmUgaW4gRGVsZnQgfjExOjAwLWlzaAooMTE6MzU6NTgpIHBsYWlzdGhvczogY3JvbjJfXzog
+MiB3ZWVrcyBidXQgcHJvYmFibHkgaGF2ZSBzb21lIHRpbWUgZm9yIG9wZW52cG4gMgooMTE6
+MzY6MDUpIGNyb24yX186IG5vdmFmbGFzaDogYmVlZiEgbW9zdCB3ZWxjb21lIDotKQooMTE6
+MzY6MTMpIGRqcGlnOiBtb2luCigxMTozNjo0OSkgY3JvbjJfXzogcGxhaXN0aG9zOiBtbW1o
+LCBvay4gIFlvdXIgcGF0Y2hzZXRzIGFyZSB0aGUgb25lcyB0aGF0IG5lZWQgcmVzZW5kaW5n
+LCB0ZXN0aW5nLCBxdWVzdGlvbmluZywgYW5kIG1lcmdpbmcuLi4gYW5kIG9yZGV4JyBkY28g
+cDJwIGNvdWxkIHVzZSBzb21lIGxvb2tpbmcgYXQKKDExOjM3OjE4KSBub3ZhZmxhc2g6IFll
+cy4uLiBiZWVmCigxMTozNzo1MykgY3JvbjJfXzogOykKKDExOjM4OjMzKSBub3ZhZmxhc2g6
+IFNvcnJ5IEkgd2Fzbid0IGluIHRoZSBtZWV0aW5nIGxhc3Qgd2Vlay4gVGhlIGZvcnVtIHRv
+cGljIHdhcyBob3QgdGhlbi4gQnV0IEkgaGFkIHNvbWUgaGVhbHRoIGlzc3Vlcy4KKDExOjQx
+OjA1KSBub3ZhZmxhc2g6IFNvIGhhY2thdGhvbi4gSSdsbCBiZSBpbiBEZWxmdCBvbiBGcmlk
+YXkuIFNvIGNhbiBJIG1lZXQgdXAgd2l0aCB5b3UgZ3V5cyB0aGVuIGF0IGZveCBpdD8gTm90
+IHN1cmUgaWYgeW91IGFscmVhZHkganVzdCBhc2tlZCB0aGF0LgooMTE6NDE6NDcpIGQxMmZr
+OiBZZXMgTWF4RiBzYWlkIEZyaWRheSB3ZSBjYW4gZ2V0IHRoZSByb29tIGFzIHdlbGwKKDEx
+OjQxOjUyKSBjcm9uMl9fOiB0aGlzIGlzIGhvdyBJIHVuZGVyc3Rvb2QgTWF4RiwgIndlIGNh
+biBhcnJpdmUgb24gRnJpZGF5IgooMTE6NDE6NTkpIG5vdmFmbGFzaDogQ29vbAooMTE6NDI6
+MTMpIGNyb24yX186IHllcAooMTE6NDI6MjUpIG5vdmFmbGFzaDogSSBoYXZlIG15IGNhciB3
+aXRoIG1lIHRoZW4gc28gSSBjYW4gYmUgdGF4aSBmb3IgYXJyaXZpbmcgcGVlcHMgaWYgdGhh
+dCdzIHdhbnRlZAooMTE6NDM6NTcpIGQxMmZrOiB3aGVuIHdpbGwgeW91IGFycml2ZSBpbiBE
+ZWxmdD8KKDExOjQ0OjIwKSBkMTJmazogaS5lLiB3aGF0IHRpbWUKKDExOjQ0OjI3KSBkanBp
+ZzogSSB3aWxsIHByb2JhYmx5IGFycml2ZSBvbiBUaHVyc2RheSBldmVuaW5nLCB0aGVuLiBB
+bHRob3VnaCBpdCB3b3VsZCBhbHNvIGJlIGFuIG9wdGlvbiB0byBvbmx5IGdvIHRvIEFtc3Rl
+cmRhbSBUaHVyc2RheSBhbmQgdGhlbiBnbyB0byBEZWxmdCBvbiBGcmlkYXkuIEFtc3RlcmRh
+bSBtaWdodCBiZSBtb3JlIGludGVyZXN0aW5nIG9uIGEgIFRodXJzZGF5IGV2ZW5pbmcuLi4K
+KDExOjQ1OjEzKSBub3ZhZmxhc2g6IFdlbGwgSSBjb3VsZCBiZSB0aGVyZSBlYXJseSBpZiB0
+aGVyZSdzIHBlb3BsZSB0byBtZWV0IHVwIHdpdGguIDEwYW0gZm9yIGV4YW1wbGUgb3IgZXZl
+biBlYXJsaWVyLiBCdXQgaWYgSSdsbCBiZSB0aGUgdW5ob2x5IG9uZSB0aGVyZSBhdCAxMGFt
+IHRoYXQgY291bGQgYmUgYm9yaW5nLgooMTE6NDU6MjUpIG5vdmFmbGFzaDogT25seSogLi4u
+YXV0b2NvcnJlY3QKKDExOjQ1OjM2KSBjcm9uMl9fOiB5b3UgYXJlIGFsd2F5cyB0aGUgdW5o
+b2x5IG9uZQooMTE6NDU6NDMpIG5vdmFmbGFzaDogVHJ1ZQooMTE6NDU6NTQpIG5vdmFmbGFz
+aDogT2ggc29tZW9uZSBpcyBkb3duIHRvIHBhcnR5IG9uIFRodXJzZGF5PyBPayBjb29sCigx
+MTo0NjoxNykgbm92YWZsYXNoOiBJIGNvdWxkIGJlIHRoZXJlIG9uIFRodXJzZGF5IHNvIHRo
+ZXJlIGlzIHBhcnR5IHRpbWUKKDExOjQ2OjU3KSBub3ZhZmxhc2g6IEEgZHJpdmUgZnJvbSBk
+ZWxmdCB0byBBbXN0ZXJkYW0gaXMgcHJldHR5IHNob3J0IGV2ZW4gYnkgcHVibGljIHRyYW5z
+cG9ydAooMTE6NDg6MTQpIGxldl9fOiBHdXRlbiB0YWcKKDExOjQ4OjI0KSBub3ZhZmxhc2g6
+IFBlcmtlbGUKKDExOjQ5OjIyKSBwbGFpc3Rob3M6IGNyb25+Ln4uCigxMTo0OTozMikgcGxh
+aXN0aG9zOiBhcmdoCigxMTo0OTozMykgbWF0dG9jazogd2UgYWxsIGdvb2QgcmVnYXJkaW5n
+IGhhY2thdGhvbiBzY2hlZHVsaW5nIGZvciBub3c/CigxMTo0OTo1MCkgcGxhaXN0aG9zOiBj
+cm9uMl9fOiBJIGNhbiBwcm9iYWJseSBnbyB0aHJvdWdoIG15IHBhdGNoZXMgYW5kIHJlc2Vu
+ZCB0aGUgb25lcyB0aGF0IG5lZWQgcmVzZW5kaW5nCigxMTo0OTo1MikgZDEyZms6IGhhdmUg
+d2UgZGVjaWRlZCBvbiBhIGhvdGVsPwooMTE6NDk6NTUpIGNyb24yX186IHNlZW1zIHNvLi4u
+IG5vdyBmaW5kIHVzZWZ1bCB3YXlzIHRvIHRyYXZlbCB0aGVyZSA6KQooMTE6NTA6MDMpIGQx
+MmZrOiBzaGFuZ2hhaSBsb29rcyBnb29kIHRvIG1lCigxMTo1MDowNCkgY3JvbjJfXzogZDEy
+Zms6IEknZCBnbyBmb3IgdGhlIElrZWEgaG90ZWwgYWdhaW4KKDExOjUwOjA3KSBub3ZhZmxh
+c2g6IE9oIGhvdGVsIGdvb2QgcG9pbnQKKDExOjUwOjE2KSBub3ZhZmxhc2g6IFRoZXJlIHNl
+ZW1zIHRvIGJlIGEgZGl2aXNpb24KKDExOjUwOjE3KSBkMTJmazogdGhlIGNsb3Nlc3Qgb25l
+CigxMTo1MDozOCkgbm92YWZsYXNoOiBJdCBpcyBlYXNpZXN0IHdpdGggZ2V0dGluZyB0byBm
+b3gKKDExOjUxOjQ2KSBub3ZhZmxhc2g6IEkgZ3Vlc3MgSSdsbCBkbyBJa2VhCigxMTo1Mjox
+MykgY3JvbjJfXzogSWtlYSA9IFdlc3Rjb3JkIGhvdGVsPyAgKGxvb2tpbmcgdGhyb3VnaCB0
+aGUgaG90ZWwgbGlzdCBvbiB0aGUgaGFja2F0aG9uIHBhZ2UpCigxMTo1MjoyMCkgTWF4Rjog
+eWVzCigxMTo1Mjo1OSkgY3JvbjJfXzogbWFwcyBjb25maXJtcyA6LSkgLSBzbyBJJ2xsIHRh
+a2Ugd2VzdGNvcmQKKDExOjUzOjIwKSBkMTJmazogb2tpCigxMTo1MzozOSkgZDEyZms6IHRo
+ZXJlJ3MgYWp1bWJvIGNsb3NlIGJ5CigxMTo1Mzo1Nykgbm92YWZsYXNoOiBGb3Igc2NobmFj
+a3NjaAooMTE6NTM6NTcpIGQxMmZrOiBjb2xhIHdpdGggY29mZmVlIGFyb21hIG5lZWRzIHRv
+IGJlIHRyaWVkCigxMTo1NDowMikgbm92YWZsYXNoOiBFdwooMTE6NTQ6MTgpIG5vdmFmbGFz
+aDogQXQgbGVhc3QgcGljayB0aGUgbWFyc2htYWxsb3cgb25lCigxMTo1NDozNCkgZDEyZms6
+IGFsbGUuanBlZwooMTE6NTQ6NDMpIG5vdmFmbGFzaDogVG9nZXRoZXIKKDExOjU0OjU2KSBk
+MTJmazogd29ydGggZXhwZXJpbWVudGluZwooMTE6NTU6MTUpIG5vdmFmbGFzaDogVW5ob2x5
+CigxMTo1NToyNykgZDEyZms6IG1hcnNobWVsbG93ICsgY29jb3MgPSBhcm1waXQKKDExOjU1
+OjU1KSBtYXR0b2NrOiBXZXN0Y29yZCB3YXMgYW4gb2sgaG90ZWwKKDExOjU2OjM3KSBNYXhG
+OiBzZWVtcyBhIGJpdCBwcmljZXkgZm9yIGJlaW5nIGp1c3Qgb2sKKDExOjU2OjQ2KSAqKipj
+cm9uMl9fIG5lZWRzIHRvIHJ1biB0byBraWQncyBkZW50aXN0Li4uIAooMTE6NTc6MDUpIG5v
+dmFmbGFzaDogSXQncyBvbmx5IGEgZmV3IG5pZ2h0cyBhbmQgaXQncyBjbG9zZQooMTE6NTk6
+MTYpIGQxMmZrOiBva2F5IHRoZW4sIHRoaW5rIHdlJ3JlIGRvbmUgd2l0aCBEZWxmdCBwcmVw
+CigxMTo1OToyMikgbWF0dG9jazogZ3V0CigxMTo1OToyOCkgbm92YWZsYXNoOiBZZQooMTE6
+NTk6MzQpIG1hdHRvY2s6ICMyIGF1dG9tYXRlZCB0ZXN0aW5nCigxMTo1OTo1MCkgbWF0dG9j
+azogSSB3aWxsIGhhdmUgdG8gZ28gdG8gbHVuY2gsIHNvIEknbGwgZm9sbG93IHRoZSBkaXNj
+dXNzaW9uIG9uIG15IG1vYmlsZQooMTI6MDA6MDgpIGQxMmZrOiB3aG8ncyBzdGlsbCBoZXJl
+IHRvIHRhbGsgYWJvdXQgdGhhdD8KKDEyOjAwOjIyKSBkMTJmazogZGpwaWc6IHlvdT8KKDEy
+OjAwOjI4KSBub3ZhZmxhc2g6IE5vdCBtYW55Li4KKDEyOjAxOjA5KSBkanBpZzogSSdtIGhl
+cmUKKDEyOjAxOjE0KSBtYXR0b2NrMiBbfnlhYWljQG1vYmlsZS1hY2Nlc3MtYmNlZTYyLTIw
+My5kaGNwLmluZXQuZmldIMOoIGVudHJhdG8gbmVsbGEgc3RhbnphLgooMTI6MDI6MTUpIHBs
+YWlzdGhvczogSSBjYW4gcHJvYmFibHkgYXJyaXZlIGJldHdlZW4gMnBtIHRvIDEwcG0gZGVw
+ZW5kaW5nIG9uIHRoZSB0cmFpbnMgSSB0YWtlCigxMjowMjoyNykgTCdhY2NvdW50IMOoIGRp
+c2Nvbm5lc3NvIGUgbm9uIHNlaSBwacO5IGluIHF1ZXN0YSBjaGF0LiBTYXJhaSByZWluc2Vy
+aXRvIGluIHF1ZXN0YSBjaGF0IGFsbGEgcmljb25uZXNzaW9uZSBkZWxsJ2FjY291bnQuCigx
+MzoyNDoxMSkgTCdhcmdvbWVudG8gZGkgI29wZW52cG4tbWVldGluZyDDqDogaHR0cHM6Ly9j
+b21tdW5pdHkub3BlbnZwbi5uZXQvb3BlbnZwbi93aWtpL1RvcGljcy0yMDIyLTA5LTIxCigx
+MzoyNDoxMSkgTCdhcmdvbWVudG8gcGVyICNvcGVudnBuLW1lZXRpbmcgw6ggc3RhdG8gaW1w
+b3N0YXRvIGRhIGNyb24yX18hZ2VydEBvcGVudnBuL2RldmVsb3Blci9jcm9uMiBhIDExOjA4
+OjA2IHN1IDIxLzA5LzIwMjIKKDEzOjI0OjExKSBub3ZhZmxhc2g6IFBsYWlzdGhvczogVGh1
+cnNkYXkgc291bmRzIGxpa2Ugd2UnbGwgYmUgYWJsZSB0byBtZWV0IHVwIGFuZCBoYXZlIGEg
+Yml0IG9mIGEgbG9vayBhcm91bmQgYmVmb3JlIHdlIGRpdmUgaW50byBzdHVmZiBvbiBGcmlk
+YXkKKDEzOjI0OjExKSAqKipvcmRleCBpcyBhcm91bmQhCigxMzoyNDoxMSkgb3JkZXg6IHNv
+cnJ5IC0gZ290IGVudGFuZ2xlZCBpbiBhbm90aGVyIGFwcG9pbnRtZW50CigxMzoyNDoxMSkg
+bm92YWZsYXNoOiBXb3cKKDEzOjI0OjExKSBub3ZhZmxhc2g6IFlvdXIgb3RoZXIgYXBwb2lu
+dG1lbnRzIGFyZSBtZWFuaW5nbGVzcyBjb21wYXJlZCB0byB0aGUgZ2xvcnkgb2Ygb3BlbnZw
+biBtZWV0aW5nCigxMzoyNDoxMSkgcGxhaXN0aG9zOiBjYW4gd2UgbWFrZSBub3RlcyBvbiB0
+aGUgd2lraSB0aGF0IG1vc3QgcGVvcGxlIGFyZSBzdGF5aW5nIGluIHRoZSB3ZXN0Y29yZD8K
+KDEzOjI0OjExKSBkMTJmazogd2lsbCBkbwooMTM6MjQ6MTEpIG5vdmFmbGFzaDogWWVzCigx
+MzoyNDoxMSkgcGxhaXN0aG9zOiBteSBsb2dpbiBzZWVtcyB0byBub3QgYmUgd29ya2luZyBh
+bnltb3JlCigxMzoyNDoxMSkgbm92YWZsYXNoOiBJIGJsYW1lIG1hdHRvY2sKKDEzOjI0OjEx
+KSBwbGFpc3Rob3M6IGFoIHVzZWQgdGhlIHdyb25nIG9uZQooMTM6MjQ6MTEpIG5vdmFmbGFz
+aDogSSBzdGlsbCBibGFtZSBtYXR0b2NrIGJlY2F1c2UgSSBkb24ndCB3YW50IHRvIGxvb2sg
+c3R1cGlkCigxMzoyNDoxMSkgTWF4RjogcGxhaXN0aG9zIGRvbmUhCigxMzoyNDoxMSkgZDEy
+Zms6IG5vdyB3ZSBoYXZlIHRoYXQgaW5mbyB0aHJlZSB0aW1lcyA9KQooMTM6MjQ6MTEpIHBs
+YWlzdGhvczogOkQKKDEzOjI0OjExKSBwbGFpc3Rob3M6IHZlcnkgaW1wb3J0YW50IQooMTM6
+MjQ6MTEpIHBsYWlzdGhvczogYXJlIHlvdSBwZW9wbGUgbGVhdmluZyBvbiBtb25kYXkgb3Ig
+c3VuZGF5PwooMTM6MjQ6MTEpIGQxMmZrOiBudG8gc3VyZSB5ZXQsIGRlcGVuZHMgb24gbmln
+aHQgdHJhaW4KKDEzOjI0OjExKSBkMTJmazogSSBsaWtlIHRoZSBpZGVhIHRvIHNsZWVwIHRo
+cm91Z2ggdGhlIHRyaXAKKDEzOjI0OjExKSBub3ZhZmxhc2g6IEknbGwgcHJvYmFibHkgYmUg
+bGVhdmluZyBvbiBTdW5kYXkgZXZlbmluZwooMTM6MjQ6MTEpIGRqcGlnOiBkMTJmazogRnJv
+bSB0aGUgZG9jdW1lbnRhdGlvbiBwdWJsaWMgcmVwb3NpdG9yaWVzIGhhdmUgbGltaXRzIG9u
+IEdIQSB1c2FnZSBhcyBsb25nIGFzIHlvdSBvbmx5IHVzZSB0aGUgZGVmYXVsdCBydW5uZXJz
+LiBOb3Qgc3VyZSB3aGV0aGVyIHRob3NlIGFsbG93IHVzIHRvIGRvIHRlc3RpbmcgdGhvdWdo
+LiBUaGF0J3Mgd2h5IEkgd2lsbCBsb29rIGludG8gaXQKKDEzOjI0OjExKSBwbGFpc3Rob3M6
+IG5vdmFmbGFzaDogYnV0IHlvdSBvbmx5IGhhdmUgbGlrZSBhIDItM2ggdHJpcCAlKQooMTM6
+MjQ6MTEpIG5vdmFmbGFzaDogVHJ1ZQooMTM6MjQ6MTEpIGxldl9fOiBhYm91dCAyLjYgLSBk
+Y28td2luIGZ1bmN0aW9uYWxpdHkgaXMgZnVsbHkgbWVyZ2VkCigxMzoyNDoxMSkgZGpwaWc6
+IGQxMmZrOiBkb24ndCBoYXZlIGxpbWl0cyAlKQooMTM6MjQ6MTEpIG5vdmFmbGFzaDogSWYg
+cGVvcGxlIGFyZSBkb2luZyBzb21ldGhpbmcgZnVuIG9uIFN1bmRheSBldmVuaW5nIHRoZW4g
+SSBjYW4gc3RheSB0aGUgbmlnaHQKKDEzOjI0OjExKSBsZXZfXzogYW5kIGl0IGlzIGRlZmF1
+bHQgZHJpdmVyIG5vdwooMTM6MjQ6MTEpIGxldl9fOiAod2hlcmUgYXBwbGljYWJsZSkKKDEz
+OjI0OjExKSBub3ZhZmxhc2g6IEkgZmVlbCB3ZSBjb3VsZCBnbyBib3dsaW5nCigxMzoyNDox
+MSkgZDEyZms6IGRqcGlnOiBpcyB0aGF0IG5ldz8gcHJldHR5IHN1cmUgdGhlcmUgd2VyZSBs
+aW1pdHMgd2hlbiBJIGxvb2tlZCBlYXJsaWVyIHRoaXMgeWVhcgooMTM6MjQ6MTEpIG5vdmFm
+bGFzaDogT3IgYXhlIHRocm93aW5nCigxMzoyNDoxMSkgZDEyZms6IF4gdGhhdAooMTM6MjQ6
+MTEpIGQxMmZrOiB3aGF0IGNvdWxkIGdvIHdyb25nIT8KKDEzOjI0OjExKSBub3ZhZmxhc2g6
+IENvbmdyYXRzIGxldiBvbiBmdWxsIG1lcmdlIG9mIG92cG4gd2luIGRjbyEKKDEzOjI0OjEx
+KSBkanBpZzogZDEyZms6IEkgZGlkbid0IGZpbmQgYW55LiBJdCBhbHdheXMganVzdCBzYXlz
+ICJmcmVlIGZvciBwdWJsaWMgcmVwb3NpdG9yaWVzIi4KKDEzOjI0OjExKSBub3ZhZmxhc2g6
+IGh0dHBzOi8vd3d3LnVyYmFuYXhldGhyb3dpbmcubmwvIGF4ZSB0aHJvd2luZyBpbiBEZWxm
+dAooMTM6MjQ6MTEpIHZwbkhlbHBlcjogVGl0bGU6IFVyYmFuIEF4ZSBUaHJvd2luZyAtIERl
+IGh5cGUgdWl0IEFtZXJpa2EgbnUgZWluZGVsaWprIGluIE5lZGVybGFuZCEgKGF0IHd3dy51
+cmJhbmF4ZXRocm93aW5nLm5sKQooMTM6MjQ6MTEpIGRqcGlnOiB5b3UgaGF2ZSBzb21lIG1p
+bnV0ZXMgb24geW91ciBmcmVlIGFjY291bnQgYnV0IEFGQUlDVCB0aG9zZSBvbmx5IGFwcGx5
+IHRvIHByaXZhdGUgcmVwb3NpdG9yaWVzCigxMzoyNDoxMSkgZGpwaWc6IG9yIG5vbi1zdGFu
+ZGFyZCBydW5uZXJzIChsaWtlID4yIGNvcmVzKQooMTM6MjQ6MTEpIGQxMmZrOiB1cmJhbiEh
+IQooMTM6MjQ6MTEpIGQxMmZrOiBkanBpZzogb2theQooMTM6MjQ6MTEpIGRqcGlnOiBJIGFz
+c3VtZSB0aGVyZSBhcmUgZGVmaW5pdGVseSBpbnRlcm5hbCBsaW1pdHMgc28gdGhleSBkb24n
+dCBnZXQgYWJ1c2VkIGJ5IGNyeXB0by1taW5lcnMgYW5kIHN1Y2guIEJ1dCBub3Qgc3VyZSB3
+aGV0aGVyIHRob3NlIGFyZSBkb2N1bWVudGVkCigxMzoyNDoxMSkgZGpwaWc6IGFueXdheSwg
+bmVlZCB0byBydW4KKDEzOjI0OjExKSBub3ZhZmxhc2g6IFRodXJzZGF5J3MgYW5kIFN1bmRh
+eXMgYXJlIHBvc3NpYmxlIHRvIGJvb2sgZm9yIGF4ZSB0aHJvd2luZyBzbyB0aGF0J3MgY29v
+bAooMTM6MjQ6MTEpIHBsYWlzdGhvczogcHJpY2VzIGZvciBmaXJzdCBjbGFzcyBEQiB0aWNr
+ZXRzIGFyZSBsaWtlIDEwIGV1ciBtb3JlIHRoYW4gMm5kIGNsYXNzLiBGb3IgNSBhbmQgNmgg
+cmlkZXMgdGhhdCBzb3VuZHMgbGlrZSBhIG5vIGJyYWluZXIKKDEzOjI0OjExKSBkMTJmazog
+ZXhpdGluZyBhcyB3ZWxsIG5vdyAqd2F2ZXMqCigxMzoyNDoxMSkgb3JkZXg6IG5vdmFmbGFz
+aDogb2YgY291cnNlIQooMTM6MjQ6MTEpICoqKm9yZGV4IGdvZXMgdGhyb3VnaCB0aGUgYmFj
+a2xvZwooMTM6MjQ6MTEpIG5vdmFmbGFzaDogSGF2ZSB0byBnbwooMTM6MjQ6MTEpIGNyb24y
+X186IHJlCigxMzoyNDoxMSkgY3JvbjJfXzogcGxhaXN0aG9zOiBtYXgtcGt0LXNpemUgLT4g
+QUNLLCBidXQgZG8gbm90IGNhbGwgaXQgTVRVIDopCigxMzoyNDoxMSkgb3JkZXg6IHdvb29v
+IEZSSURBWVlZWQo=
+
+--------------d3rN1LNNciAZcEGYuQbp2oPV--
 
