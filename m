@@ -1,9 +1,9 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 22 Sep 2022 15:58:22 +0300
-Message-Id: <20220922125822.313-1-lstipakov@...277...>
+Date: Thu, 22 Sep 2022 15:59:37 +0300
+Message-Id: <20220922125937.332-1-lstipakov@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH release/2.5] msvc: add branch name and
- commit hash to version output
+Subject: [Openvpn-devel] [PATCH] msvc: add branch name and commit hash to
+ version output
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -156,13 +156,13 @@ index dda8b051..eae94709 100644
    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
    <ImportGroup Label="ExtensionTargets">
 diff --git a/config-msvc.h b/config-msvc.h
-index e7479c86..47c5ba07 100644
+index b621f3fb..a3c687ed 100644
 --- a/config-msvc.h
 +++ b/config-msvc.h
-@@ -177,3 +177,5 @@ typedef uint16_t in_port_t;
-     #define HAVE_INET_NTOP
-     #define HAVE_INET_PTON
+@@ -89,3 +89,5 @@ typedef uint16_t in_port_t;
  #endif
+ 
+ #define ENABLE_DCO 1
 +
 +#define HAVE_CONFIG_VERSION_H 1
 -- 
