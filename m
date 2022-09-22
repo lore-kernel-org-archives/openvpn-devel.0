@@ -1,11 +1,11 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 22 Sep 2022 17:38:42 +0300
-Message-Id: <20220922143842.379-1-lstipakov@...277...>
-In-Reply-To: <20220922125937.332-1-lstipakov@...277...>
-References: <20220922125937.332-1-lstipakov@...277...>
+Date: Thu, 22 Sep 2022 17:42:58 +0300
+Message-Id: <20220922144258.432-1-lstipakov@...277...>
+In-Reply-To: <20220922125822.313-1-lstipakov@...277...>
+References: <20220922125822.313-1-lstipakov@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] msvc: add branch name and commit hash to
- version output
+Subject: [Openvpn-devel] [PATCH v2 release/2.5] msvc: add branch name and
+ commit hash to version output
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -33,7 +33,6 @@ Signed-off-by: Lev Stipakov <lev@...515...>
 
   - fix copyright year 2002 -> 2022
   - change "not-a-git-repo" to "unknown"
-
 
  build/msvc/msvc-generate/Makefile.mak         | 33 +++++++++++++-
  build/msvc/msvc-generate/git-version.py       | 45 +++++++++++++++++++
@@ -164,13 +163,13 @@ index dda8b051..eae94709 100644
    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
    <ImportGroup Label="ExtensionTargets">
 diff --git a/config-msvc.h b/config-msvc.h
-index b621f3fb..a3c687ed 100644
+index e7479c86..47c5ba07 100644
 --- a/config-msvc.h
 +++ b/config-msvc.h
-@@ -89,3 +89,5 @@ typedef uint16_t in_port_t;
+@@ -177,3 +177,5 @@ typedef uint16_t in_port_t;
+     #define HAVE_INET_NTOP
+     #define HAVE_INET_PTON
  #endif
- 
- #define ENABLE_DCO 1
 +
 +#define HAVE_CONFIG_VERSION_H 1
 -- 
