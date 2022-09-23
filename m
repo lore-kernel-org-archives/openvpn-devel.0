@@ -1,13 +1,10 @@
-MIME-Version: 1.0
-References: <20220923074512.494-1-lstipakov@...277...>
- <20220923085740.525-1-lstipakov@...277...>
-In-Reply-To: <20220923085740.525-1-lstipakov@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 23 Sep 2022 11:20:32 -0400
-Message-ID: <CAKuzo_hZ=2_M0da=BRdvBHD7nJdEvFwb5j+deL4MHYSC0qOjVQ@...278...>
-Content-Type: multipart/alternative; boundary="000000000000d35b7005e959bb99"
-Subject: Re: [Openvpn-devel] [PATCH v4 release/2.5] msvc: add branch name
- and commit hash to version output
+Date: Fri, 23 Sep 2022 18:32:22 +0200 (CEST)
+Message-Id: <202209231632.28NGWMP7019849@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20220917125811.13549-1-a@...2181...>
+References: <20220917125811.13549-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: solaris/open_tun: prevent crash
+ when dev is empty string
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,45 +13,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---000000000000d35b7005e959bb99
-Content-Type: text/plain; charset="UTF-8"
+Acked-by: Gert Doering <gert@...1296...>
 
-This may be extreme nitpicking...
+I'm not sure how "dev" can ever be an empty string here, but if it
+can be one, we shouldn't crash :-) - subjected to t_client tests on
+OpenIndiana 2019 that excercise --dev tun/tap and --dev tun3/tap3
 
-+        l = ["detached\n"]
-> +    branch = "/" .join(l)[:-1]
->
+Trying around a bit, I came up with "openvpn --dev '' --dev-type tun"
+which would indeed end up there with an empty *dev, leading to *ptr
+pointing to random garbage (no crash here, but that's more luck in
+stack layout I'd say).  With the bugfix, I get
 
-Use "none" instead of "detached"? The logic being: we are trying to add the
-branch name to the version, so "none" if not on a branch, "unknown' if the
-branch cannot be determined.
+2022-09-23 18:31:28 dev=8043451, ptr=8043451, *dev='00', *dev='', *ptr=''
 
-By the way, autotools builds get "[git: HEAD/commit-id]" when not on a
-local branch and flags like + and * appended to commit id when there are
-uncommitted changes. Not saying we reproduce that on Windows.
+.. better.
 
-Selva
+Your patch has been applied to the master branch.
 
---000000000000d35b7005e959bb99
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+commit cec4353b60bc74a2d8d78ca6b8b6f9fae02e92eb
+Author: Antonio Quartulli
+Date:   Sat Sep 17 14:58:11 2022 +0200
 
-<div dir=3D"ltr"><div class=3D"gmail_quote"><div>This may be extreme nitpic=
-king...=C2=A0</div><div><br></div><blockquote class=3D"gmail_quote" style=
-=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding=
--left:1ex">+=C2=A0 =C2=A0 =C2=A0 =C2=A0 l =3D [&quot;detached\n&quot;]<br>
-+=C2=A0 =C2=A0 branch =3D &quot;/&quot; .join(l)[:-1]<br></blockquote><div>=
-<br></div><div>Use &quot;none&quot; instead of &quot;detached&quot;? The lo=
-gic being: we are trying to add=C2=A0the branch name to the version, so &qu=
-ot;none&quot; if not on a branch, &quot;unknown&#39; if the branch cannot b=
-e determined.=C2=A0</div><div><br></div><div>By the way, autotools builds g=
-et &quot;[git: HEAD/commit-id]&quot; when not on a local branch and=C2=A0fl=
-ags=C2=A0like + and * appended to commit id when there are uncommitted chan=
-ges. Not saying we reproduce that on Windows.</div><div><br></div><div>Selv=
-a</div></div></div>
+     solaris/open_tun: prevent crash when dev is empty string
 
---000000000000d35b7005e959bb99--
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220917125811.13549-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25235.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
