@@ -1,11 +1,8 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 23 Sep 2022 11:57:40 +0300
-Message-Id: <20220923085740.525-1-lstipakov@...277...>
-In-Reply-To: <20220923074512.494-1-lstipakov@...277...>
-References: <20220923074512.494-1-lstipakov@...277...>
+From: Arne Schwabe <arne@...1227...>
+Date: Fri, 23 Sep 2022 10:58:04 +0200
+Message-Id: <20220923085804.3743109-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4 release/2.5] msvc: add branch name and
- commit hash to version output
+Subject: [Openvpn-devel] [PATCH] Document/cleanup event_timeout functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,182 +14,262 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
+Remove function event_timeout_clear_ret as it is unused.
 
-Add a simple python script which generates header with
-branch name and commit hash #defines.
+Cleanup event_timeout_trigger a bit. Do an instant return false if the
+timeout is not defined and inline local_now and use
+event_timeout_remaining instead of local duplicated code.
 
-While on it, fix filename in msvc-generate.vcxproj
-and add proper copyright header to Makefile.mak.
+Add doxygen comments for all timeout function, especially for the
+event_timeout_trigger function that is hard to understand otherwise.
 
-
-Signed-off-by: Lev Stipakov <lev@...515...>
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
+ src/openvpn/interval.c | 50 ++++++++++++-----------
+ src/openvpn/interval.h | 92 +++++++++++++++++++++++++++++-------------
+ src/openvpn/openvpn.h  |  4 +-
+ 3 files changed, 92 insertions(+), 54 deletions(-)
 
-v4:
-  - replace backslash with slash - instead of
-
-    git:msvc-version-release\2.5/b5df0fadf0fdad98
-
-we display
-
-    git:msvc-version-release/2.5/b5df0fadf0fdad98
-
-v3:
-  - properly handle branchnames like release/2.5
-and detached HEAD state
-  - property handle "not in git repo" case
-
-v2:
-  - fix copyright year 2002 -> 2022
-  - change "not-a-git-repo" to "unknown"
-
- build/msvc/msvc-generate/Makefile.mak         | 33 +++++++++++-
- build/msvc/msvc-generate/git-version.py       | 50 +++++++++++++++++++
- .../msvc/msvc-generate/msvc-generate.vcxproj  |  2 +-
- config-msvc.h                                 |  2 +
- 4 files changed, 84 insertions(+), 3 deletions(-)
- create mode 100644 build/msvc/msvc-generate/git-version.py
-
-diff --git a/build/msvc/msvc-generate/Makefile.mak b/build/msvc/msvc-generate/Makefile.mak
-index 1cb43102..ae8b0842 100644
---- a/build/msvc/msvc-generate/Makefile.mak
-+++ b/build/msvc/msvc-generate/Makefile.mak
-@@ -1,4 +1,27 @@
--# Copyright (C) 2008-2012 Alon Bar-Lev <alon.barlev@...277...>
-+#
-+#  OpenVPN -- An application to securely tunnel IP networks
-+#             over a single UDP port, with support for SSL/TLS-based
-+#             session authentication and key exchange,
-+#             packet encryption, packet authentication, and
-+#             packet compression.
-+#
-+#  Copyright (C) 2002-2022 OpenVPN Inc <sales@...515...>
-+#  Copyright (C) 2008-2012 Alon Bar-Lev <alon.barlev@...277...>
-+#  Copyright (C) 2022-2022 Lev Stipakov <lev@...2698...>
-+#
-+#  This program is free software; you can redistribute it and/or modify
-+#  it under the terms of the GNU General Public License version 2
-+#  as published by the Free Software Foundation.
-+#
-+#  This program is distributed in the hope that it will be useful,
-+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+#  GNU General Public License for more details.
-+#
-+#  You should have received a copy of the GNU General Public License along
-+#  with this program; if not, write to the Free Software Foundation, Inc.,
-+#  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+#
+diff --git a/src/openvpn/interval.c b/src/openvpn/interval.c
+index 2f0fc42dd..8f3c1c604 100644
+--- a/src/openvpn/interval.c
++++ b/src/openvpn/interval.c
+@@ -41,44 +41,46 @@ interval_init(struct interval *top, int horizon, int refresh)
+     top->horizon = horizon;
+ }
  
- CONFIG=$(SOLUTIONDIR)/version.m4
++
+ bool
+ event_timeout_trigger(struct event_timeout *et,
+                       struct timeval *tv,
+                       const int et_const_retry)
+ {
++    if (!et->defined)
++    {
++        return false;
++    }
++
+     bool ret = false;
+-    const time_t local_now = now;
++    time_t wakeup = event_timeout_remaining(et);
  
-@@ -14,7 +37,9 @@ OUTPUT_PLUGIN_CONFIG=version.m4
- INPUT_MAN=$(SOLUTIONDIR)/doc/openvpn.8.rst
- OUTPUT_MAN=$(SOLUTIONDIR)/doc/openvpn.8.html
- 
--all:	$(OUTPUT_MSVC_VER) $(OUTPUT_PLUGIN) $(OUTPUT_MAN)
-+OUTPUT_MSVC_GIT_CONFIG=$(SOLUTIONDIR)/config-version.h
-+
-+all:	$(OUTPUT_MSVC_VER) $(OUTPUT_PLUGIN) $(OUTPUT_MAN) $(OUTPUT_MSVC_GIT_CONFIG)
- 
- $(OUTPUT_MSVC_VER): $(INPUT_MSVC_VER) $(CONFIG)
- 	cscript //nologo msvc-generate.js --config="$(CONFIG)" --input="$(INPUT_MSVC_VER)" --output="$(OUTPUT_MSVC_VER)"
-@@ -28,8 +53,12 @@ $(OUTPUT_PLUGIN): $(INPUT_PLUGIN) $(OUTPUT_PLUGIN_CONFIG)
- $(OUTPUT_MAN): $(INPUT_MAN)
-     -FOR /F %i IN ('where rst2html.py') DO python %i "$(INPUT_MAN)" "$(OUTPUT_MAN)"
- 
-+$(OUTPUT_MSVC_GIT_CONFIG):
-+    python git-version.py $(SOLUTIONDIR)
-+
- clean:
- 	-del "$(OUTPUT_MSVC_VER)"
- 	-del "$(OUTPUT_PLUGIN)"
- 	-del "$(OUTPUT_PLUGIN_CONFIG)"
- 	-del "$(OUTPUT_MAN)"
-+	-del "$(OUTPUT_MSVC_GIT_CONFIG)"
-diff --git a/build/msvc/msvc-generate/git-version.py b/build/msvc/msvc-generate/git-version.py
-new file mode 100644
-index 00000000..9c831558
---- /dev/null
-+++ b/build/msvc/msvc-generate/git-version.py
-@@ -0,0 +1,50 @@
-+#
-+#  OpenVPN -- An application to securely tunnel IP networks
-+#             over a single UDP port, with support for SSL/TLS-based
-+#             session authentication and key exchange,
-+#             packet encryption, packet authentication, and
-+#             packet compression.
-+#
-+#  Copyright (C) 2022-2022 OpenVPN Inc <sales@...515...>
-+#  Copyright (C) 2022-2022 Lev Stipakov <lev@...2698...>
-+#
-+#  This program is free software; you can redistribute it and/or modify
-+#  it under the terms of the GNU General Public License version 2
-+#  as published by the Free Software Foundation.
-+#
-+#  This program is distributed in the hope that it will be useful,
-+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+#  GNU General Public License for more details.
-+#
-+#  You should have received a copy of the GNU General Public License along
-+#  with this program; if not, write to the Free Software Foundation, Inc.,
-+#  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+#
-+
-+import os
-+import sys
-+
-+def get_branch_commit_id():
-+    commit_id = os.popen("git rev-parse --short=16 HEAD").read()[:-1]
-+    if not commit_id:
-+        raise
-+    l = os.popen("git rev-parse --symbolic-full-name HEAD").read().split("/")[2:]
-+    if not l:
-+        l = ["detached\n"]
-+    branch = "/" .join(l)[:-1]
-+    return branch, commit_id
-+
-+def main():
-+    try:
-+        branch, commit_id = get_branch_commit_id()
-+    except:
-+        branch, commit_id = "unknown", "unknown"
-+
-+    name = os.path.join("%s" %  (sys.argv[1] if len(sys.argv) > 1 else "."), "config-version.h")
-+    with open(name, "w") as f:
-+        f.write("#define CONFIGURE_GIT_REVISION \"%s/%s\"\n" % (branch, commit_id))
-+        f.write("#define CONFIGURE_GIT_FLAGS \"\"\n")
-+
-+if __name__ == "__main__":
-+    main()
-diff --git a/build/msvc/msvc-generate/msvc-generate.vcxproj b/build/msvc/msvc-generate/msvc-generate.vcxproj
-index dda8b051..eae94709 100644
---- a/build/msvc/msvc-generate/msvc-generate.vcxproj
-+++ b/build/msvc/msvc-generate/msvc-generate.vcxproj
-@@ -150,7 +150,7 @@
-   </ItemDefinitionGroup>
-   <ItemGroup>
-     <None Include="Makefile.mak" />
--    <None Include="msc-generate.js" />
-+    <None Include="msvc-generate.js" />
-   </ItemGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-   <ImportGroup Label="ExtensionTargets">
-diff --git a/config-msvc.h b/config-msvc.h
-index e7479c86..47c5ba07 100644
---- a/config-msvc.h
-+++ b/config-msvc.h
-@@ -177,3 +177,5 @@ typedef uint16_t in_port_t;
-     #define HAVE_INET_NTOP
-     #define HAVE_INET_PTON
+-    if (et->defined)
++    if (wakeup <= 0)
+     {
+-        time_t wakeup = et->last - local_now + et->n;
+-        if (wakeup <= 0)
+-        {
+ #if INTERVAL_DEBUG
+-            dmsg(D_INTERVAL, "EVENT event_timeout_trigger (%d) etcr=%d", et->n,
+-                 et_const_retry);
++        dmsg(D_INTERVAL, "EVENT event_timeout_trigger (%d) etcr=%d", et->n,
++             et_const_retry);
  #endif
+-            if (et_const_retry < 0)
+-            {
+-                et->last = local_now;
+-                wakeup = et->n;
+-                ret = true;
+-            }
+-            else
+-            {
+-                wakeup = et_const_retry;
+-            }
++        if (et_const_retry < 0)
++        {
++            et->last = now;
++            wakeup = et->n;
++            ret = true;
+         }
+-
+-        if (tv && wakeup < tv->tv_sec)
++        else
+         {
++            wakeup = et_const_retry;
++        }
++    }
 +
-+#define HAVE_CONFIG_VERSION_H 1
++    if (tv && wakeup < tv->tv_sec)
++    {
+ #if INTERVAL_DEBUG
+-            dmsg(D_INTERVAL, "EVENT event_timeout_wakeup (%d/%d) etcr=%d",
+-                 (int) wakeup, et->n, et_const_retry);
++        dmsg(D_INTERVAL, "EVENT event_timeout_wakeup (%d/%d) etcr=%d",
++             (int) wakeup, et->n, et_const_retry);
+ #endif
+-            tv->tv_sec = wakeup;
+-            tv->tv_usec = 0;
+-        }
++        tv->tv_sec = wakeup;
++        tv->tv_usec = 0;
+     }
+     return ret;
+ }
+diff --git a/src/openvpn/interval.h b/src/openvpn/interval.h
+index f58bfacf6..f6e40705c 100644
+--- a/src/openvpn/interval.h
++++ b/src/openvpn/interval.h
+@@ -135,9 +135,9 @@ interval_action(struct interval *top)
+ 
+ struct event_timeout
+ {
+-    bool defined;
+-    interval_t n;
+-    time_t last; /* time of last event */
++    bool defined;       /**< This timeout is active */
++    interval_t n;       /**< periodic interval for periodic timeouts */
++    time_t last;        /**< time of last event */
+ };
+ 
+ static inline bool
+@@ -145,7 +145,12 @@ event_timeout_defined(const struct event_timeout *et)
+ {
+     return et->defined;
+ }
+-
++/**
++ * Clears the timeout and reset all values to 0. Following timer checks will
++ * not trigger.
++ *
++ * @param et    timer struct
++ */
+ static inline void
+ event_timeout_clear(struct event_timeout *et)
+ {
+@@ -154,22 +159,30 @@ event_timeout_clear(struct event_timeout *et)
+     et->last = 0;
+ }
+ 
+-static inline struct event_timeout
+-event_timeout_clear_ret(void)
+-{
+-    struct event_timeout ret;
+-    event_timeout_clear(&ret);
+-    return ret;
+-}
+ 
++/**
++ * Initialises a timer struct. The timer will become true/trigger after last + n seconds
++ *
++ *
++ * @param et            Timer struct
++ * @param n             Interval of the timer for periodic timer. A negative value for n will be interpreted as 0
++ * @param last          Sets the base time of the timer.
++ */
+ static inline void
+-event_timeout_init(struct event_timeout *et, interval_t n, const time_t local_now)
++event_timeout_init(struct event_timeout *et, interval_t n, const time_t last)
+ {
+     et->defined = true;
+     et->n = (n >= 0) ? n : 0;
+-    et->last = local_now;
++    et->last = last;
+ }
+ 
++/**
++ * Reset a timer.
++ *
++ * Sets the last time the timer has been triggered for the calculation of the
++ * next event.
++ * @param et
++ */
+ static inline void
+ event_timeout_reset(struct event_timeout *et)
+ {
+@@ -179,6 +192,12 @@ event_timeout_reset(struct event_timeout *et)
+     }
+ }
+ 
++/**
++ * Sets the periodic parameter n of a timeout.
++ * @param et
++ * @param n set the periodic value of a timeout, negative values
++ *          will be interpreted as 0
++ */
+ static inline void
+ event_timeout_modify_wakeup(struct event_timeout *et, interval_t n)
+ {
+@@ -189,32 +208,47 @@ event_timeout_modify_wakeup(struct event_timeout *et, interval_t n)
+     }
+ }
+ 
+-/*
+- * Will return the time left for a timeout, this function does not check
+- * if the timeout is actually valid
++/**
++ * Return time until the timeout should triggered from from now,
++ * this function does not check if the timeout is actually valid.
+  */
+ static inline interval_t
+ event_timeout_remaining(struct event_timeout *et)
+ {
+-    return (interval_t) (et->last - now + et->n);
++    return (interval_t) ((et->last + et->n) - now);
+ }
+ 
+-/*
+- * This is the principal function for testing and triggering recurring
+- * timers and will return true on a timer signal event.
+- * If et_const_retry == ETT_DEFAULT and a signal occurs,
+- * the function will return true and *et will be armed for the
+- * next event.  If et_const_retry >= 0 and a signal occurs,
+- * *et will not be touched, but *tv will be set to
+- * minimum (*tv, et_const_retry) for a future re-test,
+- * and the function will return true.
+- */
+-
+ #define ETT_DEFAULT (-1)
+ 
++/**
++ * This is the principal function for testing and triggering recurring
++ * timers.
++ *
++ * If *et is not triggered *tv is set to remaining time until the timeout if
++ * not already lower:
++ *
++ *      *tv = minimum(*tv, event_timeout_remaining(*et))
++ *
++ * If *et triggers and et_const_retry is negative (ETT_DEFAULT is -1):
++ *  - the function will return true
++ *  - *et will be armed for the next event (et->last set to now).
++ *  - *tv will be lowered to the event period (n) if larger than the
++ *     period of the event (set to *et's next timeout)
++ *
++ * If *et triggers and et_const_retry >= 0, *tv be reduced to et_const_try if
++ * larger:
++ *
++ *    *tv = *minimum(*tv, et_const_retry)
++ *
++ *
++ * @param et                the timeout to check
++ * @param tv                will be set to timeout for next check for this timeout unless already small.
++ * @param et_const_retry    see above
++ * @return                  if the timeout has triggered and event has been reset
++ */
+ bool event_timeout_trigger(struct event_timeout *et,
+                            struct timeval *tv,
+-                           const int et_const_retry);
++                           int et_const_retry);
+ 
+ /*
+  * Measure time intervals in microseconds
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 00cd652fa..aae1d21b8 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -386,7 +386,9 @@ struct context_2
+      * Event loop info
+      */
+ 
+-    /* how long to wait on link/tun read before we will need to be serviced */
++    /* time to next event of timers and similar. This is used to determine
++     * how long to wait on event wait (select/poll on link/tun read)
++     * before this context wants to be serviced */
+     struct timeval timeval;
+ 
+     /* next wakeup for processing coarse timers (>1 sec resolution) */
 -- 
-2.23.0.windows.1
+2.37.0 (Apple Git-136)
 
 
