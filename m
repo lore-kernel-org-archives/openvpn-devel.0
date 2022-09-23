@@ -1,10 +1,10 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 23 Sep 2022 10:45:12 +0300
-Message-Id: <20220923074512.494-1-lstipakov@...277...>
-In-Reply-To: <20220922144258.432-1-lstipakov@...277...>
-References: <20220922144258.432-1-lstipakov@...277...>
+Date: Fri, 23 Sep 2022 11:57:40 +0300
+Message-Id: <20220923085740.525-1-lstipakov@...277...>
+In-Reply-To: <20220923074512.494-1-lstipakov@...277...>
+References: <20220923074512.494-1-lstipakov@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 release/2.5] msvc: add branch name and
+Subject: [Openvpn-devel] [PATCH v4 release/2.5] msvc: add branch name and
  commit hash to version output
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -30,6 +30,15 @@ and add proper copyright header to Makefile.mak.
 
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
+
+v4:
+  - replace backslash with slash - instead of
+
+    git:msvc-version-release\2.5/b5df0fadf0fdad98
+
+we display
+
+    git:msvc-version-release/2.5/b5df0fadf0fdad98
 
 v3:
   - properly handle branchnames like release/2.5
@@ -106,7 +115,7 @@ index 1cb43102..ae8b0842 100644
 +	-del "$(OUTPUT_MSVC_GIT_CONFIG)"
 diff --git a/build/msvc/msvc-generate/git-version.py b/build/msvc/msvc-generate/git-version.py
 new file mode 100644
-index 00000000..dc989302
+index 00000000..9c831558
 --- /dev/null
 +++ b/build/msvc/msvc-generate/git-version.py
 @@ -0,0 +1,50 @@
@@ -144,7 +153,7 @@ index 00000000..dc989302
 +    l = os.popen("git rev-parse --symbolic-full-name HEAD").read().split("/")[2:]
 +    if not l:
 +        l = ["detached\n"]
-+    branch = "\\\\" .join(l)[:-1]
++    branch = "/" .join(l)[:-1]
 +    return branch, commit_id
 +
 +def main():
