@@ -1,9 +1,10 @@
+Date: Mon, 26 Sep 2022 11:24:28 +0200 (CEST)
+Message-Id: <202209260924.28Q9OS52080817@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Mon, 26 Sep 2022 10:11:58 +0200
-Message-Id: <20220926081158.40640-1-gert@...1296...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] t_client: add per-instance arguments to
- fping
+In-Reply-To: <20220926064310.688-1-lstipakov@...277...>
+References: <20220926064310.688-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: msvc: add branch name and
+ commit hash to version output
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,43 +15,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-In addition to global FPING_EXTRA_ARGS now also evaluate
-FPING_ARGGS_<suffix>.
+Acked-by: Gert Doering <gert@...1296...>
 
-This can be used, for example, for a test instance for "will ToS-tagged
-packets be sent properly?" by setting FPING_ARGS_2="-O 0x10".
+This is a useful feature, and after some polishing, I think this is 
+about as good as it will get now :-) - thanks.
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- tests/t_client.sh.in | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+I have not tested this at all, as I have no MSVC build environment and
+it will not manifest on MinGW builds.  From my understanding it looks
+reasonable.
 
-diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
-index 76ac9b22..48ba6e68 100755
---- a/tests/t_client.sh.in
-+++ b/tests/t_client.sh.in
-@@ -238,8 +238,8 @@ run_ping_tests()
-     do
- 	echo "run IPv$proto ping tests ($want), $bytes byte packets..."
- 
--	echo "$cmd -b $bytes -C 20 -p 250 -q $FPING_EXTRA_ARGS $targetlist" >>$LOGDIR/$SUF:fping.out
--	$cmd -b $bytes -C 20 -p 250 -q $FPING_EXTRA_ARGS $targetlist >>$LOGDIR/$SUF:fping.out 2>&1
-+	echo "$cmd -b $bytes -C 20 -p 250 -q $fping_args $targetlist" >>$LOGDIR/$SUF:fping.out
-+	$cmd -b $bytes -C 20 -p 250 -q $fping_args $targetlist >>$LOGDIR/$SUF:fping.out 2>&1
- 
- 	# while OpenVPN is running, pings must succeed (want='want_ok')
- 	# before OpenVPN is up, pings must NOT succeed (want='want_fail')
-@@ -278,6 +278,7 @@ do
-     eval expect_ifconfig6=\"\$EXPECT_IFCONFIG6_$SUF\"
-     eval ping4_hosts=\"\$PING4_HOSTS_$SUF\"
-     eval ping6_hosts=\"\$PING6_HOSTS_$SUF\"
-+    eval fping_args=\"\$FPING_EXTRA_ARGS \$FPING_ARGS_$SUF\"
- 
-     # If EXCEPT_IFCONFIG* variables for this test are missing, run an --up
-     # script to generate them dynamically.
--- 
-2.37.2
+Your patch has been applied to the master branch.
+
+commit b9d91c38843076a03b6b5fc123a386ef3c2bc564
+Author: Lev Stipakov
+Date:   Mon Sep 26 09:43:10 2022 +0300
+
+     msvc: add branch name and commit hash to version output
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20220926064310.688-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25311.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
