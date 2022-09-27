@@ -1,11 +1,12 @@
-Date: Tue, 27 Sep 2022 11:24:09 +0200
+Date: Tue, 27 Sep 2022 11:43:27 +0200
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <YzLBOUAgo7WfWddz@...2685...>
-References: <20220926081158.40640-1-gert@...1296...>
+Message-ID: <YzLFv8eO9ll5PkIc@...2685...>
+References: <20220920114255.23639-1-gert@...1296...>
+ <20220920132351.27718-1-gert@...1296...>
 MIME-Version: 1.0
-In-Reply-To: <20220926081158.40640-1-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] t_client: add per-instance arguments to
- fping
+In-Reply-To: <20220920132351.27718-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH v3] introduce V= level to manage
+ t_client.sh output verbosity
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,15 +21,23 @@ Content-Disposition: inline
 To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, Sep 26, 2022 at 10:11:58AM +0200, Gert Doering wrote:
-> In addition to global FPING_EXTRA_ARGS now also evaluate
-> FPING_ARGGS_<suffix>.
+On Tue, Sep 20, 2022 at 03:23:51PM +0200, Gert Doering wrote:
+> If t_client.sh is run interactively, more verbose output is useful
+> to quickly see what it is doing.  If run from a CI environment, going
+> through lots of output for successful tests just to find the one that
+> failed is non-useful.
 > 
-> This can be used, for example, for a test instance for "will ToS-tagged
-> packets be sent properly?" by setting FPING_ARGS_2="-O 0x10".
+> Introduce V=<n> environment variable to control output verbosity
+> 
+>  V=0 - do not print any per-test output at all, just overall summary
+>  V=1 - print single header line for each successful test
+>        print full output for failing tests
+>  V=99 - print full output, always, as before
+> 
+> default is V=1 now
 > 
 
-Trivial change. Tested and looks good.
+Seems to do what it is supposed to do.
 
 Acked-By: Frank Lichtenheld <frank@...2641...>
 
