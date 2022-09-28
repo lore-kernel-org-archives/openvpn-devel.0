@@ -1,10 +1,8 @@
-Date: Tue, 27 Sep 2022 18:10:48 +0200 (CEST)
-Message-Id: <202209271610.28RGAmR0023321@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220920132351.27718-1-gert@...1296...>
-References: <20220920132351.27718-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: introduce V= level to manage
- t_client.sh output verbosity
+From: mader.raphael@...1204...
+Date: Wed, 28 Sep 2022 19:38:50 +0200
+Message-Id: <20220928173850.789-1-mader.raphael@...1204...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2 openvpn3-linux] Fix non-systemd build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,31 +12,42 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-Thanks for the review & testing ;-)
+From: Raphael Mader <mader.raphael@...1204...>
 
-Patch has been applied to the master branch.
+Signed-off-by: Raphael Mader <mader.raphael@...1204...>
+---
+ src/log/logwriters/journald.cpp | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-commit 398f73094a692ba46be7e3205b65d915d2593a64
-Author: Gert Doering
-Date:   Tue Sep 20 15:23:51 2022 +0200
+diff --git a/src/log/logwriters/journald.cpp b/src/log/logwriters/journald.=
+cpp
+index f0fc85f..a25537f 100644
+--- a/src/log/logwriters/journald.cpp
++++ b/src/log/logwriters/journald.cpp
+@@ -23,6 +23,10 @@
+  * @brief  Implementation of JournaldWriter
+  */
 
-     introduce V= level to manage t_client.sh output verbosity
++#include "config.h"
++
++#ifdef HAVE_SYSTEMD
++
+ #include <sys/uio.h>
+ #include <ctype.h>
+ #include <string>
+@@ -34,8 +38,6 @@
+ #include "log/logwriters/journald.hpp"
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20220920132351.27718-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25285.html
-     Signed-off-by: Gert Doering <gert@...1296...>
 
-
+-#ifdef HAVE_SYSTEMD
+-
+ JournaldWriter::JournaldWriter()
+     : LogWriter()
+ {
 --
-kind regards,
-
-Gert Doering
+2.37.3.windows.1
 
 
