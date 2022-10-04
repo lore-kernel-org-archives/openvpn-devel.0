@@ -1,10 +1,10 @@
-Date: Tue, 4 Oct 2022 18:39:02 +0200 (CEST)
-Message-Id: <202210041639.294Gd2QC003484@...2054...>
+Date: Tue, 4 Oct 2022 18:43:47 +0200 (CEST)
+Message-Id: <202210041643.294GhlTL003657@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221004153127.527-1-gert@...1296...>
-References: <20221004153127.527-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: un-break
- undo_ifconfig_ipv4()/_ipv6() on all non-linux/non-win32 platforms
+In-Reply-To: <20221004145142.19091-1-gert@...1296...>
+References: <20221004145142.19091-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: use boolean '||' to join two
+ bools, not bitwise '|'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,21 +18,21 @@ Content-Transfer-Encoding: 8bit
 To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Verified that it doesn't break any other platforms using buildbot
-on all platforms.
+For sanity reasons, tested on the oldest system I have around
+(FreeBSD 7.4).  No complaints (none expected).
 
-Patch has been applied to the master branch (offending code is not in 2.5).
+Patch has been applied to the master branch.
 
-commit d4c34b5246e58f83ee8b87249173521a28de6993 (master)
+commit facb6fffb35f51e67eefaab8ba357b676b3c6328
 Author: Gert Doering
-Date:   Tue Oct 4 17:31:27 2022 +0200
+Date:   Tue Oct 4 16:51:42 2022 +0200
 
-     un-break undo_ifconfig_ipv4()/_ipv6() on all non-linux/non-win32 platforms
+     use boolean '||' to join two bools, not bitwise '|'
 
      Signed-off-by: Gert Doering <gert@...1296...>
      Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20221004153127.527-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25337.html
+     Message-Id: <20221004145142.19091-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25333.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
