@@ -1,10 +1,9 @@
-Date: Tue, 4 Oct 2022 18:43:47 +0200 (CEST)
-Message-Id: <202210041643.294GhlTL003657@...2054...>
+Date: Wed, 5 Oct 2022 20:21:41 +0200 (CEST)
+Message-Id: <202210051821.295ILf8b028799@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221004145142.19091-1-gert@...1296...>
-References: <20221004145142.19091-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: use boolean '||' to join two
- bools, not bitwise '|'
+In-Reply-To: <20221004131403.95597-1-gert@...1296...>
+References: <20221004131403.95597-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: denoise tests/t_lpback.sh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,21 +17,20 @@ Content-Transfer-Encoding: 8bit
 To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-For sanity reasons, tested on the oldest system I have around
-(FreeBSD 7.4).  No complaints (none expected).
+Thanks for review & finding the "some shells do, some don't" wart in v1.
 
 Patch has been applied to the master branch.
 
-commit facb6fffb35f51e67eefaab8ba357b676b3c6328
+commit 977e0650c11500d3696419afbedf4a8f42ab6760
 Author: Gert Doering
-Date:   Tue Oct 4 16:51:42 2022 +0200
+Date:   Tue Oct 4 15:14:03 2022 +0200
 
-     use boolean '||' to join two bools, not bitwise '|'
+     denoise tests/t_lpback.sh
 
      Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20221004145142.19091-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25333.html
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20221004131403.95597-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25332.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
