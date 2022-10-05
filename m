@@ -1,11 +1,15 @@
-Date: Wed, 5 Oct 2022 20:23:52 +0200
+Date: Wed, 5 Oct 2022 22:19:04 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <Yz3LuG6YuMSkQDMt@...1296...>
+Message-ID: <Yz3muBEdbTSo13qX@...1296...>
+References: <20220909195902.2011798-1-arne@...1227...>
+ <20220909195902.2011798-2-arne@...1227...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="eNksNGZs9rU31Sg+"
+ protocol="application/pgp-signature"; boundary="KwCa5xyY/3RqvWap"
 Content-Disposition: inline
-Subject: [Openvpn-devel] list hickup
+In-Reply-To: <20220909195902.2011798-2-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 2/3] Use buffer to prepare
+ protocol-flags push-reply
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,20 +18,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---eNksNGZs9rU31Sg+
+--KwCa5xyY/3RqvWap
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-the openvpn-devel@ list had major hickups this afternoon, and bounced
-everything.  So if you have sent a patch or patch review, and it did
-not show up on the list yet, please re-send.
+On Fri, Sep 09, 2022 at 09:59:01PM +0200, Arne Schwabe wrote:
+> The current approach of checking a string buffer is a bit clunky and
+> also not very extensible. Refactor this by collecting the flags in
+> a buffer.
 
-Annoying, this...
+I think that this one is obsolete, aka, already included in
+
+commit 179b3728b71013413885e453e477997f5a396f78
+Author: Arne Schwabe <arne@...1227...>
+Date:   Wed Sep 14 18:50:41 2022 +0200
+
+    Implement exit notification via control channel
+
+    Patch v4: rebase, use a buffer for the code that prepares the push reply
+
+can you confirm?
+
+thanks,
 
 gert
 --=20
@@ -40,22 +58,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---eNksNGZs9rU31Sg+
+--KwCa5xyY/3RqvWap
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJjPcu4AAoJEB2Cnv7KVigSdYQL/A62xRd5Lrau6tnj9QKX00Il
-c8U7dcwQTXPGY3HsMgbKQGxfHISVY7jkzD5d1ezkE7VzTVeRiBH4IAFXqn9pyJH4
-ceoxkdY8ZeaF5s+6hueFl54UdaYEDST7um8Bu/tJe0++9HWJZ58YkRj+ByNBsdHn
-t0OQoVrdGBNw/LQqhS7/xraefW3hmKbI4ly9qJkkEDblt/7kWhQYqYk9S06HErJO
-2pHLMJkgHzZD+dFbLLZbZXziSbyH7/4mglU5zkuM+BfdJRgwC2t517wLI6z71hx8
-l5+KdeImoyOiwVMHyPCko5Uyvx+HyoGsEtVSKmkeoV5JzebCMU/n+8WtaGDvjjC1
-+AQmQChRbgIAMAIynRHSY8evBkVQWczVYEjS3KWmBqArk/vkfl9R+6BtsJ1bgI6H
-KJRIeibgcqesh1ol7BlThoDhQ2gxY4vTVHhTpwJonhbGqNJkCvhyB1pj+FzcKkis
-7x2JWZ0fgFznqf0dgc9MYo7q0DGEsmAT2sgTjYmw+g==
-=ZcDZ
+iQGcBAEBAgAGBQJjPea3AAoJEB2Cnv7KVigS4JkL/0/Zil7dBLj/QTf3artKASbo
+5JZdcN6HbQbN4IhE39vle6GH72eIv8JAzPsn3c5vfbIM9WeM5apVIj/6/3Sr24o5
+xuPKbU7HfLdN4IlkFyFZaFy4wG+97GexrlLRr1EKKgEndcHkhnTe2Y4iVz2OQe1T
+jsA/8YSJa9MQGkfBAm2Kf8EGgtZdcBmLJAykxhZSh+N0dqzz2um2KEqYEh0bmWMh
+5ZTrpWOUCOuR6Y5daXlzn66BsEOMge3hV8agRshqPWn0KHnq0L5/BLEj/Krb7HvE
+aKZDaMVx/xJbbDmrYnBzvXqr8UuBk04R1WCq8JM4X/FeqND4uPjtEQx4HPZsoS4Y
+BmNOeS8ZBRUcf1gk67s17YBA2Pu7xDWnCbNETzhJveIrxUoFKh4vjiFNfNvOafKz
+LVHR4AqL7yKAbRiLYQb2fDF/NBa3BkyWFD7QH38orXc8qWh8Ky5DBeLZmbLY6MIE
+sUi4uHVxW0VL3LpurbSDp52EaW2iYb4z5gZYNem5fg==
+=eZ5M
 -----END PGP SIGNATURE-----
 
---eNksNGZs9rU31Sg+--
+--KwCa5xyY/3RqvWap--
 
