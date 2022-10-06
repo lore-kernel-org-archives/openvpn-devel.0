@@ -1,14 +1,10 @@
-Date: Thu, 6 Oct 2022 21:06:59 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <Yz8nU3pSzidhjL/F@...1296...>
-References: <20220624104940.2885435-1-wardragon78@...277...>
+From: Antonio Quartulli <a@...2181...>
+Date: Thu,  6 Oct 2022 22:37:31 +0200
+Message-Id: <20221006203731.13529-1-a@...2181...>
+In-Reply-To: <20220919134108.31316-1-a@...2181...>
+References: 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="EIP0+f5uuenoHA8O"
-Content-Disposition: inline
-In-Reply-To: <20220624104940.2885435-1-wardragon78@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Insert client connection data into
- PAM environment v2
+Subject: [Openvpn-devel] [PATCH v3] implement --session-timeout
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,140 +13,211 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Paolo Cerrito <wardragon78@...277...>
-Cc: openvpn-devel@lists.sourceforge.net, paolo <paolo.cerrito@...2517...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Dmitry Zelenkovsky <dmitry@...2697...>
 
---EIP0+f5uuenoHA8O
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Dmitry Zelenkovsky <dmitry@...2697...>
 
-Hi,
+Disconnect clients after session-timeout expires.
+session-timeout can be defined in ccd files in order to limit
+per-user connection time.
 
-sorry for not handling this in a more timely fashion.  It needs some
-changes, though.
+Signed-off-by: Dmitry Zelenkovsky <dmitry@...2697...>
+---
+Changes from v2:
+* improve manpage wording
+* improve session_timeout comment
 
-On Fri, Jun 24, 2022 at 12:49:41PM +0200, Paolo Cerrito wrote:
-> From: paolo <paolo.cerrito@...2517...>
->=20
-> "Changes from v1:
-> changed sprintf for logging to plugin_log
-> "
->=20
-> change to reflect current head openvpn repository
->=20
-> this patch put remote host ip into pam environment, so this make pam
-> module able to use it.
->=20
-> in simple, this patch get ip (ipv4 and ipv6) from openvpn, put into pam
-> environment and log this operation.
+Changes from v1:
+* added documentation to manpage
+* added entry in Changes.rst
+---
+ Changes.rst                         |  6 ++++++
+ doc/man-sections/link-options.rst   | 16 ++++++++++++++++
+ doc/man-sections/server-options.rst |  2 +-
+ src/openvpn/forward.c               | 22 ++++++++++++++++++++++
+ src/openvpn/init.c                  |  7 +++++++
+ src/openvpn/openvpn.h               |  2 ++
+ src/openvpn/options.c               |  7 +++++++
+ src/openvpn/options.h               |  2 ++
+ 8 files changed, 63 insertions(+), 1 deletion(-)
 
-When committing, please use "git commit -s", so the patch gets your
-signed-off-by: line.
+diff --git a/Changes.rst b/Changes.rst
+index 2daa97fb..7c45a042 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -93,6 +93,12 @@ Inline auth username and password
+     missing OpenVPN will prompt for input via stdin. This applies to inline'd
+     http-proxy-user-pass too.
+ 
++Session timeout
++    It is now possible to terminate a session (or all) after a specified amount
++    of seconds has passed session commencement. This behaviour can be configured
++    using ``--session-timeout``. This option can be configured on the server, on
++    the client or can also be pushed.
++
+ 
+ Deprecated features
+ -------------------
+diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
+index 373193aa..fe7760d7 100644
+--- a/doc/man-sections/link-options.rst
++++ b/doc/man-sections/link-options.rst
+@@ -427,6 +427,22 @@ the local and the remote host.
+   default) and you are using either ``--secret`` (shared-secret key mode)
+   or TLS mode with ``--tls-auth``.
+ 
++--session-timeout n
++  Raises :code:`SIGTERM` for the client instance after ``n`` seconds since
++  the beginning of the session, forcing OpenVPN to disconnect.
++  In client mode, OpenVPN will disconnect and exit, while in server mode
++  all client sessions are terminated.
++
++  This option can also be specified in a client instance config file
++  using ``--client-config-dir`` or dynamically generated using a
++  ``--client-connect`` script. In these cases, only the related client
++  session is terminated.
++
++  If this option is used on the server (main config or per-client),
++  this works better if ``--explicit-exit-notify`` is also specified
++  in the server config, so clients are not just silently disconnected
++  but they are also informed about it.
++
+ --socket-flags flags
+   Apply the given flags to the OpenVPN transport socket. Currently, only
+   :code:`TCP_NODELAY` is supported.
+diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server-options.rst
+index 54ea8b66..9d0c73b6 100644
+--- a/doc/man-sections/server-options.rst
++++ b/doc/man-sections/server-options.rst
+@@ -426,7 +426,7 @@ fast hardware. SSL/TLS authentication must be used in this mode.
+   ``--inactive``, ``--ping``, ``--ping-exit``, ``--ping-restart``,
+   ``--setenv``, ``--auth-token``, ``--persist-key``, ``--persist-tun``,
+   ``--echo``, ``--comp-lzo``, ``--socket-flags``, ``--sndbuf``,
+-  ``--rcvbuf``
++  ``--rcvbuf``, ``--session-timeout``
+ 
+ --push-remove opt
+   Selectively remove all ``--push`` options matching "opt" from the option
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index e5cee665..810cb8a7 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -630,6 +630,21 @@ encrypt_sign(struct context *c, bool comp_frag)
+     buffer_turnover(orig_buf, &c->c2.to_link, &c->c2.buf, &b->read_tun_buf);
+ }
+ 
++/*
++ * Should we exit due to session timeout?
++ */
++static void
++check_session_timeout(struct context *c)
++{
++    if (c->options.session_timeout
++        && event_timeout_trigger(&c->c2.session_interval, &c->c2.timeval,
++                                 ETT_DEFAULT))
++    {
++        msg(M_INFO, "Session timeout, exiting");
++        register_signal(c, SIGTERM, "session-timeout");
++    }
++}
++
+ /*
+  * Coarse timers work to 1 second resolution.
+  */
+@@ -681,6 +696,13 @@ process_coarse_timers(struct context *c)
+         return;
+     }
+ 
++    /* kill session if time is over */
++    check_session_timeout(c);
++    if (c->sig->signal_received)
++    {
++        return;
++    }
++
+     /* restart if ping not received */
+     check_ping_restart(c);
+     if (c->sig->signal_received)
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 22a0e9c6..439ea010 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1324,6 +1324,13 @@ do_init_timers(struct context *c, bool deferred)
+         event_timeout_init(&c->c2.inactivity_interval, c->options.inactivity_timeout, now);
+     }
+ 
++    /* initialize inactivity timeout */
++    if (c->options.session_timeout)
++    {
++        event_timeout_init(&c->c2.session_interval, c->options.session_timeout,
++                           now);
++    }
++
+     /* initialize pings */
+     if (dco_enabled(&c->options))
+     {
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 00cd652f..f74125aa 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -288,6 +288,8 @@ struct context_2
+     struct event_timeout inactivity_interval;
+     int64_t inactivity_bytes;
+ 
++    struct event_timeout session_interval;
++
+     /* the option strings must match across peers */
+     char *options_string_local;
+     char *options_string_remote;
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 93db0865..4566172b 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -261,6 +261,7 @@ static const char usage_message[] =
+     "                  for m seconds.\n"
+     "--inactive n [bytes] : Exit after n seconds of activity on tun/tap device\n"
+     "                  produces a combined in/out byte count < bytes.\n"
++    "--session-timeout n: Limit connection time to n seconds.\n"
+     "--ping-exit n   : Exit if n seconds pass without reception of remote ping.\n"
+     "--ping-restart n: Restart if n seconds pass without reception of remote ping.\n"
+     "--ping-timer-rem: Run the --ping-exit/--ping-restart timer only if we have a\n"
+@@ -1823,6 +1824,7 @@ show_settings(const struct options *o)
+     SHOW_INT(keepalive_ping);
+     SHOW_INT(keepalive_timeout);
+     SHOW_INT(inactivity_timeout);
++    SHOW_INT(session_timeout);
+     SHOW_INT64(inactivity_minimum_bytes);
+     SHOW_INT(ping_send_timeout);
+     SHOW_INT(ping_rec_timeout);
+@@ -6598,6 +6600,11 @@ add_option(struct options *options,
+             }
+         }
+     }
++    else if (streq(p[0], "session-timeout") && p[1] && !p[2])
++    {
++        VERIFY_PERMISSION(OPT_P_TIMER);
++        options->session_timeout = positive_atoi(p[1]);
++    }
+     else if (streq(p[0], "proto") && p[1] && !p[2])
+     {
+         int proto;
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 6449dcdf..3d1d37d0 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -324,6 +324,8 @@ struct options
+     int inactivity_timeout;     /* --inactive */
+     int64_t inactivity_minimum_bytes;
+ 
++    int session_timeout;        /* Force-kill session after n seconds */
++
+     int ping_send_timeout;      /* Send a TCP/UDP ping to remote every n seconds */
+     int ping_rec_timeout;       /* Expect a TCP/UDP ping from remote at least once every n seconds */
+     bool ping_timer_remote;     /* Run ping timer only if we have a remote address */
+-- 
+2.35.1
 
-> ---
->  src/plugins/auth-pam/auth-pam.c | 25 +++++++++++++++++++++----
->  1 file changed, 21 insertions(+), 4 deletions(-)
->=20
-> diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-=
-pam.c
-> index 70339445..c2e66e5c 100644
-> --- a/src/plugins/auth-pam/auth-pam.c
-> +++ b/src/plugins/auth-pam/auth-pam.c
-> @@ -49,7 +49,7 @@
->  #include <syslog.h>
->  #include <limits.h>
->  #include "utils.h"
-> -
-> +#include <arpa/inet.h>
->  #include <openvpn-plugin.h>
->=20=20
->  #define DEBUG(verb) ((verb) >=3D 4)
-> @@ -121,6 +121,7 @@ struct user_pass {
->      char password[128];
->      char common_name[128];
->      char response[128];
-> +    char remote[INET6_ADDRSTRLEN];
->=20=20
->      const struct name_value_list *name_value_list;
->  };
-> @@ -529,6 +530,11 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handl=
-e, const int type, const cha
->          const char *username =3D get_env("username", envp);
->          const char *password =3D get_env("password", envp);
->          const char *common_name =3D get_env("common_name", envp) ? get_e=
-nv("common_name", envp) : "";
-> +        const char *remote =3D get_env("untrusted_ip6", envp);
-> +
-> +        if (remote =3D=3D NULL){
-> +                remote =3D get_env("untrusted_ip", envp); //if Null, try=
- to take ipv4 if not set ipv6
-> +        }
-
-Please follow the OpenVPN coding style:
-
-+        if (remote =3D=3D NULL)
-+        {
-+            /*  if Null, try to take ipv4 if not set ipv6 */
-+            remote =3D get_env("untrusted_ip", envp);
-+        }
-
-(opening "{" is on a new line, always, and 4 space indent, and no // C++
-comments)
-
-This also needs some way to handle the case that neither untrusted_ip6
-nor untrusted_ip is set (which might be due to changes on the OpenVPN
-side) - with your v2 patch, this will pass NULL to send_string(),=20
-and then it will crash.
-
-You could do
-
-  remote =3D "";
-
-to make it point to an empty string...
-
-> @@ -789,8 +796,16 @@ pam_auth(const char *service, const struct user_pass=
- *up)
->      status =3D pam_start(service, name_value_list_provided ? NULL : up->=
-username, &conv, &pamh);
->      if (status =3D=3D PAM_SUCCESS)
->      {
-> +        /* Set PAM_RHOST environment variable */
-> +        if (*(up->remote))
-> +        {
-> +            status =3D pam_set_item(pamh, PAM_RHOST, up->remote);
-> +        }
-
-... which would work nicely together with this check for a non-empty
-string on the other end of the pipeline.
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---EIP0+f5uuenoHA8O
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjPydTAAoJEB2Cnv7KVigSI0AL/RJv1wEZglmxjzwLdLdHwF4S
-UxQ1q5zav2yt/BvYGY+4P9O3lTjiOW5lm/4n42PbYe28AuI/G3T5AKJZKn8sCMPE
-6K/f6pvH0KsF7ekgpDdoE+fkn898s89DBGoyzNDFTyGZiPaTr3AANnB7sxmcuUeO
-CJ5BN2nZWwbA/GeMXast1o4RrqPDiMbyvF6eYne/nfUoUahB8HrDdCn6vG5DU/gk
-vKgP2i/Eqj1DdwH3VJiJtV7/JZ/kIcV1Dcg1nefTzBgGuV6S2ERiH84aMfBNlUjq
-ZBWhhN+kMirVKrn2xg5m1Anu97VSlD656ZVTORpcyKmMosaoBuff6xAWIpFByUaE
-nm3FLUSs/YQOGYX23R2SCXARJmaz4/QqAWuKdFjV+SMuErMcabqjEJXkV1+pfDzt
-lxcIWwqO25sjn4OOGS6fyvnVcznT0nqDmMxCoPmFKYKshXR5rBVzaAmp3Jbr/NJY
-0AWX50gE6DXN2F3BpXZRsPlRSQHTl8GFf1gyEH0rHg==
-=3zQ8
------END PGP SIGNATURE-----
-
---EIP0+f5uuenoHA8O--
 
