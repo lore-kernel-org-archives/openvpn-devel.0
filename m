@@ -1,14 +1,10 @@
-Date: Thu, 6 Oct 2022 12:02:53 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <Yz6nzSfEe4yrSI8F@...1296...>
-References: <20220917231030.22565-1-a@...2181...>
- <20220919134108.31316-1-a@...2181...>
+From: Arne Schwabe <arne@...1227...>
+Date: Thu,  6 Oct 2022 14:29:40 +0200
+Message-Id: <20221006122940.1202712-1-arne@...1227...>
+In-Reply-To: <20220923085804.3743109-1-arne@...1227...>
+References: <20220923085804.3743109-1-arne@...1227...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="phrZTQxJ2FfPusyP"
-Content-Disposition: inline
-In-Reply-To: <20220919134108.31316-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2] implement --session-timeout
+Subject: [Openvpn-devel] [PATCH v2] Document/cleanup event_timeout functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,160 +13,280 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---phrZTQxJ2FfPusyP
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Remove function event_timeout_clear_ret as it is unused.
 
-Hi,
+Cleanup event_timeout_trigger a bit. Do an instant return false if the
+timeout is not defined and inline local_now and use
+event_timeout_remaining instead of local duplicated code.
 
-I have a few documentation / comment language issues, and a bit of
-grumbling about the code (which can be ignored).
+Add doxygen comments for all timeout function, especially for the
+event_timeout_trigger function that is hard to understand otherwise.
 
-On Mon, Sep 19, 2022 at 03:41:08PM +0200, Antonio Quartulli wrote:
-> +--session-timeout n
-> +  Raises :code:`SIGTERM` for the client instance after ``n`` seconds sin=
-ce
-> +  the beginning of the session, forcing OpenVPN to disconnect.
-> +  In client mode, OpenVPN will disconnect and exit, while in server mode
-> +  all client sessions are terminated.
-> +
-> +  This option can also be specified in a client instance config file
-> +  using ``--client-config-dir`` or dynamically generated using a
-> +  ``--client-connect`` script. In these cases, only the related client
-> +  session is terminated.
-> +
-> +  When using option on the server side, it may be useful to push
-> +  ``--explicit-exit-notify`` in order to terminate a client session
-> +  and be informed about it.
+Patch v2: add many fixes/correction suggested by Frank
 
-This paragraph is a bit unclear.  Why would you want to *push*
---explicit-exit-notify?  *Use* it, on the server, so the client gets
-an EEN, this I would understand.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/interval.c |  50 ++++++++++----------
+ src/openvpn/interval.h | 103 +++++++++++++++++++++++++++++------------
+ src/openvpn/openvpn.h  |   4 +-
+ 3 files changed, 102 insertions(+), 55 deletions(-)
 
-Maybe reword this as
+diff --git a/src/openvpn/interval.c b/src/openvpn/interval.c
+index 2f0fc42dd..8f3c1c604 100644
+--- a/src/openvpn/interval.c
++++ b/src/openvpn/interval.c
+@@ -41,44 +41,46 @@ interval_init(struct interval *top, int horizon, int refresh)
+     top->horizon = horizon;
+ }
+ 
++
+ bool
+ event_timeout_trigger(struct event_timeout *et,
+                       struct timeval *tv,
+                       const int et_const_retry)
+ {
++    if (!et->defined)
++    {
++        return false;
++    }
++
+     bool ret = false;
+-    const time_t local_now = now;
++    time_t wakeup = event_timeout_remaining(et);
+ 
+-    if (et->defined)
++    if (wakeup <= 0)
+     {
+-        time_t wakeup = et->last - local_now + et->n;
+-        if (wakeup <= 0)
+-        {
+ #if INTERVAL_DEBUG
+-            dmsg(D_INTERVAL, "EVENT event_timeout_trigger (%d) etcr=%d", et->n,
+-                 et_const_retry);
++        dmsg(D_INTERVAL, "EVENT event_timeout_trigger (%d) etcr=%d", et->n,
++             et_const_retry);
+ #endif
+-            if (et_const_retry < 0)
+-            {
+-                et->last = local_now;
+-                wakeup = et->n;
+-                ret = true;
+-            }
+-            else
+-            {
+-                wakeup = et_const_retry;
+-            }
++        if (et_const_retry < 0)
++        {
++            et->last = now;
++            wakeup = et->n;
++            ret = true;
+         }
+-
+-        if (tv && wakeup < tv->tv_sec)
++        else
+         {
++            wakeup = et_const_retry;
++        }
++    }
++
++    if (tv && wakeup < tv->tv_sec)
++    {
+ #if INTERVAL_DEBUG
+-            dmsg(D_INTERVAL, "EVENT event_timeout_wakeup (%d/%d) etcr=%d",
+-                 (int) wakeup, et->n, et_const_retry);
++        dmsg(D_INTERVAL, "EVENT event_timeout_wakeup (%d/%d) etcr=%d",
++             (int) wakeup, et->n, et_const_retry);
+ #endif
+-            tv->tv_sec = wakeup;
+-            tv->tv_usec = 0;
+-        }
++        tv->tv_sec = wakeup;
++        tv->tv_usec = 0;
+     }
+     return ret;
+ }
+diff --git a/src/openvpn/interval.h b/src/openvpn/interval.h
+index f58bfacf6..e6f0bece1 100644
+--- a/src/openvpn/interval.h
++++ b/src/openvpn/interval.h
+@@ -135,9 +135,9 @@ interval_action(struct interval *top)
+ 
+ struct event_timeout
+ {
+-    bool defined;
+-    interval_t n;
+-    time_t last; /* time of last event */
++    bool defined;       /**< This timeout is active */
++    interval_t n;       /**< periodic interval for periodic timeouts */
++    time_t last;        /**< time of last event */
+ };
+ 
+ static inline bool
+@@ -145,7 +145,12 @@ event_timeout_defined(const struct event_timeout *et)
+ {
+     return et->defined;
+ }
+-
++/**
++ * Clears the timeout and reset all values to 0. Following timer checks will
++ * not trigger.
++ *
++ * @param et    timer struct
++ */
+ static inline void
+ event_timeout_clear(struct event_timeout *et)
+ {
+@@ -154,22 +159,32 @@ event_timeout_clear(struct event_timeout *et)
+     et->last = 0;
+ }
+ 
+-static inline struct event_timeout
+-event_timeout_clear_ret(void)
+-{
+-    struct event_timeout ret;
+-    event_timeout_clear(&ret);
+-    return ret;
+-}
+ 
++/**
++ * Initialises a timer struct. The timer will become true/trigger after
++ * last + n seconds.
++ *
++ *
++ * @param et            Timer struct
++ * @param n             Interval of the timer for periodic timer. A negative
++ *                      value for n will be interpreted as 0.
++ * @param last          Sets the base time of the timer.
++ */
+ static inline void
+-event_timeout_init(struct event_timeout *et, interval_t n, const time_t local_now)
++event_timeout_init(struct event_timeout *et, interval_t n, const time_t last)
+ {
+     et->defined = true;
+     et->n = (n >= 0) ? n : 0;
+-    et->last = local_now;
++    et->last = last;
+ }
+ 
++/**
++ * Resets a timer.
++ *
++ * Sets the last time the timer has been triggered for the calculation of the
++ * next event.
++ * @param et
++ */
+ static inline void
+ event_timeout_reset(struct event_timeout *et)
+ {
+@@ -179,42 +194,70 @@ event_timeout_reset(struct event_timeout *et)
+     }
+ }
+ 
++/**
++ * Sets the interval n of a timeout.
++ * @param et
++ * @param n Interval value of the timer, negative values
++ *          will be interpreted as 0
++ *
++ * @note you might need to call reset_coarse_timers after this
++ */
+ static inline void
+ event_timeout_modify_wakeup(struct event_timeout *et, interval_t n)
+ {
+-    /* note that you might need to call reset_coarse_timers after this */
+     if (et->defined)
+     {
+         et->n = (n >= 0) ? n : 0;
+     }
+ }
+ 
+-/*
+- * Will return the time left for a timeout, this function does not check
+- * if the timeout is actually valid
++/**
++ * Returns the time until the timeout should triggered from from now.
++ * This function does not check if the timeout is actually valid.
+  */
+ static inline interval_t
+ event_timeout_remaining(struct event_timeout *et)
+ {
+-    return (interval_t) (et->last - now + et->n);
++    return (interval_t) ((et->last + et->n) - now);
+ }
+ 
+-/*
+- * This is the principal function for testing and triggering recurring
+- * timers and will return true on a timer signal event.
+- * If et_const_retry == ETT_DEFAULT and a signal occurs,
+- * the function will return true and *et will be armed for the
+- * next event.  If et_const_retry >= 0 and a signal occurs,
+- * *et will not be touched, but *tv will be set to
+- * minimum (*tv, et_const_retry) for a future re-test,
+- * and the function will return true.
+- */
+-
+ #define ETT_DEFAULT (-1)
+ 
++/**
++ * This is the principal function for testing and triggering recurring
++ * timers.
++ *
++ * If *et is not triggered, *tv is set to remaining time until the timeout if
++ * not already lower:
++ *
++ *      *tv = minimum(*tv, event_timeout_remaining(*et))
++ *
++ * If *et triggers and et_const_retry is negative (ETT_DEFAULT is -1):
++ *  - the function will return true
++ *  - *et will be armed for the next event (et->last set to now).
++ *  - *tv will be lowered to the event period (n) if larger than the
++ *     period of the event (set to *et's next timeout)
++ *  - *et will not changed (ie also not rearmed, stays armed)
++ *
++ * If *et triggers and et_const_retry >= 0, *tv will be lowered to et_const_try
++ * if larger:
++ *
++ *    *tv = *minimum(*tv, et_const_retry)
++ *
++ * This is mainly useful is the trigger cannot yet be triggered for other
++ * reasons and a backoff timeout should be returned if the timer is ready
++ * to trigger.
++ *
++ *
++ * @param et                the timeout to check
++ * @param tv                will be set to timeout for next check for this
++ *                          timeout unless already smaller.
++ * @param et_const_retry    see above
++ * @return                  if the timeout has triggered and event has been reset
++ */
+ bool event_timeout_trigger(struct event_timeout *et,
+                            struct timeval *tv,
+-                           const int et_const_retry);
++                           int et_const_retry);
+ 
+ /*
+  * Measure time intervals in microseconds
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 00cd652fa..95c7d7520 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -386,7 +386,9 @@ struct context_2
+      * Event loop info
+      */
+ 
+-    /* how long to wait on link/tun read before we will need to be serviced */
++    /** Time to next event of timers and similar. This is used to determine
++     *  how long to wait on event wait (select/poll on link/tun read)
++     *  before this context wants to be serviced */
+     struct timeval timeval;
+ 
+     /* next wakeup for processing coarse timers (>1 sec resolution) */
+-- 
+2.37.0 (Apple Git-136)
 
-"If this is used on the server (main config or per-client), this works
-better if ``--explicit-exit-notify`` is also used in the server config,
-so clients are not just silently disconnected but get told about it."
-
-
-> +
->  --socket-flags flags
->    Apply the given flags to the OpenVPN transport socket. Currently, only
->    :code:`TCP_NODELAY` is supported.
-> diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/serve=
-r-options.rst
-> index 54ea8b66..9d0c73b6 100644
-> --- a/doc/man-sections/server-options.rst
-> +++ b/doc/man-sections/server-options.rst
-> @@ -426,7 +426,7 @@ fast hardware. SSL/TLS authentication must be used in=
- this mode.
->    ``--inactive``, ``--ping``, ``--ping-exit``, ``--ping-restart``,
->    ``--setenv``, ``--auth-token``, ``--persist-key``, ``--persist-tun``,
->    ``--echo``, ``--comp-lzo``, ``--socket-flags``, ``--sndbuf``,
-> -  ``--rcvbuf``
-> +  ``--rcvbuf``, ``--session-timeout``
->=20=20
->  --push-remove opt
->    Selectively remove all ``--push`` options matching "opt" from the opti=
-on
-> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-> index e5cee665..810cb8a7 100644
-> --- a/src/openvpn/forward.c
-> +++ b/src/openvpn/forward.c
-> @@ -630,6 +630,21 @@ encrypt_sign(struct context *c, bool comp_frag)
->      buffer_turnover(orig_buf, &c->c2.to_link, &c->c2.buf, &b->read_tun_b=
-uf);
->  }
->=20=20
-> +/*
-> + * Should we exit due to session timeout?
-> + */
-> +static void
-> +check_session_timeout(struct context *c)
-> +{
-> +    if (c->options.session_timeout
-> +        && event_timeout_trigger(&c->c2.session_interval, &c->c2.timeval,
-> +                                 ETT_DEFAULT))
-> +    {
-> +        msg(M_INFO, "Session timeout, exiting");
-> +        register_signal(c, SIGTERM, "session-timeout");
-> +    }
-> +}
-> +
->  /*
->   * Coarse timers work to 1 second resolution.
->   */
-> @@ -681,6 +696,13 @@ process_coarse_timers(struct context *c)
->          return;
->      }
->=20=20
-> +    /* kill session if time is over */
-> +    check_session_timeout(c);
-> +    if (c->sig->signal_received)
-> +    {
-> +        return;
-> +    }
-
-This now-triple "if (c->sig->signal_received)" still rubs my sensitivies,
-but I'm not sure if it's worth rewriting check_session_timeout() and
-check_ping_restart() to return a bool instead, and make this
-
-    if (check_session_timeout(c))		/* game over? */
-    {
-        return;
-    }
-
-    if (check_ping_restart(c))			/* peer went to sleep? */
-    {
-        return;
-    }
-
-instead...
-
-
-But anyway, this is more "material for a general cleanup patch", this
-patch is OK as it is, code-wise.
-
-> +    int session_timeout;        /* Kill session after n seconds, regardl=
-ess activity */
-
-"regardless activity" is no good, "regardless of activity" is getting a bit
-long.
-
-What about "/* force-kill session after n seconds */"?
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---phrZTQxJ2FfPusyP
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjPqfNAAoJEB2Cnv7KVigST00MALQJXht6QCaix4P/iHk6rmVo
-ILJqYKo2u+jSJ0K/r2LqXkciyrn/VAiuP7M2wpcfNMyXvHkJtdatLs44UXkz0b/F
-fpHSUF/aVwSNCd3Dyo51ok33RBU48IEUfUh+FbQYdQpajr75PHlqTwEWURjQyb7g
-Q8412FrnAGHJLsZQcb01zxECSJ1NcmTVUz+tBI1UuXnGuBi56mwTYOgXpTYHjsUD
-Lp+Aof9a8BjsKXEK6I0hn1aNtqDC0oHyKhacqd8vsyLLZhy8+IsFRzBVQojbNW1l
-yds8laHejmthZefLdf6hd9b8OtTogAe5pwA6e6BHEaTZTpmZWZY2gKv3hplfmJ2k
-TXM11hZG7xqSYPa6jNElHafvakZXpO3zRnS8SSyfKLT4O5MBjkbyFHbzAn0udt1Y
-TCn+7wlBboObce5cljRmEmdJU8SJ/I5kwXfHU5ki9/crIcv8l5mv925QOMePK1ac
-rDJ8xctRE76cSwVJI3UEST2zF6HmH3/LTDEhEu33Jg==
-=cxjs
------END PGP SIGNATURE-----
-
---phrZTQxJ2FfPusyP--
 
