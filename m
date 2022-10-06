@@ -1,10 +1,14 @@
-Date: Thu, 6 Oct 2022 11:10:59 +0200 (CEST)
-Message-Id: <202210060910.2969AxkL043029@...2054...>
+Date: Thu, 6 Oct 2022 12:02:53 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20220628082024.19059-1-a@...2181...>
-References: <20220628082024.19059-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: do not push route-ipv6 entries
- that are also in the iroute-ipv6 list
+Message-ID: <Yz6nzSfEe4yrSI8F@...1296...>
+References: <20220917231030.22565-1-a@...2181...>
+ <20220919134108.31316-1-a@...2181...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="phrZTQxJ2FfPusyP"
+Content-Disposition: inline
+In-Reply-To: <20220919134108.31316-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2] implement --session-timeout
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,82 +17,160 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Stared-at-code for a bit...
+--phrZTQxJ2FfPusyP
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-The remove_iroutes_from_push_route_list() function would benefit from
-our new "early exit" style - but that's outside the scope of this patch
-(and actually not changing both at the same time helps readability).
+Hi,
 
-The way the change is done is symmetric v4/v6, so whatever quality
-problems the code might have, it's not introduced by this patch.
+I have a few documentation / comment language issues, and a bit of
+grumbling about the code (which can be ignored).
 
-If I had written, this, I might have used "ir6" as iterator variable
-for "struct iroute_ipv6 *ir6", but this is really minor - the code
-is clear enough.
+On Mon, Sep 19, 2022 at 03:41:08PM +0200, Antonio Quartulli wrote:
+> +--session-timeout n
+> +  Raises :code:`SIGTERM` for the client instance after ``n`` seconds sin=
+ce
+> +  the beginning of the session, forcing OpenVPN to disconnect.
+> +  In client mode, OpenVPN will disconnect and exit, while in server mode
+> +  all client sessions are terminated.
+> +
+> +  This option can also be specified in a client instance config file
+> +  using ``--client-config-dir`` or dynamically generated using a
+> +  ``--client-connect`` script. In these cases, only the related client
+> +  session is terminated.
+> +
+> +  When using option on the server side, it may be useful to push
+> +  ``--explicit-exit-notify`` in order to terminate a client session
+> +  and be informed about it.
 
-As a matter of optimization, I'd compare "netbits" first, and only then
-run the memcmp()) - but for the normal volumes of ipv6 iroutes that
-OpenVPN instances handle, this is inconsequential, and for Really Huge
-Installations with 10.000s of iroutes, the "walk a linked list" approach
-stinks anyway, one might want to change this to an iroute* hash lookup...
+This paragraph is a bit unclear.  Why would you want to *push*
+--explicit-exit-notify?  *Use* it, on the server, so the client gets
+an EEN, this I would understand.
 
+Maybe reword this as
 
-Tested on the FreeBSD 14 DCO instance, which excercises "push route-ipv6"
-and "iroute-ipv6" quite heavily, with various netmasks, to see if
-client-to-client routing works properly:
-
-Client #1 "has no iroutes"
-
-Oct  6 10:12:10 fbsd14 tun-udp-p2mp[43951]: SENT CONTROL [cron2-ubuntu-2004-amd64]: 'PUSH_REPLY,route 10.114.0.0 255.255.0.0,route-ipv6 fd00:abcd:114::/48,route-ipv6 fd00:abcd:114:200::74/128,route 10.114.201.0 255.255.255.0,route 10.114.201.0 255.255.255.128,route-ipv6 fd00:abcd:114:201::/64,route-ipv6 fd00:abcd:114:201::/65,route 10.114.202.74 255.255.255.255,route-ipv6 fd00:abcd:114:202::74/128,...,key-derivation tls-ekm' (status=1)
-
-Client #2 "has all these more-specific iroutes, v4+v6"
-
-Oct  6 10:12:52 fbsd14 tun-udp-p2mp[43951]: freebsd-74-amd64/2001:608:0:814::f000:3 SENT CONTROL [freebsd-74-amd64]: 'PUSH_REPLY,route 10.114.0.0 255.255.0.0,route-ipv6 fd00:abcd:114::/48,...,cipher AES-256-GCM' (status=1)
-
--> so, it works as it says on the tin, all matching iroute/iroute-ipv6
-are removed from the to-be-pushed route/route-ipv6 entries, and it
-says so in the log:
-
-Oct  6 10:12:51 ... REMOVE PUSH ROUTE: 'route-ipv6 fd00:abcd:114:200::74/128'
-Oct  6 10:12:51 ... REMOVE PUSH ROUTE: 'route 10.114.201.0 255.255.255.0'
-Oct  6 10:12:51 ... REMOVE PUSH ROUTE: 'route 10.114.201.0 255.255.255.128'
-Oct  6 10:12:51 ... REMOVE PUSH ROUTE: 'route-ipv6 fd00:abcd:114:201::/64'
-Oct  6 10:12:51 ... REMOVE PUSH ROUTE: 'route-ipv6 fd00:abcd:114:201::/65'
-Oct  6 10:12:51 ... REMOVE PUSH ROUTE: 'route 10.114.202.74 255.255.255.255'
-Oct  6 10:12:51 ... REMOVE PUSH ROUTE: 'route-ipv6 fd00:abcd:114:202::74/128'
-
-(the funny ordering comes from "this is the ordering of the push statements
-in the server.conf", so, yes, this is as expected)
+"If this is used on the server (main config or per-client), this works
+better if ``--explicit-exit-notify`` is also used in the server config,
+so clients are not just silently disconnected but get told about it."
 
 
-I discussed inclusion in release/2.5 with Antonio, and we agree that
-this is more a "missing feature" than a bug, so I've not backported
-it for now (it should apply trivially, so if someone comes screaming,
-we can always do so).
+> +
+>  --socket-flags flags
+>    Apply the given flags to the OpenVPN transport socket. Currently, only
+>    :code:`TCP_NODELAY` is supported.
+> diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/serve=
+r-options.rst
+> index 54ea8b66..9d0c73b6 100644
+> --- a/doc/man-sections/server-options.rst
+> +++ b/doc/man-sections/server-options.rst
+> @@ -426,7 +426,7 @@ fast hardware. SSL/TLS authentication must be used in=
+ this mode.
+>    ``--inactive``, ``--ping``, ``--ping-exit``, ``--ping-restart``,
+>    ``--setenv``, ``--auth-token``, ``--persist-key``, ``--persist-tun``,
+>    ``--echo``, ``--comp-lzo``, ``--socket-flags``, ``--sndbuf``,
+> -  ``--rcvbuf``
+> +  ``--rcvbuf``, ``--session-timeout``
+>=20=20
+>  --push-remove opt
+>    Selectively remove all ``--push`` options matching "opt" from the opti=
+on
+> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+> index e5cee665..810cb8a7 100644
+> --- a/src/openvpn/forward.c
+> +++ b/src/openvpn/forward.c
+> @@ -630,6 +630,21 @@ encrypt_sign(struct context *c, bool comp_frag)
+>      buffer_turnover(orig_buf, &c->c2.to_link, &c->c2.buf, &b->read_tun_b=
+uf);
+>  }
+>=20=20
+> +/*
+> + * Should we exit due to session timeout?
+> + */
+> +static void
+> +check_session_timeout(struct context *c)
+> +{
+> +    if (c->options.session_timeout
+> +        && event_timeout_trigger(&c->c2.session_interval, &c->c2.timeval,
+> +                                 ETT_DEFAULT))
+> +    {
+> +        msg(M_INFO, "Session timeout, exiting");
+> +        register_signal(c, SIGTERM, "session-timeout");
+> +    }
+> +}
+> +
+>  /*
+>   * Coarse timers work to 1 second resolution.
+>   */
+> @@ -681,6 +696,13 @@ process_coarse_timers(struct context *c)
+>          return;
+>      }
+>=20=20
+> +    /* kill session if time is over */
+> +    check_session_timeout(c);
+> +    if (c->sig->signal_received)
+> +    {
+> +        return;
+> +    }
 
-Your patch has been applied to the master branch.
+This now-triple "if (c->sig->signal_received)" still rubs my sensitivies,
+but I'm not sure if it's worth rewriting check_session_timeout() and
+check_ping_restart() to return a bool instead, and make this
 
-commit 437812d4eac9ac892fbfd2fd97c50384b2d2ec07
-Author: Antonio Quartulli
-Date:   Tue Jun 28 10:20:24 2022 +0200
+    if (check_session_timeout(c))		/* game over? */
+    {
+        return;
+    }
 
-     do not push route-ipv6 entries that are also in the iroute-ipv6 list
+    if (check_ping_restart(c))			/* peer went to sleep? */
+    {
+        return;
+    }
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Heiko Hund <heiko@...2662...>
-     Message-Id: <20220628082024.19059-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg24577.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+instead...
 
 
---
-kind regards,
+But anyway, this is more "material for a general cleanup patch", this
+patch is OK as it is, code-wise.
 
-Gert Doering
+> +    int session_timeout;        /* Kill session after n seconds, regardl=
+ess activity */
 
+"regardless activity" is no good, "regardless of activity" is getting a bit
+long.
+
+What about "/* force-kill session after n seconds */"?
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--phrZTQxJ2FfPusyP
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJjPqfNAAoJEB2Cnv7KVigST00MALQJXht6QCaix4P/iHk6rmVo
+ILJqYKo2u+jSJ0K/r2LqXkciyrn/VAiuP7M2wpcfNMyXvHkJtdatLs44UXkz0b/F
+fpHSUF/aVwSNCd3Dyo51ok33RBU48IEUfUh+FbQYdQpajr75PHlqTwEWURjQyb7g
+Q8412FrnAGHJLsZQcb01zxECSJ1NcmTVUz+tBI1UuXnGuBi56mwTYOgXpTYHjsUD
+Lp+Aof9a8BjsKXEK6I0hn1aNtqDC0oHyKhacqd8vsyLLZhy8+IsFRzBVQojbNW1l
+yds8laHejmthZefLdf6hd9b8OtTogAe5pwA6e6BHEaTZTpmZWZY2gKv3hplfmJ2k
+TXM11hZG7xqSYPa6jNElHafvakZXpO3zRnS8SSyfKLT4O5MBjkbyFHbzAn0udt1Y
+TCn+7wlBboObce5cljRmEmdJU8SJ/I5kwXfHU5ki9/crIcv8l5mv925QOMePK1ac
+rDJ8xctRE76cSwVJI3UEST2zF6HmH3/LTDEhEu33Jg==
+=cxjs
+-----END PGP SIGNATURE-----
+
+--phrZTQxJ2FfPusyP--
 
