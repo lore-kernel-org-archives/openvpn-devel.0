@@ -1,14 +1,11 @@
-From: Kristof Provost <kp@...1376...>
-Date: Fri, 07 Oct 2022 10:47:08 +0100
-Message-ID: <3B9F182D-0936-4799-B1B0-D269DBB3C2E6@...1376...>
-In-Reply-To: <Yz72rrCsJCjBgE4T@...1296...>
-References: <20220812134154.16729-3-kprovost@...2661...>
- <202208201401.27KE12Cm014083@...2054...>
- <YwDwvG++hK0nJI2F@...1296...>
- <21B552DE-38FE-41F0-8FC7-606EA4C06093@...1376...>
- <Yz72rrCsJCjBgE4T@...1296...>
+Date: Fri, 7 Oct 2022 12:21:30 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <Yz/9qsnpKGa6mOT5@...2685...>
+References: <20220826085427.25302-1-frank@...2641...>
+ <20220826085427.25302-5-frank@...2641...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] route/iroute handling on FreeBSD
+In-Reply-To: <20220826085427.25302-5-frank@...2641...>
+Subject: Re: [Openvpn-devel] [PATCH 4/6] reformat for sp_arith_additive=add
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,19 +14,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hi Gert,
+On Fri, Aug 26, 2022 at 10:54:25AM +0200, Frank Lichtenheld wrote:
+> Signed-off-by: Frank Lichtenheld <frank@...2641...>
 
-On 6 Oct 2022, at 16:39, Gert Doering wrote:
-> FreeBSD DCO has the open issue of "iroute with the same netmask as
-> route, so we want metric/weight/... to differenciate"
->
-I’ll try to dig into that, but it’ll be late next week at the earliest.
+Note: This patch doesn't apply cleanly anymore due to a conflict
+in tun.c. But obviously it can trivially be recreated, since it
+is just a call to ./dev-tools/reformat-all.sh.
 
-Best regards,
-Kristof
+Let me know if you would like a v2 anyway.
+
+Regards,
+-- 
+  Frank Lichtenheld
 
