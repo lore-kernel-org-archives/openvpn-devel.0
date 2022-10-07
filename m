@@ -1,12 +1,18 @@
-Date: Fri, 7 Oct 2022 11:44:01 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Yz/04cmanSoMHRIc@...2685...>
-References: <20220923085804.3743109-1-arne@...1227...>
- <20221006122940.1202712-1-arne@...1227...>
+Date: Fri, 7 Oct 2022 11:56:52 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <Yz/35K6JddVNg9F9@...1296...>
+References: <20220812134154.16729-3-kprovost@...2661...>
+ <202208201401.27KE12Cm014083@...2054...>
+ <YwDwvG++hK0nJI2F@...1296...>
+ <21B552DE-38FE-41F0-8FC7-606EA4C06093@...1376...>
+ <Yz72rrCsJCjBgE4T@...1296...>
+ <3B9F182D-0936-4799-B1B0-D269DBB3C2E6@...1376...>
 MIME-Version: 1.0
-In-Reply-To: <20221006122940.1202712-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Document/cleanup event_timeout
- functions
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="LAV26f8pfMMCa7fI"
+Content-Disposition: inline
+In-Reply-To: <3B9F182D-0936-4799-B1B0-D269DBB3C2E6@...1376...>
+Subject: Re: [Openvpn-devel] route/iroute handling on FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,123 +21,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
+To: Kristof Provost <kp@...1249...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+
+--LAV26f8pfMMCa7fI
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
 
-On Thu, Oct 06, 2022 at 02:29:40PM +0200, Arne Schwabe wrote:
-> Remove function event_timeout_clear_ret as it is unused.
-> 
-> Cleanup event_timeout_trigger a bit. Do an instant return false if the
-> timeout is not defined and inline local_now and use
-> event_timeout_remaining instead of local duplicated code.
-> 
-> Add doxygen comments for all timeout function, especially for the
-> event_timeout_trigger function that is hard to understand otherwise.
-> 
-> Patch v2: add many fixes/correction suggested by Frank
-> 
+Hi,
 
-The new sentences have some small issues. Gert can probably fix them on
-apply.
+On Fri, Oct 07, 2022 at 10:47:08AM +0100, Kristof Provost wrote:
+> On 6 Oct 2022, at 16:39, Gert Doering wrote:
+> > FreeBSD DCO has the open issue of "iroute with the same netmask as
+> > route, so we want metric/weight/... to differenciate"
+> I???ll try to dig into that, but it???ll be late next week at the earlies=
+t.
 
-Acked-By: Frank Lichtenheld <frank@...2641...>
+Thanks.
 
-[...]
-> -/*
-> - * Will return the time left for a timeout, this function does not check
-> - * if the timeout is actually valid
-> +/**
-> + * Returns the time until the timeout should triggered from from now.
+I'll dig into the POINTTOPOINT issue... configure a real MULTIPOINT
+interface for --topology subnet (which is something I've always avoided
+so far, because "we know the other stuff works")
 
-"should be triggered, from \c now."
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-> + * This function does not check if the timeout is actually valid.
->   */
->  static inline interval_t
->  event_timeout_remaining(struct event_timeout *et)
->  {
-> -    return (interval_t) (et->last - now + et->n);
-> +    return (interval_t) ((et->last + et->n) - now);
->  }
->  
-> -/*
-> - * This is the principal function for testing and triggering recurring
-> - * timers and will return true on a timer signal event.
-> - * If et_const_retry == ETT_DEFAULT and a signal occurs,
-> - * the function will return true and *et will be armed for the
-> - * next event.  If et_const_retry >= 0 and a signal occurs,
-> - * *et will not be touched, but *tv will be set to
-> - * minimum (*tv, et_const_retry) for a future re-test,
-> - * and the function will return true.
-> - */
-> -
->  #define ETT_DEFAULT (-1)
->  
-> +/**
-> + * This is the principal function for testing and triggering recurring
-> + * timers.
-> + *
-> + * If *et is not triggered, *tv is set to remaining time until the timeout if
-> + * not already lower:
-> + *
-> + *      *tv = minimum(*tv, event_timeout_remaining(*et))
-> + *
-> + * If *et triggers and et_const_retry is negative (ETT_DEFAULT is -1):
-> + *  - the function will return true
-> + *  - *et will be armed for the next event (et->last set to now).
-> + *  - *tv will be lowered to the event period (n) if larger than the
-> + *     period of the event (set to *et's next timeout)
-> + *  - *et will not changed (ie also not rearmed, stays armed)
-> + *
-> + * If *et triggers and et_const_retry >= 0, *tv will be lowered to et_const_try
-> + * if larger:
-> + *
-> + *    *tv = *minimum(*tv, et_const_retry)
-> + *
-> + * This is mainly useful is the trigger cannot yet be triggered for other
+Gert Doering - Munich, Germany                             gert@...1296...
 
-"if the trigger"
+--LAV26f8pfMMCa7fI
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> + * reasons and a backoff timeout should be returned if the timer is ready
-> + * to trigger.
-> + *
-> + *
-> + * @param et                the timeout to check
-> + * @param tv                will be set to timeout for next check for this
-> + *                          timeout unless already smaller.
-> + * @param et_const_retry    see above
-> + * @return                  if the timeout has triggered and event has been reset
-> + */
->  bool event_timeout_trigger(struct event_timeout *et,
->                             struct timeval *tv,
-> -                           const int et_const_retry);
-> +                           int et_const_retry);
->  
->  /*
->   * Measure time intervals in microseconds
-> diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-> index 00cd652fa..95c7d7520 100644
-> --- a/src/openvpn/openvpn.h
-> +++ b/src/openvpn/openvpn.h
-> @@ -386,7 +386,9 @@ struct context_2
->       * Event loop info
->       */
->  
-> -    /* how long to wait on link/tun read before we will need to be serviced */
-> +    /** Time to next event of timers and similar. This is used to determine
-> +     *  how long to wait on event wait (select/poll on link/tun read)
-> +     *  before this context wants to be serviced */
+-----BEGIN PGP SIGNATURE-----
 
-Add period for consistency.
+iQGcBAEBAgAGBQJjP/fkAAoJEB2Cnv7KVigSToEL/RbMZL62EuNVZUI/rTqtHU/r
+T0vdPAWp+5NQ6KGPDtaChI6qAiV6P/1x1gv4MnPiLDtsKfXe54fjB0Upq2FNrmqh
+rOqRK8tP/V2pOpvfwQWbnuNoDA9iu7fW9YDXg2gav2GAhR6l8Zcn9AYOQqfjcB6y
+17K7bPFD0BbX/SWFBQmW/2jtxeC68t25pVkEYoAcByFUXQnytBdSsO7WdhEKvOEV
+ZU2xaqrs9B/sgEHCkFXgifx/VBCMW5edbEFoUp02Pqo1Xu3CePFyv9iS/iTi+1iL
+fulcKUijhFDDtJI2we02Ak30PgtMvM8bBcp1VmZHUf+iA1SOOjGmHCmMTKeeBzB2
+Um50qbGXx2OsKavEoPoXp/+YcZXeFXnHT+3O/1AquL0D+Q4/UuK8E8eBIFnTj6E/
+5OiOHvDovVs1hnqFjYpPl6YI4EPrfegz7Rsga1G/oDdPHGbh82keKBeGjgDvul+b
+/OsIqwN8FhsoxUozDx6yi2G9h9myM0gv6kGg1CBv1g==
+=U8JP
+-----END PGP SIGNATURE-----
 
->      struct timeval timeval;
->  
->      /* next wakeup for processing coarse timers (>1 sec resolution) */
-
-Regards,
--- 
-  Frank Lichtenheld
+--LAV26f8pfMMCa7fI--
 
