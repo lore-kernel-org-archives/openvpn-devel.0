@@ -1,9 +1,10 @@
-Date: Fri, 7 Oct 2022 18:10:01 +0200 (CEST)
-Message-Id: <202210071610.297GA1o7073988@...2054...>
+Date: Sat, 8 Oct 2022 22:42:55 +0200 (CEST)
+Message-Id: <202210082042.298KgtfH099733@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221006203731.13529-1-a@...2181...>
-References: <20221006203731.13529-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: implement --session-timeout
+In-Reply-To: <20220917134832.16359-1-a@...2181...>
+References: <20220917134832.16359-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: auth-user-pass: add support for
+ inline credentials
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,53 +15,43 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Dmitry Zelenkovsky <dmitry@...2697...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-This is a useful addition for situations with external constraints
-("this VPN access may only be used between 10:00 and 18:00", so you
-can ensure the session ends at 17:59:59 without having extra managmeent
-logic around).  Whether it's overly useful in "global server context"
-or on the client side stands to be debated - but this needs no extra
-code, so "it's just there and someone might find use for it".
+This is, amazingly, quite straightforward.  I assumed major complications
+but our magic "ask for username and password" function *already* supports
+inline, we just didn't use it for --aup yet...
 
-I have tested client-side (works), server-side/global (will terminate
-each instance <n> seconds after connecting, but not itself) and
-server-side/ccd (per-instance kill switch with per-instance timer).
+I have stared at the code for a bit (looks good, though the multi-line
+calls to get_user_pass_cr() could use some "folding up" now), and
+tested with inline
 
-Unfortunately, the man page addition about explicit-exit-notify is
-wrong - on the server side, it never sends notifies, it just kills
-the client TLS instance...
+ <auth-user-pass>
+ username
+ pass
+ </auth-user-pass>
 
-2022-10-07 18:05:13 us=256095 cron2-freebsd-tc-amd64/194.97.140.21:29079 Session timeout, exiting
-2022-10-07 18:05:13 us=256170 cron2-freebsd-tc-amd64/194.97.140.21:29079 SIGTERM[soft,session-timeout] received, client-instance exiting
+and also classic --auth-user-pass with/without filename combinations
+(and, me twisted mind, multiple --auth-user-pass statements in the 
+same invocation - "last one wins").
 
-.. without telling the client, so that one needs to run into --ping timeout
-
-2022-10-07 18:05:42 [server] Inactivity timeout (--ping-restart), restarting
-
-.. 30 seconds later, which is not really satisfying...
-
-Can we do better?
-
-I have, for the time being, removed the offending man page section about
---explicit-exit-notify and merged the rest (no code change).
+Works :-)
 
 
 Your patch has been applied to the master branch.
 
-commit f96290ff901f62717fdb4c1adef72142f359e992
-Author: Dmitry Zelenkovsky
-Date:   Thu Oct 6 22:37:31 2022 +0200
+commit 7d48d31b8226d5e3a5638e2369876381038bf5e2
+Author: Antonio Quartulli
+Date:   Sat Sep 17 15:48:32 2022 +0200
 
-     implement --session-timeout
+     auth-user-pass: add support for inline credentials
 
-     Signed-off-by: Dmitry Zelenkovsky <dmitry@...2697...>
+     Signed-off-by: Antonio Quartulli <a@...2181...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221006203731.13529-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25352.html
+     Message-Id: <20220917134832.16359-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25236.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
