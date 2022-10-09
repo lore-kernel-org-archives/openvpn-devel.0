@@ -1,15 +1,15 @@
-Date: Sun, 9 Oct 2022 10:19:03 +0200
+Date: Sun, 9 Oct 2022 14:55:16 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <Y0KD9x0gaO45/crw@...1296...>
-References: <20170225004014.28638-1-a@...2181...>
- <Y0KCrIxfNxw1V+cg@...1296...>
+Message-ID: <Y0LEtHfB/8beDBjj@...1296...>
+References: <20220217182234.33850-1-arne@...1227...>
+ <3032908.4Ter4YMrkd@...2664...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="r4KfvjDAD0h7Ripb"
+ protocol="application/pgp-signature"; boundary="uh9tWObSxeAIXV6s"
 Content-Disposition: inline
-In-Reply-To: <Y0KCrIxfNxw1V+cg@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Ignore auth-nocache for auth-user-pass
- if auth-token is pushed
+In-Reply-To: <3032908.4Ter4YMrkd@...2664...>
+Subject: Re: [Openvpn-devel] [PATCH v3] Fix OpenVPN querying user/password
+ if auth-token with user expires
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,26 +18,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
+To: Heiko Hund <heiko@...2662...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---r4KfvjDAD0h7Ripb
+--uh9tWObSxeAIXV6s
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sun, Oct 09, 2022 at 10:13:32AM +0200, Gert Doering wrote:
-> This patch was still sitting "unanswered" in the list archives (though
-> it never landed in patchwork, as far as I can see).
+On Thu, Aug 18, 2022 at 10:26:04AM +0200, Heiko Hund wrote:
+> On Donnerstag, 17. Februar 2022 19:22:34 CEST Arne Schwabe wrote:
+>=20
+> > @@ -590,6 +590,7 @@ init_query_passwords(const struct context *c)
+> >      /* Auth user/pass input */
+> >      if (c->options.auth_user_pass_file)
+> >      {
+> > +        enable_auth_user_pass();
+> >  #ifdef ENABLE_MANAGEMENT
+> >          auth_user_pass_setup(c->options.auth_user_pass_file,
+> > &c->options.sc_info); #else
+>=20
+> This should be inside the #ifdef to do exactly the same as before, i.e.=20
+> doesn't introduce side effects potentially.=20
 
-*sigh*
+Actually, it shouldn't.  The #ifdef is
 
-More coffee on a sunday morning, it seems - this was actually merged
-just fine, just never recorded in the referenced trac ticket.
+  #ifdef ENABLE_MANAGEMENT
+    auth_user_pass_setup(..., foo)
+  #else
+    auth_user_pass_setup(..., NULL)
+  #endif
 
-So, just ignore me :-)
+so either the enable_auth_user_pass() goes before the #ifdef, or would
+need to be in both branches.  So the patch is fine as it is, one can
+just not see this from the hunk alone.
 
 gert
 --=20
@@ -50,22 +66,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---r4KfvjDAD0h7Ripb
+--uh9tWObSxeAIXV6s
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJjQoP3AAoJEB2Cnv7KVigSOUAL/RCK/I9HCS6ql6whxcsQyKvc
-sNVgb+bUcFzu7H0K7LHW1fMORaWfpFC4vcaC/jpHS00mxqCnowN/W/KCtTtXFwvJ
-egzAOcdVPsEIzJF+CotKfKmIivphX+5pEYsLc679STSzQdeheMeY6XhgRieopr65
-BfH2ChSTsIpTYJRLuckKvxdGdlPNe9Eiu/L89vCDU30/Fj0WnjbiiC0aRuLPRivw
-NGpBE1a+y6SO6jwGFmRgMx3cL7FKlqshUyvCvZqCJbLNMoo+v5qlKFamRlxEfF+T
-jUMntD3UdvjD6OIjTtPGtufjPQz21AmUUh0OwEoxmayEs2eUllufePOCddIJuP/X
-lJRSf8JoEAj2iCdlZ9G225ikODZfWOlHJtmkIm1YDkCeUvmu+je/oamffX8wjfa4
-ZAXSzq/z3pTr64jFNJcx/OZWvUSlV5m937zPbh/Zh4fhUmSqhyPT4jX4l7L5Deb/
-LWFITSAM2GwnCp00E/tDe4DGJEWJyAt0d66cSlJ8cA==
-=W8IC
+iQGcBAEBAgAGBQJjQsS0AAoJEB2Cnv7KVigS8a4L/AyP8MXFj/Uez7bhjxz0Iq2G
+S1fs3Wi0oD/5JBKCsri8BPY6Y2TjAut4C0LrDVWCHv42/A5IDp9UzJTGQLCrw2Ia
+uJQ7NpErG0QwB8LBEFX1/1MeUs7Wfy9sHnuLCw8BGEaGns/8YhPi9bdaoviPThSt
+k30i4cj7JwyIFHDJRmMGtEhCCGVOP6iJ7NWGbD5afR8Vp2dAi+LJIldUiYqsgUDb
+2rNdq1Z/pdxB73KCX5SK3RGSBIDADvkEwMoX302HKxQDPd7HAJobLtNweV+j5kHT
+fXgEIX50RrSFIUV8anJUEgTKtJcCSxZzTQFrSSOzmWJ7ayBmtrL8POVgknb5vpA9
+9c/H2Zlz0C0UKdHvr7ZGtdhlpmUWBvVd/jQf9+xCRcSskoQVg+9xkpBBYIDZQIwy
+DRxD8JSM5gCgLeO0cEcg8bJPtxqqJ5JAaI57D9vyDYfp6rw+E6i+5hb/S48v3pF7
+2G7CjA/rZG03Nj/F0Vwxu6uUlDq3sMyetuVDxKNYPw==
+=G3xs
 -----END PGP SIGNATURE-----
 
---r4KfvjDAD0h7Ripb--
+--uh9tWObSxeAIXV6s--
 
