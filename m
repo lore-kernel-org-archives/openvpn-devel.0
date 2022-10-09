@@ -1,8 +1,9 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Sun,  9 Oct 2022 16:00:42 +0200
-Message-Id: <20221009140042.1560899-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Enable -Werror on macOS builds
+Date: Sun, 9 Oct 2022 16:33:09 +0200 (CEST)
+Message-Id: <202210091433.299EX9CI028350@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221009140042.1560899-1-arne@...1227...>
+References: <20221009140042.1560899-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Enable -Werror on macOS builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,27 +14,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- .github/workflows/build.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Acked-by: Gert Doering <gert@...1296...>
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index f34f6a266..f7d2d3836 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -299,7 +299,7 @@ jobs:
-       - name: autoconf
-         run: autoreconf -fvi
-       - name: configure
--        run: ./configure ${{matrix.configureflags}} ${{matrix.configuressllib}}
-+        run: ./configure --enable-werror ${{matrix.configureflags}} ${{matrix.configuressllib}}
-       - name: make all
-         run: make -j4
-       - name: make check
--- 
-2.37.0 (Apple Git-136)
+Tested on "master + this patch" via my GitHub fork.  Builds all green!
+
+  https://github.com/cron2/openvpn/actions/runs/3214397115
+
+Your patch has been applied to the master branch.
+
+commit 0ff633f750a57d0a4d48481be0bd915196a0bd32 (master)
+Author: Arne Schwabe
+Date:   Sun Oct 9 16:00:42 2022 +0200
+
+     Enable -Werror on macOS builds
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20221009140042.1560899-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25369.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
