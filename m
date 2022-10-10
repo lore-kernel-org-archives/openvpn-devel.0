@@ -1,10 +1,9 @@
-Date: Mon, 10 Oct 2022 16:37:39 +0200 (CEST)
-Message-Id: <202210101437.29AEbdlY059785@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221010122745.19809-1-wardragon78@...277...>
-References: <20221010122745.19809-1-wardragon78@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Insert client connection data
- into PAM environment
+From: Arne Schwabe <arne@...1227...>
+Date: Mon, 10 Oct 2022 17:41:16 +0200
+Message-Id: <20221010154116.1685877-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Ensure only CBC, CFB,
+ OFB and AEAD ciphers are considered valid data ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,60 +14,58 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Paolo Cerrito <paolo.cerrito@...2517...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Make sure cipher_valid only considered these four operations as valid.
+This fixes that somjething like --data-ciphers  AES-256-GCM:AES-128-CCM
+will start but later fail when trying to use the CCM cipher.
 
-Thanks for providing a v3, and following our sometimes difficult rules
-for patch submission.
+We say "a supported AEAD" mode in our error since CCM is also an AEAD mode
+but one we support like GCM.
 
-I have tested this with v4 and v6 connections, and it looks good:
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/ssl_ncp.c               | 8 ++++++++
+ tests/unit_tests/openvpn/test_ncp.c | 6 ++++++
+ 2 files changed, 14 insertions(+)
 
-   PLUGIN AUTH-PAM: BACKGROUND: REMOTE: 2001:608:0:814::f000:21
-   PLUGIN AUTH-PAM: BACKGROUND: REMOTE: 194.97.140.21
-
-(I have not tested with "both environment variables are unset" but I
-think the code in v3 is good.  I have not tested with a PAM module that
-actually makes uses of this - but the pam_set_item() and PAM_RHOST matche
-the linux manpage, so "it should be fine").
-
-Unfortunately, v3 still had a coding style problem - we require that
-if() statements always - no exceptions - have {} brackets, so the
-"empty string" part looks like this now:
-
-+        if (remote == NULL)
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index 013021d6d..14a4e223d 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -136,6 +136,14 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
+             msg(M_WARN, "Unsupported %scipher in --data-ciphers: %s", optstr, token);
+             error_found = error_found || !optional;
+         }
++        else if (!nonecipher && !cipher_kt_mode_aead(token)
++                 && !cipher_kt_mode_cbc(token)
++                 && !cipher_kt_mode_ofb_cfb(token))
 +        {
-+            remote = "";
++            msg(M_WARN, "Cipher algorithm '%s' does use CFB, OFB, CBC, or "
++                "a supported AEAD mode", token);
++            error_found = error_found || !optional;
 +        }
-
-(for "core developers", running uncrustify is required, but since this
-was taking so long already, I ran the uncrustify for you and committed
-the result)
-
-I have also added a bit more of commit message to explain what the
-patch does - how OpenVPN sends this information to the plugin interface,
-and how the PAM stack needs it.  This helps future contributors to
-understand why certain code lines are the way they are.
-
-Your patch has been applied to the master branch.
-
-commit 8e9f9d031f7f2dbf2a505af297b808f22430a381
-Author: Paolo Cerrito
-Date:   Mon Oct 10 14:27:46 2022 +0200
-
-     Insert client connection data into PAM environment
-
-     Signed-off-by: Paolo Cerrito <wardragon78@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221010122745.19809-1-wardragon78@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25375.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+         else
+         {
+             const char *ovpn_cipher_name = cipher_kt_name(token);
+diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c
+index 2595d8c4e..bb9a28244 100644
+--- a/tests/unit_tests/openvpn/test_ncp.c
++++ b/tests/unit_tests/openvpn/test_ncp.c
+@@ -98,6 +98,12 @@ test_check_ncp_ciphers_list(void **state)
+     /* If the last is optional, previous invalid ciphers should be ignored */
+     assert_ptr_equal(mutate_ncp_cipher_list("Vollbit:Littlebit:AES-256-CBC:BF-CBC:?nixbit", &gc), NULL);
+ 
++    /* We do not support CCM ciphers */
++    assert_ptr_equal(mutate_ncp_cipher_list("AES-256-GCM:AES-128-CCM", &gc), NULL);
++
++    assert_string_equal(mutate_ncp_cipher_list("AES-256-GCM:?AES-128-CCM:AES-128-GCM", &gc),
++                        aes_ciphers);
++
+     /* For testing that with OpenSSL 1.1.0+ that also accepts ciphers in
+      * a different spelling the normalised cipher output is the same */
+     bool have_chacha_mixed_case = cipher_valid("ChaCha20-Poly1305");
+-- 
+2.37.0 (Apple Git-136)
 
 
