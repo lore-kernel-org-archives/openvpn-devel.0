@@ -1,9 +1,8 @@
-Date: Sun, 9 Oct 2022 16:33:09 +0200 (CEST)
-Message-Id: <202210091433.299EX9CI028350@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221009140042.1560899-1-arne@...1227...>
-References: <20221009140042.1560899-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Enable -Werror on macOS builds
+Date: Mon, 10 Oct 2022 09:12:29 +0200
+Message-Id: <20221010071229.7935-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] TLS: do not lock empty usernames
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,33 +13,39 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+We do not permit username changes on renegotiation (= username is
+"locked" after successful initial authentication).
 
-Tested on "master + this patch" via my GitHub fork.  Builds all green!
+Unfortunately the way this is written this gets in the way of using
+auth-user-pass-optional + pushing "auth-token-user" from client-connect
+(and most likely also "from management") because we'll lock an empty
+username, and on renegotiation, refuse the client with
 
-  https://github.com/cron2/openvpn/actions/runs/3214397115
+   TLS Auth Error: username attempted to change from
+            '' to 'MyTokenUser' -- tunnel disabled
 
-Your patch has been applied to the master branch.
+Fix: extend "is username a valid pointer" to "... and points to a
+     non-empty string" before locking.
+---
+ src/openvpn/ssl_verify.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 0ff633f750a57d0a4d48481be0bd915196a0bd32 (master)
-Author: Arne Schwabe
-Date:   Sun Oct 9 16:00:42 2022 +0200
-
-     Enable -Werror on macOS builds
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221009140042.1560899-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25369.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 76cb9f19..4206cf9c 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -166,7 +166,7 @@ tls_lock_username(struct tls_multi *multi, const char *username)
+     }
+     else
+     {
+-        if (username)
++        if (username && *username)
+         {
+             multi->locked_username = string_alloc(username, NULL);
+         }
+-- 
+2.35.1
 
 
