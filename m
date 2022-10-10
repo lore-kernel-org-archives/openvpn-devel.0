@@ -1,12 +1,10 @@
-From: Heiko Hund <heiko@...2662...>
-Date: Mon, 10 Oct 2022 16:24:05 +0200
-Message-ID: <23297311.EfDdHjke4D@...2664...>
-In-Reply-To: <20220625234150.3398864-3-arne@...1227...>
-References: <20220625234150.3398864-1-arne@...1227...>
- <20220625234150.3398864-3-arne@...1227...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v3 3/5] Push server mtu to client when
- support and support occ mtu
+Date: Mon, 10 Oct 2022 16:37:39 +0200 (CEST)
+Message-Id: <202210101437.29AEbdlY059785@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221010122745.19809-1-wardragon78@...277...>
+References: <20221010122745.19809-1-wardragon78@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Insert client connection data
+ into PAM environment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,24 +14,61 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: Paolo Cerrito <paolo.cerrito@...2517...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Sonntag, 26. Juni 2022 01:41:48 CEST Arne Schwabe wrote:
-> To maximise compatibility allow to  lie our MTU in the default OCC
-> message.
-> 
-> Patch v2: improve documentation
-> Patch v3: split changing default MTU into its own patch
+Acked-by: Gert Doering <gert@...1296...>
 
-Doesn't apply to master anymore. From what I have seen, besides the small typo 
-below:
-Acked-by: Heiko Hund <heiko@...2662...>
+Thanks for providing a v3, and following our sometimes difficult rules
+for patch submission.
 
-> +  Starting with OpenVPN 2.6  when running server mode (``--mode server``,
-> +  ``--server``, or ``-server-ipv6`` options present in the configuration),
+I have tested this with v4 and v6 connections, and it looks good:
 
-Should be ``--server-ipv6``
+   PLUGIN AUTH-PAM: BACKGROUND: REMOTE: 2001:608:0:814::f000:21
+   PLUGIN AUTH-PAM: BACKGROUND: REMOTE: 194.97.140.21
 
+(I have not tested with "both environment variables are unset" but I
+think the code in v3 is good.  I have not tested with a PAM module that
+actually makes uses of this - but the pam_set_item() and PAM_RHOST matche
+the linux manpage, so "it should be fine").
+
+Unfortunately, v3 still had a coding style problem - we require that
+if() statements always - no exceptions - have {} brackets, so the
+"empty string" part looks like this now:
+
++        if (remote == NULL)
++        {
++            remote = "";
++        }
+
+(for "core developers", running uncrustify is required, but since this
+was taking so long already, I ran the uncrustify for you and committed
+the result)
+
+I have also added a bit more of commit message to explain what the
+patch does - how OpenVPN sends this information to the plugin interface,
+and how the PAM stack needs it.  This helps future contributors to
+understand why certain code lines are the way they are.
+
+Your patch has been applied to the master branch.
+
+commit 8e9f9d031f7f2dbf2a505af297b808f22430a381
+Author: Paolo Cerrito
+Date:   Mon Oct 10 14:27:46 2022 +0200
+
+     Insert client connection data into PAM environment
+
+     Signed-off-by: Paolo Cerrito <wardragon78@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20221010122745.19809-1-wardragon78@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25375.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
