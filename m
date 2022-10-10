@@ -1,9 +1,12 @@
-From: Paolo Cerrito <wardragon78@...277...>
-Date: Mon, 10 Oct 2022 14:27:46 +0200
-Message-Id: <20221010122745.19809-1-wardragon78@...277...>
+From: Heiko Hund <heiko@...2662...>
+Date: Mon, 10 Oct 2022 16:24:05 +0200
+Message-ID: <23297311.EfDdHjke4D@...2664...>
+In-Reply-To: <20220625234150.3398864-3-arne@...1227...>
+References: <20220625234150.3398864-1-arne@...1227...>
+ <20220625234150.3398864-3-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Insert client connection data into PAM
- environment
+Subject: Re: [Openvpn-devel] [PATCH v3 3/5] Push server mtu to client when
+ support and support occ mtu
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,103 +16,24 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: paolo <paolo.cerrito@...2517...>, Paolo Cerrito <wardragon78@...277...>
 
-From: paolo <paolo.cerrito@...2517...>
+On Sonntag, 26. Juni 2022 01:41:48 CEST Arne Schwabe wrote:
+> To maximise compatibility allow to  lie our MTU in the default OCC
+> message.
+> 
+> Patch v2: improve documentation
+> Patch v3: split changing default MTU into its own patch
 
-- styled code as openvpn 
-- added check for remote, if NULL after all get_env, put to point to empy string
+Doesn't apply to master anymore. From what I have seen, besides the small typo 
+below:
+Acked-by: Heiko Hund <heiko@...2662...>
 
-Signed-off-by: Paolo Cerrito <wardragon78@...277...>
----
- src/plugins/auth-pam/auth-pam.c | 28 ++++++++++++++++++++++++----
- 1 file changed, 24 insertions(+), 4 deletions(-)
+> +  Starting with OpenVPN 2.6  when running server mode (``--mode server``,
+> +  ``--server``, or ``-server-ipv6`` options present in the configuration),
 
-diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-index 70339445..f90ffc5c 100644
---- a/src/plugins/auth-pam/auth-pam.c
-+++ b/src/plugins/auth-pam/auth-pam.c
-@@ -49,7 +49,7 @@
- #include <syslog.h>
- #include <limits.h>
- #include "utils.h"
--
-+#include <arpa/inet.h>
- #include <openvpn-plugin.h>
- 
- #define DEBUG(verb) ((verb) >= 4)
-@@ -121,6 +121,7 @@ struct user_pass {
-     char password[128];
-     char common_name[128];
-     char response[128];
-+    char remote[INET6_ADDRSTRLEN];
- 
-     const struct name_value_list *name_value_list;
- };
-@@ -529,6 +530,14 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
-         const char *username = get_env("username", envp);
-         const char *password = get_env("password", envp);
-         const char *common_name = get_env("common_name", envp) ? get_env("common_name", envp) : "";
-+        const char *remote = get_env("untrusted_ip6", envp);
-+
-+        if (remote == NULL)
-+        {
-+            remote = get_env("untrusted_ip", envp);
-+        }
-+	
-+	if (remote == NULL) remote="";
- 
-         /* should we do deferred auth?
-          *  yes, if there is "auth_control_file" and "deferred_auth_pam" env
-@@ -554,7 +563,8 @@ openvpn_plugin_func_v1(openvpn_plugin_handle_t handle, const int type, const cha
-                 || send_string(context->foreground_fd, username) == -1
-                 || send_string(context->foreground_fd, password) == -1
-                 || send_string(context->foreground_fd, common_name) == -1
--                || send_string(context->foreground_fd, auth_control_file) == -1)
-+                || send_string(context->foreground_fd, auth_control_file) == -1
-+                || send_string(context->foreground_fd, remote) == -1)
-             {
-                 plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "Error sending auth info to background process");
-             }
-@@ -789,8 +799,16 @@ pam_auth(const char *service, const struct user_pass *up)
-     status = pam_start(service, name_value_list_provided ? NULL : up->username, &conv, &pamh);
-     if (status == PAM_SUCCESS)
-     {
-+        /* Set PAM_RHOST environment variable */
-+        if (*(up->remote))
-+        {
-+            status = pam_set_item(pamh, PAM_RHOST, up->remote);
-+        }
-         /* Call PAM to verify username/password */
--        status = pam_authenticate(pamh, 0);
-+        if (status == PAM_SUCCESS)
-+        {
-+            status = pam_authenticate(pamh, 0);
-+        }
-         if (status == PAM_SUCCESS)
-         {
-             status = pam_acct_mgmt(pamh, 0);
-@@ -956,7 +974,8 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
-                 if (recv_string(fd, up.username, sizeof(up.username)) == -1
-                     || recv_string(fd, up.password, sizeof(up.password)) == -1
-                     || recv_string(fd, up.common_name, sizeof(up.common_name)) == -1
--                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1)
-+                    || recv_string(fd, ac_file_name, sizeof(ac_file_name)) == -1
-+                    || recv_string(fd, up.remote, sizeof(up.remote)) == -1)
-                 {
-                     plugin_log(PLOG_ERR|PLOG_ERRNO, MODULE, "BACKGROUND: read error on command channel: code=%d, exiting",
-                                command);
-@@ -970,6 +989,7 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
-                                up.username, up.password);
- #else
-                     plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: USER: %s", up.username);
-+                    plugin_log(PLOG_NOTE, MODULE, "BACKGROUND: REMOTE: %s", up.remote);
- #endif
-                 }
- 
--- 
-2.37.2
+Should be ``--server-ipv6``
+
 
 
