@@ -1,8 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Mon, 10 Oct 2022 17:41:16 +0200
-Message-Id: <20221010154116.1685877-1-arne@...1227...>
+Date: Mon, 10 Oct 2022 17:55:15 +0200
+Message-Id: <20221010155515.1687151-1-arne@...1227...>
+In-Reply-To: <20221010154116.1685877-1-arne@...1227...>
+References: <20221010154116.1685877-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Ensure only CBC, CFB,
+Subject: [Openvpn-devel] [PATCH v2] Ensure only CBC, CFB,
  OFB and AEAD ciphers are considered valid data ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -23,17 +25,31 @@ will start but later fail when trying to use the CCM cipher.
 We say "a supported AEAD" mode in our error since CCM is also an AEAD mode
 but one we support like GCM.
 
+Patch v2: add the indication if the cipher was optional into the message
+
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/ssl_ncp.c               | 8 ++++++++
- tests/unit_tests/openvpn/test_ncp.c | 6 ++++++
- 2 files changed, 14 insertions(+)
+ src/openvpn/ssl_ncp.c               | 10 +++++++++-
+ tests/unit_tests/openvpn/test_ncp.c |  6 ++++++
+ 2 files changed, 15 insertions(+), 1 deletion(-)
 
 diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
-index 013021d6d..14a4e223d 100644
+index 013021d6d..16f5ad549 100644
 --- a/src/openvpn/ssl_ncp.c
 +++ b/src/openvpn/ssl_ncp.c
-@@ -136,6 +136,14 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
+@@ -121,6 +121,7 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
+         }
+ 
+         const bool nonecipher = (strcmp(token, "none") == 0);
++        const char *optstr = optional ? "optional " : "";
+ 
+         if (nonecipher)
+         {
+@@ -132,10 +133,17 @@ mutate_ncp_cipher_list(const char *list, struct gc_arena *gc)
+         }
+         if (!nonecipher && !cipher_valid(token))
+         {
+-            const char *optstr = optional ? "optional " : "";
              msg(M_WARN, "Unsupported %scipher in --data-ciphers: %s", optstr, token);
              error_found = error_found || !optional;
          }
@@ -41,8 +57,8 @@ index 013021d6d..14a4e223d 100644
 +                 && !cipher_kt_mode_cbc(token)
 +                 && !cipher_kt_mode_ofb_cfb(token))
 +        {
-+            msg(M_WARN, "Cipher algorithm '%s' does use CFB, OFB, CBC, or "
-+                "a supported AEAD mode", token);
++            msg(M_WARN, "Unsupported %scipher algorithm '%s'. It does not use "
++                "CFB, OFB, CBC, or a supported AEAD mode", optstr, token);
 +            error_found = error_found || !optional;
 +        }
          else
