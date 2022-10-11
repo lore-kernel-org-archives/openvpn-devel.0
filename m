@@ -1,12 +1,13 @@
-Date: Tue, 11 Oct 2022 14:36:20 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Y0VjRNiJnrchIjr9@...2685...>
-References: <YydCIP5l0WwH5OX+@greenie.muc.de>
- <20221011114935.1802202-1-arne@...1227...>
+From: Heiko Hund <heiko@...2662...>
+Date: Tue, 11 Oct 2022 15:07:04 +0200
+Message-ID: <4195890.Lt9SDvczpP@...2664...>
+In-Reply-To: <Yrlr8uhcV0rUMhT6@...2678...>
+References: <20220625234150.3398864-1-arne@...1227...>
+ <20220625234150.3398864-4-arne@...1227...>
+ <Yrlr8uhcV0rUMhT6@...2678...>
 MIME-Version: 1.0
-In-Reply-To: <20221011114935.1802202-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Change exit notification in P2P to
- be a SIGUSR1 instead of a SIGTERM signal
+Subject: Re: [Openvpn-devel] [PATCH v3 4/5] Implement a function to
+ calculate the default MTU
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +16,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Tue, Oct 11, 2022 at 01:49:35PM +0200, Arne Schwabe wrote:
-> From the implemention and the fact that it is a an OCC message
-> (basically the rudimentary predecessor to control channel),
-> this message is very old.
-> 
-> I think in the past this feature fit nicely to the weird inetd + openvpn mode
-> that seems to have far to many hacks still left in our code. With inetd,
-> it made sense that the server instance quits if you press C-c on the client.
-> 
-> In our current state where inetd is no longer supported, this behaviour
-> to exit makes little sense and this patch changes the behaviour to SIGUSR1.
-> 
-> The P2MP mode nees to keep the SIGTERM behaviour to terminate that client
-> session, so we use different signals based on the mode.
-> 
-> Patch v2: use different signals for p2mp and p2p
+On Montag, 27. Juni 2022 10:36:02 CEST Frank Lichtenheld wrote:
+> As mentioned this is true for the specific options configured above.
+> But you can easily also get different values out of this function by
+> changing the options because frame_calculate_payload overhead does
+> not always return the same value.
 
-IMHO the amount of copied code and logic is big enough to warrant moving
-it to a shared function.
+I don't get it. It produces the same output for the same input reliably. Do 
+you want to see a test which forces something different to 1420 by modifying 
+the inputs accordingly?
 
-Regards,
--- 
-  Frank Lichtenheld
+Heiko
+
+
 
