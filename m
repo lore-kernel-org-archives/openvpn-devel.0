@@ -1,18 +1,18 @@
-Date: Tue, 11 Oct 2022 21:11:25 +0200
+Date: Wed, 12 Oct 2022 08:39:31 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <Y0W/3bWLuTuYZvxs@...1296...>
+Message-ID: <Y0ZhI7jZ0/aXQ4l0@...1296...>
 References: <20220812134154.16729-3-kprovost@...2661...>
  <202208201401.27KE12Cm014083@...2054...>
  <YwDwvG++hK0nJI2F@...1296...>
  <21B552DE-38FE-41F0-8FC7-606EA4C06093@...1376...>
  <Yz72rrCsJCjBgE4T@...1296...>
  <3B9F182D-0936-4799-B1B0-D269DBB3C2E6@...1376...>
- <Yz/35K6JddVNg9F9@...1296...>
+ <Yz/35K6JddVNg9F9@...1296...> <Y0W/3bWLuTuYZvxs@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="8N6mHaQCCpBGpMMF"
+ protocol="application/pgp-signature"; boundary="XJvyErSHwXqKEagi"
 Content-Disposition: inline
-In-Reply-To: <Yz/35K6JddVNg9F9@...1296...>
+In-Reply-To: <Y0W/3bWLuTuYZvxs@...1296...>
 Subject: Re: [Openvpn-devel] route/iroute handling on FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -25,57 +25,139 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Kristof Provost <kp@...1249...>
 Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---8N6mHaQCCpBGpMMF
-Content-Type: multipart/mixed; boundary="nyxAIoxNGpPDWa4M"
-Content-Disposition: inline
-
---nyxAIoxNGpPDWa4M
+--XJvyErSHwXqKEagi
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Oct 07, 2022 at 11:56:52AM +0200, Gert Doering wrote:
-> I'll dig into the POINTTOPOINT issue... configure a real MULTIPOINT
-> interface for --topology subnet (which is something I've always avoided
-> so far, because "we know the other stuff works")
+On Tue, Oct 11, 2022 at 09:11:25PM +0200, Gert Doering wrote:
+> OTOH, in "not peer2peer mode", we only support topology subnet anyway,
+> so maybe it should autoconfigure that, depending on the mode OpenVPN
+> requests (p2p mode -> IFF_POINTOPOINT, p2mp mode -> IFF_BROADCAST),
+> so we don't even need TUNSIFMODE.
 
-This is... an interesting problem.
+It's not that easy - there are two factors coming into play here, which
+are orthogonal.
 
-Changing the tun(4) stuff to do IFF_BROADCAST for "topology subnet"
-is straightforward, and makes the whole code much simpler actually
-(and you can do "ifconfig tun7 1.2.3.4/24" and have it actually do
-what you expect "here is a subnet, with 255 different next-hop IPs
-available for routing").  Patch is attached so you can see what
-I'm talking about :-)
+Factor 1: single-peer (client or p2p) vs. multi-peer
 
-Butbut... ovpn(4) does not support the TUNSIFMODE ioctl() to set
-something that is not IFF_POINTOPOINT, so we fail with
+ single-peer -> DCO has only 1 peer, all packets that go into the=20
+                tun/dco interface are sent out to the single peer
+                ("dumb pipe mode") - exactly like tun(4) behaves
 
-    2022-10-11 20:58:28 ioctl(TUNSIFMODE): Can't assign requested address (=
-errno=3D49)
-    2022-10-11 20:58:28 DCO device tun14 opened
-    2022-10-11 20:58:28 /sbin/ifconfig tun14 10.194.3.56/24 mtu 1500 up
-    ifconfig: ioctl (SIOCAIFADDR): Destination address required
-    2022-10-11 20:58:28 FreeBSD ifconfig failed: external program exited wi=
-th error status: 1
-    2022-10-11 20:58:28 Exiting due to fatal error
+                If a subnet is configured on the interface, packets to
+                ALL IPs (!=3D local) in that subnet are sent to the other
+                side.  No next-hop lookup is done.
+
+ multi-peer -> DCO has 0..N peers.  Packets that go into the tun/dco
+               interface get mapped according to route next-hop <->
+               peer[]->vpn_v4 (or v6) address and sent to that peer.
+
+               If a subnet is configured on the interface (only supported
+               mode :-) ), packets to IP addresses in that subnet that
+               have no mapped-to peer are DROPPED.
+
+ On Linux this is controlled by openvpn_dco_init() setting dco->ifmode
+ to OVPN_MODE_MP/OVPN_MODE_P2P, and net_iface_new() passing this parameter
+ to kernel DCO.
+
+ On FreeBSD, OpenVPN does not signal the p2p/p2mp mode to kernel yet
+ (if I am not misreading the code), and if I am reading ovpn_route_peer()
+ in if_ovpn.c correctly, "single-peer mode" will drop packets where a
+ corresponding peer can neither be found by ovpn_find_peer_by_ip, using
+ target IP or Route->Gateway lookup.
+
+ (*) ovpn_find_peer_by_ip() is using a sequential search, for every=20
+ single packet, which will perform poorly on servers with 1000s of
+ clients... room for optimization.
 
 
-@kp, not sure how to move forward.  What we need is a "true on-link
-subnet", so installation of iroutes to "peer #4" works (which it
-doesn't today), and I think that means "ovpn(4) needs to learn=20
-IFF_BROADCAST".
+
+Factor 2: IFF_POINTOPOINT vs. IFF_BROADCAST
+
+ This seems to be a *BSD-specific thing, aka "there is nothing in the
+ Linux specific code that seems to bother with this".
+
+ An Interface can be put to point-to-point mode (by ioctl(TUNSIFMODE)
+ with the IFF_POINTOPOINT flag set).  In that case, there is no "on-link"
+ subnet, just "us" and "them", and ifconfig wants two IPv4 addresses
+ as parameter
+
+     ifconfig tun0 10.2.3.77 10.2.3.1
+
+ ... that do not need to be adjacent.  It takes a "netmask" argument, but
+ that does not have a real effect.  To simulate "subnet" mode, OpenVPN
+ will add a 10.2.3.0/24 -> 10.2.3.1 route.
+
+ In "dumb pipe mode", this works nicely - the /24 route shoves all packets
+ towards the tun0 interface, and the tun(4) sends them over, without lookin=
+g.
+
+ In "openvpn non-dco p2mp server mode" this *also* works nicely, because
+ the tun(4) interface is still in "dumb pipe mode" and OpenVPN will do
+ an iroute lookup in the p2mp server forwarding path, sending to the proper
+ client.
+
+ In DCO mode with iroutes, this does not work at all anymore.  Say, there
+ is a client on 10.2.3.50, using iroute 10.22.33.0/24, so OpenVPN tries
+ to install a route via
+
+    route add 10.22.33.0/24 10.2.3.50
+
+ and FreeBSD *refuses* to install this route, because "10.2.3.50" is not
+ adjacent.  In my initial tests I did not notice this, because the only
+ client with iroute was assigned the .2 address,
+
+ One option that sounds like it would work: always use "remote_addr"=20
+ (=3D second parameter to IFF_POINTOPOINT ifconfig) as next-hop for all=20
+ iroute-originated routes - this would make FreeBSD accept the route, and
+ send packets towards the ovpn(4) interface.  Alas, the next-hop would
+ be "remote_addr", not "the right p2mp peer", so the "what peer do I need
+ to send this packet to?" search in ovpn(4) would find the peer on the
+ "remote_addr" IP, not the correct one (=3D lookup happens in normal=20
+ routing table).  So, it wouldn't work [AND it would add more ugly bits
+ to OpenVPN].
 
 
-OTOH, in "not peer2peer mode", we only support topology subnet anyway,
-so maybe it should autoconfigure that, depending on the mode OpenVPN
-requests (p2p mode -> IFF_POINTOPOINT, p2mp mode -> IFF_BROADCAST),
-so we don't even need TUNSIFMODE.
+ Option #2: set the interface to IFF_BROADCAST, which means "true
+ multi-IP interface, with subnet, and Kernel considers all IPs of that
+ subnet to be adjacent, and acceptable route next-hops".
 
-Looking into if_ovpn.c, this is a bit beyond my understanding of the
-code, though...
+ This is what the patch I sent yesterday does to tun(4) interfaces, and=20
+ the result is amazingly well-behaved - "it just works" and gets *rid*
+ of quite a bit of special-case hack-around code.  Want.
+
+ Unfortunately, this breaks for two reasons with FreeBSD DCO as of
+ today:
+
+  - no TUNSIFMODE support in ovpn(4), so stuck to IFF_POINTOPOINT mode
+    (I think I can add that, copy-pasting code from if_tuntap.c)
+
+  - no single-peer mode in ovpn(4)
+    -> this will break "I am on client .5 and want to send packets to
+    client .6" because vpn_v4 peer lookup won't find ".6", and no route
+    towards .1 (server) either, so packet drop.
+    (I'm not sure I can make this happen, but I'll give it a try,=20
+     following the Linux DCO approach described above)
+
+
+ (There is another option here that I think I could mention - we can,
+ of course, do IFF_BROADCAST only on the openvpn p2mp server, and stick
+ to IFF_POINTOPOINT on client/p2p instances.  BUT that implies we'd get
+ yet another case for FreeBSD ifconfig - p2p, p2p-simulated subnet, subnet
+ - so the OpenVPN code will get more complex, not simpler - and we still
+ need IFF_BROADCAST support in ovpn(4) - so we can do it properly all
+ the way, I'd say)
+
+
+ Note that Aspect 2 is only about IPv4.  IPv6 always uses true subnet mode,
+ and all these considerations are of no concern...
+
+
+Phew, what a long mail :-) - hope it clarifies what we're missing today
+and how to move forward.
 
 gert
 --=20
@@ -88,159 +170,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---nyxAIoxNGpPDWa4M
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment;
-	filename="0001-FreeBSD-for-topology-subnet-put-tun-interface-into-I.patch"
-Content-Transfer-Encoding: quoted-printable
-
-=46rom 02f74941b29532f977be58205202eb2ccb21b12e Mon Sep 17 00:00:00 2001
-=46rom: Gert Doering <gert@...1296...>
-Date: Tue, 11 Oct 2022 19:54:23 +0200
-Subject: [PATCH] FreeBSD: for topology subnet, put tun interface into
- IFF_BROADCAST mode
-
-For reasons unknown, OpenVPN has always put FreeBSD tun(4) interfaces
-into point-to-point mode (IFF_POINTOPOINT), which means "local and
-remote address, no on-link subnet".
-
-"--topology subnet" was emulated by adding a subnet-route to the "remote"
-(which was just picking a free address from the subnet).
-
-This works well enough for classic tun(4) interfaces that have no
-next-hop resolution, and routes pointing to "that fake remote" only
-(because all routing is done inside OpenVPN and it does not matter how
-packets get there) - but for ovpn(4) interfaces, it breaks iroute setup,
-where the route next-hop must be an on-link address.
-
-Thus, change interface to IFF_BROADCAST mode, and get rid of all the
-special code needed to "fake" subnet mode.
-
-Tested with tun(4) and ovpn(4) on FreeBSD 14, client and server, and
-with tun(4) on FreeBSD 12 and 7.4
-
-Signed-off-by: Gert Doering <gert@...1296...>
----
- Changes.rst       |  5 +++++
- src/openvpn/tun.c | 28 ++++++++++------------------
- 2 files changed, 15 insertions(+), 18 deletions(-)
-
-diff --git a/Changes.rst b/Changes.rst
-index df56f76a..0397cb94 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -163,6 +163,11 @@ User-visible Changes
- - :code:`link_mtu` parameter is removed from environment or replaced with =
-0 when scripts are
-   called with parameters. This parameter is unreliable and no longer inter=
-nally calculated.
-=20
-+- FreeBSD tun interfaces with ``--topology subnet`` are now put into real
-+  subnet mode (IFF_BROADCAST instead of IFF_POINTOPOINT) - this might upset
-+  software that enumerates interfaces, looking for "broadcast capable?" and
-+  expecting certain results.  Normal uses should not see any difference.
-+
- Overview of changes in 2.5
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-=20
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index ddee49f9..ede65cbe 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1479,8 +1479,6 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifnam=
-e, int tun_mtu,
-=20
- #elif defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)
-=20
--    in_addr_t remote_end;           /* for "virtual" subnet topology */
--
-     /* example: ifconfig tun2 10.2.0.2 10.2.0.1 mtu 1450 netmask 255.255.2=
-55.255 up */
-     if (tun)
-     {
-@@ -1490,10 +1488,9 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifna=
-me, int tun_mtu,
-     }
-     else if (tt->type =3D=3D DEV_TYPE_TUN && tt->topology =3D=3D TOP_SUBNE=
-T)
-     {
--        remote_end =3D create_arbitrary_remote( tt );
--        argv_printf(&argv, "%s %s %s %s mtu %d netmask %s up", IFCONFIG_PA=
-TH,
--                    ifname, ifconfig_local, print_in_addr_t(remote_end, 0,=
- &gc),
--                    tun_mtu, ifconfig_remote_netmask);
-+        int netbits =3D netmask_to_netbits2(tt->remote_netmask);
-+        argv_printf(&argv, "%s %s %s/%d mtu %d up", IFCONFIG_PATH,
-+                    ifname, ifconfig_local, netbits, tun_mtu );
-     }
-     else
-     {
-@@ -1504,18 +1501,6 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifna=
-me, int tun_mtu,
-     argv_msg(M_INFO, &argv);
-     openvpn_execve_check(&argv, es, S_FATAL, "FreeBSD ifconfig failed");
-=20
--    /* Add a network route for the local tun interface */
--    if (!tun && tt->type =3D=3D DEV_TYPE_TUN && tt->topology =3D=3D TOP_SU=
-BNET)
--    {
--        struct route_ipv4 r;
--        CLEAR(r);
--        r.flags =3D RT_DEFINED;
--        r.network =3D tt->local & tt->remote_netmask;
--        r.netmask =3D tt->remote_netmask;
--        r.gateway =3D remote_end;
--        add_route(&r, tt, 0, NULL, es, NULL);
--    }
--
- #elif defined(TARGET_AIX)
-     {
-         /* AIX ifconfig will complain if it can't find ODM path in env */
-@@ -2949,12 +2934,19 @@ open_tun(const char *dev, const char *dev_type, con=
-st char *dev_node, struct tun
-=20
-         if (tt->fd >=3D 0 && tt->type =3D=3D DEV_TYPE_TUN)
-         {
-+            /* see "Interface Flags" in ifnet(9) */
-             int i =3D IFF_POINTOPOINT | IFF_MULTICAST;
-+            if (tt->topology =3D=3D TOP_SUBNET)
-+            {
-+                i =3D IFF_BROADCAST | IFF_MULTICAST;
-+            }
-=20
-             if (ioctl(tt->fd, TUNSIFMODE, &i) < 0)
-             {
-                 msg(M_WARN | M_ERRNO, "ioctl(TUNSIFMODE)");
-             }
-+
-+            /* multi_af mode for v4+v6, see "tun(4)" */
-             i =3D 1;
-             if (ioctl(tt->fd, TUNSIFHEAD, &i) < 0)
-             {
---=20
-2.37.3
-
-
---nyxAIoxNGpPDWa4M--
-
---8N6mHaQCCpBGpMMF
+--XJvyErSHwXqKEagi
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJjRb/dAAoJEB2Cnv7KVigSkbwL/36Z3Kgrxb68mrYgQ93XCan2
-q/ilGIAP7oxHxWerTPFxWDaR3JpocXVw21AZhOkCK0OM4ht+Cy99xjpbhQQGcNj/
-Ep2MCSEdcg+YkmY7VZ8NmIw9YlFlFvmdw0j/U7bgl2A8hn93bFPcmsNIu7+D7XvC
-dlfwhp8R0M1sVtDnODvX5WDtv9EDcrNZ0KWm+tWOBYqDE49AXq+BwulwcYVOK2X3
-v0bsMjAKZSiEMK4I70owChMAteHoR0+4W/poUg/UCfhTHVC5bSG0M5ZHBRany2ol
-jJBzWlXl0djTkgCUbJbbINftbdDrv5uAdv4YPVYbbE+NfDFYFe6NiBHVyMn3WOjc
-PyiAEaIB0Z1IO17bUlbvWgi+iHWoVE5FGA5bI8vkaKSp2L4f3bgxzATlCZ6CoKUB
-68OzJ2yAKGUTjLVOQ93LyKPLy3h2nsUinz3CexYK1Yh4AISBZbbow6zGsv6lCrU/
-JQfA2AKGpu92dIShLXyMw9/XhhdwIZ+tAGBDvz20tw==
-=1WXT
+iQGcBAEBAgAGBQJjRmEjAAoJEB2Cnv7KVigSHlgL/j7vkksNTk+O8qkxmusVtWgQ
+yvsUtAozGoeIlP60TkeD45sNUSqI1AVFfESp+oPvlEAM8JHcoHFA+24CRL0n3wpb
+mJHsIXJNJU1mei26CSai//Y9hrhLlnTC/mi1kT6v9weJeiiVSWfUkvsOhy71dUJS
+T0FvwQ1P03L1rGV5c/GaRwRDcEqUhuB5jDUhrF+9tSWqCNZByWamN6QqKM0SELwn
+7lp6Y5+zPu9HWrojiCqtsEW3Hk7EnZhjkp5JjHQLd5Jv6uOTnYuMhFOHYYLWgEqq
+wdX9ORY05BkE4H9eH5gl8S/Xsa1l42zsV+S6CQni8BsTBxHWxJ/EVNRbJ/uHhs2d
+AZM7xib9chdN/rNJ4CQTkPsw9VAbcb/r0UCg5cDOl7u5H4KhWgI3IBrBK+Bau6BD
+1sa3DG4Yl9pu61zRN2IQCt83JmarBOYABS+zjVnNfgwCSuzxiERtI5SECM6rWxFS
+TJH6RQp92qKVxqJkKvQGRUAknF95u4qdWcH+/PkWOw==
+=kwxe
 -----END PGP SIGNATURE-----
 
---8N6mHaQCCpBGpMMF--
+--XJvyErSHwXqKEagi--
 
