@@ -1,9 +1,10 @@
 From: Gert Doering <gert@...1296...>
-Date: Wed, 12 Oct 2022 16:59:14 +0200
-Message-Id: <20221012145915.25810-1-gert@...1296...>
+Date: Wed, 12 Oct 2022 16:59:15 +0200
+Message-Id: <20221012145915.25810-2-gert@...1296...>
+In-Reply-To: <20221012145915.25810-1-gert@...1296...>
+References: <20221012145915.25810-1-gert@...1296...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/2] FreeBSD: for topology subnet,
- put tun interface into IFF_BROADCAST mode
+Subject: [Openvpn-devel] [PATCH 2/2] FreeBSD DCO: introduce real subnet mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,123 +17,92 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-For reasons unknown, OpenVPN has always put FreeBSD tun(4) interfaces
-into point-to-point mode (IFF_POINTOPOINT), which means "local and
-remote address, no on-link subnet".
+To be able to configure a FreeBSD interface to "subnet" mode
+(as opposed to point-to-point mode), it needs to have its
+if_iflags set to IFF_BROADCAST.  For tun(4) interface this is
+done with the TUNSIFMODE ioctl(), but this does not work for
+more modern interfaces like ovpn(4) which communicate over
+a common SIOCSDRVSPEC ioctl() that contains a "cmd" and a
+"parameter list".
 
-"--topology subnet" was emulated by adding a subnet-route to the "remote"
-(which was just picking a free address from the subnet).
+Introduce OVPN_SET_IFMODE cmd, add dco_set_ifmode() function
+to put kernel interface into IFF_BROADCAST or IFF_POINTOPOINT
+as needed.
 
-This works well enough for classic tun(4) interfaces that have no
-next-hop resolution, and routes pointing to "that fake remote" only
-(because all routing is done inside OpenVPN and it does not matter how
-packets get there) - but for ovpn(4) interfaces, it breaks iroute setup,
-where the route next-hop must be an on-link address.
-
-Thus, change interface to IFF_BROADCAST mode, and get rid of all the
-special code needed to "fake" subnet mode.
-
-Tested with tun(4) and ovpn(4) on FreeBSD 14, client and server, and
-with tun(4) on FreeBSD 12 and 7.4
-
-To actually work with ovpn(4) / FreeBSD DCO, a followup patch for
-kernel ovpn(4) and OpenVPN dco_freebsd.c is needed.
+(This needs a kernel patch to add the OVPN_SET_IFMODE on the
+other side - with an older kernel, OpenVPN will just fail now)
 
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
- Changes.rst       |  5 +++++
- src/openvpn/tun.c | 37 ++++++++++++-------------------------
- 2 files changed, 17 insertions(+), 25 deletions(-)
+ src/openvpn/dco_freebsd.c      | 36 ++++++++++++++++++++++++++++++++++
+ src/openvpn/ovpn_dco_freebsd.h |  1 +
+ 2 files changed, 37 insertions(+)
 
-diff --git a/Changes.rst b/Changes.rst
-index df56f76a..0397cb94 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -163,6 +163,11 @@ User-visible Changes
- - :code:`link_mtu` parameter is removed from environment or replaced with 0 when scripts are
-   called with parameters. This parameter is unreliable and no longer internally calculated.
+diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+index c6da6ce3..8adbf7f1 100644
+--- a/src/openvpn/dco_freebsd.c
++++ b/src/openvpn/dco_freebsd.c
+@@ -165,6 +165,34 @@ ovpn_dco_init(int mode, dco_context_t *dco)
+     return true;
+ }
  
-+- FreeBSD tun interfaces with ``--topology subnet`` are now put into real
-+  subnet mode (IFF_BROADCAST instead of IFF_POINTOPOINT) - this might upset
-+  software that enumerates interfaces, looking for "broadcast capable?" and
-+  expecting certain results.  Normal uses should not see any difference.
++static int
++dco_set_ifmode(dco_context_t *dco, int ifmode)
++{
++    struct ifdrv drv;
++    nvlist_t *nvl;
++    int ret;
 +
- Overview of changes in 2.5
- ==========================
- 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index ddee49f9..a83ec9e6 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1479,43 +1479,23 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
- 
- #elif defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)
- 
--    in_addr_t remote_end;           /* for "virtual" subnet topology */
--
-     /* example: ifconfig tun2 10.2.0.2 10.2.0.1 mtu 1450 netmask 255.255.255.255 up */
--    if (tun)
-+    if (tun)       /* point-to-point tun */
-     {
-         argv_printf(&argv, "%s %s %s %s mtu %d netmask 255.255.255.255 up",
-                     IFCONFIG_PATH, ifname, ifconfig_local,
-                     ifconfig_remote_netmask, tun_mtu);
-     }
--    else if (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
--    {
--        remote_end = create_arbitrary_remote( tt );
--        argv_printf(&argv, "%s %s %s %s mtu %d netmask %s up", IFCONFIG_PATH,
--                    ifname, ifconfig_local, print_in_addr_t(remote_end, 0, &gc),
--                    tun_mtu, ifconfig_remote_netmask);
--    }
--    else
-+    else            /* tun with topology subnet and tap mode (always subnet) */
-     {
--        argv_printf(&argv, "%s %s %s netmask %s mtu %d up", IFCONFIG_PATH,
--                    ifname, ifconfig_local, ifconfig_remote_netmask, tun_mtu);
-+        int netbits = netmask_to_netbits2(tt->remote_netmask);
-+        argv_printf(&argv, "%s %s %s/%d mtu %d up", IFCONFIG_PATH,
-+                    ifname, ifconfig_local, netbits, tun_mtu );
-     }
- 
-     argv_msg(M_INFO, &argv);
-     openvpn_execve_check(&argv, es, S_FATAL, "FreeBSD ifconfig failed");
- 
--    /* Add a network route for the local tun interface */
--    if (!tun && tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET)
--    {
--        struct route_ipv4 r;
--        CLEAR(r);
--        r.flags = RT_DEFINED;
--        r.network = tt->local & tt->remote_netmask;
--        r.netmask = tt->remote_netmask;
--        r.gateway = remote_end;
--        add_route(&r, tt, 0, NULL, es, NULL);
--    }
--
- #elif defined(TARGET_AIX)
-     {
-         /* AIX ifconfig will complain if it can't find ODM path in env */
-@@ -2949,12 +2929,19 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
- 
-         if (tt->fd >= 0 && tt->type == DEV_TYPE_TUN)
-         {
-+            /* see "Interface Flags" in ifnet(9) */
-             int i = IFF_POINTOPOINT | IFF_MULTICAST;
-+            if (tt->topology == TOP_SUBNET)
-+            {
-+                i = IFF_BROADCAST | IFF_MULTICAST;
-+            }
- 
-             if (ioctl(tt->fd, TUNSIFMODE, &i) < 0)
-             {
-                 msg(M_WARN | M_ERRNO, "ioctl(TUNSIFMODE)");
-             }
++    msg(M_INFO, "ifmode=%08x", ifmode);
++    nvl = nvlist_create(0);
++    nvlist_add_number(nvl, "ifmode", ifmode);
 +
-+            /* multi_af mode for v4+v6, see "tun(4)" */
-             i = 1;
-             if (ioctl(tt->fd, TUNSIFHEAD, &i) < 0)
-             {
++    CLEAR(drv);
++    snprintf(drv.ifd_name, IFNAMSIZ, "%s", dco->ifname);
++    drv.ifd_cmd = OVPN_SET_IFMODE;
++    drv.ifd_data = nvlist_pack(nvl, &drv.ifd_len);
++
++    ret = ioctl(dco->fd, SIOCSDRVSPEC, &drv);
++    if (ret)
++    {
++        msg(M_WARN | M_ERRNO, "Failed to set ifmode");
++    }
++
++    free(drv.ifd_data);
++    nvlist_destroy(nvl);
++
++    return ret;
++}
++
+ static int
+ create_interface(struct tuntap *tt, const char *dev)
+ {
+@@ -205,6 +233,14 @@ create_interface(struct tuntap *tt, const char *dev)
+     snprintf(tt->dco.ifname, IFNAMSIZ, "%s", ifr.ifr_data);
+     tt->actual_name = string_alloc(tt->dco.ifname, NULL);
+ 
++    /* see "Interface Flags" in ifnet(9) */
++    int i = IFF_POINTOPOINT | IFF_MULTICAST;
++    if (tt->topology == TOP_SUBNET)
++    {
++        i = IFF_BROADCAST | IFF_MULTICAST;
++    }
++    dco_set_ifmode(&tt->dco, i);
++
+     return 0;
+ }
+ 
+diff --git a/src/openvpn/ovpn_dco_freebsd.h b/src/openvpn/ovpn_dco_freebsd.h
+index 7ceec06e..cf92d597 100644
+--- a/src/openvpn/ovpn_dco_freebsd.h
++++ b/src/openvpn/ovpn_dco_freebsd.h
+@@ -60,5 +60,6 @@ enum ovpn_key_cipher {
+ #define OVPN_SEND_PKT           _IO('D', 9)
+ #define OVPN_POLL_PKT           _IO('D', 10)
+ #define OVPN_GET_PKT            _IO('D', 11)
++#define OVPN_SET_IFMODE         _IO('D', 12)
+ 
+ #endif /* ifndef _NET_IF_OVPN_H_ */
 -- 
 2.37.3
 
