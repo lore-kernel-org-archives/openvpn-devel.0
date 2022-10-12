@@ -1,10 +1,17 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 12 Oct 2022 16:59:15 +0200
-Message-Id: <20221012145915.25810-2-gert@...1296...>
-In-Reply-To: <20221012145915.25810-1-gert@...1296...>
-References: <20221012145915.25810-1-gert@...1296...>
+From: Kristof Provost <kp@...1376...>
+Date: Wed, 12 Oct 2022 17:17:38 +0200
+Message-ID: <C8B6F43B-6575-4332-B11B-FEAAD54DD512@...1376...>
+In-Reply-To: <Y0bRartX32suvWIb@...1296...>
+References: <20220812134154.16729-3-kprovost@...2661...>
+ <202208201401.27KE12Cm014083@...2054...>
+ <YwDwvG++hK0nJI2F@...1296...>
+ <21B552DE-38FE-41F0-8FC7-606EA4C06093@...1376...>
+ <Yz72rrCsJCjBgE4T@...1296...>
+ <3B9F182D-0936-4799-B1B0-D269DBB3C2E6@...1376...>
+ <Yz/35K6JddVNg9F9@...1296...> <Y0W/3bWLuTuYZvxs@...1296...>
+ <Y0ZhI7jZ0/aXQ4l0@...1296...> <Y0bRartX32suvWIb@...1296...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/2] FreeBSD DCO: introduce real subnet mode
+Subject: Re: [Openvpn-devel] route/iroute handling on FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,97 +20,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-To be able to configure a FreeBSD interface to "subnet" mode
-(as opposed to point-to-point mode), it needs to have its
-if_iflags set to IFF_BROADCAST.  For tun(4) interface this is
-done with the TUNSIFMODE ioctl(), but this does not work for
-more modern interfaces like ovpn(4) which communicate over
-a common SIOCSDRVSPEC ioctl() that contains a "cmd" and a
-"parameter list".
+Hi Gert,
 
-Introduce OVPN_SET_IFMODE cmd, add dco_set_ifmode() function
-to put kernel interface into IFF_BROADCAST or IFF_POINTOPOINT
-as needed.
+I=E2=80=99m still travelling today (and am due for my 5G chip update tomorr=
+ow), so it=E2=80=99ll be another day or two before I can look at this in an=
+y detail, but at first glance this looks sane.
 
-(This needs a kernel patch to add the OVPN_SET_IFMODE on the
-other side - with an older kernel, OpenVPN will just fail now)
+Best regards,
+Kristof
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/dco_freebsd.c      | 36 ++++++++++++++++++++++++++++++++++
- src/openvpn/ovpn_dco_freebsd.h |  1 +
- 2 files changed, 37 insertions(+)
-
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index c6da6ce3..8adbf7f1 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -165,6 +165,34 @@ ovpn_dco_init(int mode, dco_context_t *dco)
-     return true;
- }
- 
-+static int
-+dco_set_ifmode(dco_context_t *dco, int ifmode)
-+{
-+    struct ifdrv drv;
-+    nvlist_t *nvl;
-+    int ret;
-+
-+    msg(M_INFO, "ifmode=%08x", ifmode);
-+    nvl = nvlist_create(0);
-+    nvlist_add_number(nvl, "ifmode", ifmode);
-+
-+    CLEAR(drv);
-+    snprintf(drv.ifd_name, IFNAMSIZ, "%s", dco->ifname);
-+    drv.ifd_cmd = OVPN_SET_IFMODE;
-+    drv.ifd_data = nvlist_pack(nvl, &drv.ifd_len);
-+
-+    ret = ioctl(dco->fd, SIOCSDRVSPEC, &drv);
-+    if (ret)
-+    {
-+        msg(M_WARN | M_ERRNO, "Failed to set ifmode");
-+    }
-+
-+    free(drv.ifd_data);
-+    nvlist_destroy(nvl);
-+
-+    return ret;
-+}
-+
- static int
- create_interface(struct tuntap *tt, const char *dev)
- {
-@@ -205,6 +233,14 @@ create_interface(struct tuntap *tt, const char *dev)
-     snprintf(tt->dco.ifname, IFNAMSIZ, "%s", ifr.ifr_data);
-     tt->actual_name = string_alloc(tt->dco.ifname, NULL);
- 
-+    /* see "Interface Flags" in ifnet(9) */
-+    int i = IFF_POINTOPOINT | IFF_MULTICAST;
-+    if (tt->topology == TOP_SUBNET)
-+    {
-+        i = IFF_BROADCAST | IFF_MULTICAST;
-+    }
-+    dco_set_ifmode(&tt->dco, i);
-+
-     return 0;
- }
- 
-diff --git a/src/openvpn/ovpn_dco_freebsd.h b/src/openvpn/ovpn_dco_freebsd.h
-index 7ceec06e..cf92d597 100644
---- a/src/openvpn/ovpn_dco_freebsd.h
-+++ b/src/openvpn/ovpn_dco_freebsd.h
-@@ -60,5 +60,6 @@ enum ovpn_key_cipher {
- #define OVPN_SEND_PKT           _IO('D', 9)
- #define OVPN_POLL_PKT           _IO('D', 10)
- #define OVPN_GET_PKT            _IO('D', 11)
-+#define OVPN_SET_IFMODE         _IO('D', 12)
- 
- #endif /* ifndef _NET_IF_OVPN_H_ */
--- 
-2.37.3
-
+On 12 Oct 2022, at 15:38, Gert Doering wrote:
+> Hi,
+>
+> people have alreadycomplained at me that I write so long e-mails today,
+> so I can write more...
+>
+> On Wed, Oct 12, 2022 at 08:39:31AM +0200, Gert Doering wrote:
+>> Factor 1: single-peer (client or p2p) vs. multi-peer
+>>
+>>  single-peer -> DCO has only 1 peer, all packets that go into the
+>>                 tun/dco interface are sent out to the single peer
+>>                 ("dumb pipe mode") - exactly like tun(4) behaves
+>>
+>>                 If a subnet is configured on the interface, packets to
+>>                 ALL IPs (!=3D local) in that subnet are sent to the other
+>>                 side.  No next-hop lookup is done.
+>
+> This is "sort of" handled in if_ovpn.c today
+>
+> ovpn_route_peer(struct ovpn_softc *sc, struct mbuf **m0,
+>     const struct sockaddr *dst)
+> {
+> ...
+>         /* Shortcut if we're a client (or are a server and have only one =
+client). */
+>         if (sc->peercount =3D=3D 1)
+>                 return (ovpn_find_only_peer(sc));
+>
+>
+> ... so this works for the client, but has one interesting drawback on the
+> server - if there is only a single client connected, the server will send
+> ALL to-be-tunneled packets to that client.  As soon as client #2 connects,
+> packets are properly sorted.
+>
+> [..]
+>> Factor 2: IFF_POINTOPOINT vs. IFF_BROADCAST
+>>
+>>  This seems to be a *BSD-specific thing, aka "there is nothing in the
+>>  Linux specific code that seems to bother with this".
+>
+> I've whacked at if_ovpn.c and dco_freebsd.c a bit now, and I seem
+> to have working code for both ends.  I am not a FreeBSD kernel coder,
+> so I have no idea how many behavioural standards I am violating,
+> but it makes "real subnet mode in OpenVPN" work for me, with DCO.
+>
+> Kernel patch attached, OpenVPN patches will follow soonish (outside
+> of this e-mail thread).
+>
+> gert
+> --=20
+> "If was one thing all people took for granted, was conviction that if you
+>  feed honest figures into a computer, honest figures come out. Never doub=
+ted
+>  it myself till I met a computer with a sense of humor."
+>                              Robert A. Heinlein, The Moon is a Harsh Mist=
+ress
+>
+> Gert Doering - Munich, Germany                             gert@...1296...
 
