@@ -1,12 +1,11 @@
-Message-ID: <423e40ca-1a9e-99d3-824b-6990d552a2a8@...2181...>
-Date: Fri, 14 Oct 2022 22:20:54 +0200
+From: Arne Schwabe <arne@...1227...>
+Date: Sun, 16 Oct 2022 17:49:53 +0200
+Message-Id: <20221016154953.2483509-1-arne@...1227...>
+In-Reply-To: <YydCIP5l0WwH5OX+@greenie.muc.de>
+References: <YydCIP5l0WwH5OX+@greenie.muc.de>
 MIME-Version: 1.0
-References: <20220919153541.9991-1-a@...2181...>
-Content-Language: en-US
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20220919153541.9991-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2] p2p/dco: renew peer in P2P mode upon
- reconnection
+Subject: [Openvpn-devel] [PATCH v3] Change exit signal in P2P to be a
+ SIGUSR1 and delay CC exit in P2MP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,197 +14,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+From the implemention of explicit-notify and the fact that it is a an
+OCC message (basically the rudimentary predecessor to control channel),
+this message is very old.
 
-On 19/09/2022 17:35, Antonio Quartulli wrote:
-> In P2P mode when the peer reconnects we have to renew the state in DCO
-> in order to inform it about the new peer-id.
-> 
-> Cc: Arne Schwabe <arne@...1227...>
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
-> Changes from v1:
-> * remove useless arguments from tls_multi_process() (and descendant
->    calls) as we now pass 'c' directly
+I think in the past this feature fit nicely to the weird inetd + openvpn mode
+that seems to have far to many hacks still left in our code. With inetd,
+it made sense that the server instance quits if you press C-c on the client.
 
-Arne is proposing a slightly different approach with his newest patches. 
-Therefore this one can be considered obsolete.
+In our current state where inetd is no longer supported, this behaviour
+to exit makes little sense and this patch changes the behaviour to SIGUSR1.
 
-Cheers,
+Testing this lead to a confused v2 of the patch and also finally the insight
+that if a CC channel exit is triggered too early the remaining control channel
+packets that come after that can trigger the HMAC code to open a sessions
+again if the whole session lasted less than two minutes (with default
+settings).
 
-> ---
->   src/openvpn/forward.c |  4 +---
->   src/openvpn/ssl.c     | 54 +++++++++++++++++++++++++++++++++----------
->   src/openvpn/ssl.h     |  6 +----
->   3 files changed, 44 insertions(+), 20 deletions(-)
-> 
-> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-> index 810cb8a7..41593fc9 100644
-> --- a/src/openvpn/forward.c
-> +++ b/src/openvpn/forward.c
-> @@ -170,9 +170,7 @@ check_tls(struct context *c)
->   
->       if (interval_test(&c->c2.tmp_int))
->       {
-> -        const int tmp_status = tls_multi_process
-> -                                   (c->c2.tls_multi, &c->c2.to_link, &c->c2.to_link_addr,
-> -                                   get_link_socket_info(c), &wakeup);
-> +        const int tmp_status = tls_multi_process(c, &wakeup);
->           if (tmp_status == TLSMP_ACTIVE)
->           {
->               update_time();
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 3116fa4b..10691f0c 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -45,9 +45,11 @@
->   
->   #include "error.h"
->   #include "common.h"
-> +#include "openvpn.h"
->   #include "socket.h"
->   #include "misc.h"
->   #include "fdmisc.h"
-> +#include "forward.h"
->   #include "interval.h"
->   #include "perf.h"
->   #include "status.h"
-> @@ -2717,13 +2719,14 @@ read_incoming_tls_plaintext(struct key_state *ks, struct buffer *buf,
->   
->   
->   static bool
-> -tls_process_state(struct tls_multi *multi,
-> +tls_process_state(struct context *c,
->                     struct tls_session *session,
-> -                  struct buffer *to_link,
->                     struct link_socket_actual **to_link_addr,
->                     struct link_socket_info *to_link_socket_info,
->                     interval_t *wakeup)
->   {
-> +    struct tls_multi *multi = c->c2.tls_multi;
-> +    struct buffer *to_link = &c->c2.to_link;
->       bool state_change = false;
->       struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
->   
-> @@ -2827,6 +2830,20 @@ tls_process_state(struct tls_multi *multi,
->           state_change = true;
->           dmsg(D_TLS_DEBUG_MED, "STATE S_SENT_KEY");
->           ks->state = S_SENT_KEY;
-> +
-> +        /* In P2P mode we have to renew the peer in DCO in case of
-> +         * reconnection (--tls-server case)
-> +         */
-> +        if (session->opt->server && (session->opt->mode != MODE_SERVER)
-> +            && (ks->key_id == 0) && multi->dco_peer_added)
-> +        {
-> +            msg(D_DCO, "Renewing P2P peer in tls-server mode");
-> +            int ret = dco_p2p_add_new_peer(c);
-> +            if (ret < 0)
-> +            {
-> +                msg(D_DCO, "Cannot renew peer in DCO: %s (%d)", strerror(-ret), ret);
-> +            }
-> +        }
->       }
->   
->       /* Receive Key */
-> @@ -2843,6 +2860,20 @@ tls_process_state(struct tls_multi *multi,
->           state_change = true;
->           dmsg(D_TLS_DEBUG_MED, "STATE S_GOT_KEY");
->           ks->state = S_GOT_KEY;
-> +
-> +        /* In P2P mode we have to renew the peer in DCO in case of
-> +         * reconnection (--tls-client case)
-> +         */
-> +        if (!session->opt->server && !session->opt->pull && (ks->key_id == 0)
-> +            && multi->dco_peer_added)
-> +        {
-> +            msg(D_DCO, "Renewing P2P peer in tls-client mode");
-> +            int ret = dco_p2p_add_new_peer(c);
-> +            if (ret < 0)
-> +            {
-> +                msg(D_DCO, "Cannot renew peer in DCO: %s (%d)", strerror(-ret), ret);
-> +            }
-> +        }
->       }
->   
->       /* Write outgoing plaintext to TLS object */
-> @@ -2911,15 +2942,16 @@ error:
->    * want to send to our peer.
->    */
->   static bool
-> -tls_process(struct tls_multi *multi,
-> +tls_process(struct context *c,
->               struct tls_session *session,
-> -            struct buffer *to_link,
->               struct link_socket_actual **to_link_addr,
->               struct link_socket_info *to_link_socket_info,
->               interval_t *wakeup)
->   {
->       struct key_state *ks = &session->key[KS_PRIMARY];      /* primary key */
->       struct key_state *ks_lame = &session->key[KS_LAME_DUCK]; /* retiring key */
-> +    struct tls_multi *multi = c->c2.tls_multi;
-> +    struct buffer *to_link = &c->c2.to_link;
->   
->       /* Make sure we were initialized and that we're not in an error state */
->       ASSERT(ks->state != S_UNDEF);
-> @@ -2962,7 +2994,7 @@ tls_process(struct tls_multi *multi,
->                state_name(ks_lame->state),
->                to_link->len,
->                *wakeup);
-> -        state_change = tls_process_state(multi, session, to_link, to_link_addr,
-> +        state_change = tls_process_state(c, session, to_link_addr,
->                                            to_link_socket_info, wakeup);
->   
->           if (ks->state == S_ERROR)
-> @@ -3055,12 +3087,11 @@ tls_process(struct tls_multi *multi,
->    */
->   
->   int
-> -tls_multi_process(struct tls_multi *multi,
-> -                  struct buffer *to_link,
-> -                  struct link_socket_actual **to_link_addr,
-> -                  struct link_socket_info *to_link_socket_info,
-> -                  interval_t *wakeup)
-> +tls_multi_process(struct context *c, interval_t *wakeup)
->   {
-> +    struct link_socket_info *to_link_socket_info = get_link_socket_info(c);
-> +    struct link_socket_actual **to_link_addr = &c->c2.to_link_addr;
-> +    struct tls_multi *multi = c->c2.tls_multi;
->       struct gc_arena gc = gc_new();
->       int active = TLSMP_INACTIVE;
->       bool error = false;
-> @@ -3101,8 +3132,7 @@ tls_multi_process(struct tls_multi *multi,
->   
->               update_time();
->   
-> -            if (tls_process(multi, session, to_link, &tla,
-> -                            to_link_socket_info, wakeup))
-> +            if (tls_process(c, session, &tla, to_link_socket_info, wakeup))
->               {
->                   active = TLSMP_ACTIVE;
->               }
-> diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-> index a2724470..13b44f20 100644
-> --- a/src/openvpn/ssl.h
-> +++ b/src/openvpn/ssl.h
-> @@ -218,11 +218,7 @@ void tls_multi_free(struct tls_multi *multi, bool clear);
->    * Basically decides if we should call tls_process for
->    * the active or untrusted sessions.
->    */
-> -int tls_multi_process(struct tls_multi *multi,
-> -                      struct buffer *to_link,
-> -                      struct link_socket_actual **to_link_addr,
-> -                      struct link_socket_info *to_link_socket_info,
-> -                      interval_t *wakeup);
-> +int tls_multi_process(struct context *c, interval_t *wakeup);
->   
->   
->   /**************************************************************************/
+Patch v2: use different signals for p2mp and p2p
+Patch v3: use dealyed exit for P2MP/CC exit and USR1 for everything else
 
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/occ.c  |  2 +-
+ src/openvpn/push.c | 20 +++++++++++++++++++-
+ 2 files changed, 20 insertions(+), 2 deletions(-)
+
+diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c
+index 1ed0d3771..eb1f2fae7 100644
+--- a/src/openvpn/occ.c
++++ b/src/openvpn/occ.c
+@@ -431,7 +431,7 @@ process_received_occ_msg(struct context *c)
+ 
+         case OCC_EXIT:
+             dmsg(D_PACKET_CONTENT, "RECEIVED OCC_EXIT");
+-            c->sig->signal_received = SIGTERM;
++            c->sig->signal_received = SIGUSR1;
+             c->sig->signal_text = "remote-exit";
+             break;
+     }
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 26259c6b8..d9fa64870 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -193,7 +193,25 @@ void
+ receive_exit_message(struct context *c)
+ {
+     dmsg(D_STREAM_ERRORS, "Exit message received by peer");
+-    c->sig->signal_received = SIGTERM;
++    /* With control channel exit notification, we want the session to give
++     * enough time to handle retransmits and acknowledgment, so lat coming
++     * retries from the client to resend the exit or ACKs do not trigger
++     * a new session since we already killed it but the packet still has
++     * a valid HMAC. This can only happen for the period for the HMAC
++     * timeslot is still valid but waiting five seconds here does not
++     * hurt much and is the better alternative.
++     *
++     * This does not affect OCC exit since the HMAC session code will
++     * ignore DATA packets
++     * */
++    if (c->options.mode == MODE_SERVER)
++    {
++        schedule_exit(c, c->options.scheduled_exit_interval, SIGTERM);
++    }
++    else
++    {
++        c->sig->signal_received = SIGUSR1;
++    }
+     c->sig->signal_text = "remote-exit";
+ #ifdef ENABLE_MANAGEMENT
+     if (management)
 -- 
-Antonio Quartulli
+2.37.0 (Apple Git-136)
+
 
