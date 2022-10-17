@@ -1,13 +1,10 @@
-Message-ID: <f9ad8227-23d4-5b17-5f44-37112db4befd@...1227...>
-Date: Sun, 16 Oct 2022 17:51:48 +0200
-MIME-Version: 1.0
-Content-Language: en-GB
-References: <YydCIP5l0WwH5OX+@greenie.muc.de>
- <20221011110126.1798114-1-arne@...1227...> <Y0l/IPVu988ffsYd@...1296...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <Y0l/IPVu988ffsYd@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Change explicit exit notification to be
- a SIGUSR1 instead of a SIGTERM signal
+Date: Mon, 17 Oct 2022 10:25:35 +0200 (CEST)
+Message-Id: <202210170825.29H8PZTo017226@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221016154953.2483509-1-arne@...1227...>
+References: <20221016154953.2483509-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Change exit signal in P2P to be
+ a SIGUSR1 and delay CC exit in P2MP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,31 +13,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
+Acked-by: Gert Doering <gert@...1296...>
 
-> 
-> If we care about logging, I think we should do the signal remap in
-> multi_close_instance_on_signal()  (... which already remaps SIGUSR1
-> by means of remap_signal(), but only if c->options.remap_sigusr1 is
-> set).
-> 
-> OTOH, maybe it should just *not* call remap_signal(), as the per-instance
-> signals and the global signals do different things, and always remap
-> SIGUSR1-in-instance to SIGTERM...
-> 
-> 
-> What I do not think will make us happy in future is the extra
-> conditionals in v2...
+Tested the whole lot again.  Only difference to v1 is in p2mp mode with 
+incoming TLS EEN, which now logs
 
-A completely different effect screwed up my testing and lead to believe 
-that signals are handled different in p2p and p2mp. There is different 
-behaviour in p2p and p2mp but it is triggered by the HMAC cookie 
-approach that only p2mp has. Detailed explaination is in the code in 
-patch v3.
+10:15:34 cron2-freebsd-tc-amd64/194.97.140.21:53341 Exit message received by peer
+10:15:34 cron2-freebsd-tc-amd64/194.97.140.21:53341 Delayed exit in 5 seconds
+10:15:38 read UDPv6 [ECONNREFUSED]: Connection refused (fd=5,code=111)
+10:15:39 us=240199 cron2-freebsd-tc-amd64/194.97.140.21:53341 SIGTERM[soft,delayed-exit] received, client-instance exiting
 
-Arne
+(the ECONNREFUSED is "the client exited right away, so never saw the
+control-plane ACK" - calling "--explicit-exit-notify 10" on the client
+makes those last packets succeed, with no adverse effects on unwanted
+restarts)
+
+I have worked a bit on the commit message, and a lot on the new comment
+block - I hope it is now clearer what could happen, and how this change
+avoids the problem.
+
+I have also added a Changes.rst entry (user-visible changes), pointing
+out that "--remap-usr1 SIGTERM" will bring back the old behaviour, if
+someone relies on it.
+
+
+Your patch has been applied to the master branch.
+
+commit d468dff7bdfd79059818c190ddf41b125bb658de
+Author: Arne Schwabe
+Date:   Sun Oct 16 17:49:53 2022 +0200
+
+     Change exit signal in P2P to be a SIGUSR1 and delay CC exit in P2MP
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20221016154953.2483509-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25403.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
