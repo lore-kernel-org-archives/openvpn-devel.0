@@ -1,12 +1,11 @@
-Date: Tue, 18 Oct 2022 18:16:54 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Y07RdvYxfDw+YLmC@...2685...>
-References: <20220921104930.3452270-1-arne@...1227...>
- <20220921104930.3452270-3-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <20220921104930.3452270-3-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v4 3/3] Add unit test for
- reliable_get_num_output_sequenced_available
+References: <20221010071229.7935-1-gert@...1296...>
+In-Reply-To: <20221010071229.7935-1-gert@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 18 Oct 2022 19:01:20 -0400
+Message-ID: <CAKuzo_jMWxigVoqxJNHdx+yfn2CBHamECs3Fq3QFsNpSJ9jK_g@...278...>
+Content-Type: multipart/alternative; boundary="000000000000dd1d0f05eb571a35"
+Subject: Re: [Openvpn-devel] [PATCH] TLS: do not lock empty usernames
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,157 +14,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Arne Schwabe <arne@...1227...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-By: Frank Lichtenheld <frank@...2699...>
+--000000000000dd1d0f05eb571a35
+Content-Type: text/plain; charset="UTF-8"
 
-Already acked in 1957647252.642516.1652264253337@...2642...
+Hi,
 
-On Wed, Sep 21, 2022 at 12:49:30PM +0200, Arne Schwabe wrote:
-> Patch v4: rebase
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  tests/unit_tests/openvpn/Makefile.am       |  5 +-
->  tests/unit_tests/openvpn/mock_get_random.c | 10 ++++
->  tests/unit_tests/openvpn/test_packet_id.c  | 55 ++++++++++++++++++++++
->  3 files changed, 69 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-> index 65cf9549c..c7846f3e6 100644
-> --- a/tests/unit_tests/openvpn/Makefile.am
-> +++ b/tests/unit_tests/openvpn/Makefile.am
-> @@ -61,7 +61,10 @@ packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c mock_msg.h \
->  	$(openvpn_srcdir)/buffer.c \
->  	$(openvpn_srcdir)/otime.c \
->  	$(openvpn_srcdir)/packet_id.c \
-> -	$(openvpn_srcdir)/platform.c
-> +	$(openvpn_srcdir)/platform.c \
-> +	$(openvpn_srcdir)/reliable.c \
-> +    $(openvpn_srcdir)/session_id.c
-> +
->  
->  pkt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
->  	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
-> diff --git a/tests/unit_tests/openvpn/mock_get_random.c b/tests/unit_tests/openvpn/mock_get_random.c
-> index d0d2574ae..787b5e33e 100644
-> --- a/tests/unit_tests/openvpn/mock_get_random.c
-> +++ b/tests/unit_tests/openvpn/mock_get_random.c
-> @@ -26,6 +26,7 @@
->  #include <stdio.h>
->  #include <stdlib.h>
->  #include <setjmp.h>
-> +#include <stdint.h>
->  #include <cmocka.h>
->  
->  unsigned long
-> @@ -34,3 +35,12 @@ get_random(void)
->      /* rand() is not very random, but it's C99 and this is just for testing */
->      return rand();
->  }
-> +
-> +void
-> +prng_bytes(uint8_t *output, int len)
-> +{
-> +    for (int i = 0; i < len; i++)
-> +    {
-> +        output[i] = rand();
-> +    }
-> +}
-> diff --git a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_tests/openvpn/test_packet_id.c
-> index a3d4db285..c610d9727 100644
-> --- a/tests/unit_tests/openvpn/test_packet_id.c
-> +++ b/tests/unit_tests/openvpn/test_packet_id.c
-> @@ -36,6 +36,7 @@
->  #include <cmocka.h>
->  
->  #include "packet_id.h"
-> +#include "reliable.h"
->  
->  #include "mock_msg.h"
->  
-> @@ -156,6 +157,59 @@ test_packet_id_write_long_wrap(void **state)
->      assert_true(data->test_buf_data.buf_time == htonl(now));
->  }
->  
-> +static void
-> +test_get_num_output_sequenced_available(void **state)
-> +{
-> +
-> +    struct reliable *rel = malloc(sizeof(struct reliable));
-> +    reliable_init(rel, 100, 50, 8, false);
-> +
-> +    rel->array[5].active = true;
-> +    rel->array[5].packet_id = 100;
-> +
-> +    rel->packet_id = 103;
-> +
-> +    assert_int_equal(5, reliable_get_num_output_sequenced_available(rel));
-> +
-> +    rel->array[6].active = true;
-> +    rel->array[6].packet_id = 97;
-> +    assert_int_equal(2, reliable_get_num_output_sequenced_available(rel));
-> +
-> +    /* test ids close to int/unsigned int barrier */
-> +
-> +    rel->array[5].active = true;
-> +    rel->array[5].packet_id = (0x80000000u -3);
-> +    rel->array[6].active = false;
-> +    rel->packet_id = (0x80000000u -1);
-> +
-> +    assert_int_equal(6, reliable_get_num_output_sequenced_available(rel));
-> +
-> +    rel->array[5].active = true;
-> +    rel->array[5].packet_id = (0x80000000u -3);
-> +    rel->packet_id = 0x80000001u;
-> +
-> +    assert_int_equal(4, reliable_get_num_output_sequenced_available(rel));
-> +
-> +
-> +    /* test wrapping */
-> +    rel->array[5].active = true;
-> +    rel->array[5].packet_id = (0xffffffffu -3);
-> +    rel->array[6].active = false;
-> +    rel->packet_id = (0xffffffffu - 1);
-> +
-> +    assert_int_equal(6, reliable_get_num_output_sequenced_available(rel));
-> +
-> +    rel->array[2].packet_id = 0;
-> +    rel->array[2].active = true;
-> +
-> +    assert_int_equal(6, reliable_get_num_output_sequenced_available(rel));
-> +
-> +    rel->packet_id = 3;
-> +    assert_int_equal(1, reliable_get_num_output_sequenced_available(rel));
-> +
-> +    reliable_free(rel);
-> +}
-> +
->  int
->  main(void)
->  {
-> @@ -178,6 +232,7 @@ main(void)
->          cmocka_unit_test_setup_teardown(test_packet_id_write_long_wrap,
->                                          test_packet_id_write_setup,
->                                          test_packet_id_write_teardown),
-> +        cmocka_unit_test(test_get_num_output_sequenced_available)
->      };
->  
->      return cmocka_run_group_tests_name("packet_id tests", tests, NULL, NULL);
-> -- 
-> 2.37.0 (Apple Git-136)
-> 
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+On Mon, Oct 10, 2022 at 3:14 AM Gert Doering <gert@...1296...> wrote:
 
--- 
-  Frank Lichtenheld
+> We do not permit username changes on renegotiation (= username is
+> "locked" after successful initial authentication).
+>
+> Unfortunately the way this is written this gets in the way of using
+> auth-user-pass-optional + pushing "auth-token-user" from client-connect
+> (and most likely also "from management") because we'll lock an empty
+> username, and on renegotiation, refuse the client with
+>
+
+Why is it not okay to support change of username?. I have a situation
+where username change looks legitimate:
+
+With our new PLAP (start from login screen) and "persistent connection"
+support on Windows,
+a connection may be started by one user and then "renegotiated" by another
+who may enter
+a different username and password from the initial connection (say
+auth-nocache or 2FA
+is in use).
+
+In this case, the server will disable the tunnel (username tried to
+change), the client will retry
+asking the user for username/password input again. On inputting the same
+credentials a
+second time, the connection will succeed. This leads to poor UX.
+
+If we can conjure up usernames (like with empty --> token-user) why not
+allow other username
+changes too?
+
+Selva
+
+--000000000000dd1d0f05eb571a35
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"l=
+tr" class=3D"gmail_attr">On Mon, Oct 10, 2022 at 3:14 AM Gert Doering &lt;<=
+a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;=
+ wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px =
+0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">We do no=
+t permit username changes on renegotiation (=3D username is<br>
+&quot;locked&quot; after successful initial authentication).<br>
+<br>
+Unfortunately the way this is written this gets in the way of using<br>
+auth-user-pass-optional + pushing &quot;auth-token-user&quot; from client-c=
+onnect<br>
+(and most likely also &quot;from management&quot;) because we&#39;ll lock a=
+n empty<br>
+username, and on renegotiation, refuse the client with<br></blockquote><div=
+><br></div><div>Why is it not okay to support change of username?. I have a=
+ situation</div><div>where username change looks legitimate:</div><div><br>=
+</div><div>With our new PLAP (start from login screen) and &quot;persistent=
+ connection&quot; support on Windows,</div><div>a connection=C2=A0may be st=
+arted by one user and then &quot;renegotiated&quot; by another who may ente=
+r</div><div>a different username and password from the initial=C2=A0connect=
+ion=C2=A0(say auth-nocache or 2FA</div><div>is in use).=C2=A0</div><div><br=
+></div><div>In this case, the server will disable the tunnel (username trie=
+d to change), the client will retry</div><div>asking the user for username/=
+password input again. On inputting the same credentials a</div><div>second =
+time, the connection will succeed. This leads to poor UX.</div><div><br></d=
+iv><div>If we can conjure up usernames (like with empty --&gt; token-user) =
+why not allow other username</div><div>changes=C2=A0too?</div><div><br></di=
+v><div>Selva</div></div></div>
+
+--000000000000dd1d0f05eb571a35--
 
