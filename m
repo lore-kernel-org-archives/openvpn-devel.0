@@ -1,11 +1,12 @@
-Date: Tue, 18 Oct 2022 18:02:35 +0200
+Date: Tue, 18 Oct 2022 18:16:54 +0200
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Y07OG5Jgt2kKSc5U@...2685...>
+Message-ID: <Y07RdvYxfDw+YLmC@...2685...>
 References: <20220921104930.3452270-1-arne@...1227...>
+ <20220921104930.3452270-3-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <20220921104930.3452270-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v4 1/3] Ensure that control channel
- packet are respecting maximum packet size
+In-Reply-To: <20220921104930.3452270-3-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v4 3/3] Add unit test for
+ reliable_get_num_output_sequenced_available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,151 +21,151 @@ Content-Disposition: inline
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Wed, Sep 21, 2022 at 12:49:28PM +0200, Arne Schwabe wrote:
-> This ensures that control packets are actually smaller than the maximum
-> control channel packet size.
-> 
-> Since OpenVPN will consider a control message packet complete
-> when the TLS record is complete, we have to ensure that the SSL library
-> will still write one record, so the receiving side will only be able
-> to get/read the control message content when a TLS record is
-> complete. To achieve this goal, this commit does:
-> 
-> - Split one read from TLS library into multiple control
->   channel packets, splitting one TLS record into multiple
->   control packets.
-> - increase allowed number of outstanding packets to 6 from 4 on the
->   sender side. This is still okay with older implementations as
->   receivers will have room for 8.
-> - calculate the overhead for control channel message to allow
->   staying below that threshold.
-> - remove maxlen from key_state_read_ciphertext and related functions
->   as we now always allow control channel messages to be up to
->   TLS_CHANNEL_BUF_SIZE in size and no longer limit this by the mtu of
->   control packets as the implemented splitting will take care of
->   larger payloads from the SSL library
-> 
-> Note this commit has a warning message that references max-packet-size that
-> is introduced in the next commit. In this commit the packet size is not yet
-> configurable.
-> 
-> Patch v2: avoid assertion about to large buffer by sticking to 1250 max
->           control size in this commit and leaving larger sizes for the
->           --max-packet-size commit. Also fix
->           various other small problems and grammar fixes.
-> Patch v3: grammar fixes
-> Patch v4: adjust tls-mtu to max-packet-size in message.
+Acked-By: Frank Lichtenheld <frank@...2699...>
 
-Reread the code. Did some client-side tests with small MTUs. Didn't find any issues.
-One remaining typo found, see below.
+Already acked in 1957647252.642516.1652264253337@...2642...
 
-I think it would actually have been possible to split this up in even smaller
-patches (e.g. removing the maxlen parameter), but probably not worth doing that
-now on a v4.
-
-Acked-By: Frank Lichtenheld <frank@...2641...>
-
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 672cd9c84..b69258be8 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-[...]
-> @@ -2675,6 +2718,92 @@ read_incoming_tls_plaintext(struct key_state *ks, struct buffer *buf,
->      return true;
+On Wed, Sep 21, 2022 at 12:49:30PM +0200, Arne Schwabe wrote:
+> Patch v4: rebase
+> 
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  tests/unit_tests/openvpn/Makefile.am       |  5 +-
+>  tests/unit_tests/openvpn/mock_get_random.c | 10 ++++
+>  tests/unit_tests/openvpn/test_packet_id.c  | 55 ++++++++++++++++++++++
+>  3 files changed, 69 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+> index 65cf9549c..c7846f3e6 100644
+> --- a/tests/unit_tests/openvpn/Makefile.am
+> +++ b/tests/unit_tests/openvpn/Makefile.am
+> @@ -61,7 +61,10 @@ packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c mock_msg.h \
+>  	$(openvpn_srcdir)/buffer.c \
+>  	$(openvpn_srcdir)/otime.c \
+>  	$(openvpn_srcdir)/packet_id.c \
+> -	$(openvpn_srcdir)/platform.c
+> +	$(openvpn_srcdir)/platform.c \
+> +	$(openvpn_srcdir)/reliable.c \
+> +    $(openvpn_srcdir)/session_id.c
+> +
+>  
+>  pkt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+>  	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
+> diff --git a/tests/unit_tests/openvpn/mock_get_random.c b/tests/unit_tests/openvpn/mock_get_random.c
+> index d0d2574ae..787b5e33e 100644
+> --- a/tests/unit_tests/openvpn/mock_get_random.c
+> +++ b/tests/unit_tests/openvpn/mock_get_random.c
+> @@ -26,6 +26,7 @@
+>  #include <stdio.h>
+>  #include <stdlib.h>
+>  #include <setjmp.h>
+> +#include <stdint.h>
+>  #include <cmocka.h>
+>  
+>  unsigned long
+> @@ -34,3 +35,12 @@ get_random(void)
+>      /* rand() is not very random, but it's C99 and this is just for testing */
+>      return rand();
+>  }
+> +
+> +void
+> +prng_bytes(uint8_t *output, int len)
+> +{
+> +    for (int i = 0; i < len; i++)
+> +    {
+> +        output[i] = rand();
+> +    }
+> +}
+> diff --git a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_tests/openvpn/test_packet_id.c
+> index a3d4db285..c610d9727 100644
+> --- a/tests/unit_tests/openvpn/test_packet_id.c
+> +++ b/tests/unit_tests/openvpn/test_packet_id.c
+> @@ -36,6 +36,7 @@
+>  #include <cmocka.h>
+>  
+>  #include "packet_id.h"
+> +#include "reliable.h"
+>  
+>  #include "mock_msg.h"
+>  
+> @@ -156,6 +157,59 @@ test_packet_id_write_long_wrap(void **state)
+>      assert_true(data->test_buf_data.buf_time == htonl(now));
 >  }
 >  
-> +static bool
-> +write_outgoing_tls_ciphertext(struct tls_session *session, bool *state_change)
+> +static void
+> +test_get_num_output_sequenced_available(void **state)
 > +{
-> +    struct key_state *ks = &session->key[KS_PRIMARY];
 > +
-> +    int rel_avail = reliable_get_num_output_sequenced_available(ks->send_reliable);
-> +    if (rel_avail == 0)
-> +    {
-> +        return true;
-> +    }
+> +    struct reliable *rel = malloc(sizeof(struct reliable));
+> +    reliable_init(rel, 100, 50, 8, false);
 > +
-> +    /* We need to determine how much space is actually available in the control
-> +     * channel frame */
+> +    rel->array[5].active = true;
+> +    rel->array[5].packet_id = 100;
 > +
-> +    int max_pkt_len = min_int(TLS_CHANNEL_BUF_SIZE, session->opt->frame.tun_mtu);
+> +    rel->packet_id = 103;
+> +
+> +    assert_int_equal(5, reliable_get_num_output_sequenced_available(rel));
+> +
+> +    rel->array[6].active = true;
+> +    rel->array[6].packet_id = 97;
+> +    assert_int_equal(2, reliable_get_num_output_sequenced_available(rel));
+> +
+> +    /* test ids close to int/unsigned int barrier */
+> +
+> +    rel->array[5].active = true;
+> +    rel->array[5].packet_id = (0x80000000u -3);
+> +    rel->array[6].active = false;
+> +    rel->packet_id = (0x80000000u -1);
+> +
+> +    assert_int_equal(6, reliable_get_num_output_sequenced_available(rel));
+> +
+> +    rel->array[5].active = true;
+> +    rel->array[5].packet_id = (0x80000000u -3);
+> +    rel->packet_id = 0x80000001u;
+> +
+> +    assert_int_equal(4, reliable_get_num_output_sequenced_available(rel));
 > +
 > +
-> +    /* Subtract overhead */
-> +    max_pkt_len -= calc_control_channel_frame_overhead(session);
+> +    /* test wrapping */
+> +    rel->array[5].active = true;
+> +    rel->array[5].packet_id = (0xffffffffu -3);
+> +    rel->array[6].active = false;
+> +    rel->packet_id = (0xffffffffu - 1);
 > +
-> +    /* calculate total available length for outgoing tls ciphertext */
-> +    int maxlen = max_pkt_len * rel_avail;
+> +    assert_int_equal(6, reliable_get_num_output_sequenced_available(rel));
 > +
-> +    /* Is first packet one that will have a WKC appended? */
-> +    if (control_packet_needs_wkc(ks))
-> +    {
-> +        maxlen -= buf_len(session->tls_wrap.tls_crypt_v2_wkc);
-> +    }
+> +    rel->array[2].packet_id = 0;
+> +    rel->array[2].active = true;
 > +
-> +    /* Not enough space available to send a full control channel packet */
-> +    if (maxlen < TLS_CHANNEL_BUF_SIZE)
-> +    {
-> +        if (rel_avail == TLS_RELIABLE_N_SEND_BUFFERS)
-> +        {
-> +            msg(D_TLS_ERRORS, "--max-packet-size setting too low. Unable to "
-> +                "send control channel message.");
-> +        }
-> +        msg(D_REL_LOW, "Reliable: Send queue full, postponing TLS send");
-> +        return true;
-> +    }
+> +    assert_int_equal(6, reliable_get_num_output_sequenced_available(rel));
 > +
-> +    /* This seems a bit wasteful to allocate every time */
-> +    struct gc_arena gc = gc_new();
-> +    struct buffer tmp = alloc_buf_gc(TLS_CHANNEL_BUF_SIZE, &gc);
+> +    rel->packet_id = 3;
+> +    assert_int_equal(1, reliable_get_num_output_sequenced_available(rel));
 > +
-> +    int status = key_state_read_ciphertext(&ks->ks_ssl, &tmp);
-> +
-> +    if (status == -1)
-> +    {
-> +        msg(D_TLS_ERRORS,
-> +            "TLS Error: Ciphertext -> reliable TCP/UDP transport read error");
-> +        gc_free(&gc);
-> +        return false;
-> +    }
-> +    if (status == 1)
-> +    {
-> +        /* Split the TLS ciphertext (TLS record) into multiple small packets
-> +         * that respect tls_mtu */
-> +        while (tmp.len)
-> +        {
-> +            int len = max_pkt_len;
-> +            int opcode = P_CONTROL_V1;
-> +            if (control_packet_needs_wkc(ks))
-> +            {
-> +                opcode = P_CONTROL_WKC_V1;
-> +                len = max_int(0, len - buf_len(session->tls_wrap.tls_crypt_v2_wkc));
-> +            }
-> +            /* do not send more than available */
-> +            len = min_int(len, tmp.len);
-> +
-> +            struct buffer *buf = reliable_get_buf_output_sequenced(ks->send_reliable);
-> +            /* we assert here since we checked for its availibility before */
-
-"availability"
-
-> +            ASSERT(buf);
-> +            buf_copy_n(buf, &tmp, len);
-> +
-> +            reliable_mark_active_outgoing(ks->send_reliable, buf, opcode);
-> +            INCR_GENERATED;
-> +            *state_change = true;
-> +        }
-> +        dmsg(D_TLS_DEBUG, "Outgoing Ciphertext -> Reliable");
-> +    }
-> +
-> +    gc_free(&gc);
-> +    return true;
+> +    reliable_free(rel);
 > +}
 > +
+>  int
+>  main(void)
+>  {
+> @@ -178,6 +232,7 @@ main(void)
+>          cmocka_unit_test_setup_teardown(test_packet_id_write_long_wrap,
+>                                          test_packet_id_write_setup,
+>                                          test_packet_id_write_teardown),
+> +        cmocka_unit_test(test_get_num_output_sequenced_available)
+>      };
 >  
+>      return cmocka_run_group_tests_name("packet_id tests", tests, NULL, NULL);
+> -- 
+> 2.37.0 (Apple Git-136)
+> 
+> 
+> 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
-Regards,
 -- 
   Frank Lichtenheld
 
