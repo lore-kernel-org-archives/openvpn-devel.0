@@ -1,13 +1,9 @@
-Date: Wed, 19 Oct 2022 22:56:14 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <Y1BkbnMzpOPVsx3v@...1296...>
-References: <CAKuzo_gRebSz5GObVLJodQvxV2x1XvxFoXoBxe6RuC3fb3eJog@...278...>
+From: selva.nair@...277...
+Date: Wed, 19 Oct 2022 18:46:42 -0400
+Message-Id: <20221019224642.11178-1-selva.nair@...277...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="vSQ2k9ridjC71CEc"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_gRebSz5GObVLJodQvxV2x1XvxFoXoBxe6RuC3fb3eJog@...278...>
-Subject: Re: [Openvpn-devel] Is auth-nocache broken?
+Subject: [Openvpn-devel] [PATCH for 2.5/2.6] Purge auth-token as well while
+ purging passwords
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,60 +12,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---vSQ2k9ridjC71CEc
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Selva Nair <selva.nair@...277...>
 
-Hi,
+Starting from commit e61b401a auth-token is saved in a separate struct
+from auth-user-pass and is not cleared when ssl_purge_auth() is called.
+This makes "forget-passwords" sent to the management
+interface or "--management-forget-disconnect" option not to work
+as expected.
 
-On Wed, Oct 19, 2022 at 02:33:27PM -0400, Selva Nair wrote:
-> Using --auth-user-pass, --auth-nocache and --reneg-sec <a small value>, no
-> auth-tokens in use, I see that username/password is prompted on the first
-> connection attempt and at first renegotiation. After that reneg completes
-> without prompting for user/pass.
+Purging caused by --auth-nocache is not affected
+(auth-token is retained in that case as it should be).
 
-It's possibly we broke that by trying to repair all the corner cases
-with either pushing tokens from the server, or *not* using auth-nocache.
+Use case:
+For Pre-Logon access and persistent connections on Windows, use of
+"forget-passwords" before disconnect is probably the only way to
+ensure that no credentials are left behind. Note that openvpn.exe
+continues to run after disconnect in these cases.
 
-I assume you tested with master?
+Also, the original intent of "forget-passwords" appears to be to
+clear all "passwords" that can be used to reconnect.
 
-(Unfortunately my automated tests all use "username + passwords are
-coming from a file", which means "send the same one as before" and
-"go read the file again" both produce the same effect... having
-a management-interface driven client test would help here... no
-time yet to write one)
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/ssl.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index d9b21819..4c0d78a1 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -492,6 +492,7 @@ ssl_purge_auth(const bool auth_user_pass_only)
+         purge_user_pass(&passbuf, true);
+     }
+     purge_user_pass(&auth_user_pass, true);
++    purge_user_pass(&auth_token, true);
+ #ifdef ENABLE_MANAGEMENT
+     ssl_purge_auth_challenge();
+ #endif
+-- 
+2.30.2
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---vSQ2k9ridjC71CEc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjUGRuAAoJEB2Cnv7KVigSr6EL/1pyPF/Kf/jGgvGZO5KaHQdJ
-LViCemyytjKNVMpdrq8DNxdV19UkZfpZ+7n526rf+oXjCLYJb7i9PFanzUHRKInA
-wurZXj/cme3yeSjwxTLeM9LoJsMwULE6mrfG7Ho+GExajOWk15L3Rs2hzNVd6VTU
-tu9DvS8D8CtA2HqBYdFIMhZlx7T7MMHyi/oUFNwyXEEQH7VjBwiZWk65g/a2Gia8
-kNfmldHjbdU8oXphNQZY0aoY9rJciZd074fX2DOpzBRO7FApsEI4favt/pPSh1Nb
-xgj4hwui1ujGmuoffxFXINIsq1WZlR9kIntud4BRIqB01qPbuX+2RRwpSAPmNmhe
-JmALcEu7lKFMdJ8Z2hw+aYYqQCreSXMddlAkpk63PEfPmjRa5DxSyk5HdlOxUR2F
-Jx3f15DMqMZmTmV8sujoGo2s4w9kI+3HOAjron9qDVYYOx+VTw6pYA65Fm9UE0GZ
-EUig4J+k8EZP79uZneW4B7b+aiX+rSFMNGWSXVrb6g==
-=fk+t
------END PGP SIGNATURE-----
-
---vSQ2k9ridjC71CEc--
 
