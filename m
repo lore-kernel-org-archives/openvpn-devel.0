@@ -1,8 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed, 19 Oct 2022 15:36:27 +0200
-Message-Id: <20221019133627.2918110-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix regression of ignoring --user
+Date: Wed, 19 Oct 2022 16:13:41 +0200 (CEST)
+Message-Id: <202210191413.29JEDfSU076673@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221019133627.2918110-1-arne@...1227...>
+References: <20221019133627.2918110-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix regression of ignoring
+ --user
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,44 +15,38 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Commit facb6fffb changed a call in the style of if(a() | b())
-to if(a() || b()). While this looks identical, it is not. The first
-statement always executes b() while the second only executes b() if
-a() returns false. This lead to to the platform_state_user never to
-set as side effect and thus --user being ignored. Rewrite the code
-to make this more explicit.
+Acked-by: Gert Doering <gert@...1296...>
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/init.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+Glad that this obscure AS option caught this breakage... *sigh* - that's
+what you get for "just fix this compiler warning" (which I am usually
+quite reluctant to do, but "it looked straightforward enough").
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 07d43d49d..7de65a3ec 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -3597,10 +3597,14 @@ do_init_first_time(struct context *c)
-         ALLOC_OBJ_CLEAR_GC(c->c0, struct context_0, &c->gc);
-         c0 = c->c0;
- 
--        /* get user and/or group that we want to setuid/setgid to */
--        c0->uid_gid_specified =
--            platform_group_get(c->options.groupname, &c0->platform_state_group)
--            || platform_user_get(c->options.username, &c0->platform_state_user);
-+        /* get user and/or group that we want to setuid/setgid to,
-+         * sets also platform_x_state */
-+        bool group_defined =  platform_group_get(c->options.groupname,
-+                                                 &c0->platform_state_group);
-+        bool user_defined = platform_user_get(c->options.username,
-+                                              &c0->platform_state_user);
-+
-+        c0->uid_gid_specified = user_defined || group_defined;
- 
-         /* perform postponed chdir if --daemon */
-         if (c->did_we_daemonize && c->options.cd_dir == NULL)
--- 
-2.37.0 (Apple Git-136)
+The new code is less magic, and much easier to understand - good.
+
+Lightly tested only ("run one instance with --user or --group, see
+if log and ps output agree").
+
+Your patch has been applied to the master branch.
+
+commit 66f6a3b7991d5316116ce7cb91dfa4d71d4df42f
+Author: Arne Schwabe
+Date:   Wed Oct 19 15:36:27 2022 +0200
+
+     Fix regression of ignoring --user
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20221019133627.2918110-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25430.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
