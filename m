@@ -1,14 +1,8 @@
-Message-ID: <83d59a00-7c5f-0b34-aceb-857c08af872b@...1227...>
-Date: Wed, 19 Oct 2022 13:21:59 +0200
-MIME-Version: 1.0
-Content-Language: en-GB
-References: <20220824093723.64618-1-arne@...1227...>
- <20220914172527.2661529-1-arne@...1227...>
- <YyM0WAn0tZ1vj4N6@...2678...>
 From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <YyM0WAn0tZ1vj4N6@...2678...>
-Subject: Re: [Openvpn-devel] [PATCH v3] Improve data key id not found error
- message
+Date: Wed, 19 Oct 2022 15:36:27 +0200
+Message-Id: <20221019133627.2918110-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Fix regression of ignoring --user
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,26 +11,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+Commit facb6fffb changed a call in the style of if(a() | b())
+to if(a() || b()). While this looks identical, it is not. The first
+statement always executes b() while the second only executes b() if
+a() returns false. This lead to to the platform_state_user never to
+set as side effect and thus --user being ignored. Rewrite the code
+to make this more explicit.
 
->> Patch v2: fix comparing key_id to state value, improve message
->> Patch v3: also take key_id into account
-> 
-> Code looks good to me now. Is there any way of testing this?
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/init.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-You need to get both peer in some kind of inconsistent state. Like short 
-reneg-sec on one side and dealyed auth on the other side or deauthing 
-(e.g. via management) and seeing packet in the last five seconds before 
-the session gets killed. Also somethning like reneg-sec 60 on one side 
-might trigger these warnings.
-
-If I trigger them again with something reliable to trigger them, I will 
-follow up.
-
-Arne
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 07d43d49d..7de65a3ec 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -3597,10 +3597,14 @@ do_init_first_time(struct context *c)
+         ALLOC_OBJ_CLEAR_GC(c->c0, struct context_0, &c->gc);
+         c0 = c->c0;
+ 
+-        /* get user and/or group that we want to setuid/setgid to */
+-        c0->uid_gid_specified =
+-            platform_group_get(c->options.groupname, &c0->platform_state_group)
+-            || platform_user_get(c->options.username, &c0->platform_state_user);
++        /* get user and/or group that we want to setuid/setgid to,
++         * sets also platform_x_state */
++        bool group_defined =  platform_group_get(c->options.groupname,
++                                                 &c0->platform_state_group);
++        bool user_defined = platform_user_get(c->options.username,
++                                              &c0->platform_state_user);
++
++        c0->uid_gid_specified = user_defined || group_defined;
+ 
+         /* perform postponed chdir if --daemon */
+         if (c->did_we_daemonize && c->options.cd_dir == NULL)
+-- 
+2.37.0 (Apple Git-136)
 
 
