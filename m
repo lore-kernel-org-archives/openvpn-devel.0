@@ -1,13 +1,11 @@
-Message-ID: <30459709-4f14-5f76-072d-24cbc75ac0eb@...2181...>
-Date: Sat, 22 Oct 2022 15:38:18 +0200
-MIME-Version: 1.0
-Content-Language: en-US
-References: <8f4f2e11-6418-58ac-0fd5-f9a19450102a@...2181...>
- <20221022083842.4093941-1-git@...2701...>
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20221022083842.4093941-1-git@...2701...>
-Subject: Re: [Openvpn-devel] [PATCH v2] ovpn-dco: fix kernel 6.1 compile
- issue in ovpn_peer_create
+Date: Sat, 22 Oct 2022 22:55:21 +0200
+Message-Id: <20221022205521.29406-1-a@...2181...>
+In-Reply-To: 20220818001358.175361-1-a@...2181...
+References: 
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2] close_tun: print interface type
+ consistently in message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,39 +14,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: John Thomson <git@...2701...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Hi,
+When closing the tunnel interface we know if we were using DCO or not.
+for this reason we can customize the closing message and make it
+consistent with the opening one.
 
-On 22/10/2022 10:38, John Thomson wrote:
-> Linux 5.19 replaces netif_tx_napi_add, but maintains a definition to the
-> new function in: 58caed3dacb4 ("netdev: reshuffle netif_napi_add() APIs
-> to allow dropping weigh") [0]
-> 
-> Linux 6.1 removes netif_tx_napi_add in c3f760ef1287 ("net: remove
-> netif_tx_napi_add()") [1]
-> 
-> [0]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=58caed3dacb4354a25a1aa8d2febc3e9648ba1f4
-> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c3f760ef128789252e7c4f10d3c1721422dceba9
-> 
-> Signed-off-by: John Thomson <git@...2701...>
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+Changes from v1:
+* use termary if instead of full blown if block
+---
+ src/openvpn/init.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Thanks a lot for this!
-Your patch has been applied to the master branch with a few minor style 
-fixes.
-
-> ---
-> v2: Do not throw ifdefs into the middle of the code
-> 
-> compile tested only: openwrt toolchain aarch64: kernel v6.1rc1, kernel 5.10
-
-Out of curiosity: are you using the openvpn-dev feed for openwqrt? 
-(https://github.com/OpenVPN/openvpn-dev-openwrt)
-
-Cheers,
-
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index c48048a1..01d6dab5 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1946,7 +1946,9 @@ do_open_tun(struct context *c)
+ static void
+ do_close_tun_simple(struct context *c)
+ {
+-    msg(D_CLOSE, "Closing TUN/TAP interface");
++    msg(D_CLOSE, "Closing %s interface",
++        dco_enabled(&c->options) ? "DCO": "TUN/TAP");
++
+     if (c->c1.tuntap)
+     {
+         if (!c->options.ifconfig_noexec)
 -- 
-Antonio Quartulli
+2.37.4
+
 
