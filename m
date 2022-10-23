@@ -1,13 +1,10 @@
-Mime-Version: 1.0
-Message-Id: <11858130-7897-4996-9823-0723391def47@...2702...>
-In-Reply-To: <30459709-4f14-5f76-072d-24cbc75ac0eb@...2181...>
-References: <8f4f2e11-6418-58ac-0fd5-f9a19450102a@...2181...>
- <20221022083842.4093941-1-git@...2701...>
- <30459709-4f14-5f76-072d-24cbc75ac0eb@...2181...>
-Date: Sat, 22 Oct 2022 21:53:20 +0000
-From: "John Thomson" <git@...2701...>
-Subject: Re: [Openvpn-devel] [PATCH v2] ovpn-dco: fix kernel 6.1 compile
- issue in ovpn_peer_create
+Date: Sun, 23 Oct 2022 18:16:00 +0200 (CEST)
+Message-Id: <202210231616.29NGG0QJ064775@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221022205521.29406-1-a@...2181...>
+References: <20221022205521.29406-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: close_tun: print interface type
+ consistently in message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,52 +14,33 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Sat, 22 Oct 2022, at 13:38, Antonio Quartulli wrote:
-> Hi,
->
-> On 22/10/2022 10:38, John Thomson wrote:
->> Linux 5.19 replaces netif_tx_napi_add, but maintains a definition to the
->> new function in: 58caed3dacb4 ("netdev: reshuffle netif_napi_add() APIs
->> to allow dropping weigh") [0]
->>=20
->> Linux 6.1 removes netif_tx_napi_add in c3f760ef1287 ("net: remove
->> netif_tx_napi_add()") [1]
->>=20
->> [0]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/=
-commit/?id=3D58caed3dacb4354a25a1aa8d2febc3e9648ba1f4
->> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/=
-commit/?id=3Dc3f760ef128789252e7c4f10d3c1721422dceba9
->>=20
->> Signed-off-by: John Thomson <git@...2701...>
->
-> Thanks a lot for this!
-> Your patch has been applied to the master branch with a few minor style=20
-> fixes.
+Acked-by: Gert Doering <gert@...1296...>
 
-Thank you for the help and quick turnaround.
-I really should have found all the #if LINUX_VERSION_CODE in linux-compat m=
-yself the first time=E2=80=A6 Sorry
+Tested on Linux with/without --disable-dco, and the expected message
+shows up.  Test compiled on FreeBSD (without DCO) and nothing breaks.
 
->
->> ---
->> v2: Do not throw ifdefs into the middle of the code
->>=20
->> compile tested only: openwrt toolchain aarch64: kernel v6.1rc1, kernel 5=
-.10
->
-> Out of curiosity: are you using the openvpn-dev feed for openwqrt?=20
-> (https://github.com/OpenVPN/openvpn-dev-openwrt)
+Your patch has been applied to the master branch.
 
-Not yet, only just learned of it.
-I was walking through building all the Openwrt kernel modules with kernel 6=
-.1rc1 and came across ovpn-dco in the Openwrt packages feed.
+commit 77829be280b3b280f35d1ca4947900f3c5e5dd26
+Author: Antonio Quartulli
+Date:   Sat Oct 22 22:55:21 2022 +0200
+
+     close_tun: print interface type consistently in message
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20221022205521.29406-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25449.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-Cheers,
+--
+kind regards,
 
---=20
-  John Thomson
+Gert Doering
+
 
