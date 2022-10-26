@@ -1,17 +1,10 @@
-Date: Wed, 26 Oct 2022 20:48:03 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <Y1mA4wCWNjdPWWqu@...1296...>
+From: selva.nair@...277...
+Date: Wed, 26 Oct 2022 14:55:43 -0400
+Message-Id: <20221026185543.5378-1-selva.nair@...277...>
+In-Reply-To: <20221019224642.11178-1-selva.nair@...277...>
 References: <20221019224642.11178-1-selva.nair@...277...>
- <Y1kr4zYWRP29K2G2@...1296...>
- <CAKuzo_iRT5SHQUq2jMnBsY6W+wmpVGS2y9d+saVX4dT7D=udiQ@...278...>
- <Y1lKC+75SJEpCYXB@...1296...>
- <CAKuzo_h0CC43=n-PydjH7qcVk5G1XjVZtSqMHmZSgqiJUPRMnA@...278...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="PseDdMH2Nf95F07d"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_h0CC43=n-PydjH7qcVk5G1XjVZtSqMHmZSgqiJUPRMnA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH for 2.5/2.6] Purge auth-token as well
+Subject: [Openvpn-devel] [PATCH v2 for 2.5/2.6] Purge auth-token as well
  while purging passwords
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -21,65 +14,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---PseDdMH2Nf95F07d
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Selva Nair <selva.nair@...277...>
 
-Hi,
+Starting from commit e61b401a auth-token is saved in a separate struct
+from auth-user-pass and is not cleared when ssl_purge_auth() is called.
+This makes "forget-passwords" sent to the management
+interface or "--management-forget-disconnect" option not to work
+as expected.
 
-On Wed, Oct 26, 2022 at 11:54:57AM -0400, Selva Nair wrote:
-> > I'm not sure I understand what the intended use of
-> > --management-forget-disconnect *is* - if it's "disconnected by a button
-> > press", the GUI can send "forget-passwords", and we do not need this
-> > option in the first place.
-> >
-> > If it's "disconnected by a network hickup", why would one want to
-> > flush the token here, which is intended to seamlessly reconnect
-> > after the hickup?
->=20
-> Here "disconnect" does not mean disconnect from the server, but disconnect
-> the management client from the daemon. I like to refer to it as "detach"
-> from the management interface. When the client detaches it allows another
-> "client" (may be an interactive  telnet session) to connect.
+Purging caused by --auth-nocache is not affected
+(auth-token is retained in that case as it should be).
 
-Ah!  I was misunderstanding this option.  Yes, in that case, "forget
-everything, including tokens" seems reasonable.
+Use case:
+For Pre-Logon access and persistent connections on Windows, use of
+"forget-passwords" before disconnect is probably the only way to
+ensure that no credentials are left behind. Note that openvpn.exe
+continues to run after disconnect in these cases.
 
-> Still not convincing?
+Also, the original intent of "forget-passwords" appears to be to
+clear all "passwords" that can be used to reconnect.
 
-Now it is, thanks :-) - wrong "disconnect".
+v2:
+- call ssl_clean_auth_token() directly from manage.c instead
+  of amending ssl_purge_auth()
+- Add a comment that ssl_purge_auth() does not clear auth-token
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/manage.c | 2 ++
+ src/openvpn/ssl.h    | 1 +
+ 2 files changed, 3 insertions(+)
 
-Gert Doering - Munich, Germany                             gert@...1296...
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 5670e594..5b288eab 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -762,6 +762,7 @@ static void
+ man_forget_passwords(struct management *man)
+ {
+     ssl_purge_auth(false);
++    (void)ssl_clean_auth_token();
+     msg(M_CLIENT, "SUCCESS: Passwords were forgotten");
+ }
+ 
+@@ -1922,6 +1923,7 @@ man_reset_client_socket(struct management *man, const bool exiting)
+         if (man->settings.flags & MF_FORGET_DISCONNECT)
+         {
+             ssl_purge_auth(false);
++            (void)ssl_clean_auth_token();
+         }
+ 
+         if (man->settings.flags & MF_SIGNAL)
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 9ae6ae8f..94137b23 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -390,6 +390,7 @@ void ssl_set_auth_nocache(void);
+ /*
+  * Purge any stored authentication information, both for key files and tunnel
+  * authentication. If PCKS #11 is enabled, purge authentication for that too.
++ * Note that auth_token is not cleared.
+  */
+ void ssl_purge_auth(const bool auth_user_pass_only);
+ 
+-- 
+2.30.2
 
---PseDdMH2Nf95F07d
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjWYDjAAoJEB2Cnv7KVigSO24L/14h7ksQUfigBIAKCkURNJmq
-LTCCRSuK++PZpX1wHZC01dlMMfaLQMCx++Z+5MpBJCWvKrV8VjYWVd/+GqJHGTPW
-P/DQ/TDLkdzI8yK/rcxUduXvT4TwCd8H2G0uJCg5VwMtqouPdgzzjTohR5d3B/qH
-I4qmDyNHuQTpBplkn3pg7CtmEcfVhd6NFGtkkK9NLrMXUBnvO/vbNzXtjtKtTPPN
-yAMSxi64L4CIRQhw5G1TYll30jIEXof51SqFOS+F0amOEfVcXwJwwRx7I7EiqxBW
-BdZ75BZobzlQygPnr4SXjxF6cNUeuLgtm4AiRyVHhsRrxvVySs359HqtupALq2eU
-s2UJ+yDV8ETk3UHqQ7qWPY1+pNkYXMcRcDkK2Z8y3EDeRtsaGUNjBHxiZNy/B1mJ
-tgOmx15kNTj6DrYIndhmKhdRMlvrbHX8n91n8ro+HH8c7t4U6gArmgwTIZwha+30
-9n1y8Lseo8PF1ufHHmLpX6eL3LmwkIvmCWBMW9Vczw==
-=Szd4
------END PGP SIGNATURE-----
-
---PseDdMH2Nf95F07d--
 
