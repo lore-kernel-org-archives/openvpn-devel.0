@@ -1,11 +1,10 @@
-From: selva.nair@...277...
-Date: Wed, 26 Oct 2022 14:55:43 -0400
-Message-Id: <20221026185543.5378-1-selva.nair@...277...>
-In-Reply-To: <20221019224642.11178-1-selva.nair@...277...>
-References: <20221019224642.11178-1-selva.nair@...277...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 for 2.5/2.6] Purge auth-token as well
- while purging passwords
+Date: Thu, 27 Oct 2022 08:07:59 +0200 (CEST)
+Message-Id: <202210270607.29R67xBm021921@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221023195105.31714-1-selva.nair@...277...>
+References: <20221023195105.31714-1-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Ensure --auth-nocache is
+ handled during renegotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,72 +15,113 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+Looking at the code, I'd say your commit description makes a lot of
+sense, and explains the observed "funnies" quite well (which I could
+reproduce).  The code change looks reasonable, Arne ACKed this, and
+I could not find a way to break it.  Good :-)
 
-Starting from commit e61b401a auth-token is saved in a separate struct
-from auth-user-pass and is not cleared when ssl_purge_auth() is called.
-This makes "forget-passwords" sent to the management
-interface or "--management-forget-disconnect" option not to work
-as expected.
+One comment, though: when auth-tokens are in use, this call chain
 
-Purging caused by --auth-nocache is not affected
-(auth-token is retained in that case as it should be).
+        if (auth_token.token_defined && auth_token.defined)
+        {
+            up = &auth_token;
+        }   
+        /* save username for auth-token which may get pushed later */
+        if (session->opt->pull)
+        {   
+            strncpynt(auth_token.username, up->username, USER_PASS_LEN);
+        } 
 
-Use case:
-For Pre-Logon access and persistent connections on Windows, use of
-"forget-passwords" before disconnect is probably the only way to
-ensure that no credentials are left behind. Note that openvpn.exe
-continues to run after disconnect in these cases.
+.. will effectively copy auth_token.username to itself, which looks
+a bit silly but *should* be well-defined.  At least it did not cause
+issues in my auth-token tests.  If we think this is unwanted, having
+a check like
 
-Also, the original intent of "forget-passwords" appears to be to
-clear all "passwords" that can be used to reconnect.
+        if (session->opt->pull && up != &auth_token)
 
-v2:
-- call ssl_clean_auth_token() directly from manage.c instead
-  of amending ssl_purge_auth()
-- Add a comment that ssl_purge_auth() does not clear auth-token
+would avoid that ("copy only if not working on auth_token already").
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/manage.c | 2 ++
- src/openvpn/ssl.h    | 1 +
- 2 files changed, 3 insertions(+)
 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 5670e594..5b288eab 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -762,6 +762,7 @@ static void
- man_forget_passwords(struct management *man)
- {
-     ssl_purge_auth(false);
-+    (void)ssl_clean_auth_token();
-     msg(M_CLIENT, "SUCCESS: Passwords were forgotten");
- }
- 
-@@ -1922,6 +1923,7 @@ man_reset_client_socket(struct management *man, const bool exiting)
-         if (man->settings.flags & MF_FORGET_DISCONNECT)
-         {
-             ssl_purge_auth(false);
-+            (void)ssl_clean_auth_token();
-         }
- 
-         if (man->settings.flags & MF_SIGNAL)
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 9ae6ae8f..94137b23 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -390,6 +390,7 @@ void ssl_set_auth_nocache(void);
- /*
-  * Purge any stored authentication information, both for key files and tunnel
-  * authentication. If PCKS #11 is enabled, purge authentication for that too.
-+ * Note that auth_token is not cleared.
-  */
- void ssl_purge_auth(const bool auth_user_pass_only);
- 
--- 
-2.30.2
+Testing took quite a bit of test cases + renegotiations to catch
+"the original problem" and verify that "the fix" does not break 
+related use cases (since this is a tangled mess of a-u-p and tokens)...
+but it looks good!
+
+old code (commit 7d48d31b8226d5, fairly recent "master", and also 
+with 2.5.6 / commit 7b1b100557):
+
+ * --auth-user-pass --auth-nocache --reneg-sec 150  (no tokens)
+   expected behaviour:
+     - u+p reauth every 150 seconds, prompt for username+password
+   result: 
+     - asks on *first* renegotiation
+     - ran into a --ping-restart timeout
+     - reconnected with *cached* username + password  <<< this is unwanted
+     - asks again on *first* reneg
+     - next 100 renegs with *cached* u+p <<< unwanted
+
+   -> so, clearly somewhat nondeterministic and not what was ordered
+
+with "master + patch" and also "release/2.5 + patch":
+
+ * --auth-user-pass --reneg-sec 150
+   expected behaviour:
+     - u+p reauth every 150 seconds, no prompting on reneg
+   result: works fine (no prompts after the initial ones)
+
+ * --auth-user-pass --auth-nocache --reneg-sec 150
+   expected behaviour:
+     - u+p reauth every 150 seconds, prompt for username+password
+   result: works fine (prompts on every reneg)
+
+ * --auth-user-pass --reneg-sec 150                 + server-pushed auth-token
+   expected behaviour:
+     - token reauth ever 150 sec
+     - u+p reauth when the token expires (600s here), no prompting
+   result: works fine (no prompts on reneg ever)
+     - terminate + restart server -> reauth with token, no prompting
+   result: works fine
+
+   NOTE: due to reasons outside of this patch, "renegotiate with UP without
+   prompting" only works if there is a continuous connection to the server
+   - if the server connection breaks, server_pushed_signal()->ssl_purge_auth()
+   happens, and UP is forgotten, so when the token expires, prompts ensue
+   (surprising behaviour, but not caused by this patch).
+
+ * --auth-user-pass --auth-nocache --reneg-sec 150  + server-pushed auth-token
+   expected behaviour:
+     - token reauth ever 150 sec
+     - u+p reauth when the token expires (600s), prompt for username+password
+   result: works fine (prompts at token expiry, *only*)
+     - terminate + restart server -> reauth with token, no prompting
+   result: works fine
+
+(never using --auth-user-pass <file>, because that makes it hard to verify
+without extra instrumentation whether it used the cached copy, or the
+on-file copy)
+
+Your patch has been applied to the master and release/2.5 branch.
+
+commit 3a4fb17d103be37599d72d072bbee42cc121a39d (master)
+commit 5ad4b4b374f072459ab2436ed372c92d3a42d65d (HEAD -> release/2.5)
+Author: Selva Nair
+Date:   Sun Oct 23 15:51:05 2022 -0400
+
+     Ensure --auth-nocache is handled during renegotiation
+
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20221023195105.31714-1-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25452.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
