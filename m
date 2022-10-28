@@ -1,9 +1,9 @@
-Date: Fri, 28 Oct 2022 18:30:53 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Y1wDvf7k2GhlOesC@...2685...>
-References: <CAKuzo_hM7yzr3QrYhwL0Gts7F7jEkDZRx3W_whrtBUybmOCMgw@...278...>
+Message-Id: <1666983897684.4024046017.1513116668@...68...>
+From: Marc Becker <becm@...68...>
+Date: Fri, 28 Oct 2022 19:19:17 +0000
+In-Reply-To: <Y1wDvf7k2GhlOesC@...2685...>
+References: <Y1wDvf7k2GhlOesC@...2685...>
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_hM7yzr3QrYhwL0Gts7F7jEkDZRx3W_whrtBUybmOCMgw@...278...>
 Subject: Re: [Openvpn-devel] 2.5.8 release
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -13,32 +13,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On Fri, Oct 28, 2022 at 10:43:13AM -0400, Selva Nair wrote:
-> Hi,
-> 
-> If we are releasing a new Windows installer, there are a few new features
-> in the GUI that could go into the announcement. Unfortunately Changes.rst
-> in the GUI hasn't been updated since 2015 or so.
-> 
-> The most user visible one are:
-> 
-> (i) OpenVPN 3 support -- the GUI can now work as a user interface for
-> OpenVPN 3 client
-> (ii) pkcs11-id-management is now handled -- the GUI can list available
-> pkcs11-ids and allow the user to select one
-> (ii) Persistent connections -- the GUI now lists connections started at
-> boot by the automatic service and lets the user control it. Interactive
-> inputs such as username/password with such connections are possible.
+In relation to PKCS#11 improvements I was hoping to get
+https://github.com/OpenSC/pkcs11-helper/pull/59
+done by now to make external DLLs easier to use.
 
-Okay, will include this.
+Seems to be some lines in pkcs11-helper and a transition from
+pkcs11h_addProvider()
+to a combination to
+pkcs11h_registerProvider()/pkcs11h_setProviderProperty()
+and maybe just the set appropriate flags based on abspath().
+
+But sadly I did not get around to do it, too much day work.
+
 
 Regards,
--- 
-  Frank Lichtenheld
+Marc
 
