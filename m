@@ -1,15 +1,9 @@
-Date: Fri, 28 Oct 2022 08:46:41 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <Y1t60WGhceo8M6/I@...1296...>
-References: <20221027160619.11894-1-selva.nair@...277...>
- <202210271902.29RJ2qTm038532@...2054...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="KDnNieg2zdFcoVP7"
-Content-Disposition: inline
-In-Reply-To: <202210271902.29RJ2qTm038532@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Do not copy auth_token
- username to itself
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 28 Oct 2022 10:43:13 -0400
+Message-ID: <CAKuzo_hM7yzr3QrYhwL0Gts7F7jEkDZRx3W_whrtBUybmOCMgw@...278...>
+Content-Type: multipart/alternative; boundary="000000000000e8ec3205ec194785"
+Subject: [Openvpn-devel] 2.5.8 release
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,58 +12,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---KDnNieg2zdFcoVP7
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--000000000000e8ec3205ec194785
+Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
-... and here we go:
+If we are releasing a new Windows installer, there are a few new features
+in the GUI that could go into the announcement. Unfortunately Changes.rst
+in the GUI hasn't been updated since 2015 or so.
 
-On Thu, Oct 27, 2022 at 09:02:52PM +0200, Gert Doering wrote:
-> Your patch has been applied to the master branch, for now - it needs
-> to go to 2.5 as well, but we're right in the middle of a 2.5.8=20
-> release, and I need to check with Samuli & Frank if anything has been
-> done already that would cause havoc if I change the (preliminary)
-> v2.5.8 tag...
->=20
-> commit dbf142ffe597b21aa09a47677ea2061b74a9354e
-  commit cd50cf021bcfb797b6dacbe853e4c08b21a8e89d (release/2.5)
+The most user visible one are:
 
-briefly tested in a setup with username+password and token, things
-still work :-) - v2.5.8 has been updated, so this is in.
+(i) OpenVPN 3 support -- the GUI can now work as a user interface for
+OpenVPN 3 client
+(ii) pkcs11-id-management is now handled -- the GUI can list available
+pkcs11-ids and allow the user to select one
+(ii) Persistent connections -- the GUI now lists connections started at
+boot by the automatic service and lets the user control it. Interactive
+inputs such as username/password with such connections are possible.
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+PLAP support is also in, but it won't be visible to the user until we start
+using build scripts from master (i.e., in 2.6).
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Regards,
 
---KDnNieg2zdFcoVP7
-Content-Type: application/pgp-signature; name="signature.asc"
+Selva
 
------BEGIN PGP SIGNATURE-----
+--000000000000e8ec3205ec194785
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-iQGcBAEBAgAGBQJjW3rRAAoJEB2Cnv7KVigSLl8MAIcL0IwJo8wCxeek7+32sfqf
-IgV85xgn/nftSqkJBoe+9uxGVZkeRBW3AumdVSwma52o44c2X2SG8LmUaLoGhzqs
-bwWM2kgd8BHzXghUZQG8czu+EtL0XdDcgWItuZGb2XqNnYIHTMzYTkDV8zL+/hdC
-y2/JVvdTIqm22FrUW9qqiMAv6QYpfjb1ZUi0qdk+R2oPAmSqSnCAEyH3gIC5c6IR
-7L2XMEasukS7fcxbxqczT/dhj/JvLr5LjZjqopiSPtiXdAjUTFeYl7OK6CVZfAUo
-SB1XfHzYm7eg+Z+05EcLFIX/rlwzQ//9hGTU94SdWOcsE5I/GP7XnBHNCXQgWIDQ
-A6ISXj9SB6kY5Ppuoo5diTNzGEZBuqkafRxG74LOwgpm30vcmLJ53ipg90fTXh32
-hHHkhSxXInqzqIZwGekeEDDRhbJvXWE1xae7HOJO9x4w2elXyJ+Id+dd/AlnfARX
-6hgYcXMk89sVkv6dfZjBPK4bDjosVS7CqMZ3sDyHTQ==
-=P0T1
------END PGP SIGNATURE-----
+<div dir=3D"ltr">Hi,<div><br></div><div>If we are releasing a new Windows i=
+nstaller, there are a few new features in the GUI that could go into the an=
+nouncement. Unfortunately Changes.rst in the GUI hasn&#39;t been updated si=
+nce 2015 or so.</div><div><br></div><div>The most user visible one are:</di=
+v><div>=C2=A0</div><div>(i) OpenVPN 3 support -- the GUI can now work as a =
+user interface for OpenVPN 3 client</div><div>(ii) pkcs11-id-management is =
+now handled -- the GUI can list available pkcs11-ids and allow the user to =
+select one=C2=A0</div><div>(ii) Persistent connections -- the GUI now lists=
+ connections started at boot by the automatic service and lets the user con=
+trol it. Interactive inputs such as username/password with such connections=
+ are possible.</div><div><br></div><div>PLAP support is also in, but it won=
+&#39;t be visible to the user until we start using build scripts from maste=
+r (i.e., in 2.6).</div><div><br></div><div>Regards,</div><div><br></div><di=
+v>Selva</div></div>
 
---KDnNieg2zdFcoVP7--
+--000000000000e8ec3205ec194785--
 
