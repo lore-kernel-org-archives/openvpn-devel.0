@@ -1,9 +1,12 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri,  4 Nov 2022 11:02:47 +0200
-Message-Id: <20221104090247.167-1-lstipakov@...277...>
+From: Arne Schwabe <arne@...1227...>
+Date: Fri,  4 Nov 2022 13:56:55 +0100
+Message-Id: <20221104125655.656150-2-arne@...1227...>
+In-Reply-To: <20221104125655.656150-1-arne@...1227...>
+References: <20220921104930.3452270-1-arne@...1227...>
+ <20221104125655.656150-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] win32: detect arm64 architecture and
- emulations
+Subject: [Openvpn-devel] [PATCH v6 2/2] Allow setting control channel packet
+ size with max-packet-size
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,166 +18,358 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
+Currently control packet size is controlled by tun-mtu in a very
+non-obvious way since the control overhead is not taken into account
+and control channel packet will end up with a different size than
+data channel packet.
 
-Properly detect process architecture and
-machine architecture, including arm64.
+Instead we decouple this and introduce max-packet-size. Control packet size
+defaults to 1250 if max-packet-size is not set.
 
-Print process architecture and, if machine
-architecture is different (we are running in
-emulation), print that too.
+Patch v2: rebase on latest patch set
+Patch v3: Introduce TLS_CHANNEL_MTU_MIN define and give explaination
+          of its value.
+Patch v4: introduce max-packet-size instead of tls-mtu
+Patch v5: improve documentation
+Patch v6: Rebase, lower lower limit, add warning message for
+          when wrapped tls-crypt-v2 keys will ignore max-packet-size
 
-Signed-off-by: Lev Stipakov <lev@...515...>
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/win32.c | 123 ++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 112 insertions(+), 11 deletions(-)
+ Changes.rst                       | 11 +++++++++-
+ doc/man-sections/link-options.rst | 34 ++++++++++++++++++++++++++++---
+ src/openvpn/common.h              | 13 ++++++++++++
+ src/openvpn/init.c                | 23 +++++++++++++++++++--
+ src/openvpn/mtu.h                 |  5 +++++
+ src/openvpn/options.c             | 21 +++++++++++++++++++
+ src/openvpn/options.h             |  1 +
+ src/openvpn/ssl.c                 | 26 ++++++++++++-----------
+ src/openvpn/ssl.h                 |  8 +++-----
+ 9 files changed, 119 insertions(+), 23 deletions(-)
 
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index 82f0c73f..cfe4dbde 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -1345,18 +1345,106 @@ win32_version_info(void)
-     return WIN_10;
- }
+diff --git a/Changes.rst b/Changes.rst
+index fc5a1a853..f25833b40 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -100,6 +100,13 @@ Inline auth username and password
+     http-proxy-user-pass too.
  
--bool
--win32_is_64bit(void)
-+typedef enum {
-+    ARCH_X86,
-+    ARCH_AMD64,
-+    ARCH_ARM64,
-+    ARCH_NATIVE, /* means no emulation, makes sense for host arch */
-+    ARCH_UNKNOWN
-+} arch_t;
-+
-+static void
-+win32_get_arch(arch_t *process_arch, arch_t *host_arch)
- {
--#if defined(_WIN64)
--    return true;  /* 64-bit programs run only on Win64 */
-+    *process_arch = ARCH_UNKNOWN;
-+    *host_arch = ARCH_NATIVE;
-+
-+    typedef BOOL (__stdcall *is_wow64_process2_t)(HANDLE, USHORT *, USHORT *);
-+    is_wow64_process2_t is_wow64_process2 = (is_wow64_process2_t)
-+                                            GetProcAddress(GetModuleHandle("Kernel32.dll"), "IsWow64Process2");
-+
-+    USHORT process_machine = 0;
-+    USHORT native_machine = 0;
-+    BOOL is_wow64 = FALSE;
-+
-+#ifdef _ARM64_
-+    *process_arch = ARCH_ARM64;
-+#elif defined(_WIN64)
-+    *process_arch = ARCH_AMD64;
-+    if (is_wow64_process2)
-+    {
-+        /* this could be amd64 on arm64 */
-+        BOOL is_wow64 = is_wow64_process2(GetCurrentProcess(),
-+                                          &process_machine, &native_machine);
-+        if (is_wow64 && native_machine == IMAGE_FILE_MACHINE_ARM64)
-+        {
-+            *host_arch = ARCH_ARM64;
-+        }
-+    }
- #elif defined(_WIN32)
--    /* 32-bit programs run on both 32-bit and 64-bit Windows */
--    BOOL f64 = FALSE;
--    return IsWow64Process(GetCurrentProcess(), &f64) && f64;
--#else  /* if defined(_WIN64) */
--    return false; /* Win64 does not support Win16 */
--#endif
-+    *process_arch = ARCH_X86;
-+
-+    if (is_wow64_process2)
-+    {
-+        /* check if we're running on arm64 or amd64 machine */
-+        is_wow64 = is_wow64_process2(GetCurrentProcess(),
-+                                     &process_machine, &native_machine);
-+        if (is_wow64)
-+        {
-+            switch (native_machine)
-+            {
-+                case IMAGE_FILE_MACHINE_ARM64:
-+                    *host_arch = ARCH_ARM64;
-+                    break;
-+
-+                case IMAGE_FILE_MACHINE_AMD64:
-+                    *host_arch = ARCH_AMD64;
-+                    break;
-+
-+                default:
-+                    *host_arch = ARCH_UNKNOWN;
-+                    break;
-+            }
-+        }
-+    }
-+    else
-+    {
-+        BOOL w64 = FALSE;
-+        is_wow64 = IsWow64Process(GetCurrentProcess(), &w64) && w64;
-+        if (is_wow64)
-+        {
-+            /* we are unable to differentiate between arm64 and amd64
-+             * machines here, so assume we are running on amd64 */
-+            *host_arch = ARCH_AMD64;
-+        }
-+    }
-+#endif /* _ARM64_ */
-+}
-+
-+static void
-+win32_print_arch(arch_t arch, struct buffer *out)
-+{
-+    switch (arch)
-+    {
-+        case ARCH_X86:
-+            buf_printf(out, "x86");
-+            break;
-+
-+        case ARCH_AMD64:
-+            buf_printf(out, "amd64");
-+            break;
-+
-+        case ARCH_ARM64:
-+            buf_printf(out, "arm64");
-+            break;
-+
-+        case ARCH_UNKNOWN:
-+            buf_printf(out, "(unknown)");
-+            break;
-+
-+        default:
-+            break;
-+    }
- }
  
- const char *
-@@ -1397,7 +1485,20 @@ win32_version_string(struct gc_arena *gc, bool add_name)
-             break;
++Improved control channel packet size control (``max-packet-size``)
++    The size of control channel is no longer tied to
++    ``--link-mtu``/``--tun-mtu`` and can be set using ``--max-packet-size``.
++    Sending large control channel frames is also optimised by allowing 6
++    outstanding packets instead of just 4. ``max-packet-size`` will also set
++    ``mssfix`` to try to limit data-channel packets as well.
++
+ Deprecated features
+ -------------------
+ ``inetd`` has been removed
+@@ -162,7 +169,9 @@ User-visible Changes
+ - Option ``--nobind`` is default when ``--client`` or ``--pull`` is used in the configuration
+ - :code:`link_mtu` parameter is removed from environment or replaced with 0 when scripts are
+   called with parameters. This parameter is unreliable and no longer internally calculated.
+-
++- control channel packet maximum size is no longer influenced by
++  ``--link-mtu``/``--tun-mtu`` and must be set by ``--max-packet-size`` now.
++  The default is 1250 for the control channel size.
+ - In point-to-point OpenVPN setups (no ``--server``), using
+   ``--explict-exit-notiy`` on one end would terminate the other side at
+   session end.  This is considered a no longer useful default and has
+diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
+index eb098a0f8..6a7f48a59 100644
+--- a/doc/man-sections/link-options.rst
++++ b/doc/man-sections/link-options.rst
+@@ -172,9 +172,9 @@ the local and the remote host.
+   the first place, and if big packets come through anyhow (from protocols
+   other than TCP), ``--fragment`` will internally fragment them.
+ 
+-  Both ``--fragment`` and ``--mssfix`` are designed to work around cases
+-  where Path MTU discovery is broken on the network path between OpenVPN
+-  peers.
++  ``max-packet-size``, ``--fragment`` and ``--mssfix`` are designed to work
++  around cases where Path MTU discovery is broken on the network path
++  between OpenVPN peers.
+ 
+   The usual symptom of such a breakdown is an OpenVPN connection which
+   successfully starts, but then stalls during active usage.
+@@ -189,6 +189,10 @@ the local and the remote host.
+ 
+      --tun-mtu 1500 --fragment 1300 --mssfix
+ 
++  If the ``max-packet-size size`` option is used in the configuration
++  it will also act as if ``mssfix size mtu`` was specified in the
++  configuration.
++
+ --mtu-disc type
+   Should we do Path MTU discovery on TCP/UDP channel? Only supported on
+   OSes such as Linux that supports the necessary system call to set.
+@@ -465,3 +469,27 @@ the local and the remote host.
+      if mode server:
+          socket-flags TCP_NODELAY
+          push "socket-flags TCP_NODELAY"
++
++--max-packet-size size
++  This option will instruct OpenVPN to try to limit the maximum on-write packet
++  size by restricting the control channel packet size and setting ``--mssfix``.
++
++  OpenVPN will try to keep its control channel messages below this size but
++  due to some constraints in the protocol this is not always possible. If the
++  option is not set, the control packet maximum size defaults to 1250.
++  The control channel packet size will be restricted to values between
++  512 and 2048. The maximum packet size includes encapsulation overhead like
++  UDP and IP.
++
++  In terms of ``--mssfix`` it will expand to:
++  ::
++
++      mssfix size mtu
++
++  If you need to set ``--mssfix`` for data channel and control channel maximum
++  packet size independently, use ``--max-packet-size`` first, followed by a
++  ``--mssfix`` in the configuration.
++
++  In general the default size of 1250 should work almost universally apart
++  from specific corner cases, especially since IPv6 requires a MTU of 1280
++  or larger.
+diff --git a/src/openvpn/common.h b/src/openvpn/common.h
+index b94680885..d0eaf5626 100644
+--- a/src/openvpn/common.h
++++ b/src/openvpn/common.h
+@@ -68,6 +68,19 @@ typedef unsigned long ptr_type;
+  */
+ #define TLS_CHANNEL_BUF_SIZE 2048
+ 
++/* TLS control buffer minimum size
++ *
++ * A control frame might have IPv6 header (40 byte),
++ * UDP (8 byte), opcode (1), session id (8),
++ * ACK array with 4 ACKs in non-ACK_V1 packets (25 bytes)
++ * tls-crypt(56) or tls-auth(up to 72). To allow secure
++ * renegotiation (dynamic tls-crypt), we set this minimum
++ * to 154, which only allows 16 byte of payload and should
++ * be considered an absolute minimum and not a good value to
++ * set
++ */
++#define TLS_CHANNEL_MTU_MIN 154
++
+ /*
+  * This parameter controls the maximum size of a bundle
+  * of pushed options.
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 626239219..a8f06e260 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2640,6 +2640,10 @@ frame_finalize_options(struct context *c, const struct options *o)
+      * space */
+     size_t payload_size = max_int(1500, frame->tun_mtu);
+ 
++    /* we need to be also large enough to hold larger control channel packets
++     * if configured */
++    payload_size = max_int(payload_size, o->ce.tls_mtu);
++
+     /* The extra tun needs to be added to the payload size */
+     if (o->ce.tun_mtu_defined)
+     {
+@@ -2840,6 +2844,21 @@ do_init_tls_wrap_key(struct context *c)
+                                          options->ce.tls_crypt_v2_file,
+                                          options->ce.tls_crypt_v2_file_inline);
+         }
++        /* We have to ensure that the loaded tls-crypt key is small enough
++         * to fit into the initial hard reset v3 packet */
++        int wkc_len = buf_len(&c->c1.ks.tls_crypt_v2_wkc);
++
++        /* empty ACK/message id, tls-crypt, Opcode, udp , ipv6 */
++        int required_size = 5 + wkc_len + tls_crypt_buf_overhead() + 1 + 8 + 40;
++
++        if (required_size > c->options.ce.tls_mtu)
++        {
++            msg(M_WARN, "ERROR: tls-crypt-v2 client key too large to work with "
++                "requested --max-packet-size %d, requires at least "
++                "--max-packet-size %d. Packets will ignore requested "
++                "maximum packet size", c->options.ce.tls_mtu,
++                required_size);
++        }
      }
  
--    buf_printf(&out, win32_is_64bit() ? " 64bit" : " 32bit");
-+    buf_printf(&out, ", ");
-+
-+    arch_t process_arch, host_arch;
-+    win32_get_arch(&process_arch, &host_arch);
-+    win32_print_arch(process_arch, &out);
-+
-+    buf_printf(&out, " executable");
-+
-+    if (host_arch != ARCH_NATIVE)
-+    {
-+        buf_printf(&out, " running on ");
-+        win32_print_arch(host_arch, &out);
-+        buf_printf(&out, " host");
-+    }
  
-     return (const char *)out.data;
+@@ -3187,7 +3206,7 @@ do_init_frame_tls(struct context *c)
+ {
+     if (c->c2.tls_multi)
+     {
+-        tls_multi_init_finalize(c->c2.tls_multi, &c->c2.frame);
++        tls_multi_init_finalize(c->c2.tls_multi, c->options.ce.tls_mtu);
+         ASSERT(c->c2.tls_multi->opt.frame.buf.payload_size <=
+                c->c2.frame.buf.payload_size);
+         frame_print(&c->c2.tls_multi->opt.frame, D_MTU_INFO,
+@@ -3195,7 +3214,7 @@ do_init_frame_tls(struct context *c)
+     }
+     if (c->c2.tls_auth_standalone)
+     {
+-        tls_init_control_channel_frame_parameters(&c->c2.frame, &c->c2.tls_auth_standalone->frame);
++        tls_init_control_channel_frame_parameters(&c->c2.tls_auth_standalone->frame, c->options.ce.tls_mtu);
+         frame_print(&c->c2.tls_auth_standalone->frame, D_MTU_INFO,
+                     "TLS-Auth MTU parms");
+         c->c2.tls_auth_standalone->tls_wrap.work = alloc_buf_gc(BUF_SIZE(&c->c2.frame), &c->c2.gc);
+diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
+index d4856f166..370806fb5 100644
+--- a/src/openvpn/mtu.h
++++ b/src/openvpn/mtu.h
+@@ -79,6 +79,11 @@
+  */
+ #define MSSFIX_DEFAULT     1492
+ 
++/*
++ * Default maximum size of control channel packets
++ */
++#define TLS_MTU_DEFAULT    1250
++
+ /*
+  * Alignment of payload data such as IP packet or
+  * ethernet frame.
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 9f5e4b35d..a86cc5cf1 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -826,6 +826,7 @@ init_options(struct options *o, const bool init_gc)
+     o->ce.bind_local = true;
+     o->ce.tun_mtu = TUN_MTU_DEFAULT;
+     o->ce.link_mtu = LINK_MTU_DEFAULT;
++    o->ce.tls_mtu = TLS_MTU_DEFAULT;
+     o->ce.mtu_discover_type = -1;
+     o->ce.mssfix = 0;
+     o->ce.mssfix_default = true;
+@@ -1712,6 +1713,7 @@ show_connection_entry(const struct connection_entry *o)
+     SHOW_BOOL(link_mtu_defined);
+     SHOW_INT(tun_mtu_extra);
+     SHOW_BOOL(tun_mtu_extra_defined);
++    SHOW_INT(tls_mtu);
+ 
+     SHOW_INT(mtu_discover_type);
+ 
+@@ -6457,6 +6459,25 @@ add_option(struct options *options,
+         options->ce.tun_mtu_extra = positive_atoi(p[1]);
+         options->ce.tun_mtu_extra_defined = true;
+     }
++    else if (streq(p[0], "max-packet-size") && p[1] && !p[2])
++    {
++        VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);
++        int maxmtu = positive_atoi(p[1]);
++        options->ce.tls_mtu = constrain_int(maxmtu, TLS_CHANNEL_MTU_MIN, TLS_CHANNEL_BUF_SIZE);
++
++        if (maxmtu < TLS_CHANNEL_MTU_MIN || maxmtu > TLS_CHANNEL_BUF_SIZE)
++        {
++            msg(M_WARN, "Note: max-packet-size value outside of allowed "
++                "control channel packet size (%d to %d), will use %d "
++                "instead.", TLS_CHANNEL_MTU_MIN, TLS_CHANNEL_BUF_SIZE,
++                options->ce.tls_mtu);
++        }
++
++        /* also set mssfix maxmtu mtu */
++        options->ce.mssfix = maxmtu;
++        options->ce.mssfix_default = false;
++        options->ce.mssfix_encap = true;
++    }
+ #ifdef ENABLE_FRAGMENT
+     else if (streq(p[0], "mtu-dynamic"))
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 55322baa0..b165ee5b7 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -123,6 +123,7 @@ struct connection_entry
+     bool tun_mtu_extra_defined;
+     int link_mtu;        /* MTU of device over which tunnel packets pass via TCP/UDP */
+     bool link_mtu_defined; /* true if user overriding parm with command line option */
++    int tls_mtu;         /* Maximum MTU for the control channel messages */
+ 
+     /* Advanced MTU negotiation and datagram fragmentation options */
+     int mtu_discover_type; /* used if OS supports setting Path MTU discovery options on socket */
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 528fd9026..8eac09048 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -297,8 +297,7 @@ tls_limit_reneg_bytes(const char *ciphername, int *reneg_bytes)
  }
+ 
+ void
+-tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame,
+-                                          struct frame *frame)
++tls_init_control_channel_frame_parameters(struct frame *frame, int tls_mtu)
+ {
+     /*
+      * frame->extra_frame is already initialized with tls_auth buffer requirements,
+@@ -323,18 +322,21 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
+ 
+     /* Previous OpenVPN version calculated the maximum size and buffer of a
+      * control frame depending on the overhead of the data channel frame
+-     * overhead and limited its maximum size to 1250. We always allocate the
+-     * TLS_CHANNEL_BUF_SIZE buffer size since a lot of code blindly assumes
+-     * a large buffer (e.g. PUSH_BUNDLE_SIZE) and also our peer might have
+-     * a higher size configured and we still want to be able to receive the
+-     * packets. frame->mtu_mtu is set as suggestion for the maximum packet
+-     * size */
+-    frame->buf.payload_size = 1250 + overhead;
++     * overhead and limited its maximum size to 1250. Since control frames
++     * also need to fit into data channel buffer we have the same
++     * default of 1500 + 100 as data channel buffers have. Increasing
++     * control channel mtu beyond this limit also increases the data channel
++     * buffers */
++    frame->buf.payload_size = max_int(1500, tls_mtu) + 100;
+ 
+     frame->buf.headroom = overhead;
+     frame->buf.tailroom = overhead;
+ 
+-    frame->tun_mtu = min_int(data_channel_frame->tun_mtu, 1250);
++    frame->tun_mtu = tls_mtu;
++
++    /* Ensure the tun-mtu stays in a valid range */
++    frame->tun_mtu = min_int(frame->tun_mtu, TLS_CHANNEL_BUF_SIZE);
++    frame->tun_mtu = max_int(frame->tun_mtu, TLS_CHANNEL_MTU_MIN);
+ }
+ 
+ /**
+@@ -1315,9 +1317,9 @@ tls_multi_init(struct tls_options *tls_options)
+ }
+ 
+ void
+-tls_multi_init_finalize(struct tls_multi *multi, const struct frame *frame)
++tls_multi_init_finalize(struct tls_multi *multi, int tls_mtu)
+ {
+-    tls_init_control_channel_frame_parameters(frame, &multi->opt.frame);
++    tls_init_control_channel_frame_parameters(&multi->opt.frame, tls_mtu);
+     /* initialize the active and untrusted sessions */
+ 
+     tls_session_init(multi, &multi->session[TM_ACTIVE]);
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 02046b7fa..646ec581a 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -166,10 +166,9 @@ struct tls_multi *tls_multi_init(struct tls_options *tls_options);
+  *
+  * @param multi        - The \c tls_multi structure of which to finalize
+  *                       initialization.
+- * @param frame        - The data channel's \c frame structure.
++ * @param tls_mtu      - maximum allowed size for control channel packets
+  */
+-void tls_multi_init_finalize(struct tls_multi *multi,
+-                             const struct frame *frame);
++void tls_multi_init_finalize(struct tls_multi *multi, int tls_mtu);
+ 
+ /*
+  * Initialize a standalone tls-auth verification object.
+@@ -181,8 +180,7 @@ struct tls_auth_standalone *tls_auth_standalone_init(struct tls_options *tls_opt
+  * Setups the control channel frame size parameters from the data channel
+  * parameters
+  */
+-void tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame,
+-                                               struct frame *frame);
++void tls_init_control_channel_frame_parameters(struct frame *frame, int tls_mtu);
+ 
+ /*
+  * Set local and remote option compatibility strings.
 -- 
-2.38.1.windows.1
+2.37.0 (Apple Git-136)
 
 
