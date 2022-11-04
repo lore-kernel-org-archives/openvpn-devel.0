@@ -1,12 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri,  4 Nov 2022 13:56:55 +0100
-Message-Id: <20221104125655.656150-2-arne@...1227...>
-In-Reply-To: <20221104125655.656150-1-arne@...1227...>
+Date: Fri,  4 Nov 2022 13:56:54 +0100
+Message-Id: <20221104125655.656150-1-arne@...1227...>
+In-Reply-To: <20220921104930.3452270-1-arne@...1227...>
 References: <20220921104930.3452270-1-arne@...1227...>
- <20221104125655.656150-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v6 2/2] Allow setting control channel packet
- size with max-packet-size
+Subject: [Openvpn-devel] [PATCH v6 1/2] Refactor/optimise code sending TLS
+ control channel messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,356 +18,561 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Currently control packet size is controlled by tun-mtu in a very
-non-obvious way since the control overhead is not taken into account
-and control channel packet will end up with a different size than
-data channel packet.
+This commit originally tried to solve a problem that the SSL library
+might split up a control frame into multiple TLS records when doing
+multiple reads. However, this does not seem to be actually the case.
 
-Instead we decouple this and introduce max-packet-size. Control packet size
-defaults to 1250 if max-packet-size is not set.
+OpenVPN will consider a control message packet complete
+when the TLS record is complete, we have to ensure that the SSL library
+will still write one record, so the receiving side will only be able
+to get/read the control message content when a TLS record is
+complete.
 
-Patch v2: rebase on latest patch set
-Patch v3: Introduce TLS_CHANNEL_MTU_MIN define and give explaination
-          of its value.
-Patch v4: introduce max-packet-size instead of tls-mtu
-Patch v5: improve documentation
-Patch v6: Rebase, lower lower limit, add warning message for
-          when wrapped tls-crypt-v2 keys will ignore max-packet-size
+To improve handling of large control channel messages, this
+commit does:
+
+- Split one read from TLS library into multiple control
+  channel packets, splitting one TLS record into multiple
+  control packets.
+- increase allowed number of outstanding packets to 6 from 4 on the
+  sender side. This is still okay with older implementations as
+  receivers will have room for 8. This allows transmitting larger
+  control message more quickly.
+- take the wrapped key length into account when sending packets
+  This is especially important for the tls-crypt-v2 P_CONTROL_WKC_V1
+  message
+- calculate the overhead for control channel message to allow
+  staying below that threshold.
+- remove maxlen from key_state_read_ciphertext and related functions.
+  We now always give the function a correctly sized buffer.
+
+If we end up needing to send a packet larger than max-packet-size, we
+warn about it but still do it as it might still work, while refusing to
+send will never work.
+
+Patch v2: avoid assertion about to large buffer by sticking to 1250 max
+          control size in this commit and leaving larger sizes for the
+          --max-packet-size commit. Also fix
+          various other small problems and grammar fixes.
+Patch v3: grammar fixes
+Patch v4: adjust tls-mtu to max-packet-size in message.
+Patch v6: no longer make the assumption that multiple reads from the SSL
+          library split a control frame into multiple TLS records.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- Changes.rst                       | 11 +++++++++-
- doc/man-sections/link-options.rst | 34 ++++++++++++++++++++++++++++---
- src/openvpn/common.h              | 13 ++++++++++++
- src/openvpn/init.c                | 23 +++++++++++++++++++--
- src/openvpn/mtu.h                 |  5 +++++
- src/openvpn/options.c             | 21 +++++++++++++++++++
- src/openvpn/options.h             |  1 +
- src/openvpn/ssl.c                 | 26 ++++++++++++-----------
- src/openvpn/ssl.h                 |  8 +++-----
- 9 files changed, 119 insertions(+), 23 deletions(-)
+ src/openvpn/reliable.c    |  55 ++++++++++----
+ src/openvpn/reliable.h    |  32 +++++++-
+ src/openvpn/ssl.c         | 156 +++++++++++++++++++++++++++++++++-----
+ src/openvpn/ssl_backend.h |   8 +-
+ src/openvpn/ssl_mbedtls.c |  14 +---
+ src/openvpn/ssl_openssl.c |  16 ++--
+ src/openvpn/ssl_pkt.h     |   4 +-
+ 7 files changed, 216 insertions(+), 69 deletions(-)
 
-diff --git a/Changes.rst b/Changes.rst
-index fc5a1a853..f25833b40 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -100,6 +100,13 @@ Inline auth username and password
-     http-proxy-user-pass too.
+diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
+index 734736256..3ccb73976 100644
+--- a/src/openvpn/reliable.c
++++ b/src/openvpn/reliable.c
+@@ -41,6 +41,14 @@
  
+ #include "memdbg.h"
  
-+Improved control channel packet size control (``max-packet-size``)
-+    The size of control channel is no longer tied to
-+    ``--link-mtu``/``--tun-mtu`` and can be set using ``--max-packet-size``.
-+    Sending large control channel frames is also optimised by allowing 6
-+    outstanding packets instead of just 4. ``max-packet-size`` will also set
-+    ``mssfix`` to try to limit data-channel packets as well.
-+
- Deprecated features
- -------------------
- ``inetd`` has been removed
-@@ -162,7 +169,9 @@ User-visible Changes
- - Option ``--nobind`` is default when ``--client`` or ``--pull`` is used in the configuration
- - :code:`link_mtu` parameter is removed from environment or replaced with 0 when scripts are
-   called with parameters. This parameter is unreliable and no longer internally calculated.
--
-+- control channel packet maximum size is no longer influenced by
-+  ``--link-mtu``/``--tun-mtu`` and must be set by ``--max-packet-size`` now.
-+  The default is 1250 for the control channel size.
- - In point-to-point OpenVPN setups (no ``--server``), using
-   ``--explict-exit-notiy`` on one end would terminate the other side at
-   session end.  This is considered a no longer useful default and has
-diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-options.rst
-index eb098a0f8..6a7f48a59 100644
---- a/doc/man-sections/link-options.rst
-+++ b/doc/man-sections/link-options.rst
-@@ -172,9 +172,9 @@ the local and the remote host.
-   the first place, and if big packets come through anyhow (from protocols
-   other than TCP), ``--fragment`` will internally fragment them.
- 
--  Both ``--fragment`` and ``--mssfix`` are designed to work around cases
--  where Path MTU discovery is broken on the network path between OpenVPN
--  peers.
-+  ``max-packet-size``, ``--fragment`` and ``--mssfix`` are designed to work
-+  around cases where Path MTU discovery is broken on the network path
-+  between OpenVPN peers.
- 
-   The usual symptom of such a breakdown is an OpenVPN connection which
-   successfully starts, but then stalls during active usage.
-@@ -189,6 +189,10 @@ the local and the remote host.
- 
-      --tun-mtu 1500 --fragment 1300 --mssfix
- 
-+  If the ``max-packet-size size`` option is used in the configuration
-+  it will also act as if ``mssfix size mtu`` was specified in the
-+  configuration.
-+
- --mtu-disc type
-   Should we do Path MTU discovery on TCP/UDP channel? Only supported on
-   OSes such as Linux that supports the necessary system call to set.
-@@ -465,3 +469,27 @@ the local and the remote host.
-      if mode server:
-          socket-flags TCP_NODELAY
-          push "socket-flags TCP_NODELAY"
-+
-+--max-packet-size size
-+  This option will instruct OpenVPN to try to limit the maximum on-write packet
-+  size by restricting the control channel packet size and setting ``--mssfix``.
-+
-+  OpenVPN will try to keep its control channel messages below this size but
-+  due to some constraints in the protocol this is not always possible. If the
-+  option is not set, the control packet maximum size defaults to 1250.
-+  The control channel packet size will be restricted to values between
-+  512 and 2048. The maximum packet size includes encapsulation overhead like
-+  UDP and IP.
-+
-+  In terms of ``--mssfix`` it will expand to:
-+  ::
-+
-+      mssfix size mtu
-+
-+  If you need to set ``--mssfix`` for data channel and control channel maximum
-+  packet size independently, use ``--max-packet-size`` first, followed by a
-+  ``--mssfix`` in the configuration.
-+
-+  In general the default size of 1250 should work almost universally apart
-+  from specific corner cases, especially since IPv6 requires a MTU of 1280
-+  or larger.
-diff --git a/src/openvpn/common.h b/src/openvpn/common.h
-index b94680885..d0eaf5626 100644
---- a/src/openvpn/common.h
-+++ b/src/openvpn/common.h
-@@ -68,6 +68,19 @@ typedef unsigned long ptr_type;
-  */
- #define TLS_CHANNEL_BUF_SIZE 2048
- 
-+/* TLS control buffer minimum size
-+ *
-+ * A control frame might have IPv6 header (40 byte),
-+ * UDP (8 byte), opcode (1), session id (8),
-+ * ACK array with 4 ACKs in non-ACK_V1 packets (25 bytes)
-+ * tls-crypt(56) or tls-auth(up to 72). To allow secure
-+ * renegotiation (dynamic tls-crypt), we set this minimum
-+ * to 154, which only allows 16 byte of payload and should
-+ * be considered an absolute minimum and not a good value to
-+ * set
-+ */
-+#define TLS_CHANNEL_MTU_MIN 154
++/* calculates test - base while allowing for base or test wraparound. test is
++ * assumed to be higher than base */
++static inline packet_id_type
++subtract_pid(const packet_id_type test, const packet_id_type base)
++{
++    return test - base;
++}
 +
  /*
-  * This parameter controls the maximum size of a bundle
-  * of pushed options.
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 626239219..a8f06e260 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2640,6 +2640,10 @@ frame_finalize_options(struct context *c, const struct options *o)
-      * space */
-     size_t payload_size = max_int(1500, frame->tun_mtu);
- 
-+    /* we need to be also large enough to hold larger control channel packets
-+     * if configured */
-+    payload_size = max_int(payload_size, o->ce.tls_mtu);
-+
-     /* The extra tun needs to be added to the payload size */
-     if (o->ce.tun_mtu_defined)
-     {
-@@ -2840,6 +2844,21 @@ do_init_tls_wrap_key(struct context *c)
-                                          options->ce.tls_crypt_v2_file,
-                                          options->ce.tls_crypt_v2_file_inline);
-         }
-+        /* We have to ensure that the loaded tls-crypt key is small enough
-+         * to fit into the initial hard reset v3 packet */
-+        int wkc_len = buf_len(&c->c1.ks.tls_crypt_v2_wkc);
-+
-+        /* empty ACK/message id, tls-crypt, Opcode, udp , ipv6 */
-+        int required_size = 5 + wkc_len + tls_crypt_buf_overhead() + 1 + 8 + 40;
-+
-+        if (required_size > c->options.ce.tls_mtu)
-+        {
-+            msg(M_WARN, "ERROR: tls-crypt-v2 client key too large to work with "
-+                "requested --max-packet-size %d, requires at least "
-+                "--max-packet-size %d. Packets will ignore requested "
-+                "maximum packet size", c->options.ce.tls_mtu,
-+                required_size);
-+        }
-     }
- 
- 
-@@ -3187,7 +3206,7 @@ do_init_frame_tls(struct context *c)
+  * verify that test - base < extent while allowing for base or test wraparound
+  */
+@@ -49,22 +57,7 @@ reliable_pid_in_range1(const packet_id_type test,
+                        const packet_id_type base,
+                        const unsigned int extent)
  {
-     if (c->c2.tls_multi)
-     {
--        tls_multi_init_finalize(c->c2.tls_multi, &c->c2.frame);
-+        tls_multi_init_finalize(c->c2.tls_multi, c->options.ce.tls_mtu);
-         ASSERT(c->c2.tls_multi->opt.frame.buf.payload_size <=
-                c->c2.frame.buf.payload_size);
-         frame_print(&c->c2.tls_multi->opt.frame, D_MTU_INFO,
-@@ -3195,7 +3214,7 @@ do_init_frame_tls(struct context *c)
-     }
-     if (c->c2.tls_auth_standalone)
-     {
--        tls_init_control_channel_frame_parameters(&c->c2.frame, &c->c2.tls_auth_standalone->frame);
-+        tls_init_control_channel_frame_parameters(&c->c2.tls_auth_standalone->frame, c->options.ce.tls_mtu);
-         frame_print(&c->c2.tls_auth_standalone->frame, D_MTU_INFO,
-                     "TLS-Auth MTU parms");
-         c->c2.tls_auth_standalone->tls_wrap.work = alloc_buf_gc(BUF_SIZE(&c->c2.frame), &c->c2.gc);
-diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index d4856f166..370806fb5 100644
---- a/src/openvpn/mtu.h
-+++ b/src/openvpn/mtu.h
-@@ -79,6 +79,11 @@
-  */
- #define MSSFIX_DEFAULT     1492
+-    if (test >= base)
+-    {
+-        if (test - base < extent)
+-        {
+-            return true;
+-        }
+-    }
+-    else
+-    {
+-        if ((test+0x80000000u) - (base+0x80000000u) < extent)
+-        {
+-            return true;
+-        }
+-    }
+-
+-    return false;
++    return subtract_pid(test, base) < extent;
+ }
  
-+/*
-+ * Default maximum size of control channel packets
-+ */
-+#define TLS_MTU_DEFAULT    1250
-+
  /*
-  * Alignment of payload data such as IP packet or
-  * ethernet frame.
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 9f5e4b35d..a86cc5cf1 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -826,6 +826,7 @@ init_options(struct options *o, const bool init_gc)
-     o->ce.bind_local = true;
-     o->ce.tun_mtu = TUN_MTU_DEFAULT;
-     o->ce.link_mtu = LINK_MTU_DEFAULT;
-+    o->ce.tls_mtu = TLS_MTU_DEFAULT;
-     o->ce.mtu_discover_type = -1;
-     o->ce.mssfix = 0;
-     o->ce.mssfix_default = true;
-@@ -1712,6 +1713,7 @@ show_connection_entry(const struct connection_entry *o)
-     SHOW_BOOL(link_mtu_defined);
-     SHOW_INT(tun_mtu_extra);
-     SHOW_BOOL(tun_mtu_extra_defined);
-+    SHOW_INT(tls_mtu);
+@@ -498,6 +491,36 @@ reliable_get_buf(struct reliable *rel)
+     return NULL;
+ }
  
-     SHOW_INT(mtu_discover_type);
- 
-@@ -6457,6 +6459,25 @@ add_option(struct options *options,
-         options->ce.tun_mtu_extra = positive_atoi(p[1]);
-         options->ce.tun_mtu_extra_defined = true;
-     }
-+    else if (streq(p[0], "max-packet-size") && p[1] && !p[2])
++int
++reliable_get_num_output_sequenced_available(struct reliable *rel)
++{
++    struct gc_arena gc = gc_new();
++    packet_id_type min_id = 0;
++    bool min_id_defined = false;
++
++    /* find minimum active packet_id */
++    for (int i = 0; i < rel->size; ++i)
 +    {
-+        VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);
-+        int maxmtu = positive_atoi(p[1]);
-+        options->ce.tls_mtu = constrain_int(maxmtu, TLS_CHANNEL_MTU_MIN, TLS_CHANNEL_BUF_SIZE);
-+
-+        if (maxmtu < TLS_CHANNEL_MTU_MIN || maxmtu > TLS_CHANNEL_BUF_SIZE)
++        const struct reliable_entry *e = &rel->array[i];
++        if (e->active)
 +        {
-+            msg(M_WARN, "Note: max-packet-size value outside of allowed "
-+                "control channel packet size (%d to %d), will use %d "
-+                "instead.", TLS_CHANNEL_MTU_MIN, TLS_CHANNEL_BUF_SIZE,
-+                options->ce.tls_mtu);
++            if (!min_id_defined || reliable_pid_min(e->packet_id, min_id))
++            {
++                min_id_defined = true;
++                min_id = e->packet_id;
++            }
 +        }
-+
-+        /* also set mssfix maxmtu mtu */
-+        options->ce.mssfix = maxmtu;
-+        options->ce.mssfix_default = false;
-+        options->ce.mssfix_encap = true;
 +    }
- #ifdef ENABLE_FRAGMENT
-     else if (streq(p[0], "mtu-dynamic"))
-     {
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 55322baa0..b165ee5b7 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -123,6 +123,7 @@ struct connection_entry
-     bool tun_mtu_extra_defined;
-     int link_mtu;        /* MTU of device over which tunnel packets pass via TCP/UDP */
-     bool link_mtu_defined; /* true if user overriding parm with command line option */
-+    int tls_mtu;         /* Maximum MTU for the control channel messages */
++
++    int ret = rel->size;
++    if (min_id_defined)
++    {
++        ret -= subtract_pid(rel->packet_id, min_id);
++    }
++    gc_free(&gc);
++    return ret;
++}
++
+ /* grab a free buffer, fail if buffer clogged by unacknowledged low packet IDs */
+ struct buffer *
+ reliable_get_buf_output_sequenced(struct reliable *rel)
+diff --git a/src/openvpn/reliable.h b/src/openvpn/reliable.h
+index b9863efe3..7fffe397d 100644
+--- a/src/openvpn/reliable.h
++++ b/src/openvpn/reliable.h
+@@ -46,7 +46,7 @@
+                                  *   be stored in one \c reliable_ack
+                                  *   structure. */
  
-     /* Advanced MTU negotiation and datagram fragmentation options */
-     int mtu_discover_type; /* used if OS supports setting Path MTU discovery options on socket */
+-#define RELIABLE_CAPACITY 8     /**< The maximum number of packets that
++#define RELIABLE_CAPACITY 12    /**< The maximum number of packets that
+                                  *   the reliability layer for one VPN
+                                  *   tunnel in one direction can store. */
+ 
+@@ -93,7 +93,7 @@ struct reliable
+     int size;
+     interval_t initial_timeout;
+     packet_id_type packet_id;
+-    int offset;
++    int offset; /**< Offset of the bufs in the reliable_entry array */
+     bool hold; /* don't xmit until reliable_schedule_now is called */
+     struct reliable_entry array[RELIABLE_CAPACITY];
+ };
+@@ -178,6 +178,20 @@ reliable_ack_empty(struct reliable_ack *ack)
+     return !ack->len;
+ }
+ 
++/**
++ * Returns the number of packets that need to be acked.
++ *
++ * @param ack The acknowledgment structure to check.
++ *
++ * @returns the number of outstanding acks
++ */
++static inline int
++reliable_ack_outstanding(struct reliable_ack *ack)
++{
++    return ack->len;
++}
++
++
+ /**
+  * Write a packet ID acknowledgment record to a buffer.
+  *
+@@ -385,6 +399,20 @@ void reliable_mark_deleted(struct reliable *rel, struct buffer *buf);
+  */
+ struct buffer *reliable_get_buf_output_sequenced(struct reliable *rel);
+ 
++
++/**
++ * Counts the number of free buffers in output that can be potentially used
++ * for sending
++ *
++ *  @param rel The reliable structure in which to search for a free
++ *     entry.
++ *
++ *  @return the number of buffer that are available for sending without
++ *             breaking ack sequence
++ * */
++int
++reliable_get_num_output_sequenced_available(struct reliable *rel);
++
+ /**
+  * Mark the reliable entry associated with the given buffer as
+  *     active outgoing.
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 528fd9026..8eac09048 100644
+index 24e8ba632..528fd9026 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -297,8 +297,7 @@ tls_limit_reneg_bytes(const char *ciphername, int *reneg_bytes)
- }
+@@ -305,7 +305,7 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
+      * if --tls-auth is enabled.
+      */
  
- void
--tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame,
--                                          struct frame *frame)
-+tls_init_control_channel_frame_parameters(struct frame *frame, int tls_mtu)
- {
-     /*
-      * frame->extra_frame is already initialized with tls_auth buffer requirements,
-@@ -323,18 +322,21 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
+-    /* calculate the maximum overhead that control channel frames may have */
++    /* calculates the maximum overhead that control channel frames can have */
+     int overhead = 0;
  
+     /* Socks */
+@@ -324,8 +324,10 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
      /* Previous OpenVPN version calculated the maximum size and buffer of a
       * control frame depending on the overhead of the data channel frame
--     * overhead and limited its maximum size to 1250. We always allocate the
--     * TLS_CHANNEL_BUF_SIZE buffer size since a lot of code blindly assumes
--     * a large buffer (e.g. PUSH_BUNDLE_SIZE) and also our peer might have
--     * a higher size configured and we still want to be able to receive the
--     * packets. frame->mtu_mtu is set as suggestion for the maximum packet
--     * size */
--    frame->buf.payload_size = 1250 + overhead;
-+     * overhead and limited its maximum size to 1250. Since control frames
-+     * also need to fit into data channel buffer we have the same
-+     * default of 1500 + 100 as data channel buffers have. Increasing
-+     * control channel mtu beyond this limit also increases the data channel
-+     * buffers */
-+    frame->buf.payload_size = max_int(1500, tls_mtu) + 100;
+      * overhead and limited its maximum size to 1250. We always allocate the
+-     * 1250 buffer size since a lot of code blindly assumes a large buffer
+-     * (e.g. PUSH_BUNDLE_SIZE) and set frame->mtu_mtu as suggestion for the
++     * TLS_CHANNEL_BUF_SIZE buffer size since a lot of code blindly assumes
++     * a large buffer (e.g. PUSH_BUNDLE_SIZE) and also our peer might have
++     * a higher size configured and we still want to be able to receive the
++     * packets. frame->mtu_mtu is set as suggestion for the maximum packet
+      * size */
+     frame->buf.payload_size = 1250 + overhead;
  
-     frame->buf.headroom = overhead;
-     frame->buf.tailroom = overhead;
+@@ -335,6 +337,48 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
+     frame->tun_mtu = min_int(data_channel_frame->tun_mtu, 1250);
+ }
  
--    frame->tun_mtu = min_int(data_channel_frame->tun_mtu, 1250);
-+    frame->tun_mtu = tls_mtu;
++/**
++ * calculate the maximum overhead that control channel frames have
++ * This includes header, op code and everything apart from the
++ * payload itself. This method is a bit pessimistic and might give higher
++ * overhead than we actually have */
++static int
++calc_control_channel_frame_overhead(const struct tls_session *session)
++{
++    const struct key_state *ks = &session->key[KS_PRIMARY];
++    int overhead = 0;
 +
-+    /* Ensure the tun-mtu stays in a valid range */
-+    frame->tun_mtu = min_int(frame->tun_mtu, TLS_CHANNEL_BUF_SIZE);
-+    frame->tun_mtu = max_int(frame->tun_mtu, TLS_CHANNEL_MTU_MIN);
- }
- 
- /**
-@@ -1315,9 +1317,9 @@ tls_multi_init(struct tls_options *tls_options)
- }
- 
++    /* opcode */
++    overhead += 1;
++
++    /* our own session id */
++    overhead += SID_SIZE;
++
++    /* ACK array and remote SESSION ID (part of the ACK array) */
++    overhead += ACK_SIZE(min_int(reliable_ack_outstanding(ks->rec_ack), CONTROL_SEND_ACK_MAX));
++
++    /* Message packet id */
++    overhead += sizeof(packet_id_type);
++
++    if (session->tls_wrap.mode == TLS_WRAP_CRYPT)
++    {
++        overhead += tls_crypt_buf_overhead();
++    }
++    else if (session->tls_wrap.mode == TLS_WRAP_AUTH)
++    {
++        overhead += hmac_ctx_size(session->tls_wrap.opt.key_ctx_bi.encrypt.hmac);
++        overhead += packet_id_size(true);
++    }
++
++    /* Add the typical UDP overhead for an IPv6 UDP packet. TCP+IPv6 has a
++     * larger overhead but the risk of a TCP connection getting dropped because
++     * we try to send a too large packet is basically zero */
++    overhead += datagram_overhead(session->untrusted_addr.dest.addr.sa.sa_family,
++                                  PROTO_UDP);
++
++    return overhead;
++}
++
  void
--tls_multi_init_finalize(struct tls_multi *multi, const struct frame *frame)
-+tls_multi_init_finalize(struct tls_multi *multi, int tls_mtu)
+ init_ssl_lib(void)
  {
--    tls_init_control_channel_frame_parameters(frame, &multi->opt.frame);
-+    tls_init_control_channel_frame_parameters(&multi->opt.frame, tls_mtu);
-     /* initialize the active and untrusted sessions */
+@@ -2666,7 +2710,7 @@ read_incoming_tls_plaintext(struct key_state *ks, struct buffer *buf,
+ {
+     ASSERT(buf_init(buf, 0));
  
-     tls_session_init(multi, &multi->session[TM_ACTIVE]);
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 02046b7fa..646ec581a 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -166,10 +166,9 @@ struct tls_multi *tls_multi_init(struct tls_options *tls_options);
+-    int status = key_state_read_plaintext(&ks->ks_ssl, buf, TLS_CHANNEL_BUF_SIZE);
++    int status = key_state_read_plaintext(&ks->ks_ssl, buf);
+ 
+     update_time();
+     if (status == -1)
+@@ -2685,6 +2729,92 @@ read_incoming_tls_plaintext(struct key_state *ks, struct buffer *buf,
+     return true;
+ }
+ 
++static bool
++write_outgoing_tls_ciphertext(struct tls_session *session, bool *state_change)
++{
++    struct key_state *ks = &session->key[KS_PRIMARY];
++
++    int rel_avail = reliable_get_num_output_sequenced_available(ks->send_reliable);
++    if (rel_avail == 0)
++    {
++        return true;
++    }
++
++    /* We need to determine how much space is actually available in the control
++     * channel frame */
++    int max_pkt_len = min_int(TLS_CHANNEL_BUF_SIZE, session->opt->frame.tun_mtu);
++
++    /* Subtract overhead */
++    max_pkt_len -= calc_control_channel_frame_overhead(session);
++
++    /* calculate total available length for outgoing tls ciphertext */
++    int maxlen = max_pkt_len * rel_avail;
++
++    /* Is first packet one that will have a WKC appended? */
++    if (control_packet_needs_wkc(ks))
++    {
++        maxlen -= buf_len(session->tls_wrap.tls_crypt_v2_wkc);
++    }
++
++    /* If we end up with a size that leaves no room for payload, ignore the
++     * constraints to still be to send a packet. This might have gone negative
++     * if we have a large wrapped client key. */
++    if (maxlen < 16)
++    {
++        msg(D_TLS_ERRORS, "Warning: --max-packet-size (%d) setting too low. "
++            "Sending minimum sized packet.",
++            session->opt->frame.tun_mtu);
++        maxlen = 16;
++        /* We set the maximum length here to ensure a packet with a wrapped
++         * key can actually carry the 16 byte of payload */
++        max_pkt_len = TLS_CHANNEL_BUF_SIZE;
++    }
++
++    /* This seems a bit wasteful to allocate every time */
++    struct gc_arena gc = gc_new();
++    struct buffer tmp = alloc_buf_gc(maxlen, &gc);
++
++    int status = key_state_read_ciphertext(&ks->ks_ssl, &tmp);
++
++    if (status == -1)
++    {
++        msg(D_TLS_ERRORS,
++            "TLS Error: Ciphertext -> reliable TCP/UDP transport read error");
++        gc_free(&gc);
++        return false;
++    }
++    if (status == 1)
++    {
++        /* Split the TLS ciphertext (TLS record) into multiple small packets
++         * that respect tls_mtu */
++        while (tmp.len > 0)
++        {
++            int len = max_pkt_len;
++            int opcode = P_CONTROL_V1;
++            if (control_packet_needs_wkc(ks))
++            {
++                opcode = P_CONTROL_WKC_V1;
++                len = max_int(0, len - buf_len(session->tls_wrap.tls_crypt_v2_wkc));
++            }
++            /* do not send more than available */
++            len = min_int(len, tmp.len);
++
++            struct buffer *buf = reliable_get_buf_output_sequenced(ks->send_reliable);
++            /* we assert here since we checked for its availability before */
++            ASSERT(buf);
++            buf_copy_n(buf, &tmp, len);
++
++            reliable_mark_active_outgoing(ks->send_reliable, buf, opcode);
++            INCR_GENERATED;
++            *state_change = true;
++        }
++        dmsg(D_TLS_DEBUG, "Outgoing Ciphertext -> Reliable");
++    }
++
++    gc_free(&gc);
++    return true;
++}
++
+ 
+ static bool
+ tls_process_state(struct tls_multi *multi,
+@@ -2839,26 +2969,10 @@ tls_process_state(struct tls_multi *multi,
+         buf = reliable_get_buf_output_sequenced(ks->send_reliable);
+         if (buf)
+         {
+-            int status = key_state_read_ciphertext(&ks->ks_ssl, buf, multi->opt.frame.tun_mtu);
+-
+-            if (status == -1)
++            if (!write_outgoing_tls_ciphertext(session, &state_change))
+             {
+-                msg(D_TLS_ERRORS,
+-                    "TLS Error: Ciphertext -> reliable TCP/UDP transport read error");
+                 goto error;
+             }
+-            if (status == 1)
+-            {
+-                int opcode = P_CONTROL_V1;
+-                if (control_packet_needs_wkc(ks))
+-                {
+-                    opcode = P_CONTROL_WKC_V1;
+-                }
+-                reliable_mark_active_outgoing(ks->send_reliable, buf, opcode);
+-                INCR_GENERATED;
+-                state_change = true;
+-                dmsg(D_TLS_DEBUG, "Outgoing Ciphertext -> Reliable");
+-            }
+         }
+     }
+ 
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index 1bd336999..215425d41 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -461,7 +461,6 @@ int key_state_write_plaintext_const(struct key_state_ssl *ks_ssl,
+  * @param ks_ssl       - The security parameter state for this %key
+  *                       session.
+  * @param buf          - A buffer in which to store the ciphertext.
+- * @param maxlen       - The maximum number of bytes to extract.
   *
-  * @param multi        - The \c tls_multi structure of which to finalize
-  *                       initialization.
-- * @param frame        - The data channel's \c frame structure.
-+ * @param tls_mtu      - maximum allowed size for control channel packets
+  * @return The return value indicates whether the data was successfully
+  *     processed:
+@@ -470,8 +469,8 @@ int key_state_write_plaintext_const(struct key_state_ssl *ks_ssl,
+  *   later to retry.
+  * - \c -1: An error occurred.
   */
--void tls_multi_init_finalize(struct tls_multi *multi,
--                             const struct frame *frame);
-+void tls_multi_init_finalize(struct tls_multi *multi, int tls_mtu);
+-int key_state_read_ciphertext(struct key_state_ssl *ks_ssl, struct buffer *buf,
+-                              int maxlen);
++int key_state_read_ciphertext(struct key_state_ssl *ks_ssl, struct buffer *buf);
++
+ 
+ /** @} name Functions for packets to be sent to a remote OpenVPN peer */
+ 
+@@ -517,8 +516,7 @@ int key_state_write_ciphertext(struct key_state_ssl *ks_ssl,
+  *   later to retry.
+  * - \c -1: An error occurred.
+  */
+-int key_state_read_plaintext(struct key_state_ssl *ks_ssl, struct buffer *buf,
+-                             int maxlen);
++int key_state_read_plaintext(struct key_state_ssl *ks_ssl, struct buffer *buf);
+ 
+ /** @} name Functions for packets received from a remote OpenVPN peer */
+ 
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index b0785bae9..ea06cf703 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -1285,8 +1285,7 @@ key_state_write_plaintext_const(struct key_state_ssl *ks, const uint8_t *data, i
+ }
+ 
+ int
+-key_state_read_ciphertext(struct key_state_ssl *ks, struct buffer *buf,
+-                          int maxlen)
++key_state_read_ciphertext(struct key_state_ssl *ks, struct buffer *buf)
+ {
+     int retval = 0;
+     int len = 0;
+@@ -1304,10 +1303,6 @@ key_state_read_ciphertext(struct key_state_ssl *ks, struct buffer *buf,
+     }
+ 
+     len = buf_forward_capacity(buf);
+-    if (maxlen < len)
+-    {
+-        len = maxlen;
+-    }
+ 
+     retval = endless_buf_read(&ks->bio_ctx->out, BPTR(buf), len);
+ 
+@@ -1388,8 +1383,7 @@ key_state_write_ciphertext(struct key_state_ssl *ks, struct buffer *buf)
+ }
+ 
+ int
+-key_state_read_plaintext(struct key_state_ssl *ks, struct buffer *buf,
+-                         int maxlen)
++key_state_read_plaintext(struct key_state_ssl *ks, struct buffer *buf)
+ {
+     int retval = 0;
+     int len = 0;
+@@ -1407,10 +1401,6 @@ key_state_read_plaintext(struct key_state_ssl *ks, struct buffer *buf,
+     }
+ 
+     len = buf_forward_capacity(buf);
+-    if (maxlen < len)
+-    {
+-        len = maxlen;
+-    }
+ 
+     retval = mbedtls_ssl_read(ks->ctx, BPTR(buf), len);
+ 
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 710c9c06d..cd6d84246 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1871,7 +1871,7 @@ bio_write_post(const int status, struct buffer *buf)
+  * Read from an OpenSSL BIO in non-blocking mode.
+  */
+ static int
+-bio_read(BIO *bio, struct buffer *buf, int maxlen, const char *desc)
++bio_read(BIO *bio, struct buffer *buf, const char *desc)
+ {
+     int i;
+     int ret = 0;
+@@ -1882,10 +1882,6 @@ bio_read(BIO *bio, struct buffer *buf, int maxlen, const char *desc)
+     else
+     {
+         int len = buf_forward_capacity(buf);
+-        if (maxlen < len)
+-        {
+-            len = maxlen;
+-        }
+ 
+         /*
+          * BIO_read brackets most of the serious RSA
+@@ -2012,15 +2008,14 @@ key_state_write_plaintext_const(struct key_state_ssl *ks_ssl, const uint8_t *dat
+ }
+ 
+ int
+-key_state_read_ciphertext(struct key_state_ssl *ks_ssl, struct buffer *buf,
+-                          int maxlen)
++key_state_read_ciphertext(struct key_state_ssl *ks_ssl, struct buffer *buf)
+ {
+     int ret = 0;
+     perf_push(PERF_BIO_READ_CIPHERTEXT);
+ 
+     ASSERT(NULL != ks_ssl);
+ 
+-    ret = bio_read(ks_ssl->ct_out, buf, maxlen, "tls_read_ciphertext");
++    ret = bio_read(ks_ssl->ct_out, buf, "tls_read_ciphertext");
+ 
+     perf_pop();
+     return ret;
+@@ -2042,15 +2037,14 @@ key_state_write_ciphertext(struct key_state_ssl *ks_ssl, struct buffer *buf)
+ }
+ 
+ int
+-key_state_read_plaintext(struct key_state_ssl *ks_ssl, struct buffer *buf,
+-                         int maxlen)
++key_state_read_plaintext(struct key_state_ssl *ks_ssl, struct buffer *buf)
+ {
+     int ret = 0;
+     perf_push(PERF_BIO_READ_PLAINTEXT);
+ 
+     ASSERT(NULL != ks_ssl);
+ 
+-    ret = bio_read(ks_ssl->ssl_bio, buf, maxlen, "tls_read_plaintext");
++    ret = bio_read(ks_ssl->ssl_bio, buf, "tls_read_plaintext");
+ 
+     perf_pop();
+     return ret;
+diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
+index 45e0a81f5..9bb3ca958 100644
+--- a/src/openvpn/ssl_pkt.h
++++ b/src/openvpn/ssl_pkt.h
+@@ -67,8 +67,8 @@
+ /*
+  * Define number of buffers for send and receive in the reliability layer.
+  */
+-#define TLS_RELIABLE_N_SEND_BUFFERS  4 /* also window size for reliability layer */
+-#define TLS_RELIABLE_N_REC_BUFFERS   8
++#define TLS_RELIABLE_N_SEND_BUFFERS  6 /* also window size for reliability layer */
++#define TLS_RELIABLE_N_REC_BUFFERS   12
  
  /*
-  * Initialize a standalone tls-auth verification object.
-@@ -181,8 +180,7 @@ struct tls_auth_standalone *tls_auth_standalone_init(struct tls_options *tls_opt
-  * Setups the control channel frame size parameters from the data channel
-  * parameters
-  */
--void tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame,
--                                               struct frame *frame);
-+void tls_init_control_channel_frame_parameters(struct frame *frame, int tls_mtu);
- 
- /*
-  * Set local and remote option compatibility strings.
+  * Used in --mode server mode to check tls-auth signature on initial
 -- 
 2.37.0 (Apple Git-136)
 
