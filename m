@@ -1,10 +1,14 @@
-Date: Tue, 8 Nov 2022 17:58:38 +0100 (CET)
-Message-Id: <202211081658.2A8Gwc8F066351@...2054...>
+Date: Tue, 8 Nov 2022 18:21:04 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221108151407.1132097-1-arne@...1227...>
-References: <20221108151407.1132097-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add packet type in
- accept/reject messages for HMAC packet
+Message-ID: <Y2qQAK8TKEv4pWcp@...1296...>
+References: <20220625234150.3398864-2-arne@...1227...>
+ <20220801123401.3670571-1-arne@...1227...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="vkTmO34sC2KfVzWA"
+Content-Disposition: inline
+In-Reply-To: <20220801123401.3670571-1-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v4 2/5] Allow tun-mtu to be pushed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,71 +17,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+--vkTmO34sC2KfVzWA
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This is a useful addition.  It works...
+Hi,
 
-2022-11-08 17:39:46 us=399783 Connection Attempt Valid packet (P_CONTROL_V1) with HMAC challenge from peer ([AF_INET6]::ffff:194.97.140.21:61081), accepting new connection.
+On Mon, Aug 01, 2022 at 02:34:01PM +0200, Arne Schwabe wrote:
+> +
+> +Tun MTU can be pushed
+> +    As part of changing the ``--tun-mtu`` default to 1420 (see below), t=
+he
+> +    client can now also dynamically configure its MTU and the server will
+> +    try to push the client MTU when the client supports it. The directive
+> +    ``--tun-mtu-max`` has been introduced to specify the maximum pushable
+> +    MTU size.
 
-.. and uncovered a new bug...
+This text needs rewording, as the default isn't changed.
 
-2022-11-08 17:39:46 us=439044 194.97.140.21:61081 peer info: IV_NCP=2
-2022-11-08 17:39:46 us=439083 194.97.140.21:61081 peer info: IV_CIPHERS=AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305
-..
-2022-11-08 17:39:46 us=448391 cron2-freebsd-tc-amd64/194.97.140.21:61081 Data Channel: using negotiated cipher 'AES-256-GCM'
-2022-11-08 17:39:46 us=448421 cron2-freebsd-tc-amd64/194.97.140.21:61081 Data Channel MTU parms [ mss_fix:1379 max_frag:0 tun_mtu:1500 headroom:136 payload:1736 tailroom:557 ET:0 ]
-2022-11-08 17:39:46 us=448505 cron2-freebsd-tc-amd64/194.97.140.21:61081 Master Encrypt (cipher): 1fdef04a 9fc2d2e9 d01abb10 5bf10459 19f4ecd8 ec471652 f15dd536 0d7adf87
-2022-11-08 17:39:46 us=448544 cron2-freebsd-tc-amd64/194.97.140.21:61081 Message hash algorithm 'none' not found
-2022-11-08 17:39:46 us=448590 cron2-freebsd-tc-amd64/194.97.140.21:61081 Exiting due to fatal error
+I can do this on the fly, but I'm not sure what to write here - maybe
 
-.. and then the server exits.
-
-With --verb 4 it does not...  (but the message in *this* patch needs "verb 7"
-to see) - this is not caused by the patch here, but sneaked in earlier.
-
-GDB says this is the call chain where it happens...
-
-#0  md_get (digest=0x5555555e1064 "none") at crypto_mbedtls.c:774
-#1  0x0000555555568d39 in md_kt_size (mdname=<optimized out>) at crypto_mbedtls.c:812
-#2  0x0000555555564b69 in key2_print (k=k@...1851...=0x7fffffffbf10, kt=0x555555638798, prefix0=prefix0@...1851...=0x5555556025ed "Master Encrypt", 
-    prefix1=prefix1@...1851...=0x5555556025de "Master Decrypt") at crypto.c:1013
-#3  0x00005555555cb157 in generate_key_expansion (ks=ks@...1851...=0x555555638d10, session=session@...1851...=0x555555638b78, multi=<optimized out>) at ssl.c:1645
-#4  0x00005555555cc010 in tls_session_generate_data_channel_keys (multi=<optimized out>, session=0x555555638b78) at ssl.c:1705
-#5  0x00005555555cc232 in tls_session_update_crypto_params_do_work (multi=<optimized out>, session=<optimized out>, options=options@...1851...=0x555555637690, 
-    frame=frame@...1851...=0x555555638288, frame_fragment=<optimized out>, lsi=<optimized out>) at ssl.c:1769
-#6  0x00005555555cc330 in tls_session_update_crypto_params_do_work (lsi=<optimized out>, frame_fragment=<optimized out>, frame=0x555555638288, options=0x555555637690, 
-    session=<optimized out>, multi=<optimized out>) at ssl.c:1789
-#7  0x0000555555591bb7 in multi_client_generate_tls_keys (c=0x555555637690) at multi.c:2322
-#8  multi_client_connect_late_setup (option_types_found=<optimized out>, mi=0x5555556374d0, m=0x7fffffffc250) at multi.c:2464
-#9  multi_connection_established (mi=0x5555556374d0, m=0x7fffffffc250) at multi.c:2735
-
-.. so it should be easy to pinpoint.  Not sure what the "right" fix
-is, though.  Not my field.
+> +Tun MTU can be pushed
+> +    Clients can now also dynamically configure their MTU and the server =
+will
+> +    try to push the ``--tun-mtu`` the client should use when the client
+> +    supports it. The directive ``--tun-mtu-max`` has been introduced to=
+=20
+> +    specify the maximum pushable MTU size.
 
 
-Your patch has been applied to the master branch.
+>          struct tls_session *session =3D &c->c2.tls_multi->session[TM_ACT=
+IVE];
+> +        if (!check_session_cipher(session, &c->options))
+> +        {
+> +            /* The update_session_cipher method will already print an er=
+ror */
+> +            return false;
+> +        }
+> +
+> +        /* Cipher is considered safe, so we can use it to calculate the =
+max
+> +         * MTU size */
 
-commit 4466c5dcb7a77d4a214e60afc6c7b41688d0ec04
-Author: Arne Schwabe
-Date:   Tue Nov 8 16:14:07 2022 +0100
+I'm not sure I understand that comment, and the introducion of=20
+check_session_cipher() above...  where's the cipher used for the MTU
+calculation below?
 
-     Add packet type in accept/reject messages for HMAC packet
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221108151407.1132097-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25489.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--vkTmO34sC2KfVzWA
+Content-Type: application/pgp-signature; name="signature.asc"
 
---
-kind regards,
+-----BEGIN PGP SIGNATURE-----
 
-Gert Doering
+iQGcBAEBAgAGBQJjapAAAAoJEB2Cnv7KVigSHZgMAJFxYIAgrL7NdAzetXrU117q
+Lv64nABa3IYKls933OR4M3kAIMwJ/NjMwkwwrjnpEkJ877h1OEYT6Fdhy+CN9IQ2
+wRhEfHE/i5U9m97RWPvDUs7pfq7UNwr2qrD+5Jbd0/RrTd7r7vgl6ZCioUvUOFrO
+cVx3sHOIAOpXHwQ0K9E0OBuUs2hvFWKhkySvzniiP3k4QMoWy9QU0ksDvL+GOcm1
+SPwXK6oL7pUHoTgJbwY4HdHzf5QgoWDUD2E0JNX0UvyPsiA8hpOT4nJSbK8buZiB
+s9mlcESm4DO5xyHzBsgF0PgU1H99KBKG492i1LSpFrCnfE1QY/ARpEeK7D0AS3FD
+TUUiEB2SZNnIM/dqn+MkHI4/SRQfDsT9ZyvNltRnIXg5QSobKXOmEIftrLi3TQKf
+DQu3WT1I58s8t0ilXjtciO33PUylWTPHJHMpzYhw190W5Qk+ls67KH4rqzco9ikD
+S8sGFCQZgJKyi4Z/MpERknH1jV5kF0lOJ/ILbilEDA==
+=xENl
+-----END PGP SIGNATURE-----
 
+--vkTmO34sC2KfVzWA--
 
