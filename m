@@ -1,9 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed,  9 Nov 2022 12:52:08 +0100
-Message-Id: <20221109115208.1248948-1-arne@...1227...>
+Date: Wed,  9 Nov 2022 13:35:01 +0100
+Message-Id: <20221109123501.1252554-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix md_kt_size in mbed TLS when queried for
- size of "none"
+Subject: [Openvpn-devel] [PATCH] Add algorithm and bits used in key_print2
+ method and refactor method
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,34 +16,70 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Previously this would error out with a M_FATAL message about cipher
-not known. Align the mbed TLS version to OpenSSL version and also remove
-unreachable code. This manifested in key_print2 running into this
-M_FATAL message when used with an AEAD cipher and verb 7.
+This adds the the algorithm that is being used. This does not avoid the
+empty hmac key output but makes it more obvious, why there is no output.
+
+Master Decrypt (cipher, AES-256-GCM, 256 bits): 705923be f6e44923 a4920a64 434e575c 6ff8d2db d8e74f07 86c010cf 2cf3923e
+Master Decrypt (hmac, [null-digest], 0 bits):
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/crypto_mbedtls.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ src/openvpn/crypto.c | 34 ++++++++++++++++++----------------
+ 1 file changed, 18 insertions(+), 16 deletions(-)
 
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index da4ed9809..9087ff6ad 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -809,11 +809,11 @@ md_kt_name(const char *mdname)
- unsigned char
- md_kt_size(const char *mdname)
- {
--    const mbedtls_md_info_t *kt = md_get(mdname);
--    if (NULL == kt)
-+    if (!strcmp("none", mdname))
-     {
-         return 0;
-     }
-+    const mbedtls_md_info_t *kt = md_get(mdname);
-     return mbedtls_md_get_size(kt);
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 4a8f514cd..d7e882ae0 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -996,8 +996,22 @@ generate_key_random(struct key *key, const struct key_type *kt)
+     gc_free(&gc);
  }
  
+-/*
+- * Print key material
++static void
++key_print(const struct key *key,
++          const struct key_type *kt,
++          const char *prefix)
++{
++    struct gc_arena gc = gc_new();
++    dmsg(D_SHOW_KEY_SOURCE, "%s (cipher, %s, %d bits): %s",
++         prefix, cipher_kt_name(kt->cipher), cipher_kt_key_size(kt->cipher) * 8,
++         format_hex(key->cipher, cipher_kt_key_size(kt->cipher), 0, &gc));
++    dmsg(D_SHOW_KEY_SOURCE, "%s (hmac, %s, %d bits): %s",
++         prefix, md_kt_name(kt->digest), md_kt_size(kt->digest) * 8,
++         format_hex(key->hmac, md_kt_size(kt->digest), 0, &gc));
++    gc_free(&gc);
++}
++/**
++ * Prints the keys in a key2 structure.
+  */
+ void
+ key2_print(const struct key2 *k,
+@@ -1005,21 +1019,9 @@ key2_print(const struct key2 *k,
+            const char *prefix0,
+            const char *prefix1)
+ {
+-    struct gc_arena gc = gc_new();
+     ASSERT(k->n == 2);
+-    dmsg(D_SHOW_KEY_SOURCE, "%s (cipher): %s",
+-         prefix0,
+-         format_hex(k->keys[0].cipher, cipher_kt_key_size(kt->cipher), 0, &gc));
+-    dmsg(D_SHOW_KEY_SOURCE, "%s (hmac): %s",
+-         prefix0,
+-         format_hex(k->keys[0].hmac, md_kt_size(kt->digest), 0, &gc));
+-    dmsg(D_SHOW_KEY_SOURCE, "%s (cipher): %s",
+-         prefix1,
+-         format_hex(k->keys[1].cipher, cipher_kt_key_size(kt->cipher), 0, &gc));
+-    dmsg(D_SHOW_KEY_SOURCE, "%s (hmac): %s",
+-         prefix1,
+-         format_hex(k->keys[1].hmac, md_kt_size(kt->digest), 0, &gc));
+-    gc_free(&gc);
++    key_print(&k->keys[0], kt, prefix0);
++    key_print(&k->keys[1], kt, prefix1);
+ }
+ 
+ void
 -- 
 2.37.0 (Apple Git-136)
 
