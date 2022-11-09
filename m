@@ -1,10 +1,10 @@
-Date: Wed, 9 Nov 2022 13:48:41 +0100 (CET)
-Message-Id: <202211091248.2A9Cmfv6026858@...2054...>
+Date: Wed, 9 Nov 2022 13:52:11 +0100 (CET)
+Message-Id: <202211091252.2A9CqBc7027434@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221109115208.1248948-1-arne@...1227...>
-References: <20221109115208.1248948-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix md_kt_size in mbed TLS when
- queried for size of none
+In-Reply-To: <20221109123501.1252554-1-arne@...1227...>
+References: <20221109123501.1252554-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add algorithm and bits used in
+ key_print2 method and refactor method
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,27 +20,25 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Verified that this fixes the (mbedtls-only) crash I was seeing
-with --verb 7 - and verified again that it does not happen with
-OpenSSL builds:
+"Yes, this is much nicer" :-)
 
-    Master Encrypt (cipher): 6359ae14 b7069ef7 ...
-    Master Encrypt (hmac): 
-    Master Decrypt (cipher): 5217f7a8 c3f80df5 ...
-    Master Decrypt (hmac): 
+     Master Encrypt (cipher, AES-256-GCM, 256 bits): da62213e a3d13f7c ...
+     Master Encrypt (hmac, [null-digest], 0 bits): 
+     Master Decrypt (cipher, AES-256-GCM, 256 bits): 4aec936c 1eb1c231 ...
+     Master Decrypt (hmac, [null-digest], 0 bits): 
 
 Your patch has been applied to the master branch.
 
-commit 6ff2d63c7943b2d7e150c3934b4e789fb5d1e0c0
+commit 4d8dfa84bd3b778c00560d2131d3b94b4cada3bc
 Author: Arne Schwabe
-Date:   Wed Nov 9 12:52:08 2022 +0100
+Date:   Wed Nov 9 13:35:01 2022 +0100
 
-     Fix md_kt_size in mbed TLS when queried for size of none
+     Add algorithm and bits used in key_print2 method and refactor method
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221109115208.1248948-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25494.html
+     Message-Id: <20221109123501.1252554-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25495.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
