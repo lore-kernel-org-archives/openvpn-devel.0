@@ -1,9 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed,  9 Nov 2022 12:07:49 +0100
-Message-Id: <20221109110749.1245175-1-arne@...1227...>
+Date: Wed,  9 Nov 2022 12:52:08 +0100
+Message-Id: <20221109115208.1248948-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Remove unused addr_inet4or6,
- addr_guess_family and inline addr_copy_sa
+Subject: [Openvpn-devel] [PATCH] Fix md_kt_size in mbed TLS when queried for
+ size of "none"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,57 +16,34 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-addr_copy_sa is just a single line and putting that simple assignment
-into an extra function does not really improve clarity.
+Previously this would error out with a M_FATAL message about cipher
+not known. Align the mbed TLS version to OpenSSL version and also remove
+unreachable code. This manifested in key_print2 running into this
+M_FATAL message when used with an AEAD cipher and verb 7.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/socket.h | 18 ++----------------
- 1 file changed, 2 insertions(+), 16 deletions(-)
+ src/openvpn/crypto_mbedtls.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 462afa31b..94c8b6dff 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -863,20 +863,6 @@ addr_zero_host(struct openvpn_sockaddr *addr)
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index da4ed9809..9087ff6ad 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -809,11 +809,11 @@ md_kt_name(const char *mdname)
+ unsigned char
+ md_kt_size(const char *mdname)
+ {
+-    const mbedtls_md_info_t *kt = md_get(mdname);
+-    if (NULL == kt)
++    if (!strcmp("none", mdname))
+     {
+         return 0;
      }
++    const mbedtls_md_info_t *kt = md_get(mdname);
+     return mbedtls_md_get_size(kt);
  }
  
--static inline void
--addr_copy_sa(struct openvpn_sockaddr *dst, const struct openvpn_sockaddr *src)
--{
--    dst->addr = src->addr;
--}
--
--static inline bool
--addr_inet4or6(struct sockaddr *addr)
--{
--    return addr->sa_family == AF_INET || addr->sa_family == AF_INET6;
--}
--
--int addr_guess_family(sa_family_t af, const char *name);
--
- static inline int
- af_addr_size(sa_family_t af)
- {
-@@ -1052,7 +1038,7 @@ link_socket_read_udp_win32(struct link_socket *sock,
-     sockethandle_t sh = { .s = sock->sd };
-     if (sock->info.dco_installed)
-     {
--        addr_copy_sa(&from->dest, &sock->info.lsa->actual.dest);
-+        from->dest = sock->info.lsa->actual.dest;
-         sh.is_handle = true;
-     }
-     return sockethandle_finalize(sh, &sock->reads, buf, from);
-@@ -1089,7 +1075,7 @@ link_socket_read(struct link_socket *sock,
-     else if (proto_is_tcp(sock->info.proto)) /* unified TCPv4 and TCPv6 */
-     {
-         /* from address was returned by accept */
--        addr_copy_sa(&from->dest, &sock->info.lsa->actual.dest);
-+        from->dest = sock->info.lsa->actual.dest;
-         return link_socket_read_tcp(sock, buf);
-     }
-     else
 -- 
 2.37.0 (Apple Git-136)
 
