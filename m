@@ -1,8 +1,13 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed,  9 Nov 2022 16:48:09 +0100
-Message-Id: <20221109154810.1268403-1-arne@...1227...>
+Message-ID: <7b78ab26-81a7-ee68-0399-4b4cfbaef7ea@...2181...>
+Date: Thu, 10 Nov 2022 15:39:14 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v5 1/2] Allow tun-mtu to be pushed
+Content-Language: en-US
+References: <20220912074149.31160-1-gert@...1296...>
+ <20221108134523.2325-1-gert@...1296...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20221108134523.2325-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Improve documentation for --dev and
+ --dev-node.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,255 +16,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-This allows tun-mtu to pushed but only up to the size of the preallocated
-buffers. This is not a perfect solution but should allow most of the use
-cases where the mtu is close enough to 1500 (or smaller).
+Hi,
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
+On 08/11/2022 14:45, Gert Doering wrote:
+> During the research for commit a5cf4cfb77f745 it turned out that
+> OpenVPN's behaviour regarding "--dev arbitrary-name" is very
+> platform-specific and not very well documented.
+> 
+> The referenced commit fixed DCO behaviour to be in line with non-DCO
+> linux behaviour, this commit catches up on the documentation.
+> 
+> v2: disambiguate Linux ("all drivers") and FreeBSD ("only DCO"), add
+> comment about --dev-type being necessary for devices not starting with
+> tun* or tap*
+> 
+> Signed-off-by: Gert Doering <gert@...1296...>
 
-Patch v4: rebase for check_session_cipher name change
-Patch v5: remove mention of change of default mtu, remove leftover code
-          from an earlier approach.
+I think the proposed text is much better than before.
+After ironing out some details in v2 it got even clearer.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- Changes.rst                              |  5 +++
- doc/man-sections/client-options.rst      |  4 +++
- doc/man-sections/vpn-network-options.rst |  5 +++
- src/openvpn/init.c                       | 44 ++++++++++++++++++++----
- src/openvpn/mtu.c                        |  1 +
- src/openvpn/mtu.h                        |  3 ++
- src/openvpn/options.c                    | 15 +++++++-
- src/openvpn/options.h                    |  3 ++
- src/openvpn/ssl.c                        |  3 ++
- 9 files changed, 75 insertions(+), 8 deletions(-)
+I see no reason why it should not be merged in this form.
 
-diff --git a/Changes.rst b/Changes.rst
-index 657227c0f..889689877 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -105,6 +105,11 @@ Secure renegotiation
-     previously authenticated peer can do trigger renegotiation and complete
-     renegotiations. This also closes CVE-2021-3568.
- 
-+Tun MTU can be pushed
-+    The  client can now also dynamically configure its MTU and the server
-+    will try to push the client MTU when the client supports it. The
-+    directive ``--tun-mtu-max`` has been introduced to specify the maximum
-+    pushable MTU size (defaults to 1600).
- 
- Improved control channel packet size control (``max-packet-size``)
-     The size of control channel is no longer tied to
-diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
-index 5a906895b..07651479f 100644
---- a/doc/man-sections/client-options.rst
-+++ b/doc/man-sections/client-options.rst
-@@ -363,6 +363,10 @@ configuration.
-         The client announces the list of supported ciphers configured with the
-         ``--data-ciphers`` option to the server.
- 
-+  :code:`IV_MTU=<max_mtu>`
-+        The client announces the support of pushable MTU and the maximum MTU
-+        it is willing to accept.
-+
-   :code:`IV_GUI_VER=<gui_id> <version>`
-         The UI version of a UI if one is running, for example
-         :code:`de.blinkt.openvpn 0.5.47` for the Android app.
-diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
-index 5b2f84707..2d0e662e4 100644
---- a/doc/man-sections/vpn-network-options.rst
-+++ b/doc/man-sections/vpn-network-options.rst
-@@ -516,6 +516,11 @@ routing.
-   It's best to use the ``--fragment`` and/or ``--mssfix`` options to deal
-   with MTU sizing issues.
- 
-+--tun-max-mtu maxmtu
-+  This configures the maximum MTU size that a server can push to ``maxmtu``.
-+  The default for ``maxmtu`` is 1600. This will increase internal buffers
-+  allocation for larger packet sizes.
-+
- --tun-mtu-extra n
-   Assume that the TUN/TAP device might return as many as ``n`` bytes more
-   than the ``--tun-mtu`` size on read. This parameter defaults to 0, which
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index c6f6865a8..02714b43d 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2312,7 +2312,8 @@ pull_permission_mask(const struct context *c)
-         | OPT_P_ECHO
-         | OPT_P_PULL_MODE
-         | OPT_P_PEER_ID
--        | OPT_P_NCP;
-+        | OPT_P_NCP
-+        | OPT_P_PUSH_MTU;
- 
-     if (!c->options.route_nopull)
-     {
-@@ -2475,6 +2476,25 @@ do_deferred_options(struct context *c, const unsigned int found)
-         }
-     }
- 
-+    /* Cipher is considered safe, so we can use it to calculate the max
-+     * MTU size */
-+    if (found & OPT_P_PUSH_MTU)
-+    {
-+        /* MTU has changed, check that the pushed MTU is small enough to
-+         * be able to change it */
-+        msg(D_PUSH, "OPTIONS IMPORT: tun-mtu set to %d", c->options.ce.tun_mtu);
-+
-+        struct frame *frame = &c->c2.frame;
-+
-+        if (c->options.ce.tun_mtu > frame->tun_max_mtu)
-+        {
-+            msg(D_PUSH_ERRORS, "Server pushed a large mtu, please add "
-+                "tun-mtu-max %d in the client configuration",
-+                c->options.ce.tun_mtu);
-+        }
-+        frame->tun_mtu = min_int(frame->tun_max_mtu, c->options.ce.tun_mtu);
-+    }
-+
-     return true;
- }
- 
-@@ -2635,10 +2655,16 @@ frame_finalize_options(struct context *c, const struct options *o)
-     struct frame *frame = &c->c2.frame;
- 
-     frame->tun_mtu = get_frame_mtu(c, o);
-+    frame->tun_max_mtu = o->ce.tun_mtu_max;
-+
-+    /* max mtu needs to be at least as large as the tun mtu */
-+    frame->tun_max_mtu = max_int(frame->tun_mtu, frame->tun_max_mtu);
- 
--    /* We always allow at least 1500 MTU packets to be received in our buffer
--     * space */
--    size_t payload_size = max_int(1500, frame->tun_mtu);
-+    /* We always allow at least 1600 MTU packets to be received in our buffer
-+     * space to allow server to push "baby giant" MTU sizes */
-+    frame->tun_max_mtu = max_int(1600, frame->tun_max_mtu);
-+
-+    size_t payload_size = frame->tun_max_mtu;
- 
-     /* we need to be also large enough to hold larger control channel packets
-      * if configured */
-@@ -2650,9 +2676,9 @@ frame_finalize_options(struct context *c, const struct options *o)
-         payload_size += o->ce.tun_mtu_extra;
-     }
- 
--    /* Add 100 byte of extra space in the buffer to account for slightly
--     * mismatched MUTs between peers */
--    payload_size += 100;
-+    /* Add 32 byte of extra space in the buffer to account for small errors
-+     * in the calculation */
-+    payload_size += 32;
- 
- 
-     /* the space that is reserved before the payload to add extra headers to it
-@@ -3215,6 +3241,10 @@ do_init_frame_tls(struct context *c)
-                c->c2.frame.buf.payload_size);
-         frame_print(&c->c2.tls_multi->opt.frame, D_MTU_INFO,
-                     "Control Channel MTU parms");
-+
-+        /* Keep the max mtu also in the frame of tls multi so it can access
-+         * it in push_peer_info */
-+        c->c2.tls_multi->opt.frame.tun_max_mtu = c->c2.frame.tun_max_mtu;
-     }
-     if (c->c2.tls_auth_standalone)
-     {
-diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index f60f48534..a74a08153 100644
---- a/src/openvpn/mtu.c
-+++ b/src/openvpn/mtu.c
-@@ -222,6 +222,7 @@ frame_print(const struct frame *frame,
-     buf_printf(&out, " max_frag:%d", frame->max_fragment_size);
- #endif
-     buf_printf(&out, " tun_mtu:%d", frame->tun_mtu);
-+    buf_printf(&out, " tun_max_mtu:%d", frame->tun_max_mtu);
-     buf_printf(&out, " headroom:%d", frame->buf.headroom);
-     buf_printf(&out, " payload:%d", frame->buf.payload_size);
-     buf_printf(&out, " tailroom:%d", frame->buf.tailroom);
-diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index 370806fb5..badb3a6a8 100644
---- a/src/openvpn/mtu.h
-+++ b/src/openvpn/mtu.h
-@@ -138,6 +138,9 @@ struct frame {
-                                  *   control frame payload (although most of
-                                  *   code ignores it)
-                                  */
-+    int tun_max_mtu;            /**< the maximum tun-mtu size the buffers are
-+                                 *   are sized for. This is the upper bound that
-+                                 *   a server can push as MTU */
- 
-     int extra_tun;              /**< Maximum number of bytes in excess of
-                                  *   the tun/tap MTU that might be read
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 8027c572f..235d1f6cd 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -6449,10 +6449,23 @@ add_option(struct options *options,
-     }
-     else if (streq(p[0], "tun-mtu") && p[1] && !p[2])
-     {
--        VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);
-+        VERIFY_PERMISSION(OPT_P_PUSH_MTU|OPT_P_CONNECTION);
-         options->ce.tun_mtu = positive_atoi(p[1]);
-         options->ce.tun_mtu_defined = true;
-     }
-+    else if (streq(p[0], "tun-mtu-max") && p[1] && !p[3])
-+    {
-+        VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);
-+        int max_mtu = positive_atoi(p[1]);
-+        if (max_mtu < 68 || max_mtu > 65536)
-+        {
-+            msg(msglevel, "--tun-mtu-max value '%s' is invalid", p[1]);
-+        }
-+        else
-+        {
-+            options->ce.tun_mtu_max = max_mtu;
-+        }
-+    }
-     else if (streq(p[0], "tun-mtu-extra") && p[1] && !p[2])
-     {
-         VERIFY_PERMISSION(OPT_P_MTU|OPT_P_CONNECTION);
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index b165ee5b7..a2bc13a1c 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -118,6 +118,8 @@ struct connection_entry
-     const char *socks_proxy_authfile;
- 
-     int tun_mtu;         /* MTU of tun device */
-+    int tun_mtu_max;     /* maximum MTU that can be pushed */
-+
-     bool tun_mtu_defined; /* true if user overriding parm with command line option */
-     int tun_mtu_extra;
-     bool tun_mtu_extra_defined;
-@@ -730,6 +732,7 @@ struct options
- #define OPT_P_CONNECTION      (1<<27)
- #define OPT_P_PEER_ID         (1<<28)
- #define OPT_P_INLINE          (1<<29)
-+#define OPT_P_PUSH_MTU        (1<<30)
- 
- #define OPT_P_DEFAULT   (~(OPT_P_INSTANCE|OPT_P_PULL_MODE))
- 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 31bea2b23..443613096 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2061,6 +2061,9 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
- 
-             /* support for AUTH_FAIL,TEMP control message */
-             iv_proto |= IV_PROTO_AUTH_FAIL_TEMP;
-+
-+            /* support for tun-mtu as part of the push message */
-+            buf_printf(&out, "IV_MTU=%d\n", session->opt->frame.tun_max_mtu);
-         }
- 
-         /* support for Negotiable Crypto Parameters */
+Should somebody not feel it's 100% clear, a follow-up patch can always 
+be sent to improve the text even more.
+
+Acked-by: Antonio Quartulli <a@...2181...>
+
+> ---
+>   doc/man-sections/vpn-network-options.rst | 38 +++++++++++++++++++-----
+>   1 file changed, 31 insertions(+), 7 deletions(-)
+> 
+> diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
+> index 5b2f8470..72cf9064 100644
+> --- a/doc/man-sections/vpn-network-options.rst
+> +++ b/doc/man-sections/vpn-network-options.rst
+> @@ -69,15 +69,34 @@ routing.
+>        dev tap4
+>        dev ovpn
+>   
+> -  When the device name starts with :code:`tun` or :code:`tap`, the device
+> -  type is extracted automatically.  Otherwise the ``--dev-type`` option
+> -  needs to be added as well.
+> +  What happens if the device name is not :code:`tun` or :code:`tap` is
+> +  platform dependent.
+> +
+> +  On most platforms, :code:`tunN` (e.g. tun2, tun30) and :code:`tapN`
+> +  (e.g. tap3) will create a numbered tun/tap interface with the number
+> +  specified - this is useful if multiple OpenVPN instances are active,
+> +  and the instance-to-device mapping needs to be known.  Some platforms
+> +  do not support "numbered tap", so trying ``--dev tap3`` will fail.
+> +
+> +  Arbitrary device names (e.g. ``--dev tun-home``) will only work on
+> +  FreeBSD (with the DCO kernel driver for ``tun`` devices) and Linux
+> +  (for both ``tun`` and ``tap`` devices, DCO and tun/tap driver).
+> +
+> +  If such a device name starts with ``tun`` or ``tap`` (e.g. ``tun-home``),
+> +  OpenVPN will choose the right device type automatically.  Otherwise the
+> +  desired device type needs to be specified with ``--dev-type tun`` or
+> +  ``--dev-type tap``.
+> +
+> +  On Windows, only the names :code:`tun` and :code:`tap` are supported.
+> +  Selection among multiple installed drivers or driver instances is done
+> +  with ``--dev-node`` and ``--windows-driver``.
+>   
+>   --dev-node node
+> -  Explicitly set the device node rather than using :code:`/dev/net/tun`,
+> -  :code:`/dev/tun`, :code:`/dev/tap`, etc. If OpenVPN cannot figure out
+> -  whether ``node`` is a TUN or TAP device based on the name, you should
+> -  also specify ``--dev-type tun`` or ``--dev-type tap``.
+> +  This is a highly system dependent option to influence tun/tap driver
+> +  selection.
+> +
+> +  On Linux, tun/tap devices are created by accessing :code:`/dev/net/tun`,
+> +  and this device name can be changed using ``--dev-node ...``.
+>   
+>     Under Mac OS X this option can be used to specify the default tun
+>     implementation. Using ``--dev-node utun`` forces usage of the native
+> @@ -93,6 +112,11 @@ routing.
+>     both the network connections control panel name and the GUID for each
+>     TAP-Win32 adapter.
+>   
+> +  On other platforms, ``--dev-node node`` will influence the naming of the
+> +  created tun/tap device, if supported on that platform.  If OpenVPN cannot
+> +  figure out whether ``node`` is a TUN or TAP device based on the name,
+> +  you should also specify ``--dev-type tun`` or ``--dev-type tap``.
+> +
+>   --dev-type device-type
+>     Which device type are we using? ``device-type`` should be :code:`tun`
+>     (OSI Layer 3) or :code:`tap` (OSI Layer 2). Use this option only if
+
 -- 
-2.37.0 (Apple Git-136)
-
+Antonio Quartulli
 
