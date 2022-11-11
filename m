@@ -1,10 +1,8 @@
-From: Kristof Provost <kprovost@...2661...>
-Date: Fri, 11 Nov 2022 11:20:31 +0100
-Message-Id: <20221111102031.8402-2-kprovost@...2661...>
-In-Reply-To: <20221111102031.8402-1-kprovost@...2661...>
-References: <20221111102031.8402-1-kprovost@...2661...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Fri, 11 Nov 2022 12:16:19 +0100
+Message-Id: <20221111111619.21415-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] FreeBSD DCO: support AES-192-GCM
+Subject: [Openvpn-devel] [PATCH] msvc: always regenerate config-msvc.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +13,48 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-From: Kristof Provost <kp@...1376...>
+There is no easy way to detect whether this information
+is outdated. One possible optimisation would be in the
+Python code to actually only rewrite the file if it has
+changed. Although VC is already pretty good in detecting
+whether the code has actually changed so this might not
+be worth the additional complexity.
 
-As of 2c58d0cb3bb3e3a5b714ffac940500efbe5303ca FreeBSD also allows
-AES-192-GCM in DCO. Announce this support.
+While here, change some leading whitespace to tabs as
+expected in Makefile.
 
-Signed-off-by: Kristof Provost <kprovost@...2661...>
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
- src/openvpn/dco_freebsd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ build/msvc/msvc-generate/Makefile.mak | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index c8361028..8e5ee436 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -667,7 +667,7 @@ dco_event_set(dco_context_t *dco, struct event_set *es, void *arg)
- const char *
- dco_get_supported_ciphers()
- {
--    return "none:AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
-+    return "none:AES-256-GCM:AES-192-GCM:AES-128-GCM:CHACHA20-POLY1305";
- }
+Note: this patch applies to both master and release/2.5 cleanly and
+should be pushed to both.
+
+diff --git a/build/msvc/msvc-generate/Makefile.mak b/build/msvc/msvc-generate/Makefile.mak
+index ae8b0842..1c1c4bab 100644
+--- a/build/msvc/msvc-generate/Makefile.mak
++++ b/build/msvc/msvc-generate/Makefile.mak
+@@ -51,10 +51,13 @@ $(OUTPUT_PLUGIN): $(INPUT_PLUGIN) $(OUTPUT_PLUGIN_CONFIG)
+ 	cscript //nologo msvc-generate.js --config="$(OUTPUT_PLUGIN_CONFIG)" --input="$(INPUT_PLUGIN)" --output="$(OUTPUT_PLUGIN)"
  
- #endif /* defined(ENABLE_DCO) && defined(TARGET_FREEBSD) */
+ $(OUTPUT_MAN): $(INPUT_MAN)
+-    -FOR /F %i IN ('where rst2html.py') DO python %i "$(INPUT_MAN)" "$(OUTPUT_MAN)"
++	-FOR /F %i IN ('where rst2html.py') DO python %i "$(INPUT_MAN)" "$(OUTPUT_MAN)"
+ 
+-$(OUTPUT_MSVC_GIT_CONFIG):
+-    python git-version.py $(SOLUTIONDIR)
++# Force regeneration because we can't detect whether it is outdated
++$(OUTPUT_MSVC_GIT_CONFIG): FORCE
++	python git-version.py $(SOLUTIONDIR)
++
++FORCE:
+ 
+ clean:
+ 	-del "$(OUTPUT_MSVC_VER)"
 -- 
-2.38.1
+2.34.1
 
 
