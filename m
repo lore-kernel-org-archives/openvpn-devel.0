@@ -1,11 +1,12 @@
+Message-ID: <2f57bd32-b033-1474-479d-118922440d23@...1227...>
+Date: Fri, 11 Nov 2022 14:17:51 +0100
 MIME-Version: 1.0
-References: <20221111111619.21415-1-frank@...2641...>
- <20221111121212.25167-1-frank@...2641...>
-In-Reply-To: <20221111121212.25167-1-frank@...2641...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 11 Nov 2022 14:19:43 +0200
-Message-ID: <CAGyAFMU3d347hbMqo1bTS6nyr=pp7D5h09zpwiMFEhXb1bqbYA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2] msvc: always call git-version.py
+Content-Language: en-GB
+References: <20221111102031.8402-1-kprovost@...2661...>
+ <20221111102031.8402-2-kprovost@...2661...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20221111102031.8402-2-kprovost@...2661...>
+Subject: Re: [Openvpn-devel] [PATCH] FreeBSD DCO: support AES-192-GCM
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,17 +15,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Kristof Provost <kprovost@...2661...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Don't know if I can ack the patch to which I've contributed - but
-anyway, the makefile change looks
-good and the python script doesn't regenerate version header (which
-would trigger recompilation of some files).
+Am 11.11.22 um 11:20 schrieb Kristof Provost via Openvpn-devel:
+> From: Kristof Provost <kp@...1376...>
+> 
+> As of 2c58d0cb3bb3e3a5b714ffac940500efbe5303ca FreeBSD also allows
+> AES-192-GCM in DCO. Announce this support.
+> 
+> Signed-off-by: Kristof Provost <kprovost@...2661...>
+> ---
+>   src/openvpn/dco_freebsd.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+> index c8361028..8e5ee436 100644
+> --- a/src/openvpn/dco_freebsd.c
+> +++ b/src/openvpn/dco_freebsd.c
+> @@ -667,7 +667,7 @@ dco_event_set(dco_context_t *dco, struct event_set *es, void *arg)
+>   const char *
+>   dco_get_supported_ciphers()
+>   {
+> -    return "none:AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
+> +    return "none:AES-256-GCM:AES-192-GCM:AES-128-GCM:CHACHA20-POLY1305";
+>   }
+>   
+>   #endif /* defined(ENABLE_DCO) && defined(TARGET_FREEBSD) */
 
-Tested locally and GHA is happy.
-
-Acked-by: Lev Stipakov <lstipakov@...277...>
+Acked-By: Arne Schwabe <arne@...1227...>
 
