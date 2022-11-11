@@ -1,12 +1,9 @@
-Message-ID: <2f57bd32-b033-1474-479d-118922440d23@...1227...>
-Date: Fri, 11 Nov 2022 14:17:51 +0100
-MIME-Version: 1.0
-Content-Language: en-GB
-References: <20221111102031.8402-1-kprovost@...2661...>
- <20221111102031.8402-2-kprovost@...2661...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20221111102031.8402-2-kprovost@...2661...>
-Subject: Re: [Openvpn-devel] [PATCH] FreeBSD DCO: support AES-192-GCM
+Date: Fri, 11 Nov 2022 14:27:11 +0100 (CET)
+Message-Id: <202211111327.2ABDRBSv022011@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221111121212.25167-1-frank@...2641...>
+References: <20221111121212.25167-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: msvc: always call git-version.py
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,34 +12,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Kristof Provost <kprovost@...2661...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 11.11.22 um 11:20 schrieb Kristof Provost via Openvpn-devel:
-> From: Kristof Provost <kp@...1376...>
-> 
-> As of 2c58d0cb3bb3e3a5b714ffac940500efbe5303ca FreeBSD also allows
-> AES-192-GCM in DCO. Announce this support.
-> 
-> Signed-off-by: Kristof Provost <kprovost@...2661...>
-> ---
->   src/openvpn/dco_freebsd.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-> index c8361028..8e5ee436 100644
-> --- a/src/openvpn/dco_freebsd.c
-> +++ b/src/openvpn/dco_freebsd.c
-> @@ -667,7 +667,7 @@ dco_event_set(dco_context_t *dco, struct event_set *es, void *arg)
->   const char *
->   dco_get_supported_ciphers()
->   {
-> -    return "none:AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305";
-> +    return "none:AES-256-GCM:AES-192-GCM:AES-128-GCM:CHACHA20-POLY1305";
->   }
->   
->   #endif /* defined(ENABLE_DCO) && defined(TARGET_FREEBSD) */
+Your patch has been applied to the master and release/2.5 branch.
 
-Acked-By: Arne Schwabe <arne@...1227...>
+No code changes, and build changes look reasonable.  Thanks.
+
+Pushed to my GH instance for test building, no complaints either.
+
+commit 3951ed8479c01e79bd8fae5c7d4b5f6b07d1f0fb (master)
+commit 2086517693f68a3b8fe10d79b5e193868b94adf4 (release/2.5)
+Author: Frank Lichtenheld
+Date:   Fri Nov 11 13:12:12 2022 +0100
+
+     msvc: always call git-version.py
+
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20221111121212.25167-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25508.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
