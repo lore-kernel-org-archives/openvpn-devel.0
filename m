@@ -1,10 +1,8 @@
-Date: Fri, 11 Nov 2022 09:39:21 +0100 (CET)
-Message-Id: <202211110839.2AB8dLqu083404@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221108134523.2325-1-gert@...1296...>
-References: <20221108134523.2325-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Improve documentation for --dev
- and --dev-node.
+From: Kristof Provost <kprovost@...2661...>
+Date: Fri, 11 Nov 2022 11:20:30 +0100
+Message-Id: <20221111102031.8402-1-kprovost@...2661...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH]: FreeBSD DCO supports AES-192-GCM
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +13,13 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Thanks for the review.
+Minor update, but FreeBSD's if_ovpn now also supports AES-192-GCM. 
+We may as well announce this support.
 
-Indeed, further improvements of our documentation is always possible
-(and patches welcome).  *This* now concludes my "repair arbitrary name
-support for Linux and add documentation" project :-)
+Best regards,
+Kristof
 
-Patch has been applied to the master branch.
-
-commit 199081c24a1bb4b9066e542165de9b4a6ce1a8fd
-Author: Gert Doering
-Date:   Tue Nov 8 14:45:23 2022 +0100
-
-     Improve documentation for --dev and --dev-node.
-
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20221108134523.2325-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25488.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
 
 
