@@ -1,10 +1,10 @@
-Date: Mon, 14 Nov 2022 13:37:30 +0100 (CET)
-Message-Id: <202211141237.2AECbUHL096088@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221109154810.1268403-2-arne@...1227...>
-References: <20221109154810.1268403-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Push server mtu to client when
- supported and support occ mtu
+MIME-Version: 1.0
+From: Turritopsis Dohrnii Teo En Ming <tdtemccnp@...277...>
+Date: Mon, 14 Nov 2022 23:03:13 +0800
+Message-ID: <CAD3upLv_mr3DXJinqHdxPivkhdHWrBkpZ3xNjcNtHkzERGbCPw@...278...>
+Content-Type: multipart/alternative; boundary="00000000000060c81605ed6f8a1f"
+Subject: [Openvpn-devel] Do most commercial firewall appliances and VPN
+ routers have OpenVPN-powered SSL VPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,75 +13,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: ceo@...2703...
 
-Acked-by: Gert Doering <gert@...1296...>
+--00000000000060c81605ed6f8a1f
+Content-Type: text/plain; charset="UTF-8"
 
-Stared-at-code, discussed on IRC, and dropped "Changes.rst" entry, as
-user-visible behaviour is no longer changed (no default-MTU change).
+Subject: Do most commercial firewall appliances and VPN routers have
+OpenVPN-powered SSL VPN?
 
-Tested on the server testbed, having one instance do "tun-mtu 1400 1500"
-now, and depending on client version, have it push MTU or not.
+Good day from Singapore,
 
-The OCC lying feature works - tried "max-mtu 1400 1490" and got
-  WARNING: 'tun-mtu' is used inconsistently, local='tun-mtu 1490', remote='tun-mtu 1500'
+On 10 Nov 2022, I saw the logs from Sophos XG210 Firewall SSL VPN client
+for Windows. Below are a few lines from the logs.
 
-.. we need to do something about OCC and link-mtu, though...
-  WARNING: 'link-mtu' is used inconsistently, local='link-mtu 1442', remote='link-mtu 1545'
-(outside of this patch, but annoying)
+2022-11-10 14:10:03 WARNING: Compression for receiving enabled. Compression
+has been used in the past to break encryption. Sent packets are not
+compressed unless "allow-compression yes" is also set.
+2022-11-10 14:10:03 DEPRECATED OPTION: --cipher set to 'AES-128-CBC' but
+missing in --data-ciphers (AES-256-GCM:AES-128-GCM). Future OpenVPN version
+will ignore --cipher for cipher negotiations. Add 'AES-128-CBC' to
+--data-ciphers or change --cipher 'AES-128-CBC' to --data-ciphers-fallback
+'AES-128-CBC' to silence this warning.
+2022-11-10 14:10:03 OpenVPN 2.5.6 Windows-MSVC [SSL (OpenSSL)] [LZO] [LZ4]
+[PKCS11] [AEAD] built on Apr 22 2022
+2022-11-10 14:10:03 Windows version 10.0 (Windows 10 or greater) 64bit
+2022-11-10 14:10:03 library versions: OpenSSL 1.1.1n  15 Mar 2022, LZO 2.10
 
+Without question, this goes to show that the SSL VPN Server in Sophos XG210
+firewall appliance is powered by OpenVPN.
 
-Also tested with "--tun-mtu 2000 1500", to trigger the "client cannot
-handle this" message... works.  Well, sort of - the server still sends
-a too-big MTU...
+Do most commercial firewall appliances and VPN routers have OpenVPN-powered
+SSL VPN? Is there an official list?
 
-194.97.140.21:50362 peer info: IV_MTU=1800
-cron2-freebsd-tc-amd64/194.97.140.21:50362 Warning: reported maximum MTU from client (1800) is lower than MTU used on the server (2000). Add tun-max-mtu 2000 to client configuration.
-cron2-freebsd-tc-amd64/194.97.140.21:50362 SENT CONTROL [cron2-freebsd-tc-amd64]: 'PUSH_REPLY,... cc-exit tls-ekm,tun-mtu 2000' (status=1)
+Thank you.
 
-.. but the client ignores this...
+Regards,
 
-OPTIONS IMPORT: tun-mtu set to 2000
-Server-pushed tun-mtu is too large, please add tun-mtu-max 2000 in the client configuration
+Mr. Turritopsis Dohrnii Teo En Ming
+Targeted Individual in Singapore
+Blogs:
+https://tdtemcerts.blogspot.com
+https://tdtemcerts.wordpress.com
 
-.. and configures 1800 (configured --max-tun-mtu on the client).
+--00000000000060c81605ed6f8a1f
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-tcpdump confirms that pings *inside* the tunnel go up to 1800 without
-fragmentation...
+<div dir=3D"ltr">Subject: Do most commercial firewall appliances and VPN ro=
+uters have OpenVPN-powered SSL VPN?<br><br>Good day from Singapore,<br><br>=
+On 10 Nov 2022, I saw the logs from Sophos XG210 Firewall SSL VPN client fo=
+r Windows. Below are a few lines from the logs.<br><br>2022-11-10 14:10:03 =
+WARNING: Compression for receiving enabled. Compression has been used in th=
+e past to break encryption. Sent packets are not compressed unless &quot;al=
+low-compression yes&quot; is also set.<br>2022-11-10 14:10:03 DEPRECATED OP=
+TION: --cipher set to &#39;AES-128-CBC&#39; but missing in --data-ciphers (=
+AES-256-GCM:AES-128-GCM). Future OpenVPN version will ignore --cipher for c=
+ipher negotiations. Add &#39;AES-128-CBC&#39; to --data-ciphers or change -=
+-cipher &#39;AES-128-CBC&#39; to --data-ciphers-fallback &#39;AES-128-CBC&#=
+39; to silence this warning.<br>2022-11-10 14:10:03 OpenVPN 2.5.6 Windows-M=
+SVC [SSL (OpenSSL)] [LZO] [LZ4] [PKCS11] [AEAD] built on Apr 22 2022<br>202=
+2-11-10 14:10:03 Windows version 10.0 (Windows 10 or greater) 64bit<br>2022=
+-11-10 14:10:03 library versions: OpenSSL 1.1.1n =C2=A015 Mar 2022, LZO 2.1=
+0<br><br>Without question, this goes to show that the SSL VPN Server in Sop=
+hos XG210 firewall appliance is powered by OpenVPN.<br><br>Do most commerci=
+al firewall appliances and VPN routers have OpenVPN-powered SSL VPN? Is the=
+re an official list?<br><br>Thank you.<br><br>Regards,<br><br>Mr. Turritops=
+is Dohrnii Teo En Ming<br>Targeted Individual in Singapore<br>Blogs:<br><a =
+href=3D"https://tdtemcerts.blogspot.com">https://tdtemcerts.blogspot.com</a=
+><br><a href=3D"https://tdtemcerts.wordpress.com">https://tdtemcerts.wordpr=
+ess.com</a><br></div>
 
-13:29:57.041939 IP 10.204.2.6 > 10.204.0.1: ICMP echo request, id 49729, seq 31, length 1780
-13:29:57.042693 IP 10.204.0.1 > 10.204.2.6: ICMP echo reply, id 49729, seq 31, length 1780
-
-.. but if I go larger ("ping -s 2000") the MTU mismatch "server 2000,
-client 1800" strikes, and I get
-
-2022-11-14 13:30:13 tun packet too large on write (tried=1996,max=1968)
-
-(--tun-mtu-max 2000 on the client will fix this).  This is expected -
-there is some headroom, but not "200 bytes".  So when going large-mtu,
-ensure your client configs are matching.
-
-
-Your patch has been applied to the master branch.
-
-commit 761575cb7b49e94f361c6aaf4bb43d7c7baa5b38
-Author: Arne Schwabe
-Date:   Wed Nov 9 16:48:10 2022 +0100
-
-     Push server mtu to client when supported and support occ mtu
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221109154810.1268403-2-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25499.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
---
-kind regards,
-
-Gert Doering
-
+--00000000000060c81605ed6f8a1f--
 
