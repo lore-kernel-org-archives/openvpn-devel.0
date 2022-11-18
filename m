@@ -1,14 +1,10 @@
-Message-ID: <54212cc9-297e-737c-1ae0-0aa5af9d3bfd@...2181...>
-Date: Wed, 16 Nov 2022 13:35:40 +0100
+Date: Fri, 18 Nov 2022 11:02:50 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <Y3dYShpQfMpTZcVj@...2678...>
+References: <Y2LjCP6+bVqYOkGQ@...2685...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20221115122940.1947284-1-arne@...1227...>
- <7e99c14a-0d3d-b539-f173-a00d79e52811@...2181...>
- <c74c85f1-dda0-c1e2-3a09-700241b9bd0b@...1227...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <c74c85f1-dda0-c1e2-3a09-700241b9bd0b@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix logic error in checking early
- negotiation support check
+In-Reply-To: <Y2LjCP6+bVqYOkGQ@...2685...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.5.8 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,22 +13,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
 
-Hi,
+On Wed, Nov 02, 2022 at 10:37:12PM +0100, Frank Lichtenheld wrote:
+> Source code and Windows installers can be downloaded from our download page:
+> 
+> <https://openvpn.net/community-downloads/>
 
-On 16/11/2022 01:54, Arne Schwabe wrote:
-> Without the == it is enough if any of the bits EARLY_NEG_START is set 
-> (0xf00000), we want them all to be set. If EARLY_NEG_START were a 
-> flag/single bit, you would be right.
+A new version of the Windows MSI installer has been released. It fixes the issue
+that the original installer contained a openvpn.exe that showed version number
+2.5.7 instead of 2.5.8.
 
-Ouch, I indeed assumed it was 1 bit only..
+As part of the rebuild OpenSSL has been updated to the bugfix release 1.1.1s.
 
-Cheers,
-
-
+Regards,
 -- 
-Antonio Quartulli
+  Frank Lichtenheld
 
