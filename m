@@ -1,11 +1,14 @@
-MIME-Version: 1.0
+Date: Wed, 23 Nov 2022 20:19:23 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <Y35yO4WsF6VvJw2t@...1296...>
 References: <20221123154912.28394-1-maximilian.fillinger@...2507...>
  <efd32889-60e9-5892-9b38-bf54bf398a87@...1227...>
-In-Reply-To: <efd32889-60e9-5892-9b38-bf54bf398a87@...1227...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 23 Nov 2022 13:37:47 -0500
-Message-ID: <CAKuzo_hB1As0L2tMGewNbi5_WFoeoFJViSYj4yAcQs66cp8hHA@...278...>
-Content-Type: multipart/alternative; boundary="0000000000005e7ebd05ee27983d"
+ <CAKuzo_hB1As0L2tMGewNbi5_WFoeoFJViSYj4yAcQs66cp8hHA@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="jj5RxJaN0JbmiazK"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_hB1As0L2tMGewNbi5_WFoeoFJViSYj4yAcQs66cp8hHA@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] Check if pkcs11_cert is NULL before
  freeing it
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,101 +19,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Max Fillinger <maximilian.fillinger@...2507...>, openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
---0000000000005e7ebd05ee27983d
-Content-Type: text/plain; charset="UTF-8"
+--jj5RxJaN0JbmiazK
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Wed, Nov 23, 2022 at 12:18 PM Arne Schwabe <arne@...1227...> wrote:
+On Wed, Nov 23, 2022 at 01:37:47PM -0500, Selva Nair wrote:
+> pkcs11h_certiciate_freeCertificate() does seem to handle NULL argument.
+> With --show-tls, are we calling this before intializing the pkcs11 librar=
+y?
+> That could trigger an ASSERT.
 
-> Am 23.11.22 um 16:49 schrieb Max Fillinger:
-> > When running openvpn --show-tls with mbedtls, it showed a null pointer
-> > error at the end because of this.
-> >
-> > Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
-> > ---
-> >   src/openvpn/ssl_mbedtls.c | 5 ++++-
-> >   1 file changed, 4 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-> > index ea06cf70..aa55a1a0 100644
-> > --- a/src/openvpn/ssl_mbedtls.c
-> > +++ b/src/openvpn/ssl_mbedtls.c
-> > @@ -165,7 +165,10 @@ tls_ctx_free(struct tls_root_ctx *ctx)
-> >           free(ctx->crl);
-> >
-> >   #if defined(ENABLE_PKCS11)
-> > -        pkcs11h_certificate_freeCertificate(ctx->pkcs11_cert);
-> > +        if (ctx->pkcs11_cert)
-> > +        {
-> > +            pkcs11h_certificate_freeCertificate(ctx->pkcs11_cert);
-> > +        }
-> >   #endif
-> >
-> >           free(ctx->allowed_ciphers);
->
-> Sigh, a function that violates the C paradigm that calling somethingfree
-> on a null pointer is fine. Maybe we should add as a comment that this
-> function is special in this way.
->
+If I build on Linux with mbedtls && --enable-pkcs11 (which I normally
+don't do), and run --show-tls, this is what happens...
 
-pkcs11h_certiciate_freeCertificate() does seem to handle NULL argument.
-With --show-tls, are we calling this before intializing the pkcs11 library?
-That could trigger an ASSERT.
+TLS-PSK-WITH-CAMELLIA-128-GCM-SHA256
+TLS-PSK-WITH-CAMELLIA-128-CBC-SHA256
+TLS-PSK-WITH-AES-128-CCM-8
+openvpn: pkcs11h-certificate.c:1213: pkcs11h_certificate_freeCertificate: A=
+ssertion `_g_pkcs11h_data!=3DNULL' failed.
+Aborted (core dumped)
 
-Selva
+... so, the crash seems to agree with your analysis :-)
 
---0000000000005e7ebd05ee27983d
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+gert
 
-<div dir=3D"ltr"><div>Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"l=
-tr" class=3D"gmail_attr">On Wed, Nov 23, 2022 at 12:18 PM Arne Schwabe &lt;=
-<a href=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1227...</a>&gt=
-; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px=
- 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Am 23.1=
-1.22 um 16:49 schrieb Max Fillinger:<br>
-&gt; When running openvpn --show-tls with mbedtls, it showed a null pointer=
-<br>
-&gt; error at the end because of this.<br>
-&gt; <br>
-&gt; Signed-off-by: Max Fillinger &lt;<a href=3D"mailto:maximilian.fillinge=
-r@...2507..." target=3D"_blank">maximilian.fillinger@...2507...</a>&gt;<br>
-&gt; ---<br>
-&gt;=C2=A0 =C2=A0src/openvpn/ssl_mbedtls.c | 5 ++++-<br>
-&gt;=C2=A0 =C2=A01 file changed, 4 insertions(+), 1 deletion(-)<br>
-&gt; <br>
-&gt; diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c<br>
-&gt; index ea06cf70..aa55a1a0 100644<br>
-&gt; --- a/src/openvpn/ssl_mbedtls.c<br>
-&gt; +++ b/src/openvpn/ssl_mbedtls.c<br>
-&gt; @@ -165,7 +165,10 @@ tls_ctx_free(struct tls_root_ctx *ctx)<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0free(ctx-&gt;crl);<br>
-&gt;=C2=A0 =C2=A0<br>
-&gt;=C2=A0 =C2=A0#if defined(ENABLE_PKCS11)<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 =C2=A0 pkcs11h_certificate_freeCertificate(ctx-&=
-gt;pkcs11_cert);<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (ctx-&gt;pkcs11_cert)<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pkcs11h_certificate_freeCer=
-tificate(ctx-&gt;pkcs11_cert);<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-&gt;=C2=A0 =C2=A0#endif<br>
-&gt;=C2=A0 =C2=A0<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0free(ctx-&gt;allowed_ciphers);=
-<br>
-<br>
-Sigh, a function that violates the C paradigm that calling somethingfree <b=
-r>
-on a null pointer is fine. Maybe we should add as a comment that this <br>
-function is special in this way.<br></blockquote><div><br></div><div>pkcs11=
-h_certiciate_freeCertificate() does seem to handle NULL argument.</div><div=
->With --show-tls, are we calling this before=C2=A0intializing the pkcs11 li=
-brary? That could trigger an ASSERT.</div><div><br></div><div>Selva=C2=A0</=
-div></div></div>
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
---0000000000005e7ebd05ee27983d--
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--jj5RxJaN0JbmiazK
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJjfnI7AAoJEB2Cnv7KVigSjgML/A/qPj4Qp2Gbhocjp6OtoM22
+MTK4JG8gdNzjLDYxFnn5zqPYI9Bh3x3f/aZBZhWjzNAQyGFSqqeU1wzSFEpayK56
+Jq/wY5SVSiGTXz23PXn+EzZxRYrcDh8646VPzSYhEenP4LesZuUxKh7hzemX+XT5
+1LtUZyXqNz+R4qoRixL4WaOPwBCbfcZL9mY1U5WczxDYdLVk7JhLmWcIIKol4Htf
+7z1Zq5VkG3QJxKLZ6qI4Nyko3egBqUTP+lEFpndLuCFxObwb0qTbrldkV2dRCR8u
+EkmRIkWt+AMTGBE2bM77MIY8PqtEyJiqPBaX34sOYwJym6p/anRqqQfCR5gg7FzY
+dvfl5vO6Dncwdy+hSO1tDWbjyuc1SeLbYuHivpri019uvdPDBwfEEZ78FHj2xeNo
+O5G2vGrcLj4BH4E1LIfIdZkoaBg+V+ll9ImP7+ekR2iCiWabJRFrtYw89QqczIy9
+6t/hAPZQRfc1/7e+KWbAcwXMzqeOj7/Pcn803C/K3A==
+=WqZ2
+-----END PGP SIGNATURE-----
+
+--jj5RxJaN0JbmiazK--
 
