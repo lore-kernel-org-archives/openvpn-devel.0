@@ -1,11 +1,8 @@
-From: Max Fillinger <maximilian.fillinger@...2507...>
-Date: Sat, 26 Nov 2022 17:26:48 +0100
-Message-ID: <20221126162648.150678-2-maximilian.fillinger@...2507...>
-In-Reply-To: <20221126162648.150678-1-maximilian.fillinger@...2507...>
-References: <20221126162648.150678-1-maximilian.fillinger@...2507...>
+From: Steffan Karger <steffan@...1856...>
+Date: Sat, 26 Nov 2022 16:52:17 +0100
+Message-Id: <20221126155216.25148-1-steffan@...1856...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/2] Fix message for too long tls-crypt-v2
- metadata
+Subject: [Openvpn-devel] [RFC PATCH] Add connection test suite
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,78 +15,389 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The current code only checks if the base64-encoded metadata is at most
-980 characters. However, that can encode up to 735 bytes of data, while
-only up to 733 bytes are allowed. When passing 734 or 735 bytes, openvpn
-prints a misleading error message saying that the base64 cannot be
-decoded.
+Add a local connection test suite, that is able to set up connections
+and verify in the process output that the process believes the
+connection was successful.
 
-This patch checks the decoded length to show an accurate error message.
+This is not a replacement for the t_client test suite, but rather a
+fast, simple, local suite to validate .e.g control channel setup. It can
+replace t_cltsrv.sh (as a much faster alternative), but does require
+python3 and pytest to run.
 
-Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/base64.h    |  4 ++++
- src/openvpn/tls_crypt.c | 18 +++++++++++-------
- 2 files changed, 15 insertions(+), 7 deletions(-)
+This is an RFC to get comments on whether you believe this approach is a
+useful addition to our current test suite. We can add many more useful
+tests once we agree on the approach.
 
-diff --git a/src/openvpn/base64.h b/src/openvpn/base64.h
-index f49860fc..7b4224a5 100644
---- a/src/openvpn/base64.h
-+++ b/src/openvpn/base64.h
-@@ -38,6 +38,10 @@
- #define OPENVPN_BASE64_LENGTH(binary_length) \
-     ((((8 * binary_length) / 6) + 3) & ~3)
+ tests/Makefile.am                       |   6 +-
+ tests/connection_tests/test_examples.py | 303 ++++++++++++++++++++++++
+ tests/t_connection.sh                   |  24 ++
+ 3 files changed, 331 insertions(+), 2 deletions(-)
+ create mode 100644 tests/connection_tests/test_examples.py
+ create mode 100755 tests/t_connection.sh
+
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index 89180f60..96b8565b 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -14,12 +14,14 @@ MAINTAINERCLEANFILES = \
  
-+/** Compute the maximal number of bytes encoded in a base64 string. */
-+#define OPENVPN_BASE64_DECODED_LENGTH(base64_length) \
-+    ((base64_length / 4) * 3)
+ SUBDIRS = unit_tests
+ 
+-test_scripts = t_client.sh t_lpback.sh t_cltsrv.sh
++test_scripts = t_client.sh t_lpback.sh t_cltsrv.sh t_connection.sh
+ if HAVE_SITNL
+ test_scripts += t_net.sh
+ endif
+ 
+-TESTS_ENVIRONMENT = top_srcdir="$(top_srcdir)"
++TESTS_ENVIRONMENT = \
++	top_builddir="$(top_builddir)" \
++	top_srcdir="$(top_srcdir)"
+ TESTS = $(test_scripts)
+ 
+ dist_noinst_SCRIPTS = \
+diff --git a/tests/connection_tests/test_examples.py b/tests/connection_tests/test_examples.py
+new file mode 100644
+index 00000000..030fa21b
+--- /dev/null
++++ b/tests/connection_tests/test_examples.py
+@@ -0,0 +1,303 @@
++import os
++import pytest
++import re
++import subprocess
++import tempfile
++import threading
++import time
 +
- int openvpn_base64_encode(const void *data, int size, char **str);
- 
- int openvpn_base64_decode(const char *str, void *data, int size);
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 2fc79111..5d247b84 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -627,15 +627,11 @@ tls_crypt_v2_write_client_key_file(const char *filename,
-     }
-     ASSERT(buf_write(&dst, client_key.keys, sizeof(client_key.keys)));
- 
--    struct buffer metadata = alloc_buf_gc(TLS_CRYPT_V2_MAX_METADATA_LEN, &gc);
-+    struct buffer metadata;
-     if (b64_metadata)
-     {
--        if (TLS_CRYPT_V2_MAX_B64_METADATA_LEN < strlen(b64_metadata))
--        {
--            msg(M_FATAL,
--                "ERROR: metadata too long (%d bytes, max %u bytes)",
--                (int)strlen(b64_metadata), TLS_CRYPT_V2_MAX_B64_METADATA_LEN);
--        }
-+        size_t b64_length = strlen(b64_metadata);
-+        metadata = alloc_buf_gc(OPENVPN_BASE64_DECODED_LENGTH(b64_length) + 1, &gc);
-         ASSERT(buf_write(&metadata, &TLS_CRYPT_METADATA_TYPE_USER, 1));
-         int decoded_len = openvpn_base64_decode(b64_metadata, BEND(&metadata),
-                                                 BCAP(&metadata));
-@@ -644,10 +640,18 @@ tls_crypt_v2_write_client_key_file(const char *filename,
-             msg(M_FATAL, "ERROR: failed to base64 decode provided metadata");
-             goto cleanup;
-         }
-+        if (decoded_len > TLS_CRYPT_V2_MAX_METADATA_LEN)
-+        {
-+            msg(M_FATAL,
-+                "ERROR: metadata too long (%d bytes, max %u bytes)",
-+                decoded_len, TLS_CRYPT_V2_MAX_METADATA_LEN - 1);
-+            goto cleanup;
-+        }
-         ASSERT(buf_inc_len(&metadata, decoded_len));
-     }
-     else
-     {
-+        metadata = alloc_buf_gc(1 + sizeof(int64_t), &gc);
-         int64_t timestamp = htonll((uint64_t)now);
-         ASSERT(buf_write(&metadata, &TLS_CRYPT_METADATA_TYPE_TIMESTAMP, 1));
-         ASSERT(buf_write(&metadata, &timestamp, sizeof(timestamp)));
++from pathlib import Path
++
++OPENVPN = Path(os.environ["OPENVPN_BINARY"])
++CD_PATH = Path(os.environ["WORK_DIR"])
++
++
++class BasicOption:
++    def __init__(self, name, *args):
++        self.name = name
++        self.value = " ".join(args)
++
++    def toconfigfileitem(self):
++        return f"{self.name} {self.value}\n"
++
++
++class InlineOption(BasicOption):
++    def __init__(self, name, *args, infile=None):
++        self.name = name
++        if infile is not None:
++            path = Path(infile)
++            if not path.is_absolute():
++                path = CD_PATH / infile
++            self.value = open(path).read()
++        else:
++            self.value = " ".join(args)
++
++    def toconfigfileitem(self):
++        return f"<{self.name}>\n{self.value.strip()}\n</{self.name}>".strip()
++
++
++class OpenVPNConfig:
++    DEFAULT_CONFIG_BASE = [
++        BasicOption("dev", "null"),
++        BasicOption("local", "localhost"),
++        BasicOption("remote", "localhost"),
++        BasicOption("verb", "3"),
++        BasicOption("reneg-sec", "10"),
++        BasicOption("ping", "1"),
++        BasicOption("cd", str(CD_PATH)),
++        BasicOption("ca", "sample-keys/ca.crt"),
++    ]
++    DEFAULT_SERVER_PORT = "16010"
++    DEFAULT_CLIENT_PORT = "16011"
++
++    def __init__(self, name="OpenVPN", options=DEFAULT_CONFIG_BASE, extra_options=[]):
++        self.options = options + extra_options
++        self.name = name
++
++    def toconfigfile(self):
++        c = tempfile.NamedTemporaryFile(mode="w+")
++        for option in self.options:
++            c.write(option.toconfigfileitem() + "\n")
++            c.flush()
++        return c
++
++
++class ServerConfig(OpenVPNConfig):
++    DEFAULT_SERVER_OPTIONS = [
++        BasicOption("lport", OpenVPNConfig.DEFAULT_SERVER_PORT),
++        BasicOption("rport", OpenVPNConfig.DEFAULT_CLIENT_PORT),
++        BasicOption("tls-server"),
++        BasicOption("dh", "none"),
++        BasicOption("key", "sample-keys/server.key"),
++        BasicOption("cert", "sample-keys/server.crt"),
++    ]
++
++    def __init__(self, name="Server", extra_options=[]):
++        super().__init__(name=name, extra_options=self.DEFAULT_SERVER_OPTIONS)
++
++        self.options += extra_options
++
++
++class ClientConfig(OpenVPNConfig):
++    DEFAULT_SERVER_OPTIONS = [
++        BasicOption("lport", OpenVPNConfig.DEFAULT_CLIENT_PORT),
++        BasicOption("rport", OpenVPNConfig.DEFAULT_SERVER_PORT),
++        BasicOption("tls-client"),
++        BasicOption("remote-cert-tls", "server"),
++        BasicOption("key", "sample-keys/client.key"),
++        BasicOption("cert", "sample-keys/client.crt"),
++    ]
++
++    def __init__(self, name="Client", extra_options=[]):
++        super().__init__(name=name, extra_options=self.DEFAULT_SERVER_OPTIONS)
++
++        self.options += extra_options
++
++
++class RegexNotFound(Exception):
++    def __init__(self, pattern, string):
++        super().__init__(f'Regex "{pattern}" does not match "{string}"')
++
++
++class OpenVPNProcess:
++    def __init__(self, config, name=None):
++        self._configfile = config.toconfigfile()
++        self.name = name if name is not None else config.name
++        self.full_output = ""
++
++    def __enter__(self):
++        self._p = subprocess.Popen(
++            [OPENVPN, self._configfile.name], stdout=subprocess.PIPE, text=True
++        )
++
++        def append_stdout_to_string():
++            for line in self._p.stdout:
++                self.full_output += line
++
++        threading.Thread(target=append_stdout_to_string).start()
++
++        return self
++
++    def __exit__(self, type, value, traceback):
++        if self._p:
++            self._p.terminate()
++            self._p.wait(timeout=1)
++
++            print(f"{self.name} log:")
++            print(self.full_output)
++
++    @property
++    def returncode(self):
++        return self._p.returncode
++
++    def check_for_regex(self, pattern, flags=0):
++        if re.search(pattern, self.full_output, flags=flags) is None:
++            raise RegexNotFound(pattern, self.full_output)
++
++    def wait_for_regex(self, pattern, timeout=10, re_flags=0):
++        compiled_regex = re.compile(pattern, re_flags)
++        end_time = time.time() + timeout
++        while compiled_regex.search(self.full_output) is None:
++            if time.time() > end_time:
++                raise RegexNotFound(pattern, self.full_output)
++            time.sleep(0.1)
++
++
++def test_loopback_connection_udp():
++    """Basic UDP connection setup test"""
++    server = OpenVPNProcess(ServerConfig())
++    client = OpenVPNProcess(ClientConfig())
++
++    with server, client:
++        server.wait_for_regex("Initialization Sequence Completed")
++        client.wait_for_regex("Initialization Sequence Completed")
++
++    assert server.returncode == 0
++    assert client.returncode == 0
++
++
++def test_loopback_connection_tcp():
++    """Basic TCP connection setup test"""
++    server = OpenVPNProcess(
++        ServerConfig(extra_options=[BasicOption("proto", "tcp-server")])
++    )
++    client = OpenVPNProcess(
++        ClientConfig(extra_options=[BasicOption("proto", "tcp-client")])
++    )
++
++    with server, client:
++        server.wait_for_regex("Initialization Sequence Completed")
++        client.wait_for_regex("Initialization Sequence Completed")
++
++    assert server.returncode == 0
++    assert client.returncode == 0
++
++
++def test_loopback_connection_inline():
++    """Basic connection setup test with inline key/cert files"""
++    server = OpenVPNProcess(
++        ServerConfig(
++            extra_options=[
++                InlineOption("ca", infile="sample-keys/ca.crt"),
++                InlineOption("key", infile="sample-keys/server.key"),
++                InlineOption("cert", infile="sample-keys/server.crt"),
++            ]
++        )
++    )
++    client = OpenVPNProcess(
++        ClientConfig(
++            extra_options=[
++                InlineOption("ca", infile="sample-keys/ca.crt"),
++                InlineOption("key", infile="sample-keys/client.key"),
++                InlineOption("cert", infile="sample-keys/client.crt"),
++            ]
++        )
++    )
++
++    with server, client:
++        server.wait_for_regex("Initialization Sequence Completed")
++        client.wait_for_regex("Initialization Sequence Completed")
++
++    assert server.returncode == 0
++    assert client.returncode == 0
++
++
++def test_loopback_connection_tls_auth():
++    """Basic connection setup test with tls-auth enabled"""
++    server = OpenVPNProcess(
++        ServerConfig(extra_options=[BasicOption("tls-auth", "sample-keys/ta.key", "0")])
++    )
++    client = OpenVPNProcess(
++        ClientConfig(extra_options=[BasicOption("tls-auth", "sample-keys/ta.key", "1")])
++    )
++
++    with server, client:
++        server.wait_for_regex("Initialization Sequence Completed")
++        client.wait_for_regex("Initialization Sequence Completed")
++
++    server.check_for_regex(
++        "Outgoing Control Channel Authentication: Using 160 bit message hash 'SHA1' for HMAC authentication"
++    )
++    server.check_for_regex(
++        "Incoming Control Channel Authentication: Using 160 bit message hash 'SHA1' for HMAC authentication"
++    )
++    client.check_for_regex(
++        "Outgoing Control Channel Authentication: Using 160 bit message hash 'SHA1' for HMAC authentication"
++    )
++    client.check_for_regex(
++        "Incoming Control Channel Authentication: Using 160 bit message hash 'SHA1' for HMAC authentication"
++    )
++
++    assert server.returncode == 0
++    assert client.returncode == 0
++
++
++def test_loopback_connection_tls_crypt():
++    """Basic connection setup test with tls-crypt enabled"""
++    server = OpenVPNProcess(
++        ServerConfig(extra_options=[BasicOption("tls-crypt", "sample-keys/ta.key")])
++    )
++    client = OpenVPNProcess(
++        ClientConfig(extra_options=[BasicOption("tls-crypt", "sample-keys/ta.key")])
++    )
++
++    with server, client:
++        server.wait_for_regex("Initialization Sequence Completed")
++        client.wait_for_regex("Initialization Sequence Completed")
++
++    server.check_for_regex(
++        "Outgoing Control Channel Encryption: Cipher 'AES-256-CTR' initialized with 256 bit key"
++    )
++    server.check_for_regex(
++        "Incoming Control Channel Encryption: Using 256 bit message hash 'SHA256' for HMAC authentication"
++    )
++    client.check_for_regex(
++        "Outgoing Control Channel Encryption: Cipher 'AES-256-CTR' initialized with 256 bit key"
++    )
++    client.check_for_regex(
++        "Incoming Control Channel Encryption: Using 256 bit message hash 'SHA256' for HMAC authentication"
++    )
++
++    assert server.returncode == 0
++    assert client.returncode == 0
++
++
++def test_loopback_reneg():
++    """Test that OpenVPN successfully renegotiates"""
++    server = OpenVPNProcess(ServerConfig(extra_options=[BasicOption("reneg-sec", "5")]))
++    client = OpenVPNProcess(ClientConfig())
++
++    with server, client:
++        server.wait_for_regex("Initialization Sequence Completed")
++        client.wait_for_regex("Initialization Sequence Completed")
++
++        server.wait_for_regex(
++            "TLS: soft reset.*"
++            "Outgoing Data Channel: Cipher .* initialized.*"
++            "Incoming Data Channel: Cipher .* initialized",
++            re_flags=re.DOTALL,
++        )
++        # The server initiates the renegotiation, client don't log a clear
++        # entry that indicates renegotiation was started, so just check that
++        # the data channel was initialized at least twice.
++        client.wait_for_regex(
++            "Outgoing Data Channel: Cipher .* initialized.*"
++            "Outgoing Data Channel: Cipher .* initialized",
++            re_flags=re.DOTALL,
++        )
++
++    assert server.returncode == 0
++    assert client.returncode == 0
++
++
++@pytest.mark.xfail
++def test_connection_xfail():
++    """Example of a test that is marked as expected to fail
++
++    TODO For discussion purposes only, remove before final version
++    """
++    server = OpenVPNProcess(ServerConfig())
++    with server:
++        server.wait_for_regex("No can do sir", timeout=1)
++
++    assert server.returncode == 0
+diff --git a/tests/t_connection.sh b/tests/t_connection.sh
+new file mode 100755
+index 00000000..846dd4e3
+--- /dev/null
++++ b/tests/t_connection.sh
+@@ -0,0 +1,24 @@
++#!/bin/sh
++set -eu
++
++# by changing this to 1 we can force automated builds to fail
++# that are expected to have all the prerequisites
++TCLIENT_SKIP_RC="${TCLIENT_SKIP_RC:-77}"
++export OPENVPN_BINARY="$(readlink -f ${top_builddir}/src/openvpn/openvpn)"
++export WORK_DIR="$(readlink -f ${top_srcdir}/sample/)"
++
++if ! which python3 > /dev/null; then
++    echo "$0: Python3 not found, skipping connection tests."
++    exit "${TCLIENT_SKIP_RC}"
++fi
++
++if ! python3 -m pytest --version 2> /dev/null; then
++    echo "$0: Pytest not found, skipping connection tests."
++    exit "${TCLIENT_SKIP_RC}"
++fi
++
++# TODO - possible improvements
++# - Create and run from venv?
++# - Integrate as separate target through Makefile.am ?
++# - Use configure to create test config file ?
++(cd "${top_srcdir}/tests/connection_tests" && python3 -m pytest -v)
 -- 
-2.30.2
+2.25.1
 
 
