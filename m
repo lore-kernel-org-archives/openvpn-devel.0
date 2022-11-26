@@ -1,10 +1,8 @@
-Date: Sat, 26 Nov 2022 11:04:29 +0100 (CET)
-Message-Id: <202211261004.2AQA4TXx015159@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221126090851.8656-1-kprovost@...2661...>
-References: <20221126090851.8656-1-kprovost@...2661...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco: pass control packets
- through the socket on FreeBSD
+Date: Sat, 26 Nov 2022 15:10:41 +0100
+Message-Id: <20221126141041.5098-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Update PORTS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,41 +13,89 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Kristof Provost <kp@...1376...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Instead of fully removing PORTS, keep "this is what you want to do for
+porting OpenVPN to a new platform" section, and update the PLATFORMS
+part to better reflect current status.
 
-Straightforward enough :-) - we discussed this at the hackathon today,
-and FreeBSD DCO does not "consume" the socket, it just hooks into it and
-takes out "interesting" packet - so normal userland operation is still
-possible.  Support for "floating client control message" is still missing,
-but that's shared with Linux DCO (and we'll see an API show up soonish).
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ PORTS | 43 +++++++++++++++++++++++++------------------
+ 1 file changed, 25 insertions(+), 18 deletions(-)
 
-Tested (v1) on FreeBSD 14 "-CURRENT a few weeks old", and unsurprisingly,
-everything still works fine.  v2 only differs in assert(false) vs. ASSERT(0),
-so not tested again.
-
-TODO on me: actually come up with an automated test case for float clients.
-
-Your patch has been applied to the master branch.
-
-commit 4cf58f4920b430481b772e5f9e9877f9686d3995
-Author: Kristof Provost
-Date:   Sat Nov 26 10:08:51 2022 +0100
-
-     dco: pass control packets through the socket on FreeBSD
-
-     Signed-off-by: Kristof Provost <kprovost@...2661...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221126090851.8656-1-kprovost@...2661...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25542.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/PORTS b/PORTS
+index ff76850d..b257c5d2 100644
+--- a/PORTS
++++ b/PORTS
+@@ -11,20 +11,31 @@ Copyright (C) 2002-2022 OpenVPN Inc <sales@...515...>
+ 
+ PLATFORM STATUS:
+ 
+-  * Linux 2.2+ (supported)
+-  * Solaris (supported)
+-  * OpenBSD 3.0 (supported but pthreads are broken)
+-  * Max OS X Darwin
++Tier 1 platforms - actively tested for every source commit, across
++multiple operating system versions
++
++  * Windows 7 and newer
++  * Windows Server 2012 and newer
++  * Linux 2.2+
+   * FreeBSD
++  * MacOS X
++
++Tier 2 platforms - it worked at some point, but is not actively tested
++on "latest OS, latest OS libraries" so might break if larger changes
++are done on the platform side
++
++  * OpenBSD
+   * NetBSD
+-  * Windows
+-  * 64 bit platforms -- I have heard reports that
+-    OpenVPN runs on Alpha Linux and FreeBSD.
+-  * ARM -- I have heard of at least one case
+-    where OpenVPN was successfully built and
+-    run on the ARM architecture.
++  * DragonFly BSD
++  * Solaris
++  * AIX
++
++For underlying CPU architecture, everything 32 bit or 64 bit (Intel, AMD,
++ARM, PowerPC, SPARC*) should work fine.  16 bit Architectures are unlikely
++to work.
++
+ 
+-PORTING NOTES:
++PORTING GUIDELINE TO A NEW PLATFORM:
+ 
+   * Make sure that OpenSSL will build on your
+     platform.
+@@ -42,7 +53,7 @@ PORTING NOTES:
+     function in tun.c to generate a correct "ifconfig"
+     command for your platform.  Note that OpenVPN
+     determines the ifconfig path at ./configure time.
+-  * Add an ifconfig_order() variant for your OS so
++  * Possibly add an ifconfig_order() variant for your OS so
+     openvpn knows whether to call ifconfig before
+     or after tun/tap dev open.
+   * Add an #ifdef TARGET_YOUROS block in tun.c and define
+@@ -77,12 +88,8 @@ PORTING NOTES:
+     disabled with an explicit ioctl call if cross-platform
+     compatibility is to be preserved.  You can see some
+     examples of this in tun.c.
+-  * If your system supports pthreads, try building
+-    with ./configure --enable-pthread and do a stress
+-    test in TLS mode.
+-  * Try the ultimate stress test which is --gremlin
+-    --reneg-sec 10 in TLS mode (preferably with pthreads
+-    enabled), then do a flood ping across the tunnel
++  * Try the ultimate stress test which is --gremlin --reneg-sec 10
++    in TLS mode then do a flood ping across the tunnel
+     (ping -f remote-endpoint) in both directions and let
+     it run overnight.  --gremlin will induce massive
+     corruption and packet loss, but you win if you
+-- 
+2.35.1
 
 
