@@ -1,11 +1,10 @@
-From: Kristof Provost <kprovost@...2661...>
-Date: Sat, 26 Nov 2022 10:08:51 +0100
-Message-Id: <20221126090851.8656-1-kprovost@...2661...>
-In-Reply-To: <20221125155341.19456-1-kprovost@...2661...>
-References: <20221125155341.19456-1-kprovost@...2661...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] dco: pass control packets through the
- socket on FreeBSD
+Date: Sat, 26 Nov 2022 11:04:29 +0100 (CET)
+Message-Id: <202211261004.2AQA4TXx015159@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221126090851.8656-1-kprovost@...2661...>
+References: <20221126090851.8656-1-kprovost@...2661...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco: pass control packets
+ through the socket on FreeBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,97 +15,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Kristof Provost <kp@...1376...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Kristof Provost <kp@...1376...>
+Acked-by: Gert Doering <gert@...1296...>
 
-FreeBSD allows packets to be sent through the socket even when the
-if_dco driver is active, so prefer that path.
+Straightforward enough :-) - we discussed this at the hackathon today,
+and FreeBSD DCO does not "consume" the socket, it just hooks into it and
+takes out "interesting" packet - so normal userland operation is still
+possible.  Support for "floating client control message" is still missing,
+but that's shared with Linux DCO (and we'll see an API show up soonish).
 
-Also remove the FreeBSD dco_do_write() implementation, as this function
-will never be called any more on FreeBSD. Assert this.
+Tested (v1) on FreeBSD 14 "-CURRENT a few weeks old", and unsurprisingly,
+everything still works fine.  v2 only differs in assert(false) vs. ASSERT(0),
+so not tested again.
 
-Signed-off-by: Kristof Provost <kprovost@...2661...>
----
- src/openvpn/dco_freebsd.c | 33 ++++-----------------------------
- src/openvpn/forward.c     |  7 +++++--
- 2 files changed, 9 insertions(+), 31 deletions(-)
+TODO on me: actually come up with an automated test case for float clients.
 
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index 8e5ee436..4e03f52e 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -536,35 +536,10 @@ dco_do_read(dco_context_t *dco)
- int
- dco_do_write(dco_context_t *dco, int peer_id, struct buffer *buf)
- {
--    struct ifdrv drv;
--    nvlist_t *nvl;
--    int ret;
--
--    nvl = nvlist_create(0);
--
--    nvlist_add_binary(nvl, "packet", BSTR(buf), BLEN(buf));
--    nvlist_add_number(nvl, "peerid", peer_id);
--
--    CLEAR(drv);
--    snprintf(drv.ifd_name, IFNAMSIZ, "%s", dco->ifname);
--    drv.ifd_cmd = OVPN_SEND_PKT;
--    drv.ifd_data = nvlist_pack(nvl, &drv.ifd_len);
--
--    ret = ioctl(dco->fd, SIOCSDRVSPEC, &drv);
--    if (ret)
--    {
--        msg(M_WARN | M_ERRNO, "Failed to send control packet");
--        ret = -errno;
--    }
--    else
--    {
--        ret = BLEN(buf);
--    }
--
--    free(drv.ifd_data);
--    nvlist_destroy(nvl);
--
--    return ret;
-+    /* Control packets are passed through the socket, so this should never get
-+     * called. See should_use_dco_socket(). */
-+    ASSERT(0);
-+    return -EINVAL;
- }
- 
- bool
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 622be841..1dcaabd8 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1635,20 +1635,23 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
-     }
- }
- 
--/* Linux-like DCO implementations pass the socket to the kernel and
-+/* Linux DCO implementations pass the socket to the kernel and
-  * disallow usage of it from userland, so (control) packets sent and
-  * received by OpenVPN need to go through the DCO interface.
-  *
-  * Windows DCO needs control packets to be sent via the normal
-  * standard Overlapped I/O.
-  *
-+ * FreeBSD DCO allows control packets to pass through the socket in both
-+ * directions.
-+ *
-  * Hide that complexity (...especially if more platforms show up
-  * in the future...) in a small inline function.
-  */
- static inline bool
- should_use_dco_socket(struct link_socket_actual *actual)
- {
--#if defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
-+#if defined(TARGET_LINUX)
-     return actual->dco_installed;
- #else
-     return false;
--- 
-2.38.1
+Your patch has been applied to the master branch.
+
+commit 4cf58f4920b430481b772e5f9e9877f9686d3995
+Author: Kristof Provost
+Date:   Sat Nov 26 10:08:51 2022 +0100
+
+     dco: pass control packets through the socket on FreeBSD
+
+     Signed-off-by: Kristof Provost <kprovost@...2661...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20221126090851.8656-1-kprovost@...2661...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25542.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
