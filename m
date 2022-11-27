@@ -1,9 +1,9 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Sun, 27 Nov 2022 15:25:06 +0100
-Message-Id: <20221127142506.41986-1-frank@...2641...>
+From: Arne Schwabe <arne@...1227...>
+Date: Sun, 27 Nov 2022 21:32:28 +0100
+Message-Id: <20221127203228.3543200-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] options: Always define
- options->management_flags
+Subject: [Openvpn-devel] [PATCH] Add section about common error with OpenVPN
+ 2.6 and OpenSSL 3.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,278 +16,111 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-That makes it possible to remove several preprocessor
-directives which is a good thing. The cost should be
-negligible.
+We expect a number of configuration to no longer work with OpenVPN
+2.6 and OpenSSL 3.0. This section tries to explain the most common
+errors that will come up and how to work around them.
 
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/manage.h  | 41 +++++++++++++++++++-------------------
- src/openvpn/options.c | 46 +++++++++++++------------------------------
- src/openvpn/options.h |  6 ++++--
- 3 files changed, 39 insertions(+), 54 deletions(-)
+ Changes.rst | 84 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 84 insertions(+)
 
-I tried to make options.c less ugly. I didn't get far. But it still
-might be an incremental improvement.
-
-diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-index f46274e6..16ac6847 100644
---- a/src/openvpn/manage.h
-+++ b/src/openvpn/manage.h
-@@ -24,6 +24,27 @@
- #ifndef MANAGE_H
- #define MANAGE_H
+diff --git a/Changes.rst b/Changes.rst
+index c532d47f0..c470efa6e 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -196,6 +196,90 @@ User-visible Changes
+   software that enumerates interfaces, looking for "broadcast capable?" and
+   expecting certain results.  Normal uses should not see any difference.
  
-+/* management_open flags */
-+#define MF_SERVER            (1<<0)
-+#define MF_QUERY_PASSWORDS   (1<<1)
-+#define MF_HOLD              (1<<2)
-+#define MF_SIGNAL            (1<<3)
-+#define MF_FORGET_DISCONNECT (1<<4)
-+#define MF_CONNECT_AS_CLIENT (1<<5)
-+#define MF_CLIENT_AUTH       (1<<6)
-+/* #define MF_CLIENT_PF         (1<<7) *REMOVED FEATURE* */
-+#define MF_UNIX_SOCK                (1<<8)
-+#define MF_EXTERNAL_KEY             (1<<9)
-+#define MF_EXTERNAL_KEY_NOPADDING   (1<<10)
-+#define MF_EXTERNAL_KEY_PKCS1PAD    (1<<11)
-+#define MF_UP_DOWN                  (1<<12)
-+#define MF_QUERY_REMOTE             (1<<13)
-+#define MF_QUERY_PROXY              (1<<14)
-+#define MF_EXTERNAL_CERT            (1<<15)
-+#define MF_EXTERNAL_KEY_PSSPAD      (1<<16)
-+#define MF_EXTERNAL_KEY_DIGEST      (1<<17)
++- The default configuration will no longer allow connection to OpenVPN 2.3.x
++  or earlier, use the new ``--compat-mode`` option if you need compatibility
++  with older version. See the manual page for details.
++
++Common errors with OpenSSL 3.0 and OpenVPN 2.6
++----------------------------------------------
++Both OpenVPN 2.6 and OpenSSL 3.0 tighten the security considerable, so some
++configuration will no longer work. This section will cover the most common
++error we have seen and explain their reason and temporary workarounds. You
++should fix the problems since these workaround are not secure and will
++eventually stop working in a future update.
++
++- weak SHA1 or MD5 signature on certificates
++
++  This will happen on either loading of certificates or on connection
++  to a server::
++  
++      OpenSSL: error:0A00018E:SSL routines::ca md too weak
++      Cannot load certificate file cert.crt
++      Exiting due to fatal error
++
++  OpenSSL 3.0 no longer allows weak singatures on certificates. You can
++  downgrade your security to allow  by using ``--tls-cert-profile insecure``
++  but should replace/regenerate these certificates as soon as possible.
 +
 +
- #ifdef ENABLE_MANAGEMENT
++- 1024 bit RSA certificates, 1024 bit DH parameters, other weak keys
++
++  This happens if you private keys or other cryptographic material that
++  does not meet today's cryptographic standards anymore. Messages are
++  similar to::
++
++      OpenSSL: error:0A00018F:SSL routines::ee key too small
++      OpenSSL: error:1408518A:SSL routines:ssl3_ctx_ctrl:dh key too small
++  
++  DH parameters (``--dh``) can be regenerated them with
++  ``openssl dhparam 2048``. For other cryptographic keys, these keys
++  and certificates need to regnerate. TLS Security level can be temporarily
++  lowered until the problem is addressed with ``tls-cert-profile legacy`` or
++  even ``tls-cert-profile insecure``.
++
++- Connecting to a OpenVPN 2.3.x server or allowing OpenVPN 2.3.x or earlier
++  clients
++
++  This will normally result in messages like::
++
++     OPTIONS ERROR: failed to negotiate cipher with server.  Add the server's cipher ('AES-128-CBC') to --data-ciphers (currently 'AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305') if you want to connect to this server.
++
++     or
++
++     client/127.0.0.1:49954 SENT CONTROL [client]: 'AUTH_FAILED,Data channel cipher negotiation failed (no shared cipher)' (status=1)
++
++  You can manually add the missing cipher to the ``--data-ciphers`` or use
++  the ``--compat-mode`` option. Note that these message can also indicate
++  other cipher configuration. See the data channel cipher negotiation manual
++  for more details (Available online under
++  https://github.com/OpenVPN/openvpn/blob/master/doc/man-sections/cipher-negotiation.rst)
++
++- Use of a legacy 64bit block ciphers or another deprecated cipher
++
++  OpenSSL 3.0 no longer a number of insecure and outdated ciphers. Some of
++  these cipehrs are known vulnerable (SWEET32 attack).
++
++  This will typically manifest itself in messages like::
++
++      OpenSSL: error:0308010C:digital envelope routines::unsupported
++      Cipher algorithm 'BF-CBC' not found
++      Unsupported cipher in --data-ciphers: BF-CBC
++
++  If your OpenSSL distribution comes with the legacy provider, it will allow to
++  load a legacy provider that contains the old providers. In this case you can
++  use ``--providers legacy default`` to load the legacy cipher provider.
++
++- OpenVPN version not supporting TLS 1.2 or later
++
++  The default in OpenVPN 2.6 and also in many distributions is now TLS 1.2.
++  Connecting to peer that does not support this will results in messages like::
++
++    TLS error: Unsupported protocol. This typically indicates that client and server have no common TLS version enabled. This can be caused by mismatched tls-version-min and tls-version-max options on client and server. If your OpenVPN client is between v2.3.6 and v2.3.2 try adding tls-version-min 1.0 to the client configuration to use TLS 1.0+ instead of TLS 1.0 only
++    OpenSSL: error:0A000102:SSL routines::unsupported protocol
++
++  This can be an OpenVPN 2.3.6 or earlier version. ``compat-version 2.3.0`` will
++  enable TLS 1.0 support if supported by the OpenSSL distribution. Note that
++  on some Linux distributions enabling TLS 1.1 or 1.0 is not possible.
  
- #include "misc.h"
-@@ -321,26 +342,6 @@ struct user_pass;
- 
- struct management *management_init(void);
- 
--/* management_open flags */
--#define MF_SERVER            (1<<0)
--#define MF_QUERY_PASSWORDS   (1<<1)
--#define MF_HOLD              (1<<2)
--#define MF_SIGNAL            (1<<3)
--#define MF_FORGET_DISCONNECT (1<<4)
--#define MF_CONNECT_AS_CLIENT (1<<5)
--#define MF_CLIENT_AUTH       (1<<6)
--/* #define MF_CLIENT_PF         (1<<7) *REMOVED FEATURE* */
--#define MF_UNIX_SOCK                (1<<8)
--#define MF_EXTERNAL_KEY             (1<<9)
--#define MF_EXTERNAL_KEY_NOPADDING   (1<<10)
--#define MF_EXTERNAL_KEY_PKCS1PAD    (1<<11)
--#define MF_UP_DOWN                  (1<<12)
--#define MF_QUERY_REMOTE             (1<<13)
--#define MF_QUERY_PROXY              (1<<14)
--#define MF_EXTERNAL_CERT            (1<<15)
--#define MF_EXTERNAL_KEY_PSSPAD      (1<<16)
--#define MF_EXTERNAL_KEY_DIGEST      (1<<17)
--
- bool management_open(struct management *man,
-                      const char *addr,
-                      const char *port,
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index b7b34c9c..5eca4a39 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1952,24 +1952,24 @@ show_settings(const struct options *o)
-     SHOW_STR_INLINE(ca_file);
-     SHOW_STR(ca_path);
-     SHOW_STR_INLINE(dh_file);
--#ifdef ENABLE_MANAGEMENT
-     if ((o->management_flags & MF_EXTERNAL_CERT))
-     {
-         SHOW_PARM("cert_file", "EXTERNAL_CERT", "%s");
-     }
-     else
--#endif
--    SHOW_STR_INLINE(cert_file);
-+    {
-+        SHOW_STR_INLINE(cert_file);
-+    }
-     SHOW_STR_INLINE(extra_certs_file);
- 
--#ifdef ENABLE_MANAGEMENT
-     if ((o->management_flags & MF_EXTERNAL_KEY))
-     {
-         SHOW_PARM("priv_key_file", "EXTERNAL_PRIVATE_KEY", "%s");
-     }
-     else
--#endif
--    SHOW_STR_INLINE(priv_key_file);
-+    {
-+        SHOW_STR_INLINE(priv_key_file);
-+    }
- #ifndef ENABLE_CRYPTO_MBEDTLS
-     SHOW_STR_INLINE(pkcs12_file);
- #endif
-@@ -2425,7 +2425,7 @@ options_postprocess_verify_ce(const struct options *options,
- 
- #endif /* ifdef ENABLE_MANAGEMENT */
- 
--#if defined(ENABLE_MANAGEMENT) && !defined(HAVE_XKEY_PROVIDER)
-+#if !defined(HAVE_XKEY_PROVIDER)
-     if ((tls_version_max() >= TLS_VER_1_3)
-         && (options->management_flags & MF_EXTERNAL_KEY)
-         && !(options->management_flags & (MF_EXTERNAL_KEY_NOPADDING))
-@@ -2846,7 +2846,6 @@ options_postprocess_verify_ce(const struct options *options,
-             {
-                 msg(M_USAGE, "Parameter --key cannot be used when --pkcs11-provider is also specified.");
-             }
--#ifdef ENABLE_MANAGEMENT
-             if (options->management_flags & MF_EXTERNAL_KEY)
-             {
-                 msg(M_USAGE, "Parameter --management-external-key cannot be used when --pkcs11-provider is also specified.");
-@@ -2855,7 +2854,6 @@ options_postprocess_verify_ce(const struct options *options,
-             {
-                 msg(M_USAGE, "Parameter --management-external-cert cannot be used when --pkcs11-provider is also specified.");
-             }
--#endif
-             if (options->pkcs12_file)
-             {
-                 msg(M_USAGE, "Parameter --pkcs12 cannot be used when --pkcs11-provider is also specified.");
-@@ -2869,7 +2867,6 @@ options_postprocess_verify_ce(const struct options *options,
-         }
-         else
- #endif /* ifdef ENABLE_PKCS11 */
--#ifdef ENABLE_MANAGEMENT
-         if ((options->management_flags & MF_EXTERNAL_KEY) && options->priv_key_file)
-         {
-             msg(M_USAGE, "--key and --management-external-key are mutually exclusive");
-@@ -2886,7 +2883,6 @@ options_postprocess_verify_ce(const struct options *options,
-             }
-         }
-         else
--#endif
- #ifdef ENABLE_CRYPTOAPI
-         if (options->cryptoapi_cert)
-         {
-@@ -2902,7 +2898,6 @@ options_postprocess_verify_ce(const struct options *options,
-             {
-                 msg(M_USAGE, "Parameter --pkcs12 cannot be used when --cryptoapicert is also specified.");
-             }
--#ifdef ENABLE_MANAGEMENT
-             if (options->management_flags & MF_EXTERNAL_KEY)
-             {
-                 msg(M_USAGE, "Parameter --management-external-key cannot be used when --cryptoapicert is also specified.");
-@@ -2911,7 +2906,6 @@ options_postprocess_verify_ce(const struct options *options,
-             {
-                 msg(M_USAGE, "Parameter --management-external-cert cannot be used when --cryptoapicert is also specified.");
-             }
--#endif
-         }
-         else
- #endif /* ifdef ENABLE_CRYPTOAPI */
-@@ -2932,7 +2926,6 @@ options_postprocess_verify_ce(const struct options *options,
-             {
-                 msg(M_USAGE, "Parameter --key cannot be used when --pkcs12 is also specified.");
-             }
--#ifdef ENABLE_MANAGEMENT
-             if (options->management_flags & MF_EXTERNAL_KEY)
-             {
-                 msg(M_USAGE, "Parameter --management-external-key cannot be used when --pkcs12 is also specified.");
-@@ -2941,7 +2934,6 @@ options_postprocess_verify_ce(const struct options *options,
-             {
-                 msg(M_USAGE, "Parameter --management-external-cert cannot be used when --pkcs12 is also specified.");
-             }
--#endif
- #endif /* ifdef ENABLE_CRYPTO_MBEDTLS */
-         }
-         else
-@@ -2956,12 +2948,8 @@ options_postprocess_verify_ce(const struct options *options,
-             {
- 
-                 const int sum =
--#ifdef ENABLE_MANAGEMENT
-                     ((options->cert_file != NULL) || (options->management_flags & MF_EXTERNAL_CERT))
--                    +((options->priv_key_file != NULL) || (options->management_flags & MF_EXTERNAL_KEY));
--#else
--                    (options->cert_file != NULL) + (options->priv_key_file != NULL);
--#endif
-+                    + ((options->priv_key_file != NULL) || (options->management_flags & MF_EXTERNAL_KEY));
- 
-                 if (sum == 0)
-                 {
-@@ -2983,14 +2971,14 @@ options_postprocess_verify_ce(const struct options *options,
-             }
-             else
-             {
--#ifdef ENABLE_MANAGEMENT
-                 if (!(options->management_flags & MF_EXTERNAL_CERT))
--#endif
--                notnull(options->cert_file, "certificate file (--cert) or PKCS#12 file (--pkcs12)");
--#ifdef ENABLE_MANAGEMENT
-+                {
-+                    notnull(options->cert_file, "certificate file (--cert) or PKCS#12 file (--pkcs12)");
-+                }
-                 if (!(options->management_flags & MF_EXTERNAL_KEY))
--#endif
--                notnull(options->priv_key_file, "private key file (--key) or PKCS#12 file (--pkcs12)");
-+                {
-+                    notnull(options->priv_key_file, "private key file (--key) or PKCS#12 file (--pkcs12)");
-+                }
-             }
-         }
-         if (ce->tls_auth_file && ce->tls_crypt_file)
-@@ -3999,9 +3987,7 @@ options_postprocess_filechecks(struct options *options)
-                                      options->extra_certs_file, R_OK,
-                                      "--extra-certs");
- 
--#ifdef ENABLE_MANAGMENT
-     if (!(options->management_flags & MF_EXTERNAL_KEY))
--#endif
-     {
-         errs |= check_file_access_inline(options->priv_key_file_inline,
-                                          CHKACC_FILE|CHKACC_PRIVATE,
-@@ -5627,9 +5613,7 @@ bool
- key_is_external(const struct options *options)
- {
-     bool ret = false;
--#ifdef ENABLE_MANAGEMENT
-     ret = ret || (options->management_flags & MF_EXTERNAL_KEY);
--#endif
- #ifdef ENABLE_PKCS11
-     ret = ret || (options->pkcs11_providers[0] != NULL);
- #endif
-@@ -5836,7 +5820,6 @@ add_option(struct options *options,
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         options->management_flags |= MF_CONNECT_AS_CLIENT;
-     }
--#ifdef ENABLE_MANAGEMENT
-     else if (streq(p[0], "management-external-key"))
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-@@ -5885,7 +5868,6 @@ add_option(struct options *options,
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         options->management_flags |= MF_CLIENT_AUTH;
-     }
--#endif /* ifdef ENABLE_MANAGEMENT */
-     else if (streq(p[0], "management-log-cache") && p[1] && !p[2])
-     {
-         int cache;
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 68ad0cac..6f4b1f4a 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -438,10 +438,12 @@ struct options
-     const char *management_client_user;
-     const char *management_client_group;
- 
--    /* Mask of MF_ values of manage.h */
--    unsigned int management_flags;
-     const char *management_certificate;
- #endif
-+    /* Mask of MF_ values of manage.h
-+     * Always available to simplify options.c
-+     */
-+    unsigned int management_flags;
- 
- #ifdef ENABLE_PLUGIN
-     struct plugin_option_list *plugin_list;
+ Overview of changes in 2.5
+ ==========================
 -- 
-2.34.1
+2.37.1 (Apple Git-137.1)
 
 
