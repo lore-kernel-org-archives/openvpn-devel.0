@@ -1,14 +1,9 @@
-Date: Sun, 27 Nov 2022 13:31:00 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <Y4NYhDjmQGgBHEIm@...1296...>
-References: <20221127111845.11310-1-kprovost@...2661...>
- <20221127111845.11310-2-kprovost@...2661...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Sun, 27 Nov 2022 15:25:06 +0100
+Message-Id: <20221127142506.41986-1-frank@...2641...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="j+xDx7IOlS+WjWqF"
-Content-Disposition: inline
-In-Reply-To: <20221127111845.11310-2-kprovost@...2661...>
-Subject: Re: [Openvpn-devel] [PATCH] Read DCO traffic stats from the kernel
+Subject: [Openvpn-devel] [PATCH] options: Always define
+ options->management_flags
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,79 +12,282 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Kristof Provost <kprovost@...2661...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---j+xDx7IOlS+WjWqF
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+That makes it possible to remove several preprocessor
+directives which is a good thing. The cost should be
+negligible.
 
-Hi,
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ src/openvpn/manage.h  | 41 +++++++++++++++++++-------------------
+ src/openvpn/options.c | 46 +++++++++++++------------------------------
+ src/openvpn/options.h |  6 ++++--
+ 3 files changed, 39 insertions(+), 54 deletions(-)
 
-On Sun, Nov 27, 2022 at 12:18:45PM +0100, Kristof Provost via Openvpn-devel=
- wrote:
-> From: Kristof Provost <kp@...1376...>
->=20
-> When DCO is active userspace doesn't see all of the traffic, so when we
-> access these stats we must update them.
->=20
-> Retrieve kernel statistics every time we access the
-> link_(read|write)_bytes values.
->=20
-> Introduce a dco_(read|write)_bytes so that we don't clobber the existing
-> statistics, which still count control packets, sent or received directly
-> through the socket.
+I tried to make options.c less ugly. I didn't get far. But it still
+might be an incremental improvement.
 
-To briefly summarize our discussion just now
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index f46274e6..16ac6847 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -24,6 +24,27 @@
+ #ifndef MANAGE_H
+ #define MANAGE_H
+ 
++/* management_open flags */
++#define MF_SERVER            (1<<0)
++#define MF_QUERY_PASSWORDS   (1<<1)
++#define MF_HOLD              (1<<2)
++#define MF_SIGNAL            (1<<3)
++#define MF_FORGET_DISCONNECT (1<<4)
++#define MF_CONNECT_AS_CLIENT (1<<5)
++#define MF_CLIENT_AUTH       (1<<6)
++/* #define MF_CLIENT_PF         (1<<7) *REMOVED FEATURE* */
++#define MF_UNIX_SOCK                (1<<8)
++#define MF_EXTERNAL_KEY             (1<<9)
++#define MF_EXTERNAL_KEY_NOPADDING   (1<<10)
++#define MF_EXTERNAL_KEY_PKCS1PAD    (1<<11)
++#define MF_UP_DOWN                  (1<<12)
++#define MF_QUERY_REMOTE             (1<<13)
++#define MF_QUERY_PROXY              (1<<14)
++#define MF_EXTERNAL_CERT            (1<<15)
++#define MF_EXTERNAL_KEY_PSSPAD      (1<<16)
++#define MF_EXTERNAL_KEY_DIGEST      (1<<17)
++
++
+ #ifdef ENABLE_MANAGEMENT
+ 
+ #include "misc.h"
+@@ -321,26 +342,6 @@ struct user_pass;
+ 
+ struct management *management_init(void);
+ 
+-/* management_open flags */
+-#define MF_SERVER            (1<<0)
+-#define MF_QUERY_PASSWORDS   (1<<1)
+-#define MF_HOLD              (1<<2)
+-#define MF_SIGNAL            (1<<3)
+-#define MF_FORGET_DISCONNECT (1<<4)
+-#define MF_CONNECT_AS_CLIENT (1<<5)
+-#define MF_CLIENT_AUTH       (1<<6)
+-/* #define MF_CLIENT_PF         (1<<7) *REMOVED FEATURE* */
+-#define MF_UNIX_SOCK                (1<<8)
+-#define MF_EXTERNAL_KEY             (1<<9)
+-#define MF_EXTERNAL_KEY_NOPADDING   (1<<10)
+-#define MF_EXTERNAL_KEY_PKCS1PAD    (1<<11)
+-#define MF_UP_DOWN                  (1<<12)
+-#define MF_QUERY_REMOTE             (1<<13)
+-#define MF_QUERY_PROXY              (1<<14)
+-#define MF_EXTERNAL_CERT            (1<<15)
+-#define MF_EXTERNAL_KEY_PSSPAD      (1<<16)
+-#define MF_EXTERNAL_KEY_DIGEST      (1<<17)
+-
+ bool management_open(struct management *man,
+                      const char *addr,
+                      const char *port,
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index b7b34c9c..5eca4a39 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1952,24 +1952,24 @@ show_settings(const struct options *o)
+     SHOW_STR_INLINE(ca_file);
+     SHOW_STR(ca_path);
+     SHOW_STR_INLINE(dh_file);
+-#ifdef ENABLE_MANAGEMENT
+     if ((o->management_flags & MF_EXTERNAL_CERT))
+     {
+         SHOW_PARM("cert_file", "EXTERNAL_CERT", "%s");
+     }
+     else
+-#endif
+-    SHOW_STR_INLINE(cert_file);
++    {
++        SHOW_STR_INLINE(cert_file);
++    }
+     SHOW_STR_INLINE(extra_certs_file);
+ 
+-#ifdef ENABLE_MANAGEMENT
+     if ((o->management_flags & MF_EXTERNAL_KEY))
+     {
+         SHOW_PARM("priv_key_file", "EXTERNAL_PRIVATE_KEY", "%s");
+     }
+     else
+-#endif
+-    SHOW_STR_INLINE(priv_key_file);
++    {
++        SHOW_STR_INLINE(priv_key_file);
++    }
+ #ifndef ENABLE_CRYPTO_MBEDTLS
+     SHOW_STR_INLINE(pkcs12_file);
+ #endif
+@@ -2425,7 +2425,7 @@ options_postprocess_verify_ce(const struct options *options,
+ 
+ #endif /* ifdef ENABLE_MANAGEMENT */
+ 
+-#if defined(ENABLE_MANAGEMENT) && !defined(HAVE_XKEY_PROVIDER)
++#if !defined(HAVE_XKEY_PROVIDER)
+     if ((tls_version_max() >= TLS_VER_1_3)
+         && (options->management_flags & MF_EXTERNAL_KEY)
+         && !(options->management_flags & (MF_EXTERNAL_KEY_NOPADDING))
+@@ -2846,7 +2846,6 @@ options_postprocess_verify_ce(const struct options *options,
+             {
+                 msg(M_USAGE, "Parameter --key cannot be used when --pkcs11-provider is also specified.");
+             }
+-#ifdef ENABLE_MANAGEMENT
+             if (options->management_flags & MF_EXTERNAL_KEY)
+             {
+                 msg(M_USAGE, "Parameter --management-external-key cannot be used when --pkcs11-provider is also specified.");
+@@ -2855,7 +2854,6 @@ options_postprocess_verify_ce(const struct options *options,
+             {
+                 msg(M_USAGE, "Parameter --management-external-cert cannot be used when --pkcs11-provider is also specified.");
+             }
+-#endif
+             if (options->pkcs12_file)
+             {
+                 msg(M_USAGE, "Parameter --pkcs12 cannot be used when --pkcs11-provider is also specified.");
+@@ -2869,7 +2867,6 @@ options_postprocess_verify_ce(const struct options *options,
+         }
+         else
+ #endif /* ifdef ENABLE_PKCS11 */
+-#ifdef ENABLE_MANAGEMENT
+         if ((options->management_flags & MF_EXTERNAL_KEY) && options->priv_key_file)
+         {
+             msg(M_USAGE, "--key and --management-external-key are mutually exclusive");
+@@ -2886,7 +2883,6 @@ options_postprocess_verify_ce(const struct options *options,
+             }
+         }
+         else
+-#endif
+ #ifdef ENABLE_CRYPTOAPI
+         if (options->cryptoapi_cert)
+         {
+@@ -2902,7 +2898,6 @@ options_postprocess_verify_ce(const struct options *options,
+             {
+                 msg(M_USAGE, "Parameter --pkcs12 cannot be used when --cryptoapicert is also specified.");
+             }
+-#ifdef ENABLE_MANAGEMENT
+             if (options->management_flags & MF_EXTERNAL_KEY)
+             {
+                 msg(M_USAGE, "Parameter --management-external-key cannot be used when --cryptoapicert is also specified.");
+@@ -2911,7 +2906,6 @@ options_postprocess_verify_ce(const struct options *options,
+             {
+                 msg(M_USAGE, "Parameter --management-external-cert cannot be used when --cryptoapicert is also specified.");
+             }
+-#endif
+         }
+         else
+ #endif /* ifdef ENABLE_CRYPTOAPI */
+@@ -2932,7 +2926,6 @@ options_postprocess_verify_ce(const struct options *options,
+             {
+                 msg(M_USAGE, "Parameter --key cannot be used when --pkcs12 is also specified.");
+             }
+-#ifdef ENABLE_MANAGEMENT
+             if (options->management_flags & MF_EXTERNAL_KEY)
+             {
+                 msg(M_USAGE, "Parameter --management-external-key cannot be used when --pkcs12 is also specified.");
+@@ -2941,7 +2934,6 @@ options_postprocess_verify_ce(const struct options *options,
+             {
+                 msg(M_USAGE, "Parameter --management-external-cert cannot be used when --pkcs12 is also specified.");
+             }
+-#endif
+ #endif /* ifdef ENABLE_CRYPTO_MBEDTLS */
+         }
+         else
+@@ -2956,12 +2948,8 @@ options_postprocess_verify_ce(const struct options *options,
+             {
+ 
+                 const int sum =
+-#ifdef ENABLE_MANAGEMENT
+                     ((options->cert_file != NULL) || (options->management_flags & MF_EXTERNAL_CERT))
+-                    +((options->priv_key_file != NULL) || (options->management_flags & MF_EXTERNAL_KEY));
+-#else
+-                    (options->cert_file != NULL) + (options->priv_key_file != NULL);
+-#endif
++                    + ((options->priv_key_file != NULL) || (options->management_flags & MF_EXTERNAL_KEY));
+ 
+                 if (sum == 0)
+                 {
+@@ -2983,14 +2971,14 @@ options_postprocess_verify_ce(const struct options *options,
+             }
+             else
+             {
+-#ifdef ENABLE_MANAGEMENT
+                 if (!(options->management_flags & MF_EXTERNAL_CERT))
+-#endif
+-                notnull(options->cert_file, "certificate file (--cert) or PKCS#12 file (--pkcs12)");
+-#ifdef ENABLE_MANAGEMENT
++                {
++                    notnull(options->cert_file, "certificate file (--cert) or PKCS#12 file (--pkcs12)");
++                }
+                 if (!(options->management_flags & MF_EXTERNAL_KEY))
+-#endif
+-                notnull(options->priv_key_file, "private key file (--key) or PKCS#12 file (--pkcs12)");
++                {
++                    notnull(options->priv_key_file, "private key file (--key) or PKCS#12 file (--pkcs12)");
++                }
+             }
+         }
+         if (ce->tls_auth_file && ce->tls_crypt_file)
+@@ -3999,9 +3987,7 @@ options_postprocess_filechecks(struct options *options)
+                                      options->extra_certs_file, R_OK,
+                                      "--extra-certs");
+ 
+-#ifdef ENABLE_MANAGMENT
+     if (!(options->management_flags & MF_EXTERNAL_KEY))
+-#endif
+     {
+         errs |= check_file_access_inline(options->priv_key_file_inline,
+                                          CHKACC_FILE|CHKACC_PRIVATE,
+@@ -5627,9 +5613,7 @@ bool
+ key_is_external(const struct options *options)
+ {
+     bool ret = false;
+-#ifdef ENABLE_MANAGEMENT
+     ret = ret || (options->management_flags & MF_EXTERNAL_KEY);
+-#endif
+ #ifdef ENABLE_PKCS11
+     ret = ret || (options->pkcs11_providers[0] != NULL);
+ #endif
+@@ -5836,7 +5820,6 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->management_flags |= MF_CONNECT_AS_CLIENT;
+     }
+-#ifdef ENABLE_MANAGEMENT
+     else if (streq(p[0], "management-external-key"))
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+@@ -5885,7 +5868,6 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->management_flags |= MF_CLIENT_AUTH;
+     }
+-#endif /* ifdef ENABLE_MANAGEMENT */
+     else if (streq(p[0], "management-log-cache") && p[1] && !p[2])
+     {
+         int cache;
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 68ad0cac..6f4b1f4a 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -438,10 +438,12 @@ struct options
+     const char *management_client_user;
+     const char *management_client_group;
+ 
+-    /* Mask of MF_ values of manage.h */
+-    unsigned int management_flags;
+     const char *management_certificate;
+ #endif
++    /* Mask of MF_ values of manage.h
++     * Always available to simplify options.c
++     */
++    unsigned int management_flags;
+ 
+ #ifdef ENABLE_PLUGIN
+     struct plugin_option_list *plugin_list;
+-- 
+2.34.1
 
- - the general approach "pull data when needed" seems to be good for us
- - nvlists have no general size limits (so we won't run into issues when
-   there are "MANY CLIENTS" active")
-   - but kernel side DCO today has 128 peers limit on FreeBSD "to be done"
- - this patch can not be merged "as is" as it breaks Linux and Windows
-   (because the neeed DCO handling functions are not there yet) - but
-   having empty stub functions would be trivial
- - there is a racy caveat on "peer timeout"
-     - kernel sends message "peer went away, because timeout"
-     - we go to the "run --client-disconnect etc." function handling
-     - we ask the kernel for the DCO read/write stats
-     - the client that *just ended* is no longer there, so, no stats
-     --> we want a notification for all "peer has exited" even for=20
-         "userland has told the kernel to" reasons (what Linux does today),
-         and that notification should contain the counters *for this peer*
-
- - we want lots of feedback from Antonio :-)
-
-Arne, anything I forgot?
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---j+xDx7IOlS+WjWqF
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjg1iEAAoJEB2Cnv7KVigSW1AL/0yDyBCn23d/4Zhnt56oQJn/
-uYYPB3OAPEI5fsotyOHlOBPjB0vC+cPYic78nMYe/GoQOsmUJY2UTjIbGbw8SXVn
-5rvBoYXC7kENyllI2Oc8SJQKWxWqvOilCLzOh/01wDvC7TDagMRnqzpllCF8n9gj
-Xw+/Ommb6uHr5FrkZWW2FCP9SwrkX5EYJ79f7YEy6nFjKiqa4D7UfoIp3i8v0cUd
-YtXVzO/dJWF78xtdD/AOwBQN3D1Ufsa5WZ+RHIAPa3Llob6ca2hCUI99v1ojYgy2
-6hqFnqHF7ZMOh9IxYOJKYkYtkBd9tTIterUkRlIarY3rOkSSsZ1BwdFNPAZ2xlkw
-85lqHqDivCm5yEbSn2ryAlcpch4K9g5mbFSzoAhdoJUhAtYAfKAaqKBw2lwCAShf
-a+QvUNot3SmAWOrdGB9wqAe+EU7rj74xqMSbYx80bjpJIFE9tmsTLZO4trUK66D1
-7y9TAaegYQ9zPQNGXXaba23tV3ntwHrhjP5rkckqRA==
-=JyWJ
------END PGP SIGNATURE-----
-
---j+xDx7IOlS+WjWqF--
 
