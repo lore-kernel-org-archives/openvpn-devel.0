@@ -1,11 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Sun, 27 Nov 2022 10:07:42 +0100
-Message-Id: <20221127090742.3487997-1-arne@...1227...>
-In-Reply-To: <20221012133457.1927871-1-arne@...1227...>
-References: <20221012133457.1927871-1-arne@...1227...>
+From: Kristof Provost <kprovost@...2661...>
+Date: Sun, 27 Nov 2022 12:18:45 +0100
+Message-Id: <20221127111845.11310-2-kprovost@...2661...>
+In-Reply-To: <20221127111845.11310-1-kprovost@...2661...>
+References: <20221127111845.11310-1-kprovost@...2661...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 1/3] Use dedicated multi->dco_peer_id for
- DCO instead of multi->peer_id
+Subject: [Openvpn-devel] [PATCH] Read DCO traffic stats from the kernel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,309 +15,261 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-The lifetime and state machine of multi->peer_id does not exactly the
-lifetime/state of DCO. This is especially for p2p NCP where a reconnection
-can change the peer id. Also use this new field with value -1 to mean
-not installed, replacing the dco_peer_added field.
+From: Kristof Provost <kp@...1376...>
 
-Also ensure that we have a failure adding a new peer, we don't try to
-set options for that peer or generating keys for it.
+When DCO is active userspace doesn't see all of the traffic, so when we
+access these stats we must update them.
 
-Patch v2: fix one comparison checking for 0 instead of -1
-Patch v3: make recovery after failing dco_add_peer more robust
-          and the comparison that lead to not deleting a peer.
+Retrieve kernel statistics every time we access the
+link_(read|write)_bytes values.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Introduce a dco_(read|write)_bytes so that we don't clobber the existing
+statistics, which still count control packets, sent or received directly
+through the socket.
 ---
- src/openvpn/dco.c        | 24 ++++++------
- src/openvpn/forward.c    |  2 +-
- src/openvpn/init.c       |  4 +-
- src/openvpn/multi.c      | 80 +++++++++++++++++++++++-----------------
- src/openvpn/ssl.c        |  1 +
- src/openvpn/ssl_common.h |  9 ++++-
- 6 files changed, 70 insertions(+), 50 deletions(-)
+ src/openvpn/dco.h              |  8 ++++
+ src/openvpn/dco_freebsd.c      | 78 ++++++++++++++++++++++++++++++++++
+ src/openvpn/multi.c            | 30 +++++++------
+ src/openvpn/openvpn.h          |  2 +
+ src/openvpn/ovpn_dco_freebsd.h |  1 +
+ 5 files changed, 106 insertions(+), 13 deletions(-)
 
-diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index f190d038b..47fb00037 100644
---- a/src/openvpn/dco.c
-+++ b/src/openvpn/dco.c
-@@ -55,7 +55,7 @@ dco_install_key(struct tls_multi *multi, struct key_state *ks,
-                 const char *ciphername)
+diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
+index e051db06..e5d89358 100644
+--- a/src/openvpn/dco.h
++++ b/src/openvpn/dco.h
+@@ -225,6 +225,14 @@ void dco_install_iroute(struct multi_context *m, struct multi_instance *mi,
+  */
+ void dco_delete_iroutes(struct multi_context *m, struct multi_instance *mi);
  
- {
--    msg(D_DCO_DEBUG, "%s: peer_id=%d keyid=%d", __func__, multi->peer_id,
-+    msg(D_DCO_DEBUG, "%s: peer_id=%d keyid=%d", __func__, multi->dco_peer_id,
-         ks->key_id);
- 
-     /* Install a key in the PRIMARY slot only when no other key exist.
-@@ -69,7 +69,7 @@ dco_install_key(struct tls_multi *multi, struct key_state *ks,
-         slot = OVPN_KEY_SLOT_SECONDARY;
-     }
- 
--    int ret = dco_new_key(multi->dco, multi->peer_id, ks->key_id, slot,
-+    int ret = dco_new_key(multi->dco, multi->dco_peer_id, ks->key_id, slot,
-                           encrypt_key, encrypt_iv,
-                           decrypt_key, decrypt_iv,
-                           ciphername);
-@@ -133,7 +133,7 @@ dco_get_secondary_key(struct tls_multi *multi, const struct key_state *primary)
- void
- dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
- {
--    msg(D_DCO_DEBUG, "%s: peer_id=%d", __func__, multi->peer_id);
-+    msg(D_DCO_DEBUG, "%s: peer_id=%d", __func__, multi->dco_peer_id);
- 
-     /* this function checks if keys have to be swapped or erased, therefore it
-      * can't do much if we don't have any key installed
-@@ -151,14 +151,14 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
-     {
-         msg(D_DCO, "No encryption key found. Purging data channel keys");
- 
--        int ret = dco_del_key(dco, multi->peer_id, OVPN_KEY_SLOT_PRIMARY);
-+        int ret = dco_del_key(dco, multi->dco_peer_id, OVPN_KEY_SLOT_PRIMARY);
-         if (ret < 0)
-         {
-             msg(D_DCO, "Cannot delete primary key during wipe: %s (%d)", strerror(-ret), ret);
-             return;
-         }
- 
--        ret = dco_del_key(dco, multi->peer_id, OVPN_KEY_SLOT_SECONDARY);
-+        ret = dco_del_key(dco, multi->dco_peer_id, OVPN_KEY_SLOT_SECONDARY);
-         if (ret < 0)
-         {
-             msg(D_DCO, "Cannot delete secondary key during wipe: %s (%d)", strerror(-ret), ret);
-@@ -184,7 +184,7 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
-         msg(D_DCO_DEBUG, "Swapping primary and secondary keys, now: id1=%d id2=%d",
-             primary->key_id, secondary ? secondary->key_id : -1);
- 
--        int ret = dco_swap_keys(dco, multi->peer_id);
-+        int ret = dco_swap_keys(dco, multi->dco_peer_id);
-         if (ret < 0)
-         {
-             msg(D_DCO, "Cannot swap keys: %s (%d)", strerror(-ret), ret);
-@@ -202,7 +202,7 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
-     /* if we have no secondary key anymore, inform DCO about it */
-     if (!secondary && multi->dco_keys_installed == 2)
-     {
--        int ret = dco_del_key(dco, multi->peer_id, OVPN_KEY_SLOT_SECONDARY);
-+        int ret = dco_del_key(dco, multi->dco_peer_id, OVPN_KEY_SLOT_SECONDARY);
-         if (ret < 0)
-         {
-             msg(D_DCO, "Cannot delete secondary key: %s (%d)", strerror(-ret), ret);
-@@ -465,7 +465,7 @@ dco_p2p_add_new_peer(struct context *c)
-         return ret;
-     }
- 
--    c->c2.tls_multi->dco_peer_added = true;
-+    c->c2.tls_multi->dco_peer_id = multi->peer_id;
-     c->c2.link_socket->info.lsa->actual.dco_installed = true;
- 
-     return 0;
-@@ -479,10 +479,10 @@ dco_remove_peer(struct context *c)
-         return;
-     }
- 
--    if (c->c1.tuntap && c->c2.tls_multi && c->c2.tls_multi->dco_peer_added)
-+    if (c->c1.tuntap && c->c2.tls_multi && c->c2.tls_multi->dco_peer_id != -1)
-     {
--        dco_del_peer(&c->c1.tuntap->dco, c->c2.tls_multi->peer_id);
--        c->c2.tls_multi->dco_peer_added = false;
-+        dco_del_peer(&c->c1.tuntap->dco, c->c2.tls_multi->dco_peer_id);
-+        c->c2.tls_multi->dco_peer_id = -1;
-     }
- }
- 
-@@ -585,7 +585,7 @@ dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi)
-         return ret;
-     }
- 
--    c->c2.tls_multi->dco_peer_added = true;
-+    c->c2.tls_multi->dco_peer_id = peer_id;
- 
-     if (c->mode == CM_CHILD_TCP)
-     {
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 1dcaabd8e..3b5b04074 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1734,7 +1734,7 @@ process_outgoing_link(struct context *c)
-                 if (should_use_dco_socket(c->c2.to_link_addr))
-                 {
-                     size = dco_do_write(&c->c1.tuntap->dco,
--                                        c->c2.tls_multi->peer_id,
-+                                        c->c2.tls_multi->dco_peer_id,
-                                         &c->c2.to_link);
-                 }
-                 else
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 1b30c8f0a..0e4769775 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2151,14 +2151,14 @@ do_deferred_options_part2(struct context *c)
-         && (c->options.ping_send_timeout || c->c2.frame.mss_fix))
-     {
-         int ret = dco_set_peer(&c->c1.tuntap->dco,
--                               c->c2.tls_multi->peer_id,
-+                               c->c2.tls_multi->dco_peer_id,
-                                c->options.ping_send_timeout,
-                                c->options.ping_rec_timeout,
-                                c->c2.frame.mss_fix);
-         if (ret < 0)
-         {
-             msg(D_DCO, "Cannot set parameters for DCO peer (id=%u): %s",
--                c->c2.tls_multi->peer_id, strerror(-ret));
-+                c->c2.tls_multi->dco_peer_id, strerror(-ret));
-             return false;
-         }
-     }
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index b9b087e01..0a23c2bcf 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -2305,6 +2305,42 @@ cleanup:
-     return ret;
- }
- 
-+static bool
-+multi_client_setup_dco_initial(struct multi_context *m,
-+                               struct multi_instance *mi,
-+                               struct gc_arena *gc)
-+{
-+    if (!dco_enabled(&mi->context.options))
-+    {
-+        /* DCO not enabled, nothing to do, return sucess */
-+        return true;
-+    }
-+    int ret = dco_multi_add_new_peer(m, mi);
-+    if (ret < 0)
-+    {
-+        msg(D_DCO, "Cannot add peer to DCO for %s: %s (%d)",
-+            multi_instance_string(mi, false, gc), strerror(-ret), ret);
-+        return false;
-+    }
-+
-+    if (mi->context.options.ping_send_timeout || mi->context.c2.frame.mss_fix)
-+    {
-+        ret = dco_set_peer(&mi->context.c1.tuntap->dco,
-+                           mi->context.c2.tls_multi->dco_peer_id,
-+                           mi->context.options.ping_send_timeout,
-+                           mi->context.options.ping_rec_timeout,
-+                           mi->context.c2.frame.mss_fix);
-+        if (ret < 0)
-+        {
-+            msg(D_DCO, "Cannot set DCO peer parameters for %s (id=%u): %s",
-+                multi_instance_string(mi, false, gc),
-+                mi->context.c2.tls_multi->dco_peer_id, strerror(-ret));
-+            return false;
-+        }
-+    }
-+    return true;
-+}
++/**
++ * Update traffic statistics for all peers
++ *
++ * @param dco	DCO device context
++ * @param m	the server context
++ **/
++int dco_get_peer_stats(dco_context_t *dco, struct multi_context *m);
 +
  /**
-  * Generates the data channel keys
-  */
-@@ -2432,39 +2468,16 @@ multi_client_connect_late_setup(struct multi_context *m,
-     {
-         mi->context.c2.tls_multi->multi_state = CAS_FAILED;
-     }
-+    /* only continue if setting protocol options worked */
-+    else if (!multi_client_setup_dco_initial(m, mi, &gc))
+  * Retrieve the list of ciphers supported by the current platform
+  *
+diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+index 4e03f52e..111c3fa7 100644
+--- a/src/openvpn/dco_freebsd.c
++++ b/src/openvpn/dco_freebsd.c
+@@ -37,6 +37,7 @@
+ #include "dco.h"
+ #include "tun.h"
+ #include "crypto.h"
++#include "multi.h"
+ #include "ssl_common.h"
+ 
+ static nvlist_t *
+@@ -639,6 +640,83 @@ dco_event_set(dco_context_t *dco, struct event_set *es, void *arg)
+     nvlist_destroy(nvl);
+ }
+ 
++static void
++dco_update_peer_stat(struct multi_context *m, uint32_t peerid, const nvlist_t *nvl)
++{
++    struct hash_element *he;
++    struct hash_iterator hi;
++
++    hash_iterator_init(m->hash, &hi);
++
++    while ((he = hash_iterator_next(&hi)))
 +    {
-+        mi->context.c2.tls_multi->multi_state = CAS_FAILED;
++        struct multi_instance *mi = (struct multi_instance *) he->value;
++
++        if (mi->context.c2.tls_multi->peer_id != peerid)
++            continue;
++
++        mi->context.c2.dco_read_bytes = nvlist_get_number(nvl, "in");
++        mi->context.c2.dco_write_bytes = nvlist_get_number(nvl, "out");
++
++        return;
 +    }
-     /* Generate data channel keys only if setting protocol options
--     * has not failed */
--    else
-+     * and DCO initial setup has not failed */
-+    else if (!multi_client_generate_tls_keys(&mi->context))
++
++    msg(M_INFO, "Peer %d returned by kernel, but not found locally", peerid);
++}
++
++int
++dco_get_peer_stats(dco_context_t *dco, struct multi_context *m)
++{
++
++    struct ifdrv drv;
++    uint8_t buf[4096];
++    nvlist_t *nvl;
++    const nvlist_t *const *nvpeers;
++    size_t npeers;
++    int ret;
++
++    if (!dco || !dco->open)
++    {
++        return 0;
++    }
++
++    CLEAR(drv);
++    snprintf(drv.ifd_name, IFNAMSIZ, "%s", dco->ifname);
++    drv.ifd_cmd = OVPN_GET_PEER_STATS;
++    drv.ifd_len = sizeof(buf);
++    drv.ifd_data = buf;
++
++    ret = ioctl(dco->fd, SIOCGDRVSPEC, &drv);
++    if (ret)
++    {
++        msg(M_WARN | M_ERRNO, "Failed to get peer stats");
++        return -EINVAL;
++    }
++
++    nvl = nvlist_unpack(buf, drv.ifd_len, 0);
++    if (! nvl)
++    {
++        msg(M_WARN, "Failed to unpack nvlist");
++        return -EINVAL;
++    }
++
++    if (! nvlist_exists_nvlist_array(nvl, "peers")) {
++        /* no peers */
++        return 0;
++    }
++
++    nvpeers = nvlist_get_nvlist_array(nvl, "peers", &npeers);
++    for (size_t i = 0; i < npeers; i++)
++    {
++        const nvlist_t *peer = nvpeers[i];
++        uint32_t peerid = nvlist_get_number(peer, "peerid");
++
++        dco_update_peer_stat(m, peerid, nvlist_get_nvlist(peer, "bytes"));
++    }
++
++    return 0;
++}
++
+ const char *
+ dco_get_supported_ciphers()
+ {
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index b9b087e0..10a674c0 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -538,29 +538,31 @@ multi_del_iroutes(struct multi_context *m,
+ }
+ 
+ static void
+-setenv_stats(struct context *c)
++setenv_stats(struct multi_context *m, struct context *c)
+ {
+-    setenv_counter(c->c2.es, "bytes_received", c->c2.link_read_bytes);
+-    setenv_counter(c->c2.es, "bytes_sent", c->c2.link_write_bytes);
++    dco_get_peer_stats(&m->top.c1.tuntap->dco, m);
++
++    setenv_counter(c->c2.es, "bytes_received", c->c2.link_read_bytes + c->c2.dco_read_bytes);
++    setenv_counter(c->c2.es, "bytes_sent", c->c2.link_write_bytes + c->c2.dco_write_bytes);
+ }
+ 
+ static void
+-multi_client_disconnect_setenv(struct multi_instance *mi)
++multi_client_disconnect_setenv(struct multi_context *m, struct multi_instance *mi)
+ {
+     /* setenv client real IP address */
+     setenv_trusted(mi->context.c2.es, get_link_socket_info(&mi->context));
+ 
+     /* setenv stats */
+-    setenv_stats(&mi->context);
++    setenv_stats(m, &mi->context);
+ 
+     /* setenv connection duration */
+     setenv_long_long(mi->context.c2.es, "time_duration", now - mi->created);
+ }
+ 
+ static void
+-multi_client_disconnect_script(struct multi_instance *mi)
++multi_client_disconnect_script(struct multi_context *m, struct multi_instance *mi)
+ {
+-    multi_client_disconnect_setenv(mi);
++    multi_client_disconnect_setenv(m, mi);
+ 
+     if (plugin_defined(mi->context.plugins, OPENVPN_PLUGIN_CLIENT_DISCONNECT))
      {
--        if (dco_enabled(&mi->context.options))
--        {
--            int ret = dco_multi_add_new_peer(m, mi);
--            if (ret < 0)
--            {
--                msg(D_DCO, "Cannot add peer to DCO: %s (%d)", strerror(-ret), ret);
--                mi->context.c2.tls_multi->multi_state = CAS_FAILED;
--            }
--
--            if (mi->context.options.ping_send_timeout || mi->context.c2.frame.mss_fix)
--            {
--                int ret = dco_set_peer(&mi->context.c1.tuntap->dco,
--                                       mi->context.c2.tls_multi->peer_id,
--                                       mi->context.options.ping_send_timeout,
--                                       mi->context.options.ping_rec_timeout,
--                                       mi->context.c2.frame.mss_fix);
--                if (ret < 0)
--                {
--                    msg(D_DCO, "Cannot set parameters for DCO peer (id=%u): %s",
--                        mi->context.c2.tls_multi->peer_id, strerror(-ret));
--                    mi->context.c2.tls_multi->multi_state = CAS_FAILED;
--                }
--            }
--        }
--
--        if (!multi_client_generate_tls_keys(&mi->context))
--        {
--            mi->context.c2.tls_multi->multi_state = CAS_FAILED;
--        }
-+        mi->context.c2.tls_multi->multi_state = CAS_FAILED;
-     }
+@@ -667,7 +669,7 @@ multi_close_instance(struct multi_context *m,
  
-     /* send push reply if ready */
-@@ -2472,7 +2485,6 @@ multi_client_connect_late_setup(struct multi_context *m,
+     if (mi->context.c2.tls_multi->multi_state >= CAS_CONNECT_DONE)
      {
-         process_incoming_push_request(&mi->context);
-     }
--
-     gc_free(&gc);
- }
- 
-@@ -3226,8 +3238,8 @@ process_incoming_del_peer(struct multi_context *m, struct multi_instance *mi,
+-        multi_client_disconnect_script(mi);
++        multi_client_disconnect_script(m, mi);
      }
  
-     /* When kernel already deleted the peer, the socket is no longer
--     * installed and we don't need to cleanup the state in the kernel */
--    mi->context.c2.tls_multi->dco_peer_added = false;
-+     * installed, and we do not need to clean up the state in the kernel */
-+    mi->context.c2.tls_multi->dco_peer_id = -1;
-     mi->context.sig->signal_text = reason;
-     multi_signal_instance(m, mi, SIGTERM);
- }
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index a73a2b714..818100c23 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1315,6 +1315,7 @@ tls_multi_init(struct tls_options *tls_options)
+     close_context(&mi->context, SIGTERM, CC_GC_FREE);
+@@ -837,6 +839,8 @@ multi_print_status(struct multi_context *m, struct status_output *so, const int
  
-     /* get command line derived options */
-     ret->opt = *tls_options;
-+    ret->dco_peer_id = -1;
+         status_reset(so);
  
-     return ret;
- }
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 24d40ab83..e967970dd 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -661,7 +661,14 @@ struct tls_multi
-     /* Only used when DCO is used to remember how many keys we installed
-      * for this session */
-     int dco_keys_installed;
--    bool dco_peer_added;
-+    /**
-+     * This is the handle that DCO uses to identify this session with the
-+     * kernel.
-+     *
-+     * We keep this separate as the normal peer_id can change during
-+     * p2p NCP and we need to track the id that is really used.
-+     */
-+    int dco_peer_id;
++        dco_get_peer_stats(&m->top.c1.tuntap->dco, m);
++
+         if (version == 1)
+         {
+             /*
+@@ -856,8 +860,8 @@ multi_print_status(struct multi_context *m, struct status_output *so, const int
+                     status_printf(so, "%s,%s," counter_format "," counter_format ",%s",
+                                   tls_common_name(mi->context.c2.tls_multi, false),
+                                   mroute_addr_print(&mi->real, &gc),
+-                                  mi->context.c2.link_read_bytes,
+-                                  mi->context.c2.link_write_bytes,
++                                  mi->context.c2.link_read_bytes + mi->context.c2.dco_read_bytes,
++                                  mi->context.c2.link_write_bytes + mi->context.c2.dco_write_bytes,
+                                   time_string(mi->created, 0, false, &gc));
+                 }
+                 gc_free(&gc);
+@@ -932,8 +936,8 @@ multi_print_status(struct multi_context *m, struct status_output *so, const int
+                                   sep, mroute_addr_print(&mi->real, &gc),
+                                   sep, print_in_addr_t(mi->reporting_addr, IA_EMPTY_IF_UNDEF, &gc),
+                                   sep, print_in6_addr(mi->reporting_addr_ipv6, IA_EMPTY_IF_UNDEF, &gc),
+-                                  sep, mi->context.c2.link_read_bytes,
+-                                  sep, mi->context.c2.link_write_bytes,
++                                  sep, mi->context.c2.link_read_bytes + mi->context.c2.dco_read_bytes,
++                                  sep, mi->context.c2.link_write_bytes + mi->context.c2.dco_write_bytes,
+                                   sep, time_string(mi->created, 0, false, &gc),
+                                   sep, (unsigned int)mi->created,
+                                   sep, tls_username(mi->context.c2.tls_multi, false),
+@@ -2740,7 +2744,7 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
+          * did not fail */
+         if (mi->context.c2.tls_multi->multi_state == CAS_PENDING_DEFERRED_PARTIAL)
+         {
+-            multi_client_disconnect_script(mi);
++            multi_client_disconnect_script(m, mi);
+         }
  
-     dco_context_t *dco;
- };
+         mi->context.c2.tls_multi->multi_state = CAS_FAILED;
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index c543cbf6..5981e4d5 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -267,8 +267,10 @@ struct context_2
+     counter_type tun_read_bytes;
+     counter_type tun_write_bytes;
+     counter_type link_read_bytes;
++    counter_type dco_read_bytes;
+     counter_type link_read_bytes_auth;
+     counter_type link_write_bytes;
++    counter_type dco_write_bytes;
+ #ifdef PACKET_TRUNCATION_CHECK
+     counter_type n_trunc_tun_read;
+     counter_type n_trunc_tun_write;
+diff --git a/src/openvpn/ovpn_dco_freebsd.h b/src/openvpn/ovpn_dco_freebsd.h
+index cf92d597..cc90111e 100644
+--- a/src/openvpn/ovpn_dco_freebsd.h
++++ b/src/openvpn/ovpn_dco_freebsd.h
+@@ -61,5 +61,6 @@ enum ovpn_key_cipher {
+ #define OVPN_POLL_PKT           _IO('D', 10)
+ #define OVPN_GET_PKT            _IO('D', 11)
+ #define OVPN_SET_IFMODE         _IO('D', 12)
++#define OVPN_GET_PEER_STATS     _IO('D', 13)
+ 
+ #endif /* ifndef _NET_IF_OVPN_H_ */
 -- 
-2.37.1 (Apple Git-137.1)
+2.38.1
 
 
