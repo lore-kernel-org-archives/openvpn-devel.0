@@ -1,10 +1,10 @@
-Date: Mon, 28 Nov 2022 11:09:53 +0100 (CET)
-Message-Id: <202211281009.2ASA9rsI004485@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221127090742.3487997-1-arne@...1227...>
-References: <20221127090742.3487997-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Use dedicated
- multi->dco_peer_id for DCO instead of multi->peer_id
+Date: Mon, 28 Nov 2022 12:16:42 +0100
+Message-Id: <20221128111642.3483-1-gert@...1296...>
+In-Reply-To: <20221126141041.5098-1-gert@...1296...>
+References: <20221126141041.5098-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2] Update PORTS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,54 +15,92 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Instead of fully removing PORTS, keep "this is what you want to do for
+porting OpenVPN to a new platform" section, and update the PLATFORMS
+part to better reflect current status.
 
-This patch survived all tests I threw at it (Linux and FreeBSD client
-and server, with and without DCO, including multiple p2mp clients on
-the server under test).
+v2:
+  drop "2.2+" from Linux, and name the fruitish thing "macOS"
 
-The "main" code change (dco_peer_id) is fairly straightforward, if
-one checks for the right values of "-1".
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ PORTS | 43 +++++++++++++++++++++++++------------------
+ 1 file changed, 25 insertions(+), 18 deletions(-)
 
-The completely new bit in v3 is "multi_client_setup_dco_initial()",
-which packs all the "init a new p2mp DCO peer" into a single function,
-so early-return is possible, and the path "anything DCO fails ->
-CAS_FAILED -> AUTH_FAILED" is easier to see.
-
-We discussed - at breakfast - changes necessary to make the server
-not abort "if anything DCO fails" (v2 tried to setup a peer with "-1",
-which failed, and that did not lead to "CAS_FAILED" but to "server
-aborts").  The code in question is in ssl.c, init_key_contexts(), and it
-has two M_FATAL conditions - we should see that we can turn this into
-"kill the client instance, not the server".  As discussed, "not being
-able to set up keys in DCO" is a race with "the kernel might have
-killed that instance just now, due to TCP RST etc".
-
-This is not part of *this* patch yet, but it's not caused by this 
-patch either - so no reason to not progress.
-
-
-Your patch has been applied to the master branch.
-
-commit 8d4dbb56e7dda87ef031fdf52c6d87e533250ff3
-Author: Arne Schwabe
-Date:   Sun Nov 27 10:07:42 2022 +0100
-
-     Use dedicated multi->dco_peer_id for DCO instead of multi->peer_id
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221127090742.3487997-1-arne@...1227...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20221127090742.3487997-1-arne@...1227...
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/PORTS b/PORTS
+index ff76850d..2e5133b0 100644
+--- a/PORTS
++++ b/PORTS
+@@ -11,20 +11,31 @@ Copyright (C) 2002-2022 OpenVPN Inc <sales@...515...>
+ 
+ PLATFORM STATUS:
+ 
+-  * Linux 2.2+ (supported)
+-  * Solaris (supported)
+-  * OpenBSD 3.0 (supported but pthreads are broken)
+-  * Max OS X Darwin
++Tier 1 platforms - actively tested for every source commit, across
++multiple operating system versions
++
++  * Windows 7 and newer
++  * Windows Server 2012 and newer
++  * Linux
+   * FreeBSD
++  * macOS
++
++Tier 2 platforms - it worked at some point, but is not actively tested
++on "latest OS, latest OS libraries" so might break if larger changes
++are done on the platform side
++
++  * OpenBSD
+   * NetBSD
+-  * Windows
+-  * 64 bit platforms -- I have heard reports that
+-    OpenVPN runs on Alpha Linux and FreeBSD.
+-  * ARM -- I have heard of at least one case
+-    where OpenVPN was successfully built and
+-    run on the ARM architecture.
++  * DragonFly BSD
++  * Solaris
++  * AIX
++
++For underlying CPU architecture, everything 32 bit or 64 bit (Intel, AMD,
++ARM, PowerPC, SPARC*) should work fine.  16 bit Architectures are unlikely
++to work.
++
+ 
+-PORTING NOTES:
++PORTING GUIDELINE TO A NEW PLATFORM:
+ 
+   * Make sure that OpenSSL will build on your
+     platform.
+@@ -42,7 +53,7 @@ PORTING NOTES:
+     function in tun.c to generate a correct "ifconfig"
+     command for your platform.  Note that OpenVPN
+     determines the ifconfig path at ./configure time.
+-  * Add an ifconfig_order() variant for your OS so
++  * Possibly add an ifconfig_order() variant for your OS so
+     openvpn knows whether to call ifconfig before
+     or after tun/tap dev open.
+   * Add an #ifdef TARGET_YOUROS block in tun.c and define
+@@ -77,12 +88,8 @@ PORTING NOTES:
+     disabled with an explicit ioctl call if cross-platform
+     compatibility is to be preserved.  You can see some
+     examples of this in tun.c.
+-  * If your system supports pthreads, try building
+-    with ./configure --enable-pthread and do a stress
+-    test in TLS mode.
+-  * Try the ultimate stress test which is --gremlin
+-    --reneg-sec 10 in TLS mode (preferably with pthreads
+-    enabled), then do a flood ping across the tunnel
++  * Try the ultimate stress test which is --gremlin --reneg-sec 10
++    in TLS mode then do a flood ping across the tunnel
+     (ping -f remote-endpoint) in both directions and let
+     it run overnight.  --gremlin will induce massive
+     corruption and packet loss, but you win if you
+-- 
+2.35.1
 
 
