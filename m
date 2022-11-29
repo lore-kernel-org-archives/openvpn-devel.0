@@ -1,8 +1,10 @@
 From: selva.nair@...277...
-Date: Tue, 29 Nov 2022 13:05:34 -0500
-Message-Id: <20221129180534.657529-1-selva.nair@...277...>
+Date: Tue, 29 Nov 2022 13:37:56 -0500
+Message-Id: <20221129183756.657793-1-selva.nair@...277...>
+In-Reply-To: <20221129180534.657529-1-selva.nair@...277...>
+References: <20221129180534.657529-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] pull_filer: ignore leading "spaces" in
+Subject: [Openvpn-devel] [PATCH v2] pull-filter: ignore leading "spaces" in
  option names
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -21,6 +23,8 @@ From: Selva Nair <selva.nair@...277...>
 It seems sometimes comma-separated pulled options have
 an offending leading space. Not sure whether that is an error,
 but the change here matches the behaviour of option parsing.
+
+v2: fix typo in commit message.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
