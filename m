@@ -1,11 +1,11 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 30 Nov 2022 14:31:53 +0100
-Message-Id: <20221130133154.39454-3-frank@...2641...>
+Date: Wed, 30 Nov 2022 14:31:52 +0100
+Message-Id: <20221130133154.39454-2-frank@...2641...>
 In-Reply-To: <20221130133154.39454-1-frank@...2641...>
 References: <20221130133154.39454-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/3] GitHub Issues: add new links to INSTALL
- and README
+Subject: [Openvpn-devel] [PATCH 1/3] GitHub Issues: Create first issue
+ template (Bug)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,45 +18,49 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-But keep the old links around as well for now since
-the GitHub issues aren't useful, yet.
+If we want people to use GH issues, we should
+probably offer some issue templates to give
+guidance on what to include.
+
+Based on GH's standard bug template.
 
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
- INSTALL | 4 +++-
- README  | 5 ++++-
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ .github/ISSUE_TEMPLATE/bug_report.md | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+ create mode 100644 .github/ISSUE_TEMPLATE/bug_report.md
 
-diff --git a/INSTALL b/INSTALL
-index db24e98c..a63bab6a 100644
---- a/INSTALL
-+++ b/INSTALL
-@@ -276,6 +276,8 @@ TUN/TAP Driver References:
- 
- CAVEATS & BUGS:
- 
--* see the bug tracker on https://community.openvpn.net/openvpn/report
-+* See the bug tracker on https://github.com/OpenVPN/openvpn/issues
-   and the wiki on https://community.openvpn.net/wiki for more detailed
-   caveats on operating systems, and for open and resolved bug reports.
-+* Note: We only recently switched to GitHub for reporting new issues,
-+  old issues can be found at https://community.openvpn.net/openvpn/report
-diff --git a/README b/README
-index 523abb70..04eb16ff 100644
---- a/README
-+++ b/README
-@@ -30,7 +30,10 @@ For a sample VPN configuration, see
-   http://openvpn.net/howto.html
- 
- To report an issue, see
--  https://community.openvpn.net/openvpn/newticket
-+  https://github.com/OpenVPN/openvpn/issues/new
-+  (Note: We recently switched to GitHub for reporting new issues,
-+   old issues can be found at:
-+   https://community.openvpn.net/openvpn/report)
- 
- For a description of OpenVPN's underlying protocol,
-   see the file ssl.h included in the source distribution.
+diff --git a/.github/ISSUE_TEMPLATE/bug_report.md b/.github/ISSUE_TEMPLATE/bug_report.md
+new file mode 100644
+index 00000000..6cbd3ba4
+--- /dev/null
++++ b/.github/ISSUE_TEMPLATE/bug_report.md
+@@ -0,0 +1,25 @@
++---
++name: Bug report
++about: Create a report to help us improve
++title: ''
++labels: ''
++assignees: ''
++
++---
++
++**Describe the bug**
++A clear and concise description of what the bug is.
++
++**To Reproduce**
++Steps to reproduce the behavior. Please make sure to not post any secrets like keys and passwords.
++
++**Expected behavior**
++A clear and concise description of what you expected to happen.
++
++**Version information (please complete the following information):**
++ - OS: [e.g. Ubuntu 22.04]
++ - OpenVPN version: [e.g. 2.5.8]
++ - Repeat for peer if relevant
++
++**Additional context**
++Add any other context about the problem here.
 -- 
 2.34.1
 
