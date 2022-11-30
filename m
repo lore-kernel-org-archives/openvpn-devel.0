@@ -1,10 +1,9 @@
-Date: Wed, 30 Nov 2022 13:56:17 +0100 (CET)
-Message-Id: <202211301256.2AUCuHpb014984@...2054...>
+Date: Wed, 30 Nov 2022 14:08:51 +0100 (CET)
+Message-Id: <202211301308.2AUD8pt8016763@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221129113031.3735598-1-arne@...1227...>
-References: <20221129113031.3735598-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add section about common error
- with OpenVPN 2.6 and OpenSSL 3.0
+In-Reply-To: <20221129140447.1159-1-lstipakov@...277...>
+References: <20221129140447.1159-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: INSTALL: update Windows notes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +14,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
+
+Acked-by: Gert Doering <gert@...1296...>
+
+Thanks for the updates to the windows versions.  I intended to ask you
+for details, and forgot.
 
 Your patch has been applied to the master branch.
 
-configuration*s* and legacy providers adjusted as instructed.
+commit aa3b7a32b1205179daae4f1dbc3db88e407d9dd3
+Author: Lev Stipakov
+Date:   Tue Nov 29 16:04:47 2022 +0200
 
-Arne, thanks a lot for this (Berni was also waiting for something
-like this, to include in their release notes).
+     INSTALL: update Windows notes
 
-commit 2b62fc7ff5018e252e49ad01c4b9720fa2fa6200
-Author: Arne Schwabe
-Date:   Tue Nov 29 12:30:31 2022 +0100
-
-     Add section about common error with OpenVPN 2.6 and OpenSSL 3.0
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20221129113031.3735598-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25571.html
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20221129140447.1159-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25572.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
