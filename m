@@ -1,9 +1,11 @@
-Date: Wed, 30 Nov 2022 14:08:51 +0100 (CET)
-Message-Id: <202211301308.2AUD8pt8016763@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221129140447.1159-1-lstipakov@...277...>
-References: <20221129140447.1159-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: INSTALL: update Windows notes
+From: Frank Lichtenheld <frank@...2641...>
+Date: Wed, 30 Nov 2022 14:31:54 +0100
+Message-Id: <20221130133154.39454-4-frank@...2641...>
+In-Reply-To: <20221130133154.39454-1-frank@...2641...>
+References: <20221130133154.39454-1-frank@...2641...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 3/3] GitHub Issues: add note to Changes as
+ well
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,32 +16,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+For maximum visibility.
 
-Thanks for the updates to the windows versions.  I intended to ask you
-for details, and forgot.
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ Changes.rst | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Your patch has been applied to the master branch.
-
-commit aa3b7a32b1205179daae4f1dbc3db88e407d9dd3
-Author: Lev Stipakov
-Date:   Tue Nov 29 16:04:47 2022 +0200
-
-     INSTALL: update Windows notes
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221129140447.1159-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25572.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/Changes.rst b/Changes.rst
+index 11652b85..fe91ece2 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -1,6 +1,12 @@
+ Overview of changes in 2.6
+ ==========================
+ 
++Project changes
++---------------
++
++We want to deprecate our old Trac bug tracking system.
++Please report any issues with this release in GitHub
++instead: https://github.com/OpenVPN/openvpn/issues
+ 
+ New features
+ ------------
+-- 
+2.34.1
 
 
