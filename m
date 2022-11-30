@@ -1,8 +1,10 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 30 Nov 2022 14:31:51 +0100
-Message-Id: <20221130133154.39454-1-frank@...2641...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 0/3] GitHub Issues Usage
+Date: Wed, 30 Nov 2022 15:46:29 +0100 (CET)
+Message-Id: <202211301446.2AUEkTl9029920@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221130133154.39454-4-frank@...2641...>
+References: <20221130133154.39454-4-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: GitHub Issues: add note to
+ Changes as well
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-At the Hackathon in Delft we decided to switch to GitHub
-Issues since the old Trac system will need to be replaced.
+Acked-by: Gert Doering <gert@...1296...>
 
-GitHub issues have the main advantage that many other projects
-are also on GitHub. So apart from being familiar to
-users we also have the ability to link to other projects
-or move issues over to them if applicable.
+Your patch has been applied to the master branch.
 
-This patch series adds a first issue template for our use
-and does various documentation updates.
+commit cf884bebe15e802256ed6edfabf925bf4b97bdef
+Author: Frank Lichtenheld
+Date:   Wed Nov 30 14:31:54 2022 +0100
 
-Frank Lichtenheld (3):
-  GitHub Issues: Create first issue template (Bug)
-  GitHub Issues: add new links to INSTALL and README
-  GitHub Issues: add note to Changes as well
+     GitHub Issues: add note to Changes as well
 
- .github/ISSUE_TEMPLATE/bug_report.md | 25 +++++++++++++++++++++++++
- Changes.rst                          |  6 ++++++
- INSTALL                              |  4 +++-
- README                               |  5 ++++-
- 4 files changed, 38 insertions(+), 2 deletions(-)
- create mode 100644 .github/ISSUE_TEMPLATE/bug_report.md
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20221130133154.39454-4-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25590.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
--- 
-2.34.1
+
+--
+kind regards,
+
+Gert Doering
 
 
