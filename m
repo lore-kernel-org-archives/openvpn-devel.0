@@ -1,10 +1,10 @@
-Date: Thu, 1 Dec 2022 16:19:01 +0100 (CET)
-Message-Id: <202212011519.2B1FJ1Sj031118@...2054...>
+Date: Thu, 1 Dec 2022 16:21:38 +0100 (CET)
+Message-Id: <202212011521.2B1FLcgW031610@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221201125902.400-1-lstipakov@...277...>
-References: <20221201125902.400-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco: disable dco on Windows if
- --remote is not defined
+In-Reply-To: <20221129144731.35105-1-frank@...2641...>
+References: <20221129144731.35105-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: documentation: avoid
+ recommending --user nobody
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"DCO WIN wants to do outgoing stuff", no server, no no-remote - so yes,
-makes sense.
+"This is the new style nobody, so yes"
+
+We might have a word with package maintainers to ensure that a user
+"openvpn" is actually created... this is something inside our repo, but
+actual talking to actual people ;-)
 
 Your patch has been applied to the master branch.
 
-commit fd1c460ccfa38ca03e40e05524e2627917c58647
-Author: Lev Stipakov
-Date:   Thu Dec 1 14:59:02 2022 +0200
+commit a6664825494c482e0cbf50ac4a91c6a33874d7a7
+Author: Frank Lichtenheld
+Date:   Tue Nov 29 15:47:31 2022 +0100
 
-     dco: disable dco on Windows if --remote is not defined
+     documentation: avoid recommending --user nobody
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221201125902.400-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25604.html
+     Message-Id: <20221129144731.35105-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25573.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
