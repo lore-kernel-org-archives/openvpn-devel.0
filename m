@@ -1,16 +1,15 @@
-Date: Mon, 5 Dec 2022 13:00:44 +0100
+Date: Mon, 5 Dec 2022 13:08:43 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <Y43dbDUw9m+dgrJG@...1296...>
-References: <20221012133457.1927871-1-arne@...1227...>
- <20221026164522.3773718-1-arne@...1227...>
- <CAGyAFMU6RDJOo6YOYaHXPxfqS0Xt1ctGx_wrF2X-GKoiYsM+wg@...278...>
+Message-ID: <Y43fS1uZEIJQdGu8@...1296...>
+References: <20211123083758.15933-1-fkooman@...2318...>
+ <65eac3b8-9269-b60d-f8fb-6274ff92fd28@...2181...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="YNQnfaFPlFv6d5CN"
+ protocol="application/pgp-signature"; boundary="Q1YiCzl8RLfcZLtv"
 Content-Disposition: inline
-In-Reply-To: <CAGyAFMU6RDJOo6YOYaHXPxfqS0Xt1ctGx_wrF2X-GKoiYsM+wg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2 1/3] Move dco_installed from
- sock->info to sock->info.lsa.actual
+In-Reply-To: <65eac3b8-9269-b60d-f8fb-6274ff92fd28@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] implement net_gateway_ipv6 for
+ --route-ipv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,43 +18,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net, =?iso-8859-1?Q?Fran=E7ois?= Kooman <fkooman@...2318...>
 
---YNQnfaFPlFv6d5CN
+--Q1YiCzl8RLfcZLtv
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Nov 01, 2022 at 11:21:40AM +0200, Lev Stipakov wrote:
-> > @@ -1190,7 +1190,7 @@ link_socket_write(struct link_socket *sock,
-> >                    struct buffer *buf,
-> >                    struct link_socket_actual *to)
-> >  {
-> > -    if (proto_is_udp(sock->info.proto) || sock->info.dco_installed)
-> > +    if (proto_is_udp(sock->info.proto) || to->dco_installed)
-> >      {
+On Mon, Sep 19, 2022 at 09:13:10PM +0200, Antonio Quartulli wrote:
+> For the records, the following changes were requested to this patch=20
+> (some via GH):
 >=20
-> Previously we used to check the dco flag from sock->info and now it is ch=
-anged
-> to "to", which is a separate member in c->c2 (c->c2.to_link_addr vs
-> c->c2.link_socket).
->=20
-> Why not use "sock->info.lsa->actual.dco_installed" ? My understanding
-> is that this patch
-> only moves the flag to a different place and is not supposed to change
-> the behavior.
+> 1) improve (add?) commit message;
+> 2) add comments/documentation to ipv6_get_special_addr()
+> 3) get rid of the ipv6_is_special_addr() wrapper as it is not really=20
+> doing much.
 
-For the sake of the archives:  I asked Arne today, and the reply
-was "this is not pretty, but with Antonio's upcoming changes to DCO,
-it's likely that the dco_installed field goes away, or is reworked
-significantly".
+I think the patch is small and "isolated" enough so it could go into
+the next 2.6_beta2 - if I can have it, with these changes, by start
+of next week...
 
-So for now, we leave it as it is, knowing it's working but not perfect.
+Francois, would that work out?
 
 gert
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -66,22 +55,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---YNQnfaFPlFv6d5CN
+--Q1YiCzl8RLfcZLtv
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJjjd1sAAoJEB2Cnv7KVigSq7wL/0R/GG3TV9FyZVR36kEF++EE
-yerXZbjTXbeq0CrAYnYEId9tMuM0qvosBQE6/EcF448PgGRaxJVkD9jWPcs6xszc
-KqiMHvIICW0t6Q5SaKK9rTySL6ENAkNDABTpUl+7p8Md0/aRNwvKd9H5E1gGEej7
-9k+TTmylW93dhDKmCEh8gwsR/FrqIYzj0BFNkVzB2IFauRwkkv95p2mafe3Q4SZv
-u69Zd4c8GH18cC4yAywJYW7phNjRV9PgONDpwann8vqgGzNV0L1jlhSzodCyHHYT
-MMVsbf8BbxbVOW3yUREMF29NtMRKwHgYkbtzsVd3D3d26k0uCSmrKFqsKeUOAU8+
-EOo6ag7aNk8rRGZ/vKt9QLcDqBTIO2a6fMB+Od4D0dNZfD040Q/FPor8vafYyBu1
-l80In/Uf5UWK7GpfI5QWPfKRpcCtQhwf6yBtpxcxNoGHTr6SBMLsjB+kY1qY6qwK
-b5PLIqTYbzTX08mQrPcAgIknMJGD372jN6n1l4CR1Q==
-=9GGr
+iQGcBAEBAgAGBQJjjd9LAAoJEB2Cnv7KVigSNeUL/iuR+MmSHmX5Q1fIZSfHlfBr
+f3JlNlFbep9sQm6jVxSssDniFgRRmlZBOwRZr5MwEdynUW9eDG+2FiOJ7AP1Hiur
+RfLfDv8ezMomvNZZvVxp6RqB/poURJCanSacsphx89hJb3vvjuF8TK1WLedCs2ae
+dfd4niHBmpEjqkBrXobfi4F5xbLAX8/6dDTwJPKh3PAdQ8Vn9NolLX1e4b8BXxyn
+4FIf4NMcT6OrtdOLSRgorF8So9G3zS1CeEFUaVCaAky/nny5WWaLXp6rcgYthf9d
+TArY3fjsoNJXW251u6axipT+LwTVy4DuxVv+iu4H5qTWfesOI2h2k0haWtYlnkvk
+po/Hmk3+xqQRVs4aOHYQgvXEFflj4i8oEbIjP/9EZYmPu8GZF2Rdq7y3LKgSwFEk
+gwelfaVmI2mHdu+S/9Kzmz0oZYw4voX8uIM3EuIBtv4uZNfoTb4q9SgZo3C7PUFt
+uPMIQfdp7iif1N4W8U00hMMlfvVPKZWyB6lc2tYdXA==
+=xSOP
 -----END PGP SIGNATURE-----
 
---YNQnfaFPlFv6d5CN--
+--Q1YiCzl8RLfcZLtv--
 
