@@ -1,9 +1,10 @@
-Date: Wed, 7 Dec 2022 19:12:49 +0100 (CET)
-Message-Id: <202212071812.2B7ICnwl047668@...2054...>
+Date: Wed, 7 Dec 2022 19:43:32 +0100 (CET)
+Message-Id: <202212071843.2B7IhWFw057835@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221207103530.18198-1-frank@...2641...>
-References: <20221207103530.18198-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: ChangeLog: Fix encoding
+In-Reply-To: <20221207140259.1083577-1-arne@...1227...>
+References: <20221207140259.1083577-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix unit test of test_pkt on
+ little endian Linux
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,38 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Amazing enough, this survived e-mail, being saved and applied on an
-ISO8859-1 system, and generally being close to me...
+Fed this to Github actions, our buildbot army AND tested this on 
+AIX and Linux. And FreeBSD.
 
-Verified with od -c that it is, indeed, now UTF8 umlauts in there!
+Your patch has been applied to the master branch.
 
-0120440    s   )   :       f   i   x       f   o   r   e   i   g   n   _
-0120460    o   p   t   i   o   n   _   {   n   }       t   y   p   o  \n
-0120500   \n   T   Ã 265   i   v   o       L   e   e   d   j   Ã 244   r
-0120520    v       (   1   )   :  \n                           S   t   o
-0120540    p       u   s   i   n   g       d   e   p   r   e   c   a   t
-0120560    e   d       g   e   t   p   a   s   s   (   )  \n  \n   V   i
-0120600    l   l   e       S   k   y   t   t   Ã 244       (   1   )   :
-0120620   \n                           R   E   A   D   M   E   .   d   o
+commit 0f904615bd2eac9d246055ff1ca4e4da95586f86 (master)
+commit 9c923ef3b435f058a3f898691e3d0613a0357fe5 (release/2.6)
+Author: Arne Schwabe
+Date:   Wed Dec 7 15:02:59 2022 +0100
 
+     Fix unit test of test_pkt on little endian Linux
 
-Your patch has been applied to the release/2.6 branch.
-
-commit d4f105c7d36f99b7bf9bfbfe38a6988bcc72f1a5
-Author: Frank Lichtenheld
-Date:   Wed Dec 7 11:35:30 2022 +0100
-
-     ChangeLog: Fix encoding
-
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221207103530.18198-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25630.html
+     Message-Id: <20221207140259.1083577-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25633.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
