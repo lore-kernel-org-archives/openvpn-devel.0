@@ -1,8 +1,10 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Wed,  7 Dec 2022 11:35:30 +0100
-Message-Id: <20221207103530.18198-1-frank@...2641...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2.6] ChangeLog: Fix encoding
+Date: Wed, 7 Dec 2022 13:03:01 +0100 (CET)
+Message-Id: <202212071203.2B7C319J097883@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221207100201.6467-1-a@...2181...>
+References: <20221207100201.6467-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: disable DCO if --secret is
+ specified
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,57 +15,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Convert to UTF-8.
-Also collapse entries "Richard Bonhomme" and "Richard T Bonhomme".
+Acked-by: Gert Doering <gert@...1296...>
 
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
- ChangeLog | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+Nicely trivial, and gets the job done :-) - 
 
-diff --git a/ChangeLog b/ChangeLog
-index d1a47dec..64ec4bff 100644
---- a/ChangeLog
-+++ b/ChangeLog
-@@ -398,7 +398,7 @@ Arne Schwabe (289):
-       Signal USR1 when connection initialising fails
-       Allow reconnecting in p2p mode work under FreeBSD
- 
--Camille Gu�rin (1):
-+Camille Guérin (1):
-       Removed error message for an option flag not supported with --server-ipv6
- 
- David Korczynski (1):
-@@ -683,12 +683,10 @@ Michael Baentsch (1):
- Paolo Cerrito (1):
-       Insert client connection data into PAM environment
- 
--Richard Bonhomme (3):
-+Richard Bonhomme (6):
-       Improve error msg when all TAP adapters are in use 'or disabled'
-       Man page sections corrections
-       Do not print Diffie Hellman parameters file to log file
--
--Richard T Bonhomme (3):
-       Log messages: Replace NCP with --data-ciphers (NFC)
-       doc link-options.rst: Use free open-source dynamic-DNS provider URL
-       doc/protocol-options.rst: Correct default for --allow-compression
-@@ -794,10 +792,10 @@ Todd Zullinger (2):
-       Update IRC information in CONTRIBUTING.rst
-       doc/man (vpn-network-options): fix foreign_option_{n} typo
- 
--T�ivo Leedj�rv (1):
-+Tõivo Leedjärv (1):
-       Stop using deprecated getpass()
- 
--Ville Skytt� (1):
-+Ville Skyttä (1):
-       README.down-root: Fix plugin module name
- 
- Vladislav Grishenko (8):
--- 
-2.34.1
+Dec  7 11:21:02 ubuntu2004 tun-udp-p2p[1139052]: --secret is set. Disabling data channel offload
+
+.. and subsequently, tests succeed, and the instance does not crash
+anymore.  Thanks.  (Tested only on the Linux/DCO Server + Client, because
+the code path is irrelevant on non-DCO systems)
+
+I have added "Github: OpenVPN/openvpn#188" to the commit message, as
+discussed on IRC just now.
+
+Your patch has been applied to the master and release/2.6 branch.
+
+commit f5febf7f8998e425afb051cd6f965f4dd40b1659 (master)
+commit 952a33a879ee106ee0877b872ad3d6c58983b521 (release/2.6)
+Author: Antonio Quartulli
+Date:   Wed Dec 7 11:02:01 2022 +0100
+
+     disable DCO if --secret is specified
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20221207100201.6467-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25629.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
