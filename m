@@ -1,10 +1,11 @@
-Date: Wed, 7 Dec 2022 13:03:01 +0100 (CET)
-Message-Id: <202212071203.2B7C319J097883@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221207100201.6467-1-a@...2181...>
+Message-ID: <b25edb7c-502d-9299-a407-070185788f9f@...1227...>
+Date: Wed, 7 Dec 2022 13:25:26 +0100
+MIME-Version: 1.0
 References: <20221207100201.6467-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: disable DCO if --secret is
- specified
+Content-Language: en-GB
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20221207100201.6467-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] disable DCO if --secret is specified
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,43 +14,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Am 07.12.22 um 11:02 schrieb Antonio Quartulli:
+> P2P mode with pre-shared key is deprecated, unsecure and should NOT be
+> used. This said we still carry it around for a bit and we have to make
+> sure it does not fights with DCO.
+> 
+> Disable DCO at all when --secret is specified.
+> 
+> Signed-off-by: Antonio Quartulli <a@...2181...>
+> ---
+>   src/openvpn/dco.c | 6 ++++++
+>   1 file changed, 6 insertions(+)
+> 
+> diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+> index d599dd7e..1cd698bf 100644
+> --- a/src/openvpn/dco.c
+> +++ b/src/openvpn/dco.c
+> @@ -274,6 +274,12 @@ dco_check_startup_option(int msglevel, const struct options *o)
+>           return false;
+>       }
+>   
+> +    if (o->shared_secret_file)
+> +    {
+> +        msg(msglevel, "--secret is set. Disabling data channel offload");
+> +        return false;
+> +    }
 
-Nicely trivial, and gets the job done :-) - 
+I think you missing the mode when you have neither --secret nor any of 
+the tls modes.
 
-Dec  7 11:21:02 ubuntu2004 tun-udp-p2p[1139052]: --secret is set. Disabling data channel offload
-
-.. and subsequently, tests succeed, and the instance does not crash
-anymore.  Thanks.  (Tested only on the Linux/DCO Server + Client, because
-the code path is irrelevant on non-DCO systems)
-
-I have added "Github: OpenVPN/openvpn#188" to the commit message, as
-discussed on IRC just now.
-
-Your patch has been applied to the master and release/2.6 branch.
-
-commit f5febf7f8998e425afb051cd6f965f4dd40b1659 (master)
-commit 952a33a879ee106ee0877b872ad3d6c58983b521 (release/2.6)
-Author: Antonio Quartulli
-Date:   Wed Dec 7 11:02:01 2022 +0100
-
-     disable DCO if --secret is specified
-
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221207100201.6467-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25629.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+Arne
 
 
