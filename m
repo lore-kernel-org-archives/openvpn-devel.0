@@ -1,14 +1,11 @@
-Message-ID: <be6ca0b6-8c90-48a9-2f8a-ef175a824bf4@...1227...>
-Date: Wed, 7 Dec 2022 00:26:11 +0100
+Message-ID: <707e6961-f15f-5500-3a6c-c6d0b5c8f051@...2704...>
+Date: Wed, 7 Dec 2022 02:08:11 +0100
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <20221206133647.954724-1-arne@...1227...>
- <202212061554.2B6Fscpj021683@...2054...>
- <Y49rj2dL4+OYvjNO@...1296...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <Y49rj2dL4+OYvjNO@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Fix connection cookie not
- including address and fix endianness in test
+Content-Language: de-DE, en-US
+From: Marc Becker <marc.becker@...2704...>
+References: <1386e3cc-fc65-aa68-fa88-3639f6aec5a2@...2704...>
+In-Reply-To: <1386e3cc-fc65-aa68-fa88-3639f6aec5a2@...2704...>
+Subject: [Openvpn-devel] [PATCH 2/3] use new pkcs11-helper provider interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,74 +16,81 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Am 06.12.22 um 17:19 schrieb Gert Doering:
-> Hi,
-> 
-> On Tue, Dec 06, 2022 at 04:54:38PM +0100, Gert Doering wrote:
->> I have not server-tested this, as it "should not" make a difference,
->> and Arne did test this on s390.  The full server tests will run
->> tonight, though.
-> 
-> I *should* have, as that would have caught the fact that this patch
-> breaks pkt_testdriver on Linux, no matter if OpenSSL or mbedTLS
-> 
-> [ RUN      ] test_calc_session_id_hmac_static
-> [  ERROR   ] --- difference at offset 0 0xffffff84 0xffffff8b
-> difference at offset 1 0x73 0xffffffeb
-> difference at offset 2 0x52 0x3d
-> difference at offset 3 0x2b 0x20
-> difference at offset 4 0x5b 0x14
-> difference at offset 5 0xffffffa9 0x53
-> difference at offset 6 0x2a 0xffffffbe
-> difference at offset 7 0x70 0x0a
-> 8 bytes of 0x7ffe60967bd0 and 0x7ffe60967bc8 differ
-> [   LINE   ] --- test_pkt.c:492: error: Failure!
-> [  FAILED  ] test_calc_session_id_hmac_static
-> ...
-> [==========] 9 test(s) run.
-> [  PASSED  ] 8 test(s).
-> [  FAILED  ] 1 test(s), listed below:
-> [  FAILED  ] test_calc_session_id_hmac_static
-> 
->   1 FAILED TEST(S)
-> FAIL: pkt_testdriver
-> 
-> this is not specific to OpenSSL (1.1.1*) or mbedTLS, but seems to
-> be "a Linux thing", so I assume it's something related to sockaddr
-> (as this patch fixes the switch/case to actually look at the IPv4 addr)
+split provider creation, property modifications and initialization.
+new interface available since pkcs11-helper v1.28
 
-Yeah. macOS has:
+---
+  src/openvpn/pkcs11.c | 35 +++++++++++++++++++++++++++++++++++
+  1 file changed, 35 insertions(+)
 
-struct sockaddr_in {
-	__uint8_t       sin_len;
-	sa_family_t     sin_family;
-	in_port_t       sin_port;
-	struct  in_addr sin_addr;
-	char            sin_zero[8];
-};
+diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c
+index b6ceb582..6ef26eb0 100644
+--- a/src/openvpn/pkcs11.c
++++ b/src/openvpn/pkcs11.c
+@@ -396,6 +396,40 @@ pkcs11_addProvider(
+          provider
+          );
 
-with sa_family_t also uint8_t
-
-and Linux has stupidly complex definition that boils down to:
-
-struct sockaddr_in
-   {
-     uint16_t sin_family;
-     in_port_t sin_port;
-     struct in_addr sin_addr
-     char sin_zero[8];
-   };
-
-So Linux basically has a 16 bit uint16 instead of two uint8_t. Because 
-s390x is big endian, this happens to be same as on all BSDs with first 
-byte being 0 and second byte being the family.
-
-I will send a fix that fixes the fix *grumbels*
-
-Arne
-
-
++#if PKCS11H_VERSION >= ((1<<16) | (28<<8) | (0<<0))
++    if ((rv = pkcs11h_registerProvider(provider)) != CKR_OK
++        || (rv = pkcs11h_setProviderProperty(provider, 
+PKCS11H_PROVIDER_PROPERTY_LOCATION, provider, strlen(provider) + 1)) != 
+CKR_OK)
++    {
++        msg(M_WARN, "PKCS#11: Cannot create provider '%s' %ld-'%s'", 
+provider, rv, pkcs11h_getMessage(rv));
++    }
++    else
++    {
++        PKCS11H_BOOL allow_protected_auth = protected_auth;
++        PKCS11H_BOOL cert_is_private = cert_private;
++
++        if (allow_protected_auth
++            && (rv = pkcs11h_setProviderProperty(provider, 
+PKCS11H_PROVIDER_PROPERTY_ALLOW_PROTECTED_AUTH, &allow_protected_auth, 
+sizeof(allow_protected_auth))) != CKR_OK)
++        {
++            msg(M_WARN, "PKCS#11: Cannot enable protected 
+authentication '%s' %ld-'%s'", provider, rv, pkcs11h_getMessage(rv));
++        }
++        if (private_mode != PKCS11H_PRIVATEMODE_MASK_AUTO
++            && (rv = pkcs11h_setProviderProperty(provider, 
+PKCS11H_PROVIDER_PROPERTY_MASK_PRIVATE_MODE, &private_mode, 
+sizeof(private_mode))) != CKR_OK)
++        {
++            msg(M_WARN, "PKCS#11: Cannot private mode '%s' %ld-'%s'", 
+provider, rv, pkcs11h_getMessage(rv));
++        }
++        if (cert_is_private
++            && (rv = pkcs11h_setProviderProperty(provider, 
+PKCS11H_PROVIDER_PROPERTY_CERT_IS_PRIVATE, &cert_is_private, 
+sizeof(cert_is_private))) != CKR_OK)
++        {
++            msg(M_WARN, "PKCS#11: Cannot set provider properties '%s' 
+%ld-'%s'", provider, rv, pkcs11h_getMessage(rv));
++        }
++
++        if ((rv = pkcs11h_initializeProvider(provider)) != CKR_OK)
++        {
++            pkcs11h_removeProvider(provider);
++        }
++    }
++    if (rv != CKR_OK)
++#else
+      if (
+          (rv = pkcs11h_addProvider(
+               provider,
+@@ -407,6 +441,7 @@ pkcs11_addProvider(
+               cert_private
+               )) != CKR_OK
+          )
++#endif
+      {
+          msg(M_WARN, "PKCS#11: Cannot initialize provider '%s' 
+%ld-'%s'", provider, rv, pkcs11h_getMessage(rv));
+      }
+-- 
+2.38.1.windows.1
 
