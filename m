@@ -1,9 +1,9 @@
+From: Arne Schwabe <arne@...1227...>
+Date: Thu,  8 Dec 2022 16:31:29 +0100
+Message-Id: <20221208153129.1207228-1-arne@...1227...>
 MIME-Version: 1.0
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 7 Dec 2022 17:01:30 -0500
-Message-ID: <CAKuzo_gXCuTLmVixX_4r3pNfzTs2+hsX89w7EqsxxGrRq0F-Gg@...278...>
-Content-Type: multipart/alternative; boundary="0000000000000d99ed05ef4411e7"
-Subject: [Openvpn-devel] Linking to GUI changes in release announcements
+Subject: [Openvpn-devel] [PATCH] Ignore connection attempts while server is
+ shutting down
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,44 +12,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>, Frank Lichtenheld <frank@...2641...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---0000000000000d99ed05ef4411e7
-Content-Type: text/plain; charset="UTF-8"
+Currently we still allow clients to connect while the server is waiting
+to shut down. This window is very small (2s) and is only used when
+explicit-exit-notify is enabled on the server side.
 
-Hi,
+The chance of a client connecting during this time period is very low
+unless someone puts something stupid like --connect-retry 1 3 into his/her
+client config and forces the client to reconnect during this time period.
 
-Now that we have a shiny, newly updated, CHANGES.rst file for the GUI, it
-may be useful to link to it in future release announcements:
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/mudp.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-https://github.com/OpenVPN/openvpn-gui/blob/master/CHANGES.rst
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index bdf35a8ba..458152335 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -229,8 +229,13 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
+         if (!mi)
+         {
+             struct tls_pre_decrypt_state state = {0};
+-
+-            if (do_pre_decrypt_check(m, &state, real))
++            if (m->deferred_shutdown_signal.signal_received)
++            {
++                msg(D_MULTI_ERRORS,
++                    "MULTI: Connection attempt from %s ignored while server is "
++                    "shutting down", mroute_addr_print(&real, &gc));
++            }
++            else if (do_pre_decrypt_check(m, &state, real))
+             {
+                 /* This is an unknown session but with valid tls-auth/tls-crypt
+                  * (or no auth at all).  If this is the initial packet of a
+-- 
+2.37.1 (Apple Git-137.1)
 
-Although almost all new features in the GUI were made available
-incrementally, one feature new in 2.6 (not installed in 2.5.x releases) is
-the PLAP support. Here is a possible description of this feature:
-
-- Pre-logon access provider: supports starting of connections from the
-login screen before the user logs in. Useful when connection to a domain
-controller via a VPN tunnel is required for login.
-
-Selva
-
---0000000000000d99ed05ef4411e7
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi,<div><br></div><div>Now that we have a shiny, newly upd=
-ated, CHANGES.rst file for the GUI, it may be useful to link to it in futur=
-e release announcements:</div><div><br></div><div><a href=3D"https://github=
-.com/OpenVPN/openvpn-gui/blob/master/CHANGES.rst">https://github.com/OpenVP=
-N/openvpn-gui/blob/master/CHANGES.rst</a><br></div><div><br></div><div>Alth=
-ough almost all new features in the GUI were made available incrementally, =
-one feature new in 2.6 (not installed in 2.5.x releases) is the PLAP suppor=
-t. Here is a possible description of this feature:</div><div><br></div><div=
->- Pre-logon access provider: supports starting of connections from the log=
-in screen before the user logs in. Useful when connection to a domain contr=
-oller via a VPN tunnel is required for login.</div><div><br></div><div>Selv=
-a</div></div>
-
---0000000000000d99ed05ef4411e7--
 
