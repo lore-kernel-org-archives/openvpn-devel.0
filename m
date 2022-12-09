@@ -1,9 +1,14 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Thu,  8 Dec 2022 16:31:29 +0100
-Message-Id: <20221208153129.1207228-1-arne@...1227...>
+From: "Vladislav Grishenko" <themiron@...2010...>
+References: <20221122183706.12561-1-gert@...1296...>
+ <20221130205718.79765-1-gert@...1296...>
+ <Y4i0JBNkm0/77lzt@...2685...>
+In-Reply-To: <Y4i0JBNkm0/77lzt@...2685...>
+Date: Fri, 9 Dec 2022 23:19:14 +0500
+Message-ID: <030e01d90bfa$bec96720$3c5c3560$@yandex-team.ru>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Ignore connection attempts while server is
- shutting down
+Content-Language: ru
+Subject: Re: [Openvpn-devel] [PATCH v14] Add DNS SRV remote host discovery
+ support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,44 +17,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+To: 'Frank Lichtenheld' <frank@...2641...>, 'Gert Doering' <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Currently we still allow clients to connect while the server is waiting
-to shut down. This window is very small (2s) and is only used when
-explicit-exit-notify is enabled on the server side.
+Hi Frank,
 
-The chance of a client connecting during this time period is very low
-unless someone puts something stupid like --connect-retry 1 3 into his/her
-client config and forces the client to reconnect during this time period.
+> > +    "--remote-srv domain [service] : Perform DNS SRV remote host
+> discovery.\n"
+> 
+> Missing [proto]
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/mudp.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+Sure, will add
 
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index bdf35a8ba..458152335 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -229,8 +229,13 @@ multi_get_create_instance_udp(struct multi_context *m, bool *floated)
-         if (!mi)
-         {
-             struct tls_pre_decrypt_state state = {0};
--
--            if (do_pre_decrypt_check(m, &state, real))
-+            if (m->deferred_shutdown_signal.signal_received)
-+            {
-+                msg(D_MULTI_ERRORS,
-+                    "MULTI: Connection attempt from %s ignored while server is "
-+                    "shutting down", mroute_addr_print(&real, &gc));
-+            }
-+            else if (do_pre_decrypt_check(m, &state, real))
-             {
-                 /* This is an unknown session but with valid tls-auth/tls-crypt
-                  * (or no auth at all).  If this is the initial packet of a
--- 
-2.37.1 (Apple Git-137.1)
+> > -    if (!proto_is_udp(ce->proto) && options->mtu_test)
+> > +    /* Defer validation for --remote-srv with auto protocol */
+> > +    if (!proto_is_udp(ce->proto) && options->mtu_test
+> > +        && !(ce->remote_srv && ce->proto == PROTO_AUTO))
+> >      {
+> >          msg(M_USAGE, "--mtu-test only makes sense with --proto udp");
+> 
+> You disable this test here, but you don't add this in any of the
+> later checks. So it seems this test is just completely removed when
+> using remote-srv?
+
+Right, this check should be moved into options_postprocess_verify_ce_proto()
+and seems forgotten, will add it too. Thank you
+
+> > + * get_cached_srv_entry return 0 on success and -1
+> 
+> "returns"
+
+Ok, sure
+
+--
+Best Regards, Vladislav Grishenko
+
 
 
