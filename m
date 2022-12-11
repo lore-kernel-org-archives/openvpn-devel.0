@@ -1,10 +1,13 @@
-From: Marc Becker <marc.becker@...2704...>
-Date: Sun, 11 Dec 2022 21:01:08 +0100
-Message-Id: <20221211200108.1402-1-marc.becker@...2704...>
-In-Reply-To: <1386e3cc-fc65-aa68-fa88-3639f6aec5a2@...2704...>
-References: <1386e3cc-fc65-aa68-fa88-3639f6aec5a2@...2704...>
+Message-ID: <fa659222-2b20-82d5-36d9-9f320592b1e4@...2704...>
+Date: Sun, 11 Dec 2022 21:15:16 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 3/3] special handling for PKCS11
+References: <1386e3cc-fc65-aa68-fa88-3639f6aec5a2@...2704...>
+ <20221211192124.1126-1-marc.becker@...2704...>
+ <CAKuzo_iFLmH3R=K6LKcbii+vzyCvU8c6hxKRCtHuRd8gt75z0A@...278...>
+Content-Language: de-DE, en-US
+From: Marc Becker <marc.becker@...2704...>
+In-Reply-To: <CAKuzo_iFLmH3R=K6LKcbii+vzyCvU8c6hxKRCtHuRd8gt75z0A@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2 3/3] special handling for PKCS11
  providers on win32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,41 +17,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Change win32 dynamic loader behavior when supplying an absolute path.
-The DLL location is considered/preferred to resolve dependencies.
-Support in pkcs11-helper for loader flag is detected at compile time.
+Hi,
 
-3rd party DLLs and additional dependencies do no longer need to be moved
-to the OpenVPN directory or require changes to %PATH% configuration.
+my suggestion would be to decide if we want v2 or v3 of 3/3
+depending on the pkcs11-helper state immediately before next beta.
 
-Signed-off-by: Marc Becker <marc.becker@...2704...>
----
- src/openvpn/pkcs11.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+OpenVPN 2.6 changing behavior shortly after release would be something
+to avoid in any case.
+Having the patch around in 2.6 branch only and dropping it in 2.6.1 may 
+also be an acceptable compromise:
+3/3 v2 -> 2.6 branch
+3/3 v3 -> master
 
-diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c
-index b74ac8f4..aa027337 100644
---- a/src/openvpn/pkcs11.c
-+++ b/src/openvpn/pkcs11.c
-@@ -420,6 +420,13 @@ pkcs11_addProvider(
-         {
-             rv = pkcs11h_setProviderProperty(provider, PKCS11H_PROVIDER_PROPERTY_CERT_IS_PRIVATE, &cert_is_private, sizeof(cert_is_private));
-         }
-+#if defined(WIN32) && defined(PKCS11H_PROVIDER_PROPERTY_LOADER_FLAGS)
-+        if (rv == CKR_OK && platform_absolute_pathname(provider))
-+        {
-+            unsigned loader_flags = LOAD_LIBRARY_SEARCH_DEFAULT_DIRS | LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR;
-+            rv = pkcs11h_setProviderProperty(provider, PKCS11H_PROVIDER_PROPERTY_LOADER_FLAGS, &loader_flags, sizeof(loader_flags));
-+        }
-+#endif
- 
-         if (rv != CKR_OK || (rv = pkcs11h_initializeProvider(provider)) != CKR_OK)
-         {
--- 
-2.38.1.windows.1
+The timeline for pkcs11-helper releases is not something I even dare to 
+predict. :)
 
+
+Regrads,
+Marc
 
