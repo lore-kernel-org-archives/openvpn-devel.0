@@ -1,10 +1,12 @@
+Message-ID: <bfa5c96e-3478-5150-0066-ee05643be9f8@...1227...>
+Date: Mon, 12 Dec 2022 13:50:51 +0100
 MIME-Version: 1.0
+Content-Language: en-GB
 References: <20221205164103.9190-1-kprovost@...2661...>
  <20221205164103.9190-2-kprovost@...2661...>
-In-Reply-To: <20221205164103.9190-2-kprovost@...2661...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 12 Dec 2022 14:34:10 +0200
-Message-ID: <CAGyAFMW_pYqUKXttVQFzeRD-PAapHznauqbgfnettcwerkNyhQ@...278...>
+ <CAGyAFMW_pYqUKXttVQFzeRD-PAapHznauqbgfnettcwerkNyhQ@...278...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <CAGyAFMW_pYqUKXttVQFzeRD-PAapHznauqbgfnettcwerkNyhQ@...278...>
 Subject: Re: [Openvpn-devel] [PATCH 1/4] Read DCO traffic stats from the
  kernel
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,36 +17,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Kristof Provost <kprovost@...2661...>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Lev Stipakov <lstipakov@...277...>, Kristof Provost <kprovost@...2661...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Am 12.12.22 um 13:34 schrieb Lev Stipakov:
+> Hi,
+> 
+> This is good - I need an API to get stats to make openvpn-gui show
+> those (via the management interface).
+> 
+> I am not too much into FreeBSD parts, but
+> 
+>> +    hash_iterator_init(m->hash, &hi);
+>> +
+>> +    while ((he = hash_iterator_next(&hi)))
+>> +    {
+>> +        struct multi_instance *mi = (struct multi_instance *) he->value;
+>> +
+>> +        if (mi->context.c2.tls_multi->peer_id != peerid)
+>> +            continue;
+> 
+> Shouldn't we use m->instances[peerid] instead of iterating over m->hash?
+> 
 
-This is good - I need an API to get stats to make openvpn-gui show
-those (via the management interface).
+Yes and a check that kernel does not give something > max_peer
 
-I am not too much into FreeBSD parts, but
+Arne
 
-> +    hash_iterator_init(m->hash, &hi);
-> +
-> +    while ((he = hash_iterator_next(&hi)))
-> +    {
-> +        struct multi_instance *mi = (struct multi_instance *) he->value;
-> +
-> +        if (mi->context.c2.tls_multi->peer_id != peerid)
-> +            continue;
-
-Shouldn't we use m->instances[peerid] instead of iterating over m->hash?
-
-from multi.h:
-
-struct multi_context {
-    struct multi_instance **instances;  /**< Array of multi_instances.
-An instance can be
-                                         * accessed using peer-id as
-an index. */
--- 
--Lev
 
