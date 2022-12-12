@@ -1,14 +1,10 @@
-Message-ID: <fa659222-2b20-82d5-36d9-9f320592b1e4@...2704...>
-Date: Sun, 11 Dec 2022 21:15:16 +0100
-MIME-Version: 1.0
-References: <1386e3cc-fc65-aa68-fa88-3639f6aec5a2@...2704...>
- <20221211192124.1126-1-marc.becker@...2704...>
- <CAKuzo_iFLmH3R=K6LKcbii+vzyCvU8c6hxKRCtHuRd8gt75z0A@...278...>
-Content-Language: de-DE, en-US
-From: Marc Becker <marc.becker@...2704...>
-In-Reply-To: <CAKuzo_iFLmH3R=K6LKcbii+vzyCvU8c6hxKRCtHuRd8gt75z0A@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2 3/3] special handling for PKCS11
- providers on win32
+Date: Mon, 12 Dec 2022 09:32:27 +0100 (CET)
+Message-Id: <202212120832.2BC8WRCc048871@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221210134427.1433419-1-arne@...1227...>
+References: <20221210134427.1433419-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Disable DCO when TLS mode is
+ not used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,27 +13,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Selva Nair <selva.nair@...277...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Acked-by: Gert Doering <gert@...1296...>
 
-my suggestion would be to decide if we want v2 or v3 of 3/3
-depending on the pkcs11-helper state immediately before next beta.
+Yeah, thanks :-) (tested on the "p2p --secret" server, still does the
+right thing.  Have no "no secrets at all" setup, but from stare-at-code
+I see no reason why this wouldn't work as well)
 
-OpenVPN 2.6 changing behavior shortly after release would be something
-to avoid in any case.
-Having the patch around in 2.6 branch only and dropping it in 2.6.1 may 
-also be an acceptable compromise:
-3/3 v2 -> 2.6 branch
-3/3 v3 -> master
-
-The timeline for pkcs11-helper releases is not something I even dare to 
-predict. :)
+Dec 12 09:29:15 ubuntu2004 tun-udp-p2p[1272956]: No tls-client or tls-server option in configuration detected. Disabling data channel offload.
+Dec 12 09:29:15 ubuntu2004 tun-udp-p2p[1272956]: DEPRECATION: No tls-client or tls-server option in configuration detected. OpenVPN 2.7 will remove the functionality to run a VPN without TLS. See the examples section in the manual page for examples of a similar quick setup with peer-fingerprint.
+..
+Dec 12 09:29:15 ubuntu2004 tun-udp-p2p[1272957]: TUN/TAP device tun5 opened
 
 
-Regrads,
-Marc
+Your patch has been applied to the master and release/2.6 branch.
+
+commit a666668f064c7ff57cdebb3afceb72e1263a3ba9 (master)
+commit 9b277f426c7d295c8f354496e8e226fc26ff7b1c (release/2.6)
+Author: Arne Schwabe
+Date:   Sat Dec 10 14:44:27 2022 +0100
+
+     Disable DCO when TLS mode is not used
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20221210134427.1433419-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25641.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
