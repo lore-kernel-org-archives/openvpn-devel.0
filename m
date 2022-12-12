@@ -1,12 +1,12 @@
-Message-ID: <3406b66c-81a3-9db5-1e65-7038ba81da14@...1227...>
-Date: Mon, 12 Dec 2022 13:23:35 +0100
-MIME-Version: 1.0
-Content-Language: en-GB
+From: Maximilian Fillinger <maximilian.fillinger@...2507...>
+Date: Mon, 12 Dec 2022 12:24:10 +0000
+Message-ID: <1e23d42e6ba74b27978d94f9012a0029@...2507...>
 References: <20221126162648.150678-1-maximilian.fillinger@...2507...>
  <20221126162648.150678-2-maximilian.fillinger@...2507...>
  <Y5cYjSu0D5P4QMIZ@...1296...>
-From: Arne Schwabe <arne@...1227...>
 In-Reply-To: <Y5cYjSu0D5P4QMIZ@...1296...>
+Content-Language: en-US
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH 2/2] Fix message for too long
  tls-crypt-v2 metadata
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,44 +17,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, Max Fillinger <maximilian.fillinger@...2507...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Am 12.12.22 um 13:03 schrieb Gert Doering:
+Hi!
+
+> -----Original Message-----
+> From: Gert Doering [mailto:gert@...1296...]
+> Sent: maandag 12 december 2022 13:03
+> To: Maximilian Fillinger <maximilian.fillinger@...2507...>
+> Cc: openvpn-devel@lists.sourceforge.net
+> Subject: Re: [Openvpn-devel] [PATCH 2/2] Fix message for too long tls-
+> crypt-v2 metadata
+>=20
 > Hi,
-> 
+>=20
 > On Sat, Nov 26, 2022 at 05:26:48PM +0100, Max Fillinger wrote:
->> The current code only checks if the base64-encoded metadata is at most
->> 980 characters. However, that can encode up to 735 bytes of data, while
->> only up to 733 bytes are allowed. When passing 734 or 735 bytes, openvpn
->> prints a misleading error message saying that the base64 cannot be
->> decoded.
->>
->> This patch checks the decoded length to show an accurate error message.
-> 
+> > The current code only checks if the base64-encoded metadata is at most
+> > 980 characters. However, that can encode up to 735 bytes of data,
+> while
+> > only up to 733 bytes are allowed. When passing 734 or 735 bytes,
+> openvpn
+> > prints a misleading error message saying that the base64 cannot be
+> > decoded.
+> >
+> > This patch checks the decoded length to show an accurate error
+> message.
+>=20
 > This patch looks overly complex to me for "change 735 to 733" - could
 > you (or Arne) explain the change a bit better?
-> 
-> (I see that the patch has an ACK, so this is not a showstopper, just
-> be being confused)
 
-Problem is that base64 does padding. So e.g.
+What's going on is that the tls-crypt-v2 metadata can be at most 733 bytes.
+But the metadata is supplied in base64. If you want to encode 733 bytes in
+base64, you need 980 characters.
 
-a => YQ==
-ab => YWI=
-abc => YWJj
+Right now, openvpn just checks that we have at most 980 base64 characters
+and then tries to decode them into a 733 byte buffer. But 980 characters
+of base64 can encode up to 735 bytes. In that case, openvpn gives a fatal
+error about being unable to decode the base64 which I find misleading.
 
-So checking the length of the base64 gives you only something that is 
-rounded up to the next 3 bytes (base64 encodes 3 bytes to 4 bytes).
+My patch always allocates a large enough buffer to decode the base64 and
+checks that the decoded length is <=3D 733. An alternative would be to check
+the base64 length, decode to a 735 bytes buffer, then check the decoded
+length. I thought it's cleaner to have one length check, but I don't have
+a strong opinion about this.
 
-So if you have a limit like 733, you need to actually decode the base64 
-to check if it is short enough. The alternative would be to only allow 
-732 bytes, so we could check the base64 length again or use 735 bytes 
-and use a maximum tls-crypt wrapped key size of 1026 bytes (which sounds 
-a bit weird)
-
-Arne
 
 
