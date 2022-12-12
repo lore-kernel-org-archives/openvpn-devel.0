@@ -1,12 +1,15 @@
-Message-ID: <2680b52b-e2d8-9a44-e2ee-b227ac374313@...1227...>
-Date: Mon, 12 Dec 2022 15:25:54 +0100
+From: Maximilian Fillinger <maximilian.fillinger@...2507...>
+Date: Mon, 12 Dec 2022 17:06:47 +0000
+Message-ID: <c90d03a235d24004bf46367a0d341f6e@...2507...>
+References: <20221126162648.150678-1-maximilian.fillinger@...2507...>
+ <20221126162648.150678-2-maximilian.fillinger@...2507...>
+ <Y5cYjSu0D5P4QMIZ@...1296...>
+ <3406b66c-81a3-9db5-1e65-7038ba81da14@...1227...>
+In-Reply-To: <3406b66c-81a3-9db5-1e65-7038ba81da14@...1227...>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <20221212115642.2139-1-lstipakov@...277...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20221212115642.2139-1-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] management: add timer to push
- BYTECOUNT
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Fix message for too long
+ tls-crypt-v2 metadata
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +18,17 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Arne Schwabe <arne@...1227...>, Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Am 12.12.22 um 12:56 schrieb Lev Stipakov:
-> From: Lev Stipakov <lev@...515...>
-> 
-> At the moment BYTECOUNT in,out is pushed if there is traffic.
-> With DCO, userspace process doesn't see the traffic, so we need
-> to add a timer which periodically fetches stats from DCO and
-> pushes to management client. The timer interval is set by existing
-> "bytecount n" management command.
-> 
-> This commit only adds a timer, stats fetching from DCO will be added
-> later.
-
-
-If you do the timers anyway why keep the other logic that triggers on 
-                    updating the byte count? That feels duplicating and 
-unnecessary complexity. So if we switch to a timer, I would strongly 
-advocate to remove the other code path to avoid having two code paths 
-that only add complexity but do not offer any significant (none?) 
-benefit vs only keeping the timer.
-
-Arne
-
-
+PiBTbyBpZiB5b3UgaGF2ZSBhIGxpbWl0IGxpa2UgNzMzLCB5b3UgbmVlZCB0byBhY3R1YWxseSBk
+ZWNvZGUgdGhlIGJhc2U2NA0KPiB0byBjaGVjayBpZiBpdCBpcyBzaG9ydCBlbm91Z2guIFRoZSBh
+bHRlcm5hdGl2ZSB3b3VsZCBiZSB0byBvbmx5IGFsbG93DQo+IDczMiBieXRlcywgc28gd2UgY291
+bGQgY2hlY2sgdGhlIGJhc2U2NCBsZW5ndGggYWdhaW4gb3IgdXNlIDczNSBieXRlcw0KPiBhbmQg
+dXNlIGEgbWF4aW11bSB0bHMtY3J5cHQgd3JhcHBlZCBrZXkgc2l6ZSBvZiAxMDI2IGJ5dGVzICh3
+aGljaCBzb3VuZHMNCj4gYSBiaXQgd2VpcmQpDQoNCkFsbG93aW5nIDczMiBieXRlcy85NzkgY2hh
+cmFjdGVycyBhY3R1YWxseSBzZWVtcyBsaWtlIHRoZSBjbGVhbmVzdCBzb2x1dGlvbg0KdG8gbWUu
+IEl0IHNvbWVob3cganVzdCBkaWRuJ3Qgb2NjdXIgdG8gbWUuDQoNCldlbGwsIG5vdyB0aGF0IG15
+IHNvbHV0aW9uIGlzIGFja2VkLCB3ZSBjYW4ganVzdCBnbyB3aXRoIGl0Lg0K
