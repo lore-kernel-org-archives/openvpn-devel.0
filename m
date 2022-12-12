@@ -1,12 +1,13 @@
-Message-ID: <44ce157b-9742-f156-7245-fc6132332962@...1227...>
-Date: Mon, 12 Dec 2022 12:54:50 +0100
+Message-ID: <39b938a3-3431-fdbd-6ab0-a41a70fa3ab8@...1227...>
+Date: Mon, 12 Dec 2022 12:56:12 +0100
 MIME-Version: 1.0
 Content-Language: en-GB
 References: <20221126162648.150678-1-maximilian.fillinger@...2507...>
+ <20221126162648.150678-2-maximilian.fillinger@...2507...>
 From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20221126162648.150678-1-maximilian.fillinger@...2507...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Correct tls-crypt-v2 metadata
- length in man page
+In-Reply-To: <20221126162648.150678-2-maximilian.fillinger@...2507...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Fix message for too long
+ tls-crypt-v2 metadata
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,11 +21,15 @@ Content-Transfer-Encoding: 7bit
 To: Max Fillinger <maximilian.fillinger@...2507...>, openvpn-devel@lists.sourceforge.net
 
 Am 26.11.22 um 17:26 schrieb Max Fillinger:
-> The manual page claims that the client metadata can be up to 735 bytes
-> (encoded as upt to 980 characters base64), but the actual maximum length
-> is 733 bytes which is also encoded as 980 characters in base64.
+> The current code only checks if the base64-encoded metadata is at most
+> 980 characters. However, that can encode up to 735 bytes of data, while
+> only up to 733 bytes are allowed. When passing 734 or 735 bytes, openvpn
+> prints a misleading error message saying that the base64 cannot be
+> decoded.
 > 
-> Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+> This patch checks the decoded length to show an accurate error message.
+> 
+>
 
 Acked-By: Arne Schwabe <arne@...1227...>
 
