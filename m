@@ -1,10 +1,13 @@
-Date: Mon, 12 Dec 2022 14:07:30 +0100 (CET)
-Message-Id: <202212121307.2BCD7Ukp085864@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221208153129.1207228-1-arne@...1227...>
-References: <20221208153129.1207228-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Ignore connection attempts
- while server is shutting down
+Message-ID: <051ea819-72c4-54b6-6221-3bd36890d51e@...1227...>
+Date: Mon, 12 Dec 2022 14:28:19 +0100
+MIME-Version: 1.0
+Content-Language: en-GB
+References: <20221126162648.150678-1-maximilian.fillinger@...2507...>
+ <20221126162648.150678-2-maximilian.fillinger@...2507...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20221126162648.150678-2-maximilian.fillinger@...2507...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Fix message for too long
+ tls-crypt-v2 metadata
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,60 +16,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Max Fillinger <maximilian.fillinger@...2507...>, openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Am 26.11.22 um 17:26 schrieb Max Fillinger:
+> The current code only checks if the base64-encoded metadata is at most
+> 980 characters. However, that can encode up to 735 bytes of data, while
+> only up to 733 bytes are allowed. When passing 734 or 735 bytes, openvpn
+> prints a misleading error message saying that the base64 cannot be
+> decoded.
+> 
+> This patch checks the decoded length to show an accurate error message.
+> 
 
-Stare-at-code looks good, and testing confirms that it does fix over-eager
-clients reconnecting too fast:
+Gert looked at this again and we found some issues now:
 
-^C2022-12-12 14:03:11 us=841186 event_wait : Interrupted system call (fd=-1,code=4)
-2022-12-12 14:03:11 us=841294 SENT CONTROL [cron2-freebsd-tc-amd64]: 'RESTART' (status=1)
-2022-12-12 14:03:11 us=841346 SENT CONTROL [freebsd-74-amd64]: 'RESTART' (status=1)
-2022-12-12 14:03:11 us=841391 SENT CONTROL [freebsd-11-amd64]: 'RESTART' (status=1)
-2022-12-12 14:03:12 us=893434 MULTI: Connection attempt from 194.97.140.21:13788 ignored while server is shutting down
+This patch leaves an unused define TLS_CRYPT_V2_MAX_B64_METADATA_LEN 
+that is no longer used.
 
-and on the client:
-
-2022-12-12 14:03:11 SIGUSR1[soft,server-pushed-connection-reset] received, process restarting
-2022-12-12 14:03:11 Restart pause, 1 second(s)
-2022-12-12 14:03:12 TCP/UDP: Preserving recently used remote address: [AF_INET]194.97.140.11:51196
-[..]
-2022-12-12 14:04:12 TLS Error: TLS key negotiation failed to occur within 60 seconds (check your network connectivity)
-2022-12-12 14:04:12 TLS Error: TLS handshake failed
-
-so, no more "it reconnects right away and then the server disappears"
-(which I could reproduce without the patch - the client would then
-show "Initialization Sequence Completed" and wait for --ping-timeout).
+TLS_CRYPT_V2_MAX_METADATA_LEN is actually 734 sice it includes the type 
+byte for the type of metadata, which gives us the 733 bytes of metadata 
+decoded from base64.
 
 
-For 2.7, we might actually consider reworking the server-exit behaviour
-to "exit as soon as all outstanding control messages have been ACKed"
-or even "fire-and-forget on the CC EENs"?  But this is a bigger thing
-than "fix goes into 2.6_beta2", I'm afraid.
-
-Your patch has been applied to the master and release/2.6 branch.
-
-commit 7d0a90335fe79a352456f262ce42ea501796ae87 (master)
-commit f8bfe1a5fb785d2f26f3a38d597604031f081018 (release/2.6)
-Author: Arne Schwabe
-Date:   Thu Dec 8 16:31:29 2022 +0100
-
-     Ignore connection attempts while server is shutting down
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221208153129.1207228-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25638.html
-     Signed-off-by: Gert Doering <gert@...1296...>
 
 
---
-kind regards,
+>                                                   BCAP(&metadata));
+> @@ -644,10 +640,18 @@ tls_crypt_v2_write_client_key_file(const char *filename,
+>               msg(M_FATAL, "ERROR: failed to base64 decode provided metadata");
+>               goto cleanup;
+>           }
+> +        if (decoded_len > TLS_CRYPT_V2_MAX_METADATA_LEN)
+> +        {
+> +            msg(M_FATAL,
+> +                "ERROR: metadata too long (%d bytes, max %u bytes)",
+> +                decoded_len, TLS_CRYPT_V2_MAX_METADATA_LEN - 1);
+> +            goto cleanup;
+> +        }
 
-Gert Doering
+The error message correctly uses 733 as length but the check should also 
+check for TLS_CRYPT_V2_MAX_METADATA_LEN -1 or use >=
+
+Maybe we can add a unit test for this
 
 
