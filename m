@@ -1,10 +1,8 @@
-Date: Mon, 12 Dec 2022 09:32:27 +0100 (CET)
-Message-Id: <202212120832.2BC8WRCc048871@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221210134427.1433419-1-arne@...1227...>
-References: <20221210134427.1433419-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Disable DCO when TLS mode is
- not used
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 12 Dec 2022 11:58:31 +0200
+Message-Id: <20221212095832.2123-1-lstipakov@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 1/2] management: refactor bytecount routines
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,40 +13,205 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Acked-by: Gert Doering <gert@...1296...>
+From: Lev Stipakov <lev@...515...>
 
-Yeah, thanks :-) (tested on the "p2p --secret" server, still does the
-right thing.  Have no "no secrets at all" setup, but from stare-at-code
-I see no reason why this wouldn't work as well)
+In preparation of DCO stats support, simplify
+call chains of bytecount routines. No functional changes.
 
-Dec 12 09:29:15 ubuntu2004 tun-udp-p2p[1272956]: No tls-client or tls-server option in configuration detected. Disabling data channel offload.
-Dec 12 09:29:15 ubuntu2004 tun-udp-p2p[1272956]: DEPRECATION: No tls-client or tls-server option in configuration detected. OpenVPN 2.7 will remove the functionality to run a VPN without TLS. See the examples section in the manual page for examples of a similar quick setup with peer-fingerprint.
-..
-Dec 12 09:29:15 ubuntu2004 tun-udp-p2p[1272957]: TUN/TAP device tun5 opened
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/forward.c |  4 +--
+ src/openvpn/manage.c  | 64 ++++++++++++++++++++++++++++-------------
+ src/openvpn/manage.h  | 66 ++++---------------------------------------
+ 3 files changed, 52 insertions(+), 82 deletions(-)
 
-
-Your patch has been applied to the master and release/2.6 branch.
-
-commit a666668f064c7ff57cdebb3afceb72e1263a3ba9 (master)
-commit 9b277f426c7d295c8f354496e8e226fc26ff7b1c (release/2.6)
-Author: Arne Schwabe
-Date:   Sat Dec 10 14:44:27 2022 +0100
-
-     Disable DCO when TLS mode is not used
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221210134427.1433419-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25641.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 5cd7eaa6..1cd20a0b 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -948,7 +948,7 @@ process_incoming_link_part1(struct context *c, struct link_socket_info *lsi, boo
+ #ifdef ENABLE_MANAGEMENT
+         if (management)
+         {
+-            management_bytes_in(management, c->c2.buf.len);
++            management_bytes_client(management, c->c2.buf.len, 0);
+             management_bytes_server(management, &c->c2.link_read_bytes, &c->c2.link_write_bytes, &c->c2.mda_context);
+         }
+ #endif
+@@ -1788,7 +1788,7 @@ process_outgoing_link(struct context *c)
+ #ifdef ENABLE_MANAGEMENT
+                 if (management)
+                 {
+-                    management_bytes_out(management, size);
++                    management_bytes_client(management, 0, size);
+                     management_bytes_server(management, &c->c2.link_read_bytes, &c->c2.link_write_bytes, &c->c2.mda_context);
+                 }
+ #endif
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 5b288eab..1f76a23d 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -471,31 +471,55 @@ man_bytecount(struct management *man, const int update_seconds)
+     msg(M_CLIENT, "SUCCESS: bytecount interval changed");
+ }
+ 
+-void
++static void
+ man_bytecount_output_client(struct management *man)
+ {
+-    char in[32];
+-    char out[32];
+-    /* do in a roundabout way to work around possible mingw or mingw-glibc bug */
+-    openvpn_snprintf(in, sizeof(in), counter_format, man->persist.bytes_in);
+-    openvpn_snprintf(out, sizeof(out), counter_format, man->persist.bytes_out);
+-    msg(M_CLIENT, ">BYTECOUNT:%s,%s", in, out);
+-    man->connection.bytecount_last_update = now;
++    if (man->connection.bytecount_update_seconds > 0
++        && now >= man->connection.bytecount_last_update
++        + man->connection.bytecount_update_seconds)
++    {
++        char in[32];
++        char out[32];
++
++        /* do in a roundabout way to work around possible mingw or mingw-glibc bug */
++        openvpn_snprintf(in, sizeof(in), counter_format, man->persist.bytes_in);
++        openvpn_snprintf(out, sizeof(out), counter_format, man->persist.bytes_out);
++        msg(M_CLIENT, ">BYTECOUNT:%s,%s", in, out);
++        man->connection.bytecount_last_update = now;
++    }
++}
++
++void
++management_bytes_client(struct management *man,
++                        const int size_in,
++                        const int size_out)
++{
++    if (!(man->persist.callback.flags & MCF_SERVER))
++    {
++        man->persist.bytes_in += size_in;
++        man->persist.bytes_out += size_out;
++        man_bytecount_output_client(man);
++    }
+ }
+ 
+ void
+-man_bytecount_output_server(struct management *man,
+-                            const counter_type *bytes_in_total,
+-                            const counter_type *bytes_out_total,
+-                            struct man_def_auth_context *mdac)
+-{
+-    char in[32];
+-    char out[32];
+-    /* do in a roundabout way to work around possible mingw or mingw-glibc bug */
+-    openvpn_snprintf(in, sizeof(in), counter_format, *bytes_in_total);
+-    openvpn_snprintf(out, sizeof(out), counter_format, *bytes_out_total);
+-    msg(M_CLIENT, ">BYTECOUNT_CLI:%lu,%s,%s", mdac->cid, in, out);
+-    mdac->bytecount_last_update = now;
++management_bytes_server(struct management *man,
++                        const counter_type *bytes_in_total,
++                        const counter_type *bytes_out_total,
++                        struct man_def_auth_context *mdac)
++{
++    if (man->connection.bytecount_update_seconds > 0
++        && now >= mdac->bytecount_last_update + man->connection.bytecount_update_seconds
++        && (mdac->flags & (DAF_CONNECTION_ESTABLISHED | DAF_CONNECTION_CLOSED)) == DAF_CONNECTION_ESTABLISHED)
++    {
++        char in[32];
++        char out[32];
++        /* do in a roundabout way to work around possible mingw or mingw-glibc bug */
++        openvpn_snprintf(in, sizeof(in), counter_format, *bytes_in_total);
++        openvpn_snprintf(out, sizeof(out), counter_format, *bytes_out_total);
++        msg(M_CLIENT, ">BYTECOUNT_CLI:%lu,%s,%s", mdac->cid, in, out);
++        mdac->bytecount_last_update = now;
++    }
+ }
+ 
+ static void
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index f46274e6..621440be 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -511,70 +511,16 @@ void management_auth_token(struct management *man, const char *token);
+ /*
+  * These functions drive the bytecount in/out counters.
+  */
++void
++management_bytes_client(struct management *man,
++                        const int size_in,
++                        const int size_out);
+ 
+-void man_bytecount_output_client(struct management *man);
+-
+-static inline void
+-man_bytecount_possible_output_client(struct management *man)
+-{
+-    if (man->connection.bytecount_update_seconds > 0
+-        && now >= man->connection.bytecount_last_update
+-        + man->connection.bytecount_update_seconds)
+-    {
+-        man_bytecount_output_client(man);
+-    }
+-}
+-
+-static inline void
+-management_bytes_out_client(struct management *man, const int size)
+-{
+-    man->persist.bytes_out += size;
+-    man_bytecount_possible_output_client(man);
+-}
+-
+-static inline void
+-management_bytes_in_client(struct management *man, const int size)
+-{
+-    man->persist.bytes_in += size;
+-    man_bytecount_possible_output_client(man);
+-}
+-
+-static inline void
+-management_bytes_out(struct management *man, const int size)
+-{
+-    if (!(man->persist.callback.flags & MCF_SERVER))
+-    {
+-        management_bytes_out_client(man, size);
+-    }
+-}
+-
+-static inline void
+-management_bytes_in(struct management *man, const int size)
+-{
+-    if (!(man->persist.callback.flags & MCF_SERVER))
+-    {
+-        management_bytes_in_client(man, size);
+-    }
+-}
+-
+-void man_bytecount_output_server(struct management *man,
+-                                 const counter_type *bytes_in_total,
+-                                 const counter_type *bytes_out_total,
+-                                 struct man_def_auth_context *mdac);
+-
+-static inline void
++void
+ management_bytes_server(struct management *man,
+                         const counter_type *bytes_in_total,
+                         const counter_type *bytes_out_total,
+-                        struct man_def_auth_context *mdac)
+-{
+-    if (man->connection.bytecount_update_seconds > 0
+-        && now >= mdac->bytecount_last_update + man->connection.bytecount_update_seconds
+-        && (mdac->flags & (DAF_CONNECTION_ESTABLISHED|DAF_CONNECTION_CLOSED)) == DAF_CONNECTION_ESTABLISHED)
+-    {
+-        man_bytecount_output_server(man, bytes_in_total, bytes_out_total, mdac);
+-    }
+-}
++                        struct man_def_auth_context *mdac);
+ 
+ #endif /* ifdef ENABLE_MANAGEMENT */
+ 
+-- 
+2.38.1.windows.1
 
 
