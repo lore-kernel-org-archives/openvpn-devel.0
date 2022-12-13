@@ -1,10 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 13 Dec 2022 23:01:37 +0100
-Message-Id: <20221213220137.1888490-1-arne@...1227...>
-In-Reply-To: <20220909195902.2011798-1-arne@...1227...>
-References: <20220909195902.2011798-1-arne@...1227...>
+Date: Tue, 13 Dec 2022 23:54:28 +0100
+Message-Id: <20221213225430.1892940-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Improve debug logging of DCO on Linux
+Subject: [Openvpn-devel] [PATCH 1/3] Improve debug logging of DCO swap key
+ message and Linux dco_new_peer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,12 +18,12 @@ To: openvpn-devel@lists.sourceforge.net
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/dco.c       |  7 ++++---
+ src/openvpn/dco.c       | 18 ++++++++++++++----
  src/openvpn/dco_linux.c | 10 ++++++++--
- 2 files changed, 12 insertions(+), 5 deletions(-)
+ 2 files changed, 22 insertions(+), 6 deletions(-)
 
 diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index feb38cd02..5cce3f641 100644
+index feb38cd02..2396bcbf0 100644
 --- a/src/openvpn/dco.c
 +++ b/src/openvpn/dco.c
 @@ -55,8 +55,8 @@ dco_install_key(struct tls_multi *multi, struct key_state *ks,
@@ -38,16 +37,27 @@ index feb38cd02..5cce3f641 100644
  
      /* Install a key in the PRIMARY slot only when no other key exist.
       * From that moment on, any new key will be installed in the SECONDARY
-@@ -181,7 +181,8 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
+@@ -181,8 +181,18 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
       */
      if (primary->dco_status == DCO_INSTALLED_SECONDARY)
      {
 -        msg(D_DCO_DEBUG, "Swapping primary and secondary keys, now: id1=%d id2=%d",
-+        msg(D_DCO_DEBUG, "Swapping primary and secondary keys, pre swap: "
-+            "key-id1=%d key-id2=%d",
-             primary->key_id, secondary ? secondary->key_id : -1);
+-            primary->key_id, secondary ? secondary->key_id : -1);
++        if (secondary)
++        {
++            msg(D_DCO_DEBUG, "Swapping primary and secondary keys to "
++                "primary-id=%d secondary-id=%d",
++                primary->key_id, secondary->key_id);
++        }
++        else
++        {
++            msg(D_DCO_DEBUG, "Swapping primary and secondary keys to"
++                "primary-id=%d secondary-id=(to be deleted)",
++                primary->key_id);
++        }
  
          int ret = dco_swap_keys(dco, multi->dco_peer_id);
+         if (ret < 0)
 diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
 index 109358205..fbd940c28 100644
 --- a/src/openvpn/dco_linux.c
