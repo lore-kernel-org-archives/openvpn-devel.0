@@ -1,13 +1,13 @@
-Message-ID: <4b7c7be6-37ce-eb9c-0c97-4b8633609da8@...2181...>
-Date: Wed, 14 Dec 2022 00:04:46 +0100
+Message-ID: <d56e81f8-5302-5eca-0d2f-75957355231e@...2181...>
+Date: Wed, 14 Dec 2022 00:06:28 +0100
 MIME-Version: 1.0
 Content-Language: en-US
 References: <20221213225430.1892940-1-arne@...1227...>
- <20221213225430.1892940-2-arne@...1227...>
+ <20221213225430.1892940-3-arne@...1227...>
 From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20221213225430.1892940-2-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 2/3] Trigger a USR1 if dco_update_keys
- fails
+In-Reply-To: <20221213225430.1892940-3-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 3/3] Set DCO_NOT_INSTALLED also for keys
+ not in the get_key_scan range
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,144 +23,54 @@ To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 Hi,
 
 On 13/12/2022 23:54, Arne Schwabe wrote:
-> When dco_update_keys fails, we are in some weird state that we are
-> unlikely to recover since what userspace and kernel space think of
-> the keys is very likely to not in sync anymore. So abandon the
-> connection if this happens.
+> We have 6 key slots but normally only consider 3 of them to be
+> active/valid keys. Especially the secondary key of TM_LAME_DUCK can
+> in rare corner cases have a key that is still installed in the kernel.
+> 
+> While this should not cause any issues since I do not see way for this
+> key to become active ever again, it is better to keep the state correctly.
 > 
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 
-This makes sense to me.
-We didn't do that earlier because we weren't sure about what to doing 
-this case, but issuing USR1 and bailing out is actually sensible.
+I am fine with this because it is just "safer".
+But I truly dislike that we have to "Defend ourselves" from conditions 
+which we don't even know when they may happen....
+Still, this is a rant for another patch/cleanup.
 
+This patch makes sense
 Acked-by: Antonio Quartulli <a@...2181...>
 
 > ---
->   src/openvpn/dco.c     | 15 ++++++++-------
->   src/openvpn/dco.h     |  9 ++++++---
->   src/openvpn/forward.c |  7 ++++++-
->   3 files changed, 20 insertions(+), 11 deletions(-)
+>   src/openvpn/dco.c | 14 +++++++++-----
+>   1 file changed, 9 insertions(+), 5 deletions(-)
 > 
 > diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-> index 2396bcbf0..36bfbf10a 100644
+> index 36bfbf10a..20196fe5d 100644
 > --- a/src/openvpn/dco.c
 > +++ b/src/openvpn/dco.c
-> @@ -130,7 +130,7 @@ dco_get_secondary_key(struct tls_multi *multi, const struct key_state *primary)
->       return NULL;
->   }
->   
-> -void
-> +bool
->   dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
->   {
->       msg(D_DCO_DEBUG, "%s: peer_id=%d", __func__, multi->dco_peer_id);
-> @@ -140,7 +140,7 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
->        */
->       if (multi->dco_keys_installed == 0)
->       {
-> -        return;
-> +        return true;
->       }
->   
->       struct key_state *primary = tls_select_encryption_key(multi);
-> @@ -155,18 +155,18 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
->           if (ret < 0)
->           {
->               msg(D_DCO, "Cannot delete primary key during wipe: %s (%d)", strerror(-ret), ret);
-> -            return;
-> +            return false;
->           }
->   
->           ret = dco_del_key(dco, multi->dco_peer_id, OVPN_KEY_SLOT_SECONDARY);
->           if (ret < 0)
->           {
->               msg(D_DCO, "Cannot delete secondary key during wipe: %s (%d)", strerror(-ret), ret);
-> -            return;
-> +            return false;
->           }
->   
->           multi->dco_keys_installed = 0;
-> -        return;
-> +        return true;
->       }
->   
->       /* if we have a primary key, it must have been installed already (keys
-> @@ -198,7 +198,7 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
->           if (ret < 0)
->           {
->               msg(D_DCO, "Cannot swap keys: %s (%d)", strerror(-ret), ret);
-> -            return;
-> +            return false;
->           }
->   
->           primary->dco_status = DCO_INSTALLED_PRIMARY;
-> @@ -216,7 +216,7 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
->           if (ret < 0)
->           {
->               msg(D_DCO, "Cannot delete secondary key: %s (%d)", strerror(-ret), ret);
-> -            return;
-> +            return false;
->           }
+> @@ -221,13 +221,17 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
 >           multi->dco_keys_installed = 1;
 >       }
-> @@ -230,6 +230,7 @@ dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
->               ks->dco_status = DCO_NOT_INSTALLED;
+>   
+> -    /* all keys that are not installed are set to NOT installed */
+> -    for (int i = 0; i < KEY_SCAN_SIZE; ++i)
+> +    /* all keys that are not installed are set to NOT installed. Include also
+> +     * keys that might even be considered as active keys to be sure*/
+> +    for (int i = 0; i < TM_SIZE; ++i)
+>       {
+> -        struct key_state *ks = get_key_scan(multi, i);
+> -        if (ks != primary && ks != secondary)
+> +        for (int j = 0; j < KS_SIZE; j++)
+>           {
+> -            ks->dco_status = DCO_NOT_INSTALLED;
+> +            struct key_state *ks = &multi->session[i].key[j];
+> +            if (ks != primary && ks != secondary)
+> +            {
+> +                ks->dco_status = DCO_NOT_INSTALLED;
+> +            }
 >           }
 >       }
-> +    return true;
->   }
->   
->   static bool
-> diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
-> index e051db068..7e1febaa3 100644
-> --- a/src/openvpn/dco.h
-> +++ b/src/openvpn/dco.h
-> @@ -164,9 +164,11 @@ int init_key_dco_bi(struct tls_multi *multi, struct key_state *ks,
->    *
->    * @param dco           DCO device context
->    * @param multi         TLS multi instance
-> + *
-> + * @return              returns false if an error occurred that is not
-> + *                      recoverable and should reset the connection
->    */
-> -void dco_update_keys(dco_context_t *dco, struct tls_multi *multi);
-> -
-> +bool dco_update_keys(dco_context_t *dco, struct tls_multi *multi);
->   /**
->    * Install a new peer in DCO - to be called by a CLIENT (or P2P) instance
->    *
-> @@ -304,10 +306,11 @@ init_key_dco_bi(struct tls_multi *multi, struct key_state *ks,
->       return 0;
->   }
->   
-> -static inline void
-> +static inline bool
->   dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
->   {
->       ASSERT(false);
-> +    return false;
->   }
->   
->   static inline int
-> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-> index 5cd7eaa6e..8c1e49a34 100644
-> --- a/src/openvpn/forward.c
-> +++ b/src/openvpn/forward.c
-> @@ -151,7 +151,12 @@ check_dco_key_status(struct context *c)
->           return;
->       }
->   
-> -    dco_update_keys(&c->c1.tuntap->dco, c->c2.tls_multi);
-> +    if (!dco_update_keys(&c->c1.tuntap->dco, c->c2.tls_multi))
-> +    {
-> +        /* Something bad happened. Kill the connection to
-> +         * be able to recover. */
-> +        register_signal(c, SIGUSR1, "dco update keys error");
-> +    }
->   }
->   
->   /*
+>       return true;
 
 -- 
 Antonio Quartulli
