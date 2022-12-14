@@ -1,9 +1,13 @@
-From: Max Fillinger <maximilian.fillinger@...2507...>
-Date: Wed, 14 Dec 2022 16:34:14 +0100
-Message-ID: <20221214153414.12671-1-maximilian.fillinger@...2507...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [Patch v2] Fix message for too long tls-crypt-v2
- metadata
+References: <1386e3cc-fc65-aa68-fa88-3639f6aec5a2@...2704...>
+ <20221211191403.805-1-marc.becker@...2704...>
+In-Reply-To: <20221211191403.805-1-marc.becker@...2704...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 14 Dec 2022 10:35:07 -0500
+Message-ID: <CAKuzo_g7SV72PR8xCRib+PPJnqELyoRYkiOjgMbmh5ic52U6NQ@...278...>
+Content-Type: multipart/alternative; boundary="0000000000002616ec05efcb7cb2"
+Subject: Re: [Openvpn-devel] [PATCH v2 2/3] use new pkcs11-helper interface
+ to add providers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,98 +16,221 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Marc Becker <marc.becker@...2704...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The current code only checks if the base64-encoded metadata is at most
-980 character. However, that can encode up to 735 bytes of data, while
-only up to 733 bytes are allowed. When passing 734 or 735 bytes, openvpn
-prints a misleading error message saying that the base64 cannot be
-decoded.
+--0000000000002616ec05efcb7cb2
+Content-Type: text/plain; charset="UTF-8"
 
-This patch checks the decoded length to show an accurate error message.
+Hi,
 
-v2: Remove now-unused macro and fix an off-by-one error.
+On Sun, Dec 11, 2022 at 2:14 PM Marc Becker via Openvpn-devel <
+openvpn-devel@lists.sourceforge.net> wrote:
 
-Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
----
- src/openvpn/base64.h    |  4 ++++
- src/openvpn/tls_crypt.c | 18 +++++++++++-------
- src/openvpn/tls_crypt.h |  2 --
- 3 files changed, 15 insertions(+), 9 deletions(-)
+> The new interface in  pkcs11-helper 1.28 allows decoupling of provider
+> registration and initialization.
+> This allows modifying more (and future) properties apart from the
+> 6 fixed ones supported as arguments to pkcs11h_addProvider().
+>
+> With the new interface it is easier to see (from a code perspective)
+> which option is set to which value.
+> It's also not necessary to supply values for built-in defaults:
+> - slot_event_method=PKCS11H_SLOTEVENT_METHOD_AUTO
+> - slot_poll_interval=0
+>
+> Signed-off-by: Marc Becker <marc.becker@...2704...>
+> ---
+> v2: improved code and description, no (essentially) duplicated log output
+> ---
+>  src/openvpn/pkcs11.c | 33 +++++++++++++++++++++++++++++++++
+>  1 file changed, 33 insertions(+)
+>
+> diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c
+> index fbc4c472..b74ac8f4 100644
+> --- a/src/openvpn/pkcs11.c
+> +++ b/src/openvpn/pkcs11.c
+> @@ -396,6 +396,38 @@ pkcs11_addProvider(
+>          provider
+>          );
+>
+> +#if PKCS11H_VERSION >= ((1<<16) | (28<<8) | (0<<0))
+> +    if ((rv = pkcs11h_registerProvider(provider)) != CKR_OK)
+> +    {
+> +        msg(M_WARN, "PKCS#11: Cannot register provider '%s' %ld-'%s'",
+> provider, rv, pkcs11h_getMessage(rv));
+> +    }
+> +    else
+> +    {
+> +        PKCS11H_BOOL allow_protected_auth = protected_auth;
+> +        PKCS11H_BOOL cert_is_private = cert_private;
+> +
+> +        rv = pkcs11h_setProviderProperty(provider,
+> PKCS11H_PROVIDER_PROPERTY_LOCATION, provider, strlen(provider) + 1);
+> +
+> +        if (rv == CKR_OK)
+> +        {
+> +            rv = pkcs11h_setProviderProperty(provider,
+> PKCS11H_PROVIDER_PROPERTY_ALLOW_PROTECTED_AUTH, &allow_protected_auth,
+> sizeof(allow_protected_auth));
+> +        }
+> +        if (rv == CKR_OK)
+> +        {
+> +            rv = pkcs11h_setProviderProperty(provider,
+> PKCS11H_PROVIDER_PROPERTY_MASK_PRIVATE_MODE, &private_mode,
+> sizeof(private_mode));
+> +        }
+> +        if (rv == CKR_OK)
+> +        {
+> +            rv = pkcs11h_setProviderProperty(provider,
+> PKCS11H_PROVIDER_PROPERTY_CERT_IS_PRIVATE, &cert_is_private,
+> sizeof(cert_is_private));
+> +        }
+> +
+> +        if (rv != CKR_OK || (rv = pkcs11h_initializeProvider(provider))
+> != CKR_OK)
+> +        {
+> +            msg(M_WARN, "PKCS#11: Cannot initialize provider '%s'
+> %ld-'%s'", provider, rv, pkcs11h_getMessage(rv));
+> +            pkcs11h_removeProvider(provider);
+> +        }
+> +    }
+> +#else  /* if PKCS11H_VERSION >= ((1<<16) | (28<<8) | (0<<0)) */
+>      if (
+>          (rv = pkcs11h_addProvider(
+>               provider,
+> @@ -410,6 +442,7 @@ pkcs11_addProvider(
+>      {
+>          msg(M_WARN, "PKCS#11: Cannot initialize provider '%s' %ld-'%s'",
+> provider, rv, pkcs11h_getMessage(rv));
+>      }
+> +#endif /* if PKCS11H_VERSION >= ((1<<16) | (28<<8) | (0<<0)) */
+>
+>      dmsg(
+>          D_PKCS11_DEBUG,
+> --
+> 2.38.1.windows.1
+>
 
-diff --git a/src/openvpn/base64.h b/src/openvpn/base64.h
-index f49860fc..7b4224a5 100644
---- a/src/openvpn/base64.h
-+++ b/src/openvpn/base64.h
-@@ -38,6 +38,10 @@
- #define OPENVPN_BASE64_LENGTH(binary_length) \
-     ((((8 * binary_length) / 6) + 3) & ~3)
- 
-+/** Compute the maximal number of bytes encoded in a base64 string. */
-+#define OPENVPN_BASE64_DECODED_LENGTH(base64_length) \
-+    ((base64_length / 4) * 3)
-+
- int openvpn_base64_encode(const void *data, int size, char **str);
- 
- int openvpn_base64_decode(const char *str, void *data, int size);
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 2fc79111..1e461fcf 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -627,15 +627,11 @@ tls_crypt_v2_write_client_key_file(const char *filename,
-     }
-     ASSERT(buf_write(&dst, client_key.keys, sizeof(client_key.keys)));
- 
--    struct buffer metadata = alloc_buf_gc(TLS_CRYPT_V2_MAX_METADATA_LEN, &gc);
-+    struct buffer metadata;
-     if (b64_metadata)
-     {
--        if (TLS_CRYPT_V2_MAX_B64_METADATA_LEN < strlen(b64_metadata))
--        {
--            msg(M_FATAL,
--                "ERROR: metadata too long (%d bytes, max %u bytes)",
--                (int)strlen(b64_metadata), TLS_CRYPT_V2_MAX_B64_METADATA_LEN);
--        }
-+        size_t b64_length = strlen(b64_metadata);
-+        metadata = alloc_buf_gc(OPENVPN_BASE64_DECODED_LENGTH(b64_length) + 1, &gc);
-         ASSERT(buf_write(&metadata, &TLS_CRYPT_METADATA_TYPE_USER, 1));
-         int decoded_len = openvpn_base64_decode(b64_metadata, BEND(&metadata),
-                                                 BCAP(&metadata));
-@@ -644,10 +640,18 @@ tls_crypt_v2_write_client_key_file(const char *filename,
-             msg(M_FATAL, "ERROR: failed to base64 decode provided metadata");
-             goto cleanup;
-         }
-+        if (decoded_len > TLS_CRYPT_V2_MAX_METADATA_LEN - 1)
-+        {
-+            msg(M_FATAL,
-+                "ERROR: metadata too long (%d bytes, max %u bytes)",
-+                decoded_len, TLS_CRYPT_V2_MAX_METADATA_LEN - 1);
-+            goto cleanup;
-+        }
-         ASSERT(buf_inc_len(&metadata, decoded_len));
-     }
-     else
-     {
-+        metadata = alloc_buf_gc(1 + sizeof(int64_t), &gc);
-         int64_t timestamp = htonll((uint64_t)now);
-         ASSERT(buf_write(&metadata, &TLS_CRYPT_METADATA_TYPE_TIMESTAMP, 1));
-         ASSERT(buf_write(&metadata, &timestamp, sizeof(timestamp)));
-diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
-index 928ff547..d5c73752 100644
---- a/src/openvpn/tls_crypt.h
-+++ b/src/openvpn/tls_crypt.h
-@@ -101,8 +101,6 @@
- #define TLS_CRYPT_V2_MAX_METADATA_LEN (unsigned)(TLS_CRYPT_V2_MAX_WKC_LEN \
-                                                  - (TLS_CRYPT_V2_CLIENT_KEY_LEN + TLS_CRYPT_V2_TAG_SIZE \
-                                                     + sizeof(uint16_t)))
--#define TLS_CRYPT_V2_MAX_B64_METADATA_LEN \
--    OPENVPN_BASE64_LENGTH(TLS_CRYPT_V2_MAX_METADATA_LEN - 1)
- 
- /**
-  * Initialize a key_ctx_bi structure for use with --tls-crypt.
--- 
-2.30.2
+I have been delaying acking this until I get time to test 3/3, but as 1/3
+is has been acked here goes:
 
+Effectively this is the same as the original but splitting addProvider to
+explicit register/set-properties/intialize calls when using recent versions
+of pkcs11-helper is a useful refactoring.
+
+Acked-by: Selva Nair <selva.nair@...277...>
+
+--0000000000002616ec05efcb7cb2
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr">Hi,</div><br><div class=3D"gmail_quote"><=
+div dir=3D"ltr" class=3D"gmail_attr">On Sun, Dec 11, 2022 at 2:14 PM Marc B=
+ecker via Openvpn-devel &lt;<a href=3D"mailto:openvpn-devel@...1768...=
+ge.net" target=3D"_blank">openvpn-devel@lists.sourceforge.net</a>&gt; wrote=
+:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.=
+8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">The new interf=
+ace in=C2=A0 pkcs11-helper 1.28 allows decoupling of provider<br>
+registration and initialization.<br>
+This allows modifying more (and future) properties apart from the<br>
+6 fixed ones supported as arguments to pkcs11h_addProvider().<br>
+<br>
+With the new interface it is easier to see (from a code perspective)<br>
+which option is set to which value.<br>
+It&#39;s also not necessary to supply values for built-in defaults:<br>
+- slot_event_method=3DPKCS11H_SLOTEVENT_METHOD_AUTO<br>
+- slot_poll_interval=3D0<br>
+<br>
+Signed-off-by: Marc Becker &lt;<a href=3D"mailto:marc.becker@...2704..." ta=
+rget=3D"_blank">marc.becker@...2704...</a>&gt;<br>
+---<br>
+v2: improved code and description, no (essentially) duplicated log output<b=
+r>
+---<br>
+=C2=A0src/openvpn/pkcs11.c | 33 +++++++++++++++++++++++++++++++++<br>
+=C2=A01 file changed, 33 insertions(+)<br>
+<br>
+diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c<br>
+index fbc4c472..b74ac8f4 100644<br>
+--- a/src/openvpn/pkcs11.c<br>
++++ b/src/openvpn/pkcs11.c<br>
+@@ -396,6 +396,38 @@ pkcs11_addProvider(<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0provider<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0);<br>
+<br>
++#if PKCS11H_VERSION &gt;=3D ((1&lt;&lt;16) | (28&lt;&lt;8) | (0&lt;&lt;0))=
+<br>
++=C2=A0 =C2=A0 if ((rv =3D pkcs11h_registerProvider(provider)) !=3D CKR_OK)=
+<br>
++=C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_WARN, &quot;PKCS#11: Cannot register pro=
+vider &#39;%s&#39; %ld-&#39;%s&#39;&quot;, provider, rv, pkcs11h_getMessage=
+(rv));<br>
++=C2=A0 =C2=A0 }<br>
++=C2=A0 =C2=A0 else<br>
++=C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 PKCS11H_BOOL allow_protected_auth =3D protecte=
+d_auth;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 PKCS11H_BOOL cert_is_private =3D cert_private;=
+<br>
++<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 rv =3D pkcs11h_setProviderProperty(provider, P=
+KCS11H_PROVIDER_PROPERTY_LOCATION, provider, strlen(provider) + 1);<br>
++<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (rv =3D=3D CKR_OK)<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 rv =3D pkcs11h_setProviderProper=
+ty(provider, PKCS11H_PROVIDER_PROPERTY_ALLOW_PROTECTED_AUTH, &amp;allow_pro=
+tected_auth, sizeof(allow_protected_auth));<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (rv =3D=3D CKR_OK)<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 rv =3D pkcs11h_setProviderProper=
+ty(provider, PKCS11H_PROVIDER_PROPERTY_MASK_PRIVATE_MODE, &amp;private_mode=
+, sizeof(private_mode));<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (rv =3D=3D CKR_OK)<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 rv =3D pkcs11h_setProviderProper=
+ty(provider, PKCS11H_PROVIDER_PROPERTY_CERT_IS_PRIVATE, &amp;cert_is_privat=
+e, sizeof(cert_is_private));<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
++<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (rv !=3D CKR_OK || (rv =3D pkcs11h_initiali=
+zeProvider(provider)) !=3D CKR_OK)<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_WARN, &quot;PKCS#11: Canno=
+t initialize provider &#39;%s&#39; %ld-&#39;%s&#39;&quot;, provider, rv, pk=
+cs11h_getMessage(rv));<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pkcs11h_removeProvider(provider)=
+;<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
++=C2=A0 =C2=A0 }<br>
++#else=C2=A0 /* if PKCS11H_VERSION &gt;=3D ((1&lt;&lt;16) | (28&lt;&lt;8) |=
+ (0&lt;&lt;0)) */<br>
+=C2=A0 =C2=A0 =C2=A0if (<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0(rv =3D pkcs11h_addProvider(<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 provider,<br>
+@@ -410,6 +442,7 @@ pkcs11_addProvider(<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0msg(M_WARN, &quot;PKCS#11: Cannot initial=
+ize provider &#39;%s&#39; %ld-&#39;%s&#39;&quot;, provider, rv, pkcs11h_get=
+Message(rv));<br>
+=C2=A0 =C2=A0 =C2=A0}<br>
++#endif /* if PKCS11H_VERSION &gt;=3D ((1&lt;&lt;16) | (28&lt;&lt;8) | (0&l=
+t;&lt;0)) */<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0dmsg(<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0D_PKCS11_DEBUG,<br>
+-- <br>
+2.38.1.windows.1<br></blockquote><div><br></div><div>I have been delaying a=
+cking this until I get time to test 3/3, but as 1/3 is has been acked=C2=A0=
+here goes:</div><div><br></div><div>Effectively this is the same as the ori=
+ginal but splitting addProvider to explicit register/set-properties/intiali=
+ze=C2=A0calls when using recent versions of pkcs11-helper is a useful refac=
+toring.</div><div><br></div><div>Acked-by: Selva Nair &lt;<a href=3D"mailto=
+:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;</div>=
+</div></div>
+
+--0000000000002616ec05efcb7cb2--
 
