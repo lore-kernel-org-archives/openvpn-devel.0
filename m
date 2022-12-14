@@ -1,10 +1,17 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 14 Dec 2022 23:14:26 +0200
-Message-Id: <20221214211426.227-1-lstipakov@...277...>
-In-Reply-To: <20221214164824.172-1-lstipakov@...277...>
+Date: Wed, 14 Dec 2022 22:45:54 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <Y5pEEhAGyKzbNn8u@...1296...>
 References: <20221214164824.172-1-lstipakov@...277...>
+ <CAKuzo_iZPLJvSyK53oziTO99ZW6ua-DFvEWMoPAK3MjrjQ5PdA@...278...>
+ <CAGyAFMV=QqUUPj8-Z8_U3JWG3qoBOZOKpMMVAztpdc-8qT+0HQ@...278...>
+ <CAKuzo_g6Pc6djBCu05-k5oJFWYuTYBFa60Ucay+z1BebJK=9Gg@...278...>
+ <CAGyAFMUTjZuN+W8FagK+F=4P+iuUAEYS0qmieb3kNQYKN-z=gg@...278...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Introduce dco_get_peer_stats API and
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="Pmo2ufRvV+DEWhJi"
+Content-Disposition: inline
+In-Reply-To: <CAGyAFMUTjZuN+W8FagK+F=4P+iuUAEYS0qmieb3kNQYKN-z=gg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Introduce dco_get_peer_stats API and
  Windows implementation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,171 +21,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: Lev Stipakov <lstipakov@...277...>
+Cc: Selva Nair <selva.nair@...277...>, Lev Stipakov <lev@...515...>, openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+--Pmo2ufRvV+DEWhJi
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-dco_get_peer_stats fetches stats for a single peer. This is mostly
-useful in client mode. So far only Windows implements that.
+Hi,
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- v2: fix error message text
+On Wed, Dec 14, 2022 at 10:50:19PM +0200, Lev Stipakov wrote:
+> On Windows control packets are handled by userspace via link
+> read/write routines (which use device handle from CreateFile). Both
+> FreeBSD and Linux implementations use additional, netlink-based (or
+> FreeBSD analogue) channel to send/receive control packets,
+> so existing link read/write routines are not called (except initial
+> handshake, before socket handover to kernel) and therefore stats for
+> control packets are not duplicated.
 
- src/openvpn/dco.h         | 13 +++++++++++++
- src/openvpn/dco_freebsd.c |  7 +++++++
- src/openvpn/dco_linux.c   |  7 +++++++
- src/openvpn/dco_win.c     | 28 ++++++++++++++++++++++++++++
- src/openvpn/manage.c      |  9 +++++++--
- 5 files changed, 62 insertions(+), 2 deletions(-)
+FreeBSD uses standard socket read/write calls for control packets.
 
-diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
-index 9a34d5b6..866aa0fb 100644
---- a/src/openvpn/dco.h
-+++ b/src/openvpn/dco.h
-@@ -235,6 +235,13 @@ void dco_delete_iroutes(struct multi_context *m, struct multi_instance *mi);
-  **/
- int dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m);
- 
-+/**
-+ * Update traffic statistics for single peer
-+ *
-+ * @param c   instance context of the peer
-+ **/
-+int dco_get_peer_stats(struct context *c);
-+
- /**
-  * Retrieve the list of ciphers supported by the current platform
-  *
-@@ -362,6 +369,12 @@ dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m)
-     return 0;
- }
- 
-+static inline int
-+dco_get_peer_stats(struct context *c)
-+{
-+    return 0;
-+}
-+
- static inline const char *
- dco_get_supported_ciphers()
- {
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index 8d342159..7c46f64e 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -722,6 +722,13 @@ dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m)
-     return 0;
- }
- 
-+int
-+dco_get_peer_stats(struct context *c)
-+{
-+    /* Not implemented. */
-+    return 0;
-+}
-+
- const char *
- dco_get_supported_ciphers()
- {
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index 200d0b19..222537fc 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -924,6 +924,13 @@ dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m)
-     return 0;
- }
- 
-+int
-+dco_get_peer_stats(struct context *c)
-+{
-+    /* Not implemented. */
-+    return 0;
-+}
-+
- bool
- dco_available(int msglevel)
- {
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 675dece2..0d0d7946 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -33,6 +33,7 @@
- #include "tun.h"
- #include "crypto.h"
- #include "ssl_common.h"
-+#include "openvpn.h"
- 
- #include <bcrypt.h>
- #include <winsock2.h>
-@@ -406,6 +407,33 @@ dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m)
-     return 0;
- }
- 
-+int
-+dco_get_peer_stats(struct context *c)
-+{
-+    struct tuntap *tt = c->c1.tuntap;
-+
-+    if (!tuntap_defined(tt))
-+    {
-+        return -1;
-+    }
-+
-+    OVPN_STATS stats;
-+    ZeroMemory(&stats, sizeof(OVPN_STATS));
-+
-+    DWORD bytes_returned = 0;
-+    if (!DeviceIoControl(tt->hand, OVPN_IOCTL_GET_STATS, NULL, 0,
-+                         &stats, sizeof(stats), &bytes_returned, NULL))
-+    {
-+        msg(M_WARN | M_ERRNO, "DeviceIoControl(OVPN_IOCTL_GET_STATS) failed");
-+        return -1;
-+    }
-+
-+    c->c2.dco_read_bytes = stats.TransportBytesReceived;
-+    c->c2.dco_write_bytes = stats.TransportBytesSent;
-+
-+    return 0;
-+}
-+
- void
- dco_event_set(dco_context_t *dco, struct event_set *es, void *arg)
- {
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 435efaf8..2c0bb6a8 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -43,6 +43,7 @@
- #include "common.h"
- #include "manage.h"
- #include "openvpn.h"
-+#include "dco.h"
- 
- #include "memdbg.h"
- 
-@@ -4051,11 +4052,15 @@ management_check_bytecount(struct context *c, struct management *man, struct tim
-     if (event_timeout_trigger(&man->connection.bytecount_update_interval,
-                               timeval, ETT_DEFAULT))
-     {
--        /* TODO: get stats from DCO */
--
-         counter_type dco_read_bytes = 0;
-         counter_type dco_write_bytes = 0;
- 
-+        if (dco_enabled(&c->options) && (dco_get_peer_stats(c) == 0))
-+        {
-+            dco_read_bytes = c->c2.dco_read_bytes;
-+            dco_write_bytes = c->c2.dco_write_bytes;
-+        }
-+
-         if (!(man->persist.callback.flags & MCF_SERVER))
-         {
-             man_bytecount_output_client(man, dco_read_bytes, dco_write_bytes);
--- 
-2.23.0.windows.1
+The "tunnel control packets through the ioctl() interface" method was
+never used by the kernel and will be removed from OpenVPN in kp's 4/4
+patch (to be merged soon).
 
+But since the FreeBSD kernel does not count control packets (I've
+been told that it "sniffs" the socket and only removes "interesting"
+packets, the rest is passed through to userland - so control packets are
+not handled by kernel), there is no duplication.
+
+No idea about the Linux details... Antonio?
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--Pmo2ufRvV+DEWhJi
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJjmkQSAAoJEB2Cnv7KVigSRrcMAIb+r39XcoaZeW4upZXEe1Jv
+SljOYoLW8EFhD8p0GNdaqATFCEDhe9VBfif+SCEWu3etim5S6wi+UkqQHOyRF13l
+YxeC65WF7u8bHWpafE0hLOOj94/x7KYhCwTe+6q1xt0PqJdvbpISiSXrgMmkhl4i
+edfWfzgM3KfhwFNEvQI1GynewtMmR46RBIwJwEiScKw9iHkB3q+EJI/l1a/JnyB5
+3OBmniqhqbOS+3VbxvkIwQLGOXk5ejLoQeZ3oQmFqmEsF4NbwH3JHtOfh6uf4Qk5
+OVI3G/Jk6yK/cSH9Tr/gXovQc11H+lkNY+5xeRMcpsd3Gtd631XMXvbrAVU1dU5n
+DNz+0Z4e9fUyBfgIjiJPr/vleN6zGpQqMvnf8WDTXvzFmyHEWTFOBgW4ILAfqh97
+7Q17/8eYRiDcXepoMF1IOdrfJi36dvNyP5DUmhhiYmHvYORiCKdxAAkhNszA2+JR
+dntgLNP3ehG2Hlvxqg2Axw6cjnCVn0OOxIdXlLLk5Q==
+=LWko
+-----END PGP SIGNATURE-----
+
+--Pmo2ufRvV+DEWhJi--
 
