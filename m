@@ -1,10 +1,10 @@
-Date: Wed, 14 Dec 2022 09:12:52 +0100 (CET)
-Message-Id: <202212140812.2BE8Cq0h047533@...2054...>
+Date: Wed, 14 Dec 2022 14:07:46 +0100 (CET)
+Message-Id: <202212141307.2BED7kCm087992@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221213225430.1892940-3-arne@...1227...>
-References: <20221213225430.1892940-3-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Set DCO_NOT_INSTALLED also for
- keys not in the get_key_scan range
+In-Reply-To: <20221205164103.9190-3-kprovost@...2661...>
+References: <20221205164103.9190-3-kprovost@...2661...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco: Update counters when a
+ client disconnects
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +15,42 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Kristof Provost <kp@...1376...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I've done a quick read over ssl_common.h to be sure the indexes are
-valid, and fed this to a light test run (client-side only, for the
-start).  Looks good, passes.
+Acked-by: Gert Doering <gert@...1296...>
 
-I can see why Antonio grumbles, but then, ensuring stuff is in a really
-well-known state if we suspect it might not always be is a valid line
-of defense.
+This is indeed an important missing piece for correct stats (... to be
+handed to --client-disconnect scripts, etc).
+
+I have not tested the feature as such (kernel side support has landed
+but I have not yet rebuilt that system).  I *have* tested the tree
+on Linux/FreeBSD with/without DCO, and everything works as before.
+
+Looking at the code: storing these in dco_context "to be able to 
+transport to the caller" sounds like an reasonable approach, because
+the dco_do_read() functions know "nothing else" - we could introduce
+call-by-ref variables, but that won't make the code easier to read.
+
+The nested nvlists (bytes->{in,out}) here add a level of trust to the
+running kernel - should "in" be missing, nvlist_get_number(9) documents
+"the program will be aborted".  The existance of "bytes" is checked,
+so old/new kernel compat is fine (OTOH if we do not trust the kernel
+module here, we're lost anyway).  Just sayin'.
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit 4cf7409e82580f2890c391372d60ed713ba4650c (master)
-commit 5c26918f482f21484527f4b065818863c459b226 (release/2.6)
-Author: Arne Schwabe
-Date:   Tue Dec 13 23:54:30 2022 +0100
+commit 6674963debfb88c0dd3dd4eae4533010ffc319b1 (master)
+commit f05c7a8a11329cc579d3751469b597e0eab1317f (HEAD -> release/2.6)
+Author: Kristof Provost
+Date:   Mon Dec 5 17:41:01 2022 +0100
 
-     Set DCO_NOT_INSTALLED also for keys not in the get_key_scan range
+     dco: Update counters when a client disconnects
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20221213225430.1892940-3-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25681.html
+     Signed-off-by: Kristof Provost <kprovost@...2661...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20221205164103.9190-3-kprovost@...2661...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25614.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
