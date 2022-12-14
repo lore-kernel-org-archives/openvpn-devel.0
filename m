@@ -1,10 +1,10 @@
-Date: Wed, 14 Dec 2022 09:01:48 +0100 (CET)
-Message-Id: <202212140801.2BE81mhF043107@...2054...>
+Date: Wed, 14 Dec 2022 09:12:52 +0100 (CET)
+Message-Id: <202212140812.2BE8Cq0h047533@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221213225430.1892940-2-arne@...1227...>
-References: <20221213225430.1892940-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Trigger a USR1 if
- dco_update_keys fails
+In-Reply-To: <20221213225430.1892940-3-arne@...1227...>
+References: <20221213225430.1892940-3-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Set DCO_NOT_INSTALLED also for
+ keys not in the get_key_scan range
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,27 +18,27 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This looks like a good way to recover out of "we are all confused
-about state" situations.  We should never get there, but then, well-
-defined recovery is certainly a plus.
+I've done a quick read over ssl_common.h to be sure the indexes are
+valid, and fed this to a light test run (client-side only, for the
+start).  Looks good, passes.
 
-So far I've only stared-at-code, and done compile tests, but the
-change is sufficiently platform-independent (also taking --disable-dco
-into account) that I expect no breakage.
+I can see why Antonio grumbles, but then, ensuring stuff is in a really
+well-known state if we suspect it might not always be is a valid line
+of defense.
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit 419051c96e9fb1f3202fd67733aa3b6a4bbc3181 (master)
-commit 238ac1785f08e4cde4c095629c94f2b9bcc977fa (release/2.6)
+commit 4cf7409e82580f2890c391372d60ed713ba4650c (master)
+commit 5c26918f482f21484527f4b065818863c459b226 (release/2.6)
 Author: Arne Schwabe
-Date:   Tue Dec 13 23:54:29 2022 +0100
+Date:   Tue Dec 13 23:54:30 2022 +0100
 
-     Trigger a USR1 if dco_update_keys fails
+     Set DCO_NOT_INSTALLED also for keys not in the get_key_scan range
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20221213225430.1892940-2-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25679.html
+     Message-Id: <20221213225430.1892940-3-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25681.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
