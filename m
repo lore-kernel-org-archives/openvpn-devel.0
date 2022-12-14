@@ -1,8 +1,9 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 14 Dec 2022 18:09:40 +0200
-Message-Id: <20221214160940.153-1-lstipakov@...277...>
+Date: Wed, 14 Dec 2022 18:48:24 +0200
+Message-Id: <20221214164824.172-1-lstipakov@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] msvc: upgrade to Visual Studio 2022
+Subject: [Openvpn-devel] [PATCH] Introduce dco_get_peer_stats API and
+ Windows implementation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,316 +19,161 @@ Cc: Lev Stipakov <lev@...515...>
 
 From: Lev Stipakov <lev@...515...>
 
+dco_get_peer_stats fetches stats for a single peer. This is mostly
+useful in client mode. So far only Windows implements that.
+
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- build/msvc/msvc-generate/msvc-generate.vcxproj | 12 ++++++------
- src/compat/compat.vcxproj                      | 12 ++++++------
- src/openvpn/openvpn.vcxproj                    | 12 ++++++------
- src/openvpnmsica/openvpnmsica.vcxproj          | 12 ++++++------
- src/openvpnserv/openvpnserv.vcxproj            | 12 ++++++------
- src/tapctl/tapctl.vcxproj                      | 12 ++++++------
- 6 files changed, 36 insertions(+), 36 deletions(-)
+ src/openvpn/dco.h         | 13 +++++++++++++
+ src/openvpn/dco_freebsd.c |  7 +++++++
+ src/openvpn/dco_linux.c   |  7 +++++++
+ src/openvpn/dco_win.c     | 28 ++++++++++++++++++++++++++++
+ src/openvpn/manage.c      |  9 +++++++--
+ 5 files changed, 62 insertions(+), 2 deletions(-)
 
-diff --git a/build/msvc/msvc-generate/msvc-generate.vcxproj b/build/msvc/msvc-generate/msvc-generate.vcxproj
-index eae94709..70d411e4 100644
---- a/build/msvc/msvc-generate/msvc-generate.vcxproj
-+++ b/build/msvc/msvc-generate/msvc-generate.vcxproj
-@@ -35,27 +35,27 @@
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-     <ConfigurationType>Makefile</ConfigurationType>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-     <ConfigurationType>Makefile</ConfigurationType>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
-     <ConfigurationType>Makefile</ConfigurationType>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>Makefile</ConfigurationType>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-     <ConfigurationType>Makefile</ConfigurationType>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
-     <ConfigurationType>Makefile</ConfigurationType>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-   </PropertyGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-   <ImportGroup Label="ExtensionSettings">
-diff --git a/src/compat/compat.vcxproj b/src/compat/compat.vcxproj
-index fe03a51a..9fcfd6c6 100644
---- a/src/compat/compat.vcxproj
-+++ b/src/compat/compat.vcxproj
-@@ -37,39 +37,39 @@
-     <ConfigurationType>StaticLibrary</ConfigurationType>
-     <CharacterSet>MultiByte</CharacterSet>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-     <ConfigurationType>StaticLibrary</ConfigurationType>
-     <CharacterSet>MultiByte</CharacterSet>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
-     <ConfigurationType>StaticLibrary</ConfigurationType>
-     <CharacterSet>MultiByte</CharacterSet>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>StaticLibrary</ConfigurationType>
-     <CharacterSet>MultiByte</CharacterSet>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-     <ConfigurationType>StaticLibrary</ConfigurationType>
-     <CharacterSet>MultiByte</CharacterSet>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
-     <ConfigurationType>StaticLibrary</ConfigurationType>
-     <CharacterSet>MultiByte</CharacterSet>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index 9b5e416f..13755dae 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -37,39 +37,39 @@
-     <ConfigurationType>Application</ConfigurationType>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-     <CharacterSet>NotSet</CharacterSet>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-     <CharacterSet>NotSet</CharacterSet>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-     <CharacterSet>NotSet</CharacterSet>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <CharacterSet>NotSet</CharacterSet>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <CharacterSet>NotSet</CharacterSet>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <CharacterSet>NotSet</CharacterSet>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-diff --git a/src/openvpnmsica/openvpnmsica.vcxproj b/src/openvpnmsica/openvpnmsica.vcxproj
-index bf384db6..c9154b37 100644
---- a/src/openvpnmsica/openvpnmsica.vcxproj
-+++ b/src/openvpnmsica/openvpnmsica.vcxproj
-@@ -37,7 +37,7 @@
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
-     <ConfigurationType>DynamicLibrary</ConfigurationType>
-     <UseDebugLibraries>true</UseDebugLibraries>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <CharacterSet>Unicode</CharacterSet>
-     <WindowsSDKDesktopARM64Support>true</WindowsSDKDesktopARM64Support>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-@@ -45,21 +45,21 @@
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>DynamicLibrary</ConfigurationType>
-     <UseDebugLibraries>true</UseDebugLibraries>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <CharacterSet>Unicode</CharacterSet>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-     <ConfigurationType>DynamicLibrary</ConfigurationType>
-     <UseDebugLibraries>true</UseDebugLibraries>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <CharacterSet>Unicode</CharacterSet>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
-     <ConfigurationType>DynamicLibrary</ConfigurationType>
-     <UseDebugLibraries>false</UseDebugLibraries>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-     <CharacterSet>Unicode</CharacterSet>
-     <WindowsSDKDesktopARM64Support>true</WindowsSDKDesktopARM64Support>
-@@ -68,7 +68,7 @@
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-     <ConfigurationType>DynamicLibrary</ConfigurationType>
-     <UseDebugLibraries>false</UseDebugLibraries>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-     <CharacterSet>Unicode</CharacterSet>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-@@ -76,7 +76,7 @@
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-     <ConfigurationType>DynamicLibrary</ConfigurationType>
-     <UseDebugLibraries>false</UseDebugLibraries>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-     <CharacterSet>Unicode</CharacterSet>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-diff --git a/src/openvpnserv/openvpnserv.vcxproj b/src/openvpnserv/openvpnserv.vcxproj
-index d42e9642..db3a446d 100644
---- a/src/openvpnserv/openvpnserv.vcxproj
-+++ b/src/openvpnserv/openvpnserv.vcxproj
-@@ -37,39 +37,39 @@
-     <ConfigurationType>Application</ConfigurationType>
-     <CharacterSet>Unicode</CharacterSet>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <CharacterSet>Unicode</CharacterSet>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <CharacterSet>Unicode</CharacterSet>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <CharacterSet>Unicode</CharacterSet>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <CharacterSet>Unicode</CharacterSet>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <CharacterSet>Unicode</CharacterSet>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-diff --git a/src/tapctl/tapctl.vcxproj b/src/tapctl/tapctl.vcxproj
-index 0fc22d97..6311d7fd 100644
---- a/src/tapctl/tapctl.vcxproj
-+++ b/src/tapctl/tapctl.vcxproj
-@@ -37,7 +37,7 @@
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <UseDebugLibraries>true</UseDebugLibraries>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <CharacterSet>Unicode</CharacterSet>
-     <WindowsSDKDesktopARM64Support>true</WindowsSDKDesktopARM64Support>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-@@ -45,21 +45,21 @@
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <UseDebugLibraries>true</UseDebugLibraries>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <CharacterSet>Unicode</CharacterSet>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <UseDebugLibraries>true</UseDebugLibraries>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <CharacterSet>Unicode</CharacterSet>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <UseDebugLibraries>false</UseDebugLibraries>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-     <CharacterSet>Unicode</CharacterSet>
-     <WindowsSDKDesktopARM64Support>true</WindowsSDKDesktopARM64Support>
-@@ -68,7 +68,7 @@
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <UseDebugLibraries>false</UseDebugLibraries>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-     <CharacterSet>Unicode</CharacterSet>
-     <SpectreMitigation>Spectre</SpectreMitigation>
-@@ -76,7 +76,7 @@
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <UseDebugLibraries>false</UseDebugLibraries>
--    <PlatformToolset>v142</PlatformToolset>
-+    <PlatformToolset>v143</PlatformToolset>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-     <CharacterSet>Unicode</CharacterSet>
-     <SpectreMitigation>Spectre</SpectreMitigation>
+diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
+index 9a34d5b6..866aa0fb 100644
+--- a/src/openvpn/dco.h
++++ b/src/openvpn/dco.h
+@@ -235,6 +235,13 @@ void dco_delete_iroutes(struct multi_context *m, struct multi_instance *mi);
+  **/
+ int dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m);
+ 
++/**
++ * Update traffic statistics for single peer
++ *
++ * @param c   instance context of the peer
++ **/
++int dco_get_peer_stats(struct context *c);
++
+ /**
+  * Retrieve the list of ciphers supported by the current platform
+  *
+@@ -362,6 +369,12 @@ dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m)
+     return 0;
+ }
+ 
++static inline int
++dco_get_peer_stats(struct context *c)
++{
++    return 0;
++}
++
+ static inline const char *
+ dco_get_supported_ciphers()
+ {
+diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+index 8d342159..7c46f64e 100644
+--- a/src/openvpn/dco_freebsd.c
++++ b/src/openvpn/dco_freebsd.c
+@@ -722,6 +722,13 @@ dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m)
+     return 0;
+ }
+ 
++int
++dco_get_peer_stats(struct context *c)
++{
++    /* Not implemented. */
++    return 0;
++}
++
+ const char *
+ dco_get_supported_ciphers()
+ {
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index 200d0b19..222537fc 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -924,6 +924,13 @@ dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m)
+     return 0;
+ }
+ 
++int
++dco_get_peer_stats(struct context *c)
++{
++    /* Not implemented. */
++    return 0;
++}
++
+ bool
+ dco_available(int msglevel)
+ {
+diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
+index 675dece2..b85665eb 100644
+--- a/src/openvpn/dco_win.c
++++ b/src/openvpn/dco_win.c
+@@ -33,6 +33,7 @@
+ #include "tun.h"
+ #include "crypto.h"
+ #include "ssl_common.h"
++#include "openvpn.h"
+ 
+ #include <bcrypt.h>
+ #include <winsock2.h>
+@@ -406,6 +407,33 @@ dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m)
+     return 0;
+ }
+ 
++int
++dco_get_peer_stats(struct context *c)
++{
++    struct tuntap *tt = c->c1.tuntap;
++
++    if (!tuntap_defined(tt))
++    {
++        return -1;
++    }
++
++    OVPN_STATS stats;
++    ZeroMemory(&stats, sizeof(OVPN_STATS));
++
++    DWORD bytes_returned = 0;
++    if (!DeviceIoControl(tt->hand, OVPN_IOCTL_GET_STATS, NULL, 0,
++                         &stats, sizeof(stats), &bytes_returned, NULL))
++    {
++        msg(M_WARN | M_ERRNO, "DeviceIoControl(OVPN_IOCTL_SET_PEER) failed");
++        return -1;
++    }
++
++    c->c2.dco_read_bytes = stats.TransportBytesReceived;
++    c->c2.dco_write_bytes = stats.TransportBytesSent;
++
++    return 0;
++}
++
+ void
+ dco_event_set(dco_context_t *dco, struct event_set *es, void *arg)
+ {
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 435efaf8..2c0bb6a8 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -43,6 +43,7 @@
+ #include "common.h"
+ #include "manage.h"
+ #include "openvpn.h"
++#include "dco.h"
+ 
+ #include "memdbg.h"
+ 
+@@ -4051,11 +4052,15 @@ management_check_bytecount(struct context *c, struct management *man, struct tim
+     if (event_timeout_trigger(&man->connection.bytecount_update_interval,
+                               timeval, ETT_DEFAULT))
+     {
+-        /* TODO: get stats from DCO */
+-
+         counter_type dco_read_bytes = 0;
+         counter_type dco_write_bytes = 0;
+ 
++        if (dco_enabled(&c->options) && (dco_get_peer_stats(c) == 0))
++        {
++            dco_read_bytes = c->c2.dco_read_bytes;
++            dco_write_bytes = c->c2.dco_write_bytes;
++        }
++
+         if (!(man->persist.callback.flags & MCF_SERVER))
+         {
+             man_bytecount_output_client(man, dco_read_bytes, dco_write_bytes);
 -- 
 2.23.0.windows.1
 
