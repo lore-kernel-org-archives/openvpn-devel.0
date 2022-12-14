@@ -1,10 +1,13 @@
-Date: Wed, 14 Dec 2022 16:13:59 +0100 (CET)
-Message-Id: <202212141513.2BEFDxgE005238@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221205164103.9190-4-kprovost@...2661...>
-References: <20221205164103.9190-4-kprovost@...2661...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Read the peer deletion reason
- from the kernel
+Date: Wed, 14 Dec 2022 16:25:00 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <Y5nqzKAt5o4AzHVq@...2685...>
+References: <1386e3cc-fc65-aa68-fa88-3639f6aec5a2@...2704...>
+ <afaffee7-1c3a-79ad-9eca-ec7e3e5941b9@...2704...>
+ <20221211190913.190-1-marc.becker@...2704...>
+MIME-Version: 1.0
+In-Reply-To: <20221211190913.190-1-marc.becker@...2704...>
+Subject: Re: [Openvpn-devel] [PATCH v2 1/3] unify code path for adding
+ PKCS#11 providers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,47 +16,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Kristof Provost <kp@...1376...>
+Content-Disposition: inline
+To: Marc Becker <marc.becker@...2704...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+On Sun, Dec 11, 2022 at 08:09:13PM +0100, Marc Becker via Openvpn-devel wrote:
+> Use existing wrapper for pkcs11h_addProvider to have arguments with
+> "magic values" for pkcs11-helper call in a central place.
+> 
+> Slot event argument to pkcs11h_addProvider has NOT been a boolean for
+> at least 15 years.
+> Luckily the default is PKCS11H_SLOTEVENT_METHOD_AUTO=0=FALSE.
 
-Makes sense & goes hand in hand with kernel change "commit da69782bf06",
-which has landed in the official tree now.  So I've tested this, of
-course :-)
+Change makes sense and should not change behavior AFAICT.
 
-As the change only touches dco_freebsd.c I have only tested this
-on FreeBSD (but client/server, with/without DCO).  Logging is a bit
-thin there, so I added a msg() to my local tree print out the reason
-given (just to verify that "yes, it's coming up").
+Acked-By: Frank Lichtenheld <frank@...2641...>
 
-I can see counters and disconnect reason coming out of the kernel - which
-is very nice - but after a few connect/disconnects the box crashes hard
-on me.  So something is not good there...  OTOH, this is a kernel side
-thing, doesn't stop me from shipping this userland patch.
-
-
-Your patch has been applied to the master and release/2.6 branch.
-
-commit 10ea19092ded38ff25a445f987ad948aa9eac49f (master)
-commit 3186566e6967f0afb31e0426f5ec3490b0a363e9 (release/2.6)
-Author: Kristof Provost
-Date:   Mon Dec 5 17:41:02 2022 +0100
-
-     Read the peer deletion reason from the kernel
-
-     Signed-off-by: Kristof Provost <kprovost@...2661...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221205164103.9190-4-kprovost@...2661...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25617.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Regards,
+-- 
+  Frank Lichtenheld
 
