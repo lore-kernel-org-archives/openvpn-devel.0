@@ -1,13 +1,9 @@
-Date: Wed, 14 Dec 2022 16:25:00 +0100
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Y5nqzKAt5o4AzHVq@...2685...>
-References: <1386e3cc-fc65-aa68-fa88-3639f6aec5a2@...2704...>
- <afaffee7-1c3a-79ad-9eca-ec7e3e5941b9@...2704...>
- <20221211190913.190-1-marc.becker@...2704...>
+From: Max Fillinger <maximilian.fillinger@...2507...>
+Date: Wed, 14 Dec 2022 16:34:14 +0100
+Message-ID: <20221214153414.12671-1-maximilian.fillinger@...2507...>
 MIME-Version: 1.0
-In-Reply-To: <20221211190913.190-1-marc.becker@...2704...>
-Subject: Re: [Openvpn-devel] [PATCH v2 1/3] unify code path for adding
- PKCS#11 providers
+Subject: [Openvpn-devel] [Patch v2] Fix message for too long tls-crypt-v2
+ metadata
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,25 +12,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Marc Becker <marc.becker@...2704...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Sun, Dec 11, 2022 at 08:09:13PM +0100, Marc Becker via Openvpn-devel wrote:
-> Use existing wrapper for pkcs11h_addProvider to have arguments with
-> "magic values" for pkcs11-helper call in a central place.
-> 
-> Slot event argument to pkcs11h_addProvider has NOT been a boolean for
-> at least 15 years.
-> Luckily the default is PKCS11H_SLOTEVENT_METHOD_AUTO=0=FALSE.
+The current code only checks if the base64-encoded metadata is at most
+980 character. However, that can encode up to 735 bytes of data, while
+only up to 733 bytes are allowed. When passing 734 or 735 bytes, openvpn
+prints a misleading error message saying that the base64 cannot be
+decoded.
 
-Change makes sense and should not change behavior AFAICT.
+This patch checks the decoded length to show an accurate error message.
 
-Acked-By: Frank Lichtenheld <frank@...2641...>
+v2: Remove now-unused macro and fix an off-by-one error.
 
-Regards,
+Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
+---
+ src/openvpn/base64.h    |  4 ++++
+ src/openvpn/tls_crypt.c | 18 +++++++++++-------
+ src/openvpn/tls_crypt.h |  2 --
+ 3 files changed, 15 insertions(+), 9 deletions(-)
+
+diff --git a/src/openvpn/base64.h b/src/openvpn/base64.h
+index f49860fc..7b4224a5 100644
+--- a/src/openvpn/base64.h
++++ b/src/openvpn/base64.h
+@@ -38,6 +38,10 @@
+ #define OPENVPN_BASE64_LENGTH(binary_length) \
+     ((((8 * binary_length) / 6) + 3) & ~3)
+ 
++/** Compute the maximal number of bytes encoded in a base64 string. */
++#define OPENVPN_BASE64_DECODED_LENGTH(base64_length) \
++    ((base64_length / 4) * 3)
++
+ int openvpn_base64_encode(const void *data, int size, char **str);
+ 
+ int openvpn_base64_decode(const char *str, void *data, int size);
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 2fc79111..1e461fcf 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -627,15 +627,11 @@ tls_crypt_v2_write_client_key_file(const char *filename,
+     }
+     ASSERT(buf_write(&dst, client_key.keys, sizeof(client_key.keys)));
+ 
+-    struct buffer metadata = alloc_buf_gc(TLS_CRYPT_V2_MAX_METADATA_LEN, &gc);
++    struct buffer metadata;
+     if (b64_metadata)
+     {
+-        if (TLS_CRYPT_V2_MAX_B64_METADATA_LEN < strlen(b64_metadata))
+-        {
+-            msg(M_FATAL,
+-                "ERROR: metadata too long (%d bytes, max %u bytes)",
+-                (int)strlen(b64_metadata), TLS_CRYPT_V2_MAX_B64_METADATA_LEN);
+-        }
++        size_t b64_length = strlen(b64_metadata);
++        metadata = alloc_buf_gc(OPENVPN_BASE64_DECODED_LENGTH(b64_length) + 1, &gc);
+         ASSERT(buf_write(&metadata, &TLS_CRYPT_METADATA_TYPE_USER, 1));
+         int decoded_len = openvpn_base64_decode(b64_metadata, BEND(&metadata),
+                                                 BCAP(&metadata));
+@@ -644,10 +640,18 @@ tls_crypt_v2_write_client_key_file(const char *filename,
+             msg(M_FATAL, "ERROR: failed to base64 decode provided metadata");
+             goto cleanup;
+         }
++        if (decoded_len > TLS_CRYPT_V2_MAX_METADATA_LEN - 1)
++        {
++            msg(M_FATAL,
++                "ERROR: metadata too long (%d bytes, max %u bytes)",
++                decoded_len, TLS_CRYPT_V2_MAX_METADATA_LEN - 1);
++            goto cleanup;
++        }
+         ASSERT(buf_inc_len(&metadata, decoded_len));
+     }
+     else
+     {
++        metadata = alloc_buf_gc(1 + sizeof(int64_t), &gc);
+         int64_t timestamp = htonll((uint64_t)now);
+         ASSERT(buf_write(&metadata, &TLS_CRYPT_METADATA_TYPE_TIMESTAMP, 1));
+         ASSERT(buf_write(&metadata, &timestamp, sizeof(timestamp)));
+diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
+index 928ff547..d5c73752 100644
+--- a/src/openvpn/tls_crypt.h
++++ b/src/openvpn/tls_crypt.h
+@@ -101,8 +101,6 @@
+ #define TLS_CRYPT_V2_MAX_METADATA_LEN (unsigned)(TLS_CRYPT_V2_MAX_WKC_LEN \
+                                                  - (TLS_CRYPT_V2_CLIENT_KEY_LEN + TLS_CRYPT_V2_TAG_SIZE \
+                                                     + sizeof(uint16_t)))
+-#define TLS_CRYPT_V2_MAX_B64_METADATA_LEN \
+-    OPENVPN_BASE64_LENGTH(TLS_CRYPT_V2_MAX_METADATA_LEN - 1)
+ 
+ /**
+  * Initialize a key_ctx_bi structure for use with --tls-crypt.
 -- 
-  Frank Lichtenheld
+2.30.2
+
 
