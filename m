@@ -1,12 +1,10 @@
-MIME-Version: 1.0
-References: <20221211200108.1402-1-marc.becker@...2704...>
- <20221214143325.2604-1-marc.becker@...2704...>
-In-Reply-To: <20221214143325.2604-1-marc.becker@...2704...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 15 Dec 2022 09:46:54 +0200
-Message-ID: <CAGyAFMV=5Gxr9f8RY5Acmqk_rzRc1WzJ3urxZxY6VRA+WVpLYQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] vcpkg-ports/pkcs11-helper: support
- loader flags
+Date: Thu, 15 Dec 2022 08:55:19 +0100 (CET)
+Message-Id: <202212150755.2BF7tJge044122@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221211190913.190-1-marc.becker@...2704...>
+References: <20221211190913.190-1-marc.becker@...2704...>
+Subject: [Openvpn-devel] [PATCH applied] Re: unify code path for adding
+ PKCS#11 providers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,35 +13,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Marc Becker <marc.becker@...2704...>
+To: Marc Becker via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+I do claim that I have no idea about pkcs11-helper, but this patch 
+isn't *that* complex, just using the existing wrapper... but still
+thanks to Frank for reviewing.  I have test compiled on Gentoo with 
+"pkcs11-helper-1.27.0-r1", and "it compiled".
 
-I applied this pach locally, cleared vcpkg_installed directory and
-verified that vcpkg indeed applied this patch:
+I *do* find this part a bit nonintuitive...
 
-  2>-- Installing port from location:
-C:\Users\lev\Projects\openvpn\contrib\vcpkg-ports\pkcs11-helper
-  2>-- Using cached pkcs11-helper-1.29.0.tar.bz2.
-  2>-- Extracting source
-C:/Users/lev/Projects/vcpkg/downloads/pkcs11-helper-1.29.0.tar.bz2
-  2>-- Applying patch 0001-nmake-compatibility-with-vcpkg-nmake.patch
-  2>-- Applying patch 0002-config-w32-vc.h.in-indicate-OpenSSL.patch
-  2>-- Applying patch pkcs11-helper-001-RFC7512.patch
-  2>-- Applying patch pkcs11-helper-002-dynamic_loader_flags.patch
+   pkcs11_addProvider( ..., cert_private ? TRUE : FALSE)
 
-I also checked that the "inside" patch is identical to the one from
-pkcs11 repo (https://github.com/OpenSC/pkcs11-helper/pull/59/commits/934197611dd1260d17ae0f11ae81c1d2e85612d2).
+.. we have a bool, pass it to a bool, and evaluate it in tri-state, to
+pass true, if the bool is true, and false, if it is not...  wat?
 
-Everything compiles, no changes to the "actual" code of openvpn in
-this patch. I haven't tested actual pkcs11 functionality.
 
-Note that while applying "outside" patch "git am" complains about
-whitespace errors, but "this is fine" - those are from the "inside"
-patch.
+One day, someone should reformat the rest of pkcs11.c, though... this
+stuff is outright ugly
 
-Acked-by: Lev Stipakov <lstipakov@...277...>
+    msg(
+        M_INFO,
+        "PKCS#11: Adding PKCS#11 provider '%s'",
+        provider
+        );
+
+(but I'm aware that OpenVPN had this phase when every function call
+needed to be distributed to the maximum number of lines possible...)
+
+
+Your patch has been applied to the master and release/2.6 branch.
+
+commit b08f8cbb2b92f3ee0eced39d11665befea3aec87 (master)
+commit f1995ccca4c105e71728101bb719d235f5605b33 (release/2.6)
+Author: Marc Becker via Openvpn-devel
+Date:   Sun Dec 11 20:09:13 2022 +0100
+
+     unify code path for adding PKCS#11 providers
+
+     Signed-off-by: Marc Becker <marc.becker@...2704...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20221211190913.190-1-marc.becker@...2704...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25642.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
