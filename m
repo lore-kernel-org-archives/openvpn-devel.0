@@ -1,10 +1,12 @@
-Date: Thu, 15 Dec 2022 08:30:31 +0100 (CET)
-Message-Id: <202212150730.2BF7UVDe040743@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221214153414.12671-1-maximilian.fillinger@...2507...>
-References: <20221214153414.12671-1-maximilian.fillinger@...2507...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix message for too long
- tls-crypt-v2 metadata
+MIME-Version: 1.0
+References: <20221211200108.1402-1-marc.becker@...2704...>
+ <20221214143325.2604-1-marc.becker@...2704...>
+In-Reply-To: <20221214143325.2604-1-marc.becker@...2704...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 15 Dec 2022 09:46:54 +0200
+Message-ID: <CAGyAFMV=5Gxr9f8RY5Acmqk_rzRc1WzJ3urxZxY6VRA+WVpLYQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] vcpkg-ports/pkcs11-helper: support
+ loader flags
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +15,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: Max Fillinger <maximilian.fillinger@...2507...>
+To: Marc Becker <marc.becker@...2704...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Arne Schwabe <arne@...1227...>
+Hi,
 
-Thanks for the v2.  It's identical to v1, except for the off-by-one,
-and removing the now-obsolete macro, so I've taken the ACK from Arne on v1.
+I applied this pach locally, cleared vcpkg_installed directory and
+verified that vcpkg indeed applied this patch:
 
-I have only test-compiled (and looked at the diffs).
+  2>-- Installing port from location:
+C:\Users\lev\Projects\openvpn\contrib\vcpkg-ports\pkcs11-helper
+  2>-- Using cached pkcs11-helper-1.29.0.tar.bz2.
+  2>-- Extracting source
+C:/Users/lev/Projects/vcpkg/downloads/pkcs11-helper-1.29.0.tar.bz2
+  2>-- Applying patch 0001-nmake-compatibility-with-vcpkg-nmake.patch
+  2>-- Applying patch 0002-config-w32-vc.h.in-indicate-OpenSSL.patch
+  2>-- Applying patch pkcs11-helper-001-RFC7512.patch
+  2>-- Applying patch pkcs11-helper-002-dynamic_loader_flags.patch
 
-Your patch has been applied to the master and release/2.6 branch.
+I also checked that the "inside" patch is identical to the one from
+pkcs11 repo (https://github.com/OpenSC/pkcs11-helper/pull/59/commits/934197611dd1260d17ae0f11ae81c1d2e85612d2).
 
-commit 860bf4bf9248077259690a518925ecc14da4b320 (master)
-commit f8e576eba078acb1279506d8b6f334667dea1585 (release/2.6)
-Author: Max Fillinger
-Date:   Wed Dec 14 16:34:14 2022 +0100
+Everything compiles, no changes to the "actual" code of openvpn in
+this patch. I haven't tested actual pkcs11 functionality.
 
-     Fix message for too long tls-crypt-v2 metadata
+Note that while applying "outside" patch "git am" complains about
+whitespace errors, but "this is fine" - those are from the "inside"
+patch.
 
-     Signed-off-by: Max Fillinger <maximilian.fillinger@...2507...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20221214153414.12671-1-maximilian.fillinger@...2507...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25694.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Acked-by: Lev Stipakov <lstipakov@...277...>
 
