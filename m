@@ -1,10 +1,15 @@
-Date: Thu, 15 Dec 2022 09:04:18 +0100 (CET)
-Message-Id: <202212150804.2BF84I9b045409@...2054...>
+Date: Thu, 15 Dec 2022 09:14:13 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221211191403.805-1-marc.becker@...2704...>
-References: <20221211191403.805-1-marc.becker@...2704...>
-Subject: [Openvpn-devel] [PATCH applied] Re: use new pkcs11-helper interface
- to add providers
+Message-ID: <Y5rXVTcJzmoCGqSj@...1296...>
+References: <20221211190913.190-1-marc.becker@...2704...>
+ <202212150755.2BF7tJge044122@...2054...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="RRBVdHAM+4tY1eah"
+Content-Disposition: inline
+In-Reply-To: <202212150755.2BF7tJge044122@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: unify code path for adding
+ PKCS#11 providers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +18,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Marc Becker via Openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Cc: openvpn-devel@lists.sourceforge.net
 
-I have test compiled this on Gentoo with pkcs-helper-1.27.0-r1, and
-"it compiled".  I'm aware that this is not actually excercising any
-of the new code paths, but "stare at code" sees nothing explosive,
-and I trust Selva's review.
+--RRBVdHAM+4tY1eah
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master and release/2.6 branch.
+Hi,
 
-commit 5954f03bb321a969ea6edbdd353e1dd4f61ac8f0 (master)
-commit d0141344b0c21747ba18be64470236066da62f33 (release/2.6) 
-Author: Marc Becker via Openvpn-devel
-Date:   Sun Dec 11 20:14:03 2022 +0100
+*sigh* - "Marc Becker via Openvpn-devel", this so messes up my workflow...
+(can DMARC please go somewhere and die, alone, with no friends?).
 
-     use new pkcs11-helper interface to add providers
+I had to reapply these patches 1/3 and 2/3 to get the author right,
+so you'll see new commit IDs.
 
-     Signed-off-by: Marc Becker <marc.becker@...2704...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <20221211191403.805-1-marc.becker@...2704...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25643.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+For 1/3, these are:
 
+On Thu, Dec 15, 2022 at 08:55:19AM +0100, Gert Doering wrote:
+> commit b08f8cbb2b92f3ee0eced39d11665befea3aec87 (master)
+> commit f1995ccca4c105e71728101bb719d235f5605b33 (release/2.6)
 
---
-kind regards,
+new:
 
-Gert Doering
+commit 8958a365479348c1500dee44e1a8b27e7e35a96f ( master)
+commit bcceded96775cc5a131bb9ab11ba855c7576603d (release/2.6)
 
+Author: Marc Becker <marc.becker@...2704...>
+Date:   Sun Dec 11 20:09:13 2022 +0100
+
+    unify code path for adding PKCS#11 providers
+
+nothing in the actual patch has changed, just the author (and that,
+of course, changes the commit IDs).
+
+gert
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--RRBVdHAM+4tY1eah
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJjmtdVAAoJEB2Cnv7KVigSfO0L/2esOpMFpYKbWOMj9W3J8P/a
+El7V1y35M0Tnzv0E/6bCVz2+MF1mF+SgXyObFLX7EhhMpiI4FMBgwDzp7cWsv+U3
+HQ3HHcEvJ9tsKGwflHW0h6zm9LDswJxYVYufjK/v09EgPv7/beTcQv9ZB464oFL2
+dKrsGJSFDN1hOdoqS/ufip+UwroOKgAriyEKW0yBLE324wPrLZpoN8DMWmCdWdjf
+5+D6SGx9PZRrXlBfQ1VFJff2OyNbRDqWa1Vk0WemO1yxMMS21II8scTKPBVvHGds
+qFzP1qHzoZNcB1Kkbtun9GbmRCbR1Pob3ZohzFmMpXLNFduyQ1riCYFsKpiENCGi
+CwUUS4KZbAZEikbabVVAVEISE5NyNV8tG/J/JG8AzM4fOZQkSpCns3w7de4MGThl
+YmAWyTVpctlie9D7QzxBG0AT3iTKMOshh0Ug0687mMNpxy0qv9xTHBgu5glwRR+F
+EQrM9W+3cp6nv5LXCW7By51NyVxrMoULVfeDOyfn7w==
+=gXDg
+-----END PGP SIGNATURE-----
+
+--RRBVdHAM+4tY1eah--
 
