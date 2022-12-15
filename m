@@ -1,10 +1,19 @@
-Date: Thu, 15 Dec 2022 10:07:37 +0100 (CET)
-Message-Id: <202212150907.2BF97bse054683@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221214143325.2604-1-marc.becker@...2704...>
-References: <20221214143325.2604-1-marc.becker@...2704...>
-Subject: [Openvpn-devel] [PATCH applied] Re: vcpkg-ports/pkcs11-helper:
- support loader flags
+MIME-Version: 1.0
+References: <20221214164824.172-1-lstipakov@...277...>
+ <CAKuzo_iZPLJvSyK53oziTO99ZW6ua-DFvEWMoPAK3MjrjQ5PdA@...278...>
+ <CAGyAFMV=QqUUPj8-Z8_U3JWG3qoBOZOKpMMVAztpdc-8qT+0HQ@...278...>
+ <CAKuzo_g6Pc6djBCu05-k5oJFWYuTYBFa60Ucay+z1BebJK=9Gg@...278...>
+ <CAGyAFMUTjZuN+W8FagK+F=4P+iuUAEYS0qmieb3kNQYKN-z=gg@...278...>
+ <Y5pEEhAGyKzbNn8u@...1296...>
+ <CAGyAFMUQUx_oL_Qi6SBcAdB94VCW+1tmTQVkoCh5B0BnYThkLg@...278...>
+ <CAKuzo_imcQLV60uJN9mXTR8ti7gctgR=iZVpi+2AvDvSTJ_x0g@...278...>
+ <CAKuzo_jVnAUeKM9=x1vU_DztqPrwYJfHe=YTy5AS8PKF2_Tv1g@...278...>
+In-Reply-To: <CAKuzo_jVnAUeKM9=x1vU_DztqPrwYJfHe=YTy5AS8PKF2_Tv1g@...278...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 15 Dec 2022 11:31:41 +0200
+Message-ID: <CAGyAFMVkMAUmiNZCbp3xwognY-5d7-ZGEH9v=S17YBogfx2vnA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Introduce dco_get_peer_stats API and
+ Windows implementation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,47 +22,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Marc Becker <marc.becker@...2704...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: Selva Nair <selva.nair@...277...>
+Cc: Gert Doering <gert@...1296...>, Lev Stipakov <lev@...515...>, openvpn-devel@lists.sourceforge.net
 
-Lev warned me that there are whitespace errors in the "inside" patch,
-so had to apply this with "git am --whitespace=nowarn"...
+Hi,
 
-Pushed to my github instance, had GHA build something, and it claims
-"success"...
+> In non-dco use, the stats as persisted by the management interface are no=
+t reset throughout the lifetime of the process. With dco, what the driver p=
+rovides is "Peer Stats" which is reset in OvpnPeerNew()  (linux appears to =
+do the same). A quick option > would be to move the zero-ing to OvpnEvtFile=
+Cleanup() which, I guess, would work at least when persist-tun is in use.
 
-  https://github.com/cron2/openvpn/actions/runs/3702355587 
-  https://github.com/cron2/openvpn/actions/runs/3702357052
+Yeah, without persist-tun client closes the handle, which triggers
+OvpnEvtFileCleanup(), which would reset stats.
 
-so whatever it does, it does not *break* anything right away :-)
+> Or in a new callback that gets called on tun-open. But then it wont be st=
+rictly "Peer Stats".
 
-As per the discussion on v2, we need to remember to remove that patch
-again when upstream is merged and we bump openvpn-build to a new
-pkcs11-helper release - in which case, the build is likely going to
-fail anyway ("there is a patch that does not apply") so we'll notice.
+Yeah that might be an option, to have RESET_STATS ioctl.
 
+Also I wonder if the driver could remember, say, the last pid, and
+then reset stats on NEW_PEER if pid !=3D last pid. Since pids are
+recycled, we might "leak" stats in unfortunate cases, but that's okay
+I guess?
 
-Your patch has been applied to the master and release/2.6 branch.
-
-commit 2f9c56e2cb0ce0f8d7a2a30f89831d1ddc0f2bbb (master)
-commit 0b18e23b67ac3c8e64ed44c8e907c53a15cf96d0 (release/2.6)
-Author: Marc Becker
-Date:   Wed Dec 14 15:33:25 2022 +0100
-
-     vcpkg-ports/pkcs11-helper: support loader flags
-
-     Signed-off-by: Marc Becker <marc.becker@...2704...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20221214143325.2604-1-marc.becker@...2704...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25691.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+--=20
+-Lev
 
