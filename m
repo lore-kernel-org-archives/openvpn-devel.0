@@ -1,11 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 15 Dec 2022 20:01:36 +0100
-Message-Id: <20221215190143.2107896-2-arne@...1227...>
+Date: Thu, 15 Dec 2022 20:01:43 +0100
+Message-Id: <20221215190143.2107896-9-arne@...1227...>
 In-Reply-To: <20221215190143.2107896-1-arne@...1227...>
 References: <20221215190143.2107896-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/8] Make management password check constant
- time
+Subject: [Openvpn-devel] [PATCH 8/8] Deprecate NTLMv1 proxy auth method.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,36 +16,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Connor Edwards <cedw@...2705...>
 
-This changes the password check on the management interface to be constant
-time. Normally the management port should not be exposed in a way that allows
-an attacker to even interact with it but making the check constant time as
-an additional layer of security is always good.
+NTLMv1 is ancient and not considered secure anymore and we are not
+aware of any users or software still requiring this feature.
 
-Reported-by: Connor Edwards <cedw@...2705...>
+Additionally it currently depends on our "doing single DES using
+3DES" workaround for OpenSSL (cipher_des_encrypt_ecb). So removing
+NTLMv1 will also allow us to remove that workaround.
+
+Reported-By: Trial of Bits (TOB-OVPN-7)
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/manage.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ src/openvpn/proxy.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index 9349b62ad..d952618e7 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -198,7 +198,11 @@ man_check_password(struct management *man, const char *line)
- {
-     if (man_password_needed(man))
-     {
--        if (streq(line, man->settings.up.password))
-+        /* This comparison is not fixed time but since strlen(time) is based on
-+         * the attacker choice, it should not give any indication of the real
-+         * password length */
-+        if (memcmp_constant_time(line, man->settings.up.password,
-+                                 min_uint(strlen(line), sizeof(man->settings.up.password))) == 0)
+diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
+index ed7201616..633caee09 100644
+--- a/src/openvpn/proxy.c
++++ b/src/openvpn/proxy.c
+@@ -519,6 +519,8 @@ http_proxy_new(const struct http_proxy_options *o)
+ #if NTLM
+         else if (!strcmp(o->auth_method_string, "ntlm"))
          {
-             man->connection.password_verified = true;
-             msg(M_CLIENT, "SUCCESS: password is correct");
++            msg(M_INFO, "NTLM v1 authentication is deprecated and will be removed in "
++                "OpenVPN 2.7");
+             p->auth_method = HTTP_AUTH_NTLM;
+         }
+         else if (!strcmp(o->auth_method_string, "ntlm2"))
 -- 
 2.37.1 (Apple Git-137.1)
 
