@@ -1,21 +1,13 @@
-Message-ID: <4c416e69-07b6-b7e0-25aa-0b3fb3ce5ac4@...2181...>
-Date: Thu, 15 Dec 2022 11:15:30 +0100
+Message-ID: <89635e1a-2569-d6ce-e6c5-4217715138ff@...1227...>
+Date: Thu, 15 Dec 2022 11:44:13 +0100
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20221214164824.172-1-lstipakov@...277...>
- <CAKuzo_iZPLJvSyK53oziTO99ZW6ua-DFvEWMoPAK3MjrjQ5PdA@...278...>
- <CAGyAFMV=QqUUPj8-Z8_U3JWG3qoBOZOKpMMVAztpdc-8qT+0HQ@...278...>
- <CAKuzo_g6Pc6djBCu05-k5oJFWYuTYBFa60Ucay+z1BebJK=9Gg@...278...>
- <CAGyAFMUTjZuN+W8FagK+F=4P+iuUAEYS0qmieb3kNQYKN-z=gg@...278...>
- <Y5pEEhAGyKzbNn8u@...1296...>
- <CAGyAFMUQUx_oL_Qi6SBcAdB94VCW+1tmTQVkoCh5B0BnYThkLg@...278...>
- <CAKuzo_imcQLV60uJN9mXTR8ti7gctgR=iZVpi+2AvDvSTJ_x0g@...278...>
- <CAKuzo_jVnAUeKM9=x1vU_DztqPrwYJfHe=YTy5AS8PKF2_Tv1g@...278...>
- <CAGyAFMVkMAUmiNZCbp3xwognY-5d7-ZGEH9v=S17YBogfx2vnA@...278...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <CAGyAFMVkMAUmiNZCbp3xwognY-5d7-ZGEH9v=S17YBogfx2vnA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Introduce dco_get_peer_stats API and
- Windows implementation
+References: <20221213103142.1960-1-lstipakov@...277...>
+ <20221214224220.307-1-lstipakov@...277...>
+Content-Language: en-GB
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20221214224220.307-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v2] management: add timer to output
+ BYTECOUNT
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -26,49 +18,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Lev Stipakov <lstipakov@...277...>, Selva Nair <selva.nair@...277...>
-Cc: Lev Stipakov <lev@...515...>, Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Hi,
-
-On 15/12/2022 10:31, Lev Stipakov wrote:
-> Hi,
+Am 14.12.22 um 23:42 schrieb Lev Stipakov:
+> From: Lev Stipakov <lev@...515...>
 > 
->> In non-dco use, the stats as persisted by the management interface are not reset throughout the lifetime of the process. With dco, what the driver provides is "Peer Stats" which is reset in OvpnPeerNew()  (linux appears to do the same). A quick option > would be to move the zero-ing to OvpnEvtFileCleanup() which, I guess, would work at least when persist-tun is in use.
+> BYTECOUNT on management interface is used to display client stats,
+> for example by openvpn-gui. At the moment BYTECOUNT is sent if
+> there is a traffic. With DCO, userspace process doesn't see data
+> channel traffic, BYTECOUNT is not sent and therefore stats
+> are not updated.
 > 
-> Yeah, without persist-tun client closes the handle, which triggers
-> OvpnEvtFileCleanup(), which would reset stats.
+> Fix displaying DCO client stats by adding a timer, which is triggerd
+> every n seconds, where n is set by existing management command
+> bytecount <n>. Output stats, taking into account stats from DCO,
+> when timer is triggered.
 > 
->> Or in a new callback that gets called on tun-open. But then it wont be strictly "Peer Stats".
+> While on it, simplify bytecount routines call chains - inlining
+> functions which are used only once.
 > 
-> Yeah that might be an option, to have RESET_STATS ioctl.
+> DCO stats fetching is not yet implemented.
 > 
-> Also I wonder if the driver could remember, say, the last pid, and
-> then reset stats on NEW_PEER if pid != last pid. Since pids are
-> recycled, we might "leak" stats in unfortunate cases, but that's okay
-> I guess?
+> Stats for the server mode (BYTECOUNT_CLI) are unaffected
+> by this change - to output those in timer callback we would need to
+> enumerate all peers, and I am not sure we want to output stats
+> for all peers every <n> seconds.
 > 
 
-Sorry for jumping in the discussion a bit late.
+Acked-By: Arne Schwabe <arne@...1227...>
 
-IMHO the stats belong to the Peer object.
-Let's not forget that, apart from windows, DCO supports multi-peer mode, 
-therefore we have to consider that case as well.
-
-Due to the above, I'd "reset" the stats when a new peer object is 
-instantiated. Basically when a new peer object is instantiated it should 
-come with empty stats, as expected.
-
-If the desired behvaiour in userspace is to keep the stats persistent 
-across a number of events, it should simply be userspace to keep those 
-stats.
-
-This way we don't mix up the logic of counting the bytes per peer, and 
-keeping a general picture of the VPN process.
-
-Cheers,
-
-
--- 
-Antonio Quartulli
 
