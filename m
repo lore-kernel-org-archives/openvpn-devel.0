@@ -1,11 +1,12 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Thu, 15 Dec 2022 20:01:38 +0100
-Message-Id: <20221215190143.2107896-4-arne@...1227...>
-In-Reply-To: <20221215190143.2107896-1-arne@...1227...>
-References: <20221215190143.2107896-1-arne@...1227...>
+Message-ID: <731f5234-bbd5-45e9-cdb4-def18c26d4df@...1847...>
+Date: Thu, 15 Dec 2022 21:04:47 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 3/8] Ensure that argument to parse_line has
- always space for final sentinel
+Content-Language: de-DE
+From: Andre Valentin <avalentin@...1847...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------E069imNxlmyqy1PVm60p8chI"
+Subject: [Openvpn-devel] Support for fwmark on service side
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,105 +15,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This fixes two places were we do not have enough space in the array
-of parameters given to parse_line for the final NULL parameter that
-signal the end of the parsed argument errors.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------E069imNxlmyqy1PVm60p8chI
+Content-Type: multipart/mixed; boundary="------------KzBPO3ll30Ok5fBomwUbG9SD";
+ protected-headers="v1"
+From: Andre Valentin <avalentin@...1847...>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <731f5234-bbd5-45e9-cdb4-def18c26d4df@...1847...>
+Subject: Support for fwmark on service side
 
-Both these cases can lead to a buffer overflow. But both of these
-cases require root/admin access to OpenVPN:
+--------------KzBPO3ll30Ok5fBomwUbG9SD
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: base64
 
-- parse_argv, only able to trigger if starting openvpn from the command
-  line, at this point you cannot  gain more privileges than you already
-  have.
+SGkhDQoNCkluIHRoZSBvbGQgMi40IHZlcnNpb24gZGF5cywgd2UgdXNlZCBhIHByaXZhdGUgcGF0
+Y2ggd2hpY2ggYWNjb21wbGlzaGVkIHRoZSBmb2xsb3dpbmc6DQoNCkV2ZXJ5IGNsaWVudHMgZ2V0
+cyBhIGZ3bWFyayBhbmQgYSBtYXNrIGFzc2lnbmVkIHZpYSB0aGUgY29uZmlnIG9yIGEgY2NkIGZp
+bGUNCg0KT3V0Ym91bmQgcGFja2V0cw0KLUlmIHRoZSBzeXN0ZW1zIHNlbmRzIGEgcGFja2V0LCBp
+dCBhbHdheXMgaGFzIGEgZndtYXJrIGFzc2lnbmVkDQotSWYgc3VjaCBhIHBhY2tldCBnb2VzIHRo
+cnUgdGhlIHR1bi9kY28gZGV2aWNlIHRvIG9wZW52cG4sIG9wZW52cG4gcmVhZHMgdGhlIGZ3bWFy
+aw0KLUl0IGNoZWNrcyB3aGljaCBjbGllbnRzIGhhdmUgdGhlIGNvcnJlc3BvbmRpbmcgZndtYXJr
+IGFuZCB0aGVuIGRvZXMgdGhlICJub3JtYWwgcm91dGluZyIgYW5kIHNlbmRzIHRoZSBwYWNrZXQN
+Cg0KSW5ib3VuZCBwYWNrZXRzDQotT3BlblZQTiBwcm9jZXNzZXMgdGhlIHBhY2tldCBjb21pbmcg
+ZnJvbSB0aGUgY2xpZW50DQotSXQga25vd3MgdGhlIGZ3bWFyayBhbmQgYXR0YWNoZXMgdGhlIG1h
+cmsgdG8gdGhlIHBhY2thZ2UNCi1UaGUgc3lzdGVtIHdpbGwgcm91dGUgdGhlIHBhY2tldCBkZXBl
+bmRpbmcgb24gZndtYXJrIGFuZCBJUHMNCg0KV2UgdXNlZCB0aGlzIHRvIHJlZHVjZSB0aGUgbnVt
+YmVyIG9mIE9wZW5WUE4gcHJvY2Vzc2VzIGluIG91ciBtdWx0aSB0ZW5hbmN5IHNldHVwIHRvIGEg
+bWluaW11bS4NCg0KDQpGb3IgdGhlIGZ1dHVyZSBJIHdhbnQgdG8gaW1wbGVtZW50IHRoaXMgYWdh
+aW4sIHBlcmhhcHMgbm93IGluIERDTyBpbnN0ZWFkIG9mIHR1bi4NCg0KTm93IG15IHF1ZXN0aW9u
+IGlzIGlmIHRoaXMgaXMgb2YgaW50ZXJlc3QgZm9yIHRoZSBjb21tdW5pdHkuIElmIHllcywgSSB3
+b3VsZCBsb3ZlIHRvIGdldCBzb21lIHJlc29uYW5jZSBhbmQgZ3VpZGFuY2UsIHNvIHRoYXQgaXQg
+Y2FuIGJlIG1lcmdlZC4NCg0KSWYgbm90LCBJIHdvdWxkIGRvIHRoaXMgaW4gb3VyIHByaXZhdGUg
+YnJhbmNoLg0KDQpLaW5kIHJlZ2FyZHMsDQoNCkFuZHLDqQ0K
 
-  Way to reproduce, compile with ASAN and run:
+--------------KzBPO3ll30Ok5fBomwUbG9SD--
 
-       openvpn --tls-verify a a a a a a a a a a a a a a a
+--------------E069imNxlmyqy1PVm60p8chI
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-- remove_iroutes_from_push_route_list
+-----BEGIN PGP SIGNATURE-----
 
-	This operates on the list of pushed entries that is generated
-	by the server itself. So trigger this, you need to have control
-	over config, management interface, a plugin or cdd files.
+wsF5BAABCAAjFiEEyItXv4XEFMxiieOpuuz6OTgo+k8FAmObfd8FAwAAAAAACgkQuuz6OTgo+k/N
+Eg/7Bn3Tk3T39UxibcDKopGwp60TjQH2bRJNGyoPkRF3GDrWQs7NfBx0GNviEWT2DPIOyJJoZ/ul
+NXUrZ3SvjBecjHDrcugoQ0arQbj+QMztcsuA8pZ/ffrJ+wkj38Gbr1CsKOZa8wmxSWNZw9bXoK54
+Z1XuRRpljJXAWEeeu3ym3Q6DXCmALi+OOWYgf/7u3cYICKO898cvppbSYNH3zs52NMEjb4eJAD6f
+/O3Z8oHi8zmZjBIfVYAee2LglfcdAGMAsOnnOkq24IYq+f/mSUJ3thlpftE5ueYwV9j/QVSmR/DA
+ZtI35etgaAECn+kgxepaIYZyitIQgHmg7KUu7A6vcq19FNixvWzdR8XfgkdKAg2Xk51H0AXWUhsh
+G4SoL8KjyGtMmXDttHMrqUHFV7dXpIZ2l+EthWBUXlK4oP1vnF8Jp9Kiwo5Zn5pJWFKyQB4ehfr3
+0c28l0LqE04w6n99lOpbvo1hLM+SIfc6awiNYCNvL82kLpxkRnKHyriQDwM4OfV58sR0ETWxNYaf
+s/zcoeqchNu+Y2pozRlGGqnqtsD184XH5qdtfobLKUmDfREqxrltcjJm1Agl6UK8z4Js4Lc8vmwZ
+oP9e38Fxu0SStFguPbAMx4t+LrETJICmhgdi8t9r7aS/maYAhLevO1tvXQhxP229Et6VDcexotCn
+Dq4=
+=Sy/8
+-----END PGP SIGNATURE-----
 
-The parse_argv problem was found by Trial of Bits. I found the
-remove_iroutes_from_push_route_list problem by looking for similar
-problems.
-
-Reported-By: Trial of Bits (TOB-OVPN-4)
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/options.c | 9 ++++-----
- src/openvpn/push.c    | 4 ++--
- 2 files changed, 6 insertions(+), 7 deletions(-)
-
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index e48e4b459..1d6c0572c 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -5310,8 +5310,6 @@ parse_argv(struct options *options,
-            unsigned int *option_types_found,
-            struct env_set *es)
- {
--    int i, j;
--
-     /* usage message */
-     if (argc <= 1)
-     {
-@@ -5321,7 +5319,7 @@ parse_argv(struct options *options,
-     /* config filename specified only? */
-     if (argc == 2 && strncmp(argv[1], "--", 2))
-     {
--        char *p[MAX_PARMS];
-+        char *p[MAX_PARMS+1];
-         CLEAR(p);
-         p[0] = "config";
-         p[1] = argv[1];
-@@ -5331,9 +5329,9 @@ parse_argv(struct options *options,
-     else
-     {
-         /* parse command line */
--        for (i = 1; i < argc; ++i)
-+        for (int i = 1; i < argc; ++i)
-         {
--            char *p[MAX_PARMS];
-+            char *p[MAX_PARMS+1];
-             CLEAR(p);
-             p[0] = argv[i];
-             if (strncmp(p[0], "--", 2))
-@@ -5345,6 +5343,7 @@ parse_argv(struct options *options,
-                 p[0] += 2;
-             }
- 
-+            int j;
-             for (j = 1; j < MAX_PARMS; ++j)
-             {
-                 if (i + j < argc)
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index f8c747d44..ad2f3c656 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -1096,13 +1096,13 @@ remove_iroutes_from_push_route_list(struct options *o)
-         /* cycle through the push list */
-         while (e)
-         {
--            char *p[MAX_PARMS];
-+            char *p[MAX_PARMS+1];
-             bool enable = true;
- 
-             /* parse the push item */
-             CLEAR(p);
-             if (e->enable
--                && parse_line(e->option, p, SIZE(p), "[PUSH_ROUTE_REMOVE]", 1, D_ROUTE_DEBUG, &gc))
-+                && parse_line(e->option, p, SIZE(p)-1, "[PUSH_ROUTE_REMOVE]", 1, D_ROUTE_DEBUG, &gc))
-             {
-                 /* is the push item a route directive? */
-                 if (p[0] && !strcmp(p[0], "route") && !p[3] && o->iroutes)
--- 
-2.37.1 (Apple Git-137.1)
-
+--------------E069imNxlmyqy1PVm60p8chI--
 
