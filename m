@@ -1,10 +1,10 @@
-Date: Fri, 16 Dec 2022 12:43:46 +0100 (CET)
-Message-Id: <202212161143.2BGBhkcZ070485@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221215190143.2107896-4-arne@...1227...>
-References: <20221215190143.2107896-4-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Ensure that argument to
- parse_line has always space for final sentinel
+Date: Fri, 16 Dec 2022 14:04:12 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <Y5xszM2URafWhYVP@...2685...>
+References: <CAKuzo_gXCuTLmVixX_4r3pNfzTs2+hsX89w7EqsxxGrRq0F-Gg@...278...>
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_gXCuTLmVixX_4r3pNfzTs2+hsX89w7EqsxxGrRq0F-Gg@...278...>
+Subject: Re: [Openvpn-devel] Linking to GUI changes in release announcements
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,39 +13,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Acked-by: Gert Doering <gert@...1296...>
+On Wed, Dec 07, 2022 at 05:01:30PM -0500, Selva Nair wrote:
+> Hi,
+> 
+> Now that we have a shiny, newly updated, CHANGES.rst file for the GUI, it
+> may be useful to link to it in future release announcements:
+> 
+> https://github.com/OpenVPN/openvpn-gui/blob/master/CHANGES.rst
+> 
 
-Straightforward enough :-) - still, run through the test mill.  I have
-no ASAN environment around right now, so couldn't verify the actual
-overflow "before" - but stare-at-code confirms the problem and the fix.
+Done.
 
-Your patch has been applied to the master, release/2.6, release/2.5
-and release/2.4 branch (and has been t_client tested on 2.4+2.5)
+> Although almost all new features in the GUI were made available
+> incrementally, one feature new in 2.6 (not installed in 2.5.x releases) is
+> the PLAP support. Here is a possible description of this feature:
+> 
+> - Pre-logon access provider: supports starting of connections from the
+> login screen before the user logs in. Useful when connection to a domain
+> controller via a VPN tunnel is required for login.
 
-commit 749beb6d0cb9f8628997bb656ba2f64e31cac377 (master)
-commit d75462fc70a2b0b26fb10063b15b6bfc5c8161db (release/2.6)
-commit 01bed788b0ec4007591b81398b56b5f9632ca33c (release/2.5)
-commit a12adfa01b2486bff32c9bb3aedf81716ad14c58 (release/2.4)
-Author: Arne Schwabe
-Date:   Thu Dec 15 20:01:38 2022 +0100
+We have it already mentioned in the list of new features, although in
+much shorter form (which is consistent with the amount of description
+we have for other features).
 
-     Ensure that argument to parse_line has always space for final sentinel
+Maybe it would be useful to make the descriptions of the features more
+verbose in general. I will take a stab at that for Beta3.
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221215190143.2107896-4-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25734.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Regards,
+-- 
+  Frank Lichtenheld
 
