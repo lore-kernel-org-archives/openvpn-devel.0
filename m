@@ -1,10 +1,10 @@
-Date: Fri, 16 Dec 2022 11:54:20 +0100
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Y5xOXLbRtka5Z81+@flichtenheld-TUXEDO-InfinityBook-S-15-17-Gen7>
-References: <20221216090717.1082-1-lstipakov@...277...>
-MIME-Version: 1.0
-In-Reply-To: <20221216090717.1082-1-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] git-version.py: use tag as branch name
+Date: Fri, 16 Dec 2022 12:43:46 +0100 (CET)
+Message-Id: <202212161143.2BGBhkcZ070485@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221215190143.2107896-4-arne@...1227...>
+References: <20221215190143.2107896-4-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Ensure that argument to
+ parse_line has always space for final sentinel
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,42 +13,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Fri, Dec 16, 2022 at 11:07:17AM +0200, Lev Stipakov wrote:
-> From: Lev Stipakov <lev@...515...>
-> 
-> Git magic to get branch name
-> 
->   git rev-parse --symbolic-full-name HEAD
-> 
-> doesn't work when we're on tag, which is the case when
-> we build releases. In this case, use tag name as branch name
-> with another git magic:
-> 
->   git describe --tags
-> 
-> This fixes https://github.com/OpenVPN/openvpn/issues/199.
+Acked-by: Gert Doering <gert@...1296...>
 
-NAK.
+Straightforward enough :-) - still, run through the test mill.  I have
+no ASAN environment around right now, so couldn't verify the actual
+overflow "before" - but stare-at-code confirms the problem and the fix.
 
-I would propose to invert the logic:
+Your patch has been applied to the master, release/2.6, release/2.5
+and release/2.4 branch (and has been t_client tested on 2.4+2.5)
 
-Do "git describe --exact-match" first.
+commit 749beb6d0cb9f8628997bb656ba2f64e31cac377 (master)
+commit d75462fc70a2b0b26fb10063b15b6bfc5c8161db (release/2.6)
+commit 01bed788b0ec4007591b81398b56b5f9632ca33c (release/2.5)
+commit a12adfa01b2486bff32c9bb3aedf81716ad14c58 (release/2.4)
+Author: Arne Schwabe
+Date:   Thu Dec 15 20:01:38 2022 +0100
 
-That matches only annotated tags that point to this commit.
-So it will actually use the tag consistently independent of
-whether you have the commit checked out with detached HEAD
-or via the release branch.
+     Ensure that argument to parse_line has always space for final sentinel
 
-And then fall back to the previous mechanism if that doesn't
-match.
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20221215190143.2107896-4-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25734.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Regards,
--- 
-  Frank Lichtenheld
+
+--
+kind regards,
+
+Gert Doering
+
 
