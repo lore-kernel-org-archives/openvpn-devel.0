@@ -1,10 +1,8 @@
-Date: Fri, 16 Dec 2022 09:47:15 +0100 (CET)
-Message-Id: <202212160847.2BG8lF1m046650@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221215190143.2107896-3-arne@...1227...>
-References: <20221215190143.2107896-3-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: ssl_verify: Fix memleak if
- creating deferred auth control files fails
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri, 16 Dec 2022 11:07:17 +0200
+Message-Id: <20221216090717.1082-1-lstipakov@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] git-version.py: use tag as branch name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,42 +13,53 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Acked-by: Gert Doering <gert@...1296...>
+From: Lev Stipakov <lev@...515...>
 
-As agreed on the security@ list - this covers all possible leaks, and
-is fully "normal OpenVPN style".  I didn't test actual file creation
-failures, but I *did* test regular server operation with plugins and
-scripts, and that all still works fine.
+Git magic to get branch name
 
-As instructed, I've fixed the "Trial" to read "Trail of Bits" :-)
+  git rev-parse --symbolic-full-name HEAD
 
-Your patch has been applied to the master and release/2.6 branch.
+doesn't work when we're on tag, which is the case when
+we build releases. In this case, use tag name as branch name
+with another git magic:
 
-release/2.5 and older do not contain this code (no async/deferred 
---verify-auth-user-pass scripts yet) - that was only added in 2021
-via commit 28e6103096ae8.
+  git describe --tags
 
-commit 0567da5377704cf64bd2599f2d49aa478d386941 (master)
-commit cdfdfb3da0ce714f43b23f679a8ef9b36ab9f370 (release/2.6)
-Author: David Sommerseth
-Date:   Thu Dec 15 20:01:37 2022 +0100
+This fixes https://github.com/OpenVPN/openvpn/issues/199.
 
-     ssl_verify: Fix memleak if creating deferred auth control files fails
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ build/msvc/msvc-generate/git-version.py | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221215190143.2107896-3-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25737.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/build/msvc/msvc-generate/git-version.py b/build/msvc/msvc-generate/git-version.py
+index 814dc86a..513f489a 100644
+--- a/build/msvc/msvc-generate/git-version.py
++++ b/build/msvc/msvc-generate/git-version.py
+@@ -30,9 +30,16 @@ def get_branch_commit_id():
+     if not commit_id:
+         raise
+     l = os.popen("git rev-parse --symbolic-full-name HEAD").read().split("/")[2:]
+-    if not l:
+-        l = ["none\n"]
+-    branch = "/" .join(l)[:-1]
++    if l:
++        branch = "/" .join(l)[:-1]
++    else:
++        # are we on tag?
++        l = os.popen("git describe --tags").read()
++        if l:
++            branch = l[:-1]
++        else:
++            branch = "none"
++
+     return branch, commit_id
+ 
+ def main():
+-- 
+2.38.1.windows.1
 
 
