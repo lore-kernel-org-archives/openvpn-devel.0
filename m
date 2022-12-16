@@ -1,11 +1,10 @@
+Message-Id: <1671184804470.774255658.1294140792@...68...>
+From: Marc Becker <becm@...68...>
+Date: Fri, 16 Dec 2022 10:19:20 +0000
+In-Reply-To: <20221216090717.1082-1-lstipakov@...277...>
+References: <20221216090717.1082-1-lstipakov@...277...>
 MIME-Version: 1.0
-References: <20221215232104.1181936-1-selva.nair@...277...>
-In-Reply-To: <20221215232104.1181936-1-selva.nair@...277...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 16 Dec 2022 11:46:16 +0200
-Message-ID: <CAGyAFMWjum0qh3XA8Wzdf9uqNYfX4kM00nPZ5YmrUDSP+7iU1A@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Persist DCO client data channel traffic
- stats on restart
+Subject: Re: [Openvpn-devel] [PATCH] git-version.py: use tag as branch name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,28 +13,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: selva.nair@...277...
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-That was fast!
+> From: Lev Stipakov <lev@...515...>
+>=20
+> Git magic to get branch name
+>=20
+>   git rev-parse --symbolic-full-name HEAD
+>=20
+> doesn't work when we're on tag, which is the case when
+> we build releases. In this case, use tag name as branch name
+> with another git magic:
+>=20
+>   git describe --tags
+>=20
+> This fixes https://github.com/OpenVPN/openvpn/issues/199.
+>=20
+> Signed-off-by: Lev Stipakov <lev@...515...>
+> ---
 
-> Tested on Windows which is the only platform that currently
-> supports stats from DCO in client mode.
 
-Would be nice to have a comment (in code maybe?) that:
+For me, reason for "rev-parse" failing is detached HEAD (not clear from com=
+mit message).
+Likely, builder creates checkout for commit-ID without local branches.
 
-DCO resets stats on reconnect. Since client expects stats
-to be preserved across reconnects, we need to save DCO
-stats before tearing the tunnel down.
+For stability purposes, I'd throw in an "--exact-match" to increase "none" =
+fallback conditions,
+so things like "v2.6_beta1-22-g73cab722/g73c=E2=80=A6" will not end up in t=
+he version string.
 
-But anyway,
 
-Code looks good, compiled and tested - stats are indeed preserved
-across reconnect.
-
-Acked-by: Lev Stipakov <lstipakov@...277...>
+Kind Regards,
+Marc Becker
 
