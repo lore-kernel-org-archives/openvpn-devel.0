@@ -1,10 +1,10 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 19 Dec 2022 17:02:26 +0200
-Message-Id: <20221219150226.467-1-lstipakov@...277...>
-In-Reply-To: <Y5xOXLbRtka5Z81+@flichtenheld-TUXEDO-InfinityBook-S-15-17-Gen7>
-References: <Y5xOXLbRtka5Z81+@flichtenheld-TUXEDO-InfinityBook-S-15-17-Gen7>
+From: selva.nair@...277...
+Date: Mon, 19 Dec 2022 10:04:35 -0500
+Message-Id: <20221219150435.1222451-1-selva.nair@...277...>
+In-Reply-To: <20221218195810.1216368-1-selva.nair@...277...>
+References: <20221218195810.1216368-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] git-version.py: proper support for tags
+Subject: [Openvpn-devel] [PATCH v2] Reduce default restart pause to 1 second
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,70 +16,79 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
+From: Selva Nair <selva.nair@...277...>
 
-Git magic to get branch name
+Current value of restart pause is 5 seconds which feels
+unduly long. Reduce it to 1 second.
 
-  git rev-parse --symbolic-full-name HEAD
+User can still customize the delay using the first parameter for
+"--connect-retry".
 
-doesn't work when we're on tag, which is the case when
-we build releases.
+Also improve the description of "--connect-retry" in the
+man page.
 
-First, try to get tag name with
+v2 changes:
+- fix incomplete man page edit as pointed out by Arne Schwabe
+- fix man page (rst) changes as suggested by Frank Lichtenheld
 
-   git describe --exact-match
-
-and if this fails, get branch name as before.
-
-Use subprocess.Popen() to suppress stdout/stderr output.
-
-This fixes https://github.com/OpenVPN/openvpn/issues/199.
-
-Signed-off-by: Lev Stipakov <lev@...515...>
+Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- v2: 
-  - try to get tag name before branch
-  - use "git describe --exact-match" instead of "git describe --tags"
-  - use subprocess.Popen() instead of os.popen() to suppress output
+I've changed the rst edits following how other similar options
+are described -- though I do not like referring to 'arg' as 'n'
+first and then "explaining" it in valid-syntaxes...
+Will be happy to revise if there is a better way.
 
- build/msvc/msvc-generate/git-version.py | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+reST is not for me: feels like I'm forced to write a paper
+in Word instead of LaTeX.
 
-diff --git a/build/msvc/msvc-generate/git-version.py b/build/msvc/msvc-generate/git-version.py
-index 814dc86a..89fd44f2 100644
---- a/build/msvc/msvc-generate/git-version.py
-+++ b/build/msvc/msvc-generate/git-version.py
-@@ -24,15 +24,22 @@
+ doc/man-sections/client-options.rst | 17 ++++++++++++-----
+ src/openvpn/options.c               |  2 +-
+ 2 files changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
+index 07651479..974cc992 100644
+--- a/doc/man-sections/client-options.rst
++++ b/doc/man-sections/client-options.rst
+@@ -138,12 +138,19 @@ configuration.
+   Set ``--verb 6`` for debugging info showing the transformation of
+   src/dest addresses in packets.
  
- import os
- import sys
-+import subprocess
+---connect-retry n
+-  Wait ``n`` seconds between connection attempts (default :code:`5`).
++--connect-retry args
++  Wait ``n`` seconds between connection attempts (default :code:`1`).
+   Repeated reconnection attempts are slowed down after 5 retries per
+-  remote by doubling the wait time after each unsuccessful attempt. An
+-  optional argument ``max`` specifies the maximum value of wait time in
+-  seconds at which it gets capped (default :code:`300`).
++  remote by doubling the wait time after each unsuccessful attempt.
 +
-+def run_command(args):
-+    sp = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-+    o, _ = sp.communicate()
-+    return o.decode("utf-8")[:-1]
- 
- def get_branch_commit_id():
--    commit_id = os.popen("git rev-parse --short=16 HEAD").read()[:-1]
-+    commit_id = run_command(["git", "rev-parse", "--short=16", "HEAD"])
-     if not commit_id:
-         raise
--    l = os.popen("git rev-parse --symbolic-full-name HEAD").read().split("/")[2:]
--    if not l:
--        l = ["none\n"]
--    branch = "/" .join(l)[:-1]
-+    branch = run_command(["git", "describe", "--exact-match"])
-+    if not branch:
-+        branch = run_command(["git", "rev-parse", "--symbolic-full-name", "HEAD"]).split("/")[2:]
-+        branch = "/" .join(branch) # handle cases like release/2.6
++  Valid syntaxes:
++  ::
 +
-     return branch, commit_id
++     connect retry n
++     connect retry n max
++
++  If the optional argument ``max`` is specified, the maximum wait time in
++  seconds gets capped at that value (default :code:`300`).
  
- def main():
+ --connect-retry-max n
+   ``n`` specifies the number of times each ``--remote`` or
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 4383c953..4442697f 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -815,7 +815,7 @@ init_options(struct options *o, const bool init_gc)
+     o->ce.proto = PROTO_UDP;
+     o->ce.af = AF_UNSPEC;
+     o->ce.bind_ipv6_only = false;
+-    o->ce.connect_retry_seconds = 5;
++    o->ce.connect_retry_seconds = 1;
+     o->ce.connect_retry_seconds_max = 300;
+     o->ce.connect_timeout = 120;
+     o->connect_retry_max = 0;
 -- 
-2.23.0.windows.1
+2.34.1
 
 
