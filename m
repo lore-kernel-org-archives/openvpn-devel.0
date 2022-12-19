@@ -1,11 +1,10 @@
-From: selva.nair@...277...
-Date: Mon, 19 Dec 2022 09:04:05 -0500
-Message-Id: <20221219140405.1221341-1-selva.nair@...277...>
-In-Reply-To: <20221218192203.1214943-1-selva.nair@...277...>
-References: <20221218192203.1214943-1-selva.nair@...277...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 19 Dec 2022 17:02:26 +0200
+Message-Id: <20221219150226.467-1-lstipakov@...277...>
+In-Reply-To: <Y5xOXLbRtka5Z81+@flichtenheld-TUXEDO-InfinityBook-S-15-17-Gen7>
+References: <Y5xOXLbRtka5Z81+@flichtenheld-TUXEDO-InfinityBook-S-15-17-Gen7>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Do not include auth-token in pulled
- option digest
+Subject: [Openvpn-devel] [PATCH v2] git-version.py: proper support for tags
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,41 +16,70 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-From: Selva Nair <selva.nair@...277...>
+From: Lev Stipakov <lev@...515...>
 
-As change in auth-token is common on restart and does not
-require tun-reopen, exclude it from the "pulled options digest"
-calculation. Without this tun is always re-opened on SIGUSR1
-if auth-token is in use which breaks persist-tun.
+Git magic to get branch name
 
-Fixes #200
+  git rev-parse --symbolic-full-name HEAD
 
-v2: explcitly filter auth-token and auth-token-user
+doesn't work when we're on tag, which is the case when
+we build releases.
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
+First, try to get tag name with
+
+   git describe --exact-match
+
+and if this fails, get branch name as before.
+
+Use subprocess.Popen() to suppress stdout/stderr output.
+
+This fixes https://github.com/OpenVPN/openvpn/issues/199.
+
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- src/openvpn/push.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ v2: 
+  - try to get tag name before branch
+  - use "git describe --exact-match" instead of "git describe --tags"
+  - use subprocess.Popen() instead of os.popen() to suppress output
 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index ad2f3c65..e765d2a9 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -989,8 +989,10 @@ push_update_digest(md_ctx_t *ctx, struct buffer *buf, const struct options *opt)
-     char line[OPTION_PARM_SIZE];
-     while (buf_parse(buf, ',', line, sizeof(line)))
-     {
--        /* peer-id might change on restart and this should not trigger reopening tun */
--        if (strprefix(line, "peer-id "))
-+        /* peer-id and auth-token might change on restart and this should not trigger reopening tun */
-+        if (strprefix(line, "peer-id ")
-+            || strprefix(line, "auth-token ")
-+            || strprefix(line, "auth-token-user "))
-         {
-             continue;
-         }
+ build/msvc/msvc-generate/git-version.py | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/build/msvc/msvc-generate/git-version.py b/build/msvc/msvc-generate/git-version.py
+index 814dc86a..89fd44f2 100644
+--- a/build/msvc/msvc-generate/git-version.py
++++ b/build/msvc/msvc-generate/git-version.py
+@@ -24,15 +24,22 @@
+ 
+ import os
+ import sys
++import subprocess
++
++def run_command(args):
++    sp = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
++    o, _ = sp.communicate()
++    return o.decode("utf-8")[:-1]
+ 
+ def get_branch_commit_id():
+-    commit_id = os.popen("git rev-parse --short=16 HEAD").read()[:-1]
++    commit_id = run_command(["git", "rev-parse", "--short=16", "HEAD"])
+     if not commit_id:
+         raise
+-    l = os.popen("git rev-parse --symbolic-full-name HEAD").read().split("/")[2:]
+-    if not l:
+-        l = ["none\n"]
+-    branch = "/" .join(l)[:-1]
++    branch = run_command(["git", "describe", "--exact-match"])
++    if not branch:
++        branch = run_command(["git", "rev-parse", "--symbolic-full-name", "HEAD"]).split("/")[2:]
++        branch = "/" .join(branch) # handle cases like release/2.6
++
+     return branch, commit_id
+ 
+ def main():
 -- 
-2.34.1
+2.23.0.windows.1
 
 
