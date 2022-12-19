@@ -1,10 +1,10 @@
-Date: Mon, 19 Dec 2022 18:54:32 +0100 (CET)
-Message-Id: <202212191754.2BJHsWsN004981@...2054...>
+Date: Mon, 19 Dec 2022 20:31:45 +0100 (CET)
+Message-Id: <202212191931.2BJJVjga018144@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221219140405.1221341-1-selva.nair@...277...>
-References: <20221219140405.1221341-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Do not include auth-token in
- pulled option digest
+In-Reply-To: <20221215232104.1181936-1-selva.nair@...277...>
+References: <20221215232104.1181936-1-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Persist DCO client data channel
+ traffic stats on restart
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,30 +18,25 @@ Content-Transfer-Encoding: 8bit
 To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+I have not tested this beyond "push to my github instance and verify
+that it still builds", but if Lev says it's been tested and working,
+good enough.  Stare-at-code finds me wondering why we didn't remove
+ENABLE_MANAGEMENT yet (my fault...) and need these extra indirections -
+but that's for 2.7 to clean up, I am afraid.
 
-(v2 is sufficiently different from v1 that I'm not taking Arne's ACK
-but adding my own)
+Your patch has been applied to the master and release/2.6 branch.
 
-Only very lightly client-side tested, not doing actual SIGUSR1 restarts
-with --persist-tun - but I'm fairly sure that this does what it attempts
-to do, as it just extends the existing exception.
-
-Your patch has been applied to the master, release/2.6 and release/2.5
-branch (bugfix, same code, auth-token + auth-token-user both exist in 2.5).
-
-commit f778f4f88e56851c0a68205e95110c021f3032b3
-commit f922298ca5784577a1309334dafeb16f738ae46a (release/2.6)
-commit 1d81df042eae416a4e83e6a433ae2b937c5a10a4 (release/2.5)
+commit 0fdbb288db06792d5dd29acd14205d751041513d (master)
+commit 1f17444ad02e500a717e2674f6ef74c1d2c49567 (release/2.6)
 Author: Selva Nair
-Date:   Mon Dec 19 09:04:05 2022 -0500
+Date:   Thu Dec 15 18:21:04 2022 -0500
 
-     Do not include auth-token in pulled option digest
+     Persist DCO client data channel traffic stats on restart
 
      Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221219140405.1221341-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25768.html
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20221215232104.1181936-1-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25742.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
