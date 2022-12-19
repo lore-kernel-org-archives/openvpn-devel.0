@@ -1,10 +1,9 @@
-Date: Mon, 19 Dec 2022 17:51:25 +0100 (CET)
-Message-Id: <202212191651.2BJGpPOP093811@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221219150435.1222451-1-selva.nair@...277...>
-References: <20221219150435.1222451-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Reduce default restart pause to
- 1 second
+From: Arne Schwabe <arne@...1227...>
+Date: Mon, 19 Dec 2022 18:21:41 +0100
+Message-Id: <20221219172141.2565798-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Use include "buffer.h" instead of include
+ <buffer.h>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +14,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Admittedly, I have not tested this, but it's simple enough - code wise,
-not the "fighting .rst" part :-)
+My own non-standard cmake based build system found this one. But
+even if this is not a problem with the normal autoconf based system
+we should still be consistent.
 
-Your patch has been applied to the master and release/2.6 branch.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/dco_freebsd.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit cb385c64279fcb11bf6622d9723e1223b4e2a7f5 (master)
-commit 3a5d82d7fee8fc7d00902e9640494ea6fdd08b35 (release/2.6)
-Author: Selva Nair
-Date:   Mon Dec 19 10:04:35 2022 -0500
-
-     Reduce default restart pause to 1 second
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20221219150435.1222451-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25770.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/dco_freebsd.h b/src/openvpn/dco_freebsd.h
+index 0d059ddaf..2e35f3ace 100644
+--- a/src/openvpn/dco_freebsd.h
++++ b/src/openvpn/dco_freebsd.h
+@@ -22,7 +22,7 @@
+ 
+ #if defined(ENABLE_DCO) && defined(TARGET_FREEBSD)
+ 
+-#include <buffer.h>
++#include "buffer.h"
+ #include "event.h"
+ 
+ #include "ovpn_dco_freebsd.h"
+-- 
+2.37.1 (Apple Git-137.1)
 
 
