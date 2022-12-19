@@ -1,8 +1,12 @@
-From: selva.nair@...277...
-Date: Sun, 18 Dec 2022 14:58:10 -0500
-Message-Id: <20221218195810.1216368-1-selva.nair@...277...>
+Message-ID: <6da9f1f6-a808-b381-fa77-3d1023825b7e@...1227...>
+Date: Mon, 19 Dec 2022 13:11:40 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Reduce default restart pause to 1 second
+References: <20221218192203.1214943-1-selva.nair@...277...>
+Content-Language: en-GB
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20221218192203.1214943-1-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Do not include auth-token in pulled
+ option digest
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,64 +15,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+Am 18.12.22 um 20:22 schrieb selva.nair@...277...:
+> From: Selva Nair <selva.nair@...277...>
+> 
+> As change in auth-token is common on restart and does not
+> require tun-reopen, exclude it from the "pulled options digest"
+> calculation. Without this tun is always re-opened on SIGUSR1
+> if auth-token is in use which breaks persist-tun.
+> 
 
-Current value of restart pause is 5 seconds which feels
-unduly long. Reduce it to 1 second.
+Makes sense
 
-User can still customize the delay using the first parameter for
-"--connect-retry".
-
-Also improve the description of "--connect-retry" in the
-man page.
-
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
-Whle reviewing commit 5d429efd9720109b9c9f1265f5d351a75a401942
-Arne had suggested this, but I failed to follow up:
-
-Quoting from Message ID 11772d2a-4877-0ed0-2484-7ef66e059737@...1227...
-<quote arne@...1227... on 03-07-2016>
-Btw. if we introduce this backoff mechansim I think it is safe to lower
-the connect-retry small time from 5 to 1 since the potential for looping
-very fast through the connection entries is not there anymore.
-</quote>
-
- doc/man-sections/client-options.rst | 2 +-
- src/openvpn/options.c               | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
-index 07651479..37d24044 100644
---- a/doc/man-sections/client-options.rst
-+++ b/doc/man-sections/client-options.rst
-@@ -138,7 +138,7 @@ configuration.
-   Set ``--verb 6`` for debugging info showing the transformation of
-   src/dest addresses in packets.
- 
----connect-retry n
-+--connect-retry n [max]
-   Wait ``n`` seconds between connection attempts (default :code:`5`).
-   Repeated reconnection attempts are slowed down after 5 retries per
-   remote by doubling the wait time after each unsuccessful attempt. An
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 4383c953..4442697f 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -815,7 +815,7 @@ init_options(struct options *o, const bool init_gc)
-     o->ce.proto = PROTO_UDP;
-     o->ce.af = AF_UNSPEC;
-     o->ce.bind_ipv6_only = false;
--    o->ce.connect_retry_seconds = 5;
-+    o->ce.connect_retry_seconds = 1;
-     o->ce.connect_retry_seconds_max = 300;
-     o->ce.connect_timeout = 120;
-     o->connect_retry_max = 0;
--- 
-2.34.1
+Acked-By: Arne Schwabe <arne@...1227...>
 
 
