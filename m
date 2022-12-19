@@ -1,11 +1,12 @@
-Message-ID: <d67c75a4-99cd-83b0-c227-3a01549a26fd@...1227...>
-Date: Mon, 19 Dec 2022 13:12:32 +0100
+Date: Mon, 19 Dec 2022 13:13:20 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <Y6BVYDrkTXeEPxRg@...2685...>
+References: <20221215190143.2107896-9-arne@...1227...>
+ <202212161742.2BGHgPmW018977@...2054...>
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <20221218195810.1216368-1-selva.nair@...277...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20221218195810.1216368-1-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Reduce default restart pause to 1 second
+In-Reply-To: <202212161742.2BGHgPmW018977@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Deprecate NTLMv1 proxy auth
+ method.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,15 +15,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: Gert Doering <gert@...1296...>
+Cc: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-Am 18.12.22 um 20:58 schrieb selva.nair@...277...:
-> +--connect-retry n [max]
->     Wait ``n`` seconds between connection attempts (default :code:`5`).
+On Fri, Dec 16, 2022 at 06:42:25PM +0100, Gert Doering wrote:
+> Acked-by: Gert Doering <gert@...1296...>
+> 
+> Have not tested beyond "we agreed on that, message looks good,
+> and it compiles".
+> 
+> Your patch has been applied to the master and release/2.6 branch.
 
-you were close. but forgot to change the 5 in the next line to also say 1.
+Just noticed that this is missing a corresponding Changes.rst change.
+Should I send a patch for that?
 
-Arne
+Regards,
+-- 
+  Frank Lichtenheld
 
