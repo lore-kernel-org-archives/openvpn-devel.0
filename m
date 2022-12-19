@@ -1,12 +1,11 @@
-Message-ID: <6da9f1f6-a808-b381-fa77-3d1023825b7e@...1227...>
-Date: Mon, 19 Dec 2022 13:11:40 +0100
+Message-ID: <d67c75a4-99cd-83b0-c227-3a01549a26fd@...1227...>
+Date: Mon, 19 Dec 2022 13:12:32 +0100
 MIME-Version: 1.0
-References: <20221218192203.1214943-1-selva.nair@...277...>
 Content-Language: en-GB
+References: <20221218195810.1216368-1-selva.nair@...277...>
 From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20221218192203.1214943-1-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Do not include auth-token in pulled
- option digest
+In-Reply-To: <20221218195810.1216368-1-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Reduce default restart pause to 1 second
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,17 +18,11 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 
-Am 18.12.22 um 20:22 schrieb selva.nair@...277...:
-> From: Selva Nair <selva.nair@...277...>
-> 
-> As change in auth-token is common on restart and does not
-> require tun-reopen, exclude it from the "pulled options digest"
-> calculation. Without this tun is always re-opened on SIGUSR1
-> if auth-token is in use which breaks persist-tun.
-> 
+Am 18.12.22 um 20:58 schrieb selva.nair@...277...:
+> +--connect-retry n [max]
+>     Wait ``n`` seconds between connection attempts (default :code:`5`).
 
-Makes sense
+you were close. but forgot to change the 5 in the next line to also say 1.
 
-Acked-By: Arne Schwabe <arne@...1227...>
-
+Arne
 
