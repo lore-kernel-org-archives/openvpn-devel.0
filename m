@@ -1,10 +1,11 @@
-Date: Tue, 20 Dec 2022 01:13:07 +0100 (CET)
-Message-Id: <202212200013.2BK0D723055659@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221219174027.2567505-1-arne@...1227...>
-References: <20221219174027.2567505-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Ensure that dco keepalive and
- mssfix options are also set in pure p2p mode
+From: Arne Schwabe <arne@...1227...>
+Date: Tue, 20 Dec 2022 15:04:58 +0100
+Message-Id: <20221220140458.2666637-1-arne@...1227...>
+In-Reply-To: <20221215190143.2107896-1-arne@...1227...>
+References: <20221215190143.2107896-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2 1/8] Make management password check
+ constant time
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,51 +16,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Connor Edwards <cedw@...2705...>
 
-Acked-by: Gert Doering <gert@...1296...>
+This changes the password check on the management interface to be constant
+time. Normally the management port should not be exposed in a way that allows
+an attacker to even interact with it but making the check constant time as
+an additional layer of security is always good.
 
-This indeed is good news - as in, the p2p --tls-server test case that
-used to reliably break when the client disconnected because --ping wasn't
-working is now working.  Tested on Linux/DCO, FreeBSD/DCO and "Linux no DCO",
-with the full set of client/server tests - it fixes some bits, and breaks
-nothing else, so good :-)
+Patch v2: include NUL byte in comparison
 
-Stare-at-code and thinking about the flow of control also confirms that
-this is a good fix - do_up() is executed always (after PUSH_REPLY for
---client, and "on init" for --tls-client / --tls-server) so setting
-up DCO ping/mss is needed there.
+Reported-by: Connor Edwards <cedw@...2705...>
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/manage.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-(And thanks for adding the logging entry to dco_freebsd.c - I was 
-staring at my logs and wondering why I didn't see anything, even in
-p2mp mode...)
-
-(... and, as an afterthought, I re-checked to be sure we've not lost
-multipoint keepalive on the way - we haven't, I can see proper
-"ping interval..." messages for peer-id 0, 1, 2 in my udp-p2mp
-instance)
-
-
-Your patch has been applied to the master and release/2.6 branch.
-
-commit 7c66a6dab54d8efcde57c8fb562f95d95f9b18d4 (master)
-commit c6ba846384b6a7ab610e5d7de689868fa0a48395 (release/2.6)
-Author: Arne Schwabe
-Date:   Mon Dec 19 18:40:27 2022 +0100
-
-     Ensure that dco keepalive and mssfix options are also set in pure p2p mode
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221219174027.2567505-1-arne@...1227...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20221219174027.2567505-1-arne@...1227...
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index b11de224d..5465b7e9b 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -198,7 +198,12 @@ man_check_password(struct management *man, const char *line)
+ {
+     if (man_password_needed(man))
+     {
+-        if (streq(line, man->settings.up.password))
++        /* This comparison is not fixed time but since strlen(time) is based on
++         * the attacker choice, it should not give any indication of the real
++         * password length, use + 1 to include the NUL byte that terminates the
++         * string*/
++        size_t compare_len = min_uint(strlen(line) + 1, sizeof(man->settings.up.password));
++        if (memcmp_constant_time(line, man->settings.up.password, compare_len) == 0)
+         {
+             man->connection.password_verified = true;
+             msg(M_CLIENT, "SUCCESS: password is correct");
+-- 
+2.37.1 (Apple Git-137.1)
 
 
