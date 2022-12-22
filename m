@@ -1,10 +1,9 @@
-Date: Tue, 20 Dec 2022 16:30:06 +0100 (CET)
-Message-Id: <202212201530.2BKFU6lr080431@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221220140458.2666637-1-arne@...1227...>
-References: <20221220140458.2666637-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Make management password check
- constant time
+Date: Thu, 22 Dec 2022 10:53:48 +0100
+Message-Id: <20221222095349.1662685-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] bandaid fix for TCP multipoint server crash
+ with Linux-DCO
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,36 +14,110 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+TCP multipoint servers with Linux-DCO can crash under yet-unknown
+circumstances where a TCP socket gets handed to the kernel (= userland
+shall not acceess it again) but the socket still lands in the event
+polling mechanism, and is passed to link_socket_read() with
+sock->fd being "-1" (SOCKET_UNDEFINED).
 
-Works.  Password entered must be the right one now, not shorter or longer :-)
+This is a bug, but it happens very unfrequently so not fixed yet.
 
-Your patch has been applied to the master and release/2.6 branch.
+When this happens, the server gets stuck in an endless loop of
+"trying recvfrom(-1, ..), getting an error, looging that error,
+continue" until the server's disk is full.
 
-I think it would also be appropriate for 2.5, but there is no min_uint()
-(came as part of commit 3f8fb2b2c), so the patch "as is" breaks
-compilation on older branches.
+The situation is being made a bit more complex by the dco-win
+approach of treating "all kernel sockets as UDP", so the Linux
+implementation tries to access the -1 socket as UDP, confusing
+the picture more.
 
-commit e567f34262b0670fd51cbbcb6c6866b046454cee (master)
-commit 6a82929076ed97f6c37161de266d3dcbe14d55c8 (release/2.6)
-Author: Arne Schwabe
-Date:   Tue Dec 20 15:04:58 2022 +0100
+As a bandaid to avoid the crash, this patch changes
 
-     Make management password check constant time
+ - socket.h: only do the "if dco_installed, treat as UDP" for WIN32
+   (link_socket_read())
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221220140458.2666637-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25784.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+ - socket.c: add ASSERT(sock->fd >= 0); checks to all UDP socket paths
+   (we should never even hit those as this is a TCP specific problem,
+   but in the "sock->fd = -1" case, doing a clean server abort is
+   preferred to "the disk is full with non-helpful logfiles, and then
+   the server crashes anyway")
 
+ - socket.c: in the TCP read function, link_socket_read_tcp(),
+   check for sock->fd < 0 and trigger "sock->stream_reset = true"
+   (+ write to the log what happened).
 
---
-kind regards,
+This change will kill this particular TCP client instance (SIGTERM),
+but leave the rest of the server running fine - and given that
+in our tests this issue seems to be triggered by inbound TCP RST
+in just the wrong moment, so the TCP connection is gone anyway, it
+seems to be "a properly-sized bandaid".
 
-Gert Doering
+Github: OpenVPN/openvpn#190
+
+Reported-by: Bernhard Schmidt <berni@...376...>
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/socket.c | 12 ++++++++++++
+ src/openvpn/socket.h |  4 ++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 82787f9f..a4736cc7 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -3226,6 +3226,13 @@ link_socket_read_tcp(struct link_socket *sock,
+ {
+     int len = 0;
+ 
++    if (sock->sd == SOCKET_UNDEFINED)           /* DCO mishap */
++    {
++        msg(M_INFO, "BUG: link_socket_read_tcp(): sock->sd==-1, reset client instance" );
++        sock->stream_reset = true;              /* reset client instance */
++        return buf->len = 0;                    /* nothing to read */
++    }
++
+     if (!sock->stream_buf.residual_fully_formed)
+     {
+ #ifdef _WIN32
+@@ -3285,6 +3292,8 @@ link_socket_read_udp_posix_recvmsg(struct link_socket *sock,
+     struct msghdr mesg;
+     socklen_t fromlen = sizeof(from->dest.addr);
+ 
++    ASSERT(sock->sd >= 0);                      /* can't happen */
++
+     iov.iov_base = BPTR(buf);
+     iov.iov_len = buf_forward_capacity_total(buf);
+     mesg.msg_iov = &iov;
+@@ -3351,6 +3360,9 @@ link_socket_read_udp_posix(struct link_socket *sock,
+     socklen_t fromlen = sizeof(from->dest.addr);
+     socklen_t expectedlen = af_addr_size(sock->info.af);
+     addr_zero_host(&from->dest);
++
++    ASSERT(sock->sd >= 0);                      /* can't happen */
++
+ #if ENABLE_IP_PKTINFO
+     /* Both PROTO_UDPv4 and PROTO_UDPv6 */
+     if (sock->info.proto == PROTO_UDP && sock->sockflags & SF_USE_IP_PKTINFO)
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 929ef818..2718506d 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -1058,8 +1058,12 @@ link_socket_read(struct link_socket *sock,
+                  struct buffer *buf,
+                  struct link_socket_actual *from)
+ {
++#ifdef _WIN32
+     if (proto_is_udp(sock->info.proto)
+         || sock->info.lsa->actual.dco_installed)
++#else
++    if (proto_is_udp(sock->info.proto))
++#endif
+     /* unified UDPv4 and UDPv6, for DCO the kernel
+      * will strip the length header */
+     {
+-- 
+2.25.1
 
 
