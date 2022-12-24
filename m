@@ -1,10 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sat, 24 Dec 2022 20:42:45 +0100
-Message-Id: <20221224194253.3202231-2-arne@...1227...>
-In-Reply-To: <20221224194253.3202231-1-arne@...1227...>
-References: <20221224194253.3202231-1-arne@...1227...>
+Date: Sat, 24 Dec 2022 20:42:44 +0100
+Message-Id: <20221224194253.3202231-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/9] Rename TM_UNTRUSTED to TM_INITIAL
+Subject: [Openvpn-devel] [PATCH 0/9] Various patches to improve DCO behaviour
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,102 +15,83 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/ssl.c        | 16 ++++++++--------
- src/openvpn/ssl.h        |  2 +-
- src/openvpn/ssl_common.h |  2 +-
- 3 files changed, 10 insertions(+), 10 deletions(-)
+This is a list of various patches that improve certain corner cases of DCO
+behaviour or improve. The remaining issues seem to be in the ovpn-dco module
+and need to fixed there first. Remaining issues in ovpn-dco:
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 9e5480528..a5fb4fd22 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -890,8 +890,8 @@ session_index_name(int index)
-         case TM_ACTIVE:
-             return "TM_ACTIVE";
- 
--        case TM_UNTRUSTED:
--            return "TM_UNTRUSTED";
-+        case TM_INITIAL:
-+            return "TM_INITIAL";
- 
-         case TM_LAME_DUCK:
-             return "TM_LAME_DUCK";
-@@ -1330,7 +1330,7 @@ tls_multi_init_finalize(struct tls_multi *multi, int tls_mtu)
- 
-     if (!multi->opt.single_session)
-     {
--        tls_session_init(multi, &multi->session[TM_UNTRUSTED]);
-+        tls_session_init(multi, &multi->session[TM_INITIAL]);
-     }
- }
- 
-@@ -3250,7 +3250,7 @@ tls_multi_process(struct tls_multi *multi,
-     if (multi->multi_state >= CAS_CONNECT_DONE)
-     {
-         /* Only generate keys for the TM_ACTIVE session. We defer generating
--         * keys for TM_UNTRUSTED until we actually trust it.
-+         * keys for TM_INITIAL until we actually trust it.
-          * For TM_LAME_DUCK it makes no sense to generate new keys. */
-         struct tls_session *session = &multi->session[TM_ACTIVE];
-         struct key_state *ks = &session->key[KS_PRIMARY];
-@@ -3299,9 +3299,9 @@ tls_multi_process(struct tls_multi *multi,
-      * verification failed.  A semi-trusted session can forward data on the
-      * TLS control channel but not on the tunnel channel.
-      */
--    if (TLS_AUTHENTICATED(multi, &multi->session[TM_UNTRUSTED].key[KS_PRIMARY]))
-+    if (TLS_AUTHENTICATED(multi, &multi->session[TM_INITIAL].key[KS_PRIMARY]))
-     {
--        move_session(multi, TM_ACTIVE, TM_UNTRUSTED, true);
-+        move_session(multi, TM_ACTIVE, TM_INITIAL, true);
-         msg(D_TLS_DEBUG_LOW, "TLS: tls_multi_process: untrusted session promoted to %strusted",
-             tas == TLS_AUTHENTICATION_SUCCEEDED ? "" : "semi-");
- 
-@@ -3720,7 +3720,7 @@ tls_pre_decrypt(struct tls_multi *multi,
-             print_link_socket_actual(from, &gc));
- 
-         new_link = true;
--        i = TM_UNTRUSTED;
-+        i = TM_INITIAL;
-         session->untrusted_addr = *from;
-     }
-     else
-@@ -3731,7 +3731,7 @@ tls_pre_decrypt(struct tls_multi *multi,
-         /*
-          * Packet must belong to an existing session.
-          */
--        if (i != TM_ACTIVE && i != TM_UNTRUSTED)
-+        if (i != TM_ACTIVE && i != TM_INITIAL)
-         {
-             msg(D_TLS_ERRORS,
-                 "TLS Error: Unroutable control packet received from %s (si=%d op=%s)",
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 55c672d44..bd27e57a0 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -159,7 +159,7 @@ struct tls_multi *tls_multi_init(struct tls_options *tls_options);
-  * @ingroup control_processor
-  *
-  * This function initializes the \c TM_ACTIVE \c tls_session, and in
-- * server mode also the \c TM_UNTRUSTED \c tls_session, associated with
-+ * server mode also the \c TM_INITIAL \c tls_session, associated with
-  * this \c tls_multi structure.  It also configures the control channel's
-  * \c frame structure based on the data channel's \c frame given in
-  * argument \a frame.
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 978a9fca0..7d9c2460b 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -512,7 +512,7 @@ struct tls_session
-  *
-  *  @{ */
- #define TM_ACTIVE    0          /**< Active \c tls_session. */
--#define TM_UNTRUSTED 1          /**< As yet un-trusted \c tls_session
-+#define TM_INITIAL   1          /**< As yet un-trusted \c tls_session
-                                  *   being negotiated. */
- #define TM_LAME_DUCK 2          /**< Old \c tls_session. */
- #define TM_SIZE      3          /**< Size of the \c tls_multi.session
+- if there are a lot of event, the recvfrom the netlink socket will give
+  a ENOMEM. Using Control-S and Control-Q to temporarily pause the OpenVPN
+  daemon is a reliable way for me to trigger it.
+
+- OpenVPN tcp sessions that are gone, especially when doing TCP reset are
+  not notified to the user space
+
+- With UDP and bombarding server already when starting up gives me a hard
+  freeze
+
+- Unload ovpn-dco sometimes does not work. Getting 'In use by xy ' failures.
+
+- Latest FreeBSD dco module seems to be very broken. Reverting latest commit
+  fixes it.
+
+
+
+Arne Schwabe (9):
+  Rename TM_UNTRUSTED to TM_INITIAL
+  Always start session in TM_INITIAL rather than TM_ACTIVE or TM_INITIAL
+
+These two could be smashed into one commit but two makes reviewing easier. They
+clean up the state machine a bit and by doing so fix an obscore corner case
+that would not work in p2p dco.
+
+  Move dco_installed back to link_socket from link_socket.info.actual
+
+With the intention of moving back to using normal send/recv instead of using
+netlink, the special handling of figuring out which peer address uses wht
+mechansim is no longer necessary. Instead of hunting the bug down, just always
+use sendto when wanting to send something.
+
+  Ensure we do not promote a TA_TIMEOUT to a TA_WRITE/TA_READ event with
+    dco
+Ensures that we do not go to a socket write/read on a DCO installed TCP
+socket.
+
+  Also drop incoming dco packet content when dropping the packet
+  otherwise we would not clear the received packet and the dco code
+  would refuse to put a new one there.
+
+  Do not set nl socket buffer size
+This does not change anything and is more cosmetic.
+
+  Bail out when trying to install a TCP socket with residual data to DCO
+
+This is something we could probably fix if we spent a lot more time and
+only ever read as little as possible (i.e. read 2 bytes to know next
+packet length, and then read only the length of the next packet). But instead
+of adding a lot of extra code, I rather want to wait for the plans of ovpn-dco
+and tcp and how the API evolves.
+
+  Improve logging when seeing a message for an unkown peer
+  Ignore OVPN_DEL_PEER_REASON_USERSPACE to avoid race conditions
+
+This commit fixes a race condition that lead to OpenVPN trying to add
+a peer that already existed.
+
+ src/openvpn/dco.c        |  23 +-------
+ src/openvpn/dco_linux.c  |   3 --
+ src/openvpn/forward.c    |  27 ++--------
+ src/openvpn/forward.h    |  30 +++++++++++
+ src/openvpn/init.c       |   2 +-
+ src/openvpn/mtcp.c       |  20 +++++--
+ src/openvpn/mudp.c       |   2 +-
+ src/openvpn/multi.c      |  45 +++++++++++++---
+ src/openvpn/socket.c     |   8 +--
+ src/openvpn/socket.h     |  11 ++--
+ src/openvpn/ssl.c        | 113 +++++++++++++++------------------------
+ src/openvpn/ssl.h        |   2 +-
+ src/openvpn/ssl_common.h |   2 +-
+ 13 files changed, 144 insertions(+), 144 deletions(-)
+
 -- 
 2.37.1 (Apple Git-137.1)
 
