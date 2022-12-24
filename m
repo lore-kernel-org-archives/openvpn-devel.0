@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sat, 24 Dec 2022 20:42:48 +0100
-Message-Id: <20221224194253.3202231-5-arne@...1227...>
+Date: Sat, 24 Dec 2022 20:42:52 +0100
+Message-Id: <20221224194253.3202231-9-arne@...1227...>
 In-Reply-To: <20221224194253.3202231-1-arne@...1227...>
 References: <20221224194253.3202231-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 4/9] Ensure we do not promote a TA_TIMEOUT
- to a TA_WRITE/TA_READ event with dco
+Subject: [Openvpn-devel] [PATCH 8/9] Improve logging when seeing a message
+ for an unkown peer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,130 +18,34 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-with dco sometimes we end up promoting a timeout event to write
-event or read event. For the residual read, this problem is probably
-not solvable without changing the kernel DCO API
-
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/forward.c | 24 ------------------------
- src/openvpn/forward.h | 30 ++++++++++++++++++++++++++++++
- src/openvpn/mtcp.c    | 14 ++++++++++++--
- 3 files changed, 42 insertions(+), 26 deletions(-)
+ src/openvpn/multi.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 64c8ee6a0..17a14f0bd 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1674,30 +1674,6 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index d29b7efe3..6c6385c6e 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3283,7 +3283,17 @@ multi_process_incoming_dco(struct multi_context *m)
      }
- }
- 
--/*
-- * Linux DCO implementations pass the socket to the kernel and
-- * disallow usage of it from userland for TCP, so (control) packets
-- * sent and received by OpenVPN need to go through the DCO interface.
-- *
-- * Windows DCO needs control packets to be sent via the normal
-- * standard Overlapped I/O.
-- *
-- * FreeBSD DCO allows control packets to pass through the socket in both
-- * directions.
-- *
-- * Hide that complexity (...especially if more platforms show up
-- * in the future...) in a small inline function.
-- */
--static inline bool
--should_use_dco_socket(struct link_socket *ls)
--{
--#if defined(TARGET_LINUX)
--    return ls->dco_installed && proto_is_tcp(ls->info.proto);
--#else
--    return false;
--#endif
--}
--
- /*
-  * Input: c->c2.to_link
-  */
-diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index bd2d96010..e50f235da 100644
---- a/src/openvpn/forward.h
-+++ b/src/openvpn/forward.h
-@@ -424,4 +424,34 @@ connection_established(struct context *c)
-     }
- }
- 
-+
-+/**
-+ * @param ls the link_socket the decision should be made for
-+ * @return if we should use the dco kernel api or normal socket APIs for
-+ *         write/send
-+ *
-+ *
-+ * Linux DCO implementations pass the socket to the kernel and
-+ * disallow usage of it from userland for TCP, so (control) packets
-+ * sent and received by OpenVPN need to go through the DCO interface.
-+ *
-+ * Windows DCO needs control packets to be sent via the normal
-+ * standard Overlapped I/O.
-+ *
-+ * FreeBSD DCO allows control packets to pass through the socket in both
-+ * directions.
-+ *
-+ * Hide that complexity (...especially if more platforms show up
-+ * in the future...) in a small inline function.
-+ */
-+static inline bool
-+should_use_dco_socket(struct link_socket *ls)
-+{
-+#if defined(TARGET_LINUX)
-+    return ls->dco_installed && proto_is_tcp(ls->info.proto);
-+#else
-+    return false;
-+#endif
-+}
-+
- #endif /* FORWARD_H */
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index ac06ddc64..263f4d994 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -407,7 +407,7 @@ multi_tcp_wait_lite(struct multi_context *m, struct multi_instance *mi, const in
-         /* If we got a socket that has been handed over to the kernel
-          * we must not call the normal socket function to figure out
-          * if it is readable or writable */
--        /* Assert that we only have the DCO exptected flags */
-+        /* Assert that we only have the DCO expected flags */
-         ASSERT(action & (TA_SOCKET_READ | TA_SOCKET_WRITE));
- 
-         /* We are always ready! */
-@@ -567,7 +567,7 @@ multi_tcp_post(struct multi_context *m, struct multi_instance *mi, const int act
+     else
      {
-         flags |= MTP_TUN_OUT;
+-        msg(D_DCO, "Received packet for peer-id unknown to OpenVPN: %d", peer_id);
++        int msglevel = D_DCO;
++        if (dco->dco_message_type == OVPN_CMD_DEL_PEER
++            && dco->dco_del_peer_reason == OVPN_DEL_PEER_REASON_USERSPACE)
++        {
++            /* we get notified after we kill the peer ourselves and probably
++             * have already forgotten about it. This is expected */
++            msglevel = D_DCO_DEBUG;
++        }
++        msg(msglevel, "Received packet for peer-id unknown to OpenVPN: %d, "
++            "type %d, reason %d", peer_id, dco->dco_message_type,
++            dco->dco_del_peer_reason);
+         /* Also clear the buffer if this was incoming packet for a dropped peer */
+         buf_init(&dco->dco_packet_in, 0);
      }
--    if (LINK_OUT(c))
-+    if (LINK_OUT(c) && !should_use_dco_socket(c->c2.link_socket))
-     {
-         flags |= MTP_LINK_OUT;
-     }
-@@ -586,6 +586,16 @@ multi_tcp_post(struct multi_context *m, struct multi_instance *mi, const int act
-         case MTP_NONE:
-             if (mi && socket_read_residual(c->c2.link_socket))
-             {
-+                if (should_use_dco_socket(c->c2.link_socket))
-+                {
-+                    struct gc_arena gc = gc_new();
-+                    msg(M_INFO, "ovpn-dco installed socket with residual read "
-+                        "len=%d, mi=%s. This connection will probably"
-+                        " break.",  BLEN(&c->c2.link_socket->stream_buf.residual),
-+                        multi_instance_string(mi, false, &gc));
-+                    gc_free(&gc);
-+                    break;
-+                }
-                 newaction = TA_SOCKET_READ_RESIDUAL;
-             }
-             else
 -- 
 2.37.1 (Apple Git-137.1)
 
