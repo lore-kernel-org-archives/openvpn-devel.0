@@ -1,14 +1,14 @@
-Message-ID: <226d7a00-00ff-2c3d-f7f3-79b316231b49@...1227...>
-Date: Mon, 26 Dec 2022 20:49:44 +0100
+Message-ID: <ec71e35a-b62d-0efb-9899-8a9e4034349e@...1227...>
+Date: Mon, 26 Dec 2022 20:50:33 +0100
 MIME-Version: 1.0
 Content-Language: en-GB
 References: <20210825210232.22509-1-selva.nair@...277...>
  <20210907223126.8440-1-selva.nair@...277...>
- <20210907223126.8440-2-selva.nair@...277...>
+ <20210907223126.8440-3-selva.nair@...277...>
 From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20210907223126.8440-2-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v3 2/3] Permit unlimited connection
- entries and remotes
+In-Reply-To: <20210907223126.8440-3-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v3 3/3] Use a template for "unsupported
+ management commands" error
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,20 +24,16 @@ To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 Am 08.09.21 um 00:31 schrieb selva.nair@...277...:
 > From: Selva Nair <selva.nair@...277...>
 > 
-> Currently we allow a max of 64 connection entries and remotes.
-> A larger number would allow users with 100's of independent
-> config files for different end points of same provider to
-> consolidate them to connection entries.
+> The message
+> "ERROR: The 'foo' commmand is not supported by current daemon mode"
+> is repeatedly used in manage.c. Move it to a function for uniformity
+> in messaging.
 > 
-> v2,v3: no change
-> 
-> Signed-off-by: Selva Nair <selva.nair@...277...>
+> v3, v3: no change
 
-Acked-By: Arne Schwabe@...1227...
+Acked-By: Arne Schwabe <arne@...1227...>
 
-We are now increasing by multiple of 64 entries. While a bit wasteful 
-and we could have used smaller increments, the memory lost here is not 
-really a concern.
 
-Arne
+This patch currently has a conflict since PF code was removed. I will 
+let Gert decide if he wants to adjust the patch or a rebased v4.
 
