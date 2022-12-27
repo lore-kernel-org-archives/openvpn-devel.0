@@ -1,15 +1,10 @@
-MIME-Version: 1.0
-References: <20210907223126.8440-1-selva.nair@...277...>
- <202212270831.2BR8VUQ3085016@...2054...>
- <CAKuzo_jAq3Roq_HfR_WOmVW1OWcPKa-h0JGSYF8=4xC1VW1ukA@...278...>
- <Y6s4pog4C22Sb+uY@...1296...>
-In-Reply-To: <Y6s4pog4C22Sb+uY@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 27 Dec 2022 13:49:53 -0500
-Message-ID: <CAKuzo_gKJUjbyUV0BZV=FzFb-nsTO_AhAKj2t8qQJ1s=PR923g@...278...>
-Content-Type: multipart/alternative; boundary="0000000000009334cb05f0d3b888"
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add remote-count and
- remote-entry query via management
+Date: Tue, 27 Dec 2022 20:08:39 +0100 (CET)
+Message-Id: <202212271908.2BRJ8dAW018216@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221227140249.3524943-2-arne@...1227...>
+References: <20221227140249.3524943-2-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Replace realloc with new
+ gc_realloc function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,93 +13,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---0000000000009334cb05f0d3b888
-Content-Type: text/plain; charset="UTF-8"
+Acked-by: Gert Doering <gert@...1296...>
 
-On Tue, Dec 27, 2022 at 1:25 PM Gert Doering <gert@...1296...> wrote:
+The initial tests were left to Github/ASAN builds, which are now 
+"all green for real" - 
+  https://github.com/cron2/openvpn/actions/runs/3789030448
 
-> Hi,
->
-> On Tue, Dec 27, 2022 at 01:18:02PM -0500, Selva Nair wrote:
-> > My test implementation in the GUI constructs the list when first >REMOTE
-> > query is received. If there is no >REMOTE from the daemon, the feature is
-> > not used. That works.
->
-> So what's the magic --option to make openvpn query for >REMOTE?
->
+Stare-at-code also looks good, though a bit complicated (and if I'm
+reading this right, doing an initial allocation with gc_malloc() and
+then calling gc_realloc() on it will double-free(), so *boom*) - sufficient
+for the use case at hand (initial allocation also done with gc_realloc()),
+but maybe it could be simplified and made robust against this case.
 
---management-query-remote
+My manual "test one instance with 200 remotes" did what I expected
+(and I discovered --management-query-remote ;-) ).
+
+Your patch has been applied to the master and release/2.6 branch.
+
+commit e7f2169772f90f9bf158a17f5656a6a985e74e31 (master)
+commit 09267c1ccde6a8f0671c785413ca847e97bbc0a5 (release/2.6)
+Author: Arne Schwabe
+Date:   Tue Dec 27 15:02:45 2022 +0100
+
+     Replace realloc with new gc_realloc function
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20221227140249.3524943-2-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25829.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-> (My understanding of the management interface details is limited... I just
-> happen to stumble across things here and there :-) )
->
-> > That said, making these commands work from management-hold would have
-> been
-> > nice, but looked harder to implement -- we need a callback to get the
-> > context in management.c, but callbacks are initialized late.
->
-> Yes, definitely looked like it.  But if OpenVPN queries for >REMOTE
-> voluntarily ("if more than one option exists"), that sounds good enough.
->
+--
+kind regards,
 
-Yet undecided whether we should include this option from the GUI, or
-require the user to add this to the config. Unlike
-management-query-passwords adding this option always has the side effect of
-querying for remote. That may annoy/burden some users who want to leave it
-to the daemon via remote-random or use the first that works or whatever.
+Gert Doering
 
-Or, we could always add this option, and just accept the first prompt if
-the user does not want this feature.
-
-Selva
-
---0000000000009334cb05f0d3b888
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
-<div dir=3D"ltr" class=3D"gmail_attr">On Tue, Dec 27, 2022 at 1:25 PM Gert =
-Doering &lt;<a href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt; wrot=
-e:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
-.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
-<br>
-On Tue, Dec 27, 2022 at 01:18:02PM -0500, Selva Nair wrote:<br>
-&gt; My test implementation in the GUI constructs the list when first &gt;R=
-EMOTE<br>
-&gt; query is received. If there is no &gt;REMOTE from the daemon, the feat=
-ure is<br>
-&gt; not used. That works.<br>
-<br>
-So what&#39;s the magic --option to make openvpn query for &gt;REMOTE?<br><=
-/blockquote><div><br></div><div>--management-query-remote</div><div><br></d=
-iv><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bord=
-er-left:1px solid rgb(204,204,204);padding-left:1ex">
-<br>
-(My understanding of the management interface details is limited... I just<=
-br>
-happen to stumble across things here and there :-) )<br>
-<br>
-&gt; That said, making these commands work from management-hold would have =
-been<br>
-&gt; nice, but looked harder to implement -- we need a callback to get the<=
-br>
-&gt; context in management.c, but callbacks are initialized late.<br>
-<br>
-Yes, definitely looked like it.=C2=A0 But if OpenVPN queries for &gt;REMOTE=
- <br>
-voluntarily (&quot;if more than one option exists&quot;), that sounds good =
-enough.<br></blockquote><div><br></div><div>Yet undecided whether we should=
- include this option from the GUI, or require the user to add this to the c=
-onfig. Unlike management-query-passwords adding this option always has the =
-side effect of querying for remote. That may annoy/burden some users who wa=
-nt=C2=A0to leave it to the daemon via remote-random or use the first that w=
-orks or whatever.</div><div><br></div><div>Or, we could always add this opt=
-ion, and just accept the=C2=A0first prompt if the user does not=C2=A0want t=
-his feature.</div><div><br></div><div>Selva</div></div></div>
-
---0000000000009334cb05f0d3b888--
 
