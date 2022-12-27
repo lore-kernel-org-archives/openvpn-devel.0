@@ -1,10 +1,10 @@
-Date: Tue, 27 Dec 2022 10:23:47 +0100 (CET)
-Message-Id: <202212270923.2BR9NlPs092650@...2054...>
+Date: Tue, 27 Dec 2022 10:31:35 +0100 (CET)
+Message-Id: <202212270931.2BR9VZjj094118@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20210907223126.8440-2-selva.nair@...277...>
-References: <20210907223126.8440-2-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Permit unlimited connection
- entries and remotes
+In-Reply-To: <20210907223126.8440-3-selva.nair@...277...>
+References: <20210907223126.8440-3-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Use a template for 'unsupported
+ management commands' error
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,51 +18,28 @@ Content-Transfer-Encoding: 8bit
 To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-The patch needed a bit of convincing to go in (context change in options.h,
-and braces-in-the-wrong-line).  Fixed.
+Removed the hunk related to "client-pf".  The rest went in just fine.
 
-Tested with a config with 200 somewhat random remote lines - without the
-patch
+Verified with my favourite "why does this not work at --management-hold
+time?" new command :-)
 
-  Options error: Maximum number of 'remote' options (64) exceeded
-
-and with the patch "it just works"...
-
+    >HOLD:Waiting for hold release:0
     remote-entry-count
-    206
-    END
-    remote-entry-get 200 999
-    200,1195.server.org,1195,udp
-    201,1196.server.org,1196,udp
-    202,1197.server.org,1197,udp
-    203,1198.server.org,1198,udp
-    204,1199.server.org,1199,udp
-    205,1200.server.org,1200,udp
-    END
+    ERROR: The 'remote-entry-count' command is not supported by the current daemon mode
 
-(I did not try 100s of <connection>)
+Your patch has been applied to the master and release/2.6 branch.
 
-
-That said, I'm not convinced we really need to print
-
-  2022-12-27 10:16:56 WARNING: Using --management on a TCP port WITHOUT passwords is STRONGLY discouraged and considered insecure
-
-for every single --remote...  but that's a different issue, not caused
-by *this* patch.
-
-Your patch has been applied to the master branch.
-
-commit 4954beb618e8bf2dc756019d5a36040d791a8f38 (master)
-commit ceba452ee44439b426b786325db2b4e1b1c8b663 (release/2.6)
+commit caf1b9030f28a984a0e12dd87b128b428d3683f0 (master)
+commit cad95bcc564e06dc53ec88e9ec4f529146569c0d (release/2.6)
 Author: Selva Nair
-Date:   Tue Sep 7 18:31:25 2021 -0400
+Date:   Tue Sep 7 18:31:26 2021 -0400
 
-     Permit unlimited connection entries and remotes
+     Use a template for 'unsupported management commands' error
 
      Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20210907223126.8440-2-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22816.html
+     Message-Id: <20210907223126.8440-3-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg22814.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
