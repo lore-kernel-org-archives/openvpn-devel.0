@@ -1,11 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 27 Dec 2022 15:02:47 +0100
-Message-Id: <20221227140249.3524943-4-arne@...1227...>
-In-Reply-To: <20221227140249.3524943-1-arne@...1227...>
-References: <20221227140249.3524943-1-arne@...1227...>
+Date: Tue, 27 Dec 2022 15:02:44 +0100
+Message-Id: <20221227140249.3524943-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 2/4] Bail out when trying to install a
- TCP socket with residual data to DCO
+Subject: [Openvpn-devel] [PATCH 1/2] Replace custom min macro and use more
+ C99 style in man_remote_entry_get
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,51 +16,52 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Instead of getting the server in a very weird state, we bail out here. This
-is only a bandaid solution but better than the alternatives.
-
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/mtcp.c  |  2 +-
- src/openvpn/multi.c | 10 +++++++++-
- 2 files changed, 10 insertions(+), 2 deletions(-)
+ src/openvpn/manage.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index 519630544..c07b5d592 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -591,7 +591,7 @@ multi_tcp_post(struct multi_context *m, struct multi_instance *mi, const int act
-                     struct gc_arena gc = gc_new();
-                     msg(M_INFO, "ovpn-dco installed socket with residual read "
-                         "len=%d, mi=%s. This connection will probably"
--                        " break.",  BLEN(&c->c2.link_socket->stream_buf.residual),
-+                        " break.",  BLEN(&c->c2.link_socket->stream_buf.buf),
-                         multi_instance_string(mi, false, &gc));
-                     gc_free(&gc);
-                     break;
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 92e63dd26..6c6385c6e 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -2316,9 +2316,17 @@ multi_client_setup_dco_initial(struct multi_context *m,
- {
-     if (!dco_enabled(&mi->context.options))
-     {
--        /* DCO not enabled, nothing to do, return sucess */
-+        /* DCO not enabled, nothing to do, return success */
-         return true;
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index be9a38952..7e326702f 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -865,8 +865,6 @@ man_remote_entry_count(struct management *man)
      }
-+
-+    if (socket_read_residual(mi->context.c2.link_socket))
-+    {
-+        msg(M_INFO, "TCP socket with half read packet. Cannot install to "
-+            "DCO: %s",  multi_instance_string(mi, false, gc));
-+        return false;
-+    }
-+
-     int ret = dco_multi_add_new_peer(m, mi);
-     if (ret < 0)
+ }
+ 
+-#define min(a, b) ((a) < (b) ? (a) : (b))
+-
+ static void
+ man_remote_entry_get(struct management *man, const char *p1, const char *p2)
+ {
+@@ -875,12 +873,10 @@ man_remote_entry_get(struct management *man, const char *p1, const char *p2)
+     if (man->persist.callback.remote_entry_get
+         && man->persist.callback.remote_entry_count)
      {
+-        bool res;
+-        unsigned int from, to;
+         unsigned int count = (*man->persist.callback.remote_entry_count)(man->persist.callback.arg);
+ 
+-        from = (unsigned int) atoi(p1);
+-        to = p2 ? (unsigned int) atoi(p2) : from + 1;
++        unsigned int from = (unsigned int) atoi(p1);
++        unsigned int to = p2 ? (unsigned int) atoi(p2) : from + 1;
+ 
+         if (!strcmp(p1, "all"))
+         {
+@@ -888,10 +884,10 @@ man_remote_entry_get(struct management *man, const char *p1, const char *p2)
+             to = count;
+         }
+ 
+-        for (unsigned int i = from; i < min(to, count); i++)
++        for (unsigned int i = from; i < min_uint(to, count); i++)
+         {
+             char *remote = NULL;
+-            res = (*man->persist.callback.remote_entry_get)(man->persist.callback.arg, i, &remote);
++            bool res = (*man->persist.callback.remote_entry_get)(man->persist.callback.arg, i, &remote);
+             if (res && remote)
+             {
+                 msg(M_CLIENT, "%u,%s", i, remote);
 -- 
 2.37.1 (Apple Git-137.1)
 
