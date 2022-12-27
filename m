@@ -1,14 +1,10 @@
-Date: Tue, 27 Dec 2022 16:52:34 +0100
+Date: Tue, 27 Dec 2022 17:58:21 +0100 (CET)
+Message-Id: <202212271658.2BRGwLfc015538@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <Y6sUwho45Sw58437@...1296...>
-References: <20221227022404.3468137-1-arne@...1227...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="5dGwuCIujXODB3wy"
-Content-Disposition: inline
-In-Reply-To: <20221227022404.3468137-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v2 1/4] Ensure we do not promote a
- TA_TIMEOUT to a TA_READ event with dco
+In-Reply-To: <20221227022404.3468137-3-arne@...1227...>
+References: <20221227022404.3468137-3-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Ignore
+ OVPN_DEL_PEER_REASON_USERSPACE to avoid race conditions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,61 +13,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---5dGwuCIujXODB3wy
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Acked-by: Gert Doering <gert@...1296...>
 
-Hi,
+I have not actually seen this particular race (or if I have seen it it
+was drowned in lots of other events) - but yeah, to fully ignore this
+seems better than "kill peer <x> just because we ended a peer with
+the very same peer-id <x> a few seconds ago".
 
-On Tue, Dec 27, 2022 at 03:24:01AM +0100, Arne Schwabe wrote:
-> with dco sometimes we end up promoting a timeout event to read event.
-> For the residual read, this problem is probably not solvable without
-> changing the kernel DCO API (ie. passing our residual on new_peer to
-> let the kernel handle assembling the next packet.)
->=20
-> Signed-off-by: Arne Schwabe <arne@...1227...>
+To achieve the "some other program might have sent this" original idea,
+one would need to add a sending PID ("we ignore everything with our
+own PID"), or some sort of ACK mechanism ("we do not re-assign the
+peer-id <x> until we have confirmation from the kernel").  This would
+certainly be nice, but for now, ignore it is.
 
-So after a long and extensive round of testing (this one as it is,
-and 1/4+2/4 against the gremlins) I can say that it does not break
-anything, and fixes the "too many TCP connects will cause a fd=3D-1
-recv() and subsequent crash".
+Tested on the ubuntu2004 DCO system (client/server), with no gremlins.
 
-After some more discussion on IRC neither Arne and I seem to really
-fully understand the residual stuff, so not merging this yet, more
-study is needed...
+Your patch has been applied to the master branch.
 
-gert
+commit 6ad66b0c2950c0d7674a5867085fef8115f61d11 (master)
+commit eec054a95820ffa7e548f47078ec0101d6949907 (release/2.6)
+Author: Arne Schwabe
+Date:   Tue Dec 27 03:24:03 2022 +0100
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+     Ignore OVPN_DEL_PEER_REASON_USERSPACE to avoid race conditions
 
-Gert Doering - Munich, Germany                             gert@...1296...
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20221227022404.3468137-3-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25820.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---5dGwuCIujXODB3wy
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+--
+kind regards,
 
-iQGcBAEBAgAGBQJjqxTCAAoJEB2Cnv7KVigS6AUL/RpnM8YuOqd4drXTK0v0dmOM
-9eJj0DVWkgo3Ni4VVOdEorjlam54G62COCcgbXeoDp9DNXvamfLyD6SjTWePPkzK
-Ymol+i5ewUxlHUua1YOBWSn2YXXoveK19j7ZhYfW6gNydWrE3uepZ2xwUiPpz3Oe
-lRyhc4apC3bDjaNtFYcmoObK7MOiF9KuPD6b7cXm2905gH4w+whHJNgOTyNDaqQ8
-LigNy7F3kR0MkBXSgzy+ni73czocLykXU+AUYDBjMPEFzfpdqoS0AszbuOQBC7NW
-W3eRSmzeqf1unt+b02KdF9sHU7iTtT6UxWRCQS7jGsnarRMGGKiaYFvIYlNrp1FP
-pR1rwR3GFs0gmx9TQorEpBJjtKck4rGTYwGnbF5koa+Les5B2QoMjBsInYYEmBYq
-L0sZzxu/fHI/qfDpT56m0DPFtfpcuQpsNXqSVl4KENb8XWRrAqTjgqyOIAgmApSp
-KzMbnuqwbYYY3ECM0gJVyJ0DglALsnKpX2WoS5UF5Q==
-=/ThB
------END PGP SIGNATURE-----
+Gert Doering
 
---5dGwuCIujXODB3wy--
 
