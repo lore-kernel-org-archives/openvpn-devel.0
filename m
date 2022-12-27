@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 27 Dec 2022 03:24:02 +0100
-Message-Id: <20221227022404.3468137-2-arne@...1227...>
+Date: Tue, 27 Dec 2022 03:24:04 +0100
+Message-Id: <20221227022404.3468137-4-arne@...1227...>
 In-Reply-To: <20221227022404.3468137-1-arne@...1227...>
 References: <20221227022404.3468137-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 2/4] Bail out when trying to install a
- TCP socket with residual data to DCO
+Subject: [Openvpn-devel] [PATCH v2 4/4] Log peer-id if loglevel is
+ D_DCO_DEBUG and dco is enabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,51 +18,31 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Instead of getting the server in a very weird state, we bail out here. This
-is only a bandaid solution but better than the alternatives.
+This enables logging the peer id in p2mp mode if dco is enabled
+and the log level is high enough
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/mtcp.c  |  2 +-
- src/openvpn/multi.c | 10 +++++++++-
- 2 files changed, 10 insertions(+), 2 deletions(-)
+ src/openvpn/multi.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index 519630544..c07b5d592 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -591,7 +591,7 @@ multi_tcp_post(struct multi_context *m, struct multi_instance *mi, const int act
-                     struct gc_arena gc = gc_new();
-                     msg(M_INFO, "ovpn-dco installed socket with residual read "
-                         "len=%d, mi=%s. This connection will probably"
--                        " break.",  BLEN(&c->c2.link_socket->stream_buf.residual),
-+                        " break.",  BLEN(&c->c2.link_socket->stream_buf.buf),
-                         multi_instance_string(mi, false, &gc));
-                     gc_free(&gc);
-                     break;
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 92e63dd26..6c6385c6e 100644
+index 50d88f19a..f8366be28 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -2316,9 +2316,17 @@ multi_client_setup_dco_initial(struct multi_context *m,
- {
-     if (!dco_enabled(&mi->context.options))
-     {
--        /* DCO not enabled, nothing to do, return sucess */
-+        /* DCO not enabled, nothing to do, return success */
-         return true;
+@@ -473,6 +473,12 @@ multi_instance_string(const struct multi_instance *mi, bool null, struct gc_aren
+             buf_printf(&out, "%s/", cn);
+         }
+         buf_printf(&out, "%s", mroute_addr_print(&mi->real, gc));
++        if (mi->context.c2.tls_multi
++            && mi->context.options.verbosity >= D_DCO_DEBUG
++            && dco_enabled(&mi->context.options))
++        {
++            buf_printf(&out, " peer-id=%d", mi->context.c2.tls_multi->peer_id);
++        }
+         return BSTR(&out);
      }
-+
-+    if (socket_read_residual(mi->context.c2.link_socket))
-+    {
-+        msg(M_INFO, "TCP socket with half read packet. Cannot install to "
-+            "DCO: %s",  multi_instance_string(mi, false, gc));
-+        return false;
-+    }
-+
-     int ret = dco_multi_add_new_peer(m, mi);
-     if (ret < 0)
-     {
+     else if (null)
 -- 
 2.37.1 (Apple Git-137.1)
 
