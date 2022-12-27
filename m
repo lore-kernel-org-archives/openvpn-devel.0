@@ -1,9 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 27 Dec 2022 15:02:44 +0100
-Message-Id: <20221227140249.3524943-1-arne@...1227...>
+Date: Tue, 27 Dec 2022 15:02:48 +0100
+Message-Id: <20221227140249.3524943-5-arne@...1227...>
+In-Reply-To: <20221227140249.3524943-1-arne@...1227...>
+References: <20221227140249.3524943-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/2] Replace custom min macro and use more
- C99 style in man_remote_entry_get
+Subject: [Openvpn-devel] [PATCH v2 3/4] Ignore
+ OVPN_DEL_PEER_REASON_USERSPACE to avoid race conditions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,50 +20,37 @@ To: openvpn-devel@lists.sourceforge.net
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/manage.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ src/openvpn/multi.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index be9a38952..7e326702f 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -865,8 +865,6 @@ man_remote_entry_count(struct management *man)
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 6c6385c6e..50d88f19a 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3243,10 +3243,19 @@ process_incoming_del_peer(struct multi_context *m, struct multi_instance *mi,
+             break;
+ 
+         case OVPN_DEL_PEER_REASON_USERSPACE:
+-            /* This very likely ourselves but might be another process, so
+-             * still process it */
+-            reason = "ovpn-dco: userspace request";
+-            break;
++            /* We assume that is ourselves. UUnfortunately, sometimes these
++             * events happen with enough delay that they can have an order of
++             *
++             * dco_del_peer x
++             * [new client connecting]
++             * dco_new_peer x
++             * event from dco_del_peer arrives.
++             *
++             * if we do not ignore this we get desynced with the kernel
++             * since we assume the peer-id is free again. The other way would
++             * be to send a dco_del_peer again
++             */
++            return;
      }
- }
  
--#define min(a, b) ((a) < (b) ? (a) : (b))
--
- static void
- man_remote_entry_get(struct management *man, const char *p1, const char *p2)
- {
-@@ -875,12 +873,10 @@ man_remote_entry_get(struct management *man, const char *p1, const char *p2)
-     if (man->persist.callback.remote_entry_get
-         && man->persist.callback.remote_entry_count)
-     {
--        bool res;
--        unsigned int from, to;
-         unsigned int count = (*man->persist.callback.remote_entry_count)(man->persist.callback.arg);
- 
--        from = (unsigned int) atoi(p1);
--        to = p2 ? (unsigned int) atoi(p2) : from + 1;
-+        unsigned int from = (unsigned int) atoi(p1);
-+        unsigned int to = p2 ? (unsigned int) atoi(p2) : from + 1;
- 
-         if (!strcmp(p1, "all"))
-         {
-@@ -888,10 +884,10 @@ man_remote_entry_get(struct management *man, const char *p1, const char *p2)
-             to = count;
-         }
- 
--        for (unsigned int i = from; i < min(to, count); i++)
-+        for (unsigned int i = from; i < min_uint(to, count); i++)
-         {
-             char *remote = NULL;
--            res = (*man->persist.callback.remote_entry_get)(man->persist.callback.arg, i, &remote);
-+            bool res = (*man->persist.callback.remote_entry_get)(man->persist.callback.arg, i, &remote);
-             if (res && remote)
-             {
-                 msg(M_CLIENT, "%u,%s", i, remote);
+     /* When kernel already deleted the peer, the socket is no longer
 -- 
 2.37.1 (Apple Git-137.1)
 
