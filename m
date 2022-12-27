@@ -1,14 +1,13 @@
-Date: Tue, 27 Dec 2022 19:25:42 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <Y6s4pog4C22Sb+uY@...1296...>
+MIME-Version: 1.0
 References: <20210907223126.8440-1-selva.nair@...277...>
  <202212270831.2BR8VUQ3085016@...2054...>
  <CAKuzo_jAq3Roq_HfR_WOmVW1OWcPKa-h0JGSYF8=4xC1VW1ukA@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="zWs4ozjlo4idpVDD"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_jAq3Roq_HfR_WOmVW1OWcPKa-h0JGSYF8=4xC1VW1ukA@...278...>
+ <Y6s4pog4C22Sb+uY@...1296...>
+In-Reply-To: <Y6s4pog4C22Sb+uY@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 27 Dec 2022 13:49:53 -0500
+Message-ID: <CAKuzo_gKJUjbyUV0BZV=FzFb-nsTO_AhAKj2t8qQJ1s=PR923g@...278...>
+Content-Type: multipart/alternative; boundary="0000000000009334cb05f0d3b888"
 Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add remote-count and
  remote-entry query via management
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,60 +18,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---zWs4ozjlo4idpVDD
-Content-Type: text/plain; charset="us-ascii"
+--0000000000009334cb05f0d3b888
+Content-Type: text/plain; charset="UTF-8"
+
+On Tue, Dec 27, 2022 at 1:25 PM Gert Doering <gert@...1296...> wrote:
+
+> Hi,
+>
+> On Tue, Dec 27, 2022 at 01:18:02PM -0500, Selva Nair wrote:
+> > My test implementation in the GUI constructs the list when first >REMOTE
+> > query is received. If there is no >REMOTE from the daemon, the feature is
+> > not used. That works.
+>
+> So what's the magic --option to make openvpn query for >REMOTE?
+>
+
+--management-query-remote
+
+
+> (My understanding of the management interface details is limited... I just
+> happen to stumble across things here and there :-) )
+>
+> > That said, making these commands work from management-hold would have
+> been
+> > nice, but looked harder to implement -- we need a callback to get the
+> > context in management.c, but callbacks are initialized late.
+>
+> Yes, definitely looked like it.  But if OpenVPN queries for >REMOTE
+> voluntarily ("if more than one option exists"), that sounds good enough.
+>
+
+Yet undecided whether we should include this option from the GUI, or
+require the user to add this to the config. Unlike
+management-query-passwords adding this option always has the side effect of
+querying for remote. That may annoy/burden some users who want to leave it
+to the daemon via remote-random or use the first that works or whatever.
+
+Or, we could always add this option, and just accept the first prompt if
+the user does not want this feature.
+
+Selva
+
+--0000000000009334cb05f0d3b888
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
+<div dir=3D"ltr" class=3D"gmail_attr">On Tue, Dec 27, 2022 at 1:25 PM Gert =
+Doering &lt;<a href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt; wrot=
+e:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
+.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
+<br>
+On Tue, Dec 27, 2022 at 01:18:02PM -0500, Selva Nair wrote:<br>
+&gt; My test implementation in the GUI constructs the list when first &gt;R=
+EMOTE<br>
+&gt; query is received. If there is no &gt;REMOTE from the daemon, the feat=
+ure is<br>
+&gt; not used. That works.<br>
+<br>
+So what&#39;s the magic --option to make openvpn query for &gt;REMOTE?<br><=
+/blockquote><div><br></div><div>--management-query-remote</div><div><br></d=
+iv><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bord=
+er-left:1px solid rgb(204,204,204);padding-left:1ex">
+<br>
+(My understanding of the management interface details is limited... I just<=
+br>
+happen to stumble across things here and there :-) )<br>
+<br>
+&gt; That said, making these commands work from management-hold would have =
+been<br>
+&gt; nice, but looked harder to implement -- we need a callback to get the<=
+br>
+&gt; context in management.c, but callbacks are initialized late.<br>
+<br>
+Yes, definitely looked like it.=C2=A0 But if OpenVPN queries for &gt;REMOTE=
+ <br>
+voluntarily (&quot;if more than one option exists&quot;), that sounds good =
+enough.<br></blockquote><div><br></div><div>Yet undecided whether we should=
+ include this option from the GUI, or require the user to add this to the c=
+onfig. Unlike management-query-passwords adding this option always has the =
+side effect of querying for remote. That may annoy/burden some users who wa=
+nt=C2=A0to leave it to the daemon via remote-random or use the first that w=
+orks or whatever.</div><div><br></div><div>Or, we could always add this opt=
+ion, and just accept the=C2=A0first prompt if the user does not=C2=A0want t=
+his feature.</div><div><br></div><div>Selva</div></div></div>
 
-On Tue, Dec 27, 2022 at 01:18:02PM -0500, Selva Nair wrote:
-> My test implementation in the GUI constructs the list when first >REMOTE
-> query is received. If there is no >REMOTE from the daemon, the feature is
-> not used. That works.
-
-So what's the magic --option to make openvpn query for >REMOTE?
-
-(My understanding of the management interface details is limited... I just
-happen to stumble across things here and there :-) )
-
-> That said, making these commands work from management-hold would have been
-> nice, but looked harder to implement -- we need a callback to get the
-> context in management.c, but callbacks are initialized late.
-
-Yes, definitely looked like it.  But if OpenVPN queries for >REMOTE=20
-voluntarily ("if more than one option exists"), that sounds good enough.
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---zWs4ozjlo4idpVDD
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjqzimAAoJEB2Cnv7KVigSa5AL/1ID/wy17pmC4OXF3KZ2fZRO
-kCbCROemgKd3qddHkbdpFYhM03P8ealVjcMy6ZHGOE1wcSmNFtfz6GEu+CvSVnit
-vLuVtl8pAr42o+PKY8oaujjhb4TIPizgmUAYiBKrDAfQ9HDxC4WgsqsNyGsowl4p
-Hfm9zNhZcFIc9BU6QE7vFrQfPTJDhv1UUELD7SlV2s/oiTKZxfyImLqqFv0x9wpP
-aA2D2U/yB3o2wkEs8h5hBi9Z8IB+gH/pjBGLlLd8WDMPoec7FDc81J51FhDnNrb5
-U+lMMfX/jmtRXLI4YX7jpc8Z760H4BcUpfAZO5DEXS9k6cSpmocamPl1qwL3W2kk
-/ylPYjbEsiCzgCTHqcLU6uS+V7Rbykxh3Bylei2rbjV6m+FihrrmLItEJzJpa8KT
-/KZt8vlZXh3XTp4XMbYUB7StDCP4Hfv/LpzF/TfjPOJ+6bA4JgTQqutgVclf2fs+
-rLmS9qIyf80GLYOUdE0IYcg3CJJAExfD2n4ci+G/fQ==
-=k/83
------END PGP SIGNATURE-----
-
---zWs4ozjlo4idpVDD--
+--0000000000009334cb05f0d3b888--
 
