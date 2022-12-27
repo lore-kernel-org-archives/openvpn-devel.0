@@ -1,10 +1,12 @@
-Date: Tue, 27 Dec 2022 20:08:39 +0100 (CET)
-Message-Id: <202212271908.2BRJ8dAW018216@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221227140249.3524943-2-arne@...1227...>
-References: <20221227140249.3524943-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Replace realloc with new
- gc_realloc function
+Message-ID: <129ed04e-85f9-6cd1-46d0-200e7a6fce66@...1227...>
+Date: Tue, 27 Dec 2022 20:23:28 +0100
+MIME-Version: 1.0
+Content-Language: en-GB
+References: <20221222095349.1662685-1-gert@...1296...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20221222095349.1662685-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] bandaid fix for TCP multipoint server
+ crash with Linux-DCO
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,45 +15,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Am 22.12.22 um 10:53 schrieb Gert Doering:
+> TCP multipoint servers with Linux-DCO can crash under yet-unknown
+> circumstances where a TCP socket gets handed to the kernel (= userland
+> shall not acceess it again) but the socket still lands in the event
+> polling mechanism, and is passed to link_socket_read() with
+> sock->fd being "-1" (SOCKET_UNDEFINED).
+> 
+> This is a bug, but it happens very unfrequently so not fixed yet.
+> 
+> When this happens, the server gets stuck in an endless loop of
+> "trying recvfrom(-1, ..), getting an error, looging that error,
+> continue" until the server's disk is full.
+> 
+> The situation is being made a bit more complex by the dco-win
+> approach of treating "all kernel sockets as UDP", so the Linux
+> implementation tries to access the -1 socket as UDP, confusing
+> the picture more.
+> 
+> As a bandaid to avoid the crash, this patch changes
+> 
+>   - socket.h: only do the "if dco_installed, treat as UDP" for WIN32
+>     (link_socket_read())
+> 
+>   - socket.c: add ASSERT(sock->fd >= 0); checks to all UDP socket paths
+>     (we should never even hit those as this is a TCP specific problem,
+>     but in the "sock->fd = -1" case, doing a clean server abort is
+>     preferred to "the disk is full with non-helpful logfiles, and then
+>     the server crashes anyway")
+> 
+>   - socket.c: in the TCP read function, link_socket_read_tcp(),
+>     check for sock->fd < 0 and trigger "sock->stream_reset = true"
+>     (+ write to the log what happened).
+> 
+> This change will kill this particular TCP client instance (SIGTERM),
+> but leave the rest of the server running fine - and given that
+> in our tests this issue seems to be triggered by inbound TCP RST
+> in just the wrong moment, so the TCP connection is gone anyway, it
+> seems to be "a properly-sized bandaid".
+> 
+> Github: OpenVPN/openvpn#190
 
-The initial tests were left to Github/ASAN builds, which are now 
-"all green for real" - 
-  https://github.com/cron2/openvpn/actions/runs/3789030448
-
-Stare-at-code also looks good, though a bit complicated (and if I'm
-reading this right, doing an initial allocation with gc_malloc() and
-then calling gc_realloc() on it will double-free(), so *boom*) - sufficient
-for the use case at hand (initial allocation also done with gc_realloc()),
-but maybe it could be simplified and made robust against this case.
-
-My manual "test one instance with 200 remotes" did what I expected
-(and I discovered --management-query-remote ;-) ).
-
-Your patch has been applied to the master and release/2.6 branch.
-
-commit e7f2169772f90f9bf158a17f5656a6a985e74e31 (master)
-commit 09267c1ccde6a8f0671c785413ca847e97bbc0a5 (release/2.6)
-Author: Arne Schwabe
-Date:   Tue Dec 27 15:02:45 2022 +0100
-
-     Replace realloc with new gc_realloc function
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20221227140249.3524943-2-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25829.html
-     Signed-off-by: Gert Doering <gert@...1296...>
 
 
---
-kind regards,
+Acked-By: Arne Schwabe <arne@...1227...>
 
-Gert Doering
+Even though I rather would like to fully understand the issue, this 
+bandaid fix is better than right now when the time is pressing.
 
+Arne
 
