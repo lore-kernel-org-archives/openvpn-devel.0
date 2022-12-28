@@ -1,8 +1,9 @@
-Date: Wed, 28 Dec 2022 16:36:32 +0100
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Y6xigNhAE2KGIwiV@...2685...>
+Date: Wed, 28 Dec 2022 18:13:14 +0100
+Message-Id: <20221228171314.133115-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.6_rc1 released
+Subject: [Openvpn-devel] [PATCH] options.c: update usage description of
+ --cipher
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,62 +12,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-The OpenVPN community project team is proud to release OpenVPN 2.6_rc1.
-This is the first release candidate (and the third beta release) for
-the feature release 2.6.0.
+GCC with -O3 complains:
+warning: ‘%s’ directive argument is null [-Wformat-overflow=]
 
-Changes since Beta 2:
+And indeed:
+--cipher alg    : Encrypt packets with cipher algorithm alg
+                  (default=(null)).
 
-* Officially deprecate NTLMv1 proxy auth method in 2.6. Will be removed in 2.7.
-* Support unlimited number of connection entries and remote entries.
-* New management commands to enumerate and list remote entries.
-* Various bugfixes, see https://github.com/OpenVPN/openvpn/blob/v2.6_rc1/Changes.rst
+Since there is no real default anymore, remove it.
+While here also indicate the somewhat-deprecated status
+of the option.
 
-Windows MSI changes since Beta 2:
-* Included openvpn-gui updated to 11.34.0.0. See https://github.com/OpenVPN/openvpn-gui/blob/v11.34.0.0/CHANGES.rst.
-  * New feature: Connections active on exit/logout are now automatically restarted in the next session of the GUI
-* Windows installers are now built with Visual Studio 17 2022 (previously built with VS 16 2019)
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ src/openvpn/options.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Some highlights of 2.6.0 are:
-
-* Data Channel Offload (DCO) kernel acceleration support for Windows, Linux, and FreeBSD.
-* OpenSSL 3 support.
-* Improved handling of tunnel MTU, including support for pushable MTU.
-* Reworked TLS handshake, making OpenVPN immune to replay-packet state exhaustion attacks.
-* Added --peer-fingerprint mode for a more simplistic certificate setup and verification.
-* Improved protocol negotiation, leading to faster connection setup.
-
-More details can be found in the Changes document:
-
-<https://github.com/OpenVPN/openvpn/blob/release/2.6/Changes.rst>
-
-(The Changes document also contains a section with work-arounds for
-common problems encountered when using OpenVPN with OpenSSL 3)
-
-Source code and Windows installers can be downloaded from our download page:
-
-<https://community.openvpn.net/openvpn/wiki/Downloads>
-
-(The Windows installers use OpenSSL 3 now)
-
-Debian and Ubuntu packages are available in the official apt repositories:
-
-<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
-
-(Note that as a Beta release, packages are only available in testing
-and release/2.6 repositories, not in stable)
-
-On Red Hat derivatives we recommend using the Fedora Copr repository.
-
-<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release/>
-
-
-Kind regards,
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 7395019e..ee378304 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -543,8 +543,8 @@ static const char usage_message[] =
+     "                  digest algorithm alg (default=%s).\n"
+     "                  (usually adds 16 or 20 bytes per packet)\n"
+     "                  Set alg=none to disable authentication.\n"
+-    "--cipher alg    : Encrypt packets with cipher algorithm alg\n"
+-    "                  (default=%s).\n"
++    "--cipher alg    : Encrypt packets with cipher algorithm alg.\n"
++    "                  You should usually use --data-ciphers instead.\n"
+     "                  Set alg=none to disable encryption.\n"
+     "--data-ciphers list : List of ciphers that are allowed to be negotiated.\n"
+ #ifndef ENABLE_CRYPTO_MBEDTLS
+@@ -4779,7 +4779,7 @@ usage(void)
+             o.ce.local_port, o.ce.remote_port,
+             TUN_MTU_DEFAULT, TAP_MTU_EXTRA_DEFAULT,
+             o.verbosity,
+-            o.authname, o.ciphername,
++            o.authname,
+             o.replay_window, o.replay_time,
+             o.tls_timeout, o.renegotiate_seconds,
+             o.handshake_window, o.transition_window);
 -- 
-  Frank Lichtenheld
+2.34.1
+
 
