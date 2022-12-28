@@ -1,9 +1,10 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 28 Dec 2022 18:13:14 +0100
-Message-Id: <20221228171314.133115-1-frank@...2641...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] options.c: update usage description of
- --cipher
+Date: Wed, 28 Dec 2022 22:44:21 +0100 (CET)
+Message-Id: <202212282144.2BSLiLgW042202@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221228110752.34060-1-frank@...2641...>
+References: <20221228110752.34060-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: options.c: fix format security
+ error when compiling without optimization
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,49 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-GCC with -O3 complains:
-warning: ‘%s’ directive argument is null [-Wformat-overflow=]
+Funny code section... why introduce a variable, when it could have called
+msg() directly.  But anyway.
 
-And indeed:
---cipher alg    : Encrypt packets with cipher algorithm alg
-                  (default=(null)).
+Your patch has been applied to the master and release/2.6 branch.
 
-Since there is no real default anymore, remove it.
-While here also indicate the somewhat-deprecated status
-of the option.
+commit 24fc4ce25432a42170477f21133bb0f25a8a860d (master)
+commit cdcaebcbdf31cb629e54147d476e6fb9921f7999 (release/2.6)
+Author: Frank Lichtenheld
+Date:   Wed Dec 28 12:07:52 2022 +0100
 
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
- src/openvpn/options.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+     options.c: fix format security error when compiling without optimization
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 7395019e..ee378304 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -543,8 +543,8 @@ static const char usage_message[] =
-     "                  digest algorithm alg (default=%s).\n"
-     "                  (usually adds 16 or 20 bytes per packet)\n"
-     "                  Set alg=none to disable authentication.\n"
--    "--cipher alg    : Encrypt packets with cipher algorithm alg\n"
--    "                  (default=%s).\n"
-+    "--cipher alg    : Encrypt packets with cipher algorithm alg.\n"
-+    "                  You should usually use --data-ciphers instead.\n"
-     "                  Set alg=none to disable encryption.\n"
-     "--data-ciphers list : List of ciphers that are allowed to be negotiated.\n"
- #ifndef ENABLE_CRYPTO_MBEDTLS
-@@ -4779,7 +4779,7 @@ usage(void)
-             o.ce.local_port, o.ce.remote_port,
-             TUN_MTU_DEFAULT, TAP_MTU_EXTRA_DEFAULT,
-             o.verbosity,
--            o.authname, o.ciphername,
-+            o.authname,
-             o.replay_window, o.replay_time,
-             o.tls_timeout, o.renegotiate_seconds,
-             o.handshake_window, o.transition_window);
--- 
-2.34.1
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20221228110752.34060-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25848.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
