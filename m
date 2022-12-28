@@ -1,9 +1,9 @@
-From: Gert Doering <gert@...1296...>
-Date: Tue, 27 Dec 2022 23:35:06 +0100
-Message-Id: <20221227223506.34136-1-gert@...1296...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Wed, 28 Dec 2022 12:07:52 +0100
+Message-Id: <20221228110752.34060-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Undo FreeBSD 12.x workaround on IPv6
- ifconfig for 12.4 and up
+Subject: [Openvpn-devel] [PATCH] options.c: fix format security error when
+ compiling without optimization
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,38 +16,32 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-commit 5e19cc2c1bf22d introduced a workaround for a race condition
-that showed itself on IPv6 ifconfig on FreeBSD 12.x - sometimes breaking
-IPv6 connectivity on tun/tap interfaces.
+error: format not a string literal and no format arguments [-Werror=format-security]
+ 2309 |     msg(M_USAGE, str);
 
-This was fixed on the FreeBSD side in 12.4, 13.1 and up, and 13.0 is
-no longer supported.  So conditionalize the workaround on "12.0..12.3",
-to be fully removed later when 12.3 is also running out of support.
+Found by accident, since it only happens without optimization.
+Seems the compiler can figure out that this is harmless when
+thinking a bit harder about it. Fix anyway.
 
-Trac: 1226
-
-Signed-off-by: Gert Doering <gert@...1296...>
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
- src/openvpn/tun.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ src/openvpn/options.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index a83ec9e6..399e851b 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1104,8 +1104,9 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifname, int tun_mtu,
-     openvpn_execve_check(&argv, es, S_FATAL,
-                          "generic BSD ifconfig inet6 failed");
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index e454b2ac..7395019e 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2306,7 +2306,7 @@ check_ca_required(const struct options *options)
+                             " or CA path (--capath)"
+ #endif
+                             " and/or peer fingerprint verification (--peer-fingerprint)";
+-    msg(M_USAGE, str);
++    msg(M_USAGE, "%s", str);
+ }
  
--#if defined(TARGET_FREEBSD) && __FreeBSD_version >= 1200000
--    /* On FreeBSD 12 and up, there is ipv6_activate_all_interfaces="YES"
-+#if defined(TARGET_FREEBSD) && __FreeBSD_version >= 1200000 \
-+	&& __FreeBSD_version <= 1200000
-+    /* On FreeBSD 12.0-12.3, there is ipv6_activate_all_interfaces="YES"
-      * in rc.conf, which is not set by default.  If it is *not* set,
-      * "all new interfaces that are not already up" are configured by
-      * devd + /etc/pccard_ether as "inet6 ifdisabled".
+ static void
 -- 
-2.38.1
+2.34.1
 
 
