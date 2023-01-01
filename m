@@ -1,10 +1,10 @@
 From: selva.nair@...277...
-Date: Sun,  1 Jan 2023 16:51:07 -0500
-Message-Id: <20230101215109.1521549-4-selva.nair@...277...>
+Date: Sun,  1 Jan 2023 16:51:08 -0500
+Message-Id: <20230101215109.1521549-5-selva.nair@...277...>
 In-Reply-To: <20230101215109.1521549-1-selva.nair@...277...>
 References: <20230101215109.1521549-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 3/5] Assign and honour signal priority order
+Subject: [Openvpn-devel] [PATCH 4/5] Fix signal handling on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,184 +19,168 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-Signals are ordered as SIGUSR2, SIGUSR1, SIGHUP, SIGTERM, SIGINT
-in increasing priority. Lower priority signals are not allowed to
-overwrite higher ones.
+- In win32_signal_get() re-order the check so that Windows
+  signals are picked up even if signal_received is non-zero
 
-This should fix Trac #311, #639 -- SIGTER/SIGINT lost during dns resolution.
-(except for the Windows-specific bug handled in next commit)
+- When management is not active, management_sleep() becomes sleep()
+  but it is not interruptible by signals on Windows. Fix this by
+  periodically checking for signal.
 
-On sending SIGTERM during dns resolution, it still takes several seconds
-to terminate as the signal will get processed only after getaddrinfo times out
-twice (in phase1 and phase2 inits).
+Fixes Trac #311 #639 (windows specific part)
 
-Github: fixes OpenVPN/openvpn#205
-Note: one has to still wait for address resolution to time out as getaddrinfo()
-is no interruptible. But a single ctrl-C (and some patience) is enough.
+Github: Fixes OpenVPN/openvpn#205 (windows specific part)
+Note: if stuck  in address resolution, press ctrl-C and wait for getaddrinfo()
+to timeout.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/proxy.c  |  5 +----
- src/openvpn/sig.c    | 45 ++++++++++++++++++++++++++++++++------------
- src/openvpn/socket.c |  8 ++++++--
- src/openvpn/socks.c  | 14 ++++----------
- 4 files changed, 44 insertions(+), 28 deletions(-)
+ src/openvpn/manage.c |  4 ++
+ src/openvpn/win32.c  | 98 +++++++++++++++++++++++++++++---------------
+ 2 files changed, 68 insertions(+), 34 deletions(-)
 
-diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index 91121f25..120ba85e 100644
---- a/src/openvpn/proxy.c
-+++ b/src/openvpn/proxy.c
-@@ -1080,10 +1080,7 @@ done:
-     return ret;
- 
- error:
--    if (!sig_info->signal_received)
--    {
--        register_signal(sig_info, SIGUSR1, "HTTP proxy error"); /* SOFT-SIGUSR1 -- HTTP proxy error */
--    }
-+    register_signal(sig_info, SIGUSR1, "HTTP proxy error"); /* SOFT-SIGUSR1 -- HTTP proxy error */
-     gc_free(&gc);
-     return ret;
- }
-diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
-index e462b93e..d6b18cb1 100644
---- a/src/openvpn/sig.c
-+++ b/src/openvpn/sig.c
-@@ -47,16 +47,17 @@ struct signal_info siginfo_static; /* GLOBAL */
- 
- struct signame {
-     int value;
-+    int priority;
-     const char *upper;
-     const char *lower;
- };
- 
- static const struct signame signames[] = {
--    { SIGINT,  "SIGINT",  "sigint"},
--    { SIGTERM, "SIGTERM", "sigterm" },
--    { SIGHUP,  "SIGHUP",  "sighup" },
--    { SIGUSR1, "SIGUSR1", "sigusr1" },
--    { SIGUSR2, "SIGUSR2", "sigusr2" }
-+    { SIGINT, 5, "SIGINT",  "sigint"},
-+    { SIGTERM, 4, "SIGTERM", "sigterm" },
-+    { SIGHUP, 3, "SIGHUP",  "sighup" },
-+    { SIGUSR1, 2, "SIGUSR1", "sigusr1" },
-+    { SIGUSR2, 1, "SIGUSR2", "sigusr2" }
- };
- 
- int
-@@ -73,6 +74,19 @@ parse_signal(const char *signame)
-     return -1;
- }
- 
-+static int
-+signal_priority(int sig)
-+{
-+    for (size_t i = 0; i < SIZE(signames); ++i)
-+    {
-+        if (sig == signames[i].value)
-+        {
-+            return signames[i].priority;
-+        }
-+    }
-+    return -1;
-+}
-+
- const char *
- signal_name(const int sig, const bool upper)
- {
-@@ -103,16 +117,22 @@ signal_description(const int signum, const char *sigtext)
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 5465b7e9..ac37e557 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -4091,10 +4091,14 @@ man_persist_client_stats(struct management *man, struct context *c)
  void
- throw_signal(const int signum)
+ management_sleep(const int n)
  {
--    siginfo_static.signal_received = signum;
--    siginfo_static.source = SIG_SOURCE_HARD;
-+    if (signal_priority(signum) >= signal_priority(siginfo_static.signal_received))
-+    {
-+        siginfo_static.signal_received = signum;
-+        siginfo_static.source = SIG_SOURCE_HARD;
-+    }
- }
- 
- void
- throw_signal_soft(const int signum, const char *signal_text)
- {
--    siginfo_static.signal_received = signum;
--    siginfo_static.source = SIG_SOURCE_SOFT;
--    siginfo_static.signal_text = signal_text;
-+    if (signal_priority(signum) >= signal_priority(siginfo_static.signal_received))
-+    {
-+        siginfo_static.signal_received = signum;
-+        siginfo_static.source = SIG_SOURCE_SOFT;
-+        siginfo_static.signal_text = signal_text;
-+    }
- }
- 
- void
-@@ -472,9 +492,10 @@ process_signal(struct context *c)
- void
- register_signal(struct signal_info *si, int sig, const char *text)
- {
--    if (si->signal_received != SIGTERM)
-+    if (signal_priority(sig) >= signal_priority(si->signal_received))
++#ifdef WIN32
++    win32_sleep(n);
++#else
+     if (n > 0)
      {
-         si->signal_received = sig;
-+        si->signal_text = text;
-+        si->source = SIG_SOURCE_SOFT;
+         sleep(n);
      }
--    si->signal_text = text;
++#endif /* ifdef WIN32 */
  }
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index faaa2748..59d89352 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -2277,8 +2277,12 @@ link_socket_init_phase2(struct context *c)
- done:
-     if (sig_save.signal_received)
+ 
+ #endif /* ENABLE_MANAGEMENT */
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index c3520bca..e16d5461 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -642,50 +642,44 @@ int
+ win32_signal_get(struct win32_signal *ws)
+ {
+     int ret = 0;
+-    if (siginfo_static.signal_received)
+-    {
+-        ret = siginfo_static.signal_received;
+-    }
+-    else
++
++    if (ws->mode == WSO_MODE_SERVICE)
      {
--        /* This can potentially lose a saved high priority signal -- to be fixed */
--        if (!sig_info->signal_received)
-+        /* Always restore the saved signal -- register/throw_signal will handle priority */
-+        if (sig_save.source == SIG_SOURCE_HARD && sig_info == &siginfo_static)
-+        {
-+            throw_signal(sig_save.signal_received);
-+        }
-+        else
+-        if (ws->mode == WSO_MODE_SERVICE)
++        if (win32_service_interrupt(ws))
          {
-             register_signal(sig_info, sig_save.signal_received, sig_save.signal_text);
+-            if (win32_service_interrupt(ws))
+-            {
+-                ret = SIGTERM;
+-            }
++            ret = SIGTERM;
          }
-diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
-index b2ca3744..8f2ae226 100644
---- a/src/openvpn/socks.c
-+++ b/src/openvpn/socks.c
-@@ -499,11 +499,8 @@ establish_socks_proxy_passthru(struct socks_proxy_info *p,
-     return;
+-        else if (ws->mode == WSO_MODE_CONSOLE)
++    }
++    else if (ws->mode == WSO_MODE_CONSOLE)
++    {
++        switch (win32_keyboard_get(ws))
+         {
+-            switch (win32_keyboard_get(ws))
+-            {
+-                case 0x3B: /* F1 -> USR1 */
+-                    ret = SIGUSR1;
+-                    break;
++            case 0x3B: /* F1 -> USR1 */
++                ret = SIGUSR1;
++                break;
  
- error:
--    if (!sig_info->signal_received)
--    {
--        /* SOFT-SIGUSR1 -- socks error */
--        register_signal(sig_info, SIGUSR1, "socks-error");
--    }
-+    /* SOFT-SIGUSR1 -- socks error */
-+    register_signal(sig_info, SIGUSR1, "socks-error");
-     return;
+-                case 0x3C: /* F2 -> USR2 */
+-                    ret = SIGUSR2;
+-                    break;
++            case 0x3C: /* F2 -> USR2 */
++                ret = SIGUSR2;
++                break;
+ 
+-                case 0x3D: /* F3 -> HUP */
+-                    ret = SIGHUP;
+-                    break;
++            case 0x3D: /* F3 -> HUP */
++                ret = SIGHUP;
++                break;
+ 
+-                case 0x3E: /* F4 -> TERM */
+-                    ret = SIGTERM;
+-                    break;
++            case 0x3E: /* F4 -> TERM */
++                ret = SIGTERM;
++                break;
+ 
+-                case 0x03: /* CTRL-C -> TERM */
+-                    ret = SIGTERM;
+-                    break;
+-            }
+-        }
+-        if (ret)
+-        {
+-            throw_signal(ret); /* this will update signinfo_static.signal received */
++            case 0x03: /* CTRL-C -> TERM */
++                ret = SIGTERM;
++                break;
+         }
+     }
+-    return ret;
++    if (ret)
++    {
++        throw_signal(ret); /* this will update signinfo_static.signal received */
++    }
++    return (siginfo_static.signal_received);
  }
  
-@@ -543,11 +540,8 @@ establish_socks_proxy_udpassoc(struct socks_proxy_info *p,
-     return;
- 
- error:
--    if (!sig_info->signal_received)
--    {
--        /* SOFT-SIGUSR1 -- socks error */
--        register_signal(sig_info, SIGUSR1, "socks-error");
--    }
-+    /* SOFT-SIGUSR1 -- socks error */
-+    register_signal(sig_info, SIGUSR1, "socks-error");
-     return;
+ void
+@@ -1603,4 +1597,40 @@ set_openssl_env_vars()
+     }
  }
  
++void
++win32_sleep(const int n)
++{
++    if (n < 0)
++    {
++        return;
++    }
++
++    /* Sleep() is not interruptible. Use a WAIT_OBJECT to catch signal */
++    if (HANDLE_DEFINED(win32_signal.in.read))
++    {
++        time_t expire = 0;
++        update_time();
++        expire = now + n;
++        while (expire >= now)
++        {
++            DWORD status = WaitForSingleObject(win32_signal.in.read, (expire - now)*1000);
++            if (win32_signal_get(&win32_signal) || status == WAIT_TIMEOUT)
++            {
++                return;
++            }
++
++            update_time();
++
++            if (status == WAIT_FAILED && expire > now)
++            {
++                Sleep((expire-now)*1000);
++                return;
++            }
++        }
++    }
++    else
++    {
++        Sleep(n*1000);
++    }
++}
+ #endif /* ifdef _WIN32 */
 -- 
 2.34.1
 
