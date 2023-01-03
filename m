@@ -1,11 +1,11 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Tue,  3 Jan 2023 21:23:30 +0100
-Message-Id: <20230103202330.1835-3-a@...2181...>
+Date: Tue,  3 Jan 2023 21:23:29 +0100
+Message-Id: <20230103202330.1835-2-a@...2181...>
 In-Reply-To: <20230103202330.1835-1-a@...2181...>
 References: <20230103202330.1835-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 3/3] dco: improve comment about hidden debug
- message
+Subject: [Openvpn-devel] [PATCH 2/3] dco: bail out when no peer-specific
+ message is delivered
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,40 +19,43 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>
 
-While at it also improve the debug message itself
-to be more self-explanatory.
+multi_process_incoming_dco() is currently partly processing
+messages that were actually discarded. This results in a bogus
+message being printed:
+
+"Received packet for peer-id unknown to OpenVPN: -1, type 0, reason 2"
+
+Change the flow so that we bail out immediately when we know that no
+message was truly delivered by DCO.
+Currently this can be verified by chacking that the peed_is is greater
+than -1.
 
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/multi.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ src/openvpn/multi.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index b10a6d8d..8facc66f 100644
+index 27676de5..b10a6d8d 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -3296,12 +3296,17 @@ multi_process_incoming_dco(struct multi_context *m)
-         if (dco->dco_message_type == OVPN_CMD_DEL_PEER
-             && dco->dco_del_peer_reason == OVPN_DEL_PEER_REASON_USERSPACE)
-         {
--            /* we get notified after we kill the peer ourselves and probably
--             * have already forgotten about it. This is expected */
-+            /* we receive OVPN_CMD_DEL_PEER message with reason USERSPACE
-+             * after we kill the peer ourselves. This peer may have already
-+             * been deleted, so we end up here.
-+             * In this case, print the following debug message with DCO_DEBUG
-+             * level only to avoid polluting the standard DCO level with this
-+             * harmless event.
-+             */
-             msglevel = D_DCO_DEBUG;
-         }
--        msg(msglevel, "Received packet for peer-id unknown to OpenVPN: %d, "
--            "type %d, reason %d", peer_id, dco->dco_message_type,
-+        msg(msglevel, "Received DCO message for unknown peer-id: %d, "
-+            "type %d, del_peer_reason %d", peer_id, dco->dco_message_type,
-             dco->dco_del_peer_reason);
-         /* Also clear the buffer if this was incoming packet for a dropped peer */
-         buf_init(&dco->dco_packet_in, 0);
+@@ -3270,7 +3270,15 @@ multi_process_incoming_dco(struct multi_context *m)
+ 
+     int peer_id = dco->dco_message_peer_id;
+ 
+-    if ((peer_id >= 0) && (peer_id < m->max_clients) && (m->instances[peer_id]))
++    /* no peer-specific message delivered -> nothing to process.
++     * bail out right away
++     */
++    if (peer_id < 0)
++    {
++        return ret > 0;
++    }
++
++    if ((peer_id < m->max_clients) && (m->instances[peer_id]))
+     {
+         mi = m->instances[peer_id];
+         if (dco->dco_message_type == OVPN_CMD_PACKET)
 -- 
 2.38.2
 
