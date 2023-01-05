@@ -1,14 +1,10 @@
-Date: Thu, 5 Jan 2023 22:11:12 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <Y7c88NI9HQj64Bto@...1296...>
-References: <20230105175614.405385-1-arne@...1227...>
+From: selva.nair@...277...
+Date: Thu,  5 Jan 2023 18:07:55 -0500
+Message-Id: <20230105230755.1662053-1-selva.nair@...277...>
+In-Reply-To: <20230102194156.1560195-1-selva.nair@...277...>
+References: <20230102194156.1560195-1-selva.nair@...277...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="uustsK6hgIcDQxF1"
-Content-Disposition: inline
-In-Reply-To: <20230105175614.405385-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Add connect-freq-initial option to
- limit initial connection responses
+Subject: [Openvpn-devel] [PATCH v3 4/5] Fix signal handling on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,145 +13,231 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---uustsK6hgIcDQxF1
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Selva Nair <selva.nair@...277...>
 
-Hi,
+- In win32_signal_get() re-order the check so that Windows
+  signals are picked up even if signal_received is non-zero
 
-first of all, feature-ACK, and "structure-ACK" - this is a lightweight
-implementation that can go into 2.6 with not much testing, which should
-"get the thing done" for most cases.  A more sophisticated implementation
-with per-IP hashing (to avoid (ab-)using the rate-limiter to drown-out
-legitimate clients) can follwo for 2.7.
+- When management is not active, management_sleep() becomes sleep()
+  but it is not interruptible by signals on Windows. Fix this by
+  periodically checking for signal.
 
-This said, most of the code looks good, except for this part:
+Fixes Trac #311 #639 (windows specific part)
 
+Github: Fixes OpenVPN/openvpn#205 (windows specific part)
+Note: if stuck  in address resolution, press ctrl-C and wait for getaddrinfo()
+to timeout.
 
-On Thu, Jan 05, 2023 at 06:56:14PM +0100, Arne Schwabe wrote:
-> index ee3783046..cf8622f46 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -864,6 +865,8 @@ init_options(struct options *o, const bool init_gc)
->      o->n_bcast_buf =3D 256;
->      o->tcp_queue_limit =3D 64;
->      o->max_clients =3D 1024;
-> +    o->cf_initial_per =3D 10;
-> +    o->cf_initial_max =3D 100;
+v2: WIN32 --> _WIN32
+    add a chunk in management_sleep that was missed by sloppy conflict-resolution
 
-... so this is on-by-default...
+v3: following review by Lev Stipakov <lstipakov@...277...>
+  win32_sleep()
+    - Early fallback to Sleep() if no wait handles -- less indentation
+    - Check signal only if wait-object triggered
+    - Exit the while loop if not safe to continue
+  Behaviour of win32_sleep(0) checking signal is retained though may be redundant
 
-> @@ -2613,6 +2618,10 @@ options_postprocess_verify_ce(const struct options=
- *options,
->          {
->              msg(M_USAGE, "--connect-freq only works with --mode server -=
--proto udp.  Try --max-clients instead.");
->          }
-> +        if (!proto_is_udp(ce->proto) && (options->cf_initial_max || opti=
-ons->cf_initial_per))
-> +        {
-> +            msg(M_USAGE, "--connect-freq only works with --mode server -=
--proto udp.  Try --max-clients instead.");
-> +        }
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+More on why the while loop is required for the wait:
+The wait handle in.read can trigger at any key-board input. Even with ctrl-C,
+it first triggers for the ctrl keypress and only on a second round when keypress
+of "C" triggers it again we get it parsed as SIGINT/SIGTERM by win32_signal_get().
 
-... and if it is enabled for !UDP modes, we'll refuse cooperation.
+To make this safer, and not overload the process with repeated waits, 
+we now filter out any status other than WAIT_OBJECT_0, not just WAIT_FAILED.
+That should be safe enough.
 
-But wouldn't that trigger for *all* TCP servers now, since it defaults
-to "active"?
+ src/openvpn/manage.c | 16 +++++++-
+ src/openvpn/win32.c  | 98 +++++++++++++++++++++++++++++---------------
+ src/openvpn/win32.h  |  3 ++
+ 3 files changed, 81 insertions(+), 36 deletions(-)
 
-Besides that, the "--connect-freq" there is wrong and needs to be=20
-"--connect-freq-initial" ;-)
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 5465b7e9..9bd5ef4e 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -4045,9 +4045,16 @@ management_sleep(const int n)
+     {
+         management_event_loop_n_seconds(management, n);
+     }
+-    else if (n > 0)
++    else
+     {
+-        sleep(n);
++#ifdef _WIN32
++        win32_sleep(n);
++#else
++        if (n > 0)
++        {
++            sleep(n);
++        }
++#endif
+     }
+ }
+ 
+@@ -4088,13 +4095,18 @@ man_persist_client_stats(struct management *man, struct context *c)
+ 
+ #else  /* ifdef ENABLE_MANAGEMENT */
+ 
++#include "win32.h"
+ void
+ management_sleep(const int n)
+ {
++#ifdef _WIN32
++    win32_sleep(n);
++#else
+     if (n > 0)
+     {
+         sleep(n);
+     }
++#endif /* ifdef _WIN32 */
+ }
+ 
+ #endif /* ENABLE_MANAGEMENT */
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index c3520bca..b82f28b9 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -642,50 +642,44 @@ int
+ win32_signal_get(struct win32_signal *ws)
+ {
+     int ret = 0;
+-    if (siginfo_static.signal_received)
+-    {
+-        ret = siginfo_static.signal_received;
+-    }
+-    else
++
++    if (ws->mode == WSO_MODE_SERVICE)
+     {
+-        if (ws->mode == WSO_MODE_SERVICE)
++        if (win32_service_interrupt(ws))
+         {
+-            if (win32_service_interrupt(ws))
+-            {
+-                ret = SIGTERM;
+-            }
++            ret = SIGTERM;
+         }
+-        else if (ws->mode == WSO_MODE_CONSOLE)
++    }
++    else if (ws->mode == WSO_MODE_CONSOLE)
++    {
++        switch (win32_keyboard_get(ws))
+         {
+-            switch (win32_keyboard_get(ws))
+-            {
+-                case 0x3B: /* F1 -> USR1 */
+-                    ret = SIGUSR1;
+-                    break;
++            case 0x3B: /* F1 -> USR1 */
++                ret = SIGUSR1;
++                break;
+ 
+-                case 0x3C: /* F2 -> USR2 */
+-                    ret = SIGUSR2;
+-                    break;
++            case 0x3C: /* F2 -> USR2 */
++                ret = SIGUSR2;
++                break;
+ 
+-                case 0x3D: /* F3 -> HUP */
+-                    ret = SIGHUP;
+-                    break;
++            case 0x3D: /* F3 -> HUP */
++                ret = SIGHUP;
++                break;
+ 
+-                case 0x3E: /* F4 -> TERM */
+-                    ret = SIGTERM;
+-                    break;
++            case 0x3E: /* F4 -> TERM */
++                ret = SIGTERM;
++                break;
+ 
+-                case 0x03: /* CTRL-C -> TERM */
+-                    ret = SIGTERM;
+-                    break;
+-            }
+-        }
+-        if (ret)
+-        {
+-            throw_signal(ret); /* this will update signinfo_static.signal received */
++            case 0x03: /* CTRL-C -> TERM */
++                ret = SIGTERM;
++                break;
+         }
+     }
+-    return ret;
++    if (ret)
++    {
++        throw_signal(ret); /* this will update signinfo_static.signal received */
++    }
++    return (siginfo_static.signal_received);
+ }
+ 
+ void
+@@ -1603,4 +1597,40 @@ set_openssl_env_vars()
+     }
+ }
+ 
++void
++win32_sleep(const int n)
++{
++    if (n < 0)
++    {
++        return;
++    }
++
++    /* Sleep() is not interruptible. Use a WAIT_OBJECT to catch signal */
++    if (!HANDLE_DEFINED(win32_signal.in.read))
++    {
++        Sleep(n*1000); /* n=0 will just yield if there are threads */
++        return;
++    }
++
++    update_time();
++    time_t expire = now + n;
++
++    while (expire >= now)
++    {
++        DWORD status = WaitForSingleObject(win32_signal.in.read, (expire-now)*1000);
++        if ((status == WAIT_OBJECT_0 && win32_signal_get(&win32_signal))
++            || status == WAIT_TIMEOUT)
++        {
++            return;
++        }
++
++        update_time();
++
++        if (status != WAIT_OBJECT_0 && expire > now) /* wait failed ? */
++        {
++            Sleep((expire-now)*1000);
++            return;
++        }
++    }
++}
+ #endif /* ifdef _WIN32 */
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index b1371999..26d5ef8f 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -330,5 +330,8 @@ openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned in
+ bool
+ openvpn_swprintf(wchar_t *const str, const size_t size, const wchar_t *const format, ...);
+ 
++/* Sleep that can be interrupted by signals and exit event */
++void win32_sleep(const int n);
++
+ #endif /* ifndef OPENVPN_WIN32_H */
+ #endif /* ifdef _WIN32 */
+-- 
+2.34.1
 
-[..]
-> +    else if (streq(p[0], "connect-freq-initial") && p[1] && p[2] && !p[3=
-])
-> +    {
-> +        int cf_max, cf_per;
-> +
-> +        VERIFY_PERMISSION(OPT_P_GENERAL);
-> +        cf_max =3D atoi(p[1]);
-> +        cf_per =3D atoi(p[2]);
-> +        if (cf_max < 0 || cf_per < 0)
-
-" < 0 " or " <=3D 0"?
-
-> +        {
-> +            msg(msglevel, "--connect-freq-initial parms must be > 0");
-> +            goto err;
-> +        }
-
-... because the inverse of ">0" is not "<0"...
-
-> +        options->cf_initial_max =3D cf_max;
-> +        options->cf_initial_per =3D cf_per;
-> +    }
-
-... now we could of course document "0 turns it off", but then the
-message needs to be ">=3D 0".
-
-> +bool
-> +reflect_filter_rate_limit_check(struct initial_packet_rate_limit *irl)
-> +{
-> +    if (now > irl->last_period_reset + irl->period_length)
-> +    {
-> +        int dropped =3D max_int(irl->curr_period_counter - irl->max_per_=
-period, 0);
-> +        if (dropped > 0)
-> +        {
-> +            msg(D_TLS_DEBUG_LOW, "Dropped %d initial handshake packets d=
-ue to "
-> +                "--connect-freq-initial %d %d",
-> +                dropped, irl->max_per_period, irl->period_length);
-> +        }
-> +        irl->last_period_reset =3D now;
-> +        irl->curr_period_counter =3D 0;
-> +    }
-> +    /* avoid overflow by capping the counter to INT_MAX -1. Still counti=
-ng
-> +     * the number of packets during a period is still useful */
-> +    irl->curr_period_counter =3D min_int(irl->curr_period_counter + 1, I=
-NT_MAX - 1);
-
-This looks uglysh.
-
-With a 10-seconds bucket, an (32bit) "int" would overflow at about
-430 million packets per seconds - which is, I think, way beyond what
-any reasonable system can handle (10G ethernet saturates at 15 Mpps).
-
-But if you are really worried about overflows - why not use a (64bit)
-long here?
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---uustsK6hgIcDQxF1
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjtzzwAAoJEB2Cnv7KVigSbw0L/RtfO5yrccYFZkbJyoyy5Uk9
-vDoLoN9kUEAWSCwjcM8MGyghkg/jhq11tlNBkEzuYyEjUGuLeGRMP8JL7DNir0Ge
-ZFNeSofd5KATPfdFSMYYjhCMSWonqspAGK5uGd8iuuKW+g7DAWxAJRLiIHLQDKBN
-D2yXqd+yZL4DdCvBNxzb58hDGVIX9UTxT9V5W+mYFOCNQE6kmAxCmimyHUEneEJe
-/cncGkMTLhLPFwz+F2GWhWHfTWLmJPIrEw/bGED1f/dTCtYJbUEZv9DODJBz04Xt
-VxxQNTNZVP6apNmiocnVGNaUgPT3krE6Ja0QhzXa76U0hL96Er9g/LBJ0Lzb1qa+
-lMe4tJp9dXcwu7ictBLuGzlgrYgOAngAgeLjq5/ypkC7x0A0MX8tO7RguQvHbj3u
-lpaookC16EiniHl9X7M585m3IRgkdClK//p5uvj/isKjLuThbkLPrOSHDQgXKdVu
-sowXb7XYdfPmG7EgrICGzRXlOvHDo+KjbOg2wjeB5w==
-=YRQL
------END PGP SIGNATURE-----
-
---uustsK6hgIcDQxF1--
 
