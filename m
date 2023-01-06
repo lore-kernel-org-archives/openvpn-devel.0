@@ -1,10 +1,10 @@
 From: selva.nair@...277...
-Date: Thu,  5 Jan 2023 18:07:55 -0500
-Message-Id: <20230105230755.1662053-1-selva.nair@...277...>
-In-Reply-To: <20230102194156.1560195-1-selva.nair@...277...>
-References: <20230102194156.1560195-1-selva.nair@...277...>
+Date: Thu,  5 Jan 2023 19:54:38 -0500
+Message-Id: <20230106005438.1664046-1-selva.nair@...277...>
+In-Reply-To: <20230105230755.1662053-1-selva.nair@...277...>
+References: <20230105230755.1662053-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 4/5] Fix signal handling on Windows
+Subject: [Openvpn-devel] [PATCH v4 4/5] Fix signal handling on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -42,21 +42,24 @@ v3: following review by Lev Stipakov <lstipakov@...277...>
     - Exit the while loop if not safe to continue
   Behaviour of win32_sleep(0) checking signal is retained though may be redundant
 
+v4: Avoid Sleep(0) and never loop back to wait again if wait-failed
+
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
 More on why the while loop is required for the wait:
 The wait handle in.read can trigger at any key-board input. Even with ctrl-C,
-it first triggers for the ctrl keypress and only on a second round when keypress
-of "C" triggers it again we get it parsed as SIGINT/SIGTERM by win32_signal_get().
+it first triggers for the ctrl key-press and only on a second round when 
+key-press of "C" triggers it again we get it parsed as SIGINT/SIGTERM by
+win32_signal_get().
 
 To make this safer, and not overload the process with repeated waits, 
 we now filter out any status other than WAIT_OBJECT_0, not just WAIT_FAILED.
 That should be safe enough.
 
- src/openvpn/manage.c | 16 +++++++-
- src/openvpn/win32.c  | 98 +++++++++++++++++++++++++++++---------------
- src/openvpn/win32.h  |  3 ++
- 3 files changed, 81 insertions(+), 36 deletions(-)
+ src/openvpn/manage.c |  16 ++++++-
+ src/openvpn/win32.c  | 105 +++++++++++++++++++++++++++++--------------
+ src/openvpn/win32.h  |   3 ++
+ 3 files changed, 88 insertions(+), 36 deletions(-)
 
 diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
 index 5465b7e9..9bd5ef4e 100644
@@ -101,7 +104,7 @@ index 5465b7e9..9bd5ef4e 100644
  
  #endif /* ENABLE_MANAGEMENT */
 diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index c3520bca..b82f28b9 100644
+index c3520bca..569e086e 100644
 --- a/src/openvpn/win32.c
 +++ b/src/openvpn/win32.c
 @@ -642,50 +642,44 @@ int
@@ -183,7 +186,7 @@ index c3520bca..b82f28b9 100644
  }
  
  void
-@@ -1603,4 +1597,40 @@ set_openssl_env_vars()
+@@ -1603,4 +1597,47 @@ set_openssl_env_vars()
      }
  }
  
@@ -196,9 +199,13 @@ index c3520bca..b82f28b9 100644
 +    }
 +
 +    /* Sleep() is not interruptible. Use a WAIT_OBJECT to catch signal */
++
 +    if (!HANDLE_DEFINED(win32_signal.in.read))
 +    {
-+        Sleep(n*1000); /* n=0 will just yield if there are threads */
++        if (n > 0)
++        {
++            Sleep(n*1000);
++        }
 +        return;
 +    }
 +
@@ -216,9 +223,12 @@ index c3520bca..b82f28b9 100644
 +
 +        update_time();
 +
-+        if (status != WAIT_OBJECT_0 && expire > now) /* wait failed ? */
++        if (status != WAIT_OBJECT_0) /* wait failed or some unexpected error ? */
 +        {
-+            Sleep((expire-now)*1000);
++            if (expire > now)
++            {
++                Sleep((expire-now)*1000);
++            }
 +            return;
 +        }
 +    }
