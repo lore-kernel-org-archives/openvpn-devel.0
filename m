@@ -1,13 +1,13 @@
-Message-ID: <11265086-e2ed-810c-036a-a58c5f990f92@...1227...>
-Date: Fri, 6 Jan 2023 16:04:52 +0100
+Message-ID: <a8643a1a-61d9-3931-4548-db91571bb24e@...1227...>
+Date: Fri, 6 Jan 2023 16:12:02 +0100
 MIME-Version: 1.0
 Content-Language: en-GB
-References: <20230103202330.1835-1-a@...2181...>
- <20230103202330.1835-3-a@...2181...>
+References: <20230101215109.1521549-1-selva.nair@...277...>
+ <20230101215109.1521549-4-selva.nair@...277...>
 From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20230103202330.1835-3-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 3/3] dco: improve comment about hidden
- debug message
+In-Reply-To: <20230101215109.1521549-4-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 3/5] Assign and honour signal priority
+ order
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,43 +18,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 
-Am 03.01.23 um 21:23 schrieb Antonio Quartulli:
-> While at it also improve the debug message itself
-> to be more self-explanatory.
+Am 01.01.23 um 22:51 schrieb selva.nair@...277...:
+> From: Selva Nair <selva.nair@...277...>
 > 
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
->   src/openvpn/multi.c | 13 +++++++++----
->   1 file changed, 9 insertions(+), 4 deletions(-)
+> Signals are ordered as SIGUSR2, SIGUSR1, SIGHUP, SIGTERM, SIGINT
+> in increasing priority. Lower priority signals are not allowed to
+> overwrite higher ones.
 > 
-> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-> index b10a6d8d..8facc66f 100644
-> --- a/src/openvpn/multi.c
-> +++ b/src/openvpn/multi.c
-> @@ -3296,12 +3296,17 @@ multi_process_incoming_dco(struct multi_context *m)
->           if (dco->dco_message_type == OVPN_CMD_DEL_PEER
->               && dco->dco_del_peer_reason == OVPN_DEL_PEER_REASON_USERSPACE)
->           {
-> -            /* we get notified after we kill the peer ourselves and probably
-> -             * have already forgotten about it. This is expected */
-> +            /* we receive OVPN_CMD_DEL_PEER message with reason USERSPACE
-> +             * after we kill the peer ourselves. This peer may have already
-> +             * been deleted, so we end up here.
-> +             * In this case, print the following debug message with DCO_DEBUG
-> +             * level only to avoid polluting the standard DCO level with this
-> +             * harmless event.
-> +             */
->               msglevel = D_DCO_DEBUG;
->           }
-> -        msg(msglevel, "Received packet for peer-id unknown to OpenVPN: %d, "
-> -            "type %d, reason %d", peer_id, dco->dco_message_type,
-> +        msg(msglevel, "Received DCO message for unknown peer-id: %d, "
-> +            "type %d, del_peer_reason %d", peer_id, dco->dco_message_type,
->               dco->dco_del_peer_reason);
->           /* Also clear the buffer if this was incoming packet for a dropped peer */
->           buf_init(&dco->dco_packet_in, 0);
+> This should fix Trac #311, #639 -- SIGTER/SIGINT lost during dns resolution.
+> (except for the Windows-specific bug handled in next commit)
+> 
+> On sending SIGTERM during dns resolution, it still takes several seconds
+> to terminate as the signal will get processed only after getaddrinfo times out
+> twice (in phase1 and phase2 inits).
+> 
+> Github: fixes OpenVPN/openvpn#205
+> Note: one has to still wait for address resolution to time out as getaddrinfo()
+> is no interruptible. But a single ctrl-C (and some patience) is enough.
+
+Thanks. This looks like a good approach. I know there is some other 
+similar bug somewhere else that has been forever on my todo list of my 
+Android app and also the problem with signal ordering.
 
 Acked-By: Arne Schwabe <arne@...1227...>
+
+While reviewing the patch, I noticed that 
+SIG_SOURCE_SOFT/SIG_SOURCE_HARD seems to be purely informational and 
+have no real other meaning.
 
