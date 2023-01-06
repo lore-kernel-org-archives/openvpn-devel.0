@@ -1,15 +1,15 @@
-Date: Fri, 6 Jan 2023 19:23:46 +0100
+Date: Fri, 6 Jan 2023 21:19:20 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <Y7hnMtVcspp0akPv@...1296...>
-References: <20221227223506.34136-1-gert@...1296...>
- <4c469f03-c631-6839-7bd3-3ddda1b4f0b2@...1227...>
+Message-ID: <Y7iCSAacZKc++0bW@...1296...>
+References: <20230105022718.1641751-1-selva.nair@...277...>
+ <CAGyAFMVpquzshk7k9TfBTwTFKRNxBVkunn79TnBd2gpaoZSQwQ@...278...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="MPS2yEVn+CmWDpS9"
+ protocol="application/pgp-signature"; boundary="v3L8IqgUNhvR5f/f"
 Content-Disposition: inline
-In-Reply-To: <4c469f03-c631-6839-7bd3-3ddda1b4f0b2@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Undo FreeBSD 12.x workaround on IPv6
- ifconfig for 12.4 and up
+In-Reply-To: <CAGyAFMVpquzshk7k9TfBTwTFKRNxBVkunn79TnBd2gpaoZSQwQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 1/3] Use IPAPI for setting ipv6 routes
+ when iservice not available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,34 +18,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>
+Cc: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 
---MPS2yEVn+CmWDpS9
+--v3L8IqgUNhvR5f/f
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Jan 06, 2023 at 11:32:31AM +0100, Arne Schwabe wrote:
-> > +#if defined(TARGET_FREEBSD) && __FreeBSD_version >=3D 1200000 \
-> > +	&& __FreeBSD_version <=3D 1200000
-> > +    /* On FreeBSD 12.0-12.3, there is ipv6_activate_all_interfaces=3D"=
-YES"
->=20
->=20
-> That does not look right. Should the second one be < 1300000? Otherwise=20
-> I would rather simplify the expression to __FreeBSD_version =3D=3D 120000=
-0=20
-> since that is what it currently is.
+On Fri, Jan 06, 2023 at 03:44:24PM +0200, Lev Stipakov wrote:
+> Compiled and slightly tested - pinged server's tunnel IPv6 address.
 
-Of course that needs to be 1300000 (and of course it "worked" in my=20
-test on FreeBSD 13...  but it seems I forgot to re-test on 12.2/12.3)
-
-v2 RSN.
+Do we call "route" for connect networks on Windows?  We do on some
+of the platforms, but for those where we do not, this is not a good
+test for "route add" functionality - as tunnel IP + subnet gets=20
+setup via the "ifconfig-ipv6" part (implicit route for connected net).
 
 gert
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -56,22 +48,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---MPS2yEVn+CmWDpS9
+--v3L8IqgUNhvR5f/f
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJjuGcyAAoJEB2Cnv7KVigSXQUMAKzhm1YGp1d1Uv9ykEE7g0uj
-oObPOPeFJSdKQ2sQhc3064zGyxj+0qSFzzuNr/yoU1SNFCApnjDaISEZMGh+D+xG
-oe04XpY+7UgAt4K+3sfRTGLvBTir37+X4vcz49+ZkcKfsQnhWB6E7jiVpUA/VLk7
-owlayD4yfTSVYEBnmCgzKOMMvrp+RSNmYsm4miieS2Y9k+dVNeuXuF/F5PGYsYZh
-orbhhGTT1yXZ2avOS2mqt9oJzCjueCEiP7vUOEnjzRpOvX0orVVMKSMI67e5ixod
-oPcv/K7NfSBf+c2WOUtRfj8CxH98bpKOrKfiVkInu7NwQWPGgOEWB09yB4NxNWtt
-k5X+1i3VbhtTn78hKuquVR9gdpNYZ9r0AuxyJxsdQ0lBOTo7h+aloS+7fo0cqiEJ
-O8Hi0RQHIiDbFdHNvR8foj6FJvgakLVoaCbyDzxPVwhf8EpvnY3jP7m2nnNQcUSX
-QsCHK6aKkgGXOMa7/KB4WnIso6qFyhwPJSzZQoV6Yw==
-=u63o
+iQGcBAEBAgAGBQJjuIJIAAoJEB2Cnv7KVigSgU0MAIMrHyWsiS4Is3H8VY0J1sSr
+wxSpY7iZLN2UtiR0D8Wm6qotvIHsp2j2YIsgEhEo/tQOqsEMahvN2tKc7V5rD4uG
+NKabg2J40CRe38jKzBh+vTFhEIx3SugaCI8bHH0lLYe0YxLRCnIcR8YiF1zgfErB
+Y/2LQlD8me9R6W2bIpROv49fN7lHpfjaSMHP9EcI+dweG8SEtHGa1VDPuxkmsOmw
+OI8KQ2itEQAc/tgEbMB3BSE1iaJLKv+aPOeXmCl0wxOCSE39sxWCAuCjDZ15SaIm
+3PZGw7tevM8HoJ5ykOdUx+sICOpNQdKQp3EOZO+ak0v6BC5I+CvrT8m9+dPQepOs
+P/4JdKYBaXZE/1oV7WEVJM/Wq0vfNP+0RTgDfFMiD3JiM1v2j33mmfLyxwCshUi/
+3eaAIyQTW+rp3//Tf0nF7fc6Qb5mc2PlPgMUh4hFCShLwPLG1ltVa7AxxE6NMYWG
+28BKDrB4/KrP2TFb1Qi993c6/jN0SZtzRKUE5XbHCA==
+=KdQx
 -----END PGP SIGNATURE-----
 
---MPS2yEVn+CmWDpS9--
+--v3L8IqgUNhvR5f/f--
 
