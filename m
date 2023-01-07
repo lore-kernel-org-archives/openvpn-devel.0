@@ -1,16 +1,10 @@
-MIME-Version: 1.0
-References: <20230105022718.1641751-1-selva.nair@...277...>
- <CAGyAFMVpquzshk7k9TfBTwTFKRNxBVkunn79TnBd2gpaoZSQwQ@...278...>
- <Y7iCSAacZKc++0bW@...1296...>
- <CAKuzo_ik_xukXb9q+PNd_7wC6X4YPv+J9i2+wTX4488XvepStA@...278...>
- <Y7maAC4v1yUpbeYV@...1296...>
-In-Reply-To: <Y7maAC4v1yUpbeYV@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sat, 7 Jan 2023 12:13:07 -0500
-Message-ID: <CAKuzo_jYmqVLjYB-+ZEV==HB-EbcWWqBt1RmnrbMc2g=feASJw@...278...>
-Content-Type: multipart/alternative; boundary="000000000000ce240705f1afa632"
-Subject: Re: [Openvpn-devel] [PATCH 1/3] Use IPAPI for setting ipv6 routes
- when iservice not available
+Date: Sat, 7 Jan 2023 18:53:20 +0100 (CET)
+Message-Id: <202301071753.307HrK2M069718@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230103202330.1835-2-a@...2181...>
+References: <20230103202330.1835-2-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco: bail out when no
+ peer-specific message is delivered
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,123 +13,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---000000000000ce240705f1afa632
-Content-Type: text/plain; charset="UTF-8"
+I've done a bit of commit message grammar ("chacking that the peed_is")
+and actually tested this one.  Without the check, my DCO test server
+has quite a lot of these...
 
-On Sat, Jan 7, 2023 at 11:12 AM Gert Doering <gert@...1296...> wrote:
+Jan  7 07:24:06 ubuntu2004 tun-udp-p2mp-topology-subnet[2441339]: Received packet for peer-id unknown to OpenVPN: -1, type 0, reason 2
+Jan  7 07:24:06 ubuntu2004 tun-tcp-p2mp[2441317]: Received packet for peer-id unknown to OpenVPN: -1, type 0, reason 1
 
->
->
-> > Though I vaguely understand why we set the address with /128 and then set
-> > the route for the vpn subnet with fe80::8 as the gateway for
-> tap-windows6,
-> > wonder why we do this for dco as well.
->
-> Let me recap why we do this for tap-windows - for windows, this is always
-> an Ethernet adapter, so it wants to always do neighbour discovery (ND),
-> IPv6's equivalent of ARP for all "on this interface" addresses.
->
-> For "--dev tun" setups, OpenVPN does not want to deal with "Ethernet
-> things",
-> so the TAP driver replies to ARP requests for "special addresses" - for
-> net30, OpenVPN ioctl()'s the "peer" address (which is also the gateway
-> address) into the TAP driver, and only this address is replied to -
-> admittedly, I do not know how "topology subnet" works wrt virtual ARP,
-> need to read up on this again.
->
-> For IPv6, I decided that having to deal with ND is easier if I could just
-> look at a magic number, namely fe80::8, in the tap driver code - so, we
-> use /128 for the ifconfig bit ("no network here, everything is behind the
-> gateway") and point all routing to "on this interface, fe80::8" - so for
-> whatever IPv6 destination, windows will only do ND for fe80::8, and the
-> TAP driver will reply to it, without any further help (ioctl()) from
-> OpenVPN.
->
-
-Thanks for the explanation. I had a vague idea that this is done for ND.
+with the patch these are gone.  Very welcome de-noisification of my logs :-)
 
 
->
->
-> This said, I have no idea why we do it that way for wintun and DCO -
-> most likely because it avoids having to add even more windows-driver-
-> specific special case handling in places where we are nicely generic
-> today.
->
+We do still have a bit of "logging redundancy" here... for every client
+connect to instance A, p2p instance B logs 3 lines (on D_DCO_DEBUG)
 
-I guess it works because nexthop is ignored[*] for tun adapters and we
-could have just set an onlink route omitting the gateway parameter.
+Jan  7 18:35:35 ubuntu2004 tun-udp-p2p-tls-sha256[2463894]: dco_do_read
+Jan  7 18:35:35 ubuntu2004 tun-udp-p2p-tls-sha256[2463894]: ovpn-dco: ignoring message (type=3) for foreign ifindex 34074
+Jan  7 18:35:35 ubuntu2004 tun-udp-p2p-tls-sha256[2463894]: process_incoming_dco: received message of type 0 - ignoring
 
-Selva
+.. this is coming from forward.c::process_incoming_dco(), which I assume
+is only called in the p2p case, and the first message is coming from
+ovpn_handle_msg() (which is not using the __func__ paradigm... why?) - so
+if we can assert that "there is no message, there is nothing to see
+(and nothing to log!)" in the multi_process_incoming_dco() case - maybe
+we can apply this (unwritten) function contract here as well...
 
-[*] Any bogus gateway seems to work, but still, "netsh int ipv6 show
-neighbours"
-lists any such gateway set for dco as initially "Probe" and then
-"Unreachable",
-so not totally ignored?
 
---000000000000ce240705f1afa632
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Stare-at-code also agrees that if the function contract says
+"if (peer_id < 0) there is no valid packet, ever", early exit is a
+good way out - see my note about un-initializing the dco-> fields at 
+the *end* of the function for 1/3, though - in this case, no un-init...
+and also Arne's comment about "is this documented anywhere?")
 
-<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
-<div dir=3D"ltr" class=3D"gmail_attr">On Sat, Jan 7, 2023 at 11:12 AM Gert =
-Doering &lt;<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1711...=
-96...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"ma=
-rgin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:=
-1ex"><br>
-<br>
-&gt; Though I vaguely understand why we set the address with /128 and then =
-set<br>
-&gt; the route for the vpn subnet with fe80::8 as the gateway for tap-windo=
-ws6,<br>
-&gt; wonder why we do this for dco as well.<br>
-<br>
-Let me recap why we do this for tap-windows - for windows, this is always<b=
-r>
-an Ethernet adapter, so it wants to always do neighbour discovery (ND),<br>
-IPv6&#39;s equivalent of ARP for all &quot;on this interface&quot; addresse=
-s.<br>
-<br>
-For &quot;--dev tun&quot; setups, OpenVPN does not want to deal with &quot;=
-Ethernet things&quot;,<br>
-so the TAP driver replies to ARP requests for &quot;special addresses&quot;=
- - for<br>
-net30, OpenVPN ioctl()&#39;s the &quot;peer&quot; address (which is also th=
-e gateway<br>
-address) into the TAP driver, and only this address is replied to - <br>
-admittedly, I do not know how &quot;topology subnet&quot; works wrt virtual=
- ARP,<br>
-need to read up on this again.<br>
-<br>
-For IPv6, I decided that having to deal with ND is easier if I could just<b=
-r>
-look at a magic number, namely fe80::8, in the tap driver code - so, we<br>
-use /128 for the ifconfig bit (&quot;no network here, everything is behind =
-the<br>
-gateway&quot;) and point all routing to &quot;on this interface, fe80::8&qu=
-ot; - so for<br>
-whatever IPv6 destination, windows will only do ND for fe80::8, and the<br>
-TAP driver will reply to it, without any further help (ioctl()) from <br>
-OpenVPN.<br></blockquote><div><br></div><div>Thanks for the explanation. I =
-had a vague idea that this is done for ND.</div><div>=C2=A0</div><blockquot=
-e class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px s=
-olid rgb(204,204,204);padding-left:1ex">
-<br>
-<br>
-This said, I have no idea why we do it that way for wintun and DCO - <br>
-most likely because it avoids having to add even more windows-driver-<br>
-specific special case handling in places where we are nicely generic<br>
-today.<br></blockquote><div><br></div><div>I guess it works because nexthop=
- is ignored[*] for tun adapters and we</div><div>could have just set an onl=
-ink route omitting the gateway parameter.</div><div><br></div><div>Selva</d=
-iv><div><br></div><div>[*] Any bogus gateway seems to work, but still, &quo=
-t;netsh int ipv6 show neighbours&quot;</div><div>lists any such gateway set=
- for dco as initially &quot;Probe&quot; and then &quot;Unreachable&quot;,</=
-div><div>so not totally ignored?</div></div></div>
 
---000000000000ce240705f1afa632--
+Your patch has been applied to the master and release/2.6 branch.
+
+commit 388e032019ec3674b8294c856039b96fe35e5f32 (master)
+commit b0dee39c353ae9479fd19e66ae07cb336d57eef8 (release/2.6)
+Author: Antonio Quartulli
+Date:   Tue Jan 3 21:23:29 2023 +0100
+
+     dco: bail out when no peer-specific message is delivered
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20230103202330.1835-2-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25882.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
