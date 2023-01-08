@@ -1,9 +1,13 @@
-Date: Sun, 8 Jan 2023 17:43:57 +0100 (CET)
-Message-Id: <202301081643.308Ghvxh091317@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230106005438.1664046-1-selva.nair@...277...>
-References: <20230106005438.1664046-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix signal handling on Windows
+MIME-Version: 1.0
+References: <20230105022718.1641751-1-selva.nair@...277...>
+ <202301081611.308GBRlw090727@...2054...>
+In-Reply-To: <202301081611.308GBRlw090727@...2054...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 8 Jan 2023 11:46:29 -0500
+Message-ID: <CAKuzo_jtj0V4t4jEdWVFOYEMiun-KFn63Xq39=Gt+DTytA52JQ@...278...>
+Content-Type: multipart/alternative; boundary="0000000000006012ab05f1c36594"
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Use IPAPI for setting ipv6
+ routes when iservice not available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,41 +16,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I've stared at the code for a bit ("git show -w" helps), but not having
-deep understanding of all windows/management intricacies, I can only say
-"it looks reasonable".
+--0000000000006012ab05f1c36594
+Content-Type: text/plain; charset="UTF-8"
 
-I have also built a test binary (Ubuntu/MinGW) which behaved properly when
-called from the CLI.  Tested F1, F2, F3, F4 and ctrl-C.
+Hi
 
-I have also recreated the test Lev has done, connect to a non-working
-server with "--connect-retry 30" and try to press ctrl-c when sleeping -
-did not work before, works now.
+which actually brings up the observation that there's netsh.exe calls
+> left, "netsh.exe interface ipv6 set address 2 2001:608:..." :-) )
+>
 
-Your patch has been applied to the master and release/2.6 branch.
+Yes, it's on my radar :)
 
-commit 22977577ed128ac953e7ebfe30f839bcf651b334 (master)
-commit dec9c03d0f6e184fb6cce16b554491d62622425c (release/2.6)
-Author: Selva Nair
-Date:   Thu Jan 5 19:54:38 2023 -0500
+Selva
 
-     Fix signal handling on Windows
+--0000000000006012ab05f1c36594
+Content-Type: text/html; charset="UTF-8"
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20230106005438.1664046-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25895.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+<div dir="ltr"><div>Hi</div><div><br></div><div class="gmail_quote"><blockquote class="gmail_quote" style="margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+which actually brings up the observation that there&#39;s netsh.exe calls<br>
+left, &quot;netsh.exe interface ipv6 set address 2 2001:608:...&quot; :-) )<br></blockquote><div><br></div><div>Yes, it&#39;s on my radar :)</div><div><br></div><div>Selva</div></div></div>
 
-
---
-kind regards,
-
-Gert Doering
-
+--0000000000006012ab05f1c36594--
 
