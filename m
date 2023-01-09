@@ -1,9 +1,10 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon,  9 Jan 2023 13:30:46 +0200
-Message-Id: <20230109113046.1678-1-lstipakov@...277...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] tun: move print_windows_driver() out of
- tun.h
+Date: Mon, 9 Jan 2023 12:41:12 +0100 (CET)
+Message-Id: <202301091141.309BfCeH017773@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230109113046.1678-1-lstipakov@...277...>
+References: <20230109113046.1678-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: tun: move
+ print_windows_driver() out of tun.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,88 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+Acked-by: Gert Doering <gert@...1296...>
 
-We got warnings from MinGW about function being defined
-but not used when compiling modules which include tun.h.
+Thanks.  Compile-tested on MinGW, it compiles and the warnings are gone.
 
-This function is not defined as inline, so its definition
-should not be in header. Since this is not a performance
-critical, no need to make it inline.
+Your patch has been applied to the master and release/2.6 branch.
 
-Leave declaration in tun.h and move definition to tun.c.
+commit a0eb1f764df39d9447b666e5a2cbd3aa01b41983 (master)
+commit 9dd0bfb5983fdfbbb9e1fe2195642fbc4cc5f200 (release/2.6)
+Author: Lev Stipakov
+Date:   Mon Jan 9 13:30:46 2023 +0200
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- src/openvpn/tun.c | 19 +++++++++++++++++++
- src/openvpn/tun.h | 20 ++------------------
- 2 files changed, 21 insertions(+), 18 deletions(-)
+     tun: move print_windows_driver() out of tun.h
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index a83ec9e6..6947312e 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -7028,6 +7028,25 @@ ipset2ascii_all(struct gc_arena *gc)
-     return BSTR(&out);
- }
- 
-+const char *
-+print_windows_driver(enum windows_driver_type windows_driver)
-+{
-+    switch (windows_driver)
-+    {
-+        case WINDOWS_DRIVER_TAP_WINDOWS6:
-+            return "tap-windows6";
-+
-+        case WINDOWS_DRIVER_WINTUN:
-+            return "wintun";
-+
-+        case WINDOWS_DRIVER_DCO:
-+            return "ovpn-dco";
-+
-+        default:
-+            return "unspecified";
-+    }
-+}
-+
- #else /* generic */
- 
- void
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 24d52670..ed22770a 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -661,24 +661,8 @@ tuntap_is_dco_win_timeout(struct tuntap *tt, int status)
-     return tuntap_is_dco_win(tt) && (status < 0) && (openvpn_errno() == ERROR_NETNAME_DELETED);
- }
- 
--static const char *
--print_windows_driver(enum windows_driver_type windows_driver)
--{
--    switch (windows_driver)
--    {
--        case WINDOWS_DRIVER_TAP_WINDOWS6:
--            return "tap-windows6";
--
--        case WINDOWS_DRIVER_WINTUN:
--            return "wintun";
--
--        case WINDOWS_DRIVER_DCO:
--            return "ovpn-dco";
--
--        default:
--            return "unspecified";
--    }
--}
-+const char *
-+print_windows_driver(enum windows_driver_type windows_driver);
- 
- #else  /* ifdef _WIN32 */
- 
--- 
-2.38.1.windows.1
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230109113046.1678-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25923.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
