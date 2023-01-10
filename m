@@ -1,9 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Tue, 10 Jan 2023 16:19:01 +0100
-Message-Id: <20230110151901.998479-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Log peer-id if loglevel is D_DCO_DEBUG
- and dco is enabled
+Date: Tue, 10 Jan 2023 16:50:11 +0100 (CET)
+Message-Id: <202301101550.30AFoBxG045336@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230110151901.998479-1-arne@...1227...>
+References: <20230110151901.998479-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Log peer-id if loglevel is
+ D_DCO_DEBUG and dco is enabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,36 +15,40 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This enables logging the peer id in p2mp mode if dco is enabled
-and the log level is high enough
+Acked-by: Gert Doering <gert@...1296...>
 
-Patch v2: use check_debug_level to check current log level
+Works and helps with DCO debugging.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/multi.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Some of the messages look a bit stupid now... so we might want to go
+and polish :-)
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 26904859f..b639d3c67 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -476,6 +476,12 @@ multi_instance_string(const struct multi_instance *mi, bool null, struct gc_aren
-             buf_printf(&out, "%s/", cn);
-         }
-         buf_printf(&out, "%s", mroute_addr_print(&mi->real, gc));
-+        if (mi->context.c2.tls_multi
-+            && check_debug_level(D_DCO_DEBUG)
-+            && dco_enabled(&mi->context.options))
-+        {
-+            buf_printf(&out, " peer-id=%d", mi->context.c2.tls_multi->peer_id);
-+        }
-         return BSTR(&out);
-     }
-     else if (null)
--- 
-2.37.1 (Apple Git-137.1)
+.. gremlin14943/194.97.140.21:12404 peer-id=9 dco_update_keys: peer_id=9
+.. gremlin14833/194.97.140.21:11036 peer-id=11 dco_update_keys: peer_id=11
+.. gremlin14340/194.97.140.21:29500 peer-id=12 dco_update_keys: peer_id=12
+
+
+Your patch has been applied to the master and release/2.6 branch.
+
+commit 533c170fb60882547152e3b3222c8f7788d6b80f (master)
+commit d04c2110a006c204b5753113cdbed2866b9641ed (release/2.6)
+Author: Arne Schwabe
+Date:   Tue Jan 10 16:19:01 2023 +0100
+
+     Log peer-id if loglevel is D_DCO_DEBUG and dco is enabled
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230110151901.998479-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25946.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
