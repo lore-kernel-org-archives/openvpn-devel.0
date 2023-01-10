@@ -1,10 +1,14 @@
-Date: Tue, 10 Jan 2023 13:24:06 +0100 (CET)
-Message-Id: <202301101224.30ACO6oj041967@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230105022718.1641751-3-selva.nair@...277...>
-References: <20230105022718.1641751-3-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Propagate route error to
- initialization_completed()
+Date: Tue, 10 Jan 2023 13:42:25 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <Y71dMcb+kLwK237+@flichtenheld-TUXEDO-InfinityBook-S-15-17-Gen7>
+References: <20220909195902.2011798-1-arne@...1227...>
+ <20221212112746.1719605-1-arne@...1227...>
+ <Y7wsTTgS7oYV0acO@...2685...>
+ <8c76e266-6622-0e65-6b7b-f1697c3b2b13@...1227...>
+MIME-Version: 1.0
+In-Reply-To: <8c76e266-6622-0e65-6b7b-f1697c3b2b13@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v4] Introduce dynamic tls-crypt for
+ secure soft_reset/session renegotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,108 +17,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+Content-Disposition: inline
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+On Mon, Jan 09, 2023 at 05:36:06PM +0100, Arne Schwabe wrote:
+> Am 09.01.23 um 16:01 schrieb Frank Lichtenheld:
+> > On Mon, Dec 12, 2022 at 12:27:45PM +0100, Arne Schwabe wrote:
+> > > Currently we have only one slot for renegotiation of the session/keys.
+> > > If a replayed/faked packet is inserted by a malicous attacker, the
+> > > legimate peer cannot renegotiate anymore.
+> > > 
+> > > This commit introduces dynamic tls-crypt. When both peer support this
+> > > feature, both peer create a dynamic tls-crypt key using TLS EKM (export key
+> > 
+> > "peers"
+> > 
+> > > material) and will enforce using that key and tls-crypt for all
+> > > renegotiations. This also add an additional protection layer for
+> > 
+> > General question about this feature:
+> > We trigger using this key on key_id > 0, so if I understand the code
+> > correctly, it will be used first when we want to renegotiate.
+> > But will it then continued to be used? What exactly is the state after
+> > the successful renegotiation?
+> 
+> That is one of this hidden logic things of OpenVPN again. We ensure that the
+> keyid will go to 1 instead 0 on key rollover, so only initial keyids are 0.
+> So key-ids for renegotiations will be 1 to 7 and then rollover to 1 instead
+> of 0.
+> 
+> 
+>     /*
+>      * key_id increments to KEY_ID_MASK then recycles back to 1.
+>      * This way you know that if key_id is 0, it is the first key.
+>      */
+>     ++session->key_id;
+>     session->key_id &= P_KEY_ID_MASK;
+>     if (!session->key_id)
+>     {
+>         session->key_id = 1;
+>     }
 
-We discussed this previously, and it makes sense to take "route addition
-errors" into account, even if we consciously decided (long before I got
-involved...) that we consider these non-fatal, unlike ifconfig errors.
+Okay, so it does roughly what I assumed it does. But strictly speaking this
+is not a renegotiation key then. Once the first renegotiation happens the key
+will be used for ALL control channel packets, is that correct?
 
-I have stared at the code, and it looks reasonable (we discussed the
-approach before).
+So how does that avoid the replay attack? I mean it obviously avoids it for the
+first renegotiation, but could you replay the first renegotiation afterwards?
+Or does that not work due to increasing key_id/packet_id?
 
-Some of the lines are now longer than 80 characters, with "short 
-continuation lines", like this
-
-+            ret = add_bypass_routes(&rl->spec.bypass, rl->rgi.gateway.addr, tt, flags,
-+                                    &rl->rgi, es, ctx);
-
-.. while our style guide permits "longer lines if the alternativ is
-more ugly", in this case actually rewrapping would be nicer (not a 
-showstopper), like this:
-
-+            ret = add_bypass_routes(&rl->spec.bypass, rl->rgi.gateway.addr,
-+                                    tt, flags &rl->rgi, es, ctx);
-
-.. so two similarily-long lines, not one very long and one quite short.
-
-The rewrappings of the add_route3() calls are welcome :-)
-
-
-That it's only available for Windows and Linux/SITNL today is non-ideal, 
-but I can see the motivation - for platforms where we can't distinguish
-"genuine errors" and "EEXIST errors", err on the side of "keep old
-behaviour, no new warnings".  We did want a major "routing glue rewrite"
-for 2.6, which did not happen, so let's try again for 2.7...
-
-
-I have tested "things still work" by subjecting this to the full 
-client/server test on Linux (with SITNL, with and without DCO), and
-run manual tests, as suggested
-
-  openvpn --config base.ovpn --route 192.168.122.0 255.255.255.0 1.1.1.1
-
-.. which ended unexpected...
-
-    2023-01-10 13:05:15 sitnl_send: rtnl: generic error (-101): Network is unreachable
-    2023-01-10 13:05:15 ERROR: Linux route add command failed
-    2023-01-10 13:05:15 Initialization Sequence Completed
-
-.. I did expect something about "with errors" here - and I think we
-*should* print something, given that many (most?) *Linux* users will not
-have a management-client-GUI running.
-
-On the management interface, it does work fine:
-
-    state
-    1673352459,CONNECTED,ROUTE_ERROR,10.194.2.170,199.102.77.82,51194,,,fd00:abcd:194:2::1029
-
-(and if there are no errors, it will display "CONNECTED,SUCCESS,")
-
-I have not tested what the Windows GUI will do or display in this case.
-
-
-Also, the EEXIST suppression of SITNL is really a bug that needs to be
-fixed.  If I have duplicate routes...
-
-    2023-01-10 13:11:40 net_route_v4_add: 10.194.0.0/16 via 10.194.2.169 dev [NULL] table 0 metric -1
-    2023-01-10 13:11:40 net_route_v4_add: 10.194.0.0/16 via 10.194.2.169 dev [NULL] table 0 metric -1
-
-.. installation just works fine, but...
-
-    2023-01-10 13:12:00 net_route_v4_del: 10.194.0.0/16 via 10.194.2.169 dev [NULL] table 0 metric -1
-    2023-01-10 13:12:00 net_route_v4_del: 10.194.0.0/16 via 10.194.2.169 dev [NULL] table 0 metric -1
-    2023-01-10 13:12:00 sitnl_send: rtnl: generic error (-3): No such process
-    2023-01-10 13:12:00 ERROR: Linux route delete command failed
-
-.. it does not understand that the 2nd addition actually *failed*, so
-tries to remove it, which creates an error that is in the wrong place,
-and fully avoidable.  Antonio, you listening?
-
-
-Your patch has been applied to the master and release/2.6 branch.
-
-commit e04c253618ce2a1bb0996a67b81af891e8607fa9 (master)
-commit 705a08ee5adcc74d51bc096592d561f35dc8661a (release/2.6)
-Author: Selva Nair
-Date:   Wed Jan 4 21:27:18 2023 -0500
-
-     Propagate route error to initialization_completed()
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230105022718.1641751-3-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25884.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Regards,
+-- 
+  Frank Lichtenheld
 
