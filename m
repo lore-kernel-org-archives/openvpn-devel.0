@@ -1,9 +1,8 @@
-Date: Tue, 10 Jan 2023 17:25:59 +0100 (CET)
-Message-Id: <202301101625.30AGPxiN048016@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230110160531.81010-1-frank@...2641...>
-References: <20230110160531.81010-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Update copyright year to 2023
+From: Frank Lichtenheld <frank@...2641...>
+Date: Tue, 10 Jan 2023 18:02:57 +0100
+Message-Id: <20230110170257.113527-1-frank@...2641...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] check_engine_keys: make pass with OpenSSL 3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,35 +13,49 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Not enabled by default with OpenSSL 3, so we don't
+see this in our builds.
+While here add missing entries to .gitignore (which
+is what made me look at engine-key test in the first
+place).
 
-"Automatic and really easy to verify" ("git show -I Copyright")
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ .gitignore                                       | 4 ++++
+ tests/unit_tests/engine-key/check_engine_keys.sh | 2 +-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-The patch seems to be too big for mail-archive.com to archive it
-(wat?) - it's not visible there, so pointing URL: to patchwork.
-
-Your patch has been applied to the master and release/2.6 branch.
-
-commit ccf9d57249acb9bc9a450aec3e613bda631415f5 (master)
-commit f8b4a8e396f29ba52043379b04f17df5467c28d5 (release/2.6)
-Author: Frank Lichtenheld
-Date:   Tue Jan 10 17:05:31 2023 +0100
-
-     Update copyright year to 2023
-
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230110160531.81010-1-frank@...2641...>
-     URL: https://patchwork.openvpn.net/project/openvpn2/patch/20230110160531.81010-1-frank@...2641.../
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/.gitignore b/.gitignore
+index 7335154f..813413fe 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -68,6 +68,10 @@ tests/t_client-*-20??????-??????/
+ t_client.rc
+ t_client_ips.rc
+ tests/unit_tests/**/*_testdriver
++tests/unit_tests/engine-key/client.key
++tests/unit_tests/engine-key/log.txt
++tests/unit_tests/engine-key/openssl.cnf
++tests/unit_tests/engine-key/passwd
+ 
+ src/openvpn/openvpn
+ include/openvpn-plugin.h
+diff --git a/tests/unit_tests/engine-key/check_engine_keys.sh b/tests/unit_tests/engine-key/check_engine_keys.sh
+index 7e9a0e80..12dd2301 100755
+--- a/tests/unit_tests/engine-key/check_engine_keys.sh
++++ b/tests/unit_tests/engine-key/check_engine_keys.sh
+@@ -27,7 +27,7 @@ ${top_builddir}/src/openvpn/openvpn --cd ${top_srcdir}/sample --config sample-co
+ # first off check we died because of a key mismatch.  If this doesn't
+ # pass, suspect openssl of returning different messages and update the
+ # test accordingly
+-loggrep '(X509_check_private_key:key values mismatch|func\(128\):reason\(116\))' log.txt || { echo "Key mismatch not detected"; exit 1; }
++loggrep '(x509 certificate routines:(X509_check_private_key)?:key values mismatch|func\(128\):reason\(116\))' log.txt || { echo "Key mismatch not detected"; exit 1; }
+ 
+ # now look for the engine prints (these are under our control)
+ loggrep 'ENGINE: engine_init called' || { echo "Engine initialization not detected"; exit 1; }
+-- 
+2.34.1
 
 
