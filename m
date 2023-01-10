@@ -1,10 +1,9 @@
-Date: Tue, 10 Jan 2023 15:06:50 +0100 (CET)
-Message-Id: <202301101406.30AE6oGl043585@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230109200011.2525342-1-gert@...1296...>
-References: <20230109200011.2525342-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Reduce logspam about
- 'dco_update_keys: peer_id=-1' in p2p server mode
+From: Arne Schwabe <arne@...1227...>
+Date: Tue, 10 Jan 2023 16:19:01 +0100
+Message-Id: <20230110151901.998479-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2] Log peer-id if loglevel is D_DCO_DEBUG
+ and dco is enabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +14,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Antonio, thanks for the review.  Fixed the whitespace.  (Uncrustify
-did not see it since the patch was ad-hoc written on a system that
-does not have the hook - but my pre-merge hook would have caught it).
+This enables logging the peer id in p2mp mode if dco is enabled
+and the log level is high enough
 
-Patch has been applied to the master and release/2.6 branch.
+Patch v2: use check_debug_level to check current log level
 
-commit 85e0df6b493396d9d1d9030c4018f67037d2f12b (master)
-commit 9bc2dfea0e1f643b2a02b61455e1845ae83f7518 (release/2.6)
-Author: Gert Doering
-Date:   Mon Jan 9 21:00:11 2023 +0100
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/multi.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-     Reduce logspam about 'dco_update_keys: peer_id=-1' in p2p server mode
-
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20230109200011.2525342-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25935.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 26904859f..b639d3c67 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -476,6 +476,12 @@ multi_instance_string(const struct multi_instance *mi, bool null, struct gc_aren
+             buf_printf(&out, "%s/", cn);
+         }
+         buf_printf(&out, "%s", mroute_addr_print(&mi->real, gc));
++        if (mi->context.c2.tls_multi
++            && check_debug_level(D_DCO_DEBUG)
++            && dco_enabled(&mi->context.options))
++        {
++            buf_printf(&out, " peer-id=%d", mi->context.c2.tls_multi->peer_id);
++        }
+         return BSTR(&out);
+     }
+     else if (null)
+-- 
+2.37.1 (Apple Git-137.1)
 
 
