@@ -1,16 +1,12 @@
-Date: Tue, 10 Jan 2023 14:42:20 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <Y71rPELRzb+Y2Ogd@...1296...>
-References: <20221227022404.3468137-1-arne@...1227...>
- <20221227022404.3468137-4-arne@...1227...>
- <Y6rFHLYF9AYpBG+d@...1296...>
+Message-ID: <b3b64bb7-e1b0-9899-433b-c34c5d7de377@...2181...>
+Date: Tue, 10 Jan 2023 14:59:27 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="j7S+wprgBD5eRI6K"
-Content-Disposition: inline
-In-Reply-To: <Y6rFHLYF9AYpBG+d@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH v2 4/4] Log peer-id if loglevel is
- D_DCO_DEBUG and dco is enabled
+References: <20230109200011.2525342-1-gert@...1296...>
+Content-Language: en-US
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20230109200011.2525342-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Reduce logspam about 'dco_update_keys:
+ peer_id=-1' in p2p server mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,71 +15,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---j7S+wprgBD5eRI6K
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Tue, Dec 27, 2022 at 11:12:44AM +0100, Gert Doering wrote:
-> Playing around with the patch a bit, the offending piece seems to be
-> "mi->context.options.verbosity >=3D D_DCO_DEBUG" - which is unsurprising,
-> as D_DCO_DEBUG is not "6" but "LOGLEV(6, 69, M_DEBUG)", which translates
-> to=20
->=20
->   #define LOGLEV(log_level, mute_level, other) ((log_level) | ENCODE_MUTE=
-_LEVEL(mute_level) | other)
->=20
-> (numerically, D_DCO_DEBUG =3D 1157628038)
+On 09/01/2023 21:00, Gert Doering wrote:
+> p2p --tls-server with no active client/peer logs once per second
+> 
+>    "dco_update_keys: peer_id=-1"
+> 
+> which does exactly nothing, except fill the disk.  So skip the call to
+> dco_update_keys() if peer_id == -1.
+> 
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>   src/openvpn/forward.c | 6 ++++++
+>   1 file changed, 6 insertions(+)
+> 
+> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+> index ae0512fc..2ba8b0fa 100644
+> --- a/src/openvpn/forward.c
+> +++ b/src/openvpn/forward.c
+> @@ -151,6 +151,12 @@ check_dco_key_status(struct context *c)
+>           return;
+>       }
+>   
+> +    /* no active peer (p2p tls-server mode) */
+> +    if (c->c2.tls_multi->dco_peer_id == -1 )
 
-... looking at error.h, there is a "check_debug_level(flags)" thing, so
-changing the condition to
+Please remove the space after -1 (not sure why uncrustify hasn't caught it).
 
-+        if (mi->context.c2.tls_multi
-+            // && mi->context.options.verbosity >=3D D_DCO_DEBUG
-+            && check_debug_level(D_DCO_DEBUG)
-+            && dco_enabled(&mi->context.options))
-+        {
-+            buf_printf(&out, " peer-id=3D%d", mi->context.c2.tls_multi->pe=
-er_id);
-+        }
+> +    {
+> +        return;
+> +    }
+> +
+>       if (!dco_update_keys(&c->c1.tuntap->dco, c->c2.tls_multi))
+>       {
+>           /* Something bad happened. Kill the connection to
 
-works - "if --verb 6 or higher, *and* DCO, then have peer-id=3D%d as part
-if the prefix".
 
-Can you resend a v3?
+Rest looks good. Thanks!
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Acked-by: Antonio Quartulli <a@...2181...>
 
-Gert Doering - Munich, Germany                             gert@...1296...
+However, as discussed on IRC: *why* are we running the check_tls code is 
+the peer has gone away and we have switched the peer-id to -1?
 
---j7S+wprgBD5eRI6K
-Content-Type: application/pgp-signature; name="signature.asc"
+This is the real question.
 
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjvWs8AAoJEB2Cnv7KVigSSDEMAK3/OjkAq0YOcIuPa2RIKKSe
-s/4WUeliUT1FHNQq/LGgnC1iIRvmdQUKzjGnn1cJWs5LemIPQN+VoJiO3tbDrV+s
-4HTgAAETsSwpn3m+4lYV1WgABc2lMk7qflJixc/RvBhk/3TlYe4uqphbvfMNjOkO
-nfirfvqosecZ6nOhkxo70rH0sz1Kd8U6qW3OWibV2fk1P8EXlddtHGZ+YtZ7ImWc
-113z1qm+4CF92Zx9BfVdEl3uWHLr2PxYEJsXmElxZ+cK1AR8kuQPm055yvuh0R6J
-8cmlgJlGcoBFgtc8iahvmfArlTbRz+m+TATKXu2iw1Sru/phGP/xxBvf7yqxei4T
-s3YQh6giSuThcql43k/S+Rx31GjuFoHT9mvDWLpKwJuEmF0iJlgPvAnE+ZTGEE4d
-LJek9hHp+jcAInqw0Kxh6RkJZFRlcnskg7vuVPDouc6TgAR3kgo/iU7NYJPYFhwl
-DUaHoPkqV0v6hCHsvGjRf4sJrM8othW5SjBfffARMA==
-=qDjY
------END PGP SIGNATURE-----
-
---j7S+wprgBD5eRI6K--
+-- 
+Antonio Quartulli
 
