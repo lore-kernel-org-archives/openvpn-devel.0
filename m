@@ -1,9 +1,9 @@
-Date: Wed, 11 Jan 2023 16:05:39 +0100 (CET)
-Message-Id: <202301111505.30BF5dLY086502@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230111134439.1107915-1-arne@...1227...>
-References: <20230111134439.1107915-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Deprecate OCC checking
+Date: Wed, 11 Jan 2023 17:08:48 +0100
+Message-Id: <20230111160848.22906-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Repair special-casing of EEXIST for
+ Linux/SITNL route install
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,42 +14,80 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+The code in sitnl_route_set() used to treat "route can not be installed
+because it already exists" (EEXIST) as "not an error".
 
-I have stared-at-code a bit (looks reasonable) and ran a few manual
-tests - without the patch, one of my t_client instances triggers
-this (with verb 3):
+This is arguably a reasonable approach, but needs to handled higher
+up - if the low level add_route() function say "no error", we will try
+to remove that route later on in delete_route(), possibly removing
+someone else's "already existing" route then.
 
-2023-01-11 15:42:41 WARNING: 'link-mtu' is used inconsistently, local='link-mtu 1542', remote='link-mtu 1558'
+So:
+ - remove special case in sitnl_route_set()
+ - do not pass NLM_F_REPLACE flag to sitnl_route_set() call - this would
+   cause netlink to just replace existing routes, never return EEXIST
+   (see "man netlink(7)")
+ - add detailed return code handling to route_add(), assign "2" on "-EEXIST"
+   (and log appropriate message).
 
-With the patch it needs "verb 7" to be seen -> works as it says on the lid.
+(Note: sitnl_route_set() is a common function for sitnl route add and
+delete, but EEXIST can not happen on delete - so this change has no
+impact for the "delete" case)
 
-As there is nothing in the patch that really changes anything but log-levels
-and adds proper {} braces on these #ifdef ... / else / #endif constructs
-I haven't done a "full scale server test".
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/networking_sitnl.c |  6 +-----
+ src/openvpn/route.c            | 10 ++++++++--
+ 2 files changed, 9 insertions(+), 7 deletions(-)
 
-Your patch has been applied to the master and release/2.6 branch.
-
-commit 2104ea62430e4d203f2cd998e053f4192798b9f1 (master)
-commit bfd0ef36c46f8326e40229328b5e35cc50755921 (release/2.6)
-Author: Arne Schwabe
-Date:   Wed Jan 11 14:44:39 2023 +0100
-
-     Deprecate OCC checking
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230111134439.1107915-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25970.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
+index fe124616..92f30044 100644
+--- a/src/openvpn/networking_sitnl.c
++++ b/src/openvpn/networking_sitnl.c
+@@ -944,10 +944,6 @@ sitnl_route_set(int cmd, uint32_t flags, int ifindex, sa_family_t af_family,
+     }
+ 
+     ret = sitnl_send(&req.n, 0, 0, NULL, NULL);
+-    if (ret == -EEXIST)
+-    {
+-        ret = 0;
+-    }
+ err:
+     return ret;
+ }
+@@ -1177,7 +1173,7 @@ sitnl_route_add(const char *iface, sa_family_t af_family, const void *dst,
+         scope = RT_SCOPE_LINK;
+     }
+ 
+-    return sitnl_route_set(RTM_NEWROUTE, NLM_F_CREATE | NLM_F_REPLACE, ifindex,
++    return sitnl_route_set(RTM_NEWROUTE, NLM_F_CREATE, ifindex,
+                            af_family, dst, prefixlen, gw, table, metric, scope,
+                            RTPROT_BOOT, RTN_UNICAST);
+ }
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 99f948ba..2db127bb 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1594,8 +1594,14 @@ add_route(struct route_ipv4 *r,
+     }
+ 
+     status = 1;
+-    if (net_route_v4_add(ctx, &r->network, netmask_to_netbits2(r->netmask),
+-                         &r->gateway, iface, 0, metric) < 0)
++    int ret = net_route_v4_add(ctx, &r->network, netmask_to_netbits2(r->netmask),
++                               &r->gateway, iface, 0, metric);
++    if (ret == -EEXIST)
++    {
++        msg(D_ROUTE, "NOTE: Linux route add command failed because route exists");
++        status = 2;
++    }
++    else if (ret < 0)
+     {
+         msg(M_WARN, "ERROR: Linux route add command failed");
+         status = 0;
+-- 
+2.38.2
 
 
