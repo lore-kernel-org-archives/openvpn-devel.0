@@ -1,9 +1,10 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 11 Jan 2023 13:52:42 +0100
-Message-Id: <20230111125242.21025-1-frank@...2641...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] documentation: update "unsupported options"
- section
+Date: Wed, 11 Jan 2023 13:53:33 +0100 (CET)
+Message-Id: <202301111253.30BCrXWD072674@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20221127142506.41986-1-frank@...2641...>
+References: <20221127142506.41986-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: options: Always define
+ options->management_flags
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,42 +15,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-We listed those in Changes, but did not update the documentation.
+The ACK from Arne is not on the list, but it's in the quote from Frank,
+so I can say "I have seen it" (and since the discussion went on about
+a comment line, it's not a fake :-) ).  I have removed that comment
+line per discussion on IRC.
 
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
- doc/man-sections/unsupported-options.rst | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+Tested by compiling normally and with --disable-management, and asking
+for a GHA test run.
 
-diff --git a/doc/man-sections/unsupported-options.rst b/doc/man-sections/unsupported-options.rst
-index 05ba3ca2..5c4e3a0e 100644
---- a/doc/man-sections/unsupported-options.rst
-+++ b/doc/man-sections/unsupported-options.rst
-@@ -17,6 +17,14 @@ longer supported
-   ``key-method`` weakens the VPN tunnel security.  The old ``key-method``
-   was also only needed when the remote side was older than OpenVPN 2.0.
- 
-+--management-client-pf
-+  Removed in OpenVPN 2.6.  The built-in packet filtering (pf) functionality
-+  has been removed.
-+
-+--ncp-disable
-+  Removed in OpenVPN 2.6.  This option mainly served a role as debug option
-+  when NCP was first introduced.  It should no longer be necessary.
-+
- --no-iv
-   Removed in OpenVPN 2.5.  This option should not be used as it weakens the
-   VPN tunnel security.  This has been a NOOP option since OpenVPN 2.4.
-@@ -30,3 +38,6 @@ longer supported
-   in recent SSL/TLS libraries.  If your certificates does not include *key
-   usage* and *extended key usage* fields, they must be upgraded and the
-   ``--remote-cert-tls`` option should be used instead.
-+
-+--prng
-+  Removed in OpenVPN 2.6.  We now always use the PRNG of the SSL library.
--- 
-2.34.1
+Your patch has been applied to the master branch.
+
+commit ff7d7989e007a8c66fba438a257c1b85e8bcca69 (master)
+commit c8b131e5eb174a2c81a29a0b7eab5110e2e3ca19 (release/2.6)
+Author: Frank Lichtenheld
+Date:   Sun Nov 27 15:25:06 2022 +0100
+
+     options: Always define options->management_flags
+
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20221127142506.41986-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25554.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
