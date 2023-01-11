@@ -1,9 +1,12 @@
-From: Gert Doering <gert@...1296...>
-Date: Wed, 11 Jan 2023 17:08:48 +0100
-Message-Id: <20230111160848.22906-1-gert@...1296...>
+Date: Wed, 11 Jan 2023 21:26:09 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <Y78bYeqqE//h6iVl@...2685...>
+References: <20220909195902.2011798-1-arne@...1227...>
+ <20230109163810.887999-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Repair special-casing of EEXIST for
- Linux/SITNL route install
+In-Reply-To: <20230109163810.887999-1-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v5] Introduce dynamic tls-crypt for
+ secure soft_reset/session renegotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,82 +15,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The code in sitnl_route_set() used to treat "route can not be installed
-because it already exists" (EEXIST) as "not an error".
+On Mon, Jan 09, 2023 at 05:38:10PM +0100, Arne Schwabe wrote:
+> Currently we have only one slot for renegotiation of the session/keys.
+> If a replayed/faked packet is inserted by a malicous attacker, the
+> legimate peer cannot renegotiate anymore.
+> 
+> This commit introduces dynamic tls-crypt. When both peer support this
 
-This is arguably a reasonable approach, but needs to handled higher
-up - if the low level add_route() function say "no error", we will try
-to remove that route later on in delete_route(), possibly removing
-someone else's "already existing" route then.
+"peers"
 
-So:
- - remove special case in sitnl_route_set()
- - do not pass NLM_F_REPLACE flag to sitnl_route_set() call - this would
-   cause netlink to just replace existing routes, never return EEXIST
-   (see "man netlink(7)")
- - add detailed return code handling to route_add(), assign "2" on "-EEXIST"
-   (and log appropriate message).
+> feature, both peer create a dynamic tls-crypt key using TLS EKM (export key
+> material) and will enforce using that key and tls-crypt for all
+> renegotiations. This also add an additional protection layer for
+> renegotiations to be taken over by an illegimate client, binding the
+> renegotiations tightly to the original session. Especially when 2FA, webauth
+> or similar authentication is used, many third party setup ignore the need
+> to secure renegotiation with an auth-token.
+> 
 
-(Note: sitnl_route_set() is a common function for sitnl route add and
-delete, but EEXIST can not happen on delete - so this change has no
-impact for the "delete" case)
+Acked-By: Frank Lichtenheld <frank@...2641...>
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/networking_sitnl.c |  6 +-----
- src/openvpn/route.c            | 10 ++++++++--
- 2 files changed, 9 insertions(+), 7 deletions(-)
+Stared at code, read documentation, stared more at code. Looks like it
+does what it should. Ran master+patch t_client tests against a master+patch server.
+Log messages look sensible. Also tried running a connection with --reneg-sec 15
+just to prove that renegotiations still work.
 
-diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
-index fe124616..92f30044 100644
---- a/src/openvpn/networking_sitnl.c
-+++ b/src/openvpn/networking_sitnl.c
-@@ -944,10 +944,6 @@ sitnl_route_set(int cmd, uint32_t flags, int ifindex, sa_family_t af_family,
-     }
- 
-     ret = sitnl_send(&req.n, 0, 0, NULL, NULL);
--    if (ret == -EEXIST)
--    {
--        ret = 0;
--    }
- err:
-     return ret;
- }
-@@ -1177,7 +1173,7 @@ sitnl_route_add(const char *iface, sa_family_t af_family, const void *dst,
-         scope = RT_SCOPE_LINK;
-     }
- 
--    return sitnl_route_set(RTM_NEWROUTE, NLM_F_CREATE | NLM_F_REPLACE, ifindex,
-+    return sitnl_route_set(RTM_NEWROUTE, NLM_F_CREATE, ifindex,
-                            af_family, dst, prefixlen, gw, table, metric, scope,
-                            RTPROT_BOOT, RTN_UNICAST);
- }
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 99f948ba..2db127bb 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1594,8 +1594,14 @@ add_route(struct route_ipv4 *r,
-     }
- 
-     status = 1;
--    if (net_route_v4_add(ctx, &r->network, netmask_to_netbits2(r->netmask),
--                         &r->gateway, iface, 0, metric) < 0)
-+    int ret = net_route_v4_add(ctx, &r->network, netmask_to_netbits2(r->netmask),
-+                               &r->gateway, iface, 0, metric);
-+    if (ret == -EEXIST)
-+    {
-+        msg(D_ROUTE, "NOTE: Linux route add command failed because route exists");
-+        status = 2;
-+    }
-+    else if (ret < 0)
-     {
-         msg(M_WARN, "ERROR: Linux route add command failed");
-         status = 0;
+I can't prove/judge whether it actually uses a different key and whether the crypto
+claims from the commit message are actually true.
+
+Regards,
 -- 
-2.38.2
-
+  Frank Lichtenheld
 
