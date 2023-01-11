@@ -1,10 +1,10 @@
-Date: Wed, 11 Jan 2023 14:45:19 +0100 (CET)
-Message-Id: <202301111345.30BDjJd4076549@...2054...>
+Date: Wed, 11 Jan 2023 14:53:26 +0100 (CET)
+Message-Id: <202301111353.30BDrQgH076848@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230110170257.113527-1-frank@...2641...>
-References: <20230110170257.113527-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: check_engine_keys: make pass
- with OpenSSL 3
+In-Reply-To: <20230111125242.21025-1-frank@...2641...>
+References: <20230111125242.21025-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: documentation: update
+ 'unsupported options' section
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,24 +20,21 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Looking more closely I can see that I misread the regex, and it's all
-fine indeed.  Passing the test on my test candidates (ossl 1.1.x, 
-ossl 3.0.x but no engine support) and also on the GHA actions with
-both ossl versions.
+"Seems to match my memories" :)
 
-Your patch has been applied to the master branch.
+Your patch has been applied to the master and release/2.6 branch.
 
-commit af25448ee19da5d225a6a1f30f26dc3949ed8921 (master)
-commit d09db604dac1e8140c0e4cad73a8b3d2e21cbebc (release/2.6)
+commit ee0a6026af9c47fe21217f57ab04b9cc2cc193f1 (master)
+commit 4674d69c630e92d2f5ae1537ab63f8e6b9bca041 (release/2.6)
 Author: Frank Lichtenheld
-Date:   Tue Jan 10 18:02:57 2023 +0100
+Date:   Wed Jan 11 13:52:42 2023 +0100
 
-     check_engine_keys: make pass with OpenSSL 3
+     documentation: update 'unsupported options' section
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230110170257.113527-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25949.html
+     Message-Id: <20230111125242.21025-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25968.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
