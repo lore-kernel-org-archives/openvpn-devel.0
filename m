@@ -1,12 +1,14 @@
-Date: Wed, 11 Jan 2023 13:18:46 +0100
+Date: Wed, 11 Jan 2023 13:25:05 +0100
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Y76pJpuYHrTikBC7@...2685...>
-References: <20230110170257.113527-1-frank@...2641...>
- <Y75nx/NPVwZZePEr@...1296...>
+Message-ID: <Y76qoRZ0qAHnLoy4@...2685...>
+References: <20221127142506.41986-1-frank@...2641...>
+ <aff02522-a3f8-e080-054a-8f795ae10e7a@...1227...>
+ <Y5xuhFRq15H3NSgv@...2685...>
+ <4a1f1f0d-23e4-b2fb-1c7f-ef2fa4b26c71@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <Y75nx/NPVwZZePEr@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] check_engine_keys: make pass with
- OpenSSL 3
+In-Reply-To: <4a1f1f0d-23e4-b2fb-1c7f-ef2fa4b26c71@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] options: Always define
+ options->management_flags
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,64 +20,61 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: Gert Doering <gert@...1296...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Wed, Jan 11, 2023 at 08:39:51AM +0100, Gert Doering wrote:
-> Hi,
+On Wed, Jan 11, 2023 at 12:02:14PM +0100, Arne Schwabe wrote:
+> Am 16.12.22 um 14:11 schrieb Frank Lichtenheld:
+> > On Mon, Dec 12, 2022 at 12:38:41PM +0100, Arne Schwabe wrote:
+> > > Am 27.11.22 um 15:25 schrieb Frank Lichtenheld:
+> > > > That makes it possible to remove several preprocessor
+> > > > directives which is a good thing. The cost should be
+> > > > negligible.
+> > > 
+> > > Acked-By: Arne Schwabe <arne@...1227...>
+> > > 
+> > > In general the commit looks good but I would like to improve the comment for
+> > > the management flags (see below).
+> > > 
+> > > 
+> > > > diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+> > > > index 68ad0cac..6f4b1f4a 100644
+> > > > --- a/src/openvpn/options.h
+> > > > +++ b/src/openvpn/options.h
+> > > > @@ -438,10 +438,12 @@ struct options
+> > > >        const char *management_client_user;
+> > > >        const char *management_client_group;
+> > > > -    /* Mask of MF_ values of manage.h */
+> > > > -    unsigned int management_flags;
+> > > >        const char *management_certificate;
+> > > >    #endif
+> > > > +    /* Mask of MF_ values of manage.h
+> > > > +     * Always available to simplify options.c
+> > > > +     */
+> > > > +    unsigned int management_flags;
+> > > 
+> > > This feels a bit odd as a comment. I would expect this in the commit or
+> > > something like "even available when management support is not available" but
+> > > this comment feels a bit too "temporary".
+> > 
+> > How is this "temporary"? It does not describe the change, it actually states
+> > why this is handled specially. Your proposal just drops the justification, then
+> > the comment becomes useless IMHO.
+> > 
+> > Would you prefer "Always available to simplify option verification code"?
 > 
-> On Tue, Jan 10, 2023 at 06:02:57PM +0100, Frank Lichtenheld wrote:
-> > @@ -27,7 +27,7 @@ ${top_builddir}/src/openvpn/openvpn --cd ${top_srcdir}/sample --config sample-co
-> >  # first off check we died because of a key mismatch.  If this doesn't
-> >  # pass, suspect openssl of returning different messages and update the
-> >  # test accordingly
-> > -loggrep '(X509_check_private_key:key values mismatch|func\(128\):reason\(116\))' log.txt || { echo "Key mismatch not detected"; exit 1; }
-> > +loggrep '(x509 certificate routines:(X509_check_private_key)?:key values mismatch|func\(128\):reason\(116\))' log.txt || { echo "Key mismatch not detected"; exit 1; }
-> 
-> This change does not convince me - assuming normal regex here, the
-> original grep would have found any lines with
-> 
->   X509_check_private_key:key values mismatch
-> 
-> in them, while the new one would find
-> 
->   X509_check_private_key::key values mismatch
->   X509_check_private_key:X509_check_private_key:key values mismatch
-> 
-> but not "the old one with just one :"
-> 
-> Should this be
-> 
->   (x509 certificate routines:(X509_check_private_key:)?key va...
-> 
-> with the second ":" part of the (...:)? zero-or-once match?
+> I feel this because it is always available to avoid ifdefs and therefore to
+> simplify options.c but the information that ifdefs are the alternative is
+> not obvious from the comment or code alone. We have a lot of other variables
+> that are always available but are only used if certain compile options are
+> used. So I feel this comment is temporary because it basically is from the
+> history that here in this case we had ifdefs, so we added here now a comment
+> that there now no longer ifdefs. But in general without the historical
+> context the comment feels odd to me.
 
-So, OpenSSL 3 prints:
-
-x509 certificate routines::key values mismatch
-
-yes, two colons!
-
-OpenSSL 1.1 prints:
-
-x509 certificate routines:X509_check_private_key:key values mismatch
-
-My patch matches for both. But you are right that I made it slightly stricter,
-since it previously we only matched on
-
-X509_check_private_key:key values mismatch
-
-for OpenSSL 1.1. If you would prefer that we could go for
-
-(x509 certificate routines:|X509_check_private_key):key values mismatch
-
-But I like my version better.  If that passes buildbot, I think it
-should be "good enough".
-
-> (... as a side note, I hate this test... it's easily the test with the
-> most commits to make it behave across platforms and SSL library versions)
-
-yeah, definitely.
+I don't have a strong enough opinion about this to argue more about it.
+Gert, feel free to take Arne's ack and just remove the additional comment line
+I added.
 
 Regards,
 -- 
