@@ -1,14 +1,16 @@
-Date: Wed, 11 Jan 2023 08:39:51 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <Y75nx/NPVwZZePEr@...1296...>
-References: <20230110170257.113527-1-frank@...2641...>
+Message-ID: <0ad27bd2-6ae8-d142-bc21-0429446032ba@...1227...>
+Date: Wed, 11 Jan 2023 11:40:07 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="QCFGfzkQiWeAiHIR"
-Content-Disposition: inline
-In-Reply-To: <20230110170257.113527-1-frank@...2641...>
-Subject: Re: [Openvpn-devel] [PATCH] check_engine_keys: make pass with
- OpenSSL 3
+Content-Language: en-GB
+References: <20220909195902.2011798-1-arne@...1227...>
+ <20221212112746.1719605-1-arne@...1227...>
+ <Y7wsTTgS7oYV0acO@...2685...>
+ <8c76e266-6622-0e65-6b7b-f1697c3b2b13@...1227...>
+ <Y71dMcb+kLwK237+@flichtenheld-TUXEDO-InfinityBook-S-15-17-Gen7>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <Y71dMcb+kLwK237+@flichtenheld-TUXEDO-InfinityBook-S-15-17-Gen7>
+Subject: Re: [Openvpn-devel] [PATCH v4] Introduce dynamic tls-crypt for
+ secure soft_reset/session renegotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,77 +19,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---QCFGfzkQiWeAiHIR
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+>>      /*
+>>       * key_id increments to KEY_ID_MASK then recycles back to 1.
+>>       * This way you know that if key_id is 0, it is the first key.
+>>       */
+>>      ++session->key_id;
+>>      session->key_id &= P_KEY_ID_MASK;
+>>      if (!session->key_id)
+>>      {
+>>          session->key_id = 1;
+>>      }
+> 
+> Okay, so it does roughly what I assumed it does. But strictly speaking this
+> is not a renegotiation key then. Once the first renegotiation happens the key
+> will be used for ALL control channel packets, is that correct?
+> 
+> So how does that avoid the replay attack? I mean it obviously avoids it for the
+> first renegotiation, but could you replay the first renegotiation afterwards?
+> Or does that not work due to increasing key_id/packet_id?
 
-Hi,
+We do initialise the replay protection on the tls-crypt keys. So an 
+attacker can only replay packets that are already known to both peer and 
+they will drop them. While you can get the same level of protection with 
+tls-crypt (without dynamic key) using --replay-persist option, I don't 
+think I have seen this option ever being used.
 
-On Tue, Jan 10, 2023 at 06:02:57PM +0100, Frank Lichtenheld wrote:
-> @@ -27,7 +27,7 @@ ${top_builddir}/src/openvpn/openvpn --cd ${top_srcdir}/=
-sample --config sample-co
->  # first off check we died because of a key mismatch.  If this doesn't
->  # pass, suspect openssl of returning different messages and update the
->  # test accordingly
-> -loggrep '(X509_check_private_key:key values mismatch|func\(128\):reason\=
-(116\))' log.txt || { echo "Key mismatch not detected"; exit 1; }
-> +loggrep '(x509 certificate routines:(X509_check_private_key)?:key values=
- mismatch|func\(128\):reason\(116\))' log.txt || { echo "Key mismatch not d=
-etected"; exit 1; }
-
-This change does not convince me - assuming normal regex here, the
-original grep would have found any lines with
-
-  X509_check_private_key:key values mismatch
-
-in them, while the new one would find
-
-  X509_check_private_key::key values mismatch
-  X509_check_private_key:X509_check_private_key:key values mismatch
-
-but not "the old one with just one :"
-
-Should this be
-
-  (x509 certificate routines:(X509_check_private_key:)?key va...
-
-with the second ":" part of the (...:)? zero-or-once match?
-
-
-(... as a side note, I hate this test... it's easily the test with the
-most commits to make it behave across platforms and SSL library versions)
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---QCFGfzkQiWeAiHIR
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjvmfHAAoJEB2Cnv7KVigS8jAL/AzvojiX/8vkqab58v6Y1VCm
-e5hzvPGZOTw2ZNtY6rvCjkkniD4L1kQXEa0dLomSPwKZ2YDEEt23yp6YCgL5u7gP
-5K2WLsmq1zNPRK7knVGmOoV6/ZWVwBlxY541qFrbeuCkc32XTNs2MGBgZeCLeQYJ
-hee98coeBX8c5z+rPs7H0+36OWoOraXNal6+IQvRjLAUDuf9d+51GiZhmXDzRFvM
-s7h8jDIRkBCdxpEQ/GaHBU5uVzfkV49Wpq144uz3LXwHZ8Q52/kw+OZGHTjQCrs1
-x9rpkrDUsMCoAP7qjARqaWrU5/17csmFGiljIBZyHCVQ91zqR2XAt0XtsabjMCNV
-B+VzYrNnj3rlqjrmPRBECeyDNZsZRv356/l73JFg2S44qTDRO3Ugx+tQ3FTUcIDV
-jhmsUWs0dWNV/bNh/NCNsAljR8DlH2PkQ1/vvM7XrzmQt4PUZ0Ysx2fVwaHj7cj7
-V61hq3odez2GP1ovCNuwah4bz7VBa1JELSIxQtHuBQ==
-=MIRE
------END PGP SIGNATURE-----
-
---QCFGfzkQiWeAiHIR--
+Arne
 
