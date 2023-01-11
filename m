@@ -1,10 +1,9 @@
-Date: Wed, 11 Jan 2023 14:53:26 +0100 (CET)
-Message-Id: <202301111353.30BDrQgH076848@...2054...>
+Date: Wed, 11 Jan 2023 16:05:39 +0100 (CET)
+Message-Id: <202301111505.30BF5dLY086502@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230111125242.21025-1-frank@...2641...>
-References: <20230111125242.21025-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: documentation: update
- 'unsupported options' section
+In-Reply-To: <20230111134439.1107915-1-arne@...1227...>
+References: <20230111134439.1107915-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Deprecate OCC checking
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +14,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"Seems to match my memories" :)
+I have stared-at-code a bit (looks reasonable) and ran a few manual
+tests - without the patch, one of my t_client instances triggers
+this (with verb 3):
+
+2023-01-11 15:42:41 WARNING: 'link-mtu' is used inconsistently, local='link-mtu 1542', remote='link-mtu 1558'
+
+With the patch it needs "verb 7" to be seen -> works as it says on the lid.
+
+As there is nothing in the patch that really changes anything but log-levels
+and adds proper {} braces on these #ifdef ... / else / #endif constructs
+I haven't done a "full scale server test".
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit ee0a6026af9c47fe21217f57ab04b9cc2cc193f1 (master)
-commit 4674d69c630e92d2f5ae1537ab63f8e6b9bca041 (release/2.6)
-Author: Frank Lichtenheld
-Date:   Wed Jan 11 13:52:42 2023 +0100
+commit 2104ea62430e4d203f2cd998e053f4192798b9f1 (master)
+commit bfd0ef36c46f8326e40229328b5e35cc50755921 (release/2.6)
+Author: Arne Schwabe
+Date:   Wed Jan 11 14:44:39 2023 +0100
 
-     documentation: update 'unsupported options' section
+     Deprecate OCC checking
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230111125242.21025-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25968.html
+     Message-Id: <20230111134439.1107915-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25970.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
