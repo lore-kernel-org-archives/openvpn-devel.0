@@ -1,14 +1,10 @@
-Date: Wed, 11 Jan 2023 13:25:05 +0100
+Date: Wed, 11 Jan 2023 13:40:50 +0100
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Y76qoRZ0qAHnLoy4@...2685...>
-References: <20221127142506.41986-1-frank@...2641...>
- <aff02522-a3f8-e080-054a-8f795ae10e7a@...1227...>
- <Y5xuhFRq15H3NSgv@...2685...>
- <4a1f1f0d-23e4-b2fb-1c7f-ef2fa4b26c71@...1227...>
+Message-ID: <Y76uUkSUP2scgLlu@...2685...>
+References: <20230111120728.1099815-1-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <4a1f1f0d-23e4-b2fb-1c7f-ef2fa4b26c71@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] options: Always define
- options->management_flags
+In-Reply-To: <20230111120728.1099815-1-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Deprecate OCC checking
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,58 +19,48 @@ Content-Disposition: inline
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Wed, Jan 11, 2023 at 12:02:14PM +0100, Arne Schwabe wrote:
-> Am 16.12.22 um 14:11 schrieb Frank Lichtenheld:
-> > On Mon, Dec 12, 2022 at 12:38:41PM +0100, Arne Schwabe wrote:
-> > > Am 27.11.22 um 15:25 schrieb Frank Lichtenheld:
-> > > > That makes it possible to remove several preprocessor
-> > > > directives which is a good thing. The cost should be
-> > > > negligible.
-> > > 
-> > > Acked-By: Arne Schwabe <arne@...1227...>
-> > > 
-> > > In general the commit looks good but I would like to improve the comment for
-> > > the management flags (see below).
-> > > 
-> > > 
-> > > > diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-> > > > index 68ad0cac..6f4b1f4a 100644
-> > > > --- a/src/openvpn/options.h
-> > > > +++ b/src/openvpn/options.h
-> > > > @@ -438,10 +438,12 @@ struct options
-> > > >        const char *management_client_user;
-> > > >        const char *management_client_group;
-> > > > -    /* Mask of MF_ values of manage.h */
-> > > > -    unsigned int management_flags;
-> > > >        const char *management_certificate;
-> > > >    #endif
-> > > > +    /* Mask of MF_ values of manage.h
-> > > > +     * Always available to simplify options.c
-> > > > +     */
-> > > > +    unsigned int management_flags;
-> > > 
-> > > This feels a bit odd as a comment. I would expect this in the commit or
-> > > something like "even available when management support is not available" but
-> > > this comment feels a bit too "temporary".
-> > 
-> > How is this "temporary"? It does not describe the change, it actually states
-> > why this is handled specially. Your proposal just drops the justification, then
-> > the comment becomes useless IMHO.
-> > 
-> > Would you prefer "Always available to simplify option verification code"?
+On Wed, Jan 11, 2023 at 01:07:28PM +0100, Arne Schwabe wrote:
+> - Move OCC warnings to debug level. This moves the only useful OCC message
+>   of compress-migrate to D_PUSH
+> - remove configure option --enable-strict-options
+> - ignore disable-occ in TLS mode as it is logged under debug now only
+>   disable-occ is now strictly a non-TLS option
+> - mark opt-verify and disable-occ as deprecated.
 > 
-> I feel this because it is always available to avoid ifdefs and therefore to
-> simplify options.c but the information that ifdefs are the alternative is
-> not obvious from the comment or code alone. We have a lot of other variables
-> that are always available but are only used if certain compile options are
-> used. So I feel this comment is temporary because it basically is from the
-> history that here in this case we had ifdefs, so we added here now a comment
-> that there now no longer ifdefs. But in general without the historical
-> context the comment feels odd to me.
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  Changes.rst                          |  6 ++++++
+>  configure.ac                         |  1 -
+>  doc/man-sections/generic-options.rst |  3 ++-
+>  doc/man-sections/server-options.rst  |  4 ++--
+>  src/openvpn/errlevel.h               |  3 ++-
+>  src/openvpn/init.c                   |  2 --
+>  src/openvpn/options.c                | 12 +++++++-----
+>  src/openvpn/ssl.c                    |  5 ++---
+>  8 files changed, 21 insertions(+), 15 deletions(-)
+> 
+> diff --git a/Changes.rst b/Changes.rst
+> index 187d03fcf..35337a483 100644
+> --- a/Changes.rst
+> +++ b/Changes.rst
+> @@ -183,6 +183,12 @@ PF (Packet Filtering) support has been removed
+>     This implies that also ``--management-client-pf`` and any other compile
+>     time or run time related option do not exist any longer.
+>  
+> +Option conflict checking is being deprecated and phased out
+> +    The static option checking is no longer useful in typical setup that
+> +    negotiate most connection parameters. The ``--opt-verify`` and
+> +    ``--occ-disable`` are deprecated and the configure option
 
-I don't have a strong enough opinion about this to argue more about it.
-Gert, feel free to take Arne's ack and just remove the additional comment line
-I added.
+I would suggest "``./configure`` option" just to make it clear that this
+is talking about build-time configuration option. Alternatively we could
+actually write "build configuration option".
+
+> +    enable-strict-options has been removed. Logging of mismatched options has
+> +    been moved to debug logging.
+>  
+>  User-visible Changes
+>  --------------------
 
 Regards,
 -- 
