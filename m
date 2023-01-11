@@ -1,10 +1,9 @@
-Date: Wed, 11 Jan 2023 13:40:50 +0100
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Y76uUkSUP2scgLlu@...2685...>
-References: <20230111120728.1099815-1-arne@...1227...>
+Date: Wed, 11 Jan 2023 13:52:42 +0100
+Message-Id: <20230111125242.21025-1-frank@...2641...>
 MIME-Version: 1.0
-In-Reply-To: <20230111120728.1099815-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Deprecate OCC checking
+Subject: [Openvpn-devel] [PATCH] documentation: update "unsupported options"
+ section
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,56 +12,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Wed, Jan 11, 2023 at 01:07:28PM +0100, Arne Schwabe wrote:
-> - Move OCC warnings to debug level. This moves the only useful OCC message
->   of compress-migrate to D_PUSH
-> - remove configure option --enable-strict-options
-> - ignore disable-occ in TLS mode as it is logged under debug now only
->   disable-occ is now strictly a non-TLS option
-> - mark opt-verify and disable-occ as deprecated.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  Changes.rst                          |  6 ++++++
->  configure.ac                         |  1 -
->  doc/man-sections/generic-options.rst |  3 ++-
->  doc/man-sections/server-options.rst  |  4 ++--
->  src/openvpn/errlevel.h               |  3 ++-
->  src/openvpn/init.c                   |  2 --
->  src/openvpn/options.c                | 12 +++++++-----
->  src/openvpn/ssl.c                    |  5 ++---
->  8 files changed, 21 insertions(+), 15 deletions(-)
-> 
-> diff --git a/Changes.rst b/Changes.rst
-> index 187d03fcf..35337a483 100644
-> --- a/Changes.rst
-> +++ b/Changes.rst
-> @@ -183,6 +183,12 @@ PF (Packet Filtering) support has been removed
->     This implies that also ``--management-client-pf`` and any other compile
->     time or run time related option do not exist any longer.
->  
-> +Option conflict checking is being deprecated and phased out
-> +    The static option checking is no longer useful in typical setup that
-> +    negotiate most connection parameters. The ``--opt-verify`` and
-> +    ``--occ-disable`` are deprecated and the configure option
+We listed those in Changes, but did not update the documentation.
 
-I would suggest "``./configure`` option" just to make it clear that this
-is talking about build-time configuration option. Alternatively we could
-actually write "build configuration option".
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ doc/man-sections/unsupported-options.rst | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-> +    enable-strict-options has been removed. Logging of mismatched options has
-> +    been moved to debug logging.
->  
->  User-visible Changes
->  --------------------
-
-Regards,
+diff --git a/doc/man-sections/unsupported-options.rst b/doc/man-sections/unsupported-options.rst
+index 05ba3ca2..5c4e3a0e 100644
+--- a/doc/man-sections/unsupported-options.rst
++++ b/doc/man-sections/unsupported-options.rst
+@@ -17,6 +17,14 @@ longer supported
+   ``key-method`` weakens the VPN tunnel security.  The old ``key-method``
+   was also only needed when the remote side was older than OpenVPN 2.0.
+ 
++--management-client-pf
++  Removed in OpenVPN 2.6.  The built-in packet filtering (pf) functionality
++  has been removed.
++
++--ncp-disable
++  Removed in OpenVPN 2.6.  This option mainly served a role as debug option
++  when NCP was first introduced.  It should no longer be necessary.
++
+ --no-iv
+   Removed in OpenVPN 2.5.  This option should not be used as it weakens the
+   VPN tunnel security.  This has been a NOOP option since OpenVPN 2.4.
+@@ -30,3 +38,6 @@ longer supported
+   in recent SSL/TLS libraries.  If your certificates does not include *key
+   usage* and *extended key usage* fields, they must be upgraded and the
+   ``--remote-cert-tls`` option should be used instead.
++
++--prng
++  Removed in OpenVPN 2.6.  We now always use the PRNG of the SSL library.
 -- 
-  Frank Lichtenheld
+2.34.1
+
 
