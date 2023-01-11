@@ -1,10 +1,14 @@
-Date: Wed, 11 Jan 2023 08:32:48 +0100 (CET)
-Message-Id: <202301110732.30B7Wm7r067496@...2054...>
+Date: Wed, 11 Jan 2023 08:39:51 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230111062910.1846688-1-selva.nair@...277...>
-References: <20230111062910.1846688-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Include CE_DISABLED status of
- remote in remote-entry-get response
+Message-ID: <Y75nx/NPVwZZePEr@...1296...>
+References: <20230110170257.113527-1-frank@...2641...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="QCFGfzkQiWeAiHIR"
+Content-Disposition: inline
+In-Reply-To: <20230110170257.113527-1-frank@...2641...>
+Subject: Re: [Openvpn-devel] [PATCH] check_engine_keys: make pass with
+ OpenSSL 3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,58 +17,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+--QCFGfzkQiWeAiHIR
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This is really straightforward.  Tested with my .ovpn full with generated
-"remote" lines, some of them changed to "tcp", and "--proto-force tcp-client"
+Hi,
 
-..
-190,1185.server.org,1185,udp,disabled
-191,1186.server.org,1186,udp,disabled
-192,1187.server.org,1187,udp,disabled
-193,1188.server.org,1188,tcp-client,enabled
-194,1189.server.org,1189,tcp-client,enabled
-195,1190.server.org,1190,tcp-client,enabled
+On Tue, Jan 10, 2023 at 06:02:57PM +0100, Frank Lichtenheld wrote:
+> @@ -27,7 +27,7 @@ ${top_builddir}/src/openvpn/openvpn --cd ${top_srcdir}/=
+sample --config sample-co
+>  # first off check we died because of a key mismatch.  If this doesn't
+>  # pass, suspect openssl of returning different messages and update the
+>  # test accordingly
+> -loggrep '(X509_check_private_key:key values mismatch|func\(128\):reason\=
+(116\))' log.txt || { echo "Key mismatch not detected"; exit 1; }
+> +loggrep '(x509 certificate routines:(X509_check_private_key)?:key values=
+ mismatch|func\(128\):reason\(116\))' log.txt || { echo "Key mismatch not d=
+etected"; exit 1; }
 
-(NOTE: "--proto-force tcp" will surprisingly - to me - disable *everything*,
-because "client side TCP profiles are 'tcp-client', not 'tcp'")
+This change does not convince me - assuming normal regex here, the
+original grep would have found any lines with
 
+  X509_check_private_key:key values mismatch
 
-This said, the code with all these strlen() and malloc() calls for every
-single remote looks fumbly...  given that it's not exactly geared for
-maxmimum memory efficientcy, I'm tempted to suggest just having an
-on-the-stack "char remote[1000];" in man_remote_entry_get(), and pass
-a pointer to that + sizeof() to "...callback.remote_entry_count()".
+in them, while the new one would find
 
-But this is something for the next round of cleanup in early 2.7.
+  X509_check_private_key::key values mismatch
+  X509_check_private_key:X509_check_private_key:key values mismatch
 
+but not "the old one with just one :"
 
-I have reordered the example lines in the commit message.
+Should this be
 
-Your patch has been applied to the master and release/2.6 branch.
+  (x509 certificate routines:(X509_check_private_key:)?key va...
 
-commit eafbedc583c48fd46405fa0d635c688ce59c3733 (master)
-commit 69383817b9805137460c0e25ede4b18573cac01d (release/2.6)
-Author: Selva Nair
-Date:   Wed Jan 11 01:29:10 2023 -0500
-
-     Include CE_DISABLED status of remote in remote-entry-get response
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230111062910.1846688-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20230111062910.1846688-1-selva.nair@...277...
-     Signed-off-by: Gert Doering <gert@...1296...>
+with the second ":" part of the (...:)? zero-or-once match?
 
 
---
-kind regards,
+(... as a side note, I hate this test... it's easily the test with the
+most commits to make it behave across platforms and SSL library versions)
 
-Gert Doering
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--QCFGfzkQiWeAiHIR
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJjvmfHAAoJEB2Cnv7KVigS8jAL/AzvojiX/8vkqab58v6Y1VCm
+e5hzvPGZOTw2ZNtY6rvCjkkniD4L1kQXEa0dLomSPwKZ2YDEEt23yp6YCgL5u7gP
+5K2WLsmq1zNPRK7knVGmOoV6/ZWVwBlxY541qFrbeuCkc32XTNs2MGBgZeCLeQYJ
+hee98coeBX8c5z+rPs7H0+36OWoOraXNal6+IQvRjLAUDuf9d+51GiZhmXDzRFvM
+s7h8jDIRkBCdxpEQ/GaHBU5uVzfkV49Wpq144uz3LXwHZ8Q52/kw+OZGHTjQCrs1
+x9rpkrDUsMCoAP7qjARqaWrU5/17csmFGiljIBZyHCVQ91zqR2XAt0XtsabjMCNV
+B+VzYrNnj3rlqjrmPRBECeyDNZsZRv356/l73JFg2S44qTDRO3Ugx+tQ3FTUcIDV
+jhmsUWs0dWNV/bNh/NCNsAljR8DlH2PkQ1/vvM7XrzmQt4PUZ0Ysx2fVwaHj7cj7
+V61hq3odez2GP1ovCNuwah4bz7VBa1JELSIxQtHuBQ==
+=MIRE
+-----END PGP SIGNATURE-----
+
+--QCFGfzkQiWeAiHIR--
 
