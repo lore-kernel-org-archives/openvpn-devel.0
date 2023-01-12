@@ -1,16 +1,10 @@
-Message-ID: <a30bb1da-4ed9-cf08-dd33-87de06f8889f@...2108...>
-Date: Thu, 12 Jan 2023 12:54:26 +0100
-MIME-Version: 1.0
-From: David Sommerseth <dazo+openvpn@...2108...>
+Date: Thu, 12 Jan 2023 13:31:45 +0100 (CET)
+Message-Id: <202301121231.30CCVjEu027018@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230111235052.24855-1-a@...2181...>
 References: <20230111235052.24855-1-a@...2181...>
- <CAGyAFMUqycz=8qZF3VwWJ8YYVaoJkc0Uru_0+Wgo_uo3-pKPfw@...278...>
-Content-Language: en-US
-In-Reply-To: <CAGyAFMUqycz=8qZF3VwWJ8YYVaoJkc0Uru_0+Wgo_uo3-pKPfw@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------piuzJZQyAcBubWqS8ilIoetR"
-Subject: Re: [Openvpn-devel] [PATCH] dco: print proper message in case of
- transport disconnection
+Subject: [Openvpn-devel] [PATCH applied] Re: dco: print proper message in
+ case of transport disconnection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,65 +13,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------piuzJZQyAcBubWqS8ilIoetR
-Content-Type: multipart/mixed; boundary="------------1MRGADD5Cjxbc0R63VBQFuXL";
- protected-headers="v1"
-From: David Sommerseth <dazo+openvpn@...2108...>
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
-Message-ID: <a30bb1da-4ed9-cf08-dd33-87de06f8889f@...2108...>
-Subject: Re: [Openvpn-devel] [PATCH] dco: print proper message in case of
- transport disconnection
-References: <20230111235052.24855-1-a@...2181...>
- <CAGyAFMUqycz=8qZF3VwWJ8YYVaoJkc0Uru_0+Wgo_uo3-pKPfw@...278...>
-In-Reply-To: <CAGyAFMUqycz=8qZF3VwWJ8YYVaoJkc0Uru_0+Wgo_uo3-pKPfw@...278...>
+As discussed on IRC, there will be another patch with a license change
+"really soon now".  THIS patch is important to get into rc2, so people
+can test new kernel modules and get proper DCO exit code reporting.
 
---------------1MRGADD5Cjxbc0R63VBQFuXL
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: base64
+The patch itself is trivial ("compile tested so it won't accidentially
+break something").
 
-T24gMTIvMDEvMjAyMyAwOTo0MywgTGV2IFN0aXBha292IHdyb3RlOg0KPiBIaSwNCj4gDQo+PiAt
-LyogU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IEdQTC0yLjAtb25seSBXSVRIIExpbnV4LXN5c2Nh
-bGwtbm90ZSAqLw0KPj4gKy8qIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wIFdJVEgg
-TGludXgtc3lzY2FsbC1ub3RlICovDQo+IA0KPiBUaGlzIHNwZWNpZmljIGh1bmsgaXMgYmV5b25k
-IG15IHBheSBncmFkZS4NCg0KSSBkdWcgaW50byB0aGlzLiAgTGljZW5zZSB3aXNlLCBHUEwtMi4w
-IGlzIHRoZSBzYW1lIGFzIEdQTC0yLjAtb25seSBpbiANCnRoZSBzcGR4LmRldiBbMV0gc3BlY2lm
-aWNhdGlvbi4gIEJ1dCB0aGUgY2hhbmdlIGlzbid0IGNvcnJlY3QgYWNjb3JkaW5nIA0KdG8gU1BE
-WCBzcGVjaWZpY2F0aW9uIHN0YW5kYXJkIHYzOyB0aGUgc2hvcnQgdmVyc2lvbnMgKEdQTC0qLiop
-IHdhcyANCmRlcHJlY2F0ZWQgaW4gZmF2b3Igb2YgdGhlIGxvbmdlciB2ZXJzaW9uIChHUEwtKi4q
-LW9ubHkpLg0KDQpJIHdvdWxkIGxldCB0aGlzIGNoYW5nZSBwYXNzIG5vdywgYXMgaXQgZG9lc24n
-dCBjaGFuZ2UgdGhlIGxpY2Vuc2UgDQppdHNlbGYuICBMYXRlciBvbiB0aGlzIGNhbiBiZSB1bmlm
-aWVkIHRvIGEgc3BlY2lmaWMgU1BEWCBzcGVjaWZpY2F0aW9uIA0Kc3RhbmRhcmQgYWNyb3NzIGFs
-bCBmaWxlcy4NCg0KDQpbMV0gPGh0dHBzOi8vc3BkeC5kZXYvbGljZW5zZXMvPg0KDQoNCi0tDQpr
-aW5kIHJlZ2FyZHMsDQoNCkRhdmlkIFNvbW1lcnNldGgNCk9wZW5WUE4gSW5jDQoNCg==
+Your patch has been applied to the master and release/2.6 branch.
 
---------------1MRGADD5Cjxbc0R63VBQFuXL--
+commit 67c4eebdaee5b51aa041ee7ed9f697397c04a01f (master)
+commit 1a97b93a347bdc061a039048935d2f6827b3b5e8 (release/2.6)
+Author: Antonio Quartulli
+Date:   Thu Jan 12 00:50:52 2023 +0100
 
---------------piuzJZQyAcBubWqS8ilIoetR
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+     dco: print proper message in case of transport disconnection
 
------BEGIN PGP SIGNATURE-----
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20230111235052.24855-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25977.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-iQIzBAEBCAAdFiEEgDq5E1p1aZrNLFFkhs+UTJZx/fIFAmO/9PIACgkQhs+UTJZx
-/fLEnxAAwMvZsPieOfSLmJL+CsjvDjrOvdRgZDgOtnPEx/O/KXNbA1HPprXj0XRg
-pF7oCjFuMWM2OJ1rlgoPAFA+gh4gYe5LMyucgmxNzQNiEVBJN+xcBkGauh7GwFvz
-R0pd+95CWZVK7LdQ04OksbuxO2K/RhpTGJWKzsTmu0IwGHdzhwWAOgWIAqDwOR9L
-r27zm6S+r344VqKy64z6tDO54cnLgmAt1eSn8ArdPkXWg30SPXBcONCr6xGgTplL
-NLmLVI6bTUepVyULI+xtCCmF4ieTdXb3zok32ABaA7tvNCmTYwsicSnEBWJfrEqI
-cC0mgsvKMvfxY90vwpPAQCAkWjCS3J4TQEYLMS0zzfaVBAcwvktGOZgLevuox6xs
-0IyYZiUffHaYgUGX7T7xGNeJrZxjL2SBYoh5sgyMG6RdG8AmYKnStP/bhS1p7EW0
-7Jm5S0ImcdMHoEcNLGSsBuGr/YesFsGjH/lnsZynhneK7CXssUFExEE9awIdiDI8
-lJeDkGfH1C7TUXwe5XZn5TuBCwm56DRa6lGCttKqP5sM0D9vMvF2VTGbaBCoktwK
-U8PF4QfzfI/0KCaZhSpR+qywSKdysWsYEMysNKUmdAP9PFn3iNitKd8QVq1r/K7d
-5X3nPeyoe6f0yzVP0aRftnLRID/EykzqZ062Jc8l2Px4u/j0q4E=
-=kCIG
------END PGP SIGNATURE-----
 
---------------piuzJZQyAcBubWqS8ilIoetR--
+--
+kind regards,
+
+Gert Doering
+
 
