@@ -1,8 +1,12 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Thu, 12 Jan 2023 01:04:35 +0100
-Message-Id: <20230112000435.14119-1-a@...2181...>
+Message-ID: <3991c027-442a-b869-196e-ceebf3eca1d9@...2181...>
+Date: Thu, 12 Jan 2023 01:29:51 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] dco: send SIGUSR1 upon ping timeout
+Content-Language: en-US
+References: <20230111160848.22906-1-gert@...1296...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20230111160848.22906-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Repair special-casing of EEXIST for
+ Linux/SITNL route install
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,53 +15,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>, Arne Schwabe <arne@...1227...>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-When a peer is removed with reason "ping expire", we should kill the
-instance with SIGUSR1 and not SIGTERM
+Hi,
 
-Cc: Arne Schwabe <arne@...1227...>
-Signed-off-by: Antonio Quartulli <a@...2181...>
---
+for the netlink/sitnl bits: this makes sense to me.
+I agree with Selva that the v6 variant could benefit from the same 
+treatment.
 
-Arne, I am not 100% sure why but it seems for ping-restart we always use
-SIGUSR1, right? but the DCO handling code was apparently using SIGTERM.
+However, this patch can also be hacked on its own
 
-What do you think?
----
- src/openvpn/multi.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Acked-by: Antonio Quartulli <a@...2181...>
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 99123c39..10efffec 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -3234,10 +3234,12 @@ process_incoming_del_peer(struct multi_context *m, struct multi_instance *mi,
-                           dco_context_t *dco)
- {
-     const char *reason = "ovpn-dco: unknown reason";
-+    int signal = SIGTERM;
-     switch (dco->dco_del_peer_reason)
-     {
-         case OVPN_DEL_PEER_REASON_EXPIRED:
-             reason = "ovpn-dco: ping expired";
-+            signal = SIGUSR1;
-             break;
- 
-         case OVPN_DEL_PEER_REASON_TRANSPORT_ERROR:
-@@ -3270,7 +3272,7 @@ process_incoming_del_peer(struct multi_context *m, struct multi_instance *mi,
-     mi->context.sig->signal_text = reason;
-     mi->context.c2.dco_read_bytes = dco->dco_read_bytes;
-     mi->context.c2.dco_write_bytes = dco->dco_write_bytes;
--    multi_signal_instance(m, mi, SIGTERM);
-+    multi_signal_instance(m, mi, signal);
- }
- 
- bool
+On 11/01/2023 17:08, Gert Doering wrote:
+> The code in sitnl_route_set() used to treat "route can not be installed
+> because it already exists" (EEXIST) as "not an error".
+> 
+> This is arguably a reasonable approach, but needs to handled higher
+> up - if the low level add_route() function say "no error", we will try
+> to remove that route later on in delete_route(), possibly removing
+> someone else's "already existing" route then.
+> 
+> So:
+>   - remove special case in sitnl_route_set()
+>   - do not pass NLM_F_REPLACE flag to sitnl_route_set() call - this would
+>     cause netlink to just replace existing routes, never return EEXIST
+>     (see "man netlink(7)")
+>   - add detailed return code handling to route_add(), assign "2" on "-EEXIST"
+>     (and log appropriate message).
+> 
+> (Note: sitnl_route_set() is a common function for sitnl route add and
+> delete, but EEXIST can not happen on delete - so this change has no
+> impact for the "delete" case)
+> 
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>   src/openvpn/networking_sitnl.c |  6 +-----
+>   src/openvpn/route.c            | 10 ++++++++--
+>   2 files changed, 9 insertions(+), 7 deletions(-)
+> 
+> diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
+> index fe124616..92f30044 100644
+> --- a/src/openvpn/networking_sitnl.c
+> +++ b/src/openvpn/networking_sitnl.c
+> @@ -944,10 +944,6 @@ sitnl_route_set(int cmd, uint32_t flags, int ifindex, sa_family_t af_family,
+>       }
+>   
+>       ret = sitnl_send(&req.n, 0, 0, NULL, NULL);
+> -    if (ret == -EEXIST)
+> -    {
+> -        ret = 0;
+> -    }
+>   err:
+>       return ret;
+>   }
+> @@ -1177,7 +1173,7 @@ sitnl_route_add(const char *iface, sa_family_t af_family, const void *dst,
+>           scope = RT_SCOPE_LINK;
+>       }
+>   
+> -    return sitnl_route_set(RTM_NEWROUTE, NLM_F_CREATE | NLM_F_REPLACE, ifindex,
+> +    return sitnl_route_set(RTM_NEWROUTE, NLM_F_CREATE, ifindex,
+>                              af_family, dst, prefixlen, gw, table, metric, scope,
+>                              RTPROT_BOOT, RTN_UNICAST);
+>   }
+> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+> index 99f948ba..2db127bb 100644
+> --- a/src/openvpn/route.c
+> +++ b/src/openvpn/route.c
+> @@ -1594,8 +1594,14 @@ add_route(struct route_ipv4 *r,
+>       }
+>   
+>       status = 1;
+> -    if (net_route_v4_add(ctx, &r->network, netmask_to_netbits2(r->netmask),
+> -                         &r->gateway, iface, 0, metric) < 0)
+> +    int ret = net_route_v4_add(ctx, &r->network, netmask_to_netbits2(r->netmask),
+> +                               &r->gateway, iface, 0, metric);
+> +    if (ret == -EEXIST)
+> +    {
+> +        msg(D_ROUTE, "NOTE: Linux route add command failed because route exists");
+> +        status = 2;
+> +    }
+> +    else if (ret < 0)
+>       {
+>           msg(M_WARN, "ERROR: Linux route add command failed");
+>           status = 0;
+
 -- 
-2.38.2
-
+Antonio Quartulli
 
