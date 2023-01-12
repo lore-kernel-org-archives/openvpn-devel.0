@@ -1,11 +1,14 @@
-MIME-Version: 1.0
+Date: Thu, 12 Jan 2023 08:55:37 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <Y7+8+QVS4iM6DgB/@greenie.muc.de>
 References: <20230111160848.22906-1-gert@...1296...>
  <3991c027-442a-b869-196e-ceebf3eca1d9@...2181...>
-In-Reply-To: <3991c027-442a-b869-196e-ceebf3eca1d9@...2181...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 12 Jan 2023 02:50:27 -0500
-Message-ID: <CAKuzo_iZO9WW8xUJS1Qc-DNF5A2+UhK_0v8bzt21A7z9KG8PHg@...278...>
-Content-Type: multipart/alternative; boundary="000000000000c03f0005f20c5f32"
+ <CAKuzo_iZO9WW8xUJS1Qc-DNF5A2+UhK_0v8bzt21A7z9KG8PHg@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="mPAIsP2+lIi/YFef"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_iZO9WW8xUJS1Qc-DNF5A2+UhK_0v8bzt21A7z9KG8PHg@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] Repair special-casing of EEXIST for
  Linux/SITNL route install
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,58 +19,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: Antonio Quartulli <a@...2181...>, Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---000000000000c03f0005f20c5f32
-Content-Type: text/plain; charset="UTF-8"
-
-On Wed, Jan 11, 2023 at 7:30 PM Antonio Quartulli <a@...2181...> wrote:
-
-> Hi,
->
-> for the netlink/sitnl bits: this makes sense to me.
-> I agree with Selva that the v6 variant could benefit from the same
-> treatment.
->
-> However, this patch can also be hacked on its own
->
-> Acked-by: Antonio Quartulli <a@...2181...>
->
-
-Not so fast.
-As it stands the patch introduces a bug that was not there: existing v6
-routes can cause CONENCTED,ROUTE_ERROR instead of CONNECTED,SUCCESS. That's
-why I did not ACK it.
-
-Not sure I understand "can also be hacked alone".
-
-Selva
-
---000000000000c03f0005f20c5f32
-Content-Type: text/html; charset="UTF-8"
+--mPAIsP2+lIi/YFef
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
-<div dir=3D"ltr" class=3D"gmail_attr">On Wed, Jan 11, 2023 at 7:30 PM Anton=
-io Quartulli &lt;<a href=3D"mailto:a@...2181..." target=3D"_blank">a@...2707...=
-1...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"mar=
-gin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1=
-ex">Hi,<br>
-<br>
-for the netlink/sitnl bits: this makes sense to me.<br>
-I agree with Selva that the v6 variant could benefit from the same <br>
-treatment.<br>
-<br>
-However, this patch can also be hacked on its own<br>
-<br>
-Acked-by: Antonio Quartulli &lt;<a href=3D"mailto:a@...2181..." target=3D"_=
-blank">a@...2181...</a>&gt;<br></blockquote><div><br></div><div>Not so fast=
-.=C2=A0</div><div>As it stands the patch introduces=C2=A0a bug that was not=
- there: existing v6 routes can cause CONENCTED,ROUTE_ERROR instead of CONNE=
-CTED,SUCCESS. That&#39;s why I did not ACK it.</div><div><br></div><div>Not=
- sure I understand &quot;can also be hacked alone&quot;.</div><div><br></di=
-v><div>Selva</div></div></div>
+Hi,
 
---000000000000c03f0005f20c5f32--
+On Thu, Jan 12, 2023 at 02:50:27AM -0500, Selva Nair wrote:
+> Not sure I understand "can also be hacked alone".
+
+I think that was intended to be "acked" alone :-)
+
+Anyway, thanks for spotting this, and shame on me for only testing v4
+("the v6 stuff is new and shiny and has none of these problems") - but
+of course, the v6 netlink stuff was written together with the v4 netlink
+stuff, and shares traits.
+
+I'll send a v2 with v6 fixed and tested.
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--mPAIsP2+lIi/YFef
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJjv7z5AAoJEB2Cnv7KVigS35IL/2eXn0KBIVKwIJRJzK+6KtQM
+1U4ugNaKhqtCtGwQfn1RoDY7gnTJMy2FYLzm4CdDA/qPJyYoyHETeJ4WBwmaG1dj
+h2gtZX2QX7awmdbBIqzggkWHfGpNOBGMytMlup++nZrKw5lk3wK2ZEb37DJm3irM
+s/dU3Fk/B9Oi2By7uMSk/m9qpP4aEtoxdHASDVpFP2SS2YpmipXBB+lLF9R492QV
+nkcWOWpyyRKkkLDfd/4zeFSr5LV/YMTHh3M2Xvykufrs5u/D+EcgVxCmt+CBEMku
+gN7iRAl9Il/gxwDdpB87Lk9nQxrPoCxkhA+fE+w16JGPUg16rVco6481qn+HVMc8
+WaqaTel0CRKQ2VrMp2vWnoUIsLfuWx+eZys44g1oZ5i0DiqnHKnd0vDZJ65MNMgS
+hpk0fBq2YPrdsJjKyksTS6ByILjmV4AS0L9FXk+eYN2FeP9mFxNRkulIb/WAqFPK
+Xec95P3dgmYPu1M3+aJi7nn9KDWqtofr4TFv9T8QFg==
+=6dqE
+-----END PGP SIGNATURE-----
+
+--mPAIsP2+lIi/YFef--
 
