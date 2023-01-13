@@ -1,8 +1,14 @@
-Date: Thu, 12 Jan 2023 22:22:01 +0100
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Y8B5+XcKvn5T6gV4@...2685...>
+Date: Fri, 13 Jan 2023 08:35:40 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <Y8EJzGoG6yEJaGmU@...1296...>
+References: <20230111235052.24855-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.6_rc2 released
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="poIZU2OgQLNv1cqE"
+Content-Disposition: inline
+In-Reply-To: <20230111235052.24855-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] dco: print proper message in case of
+ transport disconnection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,70 +17,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net, kp@...1249...
+
+--poIZU2OgQLNv1cqE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
 
-The OpenVPN community project team is proud to release OpenVPN 2.6_rc2.
-This is the second release candidate (and the fourth beta release) for
-the feature release 2.6.0.
+Hi,
 
-Changes since RC1:
+On Thu, Jan 12, 2023 at 12:50:52AM +0100, Antonio Quartulli wrote:
+> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+> index 77dcaa60..99123c39 100644
+> --- a/src/openvpn/multi.c
+> +++ b/src/openvpn/multi.c
+> @@ -3244,6 +3244,10 @@ process_incoming_del_peer(struct multi_context *m,=
+ struct multi_instance *mi,
+>              reason =3D "ovpn-dco: transport error";
+>              break;
+>=20=20
+> +        case OVPN_DEL_PEER_REASON_TRANSPORT_DISCONNECT:
+> +            reason =3D "ovpn-dco: transport disconnected";
+> +            break;
+> +
 
-* Add rate limiter for incoming "initial handshake packets",
-  enabled by default with a limit of 100 packets per 10 seconds.
-  This change makes OpenVPN servers uninteresting as an UDP reflection DDoS engine.
-* Report CONNECTED,ROUTE_ERROR to management GUI if connection to server succeeds
-  but not all routes can be installed (Windows and Linux/Netlink only, so far) 
-* Various bugfixes, see https://github.com/OpenVPN/openvpn/blob/v2.6_rc2/Changes.rst
+We were too fast in ACKing and merging this "because rc2" - this breaks
+compilation on FreeBSD+DCO, because it only adds the necessary enum
+element for Linux.
 
-Windows MSI changes since RC1:
-* Included openvpn-gui updated to 11.35.0.0. See https://github.com/OpenVPN/openvpn-gui/blob/v11.35.0.0/CHANGES.rst.
-  * New feature: Support the CONNECTED,ROUTE_ERROR management message (see above) 
-* Fix some issues related to upgrading:
-  * "Run on logon" option not preserved when updating from 2.5 to 2.6
-  * Fix check for running service when upgrading from old NSIS installations 
+This being an enum, I can't even add an "#ifdef ...TRANSPORT_DISCONNECT"
+here, and because these codes need to be synchronized between kernel and
+userland, I can't "just add it to freebsd_dco.h".
 
-Debian packages changes since RC1:
+So consider me not very amused...
 
-* Packages for Debian bookworm are now available. 
+As a quick bandaid, I'll send a patch that adds an #ifdef TARGET_LINUX
+around this clause so I can update the FreeBSD openvpn-devel port - but
+that is not a really good solution either.  @kp, what would you suggest
+how to handle this on the FreeBSD side?
 
-Some highlights of 2.6.0 are:
+gert
 
-* Data Channel Offload (DCO) kernel acceleration support for Windows, Linux, and FreeBSD.
-* OpenSSL 3 support.
-* Improved handling of tunnel MTU, including support for pushable MTU.
-* Reworked TLS handshake, making OpenVPN immune to replay-packet state exhaustion attacks.
-* Added --peer-fingerprint mode for a more simplistic certificate setup and verification.
-* Improved protocol negotiation, leading to faster connection setup.
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-More details can be found in the Changes document:
+Gert Doering - Munich, Germany                             gert@...1296...
 
-<https://github.com/OpenVPN/openvpn/blob/release/2.6/Changes.rst>
+--poIZU2OgQLNv1cqE
+Content-Type: application/pgp-signature; name="signature.asc"
 
-(The Changes document also contains a section with work-arounds for
-common problems encountered when using OpenVPN with OpenSSL 3)
+-----BEGIN PGP SIGNATURE-----
 
-Source code and Windows installers can be downloaded from our download page:
+iQGcBAEBAgAGBQJjwQnMAAoJEB2Cnv7KVigSYdgL/2EWJmEzb30EvxbrDOmjkwcx
+NKhK3NIfv62mH92G5oTMWelinhRjkAUaPV4Qn1ReGZQVFNOrWQ4oKa50AO4gUlfQ
+nYIsqe7bl9dVJi/VpONm3qlxU/Kyhbh+oJPfkroDqQc8RKysnGUYbNJX3+8d/sGc
+3ioMqrdw30tAaQCQglgNzDCA7UIrrN/aVA8+NC3Bgki7DVzir8MaWWc05OJ5qNYc
+Ej2KBv786l2/819G8BAA6bS7B5VK6wUHsa2+JbcjedDRxvWWcaQlyop5ndlsxNaa
+QADIA1vcrirJXw1C1OiI/4wWRv6L7rONbf2h3R1q0o2Xmqm/wNAh8pFQOeOC5PYf
+tyCtColN0gza61vQeEMJ17mE2YAlDwFaxBBAc6x1JOV219ywTGk8vwrRCn7X5UG6
+ZRS7MIvrEw6on4p9TMCZC3hHY7VLYXotPnImU8PE83NCZOSFMTT1e+d72Csb3rVP
+y8/PCB5KPjVl02laIdZ2c8f3EUPhGDevbNSOt3kZzw==
+=WYYK
+-----END PGP SIGNATURE-----
 
-<https://community.openvpn.net/openvpn/wiki/Downloads>
-
-(The Windows installers use OpenSSL 3 now)
-
-Debian and Ubuntu packages are available in the official apt repositories:
-
-<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
-
-(Note that as a Beta release, packages are only available in testing
-and release/2.6 repositories, not in stable)
-
-On Red Hat derivatives we recommend using the Fedora Copr repository.
-
-<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release/>
-
-
-Kind regards,
--- 
-  Frank Lichtenheld
+--poIZU2OgQLNv1cqE--
 
