@@ -1,11 +1,9 @@
-Message-ID: <b7160a8e-8d4c-606d-1b08-de9f069d3152@...2181...>
-Date: Fri, 13 Jan 2023 14:32:47 +0100
-MIME-Version: 1.0
-Content-Language: en-US
-References: <20230113080745.82783-1-gert@...1296...>
-From: Antonio Quartulli <a@...2181...>
+Date: Fri, 13 Jan 2023 14:44:44 +0100 (CET)
+Message-Id: <202301131344.30DDiiim049907@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20230113080745.82783-1-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix
+References: <20230113080745.82783-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix
  OVPN_DEL_PEER_REASON_TRANSPORT_DISCONNECT breakage on FreeBSD+DCO
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -15,40 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Antonio, thanks for the ACK, and yes, we need a FreeBSD 14 buildbot
+(Github Actions has no support for "not yet released" OSes yet, as
+far as I'm aware)
 
-On 13/01/2023 09:07, Gert Doering wrote:
-> commit 67c4eebdae introduces a new peer disconnect reason (transport
-> disconnected, aka "TCP session closed") which breaks compilation on
-> FreeBSD - OVPN_DEL_PEER_REASON_TRANSPORT_DISCONNECT not part of the
-> enum in freebsd_dco.h, and no kernel support for TCP anyway.
-> 
-> This patch is an intermediate bandaid, making the offending code in
-> multi.c "linux only" while a better solution is discussed.
-> 
-> Signed-off-by: Gert Doering <gert@...1296...>
+Patch has been applied to the master and release/2.6 branch.
 
-Hi,
+commit cf545d603ecd9fbacc6bd519efaa92d60f944287 (master)
+commit 480ad2a84e2983e8a1b61d537cf82da5c5141853 (release/2.6)
+Author: Gert Doering
+Date:   Fri Jan 13 09:07:45 2023 +0100
 
-as we are discussing in a nother thread and on IRC, we need to come up 
-with a better solution that is flexible enough to prevent this from 
-happening in the future.
+     Fix OVPN_DEL_PEER_REASON_TRANSPORT_DISCONNECT breakage on FreeBSD+DCO
 
-There are some floating ideas.
-Anyway, the discussion will continue in the other thread.
-
-Regarding this patch:
-Acked-by: Antonio Quartulli <a@...2181...>
-
-Maybe we need a fbsd14 buildbot?
-
-Cheers,
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20230113080745.82783-1-gert@...1296...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20230113080745.82783-1-gert@...1296...
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
--- 
-Antonio Quartulli
+--
+kind regards,
+
+Gert Doering
+
 
