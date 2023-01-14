@@ -1,11 +1,10 @@
-From: selva.nair@...277...
-Date: Fri, 13 Jan 2023 18:57:54 -0500
-Message-Id: <20230113235754.1942385-2-selva.nair@...277...>
-In-Reply-To: <20230113235754.1942385-1-selva.nair@...277...>
-References: <20230113235754.1942385-1-selva.nair@...277...>
+Message-ID: <6c0e8ca1-9518-1bc0-65cb-f742311ef08f@...1227...>
+Date: Sat, 14 Jan 2023 18:29:15 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/2] Cleanup route error and debug logging
- on Windows
+From: Arne Schwabe <arne@...1227...>
+Content-Language: en-GB
+Subject: [Openvpn-devel] Amend OpenVPN license to allow continued mbed TLS
+ support (allow mbed TLS 3.x linking)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,200 +13,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: Selva Nair <selva.nair@...277...>
+Hey,
 
-Use a unified logging format for various route-methods
+This is the first round and will be only to the openvpn-devel list. 
+After that I will also write to individuals email addresses but I want 
+to start with sending this to the devel list.
 
-- Route add/delete errors are always logged with M_WARN, so
-  log only additional information (succeed/exists) with D_ROUTE.
+We are writing to you since you are or were a contributor in past to 
+OpenVPN and we would like to  ask for your permission to amend the 
+license of OpenVPN.
 
-- Non-windows platforms log route errors with a prefix "ERROR:" and
-  debug info with "ROUTE:". Do the same on Windows. Do not log
-  errors or success multiple times.
+OpenVPN 2.x is licensed under the GPL v2. This license has served us 
+well in the past and we are not trying to change that. However, changes 
+in licenses of our dependencies make this change necessary.
 
-- In add_route_ipv6, log the interface id instead of device name
-  as the latter always point to the tun/tap adapter name on Windows.
+Both mbed TLS and OpenSSL nowadays use the Apache 2.x license. For the 
+OpenSSL library we have a special exception that allows us linking with 
+it. For newer mbed TLS version, we cannot do this any more. 
+Compatibility of Apache 2.x and GPL 2.x has to our knowledge never been 
+tested in court and even FSF and ASF disagree about the issue 
+(https://www.apache.org/licenses/GPL-compatibility.html)
 
-Log lines prefixed with a PACKAGE_NAME "ROUTE" are unchanged.
-They appear to use the same format on all platforms.
+We would like to be able to continue to build/ship OpenVPN with mbed 
+TLS. We want all contributors to ask if they agree to license change 
+that adds explicit permission to link with Apache 2 licensed libraries:
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/route.c | 63 +++++++++++++++++++++++++++++++++------------
- 1 file changed, 46 insertions(+), 17 deletions(-)
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index fe5cda2a..8117c648 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1640,38 +1640,45 @@ add_route(struct route_ipv4 *r,
- 
-         argv_msg(D_ROUTE, &argv);
- 
-+        const char *method = "service";
-         if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_SERVICE)
-         {
-             status = add_route_service(r, tt);
--            msg(D_ROUTE, "Route addition via service %s", (status == RTA_SUCCESS) ? "succeeded" : "failed");
-         }
-         else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_IPAPI)
-         {
-             status = add_route_ipapi(r, tt, ai);
--            msg(D_ROUTE, "Route addition via IPAPI %s", (status == RTA_SUCCESS) ? "succeeded" : "failed");
-+            method = "ipapi";
-         }
-         else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_EXE)
-         {
-             netcmd_semaphore_lock();
-             status = openvpn_execve_check(&argv, es, 0, "ERROR: Windows route add command failed");
-             netcmd_semaphore_release();
-+            method = "route.exe";
-         }
-         else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_ADAPTIVE)
-         {
-             status = add_route_ipapi(r, tt, ai);
--            msg(D_ROUTE, "Route addition via IPAPI %s [adaptive]", (status == RTA_SUCCESS) ? "succeeded" : "failed");
-+            method = "ipapi [adaptive]";
-             if (status == RTA_ERROR)
-             {
-                 msg(D_ROUTE, "Route addition fallback to route.exe");
-                 netcmd_semaphore_lock();
-                 status = openvpn_execve_check(&argv, es, 0, "ERROR: Windows route add command failed [adaptive]");
-                 netcmd_semaphore_release();
-+                method = "route.exe";
-             }
-         }
-         else
-         {
-             ASSERT(0);
-         }
-+        if (status != RTA_ERROR) /* error is logged upstream */
-+        {
-+            msg(D_ROUTE, "Route addition via %s %s", method, (status == RTA_SUCCESS) ?
-+                "succeeded" : "failed because route exists");
-+        }
-     }
- 
- #elif defined (TARGET_SOLARIS)
-@@ -1867,7 +1874,6 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-                openvpn_net_ctx_t *ctx)
- {
-     int status = 0;
--    const char *device = tt->actual_name;
-     bool gateway_needed = false;
- 
-     if (!(r6->flags & RT_DEFINED) )
-@@ -1879,6 +1885,7 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-     struct gc_arena gc = gc_new();
- 
- #ifndef _WIN32
-+    const char *device = tt->actual_name;
-     if (r6->iface != NULL)              /* vpn server special route */
-     {
-         device = r6->iface;
-@@ -1911,8 +1918,14 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-     }
- #endif
- 
-+#ifndef _WIN32
-     msg( M_INFO, "add_route_ipv6(%s/%d -> %s metric %d) dev %s",
-          network, r6->netbits, gateway, r6->metric, device );
-+#else
-+    msg( M_INFO, "add_route_ipv6(%s/%d -> %s metric %d) IF %lu",
-+         network, r6->netbits, gateway, r6->metric,
-+         r6->adapter_index ? r6->adapter_index : tt->adapter_index);
-+#endif
- 
-     /*
-      * Filter out routes which are essentially no-ops
-@@ -2851,14 +2864,16 @@ add_route_ipapi(const struct route_ipv4 *r, const struct tuntap *tt, DWORD adapt
- doublebreak:
-             if (status != NO_ERROR)
-             {
--                msg(M_WARN, "ROUTE: route addition failed using CreateIpForwardEntry: %s [status=%u if_index=%u]",
--                    strerror_win32(status, &gc),
--                    (unsigned int)status,
--                    (unsigned int)if_index);
-                 if (status == ERROR_OBJECT_ALREADY_EXISTS)
-                 {
-                     ret = RTA_EEXIST;
-                 }
-+                else
-+                {
-+                    msg(M_WARN, "ERROR: route addition failed using CreateIpForwardEntry: "
-+                        "%s [status=%u if_index=%u]", strerror_win32(status, &gc),
-+                        (unsigned int)status, (unsigned int)if_index);
-+                }
-             }
-         }
-     }
-@@ -2894,7 +2909,7 @@ del_route_ipapi(const struct route_ipv4 *r, const struct tuntap *tt)
-         }
-         else
-         {
--            msg(M_WARN, "ROUTE: route deletion failed using DeleteIpForwardEntry: %s",
-+            msg(M_WARN, "ERROR: route deletion failed using DeleteIpForwardEntry: %s",
-                 strerror_win32(status, &gc));
-         }
-     }
-@@ -2918,10 +2933,13 @@ do_route_service(const bool add, const route_message_t *rt, const size_t size, H
- 
-     if (ack.error_number != NO_ERROR)
-     {
--        msg(M_WARN, "ROUTE: route %s failed using service: %s [status=%u if_index=%d]",
--            (add ? "addition" : "deletion"), strerror_win32(ack.error_number, &gc),
--            ack.error_number, rt->iface.index);
-         ret = (ack.error_number == ERROR_OBJECT_ALREADY_EXISTS) ? RTA_EEXIST : RTA_ERROR;
-+        if (ret == RTA_ERROR)
-+        {
-+            msg(M_WARN, "ERROR: route %s failed using service: %s [status=%u if_index=%d]",
-+                (add ? "addition" : "deletion"), strerror_win32(ack.error_number, &gc),
-+                ack.error_number, rt->iface.index);
-+        }
-         goto out;
-     }
- 
-@@ -3022,9 +3040,17 @@ route_ipv6_ipapi(const bool add, const struct route_ipv6 *r, const struct tuntap
- out:
-     if (err != NO_ERROR)
-     {
--        msg(M_WARN, "ROUTE: route %s failed using ipapi: %s [status=%lu if_index=%lu]",
--            (add ? "addition" : "deletion"), strerror_win32(err, &gc), err, fwd_row->InterfaceIndex);
-         ret = (err == ERROR_OBJECT_ALREADY_EXISTS) ? RTA_EEXIST : RTA_ERROR;
-+        if (ret == RTA_ERROR)
-+        {
-+            msg(M_WARN, "ERROR: route %s failed using ipapi: %s [status=%lu if_index=%lu]",
-+                (add ? "addition" : "deletion"), strerror_win32(err, &gc), err,
-+                fwd_row->InterfaceIndex);
-+        }
-+        else if (add)
-+        {
-+            msg(D_ROUTE, "IPv6 route addition using ipapi failed because route exists");
-+        }
-     }
-     else
-     {
-@@ -3076,9 +3102,12 @@ do_route_ipv6_service(const bool add, const struct route_ipv6 *r, const struct t
-     }
- 
-     status = do_route_service(add, &msg, sizeof(msg), tt->options.msg_channel);
--    msg(D_ROUTE, "IPv6 route %s via service %s",
--        add ? "addition" : "deletion",
--        (status == RTA_SUCCESS) ? "succeeded" : "failed");
-+    if (status != RTA_ERROR)
-+    {
-+        msg(D_ROUTE, "IPv6 route %s via service %s",
-+            add ? "addition" : "deletion",
-+            (status == RTA_SUCCESS) ? "succeeded" : "failed because route exists");
-+    }
-     return status;
- }
- 
--- 
-2.34.1
+Special exception for linking OpenVPN with Apache 2 licensed libraries:
+
+   In addition, as a special exception, OpenVPN Inc and contributors
+   give permission to link the code of this program to libraries with the
+   "APACHE LICENSE, VERSION 2.0", and distribute linked combination
+   including the two.  You must obey the GNU General Public License in
+   all respects for all of the code used other than these libraries.  If
+   you modify this file, you may extend this exception to your version of
+   the file, but you are not obligated to do so.  If you do not wish to
+   do so, delete this exception statement from your version.
+
+
+You might wonder why we are going for a generic Apache 2 exception 
+rather than one targeted at mbed TLS specifically. We believe that a 
+generic exemption is better since it also implicitly allows forks of 
+mbed TLS and even if a SSL library might emerge in the future we do not 
+have to discuss if it is a fork or not. Also granting an explicit 
+exception for Apache 2 style licenses reaffirms the linking to OpenSSL.
+
+We also considered going for a change from GPL2 to GPL2+ but we think 
+that GPL3 would hurt the ability to distribute OpenVPN as part of router 
+or other embedded devices as the GPL3 has been explicitly developed (at 
+least in part) to make this use case harder/impossible 
+(https://en.wikipedia.org/wiki/Tivoization)
+
+If you are okay with this, please reply to this mail and confirm that. 
+Otherwise we might be forced to remove and/or rewrite your code.
+
+
+As a reminder, the The current OpenSSL exception reads as follows 
+(COPYING). We don't intend to change or remote it:
+
+   Special exception for linking OpenVPN with OpenSSL:
+
+   In addition, as a special exception, OpenVPN Inc gives
+   permission to link the code of this program with the OpenSSL
+   library (or with modified versions of OpenSSL that use the same
+   license as OpenSSL), and distribute linked combinations including
+   the two.  You must obey the GNU General Public License in all
+   respects for all of the code used other than OpenSSL.  If you modify
+   this file, you may extend this exception to your version of the
+   file, but you are not obligated to do so.  If you do not wish to
+   do so, delete this exception statement from your version.
 
 
