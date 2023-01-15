@@ -1,12 +1,15 @@
-MIME-Version: 1.0
+Date: Sun, 15 Jan 2023 13:55:29 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <Y8P3wV1Icm6AGSLu@...1296...>
 References: <6c0e8ca1-9518-1bc0-65cb-f742311ef08f@...1227...>
  <CAFHpkQF4dtn0DV-nHMeUfowA2EszAscpbMVeGk6boiXYhWc5Kw@...278...>
  <247a0f9f-28d7-335b-0891-a49b0ead989e@...1227...>
-In-Reply-To: <247a0f9f-28d7-335b-0891-a49b0ead989e@...1227...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Sun, 15 Jan 2023 18:52:40 +0600
-Message-ID: <CAFHpkQHTd5kvRZT762O1Vx2kCX9H1uxWXXtRDE9LfRWGY4xA_w@...278...>
-Content-Type: multipart/alternative; boundary="000000000000c9122b05f24cf1f4"
+ <CAFHpkQHTd5kvRZT762O1Vx2kCX9H1uxWXXtRDE9LfRWGY4xA_w@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="uk4vvPXCPdt9qfnD"
+Content-Disposition: inline
+In-Reply-To: <CAFHpkQHTd5kvRZT762O1Vx2kCX9H1uxWXXtRDE9LfRWGY4xA_w@...278...>
 Subject: Re: [Openvpn-devel] Amend OpenVPN license to allow continued mbed
  TLS support (allow mbed TLS 3.x linking)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,54 +20,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: ???????? ?????????????? <chipitsine@...277...>
+Cc: Arne Schwabe <arne@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---000000000000c9122b05f24cf1f4
-Content-Type: text/plain; charset="UTF-8"
+--uk4vvPXCPdt9qfnD
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-subject says "allow mbed TLS 3.x linking".
-is OpenSSL currently restrictive as well ?
+Hi,
 
-=D0=B2=D1=81, 15 =D1=8F=D0=BD=D0=B2. 2023 =D0=B3. =D0=B2 18:24, Arne Schwab=
-e <arne@...1227...>:
+On Sun, Jan 15, 2023 at 06:52:40PM +0600, ???????? ?????????????? wrote:
+> subject says "allow mbed TLS 3.x linking".
+> is OpenSSL currently restrictive as well ?
 
-> Am 15.01.23 um 13:21 schrieb =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=
-=D0=B8=D1=86=D0=B8=D0=BD:
-> > I am fine with dropping MBED TLS for good
-> >
->
-> Please read the full mail. This also affects OpenSSL. We would like to
-> reaffirm that contributors are still okay linking with OpenSSL even
-> after OpenSSL changed its license to Apache2.
->
-> Arne
->
->
+OpenSSL has always been restrictive, which is why our license has
+always had a permit-linking-to-OpenSSL exception.
 
---000000000000c9122b05f24cf1f4
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+gert
 
-<div dir=3D"ltr"><div dir=3D"ltr">subject says &quot;allow mbed TLS 3.x lin=
-king&quot;.</div><div>is OpenSSL currently restrictive as well ?</div></div=
-><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">=D0=
-=B2=D1=81, 15 =D1=8F=D0=BD=D0=B2. 2023 =D0=B3. =D0=B2 18:24, Arne Schwabe &=
-lt;<a href=3D"mailto:arne@...1227...">arne@...1227...</a>&gt;:<br></div><bl=
-ockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-lef=
-t:1px solid rgb(204,204,204);padding-left:1ex">Am 15.01.23 um 13:21 schrieb=
- =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD:<br>
-&gt; I am fine with dropping MBED TLS for good<br>
-&gt;<br>
-<br>
-Please read the full mail. This also affects OpenSSL. We would like to <br>
-reaffirm that contributors are still okay linking with OpenSSL even <br>
-after OpenSSL changed its license to Apache2.<br>
-<br>
-Arne<br>
-<br>
-</blockquote></div>
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
---000000000000c9122b05f24cf1f4--
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--uk4vvPXCPdt9qfnD
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJjw/fBAAoJEB2Cnv7KVigSmgUL/jlBUXLhl7zrOVQBq3z/WNk0
+irkTH9FiKNuFBAlke7yIWP0JuuFNNVgTedbZqFQi6B9dXEgiiXr3ZqfaQFzaWs95
+f7x7H9t/iqnHFnIhT7GlZj8kMOquqjs5L9hMZHZcdb3QZqr28PP8PYNDun7XTZrV
++MJwk+zRRy6TuOPmIMRHBYQ3xxzMzmZ0Fl53d+lgh0N9jv4RO8ZlSKFy7j0g7GKM
+boJ6Dj12tNNEC0ZIaUHElFYlugsOLjSRaoaiyB9Wrl57+M7HmW1O8/oWbza3a7H8
+goIydxy6lMdJZNsufb8jeJxAo74JPf2hpNyYU8/NRx5VvrOEEfqcc7XT0Szz5q7Q
+40T8pWIqsDZPzn+tdJJhqGBmw+AEFNh8i/TFUi/6QOYcncz4NWa6cHofGroJt4MT
+7wdmQMzlXm9cbz/B3vFc1zBesa4zai2lHkhLTR65LgUDE0qAocP0qwnElYWb7o6r
+KC0owmt6P3I9eBvOAiU2tAdvauB1MvEvTVRiHOJ4ug==
+=VF7q
+-----END PGP SIGNATURE-----
+
+--uk4vvPXCPdt9qfnD--
 
