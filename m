@@ -1,13 +1,19 @@
-Date: Sun, 15 Jan 2023 15:55:52 +0100
+Date: Sun, 15 Jan 2023 16:04:45 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <Y8QT+HkoI1Hrn3BQ@...1296...>
+Message-ID: <Y8QWDbHsGP9zBcw6@...1296...>
 References: <6c0e8ca1-9518-1bc0-65cb-f742311ef08f@...1227...>
- <CAKuzo_i+zwgpg_zq050WQtNm+s0p-OMDkLGUUHn+hSApJfrorA@...278...>
+ <f52172ec20da430975373e7192380874bc600062.camel@...2316...>
+ <43485320-4957-8ac1-7bab-4e769000d156@...1227...>
+ <234ef71a00e43f74bda0836d66c63a3d8c54a74c.camel@...2316...>
+ <Y8PnGp9Rt/n9FODz@...1296...>
+ <7e0167f8-b1d3-a3f7-db40-5a441dba602f@...68...>
+ <44a2128f-2ade-5def-beb1-20fd48d838d2@...1227...>
+ <8f361fc115ba580d9fc62735b24dd8ebb315f496.camel@...2316...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="7IkqtdHA2EjAwk2L"
+ protocol="application/pgp-signature"; boundary="pxg9CS5wD9yvW90f"
 Content-Disposition: inline
-In-Reply-To: <CAKuzo_i+zwgpg_zq050WQtNm+s0p-OMDkLGUUHn+hSApJfrorA@...278...>
+In-Reply-To: <8f361fc115ba580d9fc62735b24dd8ebb315f496.camel@...2316...>
 Subject: Re: [Openvpn-devel] Amend OpenVPN license to allow continued mbed
  TLS support (allow mbed TLS 3.x linking)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,27 +24,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: James Bottomley <James.Bottomley@...2317...>
+Cc: Arne Schwabe <arne@...1227...>, Matthias Andree <matthias.andree@...68...>, openvpn-devel@lists.sourceforge.net
 
---7IkqtdHA2EjAwk2L
+--pxg9CS5wD9yvW90f
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sun, Jan 15, 2023 at 08:23:11AM -0500, Selva Nair wrote:
-> Some may find this discussion a waste of time but let's not belittle
-> people's contributions.
-> I do care about how my work is licensed.
+On Sun, Jan 15, 2023 at 08:37:00AM -0500, James Bottomley wrote:
+> The GNU project began in 1982.  Static libraries for SYS-V were
+> initially proposed around 1986 and didn't become widespread until the
+> 90s.
 
-I find having to spend my time on "how can two *free software licenses*
-be made compatible" a colossal waste of time that could be spent on
-improving said software instead.
+And exactly when was *the Apache license* published, or GPL *v2*?
 
-This does not imply that I do not care about your contributions, or
-want to belittle them.  Sorry if I created the impression.
+This was the context, not "the GNU project".
+
+Wikipedia says the GPLv2 was released in June 1991, and as you say,
+shared libraries already existed then.
 
 gert
 --=20
@@ -51,22 +57,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---7IkqtdHA2EjAwk2L
+--pxg9CS5wD9yvW90f
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJjxBP4AAoJEB2Cnv7KVigS/OoL/1SmWX0EggzdzekCZUNyjULI
-vMaYjmt4zmtd/h84MBJmwMljgKEWyzawxUoOSTD07UdyrMf34xFWAV2bd8/AFMsN
-PosEH/zXZdrFA2eQuLIrcAI36uvzZT3KtuxQMLQrngB5SZu3Ozhrx773BmvKEVmM
-XyP5Xx7RB1ql60pz4TbUqlli5mC5wh6cFscujnddiScHR7MuAFo1mPLPogf3/UMI
-1WLqhwSOj+rc+F2Zm7mPtcZCjCdlk+/WoC3ITzRMB3IF5H1e9BBNeAHcHQ4G8Ldm
-PxCW+ke62EeeDeefQ4DTDHoYvc5Mrub2QhJGN9E0QrUylD45E0rH7JmaiWS+tLJS
-eiTNiBNN+VTdPFpmhpQWZrQIGJ2CBXjTwWzZQtPqaZfWQuiFnzVgOF3XvULsX0EG
-9Y0QsAB9Rbv6wafW97ykVNZz1Dn6n+f8NqFb4oTfgWD6gq3muKrsqx8SjXn6XWot
-2ccHYXMNh6+lvj+WiNoDFrEmnOeMjJGxxD9GoY/Muw==
-=yEvC
+iQGcBAEBAgAGBQJjxBYNAAoJEB2Cnv7KVigSdKcMAKZ/8lsO6zTxAoSi2PDxvOUQ
+dquuRnUvVb3QZBw9ll6PdhJp11gJhF36fMPHIWC2VyEOIJmnb5OPG+HIEpbyEoGc
+UyZcUmmDmnrBgW0UwRR60WdjCN1aLVWzPsy5XqNiq3W/z+S7Np4ndFwmVP9xcFAA
+pGOtQjQQw5L3pKBmkYiI46mM3HwaHMFTrbj0+rwfh6EshTpVpA9+MOdaNiUzfFMj
+4Q+8iGEXewBj88EygsLagZ+JW07Kn/mIHvHGNlQH/c176tJWOmGtvqlhcW9TCvBg
+tcY1+kXptLjEp3UusW34r0xCfBG4g9XKj4HHJ7mLVOyKElVdC0CS9ul5fu0b9rXK
+cjf3+TzvHJvQcdxXLfXh68FZa1d9dMR6DpRDBH+FW/Wsg6CHQu7Tb69oJyJmfFmn
+g7PFFeeojcqrOMgT6bzzg1iWx4njAA11JQ4vE/oiikoq6OIAEOgzNj2dwGQsB1MW
+UoIgon+cc/g3RqHgtKOBeQ5zPN3WIgODJT6SLoJoEA==
+=HFgl
 -----END PGP SIGNATURE-----
 
---7IkqtdHA2EjAwk2L--
+--pxg9CS5wD9yvW90f--
 
