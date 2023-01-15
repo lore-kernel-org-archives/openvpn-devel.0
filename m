@@ -1,13 +1,12 @@
-Date: Sun, 15 Jan 2023 13:25:56 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <Y8Pw1FLbvnFNdefs@...1296...>
+MIME-Version: 1.0
 References: <6c0e8ca1-9518-1bc0-65cb-f742311ef08f@...1227...>
  <CAFHpkQF4dtn0DV-nHMeUfowA2EszAscpbMVeGk6boiXYhWc5Kw@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="rBORokFt8n41PFxp"
-Content-Disposition: inline
-In-Reply-To: <CAFHpkQF4dtn0DV-nHMeUfowA2EszAscpbMVeGk6boiXYhWc5Kw@...278...>
+ <247a0f9f-28d7-335b-0891-a49b0ead989e@...1227...>
+In-Reply-To: <247a0f9f-28d7-335b-0891-a49b0ead989e@...1227...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Sun, 15 Jan 2023 18:52:40 +0600
+Message-ID: <CAFHpkQHTd5kvRZT762O1Vx2kCX9H1uxWXXtRDE9LfRWGY4xA_w@...278...>
+Content-Type: multipart/alternative; boundary="000000000000c9122b05f24cf1f4"
 Subject: Re: [Openvpn-devel] Amend OpenVPN license to allow continued mbed
  TLS support (allow mbed TLS 3.x linking)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,58 +17,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ???????? ?????????????? <chipitsine@...277...>
-Cc: Arne Schwabe <arne@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---rBORokFt8n41PFxp
-Content-Type: text/plain; charset="us-ascii"
+--000000000000c9122b05f24cf1f4
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+subject says "allow mbed TLS 3.x linking".
+is OpenSSL currently restrictive as well ?
 
-On Sun, Jan 15, 2023 at 06:21:21PM +0600, ???????? ?????????????? wrote:
-> I am fine with dropping MBED TLS for good
+=D0=B2=D1=81, 15 =D1=8F=D0=BD=D0=B2. 2023 =D0=B3. =D0=B2 18:24, Arne Schwab=
+e <arne@...1227...>:
 
-This is not the question asked.
+> Am 15.01.23 um 13:21 schrieb =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=
+=D0=B8=D1=86=D0=B8=D0=BD:
+> > I am fine with dropping MBED TLS for good
+> >
+>
+> Please read the full mail. This also affects OpenSSL. We would like to
+> reaffirm that contributors are still okay linking with OpenSSL even
+> after OpenSSL changed its license to Apache2.
+>
+> Arne
+>
+>
 
-For the record: I am fine with the proposed change of license.
+--000000000000c9122b05f24cf1f4
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-(I think this is all a tremendous waste of time, but since sufficient
-number of licensing lawyers say "linking GPL2 with something that has
-additional restrictions and shipping the result is not legal" *and*
-mbedTLS can not be considered a system library anywhere, as in "it
-will be always there if you install that system" - like a libc - it's
-either this or drop mbedTLS support)
+<div dir=3D"ltr"><div dir=3D"ltr">subject says &quot;allow mbed TLS 3.x lin=
+king&quot;.</div><div>is OpenSSL currently restrictive as well ?</div></div=
+><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">=D0=
+=B2=D1=81, 15 =D1=8F=D0=BD=D0=B2. 2023 =D0=B3. =D0=B2 18:24, Arne Schwabe &=
+lt;<a href=3D"mailto:arne@...1227...">arne@...1227...</a>&gt;:<br></div><bl=
+ockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-lef=
+t:1px solid rgb(204,204,204);padding-left:1ex">Am 15.01.23 um 13:21 schrieb=
+ =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD:<br>
+&gt; I am fine with dropping MBED TLS for good<br>
+&gt;<br>
+<br>
+Please read the full mail. This also affects OpenSSL. We would like to <br>
+reaffirm that contributors are still okay linking with OpenSSL even <br>
+after OpenSSL changed its license to Apache2.<br>
+<br>
+Arne<br>
+<br>
+</blockquote></div>
 
-gert
-
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---rBORokFt8n41PFxp
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjw/DUAAoJEB2Cnv7KVigSf6AL/0h/yNsXC5ASrnRr5uPO4Y4B
-Jm6l8JQtX45D5NOV5t8shQ6FCynLd/+ywlxv0jgMm2lypPcu/LJbfQ/NUVVJ41cV
-0upQXJ0LR0aBAh8aj3Qk0Z+dOoWyE15jSqr64AwW/FeHinn2Ht5OIXBv39qDSdF2
-Oc5l1WqXeErSv5mt7YUluDuyL7xWmchWlCo8hd7ASGwgOlPf1wA9tAm8/MH7pG1x
-+erW9PJJcRloY8bJUzge1GRzAqXPwyIcPMWlTUVBEo47O5jegX1RSfVIzRctkymE
-uk8bIGRtI6XaY8EaDHeEl+eGXoSjEFZVntGGx9+fX0OJ6yK5rN2RaXvbOnZ8h0to
-N46nKMJ6fPtYFtBL3t59dEMuaKa/y3VzBJI0L1cg4PabzWsxbXGHyoo8R9izEfJ4
-TTbDXFOZNV4sCGjc31jPKAl9h0aWIG04sZFT5Q1TpPKDMiJR9moOxnokSxeWSkeG
-naZv0ULQ3FpIlAM79wXi4nt7AQivoRk6khdS4rtTdA==
-=J1YI
------END PGP SIGNATURE-----
-
---rBORokFt8n41PFxp--
+--000000000000c9122b05f24cf1f4--
 
