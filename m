@@ -1,11 +1,14 @@
-From: selva.nair@...277...
-Date: Sun, 15 Jan 2023 11:48:18 -0500
-Message-Id: <20230115164818.1973210-1-selva.nair@...277...>
-In-Reply-To: <20230113235754.1942385-1-selva.nair@...277...>
-References: <20230113235754.1942385-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 1/2] Define and use macros for route
- addition status code
+References: <6c0e8ca1-9518-1bc0-65cb-f742311ef08f@...1227...>
+ <CAKuzo_i+zwgpg_zq050WQtNm+s0p-OMDkLGUUHn+hSApJfrorA@...278...>
+ <1d60ed5a-0a1c-9723-b797-78663f477633@...1227...>
+In-Reply-To: <1d60ed5a-0a1c-9723-b797-78663f477633@...1227...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 15 Jan 2023 11:51:58 -0500
+Message-ID: <CAKuzo_gSCb_mydAbHeaVdbHOG9Km2fZLyOaQoCrrCDqQei0sJA@...278...>
+Content-Type: multipart/alternative; boundary="000000000000e0931d05f2504963"
+Subject: Re: [Openvpn-devel] Amend OpenVPN license to allow continued mbed
+ TLS support (allow mbed TLS 3.x linking)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,451 +17,206 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: Selva Nair <selva.nair@...277...>
+--000000000000e0931d05f2504963
+Content-Type: text/plain; charset="UTF-8"
 
-- Instead of 0, 1, 2 use RTA_ERROR, RTA_SUCCESS, RTA_EEXIST
-  as the return code of route addition functions.
+Hi,
 
-- Also fix a logging error: status -> (status == RTA_SUCCESS)
+On Sun, Jan 15, 2023 at 8:53 AM Arne Schwabe <arne@...1227...> wrote:
 
-v2: fold long lines
-    use "bool ret = .." pattern for android too
-    fix two more lines where status was directly assigned to bool
+> Am 15.01.23 um 14:23 schrieb Selva Nair:
+> > Hi,
+> >
+> >     We would like to be able to continue to build/ship OpenVPN with mbed
+> >     TLS. We want all contributors to ask if they agree to license change
+> >     that adds explicit permission to link with Apache 2 licensed
+> libraries:
+> >
+> >
+> >     Special exception for linking OpenVPN with Apache 2 licensed
+> libraries:
+> >
+> >         In addition, as a special exception, OpenVPN Inc and contributors
+> >         give permission to link the code of this program to libraries
+> >     with the
+> >         "APACHE LICENSE, VERSION 2.0", and distribute linked combination
+> >         including the two.  You must obey the GNU General Public License
+> in
+> >         all respects for all of the code used other than these
+> >     libraries.  If
+> >         you modify this file, you may extend this exception to your
+> >     version of
+> >         the file, but you are not obligated to do so.  If you do not
+> wish to
+> >         do so, delete this exception statement from your version.
+> >
+> >
+> > Instead of this exemption I would vote for a change to 'GPL v2 or any
+> > later version'.
+> > That would keep the license in the spirit by which people like me
+> > contributed.
+> >
+> > Using an existing license that has already been vetted also avoids the
+> need
+> > for legal counsel.
+> >
+> > I do not understand the argument about 'GPLv2 and later...' and embedded
+> > devices. Those who
+> > are currently embedding based on GPL v2 can continue to do so, those who
+> > want/need v3
+> > can do so too. Those who need v3 but also want to lock the firmware on a
+> > consumer device
+> > may be affected. But that's a choice they make, why would we want to
+> > promote that?
+> >
+> > Some may find this discussion a waste of time but let's not belittle
+> > people's contributions.
+> > I do care about how my work is licensed.
+>
+> Okay. I think the embedded thing is a bit of a misunderstanding. I am
+> not trying to promote that. What I wanted is to express why changing to
+> GPLv3 might not be an option as some license holders of OpenVPN will not
+> be okay with changing to GPL3 since they need that.
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
 
-- Hope I did not introduce any typos -- hard to check when there
-  are so many platform-specific cases involved.
-- Some lines are still long after folding: uncrustify seems to want
-  the second line to be aligned with the opening parenthesis. Feel
-  free to reformat/beautify or ask for a v3.
+Thanks for the clarification. I was not aware of that.
+That's very unfortunate, though. So some want to keep the loopholes of GPL
+v2, and also the goodies that come with an Apache 2.0 exception, all
+together!
 
- src/openvpn/route.c | 130 ++++++++++++++++++++++++++++----------------
- 1 file changed, 84 insertions(+), 46 deletions(-)
+So the situation is basically, we need somehow to still be able to link
+> Apache 2.0 licensed SSL libraries. While we have an exception for
+> OpenSSL, some might argue that this only covers the old OpenSSL license.
+>
+> So to go forward we either need to change OpenVPN 2.x to a license
+> compatible with Apache 2.0 like GPL3 or adding an excerption for linking
+> against Apache 2.0.
+>
+> At the hackathon we discussed the options and there already voices
+> against going GPL3 instead of GPL2 but everyone there was okay with
+> staying with GPL2 and adding an exception.
+>
+> This approach of taking the exception route instead of GPL3 is mostly a
+> pragmatic approach to be able to have something that might have a chance
+> of succeeding.
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 21dce6af..61a40ff1 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -96,6 +96,11 @@ print_bypass_addresses(const struct route_bypass *rb)
- 
- #endif
- 
-+/* Route addition return status codes */
-+#define RTA_ERROR   0   /* route addition failed */
-+#define RTA_SUCCESS 1   /* route addition succeeded */
-+#define RTA_EEXIST  2   /* route not added as it already exists */
-+
- static bool
- add_bypass_address(struct route_bypass *rb, const in_addr_t a)
- {
-@@ -1593,12 +1598,12 @@ add_route(struct route_ipv4 *r,
-         metric = r->metric;
-     }
- 
--    status = 1;
-+    status = RTA_SUCCESS;
-     if (net_route_v4_add(ctx, &r->network, netmask_to_netbits2(r->netmask),
-                          &r->gateway, iface, 0, metric) < 0)
-     {
-         msg(M_WARN, "ERROR: Linux route add command failed");
--        status = 0;
-+        status = RTA_ERROR;
-     }
- 
- #elif defined (TARGET_ANDROID)
-@@ -1612,7 +1617,8 @@ add_route(struct route_ipv4 *r,
-     {
-         openvpn_snprintf(out, sizeof(out), "%s %s %s", network, netmask, gateway);
-     }
--    status = management_android_control(management, "ROUTE", out);
-+    bool ret = management_android_control(management, "ROUTE", out);
-+    status = ret ? RTA_SUCCESS : RTA_ERROR;
- 
- #elif defined (_WIN32)
-     {
-@@ -1638,28 +1644,35 @@ add_route(struct route_ipv4 *r,
-         if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_SERVICE)
-         {
-             status = add_route_service(r, tt);
--            msg(D_ROUTE, "Route addition via service %s", (status == 1) ? "succeeded" : "failed");
-+            msg(D_ROUTE, "Route addition via service %s",
-+                (status == RTA_SUCCESS) ? "succeeded" : "failed");
-         }
-         else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_IPAPI)
-         {
-             status = add_route_ipapi(r, tt, ai);
--            msg(D_ROUTE, "Route addition via IPAPI %s", (status == 1) ? "succeeded" : "failed");
-+            msg(D_ROUTE, "Route addition via IPAPI %s",
-+                (status == RTA_SUCCESS) ? "succeeded" : "failed");
-         }
-         else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_EXE)
-         {
-             netcmd_semaphore_lock();
--            status = openvpn_execve_check(&argv, es, 0, "ERROR: Windows route add command failed");
-+            bool ret = openvpn_execve_check(&argv, es, 0,
-+                                            "ERROR: Windows route add command failed");
-+            status = ret ? RTA_SUCCESS : RTA_ERROR;
-             netcmd_semaphore_release();
-         }
-         else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_ADAPTIVE)
-         {
-             status = add_route_ipapi(r, tt, ai);
--            msg(D_ROUTE, "Route addition via IPAPI %s [adaptive]", (status == 1) ? "succeeded" : "failed");
--            if (status == 0)
-+            msg(D_ROUTE, "Route addition via IPAPI %s [adaptive]",
-+                (status == RTA_SUCCESS) ? "succeeded" : "failed");
-+            if (status == RTA_ERROR)
-             {
-                 msg(D_ROUTE, "Route addition fallback to route.exe");
-                 netcmd_semaphore_lock();
--                status = openvpn_execve_check(&argv, es, 0, "ERROR: Windows route add command failed [adaptive]");
-+                bool ret = openvpn_execve_check(&argv, es, 0,
-+                                                "ERROR: Windows route add command failed [adaptive]");
-+                status = ret ? RTA_SUCCESS : RTA_ERROR;
-                 netcmd_semaphore_release();
-             }
-         }
-@@ -1694,7 +1707,9 @@ add_route(struct route_ipv4 *r,
-     }
- 
-     argv_msg(D_ROUTE, &argv);
--    status = openvpn_execve_check(&argv, es, 0, "ERROR: Solaris route add command failed");
-+    bool ret = openvpn_execve_check(&argv, es, 0,
-+                                    "ERROR: Solaris route add command failed");
-+    status = ret ? RTA_SUCCESS : RTA_ERROR;
- 
- #elif defined(TARGET_FREEBSD)
- 
-@@ -1716,7 +1731,9 @@ add_route(struct route_ipv4 *r,
-     /* FIXME -- add on-link support for FreeBSD */
- 
-     argv_msg(D_ROUTE, &argv);
--    status = openvpn_execve_check(&argv, es, 0, "ERROR: FreeBSD route add command failed");
-+    bool ret = openvpn_execve_check(&argv, es, 0,
-+                                    "ERROR: FreeBSD route add command failed");
-+    status = ret ? RTA_SUCCESS : RTA_ERROR;
- 
- #elif defined(TARGET_DRAGONFLY)
- 
-@@ -1738,7 +1755,9 @@ add_route(struct route_ipv4 *r,
-     /* FIXME -- add on-link support for Dragonfly */
- 
-     argv_msg(D_ROUTE, &argv);
--    status = openvpn_execve_check(&argv, es, 0, "ERROR: DragonFly route add command failed");
-+    bool ret = openvpn_execve_check(&argv, es, 0,
-+                                    "ERROR: DragonFly route add command failed");
-+    status = ret ? RTA_SUCCESS : RTA_ERROR;
- 
- #elif defined(TARGET_DARWIN)
- 
-@@ -1770,7 +1789,9 @@ add_route(struct route_ipv4 *r,
-     }
- 
-     argv_msg(D_ROUTE, &argv);
--    status = openvpn_execve_check(&argv, es, 0, "ERROR: OS X route add command failed");
-+    bool ret = openvpn_execve_check(&argv, es, 0,
-+                                    "ERROR: OS X route add command failed");
-+    status = ret ? RTA_SUCCESS : RTA_ERROR;
- 
- #elif defined(TARGET_OPENBSD) || defined(TARGET_NETBSD)
- 
-@@ -1792,7 +1813,9 @@ add_route(struct route_ipv4 *r,
-     /* FIXME -- add on-link support for OpenBSD/NetBSD */
- 
-     argv_msg(D_ROUTE, &argv);
--    status = openvpn_execve_check(&argv, es, 0, "ERROR: OpenBSD/NetBSD route add command failed");
-+    bool ret = openvpn_execve_check(&argv, es, 0,
-+                                    "ERROR: OpenBSD/NetBSD route add command failed");
-+    status = ret ? RTA_SUCCESS : RTA_ERROR;
- 
- #elif defined(TARGET_AIX)
- 
-@@ -1802,7 +1825,9 @@ add_route(struct route_ipv4 *r,
-                     ROUTE_PATH,
-                     network, netbits, gateway);
-         argv_msg(D_ROUTE, &argv);
--        status = openvpn_execve_check(&argv, es, 0, "ERROR: AIX route add command failed");
-+        bool ret = openvpn_execve_check(&argv, es, 0,
-+                                        "ERROR: AIX route add command failed");
-+        status = ret ? RTA_SUCCESS : RTA_ERROR;
-     }
- 
- #else  /* if defined(TARGET_LINUX) */
-@@ -1810,7 +1835,7 @@ add_route(struct route_ipv4 *r,
- #endif /* if defined(TARGET_LINUX) */
- 
- done:
--    if (status == 1)
-+    if (status == RTA_SUCCESS)
-     {
-         r->flags |= RT_ADDED;
-     }
-@@ -1823,7 +1848,7 @@ done:
-     /* release resources potentially allocated during route setup */
-     net_ctx_reset(ctx);
- 
--    return (status != 0);
-+    return (status != RTA_ERROR);
- }
- 
- 
-@@ -1937,13 +1962,13 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-         metric = r6->metric;
-     }
- 
--    status = 1;
-+    status = RTA_SUCCESS;
-     if (net_route_v6_add(ctx, &r6->network, r6->netbits,
-                          gateway_needed ? &r6->gateway : NULL, device, 0,
-                          metric) < 0)
-     {
-         msg(M_WARN, "ERROR: Linux IPv6 route can't be added");
--        status = 0;
-+        status = RTA_ERROR;
-     }
- 
- #elif defined (TARGET_ANDROID)
-@@ -1989,7 +2014,9 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-     }
- 
-     argv_msg(D_ROUTE, &argv);
--    status = openvpn_execve_check(&argv, es, 0, "ERROR: Solaris route add -inet6 command failed");
-+    bool ret = openvpn_execve_check(&argv, es, 0,
-+                                    "ERROR: Solaris route add -inet6 command failed");
-+    status = ret ? RTA_SUCCESS : RTA_ERROR;
- 
- #elif defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)
- 
-@@ -2008,7 +2035,9 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-     }
- 
-     argv_msg(D_ROUTE, &argv);
--    status = openvpn_execve_check(&argv, es, 0, "ERROR: *BSD route add -inet6 command failed");
-+    bool ret = openvpn_execve_check(&argv, es, 0,
-+                                    "ERROR: *BSD route add -inet6 command failed");
-+    status = ret ? RTA_SUCCESS : RTA_ERROR;
- 
- #elif defined(TARGET_DARWIN)
- 
-@@ -2026,7 +2055,9 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-     }
- 
-     argv_msg(D_ROUTE, &argv);
--    status = openvpn_execve_check(&argv, es, 0, "ERROR: MacOS X route add -inet6 command failed");
-+    bool ret = openvpn_execve_check(&argv, es, 0,
-+                                    "ERROR: MacOS X route add -inet6 command failed");
-+    status = ret ? RTA_SUCCESS : RTA_ERROR;
- 
- #elif defined(TARGET_OPENBSD)
- 
-@@ -2035,7 +2066,9 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-                 network, r6->netbits, gateway );
- 
-     argv_msg(D_ROUTE, &argv);
--    status = openvpn_execve_check(&argv, es, 0, "ERROR: OpenBSD route add -inet6 command failed");
-+    bool ret = openvpn_execve_check(&argv, es, 0,
-+                                    "ERROR: OpenBSD route add -inet6 command failed");
-+    status = ret ? RTA_SUCCESS : RTA_ERROR;
- 
- #elif defined(TARGET_NETBSD)
- 
-@@ -2044,7 +2077,9 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-                 network, r6->netbits, gateway );
- 
-     argv_msg(D_ROUTE, &argv);
--    status = openvpn_execve_check(&argv, es, 0, "ERROR: NetBSD route add -inet6 command failed");
-+    bool ret = openvpn_execve_check(&argv, es, 0,
-+                                    "ERROR: NetBSD route add -inet6 command failed");
-+    status = ret ? RTA_SUCCESS : RTA_ERROR;
- 
- #elif defined(TARGET_AIX)
- 
-@@ -2052,14 +2087,16 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-                 ROUTE_PATH,
-                 network, r6->netbits, gateway);
-     argv_msg(D_ROUTE, &argv);
--    status = openvpn_execve_check(&argv, es, 0, "ERROR: AIX route add command failed");
-+    bool ret = openvpn_execve_check(&argv, es, 0,
-+                                    "ERROR: AIX route add command failed");
-+    status = ret ? RTA_SUCCESS : RTA_ERROR;
- 
- #else  /* if defined(TARGET_LINUX) */
-     msg(M_FATAL, "Sorry, but I don't know how to do 'route ipv6' commands on this operating system.  Try putting your routes in a --route-up script");
- #endif /* if defined(TARGET_LINUX) */
- 
- done:
--    if (status == 1)
-+    if (status == RTA_SUCCESS)
-     {
-         r6->flags |= RT_ADDED;
-     }
-@@ -2072,7 +2109,7 @@ done:
-     /* release resources potentially allocated during route setup */
-     net_ctx_reset(ctx);
- 
--    return (status != 0);
-+    return (status != RTA_ERROR);
- }
- 
- static void
-@@ -2759,11 +2796,12 @@ done:
-     gc_free(&gc);
- }
- 
-+/* Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error */
- static int
- add_route_ipapi(const struct route_ipv4 *r, const struct tuntap *tt, DWORD adapter_index)
- {
-     struct gc_arena gc = gc_new();
--    int ret = 0;
-+    int ret = RTA_ERROR;
-     DWORD status;
-     const DWORD if_index = (adapter_index == TUN_ADAPTER_INDEX_INVALID) ? windows_route_find_if_index(r, tt) : adapter_index;
- 
-@@ -2797,11 +2835,11 @@ add_route_ipapi(const struct route_ipv4 *r, const struct tuntap *tt, DWORD adapt
- 
-         if (status == NO_ERROR)
-         {
--            ret = 1;
-+            ret = RTA_SUCCESS;
-         }
-         else if (status == ERROR_OBJECT_ALREADY_EXISTS)
-         {
--            ret = 2;
-+            ret = RTA_EEXIST;
-         }
-         else
-         {
-@@ -2820,7 +2858,7 @@ add_route_ipapi(const struct route_ipv4 *r, const struct tuntap *tt, DWORD adapt
-                         msg(D_ROUTE, "ROUTE: CreateIpForwardEntry succeeded with dwForwardMetric1=%u and dwForwardType=%u",
-                             (unsigned int)fr.dwForwardMetric1,
-                             (unsigned int)fr.dwForwardType);
--                        ret = 1;
-+                        ret = RTA_SUCCESS;
-                         goto doublebreak;
-                     }
-                     else if (status != ERROR_BAD_ARGUMENTS)
-@@ -2839,7 +2877,7 @@ doublebreak:
-                     (unsigned int)if_index);
-                 if (status == ERROR_OBJECT_ALREADY_EXISTS)
-                 {
--                    ret = 2;
-+                    ret = RTA_EEXIST;
-                 }
-             }
-         }
-@@ -2885,11 +2923,11 @@ del_route_ipapi(const struct route_ipv4 *r, const struct tuntap *tt)
-     return ret;
- }
- 
--/* Returns 1 on success, 2 if route exists, 0 on error */
-+/* Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error */
- static int
- do_route_service(const bool add, const route_message_t *rt, const size_t size, HANDLE pipe)
- {
--    int ret = 0;
-+    int ret = RTA_ERROR;
-     ack_message_t ack;
-     struct gc_arena gc = gc_new();
- 
-@@ -2903,25 +2941,25 @@ do_route_service(const bool add, const route_message_t *rt, const size_t size, H
-         msg(M_WARN, "ROUTE: route %s failed using service: %s [status=%u if_index=%d]",
-             (add ? "addition" : "deletion"), strerror_win32(ack.error_number, &gc),
-             ack.error_number, rt->iface.index);
--        ret = (ack.error_number == ERROR_OBJECT_ALREADY_EXISTS) ? 2 : 0;
-+        ret = (ack.error_number == ERROR_OBJECT_ALREADY_EXISTS) ? RTA_EEXIST : RTA_ERROR;
-         goto out;
-     }
- 
--    ret = 1;
-+    ret = RTA_SUCCESS;
- 
- out:
-     gc_free(&gc);
-     return ret;
- }
- 
--/* Returns 1 on success, 2 if route exists, 0 on error */
-+/* Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error */
- static int
- do_route_ipv4_service(const bool add, const struct route_ipv4 *r, const struct tuntap *tt)
- {
-     DWORD if_index = windows_route_find_if_index(r, tt);
-     if (if_index == ~0)
-     {
--        return 0;
-+        return RTA_ERROR;
-     }
- 
-     route_message_t msg = {
-@@ -2947,13 +2985,13 @@ do_route_ipv4_service(const bool add, const struct route_ipv4 *r, const struct t
- }
- 
- /* Add or delete an ipv6 route
-- * Returns 1 on success, 2 if route exists, 0 on error
-+ * Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error
-  */
- static int
- route_ipv6_ipapi(const bool add, const struct route_ipv6 *r, const struct tuntap *tt)
- {
-     DWORD err;
--    int ret = 0;
-+    int ret = RTA_ERROR;
-     PMIB_IPFORWARD_ROW2 fwd_row;
-     struct gc_arena gc = gc_new();
- 
-@@ -3006,18 +3044,18 @@ out:
-     {
-         msg(M_WARN, "ROUTE: route %s failed using ipapi: %s [status=%lu if_index=%lu]",
-             (add ? "addition" : "deletion"), strerror_win32(err, &gc), err, fwd_row->InterfaceIndex);
--        ret = (err == ERROR_OBJECT_ALREADY_EXISTS) ? 2 : 0;
-+        ret = (err == ERROR_OBJECT_ALREADY_EXISTS) ? RTA_EEXIST : RTA_ERROR;
-     }
-     else
-     {
-         msg(D_ROUTE, "IPv6 route %s using ipapi", add ? "added" : "deleted");
--        ret = 1;
-+        ret = RTA_SUCCESS;
-     }
-     gc_free(&gc);
-     return ret;
- }
- 
--/* Returns 1 on success, 2 if route exists, 0 on error */
-+/* Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error */
- static int
- do_route_ipv6_service(const bool add, const struct route_ipv6 *r, const struct tuntap *tt)
- {
-@@ -3060,11 +3098,11 @@ do_route_ipv6_service(const bool add, const struct route_ipv6 *r, const struct t
-     status = do_route_service(add, &msg, sizeof(msg), tt->options.msg_channel);
-     msg(D_ROUTE, "IPv6 route %s via service %s",
-         add ? "addition" : "deletion",
--        status ? "succeeded" : "failed");
-+        (status == RTA_SUCCESS) ? "succeeded" : "failed");
-     return status;
- }
- 
--/* Returns 1 on success, 2 if route exists, 0 on error */
-+/* Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error */
- static int
- add_route_service(const struct route_ipv4 *r, const struct tuntap *tt)
- {
-@@ -3077,7 +3115,7 @@ del_route_service(const struct route_ipv4 *r, const struct tuntap *tt)
-     return do_route_ipv4_service(false, r, tt);
- }
- 
--/* Returns 1 on success, 2 if route exists, 0 on error */
-+/* Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error */
- static int
- add_route_ipv6_service(const struct route_ipv6 *r, const struct tuntap *tt)
- {
--- 
-2.34.1
 
+Given all that, I'll reluctantly agree to the proposed exception.
+
+It's not critical at this stage, but the wording "...libraries with the
+'APACHE LICENSE, VERSION 2.0', ..." sounds ambiguous. Is that a legally
+vetted form or a draft?
+
+Selva
+
+--000000000000e0931d05f2504963
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"l=
+tr" class=3D"gmail_attr">On Sun, Jan 15, 2023 at 8:53 AM Arne Schwabe &lt;<=
+a href=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1227...</a>&gt;=
+ wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px =
+0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Am 15.01=
+.23 um 14:23 schrieb Selva Nair:<br>
+&gt; Hi,<br>
+&gt; <br>
+&gt;=C2=A0 =C2=A0 =C2=A0We would like to be able to continue to build/ship =
+OpenVPN with mbed<br>
+&gt;=C2=A0 =C2=A0 =C2=A0TLS. We want all contributors to ask if they agree =
+to license change<br>
+&gt;=C2=A0 =C2=A0 =C2=A0that adds explicit permission to link with Apache 2=
+ licensed libraries:<br>
+&gt; <br>
+&gt; <br>
+&gt;=C2=A0 =C2=A0 =C2=A0Special exception for linking OpenVPN with Apache 2=
+ licensed libraries:<br>
+&gt; <br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0In addition, as a special exception, =
+OpenVPN Inc and contributors<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0give permission to link the code of t=
+his program to libraries<br>
+&gt;=C2=A0 =C2=A0 =C2=A0with the<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0&quot;APACHE LICENSE, VERSION 2.0&quo=
+t;, and distribute linked combination<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0including the two.=C2=A0 You must obe=
+y the GNU General Public License in<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0all respects for all of the code used=
+ other than these<br>
+&gt;=C2=A0 =C2=A0 =C2=A0libraries.=C2=A0 If<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0you modify this file, you may extend =
+this exception to your<br>
+&gt;=C2=A0 =C2=A0 =C2=A0version of<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0the file, but you are not obligated t=
+o do so.=C2=A0 If you do not wish to<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0do so, delete this exception statemen=
+t from your version.<br>
+&gt; <br>
+&gt; <br>
+&gt; Instead of this exemption=C2=A0I would vote for a change to &#39;GPL v=
+2 or any <br>
+&gt; later version&#39;.<br>
+&gt; That would keep the license in the spirit by which people like me <br>
+&gt; contributed.<br>
+&gt; <br>
+&gt; Using an existing=C2=A0license that has already been vetted also avoid=
+s the need<br>
+&gt; for legal counsel.<br>
+&gt; <br>
+&gt; I do not understand the argument about &#39;GPLv2 and later...&#39; an=
+d embedded <br>
+&gt; devices. Those who<br>
+&gt; are currently=C2=A0embedding based on GPL v2 can continue to do so, th=
+ose who <br>
+&gt; want/need v3<br>
+&gt; can do so too. Those who need=C2=A0v3 but also want to lock the firmwa=
+re=C2=A0on a <br>
+&gt; consumer device<br>
+&gt; may be affected. But that&#39;s a choice they make, why would we want =
+to <br>
+&gt; promote that?<br>
+&gt; <br>
+&gt; Some may find this discussion a waste of time but let&#39;s not belitt=
+le <br>
+&gt; people&#39;s contributions.<br>
+&gt; I do care about how my work is licensed.<br>
+<br>
+Okay. I think the embedded thing is a bit of a misunderstanding. I am <br>
+not trying to promote that. What I wanted is to express why changing to <br>
+GPLv3 might not be an option as some license holders of OpenVPN will not <b=
+r>
+be okay with changing to GPL3 since they need that.=C2=A0</blockquote><div>=
+<br></div><div>Thanks for the clarification. I was not aware of that.=C2=A0=
+</div><div>That&#39;s very=C2=A0unfortunate, though. So some want to keep t=
+he loopholes of GPL v2, and also the goodies that come=C2=A0with an Apache=
+=C2=A02.0 exception, all together!</div><div><br></div><blockquote class=3D=
+"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(2=
+04,204,204);padding-left:1ex">
+So the situation is basically, we need somehow to still be able to link <br>
+Apache 2.0 licensed SSL libraries. While we have an exception for <br>
+OpenSSL, some might argue that this only covers the old OpenSSL license.<br>
+<br>
+So to go forward we either need to change OpenVPN 2.x to a license <br>
+compatible with Apache 2.0 like GPL3 or adding an excerption for linking <b=
+r>
+against Apache 2.0.<br>
+<br>
+At the hackathon we discussed the options and there already voices <br>
+against going GPL3 instead of GPL2 but everyone there was okay with <br>
+staying with GPL2 and adding an exception.<br>
+<br>
+This approach of taking the exception route instead of GPL3 is mostly a <br>
+pragmatic approach to be able to have something that might have a chance <b=
+r>
+of succeeding.</blockquote><div><br></div><div>Given all that, I&#39;ll rel=
+uctantly agree to the proposed exception.=C2=A0</div><div><br></div><div>It=
+&#39;s not critical at this stage, but the wording &quot;...libraries with =
+the &#39;APACHE LICENSE, VERSION 2.0&#39;, ...&quot; sounds ambiguous. Is t=
+hat a legally vetted form or a draft?</div><div><br></div><div>Selva</div><=
+/div></div>
+
+--000000000000e0931d05f2504963--
 
