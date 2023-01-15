@@ -1,15 +1,10 @@
-Date: Sun, 15 Jan 2023 12:44:26 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <Y8PnGp9Rt/n9FODz@...1296...>
-References: <6c0e8ca1-9518-1bc0-65cb-f742311ef08f@...1227...>
- <f52172ec20da430975373e7192380874bc600062.camel@...2316...>
- <43485320-4957-8ac1-7bab-4e769000d156@...1227...>
- <234ef71a00e43f74bda0836d66c63a3d8c54a74c.camel@...2316...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="/d+EdYE2CMA/ZvWU"
-Content-Disposition: inline
-In-Reply-To: <234ef71a00e43f74bda0836d66c63a3d8c54a74c.camel@...2316...>
+References: <6c0e8ca1-9518-1bc0-65cb-f742311ef08f@...1227...>
+In-Reply-To: <6c0e8ca1-9518-1bc0-65cb-f742311ef08f@...1227...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Sun, 15 Jan 2023 18:21:21 +0600
+Message-ID: <CAFHpkQF4dtn0DV-nHMeUfowA2EszAscpbMVeGk6boiXYhWc5Kw@...278...>
+Content-Type: multipart/alternative; boundary="000000000000cb52d005f24c810d"
 Subject: Re: [Openvpn-devel] Amend OpenVPN license to allow continued mbed
  TLS support (allow mbed TLS 3.x linking)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,52 +15,201 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: James Bottomley <James.Bottomley@...2317...>
-Cc: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---/d+EdYE2CMA/ZvWU
-Content-Type: text/plain; charset="us-ascii"
+--000000000000cb52d005f24c810d
+Content-Type: text/plain; charset="UTF-8"
+
+I am fine with dropping MBED TLS for good
+
+On Sat, Jan 14, 2023, 11:30 PM Arne Schwabe <arne@...1227...> wrote:
+
+> Hey,
+>
+> This is the first round and will be only to the openvpn-devel list.
+> After that I will also write to individuals email addresses but I want
+> to start with sending this to the devel list.
+>
+> We are writing to you since you are or were a contributor in past to
+> OpenVPN and we would like to  ask for your permission to amend the
+> license of OpenVPN.
+>
+> OpenVPN 2.x is licensed under the GPL v2. This license has served us
+> well in the past and we are not trying to change that. However, changes
+> in licenses of our dependencies make this change necessary.
+>
+> Both mbed TLS and OpenSSL nowadays use the Apache 2.x license. For the
+> OpenSSL library we have a special exception that allows us linking with
+> it. For newer mbed TLS version, we cannot do this any more.
+> Compatibility of Apache 2.x and GPL 2.x has to our knowledge never been
+> tested in court and even FSF and ASF disagree about the issue
+> (https://www.apache.org/licenses/GPL-compatibility.html)
+>
+> We would like to be able to continue to build/ship OpenVPN with mbed
+> TLS. We want all contributors to ask if they agree to license change
+> that adds explicit permission to link with Apache 2 licensed libraries:
+>
+>
+> Special exception for linking OpenVPN with Apache 2 licensed libraries:
+>
+>    In addition, as a special exception, OpenVPN Inc and contributors
+>    give permission to link the code of this program to libraries with the
+>    "APACHE LICENSE, VERSION 2.0", and distribute linked combination
+>    including the two.  You must obey the GNU General Public License in
+>    all respects for all of the code used other than these libraries.  If
+>    you modify this file, you may extend this exception to your version of
+>    the file, but you are not obligated to do so.  If you do not wish to
+>    do so, delete this exception statement from your version.
+>
+>
+> You might wonder why we are going for a generic Apache 2 exception
+> rather than one targeted at mbed TLS specifically. We believe that a
+> generic exemption is better since it also implicitly allows forks of
+> mbed TLS and even if a SSL library might emerge in the future we do not
+> have to discuss if it is a fork or not. Also granting an explicit
+> exception for Apache 2 style licenses reaffirms the linking to OpenSSL.
+>
+> We also considered going for a change from GPL2 to GPL2+ but we think
+> that GPL3 would hurt the ability to distribute OpenVPN as part of router
+> or other embedded devices as the GPL3 has been explicitly developed (at
+> least in part) to make this use case harder/impossible
+> (https://en.wikipedia.org/wiki/Tivoization)
+>
+> If you are okay with this, please reply to this mail and confirm that.
+> Otherwise we might be forced to remove and/or rewrite your code.
+>
+>
+> As a reminder, the The current OpenSSL exception reads as follows
+> (COPYING). We don't intend to change or remote it:
+>
+>    Special exception for linking OpenVPN with OpenSSL:
+>
+>    In addition, as a special exception, OpenVPN Inc gives
+>    permission to link the code of this program with the OpenSSL
+>    library (or with modified versions of OpenSSL that use the same
+>    license as OpenSSL), and distribute linked combinations including
+>    the two.  You must obey the GNU General Public License in all
+>    respects for all of the code used other than OpenSSL.  If you modify
+>    this file, you may extend this exception to your version of the
+>    file, but you are not obligated to do so.  If you do not wish to
+>    do so, delete this exception statement from your version.
+>
+>
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+
+--000000000000cb52d005f24c810d
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+<div dir=3D"auto">I am fine with dropping MBED TLS for good</div><br><div c=
+lass=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_attr">On Sat, Jan 14, =
+2023, 11:30 PM Arne Schwabe &lt;<a href=3D"mailto:arne@...1227...">arne@...493...=
+1227...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"=
+margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hey,<br>
+<br>
+This is the first round and will be only to the openvpn-devel list. <br>
+After that I will also write to individuals email addresses but I want <br>
+to start with sending this to the devel list.<br>
+<br>
+We are writing to you since you are or were a contributor in past to <br>
+OpenVPN and we would like to=C2=A0 ask for your permission to amend the <br>
+license of OpenVPN.<br>
+<br>
+OpenVPN 2.x is licensed under the GPL v2. This license has served us <br>
+well in the past and we are not trying to change that. However, changes <br>
+in licenses of our dependencies make this change necessary.<br>
+<br>
+Both mbed TLS and OpenSSL nowadays use the Apache 2.x license. For the <br>
+OpenSSL library we have a special exception that allows us linking with <br>
+it. For newer mbed TLS version, we cannot do this any more. <br>
+Compatibility of Apache 2.x and GPL 2.x has to our knowledge never been <br>
+tested in court and even FSF and ASF disagree about the issue <br>
+(<a href=3D"https://www.apache.org/licenses/GPL-compatibility.html" rel=3D"=
+noreferrer noreferrer" target=3D"_blank">https://www.apache.org/licenses/GP=
+L-compatibility.html</a>)<br>
+<br>
+We would like to be able to continue to build/ship OpenVPN with mbed <br>
+TLS. We want all contributors to ask if they agree to license change <br>
+that adds explicit permission to link with Apache 2 licensed libraries:<br>
+<br>
+<br>
+Special exception for linking OpenVPN with Apache 2 licensed libraries:<br>
+<br>
+=C2=A0 =C2=A0In addition, as a special exception, OpenVPN Inc and contribut=
+ors<br>
+=C2=A0 =C2=A0give permission to link the code of this program to libraries =
+with the<br>
+=C2=A0 =C2=A0&quot;APACHE LICENSE, VERSION 2.0&quot;, and distribute linked=
+ combination<br>
+=C2=A0 =C2=A0including the two.=C2=A0 You must obey the GNU General Public =
+License in<br>
+=C2=A0 =C2=A0all respects for all of the code used other than these librari=
+es.=C2=A0 If<br>
+=C2=A0 =C2=A0you modify this file, you may extend this exception to your ve=
+rsion of<br>
+=C2=A0 =C2=A0the file, but you are not obligated to do so.=C2=A0 If you do =
+not wish to<br>
+=C2=A0 =C2=A0do so, delete this exception statement from your version.<br>
+<br>
+<br>
+You might wonder why we are going for a generic Apache 2 exception <br>
+rather than one targeted at mbed TLS specifically. We believe that a <br>
+generic exemption is better since it also implicitly allows forks of <br>
+mbed TLS and even if a SSL library might emerge in the future we do not <br>
+have to discuss if it is a fork or not. Also granting an explicit <br>
+exception for Apache 2 style licenses reaffirms the linking to OpenSSL.<br>
+<br>
+We also considered going for a change from GPL2 to GPL2+ but we think <br>
+that GPL3 would hurt the ability to distribute OpenVPN as part of router <b=
+r>
+or other embedded devices as the GPL3 has been explicitly developed (at <br>
+least in part) to make this use case harder/impossible <br>
+(<a href=3D"https://en.wikipedia.org/wiki/Tivoization" rel=3D"noreferrer no=
+referrer" target=3D"_blank">https://en.wikipedia.org/wiki/Tivoization</a>)<=
+br>
+<br>
+If you are okay with this, please reply to this mail and confirm that. <br>
+Otherwise we might be forced to remove and/or rewrite your code.<br>
+<br>
+<br>
+As a reminder, the The current OpenSSL exception reads as follows <br>
+(COPYING). We don&#39;t intend to change or remote it:<br>
+<br>
+=C2=A0 =C2=A0Special exception for linking OpenVPN with OpenSSL:<br>
+<br>
+=C2=A0 =C2=A0In addition, as a special exception, OpenVPN Inc gives<br>
+=C2=A0 =C2=A0permission to link the code of this program with the OpenSSL<b=
+r>
+=C2=A0 =C2=A0library (or with modified versions of OpenSSL that use the sam=
+e<br>
+=C2=A0 =C2=A0license as OpenSSL), and distribute linked combinations includ=
+ing<br>
+=C2=A0 =C2=A0the two.=C2=A0 You must obey the GNU General Public License in=
+ all<br>
+=C2=A0 =C2=A0respects for all of the code used other than OpenSSL.=C2=A0 If=
+ you modify<br>
+=C2=A0 =C2=A0this file, you may extend this exception to your version of th=
+e<br>
+=C2=A0 =C2=A0file, but you are not obligated to do so.=C2=A0 If you do not =
+wish to<br>
+=C2=A0 =C2=A0do so, delete this exception statement from your version.<br>
+<br>
+<br>
+<br>
+_______________________________________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank" re=
+l=3D"noreferrer">Openvpn-devel@lists.sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer noreferrer" target=3D"_blank">https://lists.sourceforge.net/=
+lists/listinfo/openvpn-devel</a><br>
+</blockquote></div>
 
-On Sat, Jan 14, 2023 at 05:28:09PM -0500, James Bottomley wrote:
-> What do you mean "a source"? every apache licensed library that's
-> statically linked with a GPLv2 program would be an example of this ...
-> in the early days there was no dynamic linking, so all the early GNU
-> tools were statically linked with wodges of proprietary binary gunk.
-
-These "early day" precede the creation of the Apache license or GPLv2
-by many years.
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---/d+EdYE2CMA/ZvWU
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJjw+caAAoJEB2Cnv7KVigS3WIL/3BSKkqAD6Gq5rUYYcOavXDh
-aFiqKdGGH9rn3P+G2mUgVqFNoK+ynmLbYDvxAEEgI5ofbiLnUzwAQ8G5I4Y2fZFd
-I+riD7UT44fEV0k+9J50Cp3a2PUf3tRC/D59T3C5Wxwi1S5tTbHaokhCCsFLOPpA
-fAnhgk94E4gKngBD5BER6fxoCmUd/pugSfiaqfsn8dnQLNUgTOAf6ujpi+uCh4a2
-nz5yM672vSlAdlAQfq2BIy+7euURVCYw+he7j/jK2mBreCeKxihraR/GSovrLvam
-59UFwXsdoAhsyx252m46cTFWwcFQ8Fch7cq6g2iRSxv0PXT2SYdgvsazu4uXTxgk
-FxnkHyarbq6MpD2+56fZ1jqQDx1VyS475XROJmFN0pttOJUE9Jc5ouDgxdcl6f9y
-mdK7IoF/eCPGGfylFFeLK8vvp4gfhoLBWVestC6QjASuwtB6YeabxcDRbFTXcXVt
-9y0ZY6yQqXSRFAlMHNzq5KAKQuy6xKp8v9YumKHW3g==
-=ZL2m
------END PGP SIGNATURE-----
-
---/d+EdYE2CMA/ZvWU--
+--000000000000cb52d005f24c810d--
 
