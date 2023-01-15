@@ -1,21 +1,11 @@
-Message-ID: <587f804f-0dd3-3259-50bd-7c652a43735c@...1227...>
-Date: Sun, 15 Jan 2023 17:33:58 +0100
+From: selva.nair@...277...
+Date: Sun, 15 Jan 2023 11:48:18 -0500
+Message-Id: <20230115164818.1973210-1-selva.nair@...277...>
+In-Reply-To: <20230113235754.1942385-1-selva.nair@...277...>
+References: <20230113235754.1942385-1-selva.nair@...277...>
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <6c0e8ca1-9518-1bc0-65cb-f742311ef08f@...1227...>
- <f52172ec20da430975373e7192380874bc600062.camel@...2316...>
- <43485320-4957-8ac1-7bab-4e769000d156@...1227...>
- <234ef71a00e43f74bda0836d66c63a3d8c54a74c.camel@...2316...>
- <af0497ca-b862-6a5c-f5ff-eb0d34a84692@...1227...>
- <0456a9e2e317af58f1aa6947c768ac7853c06485.camel@...2316...>
- <334bc5ad-1d55-208b-bbaf-2233c4708d9f@...1227...>
- <f24287289b084285b67fc1a7fb26714fec3f0bbc.camel@...2316...>
- <79a79fe0-978b-020d-83f2-026299e7337e@...1227...>
- <ee7b4c257b30a2b91d28eab827fd99ee61d1d48a.camel@...2316...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <ee7b4c257b30a2b91d28eab827fd99ee61d1d48a.camel@...2316...>
-Subject: Re: [Openvpn-devel] Amend OpenVPN license to allow continued mbed
- TLS support (allow mbed TLS 3.x linking)
+Subject: [Openvpn-devel] [PATCH v2 1/2] Define and use macros for route
+ addition status code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,53 +14,451 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: James Bottomley <James.Bottomley@...2316...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+From: Selva Nair <selva.nair@...277...>
 
->> Yes but neither mbed TLS nor OpenSSL is a system library on Windows
->> or macOS. And even mbed TLS is sketchy as many distributions do not
->> have in their base system. So just assume, at least for the sake of
->> argument that they are not. In that case I think we need this
->> exception. So I am  asking if you are willing to allow this exception
->> to the license even though you think it is unnecessary to make the
->> people that think that it  is needed happy?
-> 
-> In that case your proposed exception doesn't work.  You've modelled it
-> on the OpenSSL exception which was designed to cover the use case where
-> OpenSSL *is* a system library (thus covered by the system library
-> exception) but imposes incompatible additional restrictions on whole
-> binary, specifically the GPLv2 pieces.
-> 
-> To make this work assuming the crypto library isn't a system one, you
-> need an exception to the section 2 requirement to ship the whole under
-> GPLv2 ... or a simple declaration that you think openssl and mbedtls
-> are system libraries for the purposes of OpenVPN, so the system library
-> exception applies to them regardless of how they are shipped.
+- Instead of 0, 1, 2 use RTA_ERROR, RTA_SUCCESS, RTA_EEXIST
+  as the return code of route addition functions.
 
-The origin of the existing exception is the Debian project (or at least 
-has been used a lot in relationship with the project). Until very 
-recently Debian did NOT consider the OpenSSL library to be a system 
-library, so they asked GPLv2 projects to add this clause to allow 
-linking with the OpenSSL library. So that makes me believe that this 
-clause is fit for the purpose that we are using it for.
+- Also fix a logging error: status -> (status == RTA_SUCCESS)
 
+v2: fold long lines
+    use "bool ret = .." pattern for android too
+    fix two more lines where status was directly assigned to bool
 
-See as an example here 
-https://lists.debian.org/debian-legal/2004/05/msg00595.html
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
 
+- Hope I did not introduce any typos -- hard to check when there
+  are so many platform-specific cases involved.
+- Some lines are still long after folding: uncrustify seems to want
+  the second line to be aligned with the opening parenthesis. Feel
+  free to reformat/beautify or ask for a v3.
 
-The change that Debian considers the OpenSSL library a system library in 
-Debian is from 2020:
+ src/openvpn/route.c | 130 ++++++++++++++++++++++++++++----------------
+ 1 file changed, 84 insertions(+), 46 deletions(-)
 
-https://lists.debian.org/debian-devel/2020/10/msg00168.html
-http://meetbot.debian.net/debian-ftp/2020/debian-ftp.2020-03-13-20.02.html
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 21dce6af..61a40ff1 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -96,6 +96,11 @@ print_bypass_addresses(const struct route_bypass *rb)
+ 
+ #endif
+ 
++/* Route addition return status codes */
++#define RTA_ERROR   0   /* route addition failed */
++#define RTA_SUCCESS 1   /* route addition succeeded */
++#define RTA_EEXIST  2   /* route not added as it already exists */
++
+ static bool
+ add_bypass_address(struct route_bypass *rb, const in_addr_t a)
+ {
+@@ -1593,12 +1598,12 @@ add_route(struct route_ipv4 *r,
+         metric = r->metric;
+     }
+ 
+-    status = 1;
++    status = RTA_SUCCESS;
+     if (net_route_v4_add(ctx, &r->network, netmask_to_netbits2(r->netmask),
+                          &r->gateway, iface, 0, metric) < 0)
+     {
+         msg(M_WARN, "ERROR: Linux route add command failed");
+-        status = 0;
++        status = RTA_ERROR;
+     }
+ 
+ #elif defined (TARGET_ANDROID)
+@@ -1612,7 +1617,8 @@ add_route(struct route_ipv4 *r,
+     {
+         openvpn_snprintf(out, sizeof(out), "%s %s %s", network, netmask, gateway);
+     }
+-    status = management_android_control(management, "ROUTE", out);
++    bool ret = management_android_control(management, "ROUTE", out);
++    status = ret ? RTA_SUCCESS : RTA_ERROR;
+ 
+ #elif defined (_WIN32)
+     {
+@@ -1638,28 +1644,35 @@ add_route(struct route_ipv4 *r,
+         if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_SERVICE)
+         {
+             status = add_route_service(r, tt);
+-            msg(D_ROUTE, "Route addition via service %s", (status == 1) ? "succeeded" : "failed");
++            msg(D_ROUTE, "Route addition via service %s",
++                (status == RTA_SUCCESS) ? "succeeded" : "failed");
+         }
+         else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_IPAPI)
+         {
+             status = add_route_ipapi(r, tt, ai);
+-            msg(D_ROUTE, "Route addition via IPAPI %s", (status == 1) ? "succeeded" : "failed");
++            msg(D_ROUTE, "Route addition via IPAPI %s",
++                (status == RTA_SUCCESS) ? "succeeded" : "failed");
+         }
+         else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_EXE)
+         {
+             netcmd_semaphore_lock();
+-            status = openvpn_execve_check(&argv, es, 0, "ERROR: Windows route add command failed");
++            bool ret = openvpn_execve_check(&argv, es, 0,
++                                            "ERROR: Windows route add command failed");
++            status = ret ? RTA_SUCCESS : RTA_ERROR;
+             netcmd_semaphore_release();
+         }
+         else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_ADAPTIVE)
+         {
+             status = add_route_ipapi(r, tt, ai);
+-            msg(D_ROUTE, "Route addition via IPAPI %s [adaptive]", (status == 1) ? "succeeded" : "failed");
+-            if (status == 0)
++            msg(D_ROUTE, "Route addition via IPAPI %s [adaptive]",
++                (status == RTA_SUCCESS) ? "succeeded" : "failed");
++            if (status == RTA_ERROR)
+             {
+                 msg(D_ROUTE, "Route addition fallback to route.exe");
+                 netcmd_semaphore_lock();
+-                status = openvpn_execve_check(&argv, es, 0, "ERROR: Windows route add command failed [adaptive]");
++                bool ret = openvpn_execve_check(&argv, es, 0,
++                                                "ERROR: Windows route add command failed [adaptive]");
++                status = ret ? RTA_SUCCESS : RTA_ERROR;
+                 netcmd_semaphore_release();
+             }
+         }
+@@ -1694,7 +1707,9 @@ add_route(struct route_ipv4 *r,
+     }
+ 
+     argv_msg(D_ROUTE, &argv);
+-    status = openvpn_execve_check(&argv, es, 0, "ERROR: Solaris route add command failed");
++    bool ret = openvpn_execve_check(&argv, es, 0,
++                                    "ERROR: Solaris route add command failed");
++    status = ret ? RTA_SUCCESS : RTA_ERROR;
+ 
+ #elif defined(TARGET_FREEBSD)
+ 
+@@ -1716,7 +1731,9 @@ add_route(struct route_ipv4 *r,
+     /* FIXME -- add on-link support for FreeBSD */
+ 
+     argv_msg(D_ROUTE, &argv);
+-    status = openvpn_execve_check(&argv, es, 0, "ERROR: FreeBSD route add command failed");
++    bool ret = openvpn_execve_check(&argv, es, 0,
++                                    "ERROR: FreeBSD route add command failed");
++    status = ret ? RTA_SUCCESS : RTA_ERROR;
+ 
+ #elif defined(TARGET_DRAGONFLY)
+ 
+@@ -1738,7 +1755,9 @@ add_route(struct route_ipv4 *r,
+     /* FIXME -- add on-link support for Dragonfly */
+ 
+     argv_msg(D_ROUTE, &argv);
+-    status = openvpn_execve_check(&argv, es, 0, "ERROR: DragonFly route add command failed");
++    bool ret = openvpn_execve_check(&argv, es, 0,
++                                    "ERROR: DragonFly route add command failed");
++    status = ret ? RTA_SUCCESS : RTA_ERROR;
+ 
+ #elif defined(TARGET_DARWIN)
+ 
+@@ -1770,7 +1789,9 @@ add_route(struct route_ipv4 *r,
+     }
+ 
+     argv_msg(D_ROUTE, &argv);
+-    status = openvpn_execve_check(&argv, es, 0, "ERROR: OS X route add command failed");
++    bool ret = openvpn_execve_check(&argv, es, 0,
++                                    "ERROR: OS X route add command failed");
++    status = ret ? RTA_SUCCESS : RTA_ERROR;
+ 
+ #elif defined(TARGET_OPENBSD) || defined(TARGET_NETBSD)
+ 
+@@ -1792,7 +1813,9 @@ add_route(struct route_ipv4 *r,
+     /* FIXME -- add on-link support for OpenBSD/NetBSD */
+ 
+     argv_msg(D_ROUTE, &argv);
+-    status = openvpn_execve_check(&argv, es, 0, "ERROR: OpenBSD/NetBSD route add command failed");
++    bool ret = openvpn_execve_check(&argv, es, 0,
++                                    "ERROR: OpenBSD/NetBSD route add command failed");
++    status = ret ? RTA_SUCCESS : RTA_ERROR;
+ 
+ #elif defined(TARGET_AIX)
+ 
+@@ -1802,7 +1825,9 @@ add_route(struct route_ipv4 *r,
+                     ROUTE_PATH,
+                     network, netbits, gateway);
+         argv_msg(D_ROUTE, &argv);
+-        status = openvpn_execve_check(&argv, es, 0, "ERROR: AIX route add command failed");
++        bool ret = openvpn_execve_check(&argv, es, 0,
++                                        "ERROR: AIX route add command failed");
++        status = ret ? RTA_SUCCESS : RTA_ERROR;
+     }
+ 
+ #else  /* if defined(TARGET_LINUX) */
+@@ -1810,7 +1835,7 @@ add_route(struct route_ipv4 *r,
+ #endif /* if defined(TARGET_LINUX) */
+ 
+ done:
+-    if (status == 1)
++    if (status == RTA_SUCCESS)
+     {
+         r->flags |= RT_ADDED;
+     }
+@@ -1823,7 +1848,7 @@ done:
+     /* release resources potentially allocated during route setup */
+     net_ctx_reset(ctx);
+ 
+-    return (status != 0);
++    return (status != RTA_ERROR);
+ }
+ 
+ 
+@@ -1937,13 +1962,13 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
+         metric = r6->metric;
+     }
+ 
+-    status = 1;
++    status = RTA_SUCCESS;
+     if (net_route_v6_add(ctx, &r6->network, r6->netbits,
+                          gateway_needed ? &r6->gateway : NULL, device, 0,
+                          metric) < 0)
+     {
+         msg(M_WARN, "ERROR: Linux IPv6 route can't be added");
+-        status = 0;
++        status = RTA_ERROR;
+     }
+ 
+ #elif defined (TARGET_ANDROID)
+@@ -1989,7 +2014,9 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
+     }
+ 
+     argv_msg(D_ROUTE, &argv);
+-    status = openvpn_execve_check(&argv, es, 0, "ERROR: Solaris route add -inet6 command failed");
++    bool ret = openvpn_execve_check(&argv, es, 0,
++                                    "ERROR: Solaris route add -inet6 command failed");
++    status = ret ? RTA_SUCCESS : RTA_ERROR;
+ 
+ #elif defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)
+ 
+@@ -2008,7 +2035,9 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
+     }
+ 
+     argv_msg(D_ROUTE, &argv);
+-    status = openvpn_execve_check(&argv, es, 0, "ERROR: *BSD route add -inet6 command failed");
++    bool ret = openvpn_execve_check(&argv, es, 0,
++                                    "ERROR: *BSD route add -inet6 command failed");
++    status = ret ? RTA_SUCCESS : RTA_ERROR;
+ 
+ #elif defined(TARGET_DARWIN)
+ 
+@@ -2026,7 +2055,9 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
+     }
+ 
+     argv_msg(D_ROUTE, &argv);
+-    status = openvpn_execve_check(&argv, es, 0, "ERROR: MacOS X route add -inet6 command failed");
++    bool ret = openvpn_execve_check(&argv, es, 0,
++                                    "ERROR: MacOS X route add -inet6 command failed");
++    status = ret ? RTA_SUCCESS : RTA_ERROR;
+ 
+ #elif defined(TARGET_OPENBSD)
+ 
+@@ -2035,7 +2066,9 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
+                 network, r6->netbits, gateway );
+ 
+     argv_msg(D_ROUTE, &argv);
+-    status = openvpn_execve_check(&argv, es, 0, "ERROR: OpenBSD route add -inet6 command failed");
++    bool ret = openvpn_execve_check(&argv, es, 0,
++                                    "ERROR: OpenBSD route add -inet6 command failed");
++    status = ret ? RTA_SUCCESS : RTA_ERROR;
+ 
+ #elif defined(TARGET_NETBSD)
+ 
+@@ -2044,7 +2077,9 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
+                 network, r6->netbits, gateway );
+ 
+     argv_msg(D_ROUTE, &argv);
+-    status = openvpn_execve_check(&argv, es, 0, "ERROR: NetBSD route add -inet6 command failed");
++    bool ret = openvpn_execve_check(&argv, es, 0,
++                                    "ERROR: NetBSD route add -inet6 command failed");
++    status = ret ? RTA_SUCCESS : RTA_ERROR;
+ 
+ #elif defined(TARGET_AIX)
+ 
+@@ -2052,14 +2087,16 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
+                 ROUTE_PATH,
+                 network, r6->netbits, gateway);
+     argv_msg(D_ROUTE, &argv);
+-    status = openvpn_execve_check(&argv, es, 0, "ERROR: AIX route add command failed");
++    bool ret = openvpn_execve_check(&argv, es, 0,
++                                    "ERROR: AIX route add command failed");
++    status = ret ? RTA_SUCCESS : RTA_ERROR;
+ 
+ #else  /* if defined(TARGET_LINUX) */
+     msg(M_FATAL, "Sorry, but I don't know how to do 'route ipv6' commands on this operating system.  Try putting your routes in a --route-up script");
+ #endif /* if defined(TARGET_LINUX) */
+ 
+ done:
+-    if (status == 1)
++    if (status == RTA_SUCCESS)
+     {
+         r6->flags |= RT_ADDED;
+     }
+@@ -2072,7 +2109,7 @@ done:
+     /* release resources potentially allocated during route setup */
+     net_ctx_reset(ctx);
+ 
+-    return (status != 0);
++    return (status != RTA_ERROR);
+ }
+ 
+ static void
+@@ -2759,11 +2796,12 @@ done:
+     gc_free(&gc);
+ }
+ 
++/* Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error */
+ static int
+ add_route_ipapi(const struct route_ipv4 *r, const struct tuntap *tt, DWORD adapter_index)
+ {
+     struct gc_arena gc = gc_new();
+-    int ret = 0;
++    int ret = RTA_ERROR;
+     DWORD status;
+     const DWORD if_index = (adapter_index == TUN_ADAPTER_INDEX_INVALID) ? windows_route_find_if_index(r, tt) : adapter_index;
+ 
+@@ -2797,11 +2835,11 @@ add_route_ipapi(const struct route_ipv4 *r, const struct tuntap *tt, DWORD adapt
+ 
+         if (status == NO_ERROR)
+         {
+-            ret = 1;
++            ret = RTA_SUCCESS;
+         }
+         else if (status == ERROR_OBJECT_ALREADY_EXISTS)
+         {
+-            ret = 2;
++            ret = RTA_EEXIST;
+         }
+         else
+         {
+@@ -2820,7 +2858,7 @@ add_route_ipapi(const struct route_ipv4 *r, const struct tuntap *tt, DWORD adapt
+                         msg(D_ROUTE, "ROUTE: CreateIpForwardEntry succeeded with dwForwardMetric1=%u and dwForwardType=%u",
+                             (unsigned int)fr.dwForwardMetric1,
+                             (unsigned int)fr.dwForwardType);
+-                        ret = 1;
++                        ret = RTA_SUCCESS;
+                         goto doublebreak;
+                     }
+                     else if (status != ERROR_BAD_ARGUMENTS)
+@@ -2839,7 +2877,7 @@ doublebreak:
+                     (unsigned int)if_index);
+                 if (status == ERROR_OBJECT_ALREADY_EXISTS)
+                 {
+-                    ret = 2;
++                    ret = RTA_EEXIST;
+                 }
+             }
+         }
+@@ -2885,11 +2923,11 @@ del_route_ipapi(const struct route_ipv4 *r, const struct tuntap *tt)
+     return ret;
+ }
+ 
+-/* Returns 1 on success, 2 if route exists, 0 on error */
++/* Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error */
+ static int
+ do_route_service(const bool add, const route_message_t *rt, const size_t size, HANDLE pipe)
+ {
+-    int ret = 0;
++    int ret = RTA_ERROR;
+     ack_message_t ack;
+     struct gc_arena gc = gc_new();
+ 
+@@ -2903,25 +2941,25 @@ do_route_service(const bool add, const route_message_t *rt, const size_t size, H
+         msg(M_WARN, "ROUTE: route %s failed using service: %s [status=%u if_index=%d]",
+             (add ? "addition" : "deletion"), strerror_win32(ack.error_number, &gc),
+             ack.error_number, rt->iface.index);
+-        ret = (ack.error_number == ERROR_OBJECT_ALREADY_EXISTS) ? 2 : 0;
++        ret = (ack.error_number == ERROR_OBJECT_ALREADY_EXISTS) ? RTA_EEXIST : RTA_ERROR;
+         goto out;
+     }
+ 
+-    ret = 1;
++    ret = RTA_SUCCESS;
+ 
+ out:
+     gc_free(&gc);
+     return ret;
+ }
+ 
+-/* Returns 1 on success, 2 if route exists, 0 on error */
++/* Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error */
+ static int
+ do_route_ipv4_service(const bool add, const struct route_ipv4 *r, const struct tuntap *tt)
+ {
+     DWORD if_index = windows_route_find_if_index(r, tt);
+     if (if_index == ~0)
+     {
+-        return 0;
++        return RTA_ERROR;
+     }
+ 
+     route_message_t msg = {
+@@ -2947,13 +2985,13 @@ do_route_ipv4_service(const bool add, const struct route_ipv4 *r, const struct t
+ }
+ 
+ /* Add or delete an ipv6 route
+- * Returns 1 on success, 2 if route exists, 0 on error
++ * Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error
+  */
+ static int
+ route_ipv6_ipapi(const bool add, const struct route_ipv6 *r, const struct tuntap *tt)
+ {
+     DWORD err;
+-    int ret = 0;
++    int ret = RTA_ERROR;
+     PMIB_IPFORWARD_ROW2 fwd_row;
+     struct gc_arena gc = gc_new();
+ 
+@@ -3006,18 +3044,18 @@ out:
+     {
+         msg(M_WARN, "ROUTE: route %s failed using ipapi: %s [status=%lu if_index=%lu]",
+             (add ? "addition" : "deletion"), strerror_win32(err, &gc), err, fwd_row->InterfaceIndex);
+-        ret = (err == ERROR_OBJECT_ALREADY_EXISTS) ? 2 : 0;
++        ret = (err == ERROR_OBJECT_ALREADY_EXISTS) ? RTA_EEXIST : RTA_ERROR;
+     }
+     else
+     {
+         msg(D_ROUTE, "IPv6 route %s using ipapi", add ? "added" : "deleted");
+-        ret = 1;
++        ret = RTA_SUCCESS;
+     }
+     gc_free(&gc);
+     return ret;
+ }
+ 
+-/* Returns 1 on success, 2 if route exists, 0 on error */
++/* Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error */
+ static int
+ do_route_ipv6_service(const bool add, const struct route_ipv6 *r, const struct tuntap *tt)
+ {
+@@ -3060,11 +3098,11 @@ do_route_ipv6_service(const bool add, const struct route_ipv6 *r, const struct t
+     status = do_route_service(add, &msg, sizeof(msg), tt->options.msg_channel);
+     msg(D_ROUTE, "IPv6 route %s via service %s",
+         add ? "addition" : "deletion",
+-        status ? "succeeded" : "failed");
++        (status == RTA_SUCCESS) ? "succeeded" : "failed");
+     return status;
+ }
+ 
+-/* Returns 1 on success, 2 if route exists, 0 on error */
++/* Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error */
+ static int
+ add_route_service(const struct route_ipv4 *r, const struct tuntap *tt)
+ {
+@@ -3077,7 +3115,7 @@ del_route_service(const struct route_ipv4 *r, const struct tuntap *tt)
+     return do_route_ipv4_service(false, r, tt);
+ }
+ 
+-/* Returns 1 on success, 2 if route exists, 0 on error */
++/* Returns RTA_SUCCESS on success, RTA_EEXIST if route exists, RTA_ERROR on error */
+ static int
+ add_route_ipv6_service(const struct route_ipv6 *r, const struct tuntap *tt)
+ {
+-- 
+2.34.1
 
-
-So I trust that the exception does indeed allow for linking against 
-OpenSSL as a non-system library as otherwise adding this exception would 
-have made no sense in the context that it was used.
-
-Arne
 
