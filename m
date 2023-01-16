@@ -1,15 +1,9 @@
-Message-ID: <4219537b-74c6-c39b-499e-8d09e1f6f649@...1227...>
-Date: Mon, 16 Jan 2023 15:36:31 +0100
+From: selva.nair@...277...
+Date: Mon, 16 Jan 2023 14:48:09 -0500
+Message-Id: <20230116194809.1980444-1-selva.nair@...277...>
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <6c0e8ca1-9518-1bc0-65cb-f742311ef08f@...1227...>
- <CAKuzo_i+zwgpg_zq050WQtNm+s0p-OMDkLGUUHn+hSApJfrorA@...278...>
- <1d60ed5a-0a1c-9723-b797-78663f477633@...1227...>
- <CAKuzo_gSCb_mydAbHeaVdbHOG9Km2fZLyOaQoCrrCDqQei0sJA@...278...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <CAKuzo_gSCb_mydAbHeaVdbHOG9Km2fZLyOaQoCrrCDqQei0sJA@...278...>
-Subject: Re: [Openvpn-devel] Amend OpenVPN license to allow continued mbed
- TLS support (allow mbed TLS 3.x linking)
+Subject: [Openvpn-devel] [PATCH] Fix more "existing route may get deleted"
+ cases
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,114 +12,249 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Am 15.01.23 um 17:51 schrieb Selva Nair:
-> Hi,
-> 
-> On Sun, Jan 15, 2023 at 8:53 AM Arne Schwabe <arne@...1227... 
-> <mailto:arne@...1227...>> wrote:
-> 
->     Am 15.01.23 um 14:23 schrieb Selva Nair:
->      > Hi,
->      >
->      >     We would like to be able to continue to build/ship OpenVPN
->     with mbed
->      >     TLS. We want all contributors to ask if they agree to license
->     change
->      >     that adds explicit permission to link with Apache 2 licensed
->     libraries:
->      >
->      >
->      >     Special exception for linking OpenVPN with Apache 2 licensed
->     libraries:
->      >
->      >         In addition, as a special exception, OpenVPN Inc and
->     contributors
->      >         give permission to link the code of this program to libraries
->      >     with the
->      >         "APACHE LICENSE, VERSION 2.0", and distribute linked
->     combination
->      >         including the two.  You must obey the GNU General Public
->     License in
->      >         all respects for all of the code used other than these
->      >     libraries.  If
->      >         you modify this file, you may extend this exception to your
->      >     version of
->      >         the file, but you are not obligated to do so.  If you do
->     not wish to
->      >         do so, delete this exception statement from your version.
->      >
->      >
->      > Instead of this exemption I would vote for a change to 'GPL v2 or
->     any
->      > later version'.
->      > That would keep the license in the spirit by which people like me
->      > contributed.
->      >
->      > Using an existing license that has already been vetted also
->     avoids the need
->      > for legal counsel.
->      >
->      > I do not understand the argument about 'GPLv2 and later...' and
->     embedded
->      > devices. Those who
->      > are currently embedding based on GPL v2 can continue to do so,
->     those who
->      > want/need v3
->      > can do so too. Those who need v3 but also want to lock the
->     firmware on a
->      > consumer device
->      > may be affected. But that's a choice they make, why would we want to
->      > promote that?
->      >
->      > Some may find this discussion a waste of time but let's not belittle
->      > people's contributions.
->      > I do care about how my work is licensed.
-> 
->     Okay. I think the embedded thing is a bit of a misunderstanding. I am
->     not trying to promote that. What I wanted is to express why changing to
->     GPLv3 might not be an option as some license holders of OpenVPN will
->     not
->     be okay with changing to GPL3 since they need that. 
-> 
-> 
-> Thanks for the clarification. I was not aware of that.
-> That's very unfortunate, though. So some want to keep the loopholes of 
-> GPL v2, and also the goodies that come with an Apache 2.0 exception, all 
-> together!
-> 
->     So the situation is basically, we need somehow to still be able to link
->     Apache 2.0 licensed SSL libraries. While we have an exception for
->     OpenSSL, some might argue that this only covers the old OpenSSL license.
-> 
->     So to go forward we either need to change OpenVPN 2.x to a license
->     compatible with Apache 2.0 like GPL3 or adding an excerption for
->     linking
->     against Apache 2.0.
-> 
->     At the hackathon we discussed the options and there already voices
->     against going GPL3 instead of GPL2 but everyone there was okay with
->     staying with GPL2 and adding an exception.
-> 
->     This approach of taking the exception route instead of GPL3 is mostly a
->     pragmatic approach to be able to have something that might have a
->     chance
->     of succeeding.
-> 
-> 
-> Given all that, I'll reluctantly agree to the proposed exception.
-> 
-> It's not critical at this stage, but the wording "...libraries with the 
-> 'APACHE LICENSE, VERSION 2.0', ..." sounds ambiguous. Is that a legally 
-> vetted form or a draft?
+From: Selva Nair <selva.nair@...277...>
 
-Enough people have looked over that but I am not sure a lawyer has done 
-it to be honest.
+- Set RL_DID_LOCAL only if the corresponding route addition
+  succeeds. This is needed to preserve when the direct route to
+  the vpn server preexists.
 
-Arne
+- Ensure net_route_v4/v6_add/del() functions using iproute2 return
+  error when route addition fails. Return value follows the same logic
+  as corresponding functions using netlink though all failure reasons
+  get the same error code of -1.
+
+NOTE: delete_route_connected_v6_net() is called even if the
+corresponding addition fails. This looks harder to fix, but also
+less critical.
+
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+
+This anticipates two other cases of wrongly deleted routes to be fixed by 
+https://patchwork.openvpn.net/project/openvpn2/patch/20230111160848.22906-1-gert@...1296.../
+
+ src/openvpn/networking_iproute2.c | 32 +++++++++++++++++++++++--------
+ src/openvpn/route.c               | 26 ++++++++++++++-----------
+ src/openvpn/route.h               |  8 ++++----
+ 3 files changed, 43 insertions(+), 23 deletions(-)
+
+diff --git a/src/openvpn/networking_iproute2.c b/src/openvpn/networking_iproute2.c
+index f93756d6..0efeed0f 100644
+--- a/src/openvpn/networking_iproute2.c
++++ b/src/openvpn/networking_iproute2.c
+@@ -267,6 +267,7 @@ net_route_v4_add(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
+ {
+     struct argv argv = argv_new();
+     const char *dst_str = print_in_addr_t(*dst, 0, &ctx->gc);
++    int ret = 0;
+ 
+     argv_printf(&argv, "%s route add %s/%d", iproute_path, dst_str, prefixlen);
+ 
+@@ -288,11 +289,14 @@ net_route_v4_add(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
+     }
+ 
+     argv_msg(D_ROUTE, &argv);
+-    openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route add command failed");
++    if (!openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route add command failed"))
++    {
++        ret = -1;
++    }
+ 
+     argv_free(&argv);
+ 
+-    return 0;
++    return ret;
+ }
+ 
+ int
+@@ -302,6 +306,7 @@ net_route_v6_add(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
+ {
+     struct argv argv = argv_new();
+     char *dst_str = (char *)print_in6_addr(*dst, 0, &ctx->gc);
++    int ret = 0;
+ 
+     argv_printf(&argv, "%s -6 route add %s/%d dev %s", iproute_path, dst_str,
+                 prefixlen, iface);
+@@ -319,11 +324,14 @@ net_route_v6_add(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
+     }
+ 
+     argv_msg(D_ROUTE, &argv);
+-    openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route -6 add command failed");
++    if (!openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route -6 add command failed"))
++    {
++        ret = -1;
++    }
+ 
+     argv_free(&argv);
+ 
+-    return 0;
++    return ret;
+ }
+ 
+ int
+@@ -333,6 +341,7 @@ net_route_v4_del(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
+ {
+     struct argv argv = argv_new();
+     const char *dst_str = print_in_addr_t(*dst, 0, &ctx->gc);
++    int ret = 0;
+ 
+     argv_printf(&argv, "%s route del %s/%d", iproute_path, dst_str, prefixlen);
+ 
+@@ -342,11 +351,14 @@ net_route_v4_del(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
+     }
+ 
+     argv_msg(D_ROUTE, &argv);
+-    openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route delete command failed");
++    if (!openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route delete command failed"))
++    {
++        ret = -1;
++    }
+ 
+     argv_free(&argv);
+ 
+-    return 0;
++    return ret;
+ }
+ 
+ int
+@@ -356,6 +368,7 @@ net_route_v6_del(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
+ {
+     struct argv argv = argv_new();
+     char *dst_str = (char *)print_in6_addr(*dst, 0, &ctx->gc);
++    int ret = 0;
+ 
+     argv_printf(&argv, "%s -6 route del %s/%d dev %s", iproute_path, dst_str,
+                 prefixlen, iface);
+@@ -373,11 +386,14 @@ net_route_v6_del(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
+     }
+ 
+     argv_msg(D_ROUTE, &argv);
+-    openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route -6 del command failed");
++    if (!openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route -6 del command failed"))
++    {
++        ret = -1;
++    }
+ 
+     argv_free(&argv);
+ 
+-    return 0;
++    return ret;
+ }
+ 
+ int
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 3a978cb4..20dacb5e 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -912,7 +912,7 @@ init_route_ipv6_list(struct route_ipv6_list *rl6,
+     return ret;
+ }
+ 
+-static bool
++static int
+ add_route3(in_addr_t network,
+            in_addr_t netmask,
+            in_addr_t gateway,
+@@ -1050,10 +1050,14 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt,
+                 if ((rl->spec.flags & RTSA_REMOTE_HOST)
+                     && rl->spec.remote_host != IPV4_INVALID_ADDR)
+                 {
+-                    ret = add_route3(rl->spec.remote_host, IPV4_NETMASK_HOST,
+-                                     rl->rgi.gateway.addr, tt, flags | ROUTE_REF_GW,
+-                                     &rl->rgi, es, ctx);
+-                    rl->iflags |= RL_DID_LOCAL;
++                    int status = add_route3(rl->spec.remote_host, IPV4_NETMASK_HOST,
++                                            rl->rgi.gateway.addr, tt, flags | ROUTE_REF_GW,
++                                            &rl->rgi, es, ctx);
++                    if (status == RTA_SUCCESS)
++                    {
++                        rl->iflags |= RL_DID_LOCAL;
++                    }
++                    ret = (status != RTA_ERROR);
+                 }
+                 else
+                 {
+@@ -1551,7 +1555,7 @@ is_on_link(const int is_local_route, const unsigned int flags, const struct rout
+     return rgi && (is_local_route == LR_MATCH || ((flags & ROUTE_REF_GW) && (rgi->flags & RGI_ON_LINK)));
+ }
+ 
+-bool
++int
+ add_route(struct route_ipv4 *r,
+           const struct tuntap *tt,
+           unsigned int flags,
+@@ -1564,7 +1568,7 @@ add_route(struct route_ipv4 *r,
+ 
+     if (!(r->flags & RT_DEFINED))
+     {
+-        return true; /* no error */
++        return RTA_SUCCESS; /* no error */
+     }
+ 
+     struct argv argv = argv_new();
+@@ -1858,7 +1862,7 @@ done:
+     /* release resources potentially allocated during route setup */
+     net_ctx_reset(ctx);
+ 
+-    return (status != RTA_ERROR);
++    return status;
+ }
+ 
+ 
+@@ -1885,7 +1889,7 @@ route_ipv6_clear_host_bits( struct route_ipv6 *r6 )
+     }
+ }
+ 
+-bool
++int
+ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
+                unsigned int flags, const struct env_set *es,
+                openvpn_net_ctx_t *ctx)
+@@ -1895,7 +1899,7 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
+ 
+     if (!(r6->flags & RT_DEFINED) )
+     {
+-        return true; /* no error */
++        return RTA_SUCCESS; /* no error */
+     }
+ 
+     struct argv argv = argv_new();
+@@ -2131,7 +2135,7 @@ done:
+     /* release resources potentially allocated during route setup */
+     net_ctx_reset(ctx);
+ 
+-    return (status != RTA_ERROR);
++    return status;
+ }
+ 
+ static void
+diff --git a/src/openvpn/route.h b/src/openvpn/route.h
+index 71b4cf4e..1e110911 100644
+--- a/src/openvpn/route.h
++++ b/src/openvpn/route.h
+@@ -259,13 +259,13 @@ void copy_route_ipv6_option_list(struct route_ipv6_option_list *dest,
+ 
+ void route_ipv6_clear_host_bits( struct route_ipv6 *r6 );
+ 
+-bool add_route_ipv6(struct route_ipv6 *r, const struct tuntap *tt, unsigned int flags, const struct env_set *es, openvpn_net_ctx_t *ctx);
++int add_route_ipv6(struct route_ipv6 *r, const struct tuntap *tt, unsigned int flags, const struct env_set *es, openvpn_net_ctx_t *ctx);
+ 
+ void delete_route_ipv6(const struct route_ipv6 *r, const struct tuntap *tt, unsigned int flags, const struct env_set *es, openvpn_net_ctx_t *ctx);
+ 
+-bool add_route(struct route_ipv4 *r, const struct tuntap *tt, unsigned int flags,
+-               const struct route_gateway_info *rgi, const struct env_set *es,
+-               openvpn_net_ctx_t *ctx);
++int add_route(struct route_ipv4 *r, const struct tuntap *tt, unsigned int flags,
++              const struct route_gateway_info *rgi, const struct env_set *es,
++              openvpn_net_ctx_t *ctx);
+ 
+ void add_route_to_option_list(struct route_option_list *l,
+                               const char *network,
+-- 
+2.34.1
 
 
