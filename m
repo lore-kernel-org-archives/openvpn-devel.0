@@ -1,10 +1,11 @@
-From: selva.nair@...277...
-Date: Fri, 20 Jan 2023 04:41:00 -0500
-Message-Id: <20230120094100.2063883-1-selva.nair@...277...>
-In-Reply-To: <20230113235754.1942385-2-selva.nair@...277...>
-References: <20230113235754.1942385-2-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 2/2] Cleanup route error and debug
+References: <20230113235754.1942385-2-selva.nair@...277...>
+ <20230120094100.2063883-1-selva.nair@...277...>
+In-Reply-To: <20230120094100.2063883-1-selva.nair@...277...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri, 20 Jan 2023 12:13:33 +0200
+Message-ID: <CAGyAFMWh=4HSAX5aEHbm8_qYR9_HqOwpei=9LAio5ye4m19Pug@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2 2/2] Cleanup route error and debug
  logging on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,207 +15,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: selva.nair@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+Hi,
 
-Use a unified logging format for various route-methods
+Stared at the code and slightly tested - works as expected. Nice that
+we display interface id:
 
-- Route add/delete errors are always logged with M_WARN, so
-  log only additional information (succeed/exists) with D_ROUTE.
+  add_route_ipv6(2000::/3 -> 2001:db8:0:456::1 metric 200) IF 74
 
-- Non-windows platforms log route errors with a prefix "ERROR:" and
-  debug info with "ROUTE:". Do the same on Windows. Do not log
-  errors or success multiple times.
+instead of device name:
 
-- In add_route_ipv6, log the interface id instead of device name
-  as the latter always point to the tun/tap adapter name on Windows.
+  add_route_ipv6(2000::/3 -> 2001:db8:0:456::1 metric 200) dev OpenVPN
+Data Channel Offload
 
-Log lines prefixed with a PACKAGE_NAME "ROUTE" are unchanged.
-They appear to use the same format on all platforms.
+Another thing which would be good to improve is a consistency between
+IPv4 and IPv6 log messages:
 
-v2: rebase to master
+2023-01-20 11:59:56 us=265000 C:\Windows\system32\route.exe ADD
+128.0.0.0 MASK 128.0.0.0 10.58.0.1
+2023-01-20 11:59:56 us=281000 ROUTE: CreateIpForwardEntry succeeded
+with dwForwardMetric1=25 and dwForwardType=4
+2023-01-20 11:59:56 us=281000 Route addition via ipapi [adaptive] succeeded
+2023-01-20 11:59:56 us=281000 add_route_ipv6(2000::/3 ->
+2001:db8:0:456::1 metric 200) IF 74
+2023-01-20 11:59:56 us=281000 IPv6 route added using ipapi
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/route.c | 66 +++++++++++++++++++++++++++++++--------------
- 1 file changed, 46 insertions(+), 20 deletions(-)
+ - for IPv4 we print route.exe command line (for debugging I think?,
+since we use IPAPI), and we don't do it for IPv6.
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 61a40ff1..8f54eb50 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1641,17 +1641,15 @@ add_route(struct route_ipv4 *r,
- 
-         argv_msg(D_ROUTE, &argv);
- 
-+        const char *method = "service";
-         if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_SERVICE)
-         {
-             status = add_route_service(r, tt);
--            msg(D_ROUTE, "Route addition via service %s",
--                (status == RTA_SUCCESS) ? "succeeded" : "failed");
-         }
-         else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_IPAPI)
-         {
-             status = add_route_ipapi(r, tt, ai);
--            msg(D_ROUTE, "Route addition via IPAPI %s",
--                (status == RTA_SUCCESS) ? "succeeded" : "failed");
-+            method = "ipapi";
-         }
-         else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_EXE)
-         {
-@@ -1660,12 +1658,12 @@ add_route(struct route_ipv4 *r,
-                                             "ERROR: Windows route add command failed");
-             status = ret ? RTA_SUCCESS : RTA_ERROR;
-             netcmd_semaphore_release();
-+            method = "route.exe";
-         }
-         else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_ADAPTIVE)
-         {
-             status = add_route_ipapi(r, tt, ai);
--            msg(D_ROUTE, "Route addition via IPAPI %s [adaptive]",
--                (status == RTA_SUCCESS) ? "succeeded" : "failed");
-+            method = "ipapi [adaptive]";
-             if (status == RTA_ERROR)
-             {
-                 msg(D_ROUTE, "Route addition fallback to route.exe");
-@@ -1674,12 +1672,18 @@ add_route(struct route_ipv4 *r,
-                                                 "ERROR: Windows route add command failed [adaptive]");
-                 status = ret ? RTA_SUCCESS : RTA_ERROR;
-                 netcmd_semaphore_release();
-+                method = "route.exe";
-             }
-         }
-         else
-         {
-             ASSERT(0);
-         }
-+        if (status != RTA_ERROR) /* error is logged upstream */
-+        {
-+            msg(D_ROUTE, "Route addition via %s %s", method,
-+                (status == RTA_SUCCESS) ? "succeeded" : "failed because route exists");
-+        }
-     }
- 
- #elif defined (TARGET_SOLARIS)
-@@ -1881,7 +1885,6 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-                openvpn_net_ctx_t *ctx)
- {
-     int status = 0;
--    const char *device = tt->actual_name;
-     bool gateway_needed = false;
- 
-     if (!(r6->flags & RT_DEFINED) )
-@@ -1893,6 +1896,7 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-     struct gc_arena gc = gc_new();
- 
- #ifndef _WIN32
-+    const char *device = tt->actual_name;
-     if (r6->iface != NULL)              /* vpn server special route */
-     {
-         device = r6->iface;
-@@ -1925,8 +1929,14 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
-     }
- #endif
- 
-+#ifndef _WIN32
-     msg( M_INFO, "add_route_ipv6(%s/%d -> %s metric %d) dev %s",
-          network, r6->netbits, gateway, r6->metric, device );
-+#else
-+    msg( M_INFO, "add_route_ipv6(%s/%d -> %s metric %d) IF %lu",
-+         network, r6->netbits, gateway, r6->metric,
-+         r6->adapter_index ? r6->adapter_index : tt->adapter_index);
-+#endif
- 
-     /*
-      * Filter out routes which are essentially no-ops
-@@ -2871,14 +2881,16 @@ add_route_ipapi(const struct route_ipv4 *r, const struct tuntap *tt, DWORD adapt
- doublebreak:
-             if (status != NO_ERROR)
-             {
--                msg(M_WARN, "ROUTE: route addition failed using CreateIpForwardEntry: %s [status=%u if_index=%u]",
--                    strerror_win32(status, &gc),
--                    (unsigned int)status,
--                    (unsigned int)if_index);
-                 if (status == ERROR_OBJECT_ALREADY_EXISTS)
-                 {
-                     ret = RTA_EEXIST;
-                 }
-+                else
-+                {
-+                    msg(M_WARN, "ERROR: route addition failed using CreateIpForwardEntry: "
-+                        "%s [status=%u if_index=%u]", strerror_win32(status, &gc),
-+                        (unsigned int)status, (unsigned int)if_index);
-+                }
-             }
-         }
-     }
-@@ -2914,7 +2926,7 @@ del_route_ipapi(const struct route_ipv4 *r, const struct tuntap *tt)
-         }
-         else
-         {
--            msg(M_WARN, "ROUTE: route deletion failed using DeleteIpForwardEntry: %s",
-+            msg(M_WARN, "ERROR: route deletion failed using DeleteIpForwardEntry: %s",
-                 strerror_win32(status, &gc));
-         }
-     }
-@@ -2938,10 +2950,13 @@ do_route_service(const bool add, const route_message_t *rt, const size_t size, H
- 
-     if (ack.error_number != NO_ERROR)
-     {
--        msg(M_WARN, "ROUTE: route %s failed using service: %s [status=%u if_index=%d]",
--            (add ? "addition" : "deletion"), strerror_win32(ack.error_number, &gc),
--            ack.error_number, rt->iface.index);
-         ret = (ack.error_number == ERROR_OBJECT_ALREADY_EXISTS) ? RTA_EEXIST : RTA_ERROR;
-+        if (ret == RTA_ERROR)
-+        {
-+            msg(M_WARN, "ERROR: route %s failed using service: %s [status=%u if_index=%d]",
-+                (add ? "addition" : "deletion"), strerror_win32(ack.error_number, &gc),
-+                ack.error_number, rt->iface.index);
-+        }
-         goto out;
-     }
- 
-@@ -3042,9 +3057,17 @@ route_ipv6_ipapi(const bool add, const struct route_ipv6 *r, const struct tuntap
- out:
-     if (err != NO_ERROR)
-     {
--        msg(M_WARN, "ROUTE: route %s failed using ipapi: %s [status=%lu if_index=%lu]",
--            (add ? "addition" : "deletion"), strerror_win32(err, &gc), err, fwd_row->InterfaceIndex);
-         ret = (err == ERROR_OBJECT_ALREADY_EXISTS) ? RTA_EEXIST : RTA_ERROR;
-+        if (ret == RTA_ERROR)
-+        {
-+            msg(M_WARN, "ERROR: route %s failed using ipapi: %s [status=%lu if_index=%lu]",
-+                (add ? "addition" : "deletion"), strerror_win32(err, &gc), err,
-+                fwd_row->InterfaceIndex);
-+        }
-+        else if (add)
-+        {
-+            msg(D_ROUTE, "IPv6 route addition using ipapi failed because route exists");
-+        }
-     }
-     else
-     {
-@@ -3096,9 +3119,12 @@ do_route_ipv6_service(const bool add, const struct route_ipv6 *r, const struct t
-     }
- 
-     status = do_route_service(add, &msg, sizeof(msg), tt->options.msg_channel);
--    msg(D_ROUTE, "IPv6 route %s via service %s",
--        add ? "addition" : "deletion",
--        (status == RTA_SUCCESS) ? "succeeded" : "failed");
-+    if (status != RTA_ERROR)
-+    {
-+        msg(D_ROUTE, "IPv6 route %s via service %s",
-+            add ? "addition" : "deletion",
-+            (status == RTA_SUCCESS) ? "succeeded" : "failed because route exists");
-+    }
-     return status;
- }
- 
--- 
-2.34.1
+ - for IPv4 we print "Route addition via ipapi [adaptive] succeeded",
+for IPv6 "IPv6 route added using ipapi"
 
+Besides that, we use capitalized IPAPI spelling in delete_route. That
+function could probably benefit from the same
+refactoring as add_route. Anyway, this is not really about this patch.
+
+Acked-by: Lev Stipakov <lstipakov@...277...>
 
