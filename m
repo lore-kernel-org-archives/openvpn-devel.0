@@ -1,9 +1,15 @@
-From: selva.nair@...277...
-Date: Thu, 19 Jan 2023 21:18:41 -0500
-Message-Id: <20230120021841.2048791-1-selva.nair@...277...>
+Date: Fri, 20 Jan 2023 09:22:52 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <Y8pPXMgXwiNqzvbm@...1296...>
+References: <20230113235754.1942385-1-selva.nair@...277...>
+ <20230113235754.1942385-2-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Warn when pkcs11-id or pkcs11-id-management
- options are ignored
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="9OP2bQTPhyf3belz"
+Content-Disposition: inline
+In-Reply-To: <20230113235754.1942385-2-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Cleanup route error and debug
+ logging on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,97 +18,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: selva.nair@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+--9OP2bQTPhyf3belz
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-- If there are no pkcs11-providers either directly specified or
-  through p11-kit-proxy made available through a build-time detection,
-  these options are ignored. Log a warning in such cases.
+Hi,
 
-  Especially important on Windows where automatic loading of p11-kit
-  is not enabled in our release builds.
+On Fri, Jan 13, 2023 at 06:57:54PM -0500, selva.nair@...277... wrote:
+> Use a unified logging format for various route-methods
 
-- Document this behaviour.
+This generally looks good, but I could't get Lev to test it, because
+the patch does not apply anymore - v2 of the RTA_ macro patch brought
+"bool ret =3D ..." change which conflicts with this one.
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- doc/man-sections/pkcs11-options.rst | 23 ++++++++++++++---------
- src/openvpn/options.c               |  9 +++++++++
- 2 files changed, 23 insertions(+), 9 deletions(-)
+Can you rebase, and resend?
 
-diff --git a/doc/man-sections/pkcs11-options.rst b/doc/man-sections/pkcs11-options.rst
-index c064aca5..de1662b7 100644
---- a/doc/man-sections/pkcs11-options.rst
-+++ b/doc/man-sections/pkcs11-options.rst
-@@ -13,7 +13,8 @@ PKCS#11 / SmartCard options
- 
- --pkcs11-id name
-   Specify the serialized certificate id to be used. The id can be gotten
--  by the standalone ``--show-pkcs11-ids`` option.
-+  by the standalone ``--show-pkcs11-ids`` option. See also the description
-+  of ``--pkcs11-providers`` option.
- 
- --pkcs11-id-management
-   Acquire PKCS#11 id from management interface. In this case a
-@@ -21,6 +22,7 @@ PKCS#11 / SmartCard options
-   application may use pkcs11-id-count command to retrieve available number of
-   certificates, and pkcs11-id-get command to retrieve certificate id and
-   certificate body.
-+  See also the description of ``--pkcs11-providers`` option.
- 
- --pkcs11-pin-cache seconds
-   Specify how many seconds the PIN can be cached, the default is until the
-@@ -51,15 +53,18 @@ PKCS#11 / SmartCard options
-      pkcs11-protected-authentication 0
-      pkcs11-protected-authentication 1
- 
----pkcs11-providers provider
-+--pkcs11-providers providers
-   Specify an RSA Security Inc. PKCS #11 Cryptographic Token Interface
--  (Cryptoki) providers to load. This option can be used instead of
--  ``--cert``, ``--key`` and ``--pkcs12``.
--
--  If p11-kit is present on the system, its :code:`p11-kit-proxy.so` module
--  will be loaded by default if either the ``--pkcs11-id`` or
--  ``--pkcs11-id-management`` options are specified without
--  ``--pkcs11-provider`` being given.
-+  (Cryptoki) providers to load. A space-separated list of one or more
-+  provider library names may be specified. This option along with ``--pkcs11-id``
-+  or ``pkcs11-id-management`` can be used instead of
-+  ``--cert`` and ``--key`` or ``--pkcs12``.
-+
-+  If p11-kit is present on the system and was enabled during build, its
-+  :code:`p11-kit-proxy.so` module will be loaded by default if either
-+  the ``--pkcs11-id`` or ``--pkcs11-id-management`` options is present without
-+  ``--pkcs11-providers``. If default loading is not enabled in the build and
-+  no providers are specified, the former options will be ignored.
- 
- --show-pkcs11-ids args
-   (Standalone) Show PKCS#11 token object list.
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 4932a869..f24af3d7 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2855,6 +2855,15 @@ options_postprocess_verify_ce(const struct options *options,
-     {
-         check_ca_required(options);
- #ifdef ENABLE_PKCS11
-+        if (!options->pkcs11_providers[0] && options->pkcs11_id)
-+        {
-+            msg(M_WARN, "Option pkcs11-id is ignored as no pkcs11-providers are specified");
-+        }
-+        else if (!options->pkcs11_providers[0] && options->pkcs11_id_management)
-+        {
-+            msg(M_WARN, "Option pkcs11-id-management is ignored as no pkcs11-providers are specified");
-+        }
-+
-         if (options->pkcs11_providers[0])
-         {
-             if (options->pkcs11_id_management && options->pkcs11_id != NULL)
--- 
-2.34.1
+thanks,
 
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--9OP2bQTPhyf3belz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJjyk9cAAoJEB2Cnv7KVigSYGsL/3jxcs1zeXSo01Gx1Rh2xBYm
+xVyuP4w7ELMvoxc9ykU3wcebEcuyKRSJZcG+XwM6cNh4qUo1pfoYiapItZxa1kQb
+r8ahbWwTzoAOHjKrdQAoLNYm48TO8s+4tA/WP/VKSu9X1iE7vig742BBNZoGY7wl
+MYHkFYbCkj4I4SFb44dZZh/ywYPQ6AnHwtKriFIJw/8NoISWt3HjQp+CeUt7ShSY
+Xn03hgzqeJDXEZ93YaODmjCafjhmS6hV3TuARTixHHR9AYpvo+q/w+SmCq/sKXYR
+nM2KbDxbf32p9I70NW7HBUyIScB598dLN938XVGAGsPzIi1DkpquMiwtU2HOtMRV
+A/3iujBoUkT+wn3CZ/Obe7kRAqu3YCRgR0/rvN0+ECXa+poJALEKkDOlCQAfmgGW
+pA2lbRfpXPec6oFB9eOJxtDSuqnvU++mlDbf4WQQofS+eTwqN82sY8Yr+VF1p63U
+AjH0UMw1/0IfjCMCIy2zZxgyO3OvAhbkHSvwobu9DQ==
+=uhm5
+-----END PGP SIGNATURE-----
+
+--9OP2bQTPhyf3belz--
 
