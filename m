@@ -1,10 +1,9 @@
-Date: Thu, 19 Jan 2023 17:04:46 +0100 (CET)
-Message-Id: <202301191604.30JG4kIP010502@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230119085959.157-1-lstipakov@...277...>
-References: <20230119085959.157-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: openvpnmsica: remove dco
- installer custom actions
+From: selva.nair@...277...
+Date: Thu, 19 Jan 2023 21:18:41 -0500
+Message-Id: <20230120021841.2048791-1-selva.nair@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Warn when pkcs11-id or pkcs11-id-management
+ options are ignored
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,41 +14,95 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+From: Selva Nair <selva.nair@...277...>
 
-As you all guessed, I'm a big fan of ripping out large chunks of stuff
-that I have no use for ;-) - seriously, moving windco into a MSM is the
-right thing, so we do not need the installer code here anymore.
+- If there are no pkcs11-providers either directly specified or
+  through p11-kit-proxy made available through a build-time detection,
+  these options are ignored. Log a warning in such cases.
 
-(I do not fully understand all the details in the grand scheme of
-things, like "where have these functions been called from, previously?"
-but I guess this is what the windows-build patch is about...)
+  Especially important on Windows where automatic loading of p11-kit
+  is not enabled in our release builds.
 
-Tested by pushing to my GH instance and getting a windows test build,
-for good measure... but that fails because LZO downloads fail... meh.
+- Document this behaviour.
 
-Your patch has been applied to the master and release/2.6 branch.
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ doc/man-sections/pkcs11-options.rst | 23 ++++++++++++++---------
+ src/openvpn/options.c               |  9 +++++++++
+ 2 files changed, 23 insertions(+), 9 deletions(-)
 
-commit 7217c7137ef835eb70a3e0c0fcf1cbdf3d5f65b2 (master)
-commit 640c4d82611b744a4e032b827c82e365eca4f361 (release/2.6)
-Author: Lev Stipakov
-Date:   Thu Jan 19 10:59:59 2023 +0200
-
-     openvpnmsica: remove dco installer custom actions
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230119085959.157-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26053.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/doc/man-sections/pkcs11-options.rst b/doc/man-sections/pkcs11-options.rst
+index c064aca5..de1662b7 100644
+--- a/doc/man-sections/pkcs11-options.rst
++++ b/doc/man-sections/pkcs11-options.rst
+@@ -13,7 +13,8 @@ PKCS#11 / SmartCard options
+ 
+ --pkcs11-id name
+   Specify the serialized certificate id to be used. The id can be gotten
+-  by the standalone ``--show-pkcs11-ids`` option.
++  by the standalone ``--show-pkcs11-ids`` option. See also the description
++  of ``--pkcs11-providers`` option.
+ 
+ --pkcs11-id-management
+   Acquire PKCS#11 id from management interface. In this case a
+@@ -21,6 +22,7 @@ PKCS#11 / SmartCard options
+   application may use pkcs11-id-count command to retrieve available number of
+   certificates, and pkcs11-id-get command to retrieve certificate id and
+   certificate body.
++  See also the description of ``--pkcs11-providers`` option.
+ 
+ --pkcs11-pin-cache seconds
+   Specify how many seconds the PIN can be cached, the default is until the
+@@ -51,15 +53,18 @@ PKCS#11 / SmartCard options
+      pkcs11-protected-authentication 0
+      pkcs11-protected-authentication 1
+ 
+---pkcs11-providers provider
++--pkcs11-providers providers
+   Specify an RSA Security Inc. PKCS #11 Cryptographic Token Interface
+-  (Cryptoki) providers to load. This option can be used instead of
+-  ``--cert``, ``--key`` and ``--pkcs12``.
+-
+-  If p11-kit is present on the system, its :code:`p11-kit-proxy.so` module
+-  will be loaded by default if either the ``--pkcs11-id`` or
+-  ``--pkcs11-id-management`` options are specified without
+-  ``--pkcs11-provider`` being given.
++  (Cryptoki) providers to load. A space-separated list of one or more
++  provider library names may be specified. This option along with ``--pkcs11-id``
++  or ``pkcs11-id-management`` can be used instead of
++  ``--cert`` and ``--key`` or ``--pkcs12``.
++
++  If p11-kit is present on the system and was enabled during build, its
++  :code:`p11-kit-proxy.so` module will be loaded by default if either
++  the ``--pkcs11-id`` or ``--pkcs11-id-management`` options is present without
++  ``--pkcs11-providers``. If default loading is not enabled in the build and
++  no providers are specified, the former options will be ignored.
+ 
+ --show-pkcs11-ids args
+   (Standalone) Show PKCS#11 token object list.
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 4932a869..f24af3d7 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2855,6 +2855,15 @@ options_postprocess_verify_ce(const struct options *options,
+     {
+         check_ca_required(options);
+ #ifdef ENABLE_PKCS11
++        if (!options->pkcs11_providers[0] && options->pkcs11_id)
++        {
++            msg(M_WARN, "Option pkcs11-id is ignored as no pkcs11-providers are specified");
++        }
++        else if (!options->pkcs11_providers[0] && options->pkcs11_id_management)
++        {
++            msg(M_WARN, "Option pkcs11-id-management is ignored as no pkcs11-providers are specified");
++        }
++
+         if (options->pkcs11_providers[0])
+         {
+             if (options->pkcs11_id_management && options->pkcs11_id != NULL)
+-- 
+2.34.1
 
 
