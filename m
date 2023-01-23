@@ -1,11 +1,14 @@
-From: selva.nair@...277...
-Date: Sat, 21 Jan 2023 14:42:26 -0500
-Message-Id: <20230121194226.2081637-1-selva.nair@...277...>
-In-Reply-To: <20230116194809.1980444-1-selva.nair@...277...>
-References: <20230116194809.1980444-1-selva.nair@...277...>
+Date: Mon, 23 Jan 2023 13:17:15 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <Y856y+uDbKA5vmAn@...2685...>
+References: <20230101215109.1521549-6-selva.nair@...277...>
+ <20230102194322.1560285-1-selva.nair@...277...>
+ <Y7sZHFdSFS8mY3mi@...1296...>
+ <CAKuzo_gBo6aSg0ram+-97Zo-es=Adh67K2xrzoYEGpaxXWYPwA@...278...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Fix one more "existing route may get
- deleted" case
+In-Reply-To: <CAKuzo_gBo6aSg0ram+-97Zo-es=Adh67K2xrzoYEGpaxXWYPwA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2 5/5] Improve signal handling using
+ POSIX sigaction
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,133 +17,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: Selva Nair <selva.nair@...277...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+On Fri, Jan 20, 2023 at 03:44:21PM -0500, Selva Nair wrote:
+> On Sun, Jan 8, 2023 at 2:27 PM Gert Doering <gert@...1296...> wrote:
+> 
+> > Hi,
+> >
+> > On Mon, Jan 02, 2023 at 02:43:22PM -0500, selva.nair@...277... wrote:
+> > > From: Selva Nair <selva.nair@...277...>
+> > >
+> > > Currently we use the old signal API which follows system-V or
+> > > BSD semantics depending on the platform and/or feature-set macros.
+> > > Further, signal has many weaknesses which makes proper masking
+> > > (blocking) of signals during update not possible.
+> >
+> > Just for the record - as discussed before, this is considered too
+> > intrusive ("needs more testing") for 2.6.0, and can go in early in
+> > the 2.7 phase.
+> >
+> 
+> if no one has started reviewing 5/5,  I would like to split this into two
+> 
+> 1. signal -> sigaction affecting sig.c only
+> 2. changes to the way signal reset is done
+> 
+> #2 involves some decisions, affects the rest of the code, and may elicit
+> more comments.
+> 
+> Otherwise, will wait and see.
 
-- Ensure net_route_v4/v6_add/del() functions using iproute2 return
-  error when route addition fails. Return value follows the same logic
-  as corresponding functions using netlink though all failure reasons
-  get the same error code of -1.
+I think it unlikely anyone has invested much time into a patch designated for
+2.7 at this point in time. And even if, splitting up patches might still be
+worthwile, if it reduces the individual complexity.
 
-TODO: Preserve any preexisting direct route to VPN and optionally the
-IPv6 connected net route.
+So I would say: go ahead.
 
-v2: Following review, removed the poorly coded RL_DID_LOCAL-related chunks.
-That part needs a better fix.
-
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/networking_iproute2.c | 32 +++++++++++++++++++++++--------
- 1 file changed, 24 insertions(+), 8 deletions(-)
-
-diff --git a/src/openvpn/networking_iproute2.c b/src/openvpn/networking_iproute2.c
-index f93756d6..0efeed0f 100644
---- a/src/openvpn/networking_iproute2.c
-+++ b/src/openvpn/networking_iproute2.c
-@@ -267,6 +267,7 @@ net_route_v4_add(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
- {
-     struct argv argv = argv_new();
-     const char *dst_str = print_in_addr_t(*dst, 0, &ctx->gc);
-+    int ret = 0;
- 
-     argv_printf(&argv, "%s route add %s/%d", iproute_path, dst_str, prefixlen);
- 
-@@ -288,11 +289,14 @@ net_route_v4_add(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
-     }
- 
-     argv_msg(D_ROUTE, &argv);
--    openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route add command failed");
-+    if (!openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route add command failed"))
-+    {
-+        ret = -1;
-+    }
- 
-     argv_free(&argv);
- 
--    return 0;
-+    return ret;
- }
- 
- int
-@@ -302,6 +306,7 @@ net_route_v6_add(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
- {
-     struct argv argv = argv_new();
-     char *dst_str = (char *)print_in6_addr(*dst, 0, &ctx->gc);
-+    int ret = 0;
- 
-     argv_printf(&argv, "%s -6 route add %s/%d dev %s", iproute_path, dst_str,
-                 prefixlen, iface);
-@@ -319,11 +324,14 @@ net_route_v6_add(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
-     }
- 
-     argv_msg(D_ROUTE, &argv);
--    openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route -6 add command failed");
-+    if (!openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route -6 add command failed"))
-+    {
-+        ret = -1;
-+    }
- 
-     argv_free(&argv);
- 
--    return 0;
-+    return ret;
- }
- 
- int
-@@ -333,6 +341,7 @@ net_route_v4_del(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
- {
-     struct argv argv = argv_new();
-     const char *dst_str = print_in_addr_t(*dst, 0, &ctx->gc);
-+    int ret = 0;
- 
-     argv_printf(&argv, "%s route del %s/%d", iproute_path, dst_str, prefixlen);
- 
-@@ -342,11 +351,14 @@ net_route_v4_del(openvpn_net_ctx_t *ctx, const in_addr_t *dst, int prefixlen,
-     }
- 
-     argv_msg(D_ROUTE, &argv);
--    openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route delete command failed");
-+    if (!openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route delete command failed"))
-+    {
-+        ret = -1;
-+    }
- 
-     argv_free(&argv);
- 
--    return 0;
-+    return ret;
- }
- 
- int
-@@ -356,6 +368,7 @@ net_route_v6_del(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
- {
-     struct argv argv = argv_new();
-     char *dst_str = (char *)print_in6_addr(*dst, 0, &ctx->gc);
-+    int ret = 0;
- 
-     argv_printf(&argv, "%s -6 route del %s/%d dev %s", iproute_path, dst_str,
-                 prefixlen, iface);
-@@ -373,11 +386,14 @@ net_route_v6_del(openvpn_net_ctx_t *ctx, const struct in6_addr *dst,
-     }
- 
-     argv_msg(D_ROUTE, &argv);
--    openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route -6 del command failed");
-+    if (!openvpn_execve_check(&argv, ctx->es, 0, "ERROR: Linux route -6 del command failed"))
-+    {
-+        ret = -1;
-+    }
- 
-     argv_free(&argv);
- 
--    return 0;
-+    return ret;
- }
- 
- int
+Regards,
 -- 
-2.34.1
-
+  Frank Lichtenheld
 
