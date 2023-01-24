@@ -1,10 +1,8 @@
-Date: Tue, 24 Jan 2023 08:36:28 +0100 (CET)
-Message-Id: <202301240736.30O7aSsR016222@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230121194226.2081637-1-selva.nair@...277...>
-References: <20230121194226.2081637-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix one more 'existing route
- may get deleted' case
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue, 24 Jan 2023 11:14:41 +0200
+Message-Id: <20230124091441.397-1-lstipakov@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] openvpnmsica: remove unused declarations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,35 +13,57 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Acked-by: Gert Doering <gert@...1296...>
+From: Lev Stipakov <lev@...515...>
 
-This is identical to the "I already tested these" bits of v1, so
-didn't do more than "compare diffs" and "basic linux compile test" 
-(with --enable-iproute2) plus "run binary once to see if errors
-are detected" (they are) today.
+That code has been moved to MSM by commit 640c4d82
+("openvpnmsica: remove dco installer custom actions")
 
-Your patch has been applied to the master and release/2.6 branch.
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpnmsica/openvpnmsica.h | 26 --------------------------
+ 1 file changed, 26 deletions(-)
 
-commit 00fac39c58a7d5c8fa6d8f40232e9ab79f3fa9e0 (master)
-commit f30b1c90c06af73aef4ce93a62119393727032d6 (release/2.6)
-Author: Selva Nair
-Date:   Sat Jan 21 14:42:26 2023 -0500
-
-     Fix one more 'existing route may get deleted' case
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230121194226.2081637-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26067.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpnmsica/openvpnmsica.h b/src/openvpnmsica/openvpnmsica.h
+index 64f73733..05889cc8 100644
+--- a/src/openvpnmsica/openvpnmsica.h
++++ b/src/openvpnmsica/openvpnmsica.h
+@@ -151,32 +151,6 @@ DLLEXP_DECL UINT __stdcall
+ ProcessDeferredAction(_In_ MSIHANDLE hInstall);
+ 
+ 
+-/**
+- * Check what operation shall be performed on ovpn-dco driver
+- * and set data value (path to inf and user temp dir) for ProcessDriver action.
+- *
+- * @param hInstall      Handle to the installation provided to the DLL custom action
+- *
+- * @return ERROR_SUCCESS on success; An error code otherwise
+- *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
+- */
+-DLLEXP_DECL UINT __stdcall
+-EvaluateDriver(_In_ MSIHANDLE hInstall);
+-
+-
+-/**
+- * Install or uninstall ovpn-dco driver, removing all adapters using that driver.
+- * If reboot is required, creates reboot indication file in user's temp directory
+- *
+- * @param hInstall      Handle to the installation provided to the DLL custom action
+- *
+- * @return ERROR_SUCCESS on success; An error code otherwise
+- *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
+- */
+-DLLEXP_DECL UINT __stdcall
+-ProcessDriver(_In_ MSIHANDLE hInstall);
+-
+-
+ /**
+  * Schedule reboot after installation if reboot
+  * indication file is found in user's temp directory
+-- 
+2.38.1.windows.1
 
 
