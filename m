@@ -1,8 +1,10 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 24 Jan 2023 11:14:41 +0200
-Message-Id: <20230124091441.397-1-lstipakov@...277...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] openvpnmsica: remove unused declarations
+Date: Tue, 24 Jan 2023 12:03:09 +0100 (CET)
+Message-Id: <202301241103.30OB3942019309@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230124091441.397-1-lstipakov@...277...>
+References: <20230124091441.397-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: openvpnmsica: remove unused
+ declarations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,57 +15,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+Acked-by: Gert Doering <gert@...1296...>
 
-That code has been moved to MSM by commit 640c4d82
-("openvpnmsica: remove dco installer custom actions")
+Quite straightforward - "if the code is gone, we do not need prototypes
+in .h files either" :-)
 
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- src/openvpnmsica/openvpnmsica.h | 26 --------------------------
- 1 file changed, 26 deletions(-)
+Not tested anything (beyond "push to mygithub" to be sure I did not
+overlook a ";" or anything).
 
-diff --git a/src/openvpnmsica/openvpnmsica.h b/src/openvpnmsica/openvpnmsica.h
-index 64f73733..05889cc8 100644
---- a/src/openvpnmsica/openvpnmsica.h
-+++ b/src/openvpnmsica/openvpnmsica.h
-@@ -151,32 +151,6 @@ DLLEXP_DECL UINT __stdcall
- ProcessDeferredAction(_In_ MSIHANDLE hInstall);
- 
- 
--/**
-- * Check what operation shall be performed on ovpn-dco driver
-- * and set data value (path to inf and user temp dir) for ProcessDriver action.
-- *
-- * @param hInstall      Handle to the installation provided to the DLL custom action
-- *
-- * @return ERROR_SUCCESS on success; An error code otherwise
-- *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
-- */
--DLLEXP_DECL UINT __stdcall
--EvaluateDriver(_In_ MSIHANDLE hInstall);
--
--
--/**
-- * Install or uninstall ovpn-dco driver, removing all adapters using that driver.
-- * If reboot is required, creates reboot indication file in user's temp directory
-- *
-- * @param hInstall      Handle to the installation provided to the DLL custom action
-- *
-- * @return ERROR_SUCCESS on success; An error code otherwise
-- *         See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa368072.aspx
-- */
--DLLEXP_DECL UINT __stdcall
--ProcessDriver(_In_ MSIHANDLE hInstall);
--
--
- /**
-  * Schedule reboot after installation if reboot
-  * indication file is found in user's temp directory
--- 
-2.38.1.windows.1
+Your patch has been applied to the master and release/2.6 branch.
+
+commit 6effd9197cdbadedc19bb5e3254a1178697513ce (master)
+commit 5ddc7102b1b27b5b0f646d4c40c9d91b8e1989dd (release/2.6)
+Author: Lev Stipakov
+Date:   Tue Jan 24 11:14:41 2023 +0200
+
+     openvpnmsica: remove unused declarations
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230124091441.397-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26070.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
