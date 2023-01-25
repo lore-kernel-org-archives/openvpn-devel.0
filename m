@@ -1,8 +1,9 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Wed, 25 Jan 2023 10:53:21 +0100
-Message-Id: <20230125095321.23063-1-a@...2181...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] dco_linux: update license for
+Date: Wed, 25 Jan 2023 11:02:26 +0100 (CET)
+Message-Id: <202301251002.30PA2QOS041528@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230125095321.23063-1-a@...2181...>
+References: <20230125095321.23063-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco_linux: update license for
  ovpn_dco_linux.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,29 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The linux userspace API header has acquired the MIT license (check the
-ovpn-dco repository for the related change), therefore we simply bring
-this change in our local copy to ensure compliancy.
+Acked-by: Gert Doering <gert@...1296...>
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- src/openvpn/ovpn_dco_linux.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+(Formally I have no say in this, but someone has to say "yes, this
+is an acceptable change" - it's an import from ovpn-dco, Antonio is
+the author, and this was discussed before - so, in it goes)
 
-diff --git a/src/openvpn/ovpn_dco_linux.h b/src/openvpn/ovpn_dco_linux.h
-index f9a3b827..96395886 100644
---- a/src/openvpn/ovpn_dco_linux.h
-+++ b/src/openvpn/ovpn_dco_linux.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/* SPDX-License-Identifier: (GPL-2.0-only WITH Linux-syscall-note) OR MIT */
- /*
-  *  OpenVPN data channel accelerator
-  *
--- 
-2.39.1
+Your patch has been applied to the master and release/2.6 branch.
+
+commit 537cde6b8fa7d35414df715678e2cd22ab79a881 (master)
+commit b67850383c8d7abd3d7ae54d8c6368779ddd860f (release/2.6)
+Author: Antonio Quartulli
+Date:   Wed Jan 25 10:53:21 2023 +0100
+
+     dco_linux: update license for ovpn_dco_linux.h
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230125095321.23063-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26077.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
