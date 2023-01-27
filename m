@@ -1,11 +1,8 @@
-Message-ID: <543d19fd-ea64-4b9f-192f-43ec601209bd@...68...>
-Date: Fri, 27 Jan 2023 20:41:38 +0100
-MIME-Version: 1.0
-Content-Language: en-US
-References: <Y9GH9PKFR5V8ld9E@...2685...>
 From: Matthias Andree <matthias.andree@...68...>
-In-Reply-To: <Y9GH9PKFR5V8ld9E@...2685...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.6.0 released
+Date: Fri, 27 Jan 2023 21:32:08 +0100
+Message-Id: <20230127203208.305638-1-matthias.andree@...68...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] make dist: Ship ovpn_dco_freebsd.h, too
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,20 +11,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
+Cc: Matthias Andree <matthias.andree@...68...>
 
-Am 25.01.23 um 20:50 schrieb Frank Lichtenheld:
-> The OpenVPN community project team is proud to release OpenVPN 2.6.0.
-> This is the new stable version of OpenVPN with some major new features.
+This file was missing from src/openvpn/Makefile.am.
+---
+ src/openvpn/Makefile.am | 1 +
+ 1 file changed, 1 insertion(+)
 
-Hi Frank,
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 3ed73fa4..a8e44528 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -78,6 +78,7 @@ openvpn_SOURCES =3D \
+ 	mbuf.c mbuf.h \
+ 	memdbg.h \
+ 	misc.c misc.h \
++	ovpn_dco_freebsd.h \
+ 	ovpn_dco_linux.h \
+ 	ovpn_dco_win.h \
+ 	platform.c platform.h \
+--
+2.39.1
 
-OpenVPN 2.5.x releases also showed up in .tar.xz format - are there
-plans to provide these (and the detached GnuPG signatures) also for
-OpenVPN 2.6.0?
-
-Cheers,
-Matthias
 
