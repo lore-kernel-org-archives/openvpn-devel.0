@@ -1,11 +1,11 @@
 From: selva.nair@...277...
-Date: Sat, 28 Jan 2023 17:34:21 -0500
-Message-Id: <20230128223421.2207802-5-selva.nair@...277...>
+Date: Sat, 28 Jan 2023 17:34:18 -0500
+Message-Id: <20230128223421.2207802-2-selva.nair@...277...>
 In-Reply-To: <20230128223421.2207802-1-selva.nair@...277...>
 References: <20230128223421.2207802-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 4/4] cryptoapi.c: simplify parsing of
- thumbprint hex string
+Subject: [Openvpn-devel] [PATCH 1/4] Option --cryptoapicert: support issuer
+ name as a selector
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,77 +20,80 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
+- Certificate selection string can now specify a partial
+  issuer name string as "--cryptoapicert ISSUER:<string>" where
+  <string> is matched as a substring of the issuer (CA) name in
+  the certificate.
+
+  Partial case-insensitive matching against the "issuer name" is
+  used. Here "issuer name" is a text representation of the RDN's
+  separated by commas.
+
+  E.g., "CA, Ontario, Toronto, Acme Inc., IT, Acme Root CA".
+
+  See MSDN docs on CertFindCertificateInStore() with CERT_FIND_ISSUER_STR
+  as "FindType" for more details.
+
+  As the order of RDN's is not well-defined[*] and type names like "OU"
+  or "CN" are not included, its best to match against a single attribute
+  like the CN of the issuer:
+
+  E.g., --cryptoapicert "ISSUER:Acme Root"
+
+[*] Windows appears to order RDN's in the reverse order to which
+its written in the certificate but do not rely on this.
+
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/cryptoapi.c | 44 +++++++++++------------------------------
- 1 file changed, 12 insertions(+), 32 deletions(-)
+ doc/man-sections/windows-options.rst | 13 +++++++++++--
+ src/openvpn/cryptoapi.c              |  5 +++++
+ 2 files changed, 16 insertions(+), 2 deletions(-)
 
+diff --git a/doc/man-sections/windows-options.rst b/doc/man-sections/windows-options.rst
+index 368f7b19..e87291f4 100644
+--- a/doc/man-sections/windows-options.rst
++++ b/doc/man-sections/windows-options.rst
+@@ -41,13 +41,22 @@ Windows-Specific Options
+ 
+      cryptoapicert "SUBJ:Peter Runestig"
+ 
+-  To select a certificate, based on certificate's thumbprint:
++  To select a certificate, based on certificate's thumbprint (SHA1 hash):
+   ::
+ 
+      cryptoapicert "THUMB:f6 49 24 41 01 b4 ..."
+ 
+   The thumbprint hex string can easily be copy-and-pasted from the Windows
+-  Certificate Store GUI.
++  Certificate Store GUI. The embedded spaces in the hex string are optional.
++
++  To select a certificate based on a substring in certificate's
++  issuer name:
++  ::
++
++     cryptoapicert "ISSUER:Sample CA"
++
++  The first non-expired certificate found in the user's store or the
++  machine store that matches the select-string is used.
+ 
+ --dhcp-release
+   Ask Windows to release the TAP adapter lease on shutdown. This option
 diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-index 6ff4fcb5..9fd5aea9 100644
+index 661a9a6d..39eeec1b 100644
 --- a/src/openvpn/cryptoapi.c
 +++ b/src/openvpn/cryptoapi.c
-@@ -210,49 +210,29 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
+@@ -459,6 +459,11 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
+         find_param = wide_string(cert_prop + 5, &gc);
+         find_type = CERT_FIND_SUBJECT_STR_W;
      }
++    else if (!strncmp(cert_prop, "ISSUER:", 7))
++    {
++        find_param = wide_string(cert_prop + 7, &gc);
++        find_type = CERT_FIND_ISSUER_STR_W;
++    }
      else if (!strncmp(cert_prop, "THUMB:", 6))
      {
--        const char *p;
--        int i, x = 0;
-         find_type = CERT_FIND_HASH;
-         find_param = &blob;
- 
--        /* skip the tag */
--        cert_prop += 6;
--        for (p = cert_prop, i = 0; *p && i < sizeof(hash); i++)
-+        int i = 0;
-+
-+        for (const char *p = cert_prop + 6; *p && i < sizeof(hash); p += 2)
-         {
--            if (*p >= '0' && *p <= '9')
--            {
--                x = (*p - '0') << 4;
--            }
--            else if (*p >= 'A' && *p <= 'F')
-+            /* skip spaces */
-+            while (*p == ' ')
-             {
--                x = (*p - 'A' + 10) << 4;
-+                p++;
-             }
--            else if (*p >= 'a' && *p <= 'f')
-+            if (!*p) /* ending with spaces is not an error */
-             {
--                x = (*p - 'a' + 10) << 4;
-+                break;
-             }
--            if (!*++p)  /* unexpected end of string */
-+
-+            if (!isxdigit(p[0]) || !isxdigit(p[1])
-+                || sscanf(p, "%2hhx", &hash[i++]) != 1)
-             {
--                msg(M_WARN|M_INFO, "WARNING: cryptoapicert: error parsing <THUMB:%s>.", cert_prop);
-+                msg(M_WARN|M_INFO, "WARNING: cryptoapicert: error parsing <%s>.", cert_prop);
-                 goto out;
-             }
--            if (*p >= '0' && *p <= '9')
--            {
--                x += *p - '0';
--            }
--            else if (*p >= 'A' && *p <= 'F')
--            {
--                x += *p - 'A' + 10;
--            }
--            else if (*p >= 'a' && *p <= 'f')
--            {
--                x += *p - 'a' + 10;
--            }
--            hash[i] = x;
--            /* skip any space(s) between hex numbers */
--            for (p++; *p && *p == ' '; p++)
--            {
--            }
-         }
-         blob.cbData = i;
-     }
+         const char *p;
 -- 
 2.34.1
 
