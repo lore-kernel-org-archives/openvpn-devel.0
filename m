@@ -1,8 +1,10 @@
 From: Gert Doering <gert@...1296...>
-Date: Mon, 30 Jan 2023 14:41:12 +0000
-Message-Id: <20230130144112.109560-1-gert@...1296...>
+Date: Mon, 30 Jan 2023 16:17:30 +0000
+Message-Id: <20230130161730.110021-1-gert@...1296...>
+In-Reply-To: <20230130144112.109560-1-gert@...1296...>
+References: <20230130144112.109560-1-gert@...1296...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Get rid of unused 'bool tuntap_buffer'
+Subject: [Openvpn-devel] [PATCH v2] Get rid of unused 'bool tuntap_buffer'
  arguments.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -21,44 +23,64 @@ passed onwards to alloc_buf_sock_tun(), which does nothing with it.
 
 Remove from both functions.
 
+While at it, move alloc_buf_sock_tun() from mtu.c to win32.c and make
+static.  It's only ever called from win32.c / overlapped_io_init().
+
+v2:
+  move alloc_buf_sock_tun() to win32.c
+
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
- src/openvpn/mtu.c    | 3 +--
- src/openvpn/mtu.h    | 3 +--
- src/openvpn/socket.c | 4 ++--
- src/openvpn/tun.c    | 4 ++--
- src/openvpn/win32.c  | 5 ++---
- src/openvpn/win32.h  | 3 +--
- 6 files changed, 9 insertions(+), 13 deletions(-)
+ src/openvpn/mtu.c    | 13 -------------
+ src/openvpn/mtu.h    |  7 -------
+ src/openvpn/socket.c |  4 ++--
+ src/openvpn/tun.c    |  4 ++--
+ src/openvpn/win32.c  | 17 ++++++++++++++---
+ src/openvpn/win32.h  |  3 +--
+ 6 files changed, 19 insertions(+), 29 deletions(-)
 
 diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index 1d9ebe01..748a1cf1 100644
+index 1d9ebe01..4b32daff 100644
 --- a/src/openvpn/mtu.c
 +++ b/src/openvpn/mtu.c
-@@ -42,8 +42,7 @@
- /* allocate a buffer for socket or tun layer */
- void
- alloc_buf_sock_tun(struct buffer *buf,
+@@ -39,19 +39,6 @@
+ 
+ #include "memdbg.h"
+ 
+-/* allocate a buffer for socket or tun layer */
+-void
+-alloc_buf_sock_tun(struct buffer *buf,
 -                   const struct frame *frame,
 -                   const bool tuntap_buffer)
-+                   const struct frame *frame)
+-{
+-    /* allocate buffer for overlapped I/O */
+-    *buf = alloc_buf(BUF_SIZE(frame));
+-    ASSERT(buf_init(buf, frame->buf.headroom));
+-    buf->len = frame->buf.payload_size;
+-    ASSERT(buf_safe(buf, 0));
+-}
+-
+ unsigned int
+ calc_packet_id_size_dc(const struct options *options, const struct key_type *kt)
  {
-     /* allocate buffer for overlapped I/O */
-     *buf = alloc_buf(BUF_SIZE(frame));
 diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index 0ff4f7bf..65236508 100644
+index 0ff4f7bf..afd4ac53 100644
 --- a/src/openvpn/mtu.h
 +++ b/src/openvpn/mtu.h
-@@ -265,8 +265,7 @@ calc_packet_id_size_dc(const struct options *options,
-  * allocate a buffer for socket or tun layer
-  */
- void alloc_buf_sock_tun(struct buffer *buf,
+@@ -261,13 +261,6 @@ unsigned int
+ calc_packet_id_size_dc(const struct options *options,
+                        const struct key_type *kt);
+ 
+-/*
+- * allocate a buffer for socket or tun layer
+- */
+-void alloc_buf_sock_tun(struct buffer *buf,
 -                        const struct frame *frame,
 -                        const bool tuntap_buffer);
-+                        const struct frame *frame);
- 
+-
  /*
   * EXTENDED_SOCKET_ERROR_CAPABILITY functions -- print extra error info
+  * on socket errors, such as PMTU size.  As of 2003.05.11, only works
 diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
 index a883ac4a..2c75cb35 100644
 --- a/src/openvpn/socket.c
@@ -90,10 +112,25 @@ index 01c85f9f..20f80798 100644
  
      if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
 diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index 44176936..8cdfec0e 100644
+index 44176936..9f0c119f 100644
 --- a/src/openvpn/win32.c
 +++ b/src/openvpn/win32.c
-@@ -173,8 +173,7 @@ init_security_attributes_allow_all(struct security_attributes *obj)
+@@ -170,11 +170,22 @@ init_security_attributes_allow_all(struct security_attributes *obj)
+     return true;
+ }
+ 
++/* allocate a buffer for socket or tun layer */
++static void
++alloc_buf_sock_tun(struct buffer *buf,
++                   const struct frame *frame)
++{
++    /* allocate buffer for overlapped I/O */
++    *buf = alloc_buf(BUF_SIZE(frame));
++    ASSERT(buf_init(buf, frame->buf.headroom));
++    buf->len = frame->buf.payload_size;
++    ASSERT(buf_safe(buf, 0));
++}
++
  void
  overlapped_io_init(struct overlapped_io *o,
                     const struct frame *frame,
@@ -103,7 +140,7 @@ index 44176936..8cdfec0e 100644
  {
      CLEAR(*o);
  
-@@ -186,7 +185,7 @@ overlapped_io_init(struct overlapped_io *o,
+@@ -186,7 +197,7 @@ overlapped_io_init(struct overlapped_io *o,
      }
  
      /* allocate buffer for overlapped I/O */
