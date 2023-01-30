@@ -1,13 +1,11 @@
-Message-ID: <4ed6da08-1da4-3c2f-1f66-ddadd5bf209d@...68...>
-Date: Sat, 28 Jan 2023 23:38:38 +0100
+Date: Mon, 30 Jan 2023 11:55:04 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <Y9eiCCGB0oAZ1HyX@...2685...>
+References: <Y9GH9PKFR5V8ld9E@...2685...>
+ <543d19fd-ea64-4b9f-192f-43ec601209bd@...68...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20230127203208.305638-1-matthias.andree@...68...>
- <202301281855.30SItQBc022056@...2054...>
-From: Matthias Andree <matthias.andree@...68...>
-In-Reply-To: <202301281855.30SItQBc022056@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: make dist: Ship
- ovpn_dco_freebsd.h, too
+In-Reply-To: <543d19fd-ea64-4b9f-192f-43ec601209bd@...68...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.6.0 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,30 +14,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: Matthias Andree <matthias.andree@...68...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Am 28.01.23 um 19:55 schrieb Gert Doering:
-> Acked-by: Gert Doering <gert@...1296...>
->
-> To see the actual failure, one needs to build a tarball ("make dist"),
-> and from that tarball, compile with "configure --enable-dco", on FreeBSD
-> - so a pure "make distcheck" did not see it.  Apologies for that oversigh=
-t.
->
-> Your patch has been applied to the master and release/2.6 branch.
+On Fri, Jan 27, 2023 at 08:41:38PM +0100, Matthias Andree wrote:
+> Am 25.01.23 um 20:50 schrieb Frank Lichtenheld:
+> > The OpenVPN community project team is proud to release OpenVPN 2.6.0.
+> > This is the new stable version of OpenVPN with some major new features.
+> 
+> Hi Frank,
+> 
+> OpenVPN 2.5.x releases also showed up in .tar.xz format - are there
+> plans to provide these (and the detached GnuPG signatures) also for
+> OpenVPN 2.6.0?
 
-Hi Gert,
+No, we decided that we see not enough benefit in providing these
+differing compressions. The tarball is really not big enough for it
+to matter.
 
-Danke.
-
-We could set AM_DISTCHECK_CONFIGURE_FLAGS=3D--enable-dco (and possibly
-other --enable-* or -with-*) in the relevant Makefile.am though if you
-want a more complete feature set in "make distcheck".
-
-Cheers,
-Matthias
-
+Regards,
+-- 
+  Frank Lichtenheld
 
