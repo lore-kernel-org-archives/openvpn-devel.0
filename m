@@ -1,11 +1,11 @@
-Date: Mon, 30 Jan 2023 11:55:04 +0100
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Y9eiCCGB0oAZ1HyX@...2685...>
-References: <Y9GH9PKFR5V8ld9E@...2685...>
- <543d19fd-ea64-4b9f-192f-43ec601209bd@...68...>
+From: Arne Schwabe <arne@...1227...>
+Date: Mon, 30 Jan 2023 14:20:10 +0100
+Message-Id: <20230130132010.3415087-2-arne@...1227...>
+In-Reply-To: <20230130132010.3415087-1-arne@...1227...>
+References: <20230130132010.3415087-1-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <543d19fd-ea64-4b9f-192f-43ec601209bd@...68...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.6.0 released
+Subject: [Openvpn-devel] [PATCH 2/2] Add undefined and abort on error to
+ clang sanaitize builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,28 +14,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Matthias Andree <matthias.andree@...68...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Fri, Jan 27, 2023 at 08:41:38PM +0100, Matthias Andree wrote:
-> Am 25.01.23 um 20:50 schrieb Frank Lichtenheld:
-> > The OpenVPN community project team is proud to release OpenVPN 2.6.0.
-> > This is the new stable version of OpenVPN with some major new features.
-> 
-> Hi Frank,
-> 
-> OpenVPN 2.5.x releases also showed up in .tar.xz format - are there
-> plans to provide these (and the detached GnuPG signatures) also for
-> OpenVPN 2.6.0?
+The -fno-sanitize-recover=all flag ensures that for all errors we actually
+abort the tests in the automated testing and not just print some errors in red
+that nobody sess. Also add the undefined tests to catch more bugs
 
-No, we decided that we see not enough benefit in providing these
-differing compressions. The tarball is really not big enough for it
-to matter.
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ .github/workflows/build.yaml | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Regards,
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 2db90bcde..320796bf3 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -251,7 +251,7 @@ jobs:
+       - name: autoconf
+         run: autoreconf -fvi
+       - name: configure
+-        run: CFLAGS="-fsanitize=address -fno-omit-frame-pointer -O2" CC=clang ./configure --with-crypto-library=${{matrix.ssllib}}
++        run: CFLAGS="-fsanitize=address,undefined -fno-sanitize-recover=all  -fno-omit-frame-pointer -O2" CC=clang ./configure --with-crypto-library=${{matrix.ssllib}}
+       - name: make all
+         run: make -j3
+       - name: make check
+@@ -266,8 +266,8 @@ jobs:
+         os: [macos-11, macos-12]
+         include:
+           - build: asan
+-            cflags: "-fsanitize=address -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
+-            ldflags: -fsanitize=address
++            cflags: "-fsanitize=address,undefined -fno-sanitize-recover=all  -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
++            ldflags: -fsanitize=address,undefined -fno-sanitize-recover=all 
+             # Our build system ignores LDFLAGS for plugins
+             configureflags: --disable-plugin-auth-pam  --disable-plugin-down-root
+           - build: normal
+@@ -386,8 +386,8 @@ jobs:
+         configureflags: ["--with-openssl-engine=no"]
+         include:
+           - build: asan
+-            cflags: "-fsanitize=address -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
+-            ldflags: -fsanitize=address
++            cflags: "-fsanitize=address,undefined -fno-sanitize-recover=all  -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
++            ldflags: -fsanitize=address,undefined -fno-sanitize-recover=all 
+             cc: clang
+           - build: normal
+             cflags: "-O2 -g"
 -- 
-  Frank Lichtenheld
+2.37.1 (Apple Git-137.1)
+
 
