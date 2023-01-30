@@ -1,9 +1,9 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon, 30 Jan 2023 14:20:09 +0100
-Message-Id: <20230130132010.3415087-1-arne@...1227...>
+From: Gert Doering <gert@...1296...>
+Date: Mon, 30 Jan 2023 14:41:12 +0000
+Message-Id: <20230130144112.109560-1-gert@...1296...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/2] Fix unaligned access in macOS/Solaris
- hwaddr and auth-token
+Subject: [Openvpn-devel] [PATCH] Get rid of unused 'bool tuntap_buffer'
+ arguments.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,100 +16,117 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The undefined behaviour USAN clang checker found these two cases. The optimiser
-of clang/gcc will optimise the memcpy away in the auth_token case and output
-excactly the same assembly on amd64/arm64 but it is still better to not rely
-on undefined behaviour.
+overlapped_io_init() has a "bool tuntap_buffer" argument which is only
+passed onwards to alloc_buf_sock_tun(), which does nothing with it.
 
-The hw addr fix is a mess but so are the original structures.
+Remove from both functions.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
- src/openvpn/auth_token.c | 10 ++++++++--
- src/openvpn/route.c      | 32 +++++++++++++++++++++++---------
- 2 files changed, 31 insertions(+), 11 deletions(-)
+ src/openvpn/mtu.c    | 3 +--
+ src/openvpn/mtu.h    | 3 +--
+ src/openvpn/socket.c | 4 ++--
+ src/openvpn/tun.c    | 4 ++--
+ src/openvpn/win32.c  | 5 ++---
+ src/openvpn/win32.h  | 3 +--
+ 6 files changed, 9 insertions(+), 13 deletions(-)
 
-diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
-index 7b963a9c5..530b3aa4c 100644
---- a/src/openvpn/auth_token.c
-+++ b/src/openvpn/auth_token.c
-@@ -324,8 +324,14 @@ verify_auth_token(struct user_pass *up, struct tls_multi *multi,
-     const uint8_t *tstamp_initial = sessid + AUTH_TOKEN_SESSION_ID_LEN;
-     const uint8_t *tstamp = tstamp_initial + sizeof(int64_t);
+diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
+index 1d9ebe01..748a1cf1 100644
+--- a/src/openvpn/mtu.c
++++ b/src/openvpn/mtu.c
+@@ -42,8 +42,7 @@
+ /* allocate a buffer for socket or tun layer */
+ void
+ alloc_buf_sock_tun(struct buffer *buf,
+-                   const struct frame *frame,
+-                   const bool tuntap_buffer)
++                   const struct frame *frame)
+ {
+     /* allocate buffer for overlapped I/O */
+     *buf = alloc_buf(BUF_SIZE(frame));
+diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
+index 0ff4f7bf..65236508 100644
+--- a/src/openvpn/mtu.h
++++ b/src/openvpn/mtu.h
+@@ -265,8 +265,7 @@ calc_packet_id_size_dc(const struct options *options,
+  * allocate a buffer for socket or tun layer
+  */
+ void alloc_buf_sock_tun(struct buffer *buf,
+-                        const struct frame *frame,
+-                        const bool tuntap_buffer);
++                        const struct frame *frame);
  
--    uint64_t timestamp = ntohll(*((uint64_t *) (tstamp)));
--    uint64_t timestamp_initial = ntohll(*((uint64_t *) (tstamp_initial)));
-+    /* This might not be aligned to an uint64, use memcpy to avoid
-+     * unaligned access */
-+    uint64_t timestamp = 0, timestamp_initial = 0;
-+    memcpy(&timestamp, tstamp, sizeof(uint64_t));
-+    timestamp = ntohll(timestamp);
-+
-+    memcpy(&timestamp_initial, tstamp_initial, sizeof(uint64_t));
-+    timestamp_initial = ntohll(timestamp_initial);
- 
-     hmac_ctx_t *ctx = multi->opt.auth_token_key.hmac;
-     if (check_hmac_token(ctx, b64decoded, up->username))
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 82519c94b..06bfb799c 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -3637,7 +3637,7 @@ get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
-     if (rgi->flags & RGI_IFACE_DEFINED)
-     {
-         struct ifconf ifc;
--        struct ifreq *ifr;
-+        struct ifreq ifr;
-         const int bufsize = 4096;
-         char *buffer;
- 
-@@ -3662,23 +3662,37 @@ get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
- 
-         for (cp = buffer; cp <= buffer + ifc.ifc_len - sizeof(struct ifreq); )
-         {
--            ifr = (struct ifreq *)cp;
-+            /* this is not always using an 8byte alignment that struct ifr
-+             * requires */
-+            memcpy(&ifr, cp, sizeof(struct ifreq));
- #if defined(TARGET_SOLARIS)
--            const size_t len = sizeof(ifr->ifr_name) + sizeof(ifr->ifr_addr);
-+            const size_t len = sizeof(ifr.ifr_name) + sizeof(ifr.ifr_addr);
- #else
--            const size_t len = sizeof(ifr->ifr_name) + max(sizeof(ifr->ifr_addr), ifr->ifr_addr.sa_len);
-+            const size_t len = sizeof(ifr.ifr_name) + max(sizeof(ifr.ifr_addr), ifr.ifr_addr.sa_len);
+ /*
+  * EXTENDED_SOCKET_ERROR_CAPABILITY functions -- print extra error info
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index a883ac4a..2c75cb35 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1623,8 +1623,8 @@ static void
+ socket_frame_init(const struct frame *frame, struct link_socket *sock)
+ {
+ #ifdef _WIN32
+-    overlapped_io_init(&sock->reads, frame, FALSE, false);
+-    overlapped_io_init(&sock->writes, frame, TRUE, false);
++    overlapped_io_init(&sock->reads, frame, FALSE);
++    overlapped_io_init(&sock->writes, frame, TRUE);
+     sock->rw_handle.read = sock->reads.overlapped.hEvent;
+     sock->rw_handle.write = sock->writes.overlapped.hEvent;
  #endif
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 01c85f9f..20f80798 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -898,8 +898,8 @@ init_tun_post(struct tuntap *tt,
+         return;
+     }
  
--            if (!ifr->ifr_addr.sa_family)
-+            if (!ifr.ifr_addr.sa_family)
-             {
-                 break;
-             }
--            if (!strncmp(ifr->ifr_name, rgi->iface, IFNAMSIZ))
-+            if (!strncmp(ifr.ifr_name, rgi->iface, IFNAMSIZ))
-             {
--                if (ifr->ifr_addr.sa_family == AF_LINK)
-+                if (ifr.ifr_addr.sa_family == AF_LINK)
-                 {
--                    struct sockaddr_dl *sdl = (struct sockaddr_dl *)&ifr->ifr_addr;
--                    memcpy(rgi->hwaddr, LLADDR(sdl), 6);
-+                    /* This is a broken member access. struct sockaddr_dl has
-+                     * 20 bytes while if_addr has only 16 bytes. So casting if_addr
-+                     * to struct sockaddr_dl gives (legitimate) warnings
-+                     *
-+                     * sockaddr_dl has 12 bytes space for the hw address and
-+                     * Ethernet only uses 6 bytes. So the last 4 that are
-+                     * truncated and not in if_addr can be ignored here.
-+                     *
-+                     * So we use a memcpy here to avoid the warnings with ASAN
-+                     * that we are doing a very nasty cast here
-+                     */
-+                    struct sockaddr_dl sdl = { 0 };
-+                    memcpy(&sdl, &ifr.ifr_addr, sizeof(ifr.ifr_addr));
-+                    memcpy(rgi->hwaddr, LLADDR(&sdl), 6);
-                     rgi->flags |= RGI_HWADDR_DEFINED;
-                 }
-             }
+-    overlapped_io_init(&tt->reads, frame, FALSE, true);
+-    overlapped_io_init(&tt->writes, frame, TRUE, true);
++    overlapped_io_init(&tt->reads, frame, FALSE);
++    overlapped_io_init(&tt->writes, frame, TRUE);
+     tt->adapter_index = TUN_ADAPTER_INDEX_INVALID;
+ 
+     if (tt->windows_driver == WINDOWS_DRIVER_WINTUN)
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index 44176936..8cdfec0e 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -173,8 +173,7 @@ init_security_attributes_allow_all(struct security_attributes *obj)
+ void
+ overlapped_io_init(struct overlapped_io *o,
+                    const struct frame *frame,
+-                   BOOL event_state,
+-                   bool tuntap_buffer)  /* if true: tuntap buffer, if false: socket buffer */
++                   BOOL event_state)
+ {
+     CLEAR(*o);
+ 
+@@ -186,7 +185,7 @@ overlapped_io_init(struct overlapped_io *o,
+     }
+ 
+     /* allocate buffer for overlapped I/O */
+-    alloc_buf_sock_tun(&o->buf_init, frame, tuntap_buffer);
++    alloc_buf_sock_tun(&o->buf_init, frame);
+ }
+ 
+ void
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index a1a45503..72ffb012 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -217,8 +217,7 @@ struct overlapped_io {
+ 
+ void overlapped_io_init(struct overlapped_io *o,
+                         const struct frame *frame,
+-                        BOOL event_state,
+-                        bool tuntap_buffer);
++                        BOOL event_state);
+ 
+ void overlapped_io_close(struct overlapped_io *o);
+ 
 -- 
-2.37.1 (Apple Git-137.1)
+2.34.1
 
 
