@@ -1,12 +1,12 @@
-Date: Tue, 31 Jan 2023 11:55:37 +0100
+Date: Tue, 31 Jan 2023 11:57:41 +0100
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Y9jzqeRBOajsYG4u@...2685...>
+Message-ID: <Y9j0JdX8CxaaQ19J@...2685...>
 References: <20230130172936.3444840-1-arne@...1227...>
- <20230130172936.3444840-3-arne@...1227...>
+ <20230130172936.3444840-4-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <20230130172936.3444840-3-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 3/5] Update LibreSSL to 3.7.0 in Github
- actions
+In-Reply-To: <20230130172936.3444840-4-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 4/5] Add printing USAN stack trace on
+ github actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,41 +21,49 @@ Content-Disposition: inline
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, Jan 30, 2023 at 06:29:34PM +0100, Arne Schwabe wrote:
-> The version 3.5.3 triggers undefined behaviour with the usan sanatizer.
-> Updating LibreSSSL to 3.7.0 does unfortunately does not fix the issue but
-> at least we are now using a current version.
+On Mon, Jan 30, 2023 at 06:29:35PM +0100, Arne Schwabe wrote:
+> This allows identifying the source of undefined behaviour more easily
+> from the github action logs.
 > 
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 > ---
->  .github/workflows/build.yaml | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  .github/workflows/build.yaml | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
 > diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-> index 2db90bcde..6adb69563 100644
+> index 6adb69563..132624547 100644
 > --- a/.github/workflows/build.yaml
 > +++ b/.github/workflows/build.yaml
-> @@ -409,7 +409,7 @@ jobs:
->          with:
->            path: libressl
->            repository: libressl-portable/portable
-> -          ref: v3.5.3
-> +          ref: v3.7.0
->        - name: "libressl: autogen.sh"
->          run: ./autogen.sh
->          working-directory: libressl
-> @@ -417,7 +417,7 @@ jobs:
->          run: autoreconf -fvi
->          working-directory: libressl
->        - name: "libressl: configure"
-> -        run: ./configure --enable-openvpn
-> +        run: ./configure
->          working-directory: libressl
->        - name: "libressl: make all"
+> @@ -242,6 +242,9 @@ jobs:
+>  
+>      name: "clang-asan - ${{matrix.os}} - ${{matrix.ssllib}}"
+>  
+> +    env:
+> +      UBSAN_OPTIONS: print_stacktrace=1
+> +
+>      runs-on: ${{matrix.os}}
+>      steps:
+>        - name: Install dependencies
+> @@ -291,6 +294,7 @@ jobs:
+>        LDFLAGS: ${{ matrix.ldflags }}
+>        OPENSSL_CFLAGS: "-I/usr/local/opt/${{matrix.libdir}}/include"
+>        OPENSSL_LIBS: "-L/usr/local/opt/${{matrix.libdir}}/lib -lcrypto -lssl"
+> +      UBSAN_OPTIONS: print_stacktrace=1
+>      steps:
+>        - name: Install dependencies
+>          run: brew install openssl@...2560... openssl@...1554... lzo lz4 man2html cmocka libtool automake autoconf libressl
+> @@ -400,6 +404,7 @@ jobs:
+>        CFLAGS: ${{ matrix.cflags }}
+>        LDFLAGS: ${{ matrix.ldflags }}
+>        CC: ${{matrix.cc}}
+> +      UBSAN_OPTIONS: print_stacktrace=1
+>  
+>      steps:
+>        - name: Install dependencies
 
 Acked-By: Frank Lichtenheld <frank@...2641...>
 
-Always good to update to latest.
+Trivial enough.
 
 Regards,
 -- 
