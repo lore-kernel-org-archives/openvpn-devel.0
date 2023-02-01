@@ -1,14 +1,10 @@
-MIME-Version: 1.0
+From: selva.nair@...277...
+Date: Wed,  1 Feb 2023 12:07:35 -0500
+Message-Id: <20230201170735.2266851-1-selva.nair@...277...>
+In-Reply-To: <20230201041831.2259419-1-selva.nair@...277...>
 References: <20230201041831.2259419-1-selva.nair@...277...>
- <CAGyAFMVw=QzQDaBo6RE9Juh5+SObuCmAptT+yh1X44DL2g7bBQ@...278...>
- <CAKuzo_jAfKrpRpi2YHRwwXSGVz_NSy8gYwybLajFt4ZJyJ=MVg@...278...>
- <CAGyAFMU74M8k7EaVoWQ4H1w9XStFBWmqFKucebQ9wid-hmLgYg@...278...>
-In-Reply-To: <CAGyAFMU74M8k7EaVoWQ4H1w9XStFBWmqFKucebQ9wid-hmLgYg@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 1 Feb 2023 11:54:37 -0500
-Message-ID: <CAKuzo_j_HeHFQH8rXNUtMzjPD8DWAgKobM5v5wdW-qGb4LdP0w@...278...>
-Content-Type: multipart/alternative; boundary="000000000000a52ec705f3a64ede"
-Subject: Re: [Openvpn-devel] [PATCH] block-dns using iservice: fix a
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2] block-dns using iservice: fix a
  potential double free
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -18,35 +14,201 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---000000000000a52ec705f3a64ede
-Content-Type: text/plain; charset="UTF-8"
+From: Selva Nair <selva.nair@...277...>
 
->
->
-> Also I replaced 0x%x with %u in win_block_dns_service() for
-> consistency. You may want to do it in your patch too :)
->
+- An item added to undo-list was not removed on error, causing
+  attempt to free again in Undo().
+  Also fix a memory leak possibility in the same context.
 
-We have at least another place where it's %x, so will leave that for
-another day. btw, shouldn't it be %d?
+Github: fixes OpenVPN/openvpn#232
 
-Selva
+v2: Split add and delete functions and reuse the delete
+function for cleanup.
 
---000000000000a52ec705f3a64ede
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
 
-<div dir=3D"ltr"><div class=3D"gmail_quote"><blockquote class=3D"gmail_quot=
-e" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204)=
-;padding-left:1ex"><br>
-Also I replaced 0x%x with %u in win_block_dns_service() for<br>
-consistency. You may want to do it in your patch too :)<br></blockquote><di=
-v><br></div><div>We have at least another place where it&#39;s %x, so will =
-leave that for<br></div><div>another day. btw, shouldn&#39;t it be %d?</div=
-><div><br></div><div>Selva</div></div></div>
+Same as PR #235 except for DeleteBlockDNS moved up and
+the its forward declaration removed.
 
---000000000000a52ec705f3a64ede--
+ src/openvpnserv/interactive.c | 132 ++++++++++++++++++++--------------
+ 1 file changed, 78 insertions(+), 54 deletions(-)
+
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 03361d66..a3d43752 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -777,87 +777,111 @@ CmpAny(LPVOID item, LPVOID any)
+ }
+ 
+ static DWORD
+-HandleBlockDNSMessage(const block_dns_message_t *msg, undo_lists_t *lists)
++DeleteBlockDNS(const block_dns_message_t *msg, undo_lists_t *lists)
+ {
+     DWORD err = 0;
+-    block_dns_data_t *interface_data;
++    block_dns_data_t *interface_data = RemoveListItem(&(*lists)[block_dns], CmpAny, NULL);
++
++    if (interface_data)
++    {
++        err = delete_block_dns_filters(interface_data->engine);
++        if (interface_data->metric_v4 >= 0)
++        {
++            set_interface_metric(msg->iface.index, AF_INET,
++                                 interface_data->metric_v4);
++        }
++        if (interface_data->metric_v6 >= 0)
++        {
++            set_interface_metric(msg->iface.index, AF_INET6,
++                                 interface_data->metric_v6);
++        }
++        free(interface_data);
++    }
++    else
++    {
++        MsgToEventLog(M_ERR, TEXT("No previous block DNS filters to delete"));
++    }
++
++    return err;
++}
++
++static DWORD
++AddBlockDNS(const block_dns_message_t *msg, undo_lists_t *lists)
++{
++    DWORD err = 0;
++    block_dns_data_t *interface_data = NULL;
+     HANDLE engine = NULL;
+     LPCWSTR exe_path;
+ 
+     exe_path = settings.exe_path;
+ 
+-    if (msg->header.type == msg_add_block_dns)
++    err = add_block_dns_filters(&engine, msg->iface.index, exe_path, BlockDNSErrHandler);
++    if (!err)
+     {
+-        err = add_block_dns_filters(&engine, msg->iface.index, exe_path, BlockDNSErrHandler);
++        interface_data = malloc(sizeof(block_dns_data_t));
++        if (!interface_data)
++        {
++            err = ERROR_OUTOFMEMORY;
++            goto out;
++        }
++        interface_data->engine = engine;
++        interface_data->index = msg->iface.index;
++        int is_auto = 0;
++        interface_data->metric_v4 = get_interface_metric(msg->iface.index,
++                                                         AF_INET, &is_auto);
++        if (is_auto)
++        {
++            interface_data->metric_v4 = 0;
++        }
++        interface_data->metric_v6 = get_interface_metric(msg->iface.index,
++                                                         AF_INET6, &is_auto);
++        if (is_auto)
++        {
++            interface_data->metric_v6 = 0;
++        }
++
++        err = AddListItem(&(*lists)[block_dns], interface_data);
+         if (!err)
+         {
+-            interface_data = malloc(sizeof(block_dns_data_t));
+-            if (!interface_data)
+-            {
+-                return ERROR_OUTOFMEMORY;
+-            }
+-            interface_data->engine = engine;
+-            interface_data->index = msg->iface.index;
+-            int is_auto = 0;
+-            interface_data->metric_v4 = get_interface_metric(msg->iface.index,
+-                                                             AF_INET, &is_auto);
+-            if (is_auto)
+-            {
+-                interface_data->metric_v4 = 0;
+-            }
+-            interface_data->metric_v6 = get_interface_metric(msg->iface.index,
+-                                                             AF_INET6, &is_auto);
+-            if (is_auto)
+-            {
+-                interface_data->metric_v6 = 0;
+-            }
+-            err = AddListItem(&(*lists)[block_dns], interface_data);
++            err = set_interface_metric(msg->iface.index, AF_INET,
++                                       BLOCK_DNS_IFACE_METRIC);
+             if (!err)
+             {
+-                err = set_interface_metric(msg->iface.index, AF_INET,
++                err = set_interface_metric(msg->iface.index, AF_INET6,
+                                            BLOCK_DNS_IFACE_METRIC);
+-                if (!err)
+-                {
+-                    set_interface_metric(msg->iface.index, AF_INET6,
+-                                         BLOCK_DNS_IFACE_METRIC);
+-                }
+-            }
+-        }
+-    }
+-    else
+-    {
+-        interface_data = RemoveListItem(&(*lists)[block_dns], CmpAny, NULL);
+-        if (interface_data)
+-        {
+-            engine = interface_data->engine;
+-            err = delete_block_dns_filters(engine);
+-            engine = NULL;
+-            if (interface_data->metric_v4 >= 0)
+-            {
+-                set_interface_metric(msg->iface.index, AF_INET,
+-                                     interface_data->metric_v4);
+             }
+-            if (interface_data->metric_v6 >= 0)
++            if (err)
+             {
+-                set_interface_metric(msg->iface.index, AF_INET6,
+-                                     interface_data->metric_v6);
++                /* delete the filters, remove undo item and free interface data */
++                DeleteBlockDNS(msg, lists);
++                engine = NULL;
+             }
+-            free(interface_data);
+-        }
+-        else
+-        {
+-            MsgToEventLog(M_ERR, TEXT("No previous block DNS filters to delete"));
+         }
+     }
+ 
++out:
+     if (err && engine)
+     {
+         delete_block_dns_filters(engine);
++        free(interface_data);
+     }
+ 
+     return err;
+ }
+ 
++static DWORD
++HandleBlockDNSMessage(const block_dns_message_t *msg, undo_lists_t *lists)
++{
++    if (msg->header.type == msg_add_block_dns)
++    {
++        return AddBlockDNS(msg, lists);
++    }
++    else
++    {
++        return DeleteBlockDNS(msg, lists);
++    }
++}
++
+ /*
+  * Execute a command and return its exit code. If timeout > 0, terminate
+  * the process if still running after timeout milliseconds. In that case
+-- 
+2.34.1
+
 
