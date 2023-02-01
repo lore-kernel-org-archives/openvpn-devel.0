@@ -1,9 +1,11 @@
-From: selva.nair@...277...
-Date: Tue, 31 Jan 2023 23:18:31 -0500
-Message-Id: <20230201041831.2259419-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] block-dns using iservice: fix a potential
- double free
+References: <20230201041831.2259419-1-selva.nair@...277...>
+In-Reply-To: <20230201041831.2259419-1-selva.nair@...277...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Wed, 1 Feb 2023 11:36:48 +0200
+Message-ID: <CAGyAFMVw=QzQDaBo6RE9Juh5+SObuCmAptT+yh1X44DL2g7bBQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] block-dns using iservice: fix a
+ potential double free
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,73 +14,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: selva.nair@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+Hi,
 
-- An item added to undo-list was not removed on error, causing
-  attempt to free again in Undo().
-  Also fix a memory leak possibility in the same context.
+I made a slightly different fix but then noticed your mail.
 
-Github: fixes OpenVPN/openvpn#232
+Indeed the problem is that get/set_interface_metric fails,
+and we call FwpmEngineClose0 after updating the undo list. When
+openvpn process exits, we execute commands in undo list,
+and second call to FwpmEngineClose0 causes Access Violation
+inside WFP.
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpnserv/interactive.c | 17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+Note that since get_interface_metric() fails, it sets interface_data->metric_v4
+to -1. In this case we should not restore metrics back (which will
+fail in any case).
+We have a very similar code (including metrics value check) just below which
+handles msg_del_block_dns. Can we factor it out into a separate function?
 
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 03361d66..636f32e9 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -780,7 +780,7 @@ static DWORD
- HandleBlockDNSMessage(const block_dns_message_t *msg, undo_lists_t *lists)
- {
-     DWORD err = 0;
--    block_dns_data_t *interface_data;
-+    block_dns_data_t *interface_data = NULL;
-     HANDLE engine = NULL;
-     LPCWSTR exe_path;
- 
-@@ -794,6 +794,7 @@ HandleBlockDNSMessage(const block_dns_message_t *msg, undo_lists_t *lists)
-             interface_data = malloc(sizeof(block_dns_data_t));
-             if (!interface_data)
-             {
-+                delete_block_dns_filters(engine);
-                 return ERROR_OUTOFMEMORY;
-             }
-             interface_data->engine = engine;
-@@ -818,8 +819,17 @@ HandleBlockDNSMessage(const block_dns_message_t *msg, undo_lists_t *lists)
-                                            BLOCK_DNS_IFACE_METRIC);
-                 if (!err)
-                 {
--                    set_interface_metric(msg->iface.index, AF_INET6,
--                                         BLOCK_DNS_IFACE_METRIC);
-+                    err = set_interface_metric(msg->iface.index, AF_INET6,
-+                                               BLOCK_DNS_IFACE_METRIC);
-+                }
-+                if (err)
-+                {
-+                    /* try to restore the interface metric values in case changed */
-+                    set_interface_metric(msg->iface.index, AF_INET,
-+                                         interface_data->metric_v4);
-+                    set_interface_metric(msg->iface.index, AF_INET,
-+                                         interface_data->metric_v4);
-+                    RemoveListItem(&(*lists)[block_dns], CmpAny, NULL);
-                 }
-             }
-         }
-@@ -853,6 +863,7 @@ HandleBlockDNSMessage(const block_dns_message_t *msg, undo_lists_t *lists)
-     if (err && engine)
-     {
-         delete_block_dns_filters(engine);
-+        free(interface_data);
-     }
- 
-     return err;
 -- 
-2.34.1
-
+-Lev
 
