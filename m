@@ -1,13 +1,10 @@
-MIME-Version: 1.0
-References: <20230201041831.2259419-1-selva.nair@...277...>
- <CAGyAFMVw=QzQDaBo6RE9Juh5+SObuCmAptT+yh1X44DL2g7bBQ@...278...>
- <CAKuzo_jAfKrpRpi2YHRwwXSGVz_NSy8gYwybLajFt4ZJyJ=MVg@...278...>
-In-Reply-To: <CAKuzo_jAfKrpRpi2YHRwwXSGVz_NSy8gYwybLajFt4ZJyJ=MVg@...278...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 1 Feb 2023 18:16:58 +0200
-Message-ID: <CAGyAFMU74M8k7EaVoWQ4H1w9XStFBWmqFKucebQ9wid-hmLgYg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] block-dns using iservice: fix a
- potential double free
+Date: Wed, 1 Feb 2023 17:24:01 +0100 (CET)
+Message-Id: <202302011624.311GO1FV018658@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230130172936.3444840-1-arne@...1227...>
+References: <20230130172936.3444840-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix unaligned access in
+ auth-token
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,37 +13,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This one is fairly straightforward.  We had discussions on IRC if
+we really need to make this network byte order ("the data in the token
+is only for the server, nobody else needs to care") but then decided
+that if someone wants to run a cluster of an intel + a s390 host,
+they need to be compatible wrt timestamp representation...
 
-> Good point.  I have a version that splits "add" and "delete" actions into separate functions and does something like this.
->
-> Please take a look here: https://github.com/selvanair/openvpn/tree/block-dns-fix
-> The add and delete functions are in that order (with a forward declaration) only to make review easier (less changes with ignore-all-spaces), will move the latter up if it looks okay.
+Tested on the server testbed, just to be sure (it has an auth-token test) -
+things still work, including token expiry after the configured time.
 
-Looks good to me, especially without whitespaces
-https://github.com/OpenVPN/openvpn/pull/235/files?diff=unified&w=1
+Your patch has been applied to the master and release/2.6 branch (bugfix).
 
-> That said, if you have a better fix, I'm ready to review it in lieu of this.
+commit f6ccff6d7ea806711f9af59c9de52b7cf80d9c81 (master)
+commit 6241b2f8dbe39062a3273499a0259750d2f02cf8 (release/2.6)
+Author: Arne Schwabe
+Date:   Mon Jan 30 18:29:32 2023 +0100
 
-My change is more intrusive, idea is to bail out if
-get_interface_metrics fails and update undo_list only if both filters
-and metrics are applied,
+     Fix unaligned access in auth-token
 
-https://github.com/lstipakov/openvpn/commit/8c2d0de178e0771295764ea773596c13ff5f2aa6
-
-It is a bit sloppy on metrics cleanup, though - for example if
-get_interface_metric for ipv6 fails but ipv4 is not - it won't restore
-ipv4 metrics. On the other hand this is unlikely to happen.
-
-Also I replaced 0x%x with %u in win_block_dns_service() for
-consistency. You may want to do it in your patch too :)
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20230130172936.3444840-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26103.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
--- 
--Lev
+--
+kind regards,
+
+Gert Doering
+
 
