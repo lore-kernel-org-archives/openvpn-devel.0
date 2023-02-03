@@ -1,11 +1,11 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Fri,  3 Feb 2023 20:14:36 +0100
-Message-Id: <20230203191440.136050-2-frank@...2641...>
+Date: Fri,  3 Feb 2023 20:14:39 +0100
+Message-Id: <20230203191440.136050-5-frank@...2641...>
 In-Reply-To: <20230203191440.136050-1-frank@...2641...>
 References: <20230203191440.136050-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/5] Windows: fix unused function
- setenv_foreign_option
+Subject: [Openvpn-devel] [PATCH 4/5] Windows: fix unused variable in
+ win32_get_arch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,29 +20,41 @@ To: openvpn-devel@lists.sourceforge.net
 
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
- src/openvpn/options.c | 2 ++
- 1 file changed, 2 insertions(+)
+ src/openvpn/win32.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 6ae3faf8..ab1b01cf 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1041,6 +1041,7 @@ setenv_settings(struct env_set *es, const struct options *o)
-     }
- }
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index 44176936..ad3d9bf6 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -1358,7 +1358,6 @@ win32_get_arch(arch_t *process_arch, arch_t *host_arch)
  
-+#ifndef _WIN32
- static void
- setenv_foreign_option(struct options *o, const char *argv[], int len, struct env_set *es)
- {
-@@ -1078,6 +1079,7 @@ setenv_foreign_option(struct options *o, const char *argv[], int len, struct env
-         gc_free(&gc);
-     }
- }
-+#endif /* ifndef _WIN32 */
+     USHORT process_machine = 0;
+     USHORT native_machine = 0;
+-    BOOL is_wow64 = FALSE;
  
- static in_addr_t
- get_ip_addr(const char *ip_string, int msglevel, bool *error)
+ #ifdef _ARM64_
+     *process_arch = ARCH_ARM64;
+@@ -1380,8 +1379,8 @@ win32_get_arch(arch_t *process_arch, arch_t *host_arch)
+     if (is_wow64_process2)
+     {
+         /* check if we're running on arm64 or amd64 machine */
+-        is_wow64 = is_wow64_process2(GetCurrentProcess(),
+-                                     &process_machine, &native_machine);
++        BOOL is_wow64 = is_wow64_process2(GetCurrentProcess(),
++                                          &process_machine, &native_machine);
+         if (is_wow64)
+         {
+             switch (native_machine)
+@@ -1403,7 +1402,7 @@ win32_get_arch(arch_t *process_arch, arch_t *host_arch)
+     else
+     {
+         BOOL w64 = FALSE;
+-        is_wow64 = IsWow64Process(GetCurrentProcess(), &w64) && w64;
++        BOOL is_wow64 = IsWow64Process(GetCurrentProcess(), &w64) && w64;
+         if (is_wow64)
+         {
+             /* we are unable to differentiate between arm64 and amd64
 -- 
 2.34.1
 
