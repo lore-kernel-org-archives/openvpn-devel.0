@@ -1,11 +1,8 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Fri,  3 Feb 2023 20:14:39 +0100
-Message-Id: <20230203191440.136050-5-frank@...2641...>
-In-Reply-To: <20230203191440.136050-1-frank@...2641...>
-References: <20230203191440.136050-1-frank@...2641...>
+Date: Fri,  3 Feb 2023 20:14:35 +0100
+Message-Id: <20230203191440.136050-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 4/5] Windows: fix unused variable in
- win32_get_arch
+Subject: [Openvpn-devel] [PATCH 0/5] Allow mingw builds with -Werror
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,43 +15,29 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
- src/openvpn/win32.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+Since I needed to test mingw builds today, I took a
+look into the warnings reported.
 
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index 44176936..ad3d9bf6 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -1358,7 +1358,6 @@ win32_get_arch(arch_t *process_arch, arch_t *host_arch)
- 
-     USHORT process_machine = 0;
-     USHORT native_machine = 0;
--    BOOL is_wow64 = FALSE;
- 
- #ifdef _ARM64_
-     *process_arch = ARCH_ARM64;
-@@ -1380,8 +1379,8 @@ win32_get_arch(arch_t *process_arch, arch_t *host_arch)
-     if (is_wow64_process2)
-     {
-         /* check if we're running on arm64 or amd64 machine */
--        is_wow64 = is_wow64_process2(GetCurrentProcess(),
--                                     &process_machine, &native_machine);
-+        BOOL is_wow64 = is_wow64_process2(GetCurrentProcess(),
-+                                          &process_machine, &native_machine);
-         if (is_wow64)
-         {
-             switch (native_machine)
-@@ -1403,7 +1402,7 @@ win32_get_arch(arch_t *process_arch, arch_t *host_arch)
-     else
-     {
-         BOOL w64 = FALSE;
--        is_wow64 = IsWow64Process(GetCurrentProcess(), &w64) && w64;
-+        BOOL is_wow64 = IsWow64Process(GetCurrentProcess(), &w64) && w64;
-         if (is_wow64)
-         {
-             /* we are unable to differentiate between arm64 and amd64
+Most of those patches are trivial and
+straightforward. Not 100% sure whether the recv/send
+one is a good idea.
+
+Frank Lichtenheld (5):
+  Windows: fix unused function setenv_foreign_option
+  Windows: fix unused variables in delete_route_ipv6
+  Windows: fix wrong printf format in x_check_status
+  Windows: fix unused variable in win32_get_arch
+  Windows: fix signedness errors with recv/send
+
+ src/openvpn/error.c   |  4 ++--
+ src/openvpn/manage.c  |  4 ++--
+ src/openvpn/options.c |  2 ++
+ src/openvpn/proxy.c   |  2 +-
+ src/openvpn/route.c   | 32 ++++++++++++++++----------------
+ src/openvpn/syshead.h |  2 ++
+ src/openvpn/win32.c   |  7 +++----
+ 7 files changed, 28 insertions(+), 25 deletions(-)
+
 -- 
 2.34.1
 
