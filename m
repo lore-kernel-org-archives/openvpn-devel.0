@@ -1,11 +1,11 @@
 From: selva.nair@...277...
-Date: Fri,  3 Feb 2023 19:45:12 -0500
-Message-Id: <20230204004512.250271-3-selva.nair@...277...>
-In-Reply-To: <20230204004512.250271-1-selva.nair@...277...>
-References: <20230204004512.250271-1-selva.nair@...277...>
+Date: Sat,  4 Feb 2023 01:40:09 -0500
+Message-Id: <20230204064010.257925-1-selva.nair@...277...>
+In-Reply-To: <20230204004512.250271-2-selva.nair@...277...>
+References: <20230204004512.250271-2-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 3/3] Add a unit test for functions in
- cryptoapi.c
+Subject: [Openvpn-devel] [PATCH v2 2/3] Build unit tests in mingw Windows
+ build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,181 +20,198 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-- Though named cryptoapi_testdriver, right now this only tests
-  parsing of thumbprint specified as a selector for --cryptioapicert
-  option. More cryptoapi tests coming..
+- Minor changes to the build system to include some
+  dependencies for Windows build
+
+- test_tls_crypt not built as it will pull in win32.c and
+  its dependencies
+
+- If cross-compiling, "make check" will only build the tests but not
+  run any. Copy to Windows and run manually. Executables are in
+  <buid-dir>/tests/unit_tests/openvpn/.libs/ and these depend on
+  cmocka.dll in addition to openssl libs that some tests link to.
+
+  Building with mingw on Windows should run the tests (untested).
+
+v2: networking_testdriver was mistakenly enabled to run, while
+originally it was only set to build. Corrected.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
+ configure.ac                              |  2 ++
+ tests/Makefile.am                         |  2 ++
+ tests/unit_tests/example_test/Makefile.am |  2 ++
+ tests/unit_tests/openvpn/Makefile.am      | 28 +++++++++++++++++++----
+ 4 files changed, 29 insertions(+), 5 deletions(-)
 
-As requested during review of the 4/4 patch of cryptoapi series.
-Note that this doesn't currently build with MSVC -- either cross
-compile on Linux and run the binary on Windows or use mingw to
-compile on Windows.
-
- tests/unit_tests/openvpn/Makefile.am      |  15 +++
- tests/unit_tests/openvpn/test_cryptoapi.c | 126 ++++++++++++++++++++++
- 2 files changed, 141 insertions(+)
- create mode 100644 tests/unit_tests/openvpn/test_cryptoapi.c
-
+diff --git a/configure.ac b/configure.ac
+index 95d795c3..66ba6f38 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -364,6 +364,8 @@ case "$host" in
+ 		;;
+ esac
+ 
++AM_CONDITIONAL([CROSS_COMPILING], test "${cross_compiling}" = "yes")
++
+ PKG_PROG_PKG_CONFIG
+ AC_PROG_CPP
+ AC_PROG_INSTALL
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index 87dd7e17..a46f2573 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -14,10 +14,12 @@ MAINTAINERCLEANFILES = \
+ 
+ SUBDIRS = unit_tests
+ 
++if !WIN32
+ test_scripts = t_client.sh t_lpback.sh t_cltsrv.sh
+ if HAVE_SITNL
+ test_scripts += t_net.sh
+ endif
++endif
+ 
+ TESTS_ENVIRONMENT = top_srcdir="$(top_srcdir)"
+ TESTS = $(test_scripts)
+diff --git a/tests/unit_tests/example_test/Makefile.am b/tests/unit_tests/example_test/Makefile.am
+index 04a5ad35..24eb0ba1 100644
+--- a/tests/unit_tests/example_test/Makefile.am
++++ b/tests/unit_tests/example_test/Makefile.am
+@@ -2,7 +2,9 @@ AUTOMAKE_OPTIONS = foreign
+ 
+ check_PROGRAMS = example_testdriver example2_testdriver
+ 
++if !CROSS_COMPILING
+ TESTS = $(check_PROGRAMS)
++endif
+ 
+ example_testdriver_CFLAGS  = @TEST_CFLAGS@
+ example_testdriver_LDFLAGS = @TEST_LDFLAGS@
 diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index 909ac4e2..0a1ad439 100644
+index 7720a85d..8d2386e0 100644
 --- a/tests/unit_tests/openvpn/Makefile.am
 +++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -153,6 +153,21 @@ provider_testdriver_SOURCES = test_provider.c mock_msg.c \
- 	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/platform.c
+@@ -7,14 +7,22 @@ test_binaries += argv_testdriver buffer_testdriver
+ endif
+ 
+ test_binaries += crypto_testdriver packet_id_testdriver auth_token_testdriver ncp_testdriver misc_testdriver \
+-    pkt_testdriver
++	pkt_testdriver
+ if HAVE_LD_WRAP_SUPPORT
++if !WIN32
+ test_binaries += tls_crypt_testdriver
+ endif
++endif
+ 
+ test_binaries += provider_testdriver
  
 +if WIN32
-+cryptoapi_testdriver_CFLAGS  = @TEST_CFLAGS@ \
-+	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
-+	$(OPTIONAL_CRYPTO_CFLAGS)
-+cryptoapi_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
-+	$(OPTIONAL_CRYPTO_LIBS) -lcrypt32 -lncrypt
-+cryptoapi_testdriver_SOURCES = test_cryptoapi.c mock_msg.c \
-+	$(openvpn_srcdir)/xkey_helper.c \
-+	$(openvpn_srcdir)/buffer.c \
-+	$(openvpn_srcdir)/base64.c \
-+	$(openvpn_srcdir)/platform.c \
-+	mock_get_random.c \
-+	$(openvpn_srcdir)/win32-util.c
++LDADD = -lws2_32
 +endif
 +
++if !CROSS_COMPILING
+ TESTS = $(test_binaries)
++endif
+ check_PROGRAMS = $(test_binaries)
+ 
+ if HAVE_SITNL
+@@ -31,12 +39,14 @@ argv_testdriver_SOURCES = test_argv.c mock_msg.c mock_msg.h \
+ 	mock_get_random.c \
+ 	$(openvpn_srcdir)/platform.c \
+ 	$(openvpn_srcdir)/buffer.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/argv.c
+ 
+ buffer_testdriver_CFLAGS  = @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(compat_srcdir)
+ buffer_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(openvpn_srcdir) -Wl,--wrap=parse_line
+ buffer_testdriver_SOURCES = test_buffer.c mock_msg.c mock_msg.h \
+ 	mock_get_random.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/platform.c
+ 
+ crypto_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+@@ -51,6 +61,7 @@ crypto_testdriver_SOURCES = test_crypto.c mock_msg.c mock_msg.h \
+ 	$(openvpn_srcdir)/packet_id.c \
+ 	$(openvpn_srcdir)/platform.c \
+ 	$(openvpn_srcdir)/mtu.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/mss.c
+ 
+ packet_id_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+@@ -63,14 +74,14 @@ packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c mock_msg.h \
+ 	$(openvpn_srcdir)/packet_id.c \
+ 	$(openvpn_srcdir)/platform.c \
+ 	$(openvpn_srcdir)/reliable.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/session_id.c
+ 
+-
+ pkt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+ 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
+ pkt_testdriver_LDFLAGS = @TEST_LDFLAGS@
+ pkt_testdriver_SOURCES = test_pkt.c mock_msg.c mock_msg.h \
+-$(openvpn_srcdir)/argv.c \
++	$(openvpn_srcdir)/argv.c \
+ 	$(openvpn_srcdir)/base64.c \
+ 	$(openvpn_srcdir)/buffer.c \
+ 	$(openvpn_srcdir)/crypto.c \
+@@ -84,9 +95,10 @@ $(openvpn_srcdir)/argv.c \
+ 	$(openvpn_srcdir)/run_command.c \
+ 	$(openvpn_srcdir)/session_id.c \
+ 	$(openvpn_srcdir)/ssl_pkt.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/tls_crypt.c
+ 
+-
++if !WIN32
+ tls_crypt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+ 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
+ tls_crypt_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
+@@ -106,6 +118,7 @@ tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c mock_msg.h \
+ 	$(openvpn_srcdir)/packet_id.c \
+ 	$(openvpn_srcdir)/platform.c \
+ 	$(openvpn_srcdir)/run_command.c
++endif
+ 
+ if HAVE_SITNL
+ networking_testdriver_CFLAGS = @TEST_CFLAGS@ \
+@@ -136,6 +149,7 @@ provider_testdriver_SOURCES = test_provider.c mock_msg.c \
+ 	$(openvpn_srcdir)/buffer.c \
+ 	$(openvpn_srcdir)/base64.c \
+ 	mock_get_random.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/platform.c
+ 
  auth_token_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
- 	$(OPTIONAL_CRYPTO_CFLAGS)
-diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/openvpn/test_cryptoapi.c
-new file mode 100644
-index 00000000..2bea3f42
---- /dev/null
-+++ b/tests/unit_tests/openvpn/test_cryptoapi.c
-@@ -0,0 +1,126 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2023 Selva Nair <selva.nair@...277...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by the
-+ *  Free Software Foundation, either version 2 of the License,
-+ *  or (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#elif defined(_MSC_VER)
-+#include "config-msvc.h"
-+#endif
-+
-+#include "syshead.h"
-+#include "manage.h"
-+#include "integer.h"
-+#include "xkey_common.h"
-+
-+#if defined(HAVE_XKEY_PROVIDER) && defined (ENABLE_CRYPTOAPI)
-+#include <setjmp.h>
-+#include <cmocka.h>
-+#include <openssl/bio.h>
-+#include <openssl/pem.h>
-+#include <openssl/core_names.h>
-+#include <openssl/evp.h>
-+
-+#include <cryptoapi.h>
-+#include <cryptoapi.c> /* pull-in the whole file to test static functions */
-+
-+struct management *management; /* global */
-+
-+/* mock a management function that xkey_provider needs */
-+char *
-+management_query_pk_sig(struct management *man, const char *b64_data,
-+                        const char *algorithm)
-+{
-+    (void) man;
-+    (void) b64_data;
-+    (void) algorithm;
-+    return NULL;
-+}
-+
-+/* tls_libctx is defined in ssl_openssl.c which we do not want to compile in */
-+OSSL_LIB_CTX *tls_libctx;
-+
-+#ifndef _countof
-+#define _countof(x) sizeof((x))/sizeof(*(x))
-+#endif
-+
-+/* test data */
-+static const uint8_t test_hash[] = {
-+    0x77, 0x38, 0x65, 0x00, 0x1e, 0x96, 0x48, 0xc6, 0x57, 0x0b, 0xae,
-+    0xc0, 0xb7, 0x96, 0xf9, 0x66, 0x4d, 0x5f, 0xd0, 0xb7
-+};
-+
-+/* valid test strings to test with and without embedded and trailing spaces */
-+static const char *valid_str[] = {
-+    "773865001e9648c6570baec0b796f9664d5fd0b7",
-+    " 77 386500 1e 96 48 c6570b aec0b7   96f9664d5f  d0 b7",
-+    "   773865001e9648c6570baec0b796f9664d5fd0b7  ",
-+};
-+
-+/* some invalid strings to test with and without embedded and trailing spaces */
-+static const char *invalid_str[] = {
-+    "773 865001e9648c6570baec0b796f9664d5fd012",  /* space within byte */
-+    "77:38:65001e9648c6570baec0b796f9664d5fd0b7", /* invalid separator */
-+    "7738x5001e9648c6570baec0b796f9664d5fd0b7",   /* non hex character */
-+};
-+
-+static void
-+test_parse_hexstring(void **state)
-+{
-+    unsigned char hash[255];
-+    (void) state;
-+
-+    for (int i = 0; i < _countof(valid_str); i++)
-+    {
-+        int len = parse_hexstring(valid_str[i], hash, _countof(hash));
-+        assert_int_equal(len, sizeof(test_hash));
-+        assert_memory_equal(hash, test_hash, sizeof(test_hash));
-+        memset(hash, 0, _countof(hash));
-+    }
-+
-+    for (int i = 0; i < _countof(invalid_str); i++)
-+    {
-+        int len = parse_hexstring(invalid_str[i], hash, _countof(hash));
-+        assert_int_equal(len, 0);
-+    }
-+}
-+
-+int
-+main(void)
-+{
-+    const struct CMUnitTest tests[] = { cmocka_unit_test(test_parse_hexstring) };
-+
-+    int ret = cmocka_run_group_tests_name("cryptoapi tests", tests, NULL, NULL);
-+
-+    return ret;
-+}
-+
-+#else  /* ifdef HAVE_XKEY_PROVIDER */
-+
-+int
-+main(void)
-+{
-+    return 0;
-+}
-+
-+#endif  /* ifdef HAVE_XKEY_PROVIDER */
+@@ -152,6 +166,7 @@ auth_token_testdriver_SOURCES = test_auth_token.c mock_msg.c \
+ 	$(openvpn_srcdir)/otime.c \
+ 	$(openvpn_srcdir)/packet_id.c \
+ 	$(openvpn_srcdir)/platform.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/base64.c
+ 
+ 
+@@ -169,6 +184,8 @@ ncp_testdriver_SOURCES = test_ncp.c mock_msg.c \
+ 	$(openvpn_srcdir)/otime.c \
+ 	$(openvpn_srcdir)/packet_id.c \
+ 	$(openvpn_srcdir)/platform.c \
++	$(openvpn_srcdir)/win32-util.c \
++	$(compat_srcdir)/compat-strsep.c \
+ 	$(openvpn_srcdir)/ssl_util.c
+ 
+ misc_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+@@ -177,8 +194,9 @@ misc_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+ misc_testdriver_LDFLAGS = @TEST_LDFLAGS@
+ 
+ misc_testdriver_SOURCES = test_misc.c mock_msg.c \
+-    mock_get_random.c \
++	mock_get_random.c \
+ 	$(openvpn_srcdir)/buffer.c \
+ 	$(openvpn_srcdir)/options_util.c \
+ 	$(openvpn_srcdir)/ssl_util.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/platform.c
 -- 
 2.34.1
 
