@@ -1,11 +1,9 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Mon,  6 Feb 2023 12:22:18 +0100
-Message-Id: <20230206112218.51430-1-frank@...2641...>
-In-Reply-To: <20230203165529.125771-1-frank@...2641...>
-References: <20230203165529.125771-1-frank@...2641...>
+Date: Mon,  6 Feb 2023 14:08:46 +0100
+Message-Id: <20230206130846.63415-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] configure: enable DCO by default on
- FreeBSD/Linux
+Subject: [Openvpn-devel] [PATCH] configure: fix formatting of --disable-lz4
+ and --enable-comp-stub
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,141 +16,41 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Automatically disabled when
-- iproute2 is enabled
-  (Don't want to force people specifying --disable-dco explicitely)
-- libnv is missing on FreeBSD
-  (FreeBSD version too old anyway)
-
-Will still error out if libnl-genl is missing on Linux to
-make people aware of new dependency.
+Make consistent with the other options.
 
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
- configure.ac | 78 ++++++++++++++++++++++++++++++++++++++++------------
- 1 file changed, 61 insertions(+), 17 deletions(-)
+ configure.ac | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-v2: error out when libnl-genl is missing as discussed with ordex on
-    IRC.
-
+A small issue I noticed when staring at configure.ac for "enable
+DCO by default" patch.
 
 diff --git a/configure.ac b/configure.ac
-index 91500087..acfa4bc1 100644
+index acfa4bc1..7ce4c826 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -144,14 +144,27 @@ AC_ARG_ENABLE(
- 
- AC_ARG_ENABLE(
- 	[dco],
--	[AS_HELP_STRING([--enable-dco], [enable data channel offload support using the ovpn-dco kernel module (always enabled on Windows) @<:@default=no@:>@])],
-+	[AS_HELP_STRING([--disable-dco], [enable data channel offload support using the ovpn-dco kernel module (always enabled on Windows) @<:@default=yes@:>@])],
- 	,
--	[enable_dco="no"]
-+	[
-+		case "$host" in
-+			*-*-linux*)
-+				enable_dco="auto"
-+			;;
-+			*-*-freebsd*)
-+				enable_dco="auto"
-+			;;
-+			*)
-+				# note that this does not disable it for Windows
-+				enable_dco="no"
-+			;;
-+		esac
-+	]
+@@ -67,14 +67,16 @@ AC_ARG_ENABLE(
+ 	[enable_lzo="yes"]
  )
  
- AC_ARG_ENABLE(
- 	[iproute2],
--	[AS_HELP_STRING([--enable-iproute2], [enable support for iproute2 @<:@default=no@:>@])],
-+	[AS_HELP_STRING([--enable-iproute2], [enable support for iproute2 (disables DCO) @<:@default=no@:>@])],
- 	,
- 	[enable_iproute2="no"]
- )
-@@ -534,7 +547,7 @@ AC_CHECK_DECLS(
- 	,
- 	[[${SOCKET_INCLUDES}]]
- )
--AC_CHECKING([anonymous union support])
-+AC_MSG_CHECKING([anonymous union support])
- AC_COMPILE_IFELSE(
- 	[AC_LANG_PROGRAM(
- 		[[
-@@ -769,28 +782,59 @@ PKG_CHECK_MODULES(
+-AC_ARG_ENABLE(lz4,
+-	[  --disable-lz4           Disable LZ4 compression support],
++AC_ARG_ENABLE(
++	[lz4],
++	[AS_HELP_STRING([--disable-lz4], [disable LZ4 compression support @<:@default=yes@:>@])],
+ 	[enable_lz4="$enableval"],
+ 	[enable_lz4="yes"]
  )
  
- 
--if test "$enable_dco" = "yes"; then
-+if test "$enable_dco" != "no"; then
-+	enable_dco_arg="$enable_dco"
-+	if test "${enable_iproute2}" = "yes"; then
-+		AC_MSG_WARN([iproute2 support cannot be enabled when using DCO])
-+		enable_dco="no"
-+	fi
-+	case "$host" in
-+		*-*-linux*)
- dnl
- dnl Include generic netlink library used to talk to ovpn-dco
- dnl
--	case "$host" in
--		*-*-linux*)
- 			PKG_CHECK_MODULES([LIBNL_GENL],
- 					  [libnl-genl-3.0 >= 3.4.0],
- 					  [have_libnl="yes"],
--					  [AC_MSG_ERROR([libnl-genl-3.0 package not found or too old. Is the development package and pkg-config installed? Must be version 3.4.0 or newer])]
-+					  [
-+					   AC_MSG_ERROR([libnl-genl-3.0 package not found or too old. Is the development package and pkg-config installed? Must be version 3.4.0 or newer for DCO])
-+					  ]
- 			)
--
--			CFLAGS="${CFLAGS} ${LIBNL_GENL_CFLAGS}"
--			LIBS="${LIBS} ${LIBNL_GENL_LIBS}"
--
--			AC_DEFINE(ENABLE_DCO, 1, [Enable shared data channel offload])
--			AC_MSG_NOTICE([Enabled ovpn-dco support for Linux])
-+			if test "$enable_dco" = "no"; then
-+				if test "$enable_dco_arg" = "auto"; then
-+					AC_MSG_WARN([DCO support disabled])
-+				else
-+					AC_MSG_ERROR([DCO support can't be enabled])
-+				fi
-+			else
-+				CFLAGS="${CFLAGS} ${LIBNL_GENL_CFLAGS}"
-+				LIBS="${LIBS} ${LIBNL_GENL_LIBS}"
-+
-+				AC_DEFINE(ENABLE_DCO, 1, [Enable shared data channel offload])
-+				AC_MSG_NOTICE([Enabled ovpn-dco support for Linux])
-+			fi
- 			;;
- 		*-*-freebsd*)
--			LIBS="${LIBS} -lnv"
--			AC_DEFINE(ENABLE_DCO, 1, [Enable data channel offload for FreeBSD])
--			AC_MSG_NOTICE([Enabled ovpn-dco support for FreeBSD])
-+			AC_CHECK_LIB(
-+				[nv],
-+				[nvlist_create],
-+				[
-+				 LIBS="${LIBS} -lnv"
-+				 AC_DEFINE(ENABLE_DCO, 1, [Enable data channel offload for FreeBSD])
-+				 AC_MSG_NOTICE([Enabled ovpn-dco support for FreeBSD])
-+				],
-+				[
-+				 enable_dco="no"
-+				 AC_MSG_WARN([Name/Value pair library not found.])
-+				]
-+			)
-+			if test "$enable_dco" = "no"; then
-+				if test "$enable_dco_arg" = "auto"; then
-+					AC_MSG_WARN([DCO support disabled])
-+				else
-+					AC_MSG_ERROR([DCO support can't be enabled])
-+				fi
-+			fi
- 			;;
- 		*-mingw*)
- 			AC_MSG_NOTICE([NOTE: --enable-dco ignored on Windows because it's always enabled])
+-AC_ARG_ENABLE(comp-stub,
+-	[  --enable-comp-stub      Don't compile compression support but still allow limited interoperability with compression-enabled peers],
++AC_ARG_ENABLE(
++	[comp-stub],
++	[AS_HELP_STRING([--enable-comp-stub], [disable compression support but still allow limited interoperability with compression-enabled peers @<:@default=no@:>@])],
+ 	[enable_comp_stub="$enableval"],
+ 	[enable_comp_stub="no"]
+ )
 -- 
 2.34.1
 
