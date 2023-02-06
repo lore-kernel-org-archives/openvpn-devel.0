@@ -1,12 +1,11 @@
-Message-ID: <67d27c26-d751-05a4-9931-9de9080c44be@...1227...>
-Date: Sun, 5 Feb 2023 10:46:24 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Date: Mon,  6 Feb 2023 12:22:18 +0100
+Message-Id: <20230206112218.51430-1-frank@...2641...>
+In-Reply-To: <20230203165529.125771-1-frank@...2641...>
+References: <20230203165529.125771-1-frank@...2641...>
 MIME-Version: 1.0
-Content-Language: en-GB
-References: <20230204004512.250271-1-selva.nair@...277...>
-From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <20230204004512.250271-1-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 1/3] Conditionally add subdir-objects
- option to automake
+Subject: [Openvpn-devel] [PATCH v2] configure: enable DCO by default on
+ FreeBSD/Linux
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +14,146 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 04.02.23 um 01:45 schrieb selva.nair@...277...:
-> From: Selva Nair <selva.nair@...277...>
-> 
-> - Eliminates repeated warnings such as
->    warning: source file '$(openvpn_srcdir)/env_set.c' is in a subdirectory,
->    but option 'subdir-objects' is disabled
-> - Enabled only for automake >= 1.16 as older versions have a buggy implementation
->    of this option
-> 
-> Main side effect of this option is that object files like openvpnserv-blockdns.o
-> are now created in src/openvpn where block-dns.c resides instead of in
-> src/openvpnserv. Same for object files for sources from $(openvpn_srcdir) compiled
-> into test executables.
-> 
-> See also past discussion on this topic:
->    https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg00013.html
-> 
+Automatically disabled when
+- iproute2 is enabled
+  (Don't want to force people specifying --disable-dco explicitely)
+- libnv is missing on FreeBSD
+  (FreeBSD version too old anyway)
 
-Acked-By: Arne Schwabe <arne@...1227...>
+Will still error out if libnl-genl is missing on Linux to
+make people aware of new dependency.
+
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ configure.ac | 78 ++++++++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 61 insertions(+), 17 deletions(-)
+
+v2: error out when libnl-genl is missing as discussed with ordex on
+    IRC.
+
+
+diff --git a/configure.ac b/configure.ac
+index 91500087..acfa4bc1 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -144,14 +144,27 @@ AC_ARG_ENABLE(
+ 
+ AC_ARG_ENABLE(
+ 	[dco],
+-	[AS_HELP_STRING([--enable-dco], [enable data channel offload support using the ovpn-dco kernel module (always enabled on Windows) @<:@default=no@:>@])],
++	[AS_HELP_STRING([--disable-dco], [enable data channel offload support using the ovpn-dco kernel module (always enabled on Windows) @<:@default=yes@:>@])],
+ 	,
+-	[enable_dco="no"]
++	[
++		case "$host" in
++			*-*-linux*)
++				enable_dco="auto"
++			;;
++			*-*-freebsd*)
++				enable_dco="auto"
++			;;
++			*)
++				# note that this does not disable it for Windows
++				enable_dco="no"
++			;;
++		esac
++	]
+ )
+ 
+ AC_ARG_ENABLE(
+ 	[iproute2],
+-	[AS_HELP_STRING([--enable-iproute2], [enable support for iproute2 @<:@default=no@:>@])],
++	[AS_HELP_STRING([--enable-iproute2], [enable support for iproute2 (disables DCO) @<:@default=no@:>@])],
+ 	,
+ 	[enable_iproute2="no"]
+ )
+@@ -534,7 +547,7 @@ AC_CHECK_DECLS(
+ 	,
+ 	[[${SOCKET_INCLUDES}]]
+ )
+-AC_CHECKING([anonymous union support])
++AC_MSG_CHECKING([anonymous union support])
+ AC_COMPILE_IFELSE(
+ 	[AC_LANG_PROGRAM(
+ 		[[
+@@ -769,28 +782,59 @@ PKG_CHECK_MODULES(
+ )
+ 
+ 
+-if test "$enable_dco" = "yes"; then
++if test "$enable_dco" != "no"; then
++	enable_dco_arg="$enable_dco"
++	if test "${enable_iproute2}" = "yes"; then
++		AC_MSG_WARN([iproute2 support cannot be enabled when using DCO])
++		enable_dco="no"
++	fi
++	case "$host" in
++		*-*-linux*)
+ dnl
+ dnl Include generic netlink library used to talk to ovpn-dco
+ dnl
+-	case "$host" in
+-		*-*-linux*)
+ 			PKG_CHECK_MODULES([LIBNL_GENL],
+ 					  [libnl-genl-3.0 >= 3.4.0],
+ 					  [have_libnl="yes"],
+-					  [AC_MSG_ERROR([libnl-genl-3.0 package not found or too old. Is the development package and pkg-config installed? Must be version 3.4.0 or newer])]
++					  [
++					   AC_MSG_ERROR([libnl-genl-3.0 package not found or too old. Is the development package and pkg-config installed? Must be version 3.4.0 or newer for DCO])
++					  ]
+ 			)
+-
+-			CFLAGS="${CFLAGS} ${LIBNL_GENL_CFLAGS}"
+-			LIBS="${LIBS} ${LIBNL_GENL_LIBS}"
+-
+-			AC_DEFINE(ENABLE_DCO, 1, [Enable shared data channel offload])
+-			AC_MSG_NOTICE([Enabled ovpn-dco support for Linux])
++			if test "$enable_dco" = "no"; then
++				if test "$enable_dco_arg" = "auto"; then
++					AC_MSG_WARN([DCO support disabled])
++				else
++					AC_MSG_ERROR([DCO support can't be enabled])
++				fi
++			else
++				CFLAGS="${CFLAGS} ${LIBNL_GENL_CFLAGS}"
++				LIBS="${LIBS} ${LIBNL_GENL_LIBS}"
++
++				AC_DEFINE(ENABLE_DCO, 1, [Enable shared data channel offload])
++				AC_MSG_NOTICE([Enabled ovpn-dco support for Linux])
++			fi
+ 			;;
+ 		*-*-freebsd*)
+-			LIBS="${LIBS} -lnv"
+-			AC_DEFINE(ENABLE_DCO, 1, [Enable data channel offload for FreeBSD])
+-			AC_MSG_NOTICE([Enabled ovpn-dco support for FreeBSD])
++			AC_CHECK_LIB(
++				[nv],
++				[nvlist_create],
++				[
++				 LIBS="${LIBS} -lnv"
++				 AC_DEFINE(ENABLE_DCO, 1, [Enable data channel offload for FreeBSD])
++				 AC_MSG_NOTICE([Enabled ovpn-dco support for FreeBSD])
++				],
++				[
++				 enable_dco="no"
++				 AC_MSG_WARN([Name/Value pair library not found.])
++				]
++			)
++			if test "$enable_dco" = "no"; then
++				if test "$enable_dco_arg" = "auto"; then
++					AC_MSG_WARN([DCO support disabled])
++				else
++					AC_MSG_ERROR([DCO support can't be enabled])
++				fi
++			fi
+ 			;;
+ 		*-mingw*)
+ 			AC_MSG_NOTICE([NOTE: --enable-dco ignored on Windows because it's always enabled])
+-- 
+2.34.1
 
 
