@@ -1,12 +1,12 @@
 MIME-Version: 1.0
 References: <20230203191440.136050-1-frank@...2641...>
- <20230203191440.136050-2-frank@...2641...>
-In-Reply-To: <20230203191440.136050-2-frank@...2641...>
+ <20230203191440.136050-3-frank@...2641...>
+In-Reply-To: <20230203191440.136050-3-frank@...2641...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 7 Feb 2023 10:59:41 +0200
-Message-ID: <CAGyAFMWcYJ9C_89EfkpoTChFLwG+bOnp-FDS_iWb7z4V2hkoGg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 1/5] Windows: fix unused function
- setenv_foreign_option
+Date: Tue, 7 Feb 2023 11:26:43 +0200
+Message-ID: <CAGyAFMXrOQnDc_hP_D0S0EPz9RduorVdWJ=49jPrcEncV87epQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 2/5] Windows: fix unused variables in
+ delete_route_ipv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,39 +20,90 @@ Content-Transfer-Encoding: 8bit
 To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I haven't tested it in the MinGW environment, but checked the code in MSVC and
-ensured that setenv_foreign_option is indeed not used at all in Win32.
+Looks good. Stared at the code and test-compiled with MSVC.
 
 Acked-by: Lev Stipakov <lstipakov@...277...>
 
 pe 3. helmik. 2023 klo 21.15 Frank Lichtenheld (frank@...2641...)
 kirjoitti:
 >
+> At this point it might be easier to create a
+> dedicated function for Windows...
+>
 > Signed-off-by: Frank Lichtenheld <frank@...2641...>
 > ---
->  src/openvpn/options.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  src/openvpn/route.c | 32 ++++++++++++++++----------------
+>  1 file changed, 16 insertions(+), 16 deletions(-)
 >
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 6ae3faf8..ab1b01cf 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -1041,6 +1041,7 @@ setenv_settings(struct env_set *es, const struct options *o)
->      }
->  }
->
-> +#ifndef _WIN32
->  static void
->  setenv_foreign_option(struct options *o, const char *argv[], int len, struct env_set *es)
+> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+> index 82519c94..3798bc65 100644
+> --- a/src/openvpn/route.c
+> +++ b/src/openvpn/route.c
+> @@ -2333,12 +2333,6 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt,
+>                    openvpn_net_ctx_t *ctx)
 >  {
-> @@ -1078,6 +1079,7 @@ setenv_foreign_option(struct options *o, const char *argv[], int len, struct env
->          gc_free(&gc);
->      }
->  }
-> +#endif /* ifndef _WIN32 */
+>      const char *network;
+> -#if !defined(TARGET_LINUX)
+> -    const char *gateway;
+> -#else
+> -    int metric;
+> -#endif
+> -    bool gateway_needed = false;
 >
->  static in_addr_t
->  get_ip_addr(const char *ip_string, int msglevel, bool *error)
+>      if ((r6->flags & (RT_DEFINED|RT_ADDED)) != (RT_DEFINED|RT_ADDED))
+>      {
+> @@ -2346,19 +2340,34 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt,
+>      }
+>
+>  #ifndef _WIN32
+> +#if !defined(TARGET_LINUX)
+> +    const char *gateway;
+> +#else
+> +    int metric;
+> +#endif
+> +    bool gateway_needed = false;
+>      const char *device = tt->actual_name;
+>      if (r6->iface != NULL)              /* vpn server special route */
+>      {
+>          device = r6->iface;
+>          gateway_needed = true;
+>      }
+> +
+> +    /* if we used a gateway on "add route", we also need to specify it on
+> +     * delete, otherwise some OSes will refuse to delete the route
+> +     */
+> +    if (tt->type == DEV_TYPE_TAP
+> +        && !( (r6->flags & RT_METRIC_DEFINED) && r6->metric == 0 ) )
+> +    {
+> +        gateway_needed = true;
+> +    }
+>  #endif
+>
+>      struct gc_arena gc = gc_new();
+>      struct argv argv = argv_new();
+>
+>      network = print_in6_addr( r6->network, 0, &gc);
+> -#if !defined(TARGET_LINUX)
+> +#if !defined(TARGET_LINUX) && !defined(_WIN32)
+>      gateway = print_in6_addr( r6->gateway, 0, &gc);
+>  #endif
+>
+> @@ -2382,15 +2391,6 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt,
+>
+>      msg( M_INFO, "delete_route_ipv6(%s/%d)", network, r6->netbits );
+>
+> -    /* if we used a gateway on "add route", we also need to specify it on
+> -     * delete, otherwise some OSes will refuse to delete the route
+> -     */
+> -    if (tt->type == DEV_TYPE_TAP
+> -        && !( (r6->flags & RT_METRIC_DEFINED) && r6->metric == 0 ) )
+> -    {
+> -        gateway_needed = true;
+> -    }
+> -
+>  #if defined(TARGET_LINUX)
+>      metric = -1;
+>      if ((r6->flags & RT_METRIC_DEFINED) && (r6->metric > 0))
 > --
 > 2.34.1
 >
