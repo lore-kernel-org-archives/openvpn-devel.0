@@ -1,10 +1,10 @@
-Date: Tue, 7 Feb 2023 17:49:36 +0100 (CET)
-Message-Id: <202302071649.317Gnack058774@...2054...>
+Date: Tue, 7 Feb 2023 17:54:18 +0100 (CET)
+Message-Id: <202302071654.317GsIws058954@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230203191440.136050-3-frank@...2641...>
-References: <20230203191440.136050-3-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Windows: fix unused variables
- in delete_route_ipv6
+In-Reply-To: <20230207134333.52221-1-frank@...2641...>
+References: <20230207134333.52221-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Windows: fix wrong printf
+ format in x_check_status
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,26 +18,23 @@ Content-Transfer-Encoding: 8bit
 To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Test compiled on mingw & linux, and pushed to the buildbots.  This is
-the sort of cross-platform patch that looks harmless and breaks somewhere :-)
-(but it didn't).
+Test built on MinGW and Linux.  Haven't actually tried to trigger an error
+message which would contain a fd=nnn output, but for "non windows" this
+is a no-op change, and "for windows" it looks correct.
 
-We normally try to avoid refactoring in the middle of a release branch, but
-"we're between .0 and .1, and it's very trivial code movearound only".
+Your patch has been applied to the master and release/2.6 branch.
 
-Your patch has been applied to the master branch and release/2.6.
-
-commit 48495ce3cd8d53663c56d265ef6a82234878e205 (master)
-commit ab46bdd1ef9951b684782de00f37fec4092fd0f1 (release/2.6)
+commit a95705be85cb1d3a5868efaeb960ec5d625d2f11 (master)
+commit 37e23c9816754ceeb67d5365b639f0b37f804591 (release/2.6)
 Author: Frank Lichtenheld
-Date:   Fri Feb 3 20:14:37 2023 +0100
+Date:   Tue Feb 7 14:43:33 2023 +0100
 
-     Windows: fix unused variables in delete_route_ipv6
+     Windows: fix wrong printf format in x_check_status
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20230203191440.136050-3-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26140.html
+     Message-Id: <20230207134333.52221-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26166.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
