@@ -1,14 +1,13 @@
+Message-ID: <d82ebbab-b07d-1399-9ec2-4b2045ecf447@...2181...>
+Date: Tue, 7 Feb 2023 23:39:50 +0100
 MIME-Version: 1.0
-References: <20230204004512.250271-2-selva.nair@...277...>
- <20230204064010.257925-1-selva.nair@...277...>
- <e45213bd-6aba-02ca-ecb5-fbd51aebe05e@...1227...>
-In-Reply-To: <e45213bd-6aba-02ca-ecb5-fbd51aebe05e@...1227...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 7 Feb 2023 12:55:08 -0500
-Message-ID: <CAKuzo_hEivnhbMb+LH-PC8H91zaXsqE7zhQopi9xUaiomaUF9Q@...278...>
-Content-Type: multipart/alternative; boundary="00000000000028498705f41fdad4"
-Subject: Re: [Openvpn-devel] [PATCH v2 2/3] Build unit tests in mingw
- Windows build
+References: <2dfb7d11-1948-025b-f548-79c3ef1ca04e@...2181...>
+ <20230207145416.1415-1-lstipakov@...277...>
+Content-Language: en-US
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20230207145416.1415-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v3 release/2.6] Allow certain DHCP
+ options to be used without DHCP server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,108 +16,196 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---00000000000028498705f41fdad4
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
 Hi,
 
-On Tue, Feb 7, 2023 at 6:59 AM Arne Schwabe <arne@...1227...> wrote:
+On 07/02/2023 15:54, Lev Stipakov wrote:
+> From: Lev Stipakov <lev@...515...>
+> 
+> Followin DHCP options:
+> 
+>    DOMAIN, ADAPTER_DOMAIN_SUFFIX, DNS, WINS
+> 
+> don't require DHCP server in order to be used.
+> 
+> This change allows those options to be used with dco and wintun
+> drivers. If an option specified which requires DHCP server and
+> tap-windows6 driver is not used, print a clear error message
+> instead of obscure reference to --ip-win32.
+> 
+> Reported-by: Marek Zarychta
+> Signed-off-by: Lev Stipakov <lev@...515...>
 
-> Am 04.02.23 um 07:40 schrieb selva.nair@...277...:
-> > From: Selva Nair <selva.nair@...277...>
-> >
-> > - Minor changes to the build system to include some
-> >    dependencies for Windows build
-> >
-> > - test_tls_crypt not built as it will pull in win32.c and
-> >    its dependencies
-> >
-> > - If cross-compiling, "make check" will only build the tests but not
-> >    run any. Copy to Windows and run manually. Executables are in
-> >    <buid-dir>/tests/unit_tests/openvpn/.libs/ and these depend on
-> >    cmocka.dll in addition to openssl libs that some tests link to.
-> >
-> >    Building with mingw on Windows should run the tests (untested).
-> >
-> > v2: networking_testdriver was mistakenly enabled to run, while
-> > originally it was only set to build. Corrected.
-> >
->
-> I am currently testing this and also trying to add this to the Github
-> actions. This patch seems fine but I get other weird errors and cmocka
-> builds fine crosscompiling on my own machine but breaks for some reason
-> in Github Actions. I am looking into these problems and will give a full
-> review after I solved those issues.
->
+Code makes sense and does what it says.
 
-That would be nice. I was not sure how to copy the artifacts into a Windows
-instance and add a job for testing them in GHA.
+Acked-by: Antonio Quartulli <a@...2181...>
 
-Regarding "weird errors" an obvious thing easy to overlook is that the
-exe's are in .libs/ -- the wrapper that libtool generates is only useful
-for running native builds in-place with uninstalled shared libraries.
+However, please not that I did not test this code path explicitly as my 
+testing capabilities on Windows are pretty limited.
 
-Also, I just noticed that I had locally disabled the example test because
-of some missing header warning -- it needs an include <stdint.h> to build.
+Cheers,
 
-Regards,
+> ---
+>   v3: replace SHOW_INT with SHOW_UNSIGNED
+>   v2: replace enum with defines, which are more suitable
+>       as bit flags
+> 
+>   src/openvpn/options.c | 39 +++++++++++++++++++++++----------------
+>   src/openvpn/tun.h     |  6 +++++-
+>   2 files changed, 28 insertions(+), 17 deletions(-)
+> 
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 6ae3faf8..8cbffc5c 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -1290,7 +1290,7 @@ show_tuntap_options(const struct tuntap_options *o)
+>       SHOW_INT(dhcp_masq_offset);
+>       SHOW_INT(dhcp_lease_time);
+>       SHOW_INT(tap_sleep);
+> -    SHOW_BOOL(dhcp_options);
+> +    SHOW_UNSIGNED(dhcp_options);
+>       SHOW_BOOL(dhcp_renew);
+>       SHOW_BOOL(dhcp_pre_release);
+>       SHOW_STR(domain);
+> @@ -2478,12 +2478,20 @@ options_postprocess_verify_ce(const struct options *options,
+>           msg(M_USAGE, "On Windows, --ip-win32 doesn't make sense unless --ifconfig is also used");
+>       }
+>   
+> -    if (options->tuntap_options.dhcp_options
+> -        && options->windows_driver != WINDOWS_DRIVER_WINTUN
+> -        && options->tuntap_options.ip_win32_type != IPW32_SET_DHCP_MASQ
+> -        && options->tuntap_options.ip_win32_type != IPW32_SET_ADAPTIVE)
+> +    if (options->tuntap_options.dhcp_options & DHCP_OPTIONS_DHCP_REQUIRED)
+>       {
+> -        msg(M_USAGE, "--dhcp-option requires --ip-win32 dynamic or adaptive");
+> +        const char *prefix = "Some dhcp-options require DHCP server";
+> +        if (options->windows_driver != WINDOWS_DRIVER_TAP_WINDOWS6)
+> +        {
+> +            msg(M_USAGE, "%s, which is not supported by selected %s driver",
+> +                prefix, print_windows_driver(options->windows_driver));
+> +        }
+> +        else if (options->tuntap_options.ip_win32_type != IPW32_SET_DHCP_MASQ
+> +                 && options->tuntap_options.ip_win32_type != IPW32_SET_ADAPTIVE)
+> +        {
+> +            msg(M_USAGE, "%s, which requires --ip-win32 dynamic or adaptive",
+> +                prefix);
+> +        }
+>       }
+>   
+>       if (options->windows_driver == WINDOWS_DRIVER_WINTUN && dev != DEV_TYPE_TUN)
+> @@ -8083,16 +8091,17 @@ add_option(struct options *options,
+>       {
+>           struct tuntap_options *o = &options->tuntap_options;
+>           VERIFY_PERMISSION(OPT_P_DHCPDNS);
+> -        bool ipv6dns = false;
+>   
+>           if ((streq(p[1], "DOMAIN") || streq(p[1], "ADAPTER_DOMAIN_SUFFIX"))
+>               && p[2] && !p[3])
+>           {
+>               o->domain = p[2];
+> +            o->dhcp_options |= DHCP_OPTIONS_DHCP_OPTIONAL;
+>           }
+>           else if (streq(p[1], "NBS") && p[2] && !p[3])
+>           {
+>               o->netbios_scope = p[2];
+> +            o->dhcp_options |= DHCP_OPTIONS_DHCP_REQUIRED;
+>           }
+>           else if (streq(p[1], "NBT") && p[2] && !p[3])
+>           {
+> @@ -8104,31 +8113,35 @@ add_option(struct options *options,
+>                   goto err;
+>               }
+>               o->netbios_node_type = t;
+> +            o->dhcp_options |= DHCP_OPTIONS_DHCP_REQUIRED;
+>           }
+>           else if ((streq(p[1], "DNS") || streq(p[1], "DNS6")) && p[2] && !p[3]
+>                    && (!strstr(p[2], ":") || ipv6_addr_safe(p[2])))
+>           {
+>               if (strstr(p[2], ":"))
+>               {
+> -                ipv6dns = true;
+>                   dhcp_option_dns6_parse(p[2], o->dns6, &o->dns6_len, msglevel);
+>               }
+>               else
+>               {
+>                   dhcp_option_address_parse("DNS", p[2], o->dns, &o->dns_len, msglevel);
+> +                o->dhcp_options |= DHCP_OPTIONS_DHCP_OPTIONAL;
+>               }
+>           }
+>           else if (streq(p[1], "WINS") && p[2] && !p[3])
+>           {
+>               dhcp_option_address_parse("WINS", p[2], o->wins, &o->wins_len, msglevel);
+> +            o->dhcp_options |= DHCP_OPTIONS_DHCP_OPTIONAL;
+>           }
+>           else if (streq(p[1], "NTP") && p[2] && !p[3])
+>           {
+>               dhcp_option_address_parse("NTP", p[2], o->ntp, &o->ntp_len, msglevel);
+> +            o->dhcp_options |= DHCP_OPTIONS_DHCP_REQUIRED;
+>           }
+>           else if (streq(p[1], "NBDD") && p[2] && !p[3])
+>           {
+>               dhcp_option_address_parse("NBDD", p[2], o->nbdd, &o->nbdd_len, msglevel);
+> +            o->dhcp_options |= DHCP_OPTIONS_DHCP_REQUIRED;
+>           }
+>           else if (streq(p[1], "DOMAIN-SEARCH") && p[2] && !p[3])
+>           {
+> @@ -8141,10 +8154,12 @@ add_option(struct options *options,
+>                   msg(msglevel, "--dhcp-option %s: maximum of %d search entries can be specified",
+>                       p[1], N_SEARCH_LIST_LEN);
+>               }
+> +            o->dhcp_options |= DHCP_OPTIONS_DHCP_REQUIRED;
+>           }
+>           else if (streq(p[1], "DISABLE-NBT") && !p[2])
+>           {
+>               o->disable_nbt = 1;
+> +            o->dhcp_options |= DHCP_OPTIONS_DHCP_REQUIRED;
+>           }
+>   #if defined(TARGET_ANDROID)
+>           else if (streq(p[1], "PROXY_HTTP") && p[3] && !p[4])
+> @@ -8158,14 +8173,6 @@ add_option(struct options *options,
+>               msg(msglevel, "--dhcp-option: unknown option type '%s' or missing or unknown parameter", p[1]);
+>               goto err;
+>           }
+> -
+> -        /* flag that we have options to give to the TAP driver's DHCPv4 server
+> -         *  - skipped for "DNS6", as that's not a DHCPv4 option
+> -         */
+> -        if (!ipv6dns)
+> -        {
+> -            o->dhcp_options = true;
+> -        }
+>       }
+>   #endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */
+>   #ifdef _WIN32
+> diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+> index 3b0a0d24..e19e1a2e 100644
+> --- a/src/openvpn/tun.h
+> +++ b/src/openvpn/tun.h
+> @@ -62,6 +62,10 @@ enum windows_driver_type {
+>   #define IPW32_SET_ADAPTIVE_DELAY_WINDOW 300
+>   #define IPW32_SET_ADAPTIVE_TRY_NETSH    20
+>   
+> +/* bit flags for DHCP options */
+> +#define DHCP_OPTIONS_DHCP_OPTIONAL (1<<0)
+> +#define DHCP_OPTIONS_DHCP_REQUIRED (1<<1)
+> +
+>   struct tuntap_options {
+>       /* --ip-win32 options */
+>       bool ip_win32_defined;
+> @@ -90,7 +94,7 @@ struct tuntap_options {
+>   
+>       /* --dhcp-option options */
+>   
+> -    bool dhcp_options;
+> +    int dhcp_options;
+>   
+>       const char *domain;      /* DOMAIN (15) */
+>   
 
-Selva
-
---00000000000028498705f41fdad4
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div>Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"l=
-tr" class=3D"gmail_attr">On Tue, Feb 7, 2023 at 6:59 AM Arne Schwabe &lt;<a=
- href=3D"mailto:arne@...1227...">arne@...1227...</a>&gt; wrote:<br></div><b=
-lockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-le=
-ft:1px solid rgb(204,204,204);padding-left:1ex">Am 04.02.23 um 07:40 schrie=
-b <a href=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...1665...=
-77...</a>:<br>
-&gt; From: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." target=3D=
-"_blank">selva.nair@...277...</a>&gt;<br>
-&gt; <br>
-&gt; - Minor changes to the build system to include some<br>
-&gt;=C2=A0 =C2=A0 dependencies for Windows build<br>
-&gt; <br>
-&gt; - test_tls_crypt not built as it will pull in win32.c and<br>
-&gt;=C2=A0 =C2=A0 its dependencies<br>
-&gt; <br>
-&gt; - If cross-compiling, &quot;make check&quot; will only build the tests=
- but not<br>
-&gt;=C2=A0 =C2=A0 run any. Copy to Windows and run manually. Executables ar=
-e in<br>
-&gt;=C2=A0 =C2=A0 &lt;buid-dir&gt;/tests/unit_tests/openvpn/.libs/ and thes=
-e depend on<br>
-&gt;=C2=A0 =C2=A0 cmocka.dll in addition to openssl libs that some tests li=
-nk to.<br>
-&gt; <br>
-&gt;=C2=A0 =C2=A0 Building with mingw on Windows should run the tests (unte=
-sted).<br>
-&gt; <br>
-&gt; v2: networking_testdriver was mistakenly enabled to run, while<br>
-&gt; originally it was only set to build. Corrected.<br>
-&gt;<br>
-<br>
-I am currently testing this and also trying to add this to the Github <br>
-actions. This patch seems fine but I get other weird errors and cmocka <br>
-builds fine crosscompiling on my own machine but breaks for some reason <br>
-in Github Actions. I am looking into these problems and will give a full <b=
-r>
-review after I solved those issues.<br></blockquote><div><br></div><div>Tha=
-t would be nice. I was not sure how to copy the artifacts=C2=A0into a Windo=
-ws instance and add a job for testing them in GHA.</div><div><br></div><div=
->Regarding &quot;weird errors&quot; an obvious thing easy to overlook is th=
-at the exe&#39;s are in .libs/ -- the wrapper that libtool generates is onl=
-y useful for running native builds in-place with uninstalled shared librari=
-es.</div><div><br></div><div>Also, I just noticed that I had locally disabl=
-ed the example test because of some missing header warning -- it needs an i=
-nclude &lt;stdint.h&gt; to build.</div><div><br></div><div>Regards,</div><d=
-iv><br></div><div>Selva</div></div></div>
-
---00000000000028498705f41fdad4--
+-- 
+Antonio Quartulli
 
