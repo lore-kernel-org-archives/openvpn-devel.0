@@ -1,13 +1,9 @@
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue,  7 Feb 2023 10:53:39 +0200
+Message-Id: <20230207085339.1492-1-lstipakov@...277...>
 MIME-Version: 1.0
-References: <20230203165529.125771-1-frank@...2641...>
- <20230206112218.51430-1-frank@...2641...>
-In-Reply-To: <20230206112218.51430-1-frank@...2641...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 6 Feb 2023 13:16:18 -0500
-Message-ID: <CAKuzo_i6FhU_k9soY_s9QNifJt+12cx5uZuUJ2EuTacvPrBLLA@...278...>
-Content-Type: multipart/alternative; boundary="00000000000001895b05f40c0867"
-Subject: Re: [Openvpn-devel] [PATCH v2] configure: enable DCO by default on
- FreeBSD/Linux
+Subject: [Openvpn-devel] [PATCH release/2.6] Allow certain DHCP options to
+ be used without DHCP server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,179 +12,185 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
---00000000000001895b05f40c0867
-Content-Type: text/plain; charset="UTF-8"
+From: Lev Stipakov <lev@...515...>
 
-Hi,
+Followin DHCP options:
 
-On Mon, Feb 6, 2023 at 6:24 AM Frank Lichtenheld <frank@...2641...>
-wrote:
+  DOMAIN, ADAPTER_DOMAIN_SUFFIX, DNS, WINS
 
-> Automatically disabled when
-> - iproute2 is enabled
->   (Don't want to force people specifying --disable-dco explicitely)
-> - libnv is missing on FreeBSD
->   (FreeBSD version too old anyway)
->
-> Will still error out if libnl-genl is missing on Linux to
-> make people aware of new dependency.
->
-> Signed-off-by: Frank Lichtenheld <frank@...2641...>
-> ---
->  configure.ac | 78 ++++++++++++++++++++++++++++++++++++++++------------
->  1 file changed, 61 insertions(+), 17 deletions(-)
->
-> v2: error out when libnl-genl is missing as discussed with ordex on
->     IRC.
->
->
-> diff --git a/configure.ac b/configure.ac
-> index 91500087..acfa4bc1 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -144,14 +144,27 @@ AC_ARG_ENABLE(
->
->  AC_ARG_ENABLE(
->         [dco],
-> -       [AS_HELP_STRING([--enable-dco], [enable data channel offload
-> support using the ovpn-dco kernel module (always enabled on Windows)
-> @<:@default=no@:>@])],
-> +       [AS_HELP_STRING([--disable-dco], [enable data channel offload
-> support using the ovpn-dco kernel module (always enabled on Windows)
-> @<:@default=yes@:>@])],
->
+don't require DHCP server in order to be used.
 
-The help string should be
-"disable data channel offload support ..." instead of "enable data channel
-offload ..." as it's now prefixed with "--disable-dco" .
+This change allows those options to be used with dco and wintun
+drivers. If an option specified which requires DHCP server and
+tap-windows6 driver is not used, print a clear error message
+instead of obscure reference to --ip-win32.
 
-The "default=yes" in this case may be better written as "default=auto" (or
-"platform specific") but it's not critical. Here, default always refers to
-the "--enable-FEATURE" form of the option. Confusing but consistent with
-how other options are described.
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/options.c | 39 +++++++++++++++++++++++----------------
+ src/openvpn/tun.h     | 13 ++++++++++++-
+ 2 files changed, 35 insertions(+), 17 deletions(-)
 
-We could be more helpful by describing both enable and disable forms of all
-options, as well as custom args that the enable form takes (if any), but
-that's beyond the scope of this patch.
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 6ae3faf8..9c05217c 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1290,7 +1290,7 @@ show_tuntap_options(const struct tuntap_options *o)
+     SHOW_INT(dhcp_masq_offset);
+     SHOW_INT(dhcp_lease_time);
+     SHOW_INT(tap_sleep);
+-    SHOW_BOOL(dhcp_options);
++    SHOW_INT(dhcp_options);
+     SHOW_BOOL(dhcp_renew);
+     SHOW_BOOL(dhcp_pre_release);
+     SHOW_STR(domain);
+@@ -2478,12 +2478,20 @@ options_postprocess_verify_ce(const struct options *options,
+         msg(M_USAGE, "On Windows, --ip-win32 doesn't make sense unless --ifconfig is also used");
+     }
+ 
+-    if (options->tuntap_options.dhcp_options
+-        && options->windows_driver != WINDOWS_DRIVER_WINTUN
+-        && options->tuntap_options.ip_win32_type != IPW32_SET_DHCP_MASQ
+-        && options->tuntap_options.ip_win32_type != IPW32_SET_ADAPTIVE)
++    if (options->tuntap_options.dhcp_options & DHCP_OPTIONS_DHCP_REQUIRED)
+     {
+-        msg(M_USAGE, "--dhcp-option requires --ip-win32 dynamic or adaptive");
++        const char *prefix = "Some dhcp-options require DHCP server";
++        if (options->windows_driver != WINDOWS_DRIVER_TAP_WINDOWS6)
++        {
++            msg(M_USAGE, "%s, which is not supported by selected %s driver",
++                prefix, print_windows_driver(options->windows_driver));
++        }
++        else if (options->tuntap_options.ip_win32_type != IPW32_SET_DHCP_MASQ
++                 && options->tuntap_options.ip_win32_type != IPW32_SET_ADAPTIVE)
++        {
++            msg(M_USAGE, "%s, which requires --ip-win32 dynamic or adaptive",
++                prefix);
++        }
+     }
+ 
+     if (options->windows_driver == WINDOWS_DRIVER_WINTUN && dev != DEV_TYPE_TUN)
+@@ -8083,16 +8091,17 @@ add_option(struct options *options,
+     {
+         struct tuntap_options *o = &options->tuntap_options;
+         VERIFY_PERMISSION(OPT_P_DHCPDNS);
+-        bool ipv6dns = false;
+ 
+         if ((streq(p[1], "DOMAIN") || streq(p[1], "ADAPTER_DOMAIN_SUFFIX"))
+             && p[2] && !p[3])
+         {
+             o->domain = p[2];
++            o->dhcp_options |= DHCP_OPTIONS_DHCP_OPTIONAL;
+         }
+         else if (streq(p[1], "NBS") && p[2] && !p[3])
+         {
+             o->netbios_scope = p[2];
++            o->dhcp_options |= DHCP_OPTIONS_DHCP_REQUIRED;
+         }
+         else if (streq(p[1], "NBT") && p[2] && !p[3])
+         {
+@@ -8104,31 +8113,35 @@ add_option(struct options *options,
+                 goto err;
+             }
+             o->netbios_node_type = t;
++            o->dhcp_options |= DHCP_OPTIONS_DHCP_REQUIRED;
+         }
+         else if ((streq(p[1], "DNS") || streq(p[1], "DNS6")) && p[2] && !p[3]
+                  && (!strstr(p[2], ":") || ipv6_addr_safe(p[2])))
+         {
+             if (strstr(p[2], ":"))
+             {
+-                ipv6dns = true;
+                 dhcp_option_dns6_parse(p[2], o->dns6, &o->dns6_len, msglevel);
+             }
+             else
+             {
+                 dhcp_option_address_parse("DNS", p[2], o->dns, &o->dns_len, msglevel);
++                o->dhcp_options |= DHCP_OPTIONS_DHCP_OPTIONAL;
+             }
+         }
+         else if (streq(p[1], "WINS") && p[2] && !p[3])
+         {
+             dhcp_option_address_parse("WINS", p[2], o->wins, &o->wins_len, msglevel);
++            o->dhcp_options |= DHCP_OPTIONS_DHCP_OPTIONAL;
+         }
+         else if (streq(p[1], "NTP") && p[2] && !p[3])
+         {
+             dhcp_option_address_parse("NTP", p[2], o->ntp, &o->ntp_len, msglevel);
++            o->dhcp_options |= DHCP_OPTIONS_DHCP_REQUIRED;
+         }
+         else if (streq(p[1], "NBDD") && p[2] && !p[3])
+         {
+             dhcp_option_address_parse("NBDD", p[2], o->nbdd, &o->nbdd_len, msglevel);
++            o->dhcp_options |= DHCP_OPTIONS_DHCP_REQUIRED;
+         }
+         else if (streq(p[1], "DOMAIN-SEARCH") && p[2] && !p[3])
+         {
+@@ -8141,10 +8154,12 @@ add_option(struct options *options,
+                 msg(msglevel, "--dhcp-option %s: maximum of %d search entries can be specified",
+                     p[1], N_SEARCH_LIST_LEN);
+             }
++            o->dhcp_options |= DHCP_OPTIONS_DHCP_REQUIRED;
+         }
+         else if (streq(p[1], "DISABLE-NBT") && !p[2])
+         {
+             o->disable_nbt = 1;
++            o->dhcp_options |= DHCP_OPTIONS_DHCP_REQUIRED;
+         }
+ #if defined(TARGET_ANDROID)
+         else if (streq(p[1], "PROXY_HTTP") && p[3] && !p[4])
+@@ -8158,14 +8173,6 @@ add_option(struct options *options,
+             msg(msglevel, "--dhcp-option: unknown option type '%s' or missing or unknown parameter", p[1]);
+             goto err;
+         }
+-
+-        /* flag that we have options to give to the TAP driver's DHCPv4 server
+-         *  - skipped for "DNS6", as that's not a DHCPv4 option
+-         */
+-        if (!ipv6dns)
+-        {
+-            o->dhcp_options = true;
+-        }
+     }
+ #endif /* if defined(_WIN32) || defined(TARGET_ANDROID) */
+ #ifdef _WIN32
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index 3b0a0d24..66604c19 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -62,6 +62,17 @@ enum windows_driver_type {
+ #define IPW32_SET_ADAPTIVE_DELAY_WINDOW 300
+ #define IPW32_SET_ADAPTIVE_TRY_NETSH    20
+ 
++/* this is a bitmask */
++enum dhcp_options_type {
++    DHCP_OPTIONS_NONE = 0,
++
++    /* option doesn't require DHCP server */
++    DHCP_OPTIONS_DHCP_OPTIONAL = 1,
++
++    /* option requires DHCP server */
++    DHCP_OPTIONS_DHCP_REQUIRED = 2
++};
++
+ struct tuntap_options {
+     /* --ip-win32 options */
+     bool ip_win32_defined;
+@@ -90,7 +101,7 @@ struct tuntap_options {
+ 
+     /* --dhcp-option options */
+ 
+-    bool dhcp_options;
++    enum dhcp_options_type dhcp_options;
+ 
+     const char *domain;      /* DOMAIN (15) */
+ 
+-- 
+2.23.0.windows.1
 
--if test "$enable_dco" = "yes"; then
-> +if test "$enable_dco" != "no"; then
-> +       enable_dco_arg="$enable_dco"
-> +       if test "${enable_iproute2}" = "yes"; then
-> +               AC_MSG_WARN([iproute2 support cannot be enabled when using
-> DCO])
->
-
-This is mildly misleading as here iproute2 is going to win over DCO but the
-message appears to indicate otherwise. It would result in outputs like:
-
-WARNING: iproute2 support cannot be enabled when using DCO
-WARNING: DCO support disabled
-(or in an error)
-
-Phrasing the first as "DCO cannot be enabled when using iproute2" would be
-better.
-
-
-> +               enable_dco="no"
-> +       fi
-> +       case "$host" in
-> +               *-*-linux*)
-
-
-I'll defer to those who understand DCO better to ACK the technical part.
-
-Selva
-
---00000000000001895b05f40c0867
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div>Hi,</div><div><br></div><div><div class=3D"gmail_quot=
-e"><div dir=3D"ltr" class=3D"gmail_attr">On Mon, Feb 6, 2023 at 6:24 AM Fra=
-nk Lichtenheld &lt;<a href=3D"mailto:frank@...2641..." target=3D"_blank">fr=
-ank@...2641...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" st=
-yle=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padd=
-ing-left:1ex">Automatically disabled when<br>
-- iproute2 is enabled<br>
-=C2=A0 (Don&#39;t want to force people specifying --disable-dco explicitely=
-)<br>
-- libnv is missing on FreeBSD<br>
-=C2=A0 (FreeBSD version too old anyway)<br>
-<br>
-Will still error out if libnl-genl is missing on Linux to<br>
-make people aware of new dependency.<br>
-<br>
-Signed-off-by: Frank Lichtenheld &lt;<a href=3D"mailto:frank@...2641..." ta=
-rget=3D"_blank">frank@...2641...</a>&gt;<br>
----<br>
-=C2=A0<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_blank">=
-configure.ac</a> | 78 ++++++++++++++++++++++++++++++++++++++++------------<=
-br>
-=C2=A01 file changed, 61 insertions(+), 17 deletions(-)<br>
-<br>
-v2: error out when libnl-genl is missing as discussed with ordex on<br>
-=C2=A0 =C2=A0 IRC.<br>
-<br>
-<br>
-diff --git a/<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_=
-blank">configure.ac</a> b/<a href=3D"http://configure.ac" rel=3D"noreferrer=
-" target=3D"_blank">configure.ac</a><br>
-index 91500087..acfa4bc1 100644<br>
---- a/<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_blank">=
-configure.ac</a><br>
-+++ b/<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_blank">=
-configure.ac</a><br>
-@@ -144,14 +144,27 @@ AC_ARG_ENABLE(<br>
-<br>
-=C2=A0AC_ARG_ENABLE(<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 [dco],<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0[AS_HELP_STRING([--enable-dco], [enable data ch=
-annel offload support using the ovpn-dco kernel module (always enabled on W=
-indows) @&lt;:@default=3Dno@:&gt;@])],<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0[AS_HELP_STRING([--disable-dco], [enable data c=
-hannel offload support using the ovpn-dco kernel module (always enabled on =
-Windows) @&lt;:@default=3Dyes@:&gt;@])],<br></blockquote><div><br></div><di=
-v>The help string should be</div><div>&quot;disable data channel offload su=
-pport ...&quot; instead of &quot;enable data channel offload ...&quot; as i=
-t&#39;s now prefixed with &quot;--disable-dco&quot; .=C2=A0</div><div><br><=
-/div><div>The &quot;default=3Dyes&quot; in this case may be better written =
-as &quot;default=3Dauto&quot; (or &quot;platform specific&quot;) but it&#39=
-;s not critical. Here, default always refers to the &quot;--enable-FEATURE&=
-quot; form of the option. Confusing but consistent with how other options a=
-re described.=C2=A0</div><div><br></div><div>We could be more helpful by de=
-scribing both enable and disable forms of all options, as well as custom ar=
-gs that the enable form takes (if any), but that&#39;s beyond the scope of =
-this patch.</div><div><br></div><blockquote class=3D"gmail_quote" style=3D"=
-margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-lef=
-t:1ex"><span style=3D"color:rgb(80,0,80)">-if test &quot;$enable_dco&quot; =
-=3D &quot;yes&quot;; then<br></span><span style=3D"color:rgb(80,0,80)">+if =
-test &quot;$enable_dco&quot; !=3D &quot;no&quot;; then<br></span><span styl=
-e=3D"color:rgb(80,0,80)">+=C2=A0 =C2=A0 =C2=A0 =C2=A0enable_dco_arg=3D&quot=
-;$enable_dco&quot;<br></span><span style=3D"color:rgb(80,0,80)">+=C2=A0 =C2=
-=A0 =C2=A0 =C2=A0if test &quot;${enable_iproute2}&quot; =3D &quot;yes&quot;=
-; then<br></span><span style=3D"color:rgb(80,0,80)">+=C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0AC_MSG_WARN([iproute2 support cannot be e=
-nabled when using DCO])<br></span></blockquote><div><br></div><div>This is =
-mildly misleading as here iproute2 is going to win over DCO but the message=
- appears to indicate otherwise. It would result in outputs like:</div><div>=
-<br></div><div>WARNING: iproute2 support cannot be enabled when using DCO<b=
-r>WARNING: DCO support disabled<br></div><div>(or in an error)</div><div><b=
-r></div><div>Phrasing the first as &quot;DCO cannot be enabled when using i=
-proute2&quot; would be better.</div><div>=C2=A0=C2=A0</div><blockquote clas=
-s=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid r=
-gb(204,204,204);padding-left:1ex"><span style=3D"color:rgb(80,0,80)"></span=
-><span style=3D"color:rgb(80,0,80)">+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0enable_dco=3D&quot;no&quot;<br></span><span style=3D"color=
-:rgb(80,0,80)">+=C2=A0 =C2=A0 =C2=A0 =C2=A0fi<br></span><span style=3D"colo=
-r:rgb(80,0,80)">+=C2=A0 =C2=A0 =C2=A0 =C2=A0case &quot;$host&quot; in<br></=
-span><span style=3D"color:rgb(80,0,80)">+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0*-*-linux*)</span></blockquote><div>=C2=A0</div><div>I=
-&#39;ll defer to those who understand DCO better to ACK the technical part.=
-</div><div><br></div><div>Selva</div></div></div></div>
-
---00000000000001895b05f40c0867--
 
