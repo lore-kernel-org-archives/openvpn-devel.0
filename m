@@ -1,12 +1,10 @@
-MIME-Version: 1.0
-References: <20230203191440.136050-4-frank@...2641...>
- <20230207134333.52221-1-frank@...2641...>
-In-Reply-To: <20230207134333.52221-1-frank@...2641...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 7 Feb 2023 17:10:23 +0200
-Message-ID: <CAGyAFMWeYUjeSHhhb_xMFZyAiC6JevQDRY7anE=67r0t9-3jWQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2 3/5] Windows: fix wrong printf format
- in x_check_status
+Date: Tue, 7 Feb 2023 17:22:31 +0100 (CET)
+Message-Id: <202302071622.317GMVeP058309@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230203191440.136050-2-frank@...2641...>
+References: <20230203191440.136050-2-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Windows: fix unused function
+ setenv_foreign_option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,101 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Looks good, looked at the code test-compiled in MSVC.
+Tested on plain linux (which needs setenv_foreign_option) and MingW 
+(which no longer warns) compile.  Trivial enough.
 
-Acked-by: Lev Stipakov <lstipakov@...277...>
+Your patch has been applied to the master and release/2.6 branch.
 
-ti 7. helmik. 2023 klo 15.44 Frank Lichtenheld (frank@...2641...)
-kirjoitti:
->
-> Relevant defines/typedefs:
-> typedef UINT_PTR        SOCKET;
-> if defined(_WIN64)
->  typedef unsigned __int64 UINT_PTR;
-> else
->  typedef unsigned int UINT_PTR;
-> endif
-> ifdef _WIN64
->  define PRIuPTR  PRIu64
-> else
->  define PRIuPTR  PRIu32
-> endif
->
-> Remove duplicated include of inttypes.h
->
-> Signed-off-by: Frank Lichtenheld <frank@...2641...>
-> ---
->  src/openvpn/error.c   | 4 ++--
->  src/openvpn/syshead.h | 3 ++-
->  2 files changed, 4 insertions(+), 3 deletions(-)
->
-> v2:
->  - use PRIuPTR as discussed on IRC (added relevant defines to
->    commit message)
->  - remove redundant include for inttypes.h from syshead.h
->
-> diff --git a/src/openvpn/error.c b/src/openvpn/error.c
-> index 89a08cec..a2c9aa4c 100644
-> --- a/src/openvpn/error.c
-> +++ b/src/openvpn/error.c
-> @@ -695,14 +695,14 @@ x_check_status(int status,
->          {
->              if (extended_msg)
->              {
-> -                msg(x_cs_info_level, "%s %s [%s]: %s (fd=%d,code=%d)", description,
-> +                msg(x_cs_info_level, "%s %s [%s]: %s (fd=" SOCKET_PRINTF ",code=%d)", description,
->                      sock ? proto2ascii(sock->info.proto, sock->info.af, true) : "",
->                      extended_msg, openvpn_strerror(my_errno, crt_error, &gc),
->                      sock ? sock->sd : -1, my_errno);
->              }
->              else
->              {
-> -                msg(x_cs_info_level, "%s %s: %s (fd=%d,code=%d)", description,
-> +                msg(x_cs_info_level, "%s %s: %s (fd=" SOCKET_PRINTF ",code=%d)", description,
->                      sock ? proto2ascii(sock->info.proto, sock->info.af, true) : "",
->                      openvpn_strerror(my_errno, crt_error, &gc),
->                      sock ? sock->sd : -1, my_errno);
-> diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-> index fe91bc11..12ccf2f4 100644
-> --- a/src/openvpn/syshead.h
-> +++ b/src/openvpn/syshead.h
-> @@ -48,7 +48,6 @@
->  #ifdef _MSC_VER /* Visual Studio */
->  #define __func__ __FUNCTION__
->  #define __attribute__(x)
-> -#include <inttypes.h>
->  #endif
->
->  #if defined(__APPLE__)
-> @@ -442,9 +441,11 @@ typedef unsigned short sa_family_t;
->   */
->  #ifdef _WIN32
->  #define SOCKET_UNDEFINED (INVALID_SOCKET)
-> +#define SOCKET_PRINTF "%" PRIuPTR
->  typedef SOCKET socket_descriptor_t;
->  #else
->  #define SOCKET_UNDEFINED (-1)
-> +#define SOCKET_PRINTF "%d"
->  typedef int socket_descriptor_t;
->  #endif
->
-> --
-> 2.34.1
->
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+commit 8aeec3aa36873489d3e708ae694c57e59b4302ef (master)
+commit b9d35055eae676790f3bc214c00a01f756b0cd55 (release/2.6)
+Author: Frank Lichtenheld
+Date:   Fri Feb 3 20:14:36 2023 +0100
+
+     Windows: fix unused function setenv_foreign_option
+
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20230203191440.136050-2-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26145.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
+--
+kind regards,
 
--- 
--Lev
+Gert Doering
+
 
