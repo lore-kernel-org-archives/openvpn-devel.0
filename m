@@ -1,10 +1,13 @@
-Date: Tue, 7 Feb 2023 17:59:06 +0100 (CET)
-Message-Id: <202302071659.317Gx6xJ059173@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230203191440.136050-5-frank@...2641...>
-References: <20230203191440.136050-5-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Windows: fix unused variable in
- win32_get_arch
+Message-ID: <973bf6f5-1fb7-2c05-b840-8d7d85129ce6@...1227...>
+Date: Tue, 7 Feb 2023 18:00:12 +0100
+MIME-Version: 1.0
+Content-Language: en-GB
+References: <20230130161730.110021-1-gert@...1296...>
+ <20230201141518.119157-1-gert@...1296...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20230201141518.119157-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH v3] Get rid of unused 'bool
+ tuntap_buffer' arguments.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +16,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-"Clear enough", indeed.  Test compiled on MinGW.
+Am 01.02.23 um 15:15 schrieb Gert Doering:
+> overlapped_io_init() has a "bool tuntap_buffer" argument which is only
+> passed onwards to alloc_buf_sock_tun(), which does nothing with it.
+> 
+> Remove from both functions.
+> 
+> v2:
+>    move alloc_buf_sock_tun() to win32.c
+> 
+> v3:
+>    leave alloc_buf_sock_tun() where it is, and fix non-WIN32 call from socket.c
 
-Your patch has been applied to the master and release/2.6 branch.
-
-commit 2dc2d16559b41d56f662d7cd69ea547e804e27b8 (master)
-commit 4718af50bb7b5a913ae4befb2d3a8dd338b3eb74 (release/2.6)
-Author: Frank Lichtenheld
-Date:   Fri Feb 3 20:14:39 2023 +0100
-
-     Windows: fix unused variable in win32_get_arch
-
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20230203191440.136050-5-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26141.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Acked-By: Arne Schwabe <arne@...1227...>
 
