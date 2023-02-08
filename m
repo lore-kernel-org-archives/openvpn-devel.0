@@ -1,11 +1,15 @@
-From: selva.nair@...277...
-Date: Tue,  7 Feb 2023 19:59:25 -0500
-Message-Id: <20230208005925.393200-1-selva.nair@...277...>
-In-Reply-To: <20230208001819.244694-3-arne@...1227...>
-References: <20230208001819.244694-3-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3 2/3] Build unit tests in mingw Windows
- build
+References: <20230204004512.250271-2-selva.nair@...277...>
+ <20230204064010.257925-1-selva.nair@...277...>
+ <20230204064010.257925-2-selva.nair@...277...>
+ <74a4194f-2d86-2bce-195b-0cae9f294597@...1227...>
+In-Reply-To: <74a4194f-2d86-2bce-195b-0cae9f294597@...1227...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 7 Feb 2023 20:05:10 -0500
+Message-ID: <CAKuzo_g3LBd0Ss7DN7MT-D8040FvRUs__093RXG7sWAJAhOxaw@...278...>
+Content-Type: multipart/alternative; boundary="00000000000014ad4205f425dc48"
+Subject: Re: [Openvpn-devel] [PATCH v2 3/3] Add a unit test for functions in
+ cryptoapi.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,223 +18,118 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+--00000000000014ad4205f425dc48
+Content-Type: text/plain; charset="UTF-8"
 
-- Minor changes to the build system to include some
-  dependencies for Windows build
+Hi,
 
-- test_tls_crypt not built as it will pull in win32.c and
-  its dependencies
+On Tue, Feb 7, 2023 at 7:18 PM Arne Schwabe <arne@...1227...> wrote:
 
-- If cross-compiling, "make check" will only build the tests but not
-  run any. Copy to Windows and run manually. Executables are in
-  <buid-dir>/tests/unit_tests/openvpn/.libs/ and these depend on
-  cmocka.dll in addition to openssl libs that some tests link to.
+> Am 04.02.23 um 07:40 schrieb selva.nair@...277...:
+> > From: Selva Nair <selva.nair@...277...>
+> >
+> > - Though named cryptoapi_testdriver, right now this only tests
+> >    parsing of thumbprint specified as a selector for --cryptioapicert
+> >    option. More tests coming..
+> >
+> > v2: a line that belongs here was mistakenly included in the previous
+> > commit. Corrected.
+> >
+> > Signed-off-by: Selva Nair <selva.nair@...277...>
+>
+> While a good step, this still has problems. With OpenSSL 1.1.1 it still
+> tries to run the check-engine.sh script and unsurprisingly fails:
+>
+> ---- begin log.txt ----
+> ./check_engine_keys.sh: 25: ../../../src/openvpn/openvpn: not found
+> --- end log.txt ---
+> Key mismatch not detected
+> FAIL: check_engine_keys.sh
+>
+> This can be fixed by:
+>
+> --- a/tests/unit_tests/engine-key/Makefile.am
+> +++ b/tests/unit_tests/engine-key/Makefile.am
+> @@ -12,7 +12,9 @@ TESTS_ENVIRONMENT = srcdir="$(abs_srcdir)"; \
+>          top_srcdir="$(top_srcdir)"; \
+>          export srcdir builddir top_builddir top_srcdir;
+>
+> +if !CROSS_COMPILING
+>   TESTS = check_engine_keys.sh
+> +endif
+>   check_engine_keys.sh: $(conffiles)
+>
+>   CLEANFILES = \
+>
 
-  Building with mingw on Windows should run the tests (untested).
+Thanks for this. I added this to 2/3 where it belongs and submitted it as
+v3 2/3. With that, this patch should be okay as is.
 
-v2: networking_testdriver was mistakenly enabled to run, while
-originally it was only set to build. Corrected.
+For those not following closely, this patch  should be applied after the
+cryptoapi patch set where the function being tested here is introduced.
 
-v3: exclude check_engine_keys.sh when cross-compiling
-As suggested by Arne Schwabe <arne@...1227...>
+Selva
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- configure.ac                              |  2 ++
- tests/Makefile.am                         |  2 ++
- tests/unit_tests/engine-key/Makefile.am   |  2 ++
- tests/unit_tests/example_test/Makefile.am |  2 ++
- tests/unit_tests/openvpn/Makefile.am      | 28 +++++++++++++++++++----
- 5 files changed, 31 insertions(+), 5 deletions(-)
+--00000000000014ad4205f425dc48
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/configure.ac b/configure.ac
-index 95d795c3..66ba6f38 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -364,6 +364,8 @@ case "$host" in
- 		;;
- esac
- 
-+AM_CONDITIONAL([CROSS_COMPILING], test "${cross_compiling}" = "yes")
-+
- PKG_PROG_PKG_CONFIG
- AC_PROG_CPP
- AC_PROG_INSTALL
-diff --git a/tests/Makefile.am b/tests/Makefile.am
-index 87dd7e17..a46f2573 100644
---- a/tests/Makefile.am
-+++ b/tests/Makefile.am
-@@ -14,10 +14,12 @@ MAINTAINERCLEANFILES = \
- 
- SUBDIRS = unit_tests
- 
-+if !WIN32
- test_scripts = t_client.sh t_lpback.sh t_cltsrv.sh
- if HAVE_SITNL
- test_scripts += t_net.sh
- endif
-+endif
- 
- TESTS_ENVIRONMENT = top_srcdir="$(top_srcdir)"
- TESTS = $(test_scripts)
-diff --git a/tests/unit_tests/engine-key/Makefile.am b/tests/unit_tests/engine-key/Makefile.am
-index 24622251..0c288857 100644
---- a/tests/unit_tests/engine-key/Makefile.am
-+++ b/tests/unit_tests/engine-key/Makefile.am
-@@ -12,7 +12,9 @@ TESTS_ENVIRONMENT = srcdir="$(abs_srcdir)"; \
- 	top_srcdir="$(top_srcdir)"; \
- 	export srcdir builddir top_builddir top_srcdir;
- 
-+if !CROSS_COMPILING
- TESTS = check_engine_keys.sh
-+endif
- check_engine_keys.sh: $(conffiles)
- 
- CLEANFILES = \
-diff --git a/tests/unit_tests/example_test/Makefile.am b/tests/unit_tests/example_test/Makefile.am
-index 04a5ad35..24eb0ba1 100644
---- a/tests/unit_tests/example_test/Makefile.am
-+++ b/tests/unit_tests/example_test/Makefile.am
-@@ -2,7 +2,9 @@ AUTOMAKE_OPTIONS = foreign
- 
- check_PROGRAMS = example_testdriver example2_testdriver
- 
-+if !CROSS_COMPILING
- TESTS = $(check_PROGRAMS)
-+endif
- 
- example_testdriver_CFLAGS  = @TEST_CFLAGS@
- example_testdriver_LDFLAGS = @TEST_LDFLAGS@
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index 7720a85d..8d2386e0 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -7,14 +7,22 @@ test_binaries += argv_testdriver buffer_testdriver
- endif
- 
- test_binaries += crypto_testdriver packet_id_testdriver auth_token_testdriver ncp_testdriver misc_testdriver \
--    pkt_testdriver
-+	pkt_testdriver
- if HAVE_LD_WRAP_SUPPORT
-+if !WIN32
- test_binaries += tls_crypt_testdriver
- endif
-+endif
- 
- test_binaries += provider_testdriver
- 
-+if WIN32
-+LDADD = -lws2_32
-+endif
-+
-+if !CROSS_COMPILING
- TESTS = $(test_binaries)
-+endif
- check_PROGRAMS = $(test_binaries)
- 
- if HAVE_SITNL
-@@ -31,12 +39,14 @@ argv_testdriver_SOURCES = test_argv.c mock_msg.c mock_msg.h \
- 	mock_get_random.c \
- 	$(openvpn_srcdir)/platform.c \
- 	$(openvpn_srcdir)/buffer.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/argv.c
- 
- buffer_testdriver_CFLAGS  = @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(compat_srcdir)
- buffer_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(openvpn_srcdir) -Wl,--wrap=parse_line
- buffer_testdriver_SOURCES = test_buffer.c mock_msg.c mock_msg.h \
- 	mock_get_random.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/platform.c
- 
- crypto_testdriver_CFLAGS  = @TEST_CFLAGS@ \
-@@ -51,6 +61,7 @@ crypto_testdriver_SOURCES = test_crypto.c mock_msg.c mock_msg.h \
- 	$(openvpn_srcdir)/packet_id.c \
- 	$(openvpn_srcdir)/platform.c \
- 	$(openvpn_srcdir)/mtu.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/mss.c
- 
- packet_id_testdriver_CFLAGS  = @TEST_CFLAGS@ \
-@@ -63,14 +74,14 @@ packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c mock_msg.h \
- 	$(openvpn_srcdir)/packet_id.c \
- 	$(openvpn_srcdir)/platform.c \
- 	$(openvpn_srcdir)/reliable.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/session_id.c
- 
--
- pkt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
- pkt_testdriver_LDFLAGS = @TEST_LDFLAGS@
- pkt_testdriver_SOURCES = test_pkt.c mock_msg.c mock_msg.h \
--$(openvpn_srcdir)/argv.c \
-+	$(openvpn_srcdir)/argv.c \
- 	$(openvpn_srcdir)/base64.c \
- 	$(openvpn_srcdir)/buffer.c \
- 	$(openvpn_srcdir)/crypto.c \
-@@ -84,9 +95,10 @@ $(openvpn_srcdir)/argv.c \
- 	$(openvpn_srcdir)/run_command.c \
- 	$(openvpn_srcdir)/session_id.c \
- 	$(openvpn_srcdir)/ssl_pkt.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/tls_crypt.c
- 
--
-+if !WIN32
- tls_crypt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
- tls_crypt_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
-@@ -106,6 +118,7 @@ tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c mock_msg.h \
- 	$(openvpn_srcdir)/packet_id.c \
- 	$(openvpn_srcdir)/platform.c \
- 	$(openvpn_srcdir)/run_command.c
-+endif
- 
- if HAVE_SITNL
- networking_testdriver_CFLAGS = @TEST_CFLAGS@ \
-@@ -136,6 +149,7 @@ provider_testdriver_SOURCES = test_provider.c mock_msg.c \
- 	$(openvpn_srcdir)/buffer.c \
- 	$(openvpn_srcdir)/base64.c \
- 	mock_get_random.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/platform.c
- 
- auth_token_testdriver_CFLAGS  = @TEST_CFLAGS@ \
-@@ -152,6 +166,7 @@ auth_token_testdriver_SOURCES = test_auth_token.c mock_msg.c \
- 	$(openvpn_srcdir)/otime.c \
- 	$(openvpn_srcdir)/packet_id.c \
- 	$(openvpn_srcdir)/platform.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/base64.c
- 
- 
-@@ -169,6 +184,8 @@ ncp_testdriver_SOURCES = test_ncp.c mock_msg.c \
- 	$(openvpn_srcdir)/otime.c \
- 	$(openvpn_srcdir)/packet_id.c \
- 	$(openvpn_srcdir)/platform.c \
-+	$(openvpn_srcdir)/win32-util.c \
-+	$(compat_srcdir)/compat-strsep.c \
- 	$(openvpn_srcdir)/ssl_util.c
- 
- misc_testdriver_CFLAGS  = @TEST_CFLAGS@ \
-@@ -177,8 +194,9 @@ misc_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- misc_testdriver_LDFLAGS = @TEST_LDFLAGS@
- 
- misc_testdriver_SOURCES = test_misc.c mock_msg.c \
--    mock_get_random.c \
-+	mock_get_random.c \
- 	$(openvpn_srcdir)/buffer.c \
- 	$(openvpn_srcdir)/options_util.c \
- 	$(openvpn_srcdir)/ssl_util.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/platform.c
--- 
-2.34.1
+<div dir=3D"ltr"><div>Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"l=
+tr" class=3D"gmail_attr">On Tue, Feb 7, 2023 at 7:18 PM Arne Schwabe &lt;<a=
+ href=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1227...</a>&gt; =
+wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0=
+px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Am 04.02.=
+23 um 07:40 schrieb <a href=3D"mailto:selva.nair@...277..." target=3D"_blan=
+k">selva.nair@...277...</a>:<br>
+&gt; From: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." target=3D=
+"_blank">selva.nair@...277...</a>&gt;<br>
+&gt; <br>
+&gt; - Though named cryptoapi_testdriver, right now this only tests<br>
+&gt;=C2=A0 =C2=A0 parsing of thumbprint specified as a selector for --crypt=
+ioapicert<br>
+&gt;=C2=A0 =C2=A0 option. More tests coming..<br>
+&gt; <br>
+&gt; v2: a line that belongs here was mistakenly included in the previous<b=
+r>
+&gt; commit. Corrected.<br>
+&gt; <br>
+&gt; Signed-off-by: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." =
+target=3D"_blank">selva.nair@...277...</a>&gt;<br>
+<br>
+While a good step, this still has problems. With OpenSSL 1.1.1 it still <br>
+tries to run the check-engine.sh script and unsurprisingly fails:<br>
+<br>
+---- begin log.txt ----<br>
+./check_engine_keys.sh: 25: ../../../src/openvpn/openvpn: not found<br>
+--- end log.txt ---<br>
+Key mismatch not detected<br>
+FAIL: check_engine_keys.sh<br>
+<br>
+This can be fixed by:<br>
+<br>
+--- a/tests/unit_tests/engine-key/Makefile.am<br>
++++ b/tests/unit_tests/engine-key/Makefile.am<br>
+@@ -12,7 +12,9 @@ TESTS_ENVIRONMENT =3D srcdir=3D&quot;$(abs_srcdir)&quot;;=
+ \<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0top_srcdir=3D&quot;$(top_srcdir)&quot;; \=
+<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0export srcdir builddir top_builddir top_s=
+rcdir;<br>
+<br>
++if !CROSS_COMPILING<br>
+=C2=A0 TESTS =3D check_engine_keys.sh<br>
++endif<br>
+=C2=A0 check_engine_keys.sh: $(conffiles)<br>
+<br>
+=C2=A0 CLEANFILES =3D \<br></blockquote><div><br></div><div>Thanks for this=
+. I added this to 2/3 where it belongs and submitted it as v3 2/3. With tha=
+t, this patch should be okay as is.=C2=A0</div><div><br></div><div>For thos=
+e not following closely, this patch=C2=A0 should be applied after the crypt=
+oapi patch set where the function being tested here is introduced.</div><di=
+v><br></div><div>Selva</div></div></div>
 
+--00000000000014ad4205f425dc48--
 
