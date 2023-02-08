@@ -1,13 +1,11 @@
+From: selva.nair@...277...
+Date: Tue,  7 Feb 2023 19:59:25 -0500
+Message-Id: <20230208005925.393200-1-selva.nair@...277...>
+In-Reply-To: <20230208001819.244694-3-arne@...1227...>
+References: <20230208001819.244694-3-arne@...1227...>
 MIME-Version: 1.0
-References: <20230208001819.244694-1-arne@...1227...>
- <20230208001819.244694-2-arne@...1227...>
-In-Reply-To: <20230208001819.244694-2-arne@...1227...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 7 Feb 2023 19:40:00 -0500
-Message-ID: <CAKuzo_gqTixNXNbTG+PfYOm2i7WcUtzKZjbL4vTQvh_x_5gCRw@...278...>
-Content-Type: multipart/alternative; boundary="0000000000000db88905f4258278"
-Subject: Re: [Openvpn-devel] [PATCH 1/5] Conditionally add subdir-objects
- option to automake
+Subject: [Openvpn-devel] [PATCH v3 2/3] Build unit tests in mingw Windows
+ build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,91 +14,223 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---0000000000000db88905f4258278
-Content-Type: text/plain; charset="UTF-8"
+From: Selva Nair <selva.nair@...277...>
 
-On Tue, Feb 7, 2023 at 7:18 PM Arne Schwabe <arne@...1227...> wrote:
+- Minor changes to the build system to include some
+  dependencies for Windows build
 
-> From: Selva Nair <selva.nair@...277...>
->
-> - Eliminates repeated warnings such as
->   warning: source file '$(openvpn_srcdir)/env_set.c' is in a subdirectory,
->   but option 'subdir-objects' is disabled
-> - Enabled only for automake >= 1.16 as older versions have a buggy
-> implementation
->   of this option
->
-> Main side effect of this option is that object files like
-> openvpnserv-blockdns.o
-> are now created in src/openvpn where block-dns.c resides instead of in
-> src/openvpnserv. Same for object files for sources from $(openvpn_srcdir)
-> compiled
-> into test executables.
->
-> See also past discussion on this topic:
->
-> https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg00013.html
->
-> Signed-off-by: Selva Nair <selva.nair@...277...>
-> Signed-off-by: Arne Schwabe <arne@...1227...>
->
+- test_tls_crypt not built as it will pull in win32.c and
+  its dependencies
 
-I'm a bit confused here -- it seems you have made some edits to my patch
-(signed-off), but not clear what has changed.
+- If cross-compiling, "make check" will only build the tests but not
+  run any. Copy to Windows and run manually. Executables are in
+  <buid-dir>/tests/unit_tests/openvpn/.libs/ and these depend on
+  cmocka.dll in addition to openssl libs that some tests link to.
 
-As for my original 3/3, I will add your fix for engine-test and submit as
-v3 -- thanks for working on this.
+  Building with mingw on Windows should run the tests (untested).
 
-I've no idea why libtool adds that wrong line break in its wrapper script
-on OSX.
+v2: networking_testdriver was mistakenly enabled to run, while
+originally it was only set to build. Corrected.
 
-Selva
+v3: exclude check_engine_keys.sh when cross-compiling
+As suggested by Arne Schwabe <arne@...1227...>
 
---0000000000000db88905f4258278
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ configure.ac                              |  2 ++
+ tests/Makefile.am                         |  2 ++
+ tests/unit_tests/engine-key/Makefile.am   |  2 ++
+ tests/unit_tests/example_test/Makefile.am |  2 ++
+ tests/unit_tests/openvpn/Makefile.am      | 28 +++++++++++++++++++----
+ 5 files changed, 31 insertions(+), 5 deletions(-)
 
-<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
-<div dir=3D"ltr" class=3D"gmail_attr">On Tue, Feb 7, 2023 at 7:18 PM Arne S=
-chwabe &lt;<a href=3D"mailto:arne@...1227...">arne@...1227...</a>&gt; wrote=
-:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.=
-8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">From: Selva Na=
-ir &lt;<a href=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair=
-@...277...</a>&gt;<br>
-<br>
-- Eliminates repeated warnings such as<br>
-=C2=A0 warning: source file &#39;$(openvpn_srcdir)/env_set.c&#39; is in a s=
-ubdirectory,<br>
-=C2=A0 but option &#39;subdir-objects&#39; is disabled<br>
-- Enabled only for automake &gt;=3D 1.16 as older versions have a buggy imp=
-lementation<br>
-=C2=A0 of this option<br>
-<br>
-Main side effect of this option is that object files like openvpnserv-block=
-dns.o<br>
-are now created in src/openvpn where block-dns.c resides instead of in<br>
-src/openvpnserv. Same for object files for sources from $(openvpn_srcdir) c=
-ompiled<br>
-into test executables.<br>
-<br>
-See also past discussion on this topic:<br>
-=C2=A0 <a href=3D"https://www.mail-archive.com/openvpn-devel@...1357...=
-rge.net/msg00013.html" rel=3D"noreferrer" target=3D"_blank">https://www.mai=
-l-archive.com/openvpn-devel@lists.sourceforge.net/msg00013.html</a><br>
-<br>
-Signed-off-by: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." targe=
-t=3D"_blank">selva.nair@...277...</a>&gt;<br>
-Signed-off-by: Arne Schwabe &lt;<a href=3D"mailto:arne@...1227..." target=
-=3D"_blank">arne@...1227...</a>&gt;<br></blockquote><div><br></div><div>I&#=
-39;m a bit confused here -- it seems you have made some edits to my patch (=
-signed-off), but not clear what has changed.</div><div><br></div><div>As fo=
-r my original 3/3, I will add your fix for engine-test and submit as v3 -- =
-thanks for working=C2=A0on this.=C2=A0</div><div><br></div><div>I&#39;ve no=
- idea why libtool adds that wrong line break in its wrapper script on OSX.<=
-/div><div><br></div><div>Selva</div></div></div>
+diff --git a/configure.ac b/configure.ac
+index 95d795c3..66ba6f38 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -364,6 +364,8 @@ case "$host" in
+ 		;;
+ esac
+ 
++AM_CONDITIONAL([CROSS_COMPILING], test "${cross_compiling}" = "yes")
++
+ PKG_PROG_PKG_CONFIG
+ AC_PROG_CPP
+ AC_PROG_INSTALL
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index 87dd7e17..a46f2573 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -14,10 +14,12 @@ MAINTAINERCLEANFILES = \
+ 
+ SUBDIRS = unit_tests
+ 
++if !WIN32
+ test_scripts = t_client.sh t_lpback.sh t_cltsrv.sh
+ if HAVE_SITNL
+ test_scripts += t_net.sh
+ endif
++endif
+ 
+ TESTS_ENVIRONMENT = top_srcdir="$(top_srcdir)"
+ TESTS = $(test_scripts)
+diff --git a/tests/unit_tests/engine-key/Makefile.am b/tests/unit_tests/engine-key/Makefile.am
+index 24622251..0c288857 100644
+--- a/tests/unit_tests/engine-key/Makefile.am
++++ b/tests/unit_tests/engine-key/Makefile.am
+@@ -12,7 +12,9 @@ TESTS_ENVIRONMENT = srcdir="$(abs_srcdir)"; \
+ 	top_srcdir="$(top_srcdir)"; \
+ 	export srcdir builddir top_builddir top_srcdir;
+ 
++if !CROSS_COMPILING
+ TESTS = check_engine_keys.sh
++endif
+ check_engine_keys.sh: $(conffiles)
+ 
+ CLEANFILES = \
+diff --git a/tests/unit_tests/example_test/Makefile.am b/tests/unit_tests/example_test/Makefile.am
+index 04a5ad35..24eb0ba1 100644
+--- a/tests/unit_tests/example_test/Makefile.am
++++ b/tests/unit_tests/example_test/Makefile.am
+@@ -2,7 +2,9 @@ AUTOMAKE_OPTIONS = foreign
+ 
+ check_PROGRAMS = example_testdriver example2_testdriver
+ 
++if !CROSS_COMPILING
+ TESTS = $(check_PROGRAMS)
++endif
+ 
+ example_testdriver_CFLAGS  = @TEST_CFLAGS@
+ example_testdriver_LDFLAGS = @TEST_LDFLAGS@
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index 7720a85d..8d2386e0 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -7,14 +7,22 @@ test_binaries += argv_testdriver buffer_testdriver
+ endif
+ 
+ test_binaries += crypto_testdriver packet_id_testdriver auth_token_testdriver ncp_testdriver misc_testdriver \
+-    pkt_testdriver
++	pkt_testdriver
+ if HAVE_LD_WRAP_SUPPORT
++if !WIN32
+ test_binaries += tls_crypt_testdriver
+ endif
++endif
+ 
+ test_binaries += provider_testdriver
+ 
++if WIN32
++LDADD = -lws2_32
++endif
++
++if !CROSS_COMPILING
+ TESTS = $(test_binaries)
++endif
+ check_PROGRAMS = $(test_binaries)
+ 
+ if HAVE_SITNL
+@@ -31,12 +39,14 @@ argv_testdriver_SOURCES = test_argv.c mock_msg.c mock_msg.h \
+ 	mock_get_random.c \
+ 	$(openvpn_srcdir)/platform.c \
+ 	$(openvpn_srcdir)/buffer.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/argv.c
+ 
+ buffer_testdriver_CFLAGS  = @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(compat_srcdir)
+ buffer_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(openvpn_srcdir) -Wl,--wrap=parse_line
+ buffer_testdriver_SOURCES = test_buffer.c mock_msg.c mock_msg.h \
+ 	mock_get_random.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/platform.c
+ 
+ crypto_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+@@ -51,6 +61,7 @@ crypto_testdriver_SOURCES = test_crypto.c mock_msg.c mock_msg.h \
+ 	$(openvpn_srcdir)/packet_id.c \
+ 	$(openvpn_srcdir)/platform.c \
+ 	$(openvpn_srcdir)/mtu.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/mss.c
+ 
+ packet_id_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+@@ -63,14 +74,14 @@ packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c mock_msg.h \
+ 	$(openvpn_srcdir)/packet_id.c \
+ 	$(openvpn_srcdir)/platform.c \
+ 	$(openvpn_srcdir)/reliable.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/session_id.c
+ 
+-
+ pkt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+ 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
+ pkt_testdriver_LDFLAGS = @TEST_LDFLAGS@
+ pkt_testdriver_SOURCES = test_pkt.c mock_msg.c mock_msg.h \
+-$(openvpn_srcdir)/argv.c \
++	$(openvpn_srcdir)/argv.c \
+ 	$(openvpn_srcdir)/base64.c \
+ 	$(openvpn_srcdir)/buffer.c \
+ 	$(openvpn_srcdir)/crypto.c \
+@@ -84,9 +95,10 @@ $(openvpn_srcdir)/argv.c \
+ 	$(openvpn_srcdir)/run_command.c \
+ 	$(openvpn_srcdir)/session_id.c \
+ 	$(openvpn_srcdir)/ssl_pkt.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/tls_crypt.c
+ 
+-
++if !WIN32
+ tls_crypt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+ 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
+ tls_crypt_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
+@@ -106,6 +118,7 @@ tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c mock_msg.h \
+ 	$(openvpn_srcdir)/packet_id.c \
+ 	$(openvpn_srcdir)/platform.c \
+ 	$(openvpn_srcdir)/run_command.c
++endif
+ 
+ if HAVE_SITNL
+ networking_testdriver_CFLAGS = @TEST_CFLAGS@ \
+@@ -136,6 +149,7 @@ provider_testdriver_SOURCES = test_provider.c mock_msg.c \
+ 	$(openvpn_srcdir)/buffer.c \
+ 	$(openvpn_srcdir)/base64.c \
+ 	mock_get_random.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/platform.c
+ 
+ auth_token_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+@@ -152,6 +166,7 @@ auth_token_testdriver_SOURCES = test_auth_token.c mock_msg.c \
+ 	$(openvpn_srcdir)/otime.c \
+ 	$(openvpn_srcdir)/packet_id.c \
+ 	$(openvpn_srcdir)/platform.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/base64.c
+ 
+ 
+@@ -169,6 +184,8 @@ ncp_testdriver_SOURCES = test_ncp.c mock_msg.c \
+ 	$(openvpn_srcdir)/otime.c \
+ 	$(openvpn_srcdir)/packet_id.c \
+ 	$(openvpn_srcdir)/platform.c \
++	$(openvpn_srcdir)/win32-util.c \
++	$(compat_srcdir)/compat-strsep.c \
+ 	$(openvpn_srcdir)/ssl_util.c
+ 
+ misc_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+@@ -177,8 +194,9 @@ misc_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+ misc_testdriver_LDFLAGS = @TEST_LDFLAGS@
+ 
+ misc_testdriver_SOURCES = test_misc.c mock_msg.c \
+-    mock_get_random.c \
++	mock_get_random.c \
+ 	$(openvpn_srcdir)/buffer.c \
+ 	$(openvpn_srcdir)/options_util.c \
+ 	$(openvpn_srcdir)/ssl_util.c \
++	$(openvpn_srcdir)/win32-util.c \
+ 	$(openvpn_srcdir)/platform.c
+-- 
+2.34.1
 
---0000000000000db88905f4258278--
 
