@@ -1,16 +1,13 @@
-Message-ID: <b1504d9e-32af-28d5-7279-43034a2f3129@...1227...>
-Date: Wed, 8 Feb 2023 12:16:50 +0100
+Message-ID: <a3cf4f5e-292a-0756-a2cc-61c6584371d4@...1227...>
+Date: Wed, 8 Feb 2023 12:41:07 +0100
 MIME-Version: 1.0
 Content-Language: en-GB
-References: <20230204004512.250271-2-selva.nair@...277...>
- <20230204064010.257925-1-selva.nair@...277...>
- <20230204064010.257925-2-selva.nair@...277...>
- <74a4194f-2d86-2bce-195b-0cae9f294597@...1227...>
- <CAKuzo_g3LBd0Ss7DN7MT-D8040FvRUs__093RXG7sWAJAhOxaw@...278...>
+References: <20230208001819.244694-3-arne@...1227...>
+ <20230208005925.393200-1-selva.nair@...277...>
 From: Arne Schwabe <arne@...1227...>
-In-Reply-To: <CAKuzo_g3LBd0Ss7DN7MT-D8040FvRUs__093RXG7sWAJAhOxaw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2 3/3] Add a unit test for functions in
- cryptoapi.c
+In-Reply-To: <20230208005925.393200-1-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v3 2/3] Build unit tests in mingw
+ Windows build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,67 +16,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 
-Am 08.02.23 um 02:05 schrieb Selva Nair:
-> Hi,
+Am 08.02.23 um 01:59 schrieb selva.nair@...277...:
+> From: Selva Nair <selva.nair@...277...>
 > 
-> On Tue, Feb 7, 2023 at 7:18 PM Arne Schwabe <arne@...1227... 
-> <mailto:arne@...1227...>> wrote:
+> - Minor changes to the build system to include some
+>    dependencies for Windows build
 > 
->     Am 04.02.23 um 07:40 schrieb selva.nair@...277...
->     <mailto:selva.nair@...277...>:
->      > From: Selva Nair <selva.nair@...277... <mailto:selva.nair@...277...>>
->      >
->      > - Though named cryptoapi_testdriver, right now this only tests
->      >    parsing of thumbprint specified as a selector for --cryptioapicert
->      >    option. More tests coming..
->      >
->      > v2: a line that belongs here was mistakenly included in the previous
->      > commit. Corrected.
->      >
->      > Signed-off-by: Selva Nair <selva.nair@...277...
->     <mailto:selva.nair@...277...>>
+> - test_tls_crypt not built as it will pull in win32.c and
+>    its dependencies
 > 
->     While a good step, this still has problems. With OpenSSL 1.1.1 it still
->     tries to run the check-engine.sh script and unsurprisingly fails:
+> - If cross-compiling, "make check" will only build the tests but not
+>    run any. Copy to Windows and run manually. Executables are in
+>    <buid-dir>/tests/unit_tests/openvpn/.libs/ and these depend on
+>    cmocka.dll in addition to openssl libs that some tests link to.
 > 
->     ---- begin log.txt ----
->     ./check_engine_keys.sh: 25: ../../../src/openvpn/openvpn: not found
->     --- end log.txt ---
->     Key mismatch not detected
->     FAIL: check_engine_keys.sh
+>    Building with mingw on Windows should run the tests (untested).
 > 
->     This can be fixed by:
+> v2: networking_testdriver was mistakenly enabled to run, while
+> originally it was only set to build. Corrected.
 > 
->     --- a/tests/unit_tests/engine-key/Makefile.am
->     +++ b/tests/unit_tests/engine-key/Makefile.am
->     @@ -12,7 +12,9 @@ TESTS_ENVIRONMENT = srcdir="$(abs_srcdir)"; \
->               top_srcdir="$(top_srcdir)"; \
->               export srcdir builddir top_builddir top_srcdir;
-> 
->     +if !CROSS_COMPILING
->        TESTS = check_engine_keys.sh
->     +endif
->        check_engine_keys.sh: $(conffiles)
-> 
->        CLEANFILES = \
-> 
-> 
-> Thanks for this. I added this to 2/3 where it belongs and submitted it 
-> as v3 2/3. With that, this patch should be okay as is.
-> 
-> For those not following closely, this patch  should be applied after the 
-> cryptoapi patch set where the function being tested here is introduced.
-> 
-> Selva
+> v3: exclude check_engine_keys.sh when cross-compiling
+> As suggested by Arne Schwabe <arne@...1227...>
 
-No, I think this that is independent. This is about the engine keys 
-support added by James Bottomley.  I needed and tested this patch 
-without the cryptoapi patch.
+
+Acked-By: Arne Schwabe <arne@...1227...>
 
 Arne
+
 
