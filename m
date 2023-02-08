@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed,  8 Feb 2023 01:18:16 +0100
-Message-Id: <20230208001819.244694-3-arne@...1227...>
+Date: Wed,  8 Feb 2023 01:18:19 +0100
+Message-Id: <20230208001819.244694-6-arne@...1227...>
 In-Reply-To: <20230208001819.244694-1-arne@...1227...>
 References: <20230208001819.244694-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 2/5] Build unit tests in mingw Windows
- build
+Subject: [Openvpn-devel] [PATCH 5/5] Add building and running mingw
+ unittests to github actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,202 +18,165 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
-
-- Minor changes to the build system to include some
-  dependencies for Windows build
-
-- test_tls_crypt not built as it will pull in win32.c and
-  its dependencies
-
-- If cross-compiling, "make check" will only build the tests but not
-  run any. Copy to Windows and run manually. Executables are in
-  <buid-dir>/tests/unit_tests/openvpn/.libs/ and these depend on
-  cmocka.dll in addition to openssl libs that some tests link to.
-
-  Building with mingw on Windows should run the tests (untested).
-
-v2: networking_testdriver was mistakenly enabled to run, while
-originally it was only set to build. Corrected.
-
-Signed-off-by: Selva Nair <selva.nair@...277...>
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- configure.ac                              |  2 ++
- tests/Makefile.am                         |  3 +++
- tests/unit_tests/example_test/Makefile.am |  2 ++
- tests/unit_tests/openvpn/Makefile.am      | 28 +++++++++++++++++++----
- 4 files changed, 30 insertions(+), 5 deletions(-)
+ .github/workflows/build.yaml | 110 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 108 insertions(+), 2 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index 95d795c33..66ba6f38d 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -364,6 +364,8 @@ case "$host" in
- 		;;
- esac
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 132624547..c71bd2c4d 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -55,9 +55,10 @@ jobs:
+       PKCS11_HELPER_VERSION: "1.29.0"
+       OPENSSL_VERSION: "${{ matrix.osslver }}"
+       TAP_WINDOWS_VERSION: "9.23.3"
++      CMOCKA_VERSION: "1.1.5"
+     steps:
+       - name: Install dependencies
+-        run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip
++        run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip cmake ninja-build build-essential wget
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2689...
+         with:
+@@ -72,7 +73,7 @@ jobs:
+         uses: actions/cache@...2689...
+         with:
+           path: '~/mingw/'
+-          key: ${{ matrix.target }}-mingw-${{ matrix.osslver }}-${{ env.LZO_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSION }}
++          key: ${{ matrix.target }}-mingw-${{ matrix.osslver }}-${{ env.LZO_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSION }}--${{ env.CMOCKA_VERSION }}
  
-+AM_CONDITIONAL([CROSS_COMPILING], test "${cross_compiling}" = "yes")
+       # Repeating  if: steps.cache.outputs.cache-hit != 'true'
+       # on every step for building dependencies is ugly but
+@@ -84,12 +85,33 @@ jobs:
+           wget -c -P download-cache/ "https://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip"
+           wget -c -P download-cache/ "https://www.oberhumer.com/opensource/lzo/download/lzo-${LZO_VERSION}.tar.gz"
+           wget -c -P download-cache/ "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11-helper-${PKCS11_HELPER_VERSION}/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
++          wget -c -P download-cache/ "https://github.com/coreboot/cmocka/archive/refs/tags/cmocka-${CMOCKA_VERSION}.tar.gz"
+           tar jxf "download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
+           wget -c -P download-cache/ "https://www.openssl.org/source/old/1.1.1/openssl-${OPENSSL_VERSION}.tar.gz" || wget -c -P download-cache/ "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
+           tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
+           tar zxf "download-cache/lzo-${LZO_VERSION}.tar.gz"
++          tar zxf "download-cache/cmocka-${CMOCKA_VERSION}.tar.gz"
+           unzip download-cache/tap-windows-${TAP_WINDOWS_VERSION}.zip
+ 
++      - name: create cmocka build directory
++        if: steps.cache.outputs.cache-hit != 'true'
++        run: mkdir cmocka-build
 +
- PKG_PROG_PKG_CONFIG
- AC_PROG_CPP
- AC_PROG_INSTALL
-diff --git a/tests/Makefile.am b/tests/Makefile.am
-index 87dd7e17b..175a4eef6 100644
---- a/tests/Makefile.am
-+++ b/tests/Makefile.am
-@@ -14,10 +14,13 @@ MAINTAINERCLEANFILES = \
- 
- SUBDIRS = unit_tests
- 
-+if !WIN32
- test_scripts = t_client.sh t_lpback.sh t_cltsrv.sh
-+test_scripts = t_client.sh t_lpback.sh t_cltsrv.sh t_connection.sh
- if HAVE_SITNL
- test_scripts += t_net.sh
- endif
-+endif
- 
- TESTS_ENVIRONMENT = top_srcdir="$(top_srcdir)"
- TESTS = $(test_scripts)
-diff --git a/tests/unit_tests/example_test/Makefile.am b/tests/unit_tests/example_test/Makefile.am
-index 04a5ad356..24eb0ba18 100644
---- a/tests/unit_tests/example_test/Makefile.am
-+++ b/tests/unit_tests/example_test/Makefile.am
-@@ -2,7 +2,9 @@ AUTOMAKE_OPTIONS = foreign
- 
- check_PROGRAMS = example_testdriver example2_testdriver
- 
-+if !CROSS_COMPILING
- TESTS = $(check_PROGRAMS)
-+endif
- 
- example_testdriver_CFLAGS  = @TEST_CFLAGS@
- example_testdriver_LDFLAGS = @TEST_LDFLAGS@
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index 7720a85db..8d2386e08 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -7,14 +7,22 @@ test_binaries += argv_testdriver buffer_testdriver
- endif
- 
- test_binaries += crypto_testdriver packet_id_testdriver auth_token_testdriver ncp_testdriver misc_testdriver \
--    pkt_testdriver
-+	pkt_testdriver
- if HAVE_LD_WRAP_SUPPORT
-+if !WIN32
- test_binaries += tls_crypt_testdriver
- endif
-+endif
- 
- test_binaries += provider_testdriver
- 
-+if WIN32
-+LDADD = -lws2_32
-+endif
++      - name: configure cmocka
++        if: steps.cache.outputs.cache-hit != 'true'
++        working-directory: "./cmocka-build"
++        run: cmake -GNinja -DCMAKE_C_COMPILER=${{ matrix.chost }}-gcc -DCMAKE_CXX_COMPILER=${{ matrix.chost }}-g++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_PREFIX_PATH=${HOME}/mingw/opt/lib/pkgconfig/ -DCMAKE_INCLUDE_PATH=${HOME}/mingw/opt/lib/include -DCMAKE_LIBRARY_PATH=${HOME}/mingw/opt/lib -DCMAKE_INSTALL_PREFIX=${HOME}/mingw/opt/ ../cmocka-cmocka-${{ env.CMOCKA_VERSION }}
 +
-+if !CROSS_COMPILING
- TESTS = $(test_binaries)
-+endif
- check_PROGRAMS = $(test_binaries)
++      - name: build cmocka
++        if: steps.cache.outputs.cache-hit != 'true'
++        working-directory: "./cmocka-build"
++        run: ninja
++
++      - name: install cmocka
++        if: steps.cache.outputs.cache-hit != 'true'
++        working-directory: "./cmocka-build"
++        run: ninja install
++
+       - name: Configure OpenSSL
+         if: steps.cache.outputs.cache-hit != 'true'
+         run: ./Configure --cross-compile-prefix=${{ matrix.chost }}- shared ${{ matrix.target }} no-capieng --prefix="${HOME}/mingw/opt" --openssldir="${HOME}/mingw/opt" -static-libgcc
+@@ -154,6 +176,89 @@ jobs:
+       - name: build OpenVPN
+         run: make -j3
+         working-directory: openvpn
++      - name: build OpenVPN unittests
++        run: make -j3 check
++        working-directory: openvpn
++
++      # We use multiple upload-artifact here, so it becomes a flat folder
++      # structure since we need the ddls on the same level as the binaries
++      - name: Archive cmocka/openssl/lzo ddls
++        uses: actions/upload-artifact@...2689...
++        with:
++          retention-days: 1
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-dlls
++          path: '~/mingw/opt/bin/*.dll'
++
++      - name: Archive gcc dlls
++        uses: actions/upload-artifact@...2689...
++        with:
++          retention-days: 1
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-dlls
++          path: /usr/lib/gcc/${{ matrix.chost }}/10-win32/*.dll
++
++      - name: Archive mingw dlls
++        uses: actions/upload-artifact@...2689...
++        with:
++          retention-days: 1
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-dlls
++          path: /usr/${{ matrix.chost }}/lib/*.dll
++
++      # libtool puts some wrapper binaries in openvpn/tests/unit_tests/openvpn/
++      # and the real binaries in openvpn/tests/unit_tests/openvpn/.libs/
++      - name: Archive unittest artifacts
++        uses: actions/upload-artifact@...2689...
++        with:
++          retention-days: 1
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-tests
++          path: openvpn/tests/unit_tests/openvpn/.libs/*.exe
++
++      # Currently not used by the unit test but might in the future and also
++      # helpful if manually downloading and running openvpn.exe from a mingw
++      # build
++      - name: Archive openvpn binary
++        uses: actions/upload-artifact@...2689...
++        with:
++          retention-days: 1
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-tests
++          path: openvpn/src/openvpn/.libs/*.exe
++
++  mingw-unittest:
++    needs: [ mingw ]
++    strategy:
++      fail-fast: false
++      matrix:
++        osslver: [ 1.1.1q, 3.0.5 ]
++        target: [ mingw64, mingw ]
++
++    runs-on: windows-latest
++    name: "mingw unittests - ${{matrix.target}} - OSSL ${{ matrix.osslver }}"
++    steps:
++      - name: Retrieve mingw unittest dlls
++        uses: actions/download-artifact@...2689...
++        with:
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-dlls
++          path: unittests
++
++      - name: Retrieve mingw unittest
++        uses: actions/download-artifact@...2689...
++        with:
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-tests
++          path: unittests
++
++      - name: List unittests directory
++        run: "dir unittests"
++
++      - name: Run unit tests
++        run: |
++          ./unittests/argv_testdriver.exe
++          ./unittests/auth_token_testdriver.exe
++          ./unittests/buffer_testdriver.exe
++          ./unittests/crypto_testdriver.exe
++          ./unittests/misc_testdriver.exe
++          ./unittests/ncp_testdriver.exe
++          ./unittests/packet_id_testdriver.exe
++          ./unittests/pkt_testdriver.exe
++          ./unittests/provider_testdriver.exe
  
- if HAVE_SITNL
-@@ -31,12 +39,14 @@ argv_testdriver_SOURCES = test_argv.c mock_msg.c mock_msg.h \
- 	mock_get_random.c \
- 	$(openvpn_srcdir)/platform.c \
- 	$(openvpn_srcdir)/buffer.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/argv.c
- 
- buffer_testdriver_CFLAGS  = @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(compat_srcdir)
- buffer_testdriver_LDFLAGS = @TEST_LDFLAGS@ -L$(openvpn_srcdir) -Wl,--wrap=parse_line
- buffer_testdriver_SOURCES = test_buffer.c mock_msg.c mock_msg.h \
- 	mock_get_random.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/platform.c
- 
- crypto_testdriver_CFLAGS  = @TEST_CFLAGS@ \
-@@ -51,6 +61,7 @@ crypto_testdriver_SOURCES = test_crypto.c mock_msg.c mock_msg.h \
- 	$(openvpn_srcdir)/packet_id.c \
- 	$(openvpn_srcdir)/platform.c \
- 	$(openvpn_srcdir)/mtu.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/mss.c
- 
- packet_id_testdriver_CFLAGS  = @TEST_CFLAGS@ \
-@@ -63,14 +74,14 @@ packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c mock_msg.h \
- 	$(openvpn_srcdir)/packet_id.c \
- 	$(openvpn_srcdir)/platform.c \
- 	$(openvpn_srcdir)/reliable.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/session_id.c
- 
--
- pkt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
- pkt_testdriver_LDFLAGS = @TEST_LDFLAGS@
- pkt_testdriver_SOURCES = test_pkt.c mock_msg.c mock_msg.h \
--$(openvpn_srcdir)/argv.c \
-+	$(openvpn_srcdir)/argv.c \
- 	$(openvpn_srcdir)/base64.c \
- 	$(openvpn_srcdir)/buffer.c \
- 	$(openvpn_srcdir)/crypto.c \
-@@ -84,9 +95,10 @@ $(openvpn_srcdir)/argv.c \
- 	$(openvpn_srcdir)/run_command.c \
- 	$(openvpn_srcdir)/session_id.c \
- 	$(openvpn_srcdir)/ssl_pkt.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/tls_crypt.c
- 
--
-+if !WIN32
- tls_crypt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir)
- tls_crypt_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
-@@ -106,6 +118,7 @@ tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c mock_msg.h \
- 	$(openvpn_srcdir)/packet_id.c \
- 	$(openvpn_srcdir)/platform.c \
- 	$(openvpn_srcdir)/run_command.c
-+endif
- 
- if HAVE_SITNL
- networking_testdriver_CFLAGS = @TEST_CFLAGS@ \
-@@ -136,6 +149,7 @@ provider_testdriver_SOURCES = test_provider.c mock_msg.c \
- 	$(openvpn_srcdir)/buffer.c \
- 	$(openvpn_srcdir)/base64.c \
- 	mock_get_random.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/platform.c
- 
- auth_token_testdriver_CFLAGS  = @TEST_CFLAGS@ \
-@@ -152,6 +166,7 @@ auth_token_testdriver_SOURCES = test_auth_token.c mock_msg.c \
- 	$(openvpn_srcdir)/otime.c \
- 	$(openvpn_srcdir)/packet_id.c \
- 	$(openvpn_srcdir)/platform.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/base64.c
- 
- 
-@@ -169,6 +184,8 @@ ncp_testdriver_SOURCES = test_ncp.c mock_msg.c \
- 	$(openvpn_srcdir)/otime.c \
- 	$(openvpn_srcdir)/packet_id.c \
- 	$(openvpn_srcdir)/platform.c \
-+	$(openvpn_srcdir)/win32-util.c \
-+	$(compat_srcdir)/compat-strsep.c \
- 	$(openvpn_srcdir)/ssl_util.c
- 
- misc_testdriver_CFLAGS  = @TEST_CFLAGS@ \
-@@ -177,8 +194,9 @@ misc_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- misc_testdriver_LDFLAGS = @TEST_LDFLAGS@
- 
- misc_testdriver_SOURCES = test_misc.c mock_msg.c \
--    mock_get_random.c \
-+	mock_get_random.c \
- 	$(openvpn_srcdir)/buffer.c \
- 	$(openvpn_srcdir)/options_util.c \
- 	$(openvpn_srcdir)/ssl_util.c \
-+	$(openvpn_srcdir)/win32-util.c \
- 	$(openvpn_srcdir)/platform.c
+   ubuntu:
+     strategy:
+@@ -442,3 +547,4 @@ jobs:
+         run: make -j3
+       - name: make check
+         run: make check
++
 -- 
 2.37.1 (Apple Git-137.1)
 
