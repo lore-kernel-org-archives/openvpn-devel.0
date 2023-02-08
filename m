@@ -1,11 +1,14 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed,  8 Feb 2023 01:18:19 +0100
-Message-Id: <20230208001819.244694-6-arne@...1227...>
-In-Reply-To: <20230208001819.244694-1-arne@...1227...>
-References: <20230208001819.244694-1-arne@...1227...>
+Message-ID: <74a4194f-2d86-2bce-195b-0cae9f294597@...1227...>
+Date: Wed, 8 Feb 2023 01:18:50 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 5/5] Add building and running mingw
- unittests to github actions
+Content-Language: en-GB
+References: <20230204004512.250271-2-selva.nair@...277...>
+ <20230204064010.257925-1-selva.nair@...277...>
+ <20230204064010.257925-2-selva.nair@...277...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20230204064010.257925-2-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v2 3/3] Add a unit test for functions in
+ cryptoapi.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,170 +17,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- .github/workflows/build.yaml | 110 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 108 insertions(+), 2 deletions(-)
+Am 04.02.23 um 07:40 schrieb selva.nair@...277...:
+> From: Selva Nair <selva.nair@...277...>
+> 
+> - Though named cryptoapi_testdriver, right now this only tests
+>    parsing of thumbprint specified as a selector for --cryptioapicert
+>    option. More tests coming..
+> 
+> v2: a line that belongs here was mistakenly included in the previous
+> commit. Corrected.
+> 
+> Signed-off-by: Selva Nair <selva.nair@...277...>
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 132624547..c71bd2c4d 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -55,9 +55,10 @@ jobs:
-       PKCS11_HELPER_VERSION: "1.29.0"
-       OPENSSL_VERSION: "${{ matrix.osslver }}"
-       TAP_WINDOWS_VERSION: "9.23.3"
-+      CMOCKA_VERSION: "1.1.5"
-     steps:
-       - name: Install dependencies
--        run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip
-+        run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip cmake ninja-build build-essential wget
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2689...
-         with:
-@@ -72,7 +73,7 @@ jobs:
-         uses: actions/cache@...2689...
-         with:
-           path: '~/mingw/'
--          key: ${{ matrix.target }}-mingw-${{ matrix.osslver }}-${{ env.LZO_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSION }}
-+          key: ${{ matrix.target }}-mingw-${{ matrix.osslver }}-${{ env.LZO_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSION }}--${{ env.CMOCKA_VERSION }}
- 
-       # Repeating  if: steps.cache.outputs.cache-hit != 'true'
-       # on every step for building dependencies is ugly but
-@@ -84,12 +85,33 @@ jobs:
-           wget -c -P download-cache/ "https://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip"
-           wget -c -P download-cache/ "https://www.oberhumer.com/opensource/lzo/download/lzo-${LZO_VERSION}.tar.gz"
-           wget -c -P download-cache/ "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11-helper-${PKCS11_HELPER_VERSION}/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
-+          wget -c -P download-cache/ "https://github.com/coreboot/cmocka/archive/refs/tags/cmocka-${CMOCKA_VERSION}.tar.gz"
-           tar jxf "download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
-           wget -c -P download-cache/ "https://www.openssl.org/source/old/1.1.1/openssl-${OPENSSL_VERSION}.tar.gz" || wget -c -P download-cache/ "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
-           tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
-           tar zxf "download-cache/lzo-${LZO_VERSION}.tar.gz"
-+          tar zxf "download-cache/cmocka-${CMOCKA_VERSION}.tar.gz"
-           unzip download-cache/tap-windows-${TAP_WINDOWS_VERSION}.zip
- 
-+      - name: create cmocka build directory
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        run: mkdir cmocka-build
-+
-+      - name: configure cmocka
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        working-directory: "./cmocka-build"
-+        run: cmake -GNinja -DCMAKE_C_COMPILER=${{ matrix.chost }}-gcc -DCMAKE_CXX_COMPILER=${{ matrix.chost }}-g++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_PREFIX_PATH=${HOME}/mingw/opt/lib/pkgconfig/ -DCMAKE_INCLUDE_PATH=${HOME}/mingw/opt/lib/include -DCMAKE_LIBRARY_PATH=${HOME}/mingw/opt/lib -DCMAKE_INSTALL_PREFIX=${HOME}/mingw/opt/ ../cmocka-cmocka-${{ env.CMOCKA_VERSION }}
-+
-+      - name: build cmocka
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        working-directory: "./cmocka-build"
-+        run: ninja
-+
-+      - name: install cmocka
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        working-directory: "./cmocka-build"
-+        run: ninja install
-+
-       - name: Configure OpenSSL
-         if: steps.cache.outputs.cache-hit != 'true'
-         run: ./Configure --cross-compile-prefix=${{ matrix.chost }}- shared ${{ matrix.target }} no-capieng --prefix="${HOME}/mingw/opt" --openssldir="${HOME}/mingw/opt" -static-libgcc
-@@ -154,6 +176,89 @@ jobs:
-       - name: build OpenVPN
-         run: make -j3
-         working-directory: openvpn
-+      - name: build OpenVPN unittests
-+        run: make -j3 check
-+        working-directory: openvpn
-+
-+      # We use multiple upload-artifact here, so it becomes a flat folder
-+      # structure since we need the ddls on the same level as the binaries
-+      - name: Archive cmocka/openssl/lzo ddls
-+        uses: actions/upload-artifact@...2689...
-+        with:
-+          retention-days: 1
-+          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-dlls
-+          path: '~/mingw/opt/bin/*.dll'
-+
-+      - name: Archive gcc dlls
-+        uses: actions/upload-artifact@...2689...
-+        with:
-+          retention-days: 1
-+          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-dlls
-+          path: /usr/lib/gcc/${{ matrix.chost }}/10-win32/*.dll
-+
-+      - name: Archive mingw dlls
-+        uses: actions/upload-artifact@...2689...
-+        with:
-+          retention-days: 1
-+          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-dlls
-+          path: /usr/${{ matrix.chost }}/lib/*.dll
-+
-+      # libtool puts some wrapper binaries in openvpn/tests/unit_tests/openvpn/
-+      # and the real binaries in openvpn/tests/unit_tests/openvpn/.libs/
-+      - name: Archive unittest artifacts
-+        uses: actions/upload-artifact@...2689...
-+        with:
-+          retention-days: 1
-+          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-tests
-+          path: openvpn/tests/unit_tests/openvpn/.libs/*.exe
-+
-+      # Currently not used by the unit test but might in the future and also
-+      # helpful if manually downloading and running openvpn.exe from a mingw
-+      # build
-+      - name: Archive openvpn binary
-+        uses: actions/upload-artifact@...2689...
-+        with:
-+          retention-days: 1
-+          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-tests
-+          path: openvpn/src/openvpn/.libs/*.exe
-+
-+  mingw-unittest:
-+    needs: [ mingw ]
-+    strategy:
-+      fail-fast: false
-+      matrix:
-+        osslver: [ 1.1.1q, 3.0.5 ]
-+        target: [ mingw64, mingw ]
-+
-+    runs-on: windows-latest
-+    name: "mingw unittests - ${{matrix.target}} - OSSL ${{ matrix.osslver }}"
-+    steps:
-+      - name: Retrieve mingw unittest dlls
-+        uses: actions/download-artifact@...2689...
-+        with:
-+          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-dlls
-+          path: unittests
-+
-+      - name: Retrieve mingw unittest
-+        uses: actions/download-artifact@...2689...
-+        with:
-+          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-tests
-+          path: unittests
-+
-+      - name: List unittests directory
-+        run: "dir unittests"
-+
-+      - name: Run unit tests
-+        run: |
-+          ./unittests/argv_testdriver.exe
-+          ./unittests/auth_token_testdriver.exe
-+          ./unittests/buffer_testdriver.exe
-+          ./unittests/crypto_testdriver.exe
-+          ./unittests/misc_testdriver.exe
-+          ./unittests/ncp_testdriver.exe
-+          ./unittests/packet_id_testdriver.exe
-+          ./unittests/pkt_testdriver.exe
-+          ./unittests/provider_testdriver.exe
- 
-   ubuntu:
-     strategy:
-@@ -442,3 +547,4 @@ jobs:
-         run: make -j3
-       - name: make check
-         run: make check
-+
--- 
-2.37.1 (Apple Git-137.1)
+While a good step, this still has problems. With OpenSSL 1.1.1 it still 
+tries to run the check-engine.sh script and unsurprisingly fails:
+
+---- begin log.txt ----
+./check_engine_keys.sh: 25: ../../../src/openvpn/openvpn: not found
+--- end log.txt ---
+Key mismatch not detected
+FAIL: check_engine_keys.sh
+
+This can be fixed by:
+
+--- a/tests/unit_tests/engine-key/Makefile.am
++++ b/tests/unit_tests/engine-key/Makefile.am
+@@ -12,7 +12,9 @@ TESTS_ENVIRONMENT = srcdir="$(abs_srcdir)"; \
+         top_srcdir="$(top_srcdir)"; \
+         export srcdir builddir top_builddir top_srcdir;
+
++if !CROSS_COMPILING
+  TESTS = check_engine_keys.sh
++endif
+  check_engine_keys.sh: $(conffiles)
+
+  CLEANFILES = \
+
+
+I have working github actions for this running which was a real pain to 
+get working. I will send this after we get a v3 of the patch with that 
+patch above included.
+
+
+Then my mingw seems to be more pendantic then every other compiler. I 
+will send a separate patch for that on the mailing list.
+
+Also libtool is utterly broken on my mingw cross building on the mac:
+
+libtool:   error: Could not determine the host path corresponding to
+libtool:   error: 
+'/Users/arne/ovpn/mingw64/lib:/Users/arne/ovpn/mingw64/bin:/Users/arne/ovpn/deps-mingw64/lib:/Users/arne/ovpn/deps-mingw64/bin'
+libtool:   error: Continuing, but uninstalled executables may not work.
+./.libs/lt-provider_testdriver.c:41:5: warning: '_putenv' redeclared 
+without dllimport attribute: previous dllimport ignored [-Wattributes]
+    41 | int _putenv (const char *);
+       |     ^~~~~~~
+./.libs/lt-provider_testdriver.c: In function 'lt_dump_script':
+./.libs/lt-provider_testdriver.c:837:10: warning: missing terminating " 
+character
+   837 |   fputs ("# provider_testdriver - temporary wrapper script for 
+.libs/provider_testdriver.
+       |          ^
+./.libs/lt-provider_testdriver.c:837:10: error: missing terminating " 
+character
+   837 |   fputs ("# provider_testdriver - temporary wrapper script for 
+.libs/provider_testdriver.
+       | 
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./.libs/lt-provider_testdriver.c:838:4: warning: missing terminating " 
+character
+   838 | exe", f);
+       |    ^
+
+
+
+ From the lt-provider_testdriver.c:
+
+void lt_dump_script (FILE* f)
+{
+   fputs ("#! /bi", f);
+   fputs ("", f);
+   fputs ("# packet_id_testdriver - temporary wrapper script for 
+.libs/packet_id_testdrive
+r.exe", f);
+   fputs ("r.exe", f);
+   fputs ("# Ge", f);
+   fputs ("#", f);
+   fputs ("#", f);
+   fputs ("# This wrapper script should ", f);
+   fputs ("# If it is, it will ", f);
+   fputs ("", f);
+   fputs ("# Sed substitutio", f);
+   fputs ("# metacharacters that are still active withi", f);
+   fputs ("sed_quote_subst='s|", f);
+   fputs ("", f);
+   fputs ("# Be Bour", f);
+   fputs ("if test -", f);
+   fputs ("  emulate sh", f);
+   fputs ("  NULLCMD=:", f);
+   fputs ("  # Zsh 3.x a", f);
+   fputs ("  # is co", f);
+
+
+I have to say the autoconf/libtool/automake is pretty broken here and I 
+absolutely no idea how to fix it. Any idea or help would be appricated.
+
+Arne
 
 
