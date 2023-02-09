@@ -1,12 +1,9 @@
-Date: Thu, 9 Feb 2023 16:16:29 +0100
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Y+UOTefboAY11UxR@...2685...>
-References: <20230209142248.455120-1-arne@...1227...>
- <20230209142248.455120-2-arne@...1227...>
+From: =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@...2710...>
+Date: Thu,  9 Feb 2023 16:36:58 +0100
+Message-Id: <20230209153658.24001-1-ynezz@...2710...>
 MIME-Version: 1.0
-In-Reply-To: <20230209142248.455120-2-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Add debug output for sent IV
- variables in client mode with verb 7
+Subject: [Openvpn-devel] [PATCH] get_addr_generic: fix server crash in
+ freeaddrinfo on musl libc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,52 +12,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Thu, Feb 09, 2023 at 03:22:48PM +0100, Arne Schwabe wrote:
-> This helps debugging what information a client is sending without having to
-> use a debugger or to look at the server log.
-> 
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  src/openvpn/ssl.c | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
-> 
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 016bdc57f..1138dc4e7 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -1970,6 +1970,20 @@ read_string_alloc(struct buffer *buf)
->      return str;
->  }
->  
-> +static void
-> +print_client_peer_info(struct buffer *out, struct gc_arena *gc)
-> +{
-> +    struct buffer buf = alloc_buf_gc(buf_len(out), gc);
-> +    buf_copy(&buf, out);
-> +
-> +    char line[256];
-> +
-> +    while (buf_parse(&buf, '\n', line, sizeof(line)))
-> +    {
-> +        chomp(line);
-> +        msg(D_PUSH_DEBUG, "sending peer info: %s", line);
-> +    }
-> +}
+Server can crash on systems using musl libc when client with comma in
+commonName tries to connect:
 
-While this certainly is the minimal change, actually re-parsing the
-whole buffer after we have written it feels backwards.
+ ifconfig_pool_read(), in='VPN Client, abc,192.168.1.2,'
+ RESOLVE: Cannot parse IP address:  abc: (Name does not resolve)
 
-Wouldn't it be cleaner to actually wrap the buf_printf calls as something
-like "add_var" and do the logging as the variables are added? That would
-avoid the need for the additional allocations and parsing.
+as this leads to NULL pointer dereference in freeaddrinfo():
 
-Regards,
--- 
-  Frank Lichtenheld
+ Program received signal SIGSEGV, Segmentation fault.
+ 0x00007ffff7fbf81a in freeaddrinfo (p=0x0) at src/network/freeaddrinfo.c:10
+ (gdb) bt
+ #0  0x00007ffff7fbf81a in freeaddrinfo (p=0x0) at src/network/freeaddrinfo.c:10
+ #1  0x00000000004389ec in get_addr_generic (af=af@...1851...=2, flags=flags@...1851...=4, hostname=hostname@...1851...=0x7ffff7ee2988 " abc", network=network@...1851...=0x7fffffffcb7c, netbits=netbits@...1851...=0x0,
+     resolve_retry_seconds=resolve_retry_seconds@...1851...=0, signal_received=0x0, msglevel=64) at openvpn-2.5.7/src/openvpn/socket.c:186
+ #2  0x0000000000438a2d in getaddr (flags=flags@...1851...=4, hostname=hostname@...1851...=0x7ffff7ee2988 " abc", resolve_retry_seconds=resolve_retry_seconds@...1851...=0, succeeded=succeeded@...1851...=0x7fffffffcba7,
+     signal_received=signal_received@...1851...=0x0) at openvpn-2.5.7/src/openvpn/socket.c:202
+ #3  0x0000000000430ae5 in ifconfig_pool_read (persist=0x7ffff7ee4510, pool=0x7ffff7edd450) at openvpn-2.5.7/src/openvpn/pool.c:661
+
+So fix it by checking if `struct addrinfo*` pointer is valid before
+passing it down to freeaddrinfo().
+
+References: https://github.com/openwrt/openwrt/issues/11890
+Signed-off-by: Petr Štetiar <ynezz@...2710...>
+---
+ src/openvpn/socket.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index a883ac4a156c..d304554cefda 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -172,7 +172,10 @@ get_addr_generic(sa_family_t af, unsigned int flags, const char *hostname,
+         *sep = '/';
+     }
+ out:
+-    freeaddrinfo(ai);
++    if (ai)
++    {
++        freeaddrinfo(ai);
++    }
+     free(var_host);
+ 
+     return ret;
 
