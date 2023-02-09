@@ -1,11 +1,14 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Thu,  9 Feb 2023 17:37:05 +0100
-Message-Id: <20230209163705.466173-1-arne@...1227...>
-In-Reply-To: <20230208001819.244694-1-arne@...1227...>
-References: <20230208001819.244694-1-arne@...1227...>
+Date: Thu, 9 Feb 2023 17:47:33 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <Y+UjpZpxaUCpFfSh@...1296...>
+References: <20230209153658.24001-1-ynezz@...2710...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 5/5] Add building unit tests with mingw
- to github actions
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="AQ6hdlUIGZ9ael3/"
+Content-Disposition: inline
+In-Reply-To: <20230209153658.24001-1-ynezz@...2710...>
+Subject: Re: [Openvpn-devel] [PATCH] get_addr_generic: fix server crash in
+ freeaddrinfo on musl libc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,177 +17,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Petr ??tetiar <ynezz@...2710...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This runs each test in its own action since order of stderr and stdout
-is seemingly random in github action Windows output and this way at least
-tests outputs are groups gy test
+--AQ6hdlUIGZ9ael3/
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Patch v2: use -static-libgcc to avoid comping gcc runtime libraries.
+Hi,
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- .github/workflows/build.yaml | 111 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 109 insertions(+), 2 deletions(-)
+On Thu, Feb 09, 2023 at 04:36:58PM +0100, Petr ??tetiar wrote:
+> diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+> index a883ac4a156c..d304554cefda 100644
+> --- a/src/openvpn/socket.c
+> +++ b/src/openvpn/socket.c
+> @@ -172,7 +172,10 @@ get_addr_generic(sa_family_t af, unsigned int flags,=
+ const char *hostname,
+>          *sep =3D '/';
+>      }
+>  out:
+> -    freeaddrinfo(ai);
+> +    if (ai)
+> +    {
+> +        freeaddrinfo(ai);
+> +    }
+>      free(var_host);
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 5888e91e5..a1026fddb 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -55,9 +55,10 @@ jobs:
-       PKCS11_HELPER_VERSION: "1.29.0"
-       OPENSSL_VERSION: "${{ matrix.osslver }}"
-       TAP_WINDOWS_VERSION: "9.23.3"
-+      CMOCKA_VERSION: "1.1.5"
-     steps:
-       - name: Install dependencies
--        run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip
-+        run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip cmake ninja-build build-essential wget
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2689...
-         with:
-@@ -72,7 +73,7 @@ jobs:
-         uses: actions/cache@...2689...
-         with:
-           path: '~/mingw/'
--          key: ${{ matrix.target }}-mingw-${{ matrix.osslver }}-${{ env.LZO_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSION }}
-+          key: ${{ matrix.target }}-mingw-${{ matrix.osslver }}-${{ env.LZO_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSION }}--${{ env.CMOCKA_VERSION }}
- 
-       # Repeating  if: steps.cache.outputs.cache-hit != 'true'
-       # on every step for building dependencies is ugly but
-@@ -84,12 +85,33 @@ jobs:
-           wget -c -P download-cache/ "https://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip"
-           wget -c -P download-cache/ "https://www.oberhumer.com/opensource/lzo/download/lzo-${LZO_VERSION}.tar.gz"
-           wget -c -P download-cache/ "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11-helper-${PKCS11_HELPER_VERSION}/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
-+          wget -c -P download-cache/ "https://github.com/coreboot/cmocka/archive/refs/tags/cmocka-${CMOCKA_VERSION}.tar.gz"
-           tar jxf "download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
-           wget -c -P download-cache/ "https://www.openssl.org/source/old/1.1.1/openssl-${OPENSSL_VERSION}.tar.gz" || wget -c -P download-cache/ "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
-           tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
-           tar zxf "download-cache/lzo-${LZO_VERSION}.tar.gz"
-+          tar zxf "download-cache/cmocka-${CMOCKA_VERSION}.tar.gz"
-           unzip download-cache/tap-windows-${TAP_WINDOWS_VERSION}.zip
- 
-+      - name: create cmocka build directory
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        run: mkdir cmocka-build
-+
-+      - name: configure cmocka
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        working-directory: "./cmocka-build"
-+        run: cmake -GNinja -DCMAKE_C_COMPILER=${{ matrix.chost }}-gcc -DCMAKE_CXX_COMPILER=${{ matrix.chost }}-g++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SHARED_LINKER_FLAGS=-static-libgcc -DCMAKE_PREFIX_PATH=${HOME}/mingw/opt/lib/pkgconfig/ -DCMAKE_INCLUDE_PATH=${HOME}/mingw/opt/lib/include -DCMAKE_LIBRARY_PATH=${HOME}/mingw/opt/lib -DCMAKE_INSTALL_PREFIX=${HOME}/mingw/opt/ ../cmocka-cmocka-${{ env.CMOCKA_VERSION }}
-+
-+      - name: build cmocka
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        working-directory: "./cmocka-build"
-+        run: ninja
-+
-+      - name: install cmocka
-+        if: steps.cache.outputs.cache-hit != 'true'
-+        working-directory: "./cmocka-build"
-+        run: ninja install
-+
-       - name: Configure OpenSSL
-         if: steps.cache.outputs.cache-hit != 'true'
-         run: ./Configure --cross-compile-prefix=${{ matrix.chost }}- shared ${{ matrix.target }} no-capieng --prefix="${HOME}/mingw/opt" --openssldir="${HOME}/mingw/opt" -static-libgcc
-@@ -154,6 +176,90 @@ jobs:
-       - name: build OpenVPN
-         run: make -j3
-         working-directory: openvpn
-+      - name: build OpenVPN unittests
-+        run: make -j3 check
-+        working-directory: openvpn
-+
-+      # We use multiple upload-artifact here, so it becomes a flat folder
-+      # structure since we need the dlls on the same level as the binaries
-+      - name: Archive cmocka/openssl/lzo dlls
-+        uses: actions/upload-artifact@...2689...
-+        with:
-+          retention-days: 1
-+          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-dlls
-+          path: '~/mingw/opt/bin/*.dll'
-+
-+      # libtool puts some wrapper binaries in openvpn/tests/unit_tests/openvpn/
-+      # and the real binaries in openvpn/tests/unit_tests/openvpn/.libs/
-+      - name: Archive unittest artifacts
-+        uses: actions/upload-artifact@...2689...
-+        with:
-+          retention-days: 1
-+          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-tests
-+          path: openvpn/tests/unit_tests/openvpn/.libs/*.exe
-+
-+      # Currently not used by the unit test but might in the future and also
-+      # helpful if manually downloading and running openvpn.exe from a mingw
-+      # build
-+      - name: Archive openvpn binary
-+        uses: actions/upload-artifact@...2689...
-+        with:
-+          retention-days: 1
-+          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-tests
-+          path: openvpn/src/openvpn/.libs/*.exe
-+
-+  mingw-unittest:
-+    needs: [ mingw ]
-+    strategy:
-+      fail-fast: false
-+      matrix:
-+        osslver: [ 1.1.1q, 3.0.5 ]
-+        target: [ mingw64, mingw ]
-+
-+    runs-on: windows-latest
-+    name: "mingw unittests - ${{matrix.target}} - OSSL ${{ matrix.osslver }}"
-+    steps:
-+      - name: Retrieve mingw unittest dlls
-+        uses: actions/download-artifact@...2689...
-+        with:
-+          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-dlls
-+          path: unittests
-+
-+      - name: Retrieve mingw unittest
-+        uses: actions/download-artifact@...2689...
-+        with:
-+          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-tests
-+          path: unittests
-+
-+      - name: List unittests directory
-+        run: "dir unittests"
-+
-+      - name: Run argvunit test
-+        run: ./unittests/argv_testdriver.exe
-+
-+      - name: Run auth_tokenunit test
-+        run: ./unittests/auth_token_testdriver.exe
-+
-+      - name: Run bufferunit test
-+        run: ./unittests/buffer_testdriver.exe
-+
-+      - name: Run cryptounit test
-+        run: ./unittests/crypto_testdriver.exe
-+
-+      - name: Run miscunit test
-+        run: ./unittests/misc_testdriver.exe
-+
-+      - name: Run ncpunit test
-+        run: ./unittests/ncp_testdriver.exe
-+
-+      - name: Run packet idunit test
-+        run: ./unittests/packet_id_testdriver.exe
-+
-+      - name: Run pktunit test
-+        run: ./unittests/pkt_testdriver.exe
-+
-+      - name: Run providerunit test
-+        run: ./unittests/provider_testdriver.exe
- 
-   ubuntu:
-     strategy:
-@@ -450,3 +556,4 @@ jobs:
-         run: make -j3
-       - name: make check
-         run: make check
-+
--- 
-2.37.1 (Apple Git-137.1)
+The patch itself is fine, but as Arne says, maybe we should then add
+this to all places where freeaddrinfo() is called and could be NULL - so
+we're at least consistent in our interpretation of "should we pass NULL?".
 
+gert
+
+
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--AQ6hdlUIGZ9ael3/
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJj5SOlAAoJEB2Cnv7KVigSMGYL/0xdeAkncuRTmauLr1IoHjjz
+q7IRpzYMtNYe0Q2oom+KWG6wGK80lkpif2fhG422gObXV3dAN+uIvhSzrrrtGRdP
+d887bWLUDNdYHmkiBlXLCAT1T5Iun3smrJk3gJtGDMrEibkBqSQ75HZ7gPt2cVT/
+X9jRHmmi3E+PhYwBFsG4FJOvZWR9C88jyRklAdQyfwVRM5+DzsQpFQ09XlWvFWBZ
+xuGF/ZhGbOArvQSo40RL48oOdOJthkrW1jABkgcPKaPNQ1KJjvm9ELFgHNBlznaw
+tR8fllFAjBhRRrmz+9Hygk3OCyc3r2IKE9WIimxD3O5s6eohGR39OEtfAHiQCYL/
++VU0a3AHAQ12pP7CRJ5YnJCTjbW2PqnXpE3ZXcAyhkhw3kKEI0l0KVK42kP49gTv
+w0sUuPF1lIxh3a4k5dgRbfhRX9UurzPZP6qjvakWOiQ7bM+XBwdeSrqIG5Fg9kRT
+Jzz3ZA/xR/xM4uBMjXpp+K34QrcYrFktxP8mOO2Ryw==
+=4Tie
+-----END PGP SIGNATURE-----
+
+--AQ6hdlUIGZ9ael3/--
 
