@@ -1,10 +1,12 @@
-Date: Thu, 9 Feb 2023 18:27:26 +0100 (CET)
-Message-Id: <202302091727.319HRQEv004873@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230209163115.465548-1-arne@...1227...>
-References: <20230209163115.465548-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix LibreSSL not building in
- Github Actions
+Message-ID: <b187a379-2bc1-6a7b-9bb6-a53fb1358c4f@...2712...>
+Date: Thu, 9 Feb 2023 19:40:06 +0200
+MIME-Version: 1.0
+References: <20230209153658.24001-1-ynezz@...2710...>
+Content-Language: en-US
+From: Mykhailo Mishchenko <mdmisch@...2712...>
+In-Reply-To: <20230209153658.24001-1-ynezz@...2710...>
+Subject: Re: [Openvpn-devel] [PATCH] get_addr_generic: fix server crash in
+ freeaddrinfo on musl libc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +15,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+On 09.02.23 17:36, Petr Štetiar wrote:
+> Server can crash on systems using musl libc when client with comma in
+> commonName tries to connect:
+>
+>   ifconfig_pool_read(), in='VPN Client, abc,192.168.1.2,'
+>   RESOLVE: Cannot parse IP address:  abc: (Name does not resolve)
 
-Arne has said I should not look at this patch.  So I'm despearately looking
-elsewhere.  I do not want to know.
+I also would like to empathize what exactly leads to the crash. It 
+clearly tried to parse a part of client certificate's Common Name as an 
+IP address. As I understand it, this IP address was supposed to be used 
+to restore client's previous IP address. This is another bug, different 
+from trying to "free" NULL pointer.
 
-(Github says "it builds with this change")
-
-Your patch has been applied to the master branch.
-
-commit 589cca156357e05c6c3f07517184157585c8e9fc (master)
-commit dabfebc4731b7cccda36a09eaaa11f912b8a9fde (release/2.6)
-Author: Arne Schwabe
-Date:   Thu Feb 9 17:31:15 2023 +0100
-
-     Fix LibreSSL not building in Github Actions
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230209163115.465548-1-arne@...1227...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20230209163115.465548-1-arne@...1227...
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+Mykhailo
 
 
