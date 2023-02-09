@@ -1,14 +1,11 @@
-Date: Thu, 9 Feb 2023 17:33:45 +0100
-From: Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@...2710...>
-Message-ID: <20230209163344.GC89400@...2711...>
-Reply-To: Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@...2710...>
-References: <20230209153658.24001-1-ynezz@...2710...>
- <828cce6b-72dc-50db-a0d3-7948db0d941e@...1227...>
- <37d7433b-8534-51d5-da07-a94fce1f06bf@...1227...>
+From: Arne Schwabe <arne@...1227...>
+Date: Thu,  9 Feb 2023 17:37:05 +0100
+Message-Id: <20230209163705.466173-1-arne@...1227...>
+In-Reply-To: <20230208001819.244694-1-arne@...1227...>
+References: <20230208001819.244694-1-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <37d7433b-8534-51d5-da07-a94fce1f06bf@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] get_addr_generic: fix server crash in
- freeaddrinfo on musl libc
+Subject: [Openvpn-devel] [PATCH v2 5/5] Add building unit tests with mingw
+ to github actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,78 +16,175 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Arne Schwabe <arne@...1227...> [2023-02-09 17:03:31]:
+This runs each test in its own action since order of stderr and stdout
+is seemingly random in github action Windows output and this way at least
+tests outputs are groups gy test
 
-> Am 09.02.23 um 16:53 schrieb Arne Schwabe:
-> > Am 09.02.23 um 16:36 schrieb Petr Štetiar:
-> > > Server can crash on systems using musl libc when client with comma in
-> > > commonName tries to connect:
-> > > 
-> > >   ifconfig_pool_read(), in='VPN Client, abc,192.168.1.2,'
-> > >   RESOLVE: Cannot parse IP address:  abc: (Name does not resolve)
-> > > 
-> > > as this leads to NULL pointer dereference in freeaddrinfo():
-> > > 
-> > >   Program received signal SIGSEGV, Segmentation fault.
-> > >   0x00007ffff7fbf81a in freeaddrinfo (p=0x0) at
-> > > src/network/freeaddrinfo.c:10
-> > >   (gdb) bt
-> > >   #0  0x00007ffff7fbf81a in freeaddrinfo (p=0x0) at
-> > > src/network/freeaddrinfo.c:10
-> > >   #1  0x00000000004389ec in get_addr_generic (af=af@...1851...=2,
-> > > flags=flags@...1851...=4, hostname=hostname@...1851...=0x7ffff7ee2988 " abc",
-> > > network=network@...1851...=0x7fffffffcb7c, netbits=netbits@...1851...=0x0,
-> > >       resolve_retry_seconds=resolve_retry_seconds@...1851...=0,
-> > > signal_received=0x0, msglevel=64) at
-> > > openvpn-2.5.7/src/openvpn/socket.c:186
-> > >   #2  0x0000000000438a2d in getaddr (flags=flags@...1851...=4,
-> > > hostname=hostname@...1851...=0x7ffff7ee2988 " abc",
-> > > resolve_retry_seconds=resolve_retry_seconds@...1851...=0,
-> > > succeeded=succeeded@...1851...=0x7fffffffcba7,
-> > >       signal_received=signal_received@...1851...=0x0) at
-> > > openvpn-2.5.7/src/openvpn/socket.c:202
-> > >   #3  0x0000000000430ae5 in ifconfig_pool_read
-> > > (persist=0x7ffff7ee4510, pool=0x7ffff7edd450) at
-> > > openvpn-2.5.7/src/openvpn/pool.c:661
-> > > 
-> > > So fix it by checking if `struct addrinfo*` pointer is valid before
-> > > passing it down to freeaddrinfo().
-> > 
-> > I am bit surprised that freeadrinfo does not follow the usual semantics
-> > of calling freesomething on a nullptr is a noop.
-> > 
-> > If this is really the case would should add similar code (with comments
-> > that freeaddrinfo is special here) also in gc_freeaddrinfo_callback and
-> > the other places that call it without checking for ai to be valid.
-> > 
-> 
-> So FreeBSD has:
-> 
->  * - freeaddrinfo(NULL).  RFC2553 is silent about it.  XNET 5.2 says it is
->  *   invalid.  Current code accepts NULL to be compatible with other OSes.
-> 
-> and android bionic has a similar comment (bionic is also BSD libc based):
-> 
->  * - freeaddrinfo(NULL).  RFC2553 is silent about it.  XNET 5.2 says it is
->  *   invalid.
->  *   current code - SEGV on freeaddrinfo(NULL)
-> 
-> but then actually does nothing on ai == NULL:
-> 
-> #if defined(__BIONIC__)
-> 	if (ai == NULL) return;
-> #else
-> 	_DIAGASSERT(ai != NULL);
-> #endif
-> 
-> so it seems that apart from some implementations like musl this assumption
-> that freeaddrinfo is a noop is kind of true. I would still open a report
-> against musl to fix this as this seem to be better to be aligned with the
-> rest of the world.
+Patch v2: use -static-libgcc to avoid comping gcc runtime libraries.
 
-https://www.openwall.com/lists/musl/2019/03/26/18
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ .github/workflows/build.yaml | 111 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 109 insertions(+), 2 deletions(-)
+
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 5888e91e5..a1026fddb 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -55,9 +55,10 @@ jobs:
+       PKCS11_HELPER_VERSION: "1.29.0"
+       OPENSSL_VERSION: "${{ matrix.osslver }}"
+       TAP_WINDOWS_VERSION: "9.23.3"
++      CMOCKA_VERSION: "1.1.5"
+     steps:
+       - name: Install dependencies
+-        run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip
++        run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip cmake ninja-build build-essential wget
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2689...
+         with:
+@@ -72,7 +73,7 @@ jobs:
+         uses: actions/cache@...2689...
+         with:
+           path: '~/mingw/'
+-          key: ${{ matrix.target }}-mingw-${{ matrix.osslver }}-${{ env.LZO_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSION }}
++          key: ${{ matrix.target }}-mingw-${{ matrix.osslver }}-${{ env.LZO_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSION }}--${{ env.CMOCKA_VERSION }}
+ 
+       # Repeating  if: steps.cache.outputs.cache-hit != 'true'
+       # on every step for building dependencies is ugly but
+@@ -84,12 +85,33 @@ jobs:
+           wget -c -P download-cache/ "https://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip"
+           wget -c -P download-cache/ "https://www.oberhumer.com/opensource/lzo/download/lzo-${LZO_VERSION}.tar.gz"
+           wget -c -P download-cache/ "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11-helper-${PKCS11_HELPER_VERSION}/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
++          wget -c -P download-cache/ "https://github.com/coreboot/cmocka/archive/refs/tags/cmocka-${CMOCKA_VERSION}.tar.gz"
+           tar jxf "download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
+           wget -c -P download-cache/ "https://www.openssl.org/source/old/1.1.1/openssl-${OPENSSL_VERSION}.tar.gz" || wget -c -P download-cache/ "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
+           tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
+           tar zxf "download-cache/lzo-${LZO_VERSION}.tar.gz"
++          tar zxf "download-cache/cmocka-${CMOCKA_VERSION}.tar.gz"
+           unzip download-cache/tap-windows-${TAP_WINDOWS_VERSION}.zip
+ 
++      - name: create cmocka build directory
++        if: steps.cache.outputs.cache-hit != 'true'
++        run: mkdir cmocka-build
++
++      - name: configure cmocka
++        if: steps.cache.outputs.cache-hit != 'true'
++        working-directory: "./cmocka-build"
++        run: cmake -GNinja -DCMAKE_C_COMPILER=${{ matrix.chost }}-gcc -DCMAKE_CXX_COMPILER=${{ matrix.chost }}-g++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SHARED_LINKER_FLAGS=-static-libgcc -DCMAKE_PREFIX_PATH=${HOME}/mingw/opt/lib/pkgconfig/ -DCMAKE_INCLUDE_PATH=${HOME}/mingw/opt/lib/include -DCMAKE_LIBRARY_PATH=${HOME}/mingw/opt/lib -DCMAKE_INSTALL_PREFIX=${HOME}/mingw/opt/ ../cmocka-cmocka-${{ env.CMOCKA_VERSION }}
++
++      - name: build cmocka
++        if: steps.cache.outputs.cache-hit != 'true'
++        working-directory: "./cmocka-build"
++        run: ninja
++
++      - name: install cmocka
++        if: steps.cache.outputs.cache-hit != 'true'
++        working-directory: "./cmocka-build"
++        run: ninja install
++
+       - name: Configure OpenSSL
+         if: steps.cache.outputs.cache-hit != 'true'
+         run: ./Configure --cross-compile-prefix=${{ matrix.chost }}- shared ${{ matrix.target }} no-capieng --prefix="${HOME}/mingw/opt" --openssldir="${HOME}/mingw/opt" -static-libgcc
+@@ -154,6 +176,90 @@ jobs:
+       - name: build OpenVPN
+         run: make -j3
+         working-directory: openvpn
++      - name: build OpenVPN unittests
++        run: make -j3 check
++        working-directory: openvpn
++
++      # We use multiple upload-artifact here, so it becomes a flat folder
++      # structure since we need the dlls on the same level as the binaries
++      - name: Archive cmocka/openssl/lzo dlls
++        uses: actions/upload-artifact@...2689...
++        with:
++          retention-days: 1
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-dlls
++          path: '~/mingw/opt/bin/*.dll'
++
++      # libtool puts some wrapper binaries in openvpn/tests/unit_tests/openvpn/
++      # and the real binaries in openvpn/tests/unit_tests/openvpn/.libs/
++      - name: Archive unittest artifacts
++        uses: actions/upload-artifact@...2689...
++        with:
++          retention-days: 1
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-tests
++          path: openvpn/tests/unit_tests/openvpn/.libs/*.exe
++
++      # Currently not used by the unit test but might in the future and also
++      # helpful if manually downloading and running openvpn.exe from a mingw
++      # build
++      - name: Archive openvpn binary
++        uses: actions/upload-artifact@...2689...
++        with:
++          retention-days: 1
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-tests
++          path: openvpn/src/openvpn/.libs/*.exe
++
++  mingw-unittest:
++    needs: [ mingw ]
++    strategy:
++      fail-fast: false
++      matrix:
++        osslver: [ 1.1.1q, 3.0.5 ]
++        target: [ mingw64, mingw ]
++
++    runs-on: windows-latest
++    name: "mingw unittests - ${{matrix.target}} - OSSL ${{ matrix.osslver }}"
++    steps:
++      - name: Retrieve mingw unittest dlls
++        uses: actions/download-artifact@...2689...
++        with:
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-dlls
++          path: unittests
++
++      - name: Retrieve mingw unittest
++        uses: actions/download-artifact@...2689...
++        with:
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-tests
++          path: unittests
++
++      - name: List unittests directory
++        run: "dir unittests"
++
++      - name: Run argvunit test
++        run: ./unittests/argv_testdriver.exe
++
++      - name: Run auth_tokenunit test
++        run: ./unittests/auth_token_testdriver.exe
++
++      - name: Run bufferunit test
++        run: ./unittests/buffer_testdriver.exe
++
++      - name: Run cryptounit test
++        run: ./unittests/crypto_testdriver.exe
++
++      - name: Run miscunit test
++        run: ./unittests/misc_testdriver.exe
++
++      - name: Run ncpunit test
++        run: ./unittests/ncp_testdriver.exe
++
++      - name: Run packet idunit test
++        run: ./unittests/packet_id_testdriver.exe
++
++      - name: Run pktunit test
++        run: ./unittests/pkt_testdriver.exe
++
++      - name: Run providerunit test
++        run: ./unittests/provider_testdriver.exe
+ 
+   ubuntu:
+     strategy:
+@@ -450,3 +556,4 @@ jobs:
+         run: make -j3
+       - name: make check
+         run: make check
++
+-- 
+2.37.1 (Apple Git-137.1)
+
 
