@@ -1,10 +1,12 @@
-Date: Fri, 10 Feb 2023 17:58:45 +0100 (CET)
-Message-Id: <202302101658.31AGwj2G029233@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230207145416.1415-1-lstipakov@...277...>
-References: <20230207145416.1415-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Allow certain DHCP options to
- be used without DHCP server
+Date: Fri, 10 Feb 2023 18:08:57 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <Y+Z6KZH6woqyRxeQ@...2685...>
+References: <20230210142712.572303-1-arne@...1227...>
+ <20230210142712.572303-6-arne@...1227...>
+MIME-Version: 1.0
+In-Reply-To: <20230210142712.572303-6-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 2/4] Update the last sections in the man
+ page to a be a bit less outdated
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +15,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+Content-Disposition: inline
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Code looks good, and compiles on MinGW.  Didn't actually test the various
-combinations.
+On Fri, Feb 10, 2023 at 03:27:09PM +0100, Arne Schwabe wrote:
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  doc/openvpn.8.rst | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
+> 
+> diff --git a/doc/openvpn.8.rst b/doc/openvpn.8.rst
+> index 995467478..415f210ce 100644
+> --- a/doc/openvpn.8.rst
+> +++ b/doc/openvpn.8.rst
+> @@ -97,6 +97,8 @@ https://community.openvpn.net/openvpn/wiki/FAQ
+>  
+>  HOWTO
+>  =====
+> +The manual ``openvpn-examples``\(5) give some examples, especially for
 
-Your patch has been applied to the master and release/2.6 branch.
+"gives"
 
-commit 469158f93ea52a6c2f821890ef599299183aa020 (master)
-commit 442fde78a1f1f512762a4b2c4db958a3d56410d1 (release/2.6)
-Author: Lev Stipakov
-Date:   Tue Feb 7 16:54:16 2023 +0200
+> +small setups.
 
-     Allow certain DHCP options to be used without DHCP server
+Other than that
+Acked-By: Frank Lichtenheld <frank@...2641...>
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20230207145416.1415-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26169.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Regards,
+-- 
+  Frank Lichtenheld
 
