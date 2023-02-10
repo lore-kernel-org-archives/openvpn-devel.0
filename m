@@ -1,12 +1,11 @@
-Date: Fri, 10 Feb 2023 18:08:57 +0100
+Date: Fri, 10 Feb 2023 18:09:38 +0100
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <Y+Z6KZH6woqyRxeQ@...2685...>
-References: <20230210142712.572303-1-arne@...1227...>
- <20230210142712.572303-6-arne@...1227...>
+Message-ID: <Y+Z6UrlL4eddu4Vp@...2685...>
+References: <20230210133159.1336-1-lstipakov@...277...>
 MIME-Version: 1.0
-In-Reply-To: <20230210142712.572303-6-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 2/4] Update the last sections in the man
- page to a be a bit less outdated
+In-Reply-To: <20230210133159.1336-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Improve format specifier for socket
+ handle in Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,30 +17,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
 
-On Fri, Feb 10, 2023 at 03:27:09PM +0100, Arne Schwabe wrote:
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  doc/openvpn.8.rst | 11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
+On Fri, Feb 10, 2023 at 03:31:59PM +0200, Lev Stipakov wrote:
+> From: Lev Stipakov <lev@...515...>
 > 
-> diff --git a/doc/openvpn.8.rst b/doc/openvpn.8.rst
-> index 995467478..415f210ce 100644
-> --- a/doc/openvpn.8.rst
-> +++ b/doc/openvpn.8.rst
-> @@ -97,6 +97,8 @@ https://community.openvpn.net/openvpn/wiki/FAQ
->  
->  HOWTO
->  =====
-> +The manual ``openvpn-examples``\(5) give some examples, especially for
+> Socket is a handle on Windows, which is usually logged in hex.
+> Also an interesting value is INVALID_SOCKET, which is ~0.
+> 
+> PRIuPTR prints decimals, and for INVALID_SOCKET it prints something like
+> 
+>   2023-02-10 14:45:21 us=906000 write to TUN/TAP : Jrjestelmkutsulle
+> annettu data-alue on liian pieni.   (fd=18446744073709551615,code=122)
+> 
+> PRIxPTR prints hex, and INVALID_SOCKET looks a bit nicer:
+> 
+>   2023-02-10 15:17:11 us=828000 write to TUN/TAP : Jrjestelmkutsulle
+> annettu data-alue on liian pieni.   (fd=ffffffffffffffff,code=122)
+> 
 
-"gives"
-
-> +small setups.
-
-Other than that
 Acked-By: Frank Lichtenheld <frank@...2641...>
 
 Regards,
