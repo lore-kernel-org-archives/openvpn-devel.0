@@ -1,9 +1,11 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 10 Feb 2023 15:31:59 +0200
-Message-Id: <20230210133159.1336-1-lstipakov@...277...>
+From: Arne Schwabe <arne@...1227...>
+Date: Fri, 10 Feb 2023 15:27:09 +0100
+Message-Id: <20230210142712.572303-6-arne@...1227...>
+In-Reply-To: <20230210142712.572303-1-arne@...1227...>
+References: <20230210142712.572303-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Improve format specifier for socket handle
- in Windows
+Subject: [Openvpn-devel] [PATCH 2/4] Update the last sections in the man
+ page to a be a bit less outdated
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,43 +17,49 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>, Selva Nair <selva.nair@...277...>
 
-From: Lev Stipakov <lev@...515...>
-
-Socket is a handle on Windows, which is usually logged in hex.
-Also an interesting value is INVALID_SOCKET, which is ~0.
-
-PRIuPTR prints decimals, and for INVALID_SOCKET it prints something like
-
-  2023-02-10 14:45:21 us=906000 write to TUN/TAP : Jrjestelmkutsulle
-annettu data-alue on liian pieni.   (fd=18446744073709551615,code=122)
-
-PRIxPTR prints hex, and INVALID_SOCKET looks a bit nicer:
-
-  2023-02-10 15:17:11 us=828000 write to TUN/TAP : Jrjestelmkutsulle
-annettu data-alue on liian pieni.   (fd=ffffffffffffffff,code=122)
-
-Reported-by: Selva Nair <selva.nair@...277...>
-Signed-off-by: Lev Stipakov <lev@...515...>
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/syshead.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ doc/openvpn.8.rst | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 12ccf2f4..53359225 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -441,7 +441,7 @@ typedef unsigned short sa_family_t;
-  */
- #ifdef _WIN32
- #define SOCKET_UNDEFINED (INVALID_SOCKET)
--#define SOCKET_PRINTF "%" PRIuPTR
-+#define SOCKET_PRINTF "%" PRIxPTR
- typedef SOCKET socket_descriptor_t;
- #else
- #define SOCKET_UNDEFINED (-1)
+diff --git a/doc/openvpn.8.rst b/doc/openvpn.8.rst
+index 995467478..415f210ce 100644
+--- a/doc/openvpn.8.rst
++++ b/doc/openvpn.8.rst
+@@ -97,6 +97,8 @@ https://community.openvpn.net/openvpn/wiki/FAQ
+ 
+ HOWTO
+ =====
++The manual ``openvpn-examples``\(5) give some examples, especially for
++small setups.
+ 
+ For a more comprehensive guide to setting up OpenVPN in a production
+ setting, see the OpenVPN HOWTO at
+@@ -107,18 +109,17 @@ https://openvpn.net/community-resources/how-to/
+ PROTOCOL
+ ========
+ 
+-For a description of OpenVPN's underlying protocol, see
+-https://openvpn.net/community-resources/openvpn-protocol/
+-
++An ongoing effort to document the OpenVPN protocol can be found under
++https://github.com/openvpn/openvpn-rfc
+ 
+ 
+ WEB
+ ===
+ 
+-OpenVPN's web site is at https://openvpn.net/
++OpenVPN's web site is at https://community.openvpn.net/
+ 
+ Go here to download the latest version of OpenVPN, subscribe to the
+-mailing lists, read the mailing list archives, or browse the SVN
++mailing lists, read the mailing list archives, or browse the Git
+ repository.
+ 
+ 
 -- 
-2.23.0.windows.1
+2.37.1 (Apple Git-137.1)
 
 
