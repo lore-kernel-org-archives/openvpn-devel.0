@@ -1,13 +1,11 @@
 MIME-Version: 1.0
-References: <20230208001819.244694-1-arne@...1227...>
- <20230208001819.244694-4-arne@...1227...>
-In-Reply-To: <20230208001819.244694-4-arne@...1227...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 9 Feb 2023 18:01:20 -0500
-Message-ID: <CAKuzo_hWg3omNvb06FV9YPpZG4vUNhxa31nO2JP67Vzc6VQv8w@...278...>
-Content-Type: multipart/alternative; boundary="000000000000e16ae005f44c5cbc"
-Subject: Re: [Openvpn-devel] [PATCH 3/5] Do not run check_engine test when
- crosscompiling
+References: <20230209142248.455120-1-arne@...1227...>
+In-Reply-To: <20230209142248.455120-1-arne@...1227...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri, 10 Feb 2023 10:00:41 +0200
+Message-ID: <CAGyAFMUP-uCrCbQB2u6dOX-MczORL1nmyo9AS5scmTtws6d0Xg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Add 'allow-compression stub-only
+ and refuse framing with 'allow-compression no'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,98 +14,285 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---000000000000e16ae005f44c5cbc
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Tue, Feb 7, 2023 at 7:19 PM Arne Schwabe <arne@...1227...> wrote:
+I found this behavior a bit confusing.
 
+First,
+
+2023-02-10 09:53:14 us=187000 Options error: Cannot set comp-lzo to
+'no', allow-compression is set to 'no'
+2023-02-10 09:53:14 us=187000 OPTIONS IMPORT: compression parms modified
+
+parms->params
+
+but they weren't really modified, weren't they? We haven't applied
+anything because allow-compression is 'no' by default.
+
+Next, we still establish connection with DCO and got broken tunnel.
+
+If we know that the tunnel will be broken (we got pushed comp-lzo no),
+shouldn't we bail out?
+
+to 9. helmik. 2023 klo 16.23 Arne Schwabe (arne@...1227...) kirjoitti:
+>
+> This changes the "no" setting of allow-compression to also refuse framing. This
+> is important for our DCO implementation as these do not implement framing.
+>
+> This behaviour surfaced when a commercial VPN provider was pushing
+> "comp-lzo no" to a client with DCO. While we are technically at fault here
+> for announcing comp-lzo no support by announcing IV_LZO_STUB=1, the
+> VPN provider continues to push "comp-lzo no" even in absense of that
+> flag.
+>
+> As the new default we default to allow-compression stub-only if a stub option
+> is found in the config and to allow-compression no otherwise. This ensures
+> that we only enable DCO when no compression framing is used.
+>
 > Signed-off-by: Arne Schwabe <arne@...1227...>
 > ---
->  tests/unit_tests/engine-key/Makefile.am | 2 ++
->  1 file changed, 2 insertions(+)
+>  Changes.rst                           |  5 +++
+>  doc/man-sections/protocol-options.rst |  3 ++
+>  src/openvpn/comp.c                    | 32 +++++++++--------
+>  src/openvpn/comp.h                    |  2 +-
+>  src/openvpn/dco.c                     |  4 +--
+>  src/openvpn/options.c                 | 50 +++++++++++++++++++++------
+>  6 files changed, 66 insertions(+), 30 deletions(-)
 >
-> diff --git a/tests/unit_tests/engine-key/Makefile.am
-> b/tests/unit_tests/engine-key/Makefile.am
-> index 246222514..0c2888576 100644
-> --- a/tests/unit_tests/engine-key/Makefile.am
-> +++ b/tests/unit_tests/engine-key/Makefile.am
-> @@ -12,7 +12,9 @@ TESTS_ENVIRONMENT = srcdir="$(abs_srcdir)"; \
->         top_srcdir="$(top_srcdir)"; \
->         export srcdir builddir top_builddir top_srcdir;
+> diff --git a/Changes.rst b/Changes.rst
+> index c5335ce93..3a573cc9a 100644
+> --- a/Changes.rst
+> +++ b/Changes.rst
+> @@ -223,6 +223,11 @@ User-visible Changes
+>    compatibility with older versions. See the manual page on the
+>    ``--compat-mode`` for details.
 >
-> +if !CROSS_COMPILING
->  TESTS = check_engine_keys.sh
-> +endif
->  check_engine_keys.sh: $(conffiles)
+> +- (OpenVPN 2.6.1) ``--allow-compression no`` has been changed to not allow
+> +  compression or compression framing at all now and is the new default.
+> +  Use ``--allow-compression stub-only`` for the old ``no`` behaviour of OpenVPN
+> +  2.5 and OpenVPN 2.6.0.
+> +
+>  Common errors with OpenSSL 3.0 and OpenVPN 2.6
+>  ----------------------------------------------
+>  Both OpenVPN 2.6 and OpenSSL 3.0 tighten the security considerable, so some
+> diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
+> index 248f65cfd..76c323413 100644
+> --- a/doc/man-sections/protocol-options.rst
+> +++ b/doc/man-sections/protocol-options.rst
+> @@ -25,6 +25,9 @@ configured in a compatible way between both the local and remote side.
+>        compression at the same time is not a feasible option.
 >
->  CLEANFILES = \
+>    :code:`no`  (default)
+> +      OpenVPN will refuse any compression or compression framing (stub).
+> +
+> +  :code:`stub-only`
+>        OpenVPN will refuse any non-stub compression.
 >
+>    :code:`yes`
+> diff --git a/src/openvpn/comp.c b/src/openvpn/comp.c
+> index 3b8d78996..c7ec6c7f5 100644
+> --- a/src/openvpn/comp.c
+> +++ b/src/openvpn/comp.c
+> @@ -134,27 +134,29 @@ comp_print_stats(const struct compress_context *compctx, struct status_output *s
+>  void
+>  comp_generate_peer_info_string(const struct compress_options *opt, struct buffer *out)
+>  {
+> -    if (opt)
+> +    if (!opt || opt->flags & COMP_F_ALLOW_NOCOMP_ONLY)
+> +    {
+> +        return;
+> +    }
+> +
+> +    bool lzo_avail = false;
+> +    if (!(opt->flags & COMP_F_ADVERTISE_STUBS_ONLY))
+>      {
+> -        bool lzo_avail = false;
+> -        if (!(opt->flags & COMP_F_ADVERTISE_STUBS_ONLY))
+> -        {
+>  #if defined(ENABLE_LZ4)
+> -            buf_printf(out, "IV_LZ4=1\n");
+> -            buf_printf(out, "IV_LZ4v2=1\n");
+> +        buf_printf(out, "IV_LZ4=1\n");
+> +        buf_printf(out, "IV_LZ4v2=1\n");
+>  #endif
+>  #if defined(ENABLE_LZO)
+> -            buf_printf(out, "IV_LZO=1\n");
+> -            lzo_avail = true;
+> +        buf_printf(out, "IV_LZO=1\n");
+> +        lzo_avail = true;
+>  #endif
+> -        }
+> -        if (!lzo_avail)
+> -        {
+> -            buf_printf(out, "IV_LZO_STUB=1\n");
+> -        }
+> -        buf_printf(out, "IV_COMP_STUB=1\n");
+> -        buf_printf(out, "IV_COMP_STUBv2=1\n");
+>      }
+> +    if (!lzo_avail)
+> +    {
+> +        buf_printf(out, "IV_LZO_STUB=1\n");
+> +    }
+> +    buf_printf(out, "IV_COMP_STUB=1\n");
+> +    buf_printf(out, "IV_COMP_STUBv2=1\n");
+>  }
+>
+>  #endif /* USE_COMP */
+> diff --git a/src/openvpn/comp.h b/src/openvpn/comp.h
+> index 685f40391..027fa0593 100644
+> --- a/src/openvpn/comp.h
+> +++ b/src/openvpn/comp.h
+> @@ -60,7 +60,7 @@
+>                                              * we still accept other compressions to be pushed */
+>  #define COMP_F_MIGRATE              (1<<5) /* push stub-v2 or comp-lzo no when we see a client with comp-lzo in occ */
+>  #define COMP_F_ALLOW_ASYM           (1<<6) /* Compression was explicitly set to allow asymetric compression */
+> -
+> +#define COMP_F_ALLOW_NOCOMP_ONLY    (1<<7) /* Do not allow compression framing like stub v2 or comp-lzo no. Breaks DCO */
+>
+>  /*
+>   * Length of prepended prefix on compressed packets
+> diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+> index 3087a0df8..10337b964 100644
+> --- a/src/openvpn/dco.c
+> +++ b/src/openvpn/dco.c
+> @@ -410,9 +410,7 @@ dco_check_option(int msglevel, const struct options *o)
+>      }
+>
+>  #if defined(USE_COMP)
+> -    if (o->comp.alg != COMP_ALG_UNDEF
+> -        || o->comp.flags & COMP_F_ALLOW_ASYM
+> -        || o->comp.flags & COMP_F_ALLOW_COMPRESS)
+> +    if (o->comp.alg != COMP_ALG_UNDEF || !(o->comp.flags & COMP_F_ALLOW_NOCOMP_ONLY))
+>      {
+>          msg(msglevel, "Note: '--allow-compression' is not set to 'no', disabling data channel offload.");
+>
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index ab1b01cf7..6550dc52c 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -3628,10 +3628,16 @@ options_set_backwards_compatible_options(struct options *o)
+>       *
+>       * Disable compression by default starting with 2.6.0 if no other
+>       * compression related option has been explicitly set */
+> -    if (!comp_non_stub_enabled(&o->comp) && !need_compatibility_before(o, 20600)
+> -        && (o->comp.flags == 0))
+> +    if (!need_compatibility_before(o, 20600) && (o->comp.flags == 0))
+>      {
+> -        o->comp.flags = COMP_F_ALLOW_STUB_ONLY|COMP_F_ADVERTISE_STUBS_ONLY;
+> +        if (o->comp.alg == COMP_ALG_UNDEF)
+> +        {
+> +            o->comp.flags = COMP_F_ALLOW_NOCOMP_ONLY;
+> +        }
+> +        else if (!comp_non_stub_enabled(&o->comp))
+> +        {
+> +            o->comp.flags = COMP_F_ALLOW_STUB_ONLY | COMP_F_ADVERTISE_STUBS_ONLY;
+> +        }
+>      }
+>  #endif
+>  }
+> @@ -8330,8 +8336,16 @@ add_option(struct options *options,
+>
+>          if (streq(p[1], "no"))
+>          {
+> -            options->comp.flags =
+> -                COMP_F_ALLOW_STUB_ONLY|COMP_F_ADVERTISE_STUBS_ONLY;
+> +            options->comp.flags = COMP_F_ALLOW_NOCOMP_ONLY;
+> +            if (comp_non_stub_enabled(&options->comp))
+> +            {
+> +                msg(msglevel, "'--allow-compression no' conflicts with "
+> +                    " enabling compression");
+> +            }
+> +        }
+> +        else if (streq(p[1], "stub-only"))
+> +        {
+> +            options->comp.flags = COMP_F_ADVERTISE_STUBS_ONLY|COMP_F_ALLOW_STUB_ONLY;
+>              if (comp_non_stub_enabled(&options->comp))
+>              {
+>                  msg(msglevel, "'--allow-compression no' conflicts with "
+> @@ -8342,7 +8356,7 @@ add_option(struct options *options,
+>          {
+>              /* Also printed on a push to hint at configuration problems */
+>              msg(msglevel, "Cannot set allow-compression to '%s' "
+> -                "after set to 'no'", p[1]);
+> +                "after set to 'stub-only'", p[1]);
+>              goto err;
+>          }
+>          else if (streq(p[1], "asym"))
+> @@ -8373,8 +8387,16 @@ add_option(struct options *options,
+>
+>          /* All lzo variants do not use swap */
+>          options->comp.flags &= ~COMP_F_SWAP;
+> +
+> +        if (options->comp.flags & COMP_F_ALLOW_NOCOMP_ONLY)
+> +        {
+> +            /* Also printed on a push to hint at configuration problems */
+> +            msg(msglevel, "Cannot set comp-lzo to '%s', "
+> +                "allow-compression is set to 'no'", p[1]);
+> +            goto err;
+> +        }
+>  #if defined(ENABLE_LZO)
+> -        if (p[1] && streq(p[1], "no"))
+> +        else if (p[1] && streq(p[1], "no"))
+>  #endif
+>          {
+>              options->comp.alg = COMP_ALG_STUB;
+> @@ -8385,7 +8407,7 @@ add_option(struct options *options,
+>          {
+>              /* Also printed on a push to hint at configuration problems */
+>              msg(msglevel, "Cannot set comp-lzo to '%s', "
+> -                "allow-compression is set to 'no'", p[1]);
+> +                "allow-compression is set to 'stub-only'", p[1]);
+>              goto err;
+>          }
+>          else if (p[1])
+> @@ -8428,7 +8450,14 @@ add_option(struct options *options,
+>          VERIFY_PERMISSION(OPT_P_COMP);
+>          if (p[1])
+>          {
+> -            if (streq(p[1], "stub"))
+> +            if (options->comp.flags & COMP_F_ALLOW_NOCOMP_ONLY)
+> +            {
+> +                /* Also printed on a push to hint at configuration problems */
+> +                msg(msglevel, "Cannot set compress to '%s', "
+> +                    "allow-compression is set to 'no'", p[1]);
+> +                goto err;
+> +            }
+> +            else if (streq(p[1], "stub"))
+>              {
+>                  options->comp.alg = COMP_ALG_STUB;
+>                  options->comp.flags |= (COMP_F_SWAP|COMP_F_ADVERTISE_STUBS_ONLY);
+> @@ -8442,13 +8471,12 @@ add_option(struct options *options,
+>              {
+>                  options->comp.alg = COMP_ALG_UNDEF;
+>                  options->comp.flags = COMP_F_MIGRATE;
+> -
+>              }
+>              else if (options->comp.flags & COMP_F_ALLOW_STUB_ONLY)
+>              {
+>                  /* Also printed on a push to hint at configuration problems */
+>                  msg(msglevel, "Cannot set compress to '%s', "
+> -                    "allow-compression is set to 'no'", p[1]);
+> +                    "allow-compression is set to 'stub-only'", p[1]);
+>                  goto err;
+>              }
+>  #if defined(ENABLE_LZO)
+> --
+> 2.37.1 (Apple Git-137.1)
+>
+>
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
-FTR, this patch is no longer needed (included in #2 below). So, the order
-of interdependent patches are: (All acked).
 
-1. [Openvpn-devel,1/3] Conditionally add subdir-objects option to automake
-<https://patchwork.openvpn.net/project/openvpn2/patch/20230204004512.250271-1-selva.nair@...277.../>
-2. [Openvpn-devel,v3,2/3] Build unit tests in mingw Windows build
-<https://patchwork.openvpn.net/project/openvpn2/patch/20230208005925.393200-1-selva.nair@...277.../>
-3. [Openvpn-devel,4/5] Add missing stdint.h includes in unit tests files
-<https://patchwork.openvpn.net/project/openvpn2/patch/20230208001819.244694-5-arne@...1227.../>
-4. [Openvpn-devel,v2,5/5] Add building unit tests with mingw to github
-actions
-<https://patchwork.openvpn.net/project/openvpn2/patch/20230209163705.466173-1-arne@...1227.../>
 
-Selva
-
---000000000000e16ae005f44c5cbc
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div>Hi,</div><br><div class=3D"gmail_quote"><div dir=3D"l=
-tr" class=3D"gmail_attr">On Tue, Feb 7, 2023 at 7:19 PM Arne Schwabe &lt;<a=
- href=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1227...</a>&gt; =
-wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0=
-px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Signed-of=
-f-by: Arne Schwabe &lt;<a href=3D"mailto:arne@...1227..." target=3D"_blank"=
->arne@...1227...</a>&gt;<br>
----<br>
-=C2=A0tests/unit_tests/engine-key/Makefile.am | 2 ++<br>
-=C2=A01 file changed, 2 insertions(+)<br>
-<br>
-diff --git a/tests/unit_tests/engine-key/Makefile.am b/tests/unit_tests/eng=
-ine-key/Makefile.am<br>
-index 246222514..0c2888576 100644<br>
---- a/tests/unit_tests/engine-key/Makefile.am<br>
-+++ b/tests/unit_tests/engine-key/Makefile.am<br>
-@@ -12,7 +12,9 @@ TESTS_ENVIRONMENT =3D srcdir=3D&quot;$(abs_srcdir)&quot;;=
- \<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 top_srcdir=3D&quot;$(top_srcdir)&quot;; \<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 export srcdir builddir top_builddir top_srcdir;=
-<br>
-<br>
-+if !CROSS_COMPILING<br>
-=C2=A0TESTS =3D check_engine_keys.sh<br>
-+endif<br>
-=C2=A0check_engine_keys.sh: $(conffiles)<br>
-<br>
-=C2=A0CLEANFILES =3D \<br></blockquote><div><br></div><div>FTR, this patch =
-is no longer needed (included in #2 below). So, the order of interdependent=
- patches are: (All acked).</div><div><br></div>1. <a href=3D"https://patchw=
-ork.openvpn.net/project/openvpn2/patch/20230204004512.250271-1-selva.nair@...220...=
-..277.../" target=3D"_blank">[Openvpn-devel,1/3] Conditionally add subdir-o=
-bjects option to automake</a><br>2. <a href=3D"https://patchwork.openvpn.ne=
-t/project/openvpn2/patch/20230208005925.393200-1-selva.nair@...277.../" tar=
-get=3D"_blank">[Openvpn-devel,v3,2/3] Build unit tests in mingw Windows bui=
-ld</a><br>3. <a href=3D"https://patchwork.openvpn.net/project/openvpn2/patc=
-h/20230208001819.244694-5-arne@...1227.../" target=3D"_blank">[Openvpn-deve=
-l,4/5] Add missing stdint.h includes in unit tests files</a><br>4. <a href=
-=3D"https://patchwork.openvpn.net/project/openvpn2/patch/20230209163705.466=
-173-1-arne@...1227.../" target=3D"_blank">[Openvpn-devel,v2,5/5] Add buildi=
-ng unit tests with mingw to github actions</a></div><div class=3D"gmail_quo=
-te"><br></div><div class=3D"gmail_quote">Selva</div></div>
-
---000000000000e16ae005f44c5cbc--
+-- 
+-Lev
 
