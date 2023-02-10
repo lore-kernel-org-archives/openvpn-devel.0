@@ -1,10 +1,12 @@
-Date: Fri, 10 Feb 2023 19:59:03 +0100 (CET)
-Message-Id: <202302101859.31AIx3Y8031056@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230204004512.250271-1-selva.nair@...277...>
-References: <20230204004512.250271-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Conditionally add
- subdir-objects option to automake
+Message-ID: <a080d07f-c772-4dc4-de40-1807d2f74a6a@...2181...>
+Date: Fri, 10 Feb 2023 20:19:47 +0100
+MIME-Version: 1.0
+Content-Language: en-US
+References: <20230210133159.1336-1-lstipakov@...277...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20230210133159.1336-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Improve format specifier for socket
+ handle in Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,38 +15,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-This warning has been quite an annoyance for some time - thanks for
-taking care of it, and also figuring out what caveats apply.  I do
-not understand autoconf intricacies, but I have fed this to github and
-to the buildbots, and they all seem to agree "things still build fine" :-)
-(the oldest buildbot is FreeBSD 7.4 with automake-1.11, and then there's
-the OpenIndiana buildbot with automake-1.15.1, so we have everything
-in the mix... the "current" OSes in the zoo all have 1.16.2 or later)
+Hi,
 
-Your patch has been applied to the master and release/2.6 branch.
+On 10/02/2023 14:31, Lev Stipakov wrote:
+> From: Lev Stipakov <lev@...515...>
+> 
+> Socket is a handle on Windows, which is usually logged in hex.
+> Also an interesting value is INVALID_SOCKET, which is ~0.
+> 
+> PRIuPTR prints decimals, and for INVALID_SOCKET it prints something like
+> 
+>    2023-02-10 14:45:21 us=906000 write to TUN/TAP : Jrjestelmkutsulle
+> annettu data-alue on liian pieni.   (fd=18446744073709551615,code=122)
+> 
+> PRIxPTR prints hex, and INVALID_SOCKET looks a bit nicer:
+> 
+>    2023-02-10 15:17:11 us=828000 write to TUN/TAP : Jrjestelmkutsulle
+> annettu data-alue on liian pieni.   (fd=ffffffffffffffff,code=122)
+> 
+> Reported-by: Selva Nair <selva.nair@...277...>
+> Signed-off-by: Lev Stipakov <lev@...515...>
 
-commit 8b915c48252da81b96041de66847272b0902c755 (master)
-commit 7f72abcf8a56bb35a510a3409e03a4e2aaba50da (release/2.6)
-Author: Selva Nair
-Date:   Fri Feb 3 19:45:10 2023 -0500
+I also discussed this with Lev and, despite this being different from 
+what we do in the *nix world (where decimal representations make sense 
+for file descriptors), it seems to be the right hting to do on Windows 
+when using HANDLEs (shrug).
 
-     Conditionally add subdir-objects option to automake
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20230204004512.250271-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26147.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Acked-by: Antonio Quartulli <a@...2181...>
 
 
---
-kind regards,
-
-Gert Doering
-
+-- 
+Antonio Quartulli
 
