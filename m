@@ -1,11 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 10 Feb 2023 15:27:06 +0100
-Message-Id: <20230210142712.572303-3-arne@...1227...>
+Date: Fri, 10 Feb 2023 15:27:12 +0100
+Message-Id: <20230210142712.572303-9-arne@...1227...>
 In-Reply-To: <20230210142712.572303-1-arne@...1227...>
 References: <20230210142712.572303-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/4] Combine extra_tun/frame parameter of
- frame_calculate_payload_overhead
+Subject: [Openvpn-devel] [PATCH v2 5/5] Add building unit tests with mingw
+ to github actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,101 +18,172 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Instead of passing a value and a bool just pass the value and 0 if
-the caller does not want the value to be added. This also allows
-the function to be used by a function without a frame struct.
+This runs each test in its own action since order of stderr and stdout
+is seemingly random in github action Windows output and this way at least
+tests outputs are groups gy test
+
+Patch v2: use -static-libgcc to avoid comping gcc runtime libraries.
 
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/mss.c |  2 +-
- src/openvpn/mtu.c | 14 +++++---------
- src/openvpn/mtu.h |  6 +++---
- src/openvpn/occ.c |  3 +--
- 4 files changed, 10 insertions(+), 15 deletions(-)
+ .github/workflows/build.yaml | 111 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 109 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
-index 429aa1e93..98d540688 100644
---- a/src/openvpn/mss.c
-+++ b/src/openvpn/mss.c
-@@ -303,7 +303,7 @@ frame_calculate_mssfix(struct frame *frame, struct key_type *kt,
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 5888e91e5..a1026fddb 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -55,9 +55,10 @@ jobs:
+       PKCS11_HELPER_VERSION: "1.29.0"
+       OPENSSL_VERSION: "${{ matrix.osslver }}"
+       TAP_WINDOWS_VERSION: "9.23.3"
++      CMOCKA_VERSION: "1.1.5"
+     steps:
+       - name: Install dependencies
+-        run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip
++        run: sudo apt update && sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip cmake ninja-build build-essential wget
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2689...
+         with:
+@@ -72,7 +73,7 @@ jobs:
+         uses: actions/cache@...2689...
+         with:
+           path: '~/mingw/'
+-          key: ${{ matrix.target }}-mingw-${{ matrix.osslver }}-${{ env.LZO_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSION }}
++          key: ${{ matrix.target }}-mingw-${{ matrix.osslver }}-${{ env.LZO_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSION }}--${{ env.CMOCKA_VERSION }}
  
-     /* Calculate the number of bytes that the payload differs from the payload
-      * MTU. This are fragment/compression/ethernet headers */
--    payload_overhead = frame_calculate_payload_overhead(frame, options, kt, true);
-+    payload_overhead = frame_calculate_payload_overhead(frame->extra_tun, options, kt);
+       # Repeating  if: steps.cache.outputs.cache-hit != 'true'
+       # on every step for building dependencies is ugly but
+@@ -84,12 +85,33 @@ jobs:
+           wget -c -P download-cache/ "https://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip"
+           wget -c -P download-cache/ "https://www.oberhumer.com/opensource/lzo/download/lzo-${LZO_VERSION}.tar.gz"
+           wget -c -P download-cache/ "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11-helper-${PKCS11_HELPER_VERSION}/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
++          wget -c -P download-cache/ "https://github.com/coreboot/cmocka/archive/refs/tags/cmocka-${CMOCKA_VERSION}.tar.gz"
+           tar jxf "download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
+           wget -c -P download-cache/ "https://www.openssl.org/source/old/1.1.1/openssl-${OPENSSL_VERSION}.tar.gz" || wget -c -P download-cache/ "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
+           tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
+           tar zxf "download-cache/lzo-${LZO_VERSION}.tar.gz"
++          tar zxf "download-cache/cmocka-${CMOCKA_VERSION}.tar.gz"
+           unzip download-cache/tap-windows-${TAP_WINDOWS_VERSION}.zip
  
-     /* We are in a "liberal" position with respect to MSS,
-      * i.e. we assume that MSS can be calculated from MTU
-diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index 1d9ebe011..56ea67061 100644
---- a/src/openvpn/mtu.c
-+++ b/src/openvpn/mtu.c
-@@ -108,20 +108,16 @@ frame_calculate_protocol_header_size(const struct key_type *kt,
- 
- 
- size_t
--frame_calculate_payload_overhead(const struct frame *frame,
-+frame_calculate_payload_overhead(size_t extra_tun,
-                                  const struct options *options,
--                                 const struct key_type *kt,
--                                 bool extra_tun)
-+                                 const struct key_type *kt)
- {
-     size_t overhead = 0;
- 
-     /* This is the overhead of tap device that is not included in the MTU itself
-      * i.e. Ethernet header that we still need to transmit as part of the
--     * payload */
--    if (extra_tun)
--    {
--        overhead += frame->extra_tun;
--    }
-+     * payload, this is set to 0 by caller if not applicable */
-+    overhead += extra_tun;
- 
- #if defined(USE_COMP)
-     /* v1 Compression schemes add 1 byte header. V2 only adds a header when it
-@@ -158,7 +154,7 @@ frame_calculate_payload_size(const struct frame *frame,
-                              const struct key_type *kt)
- {
-     size_t payload_size = options->ce.tun_mtu;
--    payload_size += frame_calculate_payload_overhead(frame, options, kt, true);
-+    payload_size += frame_calculate_payload_overhead(frame->extra_tun, options, kt);
-     return payload_size;
- }
- 
-diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index 0ff4f7bfa..21dbcee7f 100644
---- a/src/openvpn/mtu.h
-+++ b/src/openvpn/mtu.h
-@@ -217,10 +217,10 @@ frame_calculate_payload_size(const struct frame *frame,
-  * *  [IP][UDP][OPENVPN PROTOCOL HEADER][ **PAYLOAD incl compression header** ]
-  */
- size_t
--frame_calculate_payload_overhead(const struct frame *frame,
-+frame_calculate_payload_overhead(size_t extra_tun,
-                                  const struct options *options,
--                                 const struct key_type *kt,
--                                 bool extra_tun);
-+                                 const struct key_type *kt);
++      - name: create cmocka build directory
++        if: steps.cache.outputs.cache-hit != 'true'
++        run: mkdir cmocka-build
 +
++      - name: configure cmocka
++        if: steps.cache.outputs.cache-hit != 'true'
++        working-directory: "./cmocka-build"
++        run: cmake -GNinja -DCMAKE_C_COMPILER=${{ matrix.chost }}-gcc -DCMAKE_CXX_COMPILER=${{ matrix.chost }}-g++ -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SHARED_LINKER_FLAGS=-static-libgcc -DCMAKE_PREFIX_PATH=${HOME}/mingw/opt/lib/pkgconfig/ -DCMAKE_INCLUDE_PATH=${HOME}/mingw/opt/lib/include -DCMAKE_LIBRARY_PATH=${HOME}/mingw/opt/lib -DCMAKE_INSTALL_PREFIX=${HOME}/mingw/opt/ ../cmocka-cmocka-${{ env.CMOCKA_VERSION }}
++
++      - name: build cmocka
++        if: steps.cache.outputs.cache-hit != 'true'
++        working-directory: "./cmocka-build"
++        run: ninja
++
++      - name: install cmocka
++        if: steps.cache.outputs.cache-hit != 'true'
++        working-directory: "./cmocka-build"
++        run: ninja install
++
+       - name: Configure OpenSSL
+         if: steps.cache.outputs.cache-hit != 'true'
+         run: ./Configure --cross-compile-prefix=${{ matrix.chost }}- shared ${{ matrix.target }} no-capieng --prefix="${HOME}/mingw/opt" --openssldir="${HOME}/mingw/opt" -static-libgcc
+@@ -154,6 +176,90 @@ jobs:
+       - name: build OpenVPN
+         run: make -j3
+         working-directory: openvpn
++      - name: build OpenVPN unittests
++        run: make -j3 check
++        working-directory: openvpn
++
++      # We use multiple upload-artifact here, so it becomes a flat folder
++      # structure since we need the dlls on the same level as the binaries
++      - name: Archive cmocka/openssl/lzo dlls
++        uses: actions/upload-artifact@...2689...
++        with:
++          retention-days: 1
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-dlls
++          path: '~/mingw/opt/bin/*.dll'
++
++      # libtool puts some wrapper binaries in openvpn/tests/unit_tests/openvpn/
++      # and the real binaries in openvpn/tests/unit_tests/openvpn/.libs/
++      - name: Archive unittest artifacts
++        uses: actions/upload-artifact@...2689...
++        with:
++          retention-days: 1
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-tests
++          path: openvpn/tests/unit_tests/openvpn/.libs/*.exe
++
++      # Currently not used by the unit test but might in the future and also
++      # helpful if manually downloading and running openvpn.exe from a mingw
++      # build
++      - name: Archive openvpn binary
++        uses: actions/upload-artifact@...2689...
++        with:
++          retention-days: 1
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-tests
++          path: openvpn/src/openvpn/.libs/*.exe
++
++  mingw-unittest:
++    needs: [ mingw ]
++    strategy:
++      fail-fast: false
++      matrix:
++        osslver: [ 1.1.1q, 3.0.5 ]
++        target: [ mingw64, mingw ]
++
++    runs-on: windows-latest
++    name: "mingw unittests - ${{matrix.target}} - OSSL ${{ matrix.osslver }}"
++    steps:
++      - name: Retrieve mingw unittest dlls
++        uses: actions/download-artifact@...2689...
++        with:
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-dlls
++          path: unittests
++
++      - name: Retrieve mingw unittest
++        uses: actions/download-artifact@...2689...
++        with:
++          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-tests
++          path: unittests
++
++      - name: List unittests directory
++        run: "dir unittests"
++
++      - name: Run argvunit test
++        run: ./unittests/argv_testdriver.exe
++
++      - name: Run auth_tokenunit test
++        run: ./unittests/auth_token_testdriver.exe
++
++      - name: Run bufferunit test
++        run: ./unittests/buffer_testdriver.exe
++
++      - name: Run cryptounit test
++        run: ./unittests/crypto_testdriver.exe
++
++      - name: Run miscunit test
++        run: ./unittests/misc_testdriver.exe
++
++      - name: Run ncpunit test
++        run: ./unittests/ncp_testdriver.exe
++
++      - name: Run packet idunit test
++        run: ./unittests/packet_id_testdriver.exe
++
++      - name: Run pktunit test
++        run: ./unittests/pkt_testdriver.exe
++
++      - name: Run providerunit test
++        run: ./unittests/provider_testdriver.exe
  
- /**
-  * Calculates the size of the OpenVPN protocol header. This includes
-diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c
-index 0fa803cdb..94b82e0f5 100644
---- a/src/openvpn/occ.c
-+++ b/src/openvpn/occ.c
-@@ -305,8 +305,7 @@ check_send_occ_msg_dowork(struct context *c)
-             const struct key_type *kt = &c->c1.ks.key_type;
- 
-             /* OCC message have comp/fragment headers but not ethernet headers */
--            payload_hdr = frame_calculate_payload_overhead(&c->c2.frame, &c->options,
--                                                           kt, false);
-+            payload_hdr = frame_calculate_payload_overhead(0, &c->options, kt);
- 
-             /* Since we do not know the payload size we just pass 0 as size here */
-             proto_hdr = frame_calculate_protocol_header_size(kt, &c->options, false);
+   ubuntu:
+     strategy:
+@@ -450,3 +556,4 @@ jobs:
+         run: make -j3
+       - name: make check
+         run: make check
++
 -- 
 2.37.1 (Apple Git-137.1)
 
