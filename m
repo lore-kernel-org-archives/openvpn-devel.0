@@ -1,9 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Tue, 14 Feb 2023 14:43:23 +0100
-Message-Id: <20230214134323.1033590-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Use proper print format/casting when
- converting msg_channel handle
+Date: Tue, 14 Feb 2023 14:45:09 +0100 (CET)
+Message-Id: <202302141345.31EDj94L022724@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230210142712.572303-7-arne@...1227...>
+References: <20230210142712.572303-7-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Revise the cipher negotiation
+ about OpenVPN3 in the man page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,52 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The current casting triggers a warning on 32bit:
+Acked-by: Gert Doering <gert@...1296...>
 
-    init.c:1842:66: error: cast from pointer to integer of different size [-Werror=pointer-to-int-cast]
+"Seems to make sense".  Language fixes from Frank included.
 
-Use the proper printf format specifier for printing a pointer avoiding
-the cast alltogether.
+Your patch has been applied to the master and release/2.6 branch.
 
-In options.c use a cast to intptr_t before converting to a handle to
-avoid having to ifdef atoll/atol for 32/64 bit.
+commit 4da513d584b4e7521de5a47a95cc27fa8a342fd3 (master)
+commit cfbfb801e6432382edbbec758335d7c142707206 (release/2.6)
+Author: Arne Schwabe
+Date:   Fri Feb 10 15:27:10 2023 +0100
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/init.c    | 3 ++-
- src/openvpn/options.c | 2 +-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+     Revise the cipher negotiation about OpenVPN3 in the man page
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 0ad2c7e09..0d50d9189 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1839,7 +1839,8 @@ do_open_tun(struct context *c, int *error_flags)
- #ifdef _WIN32
-         /* store (hide) interactive service handle in tuntap_options */
-         c->c1.tuntap->options.msg_channel = c->options.msg_channel;
--        msg(D_ROUTE, "interactive service msg_channel=%" PRIu64, (unsigned long long) c->options.msg_channel);
-+        msg(D_ROUTE, "interactive service msg_channel=%" PRIuPTR,
-+            (intptr_t) c->options.msg_channel);
- #endif
- 
-         /* allocate route list structure */
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index c1ddb0262..679528187 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -7882,7 +7882,7 @@ add_option(struct options *options,
- #ifdef _WIN32
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-         HANDLE process = GetCurrentProcess();
--        HANDLE handle = (HANDLE) atoll(p[1]);
-+        HANDLE handle = (HANDLE) ((intptr_t) atoll(p[1]));
-         if (!DuplicateHandle(process, handle, process, &options->msg_channel, 0,
-                              FALSE, DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS))
-         {
--- 
-2.37.1 (Apple Git-137.1)
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230210142712.572303-7-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26226.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
