@@ -1,9 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Tue, 14 Feb 2023 14:56:58 +0100
-Message-Id: <20230214135658.1034787-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Add missing check for nl_socket_alloc
- failure
+Date: Tue, 14 Feb 2023 15:00:33 +0100 (CET)
+Message-Id: <202302141400.31EE0XkI023101@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230128223421.2207802-3-selva.nair@...277...>
+References: <20230128223421.2207802-3-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: cyryptapi.c: log the selected
+ certificate's name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,37 +15,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This can happen if the memory alloc fails.
+Acked-by: Gert Doering <gert@...1296...>
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/dco_linux.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+I think this is a useful addition.  Code looks good according to the
+documentation for CertGetNameStringW() and WideCharToMultiByte().
 
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index c84f9cfe1..b1103c8d5 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -79,10 +79,14 @@ typedef int (*ovpn_nl_cb)(struct nl_msg *msg, void *arg);
- static int
- resolve_ovpn_netlink_id(int msglevel)
- {
--    int ret;
-     struct nl_sock *nl_sock = nl_socket_alloc();
- 
--    ret = genl_connect(nl_sock);
-+    if (!nl_sock)
-+    {
-+        msg(msglevel, "Allocating net link socket failed");
-+    }
-+
-+    int ret = genl_connect(nl_sock);
-     if (ret)
-     {
-         msg(msglevel, "Cannot connect to generic netlink: %s",
--- 
-2.37.1 (Apple Git-137.1)
+Tested on a MinGW compile (yes, compiles :-) ).  Not actually tested on
+a life windows system, as my "have p12 certs imported, reference them
+from .ovpn" project is still pending.
+
+The 3 new gc_free() are a bit ugly, but unavoidable without either 
+having "gc_free() in the middle of the function" (which we don't do) or
+restructure more & add "ret = 1 ; goto end" code...  so it is what it is.
+
+Your patch has been applied to the master and release/2.6 branch.
+
+commit ddffcea2922905ec13e0e39239d106e0edbea5de (master)
+commit 0ccfce24b470d924d4184c8a3de08a50154c5e4c (release/2.6)
+Author: Selva Nair
+Date:   Sat Jan 28 17:34:19 2023 -0500
+
+     cyryptapi.c: log the selected certificate's name
+
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230128223421.2207802-3-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26093.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
