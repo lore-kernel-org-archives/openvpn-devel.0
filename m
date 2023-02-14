@@ -1,10 +1,14 @@
-Date: Tue, 14 Feb 2023 15:00:33 +0100 (CET)
-Message-Id: <202302141400.31EE0XkI023101@...2054...>
+Date: Tue, 14 Feb 2023 15:01:44 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230128223421.2207802-3-selva.nair@...277...>
-References: <20230128223421.2207802-3-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: cyryptapi.c: log the selected
- certificate's name
+Message-ID: <Y+uUSNTTULTEElt2@...1296...>
+References: <20230214135658.1034787-1-arne@...1227...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="52n08Utrv9g0qjvv"
+Content-Disposition: inline
+In-Reply-To: <20230214135658.1034787-1-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Add missing check for nl_socket_alloc
+ failure
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,43 +17,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+--52n08Utrv9g0qjvv
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-I think this is a useful addition.  Code looks good according to the
-documentation for CertGetNameStringW() and WideCharToMultiByte().
+Hi,
 
-Tested on a MinGW compile (yes, compiles :-) ).  Not actually tested on
-a life windows system, as my "have p12 certs imported, reference them
-from .ovpn" project is still pending.
+On Tue, Feb 14, 2023 at 02:56:58PM +0100, Arne Schwabe wrote:
+>  resolve_ovpn_netlink_id(int msglevel)
+>  {
+> -    int ret;
+>      struct nl_sock *nl_sock =3D nl_socket_alloc();
+>=20=20
+> -    ret =3D genl_connect(nl_sock);
+> +    if (!nl_sock)
+> +    {
+> +        msg(msglevel, "Allocating net link socket failed");
+> +    }
 
-The 3 new gc_free() are a bit ugly, but unavoidable without either 
-having "gc_free() in the middle of the function" (which we don't do) or
-restructure more & add "ret = 1 ; goto end" code...  so it is what it is.
+... shouldn't we abort in this case, aka, M_FATAL (or "return -errno")?
 
-Your patch has been applied to the master and release/2.6 branch.
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-commit ddffcea2922905ec13e0e39239d106e0edbea5de (master)
-commit 0ccfce24b470d924d4184c8a3de08a50154c5e4c (release/2.6)
-Author: Selva Nair
-Date:   Sat Jan 28 17:34:19 2023 -0500
+Gert Doering - Munich, Germany                             gert@...1296...
 
-     cyryptapi.c: log the selected certificate's name
+--52n08Utrv9g0qjvv
+Content-Type: application/pgp-signature; name="signature.asc"
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230128223421.2207802-3-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26093.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+-----BEGIN PGP SIGNATURE-----
 
+iQGcBAEBAgAGBQJj65RIAAoJEB2Cnv7KVigShnIL/2Vjb0JQ9kLiIuxsjNFoefU2
+/YS5Ky1yOm/yJcgojV8UuZq3OyluGDZP2NuVrroGGfku0N4tpBiIR0SQEmcRMBcD
+8UXU1kmh9OXBH/e4AkDd/vmGmLJUdtYLmnxVkk0qagfkLvHq99Bj6JEbi68xwk4L
+FUSMtb/J9rPsghzLvAoI8/p1NB81TXqygUS2oawuvSLyw6XTe3pK3HniwWODWXxX
+5c+vAxfPDJbAD15ymS/25gET3HoYPvjsEenQq+xvTV7l/CQBwQNOgGwlRysUv6Uj
+9gftDNybdXubN67/2mQ2O7ObNLV2zsC6IInx20mCaSMwwzLsqndcBZZzrodVbcoz
+vhtaRcsrXdj+zaRCxj0lo07eDlPDhcsKJumk6uFfUZFh+nSu5H/mZXg9yuZN/XR+
+KbFNx8VzMaxVNmeTkB5G7RrcvoQQeaoVk9Axryp7SlKCAYbOtQLpx4CnCnxLwjVq
+ItqZaRhtTmxListXgi9MHgGi0/GcSu8wLSV2X2V4qw==
+=mgdc
+-----END PGP SIGNATURE-----
 
---
-kind regards,
-
-Gert Doering
-
+--52n08Utrv9g0qjvv--
 
