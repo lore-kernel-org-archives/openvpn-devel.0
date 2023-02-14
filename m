@@ -1,19 +1,11 @@
-Date: Tue, 14 Feb 2023 11:21:15 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <Y+tgm1coNX0d7gmK@...1296...>
-References: <20230208001819.244694-3-arne@...1227...>
- <20230208005925.393200-1-selva.nair@...277...>
- <Y+azhVMqdJb/6gAN@...1296...>
- <CAKuzo_imMOa+UC2FngyyyCvGpERdoyrRNpYnyqEs9+6s4q8_8Q@...278...>
- <Y+ffJEsJI1SvOupe@...1296...>
- <CAKuzo_hX3utoo8wew951AR9NZdt6hcjgq832tJDvYc6RmJvcNw@...278...>
+From: Arne Schwabe <arne@...1227...>
+Date: Tue, 14 Feb 2023 12:20:44 +0100
+Message-Id: <20230214112044.1021962-1-arne@...1227...>
+In-Reply-To: <20230210142712.572303-8-arne@...1227...>
+References: <20230210142712.572303-8-arne@...1227...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="D0n8luKZfLPMLZz8"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_hX3utoo8wew951AR9NZdt6hcjgq832tJDvYc6RmJvcNw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v3 2/3] Build unit tests in mingw
- Windows build
+Subject: [Openvpn-devel] [PATCH v2 4/4] Reduce initialisation spam from verb
+ <= 3 and print summary instead
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,98 +14,356 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---D0n8luKZfLPMLZz8
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+The messages about cipher initialisation are currently very noisy, especially if tls-auth/tls-crypt is
+in use.
 
-Hi,
+Typically messages like this is display for AES-256-CBC with SHA256:
 
-On Sat, Feb 11, 2023 at 01:44:04PM -0500, Selva Nair wrote:
-> On Sat, Feb 11, 2023 at 1:32 PM Gert Doering <gert@...1296...> wrote:
->=20
-> > /bin/bash ../../../libtool  --tag=3DCC   --mode=3Dlink i686-w64-mingw32=
--gcc
->=20
-> This is a 32 bit build which I never tried. Maybe cmocka is not built for
-> 32 bit?
+   Outgoing Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key
+   Outgoing Data Channel: Using 256 bit message hash 'SHA256' for HMAC authentication
+   Incoming Data Channel: Cipher 'AES-256-CBC' initialized with 256 bit key
+   Incoming Data Channel: Using 256 bit message hash 'SHA256' for HMAC authentication
 
-Yes, that was spot-on.
+in addition to the tls-crypt/tls-auth messages that has the amount of messages.
 
-Found time to debug this with Arne today, and all the "non-cmocka" stuff
-was built with "configure --host=3Di686-w64-mingw32" while cmocka got
-"-DCMAKE_C_COMPILER=3Dx86_64-w64-mingw32-gcc", so the resulting .a library
-was full of 64 bit objects... which, of course, "file" doesn't tell on
-the .a, but unpacking libcmocka.dll.a + libcrypto.dll.a and looking at=20
-some of the contained .o told me...
+These message are not that helpful. The only meaningful information is better suited in
+compat messages. This commit moves the spammy messages to verb 4 and consistently prints out
+the cipher/auth used in the data channel instead on verb 2:
 
-gert@...2713...:/tmp$ file cmocka_dll_d000001.o libcrypto_3_dll_d000001.o
-cmocka_dll_d000001.o:      Intel amd64 COFF object file, no line number inf=
-o, not stripped, 5 sections, symbol offset=3D0x138, 8 symbols, 1st section =
-name ".text"
-libcrypto_3_dll_d000001.o: Intel 80386 COFF object file, no line number inf=
-o, not stripped, 5 sections, symbol offset=3D0x134, 9 symbols, 1st section =
-name ".text"
+   Data Channel: cipher 'AES-256-CBC' auth 'SHA256'
 
+This patches also summarises other aspects of the imported options for VPN connection and
+prints them (even if not coming from pulled options):
 
-... so, changed the cmocka CMAKE invocation to=20
+    Data Channel: cipher 'AES-256-GCM'
+    Timers: ping 8, ping-restart 40
+    Protocol options: explicit-exit-notify 1, protocol-flags tls-ekm
 
-    cmake -DCMAKE_SYSTEM_NAME=3DWindows \
-            -DCMAKE_C_COMPILER=3Di686-w64-mingw32-gcc \
-            -DCMAKE_CXX_COMPILER=3Di686-w64-mingw32-g++ \
-...
+And move the OPTIONS IMPORT: xx modified that are included in the new messages to
+D_PUSH_DEBUG (verb 7) since they do not add any useful information anymore.
 
-rebuilt cmocka, and "make test" now does what we expect it to do - build
-something
+Patch v2: also compile with compression disabled
 
-gert@...2713...:~/mingw/openvpn.git$ ls -l ./tests/unit_tests/openvpn/.libs
-total 6504
--rwxrwxr-x 1 gert gert 541621 Feb 14 10:11 argv_testdriver.exe
--rw-rw-r-- 1 gert gert   6229 Feb 14 10:11 argv_testdriver_ltshwrapper
--rwxrwxr-x 1 gert gert 816794 Feb 14 10:12 auth_token_testdriver.exe
--rw-rw-r-- 1 gert gert   6248 Feb 14 10:12 auth_token_testdriver_ltshwrapper
--rwxrwxr-x 1 gert gert 536193 Feb 14 10:11 buffer_testdriver.exe
-...
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/crypto.c   |   4 +-
+ src/openvpn/errlevel.h |   1 +
+ src/openvpn/init.c     | 145 +++++++++++++++++++++++++++++++++++++++--
+ src/openvpn/occ.h      |  16 +++++
+ src/openvpn/sig.c      |  15 -----
+ src/openvpn/ssl.c      |   5 --
+ src/openvpn/ssl_ncp.c  |   2 +-
+ 7 files changed, 161 insertions(+), 27 deletions(-)
 
-and not fail :-)
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 073f47e47..5e1c495b0 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -835,7 +835,7 @@ init_key_ctx(struct key_ctx *ctx, const struct key *key,
+         cipher_ctx_init(ctx->cipher, key->cipher, kt->cipher, enc);
+ 
+         const char *ciphername = cipher_kt_name(kt->cipher);
+-        msg(D_HANDSHAKE, "%s: Cipher '%s' initialized with %d bit key",
++        msg(D_CIPHER_INIT, "%s: Cipher '%s' initialized with %d bit key",
+             prefix, ciphername, cipher_kt_key_size(kt->cipher) * 8);
+ 
+         dmsg(D_SHOW_KEYS, "%s: CIPHER KEY: %s", prefix,
+@@ -850,7 +850,7 @@ init_key_ctx(struct key_ctx *ctx, const struct key *key,
+         ctx->hmac = hmac_ctx_new();
+         hmac_ctx_init(ctx->hmac, key->hmac, kt->digest);
+ 
+-        msg(D_HANDSHAKE,
++        msg(D_CIPHER_INIT,
+             "%s: Using %d bit message hash '%s' for HMAC authentication",
+             prefix, md_kt_size(kt->digest) * 8, md_kt_name(kt->digest));
+ 
+diff --git a/src/openvpn/errlevel.h b/src/openvpn/errlevel.h
+index c69ea91d6..4699d1ac2 100644
+--- a/src/openvpn/errlevel.h
++++ b/src/openvpn/errlevel.h
+@@ -105,6 +105,7 @@
+ #define D_MTU_INFO           LOGLEV(4, 61, 0)        /* show terse MTU info */
+ #define D_PID_DEBUG_LOW      LOGLEV(4, 63, 0)        /* show low-freq packet-id debugging info */
+ #define D_PID_DEBUG_MEDIUM   LOGLEV(4, 64, 0)        /* show medium-freq packet-id debugging info */
++#define D_CIPHER_INIT        LOGLEV(4, 65, 0)        /* show messages about cipher init */
+ 
+ #define D_LOG_RW             LOGLEV(5, 0,  0)        /* Print 'R' or 'W' to stdout for read/write */
+ 
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index b500d3543..a2bf9548b 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2209,6 +2209,141 @@ p2p_set_dco_keepalive(struct context *c)
+     }
+     return true;
+ }
++
++/**
++ * Helper function for tls_print_deferred_options_results
++ * Adds the ", " delimitor if there already some data in the
++ * buffer.
++ */
++static void
++add_delim_if_non_empty(struct buffer *buf, const char *header)
++{
++    if (buf_len(buf) > strlen(header))
++    {
++        buf_printf(buf, ", ");
++    }
++}
++
++
++/**
++ * Prints the results of options imported for the data channel
++ * @param o
++ */
++static void
++tls_print_deferred_options_results(struct context *c)
++{
++    struct options *o = &c->options;
++
++    struct buffer out;
++    uint8_t line[1024] = { 0 };
++    buf_set_write(&out, line, sizeof(line));
++
++
++    if (cipher_kt_mode_aead(o->ciphername))
++    {
++        buf_printf(&out, "Data Channel: cipher '%s'",
++                   cipher_kt_name(o->ciphername));
++    }
++    else
++    {
++        buf_printf(&out, "Data Channel: cipher '%s', auth '%s'",
++                   cipher_kt_name(o->ciphername), md_kt_name(o->authname));
++    }
++
++    if (o->use_peer_id)
++    {
++        buf_printf(&out, ", peer-id: %d", o->peer_id);
++    }
++
++#ifdef USE_COMP
++    if (c->c2.comp_context)
++    {
++        buf_printf(&out, ", compression: '%s'", c->c2.comp_context->alg.name);
++    }
++#endif
++
++    msg(D_HANDSHAKE, "%s", BSTR(&out));
++
++    buf_clear(&out);
++
++    const char *header = "Timers: ";
++
++    buf_printf(&out, "%s", header);
++
++    if (o->ping_send_timeout)
++    {
++        buf_printf(&out, "ping %d", o->ping_send_timeout);
++    }
++
++    if (o->ping_rec_timeout_action != PING_UNDEF)
++    {
++        /* yes unidirectional ping is possible .... */
++        add_delim_if_non_empty(&out, header);
++
++        if (o->ping_rec_timeout_action == PING_EXIT)
++        {
++            buf_printf(&out, "ping-exit %d", o->ping_rec_timeout);
++        }
++        else
++        {
++            buf_printf(&out, "ping-restart %d", o->ping_rec_timeout);
++        }
++    }
++
++    if (o->inactivity_timeout)
++    {
++        add_delim_if_non_empty(&out, header);
++
++        buf_printf(&out, "inactive %d", o->inactivity_timeout);
++        if (o->inactivity_minimum_bytes)
++        {
++            buf_printf(&out, " %" PRIu64, o->inactivity_minimum_bytes);
++        }
++    }
++
++    if (o->session_timeout)
++    {
++        add_delim_if_non_empty(&out, header);
++        buf_printf(&out, "session-timeout %d", o->session_timeout);
++    }
++
++    if (buf_len(&out) > strlen(header))
++    {
++        msg(D_HANDSHAKE, "%s", BSTR(&out));
++    }
++
++    buf_clear(&out);
++    header = "Protocol options: ";
++    buf_printf(&out, "%s", header);
++
++    if (c->options.ce.explicit_exit_notification)
++    {
++        buf_printf(&out, "explicit-exit-notify %d",
++                   c->options.ce.explicit_exit_notification);
++    }
++    if (c->options.imported_protocol_flags)
++    {
++        add_delim_if_non_empty(&out, header);
++
++        buf_printf(&out, "protocol-flags");
++
++        if (o->imported_protocol_flags & CO_USE_CC_EXIT_NOTIFY)
++        {
++            buf_printf(&out, " cc-exit");
++        }
++        if (o->imported_protocol_flags & CO_USE_TLS_KEY_MATERIAL_EXPORT)
++        {
++            buf_printf(&out, " tls-ekm");
++        }
++    }
++
++    if (buf_len(&out) > strlen(header))
++    {
++        msg(D_HANDSHAKE, "%s", BSTR(&out));
++    }
++}
++
++
+ /**
+  * This function is expected to be invoked after open_tun() was performed.
+  *
+@@ -2370,6 +2505,8 @@ do_up(struct context *c, bool pulled_options, unsigned int option_types_found)
+             initialization_sequence_completed(c, error_flags); /* client/p2p restart with --persist-tun */
+         }
+ 
++        tls_print_deferred_options_results(c);
++
+         c->c2.do_up_ran = true;
+         if (c->c2.tls_multi)
+         {
+@@ -2470,7 +2607,7 @@ do_deferred_options(struct context *c, const unsigned int found)
+     if (found & OPT_P_TIMER)
+     {
+         do_init_timers(c, true);
+-        msg(D_PUSH, "OPTIONS IMPORT: timers and/or timeouts modified");
++        msg(D_PUSH_DEBUG, "OPTIONS IMPORT: timers and/or timeouts modified");
+     }
+ 
+     if (found & OPT_P_EXPLICIT_NOTIFY)
+@@ -2482,14 +2619,14 @@ do_deferred_options(struct context *c, const unsigned int found)
+         }
+         else
+         {
+-            msg(D_PUSH, "OPTIONS IMPORT: explicit notify parm(s) modified");
++            msg(D_PUSH_DEBUG, "OPTIONS IMPORT: explicit notify parm(s) modified");
+         }
+     }
+ 
+ #ifdef USE_COMP
+     if (found & OPT_P_COMP)
+     {
+-        msg(D_PUSH, "OPTIONS IMPORT: compression parms modified");
++        msg(D_PUSH_DEBUG, "OPTIONS IMPORT: compression parms modified");
+         comp_uninit(c->c2.comp_context);
+         c->c2.comp_context = comp_init(&c->options.comp);
+     }
+@@ -2540,7 +2677,7 @@ do_deferred_options(struct context *c, const unsigned int found)
+ 
+     if (found & OPT_P_PEER_ID)
+     {
+-        msg(D_PUSH, "OPTIONS IMPORT: peer-id set");
++        msg(D_PUSH_DEBUG, "OPTIONS IMPORT: peer-id set");
+         c->c2.tls_multi->use_peer_id = true;
+         c->c2.tls_multi->peer_id = c->options.peer_id;
+     }
+diff --git a/src/openvpn/occ.h b/src/openvpn/occ.h
+index 4320bd119..e382482f6 100644
+--- a/src/openvpn/occ.h
++++ b/src/openvpn/occ.h
+@@ -153,4 +153,20 @@ check_send_occ_msg(struct context *c)
+     }
+ }
+ 
++/**
++ * Small helper function to determine if we should send the exit notification
++ * via control channel.
++ * @return control channel exit message should be used */
++static inline bool
++cc_exit_notify_enabled(struct context *c)
++{
++    /* Check if we have TLS active at all */
++    if (!c->c2.tls_multi)
++    {
++        return false;
++    }
++
++    const struct key_state *ks = get_primary_key(c->c2.tls_multi);
++    return (ks->crypto_options.flags & CO_USE_CC_EXIT_NOTIFY);
++}
+ #endif /* ifndef OCC_H */
+diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
+index 0d5346010..5b89bb42b 100644
+--- a/src/openvpn/sig.c
++++ b/src/openvpn/sig.c
+@@ -342,21 +342,6 @@ print_status(const struct context *c, struct status_output *so)
+ }
+ 
+ 
+-/* Small helper function to determine if we should send the exit notification
+- * via control channel */
+-static inline bool
+-cc_exit_notify_enabled(struct context *c)
+-{
+-    /* Check if we have TLS active at all */
+-    if (!c->c2.tls_multi)
+-    {
+-        return false;
+-    }
+-
+-    const struct key_state *ks = get_primary_key(c->c2.tls_multi);
+-    return (ks->crypto_options.flags & CO_USE_CC_EXIT_NOTIFY);
+-}
+-
+ /*
+  * Handle the triggering and time-wait of explicit
+  * exit notification.
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 016bdc57f..47f3702b2 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1730,11 +1730,6 @@ tls_session_update_crypto_params_do_work(struct tls_multi *multi,
+         return true;
+ 
+     }
+-    if (strcmp(options->ciphername, session->opt->config_ciphername))
+-    {
+-        msg(D_HANDSHAKE, "Data Channel: using negotiated cipher '%s'",
+-            options->ciphername);
+-    }
+ 
+     init_key_type(&session->opt->key_type, options->ciphername,
+                   options->authname, true, true);
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index fe6f6fa7c..97619be5e 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -318,7 +318,7 @@ check_pull_client_ncp(struct context *c, const int found)
+ {
+     if (found & OPT_P_NCP)
+     {
+-        msg(D_PUSH, "OPTIONS IMPORT: data channel crypto options modified");
++        msg(D_PUSH_DEBUG, "OPTIONS IMPORT: data channel crypto options modified");
+         return true;
+     }
+ 
+-- 
+2.37.1 (Apple Git-137.1)
 
-
-So, I can confirm that the yesterday-merged patch will make "make check"
-on a MinGW system do the right thing.  I didn't test 64 bit compiles, as
-that wouldn't add insights on "it's make / configure specific" changes.
-
-Thanks for your assistence and patience,
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---D0n8luKZfLPMLZz8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJj62CbAAoJEB2Cnv7KVigS+ssMAJYVxBPVFnCW5KiNns6gviGi
-0NXxkw5V75otVDFk9+Q/P9Dcw27mNg1u7Cj6oSP3Rl8aZFd761lwRRtMOcs82X0B
-P7B86QgEdsSNWmgPS4PXnhAmZOpAx7CtvEYrHBLT6ChbvUAnroxmI5zTVzR49MHn
-HlhDWL7B3m1SmIC9OLyj3n1SEyHQpz1nQFS6LNZmIfaF/7NvX8QXOs1RSWw1lZUH
-c4O/Ax2wALwjckqDj4o8yjvAGPwjPCU3VSmv85kgwJMdzsoeEq/1GZ02RK7kBVzD
-tTMd5fLsf6dZiZYYyT4gXilprRI36D44LDycla5Afd7AWqOS2dFS90EArdwqOWD3
-SnpUXI7ffXo7EbsiiO54Mv6Q6WqPwZqgR7oY8KMrAMyfd3oDiiVuu7613C8Yr6RC
-GYk/ohquQ/mt9dQhGI7+79e90FGbnWXsaX2cFwr0+UqBqcvs062lmu8yN7/EEvSi
-xD8PtPFwGb6Fv5aJzESe2a4MI/p3svHld2SSE7jxXw==
-=D9FU
------END PGP SIGNATURE-----
-
---D0n8luKZfLPMLZz8--
 
