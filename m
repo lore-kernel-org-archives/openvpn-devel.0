@@ -1,10 +1,10 @@
-Date: Tue, 14 Feb 2023 14:11:13 +0100 (CET)
-Message-Id: <202302141311.31EDBDUZ022011@...2054...>
+Date: Tue, 14 Feb 2023 14:27:57 +0100 (CET)
+Message-Id: <202302141327.31EDRvmh022318@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230210133159.1336-1-lstipakov@...277...>
-References: <20230210133159.1336-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Improve format specifier for
- socket handle in Windows
+In-Reply-To: <20230209163705.466173-1-arne@...1227...>
+References: <20230209163705.466173-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add building unit tests with
+ mingw to github actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +15,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I'm so not testing this... but I do not need to, the change is trivial
-(ok, I cheated, I did test-compile on MinGW).
+Tested by pushing to my GH repo, and staring in amazement at the output.
 
-Your patch has been applied to the master branch.
+Your patch has been applied to the master and release/2.6 branch.
 
-commit 6731314a82d1a3c76b5497749985ee20c0c7d8eb (master)
-commit 8e3331a901dbececc8622e97ed0592ddadf56996 (release/2.6)
-Author: Lev Stipakov
-Date:   Fri Feb 10 15:31:59 2023 +0200
+commit 9719393b7cf94d37f3706ca32c02433e8578599b (master)
+commit adf00ebd51952554b02c6d8a5312b9b035b1f64c (HEAD -> release/2.6)
+Author: Arne Schwabe
+Date:   Thu Feb 9 17:37:05 2023 +0100
 
-     Improve format specifier for socket handle in Windows
+     Add building unit tests with mingw to github actions
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20230210133159.1336-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26220.html
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <20230209163705.466173-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26204.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
