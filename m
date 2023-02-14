@@ -1,11 +1,11 @@
-Date: Tue, 14 Feb 2023 15:02:38 +0100
+Date: Tue, 14 Feb 2023 15:44:25 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <Y+uUfp+2a2qqLgQ1@...1296...>
+Message-ID: <Y+ueSYlv/eGGi2pn@...1296...>
 References: <20230128223421.2207802-3-selva.nair@...277...>
  <202302141400.31EE0XkI023101@...2054...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="EY/7G2jq1ZdHmzS6"
+ protocol="application/pgp-signature"; boundary="imk3JK6KltS7M/fe"
 Content-Disposition: inline
 In-Reply-To: <202302141400.31EE0XkI023101@...2054...>
 Subject: Re: [Openvpn-devel] [PATCH applied] Re: cyryptapi.c: log the
@@ -21,16 +21,54 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---EY/7G2jq1ZdHmzS6
+--imk3JK6KltS7M/fe
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-... and apologies for not fixing the Subject: - I saw the typo, it was
-on my "must fix" list, and then I read too much Microsoft documentation
-and was distracted...
+On Tue, Feb 14, 2023 at 03:00:33PM +0100, Gert Doering wrote:
+> The 3 new gc_free() are a bit ugly, but unavoidable without either=20
+> having "gc_free() in the middle of the function" (which we don't do) or
+> restructure more & add "ret =3D 1 ; goto end" code...  so it is what it i=
+s.
+
+I did have a vague dislike for these gc_free(), but it turns out that
+one of them is actually *wrong*...
+
+https://github.com/OpenVPN/openvpn/actions/runs/4174551447/jobs/7228274450
+
+cryptoapi.c: In function `SSL_CTX_use_CryptoAPI_certificate':
+426
+cryptoapi.c:1072:13: error: incompatible type for argument 1 of `gc_free'
+427
+ 1072 |     gc_free(gc);
+428
+      |             ^~
+429
+      |             |
+430
+      |             struct gc_arena
+431
+In file included from cryptoapi.c:52:
+432
+buffer.h:1019:26: note: expected `struct gc_arena *' but argument is of typ=
+e `struct gc_arena'
+433
+ 1019 | gc_free(struct gc_arena *a)
+434
+      |         ~~~~~~~~~~~~~~~~~^
+
+
+Sorry for not spotting this before merging - my MinGW build did not
+excercise the "right" code paths.
+
+This is in the "no HAVE_XKEY_PROVIDER" branch, and I build with 3.0.7,
+so the test build never saw this.
+
+Seems I need to merge the "remove pre-3.0 support" patch quickly, so
+this becomes moot ;-)
 
 gert
 
@@ -44,22 +82,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---EY/7G2jq1ZdHmzS6
+--imk3JK6KltS7M/fe
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJj65R+AAoJEB2Cnv7KVigSCg4L/ir3GwV7HWhN00Jhb3HEd9ip
-L3XYSY8IzdgMZJhWUv7GT2cqj6vEoaBzT30ot/HxiF/G5DfanCQNBpgAeVuWLD/5
-V7r87me8UPkxvkE78GoEN/Laf1/P/eLVQcxujd44lMQ8Ot7JexEj3p3Ju5KhJyyQ
-I99gab+z6eBcp1J6wRLI5nIdswiJe1H8K/gd653+lKXtVCLtJeJiZTGM5nJZU7fQ
-lEbxwkr5qPYVmaL+QC1ceuaARbkyJzF4c2O/TXBMezBHh16q9nR76tqy1B1qu8Bc
-lzdT6nrAXX1N7JMcK4BJr54RiZK+argd291dqiUk80CxhaKfJXHt4eYNHfNEzeKv
-1EEiFo9MpBbU9/HA5A8QHusuxXHjcbkPCTmWGTuAm6SXHXlI2Olne5nAPHuTypYK
-WMWcczrlIn7q8OB06x5u+hympP421HhaTLMhkJROwB0ZXNZsGQiAaLGfO2qPwdPO
-vYZfSdV0maVAu+0y3zNiM8quVgqOkxM6FwBbXA9t+w==
-=M2t2
+iQGcBAEBAgAGBQJj655JAAoJEB2Cnv7KVigSQTsL/iOTHOlrrc+D1/pD3Ow3Q1mp
+zsbrAueWzQMkaneQGUe7Gr5ivmOuE5daI6j87iYWeiA2mCUk+TZqteuC3sRexOLh
+vFIZavZqrfEmsFNsZtsON314zXQgUS167SSvRHcHJvdJ5IvhKEWW4+zYn1ElNg3Z
+kwMg1ZZ9VMg+K2HxVza3zy/PMz/aSDYDzetuzCl1f/1YKot0+1Vhq4xFslwvNs9z
+JG6EzSw/H3UDGId462wIasBa/vhDzo4dNbgRYL/LWKXQZwsSpJVya1d3tcqud1Hs
+IQM2p1pPmfm9e0XpUHbyiQMF4ERPdjW7FrqKMJ4Un4Yr5RzW0rpxq+hq0D+bpFUs
+p2pRL+6VG3Sig3ddZL3HcM8VUQj0ffI7hl+ob4G8jMM1EYoVhlSIsarx7OoiUvmh
+QjvfcjnmxRD81AXIOQ1ChdtKMwi60u8cGHKTQEcGBU++BDANEhnq6kUtsnWVmHFV
+aKRgTKuQuTA/Tvj3N4onh2Laqm9ni/xA4uFs6iNGrw==
+=40uO
 -----END PGP SIGNATURE-----
 
---EY/7G2jq1ZdHmzS6--
+--imk3JK6KltS7M/fe--
 
