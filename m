@@ -1,9 +1,11 @@
-Message-ID: <9160f6a3-1a61-d112-7a48-a7da4af38644@...2108...>
-Date: Wed, 15 Feb 2023 13:31:02 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Date: Wed, 15 Feb 2023 16:04:55 +0100
+Message-Id: <20230215150455.45052-1-frank@...2641...>
+In-Reply-To: <20230207132026.41580-1-frank@...2641...>
+References: <20230207132026.41580-1-frank@...2641...>
 MIME-Version: 1.0
-Content-Language: en-US
-From: David Sommerseth <dazo+openvpn@...2108...>
-Subject: [Openvpn-devel] OpenVPN Linking Exception
+Subject: [Openvpn-devel] [PATCH v4] configure: enable DCO by default on
+ FreeBSD/Linux
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,99 +14,198 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+Automatically disabled when
+- iproute2 is enabled
+- libnl-genl is missing on Linux
+- libnv is missing on FreeBSD
 
-OpenVPN 2.x is licensed under the GNU Public License v2.0 (GPL-2.0). 
-This license has served us well in the past and we are not trying to 
-change that.  However, changes in licenses of our dependencies put us in 
-an unfortunate situation.
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ .github/workflows/build.yaml | 13 ++----
+ configure.ac                 | 79 ++++++++++++++++++++++++++++--------
+ 2 files changed, 66 insertions(+), 26 deletions(-)
 
-Both mbed TLS and OpenSSL nowadays use the Apache 2.x license (APL-2). 
-For the OpenSSL library we have a special exception that allows us 
-linking with it.  For newer mbed TLS versions, we cannot do this any more.
+v2: error out when libnl-genl is missing as discussed with ordex on
+    IRC.
+v3:
+ - improvements to the messages, suggested by Selva
+ - further improvements to the default specification, trying to make it clear
+ - if enabling iproute2, do not test for libnl-genl
+v4: add updates for GHA
 
-The APL-2 allows very liberal use of its source code when including it 
-in other program (like BSD license).  Unlike BSD licenses, the APL-2 has 
-a few additions that position it better in today's legal landscape.  It 
-requires patent grant (in layman terms: you cannot contribute to an 
-APL-2 licensed project and later sue someone for using your patents on 
-the code you contributed).  This is the most critical aspect where the 
-APL-2 is incompatible with GPL-2.0 according to Free Software Foundation 
-- <https://www.gnu.org/licenses/license-list.html#apache2>.
-
-A short overview of APL-2 and license text can be found here:
-<https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)#summary>
-
-The OpenVPN community has discussed these issues with Pamela Chestek
-<https://www.chesteklegal.com/> on the linking exception.  She is a 
-renowned open source license legal expert.  Various options for this 
-challenge have been studied and evaluated.
-
-What is clear is that we will need a linking exception.  The OpenSSL and
-mbed TLS libraries may be considered system libraries on Linux systems 
-but cannot be considered as such for distributions of the OpenVPN binary 
-on Windows, macOS or Android.
-
-
-The proposed linking exception for OpenVPN:
-
-     In addition, as a special exception, OpenVPN Inc and the
-     contributors give permission to link the code of this program to
-     libraries (the "Libraries") licensed under the Apache License
-     version 2.0 (this work and any linked library the "Combined Work")
-     and copy and distribute the Combined Work without an obligation to
-     license the Libraries under the GNU General Public License v2
-     (GPL-2.0) as required by Section 2 of the GPL-2.0, and without an
-     obligation to refrain from imposing any additional restrictions in
-     the Apache License version 2 that are not in the GPL-2.0, as
-     required by Section 6 of the GPL-2.0.  You must comply with the
-     GPL-2.0 in all other respects for the Combined Work, including
-     the obligation to provide source code.  If you modify this file, you
-     may extend this exception to your version of the file, but you are
-     not obligated to do so.  If you do not wish to do so, delete this
-     exception statement from your version.
-
-This exception is the verbatim copy from Pamela Chestek, and the content
-in this copy above has been reviewed by her.  There is some legalese
-phrases there (in particular related to "Combined work") which may seem 
-odd, but this is common practice in legal definitions.
-
-In plain non-legalese English this basically says:
-
-  * The intention for this license exception is to allow OpenVPN to be
-    linked against APL-2 licensed libraries, even where the GPL-2.0 and
-    APL-2 licenses conflict from a legal perspective.
-
-  * OpenVPN itself will stay GPL-2.0 and the code belonging to the
-    OpenVPN project must comply to the GPL-2.0 license.  This is NOT
-    dual-licensing of the OpenVPN code base.
-
-  * This license exception DOES NOT require NOR expect a license change
-    of the APL-2 based library.  This exception allows using the APL-2
-    library as-is.  However, when distributing a compiled OpenVPN binary
-    linking against APL-2 libraries ("Combined Work"), the REQUIREMENT is
-    that the APL-2 library MUST also be available on similar terms as in
-    GPL-2.0, like providing the source code of the library upon request,
-    except in the two specific ways mentioned.
-
-  * If the APL-2 based library forbids such linking and distribution,
-    this license exception DOES NOT overrule the restriction of the APL-2
-    based library.  If the APL-2 library cannot satisfy the requirements
-    in this license exception, you CANNOT distribute an OpenVPN binary
-    linked with this library.
-
-
-I hope we can reach an agreement and replace the current OpenSSL linking 
-exception with this new exception above.
-
-
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 699964fd..3265725f 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -275,10 +275,12 @@ jobs:
+             sslpkg: "libssl1.0-dev"
+             ssllib: openssl
+             libname: OpenSSL 1.0.2
++            extraconf: "--disable-dco"
+           - os: ubuntu-18.04
+             sslpkg: "libssl-dev"
+             libname: OpenSSL 1.1.1
+             ssllib: openssl
++            extraconf: "--disable-dco"
+           - os: ubuntu-20.04
+             sslpkg: "libssl-dev"
+             libname: OpenSSL 1.1.1
+@@ -312,22 +314,15 @@ jobs:
+             libname: OpenSSL 1.1.1
+             ssllib: openssl
+             extraconf: "--disable-lzo --disable-lz4"
+-          - os: ubuntu-20.04
+-            sslpkg: "libssl-dev"
+-            libname: OpenSSL 1.1.1
+-            ssllib: openssl
+-            extraconf: "--enable-dco"
+-            nlpkg: "libnl-genl-3-dev"
+ 
+     name: "gcc - ${{matrix.os}} - ${{matrix.libname}} ${{matrix.extraconf}}"
+     env:
+       SSLPKG: "${{matrix.sslpkg}}"
+-      NLPKG: "${{matrix.nlpkg}}"
+ 
+     runs-on: ${{matrix.os}}
+     steps:
+       - name: Install dependencies
+-        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf ${SSLPKG} ${NLPKG}
++        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf ${SSLPKG}
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2689...
+       - name: autoconf
+@@ -354,7 +349,7 @@ jobs:
+     runs-on: ${{matrix.os}}
+     steps:
+       - name: Install dependencies
+-        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automake autoconf libmbedtls-dev
++        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils libtool automake autoconf libmbedtls-dev
+       - name: Checkout OpenVPN
+         uses: actions/checkout@...2689...
+       - name: autoconf
+diff --git a/configure.ac b/configure.ac
+index 66ba6f38..5a9a55d9 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -157,14 +157,27 @@ AC_ARG_ENABLE(
+ 
+ AC_ARG_ENABLE(
+ 	[dco],
+-	[AS_HELP_STRING([--enable-dco], [enable data channel offload support using the ovpn-dco kernel module (always enabled on Windows) @<:@default=no@:>@])],
++	[AS_HELP_STRING([--disable-dco], [enable data channel offload support using the ovpn-dco kernel module (always enabled on Windows) @<:@default=yes@:>@])],
+ 	,
+-	[enable_dco="no"]
++	[
++		case "$host" in
++			*-*-linux*)
++				enable_dco="auto"
++			;;
++			*-*-freebsd*)
++				enable_dco="auto"
++			;;
++			*)
++				# note that this does not disable it for Windows
++				enable_dco="no"
++			;;
++		esac
++	]
+ )
+ 
+ AC_ARG_ENABLE(
+ 	[iproute2],
+-	[AS_HELP_STRING([--enable-iproute2], [enable support for iproute2 @<:@default=no@:>@])],
++	[AS_HELP_STRING([--enable-iproute2], [enable support for iproute2 (disables DCO) @<:@default=no@:>@])],
+ 	,
+ 	[enable_iproute2="no"]
+ )
+@@ -549,7 +562,7 @@ AC_CHECK_DECLS(
+ 	,
+ 	[[${SOCKET_INCLUDES}]]
+ )
+-AC_CHECKING([anonymous union support])
++AC_MSG_CHECKING([anonymous union support])
+ AC_COMPILE_IFELSE(
+ 	[AC_LANG_PROGRAM(
+ 		[[
+@@ -784,28 +797,60 @@ PKG_CHECK_MODULES(
+ )
+ 
+ 
+-if test "$enable_dco" = "yes"; then
++if test "$enable_dco" != "no"; then
++	enable_dco_arg="$enable_dco"
++	if test "${enable_iproute2}" = "yes"; then
++		AC_MSG_WARN([iproute2 support cannot be enabled when using DCO])
++		enable_dco="no"
++	fi
++	case "$host" in
++		*-*-linux*)
+ dnl
+ dnl Include generic netlink library used to talk to ovpn-dco
+ dnl
+-	case "$host" in
+-		*-*-linux*)
+ 			PKG_CHECK_MODULES([LIBNL_GENL],
+ 					  [libnl-genl-3.0 >= 3.4.0],
+ 					  [have_libnl="yes"],
+-					  [AC_MSG_ERROR([libnl-genl-3.0 package not found or too old. Is the development package and pkg-config installed? Must be version 3.4.0 or newer])]
++					  [
++					   AC_MSG_WARN([libnl-genl-3.0 package not found or too old. Is the development package and pkg-config installed? Must be version 3.4.0 or newer for DCO])
++					   enable_dco="no"
++					  ]
+ 			)
+-
+-			CFLAGS="${CFLAGS} ${LIBNL_GENL_CFLAGS}"
+-			LIBS="${LIBS} ${LIBNL_GENL_LIBS}"
+-
+-			AC_DEFINE(ENABLE_DCO, 1, [Enable shared data channel offload])
+-			AC_MSG_NOTICE([Enabled ovpn-dco support for Linux])
++			if test "$enable_dco" = "no"; then
++				if test "$enable_dco_arg" = "auto"; then
++					AC_MSG_WARN([DCO support disabled])
++				else
++					AC_MSG_ERROR([DCO support can't be enabled])
++				fi
++			else
++				CFLAGS="${CFLAGS} ${LIBNL_GENL_CFLAGS}"
++				LIBS="${LIBS} ${LIBNL_GENL_LIBS}"
++
++				AC_DEFINE(ENABLE_DCO, 1, [Enable shared data channel offload])
++				AC_MSG_NOTICE([Enabled ovpn-dco support for Linux])
++			fi
+ 			;;
+ 		*-*-freebsd*)
+-			LIBS="${LIBS} -lnv"
+-			AC_DEFINE(ENABLE_DCO, 1, [Enable data channel offload for FreeBSD])
+-			AC_MSG_NOTICE([Enabled ovpn-dco support for FreeBSD])
++			AC_CHECK_LIB(
++				[nv],
++				[nvlist_create],
++				[
++				 LIBS="${LIBS} -lnv"
++				 AC_DEFINE(ENABLE_DCO, 1, [Enable data channel offload for FreeBSD])
++				 AC_MSG_NOTICE([Enabled ovpn-dco support for FreeBSD])
++				],
++				[
++				 enable_dco="no"
++				 AC_MSG_WARN([Name/Value pair library not found.])
++				]
++			)
++			if test "$enable_dco" = "no"; then
++				if test "$enable_dco_arg" = "auto"; then
++					AC_MSG_WARN([DCO support disabled])
++				else
++					AC_MSG_ERROR([DCO support can't be enabled])
++				fi
++			fi
+ 			;;
+ 		*-mingw*)
+ 			AC_MSG_NOTICE([NOTE: --enable-dco ignored on Windows because it's always enabled])
 -- 
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
+2.34.1
 
 
