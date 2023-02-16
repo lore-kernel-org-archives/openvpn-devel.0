@@ -1,14 +1,16 @@
-Date: Thu, 16 Feb 2023 18:52:06 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <Y+5tRm1FpCdhARk4@...1296...>
-References: <Y+4mj61K0/yRFUXH@...2685...>
- <CAEsd45QdepRa+D+GdeS_aHtPkDNxPEFX3aVArstQRN1BM8UMSA@...278...>
+From: "uddr (Code Review)" <gerrit@...515...>
+Date: Thu, 16 Feb 2023 18:45:38 +0000
+In-Reply-To: <gerrit.1676539570000.I8154ba95e39b201cb0ad81aa774cc1dd56a55f48@...2715...>
+References: <gerrit.1676539570000.I8154ba95e39b201cb0ad81aa774cc1dd56a55f48@...2715...>
+Reply-To: yura.uddr@...277..., arne-openvpn@...1227..., antonio@...515...,
+ openvpn-devel@lists.sourceforge.net, pippin1st+pwm@...2282...,
+ frank@...2641..., yura.uddr@...277..., gerrit@...515...
+Message-ID: <b6daeb2864a445b2d2a35d805701af76f0e4a804-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="AN74CYErpk1UX9dd"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <CAEsd45QdepRa+D+GdeS_aHtPkDNxPEFX3aVArstQRN1BM8UMSA@...278...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.5.9 released
+Content-Type: multipart/alternative; boundary="2KLpQwD7e+c="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in fake-ovpn[master]: Initial fake commit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,59 +19,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: Frank Lichtenheld <frank@...2641...>, openvpn-devel@lists.sourceforge.net
+To: uddr <yura.uddr@...277...>, openvpn-devel@lists.sourceforge.net
+Cc: gerrit@...515..., antonio@...515..., Pippin <pippin1st+pwm@...2282...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 
---AN74CYErpk1UX9dd
-Content-Type: text/plain; charset="us-ascii"
+--2KLpQwD7e+c=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Attention is currently required from: Pippin, cron2, flichtenheld, plaistho=
+s.
 
-On Thu, Feb 16, 2023 at 08:48:26AM -0500, Jonathan K. Bullard wrote:
-> On Thu, Feb 16, 2023 at 7:51 AM Frank Lichtenheld <frank@...2641...> wrot=
-e:
-> >
-> > The OpenVPN community project team is proud to release OpenVPN 2.5.9. T=
-his is
-> > a small bugfix release.
->=20
-> Was this sent a bit early? There is no 2.5.9 tag at
-> https://github.com/OpenVPN/openvpn/tags.
+uddr has removed openvpn-devel@lists.sourceforge.net from this change.  ( h=
+ttp://gerrit.openvpn.net/c/fake-ovpn/+/27?usp=3Demail )
 
-One day I will learn that it's "git push" *and* "git push --tags".
+Change subject: Initial fake commit
+......................................................................
 
-So the repo was updated, but the tag was missing.  Sorry for that.
 
-gert
+Removed reviewer openvpn-devel@lists.sourceforge.net
+--
+To view, visit http://gerrit.openvpn.net/c/fake-ovpn/+/27?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Gerrit-Project: fake-ovpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I8154ba95e39b201cb0ad81aa774cc1dd56a55f48
+Gerrit-Change-Number: 27
+Gerrit-PatchSet: 1
+Gerrit-Owner: uddr <yura.uddr@...277...>
+Gerrit-Reviewer: Pippin <pippin1st+pwm@...2282...>
+Gerrit-Reviewer: cron2
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: Pippin <pippin1st+pwm@...2282...>
+Gerrit-MessageType: deleteReviewer
 
-Gert Doering - Munich, Germany                             gert@...1296...
+--2KLpQwD7e+c=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---AN74CYErpk1UX9dd
-Content-Type: application/pgp-signature; name="signature.asc"
+<p> Attention is currently required from: Pippin, cron2, flichtenheld, plai=
+sthos. </p>
+<p>uddr <strong>removed openvpn-devel@lists.sourceforge.net</strong> from t=
+his change.</p><p><a href=3D"http://gerrit.openvpn.net/c/fake-ovpn/+/27?usp=
+=3Demail">View Change</a></p><p>To view, visit <a href=3D"http://gerrit.ope=
+nvpn.net/c/fake-ovpn/+/27?usp=3Demail">change 27</a>. To unsubscribe, or fo=
+r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
+tings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
+essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
+ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/fake-o=
+vpn/+/27?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
+iv></div>
 
------BEGIN PGP SIGNATURE-----
+<div style=3D"display:none"> Gerrit-Project: fake-ovpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8154ba95e39b201cb0ad81aa774=
+cc1dd56a55f48 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 27 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: uddr &lt;yura.uddr@...277...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: Pippin &lt;pippin1st+pwm@...1665...=
+282...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: Pippin &lt;pippin1st+pwm@...493...=
+2282...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: deleteReviewer </div>
 
-iQGcBAEBAgAGBQJj7m1GAAoJEB2Cnv7KVigS1+QL/0kik5nvz8pvd3zUGJmeQVr6
-T5+Rfknt/QGd5+5w9Q2M0i9XFxZHHT5bSY19gog1jni8RJiFR9V9reZ0Qsyr+Y5Z
-vMK1N8owp2jezjsuScwD39FA/6tcz5v3A3lA3hBbX9uVcT8jMlvDWIX9HyTQyhkn
-ubMsjeo1fSrRHsVaRetUC2KgRTO9gD/vfP8Kk+2fSWtnj3QV7AmjKVvT6hxHjOrW
-M0nqKxGjzYd7RmPRrzHSBREPnoFNoRKR9afNRpSr+duzHO7Tar/dZSE+0Qth4FaY
-TiGUAmgNDeFoTtTLlfAIcXjX6o35GfPltqWMVWAJbeREiF9wdUpLKocBXAiMTdh2
-N2BjRYfltW3fbfU+mrk5h58HKPvX0uH9u8QS7QcXkfx7CTwvlWvYX/ld0YYJRMi/
-2uL9EBXw8sUv3wbNVapXhej0lAUYtWCbMwDbEXWEa35d0BnFZobTKWc0wcttAK+l
-3Jo0pgxyVWAfJ+//tDTjqcBRaKJCPhb2FUKqR1xa8w==
-=/5jM
------END PGP SIGNATURE-----
 
---AN74CYErpk1UX9dd--
+--2KLpQwD7e+c=--
 
