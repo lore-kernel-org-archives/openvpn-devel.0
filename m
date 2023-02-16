@@ -1,10 +1,13 @@
+Content-Type: multipart/alternative;
+ boundary="------------lp6g7ri1ke1rWHUNKxK0D16R"
+Message-ID: <277b0b90-1213-7dbb-f227-9835cdea7e0f@...1823...>
+Date: Thu, 16 Feb 2023 17:25:38 +0400
 MIME-Version: 1.0
+Content-Language: en-US
 References: <Y+4mj61K0/yRFUXH@...2685...>
-In-Reply-To: <Y+4mj61K0/yRFUXH@...2685...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Thu, 16 Feb 2023 08:11:56 -0500
-Message-ID: <CAEsd45Snk2siXR0b0rUC=zjAAU1ELbvXo-w-8uFqDtgC4qTrXw@...278...>
-Content-Type: multipart/alternative; boundary="0000000000001ce9f105f4d0f3d0"
+ <CAEsd45Snk2siXR0b0rUC=zjAAU1ELbvXo-w-8uFqDtgC4qTrXw@...278...>
+From: Dmitry Melekhov <dm@...1823...>
+In-Reply-To: <CAEsd45Snk2siXR0b0rUC=zjAAU1ELbvXo-w-8uFqDtgC4qTrXw@...278...>
 Subject: Re: [Openvpn-devel] OpenVPN 2.5.9 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,124 +17,198 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---0000000000001ce9f105f4d0f3d0
-Content-Type: text/plain; charset="UTF-8"
+This is a multi-part message in MIME format.
+--------------lp6g7ri1ke1rWHUNKxK0D16R
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-Not yet seeing anything about 2.5.9 at
-https://openvpn.net/community-downloads/. (From the New York City
-metropolitan area.)
+16.02.2023 17:11, Jonathan K. Bullard пишет:
+> Not yet seeing anything about 2.5.9 at 
+> https://openvpn.net/community-downloads/. (From the New York City 
+> metropolitan area.)
+>
+> Maybe caches need updating?
 
-Maybe caches need updating?
-
-Best regards,
-
-Jon Bullard
-
-
+use almost the same url as for 2.5.8 but change version, works for me.
 
 
-On Thu, Feb 16, 2023 at 7:51 AM Frank Lichtenheld <frank@...2641...>
-wrote:
-
-> The OpenVPN community project team is proud to release OpenVPN 2.5.9. This
-> is
-> a small bugfix release.
 >
-> The Windows MSI installers are now built against OpenSSL 1.1.1t which
-> contains
-> several security fixes.
+> Best regards,
 >
-> List of changes in OpenVPN:
+> Jon Bullard
 >
-> <https://github.com/OpenVPN/openvpn/blob/release/2.5/Changes.rst>
 >
-> Source code and Windows installers can be downloaded from our download
-> page:
 >
-> <https://openvpn.net/community-downloads/>
 >
-> Debian and Ubuntu packages are available in the official apt repositories:
+> On Thu, Feb 16, 2023 at 7:51 AM Frank Lichtenheld 
+> <frank@...2641...> wrote:
 >
-> <https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
+>     The OpenVPN community project team is proud to release OpenVPN
+>     2.5.9. This is
+>     a small bugfix release.
 >
-> On Red Hat derivatives we recommend using the Fedora Copr repository.
+>     The Windows MSI installers are now built against OpenSSL 1.1.1t
+>     which contains
+>     several security fixes.
 >
-> <https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release/>
+>     List of changes in OpenVPN:
 >
-> Regards,
-> --
->   Frank Lichtenheld
+>     <https://github.com/OpenVPN/openvpn/blob/release/2.5/Changes.rst>
+>
+>     Source code and Windows installers can be downloaded from our
+>     download page:
+>
+>     <https://openvpn.net/community-downloads/>
+>
+>     Debian and Ubuntu packages are available in the official apt
+>     repositories:
+>
+>     <https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
+>
+>     On Red Hat derivatives we recommend using the Fedora Copr repository.
+>
+>     <https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release/>
+>
+>     Regards,
+>     -- 
+>       Frank Lichtenheld
+>
+>
+>     _______________________________________________
+>     Openvpn-devel mailing list
+>     Openvpn-devel@lists.sourceforge.net
+>     https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 >
 >
 > _______________________________________________
 > Openvpn-devel mailing list
 > Openvpn-devel@lists.sourceforge.net
 > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
 
---0000000000001ce9f105f4d0f3d0
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Not yet seeing anything about 2.5.9 at=C2=A0<a href=3D"htt=
-ps://openvpn.net/community-downloads/" target=3D"_blank">https://openvpn.ne=
-t/community-downloads/</a>. (From the New York City metropolitan area.)<div=
-><br></div><div>Maybe caches need updating?</div><div><br></div><div>Best r=
-egards,</div><div><br></div><div>Jon Bullard</div><div><br></div><div><br><=
-/div></div><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote"><div d=
-ir=3D"ltr" class=3D"gmail_attr">On Thu, Feb 16, 2023 at 7:51 AM Frank Licht=
-enheld &lt;<a href=3D"mailto:frank@...2641..." target=3D"_blank">frank@...1665...=
-641...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"m=
-argin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-style:solid;borde=
-r-left-color:rgb(204,204,204);padding-left:1ex">The OpenVPN community proje=
-ct team is proud to release OpenVPN 2.5.9. This is<br>
-a small bugfix release.<br>
-<br>
-The Windows MSI installers are now built against OpenSSL 1.1.1t which conta=
-ins<br>
-several security fixes.<br>
-<br>
-List of changes in OpenVPN:<br>
-<br>
-&lt;<a href=3D"https://github.com/OpenVPN/openvpn/blob/release/2.5/Changes.=
-rst" rel=3D"noreferrer" target=3D"_blank">https://github.com/OpenVPN/openvp=
-n/blob/release/2.5/Changes.rst</a>&gt;<br>
-<br>
-Source code and Windows installers can be downloaded from our download page=
-:<br>
-<br>
-&lt;<a href=3D"https://openvpn.net/community-downloads/" rel=3D"noreferrer"=
- target=3D"_blank">https://openvpn.net/community-downloads/</a>&gt;<br>
-<br>
-Debian and Ubuntu packages are available in the official apt repositories:<=
-br>
-<br>
-&lt;<a href=3D"https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRe=
-pos" rel=3D"noreferrer" target=3D"_blank">https://community.openvpn.net/ope=
-nvpn/wiki/OpenvpnSoftwareRepos</a>&gt;<br>
-<br>
-On Red Hat derivatives we recommend using the Fedora Copr repository.<br>
-<br>
-&lt;<a href=3D"https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-rel=
-ease/" rel=3D"noreferrer" target=3D"_blank">https://copr.fedorainfracloud.o=
-rg/coprs/dsommers/openvpn-release/</a>&gt;<br>
-<br>
-Regards,<br>
--- <br>
-=C2=A0 Frank Lichtenheld<br>
-<br>
-<br>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net" target=3D"_blank">Op=
-envpn-devel@lists.sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
-nfo/openvpn-devel</a><br>
-</blockquote></div>
+--------------lp6g7ri1ke1rWHUNKxK0D16R
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
---0000000000001ce9f105f4d0f3d0--
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <div class="moz-cite-prefix">16.02.2023 17:11, Jonathan K. Bullard
+      пишет:<br>
+    </div>
+    <blockquote type="cite"
+cite="mid:CAEsd45Snk2siXR0b0rUC=zjAAU1ELbvXo-w-8uFqDtgC4qTrXw@...278...">
+      <div dir="ltr">Not yet seeing anything about 2.5.9 at <a
+          href="https://openvpn.net/community-downloads/"
+          target="_blank" moz-do-not-send="true"
+          class="moz-txt-link-freetext">https://openvpn.net/community-downloads/</a>.
+        (From the New York City metropolitan area.)
+        <div><br>
+        </div>
+        <div>Maybe caches need updating?</div>
+      </div>
+    </blockquote>
+    <p>use almost the same url as for 2.5.8 but change version, works
+      for me.</p>
+    <p><br>
+    </p>
+    <blockquote type="cite"
+cite="mid:CAEsd45Snk2siXR0b0rUC=zjAAU1ELbvXo-w-8uFqDtgC4qTrXw@...278...">
+      <div dir="ltr">
+        <div><br>
+        </div>
+        <div>Best regards,</div>
+        <div><br>
+        </div>
+        <div>Jon Bullard</div>
+        <div><br>
+        </div>
+        <div><br>
+        </div>
+      </div>
+      <div dir="ltr"><br>
+      </div>
+      <br>
+      <div class="gmail_quote">
+        <div dir="ltr" class="gmail_attr">On Thu, Feb 16, 2023 at 7:51
+          AM Frank Lichtenheld &lt;<a
+            href="mailto:frank@...2641..." target="_blank"
+            moz-do-not-send="true" class="moz-txt-link-freetext">frank@...2641...</a>&gt;
+          wrote:<br>
+        </div>
+        <blockquote class="gmail_quote">The OpenVPN community project
+          team is proud to release OpenVPN 2.5.9. This is<br>
+          a small bugfix release.<br>
+          <br>
+          The Windows MSI installers are now built against OpenSSL
+          1.1.1t which contains<br>
+          several security fixes.<br>
+          <br>
+          List of changes in OpenVPN:<br>
+          <br>
+          &lt;<a
+            href="https://github.com/OpenVPN/openvpn/blob/release/2.5/Changes.rst"
+            rel="noreferrer" target="_blank" moz-do-not-send="true"
+            class="moz-txt-link-freetext">https://github.com/OpenVPN/openvpn/blob/release/2.5/Changes.rst</a>&gt;<br>
+          <br>
+          Source code and Windows installers can be downloaded from our
+          download page:<br>
+          <br>
+          &lt;<a href="https://openvpn.net/community-downloads/"
+            rel="noreferrer" target="_blank" moz-do-not-send="true"
+            class="moz-txt-link-freetext">https://openvpn.net/community-downloads/</a>&gt;<br>
+          <br>
+          Debian and Ubuntu packages are available in the official apt
+          repositories:<br>
+          <br>
+          &lt;<a
+            href="https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos"
+            rel="noreferrer" target="_blank" moz-do-not-send="true"
+            class="moz-txt-link-freetext">https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos</a>&gt;<br>
+          <br>
+          On Red Hat derivatives we recommend using the Fedora Copr
+          repository.<br>
+          <br>
+          &lt;<a
+            href="https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release/"
+            rel="noreferrer" target="_blank" moz-do-not-send="true"
+            class="moz-txt-link-freetext">https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release/</a>&gt;<br>
+          <br>
+          Regards,<br>
+          -- <br>
+            Frank Lichtenheld<br>
+          <br>
+          <br>
+          _______________________________________________<br>
+          Openvpn-devel mailing list<br>
+          <a href="mailto:Openvpn-devel@lists.sourceforge.net"
+            target="_blank" moz-do-not-send="true"
+            class="moz-txt-link-freetext">Openvpn-devel@lists.sourceforge.net</a><br>
+          <a
+            href="https://lists.sourceforge.net/lists/listinfo/openvpn-devel"
+            rel="noreferrer" target="_blank" moz-do-not-send="true"
+            class="moz-txt-link-freetext">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a><br>
+        </blockquote>
+      </div>
+      <br>
+      <fieldset class="moz-mime-attachment-header"></fieldset>
+      <br>
+      <fieldset class="moz-mime-attachment-header"></fieldset>
+      <pre class="moz-quote-pre" wrap="">_______________________________________________
+Openvpn-devel mailing list
+<a class="moz-txt-link-abbreviated" href="mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net</a>
+<a class="moz-txt-link-freetext" href="https://lists.sourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a>
+</pre>
+    </blockquote>
+    <p><br>
+    </p>
+  </body>
+</html>
+
+--------------lp6g7ri1ke1rWHUNKxK0D16R--
 
