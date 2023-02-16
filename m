@@ -1,15 +1,16 @@
 From: "uddr (Code Review)" <gerrit@...515...>
-Date: Thu, 16 Feb 2023 09:26:10 +0000
+Date: Thu, 16 Feb 2023 09:27:44 +0000
+In-Reply-To: <gerrit.1676539570000.I8154ba95e39b201cb0ad81aa774cc1dd56a55f48@...2715...>
 References: <gerrit.1676539570000.I8154ba95e39b201cb0ad81aa774cc1dd56a55f48@...2715...>
 Reply-To: yura.uddr@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, antonio@...515...,
- frank@...2641..., pippin1st+pwm@...2282..., yura.uddr@...277...,
+ pippin1st+pwm@...2282..., frank@...2641..., yura.uddr@...277...,
  gerrit@...515...
-Message-ID: <23321bd52422ce618a57eec0bd05cce7e94ed1db-HTML@...2715...>
+Message-ID: <db12e5afc988130e054e45ac2a4dd990561a8a45-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="gG9yEMm3OwE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="1sqN75uxPI0="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in fake-ovpn[master]: Initial fake commit
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -19,39 +20,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, Pippin <pippin1st+pwm@...2282...>, antonio@...515...
-Cc: openvpn-devel@lists.sourceforge.net, gerrit@...515..., uddr <yura.uddr@...277...>
+To: uddr <yura.uddr@...277...>
+Cc: openvpn-devel@lists.sourceforge.net, gerrit@...515..., antonio@...515..., Pippin <pippin1st+pwm@...2282...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 
---gG9yEMm3OwE=
+--1sqN75uxPI0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: Pippin, cron2, flichtenheld, plaistho=
 s.
 
-Hello plaisthos, cron2, flichtenheld, Pippin,
-
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/fake-ovpn/+/27?usp=3Demail
-
-to review the following change.
-
+uddr has posted comments on this change. ( http://gerrit.openvpn.net/c/fake=
+-ovpn/+/27?usp=3Demail )
 
 Change subject: Initial fake commit
 ......................................................................
 
-Initial fake commit
 
-Change-Id: I8154ba95e39b201cb0ad81aa774cc1dd56a55f48
----
-M README
-1 file changed, 24 insertions(+), 60 deletions(-)
+Patch Set 1:
+
+(1 comment)
+
+Patchset:
+
+PS1:
+Please review)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/fake-ovpn refs/changes/27/27/1
 --
 To view, visit http://gerrit.openvpn.net/c/fake-ovpn/+/27?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
@@ -71,30 +67,31 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: Pippin <pippin1st+pwm@...2282...>
-Gerrit-MessageType: newchange
+Gerrit-Comment-Date: Thu, 16 Feb 2023 09:27:44 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
---gG9yEMm3OwE=
+--1sqN75uxPI0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: Pippin, cron2, flichtenheld, plai=
 sthos. </p>
-<p>uddr would like plaisthos, cron2, flichtenheld and Pippin to <strong>rev=
-iew</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/fake-ovpn/+/27?usp=3Demail">V=
-iew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">Initial fake commit<br><br>Change-Id: I8154ba95e39b201cb0ad8=
-1aa774cc1dd56a55f48<br>---<br>M README<br>1 file changed, 24 insertions(+),=
- 60 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/fake-ovp=
-n refs/changes/27/27/1</pre><p>To view, visit <a href=3D"http://gerrit.open=
-vpn.net/c/fake-ovpn/+/27?usp=3Demail">change 27</a>. To unsubscribe, or for=
- help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
-ings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
-ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
-wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/fake-ov=
-pn/+/27?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
-v></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/fake-ovpn/+/27?usp=3Demail">View =
+Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-styl=
+e: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p styl=
+e=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/fake-ovpn/=
++/27?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">Please review)</p></li></ul></li></ul><p>To view=
+, visit <a href=3D"http://gerrit.openvpn.net/c/fake-ovpn/+/27?usp=3Demail">=
+change 27</a>. To unsubscribe, or for help writing mail filters, visit <a h=
+ref=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope =
+itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
+on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/fake-ovpn/+/27?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: fake-ovpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -118,8 +115,12 @@ cc1dd56a55f48 </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: Pippin &lt;pippin1st+pwm@...493...=
 2282...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 16 Feb 2023 09:27:44=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---gG9yEMm3OwE=--
+--1sqN75uxPI0=--
 
