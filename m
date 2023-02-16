@@ -1,12 +1,9 @@
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu, 16 Feb 2023 18:01:29 +0200
+Message-Id: <20230216160129.994-1-lstipakov@...277...>
 MIME-Version: 1.0
-References: <Y+4mj61K0/yRFUXH@...2685...>
- <CAEsd45Snk2siXR0b0rUC=zjAAU1ELbvXo-w-8uFqDtgC4qTrXw@...278...>
- <dbe603e4-5299-194a-0fbf-ae4a0d4428dc@...1227...>
-In-Reply-To: <dbe603e4-5299-194a-0fbf-ae4a0d4428dc@...1227...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Thu, 16 Feb 2023 09:36:52 -0500
-Message-ID: <CAEsd45T2XLqpLPiFxOH0OaKyQJCb6qt+mhFiRkJcHPzxWr=tew@...278...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.5.9 released
+Subject: [Openvpn-devel] [PATCH] Add logging for windows driver selection
+ process
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,36 +12,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: Frank Lichtenheld <frank@...2641...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-On Thu, Feb 16, 2023 at 9:24 AM Arne Schwabe <arne@...1227...> wrote:
->
-> Am 16.02.23 um 14:11 schrieb Jonathan K. Bullard:
-> > Not yet seeing anything about 2.5.9 at
-> > https://openvpn.net/community-downloads/
-> > <https://openvpn.net/community-downloads/>. (From the New York City
-> > metropolitan area.)
-> >
-> > Maybe caches need updating?
-> >
->
-> I reached out to our the website team and the statement they gave to
-> rely to the community is:
->
-> We're working on the Community 2.5.9 release and shall have it updated
-> on the website very soon. Thank you for your patience and love to the
-> OpenVPN Community and please come back to check our website later today.
->
->
-> They also gave me a time of 11:30 am pst, which is about in about 5
-> hours from now. And I am not happy with this response either.
->
-> Arne
+From: Lev Stipakov <lev@...515...>
 
-Thanks for the update! And congratulations on, and thanks for, the new release!
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+ src/openvpn/tun.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-Jon
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 20f80798..a1414d23 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -3705,6 +3705,7 @@ get_device_instance_id_interface(struct gc_arena *gc)
+         msg(M_FATAL, "Error [%u] opening device information set key: %s", (unsigned int)err, strerror_win32(err, gc));
+     }
+ 
++    msg(D_TAP_WIN_DEBUG, "Enumerate device interface lists:");
+     for (DWORD i = 0;; ++i)
+     {
+         SP_DEVINFO_DATA device_info_data;
+@@ -3790,6 +3791,10 @@ get_device_instance_id_interface(struct gc_arena *gc)
+             dev_iif->net_cfg_instance_id = (unsigned char *)string_alloc((char *)net_cfg_instance_id, gc);
+             dev_iif->device_interface = string_alloc(dev_if, gc);
+ 
++            msg(D_TAP_WIN_DEBUG, "NetCfgInstanceId: %s, Device Interface: %s",
++                dev_iif->net_cfg_instance_id,
++                dev_iif->device_interface);
++
+             /* link into return list */
+             if (!first)
+             {
+@@ -3835,6 +3840,7 @@ get_tap_reg(struct gc_arena *gc)
+         msg(M_FATAL, "Error opening registry key: %s", ADAPTER_KEY);
+     }
+ 
++    msg(D_TAP_WIN_DEBUG, "Enumerate drivers in registy: ");
+     while (true)
+     {
+         char enum_name[256];
+@@ -3942,6 +3948,9 @@ get_tap_reg(struct gc_arena *gc)
+                             last->next = reg;
+                         }
+                         last = reg;
++
++                        msg(D_TAP_WIN_DEBUG, "NetCfgInstanceId: %s, Driver: %s",
++                            reg->guid, print_windows_driver(reg->windows_driver));
+                     }
+                 }
+             }
+@@ -6520,6 +6529,8 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
+         path = tuntap_device_path;
+     }
+ 
++    msg(D_TAP_WIN_DEBUG, "Using device interface: %s", path);
++
+     tt->hand = CreateFile(path,
+                           GENERIC_READ | GENERIC_WRITE,
+                           0,         /* was: FILE_SHARE_READ */
+@@ -6529,7 +6540,7 @@ tun_try_open_device(struct tuntap *tt, const char *device_guid, const struct dev
+                           0);
+     if (tt->hand == INVALID_HANDLE_VALUE)
+     {
+-        msg(D_TUNTAP_INFO, "CreateFile failed on %s device: %s", print_windows_driver(tt->windows_driver), path);
++        msg(D_TUNTAP_INFO | M_ERRNO, "CreateFile failed on %s device: %s", print_windows_driver(tt->windows_driver), path);
+         return false;
+     }
+ 
+-- 
+2.23.0.windows.1
+
 
