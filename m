@@ -1,8 +1,10 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 20 Feb 2023 10:56:40 +0200
-Message-Id: <20230220085640.1519-1-lstipakov@...277...>
+Date: Mon, 20 Feb 2023 11:06:01 +0200
+Message-Id: <20230220090601.983-1-lstipakov@...277...>
+In-Reply-To: <20230220085640.1519-1-lstipakov@...277...>
+References: <20230220085640.1519-1-lstipakov@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Disabe DCO if proxy is set via management
+Subject: [Openvpn-devel] [PATCH v2] Disabe DCO if proxy is set via management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,18 +25,20 @@ is proxy is set in profile.
 
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
+ v2: use dco_enabled() helper function
+
  src/openvpn/init.c | 6 ++++++
  1 file changed, 6 insertions(+)
 
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index b500d354..7c428307 100644
+index b500d354..622239f6 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
 @@ -223,6 +223,12 @@ management_callback_proxy_cmd(void *arg, const char **p)
      }
      else if (p[2] && p[3])
      {
-+        if (!c->options.tuntap_options.disable_dco)
++        if (dco_enabled(&c->options))
 +        {
 +            msg(M_INFO, "Proxy set via management, disabling Data Channel Offload.");
 +            c->options.tuntap_options.disable_dco = true;
