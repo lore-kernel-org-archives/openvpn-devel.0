@@ -1,10 +1,13 @@
-Date: Mon, 20 Feb 2023 17:07:37 +0100 (CET)
-Message-Id: <202302201607.31KG7bWV068966@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230220131424.1749736-1-arne@...1227...>
-References: <20230220131424.1749736-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Exit if a proper message
- instead of segfault on Android without management
+Message-ID: <c490d496-f555-db7d-257e-ab1a9a6234e1@...2181...>
+Date: Mon, 20 Feb 2023 21:09:33 +0100
+MIME-Version: 1.0
+Content-Language: en-US
+References: <20230220085640.1519-1-lstipakov@...277...>
+ <20230220090601.983-1-lstipakov@...277...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20230220090601.983-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Disabe DCO if proxy is set via
+ management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +16,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-This code is all inside #ifdef TARGET_ANDROID, so I didn't test anything -
-but it looks all reasonable.
+On 20/02/2023 10:06, Lev Stipakov wrote:
+> From: Lev Stipakov <lev@...515...>
+> 
+> DCO doesn't support proxy and we already disable DCO
+> is proxy is set in profile.
+> 
+> Signed-off-by: Lev Stipakov <lev@...515...>
 
-Your patch has been applied to the master and release/2.6 branch.
+Acked-by: Antonio Quartulli <a@...2181...>
 
-commit 3132bead497deca24dc638e151bf7194df6f4884 (master)
-commit d0c1abb4dee233834de540932ddcaef209696e79 (release/2.6)
-Author: Arne Schwabe
-Date:   Mon Feb 20 14:14:24 2023 +0100
+> ---
+>   v2: use dco_enabled() helper function
+> 
+>   src/openvpn/init.c | 6 ++++++
+>   1 file changed, 6 insertions(+)
+> 
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index b500d354..622239f6 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -223,6 +223,12 @@ management_callback_proxy_cmd(void *arg, const char **p)
+>       }
+>       else if (p[2] && p[3])
+>       {
+> +        if (dco_enabled(&c->options))
+> +        {
+> +            msg(M_INFO, "Proxy set via management, disabling Data Channel Offload.");
+> +            c->options.tuntap_options.disable_dco = true;
+> +        }
+> +
+>           if (streq(p[1], "HTTP"))
+>           {
+>               struct http_proxy_options *ho;
 
-     Exit if a proper message instead of segfault on Android without management
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230220131424.1749736-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26288.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+-- 
+Antonio Quartulli
 
