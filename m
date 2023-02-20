@@ -1,10 +1,9 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 20 Feb 2023 11:06:01 +0200
-Message-Id: <20230220090601.983-1-lstipakov@...277...>
-In-Reply-To: <20230220085640.1519-1-lstipakov@...277...>
-References: <20230220085640.1519-1-lstipakov@...277...>
+From: Arne Schwabe <arne@...1227...>
+Date: Mon, 20 Feb 2023 14:14:24 +0100
+Message-Id: <20230220131424.1749736-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Disabe DCO if proxy is set via management
+Subject: [Openvpn-devel] [PATCH] Exit if a proper message instead of
+ segfault on Android without management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,38 +15,50 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
+The Android implementation is relying on the management interface to be
+always available. Trying to run the Android binary without the mangament
+interface outside the app leads to a segfault. Exit with a FATAL error
+instead.
 
-DCO doesn't support proxy and we already disable DCO
-is proxy is set in profile.
-
-Signed-off-by: Lev Stipakov <lev@...515...>
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- v2: use dco_enabled() helper function
+ src/openvpn/manage.c | 4 ++++
+ src/openvpn/socket.c | 5 +++++
+ 2 files changed, 9 insertions(+)
 
- src/openvpn/init.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index b500d354..622239f6 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -223,6 +223,12 @@ management_callback_proxy_cmd(void *arg, const char **p)
-     }
-     else if (p[2] && p[3])
-     {
-+        if (dco_enabled(&c->options))
-+        {
-+            msg(M_INFO, "Proxy set via management, disabling Data Channel Offload.");
-+            c->options.tuntap_options.disable_dco = true;
-+        }
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 3ea1992b0..db88e3479 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -2192,6 +2192,10 @@ man_recv_with_fd(int fd, void *ptr, size_t nbytes, int flags, int *recvfd)
+ bool
+ management_android_control(struct management *man, const char *command, const char *msg)
+ {
++    if (!man)
++    {
++        msg(M_FATAL, "Required management interface not available.");
++    }
+     struct user_pass up;
+     CLEAR(up);
+     strncpy(up.username, msg, sizeof(up.username)-1);
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 42d953390..eff21ca56 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1161,6 +1161,11 @@ create_socket(struct link_socket *sock, struct addrinfo *addr)
+ static void
+ protect_fd_nonlocal(int fd, const struct sockaddr *addr)
+ {
++    if (!management)
++    {
++        msg(M_FATAL, "Required management interface not available.")
++    }
 +
-         if (streq(p[1], "HTTP"))
-         {
-             struct http_proxy_options *ho;
+     /* pass socket FD to management interface to pass on to VPNService API
+      * as "protected socket" (exempt from being routed into tunnel)
+      */
 -- 
-2.38.1.windows.1
+2.37.1 (Apple Git-137.1)
 
 
