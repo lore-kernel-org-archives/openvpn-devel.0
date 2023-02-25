@@ -1,10 +1,10 @@
-Date: Sat, 25 Feb 2023 16:59:10 +0100 (CET)
-Message-Id: <202302251559.31PFxA6A076591@...2054...>
+Date: Sat, 25 Feb 2023 17:04:29 +0100 (CET)
+Message-Id: <202302251604.31PG4TTq076782@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230215162654.52137-1-frank@...2641...>
-References: <20230215162654.52137-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: configure: enable DCO by
- default on FreeBSD/Linux
+In-Reply-To: <20230216160129.994-1-lstipakov@...277...>
+References: <20230216160129.994-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add logging for windows driver
+ selection process
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This patch is identical to v3, except that it modifies the github 
-actions to avoid GHA explosions on the linux workers.  So recording
-Selva's and Antonio's ACKs of v3 here on v6.
+Acked-by: Gert Doering <gert@...1296...>
 
-Pushed to GHA and buildbots, all of them are happy now.
+While I do have no idea about windows drivers and such, having some
+helpful debug output for "adapter not found" issues is good.
 
-(We need to remember to add this to Changes.rst, as it might come as
-a surprise to people upgrading 2.6.0 -> 2.6.1 and building from source)
+I have stared at the code for a bit, and it's all fairly trivial
+msg()'ing of strings and integers (plus an M_ERRNO added in one
+of the error paths).  MinGW compile says "it's the correct data
+types for each msg() call", so, good enough for me :-)
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit 2a1a21e3da3ec66d901864edd7b3b0e2498b3b0a (master)
-commit f63c9b1edbda41491ba2e05ff706bf0233903cb6 (release/2.6)
-Author: Frank Lichtenheld
-Date:   Wed Feb 15 17:26:54 2023 +0100
+commit 5b748ad099ed69b893124e2805b5ddeb6b0ec8fc (master)
+commit dff1e78957fa97b3258d5e1b0ef05ad3f853ada2 (release/2.6)
+Author: Lev Stipakov
+Date:   Thu Feb 16 18:01:29 2023 +0200
 
-     configure: enable DCO by default on FreeBSD/Linux
+     Add logging for windows driver selection process
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20230215162654.52137-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26272.html
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230216160129.994-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26281.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
