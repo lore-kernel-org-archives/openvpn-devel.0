@@ -1,10 +1,10 @@
-Date: Sat, 25 Feb 2023 17:04:29 +0100 (CET)
-Message-Id: <202302251604.31PG4TTq076782@...2054...>
+Date: Sat, 25 Feb 2023 17:29:18 +0100 (CET)
+Message-Id: <202302251629.31PGTIw9077391@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230216160129.994-1-lstipakov@...277...>
-References: <20230216160129.994-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add logging for windows driver
- selection process
+In-Reply-To: <20230214200804.600405-1-selva.nair@...277...>
+References: <20230214200804.600405-1-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add a unit test for functions
+ in cryptoapi.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +15,45 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-While I do have no idea about windows drivers and such, having some
-helpful debug output for "adapter not found" issues is good.
+Thanks for the v4.  This enabled me to just push to GH to have
+to build and run the tests, without having to bother myself with
+copying binaries around :-) 
 
-I have stared at the code for a bit, and it's all fairly trivial
-msg()'ing of strings and integers (plus an M_ERRNO added in one
-of the error paths).  MinGW compile says "it's the correct data
-types for each msg() call", so, good enough for me :-)
+OTOH, there might be a bit of polishing needed - the other tests
+print out what they are doing ("Running 7 test(s)"), while the
+cryptoapi unit test "just succeeds".  Is there something missing
+wrt cmocka initalization?
+
+  https://github.com/cron2/openvpn/actions/runs/4270790193/jobs/7434873211
+
+
+I also did do a MinGW "make check" and it built the new test binary
+just fine, and succeeded otherwise.
+
+   298368    704 -rwxrwxr-x   1 gert     gert       718042 Feb 25 16:10 ./tests/unit_tests/openvpn/.libs/cryptoapi_testdriver.exe
+
+The unit test itself looks reasonably complete in testing expected
+and error-handling behaviour (v3->v4).  Not much coverage beyond 
+"parse_hexstring()", but it's a good start to build upon :-)
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit 5b748ad099ed69b893124e2805b5ddeb6b0ec8fc (master)
-commit dff1e78957fa97b3258d5e1b0ef05ad3f853ada2 (release/2.6)
-Author: Lev Stipakov
-Date:   Thu Feb 16 18:01:29 2023 +0200
+commit 8aff5655a51d9f9f67ca31b363d4ebaf5342d410 (master)
+commit 094aea56ce20d0bb6fe79e6e14a3dfe68ea11786 (release/2.6)
+Author: Selva Nair
+Date:   Tue Feb 14 15:08:04 2023 -0500
 
-     Add logging for windows driver selection process
+     Add a unit test for functions in cryptoapi.c
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
+     Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230216160129.994-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26281.html
+     Message-Id: <20230214200804.600405-1-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26268.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
