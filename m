@@ -1,10 +1,10 @@
-Date: Sat, 25 Feb 2023 17:29:18 +0100 (CET)
-Message-Id: <202302251629.31PGTIw9077391@...2054...>
+Date: Sat, 25 Feb 2023 17:51:24 +0100 (CET)
+Message-Id: <202302251651.31PGpOPL078159@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230214200804.600405-1-selva.nair@...277...>
-References: <20230214200804.600405-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add a unit test for functions
- in cryptoapi.c
+In-Reply-To: <20230203191440.136050-6-frank@...2641...>
+References: <20230203191440.136050-6-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Windows: fix signedness errors
+ with recv/send
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,45 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Thanks for the v4.  This enabled me to just push to GH to have
-to build and run the tests, without having to bother myself with
-copying binaries around :-) 
+I'm not a big fan of adding (cast) to silence compiler warnings,
+but this signed/unsigned char * nonsense is really hard to avoid -
+casting to (void *) is the right fix here.
 
-OTOH, there might be a bit of polishing needed - the other tests
-print out what they are doing ("Running 7 test(s)"), while the
-cryptoapi unit test "just succeeds".  Is there something missing
-wrt cmocka initalization?
-
-  https://github.com/cron2/openvpn/actions/runs/4270790193/jobs/7434873211
-
-
-I also did do a MinGW "make check" and it built the new test binary
-just fine, and succeeded otherwise.
-
-   298368    704 -rwxrwxr-x   1 gert     gert       718042 Feb 25 16:10 ./tests/unit_tests/openvpn/.libs/cryptoapi_testdriver.exe
-
-The unit test itself looks reasonably complete in testing expected
-and error-handling behaviour (v3->v4).  Not much coverage beyond 
-"parse_hexstring()", but it's a good start to build upon :-)
+I have only test compiled on MinGW - and my MinGW did not warn
+about these anyway (maybe not enough -Wthing switches).  But it 
+did not break anything, and does not introduce new warnings.
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit 8aff5655a51d9f9f67ca31b363d4ebaf5342d410 (master)
-commit 094aea56ce20d0bb6fe79e6e14a3dfe68ea11786 (release/2.6)
-Author: Selva Nair
-Date:   Tue Feb 14 15:08:04 2023 -0500
+commit 7acd93a6bef2dd9b660571c29b5f41c8ca351161 (master)
+commit e9ae7cee2ca9b9ab78de01f1d3c562610e5624d2 (release/2.6)
+Author: Frank Lichtenheld
+Date:   Fri Feb 3 20:14:40 2023 +0100
 
-     Add a unit test for functions in cryptoapi.c
+     Windows: fix signedness errors with recv/send
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230214200804.600405-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26268.html
+     Message-Id: <20230203191440.136050-6-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26144.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
