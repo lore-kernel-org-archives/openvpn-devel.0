@@ -1,17 +1,11 @@
-Date: Sun, 26 Feb 2023 17:15:57 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <Y/uFvdsaFiEk+xgt@...1296...>
-References: <20230130172936.3444840-1-arne@...1227...>
- <20230130172936.3444840-2-arne@...1227...>
- <Y/suKJIyDKICDxXu@...1296...>
- <21963270-a013-9cdd-fc21-569e366c6e19@...1227...>
+Message-ID: <762ddf09-c27e-3086-d9b8-30c837998294@...2181...>
+Date: Sun, 26 Feb 2023 21:55:17 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="ZN4zre6DmlKneuw8"
-Content-Disposition: inline
-In-Reply-To: <21963270-a013-9cdd-fc21-569e366c6e19@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 2/5] Fix unaligned access in
- macOS/Solaris hwaddr
+Content-Language: en-US
+References: <20230217122156.541-1-lstipakov@...277...>
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <20230217122156.541-1-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Avoid management log loop with verb >= 6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,81 +14,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
-
---ZN4zre6DmlKneuw8
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
 Hi,
 
-On Sun, Feb 26, 2023 at 03:10:07PM +0100, Arne Schwabe wrote:
-> > struct ifaddr {
-> >          struct  sockaddr *ifa_addr;     /* address of interface */
-> >          struct  sockaddr *ifa_dstaddr;  /* other end of p-to-p link */
-> >          struct  sockaddr *ifa_netmask;  /* used to determine subnet */
-> >
-> > ... so the first memcpy() isn't actually copying the MAC address around,
-> > just a bunch of pointers, and then we dereference the first of them
-> > for the second memcpy(), using the dereferencing macro for a
-> > "sockaddr_dl" structure.
->=20
-> The problem is that LLVM ASAN does not like access to an unaligned=20
-> struct. Even if it just accessing a member to deference it. So you are=20
-> right that it is just copying a bunch of pointers, to not triggers the=20
-> warning, we have to do this nonsense. The compiler will even optimise=20
-> this then away again on platforms that have no problem with unaligned=20
-> accesses.
+On 17/02/2023 13:21, Lev Stipakov wrote:
+> From: Lev Stipakov <lev@...515...>
+> 
+> This log message is printed within check_tls(),
+> which is called by pre_select(), which is called
+> on every iteration of event loop.
+> 
+> When management is attached (and doesn't use own event loop),
+> this message sets management state to "wait write",
+> which arms event loop. When on the next iteration iowait
+> returns with "management write event is set", we call
+> pre_select() and print that message again, causing the loop.
+> 
+> Fix by simply removing this log message.
+> 
+> Signed-off-by: Lev Stipakov <lev@...515...>
 
-With ifr being a structure now, it is aligned just fine - I'm not objecting
-to that part, just to the intermediate "sdl" thing, and the double
-memcpy(), and 10 lines of comments.
+As discussed on IRC, removing this message is a good thing as it serves 
+no real purpose.
 
-> > FreeBSD also has
-> >
-> > #define IF_LLADDR(ifp)                                                 =
- \
-> >      LLADDR((struct sockaddr_dl *)((ifp)->if_addr->ifa_addr))
-> >
-> > which sounds like "feed in an *ifr, out comes a pointer for the
-> > memcpy() to rgi->addr".
->=20
-> Yes but you will still get warning about casting a smaller struct to a=20
-> larger struct and that being a bad idea.
+On top of that this message is causing this log infinite recursion, 
+therefore it should just go.
 
-This is not casting a struct, just casting a pointer.  Does it still
-warn?
+OTOH we may still have *some* recursion due to other messages printed by 
+this function. However, this messages will print only once, therefore 
+they won't cause the recursion to continue indefinitely.
 
-gert
+Acked-by: Antonio Quartulli <a@...2181...>
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+> ---
+>   src/openvpn/dco.c | 2 --
+>   1 file changed, 2 deletions(-)
+> 
+> diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+> index 3087a0df..b53332a8 100644
+> --- a/src/openvpn/dco.c
+> +++ b/src/openvpn/dco.c
+> @@ -133,8 +133,6 @@ dco_get_secondary_key(struct tls_multi *multi, const struct key_state *primary)
+>   bool
+>   dco_update_keys(dco_context_t *dco, struct tls_multi *multi)
+>   {
+> -    msg(D_DCO_DEBUG, "%s: peer_id=%d", __func__, multi->dco_peer_id);
+> -
+>       /* this function checks if keys have to be swapped or erased, therefore it
+>        * can't do much if we don't have any key installed
+>        */
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---ZN4zre6DmlKneuw8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJj+4W9AAoJEB2Cnv7KVigSBzUL/RiNb6FD/NiaIEaKRKK+Yl2m
-9qwcdnB6AB9SeC9qzz7pkBaWo+FD2sFFI0DBskqONUymAAxifcsbwEHXkjz+442Z
-GBxjKVDt/2pvpDnqOkr5y35qgrzKT/h2fstYXOG8hH320ji+rQuVTszxld88zLIw
-URDNBeknXzERqKViTspPFYdpKCXTyRPkYyog2yL2cdNNrYJG/unoLOTyl0F8V2z6
-olDuQB9Ksxh46a8wwM2UOtOo6TGLmEsCLDj6p0BPN3+G3G480bhNQaTlRlnDKdWt
-KWYBspN0JIigRS6MLqtrvBOOQjmxKtuitj/B6Pt1iLSTuY4tmh+zrGatuqmNAmzm
-4UOQfLjsJyet2BSU0TRBqKiIz8d6fEunEj7o6PDBTO0hAzW95zFfLbKykY9hIiqM
-+WNCToETWNt6sN9fyhXRtWbU1at3ridgLXu0JhVBFEfAeqdPYML2hk294326CEM0
-fnno2OzQm4sLx1cc9hUR0M4uqvzwVnhkOypqIwySLQ==
-=9NCY
------END PGP SIGNATURE-----
-
---ZN4zre6DmlKneuw8--
+-- 
+Antonio Quartulli
 
