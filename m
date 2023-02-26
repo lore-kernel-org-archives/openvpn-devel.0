@@ -1,13 +1,14 @@
-Date: Sun, 26 Feb 2023 11:02:16 +0100
+Date: Sun, 26 Feb 2023 11:04:28 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <Y/suKJIyDKICDxXu@...1296...>
+Message-ID: <Y/surGeMiBj01brz@...1296...>
 References: <20230130172936.3444840-1-arne@...1227...>
  <20230130172936.3444840-2-arne@...1227...>
+ <Y/suKJIyDKICDxXu@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="uBBTh+8NfYLNYWr7"
+ protocol="application/pgp-signature"; boundary="2bilG+t2+dtxhsFr"
 Content-Disposition: inline
-In-Reply-To: <20230130172936.3444840-2-arne@...1227...>
+In-Reply-To: <Y/suKJIyDKICDxXu@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH 2/5] Fix unaligned access in
  macOS/Solaris hwaddr
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,63 +22,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---uBBTh+8NfYLNYWr7
+--2bilG+t2+dtxhsFr
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Jan 30, 2023 at 06:29:33PM +0100, Arne Schwabe wrote:
-> The undefined behaviour USAN clang checker found this.
->=20
-> This fix is a bit messy but so are the original structures.
+On Sun, Feb 26, 2023 at 11:02:16AM +0100, Gert Doering wrote:
+> I'll check the other BSDs if LL_IFADDR() is available everywhere, but
+> if not, we can just do the same thing (struct ifr is aligned) and
+> get rid of the "sdl" and the first memcpy().
 
-I wonder...
-
-> +                    struct sockaddr_dl sdl =3D { 0 };
-> +                    memcpy(&sdl, &ifr.ifr_addr, sizeof(ifr.ifr_addr));
-> +                    memcpy(rgi->hwaddr, LLADDR(&sdl), 6);
->                      rgi->flags |=3D RGI_HWADDR_DEFINED;
-
-... why you keep the "sockaddr_dl" intermediate - this was useful
-for "we use it as a pointer", but doing two memcpy() with a huge
-explanation above looks weird.
-
-LLADDR on FreeBSD is
-
-#define LLADDR(s) ((caddr_t)((s)->sdl_data + (s)->sdl_nlen))
-
-(to operate on a "struct sockaddr_dl")
-
-struct ifaddr has=20
-
-struct ifaddr {
-        struct  sockaddr *ifa_addr;     /* address of interface */
-        struct  sockaddr *ifa_dstaddr;  /* other end of p-to-p link */
-        struct  sockaddr *ifa_netmask;  /* used to determine subnet */
-
-... so the first memcpy() isn't actually copying the MAC address around,
-just a bunch of pointers, and then we dereference the first of them
-for the second memcpy(), using the dereferencing macro for a=20
-"sockaddr_dl" structure.
-
-FreeBSD also has
-
-#define IF_LLADDR(ifp)                                                  \
-    LLADDR((struct sockaddr_dl *)((ifp)->if_addr->ifa_addr))
-
-which sounds like "feed in an *ifr, out comes a pointer for the
-memcpy() to rgi->addr".
-
-
-I'll check the other BSDs if LL_IFADDR() is available everywhere, but
-if not, we can just do the same thing (struct ifr is aligned) and
-get rid of the "sdl" and the first memcpy().
-
-(Am I overlooking something?)
+Of course neither Solaris nor OpenBSD have the LL_IFADDR(), but that's
+trivial enough.
 
 gert
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -88,22 +49,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---uBBTh+8NfYLNYWr7
+--2bilG+t2+dtxhsFr
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJj+y4oAAoJEB2Cnv7KVigSd2cL/AzP4SufF9uheLQXnkIOsnEM
-dZlKF+WsoaIgj/SYu9dlCyJfy+jeSjqSY77OE/8szs4HFSwaZX5H2XycDaGwdsG1
-qd1TtIaIVhYelMdletLV7qGOdYPc3bVQpr76WzarlKPsw9a0e4feA0De86ZK/AZJ
-xv/w1Mwt+daFTVFBPtxWxYqPeKPCimoTZQIvG/gsjm/raHRChMl2dNlsuput4win
-lVZuuWD2g/okASzPCsrv2/+1JOggh0DXtAOpJ/oycEr2loM+pR6+QBWyb02XjW+1
-0qSgPJ1lGrPX6jkl1Wht8zGzZnPfyW23aWkyHtSr8nPzVnwePGcMANm5AjmHlieZ
-ToHO9Y7j7PdovTDrGdHbdpqxyKmV740U0AkoHl5T3UEwzWCIUzisTyxQS/MhFS5y
-MGQ6MoFealN5vcfapMkJzqiZtt2YzTm+nIHKz5QQ9PJJNkbaUSJbuLuXoTcbCCOK
-1dKZkOzZYQB0JDhm+xAfLU7NFsBhpL8saNH1cDhg2Q==
-=rlPL
+iQGcBAEBAgAGBQJj+y6sAAoJEB2Cnv7KVigSkIYL/RUurV9Qyjso+oAm8Vo93pcr
+o+qM8T+tYbrJpT/7XbpGr/mXds6VIQu1RDabNlmsw9vmMv6aKlTWwW1VI45m8h9T
+5nsToszGaBeSA2bxDvtrC+Az9rfr6TFMtz/xCqv4WZtsgAMT3bwMnq5ZulVOGF+u
+k0nEkRFZHSt7UoTGVHI07iZzQAgzDKQS2Vt1tyD2shdBa62iB6TRZNgdLHic7MdK
+UhDGeVeLuIilWpxA1ij7Oeu+ZMG4ArJEFdaIsj/BbFD99nTVc6dt3Lb+XU7lywKH
+vx9vqElbL+m5Wy2YKPSPIfvZ2VgTuhR4ee9r+Q3HeRLhMaU0LGlNElAEe8916omZ
+UaA+BfSc9/xHHuchOyGCiLyYm+L4Xt85vbQArKLlC5yHAK7pdl6of5vxzBgqzGDc
+1l6ZmibSyP/BR4Zol5XaXdJOkl9ugprH/qZXxNdvD5G+/uYu6kDp262ImsuVjNN4
+W4HbD69ZR8VwLIlu+CQJFAyj7YGZJbv2Ucew+VHMWw==
+=+FqW
 -----END PGP SIGNATURE-----
 
---uBBTh+8NfYLNYWr7--
+--2bilG+t2+dtxhsFr--
 
