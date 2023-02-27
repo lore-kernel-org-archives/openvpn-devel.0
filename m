@@ -1,9 +1,10 @@
-Date: Mon, 27 Feb 2023 08:01:11 +0100 (CET)
-Message-Id: <202302270701.31R71BSD023001@...2054...>
+Date: Mon, 27 Feb 2023 08:17:20 +0100 (CET)
+Message-Id: <202302270717.31R7HKra024431@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230226213420.21201-1-a@...2181...>
-References: <20230226213420.21201-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Update issue templates
+In-Reply-To: <20230217122156.541-1-lstipakov@...277...>
+References: <20230217122156.541-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Avoid management log loop with
+ verb >= 6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,26 +15,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Trivial enough :-)
 
-Your patch has been applied to the master branch.
+Your patch has been applied to the master and release/2.6 branch.
 
-(I'm not sure what GH considers the source for issue templates,
-but I assume "master branch only")
+commit b8eddda8524bf6f164361667bfce6bbb3fac846b (master)
+commit c26609bdcd75da5702befbdfa5d0136a7787e52e (release/2.6)
+Author: Lev Stipakov
+Date:   Fri Feb 17 14:21:55 2023 +0200
 
-commit 4bdd04f7d308b8018fd9a90882a20a2a1e12472e
-Author: Antonio Quartulli
-Date:   Sun Feb 26 22:34:20 2023 +0100
+     Avoid management log loop with verb >= 6
 
-     Update issue templates
-
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230226213420.21201-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26305.html
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <20230217122156.541-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26284.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
