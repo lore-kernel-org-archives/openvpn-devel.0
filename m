@@ -1,8 +1,9 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Sun, 26 Feb 2023 22:34:20 +0100
-Message-Id: <20230226213420.21201-1-a@...2181...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Update issue templates
+Date: Mon, 27 Feb 2023 08:01:11 +0100 (CET)
+Message-Id: <202302270701.31R71BSD023001@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230226213420.21201-1-a@...2181...>
+References: <20230226213420.21201-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Update issue templates
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +14,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-With this change we extend the text exposed to people opening a bug in
-the OpenVPN project.
+Acked-by: Gert Doering <gert@...1296...>
 
-Hopefully they will read and immediately understand that GH is not the
-right place to report ossues about commercial products.
+Your patch has been applied to the master branch.
 
-Change-Id: Idd039612698a6b08f9544450885d1a5f77fd95c6
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- .github/ISSUE_TEMPLATE/bug_report.md | 3 +++
- 1 file changed, 3 insertions(+)
+(I'm not sure what GH considers the source for issue templates,
+but I assume "master branch only")
 
-diff --git a/.github/ISSUE_TEMPLATE/bug_report.md b/.github/ISSUE_TEMPLATE/bug_report.md
-index 6cbd3ba4..3bf6f233 100644
---- a/.github/ISSUE_TEMPLATE/bug_report.md
-+++ b/.github/ISSUE_TEMPLATE/bug_report.md
-@@ -7,6 +7,9 @@ assignees: ''
- 
- ---
- 
-+**IMPORTANT NOTE**
-+Bugs about OpenVPN Access Server, OpenVPN Connect or any other product by OpenVPN Inc. should be directly reported to OpenVPN Inc. at https://support.openvpn.net
-+
- **Describe the bug**
- A clear and concise description of what the bug is.
- 
--- 
-2.39.2
+commit 4bdd04f7d308b8018fd9a90882a20a2a1e12472e
+Author: Antonio Quartulli
+Date:   Sun Feb 26 22:34:20 2023 +0100
+
+     Update issue templates
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230226213420.21201-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26305.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
