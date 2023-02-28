@@ -1,9 +1,9 @@
 From: Heiko Hund <heiko@...2662...>
-Date: Tue, 28 Feb 2023 05:26:45 +0100
-Message-Id: <20230228042645.38863-1-heiko@...2662...>
+Date: Tue, 28 Feb 2023 05:41:42 +0100
+Message-Id: <20230228044142.39803-1-heiko@...2662...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] dns option: allow up to two addresses per
- family
+Subject: [Openvpn-devel] [PATCH] dns option: remove support for
+ exclude-domains
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,250 +16,138 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+No DNS resolver currently supports this and it is not possible to
+emulate the behavior without the chance of errors. Finding the
+effective default system DNS server(s) to specify the exclude
+DNS routes is not trivial and cannot be verified to be correct
+without resolver internal knowledge. So, it is better to not
+support this instead of supporting it, but incorrectly.
+
 Signed-off-by: Heiko Hund <heiko@...2662...>
 ---
- doc/man-sections/client-options.rst |  7 +--
- src/openvpn/dns.c                   | 70 ++++++++++++++++-------------
- src/openvpn/dns.h                   | 19 +++++---
- src/openvpn/options.c               | 30 +++++++------
- 4 files changed, 72 insertions(+), 54 deletions(-)
+ doc/man-sections/client-options.rst | 14 +++++---------
+ src/openvpn/dns.c                   | 13 ++-----------
+ src/openvpn/dns.h                   |  7 -------
+ src/openvpn/options.c               | 16 ----------------
+ 4 files changed, 7 insertions(+), 43 deletions(-)
 
 diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-options.rst
-index 974cc992..0b973adf 100644
+index 0b973adf..85d5610f 100644
 --- a/doc/man-sections/client-options.rst
 +++ b/doc/man-sections/client-options.rst
-@@ -168,7 +168,7 @@ configuration.
-   ::
+@@ -169,7 +169,7 @@ configuration.
  
       dns search-domains domain [domain ...]
--     dns server n address addr[:port] [addr[:port]]
-+     dns server n address addr[:port] [addr[:port]] [addr[:port]] [addr[:port]]
-      dns server n resolve-domains|exclude-domains domain [domain ...]
+      dns server n address addr[:port] [addr[:port]] [addr[:port]] [addr[:port]]
+-     dns server n resolve-domains|exclude-domains domain [domain ...]
++     dns server n resolve-domains domain [domain ...]
       dns server n dnssec yes|optional|no
       dns server n transport DoH|DoT|plain
-@@ -187,8 +187,9 @@ configuration.
-   already configured DNS servers with the same server id.
+      dns server n sni server-name
+@@ -191,14 +191,10 @@ configuration.
+   Optionally a port can be appended after a colon. IPv6 addresses need to
+   be enclosed in brackets if a port is appended.
  
-   The ``address`` option configures the IPv4 and / or IPv6 address of
--  the DNS server. Optionally a port can be appended after a colon. IPv6
--  addresses need to be enclosed in brackets if a port is appended.
-+  the DNS server. Up to two addresses per address family can be specified.
-+  Optionally a port can be appended after a colon. IPv6 addresses need to
-+  be enclosed in brackets if a port is appended.
+-  The ``resolve-domains`` and ``exclude-domains`` options take one or
+-  more DNS domains which are explicitly resolved or explicitly not resolved
+-  by a server. Only one of the options can be configured for a server.
+-  ``resolve-domains`` is used to define a split-dns setup, where only
+-  given domains are resolved by a server. ``exclude-domains`` is used to
+-  define domains which will never be resolved by a server (e.g. domains
+-  which can only be resolved locally). Systems which do not support fine
+-  grained DNS domain configuration, will ignore these settings.
++  The ``resolve-domains`` option takes one or more DNS domains used to define
++  a split-dns or dns-routing setup, where only the given domains are resolved
++  by the server. Systems which do not support fine grained DNS domain
++  configuration, will ignore this setting.
  
-   The ``resolve-domains`` and ``exclude-domains`` options take one or
-   more DNS domains which are explicitly resolved or explicitly not resolved
+   The ``dnssec`` option is used to configure validation of DNSSEC records.
+   While the exact semantics may differ for resolvers on different systems,
 diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
-index 9f2a7d5e..18f6e58b 100644
+index 18f6e58b..b1486c86 100644
 --- a/src/openvpn/dns.c
 +++ b/src/openvpn/dns.c
-@@ -117,17 +117,25 @@ dns_server_addr_parse(struct dns_server *server, const char *addr)
- 
-     if (ai->ai_family == AF_INET)
-     {
-+        if (server->addr4_count >= SIZE(server->addr4))
-+        {
-+            return false;
-+        }
-         struct sockaddr_in *sin = (struct sockaddr_in *)ai->ai_addr;
--        server->addr4_defined = true;
--        server->addr4.s_addr = ntohl(sin->sin_addr.s_addr);
--        server->port4 = port;
-+        server->addr4[server->addr4_count].in.a4.s_addr = ntohl(sin->sin_addr.s_addr);
-+        server->addr4[server->addr4_count].port = port;
-+        server->addr4_count += 1;
-     }
-     else
-     {
-+        if (server->addr6_count >= SIZE(server->addr6))
-+        {
-+            return false;
-+        }
-         struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *)ai->ai_addr;
--        server->addr6_defined = true;
--        server->addr6 = sin6->sin6_addr;
--        server->port6 = port;
-+        server->addr6[server->addr6_count].in.a6 = sin6->sin6_addr;
-+        server->addr6[server->addr6_count].port = port;
-+        server->addr6_count += 1;
-     }
- 
-     freeaddrinfo(ai);
-@@ -197,7 +205,7 @@ dns_options_verify(int msglevel, const struct dns_options *o)
-         o->servers ? o->servers : o->servers_prepull;
-     while (server)
-     {
--        if (!server->addr4_defined && !server->addr6_defined)
-+        if (server->addr4_count == 0 && server->addr6_count == 0)
-         {
-             msg(msglevel, "ERROR: dns server %ld does not have an address assigned", server->priority);
-             return false;
-@@ -376,26 +384,26 @@ setenv_dns_options(const struct dns_options *o, struct env_set *es)
- 
-     for (i = 1, s = o->servers; s != NULL; i++, s = s->next)
-     {
--        if (s->addr4_defined)
--        {
--            setenv_dns_option(es, "dns_server_%d_address4", i, -1,
--                              print_in_addr_t(s->addr4.s_addr, 0, &gc));
--        }
--        if (s->port4)
-+        for (j = 0; j < s->addr4_count; ++j)
-         {
--            setenv_dns_option(es, "dns_server_%d_port4", i, -1,
--                              print_in_port_t(s->port4, &gc));
-+            setenv_dns_option(es, "dns_server_%d_address4_%d", i, j + 1,
-+                              print_in_addr_t(s->addr4[j].in.a4.s_addr, 0, &gc));
-+            if (s->addr4[j].port)
-+            {
-+                setenv_dns_option(es, "dns_server_%d_port4_%d", i, j + 1,
-+                                  print_in_port_t(s->addr4[j].port, &gc));
-+            }
-         }
- 
--        if (s->addr6_defined)
-+        for (j = 0; j < s->addr6_count; ++j)
-         {
--            setenv_dns_option(es, "dns_server_%d_address6", i, -1,
--                              print_in6_addr(s->addr6, 0, &gc));
--        }
--        if (s->port6)
--        {
--            setenv_dns_option(es, "dns_server_%d_port6", i, -1,
--                              print_in_port_t(s->port6, &gc));
-+            setenv_dns_option(es, "dns_server_%d_address6_%d", i, j + 1,
-+                              print_in6_addr(s->addr6[j].in.a6, 0, &gc));
-+            if (s->addr6[j].port)
-+            {
-+                setenv_dns_option(es, "dns_server_%d_port6", i, -1,
-+                                  print_in_port_t(s->addr6[j].port, &gc));
-+            }
-         }
+@@ -408,11 +408,9 @@ setenv_dns_options(const struct dns_options *o, struct env_set *es)
  
          if (s->domains)
-@@ -439,12 +447,12 @@ show_dns_options(const struct dns_options *o)
-     {
-         msg(D_SHOW_PARMS, "  DNS server #%d:", i++);
- 
--        if (server->addr4_defined)
-+        for (int j = 0; j < server->addr4_count; ++j)
          {
--            const char *addr = print_in_addr_t(server->addr4.s_addr, 0, &gc);
--            if (server->port4)
-+            const char *addr = print_in_addr_t(server->addr4[j].in.a4.s_addr, 0, &gc);
-+            if (server->addr4[j].port)
+-            const char *format = s->domain_type == DNS_RESOLVE_DOMAINS ?
+-                                 "dns_server_%d_resolve_domain_%d" : "dns_server_%d_exclude_domain_%d";
+             for (j = 1, d = s->domains; d != NULL; j++, d = d->next)
              {
--                const char *port = print_in_port_t(server->port4, &gc);
-+                const char *port = print_in_port_t(server->addr4[j].port, &gc);
-                 msg(D_SHOW_PARMS, "    address4 = %s:%s", addr, port);
-             }
-             else
-@@ -452,12 +460,12 @@ show_dns_options(const struct dns_options *o)
-                 msg(D_SHOW_PARMS, "    address4 = %s", addr);
+-                setenv_dns_option(es, format, i, j, d->name);
++                setenv_dns_option(es, "dns_server_%d_resolve_domain_%d", i, j, d->name);
              }
          }
--        if (server->addr6_defined)
-+        for (int j = 0; j < server->addr6_count; ++j)
+ 
+@@ -491,14 +489,7 @@ show_dns_options(const struct dns_options *o)
+         struct dns_domain *domain = server->domains;
+         if (domain)
          {
--            const char *addr = print_in6_addr(server->addr6, 0, &gc);
--            if (server->port6)
-+            const char *addr = print_in6_addr(server->addr6[j].in.a6, 0, &gc);
-+            if (server->addr6[j].port)
+-            if (server->domain_type == DNS_RESOLVE_DOMAINS)
+-            {
+-                msg(D_SHOW_PARMS, "    resolve domains:");
+-            }
+-            else
+-            {
+-                msg(D_SHOW_PARMS, "    exclude domains:");
+-            }
++            msg(D_SHOW_PARMS, "    resolve domains:");
+             while (domain)
              {
--                const char *port = print_in_port_t(server->port6, &gc);
-+                const char *port = print_in_port_t(server->addr6[j].port, &gc);
-                 msg(D_SHOW_PARMS, "    address6 = [%s]:%s", addr, port);
-             }
-             else
+                 msg(D_SHOW_PARMS, "      %s", domain->name);
 diff --git a/src/openvpn/dns.h b/src/openvpn/dns.h
-index 03a894f2..34f864dd 100644
+index 34f864dd..22cb333b 100644
 --- a/src/openvpn/dns.h
 +++ b/src/openvpn/dns.h
-@@ -52,15 +52,22 @@ struct dns_domain {
-     const char *name;
- };
+@@ -27,12 +27,6 @@
+ #include "buffer.h"
+ #include "env_set.h"
  
-+struct dns_server_addr
-+{
-+    union {
-+        struct in_addr a4;
-+        struct in6_addr a6;
-+    } in;
-+    in_port_t port;
-+};
-+
- struct dns_server {
-     struct dns_server *next;
-     long priority;
--    bool addr4_defined;
--    bool addr6_defined;
--    struct in_addr addr4;
--    struct in6_addr addr6;
--    in_port_t port4;
--    in_port_t port6;
-+    size_t addr4_count;
-+    size_t addr6_count;
-+    struct dns_server_addr addr4[2];
-+    struct dns_server_addr addr6[2];
+-enum dns_domain_type {
+-    DNS_DOMAINS_UNSET,
+-    DNS_RESOLVE_DOMAINS,
+-    DNS_EXCLUDE_DOMAINS
+-};
+-
+ enum dns_security {
+     DNS_SECURITY_UNSET,
+     DNS_SECURITY_NO,
+@@ -69,7 +63,6 @@ struct dns_server {
+     struct dns_server_addr addr4[2];
+     struct dns_server_addr addr6[2];
      struct dns_domain *domains;
-     enum dns_domain_type domain_type;
+-    enum dns_domain_type domain_type;
      enum dns_security dnssec;
+     enum dns_server_transport transport;
+     const char *sni;
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 9105449c..7ea1994a 100644
+index 7ea1994a..19731b53 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -1387,21 +1387,23 @@ tuntap_options_copy_dns(struct options *o)
-         const struct dns_server *server = dns->servers;
-         while (server)
-         {
--            if (server->addr4_defined && tt->dns_len < N_DHCP_ADDR)
-+            for (int i = 0; i < server->addr4_count; ++i)
-             {
--                tt->dns[tt->dns_len++] = server->addr4.s_addr;
--            }
--            else
--            {
--                overflow = true;
--            }
--            if (server->addr6_defined && tt->dns6_len < N_DHCP_ADDR)
--            {
--                tt->dns6[tt->dns6_len++] = server->addr6;
-+                if (tt->dns_len >= N_DHCP_ADDR)
-+                {
-+                    overflow = true;
-+                    break;
-+                }
-+                tt->dns[tt->dns_len++] = server->addr4[i].in.a4.s_addr;
+@@ -8016,22 +8016,6 @@ add_option(struct options *options,
              }
--            else
-+            for (int i = 0; i < server->addr6_count; ++i)
+             else if (streq(p[3], "resolve-domains"))
              {
--                overflow = true;
-+                if (tt->dns6_len >= N_DHCP_ADDR)
-+                {
-+                    overflow = true;
-+                    break;
-+                }
-+                tt->dns6[tt->dns6_len++] = server->addr6[i].in.a6;
+-                if (server->domain_type == DNS_EXCLUDE_DOMAINS)
+-                {
+-                    msg(msglevel, "--dns server %ld: cannot use resolve-domains and exclude-domains", priority);
+-                    goto err;
+-                }
+-                server->domain_type = DNS_RESOLVE_DOMAINS;
+-                dns_domain_list_append(&server->domains, &p[4], &options->dns_options.gc);
+-            }
+-            else if (streq(p[3], "exclude-domains"))
+-            {
+-                if (server->domain_type == DNS_RESOLVE_DOMAINS)
+-                {
+-                    msg(msglevel, "--dns server %ld: cannot use exclude-domains and resolve-domains", priority);
+-                    goto err;
+-                }
+-                server->domain_type = DNS_EXCLUDE_DOMAINS;
+                 dns_domain_list_append(&server->domains, &p[4], &options->dns_options.gc);
              }
-             server = server->next;
-         }
-@@ -8001,13 +8003,13 @@ add_option(struct options *options,
- 
-             struct dns_server *server = dns_server_get(&options->dns_options.servers, priority, &options->dns_options.gc);
- 
--            if (streq(p[3], "address") && !p[6])
-+            if (streq(p[3], "address") && !p[8])
-             {
-                 for (int i = 4; p[i]; i++)
-                 {
-                     if (!dns_server_addr_parse(server, p[i]))
-                     {
--                        msg(msglevel, "--dns server %ld: malformed or duplicate address '%s'", priority, p[i]);
-+                        msg(msglevel, "--dns server %ld: malformed address or maximum exceeded '%s'", priority, p[i]);
-                         goto err;
-                     }
-                 }
+             else if (streq(p[3], "dnssec") && !p[5])
 -- 
 2.34.1
 
