@@ -1,8 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed,  1 Mar 2023 14:44:49 +0100
-Message-Id: <20230301134449.2810039-1-arne@...1227...>
+Date: Wed,  1 Mar 2023 14:44:55 +0100
+Message-Id: <20230301134455.2810114-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Improve description of compat-mode
+Subject: [Openvpn-devel] [PATCH] Only update frame calculation if we have a
+ valid link sockets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,58 +16,44 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Explicitly say that the version specified is the one of the peer and not
-the version we try to emulate.
+Without this, we will caculate a pointer to the linksocket relative to  a null pointer
+in get_link_socket_info, which itself does not crash and the pointer seems not to be accessed
+later, so we do not get a crash here. This is still not the correct behaviour and the undefined
+behaviour sanitiser from llvm/clang finds this.
 
-Change-Id: I3bd27a8d34d8cb4896a3b78508b7d16911571543
+Change-Id: I82a20ac72f60f8770ea1b4ab0c8cdea31868abe7
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- doc/man-sections/generic-options.rst | 21 +++++++++++++++------
- 1 file changed, 15 insertions(+), 6 deletions(-)
+ src/openvpn/init.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
-index c827651d6..ae20a261a 100644
---- a/doc/man-sections/generic-options.rst
-+++ b/doc/man-sections/generic-options.rst
-@@ -53,10 +53,16 @@ which mode OpenVPN is configured as.
-   need for /dev/urandom to be available.
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 622239f6b..e6f14f72d 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -4541,14 +4541,15 @@ init_instance(struct context *c, const struct env_set *env, const unsigned int f
+     if (c->mode == CM_P2P || c->mode == CM_TOP || c->mode == CM_CHILD_TCP)
+     {
+         link_socket_init_phase2(c);
+-    }
  
- --compat-mode version
--  This option provides a way to alter the default of OpenVPN to be more
--  compatible with the version ``version`` specified. All of the changes
--  this option does can also be achieved using individual configuration
--  options.
-+  This option provides a convient way to alter the default of OpenVPN
-+  to be more compatible with the version ``version`` specified. All of
-+  the changes this option does can also be achieved using individual
-+  configuration options.
+-    /* Update dynamic frame calculation as exact transport socket information
+-     * (IP vs IPv6) may be only available after socket phase2 has finished.
+-     * This is only needed for --static or no crypto, NCP will recalculate this
+-     * in tls_session_update_crypto_params (P2MP) */
+-    frame_calculate_dynamic(&c->c2.frame, &c->c1.ks.key_type, &c->options,
+-                            get_link_socket_info(c));
 +
-+  The version specified is the version of OpenVPN peer OepnVPN should try
-+  to compatible with. In general OpenVPN should be compatible with the last
-+  two previous version without this option. E.g. OpenVPN 2.6.0 should be
-+  compatible with 2.5.x and 2.4.x without this option. However, there might
-+  be some edge cases that still require this option even in these cases.
++        /* Update dynamic frame calculation as exact transport socket information
++         * (IP vs IPv6) may be only available after socket phase2 has finished.
++         * This is only needed for --static or no crypto, NCP will recalculate this
++         * in tls_session_update_crypto_params (P2MP) */
++        frame_calculate_dynamic(&c->c2.frame, &c->c1.ks.key_type, &c->options,
++                                get_link_socket_info(c));
++    }
  
-   Note: Using this option reverts defaults to no longer recommended
-   values and should be avoided if possible.
-@@ -67,12 +73,15 @@ which mode OpenVPN is configured as.
-   - 2.5.x or lower: ``--allow-compression asym`` is automatically added
-     to the configuration if no other compression options are present.
-   - 2.4.x or lower: The cipher in ``--cipher`` is appended to
--    ``--data-ciphers``
-+    ``--data-ciphers``.
-   - 2.3.x or lower: ``--data-cipher-fallback`` is automatically added with
--    the same cipher as ``--cipher``
-+    the same cipher as ``--cipher``.
-   - 2.3.6 or lower: ``--tls-version-min 1.0`` is added to the configuration
-     when ``--tls-version-min`` is not explicitly set.
- 
-+  If not needed, this is option should be avoided. Setting this option can
-+  lower security or disable features like data-channel offloading.
-+
- --config file
-   Load additional config options from ``file`` where each line corresponds
-   to one command line option, but with the leading :code:`--` removed.
+     /*
+      * Actually do UID/GID downgrade, and chroot, if requested.
 -- 
 2.37.1 (Apple Git-137.1)
 
