@@ -1,10 +1,10 @@
-Date: Thu, 2 Mar 2023 18:19:09 +0100 (CET)
-Message-Id: <202303021719.322HJ9VX002701@...2054...>
+Date: Thu, 2 Mar 2023 18:37:54 +0100 (CET)
+Message-Id: <202303021737.322HbsBq003070@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230301091851.82243-1-kprovost@...2661...>
-References: <20230301091851.82243-1-kprovost@...2661...>
-Subject: [Openvpn-devel] [PATCH applied] Re: options.c: enforce a minimal
- fragment size
+In-Reply-To: <20230301091848.80760-1-kprovost@...2661...>
+References: <20230301091848.80760-1-kprovost@...2661...>
+Subject: [Openvpn-devel] [PATCH applied] Re: configure: improve FreeBSD DCO
+ check
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,25 +20,53 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Straightforward :-) - and we really shouldn't divide by zero..
+Thanks for spotting & fixing this, and apologies for still
+not having a FreeBSD 14 buildslave.
 
-I have adjusted the message to read "--fragment ..." (with dashes),
-because that's what we seem to do in other option-related error
-messages.
+Indeed, the existing configure.ac hard breaks my FreeBSD 14 setup
+(which I didn't look at for a while, "because it works")...
+
+   checking for nvlist_create in -lnv... no
+   configure: WARNING: Name/Value pair library not found.
+   configure: error: DCO support can't be enabled
+
+(because "./configure --enable-dco" -> succeed or error out).
+
+With "enable DCO on auto", the existing code does
+
+   checking for nvlist_create in -lnv... no
+   configure: WARNING: Name/Value pair library not found.
+   configure: WARNING: DCO support disabled
+
+and proceeds to build a binary with no DCO!
+
+With this patch applied, "no arguments" or "--enable-dco" both
+succeed...
+
+   checking for net/if_ovpn.h... yes
+   configure: Enabled ovpn-dco support for FreeBSD
+
+on earlier FreeBSD versions (7.4), it just disables DCO, and
+proceeds happily - as it should be.
+
+   configure: WARNING: DCO header not found.
+   configure: WARNING: DCO support disabled
+
+
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit 78e504210add19343e65f5c5b80be9ea6e9e95ab (master)
-commit b9a9de156bc3ad517bfc6d1042ad0ef0350b638e (release/2.6)
+commit 6f261673dee26ae8cfdf58f77038098d4f81d84a (master)
+commit 86fb085b6d2582916ef59b4bd8bd5e4a072964a3 (release/2.6)
 Author: Kristof Provost
-Date:   Wed Mar 1 10:18:51 2023 +0100
+Date:   Wed Mar 1 10:18:48 2023 +0100
 
-     options.c: enforce a minimal fragment size
+     configure: improve FreeBSD DCO check
 
      Signed-off-by: Kristof Provost <kprovost@...2661...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230301091851.82243-1-kprovost@...2661...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26313.html
+     Message-Id: <20230301091848.80760-1-kprovost@...2661...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26314.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
