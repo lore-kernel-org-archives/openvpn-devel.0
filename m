@@ -1,10 +1,10 @@
-Date: Fri, 3 Mar 2023 17:16:58 +0100 (CET)
-Message-Id: <202303031616.323GGwFm043622@...2054...>
+Date: Fri, 3 Mar 2023 17:59:04 +0100 (CET)
+Message-Id: <202303031659.323Gx4lK054095@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230303110511.9569-1-kprovost@...2661...>
-References: <20230303110511.9569-1-kprovost@...2661...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco: define
- OVPN_DEL_PEER_REASON_TRANSPORT_DISCONNECT on FreeBSD
+In-Reply-To: <20230214112044.1021962-1-arne@...1227...>
+References: <20230214112044.1021962-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Reduce initialisation spam from
+ verb <= 3 and print summary instead
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +15,42 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Kristof Provost <kp@...1376...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks for the patch - I did the #ifdef variant "because I did not
-want to touch FreeBSD enums without checking with you first" - but
-this is a better way forward.  Client-side tested on FreeBSD 14 and 12 :-)
+Acked-by: Gert Doering <gert@...1296...>
+
+This is a useful change.
+
+I have stared a bit at the code, and it does what it wants to achieve.
+
+I do not exactly like the "add_delim_if_non_empty()" approach, but this
+seems to be an ever-recurring topic ("how to build a string with lots
+of optional parts and delimiters in between") which is ugly even in
+language with good string support...
+
+Not sure why the patch moves cc_exit_notify_enabled() to occ.h, as it's
+still only called from sig.c - but "static inline in .h" is our usual
+convention.
+
+I have very unscientifically connected to a few destinations with
+verb 3 / verb 4 and compared the results (yep, nice, and all the details
+are still there if you really want them) and pushed to GH and buildbot for
+"will it break $randomthing?".  Does not break any compile variants.
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit 155cf11531e619cf24b2aa9d0acb4ff834b2e8fa (master)
-commit 7fdf3e7ad711e1583e960798848c7d7f94e1ad8a (release/2.6)
-Author: Kristof Provost
-Date:   Fri Mar 3 12:05:11 2023 +0100
+commit c333a0c05f9d454efb38fc04c1dca1413bfc48ff (master)
+commit 7538557108f6add04f835eb161cb0a33610c6b14 (release/2.6)
+Author: Arne Schwabe
+Date:   Tue Feb 14 12:20:44 2023 +0100
 
-     dco: define OVPN_DEL_PEER_REASON_TRANSPORT_DISCONNECT on FreeBSD
+     Reduce initialisation spam from verb <= 3 and print summary instead
 
-     Signed-off-by: Kristof Provost <kprovost@...2661...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20230303110511.9569-1-kprovost@...2661...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26324.html
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230214112044.1021962-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26249.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
