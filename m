@@ -1,15 +1,9 @@
-Date: Mon, 6 Mar 2023 09:24:27 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <ZAWjO1dXEnBRsltG@...1296...>
-References: <20230306053346.796992-1-selva.nair@...277...>
- <20230306053346.796992-2-selva.nair@...277...>
+Date: Mon,  6 Mar 2023 09:07:44 +0100
+Message-Id: <20230306080744.66069-1-gert@...1296...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="YedkAhvAtKpexxJQ"
-Content-Disposition: inline
-In-Reply-To: <20230306053346.796992-2-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Include supplementary groups when
- checking management-client-group
+Subject: [Openvpn-devel] [PATCH] FreeBSD 12.x workaround for IPv6 ifconfig
+ is needed on 12.4 as well
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,73 +12,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selva.nair@...277...
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---YedkAhvAtKpexxJQ
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Commit 16d7f2cd4d90 tried to remove an FreeBSD 12.x ifconfig inet6
+workaround based on the understanding that the upstream fix for
+bug 248172 went into 12.4, but that was a misread of the code - 12.4
+needs the workaround as well, fixed in 13.0.
 
-Hi,
+Also extend comment to point to /etc/network.subr, which is the real
+source of the problematic code
 
-On Mon, Mar 06, 2023 at 12:33:46AM -0500, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
->=20
-> - When management-client-group is in use, allow access if any of
->   the supplementary groups of the user matches the specified group.
->=20
->   Currently only the effective gid of the peer socket is checked
->   which is normally the primary group of user. As unprivileged users
->   have no easy way of changing the effective gid of a process,
->   group based access control is of very limited use without this change.
+        if checkyesno ipv6_activate_all_interfaces; then
+                _ipv6_opts="-ifdisabled"
+        elif [ "$1" != "lo0" ]; then                   <<<<
+                _ipv6_opts="ifdisabled"                <<<<
+        fi
 
-I'm not really convinced this is a good way forward - it's yet another
-extra function for a very niche use case, as in "the code has been like
-this for 100 years, and nobody has ever used it".
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/tun.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-What you do is also not exactly "the user connecting has this gid at the
-time of connection" but "the uid reported by getpeerid() has this group
-listed in /etc/groups", which will be the same in many cases, but is
-still checking something different.
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index a1414d23..ca5c3b38 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1105,11 +1105,11 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifname, int tun_mtu,
+                          "generic BSD ifconfig inet6 failed");
+ 
+ #if defined(TARGET_FREEBSD) && __FreeBSD_version >= 1200000 \
+-    && __FreeBSD_version < 1204000
+-    /* On FreeBSD 12.0-12.3, there is ipv6_activate_all_interfaces="YES"
++    && __FreeBSD_version < 1300000
++    /* On FreeBSD 12.0-12.4, there is ipv6_activate_all_interfaces="YES"
+      * in rc.conf, which is not set by default.  If it is *not* set,
+      * "all new interfaces that are not already up" are configured by
+-     * devd + /etc/pccard_ether as "inet6 ifdisabled".
++     * devd -> /etc/pccard_ether -> /etc/network.subr as "inet6 ifdisabled".
+      *
+      * The "is this interface already up?" test is a non-zero time window
+      * which we manage to hit with our ifconfig often enough to cause
+-- 
+2.39.2
 
-I would propose to extend the documentation with "this only checks the
-primary gid at time of connection, if this does not work for your use
-case, put the socket into a directory with the right gid and mode 750
-and do not use that openvpn option" - as you wrote in the github ticket.
-
-> - Also accept if uid =3D 0 irrespective of the group.
-
-This part is fine for me, as it follows the traditional unix way of
-"root may pass".
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---YedkAhvAtKpexxJQ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJkBaM7AAoJEB2Cnv7KVigSu/UL/14/QlKlnhqHe6/W9OvMMWYu
-Z/i451wVsS0VvEAZpr2Y58nAC7IwYpMghCkBK0j0jn8C0eaPZ+6PcPOTIjPVRhPq
-bCvEKIuyVjTCnmR8+Luy70Ya9w21Faogo+VloLHzhdnUaHe2+8FeScsqtjwNN5Xk
-0HXX7SSpLBcUzGNg/AvyoHF7++DVUnJLe9RwbpJHk+z50YOdgjBaSFhMWrF6RRGQ
-0YPxDNaQiJ5FRpZp5IYme76MMETpvAq887edy+hTtA5YqkJxUzuQ7HLZDvPWZKR3
-rL3ZYtwKv6MUmcOG17wzRHR56XMK3bB+i7BQDEluSA/cP41rrt4X38x0SH8b7zdt
-UEBpIs92okAuPPhFU2nZ38s2LI5uwMXvHrGdhUALpCYEJ4N221JWEXo0/F2jxrZg
-G3amLgA1RIBSma96KL1DfvXrTto2S7jCq4rOJpT/iG49VgZGQJKFCrhWCq1Ia/ZE
-T/WB91tOWXamvF+I/cQ5F38bO22zFZnJzi3wM88+6w==
-=GN0p
------END PGP SIGNATURE-----
-
---YedkAhvAtKpexxJQ--
 
