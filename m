@@ -1,16 +1,14 @@
-Date: Mon, 6 Mar 2023 11:26:21 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <ZAW/zTnBkuDrHxPB@...1296...>
-References: <20220909195902.2011798-1-arne@...1227...>
- <20230131135248.3574741-1-arne@...1227...>
- <ZAWxSEpBIEEM5Uys@...1296...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="k9U2Tde7DwjVB9Y3"
-Content-Disposition: inline
-In-Reply-To: <ZAWxSEpBIEEM5Uys@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH v7] Dynamic tls-crypt for secure
- soft_reset/session renegotiation
+References: <20230306053346.796992-1-selva.nair@...277...>
+ <20230306053346.796992-2-selva.nair@...277...>
+ <ZAWjO1dXEnBRsltG@...1296...>
+In-Reply-To: <ZAWjO1dXEnBRsltG@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 6 Mar 2023 07:11:27 -0500
+Message-ID: <CAKuzo_ixHXYnZxfkJzBpMtHZ2E8f5u0GJVSWzXkx=_yZHToTBQ@...278...>
+Content-Type: multipart/alternative; boundary="000000000000baa98505f63a3222"
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Include supplementary groups when
+ checking management-client-group
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,57 +17,147 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---k9U2Tde7DwjVB9Y3
-Content-Type: text/plain; charset="us-ascii"
+--000000000000baa98505f63a3222
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-On Mon, Mar 06, 2023 at 10:24:24AM +0100, Gert Doering wrote:
-> 2023-03-06 10:20:04 Assertion failed at tls_crypt.c:83 (key->n =3D=3D 2 &=
-& other->n =3D=3D 2)
+On Mon, Mar 6, 2023 at 3:24=E2=80=AFAM Gert Doering <gert@...1296...> wrote:
 
-Splitting these into two ASSERT()s, it says key->n is fine, while
-other->n is not
+> Hi,
+>
+> On Mon, Mar 06, 2023 at 12:33:46AM -0500, selva.nair@...277... wrote:
+> > From: Selva Nair <selva.nair@...277...>
+> >
+> > - When management-client-group is in use, allow access if any of
+> >   the supplementary groups of the user matches the specified group.
+> >
+> >   Currently only the effective gid of the peer socket is checked
+> >   which is normally the primary group of user. As unprivileged users
+> >   have no easy way of changing the effective gid of a process,
+> >   group based access control is of very limited use without this change.
+>
+> I'm not really convinced this is a good way forward - it's yet another
+> extra function for a very niche use case, as in "the code has been like
+> this for 100 years, and nobody has ever used it".
+>
+> What you do is also not exactly "the user connecting has this gid at the
+> time of connection" but "the uid reported by getpeerid() has this group
+> listed in /etc/groups", which will be the same in many cases, but is
+> still checking something different.
+>
 
-2023-03-06 11:24:00 Assertion failed at tls_crypt.c:84 (other->n =3D=3D 2)
+I was of the same opinion when I first saw issue #264, but I think the
+original
+intent of "--management-client-group has to be what I've implemented or
+something similar.
 
-adding some more msg() it seems that "other" is undefined here
+Docs refer to it as group (not effective gid of the socket), and
+restricting based on
+gid reported by getpeerid is kind of useless. Why use "group" if it can't
+be used
+to restrict access to a set of users using a supplementary group...
 
-2023-03-06 11:25:44 xor_key2(): key=3D0x7fffffffd258, key->n=3D2
-2023-03-06 11:25:44 xor_key2(): other=3D0x80122062c, other->n=3D3009016
+I would propose to extend the documentation with "this only checks the
+> primary gid at time of connection, if this does not work for your use
+> case, put the socket into a directory with the right gid and mode 750
+> and do not use that openvpn option" - as you wrote in the github ticket.
+>
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+It's impossible to save that option by documenting. In that case, let's
+just
+make it a no-op and document that this option has no effect. And suggest
+the above for how to achieve group-based access control..
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---k9U2Tde7DwjVB9Y3
-Content-Type: application/pgp-signature; name="signature.asc"
+> > - Also accept if uid =3D 0 irrespective of the group.
+>
+> This part is fine for me, as it follows the traditional unix way of
+> "root may pass".
+>
 
------BEGIN PGP SIGNATURE-----
+I'm not keen on touching some code and ignore that a closely related
+code stays crippled (IMO). Unless we can make --management-client-group
+a no-op as mentioned above.
 
-iQGcBAEBAgAGBQJkBb/NAAoJEB2Cnv7KVigSN78L/19YhSSIZ5fXgnwiYnH/jPTX
-i2GNLRgEbrGHzAvWR3B7MLZ5jdPYOpT1V2Jo5FXGodOJgBFIHqSoV4+XTzlRpmBk
-wg/ufnWxa7HkJROxnxPHxziAkmCFusdOI/Kztz0qFnCVB6pUcDgg8Kfz3TuqXZTj
-L8V6NHiK+t8JiiahrYLUj5KvgDngzvtseOM7uWLYwr3eTGwWt6RdBojmDj2VIPmz
-kHt9oK6d2Ipa/YZJZE3PPPYOSj/epRYLOEd9ki1sCvnwhXjql769KIGpnjyNo4Ht
-zaNMMmhneEzrOOUuPBqc1btgKGA798kxUNNN1RZLNscOSsadCXu+9dfJYcFd/Ro8
-Qdf314lzrOkgSCp7xpQpWlwCwiJH0eNsaVjf+AIGE3YsIxm4tJzMbhOGDPU6eFUt
-KZPYscHI8nPGOpURgGeM+no6ZMZxtvBEdbwREvqYdm6C4w21Y51elZoIKV+Yrl6b
-iX24FndkSBNMhmOChPnrvLbZl0bzKNunRliiVVVXAQ==
-=NqVQ
------END PGP SIGNATURE-----
+As you say this is an obscure option -- we can leave it "as is".
 
---k9U2Tde7DwjVB9Y3--
+Selva
+
+--000000000000baa98505f63a3222
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr">Hi,</div><br><div class=3D"gmail_quote"><=
+div dir=3D"ltr" class=3D"gmail_attr">On Mon, Mar 6, 2023 at 3:24=E2=80=AFAM=
+ Gert Doering &lt;<a href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt=
+; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px=
+ 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
+<br>
+On Mon, Mar 06, 2023 at 12:33:46AM -0500, <a href=3D"mailto:selva.nair@...1665...=
+77..." target=3D"_blank">selva.nair@...277...</a> wrote:<br>
+&gt; From: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." target=3D=
+"_blank">selva.nair@...277...</a>&gt;<br>
+&gt; <br>
+&gt; - When management-client-group is in use, allow access if any of<br>
+&gt;=C2=A0 =C2=A0the supplementary groups of the user matches the specified=
+ group.<br>
+&gt; <br>
+&gt;=C2=A0 =C2=A0Currently only the effective gid of the peer socket is che=
+cked<br>
+&gt;=C2=A0 =C2=A0which is normally the primary group of user. As unprivileg=
+ed users<br>
+&gt;=C2=A0 =C2=A0have no easy way of changing the effective gid of a proces=
+s,<br>
+&gt;=C2=A0 =C2=A0group based access control is of very limited use without =
+this change.<br>
+<br>
+I&#39;m not really convinced this is a good way forward - it&#39;s yet anot=
+her<br>
+extra function for a very niche use case, as in &quot;the code has been lik=
+e<br>
+this for 100 years, and nobody has ever used it&quot;.<br>
+<br>
+What you do is also not exactly &quot;the user connecting has this gid at t=
+he<br>
+time of connection&quot; but &quot;the uid reported by getpeerid() has this=
+ group<br>
+listed in /etc/groups&quot;, which will be the same in many cases, but is<b=
+r>
+still checking something different.<br></blockquote><div><br></div><div>I w=
+as of the same opinion when I first saw issue #264, but I think the origina=
+l</div><div>intent of &quot;--management-client-group has to be what I&#39;=
+ve implemented or</div><div>something similar.</div><div><br></div><div>Doc=
+s refer to it as group (not effective gid of the socket), and restricting b=
+ased on</div><div>gid=C2=A0reported by getpeerid is kind of useless. Why us=
+e &quot;group&quot; if it can&#39;t be used</div><div>to restrict access to=
+ a set of users using a supplementary group...</div><div><br></div><blockqu=
+ote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px=
+ solid rgb(204,204,204);padding-left:1ex">
+I would propose to extend the documentation with &quot;this only checks the=
+<br>
+primary gid at time of connection, if this does not work for your use<br>
+case, put the socket into a directory with the right gid and mode 750<br>
+and do not use that openvpn option&quot; - as you wrote in the github ticke=
+t.<br></blockquote><div><br></div><div>It&#39;s impossible to save that opt=
+ion by documenting. In that case, let&#39;s just=C2=A0</div><div>make it a =
+no-op and document=C2=A0that this option has no effect. And suggest</div><d=
+iv>the above for how to achieve group-based access control..</div><div>=C2=
+=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8e=
+x;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+&gt; - Also accept if uid =3D 0 irrespective of the group.<br>
+<br>
+This part is fine for me, as it follows the traditional unix way of<br>
+&quot;root may pass&quot;.<br></blockquote><div><br></div><div>I&#39;m not =
+keen on touching some code and ignore that a closely related</div><div>code=
+=C2=A0stays crippled (IMO). Unless we can make --management-client-group</d=
+iv><div>a no-op as mentioned above.</div><div><br></div><div>As you say thi=
+s is an obscure=C2=A0option -- we can leave it &quot;as is&quot;.</div><div=
+><br></div><div>Selva</div></div></div>
+
+--000000000000baa98505f63a3222--
 
