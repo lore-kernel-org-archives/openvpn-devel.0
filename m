@@ -1,11 +1,10 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Wed,  8 Mar 2023 14:37:43 +0100
-Message-Id: <20230308133743.5059-1-a@...2181...>
-In-Reply-To: <7e5fc5f4-a17a-0266-f465-faa683cdcf31@...1227...>
-References: 
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Avoid warning about missing braces when
- initialising key struct
+Date: Wed, 8 Mar 2023 14:56:11 +0100 (CET)
+Message-Id: <202303081356.328DuBJe068355@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230308133743.5059-1-a@...2181...>
+References: <20230308133743.5059-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Avoid warning about missing
+ braces when initialising key struct
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,34 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
+Acked-by: Gert Doering <gert@...1296...>
 
-As concluded on IRC, this version does what we want it to do.
-We also quickly tested with some sample program to make sure we weren't
-making this up.
+Confirmed that it pacifies github, and tests still pass.
+
+Your patch has been applied to the master and release/2.6 branch.
+
+commit 5a14a5ea572ec88e2a9e7bfdad9d5fe31025c021 (master)
+commit 26417824ff81ba1dd18b03a40822da533018a892 (release/2.6)
+Author: Antonio Quartulli
+Date:   Wed Mar 8 14:37:43 2023 +0100
+
+     Avoid warning about missing braces when initialising key struct
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230308133743.5059-1-a@...2181...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20230308133743.5059-1-a@...2181...
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
- src/openvpn/tls_crypt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--
+kind regards,
 
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 81098355..3b68d186 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -348,7 +348,7 @@ tls_crypt_v2_init_client_key(struct key_ctx_bi *key, struct key2 *original_key,
-         msg(M_FATAL, "ERROR: invalid tls-crypt-v2 client key format");
-     }
- 
--    struct key2 key2 = { .n = 2, .keys = { 0 } };
-+    struct key2 key2 = { .n = 2 };
-     if (!buf_read(&client_key, &key2.keys, sizeof(key2.keys)))
-     {
-         msg(M_FATAL, "ERROR: not enough data in tls-crypt-v2 client key");
--- 
-2.39.2
+Gert Doering
 
 
