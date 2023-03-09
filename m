@@ -1,14 +1,14 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Thu, 9 Mar 2023 15:00:40 +0000
+Date: Thu, 9 Mar 2023 15:02:36 +0000
 In-Reply-To: <gerrit.1677068512000.Ia1297c3ae9a28b188ed21ad21ae96fff3d02ee4d@...2715...>
 References: <gerrit.1677068512000.Ia1297c3ae9a28b188ed21ad21ae96fff3d02ee4d@...2715...>
 Reply-To: a@...2181..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, lstipakov@...277...
-Message-ID: <7dd3c5960d67c7c2288d0542ebea8fee8bc02312-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <31f77f3e88c9573387ff4ca5c43efca4ea9588e8-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="5VnUDrsbJ3Q="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="0vpYSa5d9jI="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: dco: don't use
  NetLink to exchange control packets
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,62 +19,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>
 
---5VnUDrsbJ3Q=
+--0vpYSa5d9jI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: cron2, plaisthos.
 
-Hello cron2, plaisthos,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/28?usp=3Demail
-
-to look at the new patch set (#5).
-
+ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/28?usp=3Demail )
 
 Change subject: dco: don't use NetLink to exchange control packets
 ......................................................................
 
-dco: don't use NetLink to exchange control packets
 
-Using NetLink has proved to be overkill and performance critical.
-The amount of control traffic can also easily overrun the NetLink buffer
-when a server has enough clients connected.
+Patch Set 5:
 
-Stop using NetLink to send/receive control packets and just use the
-transport socket as if DCO was not there at all.
+(2 comments)
 
-Under the hood DCO will redirect control packets to the transport socket
-without altering them, so that userspace can happily process them as
-usual.
+File src/openvpn/socket.h:
 
-Change-Id: Ia1297c3ae9a28b188ed21ad21ae96fff3d02ee4d
-[lev@...515...: ensure win_dco flag is still exposed]
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
-M src/openvpn/dco.c
-M src/openvpn/dco.h
-M src/openvpn/dco_freebsd.c
-M src/openvpn/dco_freebsd.h
-M src/openvpn/dco_linux.c
-M src/openvpn/dco_linux.h
-M src/openvpn/dco_win.c
-M src/openvpn/forward.c
-M src/openvpn/init.c
-M src/openvpn/mtcp.c
-M src/openvpn/multi.c
-M src/openvpn/ovpn_dco_linux.h
-M src/openvpn/socket.c
-M src/openvpn/socket.h
-14 files changed, 58 insertions(+), 297 deletions(-)
+http://gerrit.openvpn.net/c/openvpn/+/28/comment/1357b934_a0d12dbd
+PS4, Line 1184:         /* unified UDPv4 and UDPv6 and DCO (kernel adds siz=
+e header) */
+> not anymore on linux as packets are just left untouched.
+Ack
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/28/28/5
+http://gerrit.openvpn.net/c/openvpn/+/28/comment/757247af_5fb67f04
+PS4, Line 1069:      * will strip the length header */
+> aaah makes sense now. [=E2=80=A6]
+Ack
+
+
+
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/28?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
@@ -91,41 +70,43 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: stipa <lstipakov@...277...>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: cron2
-Gerrit-MessageType: newpatchset
+Gerrit-Comment-Date: Thu, 09 Mar 2023 15:02:36 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
+Comment-In-Reply-To: ordex <a@...2181...>
+Gerrit-MessageType: comment
 
---5VnUDrsbJ3Q=
+--0vpYSa5d9jI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: cron2, plaisthos. </p>
-<p>ordex <strong>uploaded patch set #5</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/28?usp=3Demail">View Change</a>=
-</p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
->dco: don&#39;t use NetLink to exchange control packets<br><br>Using NetLin=
-k has proved to be overkill and performance critical.<br>The amount of cont=
-rol traffic can also easily overrun the NetLink buffer<br>when a server has=
- enough clients connected.<br><br>Stop using NetLink to send/receive contro=
-l packets and just use the<br>transport socket as if DCO was not there at a=
-ll.<br><br>Under the hood DCO will redirect control packets to the transpor=
-t socket<br>without altering them, so that userspace can happily process th=
-em as<br>usual.<br><br>Change-Id: Ia1297c3ae9a28b188ed21ad21ae96fff3d02ee4d=
-<br>[lev@...515...: ensure win_dco flag is still exposed]<br>Signed-off-by:=
- Antonio Quartulli &lt;a@...2181...&gt;<br>---<br>M src/openvpn/dco.c<br>M =
-src/openvpn/dco.h<br>M src/openvpn/dco_freebsd.c<br>M src/openvpn/dco_freeb=
-sd.h<br>M src/openvpn/dco_linux.c<br>M src/openvpn/dco_linux.h<br>M src/ope=
-nvpn/dco_win.c<br>M src/openvpn/forward.c<br>M src/openvpn/init.c<br>M src/=
-openvpn/mtcp.c<br>M src/openvpn/multi.c<br>M src/openvpn/ovpn_dco_linux.h<b=
-r>M src/openvpn/socket.c<br>M src/openvpn/socket.h<br>14 files changed, 58 =
-insertions(+), 297 deletions(-)<br><br></pre><pre style=3D"font-family: mon=
-ospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net=
-:29418/openvpn refs/changes/28/28/5</pre><p>To view, visit <a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/28?usp=3Demail">change 28</a>. To unsubscr=
-ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
-pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/28?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
-ge"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/28?usp=3Demail">View Ch=
+ange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/socket.h:</p><ul st=
+yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
+0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/28/comment/1357b934_a0d12dbd">Patch Set #4, Line 1184:</a> =
+<code style=3D"font-family:monospace,monospace">        /* unified UDPv4 an=
+d UDPv6 and DCO (kernel adds size header) */</code></p><p><blockquote style=
+=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">not anym=
+ore on linux as packets are just left untouched.</blockquote></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">Ack</p></li><li style=3D=
+"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/28/comment/757247af_5fb67f04">Pat=
+ch Set #4, Line 1069:</a> <code style=3D"font-family:monospace,monospace"> =
+    * will strip the length header */</code></p><p><blockquote style=3D"bor=
+der-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">aaah makes sens=
+e now. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-=
+wrap: break-word;">Ack</p></li></ul></li></ul><p>To view, visit <a href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/28?usp=3Demail">change 28</a>. To uns=
+ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
+openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sc=
+hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
+//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/28?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
+ Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -142,8 +123,16 @@ ge"/></div></div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: cron2 </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 09 Mar 2023 15:02:36=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
+<div style=3D"display:none"> Comment-In-Reply-To: ordex &lt;a@...2181...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---5VnUDrsbJ3Q=--
+--0vpYSa5d9jI=--
 
