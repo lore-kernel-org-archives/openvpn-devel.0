@@ -1,9 +1,11 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Thu,  9 Mar 2023 13:00:31 +0100
-Message-Id: <20230309120031.3780130-1-arne@...1227...>
+Message-ID: <dec5d3c5-4a93-3d42-8c90-51a45af0801e@...1227...>
+Date: Thu, 9 Mar 2023 13:06:17 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Ensure n = 2 is set in key2 structer in
- tls_crypt_v2_unwrap_client_key
+Content-Language: en-GB
+References: <20230309092635.7450-1-kprovost@...2661...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20230309092635.7450-1-kprovost@...2661...>
+Subject: Re: [Openvpn-devel] [PATCH] dco: print FreeBSD version
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,35 +14,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Kristof Provost <kprovost@...2661...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-The ASSERT in xor_key2 assumes that all methods that load a key2 struct
-correctly set n=2. However, tls_crypt_v2_unwrap_client_key loads a key
-without setting n = 2, trigerring the assert.
+Am 09.03.23 um 10:26 schrieb Kristof Provost via Openvpn-devel:
+> From: Kristof Provost <kp@...1376...>
+> 
+> Implement dco_version_string() for FreeBSD.
+> Unlike Linux and Windows the DCO driver is built into the operating
+> system itself, so we log the OS version as a proxy for the DCO version.
+> ---
+>   src/openvpn/dco_freebsd.c | 14 +++++++++++++-
+>   1 file changed, 13 insertions(+), 1 deletion(-)
+> 
+> diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+> index 2b94b2a2..a5e96bb2 100644
+> --- a/src/openvpn/dco_freebsd.c
+> +++ b/src/openvpn/dco_freebsd.c
+> @@ -31,6 +31,8 @@
+>   #include <sys/param.h>
+>   #include <sys/linker.h>
+>   #include <sys/nv.h>
+> +#include <sys/utsname.h>
+> +
+>   #include <netinet/in.h>
+>   
+>   #include "dco_freebsd.h"
+> @@ -627,7 +629,17 @@ out:
+>   const char *
+>   dco_version_string(struct gc_arena *gc)
+>   {
+> -    return "v0";
+> +    struct utsname name;
+> +    struct buffer out = alloc_buf_gc(256, gc);
+> +    int ret;
+> +
+> +    ret = uname(&name);
+> +    if (ret != 0)
+> +        return "N/A";
 
-Closes and reported in https://github.com/OpenVPN/openvpn/issues/272
+There should be { around the return
 
-Change-Id: Iaeb163d83b95818e0b26faf9d25e7737dc8ecb23
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/tls_crypt.c | 1 +
- 1 file changed, 1 insertion(+)
+> +
+> +    buf_printf(&out, "%s", name.version);
+> +
+> +    return (char *)out.data;
 
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 8882d5de0..4f22f8af7 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -533,6 +533,7 @@ tls_crypt_v2_unwrap_client_key(struct key2 *client_key, struct buffer *metadata,
-     }
-     memcpy(&client_key->keys, BPTR(&plaintext), sizeof(client_key->keys));
-     ASSERT(buf_advance(&plaintext, sizeof(client_key->keys)));
-+    client_key->n = 2;
- 
-     if (!buf_copy(metadata, &plaintext))
+This should use BSTR(data) instead. Instead of copying/printf, you could 
+also just do:
+
+     struct utsname* uts;
+     ALLOC_OBJ_GC(uts, struct utsname, gc);
+
+
+     if (uname(&name) != 0)
      {
--- 
-2.37.1 (Apple Git-137.1)
+         return "N/A";
+     }
+
+     return uts->name;
+
+Arne
 
 
