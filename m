@@ -1,13 +1,8 @@
-Message-ID: <b64ec5de-e2d0-764e-d48b-b02c2d6c9f17@...2181...>
-Date: Thu, 9 Mar 2023 13:16:14 +0100
+From: Kristof Provost <kprovost@...2661...>
+Date: Thu,  9 Mar 2023 13:23:32 +0100
+Message-Id: <20230309122332.92490-1-kprovost@...2661...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20230309092635.7450-1-kprovost@...2661...>
- <dec5d3c5-4a93-3d42-8c90-51a45af0801e@...1227...>
- <72CE0EE5-EF58-4AAB-A4A7-E5608AE160EC@...2661...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <72CE0EE5-EF58-4AAB-A4A7-E5608AE160EC@...2661...>
-Subject: Re: [Openvpn-devel] [PATCH] dco: print FreeBSD version
+Subject: [Openvpn-devel] [PATCH] dco: print FreeBSD version
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,23 +11,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Kristof Provost <kprovost@...2661...>, Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+From: Kristof Provost <kp@...1376...>
 
-On 09/03/2023 13:13, Kristof Provost via Openvpn-devel wrote:
->> This should use BSTR(data) instead.
->>
-> I copied Antonio’s code here, but that is better, so I’ll fix that too.
-> 
+Implement dco_version_string() for FreeBSD.
+Unlike Linux and Windows the DCO driver is built into the operating
+system itself, so we log the OS version as a proxy for the DCO version.
+---
+ src/openvpn/dco_freebsd.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-dang! with one email Arne spoiled two patches!
-
-Cheers,
-
+diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+index 2b94b2a2..5238ebdd 100644
+--- a/src/openvpn/dco_freebsd.c
++++ b/src/openvpn/dco_freebsd.c
+@@ -31,6 +31,8 @@
+ #include <sys/param.h>
+ #include <sys/linker.h>
+ #include <sys/nv.h>
++#include <sys/utsname.h>
++
+ #include <netinet/in.h>
+ 
+ #include "dco_freebsd.h"
+@@ -627,7 +629,15 @@ out:
+ const char *
+ dco_version_string(struct gc_arena *gc)
+ {
+-    return "v0";
++    struct utsname* uts;
++    ALLOC_OBJ_GC(uts, struct utsname, gc);
++
++    if (uname(uts) != 0)
++    {
++        return "N/A";
++    }
++
++    return uts->version;
+ }
+ 
+ void
 -- 
-Antonio Quartulli
+2.39.2
+
 
