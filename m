@@ -1,10 +1,10 @@
-Date: Thu, 9 Mar 2023 19:55:27 +0100 (CET)
-Message-Id: <202303091855.329ItRbm094085@...2054...>
+Date: Thu, 9 Mar 2023 20:37:45 +0100 (CET)
+Message-Id: <202303091937.329JbjD1010486@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230309120031.3780130-1-arne@...1227...>
-References: <20230309120031.3780130-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Ensure n = 2 is set in key2
- struct in tls_crypt_v2_unwrap_client_key
+In-Reply-To: <20230308150704.128797-1-frank@...2641...>
+References: <20230308150704.128797-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: tests/unit_tests: Fix 'make
+ distcheck' with subdir-objects enabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Trivial enough :-) - wording fixes applied ("structer", "trigerring").
-
-Interesting that Antonio could reproduce this while it "just works"
-in my test beds.
+Tested in-tree and out-of-tree builds, regular "make check" and also
+"make distcheck", Linux and FreeBSD.  All works.
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit 85832307fcb41c229ccb7ba83984726757eb32f7 (master)
-commit ae6068842854278de70264218516b0e4fcdfc6d9 (release/2.6)
-Author: Arne Schwabe
-Date:   Thu Mar 9 13:00:31 2023 +0100
+commit 838474145933199a62d1f59fbc2df14e4fbd57f3 (master)
+commit 5eb94ce9ef2d4095004a0a3c9dbf3aeae78cf371 (release/2.6)
+Author: Frank Lichtenheld
+Date:   Wed Mar 8 16:07:04 2023 +0100
 
-     Ensure n = 2 is set in key2 struct in tls_crypt_v2_unwrap_client_key
+     tests/unit_tests: Fix 'make distcheck' with subdir-objects enabled
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20230309120031.3780130-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26363.html
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <20230308150704.128797-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26352.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
