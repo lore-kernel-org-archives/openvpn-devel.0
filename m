@@ -1,12 +1,16 @@
-Message-ID: <5ae724bc-b976-0cb7-205e-c5ee1f0430e5@...2181...>
-Date: Thu, 9 Mar 2023 16:02:52 +0100
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Thu, 9 Mar 2023 15:30:36 +0000
+In-Reply-To: <gerrit.1677068512000.Ia1297c3ae9a28b188ed21ad21ae96fff3d02ee4d@...2715...>
+References: <gerrit.1677068512000.Ia1297c3ae9a28b188ed21ad21ae96fff3d02ee4d@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ lstipakov@...277..., a@...2181...
+Message-ID: <a7235bc00d6d83a609e55fce663a24bca0e128bb-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20230309131419.29157-1-a@...2181...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20230309131419.29157-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v3] dco: print version to log if
- available
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="za6kJUpFplw="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: dco: don't use
+ NetLink to exchange control packets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,214 +19,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lstipakov@...277...>
 
-This is being discussed on Gerrit at:
+--za6kJUpFplw=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-https://gerrit.openvpn.net/c/openvpn/+/28
+Attention is currently required from: cron2, ordex.
 
-On 09/03/2023 14:14, Antonio Quartulli wrote:
-> In order to provide better support in case of troubleshooting issues,
-> it's important to know what exact DCO version is loaded on the user
-> system.
-> 
-> Therefore print the DCO version during bootup.
-> 
-> For Windows and FreeBSD we currently implement a placeholder printing 'v0'.
-> This should be improved with a follow-up patch.
-> 
-> For Linux we directly fetch the module version from /sys and print
-> something like:
-> 
-> 	DCO version: 0.1.20230206-15-g580608ec7c59
-> 
-> Change-Id: Ie1f6fa5d12a473d353d84fd119c2430b638e8bcd
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
-> Changes from v1:
-> * beautify usage of buf with some helpers
-> * don't apply -1 to buffer capacity as fgets will already read one byte
->    less than provided length and will add a null terminator there
-> 
-> Changes from v2:
-> * fix style of type returned by dco_version_string() (uncrustify doesn't
->    work anymore on my box..due to incompatibler config)
-> ---
->   src/openvpn/dco.h         | 15 +++++++++++++++
->   src/openvpn/dco_freebsd.c |  6 ++++++
->   src/openvpn/dco_linux.c   | 27 +++++++++++++++++++++++++++
->   src/openvpn/dco_win.c     |  6 ++++++
->   src/openvpn/openvpn.c     |  2 ++
->   src/openvpn/options.c     | 11 +++++++++++
->   src/openvpn/options.h     |  2 ++
->   7 files changed, 69 insertions(+)
-> 
-> diff --git a/src/openvpn/dco.h b/src/openvpn/dco.h
-> index 2fe671bf..96d95c21 100644
-> --- a/src/openvpn/dco.h
-> +++ b/src/openvpn/dco.h
-> @@ -58,6 +58,15 @@ struct tuntap;
->    */
->   bool dco_available(int msglevel);
->   
-> +
-> +/**
-> + * Return a human readable string representing the DCO version
-> + *
-> + * @param gc    the garbage collector to use for any dynamic allocation
-> + * @return      a pointer to the string (allocated via gc) containing the string
-> + */
-> +const char *dco_version_string(struct gc_arena *gc);
-> +
->   /**
->    * Check whether the options struct has any option that is not supported by
->    * our current dco implementation. If so print a warning at warning level
-> @@ -250,6 +259,12 @@ dco_available(int msglevel)
->       return false;
->   }
->   
-> +static inline const char *
-> +dco_version_string(struct gc_arena *gc)
-> +{
-> +    return "not-compiled";
-> +}
-> +
->   static inline bool
->   dco_check_option(int msglevel, const struct options *o)
->   {
-> diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-> index 92de5f04..cbd2ce20 100644
-> --- a/src/openvpn/dco_freebsd.c
-> +++ b/src/openvpn/dco_freebsd.c
-> @@ -614,6 +614,12 @@ out:
->       return available;
->   }
->   
-> +const char *
-> +dco_version_string(struct gc_arena *gc)
-> +{
-> +    return "v0";
-> +}
-> +
->   void
->   dco_event_set(dco_context_t *dco, struct event_set *es, void *arg)
->   {
-> diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-> index 308abfc4..9f3531d5 100644
-> --- a/src/openvpn/dco_linux.c
-> +++ b/src/openvpn/dco_linux.c
-> @@ -841,9 +841,36 @@ dco_available(int msglevel)
->               "Note: Kernel support for ovpn-dco missing, disabling data channel offload.");
->           return false;
->       }
-> +
->       return true;
->   }
->   
-> +const char *
-> +dco_version_string(struct gc_arena *gc)
-> +{
-> +    struct buffer out = alloc_buf_gc(256, gc);
-> +    FILE *fp = fopen("/sys/module/ovpn_dco_v2/version", "r");
-> +    if (!fp)
-> +    {
-> +        return "N/A";
-> +    }
-> +
-> +    if (!fgets(BSTR(&out), BCAP(&out), fp))
-> +    {
-> +        return "ERR";
-> +    }
-> +
-> +    /* remove potential newline at the end of the string */
-> +    char *str = BSTR(&out);
-> +    char *nl = strchr(str, '\n');
-> +    if (nl)
-> +    {
-> +        *nl = '\0';
-> +    }
-> +
-> +    return BSTR(&out);
-> +}
-> +
->   void
->   dco_event_set(dco_context_t *dco, struct event_set *es, void *arg)
->   {
-> diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-> index a805c2a0..26463b38 100644
-> --- a/src/openvpn/dco_win.c
-> +++ b/src/openvpn/dco_win.c
-> @@ -385,6 +385,12 @@ dco_available(int msglevel)
->       return false;
->   }
->   
-> +const char *
-> +dco_version_string(struct gc_arena *gc)
-> +{
-> +    return "v0";
-> +}
-> +
->   int
->   dco_do_read(dco_context_t *dco)
->   {
-> diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
-> index cba58276..1aaddcdf 100644
-> --- a/src/openvpn/openvpn.c
-> +++ b/src/openvpn/openvpn.c
-> @@ -262,6 +262,8 @@ openvpn_main(int argc, char *argv[])
->   #endif
->               show_library_versions(M_INFO);
->   
-> +            show_dco_version(M_INFO);
-> +
->               /* misc stuff */
->               pre_setup(&c.options);
->   
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index ce7bd0a7..8f0e2194 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -4816,6 +4816,16 @@ show_windows_version(const unsigned int flags)
->   }
->   #endif
->   
-> +void
-> +show_dco_version(const unsigned int flags)
-> +{
-> +#ifdef ENABLE_DCO
-> +    struct gc_arena gc = gc_new();
-> +    msg(flags, "DCO version: %s", dco_version_string(&gc));
-> +    gc_free(&gc);
-> +#endif
-> +}
-> +
->   void
->   show_library_versions(const unsigned int flags)
->   {
-> @@ -4839,6 +4849,7 @@ usage_version(void)
->   #ifdef _WIN32
->       show_windows_version( M_INFO|M_NOPREFIX );
->   #endif
-> +    show_dco_version(M_INFO | M_NOPREFIX);
->       msg(M_INFO|M_NOPREFIX, "Originally developed by James Yonan");
->       msg(M_INFO|M_NOPREFIX, "Copyright (C) 2002-2023 OpenVPN Inc <sales@...515...>");
->   #ifndef ENABLE_SMALL
-> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-> index 7df717f7..2f25f5d0 100644
-> --- a/src/openvpn/options.h
-> +++ b/src/openvpn/options.h
-> @@ -796,6 +796,8 @@ void show_windows_version(const unsigned int flags);
->   
->   #endif
->   
-> +void show_dco_version(const unsigned int flags);
-> +
->   void init_options(struct options *o, const bool init_gc);
->   
->   void uninit_options(struct options *o);
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/28?usp=3Demail )
 
--- 
-Antonio Quartulli
+Change subject: dco: don't use NetLink to exchange control packets
+......................................................................
+
+
+Patch Set 5: Code-Review+1
+
+(1 comment)
+
+Patchset:
+
+PS5:
+something nice
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/28?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ia1297c3ae9a28b188ed21ad21ae96fff3d02ee4d
+Gerrit-Change-Number: 28
+Gerrit-PatchSet: 5
+Gerrit-Owner: ordex <a@...2181...>
+Gerrit-Reviewer: cron2
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: stipa <lstipakov@...277...>
+Gerrit-Attention: cron2
+Gerrit-Attention: ordex <a@...2181...>
+Gerrit-Comment-Date: Thu, 09 Mar 2023 15:30:36 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--za6kJUpFplw=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: cron2, ordex. </p>
+<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/28?usp=3Demail">Vie=
+w Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;=
+"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-st=
+yle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p st=
+yle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/=
++/28?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre-wra=
+p; word-wrap: break-word;">something nice</p></li></ul></li></ul><p>To view=
+, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/28?usp=3Demail">ch=
+ange 28</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
+f=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope it=
+emtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action=
+" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"=
+http://gerrit.openvpn.net/c/openvpn/+/28?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia1297c3ae9a28b188ed21ad21ae=
+96fff3d02ee4d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 28 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: stipa &lt;lstipakov@...277...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 09 Mar 2023 15:30:36=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--za6kJUpFplw=--
 
