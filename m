@@ -1,10 +1,9 @@
+From: Arne Schwabe <arne@...1227...>
+Date: Mon, 13 Mar 2023 14:33:23 +0100
+Message-Id: <20230313133323.59367-1-arne@...1227...>
 MIME-Version: 1.0
-References: <20230313100601.2146-1-lstipakov@...277...>
-In-Reply-To: <20230313100601.2146-1-lstipakov@...277...>
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 13 Mar 2023 12:19:33 +0200
-Message-ID: <CAGyAFMXvCDq6n6ZnJUiv1hS6aJABjjTUQ3wtqsSbLpNQ7_r23A@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Support --inactive option for DCO
+Subject: [Openvpn-devel] [PATCH] Fix memory leaks in HMAC initial packet id
+ and dco open tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,89 +12,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-Review happens at https://gerrit.openvpn.net/c/openvpn/+/143
+The open_tun_dco_generic already allocates the actual_name string, this
+shadows the allocation in the FreeBSD/Linux specific methods.
 
-ma 13. maalisk. 2023 klo 12.06 Lev Stipakov (lstipakov@...277...) kirjoitti:
->
-> From: Lev Stipakov <lev@...515...>
->
-> When DCO is in use, userland doesn't see any traffic
-> which breaks --inactive option.
->
-> Fix by adding inactivity check to inactivity timeout
-> callback. Get the cumulative tun bytes count (ping packets
-> are excluded) from DCO and compare it to the previous value
-> stored in c2.inactivity_bytes. Reset inactivity timer and
-> update c2.inactivity_bytes if amount of new bytes exceeds
-> inactivity_minimum_bytes, otherwise terminate session
-> due to inactivity.
->
-> Fixes https://github.com/OpenVPN/openvpn/issues/228
->
-> Currently works only on Windows, since we do't have
-> since peer stats implementation yet for Linux and FreeBSD.
->
-> Change-Id: Ib417b965bc4a2c17b51935b43c9627b106716526
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> ---
->  src/openvpn/dco_win.c |  2 ++
->  src/openvpn/forward.c | 20 +++++++++++++++++++-
->  2 files changed, 21 insertions(+), 1 deletion(-)
->
-> diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-> index 0931fb30..aae6b4b5 100644
-> --- a/src/openvpn/dco_win.c
-> +++ b/src/openvpn/dco_win.c
-> @@ -431,6 +431,8 @@ dco_get_peer_stats(struct context *c)
->
->      c->c2.dco_read_bytes = stats.TransportBytesReceived;
->      c->c2.dco_write_bytes = stats.TransportBytesSent;
-> +    c->c2.tun_read_bytes = stats.TunBytesReceived;
-> +    c->c2.tun_write_bytes = stats.TunBytesSent;
->
->      return 0;
->  }
-> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-> index 257c7c75..21800dc9 100644
-> --- a/src/openvpn/forward.c
-> +++ b/src/openvpn/forward.c
-> @@ -724,7 +724,25 @@ process_coarse_timers(struct context *c)
->      if (c->options.inactivity_timeout
->          && event_timeout_trigger(&c->c2.inactivity_interval, &c->c2.timeval, ETT_DEFAULT))
->      {
-> -        check_inactivity_timeout(c);
-> +        if (dco_enabled(&c->options) && dco_get_peer_stats(c) == 0)
-> +        {
-> +            int64_t tot_bytes = c->c2.tun_read_bytes + c->c2.tun_write_bytes;
-> +            int64_t new_bytes = tot_bytes - c->c2.inactivity_bytes;
-> +
-> +            if (new_bytes >= c->options.inactivity_minimum_bytes)
-> +            {
-> +                c->c2.inactivity_bytes = tot_bytes;
-> +                event_timeout_reset(&c->c2.inactivity_interval);
-> +            }
-> +            else
-> +            {
-> +                check_inactivity_timeout(c);
-> +            }
-> +        }
-> +        else
-> +        {
-> +            check_inactivity_timeout(c);
-> +        }
->      }
->
->      if (c->sig->signal_received)
-> --
-> 2.23.0.windows.1
->
+The HMAC leaks are just forgotten frees/deinitialisations.
 
+Change-Id: I3c344af047abe94c0178bde1781eb450f10d157d
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/dco_freebsd.c |  1 -
+ src/openvpn/init.c        |  2 ++
+ src/openvpn/ssl.c         | 11 +++++++++++
+ src/openvpn/ssl.h         |  6 ++++++
+ 4 files changed, 19 insertions(+), 1 deletion(-)
 
+diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+index cbd2ce205..70bf9d61d 100644
+--- a/src/openvpn/dco_freebsd.c
++++ b/src/openvpn/dco_freebsd.c
+@@ -230,7 +230,6 @@ create_interface(struct tuntap *tt, const char *dev)
+     }
+ 
+     snprintf(tt->dco.ifname, IFNAMSIZ, "%s", ifr.ifr_data);
+-    tt->actual_name = string_alloc(tt->dco.ifname, NULL);
+ 
+     /* see "Interface Flags" in ifnet(9) */
+     int i = IFF_POINTOPOINT | IFF_MULTICAST;
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 293031de6..45b1c8b0d 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -3876,6 +3876,8 @@ do_close_tls(struct context *c)
+         md_ctx_cleanup(c->c2.pulled_options_state);
+         md_ctx_free(c->c2.pulled_options_state);
+     }
++
++    tls_auth_standalone_free(c->c2.tls_auth_standalone);
+ }
+ 
+ /*
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index f4aca484f..04205329a 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1361,6 +1361,17 @@ tls_auth_standalone_init(struct tls_options *tls_options,
+     return tas;
+ }
+ 
++void
++tls_auth_standalone_free(struct tls_auth_standalone *tas)
++{
++    if (!tas)
++    {
++        return;
++    }
++
++    packet_id_free(&tas->tls_wrap.opt.packet_id);
++}
++
+ /*
+  * Set local and remote option compatibility strings.
+  * Used to verify compatibility of local and remote option
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index bdcee769b..4ed4cfaa4 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -180,6 +180,12 @@ void tls_multi_init_finalize(struct tls_multi *multi, int tls_mtu);
+ struct tls_auth_standalone *tls_auth_standalone_init(struct tls_options *tls_options,
+                                                      struct gc_arena *gc);
+ 
++/**
++ * Frees a standalone tls-auth verification object.
++ * @param tas   the object to free. May be NULL.
++ */
++void tls_auth_standalone_free(struct tls_auth_standalone *tas);
++
+ /*
+  * Setups the control channel frame size parameters from the data channel
+  * parameters
 -- 
--Lev
+2.37.1 (Apple Git-137.1)
+
 
