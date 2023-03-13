@@ -1,9 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon, 13 Mar 2023 14:33:23 +0100
-Message-Id: <20230313133323.59367-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix memory leaks in HMAC initial packet id
- and dco open tun
+Date: Mon, 13 Mar 2023 14:39:37 +0100 (CET)
+Message-Id: <202303131339.32DDdbMb000174@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230309210344.5763-1-a@...2181...>
+References: <20230309210344.5763-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco: don't use NetLink to
+ exchange control packets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,87 +15,57 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The open_tun_dco_generic already allocates the actual_name string, this
-shadows the allocation in the FreeBSD/Linux specific methods.
+I have tested this on ubuntu 20.04 against the kernel DCO (v2) module
+from "next", commit 580608e.  All client and server side tests pass
+(with and without DCO), and it survived UDP and TCP gremlin attacks
+for ~1h each.  This is better than we ever had, so yay :-)
 
-The HMAC leaks are just forgotten frees/deinitialisations.
+UDP gremlins still seems to make it lose track of a few clients
+(kernel thinks "nothing left" and sends no more keepalive, userland
+claims "6 clients left") - this is still not perfect, but no *real*
+issue - if one of the clients reconnects, the session will be flushed,
+and if key renegotiation comes up, it will eventually be expired.
 
-Change-Id: I3c344af047abe94c0178bde1781eb450f10d157d
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/dco_freebsd.c |  1 -
- src/openvpn/init.c        |  2 ++
- src/openvpn/ssl.c         | 11 +++++++++++
- src/openvpn/ssl.h         |  6 ++++++
- 4 files changed, 19 insertions(+), 1 deletion(-)
 
-diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-index cbd2ce205..70bf9d61d 100644
---- a/src/openvpn/dco_freebsd.c
-+++ b/src/openvpn/dco_freebsd.c
-@@ -230,7 +230,6 @@ create_interface(struct tuntap *tt, const char *dev)
-     }
- 
-     snprintf(tt->dco.ifname, IFNAMSIZ, "%s", ifr.ifr_data);
--    tt->actual_name = string_alloc(tt->dco.ifname, NULL);
- 
-     /* see "Interface Flags" in ifnet(9) */
-     int i = IFF_POINTOPOINT | IFF_MULTICAST;
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 293031de6..45b1c8b0d 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -3876,6 +3876,8 @@ do_close_tls(struct context *c)
-         md_ctx_cleanup(c->c2.pulled_options_state);
-         md_ctx_free(c->c2.pulled_options_state);
-     }
-+
-+    tls_auth_standalone_free(c->c2.tls_auth_standalone);
- }
- 
- /*
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index f4aca484f..04205329a 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1361,6 +1361,17 @@ tls_auth_standalone_init(struct tls_options *tls_options,
-     return tas;
- }
- 
-+void
-+tls_auth_standalone_free(struct tls_auth_standalone *tas)
-+{
-+    if (!tas)
-+    {
-+        return;
-+    }
-+
-+    packet_id_free(&tas->tls_wrap.opt.packet_id);
-+}
-+
- /*
-  * Set local and remote option compatibility strings.
-  * Used to verify compatibility of local and remote option
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index bdcee769b..4ed4cfaa4 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -180,6 +180,12 @@ void tls_multi_init_finalize(struct tls_multi *multi, int tls_mtu);
- struct tls_auth_standalone *tls_auth_standalone_init(struct tls_options *tls_options,
-                                                      struct gc_arena *gc);
- 
-+/**
-+ * Frees a standalone tls-auth verification object.
-+ * @param tas   the object to free. May be NULL.
-+ */
-+void tls_auth_standalone_free(struct tls_auth_standalone *tas);
-+
- /*
-  * Setups the control channel frame size parameters from the data channel
-  * parameters
--- 
-2.37.1 (Apple Git-137.1)
+Stare-at-code also looks good.  Taking out lots of stuff that was 
+just complicating things.  I also like that this obsoletes quite
+a bit of extra comments that we fought about quite a while to
+make them understandable :-) - plus the #ifdef _WIN32 from my 
+bandaid patch...
+
+I have also compile-tested this for Windows (MinGW), not actually
+runtime-tested it - but the logic wrt "dco_installed" -> "SF_DCO_WIN"
+is clear enough (one could argue endlessly on "flag" or "bool", but
+it does the same thing).
+
+Uncrustify complains about ovpn_dco_linux.h, but since this is a
+"foreign import" I ignored it (as previously).
+
+I have added a note to the commit message that this is an API
+breaking change and needs a newer kernel module (as agreed on IRC).
+
+Your patch has been applied to the master and release/2.6 branch.
+
+commit ac1d24286ad4788415ce6f56e97c18562d1cadbd (master)
+commit 321b04fac8aaaad254fe884472109042d8fb83d7 (release/2.6)
+Author: Antonio Quartulli
+Date:   Thu Mar 9 22:03:44 2023 +0100
+
+     dco: don't use NetLink to exchange control packets
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20230309210344.5763-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26384.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
