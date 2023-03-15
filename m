@@ -1,11 +1,11 @@
 From: selva.nair@...277...
-Date: Tue, 14 Mar 2023 21:35:15 -0400
-Message-Id: <20230315013516.1256700-4-selva.nair@...277...>
+Date: Tue, 14 Mar 2023 21:35:16 -0400
+Message-Id: <20230315013516.1256700-5-selva.nair@...277...>
 In-Reply-To: <20230315013516.1256700-1-selva.nair@...277...>
 References: <20230315013516.1256700-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 3/4] Refactor
- SSL_CTX_use_CryptoAPI_certificate()
+Subject: [Openvpn-devel] [PATCH 4/4] Add a test for signing with
+ certificates in Windows store
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,119 +20,230 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-- Loading the certificate and key into the provider is split out of
-  setting up the SSL context. This allows testing of signing by
-  cryptoapi-provider interface without dependence on SSL context
-  or link-time wrapping.
+- For each sample certificate/key pair imported into the store,
+  load the key into xkey-provider and sign a test message.
+  As the key is "provided", signing will use appropriate
+  backend (Windows CNG in this case).
 
-Change-Id: I269b94589636425e1ba9bf953047d238fa830376
+  The signature is then verified using OpenSSL.
+
+Change-Id: I520b34ba51e8c6d0247a82edc52bde181ab5a717
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/cryptoapi.c | 63 +++++++++++++++++++++++++++--------------
- 1 file changed, 41 insertions(+), 22 deletions(-)
+ tests/unit_tests/openvpn/Makefile.am      |   1 +
+ tests/unit_tests/openvpn/test_cryptoapi.c | 166 ++++++++++++++++++++++
+ 2 files changed, 167 insertions(+)
 
-diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-index 022f53d4..20b7d985 100644
---- a/src/openvpn/cryptoapi.c
-+++ b/src/openvpn/cryptoapi.c
-@@ -401,11 +401,17 @@ get_cert_name(const CERT_CONTEXT *cc, struct gc_arena *gc)
-     return name;
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index 339c7ef3..4391a54e 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -157,6 +157,7 @@ cryptoapi_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
+ 	$(OPTIONAL_CRYPTO_LIBS) -lcrypt32 -lncrypt
+ cryptoapi_testdriver_SOURCES = test_cryptoapi.c mock_msg.c \
+ 	$(top_srcdir)/src/openvpn/xkey_helper.c \
++	$(top_srcdir)/src/openvpn/xkey_provider.c \
+ 	$(top_srcdir)/src/openvpn/buffer.c \
+ 	$(top_srcdir)/src/openvpn/base64.c \
+ 	$(top_srcdir)/src/openvpn/platform.c \
+diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/openvpn/test_cryptoapi.c
+index ccb3207c..b07e8935 100644
+--- a/tests/unit_tests/openvpn/test_cryptoapi.c
++++ b/tests/unit_tests/openvpn/test_cryptoapi.c
+@@ -47,6 +47,7 @@
+ #include <cryptoapi.c> /* pull-in the whole file to test static functions */
+ 
+ struct management *management; /* global */
++static OSSL_PROVIDER *prov[2];
+ 
+ /* mock a management function that xkey_provider needs */
+ char *
+@@ -66,6 +67,11 @@ OSSL_LIB_CTX *tls_libctx;
+ #define _countof(x) sizeof((x))/sizeof(*(x))
+ #endif
+ 
++/* A message for signing */
++static const char *test_msg = "Lorem ipsum dolor sit amet, consectetur "
++                              "adipisici elit, sed eiusmod tempor incidunt "
++                              "ut labore et dolore magna aliqua.";
++
+ /* test data */
+ static const uint8_t test_hash[] = {
+     0x77, 0x38, 0x65, 0x00, 0x1e, 0x96, 0x48, 0xc6, 0x57, 0x0b, 0xae,
+@@ -336,6 +342,164 @@ test_find_cert_byissuer(void **state)
+     gc_free(&gc);
  }
  
--int
--SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
++static int
++setup_cryptoapi_sign(void **state)
++{
++    (void) state;
++    /* Initialize providers in a way matching what OpenVPN core does */
++    tls_libctx = OSSL_LIB_CTX_new();
++    prov[0] = OSSL_PROVIDER_load(tls_libctx, "default");
++    OSSL_PROVIDER_add_builtin(tls_libctx, "ovpn.xkey", xkey_provider_init);
++    prov[1] = OSSL_PROVIDER_load(tls_libctx, "ovpn.xkey");
++
++    /* set default propq as we do in ssl_openssl.c */
++    EVP_set_default_properties(tls_libctx, "?provider!=ovpn.xkey");
++    return 0;
++}
++
++static int
++teardown_cryptoapi_sign(void **state)
++{
++    (void) state;
++    for (size_t i = 0; i < _countof(prov); i++)
++    {
++        if (prov[i])
++        {
++            OSSL_PROVIDER_unload(prov[i]);
++            prov[i] = NULL;
++        }
++    }
++    OSSL_LIB_CTX_free(tls_libctx);
++    tls_libctx = NULL;
++    return 0;
++}
++
 +/**
-+ * Load certificate matching 'cert_prop' from Windows cert store
-+ * into xkey provider and return pointers to X509 cert and private key.
++ * Sign "test_msg" using a private key. The key may be a "provided" key
++ * in which case its signed by the provider's backend -- cryptoapi in our
++ * case. Then verify the signature using OpenSSL.
 + * Returns 1 on success, 0 on error.
-+ * Caller must free 'cert' and 'privkey' after use.
 + */
 +static int
-+Load_CryptoAPI_certificate(const char *cert_prop, X509 **cert, EVP_PKEY **privkey)
- {
-+
-     HCERTSTORE cs;
--    X509 *cert = NULL;
-     CAPI_DATA *cd = calloc(1, sizeof(*cd));
-     struct gc_arena gc = gc_new();
- 
-@@ -450,9 +456,9 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-     }
- 
-     /* cert_context->pbCertEncoded is the cert X509 DER encoded. */
--    cert = d2i_X509(NULL, (const unsigned char **) &cd->cert_context->pbCertEncoded,
--                    cd->cert_context->cbCertEncoded);
--    if (cert == NULL)
-+    *cert = d2i_X509(NULL, (const unsigned char **) &cd->cert_context->pbCertEncoded,
-+                     cd->cert_context->cbCertEncoded);
-+    if (*cert == NULL)
-     {
-         msg(M_NONFATAL, "Error in cryptoapicert: X509 certificate decode failed");
-         goto err;
-@@ -468,28 +474,16 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-         /* private key may be in a token not available, or incompatible with CNG */
-         msg(M_NONFATAL|M_ERRNO, "Error in cryptoapicert: failed to acquire key. Key not present or "
-             "is in a legacy token not supported by Windows CNG API");
--        goto err;
--    }
--
--    /* Public key in cert is NULL until we call SSL_CTX_use_certificate(),
--     * so we do it here then...  */
--    if (!SSL_CTX_use_certificate(ssl_ctx, cert))
--    {
-+        X509_free(*cert);
-         goto err;
-     }
- 
-     /* the public key */
--    EVP_PKEY *pkey = X509_get_pubkey(cert);
-+    EVP_PKEY *pkey = X509_get_pubkey(*cert);
-     cd->pubkey = pkey; /* will be freed with cd */
- 
--    /* SSL_CTX_use_certificate() increased the reference count in 'cert', so
--     * we decrease it here with X509_free(), or it will never be cleaned up. */
--    X509_free(cert);
--    cert = NULL;
--
--    EVP_PKEY *privkey = xkey_load_generic_key(tls_libctx, cd, pkey,
--                                              xkey_cng_sign, (XKEY_PRIVKEY_FREE_fn *) CAPI_DATA_free);
--    SSL_CTX_use_PrivateKey(ssl_ctx, privkey);
-+    *privkey = xkey_load_generic_key(tls_libctx, cd, pkey,
-+                                     xkey_cng_sign, (XKEY_PRIVKEY_FREE_fn *) CAPI_DATA_free);
-     gc_free(&gc);
-     return 1; /* do not free cd -- its kept by xkey provider */
- 
-@@ -498,5 +492,30 @@ err:
-     gc_free(&gc);
-     return 0;
- }
-+
-+int
-+SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
++digest_sign_verify(EVP_PKEY *privkey, EVP_PKEY *pubkey)
 +{
-+    X509 *cert = NULL;
-+    EVP_PKEY *privkey = NULL;
++    uint8_t *sig = NULL;
++    size_t siglen = 0;
 +    int ret = 0;
 +
-+    if (!Load_CryptoAPI_certificate(cert_prop, &cert, &privkey))
++    OSSL_PARAM params[2] = {OSSL_PARAM_END};
++    const char *mdname = "SHA256";
++
++    if (EVP_PKEY_get_id(privkey) == EVP_PKEY_RSA)
 +    {
++        const char *padmode = "pss"; /* RSA_PSS: for all other params, use defaults */
++        params[0] = OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_PAD_MODE,
++                                                     (char *)padmode, 0);
++        params[1] = OSSL_PARAM_construct_end();
++    }
++    else if (EVP_PKEY_get_id(privkey) == EVP_PKEY_EC)
++    {
++        params[0] = OSSL_PARAM_construct_end();
++    }
++    else
++    {
++        print_error("Unknown key type in digest_sign_verify()");
 +        return ret;
 +    }
-+    if (SSL_CTX_use_certificate(ssl_ctx, cert)
-+        && SSL_CTX_use_PrivateKey(ssl_ctx, privkey))
++
++    EVP_PKEY_CTX *pctx = NULL;
++    EVP_MD_CTX *mctx = EVP_MD_CTX_new();
++
++    if (!mctx
++        || EVP_DigestSignInit_ex(mctx, &pctx, mdname, tls_libctx, NULL, privkey,  params) <= 0)
 +    {
-+        ret = 1;
++        /* cmocka assert output for these kinds of failures is hardly explanatory,
++         * print a message and assert in caller. */
++        print_error("Failed to initialize EVP_DigestSignInit_ex()\n");
++        goto done;
 +    }
 +
-+    /* Always free cert and privkey even if retained by ssl_ctx as
-+     * they are reference counted */
-+    X509_free(cert);
-+    EVP_PKEY_free(privkey);
++    /* sign with sig = NULL to get required siglen */
++    if (EVP_DigestSign(mctx, sig, &siglen, (uint8_t *)test_msg, strlen(test_msg)) != 1)
++    {
++        print_error("EVP_DigestSign: failed to get required signature size");
++        goto done;
++    }
++    assert_true(siglen > 0);
++
++    if ((sig = test_calloc(1, siglen)) == NULL)
++    {
++        print_error("Out of memory");
++        goto done;
++    }
++    if (EVP_DigestSign(mctx, sig, &siglen, (uint8_t *)test_msg, strlen(test_msg)) != 1)
++    {
++        print_error("EVP_DigestSign: signing failed");
++        goto done;
++    }
++
++    /*
++     * Now validate the signature using OpenSSL. Just use the public key
++     * which is a native OpenSSL key.
++     */
++    EVP_MD_CTX_free(mctx); /* this also frees pctx */
++    mctx = EVP_MD_CTX_new();
++    pctx = NULL;
++    if (!mctx
++        || EVP_DigestVerifyInit_ex(mctx, &pctx, mdname, tls_libctx, NULL, pubkey,  params) <= 0)
++    {
++        print_error("Failed to initialize EVP_DigestVerifyInit_ex()");
++        goto done;
++    }
++    if (EVP_DigestVerify(mctx, sig, siglen, (uint8_t *)test_msg, strlen(test_msg)) != 1)
++    {
++        print_error("EVP_DigestVerify failed");
++        goto done;
++    }
++    ret = 1;
++
++done:
++    if (mctx)
++    {
++        EVP_MD_CTX_free(mctx); /* this also frees pctx */
++    }
++    test_free(sig);
 +    return ret;
 +}
 +
- #endif  /* HAVE_XKEY_PROVIDER */
- #endif                          /* _WIN32 */
++/* Load sample certificates & keys, sign a test message using
++ * them and verify the signature.
++ */
++void
++test_cryptoapi_sign(void **state)
++{
++    (void) state;
++    char select_string[64];
++    X509 *x509 = NULL;
++    EVP_PKEY *privkey = NULL;
++
++    import_certs(state); /* a no-op if already imported */
++    assert_true(certs_loaded);
++
++    for (struct test_cert *c = certs; c->cert; c++)
++    {
++        if (c->valid == 0)
++        {
++            continue;
++        }
++        openvpn_snprintf(select_string, sizeof(select_string), "THUMB:%s", c->hash);
++        if (Load_CryptoAPI_certificate(select_string, &x509, &privkey) != 1)
++        {
++            fail_msg("Load_CryptoAPI_certificate failed: <%s>", c->friendly_name);
++            return;
++        }
++        EVP_PKEY *pubkey = X509_get_pubkey(x509);
++        assert_int_equal(digest_sign_verify(privkey, pubkey), 1);
++        X509_free(x509);
++        EVP_PKEY_free(privkey);
++    }
++}
++
+ static void
+ test_parse_hexstring(void **state)
+ {
+@@ -366,6 +530,8 @@ main(void)
+         cmocka_unit_test(test_find_cert_bythumb),
+         cmocka_unit_test(test_find_cert_byname),
+         cmocka_unit_test(test_find_cert_byissuer),
++        cmocka_unit_test_setup_teardown(test_cryptoapi_sign, setup_cryptoapi_sign,
++                                        teardown_cryptoapi_sign),
+     };
+ 
+     int ret = cmocka_run_group_tests_name("cryptoapi tests", tests, NULL, cleanup);
 -- 
 2.34.1
 
