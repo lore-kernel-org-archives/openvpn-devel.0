@@ -1,11 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed, 15 Mar 2023 16:04:20 +0100
-Message-Id: <20230315150420.298988-1-arne@...1227...>
-In-Reply-To: <20230314144854.182110-1-arne@...1227...>
-References: <20230314144854.182110-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Fix memory leaks in HMAC initial packet
- id
+Date: Wed, 15 Mar 2023 17:52:08 +0100 (CET)
+Message-Id: <202303151652.32FGq8pl049934@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230314122134.1248576-1-selva.nair@...277...>
+References: <20230314122134.1248576-1-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Bugfix: Convert ECDSA signature
+ form pkcs11-helper to DER encoded form
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,267 +15,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The HMAC leaks are just forgotten frees/deinitialisations. tls_wrap_control
-will sometimes return the original buffer (non tls-crypt) and sometimes
-tls_wrap.work, handling this buffer lifetime is a bit more complicated. Instead
-of further complicating that code just give our work buffer the same lifetime
-as the other one inside tls_wrap.work as that is also more consistent.
+I do not understand these crypto intricacies, but I've stared a bit
+at the code to understand the code-move-around, and "things look
+reasonable".  The test beds agree (mingw, github), and most important,
+Arne agrees :-)
 
-Also packet_id_init will allocated a buffer with malloc and not using a
-gc_arena, so we need to manually also free it.
+Your patch has been applied to the master and release/2.6 branch.
 
-Patch v2: add missing deallocations in unit tests of the new workbuf
+commit b7cf18f750f2a020032e09b6c4184579896876ee (master) 
+commit 1e954cefa0941439ca09598b6131203b975950f8 (release/2.6)
+Author: Selva Nair
+Date:   Tue Mar 14 08:21:34 2023 -0400
 
-Found-By: clang with asan
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/init.c                  |  3 +++
- src/openvpn/ssl.c                   | 12 +++++++++++
- src/openvpn/ssl.h                   |  6 ++++++
- src/openvpn/ssl_pkt.c               |  8 +++++--
- src/openvpn/ssl_pkt.h               |  2 +-
- tests/unit_tests/openvpn/test_pkt.c | 33 +++++++++++++++++++----------
- 6 files changed, 50 insertions(+), 14 deletions(-)
+     Bugfix: Convert ECDSA signature form pkcs11-helper to DER encoded form
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 124ac76bd..fa2681dc7 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -3483,6 +3483,7 @@ do_init_frame_tls(struct context *c)
-         frame_print(&c->c2.tls_auth_standalone->frame, D_MTU_INFO,
-                     "TLS-Auth MTU parms");
-         c->c2.tls_auth_standalone->tls_wrap.work = alloc_buf_gc(BUF_SIZE(&c->c2.frame), &c->c2.gc);
-+        c->c2.tls_auth_standalone->workbuf = alloc_buf_gc(BUF_SIZE(&c->c2.frame), &c->c2.gc);
-     }
- }
- 
-@@ -3881,6 +3882,8 @@ do_close_tls(struct context *c)
-         md_ctx_cleanup(c->c2.pulled_options_state);
-         md_ctx_free(c->c2.pulled_options_state);
-     }
-+
-+    tls_auth_standalone_free(c->c2.tls_auth_standalone);
- }
- 
- /*
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 78cec90a1..f2331f712 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1358,9 +1358,21 @@ tls_auth_standalone_init(struct tls_options *tls_options,
-     packet_id_init(&tas->tls_wrap.opt.packet_id, tls_options->replay_window,
-                    tls_options->replay_time, "TAS", 0);
- 
-+    tas->workbuf = alloc_buf_gc(tas->frame.buf.payload_size, gc);
-     return tas;
- }
- 
-+void
-+tls_auth_standalone_free(struct tls_auth_standalone *tas)
-+{
-+    if (!tas)
-+    {
-+        return;
-+    }
-+
-+    packet_id_free(&tas->tls_wrap.opt.packet_id);
-+}
-+
- /*
-  * Set local and remote option compatibility strings.
-  * Used to verify compatibility of local and remote option
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 58ff4b9b4..a050cd5c9 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -180,6 +180,12 @@ void tls_multi_init_finalize(struct tls_multi *multi, int tls_mtu);
- struct tls_auth_standalone *tls_auth_standalone_init(struct tls_options *tls_options,
-                                                      struct gc_arena *gc);
- 
-+/**
-+ * Frees a standalone tls-auth verification object.
-+ * @param tas   the object to free. May be NULL.
-+ */
-+void tls_auth_standalone_free(struct tls_auth_standalone *tas);
-+
- /*
-  * Setups the control channel frame size parameters from the data channel
-  * parameters
-diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
-index 17a7f8917..8b3391e76 100644
---- a/src/openvpn/ssl_pkt.c
-+++ b/src/openvpn/ssl_pkt.c
-@@ -434,7 +434,10 @@ tls_reset_standalone(struct tls_wrap_ctx *ctx,
-                      uint8_t header,
-                      bool request_resend_wkc)
- {
--    struct buffer buf = alloc_buf(tas->frame.buf.payload_size);
-+    /* Copy buffer here to point at the same data but allow tls_wrap_control
-+     * to potentially change buf to point to another buffer without
-+     * modifying the buffer in tas */
-+    struct buffer buf = tas->workbuf;
-     ASSERT(buf_init(&buf, tas->frame.buf.headroom));
- 
-     /* Reliable ACK structure */
-@@ -461,7 +464,8 @@ tls_reset_standalone(struct tls_wrap_ctx *ctx,
-         buf_write_u16(&buf, EARLY_NEG_FLAG_RESEND_WKC);
-     }
- 
--    /* Add tls-auth/tls-crypt wrapping, this might replace buf */
-+    /* Add tls-auth/tls-crypt wrapping, this might replace buf with
-+     * ctx->work */
-     tls_wrap_control(ctx, header, &buf, own_sid);
- 
-     return buf;
-diff --git a/src/openvpn/ssl_pkt.h b/src/openvpn/ssl_pkt.h
-index ec7b48daf..ef4852e5d 100644
---- a/src/openvpn/ssl_pkt.h
-+++ b/src/openvpn/ssl_pkt.h
-@@ -77,6 +77,7 @@
- struct tls_auth_standalone
- {
-     struct tls_wrap_ctx tls_wrap;
-+    struct buffer workbuf;
-     struct frame frame;
- };
- 
-@@ -220,7 +221,6 @@ read_control_auth(struct buffer *buf,
-  * This function creates a reset packet using the information
-  * from the tls pre decrypt state.
-  *
-- * The returned buf needs to be free with \c free_buf
-  */
- struct buffer
- tls_reset_standalone(struct tls_wrap_ctx *ctx,
-diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
-index f11e52a11..736f13178 100644
---- a/tests/unit_tests/openvpn/test_pkt.c
-+++ b/tests/unit_tests/openvpn/test_pkt.c
-@@ -203,6 +203,7 @@ init_tas_auth(int key_direction)
-                             static_key, true, key_direction,
-                             "Control Channel Authentication", "tls-auth",
-                             NULL);
-+    tas.workbuf = alloc_buf(1600);
- 
-     return tas;
- }
-@@ -217,10 +218,22 @@ init_tas_crypt(bool server)
-     tls_crypt_init_key(&tas.tls_wrap.opt.key_ctx_bi,
-                        &tas.tls_wrap.original_wrap_keydata, static_key,
-                        true, server);
-+    tas.workbuf = alloc_buf(1600);
-+    tas.tls_wrap.work = alloc_buf(1600);
- 
-     return tas;
- }
- 
-+void
-+free_tas(struct tls_auth_standalone *tas)
-+{
-+    /* Not some of these might be null pointers but calling free on null
-+     * pointers is a noop */
-+    free_key_ctx_bi(&tas->tls_wrap.opt.key_ctx_bi);
-+    free_buf(&tas->workbuf);
-+    free_buf(&tas->tls_wrap.work);
-+}
-+
- void
- test_tls_decrypt_lite_crypt(void **ut_state)
- {
-@@ -228,7 +241,6 @@ test_tls_decrypt_lite_crypt(void **ut_state)
-     struct tls_pre_decrypt_state state = { 0 };
- 
-     struct tls_auth_standalone tas = init_tas_crypt(true);
--
-     struct buffer buf = alloc_buf(1024);
- 
-     /* tls-auth should be invalid */
-@@ -263,6 +275,7 @@ test_tls_decrypt_lite_crypt(void **ut_state)
-     }
- 
-     free_key_ctx_bi(&tas.tls_wrap.opt.key_ctx_bi);
-+    free_tas(&tas);
-     free_buf(&buf);
- }
- 
-@@ -318,6 +331,7 @@ test_tls_decrypt_lite_auth(void **ut_state)
-     free_tls_pre_decrypt_state(&state);
-     /* Wrong key direction gives a wrong hmac key and should not validate */
-     free_key_ctx_bi(&tas.tls_wrap.opt.key_ctx_bi);
-+    free_tas(&tas);
-     tas = init_tas_auth(KEY_DIRECTION_INVERSE);
- 
-     buf_reset_len(&buf);
-@@ -326,7 +340,7 @@ test_tls_decrypt_lite_auth(void **ut_state)
-     assert_int_equal(verdict, VERDICT_INVALID);
- 
-     free_tls_pre_decrypt_state(&state);
--    free_key_ctx_bi(&tas.tls_wrap.opt.key_ctx_bi);
-+    free_tas(&tas);
-     free_buf(&buf);
- }
- 
-@@ -371,6 +385,7 @@ test_tls_decrypt_lite_none(void **ut_state)
- 
-     free_tls_pre_decrypt_state(&state);
-     free_buf(&buf);
-+    free_tas(&tas);
- }
- 
- static void
-@@ -442,10 +457,9 @@ test_verify_hmac_tls_auth(void **ut_state)
-     bool valid = check_session_id_hmac(&state, &from.dest, hmac, 30);
-     assert_false(valid);
- 
--    free_key_ctx_bi(&tas.tls_wrap.opt.key_ctx_bi);
--    free_key_ctx(&tas.tls_wrap.tls_crypt_v2_server_key);
-     free_tls_pre_decrypt_state(&state);
-     free_buf(&buf);
-+    free_tas(&tas);
-     hmac_ctx_cleanup(hmac);
-     hmac_ctx_free(hmac);
- }
-@@ -563,6 +577,7 @@ test_generate_reset_packet_plain(void **ut_state)
-     tas.tls_wrap.mode = TLS_WRAP_NONE;
-     struct frame frame = { {.headroom = 200, .payload_size = 1400}, 0};
-     tas.frame = frame;
-+    tas.workbuf = alloc_buf(1600);
- 
-     uint8_t header = 0 | (P_CONTROL_HARD_RESET_CLIENT_V2 << P_OPCODE_SHIFT);
- 
-@@ -577,10 +592,9 @@ test_generate_reset_packet_plain(void **ut_state)
-     struct buffer buf2 = tls_reset_standalone(&tas.tls_wrap, &tas, &client_id, &server_id, header, false);
-     assert_int_equal(BLEN(&buf), BLEN(&buf2));
-     assert_memory_equal(BPTR(&buf), BPTR(&buf2), BLEN(&buf));
--    free_buf(&buf2);
- 
-     free_tls_pre_decrypt_state(&state);
--    free_buf(&buf);
-+    free_buf(&tas.workbuf);
- }
- 
- static void
-@@ -614,15 +628,12 @@ test_generate_reset_packet_tls_auth(void **ut_state)
-     assert_int_equal(BLEN(&buf), BLEN(&buf2));
-     assert_memory_equal(BPTR(&buf), BPTR(&buf2), BLEN(&buf));
- 
--    free_buf(&buf2);
-     free_tls_pre_decrypt_state(&state);
- 
-     packet_id_free(&tas_client.tls_wrap.opt.packet_id);
- 
--    free_buf(&buf);
--    free_key_ctx_bi(&tas_server.tls_wrap.opt.key_ctx_bi);
--    free_key_ctx_bi(&tas_client.tls_wrap.opt.key_ctx_bi);
--
-+    free_tas(&tas_client);
-+    free_tas(&tas_server);
- }
- 
- int
--- 
-2.37.1 (Apple Git-137.1)
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20230314122134.1248576-1-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26406.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
