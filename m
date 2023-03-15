@@ -1,9 +1,8 @@
-Date: Tue, 14 Mar 2023 16:03:47 +0100 (CET)
-Message-Id: <202303141503.32EF3lgr025340@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230314144854.182110-2-arne@...1227...>
-References: <20230314144854.182110-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix memory leaks in dco open tun
+From: selva.nair@...277...
+Date: Tue, 14 Mar 2023 21:35:12 -0400
+Message-Id: <20230315013516.1256700-1-selva.nair@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 0/4] Add some tests for cryptoapi.c functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,36 +13,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+From: Selva Nair <selva.nair@...277...>
 
-This one is fairly straightforward (and the leak is small) - I've
-re-read all the code involved for v2 of the patch (set) and the
-change is correct.  The device name involved stays unchanged in
-the current iterations of open_tun_dco(), so there is no need to
-save it there (fallout of the many rewrites of these parts).
+  Import some sample certificates into Windows store for testing
+    - 4 test certificates&keys imported to user store
+      and removed at the end.
 
-Your patch has been applied to the master and release/2.6 branch.
+  Add tests for finding certificates in Windows certficate store
+    - test using SUBJ:, THUMB: and ISSUER: select-strings
 
-commit 021952705ba4b77a1d94bec85f6f02e6c612a37e (master)
-commit be7a5640fbce2d3d56bdcee23e3d76ea15a678d1 (release/2.6)
-Author: Arne Schwabe
-Date:   Tue Mar 14 15:48:54 2023 +0100
+  Refactor SSL_CTX_use_CryptoAPI_certificate()
+    - A minor reorganization avoids wrapping for the next test
 
-     Fix memory leaks in dco open tun
+  Add a test for signing with certificates in Windows store
+    - Test loading keys into xkey-provider and sign a test message.
+      The signature is then verified using OpenSSL.
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230314144854.182110-2-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26411.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Sample output the test runs:
+https://github.com/selvanair/openvpn/actions/runs/4418774866/jobs/7746404938#step:8:1
 
+ src/openvpn/cryptoapi.c                   |  63 ++--
+ tests/unit_tests/openvpn/Makefile.am      |   1 +
+ tests/unit_tests/openvpn/cert_data.h      | 166 +++++++++
+ tests/unit_tests/openvpn/test_cryptoapi.c | 429 +++++++++++++++++++++-
+ 4 files changed, 635 insertions(+), 24 deletions(-)
+ create mode 100644 tests/unit_tests/openvpn/cert_data.h
 
---
-kind regards,
-
-Gert Doering
+-- 
+2.34.1
 
 
