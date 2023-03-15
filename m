@@ -1,14 +1,13 @@
-Date: Wed, 15 Mar 2023 09:30:38 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <ZBGCLjjaSwodDPce@...1296...>
-References: <20230315013516.1256700-1-selva.nair@...277...>
+Message-ID: <86d0213e-dd5a-5ee8-f83c-306a9c173afc@...1227...>
+Date: Wed, 15 Mar 2023 09:44:34 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="emfu8so/QlvHx08w"
-Content-Disposition: inline
-In-Reply-To: <20230315013516.1256700-1-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 0/4] Add some tests for cryptoapi.c
- functions
+Content-Language: en-GB
+References: <20230311052403.1154030-1-selva.nair@...277...>
+ <20230314122134.1248576-1-selva.nair@...277...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20230314122134.1248576-1-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Bugfix: Convert ECDSA signature form
+ pkcs11-helper to DER encoded form
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,56 +16,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selva.nair@...277...
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
+Cc: Florian Apolloner <florian@...2720...>
 
---emfu8so/QlvHx08w
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-Hi,
-
-On Tue, Mar 14, 2023 at 09:35:12PM -0400, selva.nair@...277... wrote:
+Am 14.03.23 um 13:21 schrieb selva.nair@...277...:
 > From: Selva Nair <selva.nair@...277...>
->=20
->   Import some sample certificates into Windows store for testing
->     - 4 test certificates&keys imported to user store
->       and removed at the end.
-[..]
+> 
+> - With OpenSSL 3.0 and xkey-provider, we use pkcs11h_certificate_signAny_ex()
+>    which returns EC signature as raw r|s concatenated. But OpenSSL expects
+>    a DER encoded ASN.1 structure.
+> 
+>    Do this conversion as done in cryptoapi.c. For code re-use, ecdsa_bin2sig()
+>    is consolidated with sig to DER conversion as ecdsa_bin2der() and
+>    moved to xkey_helper.c
+> 
+>    In the past when we used OpenSSL hooks installed by pkcs11-helper,
+>    such a conversion was not required as it was internally handled by
+>    the library.
 
-This is extremely valuable.  Thanks.
+Even though the commit is quite long, it is mostly moving the 
+ecdsa_bin2der function into xkey_helper.c. While I have not tested it 
+myself the code changes make sense and look good and we got a positive 
+test report.
 
-If I apply these 4 patches on top of "master", will the test then succeed,
-or will it show failure due to the not-yet-merged padding patch?
+Acked-By: Arne Schwabe <arne@...1227...>
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
 
-Gert Doering - Munich, Germany                             gert@...1296...
 
---emfu8so/QlvHx08w
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJkEYItAAoJEB2Cnv7KVigSnnMMAI1zK/u4pQGahQA3kNuIzAB6
-0PPr1+q0y7OvGhlGrSIWdjziYxjgw/SO63iGIDRUBLHIisN2/quDcia5F45kqPJK
-V9zfDrxlT8UTCHKnQMbqyL2chVuiGTMVbwCOOYH7oP+vYVRjsxhO/vKfDSLFT2W9
-ZUuOHvMpMrWlBHTyRW/g8fzmQJdhPOwkQfCXjMzWS13v6HSC+FLrV8bbUzrgzJgZ
-pvBQjuSQfPzjxqGF9Mqkf1VxL/RUJUDc0jC/+2kTWDS+2Lde3rhAEFvss5pBn+zb
-REwG47dYqvQLgA0MJBL2I+ooBAiUMqzpTBWRrybF0fz/97dgFobUr0TUbKxSnAUL
-mAqOmxEK03jpZpiydoIRi7apBAHZzbDGzogl4j/NwsJx8i459SLC/hK3RMr9H5U+
-IW+AZSOG3R4BazToSPBZTqaWIyMP4CuRpCOYacNY7BDYkjLFN9hT8ajdkunnlv86
-/OpxPocD4M01hUyeGQuueh+m0hUJ2FpS4zWK1sg5Gg==
-=pRKQ
------END PGP SIGNATURE-----
-
---emfu8so/QlvHx08w--
 
