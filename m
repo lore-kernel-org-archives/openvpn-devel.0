@@ -1,10 +1,10 @@
-Date: Thu, 16 Mar 2023 10:39:49 +0100 (CET)
-Message-Id: <202303160939.32G9dnGX066695@...2054...>
+Date: Thu, 16 Mar 2023 10:53:29 +0100 (CET)
+Message-Id: <202303160953.32G9rTV8067067@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230315013516.1256700-3-selva.nair@...277...>
-References: <20230315013516.1256700-3-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add tests for finding
- certificates in Windows cert store
+In-Reply-To: <20230315013516.1256700-4-selva.nair@...277...>
+References: <20230315013516.1256700-4-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Refactor
+ SSL_CTX_use_CryptoAPI_certificate()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,36 +20,25 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Code looks reasonable and tests what we want tested.  Tested with
-a local MinGW build -> copied to windows10, and with GHA.
+Stared-at-code, looks all reasonable.
 
-    [==========] Running 5 test(s).
-    [ RUN      ] test_parse_hexstring
-    [       OK ] test_parse_hexstring
-    [ RUN      ] import_certs
-    [       OK ] import_certs
-    [ RUN      ] test_find_cert_bythumb
-    [       OK ] test_find_cert_bythumb
-    [ RUN      ] test_find_cert_byname
-    [       OK ] test_find_cert_byname
-    [ RUN      ] test_find_cert_byissuer
-    [       OK ] test_find_cert_byissuer
-    [==========] 5 test(s) run.
-    [  PASSED  ] 5 test(s).
+Tested on local MinGW->W10 build (of cryptoapi_testdriver.exe) and GHA
+(to get all 32/64 bit and OpenSSL 1/3 combinations built), everything
+passes.
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit b538a334284716757c48026bf6ace95e33258943 (master)
-commit a08d0c770d0c0cd2534a0a900bba358b1c44056f (release/2.6)
+commit 0ad5f4d6c44daedca00dc399a5f914ac5850caa0 (master)
+commit 5c2154ca49a591afd8faa8e535a67b149ddbd354 (release/2.6)
 Author: Selva Nair
-Date:   Tue Mar 14 21:35:14 2023 -0400
+Date:   Tue Mar 14 21:35:15 2023 -0400
 
-     Add tests for finding certificates in Windows cert store
+     Refactor SSL_CTX_use_CryptoAPI_certificate()
 
      Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230315013516.1256700-3-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26415.html
+     Message-Id: <20230315013516.1256700-4-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26414.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
