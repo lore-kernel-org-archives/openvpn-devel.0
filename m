@@ -1,10 +1,10 @@
-Date: Wed, 15 Mar 2023 22:28:45 +0100 (CET)
-Message-Id: <202303152128.32FLSjUL054268@...2054...>
+Date: Thu, 16 Mar 2023 10:27:18 +0100 (CET)
+Message-Id: <202303160927.32G9RIoZ066276@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230315195512.323070-1-arne@...1227...>
-References: <20230315195512.323070-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix memory leaks in HMAC
- initial packet id
+In-Reply-To: <20230315013516.1256700-2-selva.nair@...277...>
+References: <20230315013516.1256700-2-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Import some sample certificates
+ into Windows store for testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,36 +15,42 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Stared at the code, and the current version looks good - the change
-is now bigger than "just add a free_buf()", but since that did not
-work, the new approach of putting all buffers into the per-session
-gc_arena should stop the leaking (it might use a bit more memory
-while the session is active, because there are two bufs of 1600 bytes
-each, but it will be returned afterwards << this is the good part)
+This is a welcome addition so we can have actual cryptoapi unit 
+tests.  The code looks reasonable, and GHA says "it passes"...
 
-The biggest part of this patch is the unit test anyway :-)
+	Run ./unittests/cryptoapi_testdriver.exe
+	[==========] Running 2 test(s).
+	[ RUN      ] test_parse_hexstring
+	[       OK ] test_parse_hexstring
+	[ RUN      ] import_certs
+	[  PASSED  ] 2 test(s).
+	[       OK ] import_certs
+	[==========] 2 test(s) run.
 
-Subjected this to Github actions (which broke the previous two versions)
-and to my server testbed (which broke v2).  All are happy now.
+
+I have tried testing this on a "real" Win10 VM, but I am missing some
+intricacies with the cert store - I wanted to see if certs are properly
+cleaned up, but I can't even see my own .p12 I have imported, so I am
+doing something wrong... 
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit e8ecaadd2ac38f2c2d4bcd40eeaea7401aa737a1 (master)
-commit 0942e1575abbc0bdda62e3158827b130ae3f9ab6 (release/2.6)
-Author: Arne Schwabe
-Date:   Wed Mar 15 20:55:12 2023 +0100
+commit d6cf0239e835d98b66c71d701e70128db9ca7e9a (master)
+commit e6011868c40aaf91d30d084b1b454f7709c855fd (release/2.6)
+Author: Selva Nair
+Date:   Tue Mar 14 21:35:13 2023 -0400
 
-     Fix memory leaks in HMAC initial packet id
+     Import some sample certificates into Windows store for testing
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230315195512.323070-1-arne@...1227...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20230315195512.323070-1-arne@...1227...
+     Message-Id: <20230315013516.1256700-2-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26417.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
