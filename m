@@ -1,9 +1,8 @@
-From: selva.nair@...277...
-Date: Sat, 18 Mar 2023 10:43:25 -0400
-Message-Id: <20230318144325.1316320-1-selva.nair@...277...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Unit tests: add test for
- SSL_CTX_use_Cryptoapi_certificate()
+From: Michael Baentsch <info@...2666...>
+Date: Sun, 19 Mar 2023 08:54:41 +0100
+Message-Id: <20230319075441.13021-1-info@...2666...>
+Subject: [Openvpn-devel] [PATCH] using OpenSSL3 API for EVP PKEY type name
+ reporting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,119 +15,83 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
-
-- This is the only remaining function in cryptoapi.c that has no
-  direct or indirect test.
-
-  This test confirms that an SSL_CTX context gets a certificate and
-  private key loaded into it and the public key in the certificate
-  matches the private key. As signing with certificate/key pairs
-  fetched from the store is independently tested by the 'cryptoapi_sign'
-  test, signing is not re-tested here.
-
-  The functions "setup_/teardown_cryptoapi_sign()" are renamed to
-  "setup_/teardown_xkey_provider()" to better reflect their purpose.
-  These are also reused for the new test.
-
-  While touching this context, also fix a memory leak in
-  test_cryptoapi_sign: X509_get_pubkey() -> X509_get0_pubkey()
-
-Signed-off-by: Selva Nair <selva.nair@...277...>
+Signed-off-by: Michael Baentsch <info@...2666...>
 ---
- tests/unit_tests/openvpn/test_cryptoapi.c | 51 ++++++++++++++++++++---
- 1 file changed, 46 insertions(+), 5 deletions(-)
+ src/openvpn/ssl_openssl.c | 26 +++++++++++++++++++++++---
+ 1 file changed, 23 insertions(+), 3 deletions(-)
 
-diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/openvpn/test_cryptoapi.c
-index b07e8935..e64a1de3 100644
---- a/tests/unit_tests/openvpn/test_cryptoapi.c
-+++ b/tests/unit_tests/openvpn/test_cryptoapi.c
-@@ -343,7 +343,7 @@ test_find_cert_byissuer(void **state)
- }
- 
- static int
--setup_cryptoapi_sign(void **state)
-+setup_xkey_provider(void **state)
- {
-     (void) state;
-     /* Initialize providers in a way matching what OpenVPN core does */
-@@ -358,7 +358,7 @@ setup_cryptoapi_sign(void **state)
- }
- 
- static int
--teardown_cryptoapi_sign(void **state)
-+teardown_xkey_provider(void **state)
- {
-     (void) state;
-     for (size_t i = 0; i < _countof(prov); i++)
-@@ -493,13 +493,52 @@ test_cryptoapi_sign(void **state)
-             fail_msg("Load_CryptoAPI_certificate failed: <%s>", c->friendly_name);
-             return;
-         }
--        EVP_PKEY *pubkey = X509_get_pubkey(x509);
-+        EVP_PKEY *pubkey = X509_get0_pubkey(x509);
-+        assert_non_null(pubkey);
-         assert_int_equal(digest_sign_verify(privkey, pubkey), 1);
-         X509_free(x509);
-         EVP_PKEY_free(privkey);
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 2b932af9..65b36d1c 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1501,7 +1501,11 @@ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
      }
- }
+     EVP_PKEY_free(privkey);
+ #else  /* ifdef HAVE_XKEY_PROVIDER */
++#if OPENSSL_VERSION_NUMBER < 0x30000000L
+     if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA)
++#else /* OPENSSL_VERSION_NUMBER < 0x30000000L */
++    if (EVP_PKEY_is_a(pkey, "RSA"))
++#endif /* OPENSSL_VERSION_NUMBER < 0x30000000L */
+     {
+         if (!tls_ctx_use_external_rsa_key(ctx, pkey))
+         {
+@@ -1509,7 +1513,11 @@ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
+         }
+     }
+ #if (OPENSSL_VERSION_NUMBER > 0x10100000L) && !defined(OPENSSL_NO_EC)
++#if OPENSSL_VERSION_NUMBER < 0x30000000L
+     else if (EVP_PKEY_id(pkey) == EVP_PKEY_EC)
++#else /* OPENSSL_VERSION_NUMBER < 0x30000000L */
++    else if (EVP_PKEY_is_a(pkey, "EC"))
++#endif /* OPENSSL_VERSION_NUMBER < 0x30000000L */
+     {
+         if (!tls_ctx_use_external_ec_key(ctx, pkey))
+         {
+@@ -2064,10 +2072,15 @@ print_cert_details(X509 *cert, char *buf, size_t buflen)
+     }
  
-+/* Test that SSL_CTX_use_Cryptoapi_certificate() sets a matching certificate
-+ * and key in ssl_ctx.
-+ */
-+void
-+test_ssl_ctx_use_cryptoapicert(void **state)
-+{
-+    (void) state;
-+    char select_string[64];
-+
-+    import_certs(state); /* a no-op if already imported */
-+    assert_true(certs_loaded);
-+
-+    for (struct test_cert *c = certs; c->cert; c++)
-+    {
-+        if (c->valid == 0)
-+        {
-+            continue;
-+        }
-+        SSL_CTX *ssl_ctx = SSL_CTX_new_ex(tls_libctx, NULL, SSLv23_client_method());
-+        assert_non_null(ssl_ctx);
-+
-+        openvpn_snprintf(select_string, sizeof(select_string), "THUMB:%s", c->hash);
-+        if (!SSL_CTX_use_CryptoAPI_certificate(ssl_ctx, select_string))
-+        {
-+            fail_msg("SSL_CTX_use_CryptoAPI_certificate failed: <%s>", c->friendly_name);
-+            return;
-+        }
-+        /* Use OpenSSL to check that the cert and private key in ssl_ctx "match" */
-+        if (!SSL_CTX_check_private_key(ssl_ctx))
-+        {
-+            fail_msg("Certificate and private key in ssl_ctx do not match for <%s>", c->friendly_name);
-+            return;
-+        }
-+
-+        SSL_CTX_free(ssl_ctx);
-+    }
-+}
-+
- static void
- test_parse_hexstring(void **state)
- {
-@@ -530,8 +569,10 @@ main(void)
-         cmocka_unit_test(test_find_cert_bythumb),
-         cmocka_unit_test(test_find_cert_byname),
-         cmocka_unit_test(test_find_cert_byissuer),
--        cmocka_unit_test_setup_teardown(test_cryptoapi_sign, setup_cryptoapi_sign,
--                                        teardown_cryptoapi_sign),
-+        cmocka_unit_test_setup_teardown(test_cryptoapi_sign, setup_xkey_provider,
-+                                        teardown_xkey_provider),
-+        cmocka_unit_test_setup_teardown(test_ssl_ctx_use_cryptoapicert, setup_xkey_provider,
-+                                        teardown_xkey_provider),
-     };
+     int typeid = EVP_PKEY_id(pkey);
++#if OPENSSL_VERSION_NUMBER < 0x30000000L
++    bool is_ec = typeid == EVP_PKEY_EC;
++#else
++    bool is_ec = EVP_PKEY_is_a(pkey, "EC");
++#endif
  
-     int ret = cmocka_run_group_tests_name("cryptoapi tests", tests, NULL, cleanup);
+ #ifndef OPENSSL_NO_EC
+     char groupname[256];
+-    if (typeid == EVP_PKEY_EC)
++    if (is_ec)
+     {
+         size_t len;
+         if (EVP_PKEY_get_group_name(pkey, groupname, sizeof(groupname), &len))
+@@ -2080,9 +2093,9 @@ print_cert_details(X509 *cert, char *buf, size_t buflen)
+         }
+     }
+ #endif
+-    if (EVP_PKEY_id(pkey) != 0)
++    if (typeid != 0)
+     {
+-        int typeid = EVP_PKEY_id(pkey);
++#if OPENSSL_VERSION_NUMBER < 0x30000000L
+         type = OBJ_nid2sn(typeid);
+ 
+         /* OpenSSL reports rsaEncryption, dsaEncryption and
+@@ -2104,6 +2117,13 @@ print_cert_details(X509 *cert, char *buf, size_t buflen)
+         {
+             type = "unknown type";
+         }
++#else /* OpenSSL >= 3 */
++        type = EVP_PKEY_get0_type_name(pkey);
++        if (type == NULL)
++        {
++            type = "(error getting public key type)";
++        }
++#endif /* if OPENSSL_VERSION_NUMBER < 0x30000000L */
+     }
+ 
+     char sig[128] = { 0 };
 -- 
-2.34.1
+2.17.1
 
 
