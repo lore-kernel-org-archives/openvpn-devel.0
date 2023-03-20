@@ -1,10 +1,10 @@
-Date: Mon, 20 Mar 2023 18:22:08 +0100 (CET)
-Message-Id: <202303201722.32KHM8mq067126@...2054...>
+Date: Mon, 20 Mar 2023 18:34:18 +0100 (CET)
+Message-Id: <202303201734.32KHYIHU067403@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230301134455.2810114-1-arne@...1227...>
-References: <20230301134455.2810114-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Only update frame calculation
- if we have a valid link sockets
+In-Reply-To: <20230318144325.1316320-1-selva.nair@...277...>
+References: <20230318144325.1316320-1-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Unit tests: add test for
+ SSL_CTX_use_Cryptoapi_certificate()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,47 +15,47 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-This is not really "high priority critical NULL pointer crash bug"
-important, because due to lucky circumstances the result from
-get_link_socket_info(c) on a NULL pointer is still NULL (because
-&->info is the first member of the struct) - so later consumers
-of *lsi will not crash ("if (lsi && lsi->...)").
+Unit tests are goood!!!! :-)
 
-It's still undefined behaviour, so let's not rely on this, and
-instead only update frame parameters *here* in the modes that have
-a link_sock available.  Notable exception is "UDP child", but in this
-case there is another call chain from multi_connection_established()
--> tls_session_update_crypto_params_do_work() -> frame_calculate_dynamic()
-which will do the updating later.  (Discussed at lenght with Arne on IRC):
+Stare-at-code looks good, and Github is happy with the result... (both
+32 and 64 bit)
 
-I still find the whole session setup thing confusing (like, why is
-the TCP link_socket initialized before init_instance(), and UDP child
-only afterwards, leading to this situation in the first place?) - but
-this is not "bugfix, 2.6" land, more "refactor for 2.7".
-
-
-I have lightly tested this with GHA and the server test framework
-- which does not really *verify* all these frame / overhead, just
-"clients can still connect just fine, nothing crashes/fails".
+    [==========] Running 7 test(s).
+    [ RUN      ] test_parse_hexstring
+    [       OK ] test_parse_hexstring
+    [ RUN      ] import_certs
+    [       OK ] import_certs
+    [ RUN      ] test_find_cert_bythumb
+    [       OK ] test_find_cert_bythumb
+    [ RUN      ] test_find_cert_byname
+    [       OK ] test_find_cert_byname
+    [ RUN      ] test_find_cert_byissuer
+    [       OK ] test_find_cert_byissuer
+    [ RUN      ] test_cryptoapi_sign
+    [       OK ] test_cryptoapi_sign
+    [ RUN      ] test_ssl_ctx_use_cryptoapicert
+    [       OK ] test_ssl_ctx_use_cryptoapicert
+    [==========] 7 test(s) run.
+    [  PASSED  ] 7 test(s).
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit 2d17869f8d9d8e27f64f1a7cd1514fbbb768807b (master)
-commit 75cc2fa6e15ce806415aed33d7608b8d9cc00e36 (release/2.6)
-Author: Arne Schwabe
-Date:   Wed Mar 1 14:44:55 2023 +0100
+commit 85da9de524f34db3f6bd4ebc110b25c6bcbc273d (master)
+commit 973083746727cb797248262de56fb0a707bcdb90 (release/2.6)
+Author: Selva Nair
+Date:   Sat Mar 18 10:43:25 2023 -0400
 
-     Only update frame calculation if we have a valid link sockets
+     Unit tests: add test for SSL_CTX_use_Cryptoapi_certificate()
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230301134455.2810114-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26318.html
+     Message-Id: <20230318144325.1316320-1-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26438.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
