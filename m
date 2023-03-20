@@ -1,10 +1,10 @@
-Date: Mon, 20 Mar 2023 18:34:18 +0100 (CET)
-Message-Id: <202303201734.32KHYIHU067403@...2054...>
+Date: Mon, 20 Mar 2023 18:57:45 +0100 (CET)
+Message-Id: <202303201757.32KHvjTh071877@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230318144325.1316320-1-selva.nair@...277...>
-References: <20230318144325.1316320-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Unit tests: add test for
- SSL_CTX_use_Cryptoapi_certificate()
+In-Reply-To: <20230318141330.1315235-1-selva.nair@...277...>
+References: <20230318141330.1315235-1-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Improve error message on short
+ read from socks proxy
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,42 +20,31 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Unit tests are goood!!!! :-)
+Thanks, this change makes sense.  I have not actively tried to provoke
+it (like, by connecting to a "fake SOCKS server" that will trigger it),
+but the change is obviously an improvement to "if it's not ==1, it 
+must be a TCP error!").
 
-Stare-at-code looks good, and Github is happy with the result... (both
-32 and 64 bit)
+I do test the SOCKS code in my t_client runs, but all my SOCKS servers
+are well-behaved (and the regular t_client cannot handle "expect failure" 
+cases anyway).  Room for improvement.
 
-    [==========] Running 7 test(s).
-    [ RUN      ] test_parse_hexstring
-    [       OK ] test_parse_hexstring
-    [ RUN      ] import_certs
-    [       OK ] import_certs
-    [ RUN      ] test_find_cert_bythumb
-    [       OK ] test_find_cert_bythumb
-    [ RUN      ] test_find_cert_byname
-    [       OK ] test_find_cert_byname
-    [ RUN      ] test_find_cert_byissuer
-    [       OK ] test_find_cert_byissuer
-    [ RUN      ] test_cryptoapi_sign
-    [       OK ] test_cryptoapi_sign
-    [ RUN      ] test_ssl_ctx_use_cryptoapicert
-    [       OK ] test_ssl_ctx_use_cryptoapicert
-    [==========] 7 test(s) run.
-    [  PASSED  ] 7 test(s).
+So, I've tested this on a regular client using a well-behaved SOCKS
+proxy, and as expected, "it does not break anything" :-)
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit 85da9de524f34db3f6bd4ebc110b25c6bcbc273d (master)
-commit 973083746727cb797248262de56fb0a707bcdb90 (release/2.6)
+commit 172640189277c940439d24fd31a59b8faffd0b3e (master)
+commit c20a15844829a186b4d5256b0e8d76b8eb074845 (release/2.6)
 Author: Selva Nair
-Date:   Sat Mar 18 10:43:25 2023 -0400
+Date:   Sat Mar 18 10:13:30 2023 -0400
 
-     Unit tests: add test for SSL_CTX_use_Cryptoapi_certificate()
+     Improve error message on short read from socks proxy
 
      Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230318144325.1316320-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26438.html
+     Message-Id: <20230318141330.1315235-1-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26437.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
