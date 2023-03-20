@@ -1,10 +1,10 @@
-Date: Mon, 20 Mar 2023 17:35:00 +0100 (CET)
-Message-Id: <202303201635.32KGZ0qp066290@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230301135353.2811069-2-arne@...1227...>
-References: <20230301135353.2811069-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Make sending plain text control
- message session aware
+From: Arne Schwabe <arne@...1227...>
+Date: Mon, 20 Mar 2023 17:55:38 +0100
+Message-Id: <20230320165538.902965-1-arne@...1227...>
+In-Reply-To: <20230301134449.2810039-1-arne@...1227...>
+References: <20230301134449.2810039-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2] Improve description of compat-mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,64 +15,65 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Explicitly say that the version specified is the one of the peer and not
+the version we try to emulate.
 
-Discussed this at length with Arne - the change looks very big, but
-most of it is "change of calling conventions", passing in "session"
-instead of "multi" (session being c2.tls_multi->session[$key], TM_ACTIVE
-for most of the invocations).
+Patch v2: Improve grammar.
+Change-Id: I3bd27a8d34d8cb4896a3b78508b7d16911571543
 
-The interesting things are more subtle :-) -
+Change-Id: If4fb45b3426f5e0dbe6c87d5bd05681b9d733827
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ doc/man-sections/generic-options.rst | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
-  - send_auth_failed() will now call send_control_channel_string_dowork()
-    twice, for TM_INITIAL and TM_ACTIVE, to deliver the AUTH_FAILED
-    message to all sessions, active and pending (and reschedule, as
-    that call is in send_control_channel_string() normally)
-
-  - verify_user_pass_script() calls key_state_check_auth_pending_file()
-    with "session" (in additon to "multi"), which can be TM_INITIAL
-    or TM_ACTIVE, depending on the context.  This then calls
-    send_auth_pending_messages() to send the "auth pending" message
-    to the appropriate context.
-
-  - management_client_pending_auth() will use the TM_INITIAL or TM_ACTIVE
-    session depending on the new "KID" argument (== mda_key_id)
-
-
-While staring at the code, I've fed this to the server testbed, which
-does quite a bit of authentication and async/deferred authentication
-testing, and all passed.  It does not yet do client-side delayed auth
-testing (need a proper client testbed), so I can not attest that it
-fixes the problems observed in #256 - but I can attest that it's not
-breaking anything we currently test for.
-
-
-I have added a "Github: ..." tag to the commit message, and reworded
-doc/management-notes.txt a bit, as agreed on IRC.  In the 2.6 branch,
-the "Changes.rst" entry was moved to a new "2.6.2" section.
-
-Your patch has been applied to the master and release/2.6 branch.
-
-commit a261e173341f8e68505a6ab5a413d09b0797a459 (master)
-commit da083c3b9bc1b5720a4dcbef9c32bbbbec0dcce6 (release/2.6)
-Author: Arne Schwabe
-Date:   Wed Mar 1 14:53:53 2023 +0100
-
-     Make sending plain text control message session aware
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230301135353.2811069-2-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26320.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
+index c827651d6..97e1b5aa6 100644
+--- a/doc/man-sections/generic-options.rst
++++ b/doc/man-sections/generic-options.rst
+@@ -53,10 +53,17 @@ which mode OpenVPN is configured as.
+   need for /dev/urandom to be available.
+ 
+ --compat-mode version
+-  This option provides a way to alter the default of OpenVPN to be more
+-  compatible with the version ``version`` specified. All of the changes
+-  this option does can also be achieved using individual configuration
+-  options.
++  This option provides a convenient way to alter the defaults of OpenVPN
++  to be more compatible with the version ``version`` specified. All of
++  the changes this option applies can also be achieved using individual
++  configuration options.
++
++  The version specified with this option is the version of OpenVPN peer
++  OpenVPN should try to be compatible with. In general OpenVPN should be
++  compatible with the last two previous version without this option. E.g.
++  OpenVPN 2.6.0 should be compatible with 2.5.x and 2.4.x without this option.
++  However, there might be some edge cases that still require this option even
++  in these cases.
+ 
+   Note: Using this option reverts defaults to no longer recommended
+   values and should be avoided if possible.
+@@ -67,12 +74,15 @@ which mode OpenVPN is configured as.
+   - 2.5.x or lower: ``--allow-compression asym`` is automatically added
+     to the configuration if no other compression options are present.
+   - 2.4.x or lower: The cipher in ``--cipher`` is appended to
+-    ``--data-ciphers``
++    ``--data-ciphers``.
+   - 2.3.x or lower: ``--data-cipher-fallback`` is automatically added with
+-    the same cipher as ``--cipher``
++    the same cipher as ``--cipher``.
+   - 2.3.6 or lower: ``--tls-version-min 1.0`` is added to the configuration
+     when ``--tls-version-min`` is not explicitly set.
+ 
++  If not required, this is option should be avoided. Setting this option can
++  lower security or disable features like data-channel offloading.
++
+ --config file
+   Load additional config options from ``file`` where each line corresponds
+   to one command line option, but with the leading :code:`--` removed.
+-- 
+2.37.1 (Apple Git-137.1)
 
 
