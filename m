@@ -1,10 +1,10 @@
-Date: Tue, 21 Mar 2023 16:07:42 +0100 (CET)
-Message-Id: <202303211507.32LF7g5p092455@...2054...>
+Date: Tue, 21 Mar 2023 16:15:43 +0100 (CET)
+Message-Id: <202303211515.32LFFhqx092683@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230320165538.902965-1-arne@...1227...>
-References: <20230320165538.902965-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Improve description of
- compat-mode
+In-Reply-To: <20230321102842.10780-1-a@...2181...>
+References: <20230321102842.10780-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: multi: don't call DCO APIs if
+ DCO is disabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Nothing to test here :-)
+I have not tested this extensively (as in "instrument the functions
+not called anymore if --disable-dco is in use"), just ran some basic
+tests on FreeBSD 14 with DCO, and "counters with DCO" still work,
+as does --inactive (with a "this many bytes" specification).
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit daf66f4013d8facc085ea6cfaaf8a42f4d45a461 (master)
-commit 92827ad84eb3a5b7ca70f3e7f34800d25790b10d (release/2.6)
-Author: Arne Schwabe
-Date:   Mon Mar 20 17:55:38 2023 +0100
+commit 891c71db5e26291b19885b9a5ae5c72011b86658 (master)
+commit 8f503708ed954ff3ae43357bd9f59809581a1381 (release/2.6)
+Author: Antonio Quartulli
+Date:   Tue Mar 21 11:28:42 2023 +0100
 
-     Improve description of compat-mode
+     multi: don't call DCO APIs if DCO is disabled
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Frank Lichtenheld <frank@...2641...>
-     Message-Id: <20230320165538.902965-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26445.html
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20230321102842.10780-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26458.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
