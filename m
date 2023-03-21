@@ -1,10 +1,11 @@
-Date: Tue, 21 Mar 2023 09:22:25 +0100 (CET)
-Message-Id: <202303210822.32L8MP2a086584@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230320195820.6675-1-a@...2181...>
-References: <20230320195820.6675-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco-linux: remove M_ERRNO flag
- when printing netlink error message
+Date: Tue, 21 Mar 2023 09:23:58 +0100
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <ZBlpntTB80+0DvGg@...2685...>
+References: <20230301134449.2810039-1-arne@...1227...>
+ <20230320165538.902965-1-arne@...1227...>
+MIME-Version: 1.0
+In-Reply-To: <20230320165538.902965-1-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Improve description of compat-mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +14,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+Content-Disposition: inline
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+On Mon, Mar 20, 2023 at 05:55:38PM +0100, Arne Schwabe wrote:
+> Explicitly say that the version specified is the one of the peer and not
+> the version we try to emulate.
+> 
+> Patch v2: Improve grammar.
+> Change-Id: I3bd27a8d34d8cb4896a3b78508b7d16911571543
+> 
+> Change-Id: If4fb45b3426f5e0dbe6c87d5bd05681b9d733827
 
-"Trivially correct" :-) - compile-tested on a DCO enabled linux.
+How did you end up with two change ids?
 
-Your patch has been applied to the master and release/2.6 branch.
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  doc/man-sections/generic-options.rst | 22 ++++++++++++++++------
+>  1 file changed, 16 insertions(+), 6 deletions(-)
 
-commit 23903fd579353c9892415a750f17a9832a79cced (master)
-commit 047f772b84843344b6131e9e915472d14adcea2b (release/2.6)
-Author: Antonio Quartulli
-Date:   Mon Mar 20 20:58:20 2023 +0100
+Review happened in Gerrit.
 
-     dco-linux: remove M_ERRNO flag when printing netlink error message
+Acked-By: Frank Lichtenheld <frank@...2641...>
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230320195820.6675-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26452.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Regards,
+-- 
+  Frank Lichtenheld
 
