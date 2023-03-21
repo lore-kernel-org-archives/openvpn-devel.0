@@ -1,10 +1,10 @@
-Date: Tue, 21 Mar 2023 16:15:43 +0100 (CET)
-Message-Id: <202303211515.32LFFhqx092683@...2054...>
+Date: Tue, 21 Mar 2023 17:22:18 +0100 (CET)
+Message-Id: <202303211622.32LGMIM3093826@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230321102842.10780-1-a@...2181...>
-References: <20230321102842.10780-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: multi: don't call DCO APIs if
- DCO is disabled
+In-Reply-To: <20230310050814.67246-1-heiko@...2662...>
+References: <20230310050814.67246-1-heiko@...2662...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dns option: allow up to eight
+ addresses per server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,46 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: Heiko Hund <heiko@...2662...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I have not tested this extensively (as in "instrument the functions
-not called anymore if --disable-dco is in use"), just ran some basic
-tests on FreeBSD 14 with DCO, and "counters with DCO" still work,
-as does --inactive (with a "this many bytes" specification).
+I've submitted this to "basic client/server testing" plus "GHA build",
+just to be sure that nothing breaks - but this doesn't excercise the
+new code at all.
+
+Stare-at-code says "it should do what it says on the lid", and the
+code is actually a bit simpler this way, not having to maintain separate
+addr4/addr6_defined variables etc.
+
+Some basic tests (running openvpn from the cli with --dns option and
+looking at "show_dns_options()" output) look good.  Didn't look at the
+environment variables or Windows DHCP.
+
+The error message for "--dns server 3 address" (with no addresses) is
+a bit confusing now
+
+   Options error: --dns: unknown option type 'server' or missing or unknown parameter
+
+but it does not crash or otherwise misbehave.  Exceeding the number of
+allowed addresses leads to
+
+  Options error: --dns server 3: malformed address or maximum exceeded '9.9.9.9'
+
+(good).
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit 891c71db5e26291b19885b9a5ae5c72011b86658 (master)
-commit 8f503708ed954ff3ae43357bd9f59809581a1381 (release/2.6)
-Author: Antonio Quartulli
-Date:   Tue Mar 21 11:28:42 2023 +0100
+commit 424ae5906388af8769ae448080fa3b7ec266e8d8 (master)
+commit 3b967e7e05f679203ce26e027fcea5f7b4709eaa (release/2.6)
+Author: Heiko Hund
+Date:   Fri Mar 10 06:08:12 2023 +0100
 
-     multi: don't call DCO APIs if DCO is disabled
+     dns option: allow up to eight addresses per server
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20230321102842.10780-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26458.html
+     Signed-off-by: Heiko Hund <heiko@...2662...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20230310050814.67246-1-heiko@...2662...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26386.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
