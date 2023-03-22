@@ -1,8 +1,8 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 22 Mar 2023 13:32:49 +0200
-Message-Id: <20230322113249.2039-1-lstipakov@...277...>
+Date: Wed, 22 Mar 2023 13:34:08 +0200
+Message-Id: <20230322113408.2057-1-lstipakov@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Print DCO client stats on SIGUSR2
+Subject: [Openvpn-devel] [PATCH] Fix "--inactive <time> 0" behavior for DCO
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,66 +18,34 @@ Cc: Lev Stipakov <lev@...515...>
 
 From: Lev Stipakov <lev@...515...>
 
-Change-Id: I465febdf7ee5fe573e88255844f718efb60f8e8a
+Make sure we exit if <bytes> is 0 (not set) and no traffic
+was produced.
+
+According to man page and non-DCO --inactive implementation,
+we exit if amount of bytes produced is less than <bytes> specified.
+DCO implementation will do off-by-ones, but we consider it as okay
+since we don't want to complicate code to handle both bytes=0 and >0
+cases.
+
+Change-Id: I4c089e486728a43bfe42596787c00355838311da
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
- src/openvpn/sig.c | 13 +++++++++----
- src/openvpn/sig.h |  2 +-
- 2 files changed, 10 insertions(+), 5 deletions(-)
+ src/openvpn/forward.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
-index 5b89bb42..05c0054b 100644
---- a/src/openvpn/sig.c
-+++ b/src/openvpn/sig.c
-@@ -300,18 +300,23 @@ restore_signal_state(void)
-  * Triggered by SIGUSR2 or F2 on Windows.
-  */
- void
--print_status(const struct context *c, struct status_output *so)
-+print_status(struct context *c, struct status_output *so)
- {
-     struct gc_arena gc = gc_new();
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 28a96f94..b3e0ba5d 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -481,7 +481,7 @@ check_inactivity_timeout(struct context *c)
+         int64_t tot_bytes = c->c2.tun_read_bytes + c->c2.tun_write_bytes;
+         int64_t new_bytes = tot_bytes - c->c2.inactivity_bytes;
  
-     status_reset(so);
- 
-+    if (dco_enabled(&c->options))
-+    {
-+        dco_get_peer_stats(c);
-+    }
-+
-     status_printf(so, "OpenVPN STATISTICS");
-     status_printf(so, "Updated,%s", time_string(0, 0, false, &gc));
-     status_printf(so, "TUN/TAP read bytes," counter_format, c->c2.tun_read_bytes);
-     status_printf(so, "TUN/TAP write bytes," counter_format, c->c2.tun_write_bytes);
--    status_printf(so, "TCP/UDP read bytes," counter_format, c->c2.link_read_bytes);
--    status_printf(so, "TCP/UDP write bytes," counter_format, c->c2.link_write_bytes);
-+    status_printf(so, "TCP/UDP read bytes," counter_format, c->c2.link_read_bytes + c->c2.dco_read_bytes);
-+    status_printf(so, "TCP/UDP write bytes," counter_format, c->c2.link_write_bytes + c->c2.dco_write_bytes);
-     status_printf(so, "Auth read bytes," counter_format, c->c2.link_read_bytes_auth);
- #ifdef USE_COMP
-     if (c->c2.comp_context)
-@@ -402,7 +407,7 @@ remap_signal(struct context *c)
- }
- 
- static void
--process_sigusr2(const struct context *c)
-+process_sigusr2(struct context *c)
- {
-     struct status_output *so = status_open(NULL, 0, M_INFO, NULL, 0);
-     print_status(c, so);
-diff --git a/src/openvpn/sig.h b/src/openvpn/sig.h
-index 4858eb93..b09dfab6 100644
---- a/src/openvpn/sig.h
-+++ b/src/openvpn/sig.h
-@@ -69,7 +69,7 @@ void restore_signal_state(void);
- 
- void print_signal(const struct signal_info *si, const char *title, int msglevel);
- 
--void print_status(const struct context *c, struct status_output *so);
-+void print_status(struct context *c, struct status_output *so);
- 
- void remap_signal(struct context *c);
- 
+-        if (new_bytes >= c->options.inactivity_minimum_bytes)
++        if (new_bytes > c->options.inactivity_minimum_bytes)
+         {
+             c->c2.inactivity_bytes = tot_bytes;
+             event_timeout_reset(&c->c2.inactivity_interval);
 -- 
 2.38.1.windows.1
 
