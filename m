@@ -1,9 +1,11 @@
 From: selva.nair@...277...
-Date: Wed, 22 Mar 2023 18:14:54 -0400
-Message-Id: <20230322221456.1660425-1-selva.nair@...277...>
+Date: Wed, 22 Mar 2023 18:14:55 -0400
+Message-Id: <20230322221456.1660425-2-selva.nair@...277...>
+In-Reply-To: <20230322221456.1660425-1-selva.nair@...277...>
+References: <20230322221456.1660425-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/3] Move digest_sign_verify out of
- test_cryptoapi.c
+Subject: [Openvpn-devel] [PATCH 2/3] Unit tests: Test for PKCS#11 using a
+ softhsm2 token
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,34 +20,145 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-- This function will be reused for testing pkcs11
+- Load some test certificate/key pairs into a temporary softhsm2 token
+  and enumerate available objects through pkcs11-helper interface
+
+- For each object, load it into SSL_CTX and test sign (if using OpenSSL 3)
+  or check the certificate and public-key match (if using OpenSSl 1.1.1.).
+  The pkcs11-id for each object is specified directly or
+  through a mocked management callback to test pkcs11-id-management
+
+Limitations:
+  Depends on libsofthsm2.so and p11tool (install softhsm2 and gnutls-bin
+  packages). Mbed-TLS/pkcs11-helper combination is not tested.
+
+  If locations of these binaries are not auto-detected or need to be
+  overridden, use -DSOFTHSM2_UTIL=<path> -DP11TOOL=<path> to configure.
+  Location of SOFTHSM2_MODULE is not auto-detected and defaults to
+  /usr/lib/softhsm/libsofthsm2.so. It may be changed by passing
+  -DSOFTHSM2_MODULE=/some-path/libsofthsm2.so to configure.
+  Also see "configure --help".
+
+  The test is enabled only if --enable-pkcs11 is in use, and SOFTHSM2_UTIL
+  & P11TOOL are found in path or manually defined during configuring.
+
+Changes relative to github PR
+  - Explicitly disable building the test on Windows: need to port mkstemp,
+    mkdtemp, setenv etc., before enabling this on Windows.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- tests/unit_tests/openvpn/Makefile.am       |   1 +
- tests/unit_tests/openvpn/pkey_test_utils.c | 141 +++++++++++++++++++++
- tests/unit_tests/openvpn/test_cryptoapi.c  |  98 +-------------
- 3 files changed, 143 insertions(+), 97 deletions(-)
- create mode 100644 tests/unit_tests/openvpn/pkey_test_utils.c
+ configure.ac                           |  16 +
+ tests/unit_tests/openvpn/Makefile.am   |  29 ++
+ tests/unit_tests/openvpn/mock_msg.c    |   6 +
+ tests/unit_tests/openvpn/test_pkcs11.c | 453 +++++++++++++++++++++++++
+ 4 files changed, 504 insertions(+)
+ create mode 100644 tests/unit_tests/openvpn/test_pkcs11.c
 
+diff --git a/configure.ac b/configure.ac
+index 67f680b2..ca85e5ed 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1345,6 +1345,7 @@ if test "${enable_comp_stub}" = "yes"; then
+ 	AC_DEFINE([ENABLE_COMP_STUB], [1], [Enable compression stub capability])
+ fi
+ 
++AM_CONDITIONAL([HAVE_SOFTHSM2], [false])
+ if test "${enable_pkcs11}" = "yes"; then
+ 	test "${have_pkcs11_helper}" != "yes" && AC_MSG_ERROR([PKCS11 enabled but libpkcs11-helper is missing])
+ 	OPTIONAL_PKCS11_HELPER_CFLAGS="${PKCS11_HELPER_CFLAGS}"
+@@ -1357,6 +1358,21 @@ if test "${enable_pkcs11}" = "yes"; then
+ 		 AC_DEFINE_UNQUOTED([DEFAULT_PKCS11_MODULE], "${proxy_module}", [p11-kit proxy])],
+ 		[]
+ 	)
++	#
++	# softhsm2 for pkcs11 tests
++	#
++	AC_ARG_VAR([P11TOOL], [full path to p11tool])
++	AC_PATH_PROGS([P11TOOL], [p11tool],, [$PATH:/usr/local/bin:/usr/bin:/bin])
++	AC_DEFINE_UNQUOTED([P11TOOL_PATH], ["$P11TOOL"], [Path to p11tool])
++	AC_ARG_VAR([SOFTHSM2_UTIL], [full path to softhsm2-util])
++	AC_ARG_VAR([SOFTHSM2_MODULE], [full path to softhsm2 module @<:@default=/usr/lib/softhsm/libsofthsm2.so@:>@])
++	AC_PATH_PROGS([SOFTHSM2_UTIL], [softhsm2-util],, [$PATH:/usr/local/bin:/usr/bin:/bin])
++	test -z "$SOFTHSM2_MODULE" && SOFTHSM2_MODULE=/usr/lib/softhsm/libsofthsm2.so
++	AC_DEFINE_UNQUOTED([SOFTHSM2_UTIL_PATH], ["$SOFTHSM2_UTIL"], [Path to softhsm2-util])
++	AC_DEFINE_UNQUOTED([SOFTHSM2_MODULE_PATH], ["$SOFTHSM2_MODULE"], [Path to softhsm2 module])
++	if test "${with_crypto_library}" = "openssl"; then
++		AM_CONDITIONAL([HAVE_SOFTHSM2], [test "${P11TOOL}" -a "${SOFTHSM2_UTIL}" -a "${SOFTHSM2_MODULE}"])
++	fi
+ fi
+ 
+ # When testing a compiler option, we add -Werror to force
 diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index 4391a54e..30659561 100644
+index 30659561..ccd0e37b 100644
 --- a/tests/unit_tests/openvpn/Makefile.am
 +++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -156,6 +156,7 @@ cryptoapi_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- cryptoapi_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
- 	$(OPTIONAL_CRYPTO_LIBS) -lcrypt32 -lncrypt
- cryptoapi_testdriver_SOURCES = test_cryptoapi.c mock_msg.c \
-+	pkey_test_utils.c \
- 	$(top_srcdir)/src/openvpn/xkey_helper.c \
- 	$(top_srcdir)/src/openvpn/xkey_provider.c \
- 	$(top_srcdir)/src/openvpn/buffer.c \
-diff --git a/tests/unit_tests/openvpn/pkey_test_utils.c b/tests/unit_tests/openvpn/pkey_test_utils.c
+@@ -21,6 +21,12 @@ test_binaries += cryptoapi_testdriver
+ LDADD = -lws2_32
+ endif
+ 
++if HAVE_SOFTHSM2
++if !WIN32
++test_binaries += pkcs11_testdriver
++endif
++endif
++
+ if !CROSS_COMPILING
+ TESTS = $(test_binaries)
+ endif
+@@ -166,6 +172,29 @@ cryptoapi_testdriver_SOURCES = test_cryptoapi.c mock_msg.c \
+ 	$(top_srcdir)/src/openvpn/win32-util.c
+ endif
+ 
++if HAVE_SOFTHSM2
++if !WIN32
++pkcs11_testdriver_CFLAGS  = @TEST_CFLAGS@ \
++	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpn \
++	$(OPTIONAL_CRYPTO_CFLAGS)
++pkcs11_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
++	$(OPTIONAL_CRYPTO_LIBS)
++pkcs11_testdriver_SOURCES = test_pkcs11.c mock_msg.c \
++	pkey_test_utils.c mock_get_random.c \
++	$(top_srcdir)/src/openvpn/xkey_helper.c \
++	$(top_srcdir)/src/openvpn/xkey_provider.c \
++	$(top_srcdir)/src/openvpn/argv.c \
++	$(top_srcdir)/src/openvpn/env_set.c \
++	$(top_srcdir)/src/openvpn/buffer.c \
++	$(top_srcdir)/src/openvpn/otime.c \
++	$(top_srcdir)/src/openvpn/run_command.c \
++	$(top_srcdir)/src/openvpn/base64.c \
++	$(top_srcdir)/src/openvpn/platform.c \
++	$(top_srcdir)/src/openvpn/pkcs11.c \
++	$(top_srcdir)/src/openvpn/pkcs11_openssl.c
++endif
++endif
++
+ auth_token_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+ 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpn \
+ 	$(OPTIONAL_CRYPTO_CFLAGS)
+diff --git a/tests/unit_tests/openvpn/mock_msg.c b/tests/unit_tests/openvpn/mock_msg.c
+index 3fa9a166..a6fcf432 100644
+--- a/tests/unit_tests/openvpn/mock_msg.c
++++ b/tests/unit_tests/openvpn/mock_msg.c
+@@ -48,6 +48,12 @@ mock_set_debug_level(int level)
+     x_debug_level = level;
+ }
+ 
++int
++get_debug_level(void)
++{
++    return x_debug_level;
++}
++
+ void
+ x_msg_va(const unsigned int flags, const char *format,
+          va_list arglist)
+diff --git a/tests/unit_tests/openvpn/test_pkcs11.c b/tests/unit_tests/openvpn/test_pkcs11.c
 new file mode 100644
-index 00000000..7adaf33f
+index 00000000..ea394bea
 --- /dev/null
-+++ b/tests/unit_tests/openvpn/pkey_test_utils.c
-@@ -0,0 +1,141 @@
++++ b/tests/unit_tests/openvpn/test_pkcs11.c
+@@ -0,0 +1,453 @@
 +/*
 + *  OpenVPN -- An application to securely tunnel IP networks
 + *             over a single UDP port, with support for SSL/TLS-based
@@ -76,233 +189,429 @@ index 00000000..7adaf33f
 +#include "config-msvc.h"
 +#endif
 +
-+
 +#include "syshead.h"
++#include "manage.h"
++#include "base64.h"
++#include "run_command.h"
 +#include "xkey_common.h"
++#include "cert_data.h"
++#include "pkcs11.h"
++#include "ssl.h"
++
 +#include <setjmp.h>
 +#include <cmocka.h>
 +
-+#ifdef HAVE_XKEY_PROVIDER
++#define token_name "Test Token"
++#define PIN "12345"
++#define HASHSIZE 20
 +
-+#include <openssl/core_names.h>
-+#include <openssl/evp.h>
++struct management *management; /* global */
 +
-+extern OSSL_LIB_CTX *tls_libctx;
-+
-+/* A message for signing */
-+static const char *test_msg = "Lorem ipsum dolor sit amet, consectetur "
-+                              "adipisici elit, sed eiusmod tempor incidunt "
-+                              "ut labore et dolore magna aliqua.";
-+
-+/**
-+ * Sign "test_msg" using a private key. The key may be a "provided" key
-+ * in which case its signed by the provider's backend -- cryptoapi in our
-+ * case. Then verify the signature using OpenSSL.
-+ * Returns 1 on success, 0 on error.
-+ */
++/* stubs for some unused functions instead of pulling in too many dependencies */
 +int
-+digest_sign_verify(EVP_PKEY *privkey, EVP_PKEY *pubkey)
++parse_line(const char *line, char **p, const int n, const char *file,
++           const int line_num, int msglevel, struct gc_arena *gc)
 +{
-+    uint8_t *sig = NULL;
-+    size_t siglen = 0;
-+    int ret = 0;
++    assert_true(0);
++    return 0;
++}
++char *
++x509_get_subject(openvpn_x509_cert_t *cert, struct gc_arena *gc)
++{
++    return "N/A";
++}
++void
++query_user_clear(void)
++{
++    assert_true(0);
++}
++bool
++query_user_exec_builtin(void)
++{
++    assert_true(0);
++    return false;
++}
++void
++query_user_add(char *prompt, size_t prompt_len, char *resp, size_t resp_len, bool echo)
++{
++    (void) prompt;
++    (void) prompt_len;
++    (void) resp;
++    (void) resp_len;
++    (void) echo;
++    assert_true(0);
++}
++void
++purge_user_pass(struct user_pass *up, const bool force)
++{
++    (void) force;
++    secure_memzero(up, sizeof(*up));
++}
 +
-+    OSSL_PARAM params[2] = {OSSL_PARAM_END};
-+    const char *mdname = "SHA256";
++char *
++management_query_pk_sig(struct management *man, const char *b64_data,
++                        const char *algorithm)
++{
++    (void) man;
++    (void) b64_data;
++    (void) algorithm;
++    return NULL;
++}
 +
-+    if (EVP_PKEY_get_id(privkey) == EVP_PKEY_RSA)
++int
++digest_sign_verify(EVP_PKEY *privkey, EVP_PKEY *pubkey);
++
++/* Test certificate database: data for cert1, cert2 .. key1, key2 etc.
++ * are defined in cert_data.h
++ */
++static struct test_cert
++{
++    const char *const cert;             /* certificate as PEM */
++    const char *const key;              /* key as unencrypted PEM */
++    const char *const cname;            /* common-name */
++    const char *const issuer;           /* issuer common-name */
++    const char *const friendly_name;    /* identifies certs loaded to the store -- keep unique */
++    uint8_t hash[HASHSIZE];             /* SHA1 fingerprint: computed and filled in later */
++    char *p11_id;                       /* PKCS#11 id -- filled in later */
++} certs[] = {
++    {cert1,  key1,  cname1,  "OVPN TEST CA1",  "OVPN Test Cert 1",  {},  NULL},
++    {cert2,  key2,  cname2,  "OVPN TEST CA2",  "OVPN Test Cert 2",  {},  NULL},
++    {cert3,  key3,  cname3,  "OVPN TEST CA1",  "OVPN Test Cert 3",  {},  NULL},
++    {cert4,  key4,  cname4,  "OVPN TEST CA2",  "OVPN Test Cert 4",  {},  NULL},
++    {}
++};
++
++static bool pkcs11_id_management;
++static char softhsm2_tokens_path[] = "softhsm2_tokens_XXXXXX";
++static char softhsm2_conf_path[] = "softhsm2_conf_XXXXXX";
++int num_certs;
++static const char *pkcs11_id_current;
++struct env_set *es;
++
++/* Intercept get_user_pass for PIN and other prompts */
++bool
++get_user_pass_cr(struct user_pass *up, const char *auth_file, const char *prefix,
++                 const unsigned int flags, const char *unused)
++{
++    (void) unused;
++    bool ret = true;
++    if (!strcmp(prefix, "pkcs11-id-request") && flags&GET_USER_PASS_NEED_STR)
 +    {
-+        const char *padmode = "pss"; /* RSA_PSS: for all other params, use defaults */
-+        params[0] = OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_PAD_MODE,
-+                                                     (char *)padmode, 0);
-+        params[1] = OSSL_PARAM_construct_end();
++        assert_true(pkcs11_id_management);
++        strncpynt(up->password, pkcs11_id_current, sizeof(up->password));
 +    }
-+    else if (EVP_PKEY_get_id(privkey) == EVP_PKEY_EC)
++    else if (flags & GET_USER_PASS_PASSWORD_ONLY)
 +    {
-+        params[0] = OSSL_PARAM_construct_end();
++        openvpn_snprintf(up->password, sizeof(up->password), "%s", PIN);
 +    }
 +    else
 +    {
-+        print_error("Unknown key type in digest_sign_verify()");
-+        return ret;
++        msg(M_NONFATAL, "ERROR: get_user_pass called with unknown request <%s> ignored\n", prefix);
++        ret = false;
 +    }
 +
-+    EVP_PKEY_CTX *pctx = NULL;
-+    EVP_MD_CTX *mctx = EVP_MD_CTX_new();
-+
-+    if (!mctx
-+        || EVP_DigestSignInit_ex(mctx, &pctx, mdname, tls_libctx, NULL, privkey,  params) <= 0)
-+    {
-+        /* cmocka assert output for these kinds of failures is hardly explanatory,
-+         * print a message and assert in caller. */
-+        print_error("Failed to initialize EVP_DigestSignInit_ex()\n");
-+        goto done;
-+    }
-+
-+    /* sign with sig = NULL to get required siglen */
-+    if (EVP_DigestSign(mctx, sig, &siglen, (uint8_t *)test_msg, strlen(test_msg)) != 1)
-+    {
-+        print_error("EVP_DigestSign: failed to get required signature size");
-+        goto done;
-+    }
-+    assert_true(siglen > 0);
-+
-+    if ((sig = test_calloc(1, siglen)) == NULL)
-+    {
-+        print_error("Out of memory");
-+        goto done;
-+    }
-+    if (EVP_DigestSign(mctx, sig, &siglen, (uint8_t *)test_msg, strlen(test_msg)) != 1)
-+    {
-+        print_error("EVP_DigestSign: signing failed");
-+        goto done;
-+    }
-+
-+    /*
-+     * Now validate the signature using OpenSSL. Just use the public key
-+     * which is a native OpenSSL key.
-+     */
-+    EVP_MD_CTX_free(mctx); /* this also frees pctx */
-+    mctx = EVP_MD_CTX_new();
-+    pctx = NULL;
-+    if (!mctx
-+        || EVP_DigestVerifyInit_ex(mctx, &pctx, mdname, tls_libctx, NULL, pubkey,  params) <= 0)
-+    {
-+        print_error("Failed to initialize EVP_DigestVerifyInit_ex()");
-+        goto done;
-+    }
-+    if (EVP_DigestVerify(mctx, sig, siglen, (uint8_t *)test_msg, strlen(test_msg)) != 1)
-+    {
-+        print_error("EVP_DigestVerify failed");
-+        goto done;
-+    }
-+    ret = 1;
-+
-+done:
-+    if (mctx)
-+    {
-+        EVP_MD_CTX_free(mctx); /* this also frees pctx */
-+    }
-+    test_free(sig);
 +    return ret;
 +}
-+#endif /* HAVE_XKEY_PROVIDER */
-diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/openvpn/test_cryptoapi.c
-index e64a1de3..c8468103 100644
---- a/tests/unit_tests/openvpn/test_cryptoapi.c
-+++ b/tests/unit_tests/openvpn/test_cryptoapi.c
-@@ -67,11 +67,6 @@ OSSL_LIB_CTX *tls_libctx;
- #define _countof(x) sizeof((x))/sizeof(*(x))
- #endif
- 
--/* A message for signing */
--static const char *test_msg = "Lorem ipsum dolor sit amet, consectetur "
--                              "adipisici elit, sed eiusmod tempor incidunt "
--                              "ut labore et dolore magna aliqua.";
--
- /* test data */
- static const uint8_t test_hash[] = {
-     0x77, 0x38, 0x65, 0x00, 0x1e, 0x96, 0x48, 0xc6, 0x57, 0x0b, 0xae,
-@@ -374,98 +369,7 @@ teardown_xkey_provider(void **state)
-     return 0;
- }
- 
--/**
-- * Sign "test_msg" using a private key. The key may be a "provided" key
-- * in which case its signed by the provider's backend -- cryptoapi in our
-- * case. Then verify the signature using OpenSSL.
-- * Returns 1 on success, 0 on error.
-- */
--static int
--digest_sign_verify(EVP_PKEY *privkey, EVP_PKEY *pubkey)
--{
--    uint8_t *sig = NULL;
--    size_t siglen = 0;
--    int ret = 0;
--
--    OSSL_PARAM params[2] = {OSSL_PARAM_END};
--    const char *mdname = "SHA256";
--
--    if (EVP_PKEY_get_id(privkey) == EVP_PKEY_RSA)
--    {
--        const char *padmode = "pss"; /* RSA_PSS: for all other params, use defaults */
--        params[0] = OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_PAD_MODE,
--                                                     (char *)padmode, 0);
--        params[1] = OSSL_PARAM_construct_end();
--    }
--    else if (EVP_PKEY_get_id(privkey) == EVP_PKEY_EC)
--    {
--        params[0] = OSSL_PARAM_construct_end();
--    }
--    else
--    {
--        print_error("Unknown key type in digest_sign_verify()");
--        return ret;
--    }
--
--    EVP_PKEY_CTX *pctx = NULL;
--    EVP_MD_CTX *mctx = EVP_MD_CTX_new();
--
--    if (!mctx
--        || EVP_DigestSignInit_ex(mctx, &pctx, mdname, tls_libctx, NULL, privkey,  params) <= 0)
--    {
--        /* cmocka assert output for these kinds of failures is hardly explanatory,
--         * print a message and assert in caller. */
--        print_error("Failed to initialize EVP_DigestSignInit_ex()\n");
--        goto done;
--    }
--
--    /* sign with sig = NULL to get required siglen */
--    if (EVP_DigestSign(mctx, sig, &siglen, (uint8_t *)test_msg, strlen(test_msg)) != 1)
--    {
--        print_error("EVP_DigestSign: failed to get required signature size");
--        goto done;
--    }
--    assert_true(siglen > 0);
--
--    if ((sig = test_calloc(1, siglen)) == NULL)
--    {
--        print_error("Out of memory");
--        goto done;
--    }
--    if (EVP_DigestSign(mctx, sig, &siglen, (uint8_t *)test_msg, strlen(test_msg)) != 1)
--    {
--        print_error("EVP_DigestSign: signing failed");
--        goto done;
--    }
--
--    /*
--     * Now validate the signature using OpenSSL. Just use the public key
--     * which is a native OpenSSL key.
--     */
--    EVP_MD_CTX_free(mctx); /* this also frees pctx */
--    mctx = EVP_MD_CTX_new();
--    pctx = NULL;
--    if (!mctx
--        || EVP_DigestVerifyInit_ex(mctx, &pctx, mdname, tls_libctx, NULL, pubkey,  params) <= 0)
--    {
--        print_error("Failed to initialize EVP_DigestVerifyInit_ex()");
--        goto done;
--    }
--    if (EVP_DigestVerify(mctx, sig, siglen, (uint8_t *)test_msg, strlen(test_msg)) != 1)
--    {
--        print_error("EVP_DigestVerify failed");
--        goto done;
--    }
--    ret = 1;
--
--done:
--    if (mctx)
--    {
--        EVP_MD_CTX_free(mctx); /* this also frees pctx */
--    }
--    test_free(sig);
--    return ret;
--}
-+int digest_sign_verify(EVP_PKEY *privkey, EVP_PKEY *pubkey);
- 
- /* Load sample certificates & keys, sign a test message using
-  * them and verify the signature.
++
++/* Compute sha1 hash of a X509 certificate */
++static void
++sha1_fingerprint(X509 *x509, uint8_t *hash, int capacity)
++{
++    assert_true(capacity >= EVP_MD_size(EVP_sha1()));
++    assert_int_equal(X509_digest(x509, EVP_sha1(), hash, NULL), 1);
++}
++
++#if defined(HAVE_XKEY_PROVIDER)
++OSSL_LIB_CTX *tls_libctx;
++OSSL_PROVIDER *prov[2];
++#endif
++
++static int
++init(void **state)
++{
++    (void) state;
++
++    umask(0077);  /* ensure all files and directories we create get user only access */
++    char config[256];
++
++    if (!mkdtemp(softhsm2_tokens_path))
++    {
++        fail_msg("make tmpdir using template <%s> failed (error = %d)", softhsm2_tokens_path, errno);
++    }
++
++    int fd = mkstemp(softhsm2_conf_path);
++    if (fd < 0)
++    {
++        fail_msg("make tmpfile using template <%s> failed (error = %d)", softhsm2_conf_path, errno);
++    }
++    openvpn_snprintf(config, sizeof(config), "directories.tokendir=%s/",
++                     softhsm2_tokens_path);
++    assert_int_equal(write(fd, config, strlen(config)), strlen(config));
++    close(fd);
++
++    /* environment */
++    setenv("SOFTHSM2_CONF", softhsm2_conf_path, 1);
++    es = env_set_create(NULL);
++    setenv_str(es, "SOFTHSM2_CONF", softhsm2_conf_path);
++    setenv_str(es, "GNUTLS_PIN", PIN);
++
++    /* init the token using the temporary location as storage */
++    struct argv a = argv_new();
++    argv_printf(&a, "%s --init-token --free --label \"%s\" --so-pin %s --pin %s",
++                SOFTHSM2_UTIL_PATH, token_name, PIN, PIN);
++    assert_true(openvpn_execve_check(&a, es, 0, "Failed to initialize token"));
++
++    /* Import certificates and keys in our test database into the token */
++    char cert[] = "cert_XXXXXX";
++    char key[] = "key_XXXXXX";
++    int cert_fd = mkstemp(cert);
++    int key_fd = mkstemp(key);
++    if (cert_fd < 0 || key_fd < 0)
++    {
++        fail_msg("make tmpfile for certificate or key data failed (error = %d)", errno);
++    }
++
++    for (struct test_cert *c = certs; c->cert; c++)
++    {
++        /* fill-in the hash of the cert */
++        BIO *buf = BIO_new_mem_buf(c->cert, -1);
++        X509 *x509 = NULL;
++        if (buf)
++        {
++            x509 = PEM_read_bio_X509(buf, NULL, NULL, NULL);
++            BIO_free(buf);
++        }
++        assert_non_null(x509);
++        sha1_fingerprint(x509, c->hash, HASHSIZE);
++        X509_free(x509);
++
++        /* we load all cert/key pairs even if expired as
++         * signing should still work */
++        assert_int_equal(write(cert_fd, c->cert, strlen(c->cert)), strlen(c->cert));
++        assert_int_equal(write(key_fd, c->key, strlen(c->key)), strlen(c->key));
++
++        argv_free(&a);
++        a = argv_new();
++        /* Use numcerts+1 as a unique id of the object  -- same id for matching cert and key */
++        argv_printf(&a, "%s --provider %s --load-certificate %s --label \"%s\" --id %08x --login --write",
++                    P11TOOL_PATH, SOFTHSM2_MODULE_PATH, cert, c->friendly_name, num_certs+1);
++        assert_true(openvpn_execve_check(&a, es, 0, "Failed to upload certificate into token"));
++
++        argv_free(&a);
++        a = argv_new();
++        argv_printf(&a, "%s --provider %s --load-privkey %s --label \"%s\" --id %08x --login --write",
++                    P11TOOL_PATH, SOFTHSM2_MODULE_PATH, key, c->friendly_name, num_certs+1);
++        assert_true(openvpn_execve_check(&a, es, 0, "Failed to upload key into token"));
++
++        assert_int_equal(ftruncate(cert_fd, 0), 0);
++        assert_int_equal(ftruncate(key_fd, 0), 0);
++        num_certs++;
++    }
++
++    argv_free(&a);
++    close(cert_fd);
++    close(key_fd);
++    unlink(cert);
++    unlink(key);
++    return 0;
++}
++
++static int
++cleanup(void **state)
++{
++    (void) state;
++    struct argv a = argv_new();
++
++    argv_printf(&a, "%s --delete-token --token \"%s\"", SOFTHSM2_UTIL_PATH, token_name);
++    assert_true(openvpn_execve_check(&a, es, 0, "Failed to delete token"));
++    argv_free(&a);
++
++    rmdir(softhsm2_tokens_path); /* this must be empty after delete token */
++    unlink(softhsm2_conf_path);
++    for (struct test_cert *c = certs; c->cert; c++)
++    {
++        free(c->p11_id);
++        c->p11_id = NULL;
++    }
++    env_set_destroy(es);
++    return 0;
++}
++
++static int
++setup_pkcs11(void **state)
++{
++#if defined(HAVE_XKEY_PROVIDER)
++    /* Initialize providers in a way matching what OpenVPN core does */
++    tls_libctx = OSSL_LIB_CTX_new();
++    prov[0] = OSSL_PROVIDER_load(tls_libctx, "default");
++    OSSL_PROVIDER_add_builtin(tls_libctx, "ovpn.xkey", xkey_provider_init);
++    prov[1] = OSSL_PROVIDER_load(tls_libctx, "ovpn.xkey");
++    assert_non_null(prov[1]);
++
++    /* set default propq as we do in ssl_openssl.c */
++    EVP_set_default_properties(tls_libctx, "?provider!=ovpn.xkey");
++#endif
++    pkcs11_initialize(true, 0); /* protected auth enabled, pin-cache = 0 */
++    pkcs11_addProvider(SOFTHSM2_MODULE_PATH, false, 0, false);
++    return 0;
++}
++
++static int
++teardown_pkcs11(void **state)
++{
++    pkcs11_terminate();
++#if defined(HAVE_XKEY_PROVIDER)
++    for (size_t i = 0; i < SIZE(prov); i++)
++    {
++        if (prov[i])
++        {
++            OSSL_PROVIDER_unload(prov[i]);
++            prov[i] = NULL;
++        }
++    }
++    OSSL_LIB_CTX_free(tls_libctx);
++#endif
++    return 0;
++}
++
++static struct test_cert *
++lookup_cert_byhash(uint8_t *sha1)
++{
++    struct test_cert *c = certs;
++    while (c->cert && memcmp(c->hash, sha1, HASHSIZE))
++    {
++        c++;
++    }
++    return c->cert ? c : NULL;
++}
++
++/* Enumerate usable items in the token and collect their pkcs11-ids */
++static void
++test_pkcs11_ids(void **state)
++{
++    char *p11_id = NULL;
++    char *base64 = NULL;
++
++    int n = pkcs11_management_id_count();
++    assert_int_equal(n, num_certs);
++
++    for (int i = 0; i < n; i++)
++    {
++        X509 *x509 = NULL;
++        uint8_t sha1[HASHSIZE];
++
++        /* We use the management interface functions as a quick way
++         * to enumerate objects available for private key operations */
++        if (!pkcs11_management_id_get(i, &p11_id, &base64))
++        {
++            fail_msg("Failed to get pkcs11-id for index (%d) from pkcs11-helper", i);
++        }
++        /* decode the base64 data and convert to X509 and get its sha1 fingerprint */
++        unsigned char *der = malloc(strlen(base64));
++        assert_non_null(der);
++        int derlen = openvpn_base64_decode(base64, der, strlen(base64));
++        free(base64);
++        assert_true(derlen > 0);
++
++        const unsigned char *ppin = der; /* alias needed as d2i_X509 alters the pointer */
++        assert_non_null(d2i_X509(&x509, &ppin, derlen));
++        sha1_fingerprint(x509, sha1, HASHSIZE);
++        X509_free(x509);
++        free(der);
++
++        /* Save the pkcs11-id of this ceritificate in our database */
++        struct test_cert *c = lookup_cert_byhash(sha1);
++        assert_non_null(c);
++        c->p11_id = p11_id; /* p11_id is freed in cleanup */
++        assert_memory_equal(c->hash, sha1, HASHSIZE);
++    }
++    /* check whether all certs in our db were found by pkcs11-helper*/
++    for (struct test_cert *c = certs; c->cert; c++)
++    {
++        if (!c->p11_id)
++        {
++            fail_msg("Certificate <%s> not enumerated by pkcs11-helper", c->friendly_name);
++        }
++    }
++}
++
++/* For each available pkcs11-id, load it into an SSL_CTX
++ * and test signing with it.
++ */
++static void
++test_tls_ctx_use_pkcs11(void **state)
++{
++    (void) state;
++    struct tls_root_ctx tls_ctx = {};
++    uint8_t sha1[HASHSIZE];
++    for (struct test_cert *c = certs; c->cert; c++)
++    {
++#ifdef HAVE_XKEY_PROVIDER
++        tls_ctx.ctx = SSL_CTX_new_ex(tls_libctx, NULL, SSLv23_client_method());
++#else
++        tls_ctx.ctx = SSL_CTX_new(SSLv23_client_method());
++#endif
++        if (pkcs11_id_management)
++        {
++            /* The management callback will return pkcs11_id_current as the
++             * selection. Set it here as the current certificate's p11_id
++             */
++            pkcs11_id_current = c->p11_id;
++            tls_ctx_use_pkcs11(&tls_ctx, 1, NULL);
++        }
++        else
++        {
++            /* directly use c->p11_id */
++            tls_ctx_use_pkcs11(&tls_ctx, 0, c->p11_id);
++        }
++
++        /* check that the cert set in SSL_CTX is what we intended */
++        X509 *x509 = SSL_CTX_get0_certificate(tls_ctx.ctx);
++        assert_non_null(x509);
++        sha1_fingerprint(x509, sha1, HASHSIZE);
++        assert_memory_equal(sha1, c->hash, HASHSIZE);
++
++        /* Test signing with the private key in SSL_CTX */
++        EVP_PKEY *pubkey = X509_get0_pubkey(x509);
++        EVP_PKEY *privkey = SSL_CTX_get0_privatekey(tls_ctx.ctx);
++        assert_non_null(pubkey);
++        assert_non_null(privkey);
++#ifdef HAVE_XKEY_PROVIDER
++        digest_sign_verify(privkey, pubkey); /* this will exercise signing via pkcs11 backend */
++#else
++        if (!SSL_CTX_check_private_key(tls_ctx.ctx))
++        {
++            fail_msg("Certificate and private key in ssl_ctx do not match for <%s>", c->friendly_name);
++            return;
++        }
++#endif
++        SSL_CTX_free(tls_ctx.ctx);
++    }
++}
++
++/* same test as test_tls_ctx_use_pkcs11, with id selected via management i/f */
++static void
++test_tls_ctx_use_pkcs11__management(void **state)
++{
++    pkcs11_id_management = true;
++    test_tls_ctx_use_pkcs11(state);
++}
++
++int
++main(void)
++{
++    const struct CMUnitTest tests[] = {
++        cmocka_unit_test_setup_teardown(test_pkcs11_ids, setup_pkcs11,
++                                        teardown_pkcs11),
++        cmocka_unit_test_setup_teardown(test_tls_ctx_use_pkcs11, setup_pkcs11,
++                                        teardown_pkcs11),
++        cmocka_unit_test_setup_teardown(test_tls_ctx_use_pkcs11__management, setup_pkcs11,
++                                        teardown_pkcs11),
++    };
++    int ret = cmocka_run_group_tests_name("pkcs11_tests", tests, init, cleanup);
++
++    return ret;
++}
 -- 
 2.34.1
 
