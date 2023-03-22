@@ -1,9 +1,9 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Wed, 22 Mar 2023 20:27:57 +0100
-Message-Id: <20230322192757.20767-1-a@...2181...>
+From: selva.nair@...277...
+Date: Wed, 22 Mar 2023 18:14:54 -0400
+Message-Id: <20230322221456.1660425-1-selva.nair@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] dco-linux: implement dco_get_peer_stats{,
- multi} API
+Subject: [Openvpn-devel] [PATCH 1/3] Move digest_sign_verify out of
+ test_cryptoapi.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,335 +15,295 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
 
-With this API it is possible to retrieve the stats for a specific peer
-or for all peers and then update the userspace counters with the value
-reported by DCO.
+From: Selva Nair <selva.nair@...277...>
 
-Change-Id: Ia3990b86b1be7ca844fb1674b39ce0d60528ccff
-Signed-off-by: Antonio Quartulli <a@...2181...>
+- This function will be reused for testing pkcs11
+
+Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
+ tests/unit_tests/openvpn/Makefile.am       |   1 +
+ tests/unit_tests/openvpn/pkey_test_utils.c | 141 +++++++++++++++++++++
+ tests/unit_tests/openvpn/test_cryptoapi.c  |  98 +-------------
+ 3 files changed, 143 insertions(+), 97 deletions(-)
+ create mode 100644 tests/unit_tests/openvpn/pkey_test_utils.c
 
-Changes from v1:
-* use m->instances[] instead of iterating over m->hash
-
-Changes from v2:
-* added boundary check on peer-id
-
-Changes from v3:
-* use one check only instead of two
----
- src/openvpn/dco_linux.c      | 183 ++++++++++++++++++++++++++++++++---
- src/openvpn/ovpn_dco_linux.h |  14 ++-
- 2 files changed, 179 insertions(+), 18 deletions(-)
-
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index 47961849..317f9dc0 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -41,6 +41,7 @@
- #include "tun.h"
- #include "ssl.h"
- #include "fdmisc.h"
-+#include "multi.h"
- #include "ssl_verify.h"
- 
- #include "ovpn_dco_linux.h"
-@@ -168,16 +169,17 @@ ovpn_nl_recvmsgs(dco_context_t *dco, const char *prefix)
-  * @param dco       The dco context to use
-  * @param nl_msg    the message to use
-  * @param cb        An optional callback if the caller expects an answer
-+ * @param cb_arg    An optional param to pass to the callback
-  * @param prefix    A prefix to report in the error message to give the user context
-  * @return          status of sending the message
-  */
- static int
- ovpn_nl_msg_send(dco_context_t *dco, struct nl_msg *nl_msg, ovpn_nl_cb cb,
--                 const char *prefix)
-+                 void *cb_arg, const char *prefix)
- {
-     dco->status = 1;
- 
--    nl_cb_set(dco->nl_cb, NL_CB_VALID, NL_CB_CUSTOM, cb, dco);
-+    nl_cb_set(dco->nl_cb, NL_CB_VALID, NL_CB_CUSTOM, cb, cb_arg);
-     nl_send_auto(dco->nl_sock, nl_msg);
- 
-     while (dco->status == 1)
-@@ -268,7 +270,7 @@ dco_new_peer(dco_context_t *dco, unsigned int peerid, int sd,
-     }
-     nla_nest_end(nl_msg, attr);
- 
--    ret = ovpn_nl_msg_send(dco, nl_msg, NULL, __func__);
-+    ret = ovpn_nl_msg_send(dco, nl_msg, NULL, NULL, __func__);
- 
- nla_put_failure:
-     nlmsg_free(nl_msg);
-@@ -489,7 +491,7 @@ dco_swap_keys(dco_context_t *dco, unsigned int peerid)
-     NLA_PUT_U32(nl_msg, OVPN_SWAP_KEYS_ATTR_PEER_ID, peerid);
-     nla_nest_end(nl_msg, attr);
- 
--    ret = ovpn_nl_msg_send(dco, nl_msg, NULL, __func__);
-+    ret = ovpn_nl_msg_send(dco, nl_msg, NULL, NULL, __func__);
- 
- nla_put_failure:
-     nlmsg_free(nl_msg);
-@@ -513,7 +515,7 @@ dco_del_peer(dco_context_t *dco, unsigned int peerid)
-     NLA_PUT_U32(nl_msg, OVPN_DEL_PEER_ATTR_PEER_ID, peerid);
-     nla_nest_end(nl_msg, attr);
- 
--    ret = ovpn_nl_msg_send(dco, nl_msg, NULL, __func__);
-+    ret = ovpn_nl_msg_send(dco, nl_msg, NULL, NULL, __func__);
- 
- nla_put_failure:
-     nlmsg_free(nl_msg);
-@@ -539,7 +541,7 @@ dco_del_key(dco_context_t *dco, unsigned int peerid,
-     NLA_PUT_U8(nl_msg, OVPN_DEL_KEY_ATTR_KEY_SLOT, slot);
-     nla_nest_end(nl_msg, attr);
- 
--    ret = ovpn_nl_msg_send(dco, nl_msg, NULL, __func__);
-+    ret = ovpn_nl_msg_send(dco, nl_msg, NULL, NULL, __func__);
- 
- nla_put_failure:
-     nlmsg_free(nl_msg);
-@@ -596,7 +598,7 @@ dco_new_key(dco_context_t *dco, unsigned int peerid, int keyid,
- 
-     nla_nest_end(nl_msg, attr);
- 
--    ret = ovpn_nl_msg_send(dco, nl_msg, NULL, __func__);
-+    ret = ovpn_nl_msg_send(dco, nl_msg, NULL, NULL, __func__);
- 
- nla_put_failure:
-     nlmsg_free(nl_msg);
-@@ -625,7 +627,7 @@ dco_set_peer(dco_context_t *dco, unsigned int peerid,
-                 keepalive_timeout);
-     nla_nest_end(nl_msg, attr);
- 
--    ret = ovpn_nl_msg_send(dco, nl_msg, NULL, __func__);
-+    ret = ovpn_nl_msg_send(dco, nl_msg, NULL, NULL, __func__);
- 
- nla_put_failure:
-     nlmsg_free(nl_msg);
-@@ -706,7 +708,7 @@ ovpn_get_mcast_id(dco_context_t *dco)
-     int ret = -EMSGSIZE;
-     NLA_PUT_STRING(nl_msg, CTRL_ATTR_FAMILY_NAME, OVPN_NL_NAME);
- 
--    ret = ovpn_nl_msg_send(dco, nl_msg, mcast_family_handler, __func__);
-+    ret = ovpn_nl_msg_send(dco, nl_msg, mcast_family_handler, dco, __func__);
- 
- nla_put_failure:
-     nlmsg_free(nl_msg);
-@@ -819,18 +821,173 @@ dco_do_read(dco_context_t *dco)
-     return ovpn_nl_recvmsgs(dco, __func__);
- }
- 
-+static void
-+dco_update_peer_stat(struct context_2 *c2, struct nlattr *tb[], uint32_t id)
-+{
-+    if (tb[OVPN_GET_PEER_RESP_ATTR_LINK_RX_BYTES])
-+    {
-+        c2->dco_read_bytes = nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_LINK_RX_BYTES]);
-+        msg(D_DCO_DEBUG, "%s / dco_read_bytes: %lu", __func__,
-+            c2->dco_read_bytes);
-+    }
-+    else
-+    {
-+        msg(M_WARN, "%s: no link RX bytes provided in reply for peer %u",
-+            __func__, id);
-+    }
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index 4391a54e..30659561 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -156,6 +156,7 @@ cryptoapi_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+ cryptoapi_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
+ 	$(OPTIONAL_CRYPTO_LIBS) -lcrypt32 -lncrypt
+ cryptoapi_testdriver_SOURCES = test_cryptoapi.c mock_msg.c \
++	pkey_test_utils.c \
+ 	$(top_srcdir)/src/openvpn/xkey_helper.c \
+ 	$(top_srcdir)/src/openvpn/xkey_provider.c \
+ 	$(top_srcdir)/src/openvpn/buffer.c \
+diff --git a/tests/unit_tests/openvpn/pkey_test_utils.c b/tests/unit_tests/openvpn/pkey_test_utils.c
+new file mode 100644
+index 00000000..7adaf33f
+--- /dev/null
++++ b/tests/unit_tests/openvpn/pkey_test_utils.c
+@@ -0,0 +1,141 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2023 Selva Nair <selva.nair@...277...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by the
++ *  Free Software Foundation, either version 2 of the License,
++ *  or (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
 +
-+    if (tb[OVPN_GET_PEER_RESP_ATTR_LINK_TX_BYTES])
-+    {
-+        c2->dco_write_bytes = nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_LINK_TX_BYTES]);
-+        msg(D_DCO_DEBUG, "%s / dco_write_bytes: %lu", __func__,
-+            c2->dco_write_bytes);
-+    }
-+    else
-+    {
-+        msg(M_WARN, "%s: no link TX bytes provided in reply for peer %u",
-+            __func__, id);
-+    }
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#elif defined(_MSC_VER)
++#include "config-msvc.h"
++#endif
 +
-+    if (tb[OVPN_GET_PEER_RESP_ATTR_VPN_RX_BYTES])
-+    {
-+        c2->tun_read_bytes = nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_VPN_RX_BYTES]);
-+        msg(D_DCO_DEBUG, "%s / tun_read_bytes: %lu", __func__,
-+            c2->tun_read_bytes);
-+    }
-+    else
-+    {
-+        msg(M_WARN, "%s: no VPN RX bytes provided in reply for peer %u",
-+            __func__, id);
-+    }
 +
-+    if (tb[OVPN_GET_PEER_RESP_ATTR_VPN_TX_BYTES])
-+    {
-+        c2->tun_write_bytes = nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_VPN_TX_BYTES]);
-+        msg(D_DCO_DEBUG, "%s / tun_write_bytes: %lu", __func__,
-+            c2->tun_write_bytes);
-+    }
-+    else
-+    {
-+        msg(M_WARN, "%s: no VPN TX bytes provided in reply for peer %u",
-+            __func__, id);
-+    }
-+}
++#include "syshead.h"
++#include "xkey_common.h"
++#include <setjmp.h>
++#include <cmocka.h>
 +
++#ifdef HAVE_XKEY_PROVIDER
++
++#include <openssl/core_names.h>
++#include <openssl/evp.h>
++
++extern OSSL_LIB_CTX *tls_libctx;
++
++/* A message for signing */
++static const char *test_msg = "Lorem ipsum dolor sit amet, consectetur "
++                              "adipisici elit, sed eiusmod tempor incidunt "
++                              "ut labore et dolore magna aliqua.";
++
++/**
++ * Sign "test_msg" using a private key. The key may be a "provided" key
++ * in which case its signed by the provider's backend -- cryptoapi in our
++ * case. Then verify the signature using OpenSSL.
++ * Returns 1 on success, 0 on error.
++ */
 +int
-+dco_parse_peer_multi(struct nl_msg *msg, void *arg)
++digest_sign_verify(EVP_PKEY *privkey, EVP_PKEY *pubkey)
 +{
-+    struct nlattr *tb[OVPN_ATTR_MAX + 1];
-+    struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
++    uint8_t *sig = NULL;
++    size_t siglen = 0;
++    int ret = 0;
 +
-+    msg(D_DCO_DEBUG, "%s: parsing message...", __func__);
++    OSSL_PARAM params[2] = {OSSL_PARAM_END};
++    const char *mdname = "SHA256";
 +
-+    nla_parse(tb, OVPN_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
-+              genlmsg_attrlen(gnlh, 0), NULL);
-+
-+    if (!tb[OVPN_ATTR_GET_PEER])
++    if (EVP_PKEY_get_id(privkey) == EVP_PKEY_RSA)
 +    {
-+        return NL_SKIP;
++        const char *padmode = "pss"; /* RSA_PSS: for all other params, use defaults */
++        params[0] = OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_PAD_MODE,
++                                                     (char *)padmode, 0);
++        params[1] = OSSL_PARAM_construct_end();
++    }
++    else if (EVP_PKEY_get_id(privkey) == EVP_PKEY_EC)
++    {
++        params[0] = OSSL_PARAM_construct_end();
++    }
++    else
++    {
++        print_error("Unknown key type in digest_sign_verify()");
++        return ret;
 +    }
 +
-+    struct nlattr *tb_peer[OVPN_GET_PEER_RESP_ATTR_MAX + 1];
++    EVP_PKEY_CTX *pctx = NULL;
++    EVP_MD_CTX *mctx = EVP_MD_CTX_new();
 +
-+    nla_parse(tb_peer, OVPN_GET_PEER_RESP_ATTR_MAX,
-+              nla_data(tb[OVPN_ATTR_GET_PEER]),
-+              nla_len(tb[OVPN_ATTR_GET_PEER]), NULL);
-+
-+    if (!tb_peer[OVPN_GET_PEER_RESP_ATTR_PEER_ID])
++    if (!mctx
++        || EVP_DigestSignInit_ex(mctx, &pctx, mdname, tls_libctx, NULL, privkey,  params) <= 0)
 +    {
-+        msg(M_WARN, "%s: no peer-id provided in reply", __func__);
-+        return NL_SKIP;
++        /* cmocka assert output for these kinds of failures is hardly explanatory,
++         * print a message and assert in caller. */
++        print_error("Failed to initialize EVP_DigestSignInit_ex()\n");
++        goto done;
 +    }
 +
-+    struct multi_context *m = arg;
-+    uint32_t peer_id = nla_get_u32(tb_peer[OVPN_GET_PEER_RESP_ATTR_PEER_ID]);
-+
-+    if (peer_id >= m->max_clients || !m->instances[peer_id])
++    /* sign with sig = NULL to get required siglen */
++    if (EVP_DigestSign(mctx, sig, &siglen, (uint8_t *)test_msg, strlen(test_msg)) != 1)
 +    {
-+        msg(M_WARN, "%s: cannot store DCO stats for peer %u", __func__,
-+            peer_id);
-+        return NL_SKIP;
++        print_error("EVP_DigestSign: failed to get required signature size");
++        goto done;
++    }
++    assert_true(siglen > 0);
++
++    if ((sig = test_calloc(1, siglen)) == NULL)
++    {
++        print_error("Out of memory");
++        goto done;
++    }
++    if (EVP_DigestSign(mctx, sig, &siglen, (uint8_t *)test_msg, strlen(test_msg)) != 1)
++    {
++        print_error("EVP_DigestSign: signing failed");
++        goto done;
 +    }
 +
-+    dco_update_peer_stat(&m->instances[peer_id]->context.c2, tb_peer, peer_id);
-+
-+    return NL_OK;
-+}
-+
- int
- dco_get_peer_stats_multi(dco_context_t *dco, struct multi_context *m)
- {
--    /* Not implemented. */
--    return 0;
-+    msg(D_DCO_DEBUG, "%s", __func__);
-+
-+    struct nl_msg *nl_msg = ovpn_dco_nlmsg_create(dco, OVPN_CMD_GET_PEER);
-+
-+    nlmsg_hdr(nl_msg)->nlmsg_flags |= NLM_F_DUMP;
-+
-+    return ovpn_nl_msg_send(dco, nl_msg, dco_parse_peer_multi, m, __func__);
-+}
-+
-+static int
-+dco_parse_peer(struct nl_msg *msg, void *arg)
-+{
-+    struct context *c = arg;
-+    struct nlattr *tb[OVPN_ATTR_MAX + 1];
-+    struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
-+
-+    msg(D_DCO_DEBUG, "%s: parsing message...", __func__);
-+
-+    nla_parse(tb, OVPN_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
-+              genlmsg_attrlen(gnlh, 0), NULL);
-+
-+    if (!tb[OVPN_ATTR_GET_PEER])
++    /*
++     * Now validate the signature using OpenSSL. Just use the public key
++     * which is a native OpenSSL key.
++     */
++    EVP_MD_CTX_free(mctx); /* this also frees pctx */
++    mctx = EVP_MD_CTX_new();
++    pctx = NULL;
++    if (!mctx
++        || EVP_DigestVerifyInit_ex(mctx, &pctx, mdname, tls_libctx, NULL, pubkey,  params) <= 0)
 +    {
-+        msg(D_DCO_DEBUG, "%s: malformed reply", __func__);
-+        return NL_SKIP;
++        print_error("Failed to initialize EVP_DigestVerifyInit_ex()");
++        goto done;
 +    }
-+
-+    struct nlattr *tb_peer[OVPN_GET_PEER_RESP_ATTR_MAX + 1];
-+
-+    nla_parse(tb_peer, OVPN_GET_PEER_RESP_ATTR_MAX,
-+              nla_data(tb[OVPN_ATTR_GET_PEER]),
-+              nla_len(tb[OVPN_ATTR_GET_PEER]), NULL);
-+
-+    if (!tb_peer[OVPN_GET_PEER_RESP_ATTR_PEER_ID])
++    if (EVP_DigestVerify(mctx, sig, siglen, (uint8_t *)test_msg, strlen(test_msg)) != 1)
 +    {
-+        msg(M_WARN, "%s: no peer-id provided in reply", __func__);
-+        return NL_SKIP;
++        print_error("EVP_DigestVerify failed");
++        goto done;
 +    }
++    ret = 1;
 +
-+    uint32_t peer_id = nla_get_u32(tb_peer[OVPN_GET_PEER_RESP_ATTR_PEER_ID]);
-+    if (c->c2.tls_multi->dco_peer_id != peer_id)
++done:
++    if (mctx)
 +    {
-+        return NL_SKIP;
++        EVP_MD_CTX_free(mctx); /* this also frees pctx */
 +    }
-+
-+    dco_update_peer_stat(&c->c2, tb_peer, peer_id);
-+
-+    return NL_OK;
- }
- 
- int
- dco_get_peer_stats(struct context *c)
- {
--    /* Not implemented. */
--    return 0;
-+    uint32_t peer_id = c->c2.tls_multi->dco_peer_id;
-+    msg(D_DCO_DEBUG, "%s: peer-id %d", __func__, peer_id);
-+
-+    dco_context_t *dco = &c->c1.tuntap->dco;
-+    struct nl_msg *nl_msg = ovpn_dco_nlmsg_create(dco, OVPN_CMD_GET_PEER);
-+    struct nlattr *attr = nla_nest_start(nl_msg, OVPN_ATTR_GET_PEER);
-+    int ret = -EMSGSIZE;
-+
-+    NLA_PUT_U32(nl_msg, OVPN_GET_PEER_ATTR_PEER_ID, peer_id);
-+    nla_nest_end(nl_msg, attr);
-+
-+    ret = ovpn_nl_msg_send(dco, nl_msg, dco_parse_peer, c, __func__);
-+
-+nla_put_failure:
-+    nlmsg_free(nl_msg);
++    test_free(sig);
 +    return ret;
++}
++#endif /* HAVE_XKEY_PROVIDER */
+diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/openvpn/test_cryptoapi.c
+index e64a1de3..c8468103 100644
+--- a/tests/unit_tests/openvpn/test_cryptoapi.c
++++ b/tests/unit_tests/openvpn/test_cryptoapi.c
+@@ -67,11 +67,6 @@ OSSL_LIB_CTX *tls_libctx;
+ #define _countof(x) sizeof((x))/sizeof(*(x))
+ #endif
+ 
+-/* A message for signing */
+-static const char *test_msg = "Lorem ipsum dolor sit amet, consectetur "
+-                              "adipisici elit, sed eiusmod tempor incidunt "
+-                              "ut labore et dolore magna aliqua.";
+-
+ /* test data */
+ static const uint8_t test_hash[] = {
+     0x77, 0x38, 0x65, 0x00, 0x1e, 0x96, 0x48, 0xc6, 0x57, 0x0b, 0xae,
+@@ -374,98 +369,7 @@ teardown_xkey_provider(void **state)
+     return 0;
  }
  
- bool
-diff --git a/src/openvpn/ovpn_dco_linux.h b/src/openvpn/ovpn_dco_linux.h
-index d3fd9a89..73e19b59 100644
---- a/src/openvpn/ovpn_dco_linux.h
-+++ b/src/openvpn/ovpn_dco_linux.h
-@@ -2,7 +2,7 @@
- /*
-  *  OpenVPN data channel accelerator
-  *
-- *  Copyright (C) 2019-2022 OpenVPN, Inc.
-+ *  Copyright (C) 2019-2023 OpenVPN, Inc.
-  *
-  *  Author:	James Yonan <james@...515...>
-  *		Antonio Quartulli <antonio@...515...>
-@@ -188,10 +188,14 @@ enum ovpn_netlink_get_peer_response_attrs {
- 	OVPN_GET_PEER_RESP_ATTR_LOCAL_PORT,
- 	OVPN_GET_PEER_RESP_ATTR_KEEPALIVE_INTERVAL,
- 	OVPN_GET_PEER_RESP_ATTR_KEEPALIVE_TIMEOUT,
--	OVPN_GET_PEER_RESP_ATTR_RX_BYTES,
--	OVPN_GET_PEER_RESP_ATTR_TX_BYTES,
--	OVPN_GET_PEER_RESP_ATTR_RX_PACKETS,
--	OVPN_GET_PEER_RESP_ATTR_TX_PACKETS,
-+	OVPN_GET_PEER_RESP_ATTR_VPN_RX_BYTES,
-+	OVPN_GET_PEER_RESP_ATTR_VPN_TX_BYTES,
-+	OVPN_GET_PEER_RESP_ATTR_VPN_RX_PACKETS,
-+	OVPN_GET_PEER_RESP_ATTR_VPN_TX_PACKETS,
-+	OVPN_GET_PEER_RESP_ATTR_LINK_RX_BYTES,
-+	OVPN_GET_PEER_RESP_ATTR_LINK_TX_BYTES,
-+	OVPN_GET_PEER_RESP_ATTR_LINK_RX_PACKETS,
-+	OVPN_GET_PEER_RESP_ATTR_LINK_TX_PACKETS,
+-/**
+- * Sign "test_msg" using a private key. The key may be a "provided" key
+- * in which case its signed by the provider's backend -- cryptoapi in our
+- * case. Then verify the signature using OpenSSL.
+- * Returns 1 on success, 0 on error.
+- */
+-static int
+-digest_sign_verify(EVP_PKEY *privkey, EVP_PKEY *pubkey)
+-{
+-    uint8_t *sig = NULL;
+-    size_t siglen = 0;
+-    int ret = 0;
+-
+-    OSSL_PARAM params[2] = {OSSL_PARAM_END};
+-    const char *mdname = "SHA256";
+-
+-    if (EVP_PKEY_get_id(privkey) == EVP_PKEY_RSA)
+-    {
+-        const char *padmode = "pss"; /* RSA_PSS: for all other params, use defaults */
+-        params[0] = OSSL_PARAM_construct_utf8_string(OSSL_SIGNATURE_PARAM_PAD_MODE,
+-                                                     (char *)padmode, 0);
+-        params[1] = OSSL_PARAM_construct_end();
+-    }
+-    else if (EVP_PKEY_get_id(privkey) == EVP_PKEY_EC)
+-    {
+-        params[0] = OSSL_PARAM_construct_end();
+-    }
+-    else
+-    {
+-        print_error("Unknown key type in digest_sign_verify()");
+-        return ret;
+-    }
+-
+-    EVP_PKEY_CTX *pctx = NULL;
+-    EVP_MD_CTX *mctx = EVP_MD_CTX_new();
+-
+-    if (!mctx
+-        || EVP_DigestSignInit_ex(mctx, &pctx, mdname, tls_libctx, NULL, privkey,  params) <= 0)
+-    {
+-        /* cmocka assert output for these kinds of failures is hardly explanatory,
+-         * print a message and assert in caller. */
+-        print_error("Failed to initialize EVP_DigestSignInit_ex()\n");
+-        goto done;
+-    }
+-
+-    /* sign with sig = NULL to get required siglen */
+-    if (EVP_DigestSign(mctx, sig, &siglen, (uint8_t *)test_msg, strlen(test_msg)) != 1)
+-    {
+-        print_error("EVP_DigestSign: failed to get required signature size");
+-        goto done;
+-    }
+-    assert_true(siglen > 0);
+-
+-    if ((sig = test_calloc(1, siglen)) == NULL)
+-    {
+-        print_error("Out of memory");
+-        goto done;
+-    }
+-    if (EVP_DigestSign(mctx, sig, &siglen, (uint8_t *)test_msg, strlen(test_msg)) != 1)
+-    {
+-        print_error("EVP_DigestSign: signing failed");
+-        goto done;
+-    }
+-
+-    /*
+-     * Now validate the signature using OpenSSL. Just use the public key
+-     * which is a native OpenSSL key.
+-     */
+-    EVP_MD_CTX_free(mctx); /* this also frees pctx */
+-    mctx = EVP_MD_CTX_new();
+-    pctx = NULL;
+-    if (!mctx
+-        || EVP_DigestVerifyInit_ex(mctx, &pctx, mdname, tls_libctx, NULL, pubkey,  params) <= 0)
+-    {
+-        print_error("Failed to initialize EVP_DigestVerifyInit_ex()");
+-        goto done;
+-    }
+-    if (EVP_DigestVerify(mctx, sig, siglen, (uint8_t *)test_msg, strlen(test_msg)) != 1)
+-    {
+-        print_error("EVP_DigestVerify failed");
+-        goto done;
+-    }
+-    ret = 1;
+-
+-done:
+-    if (mctx)
+-    {
+-        EVP_MD_CTX_free(mctx); /* this also frees pctx */
+-    }
+-    test_free(sig);
+-    return ret;
+-}
++int digest_sign_verify(EVP_PKEY *privkey, EVP_PKEY *pubkey);
  
- 	__OVPN_GET_PEER_RESP_ATTR_AFTER_LAST,
- 	OVPN_GET_PEER_RESP_ATTR_MAX = __OVPN_GET_PEER_RESP_ATTR_AFTER_LAST - 1,
+ /* Load sample certificates & keys, sign a test message using
+  * them and verify the signature.
 -- 
-2.39.2
+2.34.1
 
 
