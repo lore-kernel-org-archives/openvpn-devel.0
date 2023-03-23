@@ -1,12 +1,10 @@
-Date: Thu, 23 Mar 2023 09:50:44 +0100
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZBwS5HanJe1AEgY/@flichtenheld-TUXEDO-InfinityBook-S-15-17-Gen7>
-References: <20230322221456.1660425-1-selva.nair@...277...>
- <20230322221456.1660425-3-selva.nair@...277...>
-MIME-Version: 1.0
-In-Reply-To: <20230322221456.1660425-3-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 3/3] Enable pkcs11 an dtest_pkcs11 in
- github actions
+Date: Thu, 23 Mar 2023 10:54:31 +0100 (CET)
+Message-Id: <202303230954.32N9sVVV036717@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230322113249.2039-1-lstipakov@...277...>
+References: <20230322113249.2039-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Print DCO client stats on
+ SIGUSR2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +13,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: selva.nair@...277...
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Wed, Mar 22, 2023 at 06:14:56PM -0400, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
-> 
-> - Enabled for the Ubuntu 22.04 build (OpenSSL 3) and one of the
->   Ubuntu 20.04 builds (OpenSSL 1.1.1).
-> 
-> Signed-off-by: Selva Nair <selva.nair@...277...>
-> ---
->  .github/workflows/build.yaml | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
+Acked-by: Gert Doering <gert@...1296...>
 
-Worked in the PR, so
-Acked-By: Frank Lichtenheld <frank@...2641...>
+I have listened to the discussion, and I think we all agree that we
+need to revisit this "DCO counter" business:
+  - definition of c2 structure elements
+  - do we need extra fields for "dco counters"?
+    - do we need more counters?  Windows currently has 
+      "TransportBytes*" and "TunBytes*", while FreeBSD only has "bytes"
+      (which are what, exactly?)
+      -> *I* definitely need a better understanding of these
+  - when and where do we query the kernel for counters (timer, signal, ...?)
 
--- 
-  Frank Lichtenheld
+This said, we want the functionality now :-) - so, I have tested this
+(on FreeBSD), and it does what it says, and the code looks reasonable
+according to "it will not access undefined pointers, will not leak
+memory" etc.
+
+Your patch has been applied to the master and release/2.6 branch.
+
+commit d5238627e4fab93a6c09816c60eb90e237b626c3 (master)
+commit d598871ca9fb7b4814ee8d8edfb26d20479bb6ed (release/2.6)
+Author: Lev Stipakov
+Date:   Wed Mar 22 13:32:49 2023 +0200
+
+     Print DCO client stats on SIGUSR2
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230322113249.2039-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26471.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
