@@ -1,10 +1,14 @@
-Date: Thu, 23 Mar 2023 10:54:31 +0100 (CET)
-Message-Id: <202303230954.32N9sVVV036717@...2054...>
+Date: Thu, 23 Mar 2023 13:03:18 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230322113249.2039-1-lstipakov@...277...>
-References: <20230322113249.2039-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Print DCO client stats on
- SIGUSR2
+Message-ID: <ZBxABqx/VGMY4R62@...1296...>
+References: <20230322192757.20767-1-a@...2181...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="XdzQO1hpJOqc3Qq/"
+Content-Disposition: inline
+In-Reply-To: <20230322192757.20767-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v4] dco-linux: implement
+ dco_get_peer_stats{, multi} API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,47 +17,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+--XdzQO1hpJOqc3Qq/
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-I have listened to the discussion, and I think we all agree that we
-need to revisit this "DCO counter" business:
-  - definition of c2 structure elements
-  - do we need extra fields for "dco counters"?
-    - do we need more counters?  Windows currently has 
-      "TransportBytes*" and "TunBytes*", while FreeBSD only has "bytes"
-      (which are what, exactly?)
-      -> *I* definitely need a better understanding of these
-  - when and where do we query the kernel for counters (timer, signal, ...?)
+Hi,
 
-This said, we want the functionality now :-) - so, I have tested this
-(on FreeBSD), and it does what it says, and the code looks reasonable
-according to "it will not access undefined pointers, will not leak
-memory" etc.
+On Wed, Mar 22, 2023 at 08:27:57PM +0100, Antonio Quartulli wrote:
+> With this API it is possible to retrieve the stats for a specific peer
+> or for all peers and then update the userspace counters with the value
+> reported by DCO.
+>=20
+> Change-Id: Ia3990b86b1be7ca844fb1674b39ce0d60528ccff
+> Signed-off-by: Antonio Quartulli <a@...2181...>
 
-Your patch has been applied to the master and release/2.6 branch.
+This *looks* very reasonable, but only half of it works for me.
 
-commit d5238627e4fab93a6c09816c60eb90e237b626c3 (master)
-commit d598871ca9fb7b4814ee8d8edfb26d20479bb6ed (release/2.6)
-Author: Lev Stipakov
-Date:   Wed Mar 22 13:32:49 2023 +0200
+...
+tun-udp-p2mp[492453]: OpenVPN 2.7_git [git:vw/master/5a8fb55ac8cf4019] x86_=
+64-pc-linux-gnu [SSL (mbed TLS)] [LZO] [LZ4] [EPOLL] [MH/PKTINFO] [AEAD] [D=
+CO] built on Mar 23 2023
+tun-udp-p2mp[492453]: DCO version: 0.2.20230313
+...
+tun-udp-p2mp[492454]: dco_get_peer_stats_multi
+tun-udp-p2mp[492454]: dco_parse_peer_multi: parsing message...
+tun-udp-p2mp[492454]: dco_update_peer_stat: no link RX bytes provided in re=
+ply for peer 0
+tun-udp-p2mp[492454]: dco_update_peer_stat: no link TX bytes provided in re=
+ply for peer 0
+tun-udp-p2mp[492454]: dco_update_peer_stat / tun_read_bytes: 240
+tun-udp-p2mp[492454]: dco_update_peer_stat / tun_write_bytes: 96
+tun-udp-p2mp[492454]: dco_parse_peer_multi: parsing message...
+tun-udp-p2mp[492454]: dco_update_peer_stat: no link RX bytes provided in re=
+ply for peer 1
+tun-udp-p2mp[492454]: dco_update_peer_stat: no link TX bytes provided in re=
+ply for peer 1
+tun-udp-p2mp[492454]: dco_update_peer_stat / tun_read_bytes: 776
+tun-udp-p2mp[492454]: dco_update_peer_stat / tun_write_bytes: 80
 
-     Print DCO client stats on SIGUSR2
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230322113249.2039-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26471.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+So neither for p2p tls nor for --server setups, I am receiving "link bytes",
+only tun*bytes.
 
+I have not checked the kernel side if I *should* receive anything, but
+this looks incomplete - either the kernel side is not yet ready (not
+a showstopper) or there is a desync in the tags used, which might or
+might not prevent merging...
 
---
-kind regards,
+Antonio, any ideas?
 
-Gert Doering
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--XdzQO1hpJOqc3Qq/
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJkHEAGAAoJEB2Cnv7KVigS8nQMAJddMGYA7VXH0D+BC/UwY7tD
+sKMosmtABfHtmWuFa2S+QAqe/SbmRd2sPK/vsobPReCk8sdcRLiRZSKbmx4+COuh
+KDhELB1BKITAw4oPjPXQ8G4cqPT4qWMKAK4vOfqQDmbhhi7k9eS6ngnk1Oy6U+jj
+dAgwUg2thViG81BhTNZKEwPMrdW2sbmJ0dC1Qk79IqtIuhsLN9OlqyvPROsKypPV
+cQ3qe+Yg5OBxf269/WD6WeOdxpdYDqLGI9i8feyGyDo0hanRXMLtojJYqPoavmFJ
+K3hyNKfsIHM/VB1J2/lc7/d41l+z6tkRst7zGopwh9F9FUAskoqIy9V8NOaYQ/Tt
+j9VgCGLD2EhwyI3Nyo8if7pEZNWF+yID6uslPA+tSEhF9SVv2LZSJ0Y8THu3Qipq
++USvRCbsgn2BiuVGYJ9Vqkkjk829xBsydRqn0lzJw//GU0bQgmsOq1daAsH58zA0
+myf5bq8uHx6Xt12TDjktcTZKFiIHybPvni9j+Zyylg==
+=9yLg
+-----END PGP SIGNATURE-----
+
+--XdzQO1hpJOqc3Qq/--
 
