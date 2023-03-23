@@ -1,11 +1,11 @@
-From: selva.nair@...277...
-Date: Wed, 22 Mar 2023 18:14:56 -0400
-Message-Id: <20230322221456.1660425-3-selva.nair@...277...>
-In-Reply-To: <20230322221456.1660425-1-selva.nair@...277...>
-References: <20230322221456.1660425-1-selva.nair@...277...>
+From: Kristof Provost <kp@...1376...>
+Date: Thu, 23 Mar 2023 10:55:10 +0900
+Message-ID: <39D4CBF8-779C-4FEC-8520-35C69DC214C9@...1376...>
+In-Reply-To: <20230322192733.20295-1-a@...2181...>
+References: <20230322192733.20295-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 3/3] Enable pkcs11 an dtest_pkcs11 in github
- actions
+Subject: Re: [Openvpn-devel] [PATCH v3] dco-freebsd: use m->instances[]
+ instead of m->hash
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,53 +16,56 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+On 23 Mar 2023, at 4:27, Antonio Quartulli wrote:
+> When retrieving the multi_instance of a specific peer,
+> there is no need to peform a linear search across the
+> whole m->hash list. We can directly access the needed
+> object via m->instances[peer-id] in constant time (and
+> just one line of code).
+>
+> Adapt the dco-freebsd code to do so.
+>
+> Cc: Kristof Provost <kp@...1376...>
+> Change-Id: I8d8af6f872146604a9710edf443db65df48ac3cb
+> Signed-off-by: Antonio Quartulli <a@...2181...>
+> ---
+> NOTE: not tested because I have no FreeBSD environment
+>
+> Changes from v1:
+> * added boundary check on peer-id
+>
+> Changes from v2:
+> * use one check only instead of two
+> ---
+>  src/openvpn/dco_freebsd.c | 23 +++++++----------------
+>  1 file changed, 7 insertions(+), 16 deletions(-)
+>
+> diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+> index 225b3cf8..54ec16ff 100644
+> --- a/src/openvpn/dco_freebsd.c
+> +++ b/src/openvpn/dco_freebsd.c
+> @@ -674,27 +674,18 @@ dco_event_set(dco_context_t *dco, struct event_set *es, void *arg)
+>  static void
+>  dco_update_peer_stat(struct multi_context *m, uint32_t peerid, const nvlist_t *nvl)
+‘peerid’ here
 
-- Enabled for the Ubuntu 22.04 build (OpenSSL 3) and one of the
-  Ubuntu 20.04 builds (OpenSSL 1.1.1).
+>  {
+> -    struct hash_element *he;
+> -    struct hash_iterator hi;
+>
+> -    hash_iterator_init(m->hash, &hi);
+> -
+> -    while ((he = hash_iterator_next(&hi)))
+> +    if (peer_id >= m->max_clients || !m->instances[peer_id])
+But ‘peer_id’ everywhere else.
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- .github/workflows/build.yaml | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+So that needs to be fixed, because this version doesn’t build.
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index a3ca7a2e..2538c818 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -297,11 +297,14 @@ jobs:
-             sslpkg: "libssl-dev"
-             libname: OpenSSL 3.0.2
-             ssllib: openssl
-+            pkcs11pkg: "libpkcs11-helper1-dev softhsm2 gnutls-bin"
-+            extraconf: --enable-pkcs11
-           - os: ubuntu-20.04
-             sslpkg: "libssl-dev"
-             libname: OpenSSL 1.1.1
-             ssllib: openssl
--            extraconf: "--enable-iproute2"
-+            pkcs11pkg: "libpkcs11-helper1-dev softhsm2 gnutls-bin"
-+            extraconf: "--enable-iproute2 --enable-pkcs11"
-           - os: ubuntu-20.04
-             sslpkg: "libssl-dev"
-             libname: OpenSSL 1.1.1
-@@ -326,11 +329,12 @@ jobs:
-     name: "gcc - ${{matrix.os}} - ${{matrix.libname}} ${{matrix.extraconf}}"
-     env:
-       SSLPKG: "${{matrix.sslpkg}}"
-+      PKCS11PKG: "${{matrix.pkcs11pkg}}"
- 
-     runs-on: ${{matrix.os}}
-     steps:
-       - name: Install dependencies
--        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf ${SSLPKG}
-+        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf ${SSLPKG} ${PKCS11PKG}
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2689...
-       - name: autoconf
--- 
-2.34.1
+Other than that I’m happy with this change.
 
+Best regards,
+Kristof
 
