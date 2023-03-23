@@ -1,12 +1,9 @@
-Message-ID: <fe246110-62a1-b348-71d6-e1a17097fd88@...2181...>
-Date: Thu, 23 Mar 2023 13:15:03 +0100
-MIME-Version: 1.0
-Content-Language: en-US
+Date: Thu, 23 Mar 2023 13:29:09 +0100 (CET)
+Message-Id: <202303231229.32NCT98u042600@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230322192757.20767-1-a@...2181...>
 References: <20230322192757.20767-1-a@...2181...>
- <ZBxABqx/VGMY4R62@...1296...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <ZBxABqx/VGMY4R62@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH v4] dco-linux: implement
+Subject: [Openvpn-devel] [PATCH applied] Re: dco-linux: implement
  dco_get_peer_stats{, multi} API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,73 +13,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Spot on and sorry for forgetting to mentioning it:
+Acked-by: Gert Doering <gert@...1296...>
 
-You need ovpn-dco at this commit:
+This only touches linux only files, so only tested on Linux (builds with
+and without DCO).  The patch looks larger than it is because of a new
+argument to ovpn_nl_msg_send(), but for the "existing code" this is
+unused (extra argument to the callback function), so no change.  The
+actual new code looks quite reasonable.
 
-commit 726fdfe0fa21aa4e87c5a60294ea0365ce7b6809 (HEAD -> master, 
-origin/master)
-Author: Antonio Quartulli <antonio@...515...>
-Date:   Mon Mar 20 23:50:52 2023 +0100
+Testing confirms that we have counters now, for both server (status file)
+and client (SIGUSR2) use.
 
-     ovpn-dco: store and report transport rx/tx stats as well
+There is a catch to it - the userland side has support for "link bytes"
+and "tun bytes" (which end up in dco*bytes), but the "recommended kernel
+version" from ChangeLog does not have the link counters yet - so all
+queries end up with output like this:
 
-     Signed-off-by: Antonio Quartulli <antonio@...515...>
+tun-udp-p2mp[492454]: dco_update_peer_stat: no link RX bytes provided in reply for peer 0
+tun-udp-p2mp[492454]: dco_update_peer_stat: no link TX bytes provided in reply for peer 0
+tun-udp-p2mp[492454]: dco_update_peer_stat / tun_read_bytes: 5600
+tun-udp-p2mp[492454]: dco_update_peer_stat / tun_write_bytes: 3592
 
-Which comes right after the one you are using.
+upgrading kernel commit to commit 726fdfe0f brings both counters (and
+the values correlate to "which peer did what?").
 
-It is not a breaking change (as you see there is no real *failure*, just 
-missing information from the kernel side).
+tun-udp-p2mp[493935]: dco_update_peer_stat / dco_read_bytes: 132176
+tun-udp-p2mp[493935]: dco_update_peer_stat / dco_write_bytes: 131600
+tun-udp-p2mp[493935]: dco_update_peer_stat / tun_read_bytes: 128096
+tun-udp-p2mp[493935]: dco_update_peer_stat / tun_write_bytes: 127640
 
-Regards,
 
-On 23/03/2023 13:03, Gert Doering wrote:
-> Hi,
-> 
-> On Wed, Mar 22, 2023 at 08:27:57PM +0100, Antonio Quartulli wrote:
->> With this API it is possible to retrieve the stats for a specific peer
->> or for all peers and then update the userspace counters with the value
->> reported by DCO.
->>
->> Change-Id: Ia3990b86b1be7ca844fb1674b39ce0d60528ccff
->> Signed-off-by: Antonio Quartulli <a@...2181...>
-> 
-> This *looks* very reasonable, but only half of it works for me.
-> 
-> ...
-> tun-udp-p2mp[492453]: OpenVPN 2.7_git [git:vw/master/5a8fb55ac8cf4019] x86_64-pc-linux-gnu [SSL (mbed TLS)] [LZO] [LZ4] [EPOLL] [MH/PKTINFO] [AEAD] [DCO] built on Mar 23 2023
-> tun-udp-p2mp[492453]: DCO version: 0.2.20230313
-> ...
-> tun-udp-p2mp[492454]: dco_get_peer_stats_multi
-> tun-udp-p2mp[492454]: dco_parse_peer_multi: parsing message...
-> tun-udp-p2mp[492454]: dco_update_peer_stat: no link RX bytes provided in reply for peer 0
-> tun-udp-p2mp[492454]: dco_update_peer_stat: no link TX bytes provided in reply for peer 0
-> tun-udp-p2mp[492454]: dco_update_peer_stat / tun_read_bytes: 240
-> tun-udp-p2mp[492454]: dco_update_peer_stat / tun_write_bytes: 96
-> tun-udp-p2mp[492454]: dco_parse_peer_multi: parsing message...
-> tun-udp-p2mp[492454]: dco_update_peer_stat: no link RX bytes provided in reply for peer 1
-> tun-udp-p2mp[492454]: dco_update_peer_stat: no link TX bytes provided in reply for peer 1
-> tun-udp-p2mp[492454]: dco_update_peer_stat / tun_read_bytes: 776
-> tun-udp-p2mp[492454]: dco_update_peer_stat / tun_write_bytes: 80
-> 
-> 
-> So neither for p2p tls nor for --server setups, I am receiving "link bytes",
-> only tun*bytes.
-> 
-> I have not checked the kernel side if I *should* receive anything, but
-> this looks incomplete - either the kernel side is not yet ready (not
-> a showstopper) or there is a desync in the tags used, which might or
-> might not prevent merging...
-> 
-> Antonio, any ideas?
-> 
-> gert
 
--- 
-Antonio Quartulli
+Your patch has been applied to the master and release/2.6 branch.
+
+commit 5a8fb55ac8cf4019afee884d3be545ddf87435a4 (master)
+commit 1fd69b9085f4c21542ec506d101eb73b3cd0abc4 (release/2.6)
+Author: Antonio Quartulli
+Date:   Wed Mar 22 20:27:57 2023 +0100
+
+     dco-linux: implement dco_get_peer_stats{, multi} API
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230322192757.20767-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26481.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
