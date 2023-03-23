@@ -1,10 +1,10 @@
-Message-ID: <186bf889-b834-9e43-13a6-3363156b7a55@...2181...>
-Date: Thu, 23 Mar 2023 09:26:36 +0100
+Message-ID: <6ec6d2f7-4163-3b18-e710-c9d0aa4a531e@...1227...>
+Date: Thu, 23 Mar 2023 09:30:43 +0100
 MIME-Version: 1.0
-Content-Language: en-US
+Content-Language: en-GB
 References: <20230322192733.20295-1-a@...2181...>
  <20230323080341.51624-1-gert@...1296...>
-From: Antonio Quartulli <a@...2181...>
+From: Arne Schwabe <arne@...1227...>
 In-Reply-To: <20230323080341.51624-1-gert@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH v4] dco-freebsd: use m->instances[]
  instead of m->hash
@@ -20,9 +20,7 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-On 23/03/2023 09:03, Gert Doering wrote:
+Am 23.03.23 um 09:03 schrieb Gert Doering:
 > From: Antonio Quartulli <a@...2181...>
 > 
 > When retrieving the multi_instance of a specific peer,
@@ -69,13 +67,6 @@ On 23/03/2023 09:03, Gert Doering wrote:
 > -        mi->context.c2.dco_write_bytes = nvlist_get_number(nvl, "out");
 > -
 > +        msg(M_WARN, "dco_update_peer_stat: invalid peer ID %d returned by kernel", peerid);
-
-I'd prefer to use __func__ here, but it is noted that dco_freebsd.c 
-seldomly uses this approach.
-For this reason I think hardcoding the function name is fine for now.
-
-Later on we can do a full cleanup.
-
 >           return;
 >       }
 >   
@@ -88,14 +79,5 @@ Later on we can do a full cleanup.
 >   
 >   int
 
-This patch is basically my v3 with the peerid fixed and the message changed.
-
-I can't ACK since this patch bears my own signature, but I am fine with 
-the applied modification.
-
-Cheers,
-
-
--- 
-Antonio Quartulli
+Acked-By: Arne Schwabe <arne@...1227...>
 
