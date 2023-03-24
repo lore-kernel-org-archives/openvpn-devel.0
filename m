@@ -1,15 +1,9 @@
-Date: Fri, 24 Mar 2023 12:44:19 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <ZB2NE5KqeMoA6K+J@...1296...>
-References: <20230323170601.1256132-1-arne@...1227...>
- <20230323170601.1256132-4-arne@...1227...>
+From: Arne Schwabe <arne@...1227...>
+Date: Fri, 24 Mar 2023 13:10:50 +0100
+Message-Id: <20230324121050.1350913-1-arne@...1227...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="BEjhguqOG38mxMGr"
-Content-Disposition: inline
-In-Reply-To: <20230323170601.1256132-4-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v3 4/4] Parse compression options and
- bail out when compression is disabled
+Subject: [Openvpn-devel] [PATCH v4] Parse compression options and bail out
+ when compression is disabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,93 +12,336 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---BEjhguqOG38mxMGr
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This change keeps the option parsing of compression options even when
+compression is disabled. This allows OpenVPN to also refuse/reject connections
+that try to use compression when compression is completely disabled.
 
-Hi,
+Patch v4: fix one missing USE_COMP
 
-On Thu, Mar 23, 2023 at 06:06:01PM +0100, Arne Schwabe wrote:
-> This change keeps the option parsing of compression options even when
-> compression is disabled. This allows OpenVPN to also refuse/reject connec=
-tions
-> that try to use compression when compression is completely disabled.
+Change-Id: I9d7afd8f1d67d2455b4ec6bc12f4dcde80140c4f
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/comp.c    | 14 ++++---
+ src/openvpn/comp.h    | 85 ++++++++++++++++++++++---------------------
+ src/openvpn/init.c    |  4 +-
+ src/openvpn/multi.c   |  2 -
+ src/openvpn/options.c | 12 +-----
+ src/openvpn/options.h |  4 --
+ 6 files changed, 56 insertions(+), 65 deletions(-)
 
-Amazing as that might be, if you actually disable compression, master + 4/4
-does not compile anymore...
+diff --git a/src/openvpn/comp.c b/src/openvpn/comp.c
+index c7a562f5a..27b640ce0 100644
+--- a/src/openvpn/comp.c
++++ b/src/openvpn/comp.c
+@@ -29,10 +29,11 @@
+ 
+ #include "syshead.h"
+ 
+-#ifdef USE_COMP
+-
+ #include "comp.h"
+ #include "error.h"
++
++#ifdef USE_COMP
++
+ #include "otime.h"
+ 
+ #include "memdbg.h"
+@@ -158,6 +159,7 @@ comp_generate_peer_info_string(const struct compress_options *opt, struct buffer
+     buf_printf(out, "IV_COMP_STUB=1\n");
+     buf_printf(out, "IV_COMP_STUBv2=1\n");
+ }
++#endif /* USE_COMP */
+ 
+ bool
+ check_compression_settings_valid(struct compress_options *info, int msglevel)
+@@ -170,8 +172,13 @@ check_compression_settings_valid(struct compress_options *info, int msglevel)
+     if (info->alg != COMP_ALGV2_UNCOMPRESSED && info->alg != COMP_ALG_UNDEF
+         && (info->flags & COMP_F_ALLOW_NOCOMP_ONLY))
+     {
++#ifdef USE_COMP
+         msg(msglevel, "Compression or compression stub framing is not allowed "
+             "since data-channel offloading is enabled.");
++#else
++        msg(msglevel, "Compression or compression stub framing is not allowed "
++            "since OpenVPN was built without compression support.");
++#endif
+         return false;
+     }
+ 
+@@ -199,6 +206,3 @@ check_compression_settings_valid(struct compress_options *info, int msglevel)
+ #endif
+     return true;
+ }
+-
+-
+-#endif /* USE_COMP */
+diff --git a/src/openvpn/comp.h b/src/openvpn/comp.h
+index 71b350d09..89940cf3a 100644
+--- a/src/openvpn/comp.h
++++ b/src/openvpn/comp.h
+@@ -28,12 +28,19 @@
+ #ifndef OPENVPN_COMP_H
+ #define OPENVPN_COMP_H
+ 
+-#ifdef USE_COMP
++/* We always parse all compression options, so we include these defines/struct
++ * outside of the USE_COMP define */
+ 
+-#include "buffer.h"
+-#include "mtu.h"
+-#include "common.h"
+-#include "status.h"
++/* Compression flags */
++#define COMP_F_ADAPTIVE             (1<<0) /* COMP_ALG_LZO only */
++#define COMP_F_ALLOW_COMPRESS       (1<<1) /* not only downlink is compressed but also uplink */
++#define COMP_F_SWAP                 (1<<2) /* initial command byte is swapped with last byte in buffer to preserve payload alignment */
++#define COMP_F_ADVERTISE_STUBS_ONLY (1<<3) /* tell server that we only support compression stubs */
++#define COMP_F_ALLOW_STUB_ONLY      (1<<4) /* Only accept stub compression, even with COMP_F_ADVERTISE_STUBS_ONLY
++                                            * we still accept other compressions to be pushed */
++#define COMP_F_MIGRATE              (1<<5) /* push stub-v2 or comp-lzo no when we see a client with comp-lzo in occ */
++#define COMP_F_ALLOW_ASYM           (1<<6) /* Compression was explicitly set to allow asymetric compression */
++#define COMP_F_ALLOW_NOCOMP_ONLY    (1<<7) /* Do not allow compression framing (breaks DCO) */
+ 
+ /* algorithms */
+ #define COMP_ALG_UNDEF  0
+@@ -51,16 +58,37 @@
+  #define COMP_ALGV2_SNAPPY   13
+  */
+ 
+-/* Compression flags */
+-#define COMP_F_ADAPTIVE             (1<<0) /* COMP_ALG_LZO only */
+-#define COMP_F_ALLOW_COMPRESS       (1<<1) /* not only downlink is compressed but also uplink */
+-#define COMP_F_SWAP                 (1<<2) /* initial command byte is swapped with last byte in buffer to preserve payload alignment */
+-#define COMP_F_ADVERTISE_STUBS_ONLY (1<<3) /* tell server that we only support compression stubs */
+-#define COMP_F_ALLOW_STUB_ONLY      (1<<4) /* Only accept stub compression, even with COMP_F_ADVERTISE_STUBS_ONLY
+-                                            * we still accept other compressions to be pushed */
+-#define COMP_F_MIGRATE              (1<<5) /* push stub-v2 or comp-lzo no when we see a client with comp-lzo in occ */
+-#define COMP_F_ALLOW_ASYM           (1<<6) /* Compression was explicitly set to allow asymetric compression */
+-#define COMP_F_ALLOW_NOCOMP_ONLY    (1<<7) /* Do not allow compression framing (breaks DCO) */
++/*
++ * Information that basically identifies a compression
++ * algorithm and related flags.
++ */
++struct compress_options
++{
++    int alg;
++    unsigned int flags;
++};
++
++static inline bool
++comp_non_stub_enabled(const struct compress_options *info)
++{
++    return info->alg != COMP_ALGV2_UNCOMPRESSED
++           && info->alg != COMP_ALG_STUB
++           && info->alg != COMP_ALG_UNDEF;
++}
++
++/**
++ * Checks if the compression settings are valid. Takes into account the
++ * flags of allow-compression and also the whether algorithms are compiled
++ * in
++ */
++bool
++check_compression_settings_valid(struct compress_options *info, int msglevel);
++
++#ifdef USE_COMP
++#include "buffer.h"
++#include "mtu.h"
++#include "common.h"
++#include "status.h"
+ 
+ /*
+  * Length of prepended prefix on compressed packets
+@@ -130,16 +158,6 @@ struct compress_alg
+ #include "comp-lz4.h"
+ #endif
+ 
+-/*
+- * Information that basically identifies a compression
+- * algorithm and related flags.
+- */
+-struct compress_options
+-{
+-    int alg;
+-    unsigned int flags;
+-};
+-
+ /*
+  * Workspace union of all supported compression algorithms
+  */
+@@ -187,22 +205,5 @@ comp_enabled(const struct compress_options *info)
+ {
+     return info->alg != COMP_ALG_UNDEF;
+ }
+-
+-static inline bool
+-comp_non_stub_enabled(const struct compress_options *info)
+-{
+-    return info->alg != COMP_ALGV2_UNCOMPRESSED
+-           && info->alg != COMP_ALG_STUB
+-           && info->alg != COMP_ALG_UNDEF;
+-}
+-
+-/**
+- * Checks if the compression settings are valid. Takes into account the
+- * flags of allow-compression and also the whether algorithms are compiled
+- * in
+- */
+-bool
+-check_compression_settings_valid(struct compress_options *info, int msglevel);
+-
+ #endif /* USE_COMP */
+ #endif /* ifndef OPENVPN_COMP_H */
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 14859499d..d358ad003 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2634,7 +2634,6 @@ do_deferred_options(struct context *c, const unsigned int found)
+         }
+     }
+ 
+-#ifdef USE_COMP
+     if (found & OPT_P_COMP)
+     {
+         if (!check_compression_settings_valid(&c->options.comp, D_PUSH_ERRORS))
+@@ -2645,11 +2644,12 @@ do_deferred_options(struct context *c, const unsigned int found)
+                 "See also allow-compression in the manual.");
+             return false;
+         }
++#ifdef USE_COMP
+         msg(D_PUSH_DEBUG, "OPTIONS IMPORT: compression parms modified");
+         comp_uninit(c->c2.comp_context);
+         c->c2.comp_context = comp_init(&c->options.comp);
+-    }
+ #endif
++    }
+ 
+     if (found & OPT_P_SHAPER)
+     {
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index ac090ef5a..5444e7520 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -2766,13 +2766,11 @@ multi_connection_established(struct multi_context *m, struct multi_instance *mi)
+         cc_succeeded = false;
+     }
+ 
+-#ifdef USE_COMP
+     if (!check_compression_settings_valid(&mi->context.options.comp, D_MULTI_ERRORS))
+     {
+         msg(D_MULTI_ERRORS, "MULTI: client has been rejected due to invalid compression options");
+         cc_succeeded = false;
+     }
+-#endif
+ 
+     if (cc_succeeded)
+     {
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 0ccff7213..2680f2684 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1906,10 +1906,8 @@ show_settings(const struct options *o)
+ 
+     SHOW_BOOL(fast_io);
+ 
+-#ifdef USE_COMP
+     SHOW_INT(comp.alg);
+     SHOW_INT(comp.flags);
+-#endif
+ 
+     SHOW_STR(route_script);
+     SHOW_STR(route_default_gateway);
+@@ -3320,9 +3318,7 @@ pre_connect_save(struct options *o)
+     o->pre_connect->ping_send_timeout = o->ping_send_timeout;
+ 
+     /* Miscellaneous Options */
+-#ifdef USE_COMP
+     o->pre_connect->comp = o->comp;
+-#endif
+ }
+ 
+ void
+@@ -3386,9 +3382,7 @@ pre_connect_restore(struct options *o, struct gc_arena *gc)
+         o->ping_send_timeout = pp->ping_send_timeout;
+ 
+         /* Miscellaneous Options */
+-#ifdef USE_COMP
+         o->comp = pp->comp;
+-#endif
+     }
+ 
+     o->push_continuation = 0;
+@@ -3651,6 +3645,8 @@ options_set_backwards_compatible_options(struct options *o)
+             o->comp.flags = COMP_F_ALLOW_STUB_ONLY | COMP_F_ADVERTISE_STUBS_ONLY;
+         }
+     }
++#else  /* ifdef USE_COMP */
++    o->comp.flags = COMP_F_ALLOW_NOCOMP_ONLY;
+ #endif
+ }
+ 
+@@ -5665,7 +5661,6 @@ set_user_script(struct options *options,
+ #endif
+ }
+ 
+-#ifdef USE_COMP
+ static void
+ show_compression_warning(struct compress_options *info)
+ {
+@@ -5684,7 +5679,6 @@ show_compression_warning(struct compress_options *info)
+         }
+     }
+ }
+-#endif
+ 
+ bool
+ key_is_external(const struct options *options)
+@@ -8366,7 +8360,6 @@ add_option(struct options *options,
+         options->passtos = true;
+     }
+ #endif
+-#if defined(USE_COMP)
+     else if (streq(p[0], "allow-compression") && p[1] && !p[2])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+@@ -8502,7 +8495,6 @@ add_option(struct options *options,
+ 
+         show_compression_warning(&options->comp);
+     }
+-#endif /* USE_COMP */
+     else if (streq(p[0], "show-ciphers") && !p[1])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 2f25f5d07..f5890b90f 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -87,9 +87,7 @@ struct options_pre_connect
+     int ping_rec_timeout_action;
+ 
+     int foreign_option_index;
+-#ifdef USE_COMP
+     struct compress_options comp;
+-#endif
+ };
+ 
+ #if !defined(ENABLE_CRYPTO_OPENSSL) && !defined(ENABLE_CRYPTO_MBEDTLS)
+@@ -395,9 +393,7 @@ struct options
+     /* optimize TUN/TAP/UDP writes */
+     bool fast_io;
+ 
+-#ifdef USE_COMP
+     struct compress_options comp;
+-#endif
+ 
+     /* buffer sizes */
+     int rcvbuf;
+-- 
+2.37.1 (Apple Git-137.1)
 
-depbase=3D`echo init.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`; cc -DHAVE_CONFI=
-G_H -I. -I../.. -I../../include  -I../../include  -I../../src/compat       =
-     -DPLUGIN_LIBDIR=3D\"/usr/local/lib/openvpn/plugins\"  -Wall -g -O2 -st=
-d=3Dc99 -MT init.o -MD -MP -MF $depbase.Tpo -c -o init.o init.c && mv -f $d=
-epbase.Tpo $depbase.Po
-init.c:2648:9: warning: implicit declaration of function 'comp_uninit' is
-      invalid in C99 [-Wimplicit-function-declaration]
-        comp_uninit(c->c2.comp_context);
-        ^
-init.c:2648:27: error: no member named 'comp_context' in 'struct context_2'=
-; did
-      you mean 'mda_context'?
-        comp_uninit(c->c2.comp_context);
-                          ^~~~~~~~~~~~
-                          mda_context
-./openvpn.h:459:33: note: 'mda_context' declared here
-    struct man_def_auth_context mda_context;
-                                ^
-init.c:2649:30: warning: implicit declaration of function 'comp_init' is in=
-valid
-      in C99 [-Wimplicit-function-declaration]
-        c->c2.comp_context =3D comp_init(&c->options.comp);
-init.c:2649:15: error: no member named 'comp_context' in 'struct context_2'=
-; did
-      you mean 'mda_context'?
-        c->c2.comp_context =3D comp_init(&c->options.comp);
-              ^~~~~~~~~~~~
-              mda_context
-./openvpn.h:459:33: note: 'mda_context' declared here
-    struct man_def_auth_context mda_context;
-                                ^
-init.c:2649:28: error: assigning to 'struct man_def_auth_context' from
-      incompatible type 'int'
-        c->c2.comp_context =3D comp_init(&c->options.comp);
-                           ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-2 warnings and 3 errors generated.
-*** Error code 1
-
-
-so, NAK.
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---BEjhguqOG38mxMGr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJkHY0TAAoJEB2Cnv7KVigSyZEMAITpJl1FV2obQm8wuCxoVfTq
-SDWVcWdv7oP8u6J6kI493/dswMYjtpnz/AyxZEEXG9uIgx08xOdh4w2/hRVLspnn
-c7ru2KlmmoVSpBHn1SjjSLIm/zZcGbIPUiWr/HsxqC12Q7DRIDIj/R7LV+Xeps7x
-HchZ0V/XTKgI1RpuY8p2ZwZvicsgjmCWMaiQ0TLcxE5+lUNx3pOG5/68x4FYHc9B
-cG7D8K0lcJNkHB+xWiQtXWyKyiEN39D3P0pHs+bG6r4IjAUv89q9nApgFYCZhw6d
-Ry2U6KbNq2fhB6yJfrvgNrNWqCkUMMz7T4WkEkYZIgQHkvlvmtbimeLcpc3S4oC6
-qsP93n+mKrrI14ieUG0hWo3qIwKobxeTzFgAO3cDi57dSVEFW84jw/OLpPNYviiW
-ScrJWfN4RVT8sGSAQTfeKnb5aLnh3sUYlTQHb6FiwxlVqHDGDD7cNwZZSkMsAc2R
-73+NDldWwpKkkrVGiWojqHvKk6z1poYefpvOTrkAKA==
-=RMKe
------END PGP SIGNATURE-----
-
---BEjhguqOG38mxMGr--
 
