@@ -1,10 +1,13 @@
-Date: Fri, 24 Mar 2023 13:37:06 +0100 (CET)
-Message-Id: <202303241237.32OCb68T089595@...2054...>
+Date: Fri, 24 Mar 2023 13:46:37 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230324121818.2358-1-lstipakov@...277...>
-References: <20230324121818.2358-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Don't overwrite socket flags
- when using DCO on Windows
+Message-ID: <ZB2brbgptkntUOCo@...1296...>
+References: <20230324083816.79436-1-gert@...1296...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="nTMIL39aGjNXFl+I"
+Content-Disposition: inline
+In-Reply-To: <20230324083816.79436-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix compilation without compression
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,39 +16,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+--nTMIL39aGjNXFl+I
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-"Because it makes sense".  We didn't discover this before as it needs
-a server actually pushing sock-options *and* a DCO-on-Windows client
-(*and* TCP?).
+Hi,
 
-I haven't actually tested this, but discussed this beforehand with
-Lev, and he has (and the change looks good).
+On Fri, Mar 24, 2023 at 09:38:16AM +0100, Gert Doering wrote:
+> The previous commit (e86bc8b2967) breaks compilation if all compression
+> algorithms are disabled (--disable-lz4 --disable-lzo).  A later patch
+> in the series would fix this but can not be merged yet.
 
-Your patch has been applied to the master and release/2.6 branch.
+Just for reference, this got fixed with Arne's commit a8170dd0e76 now,
+so this patch is no longer needed.  Marked as such in Patchwork.
 
-commit 82e7d5cfd81f03f045ace2bf1d3590b79441ea17 (master)
-commit cfc5228f9aeaa99c75fb7538435780e4dd7fb7de (release/2.6)
-Author: Lev Stipakov
-Date:   Fri Mar 24 14:18:18 2023 +0200
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-     Don't overwrite socket flags when using DCO on Windows
+Gert Doering - Munich, Germany                             gert@...1296...
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230324121818.2358-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26513.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+--nTMIL39aGjNXFl+I
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
---
-kind regards,
+iQGcBAEBAgAGBQJkHZutAAoJEB2Cnv7KVigSkAgMAJvj9vQGH7mrXTAfZw/qSvCO
+Tsg4JU3KbUZZClCYekTZBcnWTjxgSuFE6FHAI3pU6ZvGTjbks3yrNFylS3RIWEdh
+nnk04eFhS4F5TEpfrmkSgUw8GFcxCmvccQ8pcmztJjsFAGPN+vxy8CaxrNXs/GsZ
+thi44Mgp9QdgTdjQ+xgiypCi6YHNlPuUi5SeQRmYkSxlec6k93LE03SgkpeI2Z1O
+F+yoayigSAHjtnpaN5Ft2sn9fcSXa/nRT3NRwosno28xnS14zAC8Vl5pYOtdS7PX
+ZDZMsjfnrvdGyb/pyl969cHytYOrIfPc269rWVrPuO559lBVecqVMEYC1X9anqBK
+ezE/MYOXl3VWeUW8IgT5Bgh5Sw6i3HPadKWBOc/Uz7+vyiPvlxkgWzzEgv4Ec70j
+oT2NuXbS1I42FTG+i5hNbREUrM/ubBWiPO6Vw6t3JRBm6WmOlifiNU0OIlDrpSFL
+eElRgX+kHElQXbigtC3zPr76ZdzDI/EmlSJpoMVhww==
+=Ccv0
+-----END PGP SIGNATURE-----
 
-Gert Doering
-
+--nTMIL39aGjNXFl+I--
 
