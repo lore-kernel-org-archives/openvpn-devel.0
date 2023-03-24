@@ -1,9 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri, 24 Mar 2023 11:06:40 +0100
-Message-Id: <20230324100640.1340535-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] Add 'allow-compression stub-only'
- internally for DCO
+Date: Fri, 24 Mar 2023 12:14:59 +0100 (CET)
+Message-Id: <202303241114.32OBExpR082008@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230324100640.1340535-1-arne@...1227...>
+References: <20230324100640.1340535-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add 'allow-compression
+ stub-only' internally for DCO
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,176 +15,78 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This changes the "no" setting of allow-compression to also refuse framing.
-This is important for our DCO implementation as these do not implement framing.
+Acked-by: Gert Doering <gert@...1296...>
 
-This behaviour surfaced when a commercial VPN provider was pushing
-"comp-lzo no" to a client with DCO. While we are technically at fault here
-for announcing comp-lzo no support by announcing IV_LZO_STUB=1, the
-VPN provider continues to push "comp-lzo no" even in absense of that
-flag.
+This is the actual thing we want to fix: if a server pushes 'comp-lzo no',
+a non-DCO client will enable compression framing, while a DCO client can
+not do this, and silently stays on "no framing" - and then both sides
+will drop all data packets because "incorrect format".   We can not "make
+it work", but we *can* abort the connection with a clear message so
+the VPN provider / server operator can fix their setup.
 
-As the new default we default to allow-compression stub-only if a stub option
-is found in the config and to allow-compression no otherwise. This ensures
-that we only enable DCO when no compression framing is used.
+This change also removes sending of all IV_COMP* variables to the server
+if DCO is active - so a "server that cares" knows that it must not send
+any compression settings.
 
-This will now also bail out if the server pushes a compression setting that
-we do not support as mismatching compression is almost never a working
-connection. In my lz4-v2 and lzo-v2 you might have a connection that works
-mostly but some packets will be dropped since they compressed which is not
-desirable either since it becomes very hard to debug.
 
-Patch v2: bail out if server pushes an unsupported method. Also include this
-          bail out logic when OpenVPN is compiled without compression support.
+I have run this through the t_client/t_server tests on DCO and non DCO
+hosts, with and without compression, and all the existing setups still
+work fine, including compatibility to older versions.
 
-Patch v3: always parse all compression option and move logic to check method
-Patch v4: fix for not setting correct default for non-dco
+I have also tested pushed options and ccd/ options on "no compression
+enabled" setups
 
-Change-Id: Ibd0c77af24e2214b3055d585dc23a4b06dccd414
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- doc/man-sections/protocol-options.rst |  4 ++-
- src/openvpn/comp.c                    | 47 ++++++++++++++++++---------
- src/openvpn/comp.h                    |  2 +-
- src/openvpn/options.c                 | 14 ++++++--
- 4 files changed, 46 insertions(+), 21 deletions(-)
+ - pushing 'comp-lzo no' with no DCO --> accepted, do "stub" framing
 
-diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
-index 248f65cfd..055d08f95 100644
---- a/doc/man-sections/protocol-options.rst
-+++ b/doc/man-sections/protocol-options.rst
-@@ -25,7 +25,9 @@ configured in a compatible way between both the local and remote side.
-       compression at the same time is not a feasible option.
- 
-   :code:`no`  (default)
--      OpenVPN will refuse any non-stub compression.
-+      OpenVPN will refuse any compression.  If data-channel offloading
-+      is enabled. OpenVPN will additionally also refuse compression
-+      framing (stub).
- 
-   :code:`yes`
-       OpenVPN will send and receive compressed packets.
-diff --git a/src/openvpn/comp.c b/src/openvpn/comp.c
-index d6d8029da..c7a562f5a 100644
---- a/src/openvpn/comp.c
-+++ b/src/openvpn/comp.c
-@@ -134,36 +134,51 @@ comp_print_stats(const struct compress_context *compctx, struct status_output *s
- void
- comp_generate_peer_info_string(const struct compress_options *opt, struct buffer *out)
- {
--    if (opt)
-+    if (!opt || opt->flags & COMP_F_ALLOW_NOCOMP_ONLY)
-+    {
-+        return;
-+    }
-+
-+    bool lzo_avail = false;
-+    if (!(opt->flags & COMP_F_ADVERTISE_STUBS_ONLY))
-     {
--        bool lzo_avail = false;
--        if (!(opt->flags & COMP_F_ADVERTISE_STUBS_ONLY))
--        {
- #if defined(ENABLE_LZ4)
--            buf_printf(out, "IV_LZ4=1\n");
--            buf_printf(out, "IV_LZ4v2=1\n");
-+        buf_printf(out, "IV_LZ4=1\n");
-+        buf_printf(out, "IV_LZ4v2=1\n");
- #endif
- #if defined(ENABLE_LZO)
--            buf_printf(out, "IV_LZO=1\n");
--            lzo_avail = true;
-+        buf_printf(out, "IV_LZO=1\n");
-+        lzo_avail = true;
- #endif
--        }
--        if (!lzo_avail)
--        {
--            buf_printf(out, "IV_LZO_STUB=1\n");
--        }
--        buf_printf(out, "IV_COMP_STUB=1\n");
--        buf_printf(out, "IV_COMP_STUBv2=1\n");
-     }
-+    if (!lzo_avail)
-+    {
-+        buf_printf(out, "IV_LZO_STUB=1\n");
-+    }
-+    buf_printf(out, "IV_COMP_STUB=1\n");
-+    buf_printf(out, "IV_COMP_STUBv2=1\n");
- }
- 
- bool
- check_compression_settings_valid(struct compress_options *info, int msglevel)
- {
-+    /*
-+     * We also allow comp-stub-v2 here as it technically allows escaping of
-+     * weird mac address and IPv5 protocol but practically always is used
-+     * as an way to disable all framing.
-+     */
-+    if (info->alg != COMP_ALGV2_UNCOMPRESSED && info->alg != COMP_ALG_UNDEF
-+        && (info->flags & COMP_F_ALLOW_NOCOMP_ONLY))
-+    {
-+        msg(msglevel, "Compression or compression stub framing is not allowed "
-+            "since data-channel offloading is enabled.");
-+        return false;
-+    }
-+
-     if ((info->flags & COMP_F_ALLOW_STUB_ONLY) && comp_non_stub_enabled(info))
-     {
-         msg(msglevel, "Compression is not allowed since allow-compression is "
--            "set to 'no'");
-+            "set to 'stub-only'");
-         return false;
-     }
- #ifndef ENABLE_LZ4
-diff --git a/src/openvpn/comp.h b/src/openvpn/comp.h
-index 8636727ab..71b350d09 100644
---- a/src/openvpn/comp.h
-+++ b/src/openvpn/comp.h
-@@ -60,7 +60,7 @@
-                                             * we still accept other compressions to be pushed */
- #define COMP_F_MIGRATE              (1<<5) /* push stub-v2 or comp-lzo no when we see a client with comp-lzo in occ */
- #define COMP_F_ALLOW_ASYM           (1<<6) /* Compression was explicitly set to allow asymetric compression */
--
-+#define COMP_F_ALLOW_NOCOMP_ONLY    (1<<7) /* Do not allow compression framing (breaks DCO) */
- 
- /*
-  * Length of prepended prefix on compressed packets
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 435e1ca9e..0ccff7213 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3644,10 +3644,12 @@ options_set_backwards_compatible_options(struct options *o)
-      *
-      * Disable compression by default starting with 2.6.0 if no other
-      * compression related option has been explicitly set */
--    if (!comp_non_stub_enabled(&o->comp) && !need_compatibility_before(o, 20600)
--        && (o->comp.flags == 0))
-+    if (!need_compatibility_before(o, 20600) && (o->comp.flags == 0))
-     {
--        o->comp.flags = COMP_F_ALLOW_STUB_ONLY|COMP_F_ADVERTISE_STUBS_ONLY;
-+        if (!comp_non_stub_enabled(&o->comp))
-+        {
-+            o->comp.flags = COMP_F_ALLOW_STUB_ONLY | COMP_F_ADVERTISE_STUBS_ONLY;
-+        }
-     }
- #endif
- }
-@@ -3749,6 +3751,12 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
-         o->tuntap_options.disable_dco = !dco_check_option(D_DCO, o)
-                                         || !dco_check_startup_option(D_DCO, o);
-     }
-+#ifdef USE_COMP
-+    if (dco_enabled(o))
-+    {
-+        o->comp.flags |= COMP_F_ALLOW_NOCOMP_ONLY;
-+    }
-+#endif
- 
- #ifdef _WIN32
-     if (dco_enabled(o))
--- 
-2.37.1 (Apple Git-137.1)
+ - pushing 'comp-lzo no' with DCO active --> refused, SIGUSR1 restart
+
+   2023-03-24 09:09:48 Compression or compression stub framing is not 
+     allowed since data-channel offloading is enabled.
+   2023-03-24 09:09:48 OPTIONS ERROR: server pushed compression settings 
+     that are not allowed and will result in a non-working connection.
+     See also allow-compression in the manual.
+
+ - pushing 'compress lz4' is refused in both cases, unless
+   "allow-compression asym/yes" is set
+
+ - ccd file producing 'comp-lzo no'
+ - ccd file producing 'compress stub-v2'
+ - ccd file producing 'compress lz4'
+   --> this all works as expected (refusing the client with AUTH_FAILED), 
+       though we have started to be "just a bit" chatty about this...
+
+    tun-udp-p2mp[564755]: peer-id=1 OPTIONS IMPORT: reading client specific options from: ccd/freebsd-14-amd64
+    tun-udp-p2mp[564755]: peer-id=1 Note: '--allow-compression' is not set to 'no', disabling data channel offload.
+    tun-udp-p2mp[564755]: peer-id=1 MULTI: client has been rejected due to incompatible DCO options
+    tun-udp-p2mp[564755]: peer-id=1 Compression or compression stub framing is not allowed since data-channel offloading is enabled.
+    tun-udp-p2mp[564755]: peer-id=1 MULTI: client has been rejected due to invalid compression options
+
+
+Compilation with --disable-lzo --disable-lz4 is still broken with this
+commit - this was overlooked in part 2/4, and will be fixed in 4/4.
+
+Your patch has been applied to the master and release/2.6 branch.
+
+commit 4117d950788eebfaf6c9b5dde278e3a81b9e805d (master)
+commit 2ac91ea73b76dd17d5cdf78740790ed928e08bff (release/2.6)
+Author: Arne Schwabe
+Date:   Fri Mar 24 11:06:40 2023 +0100
+
+     Add 'allow-compression stub-only' internally for DCO
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230324100640.1340535-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26509.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
