@@ -1,10 +1,10 @@
-Date: Fri, 24 Mar 2023 13:33:17 +0100 (CET)
-Message-Id: <202303241233.32OCXHuj089180@...2054...>
+Date: Fri, 24 Mar 2023 13:37:06 +0100 (CET)
+Message-Id: <202303241237.32OCb68T089595@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230324121050.1350913-1-arne@...1227...>
-References: <20230324121050.1350913-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Parse compression options and
- bail out when compression is disabled
+In-Reply-To: <20230324121818.2358-1-lstipakov@...277...>
+References: <20230324121818.2358-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Don't overwrite socket flags
+ when using DCO on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-This is best viewed with "--color-moved=zebra", as it really just moves
-stuff around (and gets rid of a few #ifdef USE_COMP).  That we now
-have #include statements after code is a big ugly, but saves having
-another set of #ifdef... 
+"Because it makes sense".  We didn't discover this before as it needs
+a server actually pushing sock-options *and* a DCO-on-Windows client
+(*and* TCP?).
 
-Client-tested with and without compression built in, and pushed to GHA
-for verification that nothing is breaking anymore.
+I haven't actually tested this, but discussed this beforehand with
+Lev, and he has (and the change looks good).
 
-Your patch has been applied to master and release/2.6 branch.
+Your patch has been applied to the master and release/2.6 branch.
 
-commit a8170dd0e76a7440f3291ad26d78f8ca247a191b (master)
-commit 5a189d5e249c89c55ef7cad4d19a9d8e89a20ff1 (release/2.6)
-Author: Arne Schwabe
-Date:   Fri Mar 24 13:10:50 2023 +0100
+commit 82e7d5cfd81f03f045ace2bf1d3590b79441ea17 (master)
+commit cfc5228f9aeaa99c75fb7538435780e4dd7fb7de (release/2.6)
+Author: Lev Stipakov
+Date:   Fri Mar 24 14:18:18 2023 +0200
 
-     Parse compression options and bail out when compression is disabled
+     Don't overwrite socket flags when using DCO on Windows
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Signed-off-by: Lev Stipakov <lev@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230324121050.1350913-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26512.html
+     Message-Id: <20230324121818.2358-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26513.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
