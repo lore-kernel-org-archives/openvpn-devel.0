@@ -1,10 +1,15 @@
-Date: Fri, 24 Mar 2023 12:14:59 +0100 (CET)
-Message-Id: <202303241114.32OBExpR082008@...2054...>
+Date: Fri, 24 Mar 2023 12:44:19 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230324100640.1340535-1-arne@...1227...>
-References: <20230324100640.1340535-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add 'allow-compression
- stub-only' internally for DCO
+Message-ID: <ZB2NE5KqeMoA6K+J@...1296...>
+References: <20230323170601.1256132-1-arne@...1227...>
+ <20230323170601.1256132-4-arne@...1227...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="BEjhguqOG38mxMGr"
+Content-Disposition: inline
+In-Reply-To: <20230323170601.1256132-4-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v3 4/4] Parse compression options and
+ bail out when compression is disabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,80 +18,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+--BEjhguqOG38mxMGr
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This is the actual thing we want to fix: if a server pushes 'comp-lzo no',
-a non-DCO client will enable compression framing, while a DCO client can
-not do this, and silently stays on "no framing" - and then both sides
-will drop all data packets because "incorrect format".   We can not "make
-it work", but we *can* abort the connection with a clear message so
-the VPN provider / server operator can fix their setup.
+Hi,
 
-This change also removes sending of all IV_COMP* variables to the server
-if DCO is active - so a "server that cares" knows that it must not send
-any compression settings.
+On Thu, Mar 23, 2023 at 06:06:01PM +0100, Arne Schwabe wrote:
+> This change keeps the option parsing of compression options even when
+> compression is disabled. This allows OpenVPN to also refuse/reject connec=
+tions
+> that try to use compression when compression is completely disabled.
 
+Amazing as that might be, if you actually disable compression, master + 4/4
+does not compile anymore...
 
-I have run this through the t_client/t_server tests on DCO and non DCO
-hosts, with and without compression, and all the existing setups still
-work fine, including compatibility to older versions.
-
-I have also tested pushed options and ccd/ options on "no compression
-enabled" setups
-
- - pushing 'comp-lzo no' with no DCO --> accepted, do "stub" framing
-
- - pushing 'comp-lzo no' with DCO active --> refused, SIGUSR1 restart
-
-   2023-03-24 09:09:48 Compression or compression stub framing is not 
-     allowed since data-channel offloading is enabled.
-   2023-03-24 09:09:48 OPTIONS ERROR: server pushed compression settings 
-     that are not allowed and will result in a non-working connection.
-     See also allow-compression in the manual.
-
- - pushing 'compress lz4' is refused in both cases, unless
-   "allow-compression asym/yes" is set
-
- - ccd file producing 'comp-lzo no'
- - ccd file producing 'compress stub-v2'
- - ccd file producing 'compress lz4'
-   --> this all works as expected (refusing the client with AUTH_FAILED), 
-       though we have started to be "just a bit" chatty about this...
-
-    tun-udp-p2mp[564755]: peer-id=1 OPTIONS IMPORT: reading client specific options from: ccd/freebsd-14-amd64
-    tun-udp-p2mp[564755]: peer-id=1 Note: '--allow-compression' is not set to 'no', disabling data channel offload.
-    tun-udp-p2mp[564755]: peer-id=1 MULTI: client has been rejected due to incompatible DCO options
-    tun-udp-p2mp[564755]: peer-id=1 Compression or compression stub framing is not allowed since data-channel offloading is enabled.
-    tun-udp-p2mp[564755]: peer-id=1 MULTI: client has been rejected due to invalid compression options
-
-
-Compilation with --disable-lzo --disable-lz4 is still broken with this
-commit - this was overlooked in part 2/4, and will be fixed in 4/4.
-
-Your patch has been applied to the master and release/2.6 branch.
-
-commit 4117d950788eebfaf6c9b5dde278e3a81b9e805d (master)
-commit 2ac91ea73b76dd17d5cdf78740790ed928e08bff (release/2.6)
-Author: Arne Schwabe
-Date:   Fri Mar 24 11:06:40 2023 +0100
-
-     Add 'allow-compression stub-only' internally for DCO
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230324100640.1340535-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26509.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+depbase=3D`echo init.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`; cc -DHAVE_CONFI=
+G_H -I. -I../.. -I../../include  -I../../include  -I../../src/compat       =
+     -DPLUGIN_LIBDIR=3D\"/usr/local/lib/openvpn/plugins\"  -Wall -g -O2 -st=
+d=3Dc99 -MT init.o -MD -MP -MF $depbase.Tpo -c -o init.o init.c && mv -f $d=
+epbase.Tpo $depbase.Po
+init.c:2648:9: warning: implicit declaration of function 'comp_uninit' is
+      invalid in C99 [-Wimplicit-function-declaration]
+        comp_uninit(c->c2.comp_context);
+        ^
+init.c:2648:27: error: no member named 'comp_context' in 'struct context_2'=
+; did
+      you mean 'mda_context'?
+        comp_uninit(c->c2.comp_context);
+                          ^~~~~~~~~~~~
+                          mda_context
+./openvpn.h:459:33: note: 'mda_context' declared here
+    struct man_def_auth_context mda_context;
+                                ^
+init.c:2649:30: warning: implicit declaration of function 'comp_init' is in=
+valid
+      in C99 [-Wimplicit-function-declaration]
+        c->c2.comp_context =3D comp_init(&c->options.comp);
+init.c:2649:15: error: no member named 'comp_context' in 'struct context_2'=
+; did
+      you mean 'mda_context'?
+        c->c2.comp_context =3D comp_init(&c->options.comp);
+              ^~~~~~~~~~~~
+              mda_context
+./openvpn.h:459:33: note: 'mda_context' declared here
+    struct man_def_auth_context mda_context;
+                                ^
+init.c:2649:28: error: assigning to 'struct man_def_auth_context' from
+      incompatible type 'int'
+        c->c2.comp_context =3D comp_init(&c->options.comp);
+                           ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2 warnings and 3 errors generated.
+*** Error code 1
 
 
---
-kind regards,
+so, NAK.
 
-Gert Doering
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--BEjhguqOG38mxMGr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJkHY0TAAoJEB2Cnv7KVigSyZEMAITpJl1FV2obQm8wuCxoVfTq
+SDWVcWdv7oP8u6J6kI493/dswMYjtpnz/AyxZEEXG9uIgx08xOdh4w2/hRVLspnn
+c7ru2KlmmoVSpBHn1SjjSLIm/zZcGbIPUiWr/HsxqC12Q7DRIDIj/R7LV+Xeps7x
+HchZ0V/XTKgI1RpuY8p2ZwZvicsgjmCWMaiQ0TLcxE5+lUNx3pOG5/68x4FYHc9B
+cG7D8K0lcJNkHB+xWiQtXWyKyiEN39D3P0pHs+bG6r4IjAUv89q9nApgFYCZhw6d
+Ry2U6KbNq2fhB6yJfrvgNrNWqCkUMMz7T4WkEkYZIgQHkvlvmtbimeLcpc3S4oC6
+qsP93n+mKrrI14ieUG0hWo3qIwKobxeTzFgAO3cDi57dSVEFW84jw/OLpPNYviiW
+ScrJWfN4RVT8sGSAQTfeKnb5aLnh3sUYlTQHb6FiwxlVqHDGDD7cNwZZSkMsAc2R
+73+NDldWwpKkkrVGiWojqHvKk6z1poYefpvOTrkAKA==
+=RMKe
+-----END PGP SIGNATURE-----
+
+--BEjhguqOG38mxMGr--
 
