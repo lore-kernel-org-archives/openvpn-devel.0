@@ -1,10 +1,10 @@
-Date: Mon, 27 Mar 2023 10:37:52 +0200
+Date: Mon, 27 Mar 2023 10:45:48 +0200
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZCFV4J4hCRL5YqOw@...2685...>
+Message-ID: <ZCFXvBfob0KajSBd@...2685...>
 References: <20230323143140.76949-1-frank@...2641...>
- <CAKuzo_i+EEaThhmtOHjJGwprtnRgQGxDSNMpeJ+aHHH1FPGNOw@...278...>
+ <d917e295-3c4b-2a72-8ce1-6619dce22879@...68...>
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_i+EEaThhmtOHjJGwprtnRgQGxDSNMpeJ+aHHH1FPGNOw@...278...>
+In-Reply-To: <d917e295-3c4b-2a72-8ce1-6619dce22879@...68...>
 Subject: Re: [Openvpn-devel] [PATCH] unit_tests: make cert_data.h compile
  with MSVC
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,22 +18,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: Selva Nair <selva.nair@...277...>
+To: Matthias Andree <matthias.andree@...68...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Fri, Mar 24, 2023 at 01:13:22PM -0400, Selva Nair wrote:
-> Hi,
+On Fri, Mar 24, 2023 at 07:30:51PM +0100, Matthias Andree wrote:
+> Am 23.03.23 um 15:31 schrieb Frank Lichtenheld:
+> > Currently this is not obvious since we never build the
+> > UTs with MSVC, but it doesn't like the initializers with
+> > "const" variables. They cause
+> > error C2099: initializer is not a constant
 > 
-[...]
-> I would like to avoid such long preprocessor #defines with continuation
-> lines.
+> What MSVC version are you using? What options? I've tried with a minimal
+> C program with static const char *const foo = "something"; and it
+> compiled with the latest 2017 or 2022 MSVC.
 > 
-> Would the attached small patch be acceptable instead? It covers only
-> test_cryptoapi --- if this will do, I can incorporate similar changes for
-> test_pkcs11 into a v2 of the relevant patch as those have not been
-> ACK-ed yet.
+> How are you connecting the unit test to the build?
 
-The attached patch seems to work, yes.
+For reference, this is part of my experimental cmake branch,
+https://github.com/flichtenheld/openvpn/tree/cmake
 
 Regards,
 -- 
