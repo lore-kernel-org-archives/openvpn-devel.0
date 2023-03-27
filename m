@@ -1,14 +1,9 @@
+From: selva.nair@...277...
+Date: Mon, 27 Mar 2023 07:49:37 -0400
+Message-Id: <20230327114937.28246-1-selva.nair@...277...>
 MIME-Version: 1.0
-References: <20230323143140.76949-1-frank@...2641...>
- <CAKuzo_i+EEaThhmtOHjJGwprtnRgQGxDSNMpeJ+aHHH1FPGNOw@...278...>
- <ZCFYsIhSsTdQDDk8@...2685...>
-In-Reply-To: <ZCFYsIhSsTdQDDk8@...2685...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 27 Mar 2023 07:44:50 -0400
-Message-ID: <CAKuzo_hK0wjsvqttP1v7gKty6pk99jFTjB222tWZ33ROj-GAuQ@...278...>
-Content-Type: multipart/alternative; boundary="00000000000035cc0105f7e04611"
-Subject: Re: [Openvpn-devel] [PATCH] unit_tests: make cert_data.h compile
- with MSVC
+Subject: [Openvpn-devel] [PATCH] Make cert_data.h and
+ test_cryptoapi/pkcs11.c MSVC compliant
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,65 +12,154 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---00000000000035cc0105f7e04611
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Selva Nair <selva.nair@...277...>
 
-On Mon, Mar 27, 2023 at 4:49=E2=80=AFAM Frank Lichtenheld <frank@...2641...>
-wrote:
+- Do not use non-literal initializers for static objects
+- Replace empty initializer {} by {0}
 
-> On Fri, Mar 24, 2023 at 01:13:22PM -0400, Selva Nair wrote:
-> > Would the attached small patch be acceptable instead? It covers only
-> > test_cryptoapi --- if this will do, I can incorporate similar changes f=
-or
-> > test_pkcs11 into a v2 of the relevant patch as those have not been
-> > ACK-ed yet.
->
-> Actually, I acked that whole series. However there was a problem with
-> my mail configuration on that day and so Gmail rejected them. They
-> are on the list however.
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+To be applied after the test-pkcs11 patch set
 
+ tests/unit_tests/openvpn/cert_data.h      |  6 ++---
+ tests/unit_tests/openvpn/test_cryptoapi.c | 24 ++++++++++++++------
+ tests/unit_tests/openvpn/test_pkcs11.c    | 27 ++++++++++++++++-------
+ 3 files changed, 39 insertions(+), 18 deletions(-)
 
-> But feel free to integrate this and I can re-ack the patch.
->
+diff --git a/tests/unit_tests/openvpn/cert_data.h b/tests/unit_tests/openvpn/cert_data.h
+index 33de35ec..0886b071 100644
+--- a/tests/unit_tests/openvpn/cert_data.h
++++ b/tests/unit_tests/openvpn/cert_data.h
+@@ -79,7 +79,7 @@ static const char *const cert2 =
+     "HeTsAlHjfFEReVDiNCI9vMQLKFKKWnAorT2+iyRueA3bt2gchf863BBhZvJddL7Q\n"
+     "KBa0osXw+eGBRAwsm7m1qCho3b3fN2nFAa+k07ptRkOeablmFdXE81nVlA==\n"
+     "-----END CERTIFICATE-----\n";
+-static const char *const key2 = key1;
++#define key2 key1
+ static const char *const hash2 = "FA18FD34BAABE47D6E2910E080F421C109CA97F5";
+ static const char *const cname2 = "ovpn-test-ec2";
+ 
+@@ -159,8 +159,8 @@ static const char *const cert4 =
+     "353PpJJ9s2b/Fqoc4d7udqhQogA7jqbayTKhJxbT134l2NzqDROzuS0kXbX8bXCi\n"
+     "mXSa4c8=\n"
+     "-----END CERTIFICATE-----\n";
+-static const char *const key4 = key3;
++#define key4 key3
+ static const char *const hash4 = "E1401D4497C944783E3D62CDBD2A1F69F5E5071E";
+-static const char *const cname4 = cname3; /* same CN as that of cert3 */
++#define cname4 cname3 /* same CN as that of cert3 */
+ 
+ #endif /* CERT_DATA_H */
+diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/openvpn/test_cryptoapi.c
+index c8468103..2150b77c 100644
+--- a/tests/unit_tests/openvpn/test_cryptoapi.c
++++ b/tests/unit_tests/openvpn/test_cryptoapi.c
+@@ -99,17 +99,26 @@ static struct test_cert
+     const char *const friendly_name;    /* identifies certs loaded to the store -- keep unique */
+     const char *hash;                   /* SHA1 fingerprint */
+     int valid;                          /* nonzero if certificate has not expired */
+-} certs[] = {
+-    {cert1,  key1,  cname1,  "OVPN TEST CA1",  "OVPN Test Cert 1",  hash1,  1},
+-    {cert2,  key2,  cname2,  "OVPN TEST CA2",  "OVPN Test Cert 2",  hash2,  1},
+-    {cert3,  key3,  cname3,  "OVPN TEST CA1",  "OVPN Test Cert 3",  hash3,  1},
+-    {cert4,  key4,  cname4,  "OVPN TEST CA2",  "OVPN Test Cert 4",  hash4,  0},
+-    {}
+-};
++} certs[5];
+ 
+ static bool certs_loaded;
+ static HCERTSTORE user_store;
+ 
++/* Fill-in certs[] array */
++void
++init_cert_data()
++{
++    struct test_cert certs_local[] = {
++        {cert1,  key1,  cname1,  "OVPN TEST CA1",  "OVPN Test Cert 1",  hash1,  1},
++        {cert2,  key2,  cname2,  "OVPN TEST CA2",  "OVPN Test Cert 2",  hash2,  1},
++        {cert3,  key3,  cname3,  "OVPN TEST CA1",  "OVPN Test Cert 3",  hash3,  1},
++        {cert4,  key4,  cname4,  "OVPN TEST CA2",  "OVPN Test Cert 4",  hash4,  0},
++        {0}
++    };
++    assert(sizeof(certs_local) == sizeof(certs));
++    memcpy(certs, certs_local, sizeof(certs_local));
++}
++
+ /* Lookup a certificate in our certificate/key db */
+ static struct test_cert *
+ lookup_cert(const char *friendly_name)
+@@ -131,6 +140,7 @@ import_certs(void **state)
+     {
+         return;
+     }
++    init_cert_data();
+     user_store = CertOpenStore(CERT_STORE_PROV_SYSTEM, 0, 0, CERT_SYSTEM_STORE_CURRENT_USER
+                                |CERT_STORE_OPEN_EXISTING_FLAG, L"MY");
+     assert_non_null(user_store);
+diff --git a/tests/unit_tests/openvpn/test_pkcs11.c b/tests/unit_tests/openvpn/test_pkcs11.c
+index ea394bea..df5f8c7e 100644
+--- a/tests/unit_tests/openvpn/test_pkcs11.c
++++ b/tests/unit_tests/openvpn/test_pkcs11.c
+@@ -112,13 +112,7 @@ static struct test_cert
+     const char *const friendly_name;    /* identifies certs loaded to the store -- keep unique */
+     uint8_t hash[HASHSIZE];             /* SHA1 fingerprint: computed and filled in later */
+     char *p11_id;                       /* PKCS#11 id -- filled in later */
+-} certs[] = {
+-    {cert1,  key1,  cname1,  "OVPN TEST CA1",  "OVPN Test Cert 1",  {},  NULL},
+-    {cert2,  key2,  cname2,  "OVPN TEST CA2",  "OVPN Test Cert 2",  {},  NULL},
+-    {cert3,  key3,  cname3,  "OVPN TEST CA1",  "OVPN Test Cert 3",  {},  NULL},
+-    {cert4,  key4,  cname4,  "OVPN TEST CA2",  "OVPN Test Cert 4",  {},  NULL},
+-    {}
+-};
++} certs[5];
+ 
+ static bool pkcs11_id_management;
+ static char softhsm2_tokens_path[] = "softhsm2_tokens_XXXXXX";
+@@ -127,6 +121,21 @@ int num_certs;
+ static const char *pkcs11_id_current;
+ struct env_set *es;
+ 
++/* Fill-in certs[] array */
++void
++init_cert_data()
++{
++    struct test_cert certs_local[] = {
++        {cert1,  key1,  cname1,  "OVPN TEST CA1",  "OVPN Test Cert 1",  {0},  NULL},
++        {cert2,  key2,  cname2,  "OVPN TEST CA2",  "OVPN Test Cert 2",  {0},  NULL},
++        {cert3,  key3,  cname3,  "OVPN TEST CA1",  "OVPN Test Cert 3",  {0},  NULL},
++        {cert4,  key4,  cname4,  "OVPN TEST CA2",  "OVPN Test Cert 4",  {0},  NULL},
++        {0}
++    };
++    assert(sizeof(certs_local) == sizeof(certs));
++    memcpy(certs, certs_local, sizeof(certs_local));
++}
++
+ /* Intercept get_user_pass for PIN and other prompts */
+ bool
+ get_user_pass_cr(struct user_pass *up, const char *auth_file, const char *prefix,
+@@ -173,6 +182,7 @@ init(void **state)
+     umask(0077);  /* ensure all files and directories we create get user only access */
+     char config[256];
+ 
++    init_cert_data();
+     if (!mkdtemp(softhsm2_tokens_path))
+     {
+         fail_msg("make tmpdir using template <%s> failed (error = %d)", softhsm2_tokens_path, errno);
+@@ -416,7 +426,8 @@ test_tls_ctx_use_pkcs11(void **state)
+         assert_non_null(pubkey);
+         assert_non_null(privkey);
+ #ifdef HAVE_XKEY_PROVIDER
+-        digest_sign_verify(privkey, pubkey); /* this will exercise signing via pkcs11 backend */
++        /* this will exercise signing via pkcs11 backend */
++        assert_int_equal(digest_sign_verify(privkey, pubkey), 1);
+ #else
+         if (!SSL_CTX_check_private_key(tls_ctx.ctx))
+         {
+-- 
+2.34.1
 
-In that case I'll send this as a single patch covering both cryptoapi and
-pkcs11 tests.
-
-Thanks,
-
-Selva
-
---00000000000035cc0105f7e04611
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
-<div dir=3D"ltr" class=3D"gmail_attr">On Mon, Mar 27, 2023 at 4:49=E2=80=AF=
-AM Frank Lichtenheld &lt;<a href=3D"mailto:frank@...2641...">frank@...2724...=
-..</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margi=
-n:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex=
-">On Fri, Mar 24, 2023 at 01:13:22PM -0400, Selva Nair wrote:<br>
-&gt; Would the attached small patch be acceptable instead? It covers only<b=
-r>
-&gt; test_cryptoapi --- if this will do, I can incorporate similar changes =
-for<br>
-&gt; test_pkcs11 into a v2 of the relevant patch as those have not been<br>
-&gt; ACK-ed yet.<br>
-<br>
-Actually, I acked that whole series. However there was a problem with<br>
-my mail configuration on that day and so Gmail rejected them. They<br>
-are on the list however.=C2=A0</blockquote><blockquote class=3D"gmail_quote=
-" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);=
-padding-left:1ex">
-<br>
-But feel free to integrate this and I can re-ack the patch.<br></blockquote=
-><div><br></div><div>In that case I&#39;ll send this as a single patch cove=
-ring both cryptoapi and</div><div>pkcs11 tests.=C2=A0</div><div><br></div><=
-div>Thanks,</div><div><br></div><div>Selva</div></div></div>
-
---00000000000035cc0105f7e04611--
 
