@@ -1,8 +1,8 @@
-Date: Tue, 28 Mar 2023 12:02:57 +0200
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZCK7UUerR1gILqwv@...2685...>
+Date: Tue, 28 Mar 2023 12:09:26 +0200
+Message-Id: <20230328100926.138233-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.6.2 released
+Subject: [Openvpn-devel] [PATCH] GHA: remove Ubuntu 18.04 builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,57 +11,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-The OpenVPN community project team is proud to release OpenVPN 2.6.2.
+Github will stop supporting them on April, 1st.
 
-This is mostly a bugfix release with some improvements.
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ .github/workflows/build.yaml | 15 ---------------
+ 1 file changed, 15 deletions(-)
 
-Feature changes:
-
-* implement byte counter statistics for DCO Linux (p2mp server and client)
-* implement byte counter statistics for DCO Windows (client only)
-* "--dns server <n> address ..." now permits up to 8 v4 or v6 addresses
-
-Important note for Linux DCO users:
-
-New control packets flow for data channel offloading on Linux:
-2.6.2+ changes the way OpenVPN control packets are handled on Linux when
-DCO is active, fixing the lockups observed with 2.6.0/2.6.1 under high client
-connect/disconnect activity. This is an INCOMPATIBLE change and therefore an
-ovpn-dco kernel module older than v0.2.20230323 (commit ID 726fdfe0fa21) will
-not work anymore and must be upgraded. The kernel module was renamed to
-"ovpn-dco-v2.ko" in order to highlight this change and ensure that users and
-userspace software could easily understand which version is loaded. Attempting
-to use the old ovpn-dco with 2.6.2+ will lead to disabling DCO at runtime.
-
-Windows MSI changes since 2.6.1:
-
-* Update included openvpn-gui to 11.39.0.0
-
-More details can be found in the Changes document:
-
-<https://github.com/OpenVPN/openvpn/blob/release/2.6/Changes.rst>
-
-(The Changes document also contains a section with work-arounds for
-common problems encountered when using OpenVPN with OpenSSL 3)
-
-Source code and Windows installers can be downloaded from our download page:
-
-<https://openvpn.net/community-downloads/>
-
-Debian and Ubuntu packages are available in the official apt repositories:
-
-<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
-
-On Red Hat derivatives we recommend using the Fedora Copr repository.
-
-<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release/>
-
-Kind regards,
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index a3ca7a2e..99ae437e 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -274,21 +274,6 @@ jobs:
+         libname: [mbed TLS]
+ 
+         include:
+-          - os: ubuntu-18.04
+-            sslpkg: "libmbedtls-dev"
+-            ssllib: mbedtls
+-            libname: mbed TLS
+-            extraconf: "--disable-dco"
+-          - os: ubuntu-18.04
+-            sslpkg: "libssl1.0-dev"
+-            ssllib: openssl
+-            libname: OpenSSL 1.0.2
+-            extraconf: "--disable-dco"
+-          - os: ubuntu-18.04
+-            sslpkg: "libssl-dev"
+-            libname: OpenSSL 1.1.1
+-            ssllib: openssl
+-            extraconf: "--disable-dco"
+           - os: ubuntu-20.04
+             sslpkg: "libssl-dev"
+             libname: OpenSSL 1.1.1
 -- 
-  Frank Lichtenheld
+2.34.1
+
 
