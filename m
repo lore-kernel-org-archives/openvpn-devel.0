@@ -1,10 +1,14 @@
-Date: Tue, 28 Mar 2023 09:25:12 +0200 (CEST)
-Message-Id: <202303280725.32S7PC7q076380@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230327171236.51771-1-selva.nair@...277...>
-References: <20230327171236.51771-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Bug-fix: segfault in
- dco_get_peer_stats()
+Date: Tue, 28 Mar 2023 10:47:10 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <ZCKpjm8t4Rg21WvX@...2685...>
+References: <20230327114937.28246-1-selva.nair@...277...>
+ <139d5059-25b8-e968-2996-5b3bc225ba3b@...68...>
+ <CAKuzo_iMkMXqvHTSX5ZmcurBhx3GT8rd_dbowmtnjaZORyyH1Q@...278...>
+ <bf4dac04-2258-ad3d-4929-fe17f0c2cfe3@...68...>
+MIME-Version: 1.0
+In-Reply-To: <bf4dac04-2258-ad3d-4929-fe17f0c2cfe3@...68...>
+Subject: Re: [Openvpn-devel] [PATCH] Make cert_data.h and
+ test_cryptoapi/pkcs11.c MSVC compliant
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,38 +19,47 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: Matthias Andree <matthias.andree@...68...>
+Cc: Selva Nair <selva.nair@...277...>, openvpn-devel@lists.sourceforge.net
 
-Acked-by: Antonio Quartulli <a@...2181...>
+On Mon, Mar 27, 2023 at 09:45:53PM +0200, Matthias Andree wrote:
+> Am 27.03.23 um 16:45 schrieb Selva Nair:
+> > Hi,
+> > 
+> > On Mon, Mar 27, 2023 at 9:59 AM Matthias Andree
+> > <matthias.andree@...68...> wrote:
+> > 
+> >     Am 27.03.23 um 13:49 schrieb selva.nair@...277...:
+> >     > From: Selva Nair <selva.nair@...277...>
+> >     >
+> >     > - Do not use non-literal initializers for static objects
+> >     > - Replace empty initializer {} by {0}
+> > 
+> >     Should we go to a revision, I would suggest to not make something
+> >     compliant to a compiler because that is assigning it way too much
+> >     power
+> >     and control. A terms such as "ready to be compiled with MSVC" or so
+> >     would be in order, or making this code compliant with some wisely
+> >     chosen
+> >     version of the ISO 9899 standard, aka. standard C.
+> > 
+> > 
+> > In this case "MSVC compliant" was arguably a poor choice of words as
+> > what the change does is to avoid non-C99 constructs. However it made
+> > sense to refer to MSVC in the context of what prompted this patch.
+> > 
+> > That said, in a cross-platform code base one often has to make changes
+> > to please compilers just to get things to build.
+> 
+> I don't mind what we're doing here... just that I want to avoid the
+> impression as though MSVC were setting the standards. There's always
+> MinGW-GCC...
 
-Thanks for the good find.  Since I could reproduce the crash yesterday
-(and I do need management for it) I can verify that it does no longer
-crash with the patch.
+GCC doesn't seem to care about any of this. Which doesn't really make
+it easier to write code that adheres to standards.
 
-(For whatever reason, --tls-version-max 1.0 did not suffice to trigger
-the error this morning, but --tls-version-min 1.3 + management + bytecount
-still did)
-
-Your patch has been applied to the master branch.
-
-commit 10c3f25a26bce480f80624c5ef4cb6774a31c305 (master)
-commit d01b9d751d6a5b4dc3737b339ec1ca5c23705243 (release/2.6)
-Author: Selva Nair
-Date:   Mon Mar 27 13:12:36 2023 -0400
-
-     Bug-fix: segfault in dco_get_peer_stats()
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20230327171236.51771-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26530.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Regards,
+-- 
+  Frank Lichtenheld
 
