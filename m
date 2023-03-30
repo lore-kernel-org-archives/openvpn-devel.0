@@ -1,10 +1,9 @@
-Date: Thu, 30 Mar 2023 12:56:49 +0200 (CEST)
-Message-Id: <202303301056.32UAuneS032153@...2054...>
+Date: Thu, 30 Mar 2023 13:11:06 +0200 (CEST)
+Message-Id: <202303301111.32UBB66p032529@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230330101536.533080-1-frank@...2641...>
-References: <20230330101536.533080-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: vcpkg: request tools feature of
- openssl for MSVC build
+In-Reply-To: <20230330094215.487924-1-frank@...2641...>
+References: <20230330094215.487924-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Do not include net/in_systm.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,25 +17,27 @@ Content-Transfer-Encoding: 8bit
 To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I have no idea what this is about, but I do not need to :-) - Frank and
-Lev do building, and if they say this is what is needed...
+Acked-by: Gert Doering <gert@...1296...>
 
-Since it's related to MSI building, it needs to go into 2.6 as long
-as we provide 2.6.x MSU builds ("for a while").
+"Buildbot says it still compiles on ALL platforms!" - and that is
+all I would have tested anyway (Buildbot isn't testing AIX, but I am
+reasonably sure AIX does not need that either).
 
-Your patch has been applied to the master and release/2.6 branch.
+This is refactoring / code cleanup, which goes to master (only), unless
+needed for a bugfix.
 
-commit b1fc3f25bc27462100bf96d9b677d6a3c31d3303 (master)
-commit 253a87dccf8c9645fade2426177489fcd8dd0ec8 (release/2.6)
+Your patch has been applied to the master branch.
+
+commit dbd7e3bea41e8be3fa637a17827236b1fc6db18b
 Author: Frank Lichtenheld
-Date:   Thu Mar 30 12:15:36 2023 +0200
+Date:   Thu Mar 30 11:42:15 2023 +0200
 
-     vcpkg: request tools feature of openssl for MSVC build
+     Do not include net/in_systm.h
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20230330101536.533080-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26561.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230330094215.487924-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26559.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
