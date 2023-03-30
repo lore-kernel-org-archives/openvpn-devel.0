@@ -1,8 +1,8 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Thu, 30 Mar 2023 11:42:15 +0200
-Message-Id: <20230330094215.487924-1-frank@...2641...>
+Date: Thu, 30 Mar 2023 11:42:26 +0200
+Message-Id: <20230330094226.487951-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Do not include net/in_systm.h
+Subject: [Openvpn-devel] [PATCH] version.sh: remove
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,89 +15,73 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This only defines three types and none of them is
-used anywhere in our source code.
+This was added back in commit
+6187644b660ce284d0a706811eae2dce7cb411b2
+to support the NSIS windows installer.
+
+It is now unused.
 
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
- configure.ac          |  5 +----
- src/openvpn/syshead.h | 16 ----------------
- 2 files changed, 1 insertion(+), 20 deletions(-)
+ .gitignore    | 1 -
+ Makefile.am   | 5 -----
+ configure.ac  | 1 -
+ version.sh.in | 4 ----
+ 4 files changed, 11 deletions(-)
+ delete mode 100644 version.sh.in
 
-Suggested by Arne in his CMake patch.
-Confirmed and tested.
+Fallout of my quest to understand all users of version.m4
 
+diff --git a/.gitignore b/.gitignore
+index 813413fe..bedbf519 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -46,7 +46,6 @@ m4/ltversion.m4
+ m4/lt~obsolete.m4
+ vcpkg_installed
+ 
+-version.sh
+ msvc-env-local.bat
+ config-msvc-local.h
+ config-msvc-version.h
+diff --git a/Makefile.am b/Makefile.am
+index 4ffe5118..297c3399 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -70,11 +70,6 @@ dist_noinst_HEADERS = \
+ 	config-msvc.h \
+ 	config-msvc-version.h.in
+ 
+-if WIN32
+-rootdir=$(prefix)
+-root_DATA = version.sh
+-endif
+-
+ config-version.h:
+ 	@CONFIGURE_GIT_CHFILES="`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) diff-files --name-status -r --ignore-submodules --quiet -- || echo \"+\"`"; \
+ 	CONFIGURE_GIT_UNCOMMITTED="`GIT_DIR=\"$(top_srcdir)/.git\" $(GIT) diff-index --cached  --quiet --ignore-submodules HEAD || echo \"*\"`"; \
 diff --git a/configure.ac b/configure.ac
-index ca85e5ed..e1e79ebf 100644
+index e1e79ebf..50bccc72 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -453,7 +453,7 @@ AC_CHECK_HEADERS([ \
- 	fcntl.h io.h \
- 	sys/types.h sys/socket.h \
- 	unistd.h dlfcn.h \
--	netinet/in.h netinet/in_systm.h \
-+	netinet/in.h \
- 	netinet/tcp.h arpa/inet.h netdb.h \
- 	versionhelpers.h \
- ])
-@@ -489,9 +489,6 @@ SOCKET_INCLUDES="
- #ifdef _WIN32
- #include <ws2tcpip.h>
- #endif
--#ifdef HAVE_NETINET_IN_SYSTM_H
--#include <netinet/in_systm.h>
--#endif
- #ifdef HAVE_NETINET_IP_H
- #include <netinet/ip.h>
- #endif
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index 53359225..7181b94d 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -221,10 +221,6 @@
- #include <sys/sockio.h>
- #endif
+@@ -1502,7 +1502,6 @@ AC_SUBST([TEST_LDFLAGS])
+ AC_SUBST([TEST_CFLAGS])
  
--#ifdef HAVE_NETINET_IN_SYSTM_H
--#include <netinet/in_systm.h>
--#endif
--
- #ifdef HAVE_NETINET_IP_H
- #include <netinet/ip.h>
- #endif
-@@ -241,10 +237,6 @@
- #include <sys/uio.h>
- #endif
- 
--#ifdef HAVE_NETINET_IN_SYSTM_H
--#include <netinet/in_systm.h>
--#endif
--
- #ifdef HAVE_NETINET_IP_H
- #include <netinet/ip.h>
- #endif
-@@ -265,10 +257,6 @@
- #include <sys/uio.h>
- #endif
- 
--#ifdef HAVE_NETINET_IN_SYSTM_H
--#include <netinet/in_systm.h>
--#endif
--
- #ifdef HAVE_NETINET_IP_H
- #include <netinet/ip.h>
- #endif
-@@ -301,10 +289,6 @@
- #include <sys/uio.h>
- #endif
- 
--#ifdef HAVE_NETINET_IN_SYSTM_H
--#include <netinet/in_systm.h>
--#endif
--
- #ifdef HAVE_NETINET_IP_H
- #include <netinet/ip.h>
- #endif
+ AC_CONFIG_FILES([
+-	version.sh
+ 	Makefile
+ 	build/Makefile
+ 	build/msvc/Makefile
+diff --git a/version.sh.in b/version.sh.in
+deleted file mode 100644
+index 2af5a364..00000000
+--- a/version.sh.in
++++ /dev/null
+@@ -1,4 +0,0 @@
+-OPENVPN_PACKAGE_NAME="@PACKAGE_NAME@"
+-OPENVPN_PACKAGE_TARNAME="@PACKAGE_TARNAME@"
+-OPENVPN_PACKAGE_VERSION="@PACKAGE_VERSION@"
+-OPENVPN_PACKAGE_HOST="@host@"
 -- 
 2.34.1
 
