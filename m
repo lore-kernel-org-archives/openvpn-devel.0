@@ -1,13 +1,8 @@
-Message-ID: <f5dbcc0d-bcb4-5b3d-af06-938a8f453ef5@...2181...>
-Date: Wed, 29 Mar 2023 15:01:39 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Date: Thu, 30 Mar 2023 11:42:15 +0200
+Message-Id: <20230330094215.487924-1-frank@...2641...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20230214135658.1034787-1-arne@...1227...>
- <20230329124644.1956530-1-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20230329124644.1956530-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Add missing check for
- nl_socket_alloc failure
+Subject: [Openvpn-devel] [PATCH] Do not include net/in_systm.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,47 +11,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+This only defines three types and none of them is
+used anywhere in our source code.
 
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ configure.ac          |  5 +----
+ src/openvpn/syshead.h | 16 ----------------
+ 2 files changed, 1 insertion(+), 20 deletions(-)
 
-On 29/03/2023 14:46, Arne Schwabe wrote:
-> This can happen if the memory alloc fails.
-> 
-> Patch V2: add goto error
-> 
-> Change-Id: Iee66caa794d267ac5f8bee584633352893047171
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->   src/openvpn/dco_linux.c | 7 +++++++
->   1 file changed, 7 insertions(+)
-> 
-> diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-> index 41540c0f8..95fe94848 100644
-> --- a/src/openvpn/dco_linux.c
-> +++ b/src/openvpn/dco_linux.c
-> @@ -83,6 +83,13 @@ resolve_ovpn_netlink_id(int msglevel)
->       int ret;
->       struct nl_sock *nl_sock = nl_socket_alloc();
->   
-> +    if (!nl_sock)
-> +    {
-> +        msg(msglevel, "Allocating net link socket failed");
-> +        ret = -1;
+Suggested by Arne in his CMake patch.
+Confirmed and tested.
 
-Please use -ENOMEM here - it is always better to return an actual reason 
-rather than just "failed".
-
-> +        goto err_sock;
-
-There is no need to jump to cleanup.
-You can just return -1 here and save one line.
-(this is what we do in other functions of this file)
-
-Cheers,
-
+diff --git a/configure.ac b/configure.ac
+index ca85e5ed..e1e79ebf 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -453,7 +453,7 @@ AC_CHECK_HEADERS([ \
+ 	fcntl.h io.h \
+ 	sys/types.h sys/socket.h \
+ 	unistd.h dlfcn.h \
+-	netinet/in.h netinet/in_systm.h \
++	netinet/in.h \
+ 	netinet/tcp.h arpa/inet.h netdb.h \
+ 	versionhelpers.h \
+ ])
+@@ -489,9 +489,6 @@ SOCKET_INCLUDES="
+ #ifdef _WIN32
+ #include <ws2tcpip.h>
+ #endif
+-#ifdef HAVE_NETINET_IN_SYSTM_H
+-#include <netinet/in_systm.h>
+-#endif
+ #ifdef HAVE_NETINET_IP_H
+ #include <netinet/ip.h>
+ #endif
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index 53359225..7181b94d 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -221,10 +221,6 @@
+ #include <sys/sockio.h>
+ #endif
+ 
+-#ifdef HAVE_NETINET_IN_SYSTM_H
+-#include <netinet/in_systm.h>
+-#endif
+-
+ #ifdef HAVE_NETINET_IP_H
+ #include <netinet/ip.h>
+ #endif
+@@ -241,10 +237,6 @@
+ #include <sys/uio.h>
+ #endif
+ 
+-#ifdef HAVE_NETINET_IN_SYSTM_H
+-#include <netinet/in_systm.h>
+-#endif
+-
+ #ifdef HAVE_NETINET_IP_H
+ #include <netinet/ip.h>
+ #endif
+@@ -265,10 +257,6 @@
+ #include <sys/uio.h>
+ #endif
+ 
+-#ifdef HAVE_NETINET_IN_SYSTM_H
+-#include <netinet/in_systm.h>
+-#endif
+-
+ #ifdef HAVE_NETINET_IP_H
+ #include <netinet/ip.h>
+ #endif
+@@ -301,10 +289,6 @@
+ #include <sys/uio.h>
+ #endif
+ 
+-#ifdef HAVE_NETINET_IN_SYSTM_H
+-#include <netinet/in_systm.h>
+-#endif
+-
+ #ifdef HAVE_NETINET_IP_H
+ #include <netinet/ip.h>
+ #endif
 -- 
-Antonio Quartulli
+2.34.1
+
 
