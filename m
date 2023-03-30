@@ -1,9 +1,9 @@
-Date: Thu, 30 Mar 2023 13:11:06 +0200 (CEST)
-Message-Id: <202303301111.32UBB66p032529@...2054...>
+Date: Thu, 30 Mar 2023 13:39:21 +0200 (CEST)
+Message-Id: <202303301139.32UBdLkQ033009@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230330094215.487924-1-frank@...2641...>
-References: <20230330094215.487924-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Do not include net/in_systm.h
+In-Reply-To: <20230330094226.487951-1-frank@...2641...>
+References: <20230330094226.487951-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: version.sh: remove
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,25 +19,21 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"Buildbot says it still compiles on ALL platforms!" - and that is
-all I would have tested anyway (Buildbot isn't testing AIX, but I am
-reasonably sure AIX does not need that either).
-
-This is refactoring / code cleanup, which goes to master (only), unless
-needed for a bugfix.
+Tested on a normal MinGW build (no MSI installers, just openvpn.exe)
+and this still works, as do GHA builds.
 
 Your patch has been applied to the master branch.
 
-commit dbd7e3bea41e8be3fa637a17827236b1fc6db18b
+commit 93343fdf00f44a683faf12c448a31ef66f6e39ee
 Author: Frank Lichtenheld
-Date:   Thu Mar 30 11:42:15 2023 +0200
+Date:   Thu Mar 30 11:42:26 2023 +0200
 
-     Do not include net/in_systm.h
+     version.sh: remove
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230330094215.487924-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26559.html
+     Message-Id: <20230330094226.487951-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26560.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
