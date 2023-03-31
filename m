@@ -1,12 +1,12 @@
 MIME-Version: 1.0
 References: <20230331154214.613245-1-frank@...2641...>
- <20230331154214.613245-3-frank@...2641...>
-In-Reply-To: <20230331154214.613245-3-frank@...2641...>
+ <20230331154214.613245-4-frank@...2641...>
+In-Reply-To: <20230331154214.613245-4-frank@...2641...>
 From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 31 Mar 2023 18:54:22 +0300
-Message-ID: <CAGyAFMXA118DUmDOJdV7M_tAN5mF48pKC7TaFagHY1OkUsdAfw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 2/3] vcpkg-ports/pkcs11-helper: Convert
- CONTROL to vcpkg.json
+Date: Fri, 31 Mar 2023 18:54:54 +0300
+Message-ID: <CAGyAFMV8ohU5J0Une36rER_mKzxh2FojOKk4cQA6j9L7742TQw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 3/3] vcpkg-ports/pkcs11-helper:
+ reference upstream PRs in patches
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -27,53 +27,52 @@ Acked-by: Lev Stipakov <lstipakov@...277...>
 pe 31. maalisk. 2023 klo 18.43 Frank Lichtenheld
 (frank@...2641...) kirjoitti:
 >
-> To be in line with current vcpkg packaging policies.
+> So it is easier to check the merge status.
 >
-> Change-Id: Ifad0965a2b724b0b278783ba9c0ad5a82274445d
+> Change-Id: Ia1f8a8d26d4752a7dda1a20521c59ded06bc7c52
 > Signed-off-by: Frank Lichtenheld <frank@...2641...>
 > ---
->  .github/workflows/build.yaml                 | 1 +
->  contrib/vcpkg-ports/pkcs11-helper/CONTROL    | 4 ----
->  contrib/vcpkg-ports/pkcs11-helper/vcpkg.json | 7 +++++++
->  3 files changed, 8 insertions(+), 4 deletions(-)
->  delete mode 100644 contrib/vcpkg-ports/pkcs11-helper/CONTROL
->  create mode 100644 contrib/vcpkg-ports/pkcs11-helper/vcpkg.json
+>  ...1-Allow-the-build-to-succeed-if-configured-with-disabl.patch | 2 ++
+>  .../vcpkg-ports/pkcs11-helper/pkcs11-helper-001-RFC7512.patch   | 2 ++
+>  .../pkcs11-helper/pkcs11-helper-002-dynamic_loader_flags.patch  | 2 ++
+>  3 files changed, 6 insertions(+)
 >
-> diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-> index 0f352dcd..0c16d379 100644
-> --- a/.github/workflows/build.yaml
-> +++ b/.github/workflows/build.yaml
-> @@ -445,6 +445,7 @@ jobs:
->          uses: lukka/run-vcpkg@...2637...
->          with:
->            vcpkgGitCommitId: 'd10d511f25620ca0f315cd83dcef6485efc63010'
-> +          vcpkgJsonGlob: '**/openvpn/vcpkg.json'
->            appendedCacheKey: '${{matrix.triplet}}'
+> diff --git a/contrib/vcpkg-ports/pkcs11-helper/0001-Allow-the-build-to-succeed-if-configured-with-disabl.patch b/contrib/vcpkg-ports/pkcs11-helper/0001-Allow-the-build-to-succeed-if-configured-with-disabl.patch
+> index 102be4ec..16fa7042 100644
+> --- a/contrib/vcpkg-ports/pkcs11-helper/0001-Allow-the-build-to-succeed-if-configured-with-disabl.patch
+> +++ b/contrib/vcpkg-ports/pkcs11-helper/0001-Allow-the-build-to-succeed-if-configured-with-disabl.patch
+> @@ -12,6 +12,8 @@ Signed-off-by: Frank Lichtenheld <frank@...2641...>
+>   lib/Makefile.am | 2 ++
+>   2 files changed, 3 insertions(+)
 >
->        - name: Run MSBuild consuming vcpkg.json
-> diff --git a/contrib/vcpkg-ports/pkcs11-helper/CONTROL b/contrib/vcpkg-ports/pkcs11-helper/CONTROL
-> deleted file mode 100644
-> index 1ead697e..00000000
-> --- a/contrib/vcpkg-ports/pkcs11-helper/CONTROL
-> +++ /dev/null
-> @@ -1,4 +0,0 @@
-> -Source: pkcs11-helper
-> -Version: 1.29-1
-> -Homepage: https://github.com/OpenSC/pkcs11-helper
-> -Description: pkcs11-helper is a library that simplifies the interaction with PKCS#11 providers for end-user applications.
-> diff --git a/contrib/vcpkg-ports/pkcs11-helper/vcpkg.json b/contrib/vcpkg-ports/pkcs11-helper/vcpkg.json
-> new file mode 100644
-> index 00000000..12f918b7
-> --- /dev/null
-> +++ b/contrib/vcpkg-ports/pkcs11-helper/vcpkg.json
-> @@ -0,0 +1,7 @@
-> +{
-> +    "name": "pkcs11-helper",
-> +    "version": "1.29.0",
-> +    "description": "pkcs11-helper is a library that simplifies the interaction with PKCS#11 providers for end-user applications.",
-> +    "homepage": "https://github.com/OpenSC/pkcs11-helper",
-> +    "license": "BSD-3-Clause OR GPL-2.0-only"
-> +}
+> +upstream PR: https://github.com/OpenSC/pkcs11-helper/pull/62
+> +
+>  diff --git a/configure.ac b/configure.ac
+>  index a7e9760..f154ae3 100644
+>  --- a/configure.ac
+> diff --git a/contrib/vcpkg-ports/pkcs11-helper/pkcs11-helper-001-RFC7512.patch b/contrib/vcpkg-ports/pkcs11-helper/pkcs11-helper-001-RFC7512.patch
+> index 84fba080..56e3486e 100644
+> --- a/contrib/vcpkg-ports/pkcs11-helper/pkcs11-helper-001-RFC7512.patch
+> +++ b/contrib/vcpkg-ports/pkcs11-helper/pkcs11-helper-001-RFC7512.patch
+> @@ -1,3 +1,5 @@
+> +upstream PR: https://github.com/OpenSC/pkcs11-helper/pull/4
+> +
+>  commit 90590b02085edc3830bdfe0942a46c4e7bf3f1ab (HEAD -> master)
+>  Author: David Woodhouse <David.Woodhouse@...753...>
+>  Date:   Thu Apr 30 14:58:24 2015 +0100
+> diff --git a/contrib/vcpkg-ports/pkcs11-helper/pkcs11-helper-002-dynamic_loader_flags.patch b/contrib/vcpkg-ports/pkcs11-helper/pkcs11-helper-002-dynamic_loader_flags.patch
+> index 325dea8b..6d674581 100644
+> --- a/contrib/vcpkg-ports/pkcs11-helper/pkcs11-helper-002-dynamic_loader_flags.patch
+> +++ b/contrib/vcpkg-ports/pkcs11-helper/pkcs11-helper-002-dynamic_loader_flags.patch
+> @@ -11,6 +11,8 @@ set original values as defaults, use verbatim (user-supplied) value
+>   lib/pkcs11h-core.c                       | 13 +++++++++++--
+>   3 files changed, 23 insertions(+), 3 deletions(-)
+>
+> +upstream PR: https://github.com/OpenSC/pkcs11-helper/pull/59
+> +
+>  diff --git a/include/pkcs11-helper-1.0/pkcs11h-core.h b/include/pkcs11-helper-1.0/pkcs11h-core.h
+>  index 9028c277..56f87718 100644
+>  --- a/include/pkcs11-helper-1.0/pkcs11h-core.h
 > --
 > 2.34.1
 >
