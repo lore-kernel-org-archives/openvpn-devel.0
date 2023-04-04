@@ -1,8 +1,11 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Tue,  4 Apr 2023 10:59:32 +0300
-Message-Id: <20230404075931.840-1-lstipakov@...277...>
+From: Gianmarco De Gregori <gianmarco@...2726...>
+Date: Tue,  4 Apr 2023 10:32:26 +0200
+Message-Id: <20230404083226.18751-1-gianmarco@...2726...>
+In-Reply-To: <20230403131750.4730-1-gianmarco@...2726...>
+References: 
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Support of DNS domain for DHCP-less drivers
+Subject: [Openvpn-devel] [PATCH v3] Route: add support for user defined
+ routing table
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,248 +17,593 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
 
-From: Lev Stipakov <lev@...515...>
+Add the ability for users to specify a custom
+routing table where routes should be installed in.
+As of now routes are always installed in the main
+routing table of the operating system, however,
+with the new --route-table option it is possibile
+to specify the ID of the default routing table
+to be used by --route(-ipv6).
 
-We set DNS domain either via interactve service or DHCP.
-When interactive service is not used, for example,
-when profiles are started by OpenVPNService, this option
-is not working for DCO and wintun.
+The --route(-ipv6) directives have been extended
+with an additional argument (5th for --route)
+(4th for --route-ipv6) so that each of them
+can possibly use an independent routing table.
 
-This implements setting DNS domain via WMIC command,
-similar to implementation in interactive service.
-This is done when:
+Please note: this feature is currently supported
+only by Linux/SITNL.
+Support for other platforms should be added in related backends.
 
- - interactive service is not used
- - ip_win32_type is either METSH or IPAPI, which is
-the case for DCO and wintun.
-
-Fixes https://github.com/OpenVPN/openvpn/issues/306
-
-Change-Id: I9ab51bf1c0774564204c75ecce9ebfb818db2f5b
+Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
 ---
- src/openvpn/options.c |  8 ++---
- src/openvpn/tun.c     | 72 ++++++++++++++++++++++++++++++++++---------
- src/openvpn/tun.h     |  6 ++++
- src/openvpn/win32.h   |  1 +
- 4 files changed, 67 insertions(+), 20 deletions(-)
+Changes from v1:
+* Fixed parameters (metric and table_id) order in init_route_list() call in init.c : 1535.
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 2680f268..36d54ceb 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3396,11 +3396,11 @@ options_postprocess_mutate_invariant(struct options *options)
- #ifdef _WIN32
-     const int dev = dev_type_enum(options->dev, options->dev_type);
+Changes from v2:
+* Add route_default_table_id to show_settings() in options.c : 1800.
+
+ doc/man-sections/vpn-network-options.rst |  16 +++-
+ src/openvpn/helper.c                     |   1 +
+ src/openvpn/init.c                       |  15 +++-
+ src/openvpn/options.c                    |  45 +++++++++-
+ src/openvpn/options.h                    |   1 +
+ src/openvpn/route.c                      | 101 +++++++++++++++++++++--
+ src/openvpn/route.h                      |  17 +++-
+ 7 files changed, 180 insertions(+), 16 deletions(-)
+
+diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
+index 8e3c92ee..c25bbf31 100644
+--- a/doc/man-sections/vpn-network-options.rst
++++ b/doc/man-sections/vpn-network-options.rst
+@@ -367,6 +367,14 @@ routing.
+   Like ``--redirect-gateway``, but omit actually changing the default gateway.
+   Useful when pushing private subnets.
  
-+    const bool dhcp = tuntap_maybe_dhcp(&options->tuntap_options);
++--route-table id
++  Specify a default table id for use with --route.
++  By default, OpenVPN installs routes in the main routing
++  table of the operating system, but with this option,
++  a user defined routing table can be used instead.
 +
-     /* when using wintun/ovpn-dco, kernel doesn't send DHCP requests, so don't use it */
-     if ((options->windows_driver == WINDOWS_DRIVER_WINTUN
--         || options->windows_driver == WINDOWS_DRIVER_DCO)
--        && (options->tuntap_options.ip_win32_type == IPW32_SET_DHCP_MASQ
--            || options->tuntap_options.ip_win32_type == IPW32_SET_ADAPTIVE))
-+         || options->windows_driver == WINDOWS_DRIVER_DCO) && dhcp)
-     {
-         options->tuntap_options.ip_win32_type = IPW32_SET_NETSH;
-     }
-@@ -3408,8 +3408,6 @@ options_postprocess_mutate_invariant(struct options *options)
-     if ((dev == DEV_TYPE_TUN || dev == DEV_TYPE_TAP) && !options->route_delay_defined)
-     {
-         /* delay may only be necessary when we perform DHCP handshake */
--        const bool dhcp = (options->tuntap_options.ip_win32_type == IPW32_SET_DHCP_MASQ)
--                          || (options->tuntap_options.ip_win32_type == IPW32_SET_ADAPTIVE);
-         if ((options->mode == MODE_POINT_TO_POINT) && dhcp)
-         {
-             options->route_delay_defined = true;
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 2ebe4809..c2cc7e26 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -84,6 +84,8 @@ static void netsh_set_dns6_servers(const struct in6_addr *addr_list,
- 
- static void netsh_command(const struct argv *a, int n, int msglevel);
- 
-+static void exec_command(const char *prefix, const struct argv *a, int n, int msglevel);
++  (Supported on Linux only, on other platforms this is a no-op).
 +
- static const char *netsh_get_id(const char *dev_node, struct gc_arena *gc);
+ --route args
+   Add route to routing table after connection is established. Multiple
+   routes can be specified. Routes will be automatically torn down in
+@@ -379,6 +387,7 @@ routing.
+       route network/IP netmask
+       route network/IP netmask gateway
+       route network/IP netmask gateway metric
++      route network/IP netmask gateway metric table-id
  
- static bool
-@@ -324,6 +326,22 @@ out:
-     return ret;
+   This option is intended as a convenience proxy for the ``route``\(8)
+   shell command, while at the same time providing portable semantics
+@@ -394,6 +403,9 @@ routing.
+   ``metric``
+         default taken from ``--route-metric`` if set, otherwise :code:`0`.
+ 
++  ``table-id`` (Supported on Linux only, on other platforms this is a no-op).
++	default taken from ``--route-table`` if set, otherwise :code:`0`.
++
+   The default can be specified by leaving an option blank or setting it to
+   :code:`default`.
+ 
+@@ -444,12 +456,14 @@ routing.
+   Valid syntax:
+   ::
+ 
+-     route-ipv6 ipv6addr/bits [gateway] [metric]
++     route-ipv6 ipv6addr/bits [gateway] [metric] [table-id]
+ 
+   The gateway parameter is only used for IPv6 routes across *tap* devices,
+   and if missing, the ``ipv6remote`` field from ``--ifconfig-ipv6`` or
+   ``--route-ipv6-gateway`` is used.
+ 
++  (table-id supported on Linux only, on other platforms this is a no-op).
++
+ --route-gateway arg
+   Specify a default *gateway* for use with ``--route``.
+ 
+diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
+index 7c219fdf..4a0e0d85 100644
+--- a/src/openvpn/helper.c
++++ b/src/openvpn/helper.c
+@@ -120,6 +120,7 @@ helper_add_route(const in_addr_t network, const in_addr_t netmask, struct option
+                              print_in_addr_t(network, 0, &o->gc),
+                              print_in_addr_t(netmask, 0, &o->gc),
+                              NULL,
++                             NULL,
+                              NULL);
  }
  
-+static void
-+wmic_do_dns_domain(bool add, const struct tuntap *tt)
-+{
-+    if (!tt->options.domain)
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index d358ad00..00caa283 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1504,6 +1504,7 @@ do_init_route_list(const struct options *options,
+     const char *gw = NULL;
+     int dev = dev_type_enum(options->dev, options->dev_type);
+     int metric = 0;
++    uint32_t table_id = 0; /* unspec table */
+ 
+     /* if DCO is enabled we have both regular routes and iroutes in the system
+      * routing table, and normal routes must have a higher metric for that to
+@@ -1522,6 +1523,10 @@ do_init_route_list(const struct options *options,
+     {
+         gw = options->route_default_gateway;
+     }
++    if (options->route_default_table_id)
 +    {
-+        return;
++        table_id = options->route_default_table_id;
++    }
+     if (options->route_default_metric)
+     {
+         metric = options->route_default_metric;
+@@ -1531,6 +1536,7 @@ do_init_route_list(const struct options *options,
+                         options->routes,
+                         gw,
+                         metric,
++                        table_id,
+                         link_socket_current_remote(link_socket_info),
+                         es,
+                         ctx))
+@@ -1549,6 +1555,7 @@ do_init_route_ipv6_list(const struct options *options,
+ {
+     const char *gw = NULL;
+     int metric = -1;            /* no metric set */
++    uint32_t table_id = 0; /* unspec table */
+ 
+     /* see explanation in do_init_route_list() */
+     if (dco_enabled(options))
+@@ -1567,6 +1574,11 @@ do_init_route_ipv6_list(const struct options *options,
+         metric = options->route_default_metric;
+     }
+ 
++    if (options->route_default_table_id)
++    {
++        table_id = options->route_default_table_id;
 +    }
 +
-+    struct argv argv = argv_new();
-+    argv_printf(&argv, "%s%s nicconfig where (InterfaceIndex=%ld) call SetDNSDomain %s",
-+                get_win_sys_path(), WMIC_PATH_SUFFIX, tt->adapter_index, add ? tt->options.domain : "");
-+    exec_command("WMIC", &argv, 1, M_WARN);
-+
-+    argv_free(&argv);
-+}
-+
- #endif /* ifdef _WIN32 */
+     /* redirect (IPv6) gateway to VPN?  if yes, add a few more specifics
+      */
+     if (options->routes_ipv6->flags & RG_REROUTE_GW)
+@@ -1578,7 +1590,7 @@ do_init_route_ipv6_list(const struct options *options,
+         {
+             add_route_ipv6_to_option_list( options->routes_ipv6,
+                                            string_alloc(opt_list[i], options->routes_ipv6->gc),
+-                                           NULL, NULL );
++                                           NULL, NULL, NULL );
+         }
+     }
  
- #ifdef TARGET_SOLARIS
-@@ -1190,6 +1208,11 @@ do_ifconfig_ipv6(struct tuntap *tt, const char *ifname, int tun_mtu,
-         /* set ipv6 dns servers if any are specified */
-         netsh_set_dns6_servers(tt->options.dns6, tt->options.dns6_len, tt->adapter_index);
-         windows_set_mtu(tt->adapter_index, AF_INET6, tun_mtu);
-+
-+        if (!tt->did_ifconfig_setup && !tuntap_maybe_dhcp(&tt->options))
+@@ -1586,6 +1598,7 @@ do_init_route_ipv6_list(const struct options *options,
+                              options->routes_ipv6,
+                              gw,
+                              metric,
++                             table_id,
+                              link_socket_current_remote_ipv6(link_socket_info),
+                              es,
+                              ctx))
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 2680f268..3914ab23 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1912,6 +1912,7 @@ show_settings(const struct options *o)
+     SHOW_STR(route_script);
+     SHOW_STR(route_default_gateway);
+     SHOW_INT(route_default_metric);
++    SHOW_INT(route_default_table_id);
+     SHOW_BOOL(route_noexec);
+     SHOW_INT(route_delay);
+     SHOW_INT(route_delay_window);
+@@ -6956,7 +6957,15 @@ add_option(struct options *options,
+         cnol_check_alloc(options);
+         add_client_nat_to_option_list(options->client_nat, p[1], p[2], p[3], p[4], msglevel);
+     }
+-    else if (streq(p[0], "route") && p[1] && !p[5])
++    else if (streq(p[0], "route-table") && p[1] && !p[2])
++    {
++#ifndef ENABLE_SITNL
++        msg(M_WARN, "NOTE: --route-table specified, but not supported on this platform");
++#endif
++        VERIFY_PERMISSION(OPT_P_ROUTE);
++        options->route_default_table_id = positive_atoi(p[1]);
++    }
++    else if (streq(p[0], "route") && p[1] && !p[6])
+     {
+         VERIFY_PERMISSION(OPT_P_ROUTE);
+         rol_check_alloc(options);
+@@ -6978,9 +6987,22 @@ add_option(struct options *options,
+                 goto err;
+             }
+         }
+-        add_route_to_option_list(options->routes, p[1], p[2], p[3], p[4]);
++        /* at the moment the routing table id is supported only by Linux/SITNL */
++#ifndef ENABLE_SITNL
++        if (p[5])
 +        {
-+            wmic_do_dns_domain(true, tt);
++            static bool route_table_warned = false;
++
++            if (!route_table_warned)
++            {
++                msg(M_WARN, "NOTE: table specified for --route, but not supported on this platform");
++                route_table_warned = true;
++            }
 +        }
++#endif
++        add_route_to_option_list(options->routes, p[1], p[2], p[3], p[4], p[5]);
      }
- #else /* platforms we have no IPv6 code for */
-     msg(M_FATAL, "Sorry, but I don't know how to do IPv6 'ifconfig' commands on this operating system.  You should ifconfig your TUN/TAP device manually or use an --up script.");
-@@ -1525,7 +1548,7 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-             ifname, ifconfig_local,
-             ifconfig_remote_netmask);
-     }
--    else if (tt->options.ip_win32_type == IPW32_SET_DHCP_MASQ || tt->options.ip_win32_type == IPW32_SET_ADAPTIVE)
-+    else if (tuntap_maybe_dhcp(&tt->options))
+-    else if (streq(p[0], "route-ipv6") && p[1] && !p[4])
++    else if (streq(p[0], "route-ipv6") && p[1] && !p[5])
      {
-         /* Let the DHCP configure the interface. */
-     }
-@@ -1535,11 +1558,18 @@ do_ifconfig_ipv4(struct tuntap *tt, const char *ifname, int tun_mtu,
-         do_dns_service(true, AF_INET, tt);
-         do_dns_domain_service(true, tt);
-     }
--    else if (tt->options.ip_win32_type == IPW32_SET_NETSH)
-+    else
-     {
--        netsh_ifconfig(&tt->options, tt->adapter_index, tt->local,
--                       tt->adapter_netmask, NI_IP_NETMASK|NI_OPTIONS);
-+        if (tt->options.ip_win32_type == IPW32_SET_NETSH)
+         VERIFY_PERMISSION(OPT_P_ROUTE);
+         rol6_check_alloc(options);
+@@ -6998,7 +7020,22 @@ add_option(struct options *options,
+             }
+             /* p[3] is metric, if present */
+         }
+-        add_route_ipv6_to_option_list(options->routes_ipv6, p[1], p[2], p[3]);
++
++        /* at the moment the routing table id is supported only by Linux/SITNL */
++#ifndef ENABLE_SITNL
++        if (p[5])
 +        {
-+            netsh_ifconfig(&tt->options, tt->adapter_index, tt->local,
-+                           tt->adapter_netmask, NI_IP_NETMASK | NI_OPTIONS);
++            static bool route6_table_warned = false;
++
++            if (!route6_table_warned)
++            {
++                msg(M_WARN, "NOTE: table specified for --route-ipv6, but not supported on this platform");
++                route6_table_warned = true;
++            }
 +        }
++#endif
 +
-+        wmic_do_dns_domain(true, tt);
++        add_route_ipv6_to_option_list(options->routes_ipv6, p[1], p[2], p[3], p[4]);
      }
-+
-+
-     if (tt->options.msg_channel)
+     else if (streq(p[0], "max-routes") && !p[2])
      {
-         do_set_mtu_service(tt, AF_INET, tun_mtu);
-@@ -5238,12 +5268,8 @@ dhcp_renew(const struct tuntap *tt)
-     }
- }
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index f5890b90..78ff645e 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -411,6 +411,7 @@ struct options
+     const char *route_predown_script;
+     const char *route_default_gateway;
+     const char *route_ipv6_default_gateway;
++    uint32_t route_default_table_id;
+     int route_default_metric;
+     bool route_noexec;
+     int route_delay;
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 3798bc65..00419dce 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -325,7 +325,6 @@ init_route(struct route_ipv4 *r,
  
--/*
-- * netsh functions
-- */
+     CLEAR(*r);
+     r->option = ro;
 -
- static void
--netsh_command(const struct argv *a, int n, int msglevel)
-+exec_command(const char *prefix, const struct argv *a, int n, int msglevel)
+     /* network */
+ 
+     if (!is_route_parm_defined(ro->network))
+@@ -437,6 +436,27 @@ init_route(struct route_ipv4 *r,
+ 
+     r->flags |= RT_DEFINED;
+ 
++    /* routing table id */
++
++    r->table_id = 0;
++    if (ro->table_id)
++    {
++        r->table_id = atoi(ro->table_id);
++        if (r->table_id < 0)
++        {
++            msg(M_WARN, PACKAGE_NAME "ROUTE: routing table id for network %s (%s) must be >= 0",
++                ro->network,
++                ro->table_id);
++            goto fail;
++        }
++        r->flags |= RT_TABLE_DEFINED;
++    }
++    else if (rl->spec.flags & RTSA_DEFAULT_TABLE_ID)
++    {
++        r->table_id = rl->spec.table_id;
++        r->flags |= RT_TABLE_DEFINED;
++    }
++
+     return true;
+ 
+ fail:
+@@ -493,6 +513,27 @@ init_route_ipv6(struct route_ipv6 *r6,
+ 
+     r6->flags |= RT_DEFINED;
+ 
++    /* routing table id */
++
++    r6->table_id = 0;
++    if (r6o->table_id)
++    {
++        r6->table_id = atoi(r6o->table_id);
++        if (r6->table_id < 0)
++        {
++            msg(M_WARN, PACKAGE_NAME "ROUTE: routing table id for network %s (%s) must be >= 0",
++                r6o->prefix,
++                r6o->table_id);
++            goto fail;
++        }
++        r6->flags |= RT_TABLE_DEFINED;
++    }
++    else if (rl6->spec_flags & RTSA_DEFAULT_TABLE_ID)
++    {
++        r6->table_id = rl6->default_route_table_id;
++        r6->flags |= RT_TABLE_DEFINED;
++    }
++
+     return true;
+ 
+ fail:
+@@ -506,7 +547,8 @@ add_route_to_option_list(struct route_option_list *l,
+                          const char *network,
+                          const char *netmask,
+                          const char *gateway,
+-                         const char *metric)
++                         const char *metric,
++                         const char *table_id)
  {
-     int i;
-     for (i = 0; i < n; ++i)
-@@ -5251,8 +5277,8 @@ netsh_command(const struct argv *a, int n, int msglevel)
-         bool status;
-         management_sleep(0);
-         netcmd_semaphore_lock();
--        argv_msg_prefix(M_INFO, a, "NETSH");
--        status = openvpn_execve_check(a, NULL, 0, "ERROR: netsh command failed");
-+        argv_msg_prefix(M_INFO, a, prefix);
-+        status = openvpn_execve_check(a, NULL, 0, "ERROR: command failed");
-         netcmd_semaphore_release();
-         if (status)
-         {
-@@ -5260,7 +5286,13 @@ netsh_command(const struct argv *a, int n, int msglevel)
-         }
-         management_sleep(4);
-     }
--    msg(msglevel, "NETSH: command failed");
-+    msg(msglevel, "%s: command failed", prefix);
-+}
-+
-+static void
-+netsh_command(const struct argv *a, int n, int msglevel)
-+{
-+    exec_command("NETSH", a, n, msglevel);
+     struct route_option *ro;
+     ALLOC_OBJ_GC(ro, struct route_option, l->gc);
+@@ -514,6 +556,7 @@ add_route_to_option_list(struct route_option_list *l,
+     ro->netmask = netmask;
+     ro->gateway = gateway;
+     ro->metric = metric;
++    ro->table_id = table_id;
+     ro->next = l->routes;
+     l->routes = ro;
+ 
+@@ -523,13 +566,15 @@ void
+ add_route_ipv6_to_option_list(struct route_ipv6_option_list *l,
+                               const char *prefix,
+                               const char *gateway,
+-                              const char *metric)
++                              const char *metric,
++                              const char *table_id)
+ {
+     struct route_ipv6_option *ro;
+     ALLOC_OBJ_GC(ro, struct route_ipv6_option, l->gc);
+     ro->prefix = prefix;
+     ro->gateway = gateway;
+     ro->metric = metric;
++    ro->table_id = table_id;
+     ro->next = l->routes_ipv6;
+     l->routes_ipv6 = ro;
  }
- 
- void
-@@ -6927,6 +6959,11 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-         }
-         else
-         {
-+            if (!tt->did_ifconfig_setup && !tuntap_maybe_dhcp(&tt->options))
-+            {
-+                wmic_do_dns_domain(false, tt);
-+            }
-+
-             netsh_delete_address_dns(tt, true, &gc);
-         }
-     }
-@@ -6937,7 +6974,7 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-         {
-             /* We didn't do ifconfig. */
-         }
--        else if (tt->options.ip_win32_type == IPW32_SET_DHCP_MASQ || tt->options.ip_win32_type == IPW32_SET_ADAPTIVE)
-+        else if (tuntap_maybe_dhcp(&tt->options))
-         {
-             /* We don't have to clean the configuration with DHCP. */
-         }
-@@ -6947,9 +6984,14 @@ close_tun(struct tuntap *tt, openvpn_net_ctx_t *ctx)
-             do_dns_service(false, AF_INET, tt);
-             do_address_service(false, AF_INET, tt);
-         }
--        else if (tt->options.ip_win32_type == IPW32_SET_NETSH)
-+        else
-         {
--            netsh_delete_address_dns(tt, false, &gc);
-+            wmic_do_dns_domain(false, tt);
-+
-+            if (tt->options.ip_win32_type == IPW32_SET_NETSH)
-+            {
-+                netsh_delete_address_dns(tt, false, &gc);
-+            }
-         }
+@@ -628,6 +673,7 @@ init_route_list(struct route_list *rl,
+                 const struct route_option_list *opt,
+                 const char *remote_endpoint,
+                 int default_metric,
++                uint32_t table_id,
+                 in_addr_t remote_host,
+                 struct env_set *es,
+                 openvpn_net_ctx_t *ctx)
+@@ -651,6 +697,12 @@ init_route_list(struct route_list *rl,
+         rl->spec.flags |= RTSA_DEFAULT_METRIC;
      }
  
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index e19e1a2e..0d8e2307 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -668,6 +668,12 @@ tuntap_is_dco_win_timeout(struct tuntap *tt, int status)
- const char *
- print_windows_driver(enum windows_driver_type windows_driver);
- 
-+static inline bool
-+tuntap_maybe_dhcp(struct tuntap_options *o)
-+{
-+    return o->ip_win32_type == IPW32_SET_DHCP_MASQ || o->ip_win32_type == IPW32_SET_ADAPTIVE;
-+}
++    if (table_id)
++    {
++        rl->spec.table_id = table_id;
++        rl->spec.flags |= RTSA_DEFAULT_TABLE_ID;
++    }
 +
- #else  /* ifdef _WIN32 */
+     get_default_gateway(&rl->rgi, ctx);
+     if (rl->rgi.flags & RGI_ADDR_DEFINED)
+     {
+@@ -784,6 +836,7 @@ init_route_ipv6_list(struct route_ipv6_list *rl6,
+                      const struct route_ipv6_option_list *opt6,
+                      const char *remote_endpoint,
+                      int default_metric,
++                     uint32_t table_id,
+                      const struct in6_addr *remote_host_ipv6,
+                      struct env_set *es,
+                      openvpn_net_ctx_t *ctx)
+@@ -808,6 +861,12 @@ init_route_ipv6_list(struct route_ipv6_list *rl6,
+         rl6->spec_flags |= RTSA_DEFAULT_METRIC;
+     }
  
- static inline bool
-diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index 72ffb012..36059662 100644
---- a/src/openvpn/win32.h
-+++ b/src/openvpn/win32.h
-@@ -38,6 +38,7 @@
- #define WIN_ROUTE_PATH_SUFFIX "\\system32\\route.exe"
- #define WIN_IPCONFIG_PATH_SUFFIX "\\system32\\ipconfig.exe"
- #define WIN_NET_PATH_SUFFIX "\\system32\\net.exe"
-+#define WMIC_PATH_SUFFIX "\\system32\\wbem\\wmic.exe"
++    if (table_id)
++    {
++        rl6->default_route_table_id = table_id;
++        rl6->spec_flags |= RTSA_DEFAULT_TABLE_ID;
++    }
++
+     msg(D_ROUTE, "GDG6: remote_host_ipv6=%s",
+         remote_host_ipv6 ?  print_in6_addr(*remote_host_ipv6, 0, &gc) : "n/a" );
  
- /*
-  * Win32-specific OpenVPN code, targeted at the mingw
+@@ -1598,9 +1657,15 @@ add_route(struct route_ipv4 *r,
+         metric = r->metric;
+     }
+ 
++    uint32_t table_id = 0;
++    if (r->flags & RT_TABLE_DEFINED)
++    {
++        table_id = r->table_id;
++    }
++
+     status = RTA_SUCCESS;
+     int ret = net_route_v4_add(ctx, &r->network, netmask_to_netbits2(r->netmask),
+-                               &r->gateway, iface, 0, metric);
++                               &r->gateway, iface, table_id, metric);
+     if (ret == -EEXIST)
+     {
+         msg(D_ROUTE, "NOTE: Linux route add command failed because route exists");
+@@ -1978,10 +2043,16 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt,
+         metric = r6->metric;
+     }
+ 
++    uint32_t table_id = 0;
++    if ((r6->flags & RT_TABLE_DEFINED) && (r6->table_id > 0))
++    {
++        table_id = r6->table_id;
++    }
++
+     status = RTA_SUCCESS;
+     int ret = net_route_v6_add(ctx, &r6->network, r6->netbits,
+                                gateway_needed ? &r6->gateway : NULL,
+-                               device, 0, metric);
++                               device, table_id, metric);
+     if (ret == -EEXIST)
+     {
+         msg(D_ROUTE, "NOTE: Linux route add command failed because route exists");
+@@ -2186,8 +2257,14 @@ delete_route(struct route_ipv4 *r,
+         metric = r->metric;
+     }
+ 
++    uint32_t table_id = 0;
++    if (r->flags & RT_TABLE_DEFINED)
++    {
++        table_id = r->table_id;
++    }
++
+     if (net_route_v4_del(ctx, &r->network, netmask_to_netbits2(r->netmask),
+-                         &r->gateway, NULL, 0, metric) < 0)
++                         &r->gateway, NULL, table_id, metric) < 0)
+     {
+         msg(M_WARN, "ERROR: Linux route delete command failed");
+     }
+@@ -2361,7 +2438,7 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt,
+     {
+         gateway_needed = true;
+     }
+-#endif
++#endif /* ifndef _WIN32 */
+ 
+     struct gc_arena gc = gc_new();
+     struct argv argv = argv_new();
+@@ -2398,8 +2475,16 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt,
+         metric = r6->metric;
+     }
+ 
++    uint32_t table_id = 0;
++    if (r6->flags & RT_TABLE_DEFINED)
++    {
++        table_id = r6->table_id;
++    }
++
++
++
+     if (net_route_v6_del(ctx, &r6->network, r6->netbits,
+-                         gateway_needed ? &r6->gateway : NULL, device, 0,
++                         gateway_needed ? &r6->gateway : NULL, device, table_id,
+                          metric) < 0)
+     {
+         msg(M_WARN, "ERROR: Linux route v6 delete command failed");
+diff --git a/src/openvpn/route.h b/src/openvpn/route.h
+index 71b4cf4e..b97764db 100644
+--- a/src/openvpn/route.h
++++ b/src/openvpn/route.h
+@@ -63,12 +63,14 @@ struct route_special_addr
+ #define RTSA_REMOTE_ENDPOINT  (1<<0)
+ #define RTSA_REMOTE_HOST      (1<<1)
+ #define RTSA_DEFAULT_METRIC   (1<<2)
++#define RTSA_DEFAULT_TABLE_ID (1<<3)
+     unsigned int flags;
+ 
+     in_addr_t remote_endpoint;
+     in_addr_t remote_host;
+     int remote_host_local; /* TLA_x value */
+     struct route_bypass bypass;
++    uint32_t table_id;
+     int default_metric;
+ };
+ 
+@@ -77,6 +79,7 @@ struct route_option {
+     const char *network;
+     const char *netmask;
+     const char *gateway;
++    const char *table_id;
+     const char *metric;
+ };
+ 
+@@ -92,6 +95,7 @@ struct route_option {
+ 
+ struct route_option_list {
+     unsigned int flags; /* RG_x flags */
++
+     struct route_option *routes;
+     struct gc_arena *gc;
+ };
+@@ -101,6 +105,7 @@ struct route_ipv6_option {
+     const char *prefix;         /* e.g. "2001:db8:1::/64" */
+     const char *gateway;        /* e.g. "2001:db8:0::2" */
+     const char *metric;         /* e.g. "5" */
++    const char *table_id;
+ };
+ 
+ struct route_ipv6_option_list {
+@@ -113,12 +118,14 @@ struct route_ipv4 {
+ #define RT_DEFINED        (1<<0)
+ #define RT_ADDED          (1<<1)
+ #define RT_METRIC_DEFINED (1<<2)
++#define RT_TABLE_DEFINED  (1<<3)
+     struct route_ipv4 *next;
+     unsigned int flags;
+     const struct route_option *option;
+     in_addr_t network;
+     in_addr_t netmask;
+     in_addr_t gateway;
++    uint32_t table_id;
+     int metric;
+ };
+ 
+@@ -129,6 +136,7 @@ struct route_ipv6 {
+     unsigned int netbits;
+     struct in6_addr gateway;
+     int metric;
++    uint32_t table_id;
+     /* gateway interface */
+ #ifdef _WIN32
+     DWORD adapter_index;        /* interface or ~0 if undefined */
+@@ -223,6 +231,7 @@ struct route_ipv6_list {
+     struct in6_addr remote_endpoint_ipv6; /* inside tun */
+     struct in6_addr remote_host_ipv6;   /* --remote address */
+     int default_metric;
++    uint32_t default_route_table_id;
+ 
+     struct route_ipv6_gateway_info rgi6;
+     unsigned int flags;                 /* RG_x flags, see route_option_list */
+@@ -271,17 +280,20 @@ void add_route_to_option_list(struct route_option_list *l,
+                               const char *network,
+                               const char *netmask,
+                               const char *gateway,
+-                              const char *metric);
++                              const char *metric,
++                              const char *table_id);
+ 
+ void add_route_ipv6_to_option_list(struct route_ipv6_option_list *l,
+                                    const char *prefix,
+                                    const char *gateway,
+-                                   const char *metric);
++                                   const char *metric,
++                                   const char *table_id);
+ 
+ bool init_route_list(struct route_list *rl,
+                      const struct route_option_list *opt,
+                      const char *remote_endpoint,
+                      int default_metric,
++                     uint32_t table_id,
+                      in_addr_t remote_host,
+                      struct env_set *es,
+                      openvpn_net_ctx_t *ctx);
+@@ -290,6 +302,7 @@ bool init_route_ipv6_list(struct route_ipv6_list *rl6,
+                           const struct route_ipv6_option_list *opt6,
+                           const char *remote_endpoint,
+                           int default_metric,
++                          uint32_t table_id,
+                           const struct in6_addr *remote_host,
+                           struct env_set *es,
+                           openvpn_net_ctx_t *ctx);
 -- 
-2.23.0.windows.1
+2.37.2
 
 
