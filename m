@@ -1,9 +1,8 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Mon, 17 Apr 2023 14:54:46 +0200
-Message-Id: <20230417125446.27247-1-frank@...2641...>
+From: Arne Schwabe <arne@...1227...>
+Date: Mon, 17 Apr 2023 15:40:46 +0200
+Message-Id: <20230417134046.81761-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] fix typo in help text:
- --ignore-unknown-option
+Subject: [Openvpn-devel] [PATCH] Fix compile error on TARGET_ANDROID
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +14,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Michael Nix <mchl.nix@...1030...>
 
-From: Michael Nix <mchl.nix@...1030...>
+Commit 3132bead49 accidentially was submitted with a missing semicolon
+at the end of the line. Whoops.
 
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/options.c | 2 +-
+ src/openvpn/socket.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 3914ab23..f5b09ab7 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -248,7 +248,7 @@ static const char usage_message[] =
-     "--setenv name value : Set a custom environmental variable to pass to script.\n"
-     "--setenv FORWARD_COMPATIBLE 1 : Relax config file syntax checking to allow\n"
-     "                  directives for future OpenVPN versions to be ignored.\n"
--    "--ignore-unkown-option opt1 opt2 ...: Relax config file syntax. Allow\n"
-+    "--ignore-unknown-option opt1 opt2 ...: Relax config file syntax. Allow\n"
-     "                  these options to be ignored when unknown\n"
-     "--script-security level: Where level can be:\n"
-     "                  0 -- strictly no calling of external programs\n"
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index ab8cc754..fc643c1c 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1165,7 +1165,7 @@ protect_fd_nonlocal(int fd, const struct sockaddr *addr)
+ {
+     if (!management)
+     {
+-        msg(M_FATAL, "Required management interface not available.")
++        msg(M_FATAL, "Required management interface not available.");
+     }
+ 
+     /* pass socket FD to management interface to pass on to VPNService API
 -- 
-2.34.1
+2.39.2 (Apple Git-143)
 
 
