@@ -1,8 +1,8 @@
-From: selva.nair@...277...
-Date: Tue, 18 Apr 2023 09:40:11 -0400
-Message-Id: <20230418134011.1752777-1-selva.nair@...277...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Tue, 18 Apr 2023 15:49:41 +0200
+Message-Id: <20230418134941.86637-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Format Windows error message in Unicode
+Subject: [Openvpn-devel] [PATCH] tests: do not include t_client.sh in dist
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,55 +15,32 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+It is generated from t_client.sh.in by configure,
+so no need to ship it. Due to the dependency on
+the configuration it also might break reproducibility
+of the dist tarball.
 
-- We assume that all text passed to the management interface
-  and written to log file are in Unicode (UTF-8). This is broken by
-  the use of the ANSI version of FormatMessage() for Windows error
-  messages. Fix by using FormatMessageW() and converting the UTF-16
-  result to UTF-8.
-
-Github: fixes OpenVPN/openvpn#319
-
-Signed-off-by: Selva Nair <selva.nair@...277...>
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
- src/openvpn/error.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ tests/Makefile.am | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/src/openvpn/error.c b/src/openvpn/error.c
-index a2c9aa4c..ef821fcd 100644
---- a/src/openvpn/error.c
-+++ b/src/openvpn/error.c
-@@ -970,19 +970,24 @@ strerror_win32(DWORD errnum, struct gc_arena *gc)
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index a46f2573..80673d56 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -25,8 +25,10 @@ TESTS_ENVIRONMENT = top_srcdir="$(top_srcdir)"
+ TESTS = $(test_scripts)
  
-     /* format a windows error message */
-     {
--        char message[256];
-+        wchar_t wmessage[256];
-+        char *message = NULL;
-         struct buffer out = alloc_buf_gc(256, gc);
--        const int status =  FormatMessage(
-+        const int status =  FormatMessageW(
-             FORMAT_MESSAGE_IGNORE_INSERTS
-             | FORMAT_MESSAGE_FROM_SYSTEM
-             | FORMAT_MESSAGE_ARGUMENT_ARRAY,
-             NULL,
-             errnum,
-             0,
--            message,
--            sizeof(message),
-+            wmessage,
-+            SIZE(wmessage),
-             NULL);
--        if (!status)
-+        if (status)
-+        {
-+            message = utf16to8(wmessage, gc);
-+        }
-+        if (!status || !message)
-         {
-             buf_printf(&out, "[Unknown Win32 Error]");
-         }
+ dist_noinst_SCRIPTS = \
+-	$(test_scripts) \
++	t_cltsrv.sh \
+ 	t_cltsrv-down.sh \
++	t_lpback.sh \
++	t_net.sh \
+ 	update_t_client_ips.sh
+ 
+ dist_noinst_DATA = \
 -- 
 2.34.1
 
