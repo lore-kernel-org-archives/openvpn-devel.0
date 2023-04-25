@@ -1,9 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 25 Apr 2023 12:20:21 +0200
-Message-Id: <20230425102021.1041755-1-arne@...1227...>
+Date: Tue, 25 Apr 2023 12:21:09 +0200
+Message-Id: <20230425102109.1041904-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Add missing check for nl_socket_alloc
- failure
+Subject: [Openvpn-devel] [PATCH v2] Add Apache2 linking with for new commits
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,35 +15,58 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This can happen if the memory alloc fails.
+After first round of mailing people with more than 10 commits we have
+almost all committers have agreed. This put this license in the realm
+of having a realistic change to work. Had any of these contributers
+disagreed, rewriting all their code might have been not feasible.
 
-Patch V2: add goto error
+The rationale of adding this exception now is to avoid having to
+have a second round of agreement for new contributers and ensure
+that all new code will include the exemption.
 
-Change-Id: Iee66caa794d267ac5f8bee584633352893047171
+patch v2: add explaination and use exception rather than excemption
+
+Change-Id: Ide83f914f383b53ef37ddf628e4da5a78e241bf0
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/dco_linux.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ COPYING | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index 41540c0f8..95fe94848 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -83,6 +83,13 @@ resolve_ovpn_netlink_id(int msglevel)
-     int ret;
-     struct nl_sock *nl_sock = nl_socket_alloc();
+diff --git a/COPYING b/COPYING
+index e12c51414..b4a148494 100644
+--- a/COPYING
++++ b/COPYING
+@@ -31,6 +31,29 @@ OpenVPN license:
+   file, but you are not obligated to do so.  If you do not wish to
+   do so, delete this exception statement from your version.
  
-+    if (!nl_sock)
-+    {
-+        msg(msglevel, "Allocating net link socket failed");
-+        ret = -1;
-+        goto err_sock;
-+    }
++Apache2 linking exemption:
++---------------------------
++OpenVPN is currently undergoing a license change to add an exemption for
++Apache 2 linking. The following exemption is only valid for new contributions
++after COMMITDATE and past contribution where the authors have already agreed
++to the exemption.
 +
-     ret = genl_connect(nl_sock);
-     if (ret)
-     {
++  In addition, as a special exception, OpenVPN Inc and the
++  contributors give permission to link the code of this program to
++  libraries (the "Libraries") licensed under the Apache License
++  version 2.0 (this work and any linked library the "Combined Work")
++  and copy and distribute the Combined Work without an obligation to
++  license the Libraries under the GNU General Public License v2
++  (GPL-2.0) as required by Section 2 of the GPL-2.0, and without an
++  obligation to refrain from imposing any additional restrictions in
++  the Apache License version 2 that are not in the GPL-2.0, as
++  required by Section 6 of the GPL-2.0.  You must comply with the
++  GPL-2.0 in all other respects for the Combined Work, including
++  the obligation to provide source code.  If you modify this file, you
++  may extend this exception to your version of the file, but you are
++  not obligated to do so.  If you do not wish to do so, delete this
++  exception statement from your version.
++
+ LZO license:
+ ------------
+ 
 -- 
-2.37.1 (Apple Git-137.1)
+2.39.2 (Apple Git-143)
 
 
