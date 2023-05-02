@@ -1,9 +1,11 @@
-Date: Tue, 2 May 2023 16:27:10 +0200 (CEST)
-Message-Id: <202305021427.342ERAXb069743@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230430172202.206528-1-arne@...1227...>
-References: <20230430172202.206528-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove unused variable line
+From: David Sommerseth <dazo+openvpn@...2108...>
+Date: Tue,  2 May 2023 17:00:24 +0200
+Message-Id: <20230502150024.52106-1-dazo+openvpn@...2108...>
+In-Reply-To: <20230502120227.30592-1-frank@...2641...>
+References: <20230502120227.30592-1-frank@...2641...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH applied openvpn3-linux]
+ openvpn3-config-manage: Fix description in man page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,34 +16,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, Frank Lichtenheld <frank@...2641...>
+Cc: David Sommerseth <davids@...515...>
 
-Acked-by: Gert Doering <gert@...1296...>
+From: David Sommerseth <davids@...515...>
 
-Trivial enough.  Looks like a leftover from The Great Pool Rewrite for 2.5
+Your patch has been applied to the master branch
 
-Test compiled on Linux.
+commit 97c729808a688364c16d17f7c34a4c7229ca0131 master
+Author: Frank Lichtenheld
+Date:   Tue, 02 May 2023 12:02:27 +0000
 
-Your patch has been applied to the master and release/2.6 branch.
+     docs/man: Fix description in openvpn3-config-manage man page
 
-commit f9d0994584cd8f42c013db3e8ea2d6ab3e3d7c62 (master)
-commit 6f72df316daed5e8f7a1b4b432265e01954dbac3 (release/2.6)
-Author: Arne Schwabe
-Date:   Sun Apr 30 19:22:02 2023 +0200
-
-     Remove unused variable line
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230430172202.206528-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26612.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+     Signed-off-by: Frank Lichtenheld
+     Message-Id: <20230502120227.30592-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26613.html
+     Signed-off-by: David Sommerseth
 
 
 --
 kind regards,
 
-Gert Doering
-
+David Sommerseth
 
