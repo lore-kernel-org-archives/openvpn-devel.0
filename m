@@ -1,11 +1,14 @@
-Message-ID: <9fd4f0f6-9ec8-2a7e-630f-78824f4fb0c5@...2181...>
-Date: Thu, 4 May 2023 17:19:20 +0200
+Date: Fri, 5 May 2023 09:33:20 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZFSxQELSohwLfK-V@...1296...>
+References: <ZFSsu3eazsdo8zoA@...1152...>
 MIME-Version: 1.0
-From: Antonio Quartulli <a@...2181...>
-References: <20230414094227.9153-1-kprovost@...2661...>
-Content-Language: en-US
-In-Reply-To: <20230414094227.9153-1-kprovost@...2661...>
-Subject: Re: [Openvpn-devel] [PATCH] DCO: support key rotation notifications
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="YRR39cIE+Wipn+7O"
+Content-Disposition: inline
+In-Reply-To: <ZFSsu3eazsdo8zoA@...1152...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] auth-token-user/auth-token
+ issue with "TLS Auth Error: username attempted to change"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,178 +17,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Kristof Provost <kprovost@...2661...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Ralf Hildebrandt <Ralf.Hildebrandt@...1152...>
+Cc: openvpn-users@lists.sourceforge.net, openvpn-devel@lists.sourceforge.net
+
+--YRR39cIE+Wipn+7O
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On 14/04/2023 11:42, Kristof Provost via Openvpn-devel wrote:
-> From: Kristof Provost <kp@...1376...>
-> 
-> Allow the kernel driver to notify us that it's time to renegotiate keys.
-> The intent is to avoid IV re-use after 2^32 packets.
-> 
-> This is a first draft intended for discussion. The accompanying kernel
-> change for FreeBSD can be found in https://reviews.freebsd.org/D39570
-> 
-> Signed-off-by: Kristof Provost <kprovost@...2661...>
+On Fri, May 05, 2023 at 09:14:03AM +0200, Ralf Hildebrandt via Openvpn-user=
+s wrote:
+> May  5 09:06:00 openvpn-gw170-int openvpn-udp[29574]: hildeb/10.31.192.11=
+5:55334 TLS Auth Error: username attempted to change from 'hildeb' to 'hild=
+eb::1f047fb6' -- tunnel disabled
+> May  5 09:06:00 openvpn-gw170-int openvpn-udp[29574]: hildeb/10.31.192.11=
+5:55334 TLS Auth Error: Auth Username/Password verification failed for peer
+>=20
+> What do we have to do to make the server accept the the
+> auth-token-user it pushed to the client?
 
-This looks good to me and I think it's reasonable to use the 
-CMD_SWAP_KEYS as notification for userspace to actually trigger a key 
-rotation.
+As of today, there is no way to make it do that.  On initial TLS
+authentication, the session is tied hard to the initial username(*),
+and changing username on reauthentication is not allowed.
 
-Acked-by: Antonio Quartulli <a@...2181...>
+That said, this breaks at least two use cases
 
-Linux and Windows part is now missing.
+ - there was no initial username/password authentication at all - and
+   you absolutely need auth-token-user here, to make the client actually
+   send the auth-token back.  It fails, because the server is locked
+   to "empty username" - I have sent a patch for this, but Arne is not
+   fully agreeing with me that it's the right thing
 
-Cheers,
+ - actually *changing* the auth-token-user from an original username/passwo=
+rd
+   authentication - it runs into the same problem, but this might be=20
+   workaroundable by not actually pushing a new "user".  So, question to
+   you, what is the intention behind changing the username here?
 
-> ---
->   src/openvpn/dco_freebsd.c      |  4 ++++
->   src/openvpn/dco_freebsd.h      |  1 +
->   src/openvpn/forward.c          | 32 +++++++++++++++++++++-----------
->   src/openvpn/multi.c            |  4 ++++
->   src/openvpn/ovpn_dco_freebsd.h |  1 +
->   src/openvpn/ssl.c              |  6 ++++++
->   src/openvpn/ssl.h              |  3 +++
->   7 files changed, 40 insertions(+), 11 deletions(-)
-> 
-> diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
-> index a334d5d2..1111abeb 100644
-> --- a/src/openvpn/dco_freebsd.c
-> +++ b/src/openvpn/dco_freebsd.c
-> @@ -550,6 +550,10 @@ dco_do_read(dco_context_t *dco)
->               dco->dco_message_type = OVPN_CMD_DEL_PEER;
->               break;
->   
-> +        case OVPN_NOTIF_ROTATE_KEY:
-> +            dco->dco_message_type = OVPN_CMD_SWAP_KEYS;
-> +            break;
-> +
->           default:
->               msg(M_WARN, "Unknown kernel notification %d", type);
->               break;
-> diff --git a/src/openvpn/dco_freebsd.h b/src/openvpn/dco_freebsd.h
-> index a07f9b69..e1a054e0 100644
-> --- a/src/openvpn/dco_freebsd.h
-> +++ b/src/openvpn/dco_freebsd.h
-> @@ -35,6 +35,7 @@ typedef enum ovpn_key_cipher dco_cipher_t;
->   enum ovpn_message_type_t {
->       OVPN_CMD_DEL_PEER,
->       OVPN_CMD_PACKET,
-> +    OVPN_CMD_SWAP_KEYS,
->   };
->   
->   enum ovpn_del_reason_t {
-> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-> index b3e0ba5d..d50eb457 100644
-> --- a/src/openvpn/forward.c
-> +++ b/src/openvpn/forward.c
-> @@ -1232,20 +1232,30 @@ process_incoming_dco(struct context *c)
->           return;
->       }
->   
-> -    if (dco->dco_message_type != OVPN_CMD_DEL_PEER)
-> +    switch (dco->dco_message_type)
->       {
-> -        msg(D_DCO_DEBUG, "%s: received message of type %u - ignoring", __func__,
-> -            dco->dco_message_type);
-> -        return;
-> -    }
-> +        case OVPN_CMD_DEL_PEER:
-> +            if (dco->dco_del_peer_reason == OVPN_DEL_PEER_REASON_EXPIRED)
-> +            {
-> +                    msg(D_DCO_DEBUG, "%s: received peer expired notification of for peer-id "
-> +                                    "%d", __func__, dco->dco_message_peer_id);
-> +                    trigger_ping_timeout_signal(c);
-> +                    return;
-> +            }
-> +            break;
->   
-> -    if (dco->dco_del_peer_reason == OVPN_DEL_PEER_REASON_EXPIRED)
-> -    {
-> -        msg(D_DCO_DEBUG, "%s: received peer expired notification of for peer-id "
-> -            "%d", __func__, dco->dco_message_peer_id);
-> -        trigger_ping_timeout_signal(c);
-> -        return;
-> +        case OVPN_CMD_SWAP_KEYS:
-> +            msg(D_DCO_DEBUG, "%s: received key rotation notification for peer-id %d",
-> +                            __func__, dco->dco_message_peer_id);
-> +            tls_session_soft_reset(c->c2.tls_multi);
-> +            break;
-> +
-> +        default:
-> +            msg(D_DCO_DEBUG, "%s: received message of type %u - ignoring", __func__,
-> +                dco->dco_message_type);
-> +            return;
->       }
-> +
->   #endif /* if defined(ENABLE_DCO) && (defined(TARGET_LINUX) || defined(TARGET_FREEBSD)) */
->   }
->   
-> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-> index 5444e752..6fb9cff2 100644
-> --- a/src/openvpn/multi.c
-> +++ b/src/openvpn/multi.c
-> @@ -3284,6 +3284,10 @@ multi_process_incoming_dco(struct multi_context *m)
->           {
->               process_incoming_del_peer(m, mi, dco);
->           }
-> +        else if (dco->dco_message_type == OVPN_CMD_SWAP_KEYS)
-> +        {
-> +            tls_session_soft_reset(mi->context.c2.tls_multi);
-> +        }
->       }
->       else
->       {
-> diff --git a/src/openvpn/ovpn_dco_freebsd.h b/src/openvpn/ovpn_dco_freebsd.h
-> index fec33835..53f94dfd 100644
-> --- a/src/openvpn/ovpn_dco_freebsd.h
-> +++ b/src/openvpn/ovpn_dco_freebsd.h
-> @@ -36,6 +36,7 @@
->   
->   enum ovpn_notif_type {
->       OVPN_NOTIF_DEL_PEER,
-> +    OVPN_NOTIF_ROTATE_KEY,
->   };
->   
->   enum ovpn_del_reason {
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 60aaee8d..26e86c8d 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -1918,6 +1918,12 @@ key_state_soft_reset(struct tls_session *session)
->       ks->remote_addr = ks_lame->remote_addr;
->   }
->   
-> +void
-> +tls_session_soft_reset(struct tls_multi *tls_multi)
-> +{
-> +	key_state_soft_reset(&tls_multi->session[TM_ACTIVE]);
-> +}
-> +
->   /*
->    * Read/write strings from/to a struct buffer with a u16 length prefix.
->    */
-> diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-> index 4ed4cfaa..3c40fbed 100644
-> --- a/src/openvpn/ssl.h
-> +++ b/src/openvpn/ssl.h
-> @@ -573,6 +573,9 @@ bool
->   tls_session_generate_data_channel_keys(struct tls_multi *multi,
->                                          struct tls_session *session);
->   
-> +void
-> +tls_session_soft_reset(struct tls_multi *multi);
-> +
->   /**
->    * Load ovpn.xkey provider used for external key signing
->    */
 
--- 
-Antonio Quartulli
+For "my case", I think handling the "username was empty before" case
+specially is the easy way forward (even if Arne disagrees), but for
+"your case" we'd need to disable the "tie TLS session to username",
+which is a no-go for Arne...
 
--- 
-Antonio Quartulli
+So maybe we need to introduce a new server option
+
+  push-auth-token-user $name
+
+which would be internally converted into
+
+  push "auth-token-user $name"
+  + tie $name to the TLS session
+
+Will discuss this with Arne.  Not sure he's reading openvpn-users - so
+copying in openvpn-devel.
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--YRR39cIE+Wipn+7O
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJkVLFAAAoJEB2Cnv7KVigSXLIL/2sFrDATnm3wHGnbmLk2SO+B
+YXTkiTVGA7ql/5sLFbLSq/uPBqTe/NTFn0OGElF1ooEc4+Dw3OkLWQLI775sZX/O
+NS+dirhBRt+tuMJ4Ka98fa9QK3f8nvJ7EH9VwN2M0gDHd0F+tYXNsvmPl0e1pifz
+IXX5d5cdAEl5fBPq9hqMMkFfjmtFS7dLy/Uq9aLm8zQN6aCb4dKZJp03nmc+UHfB
+i/BNI1IUl5GHBhSl9R43ELPM6pj1wC0DpQhs7XzCjoYQbYs/GdpsjXFAW9mnfC+F
+V1vLw+LR5rU/4Hr3wTY3+prQ3p8cyzuhc5nGahfFJ2xSIUW4P2WR2b+DD1DQUlAZ
+ndvSL6IULoP4MQQ43R/OVxfs+g6015P3tGGLYvinxqU3ZcTqVfSVc27WqAm4w0Vp
+b80upiERF3ilOstU4hokPFB8oWCF+9SmiGvgXfs6LegaCYPl92MfnAkXqXcM1Rho
+1gmkoaugLLfoDMSsS2XpUmBXJhsDpvZTzxxmAvJCNQ==
+=pTrI
+-----END PGP SIGNATURE-----
+
+--YRR39cIE+Wipn+7O--
 
