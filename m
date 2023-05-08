@@ -1,10 +1,10 @@
-Date: Mon, 8 May 2023 14:17:18 +0200 (CEST)
-Message-Id: <202305081217.348CHIZm004823@...2054...>
+Date: Mon, 8 May 2023 14:20:12 +0200 (CEST)
+Message-Id: <202305081220.348CKC2K005006@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230417125446.27247-1-frank@...2641...>
-References: <20230417125446.27247-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: fix typo in help text:
- --ignore-unknown-option
+In-Reply-To: <20230417134046.81761-1-arne@...1227...>
+References: <20230417134046.81761-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix compile error on
+ TARGET_ANDROID
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Michael Nix <mchl.nix@...1030...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"because it makes sense".
+"Obviously correct".  Wonder who ACKed and/or merged the offending code...
 
-I have not tested this beyond "does it still compile?" (which is just
-paranoia since "it's only changing a single byte in a string", but hey...)
-
-@Frank, thanks for forwarding this from a MR to the list.
+Interesting enough, Uncrustify does not complain here.
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit c7da4e0dcca5a56e2ec37fc8a2672cdbebe65048 (master)
-commit d76fc3336def34adf7e76141865c492fdf69d844 (release/2.6)
-Author: Michael Nix
-Date:   Mon Apr 17 14:54:46 2023 +0200
+commit 8d38ed4817f4c1fe1676409c4e5138aaa4a69dfc (master)
+commit a32f914051909cc5e7692964af169fc3224270e5 (release/2.6)
+Author: Arne Schwabe
+Date:   Mon Apr 17 15:40:46 2023 +0200
 
-     fix typo in help text: --ignore-unknown-option
+     Fix compile error on TARGET_ANDROID
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Signed-off-by: Arne Schwabe <arne@...1227...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230417125446.27247-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26592.html
+     Message-Id: <20230417134046.81761-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26593.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
