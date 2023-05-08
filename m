@@ -1,10 +1,10 @@
-Date: Mon, 8 May 2023 13:57:44 +0200 (CEST)
-Message-Id: <202305081157.348BviG7004254@...2054...>
+Date: Mon, 8 May 2023 14:11:11 +0200 (CEST)
+Message-Id: <202305081211.348CBB43004596@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230503135922.54871-1-frank@...2641...>
-References: <20230503135922.54871-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: man page: Remove cruft from
- --topology documentation
+In-Reply-To: <20230418134941.86637-1-frank@...2641...>
+References: <20230418134941.86637-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: tests: do not include
+ t_client.sh in dist
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,21 +20,26 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-"Because it makes sense".
+t_client.sh is built according to configure findings for @SHELL etc.,
+so no good packing it.
+
+Verified that the tarball before/after only differs in "t_client.sh",
+that "distcheck" still passes, and that "make check" on the resulting
+tarball builds & runs a t_client.sh as expected.
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit 03174bea4805bc018190d56a96f750f72fd960c1 (master)
-commit 3779cefe5d3636f722a4df51db6162fcc44e2dcd (release/2.6)
+commit d75a2dfc3e11daa1650f838517b610e6632d0445 (master)
+commit 477e7f5e91bfc66214c8d5466b24a424e2b401f4 (release/2.6)
 Author: Frank Lichtenheld
-Date:   Wed May 3 15:59:21 2023 +0200
+Date:   Tue Apr 18 15:49:41 2023 +0200
 
-     man page: Remove cruft from --topology documentation
+     tests: do not include t_client.sh in dist
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230503135922.54871-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26621.html
+     Message-Id: <20230418134941.86637-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26596.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
