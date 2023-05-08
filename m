@@ -1,10 +1,10 @@
-Date: Mon, 8 May 2023 17:32:40 +0200 (CEST)
-Message-Id: <202305081532.348FWeDc008280@...2054...>
+Date: Mon, 8 May 2023 17:41:59 +0200 (CEST)
+Message-Id: <202305081541.348FfxWS008517@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230331154214.613245-3-frank@...2641...>
-References: <20230331154214.613245-3-frank@...2641...>
+In-Reply-To: <20230331154214.613245-4-frank@...2641...>
+References: <20230331154214.613245-4-frank@...2641...>
 Subject: [Openvpn-devel] [PATCH applied] Re: vcpkg-ports/pkcs11-helper:
- Convert CONTROL to vcpkg.json
+ reference upstream PRs in patches
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,23 +18,20 @@ Content-Transfer-Encoding: 8bit
 To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I have no idea what this does, but if Lev says it's The Way...
-
-It doesn't contain code changes, and I have verified that it doesn't
-break MinGW or GH building, so fine with me.
+Looks reasonable and does not break any builds... :-)
 
 Your patch has been applied to the master branch.
 
-commit a2160d3e42a1eff59aee3d984fd3354907f4379f
+commit 9577ffe92f033d8452cff0a3dbdfdc943655c5b8
 Author: Frank Lichtenheld
-Date:   Fri Mar 31 17:42:13 2023 +0200
+Date:   Fri Mar 31 17:42:14 2023 +0200
 
-     vcpkg-ports/pkcs11-helper: Convert CONTROL to vcpkg.json
+     vcpkg-ports/pkcs11-helper: reference upstream PRs in patches
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20230331154214.613245-3-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26571.html
+     Message-Id: <20230331154214.613245-4-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26569.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
