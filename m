@@ -1,10 +1,8 @@
-Date: Wed, 10 May 2023 10:13:29 +0200 (CEST)
-Message-Id: <202305100813.34A8DTHL046895@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230509170517.2637245-1-selva.nair@...277...>
-References: <20230509170517.2637245-1-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Bugfix: dangling pointer passed
- to pkcs11-helper
+From: Frank Lichtenheld <frank@...2641...>
+Date: Wed, 10 May 2023 13:22:33 +0200
+Message-Id: <20230510112236.248026-1-frank@...2641...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 0/3] Some misc -Wconversion fixes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,62 +13,50 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+In the context of the CMake patchset Lev and I discussed
+lowering the warning level for the MSVC builds since there
+are so many conversion warnings they drown out everything
+else.
 
-The patch itself looks trivial ("just move the structure to the outer
-scope").
+So I actually tried what happens when you build with
+-Wconversion on Linux and whether it would be possible
+to resolve these issues. The short answer is: no, this
+is not possible with reasonable effort. But while finding
+this out I at least fixed some of the issues. So here
+a small patchset that fell out of that.
 
-The interesting bit is "why" :-) - "set_pss_params()" is harmless (it
-just fills the data in the structure), but then mech.pParameter is set
-to &pss_params, and *this* is passed to pkcs11h_certificate_signAny_ex()
-a few lines down, outside the original scope.
+Can also be reviewed via https://gerrit.openvpn.net/
 
-So - the patch makes sense, the bug is obvious in hindsight, and we
-also have a confirmation in #323 that the patch fixes a real problem
-"depending on compiler and OS", nasty.
+Frank Lichtenheld (3):
+  Various fixes for -Wconversion errors
+  Change type of frame.mss_fix to uint16_t
+  mss/mtu: make all size calculations use size_t
 
-For testing, I have only used the GH Action builds - there's two
-instances that build with --enable-pkcs11 and run the tests (and I
-have no suitable setup locally).
+ src/openvpn/buffer.c                       |  4 +-
+ src/openvpn/crypto.c                       | 10 +++--
+ src/openvpn/integer.h                      | 15 ++++++--
+ src/openvpn/mss.c                          | 43 +++++++++++-----------
+ src/openvpn/mss.h                          |  4 +-
+ src/openvpn/mtu.c                          |  6 +--
+ src/openvpn/mtu.h                          |  2 +-
+ src/openvpn/options.c                      |  1 +
+ src/openvpn/otime.c                        |  2 +-
+ src/openvpn/otime.h                        |  2 +-
+ src/openvpn/packet_id.c                    |  4 +-
+ src/openvpn/reliable.c                     |  7 ++--
+ src/openvpn/socket.h                       |  4 +-
+ src/openvpn/tls_crypt.c                    |  2 +-
+ src/openvpn/xkey_helper.c                  | 14 +++----
+ tests/unit_tests/openvpn/mock_get_random.c |  2 +-
+ tests/unit_tests/openvpn/test_crypto.c     |  6 +--
+ tests/unit_tests/openvpn/test_packet_id.c  |  6 +--
+ tests/unit_tests/openvpn/test_provider.c   |  2 +-
+ tests/unit_tests/openvpn/test_tls_crypt.c  |  2 +-
+ 20 files changed, 74 insertions(+), 64 deletions(-)
 
-[==========] Running 3 test(s).
-Slot 0 has a free/uninitialized token.
-The token has been initialized and is reassigned to slot 379532672
-[ RUN      ] test_pkcs11_ids
-[       OK ] test_pkcs11_ids
-[ RUN      ] test_tls_ctx_use_pkcs11
-[       OK ] test_tls_ctx_use_pkcs11
-[ RUN      ] test_tls_ctx_use_pkcs11__management
-[       OK ] test_tls_ctx_use_pkcs11__management
-Found token (541bef49-4423-01c1-e7c6-600c169f3580) with matching token label.
-The token (softhsm2_tokens_Fi02IS/541bef49-4423-01c1-e7c6-600c169f3580) has been deleted.
-[==========] 3 test(s) run.
-[  PASSED  ] 3 test(s).
-PASS: pkcs11_testdriver
-
-
-Your patch has been applied to the master branch.
-
-commit f4850745709c5b80ab7d09c03a86c5ceea6d10a2 (master)
-commit 7e4becb4cd8be7f0d5ff80cf80877ea152f99830 (release/2.6)
-Author: Selva Nair
-Date:   Tue May 9 13:05:17 2023 -0400
-
-     Bugfix: dangling pointer passed to pkcs11-helper
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230509170517.2637245-1-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26640.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+-- 
+2.34.1
 
 
