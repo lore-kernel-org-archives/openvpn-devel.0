@@ -1,10 +1,11 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 10 May 2023 13:22:35 +0200
-Message-Id: <20230510112236.248026-3-frank@...2641...>
+Date: Wed, 10 May 2023 13:22:36 +0200
+Message-Id: <20230510112236.248026-4-frank@...2641...>
 In-Reply-To: <20230510112236.248026-1-frank@...2641...>
 References: <20230510112236.248026-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/3] Change type of frame.mss_fix to uint16_t
+Subject: [Openvpn-devel] [PATCH 3/3] mss/mtu: make all size calculations use
+ size_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,151 +18,150 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Since in the end this always ends up as an uint16_t
-anyway, just make the conversion much earlier. Cleans
-up the code and removes some -Wconversion warnings.
+Half of them used unsigned int, the other half size_t.
+Standardize on one. Could've also standardized on the
+other, both are much too big for the expected numbers
+anyway.
 
-Change-Id: Id8321dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26
+Add a new utility function clamp_size_to_int for
+cases we need to change from size_t to int (there
+are a lot of those all over our codebase).
+
+Resolves some -Wconversion warnings.
+
+Change-Id: Ic996eca227d9e68279a454db93fcbc86a7bd0380
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
- src/openvpn/mss.c     | 21 +++++++++++----------
- src/openvpn/mss.h     |  4 ++--
- src/openvpn/mtu.c     |  2 +-
- src/openvpn/mtu.h     |  2 +-
- src/openvpn/options.c |  1 +
- 5 files changed, 16 insertions(+), 14 deletions(-)
+ src/openvpn/integer.h | 11 +++++++++--
+ src/openvpn/mss.c     | 20 ++++++++++----------
+ src/openvpn/mtu.c     |  4 ++--
+ 3 files changed, 21 insertions(+), 14 deletions(-)
 
+diff --git a/src/openvpn/integer.h b/src/openvpn/integer.h
+index 2551428e..8be7c3c2 100644
+--- a/src/openvpn/integer.h
++++ b/src/openvpn/integer.h
+@@ -36,6 +36,13 @@
+                    ((uint64_t)ntohl((uint32_t)((x) & 0xFFFFFFFF)) << 32) | ntohl((uint32_t)((x) >> 32)))
+ #endif
+ 
++static inline int
++clamp_size_to_int(size_t size)
++{
++    ASSERT(size <= INT_MAX);
++    return (int)size;
++}
++
+ /*
+  * min/max functions
+  */
+@@ -188,8 +195,8 @@ index_verify(int index, int size, const char *file, int line)
+ /**
+  * Rounds down num to the nearest multiple of multiple
+  */
+-static inline unsigned int
+-round_down_uint(unsigned int num, unsigned int multiple)
++static inline size_t
++round_down_size(size_t num, size_t multiple)
+ {
+     return (num / multiple) * multiple;
+ }
 diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
-index fd2d3c1d..44b316da 100644
+index 44b316da..d0471ebf 100644
 --- a/src/openvpn/mss.c
 +++ b/src/openvpn/mss.c
-@@ -46,7 +46,7 @@
-  *              if yes, hand to mss_fixup_dowork()
-  */
- void
--mss_fixup_ipv4(struct buffer *buf, int maxmss)
-+mss_fixup_ipv4(struct buffer *buf, uint16_t maxmss)
- {
-     const struct openvpn_iphdr *pip;
-     int hlen;
-@@ -74,7 +74,7 @@ mss_fixup_ipv4(struct buffer *buf, int maxmss)
-             struct openvpn_tcphdr *tc = (struct openvpn_tcphdr *) BPTR(&newbuf);
-             if (tc->flags & OPENVPN_TCPH_SYN_MASK)
-             {
--                mss_fixup_dowork(&newbuf, (uint16_t) maxmss);
-+                mss_fixup_dowork(&newbuf, maxmss);
-             }
-         }
-     }
-@@ -86,7 +86,7 @@ mss_fixup_ipv4(struct buffer *buf, int maxmss)
-  *              (IPv6 header structure is sufficiently different from IPv4...)
-  */
- void
--mss_fixup_ipv6(struct buffer *buf, int maxmss)
-+mss_fixup_ipv6(struct buffer *buf, uint16_t maxmss)
- {
-     const struct openvpn_ipv6hdr *pip6;
-     struct buffer newbuf;
-@@ -132,7 +132,7 @@ mss_fixup_ipv6(struct buffer *buf, int maxmss)
-         struct openvpn_tcphdr *tc = (struct openvpn_tcphdr *) BPTR(&newbuf);
-         if (tc->flags & OPENVPN_TCPH_SYN_MASK)
-         {
--            mss_fixup_dowork(&newbuf, (uint16_t) maxmss-20);
-+            mss_fixup_dowork(&newbuf, maxmss-20);
-         }
+@@ -209,8 +209,8 @@ mss_fixup_dowork(struct buffer *buf, uint16_t maxmss)
      }
  }
-@@ -193,13 +193,14 @@ mss_fixup_dowork(struct buffer *buf, uint16_t maxmss)
-                 {
-                     continue;
-                 }
--                mssval = (opt[2]<<8)+opt[3];
-+                mssval = opt[2] << 8;
-+                mssval += opt[3];
-                 if (mssval > maxmss)
-                 {
--                    dmsg(D_MSS, "MSS: %d -> %d", (int) mssval, (int) maxmss);
-+                    dmsg(D_MSS, "MSS: %" PRIu16 " -> %" PRIu16, mssval, maxmss);
-                     accumulate = htons(mssval);
--                    opt[2] = (maxmss>>8)&0xff;
--                    opt[3] = maxmss&0xff;
-+                    opt[2] = (uint8_t)((maxmss>>8)&0xff);
-+                    opt[3] = (uint8_t)(maxmss&0xff);
-                     accumulate -= htons(maxmss);
-                     ADJUST_CHECKSUM(accumulate, tc->check);
-                 }
-@@ -293,7 +294,7 @@ frame_calculate_mssfix(struct frame *frame, struct key_type *kt,
+ 
+-static inline unsigned int
+-adjust_payload_max_cbc(const struct key_type *kt, unsigned int target)
++static inline size_t
++adjust_payload_max_cbc(const struct key_type *kt, size_t target)
+ {
+     if (!cipher_kt_mode_cbc(kt->cipher))
      {
-         /* we subtract IPv4 and TCP overhead here, mssfix method will add the
-          * extra 20 for IPv6 */
--        frame->mss_fix = options->ce.mssfix - (20 + 20);
-+        frame->mss_fix = (uint16_t)(options->ce.mssfix - (20 + 20));
+@@ -223,13 +223,13 @@ adjust_payload_max_cbc(const struct key_type *kt, unsigned int target)
+         /* With CBC we need at least one extra byte for padding and then need
+          * to ensure that the resulting CBC ciphertext length, which is always
+          * a multiple of the block size, is not larger than the target value */
+-        unsigned int block_size = cipher_kt_block_size(kt->cipher);
+-        target = round_down_uint(target, block_size);
++        size_t block_size = cipher_kt_block_size(kt->cipher);
++        target = round_down_size(target, block_size);
+         return target - 1;
+     }
+ }
+ 
+-static unsigned int
++static size_t
+ get_ip_encap_overhead(const struct options *options,
+                       const struct link_socket_info *lsi)
+ {
+@@ -260,7 +260,7 @@ frame_calculate_fragment(struct frame *frame, struct key_type *kt,
+                          struct link_socket_info *lsi)
+ {
+ #if defined(ENABLE_FRAGMENT)
+-    unsigned int overhead;
++    size_t overhead;
+ 
+     overhead = frame_calculate_protocol_header_size(kt, options, false);
+ 
+@@ -269,12 +269,12 @@ frame_calculate_fragment(struct frame *frame, struct key_type *kt,
+         overhead += get_ip_encap_overhead(options, lsi);
+     }
+ 
+-    unsigned int target = options->ce.fragment - overhead;
++    size_t target = options->ce.fragment - overhead;
+     /* The 4 bytes of header that fragment adds itself. The other extra payload
+      * bytes (Ethernet header/compression) are handled by the fragment code
+      * just as part of the payload and therefore automatically taken into
+      * account if the packet needs to fragmented */
+-    frame->max_fragment_size = adjust_payload_max_cbc(kt, target) - 4;
++    frame->max_fragment_size = clamp_size_to_int(adjust_payload_max_cbc(kt, target)) - 4;
+ 
+     if (cipher_kt_mode_cbc(kt->cipher))
+     {
+@@ -298,7 +298,7 @@ frame_calculate_mssfix(struct frame *frame, struct key_type *kt,
          return;
      }
  
-@@ -327,7 +328,7 @@ frame_calculate_mssfix(struct frame *frame, struct key_type *kt,
+-    unsigned int overhead, payload_overhead;
++    size_t overhead, payload_overhead;
+ 
+     overhead = frame_calculate_protocol_header_size(kt, options, false);
+ 
+@@ -327,7 +327,7 @@ frame_calculate_mssfix(struct frame *frame, struct key_type *kt,
+      * by ce.mssfix */
  
      /* This is the target value our payload needs to be smaller */
-     unsigned int target = options->ce.mssfix - overhead;
--    frame->mss_fix = adjust_payload_max_cbc(kt, target) - payload_overhead;
-+    frame->mss_fix = (uint16_t)(adjust_payload_max_cbc(kt, target) - payload_overhead);
+-    unsigned int target = options->ce.mssfix - overhead;
++    size_t target = options->ce.mssfix - overhead;
+     frame->mss_fix = (uint16_t)(adjust_payload_max_cbc(kt, target) - payload_overhead);
  
- 
- }
-diff --git a/src/openvpn/mss.h b/src/openvpn/mss.h
-index 1c4704bd..b2a68cf7 100644
---- a/src/openvpn/mss.h
-+++ b/src/openvpn/mss.h
-@@ -29,9 +29,9 @@
- #include "mtu.h"
- #include "ssl_common.h"
- 
--void mss_fixup_ipv4(struct buffer *buf, int maxmss);
-+void mss_fixup_ipv4(struct buffer *buf, uint16_t maxmss);
- 
--void mss_fixup_ipv6(struct buffer *buf, int maxmss);
-+void mss_fixup_ipv6(struct buffer *buf, uint16_t maxmss);
- 
- void mss_fixup_dowork(struct buffer *buf, uint16_t maxmss);
  
 diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index 2925b7fe..3c8468a9 100644
+index 3c8468a9..c1d55ade 100644
 --- a/src/openvpn/mtu.c
 +++ b/src/openvpn/mtu.c
-@@ -212,7 +212,7 @@ frame_print(const struct frame *frame,
-         buf_printf(&out, "%s ", prefix);
-     }
-     buf_printf(&out, "[");
--    buf_printf(&out, " mss_fix:%d", frame->mss_fix);
-+    buf_printf(&out, " mss_fix:%" PRIu16, frame->mss_fix);
- #ifdef ENABLE_FRAGMENT
-     buf_printf(&out, " max_frag:%d", frame->max_fragment_size);
- #endif
-diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index b602b86b..c64398de 100644
---- a/src/openvpn/mtu.h
-+++ b/src/openvpn/mtu.h
-@@ -115,7 +115,7 @@ struct frame {
-                                   *  decryption/encryption or compression. */
-     } buf;
+@@ -176,7 +176,7 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
+      */
+     const char *ciphername = o->ciphername;
  
--    unsigned int mss_fix;       /**< The actual MSS value that should be
-+    uint16_t mss_fix;           /**< The actual MSS value that should be
-                                  *   written to the payload packets. This
-                                  *   is the value for IPv4 TCP packets. For
-                                  *   IPv6 packets another 20 bytes must
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index fa435c1d..94859294 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -7260,6 +7260,7 @@ add_option(struct options *options,
-             /* value specified, assume encapsulation is not
-              * included unless "mtu" follows later */
-             options->ce.mssfix = positive_atoi(p[1]);
-+            ASSERT(options->ce.mssfix <= UINT16_MAX);
-             options->ce.mssfix_encap = false;
-             options->ce.mssfix_default = false;
-         }
+-    unsigned int overhead = 0;
++    size_t overhead = 0;
+ 
+     if (strcmp(o->ciphername, "BF-CBC") == 0)
+     {
+@@ -194,7 +194,7 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
+      * the ciphers are actually valid for non tls in occ calucation */
+     init_key_type(&occ_kt, ciphername, o->authname, true, false);
+ 
+-    unsigned int payload = frame_calculate_payload_size(frame, o, &occ_kt);
++    size_t payload = frame_calculate_payload_size(frame, o, &occ_kt);
+     overhead += frame_calculate_protocol_header_size(&occ_kt, o, true);
+ 
+     return payload + overhead;
 -- 
 2.34.1
 
