@@ -1,8 +1,11 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Thu, 11 May 2023 12:12:53 +0200
-Message-Id: <20230511101253.369196-1-frank@...2641...>
+Date: Fri, 12 May 2023 15:21:36 +0200
+Message-Id: <20230512132136.417404-1-frank@...2641...>
+In-Reply-To: <20230510112236.248026-3-frank@...2641...>
+References: <20230510112236.248026-3-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] tests: Allow to override openvpn binary used
+Subject: [Openvpn-devel] [PATCH v2 2/3] Change type of frame.mss_fix to
+ uint16_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,144 +18,164 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This makes it easy to test an installed binary for
-example.
+Since in the end this always ends up as an uint16_t
+anyway, just make the conversion much earlier. Cleans
+up the code and removes some -Wconversion warnings.
 
+v2:
+ - proper error handling in options.c
+
+Change-Id: Id8321dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
- tests/t_client.sh.in |  7 ++++---
- tests/t_cltsrv.sh    |  5 +++--
- tests/t_lpback.sh    | 13 +++++++------
- tests/t_net.sh       |  2 +-
- 4 files changed, 15 insertions(+), 12 deletions(-)
+ src/openvpn/mss.c     | 21 +++++++++++----------
+ src/openvpn/mss.h     |  4 ++--
+ src/openvpn/mtu.c     |  2 +-
+ src/openvpn/mtu.h     |  2 +-
+ src/openvpn/options.c |  9 ++++++++-
+ 5 files changed, 23 insertions(+), 15 deletions(-)
 
-diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
-index e919456a..99e6f9c6 100755
---- a/tests/t_client.sh.in
-+++ b/tests/t_client.sh.in
-@@ -18,6 +18,7 @@ TCLIENT_SKIP_RC="${TCLIENT_SKIP_RC:-77}"
+diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
+index fd2d3c1d..44b316da 100644
+--- a/src/openvpn/mss.c
++++ b/src/openvpn/mss.c
+@@ -46,7 +46,7 @@
+  *              if yes, hand to mss_fixup_dowork()
+  */
+ void
+-mss_fixup_ipv4(struct buffer *buf, int maxmss)
++mss_fixup_ipv4(struct buffer *buf, uint16_t maxmss)
+ {
+     const struct openvpn_iphdr *pip;
+     int hlen;
+@@ -74,7 +74,7 @@ mss_fixup_ipv4(struct buffer *buf, int maxmss)
+             struct openvpn_tcphdr *tc = (struct openvpn_tcphdr *) BPTR(&newbuf);
+             if (tc->flags & OPENVPN_TCPH_SYN_MASK)
+             {
+-                mss_fixup_dowork(&newbuf, (uint16_t) maxmss);
++                mss_fixup_dowork(&newbuf, maxmss);
+             }
+         }
+     }
+@@ -86,7 +86,7 @@ mss_fixup_ipv4(struct buffer *buf, int maxmss)
+  *              (IPv6 header structure is sufficiently different from IPv4...)
+  */
+ void
+-mss_fixup_ipv6(struct buffer *buf, int maxmss)
++mss_fixup_ipv6(struct buffer *buf, uint16_t maxmss)
+ {
+     const struct openvpn_ipv6hdr *pip6;
+     struct buffer newbuf;
+@@ -132,7 +132,7 @@ mss_fixup_ipv6(struct buffer *buf, int maxmss)
+         struct openvpn_tcphdr *tc = (struct openvpn_tcphdr *) BPTR(&newbuf);
+         if (tc->flags & OPENVPN_TCPH_SYN_MASK)
+         {
+-            mss_fixup_dowork(&newbuf, (uint16_t) maxmss-20);
++            mss_fixup_dowork(&newbuf, maxmss-20);
+         }
+     }
+ }
+@@ -193,13 +193,14 @@ mss_fixup_dowork(struct buffer *buf, uint16_t maxmss)
+                 {
+                     continue;
+                 }
+-                mssval = (opt[2]<<8)+opt[3];
++                mssval = opt[2] << 8;
++                mssval += opt[3];
+                 if (mssval > maxmss)
+                 {
+-                    dmsg(D_MSS, "MSS: %d -> %d", (int) mssval, (int) maxmss);
++                    dmsg(D_MSS, "MSS: %" PRIu16 " -> %" PRIu16, mssval, maxmss);
+                     accumulate = htons(mssval);
+-                    opt[2] = (maxmss>>8)&0xff;
+-                    opt[3] = maxmss&0xff;
++                    opt[2] = (uint8_t)((maxmss>>8)&0xff);
++                    opt[3] = (uint8_t)(maxmss&0xff);
+                     accumulate -= htons(maxmss);
+                     ADJUST_CHECKSUM(accumulate, tc->check);
+                 }
+@@ -293,7 +294,7 @@ frame_calculate_mssfix(struct frame *frame, struct key_type *kt,
+     {
+         /* we subtract IPv4 and TCP overhead here, mssfix method will add the
+          * extra 20 for IPv6 */
+-        frame->mss_fix = options->ce.mssfix - (20 + 20);
++        frame->mss_fix = (uint16_t)(options->ce.mssfix - (20 + 20));
+         return;
+     }
  
- srcdir="${srcdir:-.}"
- top_builddir="${top_builddir:-..}"
-+openvpn="${openvpn:-${top_builddir}/src/openvpn/openvpn}"
- if [ -r "${top_builddir}"/t_client.rc ] ; then
-     . "${top_builddir}"/t_client.rc
- elif [ -r "${srcdir}"/t_client.rc ] ; then
-@@ -49,7 +50,7 @@ if [ $? -ne 0 ]; then
-     exit "${TCLIENT_SKIP_RC}"
- fi
+@@ -327,7 +328,7 @@ frame_calculate_mssfix(struct frame *frame, struct key_type *kt,
  
--if [ ! -x "${top_builddir}/src/openvpn/openvpn" ]
-+if [ ! -x "${openvpn}" ]
- then
-     echo "no (executable) openvpn binary in current build tree. FAIL." >&2
-     exit 1
-@@ -340,9 +341,9 @@ do
-     pidfile="${top_builddir}/tests/$LOGDIR/openvpn-$SUF.pid"
-     openvpn_conf="$openvpn_conf --writepid $pidfile $up"
-     output " run openvpn $openvpn_conf"
--    echo "# src/openvpn/openvpn $openvpn_conf" >$LOGDIR/$SUF:openvpn.log
-+    echo "# ${openvpn} $openvpn_conf" >$LOGDIR/$SUF:openvpn.log
-     umask 022
--    $RUN_SUDO "${top_builddir}/src/openvpn/openvpn" $openvpn_conf >>$LOGDIR/$SUF:openvpn.log &
-+    $RUN_SUDO "${openvpn}" $openvpn_conf >>$LOGDIR/$SUF:openvpn.log &
-     sudopid=$!
- 
-     # Check if OpenVPN has initialized before continuing.  It will check every 3rd second up
-diff --git a/tests/t_cltsrv.sh b/tests/t_cltsrv.sh
-index 752251e4..4a8643ae 100755
---- a/tests/t_cltsrv.sh
-+++ b/tests/t_cltsrv.sh
-@@ -22,6 +22,7 @@ set -e
- srcdir="${srcdir:-.}"
- top_srcdir="${top_srcdir:-..}"
- top_builddir="${top_builddir:-..}"
-+openvpn="${openvpn:-${top_builddir}/src/openvpn/openvpn}"
- trap "rm -f log.$$ log.$$.signal ; trap 0 ; exit 77" 1 2 15
- trap "rm -f log.$$ log.$$.signal ; exit 1" 0 3
- addopts=
-@@ -55,8 +56,8 @@ success=0
- for i in 1 2 3 ; do
-   set +e
-   (
--  "${top_builddir}/src/openvpn/openvpn" --script-security 2 --cd "${root}" ${addopts} --setenv role srv --down "${downscript}" --tls-exit --ping-exit 180 --config "sample-config-files/loopback-server" &
--  "${top_builddir}/src/openvpn/openvpn" --script-security 2 --cd "${top_srcdir}/sample" ${addopts} --setenv role clt --down "${downscript}" --tls-exit --ping-exit 180 --config "sample-config-files/loopback-client"
-+  "${openvpn}" --script-security 2 --cd "${root}" ${addopts} --setenv role srv --down "${downscript}" --tls-exit --ping-exit 180 --config "sample-config-files/loopback-server" &
-+  "${openvpn}" --script-security 2 --cd "${top_srcdir}/sample" ${addopts} --setenv role clt --down "${downscript}" --tls-exit --ping-exit 180 --config "sample-config-files/loopback-client"
-   ) 3>log.$$.signal >log.$$ 2>&1
-   e1=$?
-   wait $!
-diff --git a/tests/t_lpback.sh b/tests/t_lpback.sh
-index 5aabbd5e..482016a9 100755
---- a/tests/t_lpback.sh
-+++ b/tests/t_lpback.sh
-@@ -21,6 +21,7 @@
- 
- set -eu
- top_builddir="${top_builddir:-..}"
-+openvpn="${openvpn:-${top_builddir}/src/openvpn/openvpn}"
- trap "rm -f key.$$ tc-server-key.$$ tc-client-key.$$ log.$$ ; trap 0 ; exit 77" 1 2 15
- trap "rm -f key.$$ tc-server-key.$$ tc-client-key.$$ log.$$ ; exit 1" 0 3
- 
-@@ -71,7 +72,7 @@ fi
- 
- 
- # Get list of supported ciphers from openvpn --show-ciphers output
--CIPHERS=$(${top_builddir}/src/openvpn/openvpn --show-ciphers | \
-+CIPHERS=$(${openvpn} --show-ciphers | \
-             sed -e '/The following/,/^$/d' -e s'/ .*//' -e '/^[[:space:]]*$/d')
- 
- # SK, 2014-06-04: currently the DES-EDE3-CFB1 implementation of OpenSSL is
-@@ -90,23 +91,23 @@ fi
- # Also test cipher 'none'
- CIPHERS=${CIPHERS}$(printf "\nnone")
- 
--"${top_builddir}/src/openvpn/openvpn" --genkey secret key.$$
-+"${openvpn}" --genkey secret key.$$
- set +e
- 
- for cipher in ${CIPHERS}
- do
-     test_start "Testing cipher ${cipher}... "
--    ( "${top_builddir}/src/openvpn/openvpn" --test-crypto --secret key.$$ --cipher ${cipher} ) >log.$$ 2>&1
-+    ( "${openvpn}" --test-crypto --secret key.$$ --cipher ${cipher} ) >log.$$ 2>&1
-     test_end $? log.$$
- done
- 
- test_start "Testing tls-crypt-v2 server key generation... "
--"${top_builddir}/src/openvpn/openvpn" \
-+"${openvpn}" \
-     --genkey tls-crypt-v2-server tc-server-key.$$ >log.$$ 2>&1
- test_end $? log.$$
- 
- test_start "Testing tls-crypt-v2 key generation (no metadata)... "
--"${top_builddir}/src/openvpn/openvpn" --tls-crypt-v2 tc-server-key.$$ \
-+"${openvpn}" --tls-crypt-v2 tc-server-key.$$ \
-     --genkey tls-crypt-v2-client tc-client-key.$$ >log.$$ 2>&1
- test_end $? log.$$
- 
-@@ -118,7 +119,7 @@ while [ $i -lt 732 ]; do
-     i=$(expr $i + 1)
- done
- test_start "Testing tls-crypt-v2 key generation (max length metadata)... "
--"${top_builddir}/src/openvpn/openvpn" --tls-crypt-v2 tc-server-key.$$ \
-+"${openvpn}" --tls-crypt-v2 tc-server-key.$$ \
-     --genkey tls-crypt-v2-client tc-client-key.$$ "${METADATA}" \
-     >log.$$ 2>&1
- test_end $? log.$$
-diff --git a/tests/t_net.sh b/tests/t_net.sh
-index bc91f825..8134832c 100755
---- a/tests/t_net.sh
-+++ b/tests/t_net.sh
-@@ -7,7 +7,7 @@ LAST_TEST=8
- 
- srcdir="${srcdir:-.}"
- top_builddir="${top_builddir:-..}"
--openvpn="${top_builddir}/src/openvpn/openvpn"
-+openvpn="${openvpn:-${top_builddir}/src/openvpn/openvpn}"
+     /* This is the target value our payload needs to be smaller */
+     unsigned int target = options->ce.mssfix - overhead;
+-    frame->mss_fix = adjust_payload_max_cbc(kt, target) - payload_overhead;
++    frame->mss_fix = (uint16_t)(adjust_payload_max_cbc(kt, target) - payload_overhead);
  
  
- # bail out right away on non-linux. NetLink (the object of this test) is only
+ }
+diff --git a/src/openvpn/mss.h b/src/openvpn/mss.h
+index 1c4704bd..b2a68cf7 100644
+--- a/src/openvpn/mss.h
++++ b/src/openvpn/mss.h
+@@ -29,9 +29,9 @@
+ #include "mtu.h"
+ #include "ssl_common.h"
+ 
+-void mss_fixup_ipv4(struct buffer *buf, int maxmss);
++void mss_fixup_ipv4(struct buffer *buf, uint16_t maxmss);
+ 
+-void mss_fixup_ipv6(struct buffer *buf, int maxmss);
++void mss_fixup_ipv6(struct buffer *buf, uint16_t maxmss);
+ 
+ void mss_fixup_dowork(struct buffer *buf, uint16_t maxmss);
+ 
+diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
+index 2925b7fe..3c8468a9 100644
+--- a/src/openvpn/mtu.c
++++ b/src/openvpn/mtu.c
+@@ -212,7 +212,7 @@ frame_print(const struct frame *frame,
+         buf_printf(&out, "%s ", prefix);
+     }
+     buf_printf(&out, "[");
+-    buf_printf(&out, " mss_fix:%d", frame->mss_fix);
++    buf_printf(&out, " mss_fix:%" PRIu16, frame->mss_fix);
+ #ifdef ENABLE_FRAGMENT
+     buf_printf(&out, " max_frag:%d", frame->max_fragment_size);
+ #endif
+diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
+index b602b86b..c64398de 100644
+--- a/src/openvpn/mtu.h
++++ b/src/openvpn/mtu.h
+@@ -115,7 +115,7 @@ struct frame {
+                                   *  decryption/encryption or compression. */
+     } buf;
+ 
+-    unsigned int mss_fix;       /**< The actual MSS value that should be
++    uint16_t mss_fix;           /**< The actual MSS value that should be
+                                  *   written to the payload packets. This
+                                  *   is the value for IPv4 TCP packets. For
+                                  *   IPv6 packets another 20 bytes must
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index fa435c1d..c26ee30d 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -7257,9 +7257,16 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
+         if (p[1])
+         {
++            int mssfix = positive_atoi(p[1]);
++            if (mssfix > UINT16_MAX)
++            {
++                msg(msglevel, "--mssfix value '%s' is invalid", p[1]);
++                goto err;
++            }
++
+             /* value specified, assume encapsulation is not
+              * included unless "mtu" follows later */
+-            options->ce.mssfix = positive_atoi(p[1]);
++            options->ce.mssfix = mssfix;
+             options->ce.mssfix_encap = false;
+             options->ce.mssfix_default = false;
+         }
 -- 
 2.34.1
 
