@@ -1,9 +1,8 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Mon, 15 May 2023 17:53:39 +0200
-Message-Id: <20230515155339.38600-1-frank@...2641...>
+Date: Mon, 15 May 2023 17:54:07 +0200
+Message-Id: <20230515155407.38647-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] sample-plugins: Fix memleak in
- client-connect example plugin
+Subject: [Openvpn-devel] [PATCH] Fix two unused assignments
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,58 +15,51 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-I was looking for memleaks in the code and found
-this one with cppcheck. Only an example, but no
-need to leave this bug in it.
+A fallout of my memleak investigation. These are
+not leaks, we just assign a value that is never
+read before overwritten. Not critical, but since
+I already stumbled over it...
 
-Also fix fortify problem in keying-material-exporter-demo
-so I can actually test the compilation of the sample
-plugins.
-
-Change-Id: Ibd1b282afc4a28768be3f165f84ab60ca4d24a9b
+Change-Id: I761ea3d289f49a20e42a3d1bfccebce3c7447afe
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
- .../sample-plugins/client-connect/sample-client-connect.c   | 6 ++++++
- .../keying-material-exporter-demo/keyingmaterialexporter.c  | 2 +-
- 2 files changed, 7 insertions(+), 1 deletion(-)
+ src/openvpn/push.c | 1 -
+ src/openvpn/tun.c  | 3 +--
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/sample/sample-plugins/client-connect/sample-client-connect.c b/sample/sample-plugins/client-connect/sample-client-connect.c
-index 391de344..eb242126 100644
---- a/sample/sample-plugins/client-connect/sample-client-connect.c
-+++ b/sample/sample-plugins/client-connect/sample-client-connect.c
-@@ -454,6 +454,9 @@ openvpn_plugin_client_connect_v2(struct plugin_context *context,
-     if (!rl->name || !rl->value)
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 54e53f6a..8e962719 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -713,7 +713,6 @@ send_push_options(struct context *c, struct buffer *buf,
+ {
+     struct push_entry *e = push_list->head;
+ 
+-    e = push_list->head;
+     while (e)
      {
-         plugin_log(PLOG_ERR, MODULE, "malloc(return_list->xx) failed");
-+        free(rl->name);
-+        free(rl->value);
-+        free(rl);
-         return OPENVPN_PLUGIN_FUNC_ERROR;
+         if (e->enable)
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 2320e8b1..df10dbd2 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -4337,7 +4337,6 @@ get_unspecified_device_guid(const int device_number,
+                             struct gc_arena *gc)
+ {
+     const struct tap_reg *tap_reg = tap_reg_src;
+-    struct buffer ret = clear_buf();
+     struct buffer actual = clear_buf();
+     int i;
+ 
+@@ -4381,7 +4380,7 @@ get_unspecified_device_guid(const int device_number,
      }
  
-@@ -509,6 +512,9 @@ openvpn_plugin_client_connect_defer_v2(struct plugin_context *context,
-     if (!rl->name || !rl->value)
+     /* Save GUID for return value */
+-    ret = alloc_buf_gc(256, gc);
++    struct buffer ret = alloc_buf_gc(256, gc);
+     buf_printf(&ret, "%s", tap_reg->guid);
+     if (windows_driver != NULL)
      {
-         plugin_log(PLOG_ERR, MODULE, "malloc(return_list->xx) failed");
-+        free(rl->name);
-+        free(rl->value);
-+        free(rl);
-         return OPENVPN_PLUGIN_FUNC_ERROR;
-     }
- 
-diff --git a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
-index 6a0a1f69..f84cf232 100644
---- a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
-+++ b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
-@@ -155,7 +155,7 @@ session_user_set(struct session *sess, X509 *x509)
- 
-         if (!strncasecmp(objbuf, "CN", 2))
-         {
--            snprintf(sess->user, sizeof(sess->user) - 1, (char *)buf);
-+            snprintf(sess->user, sizeof(sess->user) - 1, "%s", (char *)buf);
-         }
- 
-         OPENSSL_free(buf);
 -- 
 2.34.1
 
