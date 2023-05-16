@@ -1,14 +1,9 @@
-From: Jeremie Courreges-Anglas <jca@...2272...>
-References: <20230426094931.1168078-1-arne@...1227...>
-Date: Mon, 15 May 2023 19:26:49 +0200
-In-Reply-To: <20230426094931.1168078-1-arne@...1227...> (Arne Schwabe's
- message of "Wed, 26 Apr 2023 11:49:31 +0200")
-Message-ID: <87zg65mrom.fsf@...2733...>
+From: selva.nair@...277...
+Date: Mon, 15 May 2023 22:42:32 -0400
+Message-Id: <20230516024232.2680491-1-selva.nair@...277...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
- micalg=pgp-sha512; protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] [PATCH v3] Add Apache2 linking with for new
- commits
+Subject: [Openvpn-devel] [PATCH] Correctly handle Unicode names for exit
+ event
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,78 +12,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---=-=-=
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Wed, Apr 26 2023, Arne Schwabe <arne@...1227...> wrote:
-> After first round of mailing people with more than 10 commits we have
-> almost all committers have agreed. This put this license in the realm
-> of having a realistic change to work. Had any of these contributers
-> disagreed, rewriting all their code might have been not feasible.
->
-> The rationale of adding this exception now is to avoid having to
-> have a second round of agreement for new contributers and ensure
-> that all new code will include the exemption.
+From: Selva Nair <selva.nair@...277...>
 
-The proposal here (already committed) merely adds an exception for
-linking with Apache 2 libraries.  As discussed privately with Arne, the
-proposal that I have received was to *replace* the OpenSSL linking
-exception with the Apache 2 linking exception.  The rationale being that
-OpenSSL 3 has moved to Apache 2, and that OpenVPN plans to drop support
-for OpenSSL 1.X at some point.
+Currently we use the ANSI version of CreateEvent causing name of the
+exit event to be interpreted differently depending on the code page
+in effect. Internally all strings parsed from command line and config
+file are stored as UTF8-encoded Uniode. When passed to Windows API calls,
+these should be converted to UTF16 and wide character version of the API
+should be used.
 
-The LibreSSL project has not moved to Apache 2 and doesn't plan to do
-so.  OpenVPN currently builds and runs fine using LibreSSL, without any
-patch.  I don't know about the state of OpenSSL 3 APIs in LibreSSL, but
-I suggest not to tie together licensing matters and technical matters.
+CreateEvent calls for unnamed events are left unchanged as there is no
+text-encoding dependence in those cases.
 
-I think the existing OpenSSL linking exception should be kept as is.
-For the (admittedly few and uncomplicated) changes I have contributed to
-the OpenVPN code base, I would agree with a licensing change that
-doesn't remove this exception.
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/win32.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-For convenience, here's the current OpenSSL linking exception:
---8<--
-  Special exception for linking OpenVPN with OpenSSL:
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index 1ae3723f..25da54ab 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -509,19 +509,19 @@ win32_signal_open(struct win32_signal *ws,
+         && !HANDLE_DEFINED(ws->in.read) && exit_event_name)
+     {
+         struct security_attributes sa;
++        struct gc_arena gc = gc_new();
++        const wchar_t *exit_event_nameW = wide_string(exit_event_name, &gc);
+ 
+         if (!init_security_attributes_allow_all(&sa))
+         {
+             msg(M_ERR, "Error: win32_signal_open: init SA failed");
+         }
+ 
+-        ws->in.read = CreateEvent(&sa.sa,
+-                                  TRUE,
+-                                  exit_event_initial_state ? TRUE : FALSE,
+-                                  exit_event_name);
++        ws->in.read = CreateEventW(&sa.sa, TRUE, exit_event_initial_state ? TRUE : FALSE,
++                                   exit_event_nameW);
+         if (ws->in.read == NULL)
+         {
+-            msg(M_WARN|M_ERRNO, "NOTE: CreateEvent '%s' failed", exit_event_name);
++            msg(M_WARN|M_ERRNO, "NOTE: CreateEventW '%s' failed", exit_event_name);
+         }
+         else
+         {
+@@ -534,6 +534,7 @@ win32_signal_open(struct win32_signal *ws,
+                 ws->mode = WSO_MODE_SERVICE;
+             }
+         }
++        gc_free(&gc);
+     }
+     /* set the ctrl handler in both console and service modes */
+     if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE) win_ctrl_handler, true))
+-- 
+2.34.1
 
-  In addition, as a special exception, OpenVPN Inc gives
-  permission to link the code of this program with the OpenSSL
-  library (or with modified versions of OpenSSL that use the same
-  license as OpenSSL), and distribute linked combinations including
-  the two.  You must obey the GNU General Public License in all
-  respects for all of the code used other than OpenSSL.  If you modify
-  this file, you may extend this exception to your version of the
-  file, but you are not obligated to do so.  If you do not wish to
-  do so, delete this exception statement from your version.
--->8--
-
-Regards,
---=20
-jca | PGP : 0x1524E7EE / 5135 92C1 AD36 5293 2BDF  DDCC 0DFA 74AE 1524 E7EE
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQJDBAEBCgAtFiEEUTWSwa02UpMr393MDfp0rhUk5+4FAmRia1oPHGpjYUB3eGN2
-Ym4ub3JnAAoJEA36dK4VJOfuE88QAJa2buNbxOSKl9o1PVQ1EfW0Mp62zTsWH9oL
-QGWQXtSpwRb8N5CUnGsesW7adprCdwcqyAx/Pot2k0r2Wqc7TPY9rd8wodoIX2sN
-6O7Cukb3I40zbmpdPXOIDkP/+P/GA4JGSUdLFykO2iNyIfeU6xT6C04Ugiqm6D+R
-tqNV37fyP+OGj6tTCAOhmIGu2hf1bMcH6/L3IyfN/ZElFDJelCBVMdqiJnauA8Aq
-aB33G0NA2lmIR0z0Y25sIZq63318rOImXw3+tOVLXO7N6xk+vfpl0ZTrQLItt1Dx
-RsHsA2QGItLIw03DS3Z5IyiI/L1YYHeAzVU/oA6ZoV5LdVc8Z+HKjwfmE5Op0jmO
-2ZAx7/OjcnELsJNBd6C7eqzFPAKsLHKFP8SXSOzO7lP3KQ2iPzoI82+yQ7Qnj2ov
-XO0itpKxvv37S8YarCa3FgCEI2BfixJqexFUPkqtsVA8po0vdC86Q2Lz/Tjn26m3
-1lN9T6hm6OSdvqIj8nNhdQvY6mpzQN7GU31JiPhZW14XEV8cZPyrac2UXq9VkM7L
-8CBwZHFWibCPWmdvquwegKBPrJG+sxbOUYPchxBxniR+W+dEYNt/I4ucoFiskmXC
-CFVTeqaTZwZtgFIAGkrqpdGuCj2kAXQfo98PnaNaWl6sVxowUZW66m6ds06DzbUR
-6nb6DQSN
-=l7d9
------END PGP SIGNATURE-----
---=-=-=--
 
