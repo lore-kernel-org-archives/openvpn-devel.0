@@ -1,10 +1,11 @@
-Date: Tue, 16 May 2023 09:00:45 +0200 (CEST)
-Message-Id: <202305160700.34G70jXL042671@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230515142116.33135-1-frank@...2641...>
-References: <20230515142116.33135-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: DCO: fix memory leak in
- dco_get_peer_stats_multi for Linux
+From: Frank Lichtenheld <frank@...2641...>
+Date: Tue, 16 May 2023 11:35:34 +0200
+Message-Id: <20230516093534.26384-1-frank@...2641...>
+In-Reply-To: <20230515155339.38600-1-frank@...2641...>
+References: <20230515155339.38600-1-frank@...2641...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2] sample-plugins: Fix memleak in
+ client-connect example plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +16,74 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Good catch!
+I was looking for memleaks in the code and found
+this one with cppcheck. Only an example, but no
+need to leave this bug in it.
 
-I have done a basic "does it still compile and not crash?" test on the
-server-with-DCO test rig.  Does not crash :-) - and the patch looks good.
+Also fix fortify problem in keying-material-exporter-demo
+so I can actually test the compilation of the sample
+plugins.
 
-Your patch has been applied to the master and release/2.6 branch.
+v2:
+ - remove unneccessary usages of snprintf, replace
+   with strncpy.
 
-commit 276f7c86d70666bc2ab4e6192ef5f1dcbd6a230f (master)
-commit 5e8a571af165c867ccb9c4c9e6334620f42013ac (release/2.6)
-Author: Frank Lichtenheld
-Date:   Mon May 15 16:21:16 2023 +0200
+Change-Id: Ibd1b282afc4a28768be3f165f84ab60ca4d24a9b
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ .../sample-plugins/client-connect/sample-client-connect.c   | 6 ++++++
+ .../keying-material-exporter-demo/keyingmaterialexporter.c  | 4 ++--
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-     DCO: fix memory leak in dco_get_peer_stats_multi for Linux
-
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20230515142116.33135-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26659.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/sample/sample-plugins/client-connect/sample-client-connect.c b/sample/sample-plugins/client-connect/sample-client-connect.c
+index 391de344..eb242126 100644
+--- a/sample/sample-plugins/client-connect/sample-client-connect.c
++++ b/sample/sample-plugins/client-connect/sample-client-connect.c
+@@ -454,6 +454,9 @@ openvpn_plugin_client_connect_v2(struct plugin_context *context,
+     if (!rl->name || !rl->value)
+     {
+         plugin_log(PLOG_ERR, MODULE, "malloc(return_list->xx) failed");
++        free(rl->name);
++        free(rl->value);
++        free(rl);
+         return OPENVPN_PLUGIN_FUNC_ERROR;
+     }
+ 
+@@ -509,6 +512,9 @@ openvpn_plugin_client_connect_defer_v2(struct plugin_context *context,
+     if (!rl->name || !rl->value)
+     {
+         plugin_log(PLOG_ERR, MODULE, "malloc(return_list->xx) failed");
++        free(rl->name);
++        free(rl->value);
++        free(rl);
+         return OPENVPN_PLUGIN_FUNC_ERROR;
+     }
+ 
+diff --git a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
+index 6a0a1f69..71badf2c 100644
+--- a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
++++ b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
+@@ -155,7 +155,7 @@ session_user_set(struct session *sess, X509 *x509)
+ 
+         if (!strncasecmp(objbuf, "CN", 2))
+         {
+-            snprintf(sess->user, sizeof(sess->user) - 1, (char *)buf);
++            strncpy(sess->user, (char *)buf, sizeof(sess->user) - 1);
+         }
+ 
+         OPENSSL_free(buf);
+@@ -234,7 +234,7 @@ tls_final(struct openvpn_plugin_args_func_in const *args,
+         return OPENVPN_PLUGIN_FUNC_ERROR;
+     }
+ 
+-    snprintf(sess->key, sizeof(sess->key) - 1, "%s", key);
++    strncpy(sess->key, key, sizeof(sess->key) - 1);
+     ovpn_note("app session key:  %s", sess->key);
+ 
+     switch (plugin->type)
+-- 
+2.34.1
 
 
