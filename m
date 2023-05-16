@@ -1,11 +1,9 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Tue, 16 May 2023 11:35:34 +0200
-Message-Id: <20230516093534.26384-1-frank@...2641...>
-In-Reply-To: <20230515155339.38600-1-frank@...2641...>
-References: <20230515155339.38600-1-frank@...2641...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] sample-plugins: Fix memleak in
- client-connect example plugin
+Date: Tue, 16 May 2023 12:12:35 +0200 (CEST)
+Message-Id: <202305161012.34GACZgY045798@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230515155407.38647-1-frank@...2641...>
+References: <20230515155407.38647-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix two unused assignments
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,74 +14,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-I was looking for memleaks in the code and found
-this one with cppcheck. Only an example, but no
-need to leave this bug in it.
+Acked-by: Gert Doering <gert@...1296...>
 
-Also fix fortify problem in keying-material-exporter-demo
-so I can actually test the compilation of the sample
-plugins.
+"Quite obvious, if you look at it" :-) - since one of this is Windows,
+I have at least compile-tested this on MinGW.
 
-v2:
- - remove unneccessary usages of snprintf, replace
-   with strncpy.
+Your patch has been applied to the master and release/2.6 branch.
 
-Change-Id: Ibd1b282afc4a28768be3f165f84ab60ca4d24a9b
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
- .../sample-plugins/client-connect/sample-client-connect.c   | 6 ++++++
- .../keying-material-exporter-demo/keyingmaterialexporter.c  | 4 ++--
- 2 files changed, 8 insertions(+), 2 deletions(-)
+commit b5cf76cbdc0d7ef2817b71f4611d99455e2d48ea (master)
+commit eb9fffe64a095a881db848839aef6960e1402ca6 (release/2.6)
+Author: Frank Lichtenheld
+Date:   Mon May 15 17:54:07 2023 +0200
 
-diff --git a/sample/sample-plugins/client-connect/sample-client-connect.c b/sample/sample-plugins/client-connect/sample-client-connect.c
-index 391de344..eb242126 100644
---- a/sample/sample-plugins/client-connect/sample-client-connect.c
-+++ b/sample/sample-plugins/client-connect/sample-client-connect.c
-@@ -454,6 +454,9 @@ openvpn_plugin_client_connect_v2(struct plugin_context *context,
-     if (!rl->name || !rl->value)
-     {
-         plugin_log(PLOG_ERR, MODULE, "malloc(return_list->xx) failed");
-+        free(rl->name);
-+        free(rl->value);
-+        free(rl);
-         return OPENVPN_PLUGIN_FUNC_ERROR;
-     }
- 
-@@ -509,6 +512,9 @@ openvpn_plugin_client_connect_defer_v2(struct plugin_context *context,
-     if (!rl->name || !rl->value)
-     {
-         plugin_log(PLOG_ERR, MODULE, "malloc(return_list->xx) failed");
-+        free(rl->name);
-+        free(rl->value);
-+        free(rl);
-         return OPENVPN_PLUGIN_FUNC_ERROR;
-     }
- 
-diff --git a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
-index 6a0a1f69..71badf2c 100644
---- a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
-+++ b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
-@@ -155,7 +155,7 @@ session_user_set(struct session *sess, X509 *x509)
- 
-         if (!strncasecmp(objbuf, "CN", 2))
-         {
--            snprintf(sess->user, sizeof(sess->user) - 1, (char *)buf);
-+            strncpy(sess->user, (char *)buf, sizeof(sess->user) - 1);
-         }
- 
-         OPENSSL_free(buf);
-@@ -234,7 +234,7 @@ tls_final(struct openvpn_plugin_args_func_in const *args,
-         return OPENVPN_PLUGIN_FUNC_ERROR;
-     }
- 
--    snprintf(sess->key, sizeof(sess->key) - 1, "%s", key);
-+    strncpy(sess->key, key, sizeof(sess->key) - 1);
-     ovpn_note("app session key:  %s", sess->key);
- 
-     switch (plugin->type)
--- 
-2.34.1
+     Fix two unused assignments
+
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230515155407.38647-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26662.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
