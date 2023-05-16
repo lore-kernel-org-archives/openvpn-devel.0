@@ -1,8 +1,10 @@
-Date: Tue, 16 May 2023 14:40:12 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZGN5rLctl5w8Iy3T@...2685...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.6.4 released
+Date: Tue, 16 May 2023 18:12:28 +0200 (CEST)
+Message-Id: <202305161612.34GGCSwt052425@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230511101253.369196-1-frank@...2641...>
+References: <20230511101253.369196-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: tests: Allow to override
+ openvpn binary used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,52 +15,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The OpenVPN community project team is proud to release OpenVPN 2.6.4.
+Acked-by: Gert Doering <gert@...1296...>
 
-This is a small bugfix release.
+Looks good. Existing tests still work (tested in-tree and out-of-tree
+builds, but in the end that's both "../src/openvpn/openvpn")
 
-Note:
+"make check openvpn=$path/openvpn" also runs the specified binary.  
 
-* License amendment: all NEW commits fall under a modified license that explicitly permits
-  linking with Apache2 libraries (mbedTLS, OpenSSL).
-  See COPYING for details. Existing code will fall under the new license as soon as all
-  contributors have agreed to the change - work ongoing.
+Your patch has been applied to the master branch.
 
-Feature changes:
+(Since most development happens there, not sure we need this in 2.6)
 
-* DCO: support kernel-triggered key rotation (avoid IV reuse after 232 packets).
-  This is the userland side, accepting a message from kernel, and initiating a
-  TLS renegotiation. As of 2.6.4 release, only implemented in FreeBSD kernel. 
+commit d623aa6c29545a7f00daaa73d87818a9c5b1e942
+Author: Frank Lichtenheld
+Date:   Thu May 11 12:12:53 2023 +0200
 
-Windows MSI changes since 2.6.3:
+     tests: Allow to override openvpn binary used
 
-* Rebuilt included tap-windows driver with the correct version of the old Windows 7 driver,
-  removing a warning about unsigned driver on Windows 7 installation.
-  See GH ​openvpn-build#365. 
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230511101253.369196-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26648.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-More details can be found in the Changes document:
 
-<https://github.com/OpenVPN/openvpn/blob/release/2.6/Changes.rst>
+--
+kind regards,
 
-(The Changes document also contains a section with work-arounds for
-common problems encountered when using OpenVPN with OpenSSL 3)
+Gert Doering
 
-Source code and Windows installers can be downloaded from our download page:
-
-<https://openvpn.net/community-downloads/>
-
-Debian and Ubuntu packages are available in the official apt repositories:
-
-<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos#DebianUbuntu:UsingOpenVPNaptrepositories>
-
-On Red Hat derivatives we recommend using the Fedora Copr repository.
-
-<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release-2.6/>
-
-Kind regards,
--- 
-  Frank Lichtenheld
 
