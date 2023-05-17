@@ -1,12 +1,11 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 17 May 2023 10:44:22 +0200
-Message-Id: <20230517084422.70547-2-frank@...2641...>
-In-Reply-To: <20230517084422.70547-1-frank@...2641...>
-References: <20230329090447.246561-1-frank@...2641...>
- <20230517084422.70547-1-frank@...2641...>
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 17 May 2023 13:02:30 +0200
+Message-Id: <20230517110230.2234266-2-arne@...1227...>
+In-Reply-To: <20230517110230.2234266-1-arne@...1227...>
+References: <20230517110230.2234266-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/2 v2] test_buffer: add tests for
- buf_catrunc and its caller format_hex_ex
+Subject: [Openvpn-devel] [PATCH 2/2] Fix CR_RESPONSE mangaement message
+ using wrong key_id
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,98 +18,67 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Just some very basic tests.
+the management interface expects the management key id instead
+of the openvpn key id. In the past they often were the same for low ids
+which hid the bug quite well.
 
-v2:
- - fix off-by-one
+Also do not pick uninitialised keystates (management key_id is not valid
+in these) and provide better logging when a key state is not found.
 
-Change-Id: I73fc893136387d1da05f4aea98cb37b02d6c3230
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Change-Id: If9fa1165a0e886b570b3738546ed810a32367cbe
+Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- tests/unit_tests/openvpn/test_buffer.c | 62 ++++++++++++++++++++++++++
- 1 file changed, 62 insertions(+)
+ src/openvpn/push.c       | 4 ++--
+ src/openvpn/ssl_common.h | 2 +-
+ src/openvpn/ssl_verify.c | 5 +++++
+ 3 files changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
-index 9e3b1d2e..bff50567 100644
---- a/tests/unit_tests/openvpn/test_buffer.c
-+++ b/tests/unit_tests/openvpn/test_buffer.c
-@@ -56,6 +56,66 @@ test_buffer_strprefix(void **state)
-     assert_int_equal(BLEN(buf), strlen(str)); \
-     assert_memory_equal(BPTR(buf), str, BLEN(buf));
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 8e9627199..8f0a534ac 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -267,9 +267,9 @@ receive_cr_response(struct context *c, const struct buffer *buffer)
+     struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
+     struct man_def_auth_context *mda = session->opt->mda_context;
+     struct env_set *es = session->opt->es;
+-    int key_id = get_primary_key(c->c2.tls_multi)->key_id;
++    unsigned int mda_key_id = get_primary_key(c->c2.tls_multi)->mda_key_id;
  
-+static void
-+test_buffer_printf_catrunc(void **state)
-+{
-+    struct gc_arena gc = gc_new();
-+    struct buffer buf = alloc_buf_gc(16, &gc);
-+
-+    buf_printf(&buf, "%d", 123);
-+    buf_printf(&buf, "%s", "some text, too long to fit");
-+    assert_buf_equals_str(&buf, "123some text, t");
-+
-+    buf_catrunc(&buf, "...");
-+    assert_buf_equals_str(&buf, "123some text...");
-+
-+    buf_catrunc(&buf, "some other text, much too long to fit");
-+    assert_buf_equals_str(&buf, "123some text...");
-+
-+    buf_catrunc(&buf, "something else"); /* exactly right */
-+    assert_buf_equals_str(&buf, "1something else");
-+
-+    buf_catrunc(&buf, "something other"); /* 1 byte too long */
-+    assert_buf_equals_str(&buf, "1something else");
-+
-+    gc_free(&gc);
-+}
-+
-+static void
-+test_buffer_format_hex_ex(void **state)
-+{
-+    const int input_size = 10;
-+    const uint8_t input[] = {
-+        0x01, 0x00, 0xff, 0x10, 0xff, 0x00, 0xf0, 0x0f, 0x09, 0x0a
-+    };
-+    char *output;
-+    struct gc_arena gc = gc_new();
-+
-+    int maxoutput = 0;
-+    unsigned int blocksize = 5;
-+    char *separator = " ";
-+    output = format_hex_ex(input, input_size, maxoutput, blocksize, separator, &gc);
-+    assert_string_equal(output, "0100ff10ff 00f00f090a");
-+
-+    maxoutput = 14;
-+    output = format_hex_ex(input, input_size, maxoutput, blocksize, separator, &gc);
-+    assert_string_equal(output, "0100[more...]");
-+
-+    maxoutput = 11;
-+    output = format_hex_ex(input, input_size, maxoutput, blocksize, separator, &gc);
-+    assert_string_equal(output, "0[more...]");
-+
-+    maxoutput = 10;
-+    output = format_hex_ex(input, input_size, maxoutput, blocksize, separator, &gc);
-+    assert_string_equal(output, "0100ff10f");
-+
-+    maxoutput = 9;
-+    output = format_hex_ex(input, input_size, maxoutput, blocksize, separator, &gc);
-+    assert_string_equal(output, "0100ff10");
-+
-+    gc_free(&gc);
-+}
-+
- struct test_buffer_list_aggregate_ctx {
-     struct buffer_list *empty;
-     struct buffer_list *one_two_three;
-@@ -267,6 +327,8 @@ main(void)
- {
-     const struct CMUnitTest tests[] = {
-         cmocka_unit_test(test_buffer_strprefix),
-+        cmocka_unit_test(test_buffer_printf_catrunc),
-+        cmocka_unit_test(test_buffer_format_hex_ex),
-         cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_empty,
-                                         test_buffer_list_setup,
-                                         test_buffer_list_teardown),
+-    management_notify_client_cr_response(key_id, mda, es, m);
++    management_notify_client_cr_response(mda_key_id, mda, es, m);
+ #endif
+ #if ENABLE_PLUGIN
+     verify_crresponse_plugin(c->c2.tls_multi, m);
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index ebfd25432..be0f18746 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -733,7 +733,7 @@ get_key_by_management_key_id(struct tls_multi *multi, unsigned int mda_key_id)
+     for (int i = 0; i < KEY_SCAN_SIZE; ++i)
+     {
+         struct key_state *ks = get_key_scan(multi, i);
+-        if (ks->mda_key_id == mda_key_id)
++        if (ks->mda_key_id == mda_key_id && ks->state > S_UNDEF)
+         {
+             return ks;
+         }
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 4c78c2b2c..567f55ea3 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -1279,6 +1279,11 @@ tls_authenticate_key(struct tls_multi *multi, const unsigned int mda_key_id, con
+         {
+             ks->mda_status = auth ? ACF_SUCCEEDED : ACF_FAILED;
+         }
++        else
++        {
++            msg(D_TLS_DEBUG_LOW, "%s: no key state found for management key id "
++                "%d", __func__, mda_key_id);
++        }
+     }
+     return (bool) ks;
+ }
 -- 
-2.34.1
+2.39.2 (Apple Git-143)
 
 
