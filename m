@@ -1,9 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed, 17 May 2023 13:02:29 +0200
-Message-Id: <20230517110230.2234266-1-arne@...1227...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Wed, 17 May 2023 13:36:19 +0200
+Message-Id: <20230517113619.82808-1-frank@...2641...>
+In-Reply-To: <20230517084422.70547-1-frank@...2641...>
+References: <20230517084422.70547-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/2] Introduce get_key_by_management_key_id
- helper function
+Subject: [Openvpn-devel] [PATCH 1/2 v4] buffer: use memcpy in buf_catrunc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,79 +17,57 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This function allows us to map from a management key id to a key structure
-and also allows this function to be reused.
+Since we use strlen() to determine the length
+and then check it ourselves, there is really
+no point in using strncpy.
 
-Signed-off-by: Arne Schwabe <arne@...1227...>
+But the compiler might complain that we use
+the output of strlen() for the length of
+strncpy which is usually a sign for bugs:
+
+error: ‘strncpy’ specified bound depends
+ on the length of the source argument
+ [-Werror=stringop-overflow=]
+
+Warning was at least triggered for
+mingw-gcc version 10-win32 20220113.
+
+Also change the type of len to size_t
+which avoids potential problems with
+signed overflow.
+
+v2:
+ - make len size_t and change code to avoid any theoretical overflows
+ - remove useless casts
+v3:
+ - fix off-by-one introduced by v2 %)
+v4:
+ - ignore unsigned overflow to simplify code
+
+Change-Id: If4a67adac4d2e870fd719b58075d39efcd67c671
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
- src/openvpn/ssl_common.h | 20 ++++++++++++++++++++
- src/openvpn/ssl_verify.c | 17 +++++++----------
- 2 files changed, 27 insertions(+), 10 deletions(-)
+ src/openvpn/buffer.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 27b029479..ebfd25432 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -722,4 +722,24 @@ get_primary_key(const struct tls_multi *multi)
-     return &multi->session[TM_ACTIVE].key[KS_PRIMARY];
- }
- 
-+#ifdef ENABLE_MANAGEMENT
-+/**
-+ * Gets the \c key_state  object that belong to the management key id or
-+ * return NULL if not found.
-+ */
-+static inline struct key_state *
-+get_key_by_management_key_id(struct tls_multi *multi, unsigned int mda_key_id)
-+{
-+    for (int i = 0; i < KEY_SCAN_SIZE; ++i)
-+    {
-+        struct key_state *ks = get_key_scan(multi, i);
-+        if (ks->mda_key_id == mda_key_id)
-+        {
-+            return ks;
-+        }
-+    }
-+    return NULL;
-+}
-+#endif
-+
- #endif /* SSL_COMMON_H_ */
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 1b589f1a6..4c78c2b2c 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -1268,22 +1268,19 @@ tls_authentication_status(struct tls_multi *multi)
- bool
- tls_authenticate_key(struct tls_multi *multi, const unsigned int mda_key_id, const bool auth, const char *client_reason)
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index d099795b..7725438e 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -316,10 +316,10 @@ buf_catrunc(struct buffer *buf, const char *str)
  {
--    bool ret = false;
-+    struct key_state *ks = NULL;
-     if (multi)
+     if (buf_forward_capacity(buf) <= 1)
      {
--        int i;
-+
-         auth_set_client_reason(multi, client_reason);
--        for (i = 0; i < KEY_SCAN_SIZE; ++i)
-+        ks = get_key_by_management_key_id(multi, mda_key_id);
-+
-+        if (ks)
+-        int len = (int) strlen(str) + 1;
++        size_t len = strlen(str) + 1;
+         if (len < buf_forward_capacity_total(buf))
          {
--            struct key_state *ks = get_key_scan(multi, i);
--            if (ks->mda_key_id == mda_key_id)
--            {
--                ks->mda_status = auth ? ACF_SUCCEEDED : ACF_FAILED;
--                ret = true;
--            }
-+            ks->mda_status = auth ? ACF_SUCCEEDED : ACF_FAILED;
+-            strncpynt((char *)(buf->data + buf->capacity - len), str, len);
++            memcpy(buf->data + buf->capacity - len, str, len);
          }
      }
--    return ret;
-+    return (bool) ks;
  }
- #endif /* ifdef ENABLE_MANAGEMENT */
- 
 -- 
-2.39.2 (Apple Git-143)
+2.34.1
 
 
