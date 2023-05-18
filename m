@@ -1,15 +1,13 @@
-Message-ID: <09c8b16b-f3cc-40da-279f-8ff704393d3b@...2181...>
-Date: Wed, 17 May 2023 23:14:43 +0200
-MIME-Version: 1.0
-From: Antonio Quartulli <a@...2181...>
+Date: Thu, 18 May 2023 08:47:39 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZGXKCwNgcA2P7Hiu@...1296...>
 References: <20230517200143.216-1-chipitsine@...277...>
  <02835E0F-FA73-4722-83EB-17A33A3A8DA5@...1376...>
- <CAFHpkQER6g7MPu07_0TbKnnvc6poGsD2nZqLyATFXQN4JwiseQ@...278...>
- <DEA80ADA-574E-431E-A61E-89F4840AD9AF@...1376...>
- <CAFHpkQFUYAbi=XPer39VshqN=Qcbcatcg1FGLpLHmxcKYKKDRA@...278...>
- <4C50099D-11A0-4BE2-8E88-8E9C1327519B@...1376...>
-Content-Language: en-US
-In-Reply-To: <4C50099D-11A0-4BE2-8E88-8E9C1327519B@...1376...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="ojzKXvCQMM2aUn7m"
+Content-Disposition: inline
+In-Reply-To: <02835E0F-FA73-4722-83EB-17A33A3A8DA5@...1376...>
 Subject: Re: [Openvpn-devel] [PATCH] src/openvpn/dco_freebsd.c: handle
  malloc failure
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,80 +18,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-To: Kristof Provost <kp@...1376...>, =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC4?= =?UTF-8?B?0L0=?= <chipitsine@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Kristof Provost <kp@...1249...>
+Cc: Ilya Shipitsin <chipitsine@...277...>, openvpn-devel@lists.sourceforge.net
+
+--ojzKXvCQMM2aUn7m
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On 17/05/2023 23:10, Kristof Provost wrote:
-> On 17 May 2023, at 17:06, Илья Шипицин wrote:
->> ср, 17 мая 2023 г. в 23:04, Kristof Provost <kp@...1249...>:
->>
->>> On 17 May 2023, at 16:58, Илья Шипицин wrote:
->>>> ср, 17 мая 2023 г. в 22:43, Kristof Provost <kp@...1249...>:
->>>>
->>>>> On 17 May 2023, at 16:01, Ilya Shipitsin wrote:
->>>>>> malloc was not checked against NULL, I was able
->>>>>> to get core dump in case of failure
->>>>>>
->>>>>> Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
->>>>>> ---
->>>>>>   src/openvpn/dco_freebsd.c | 5 +++++
->>>>>>   1 file changed, 5 insertions(+)
->>>>>>
->>>>>> diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
->>>>>> index 1111abeb..adbd1120 100644
->>>>>> --- a/src/openvpn/dco_freebsd.c
->>>>>> +++ b/src/openvpn/dco_freebsd.c
->>>>>> @@ -594,6 +594,11 @@ dco_available(int msglevel)
->>>>>>       }
->>>>>>
->>>>>>       buf = malloc(ifcr.ifcr_total * IFNAMSIZ);
->>>>>> +    if (buf == NULL)
->>>>>> +    {
->>>>>
->>>>> I’d ‘goto out;’ instead, because that’s how we handle other errors in
->>> this
->>>>> function.
->>>>> (free(NULL) is guaranteed to be safe, so we can just do that.)
->>>>>
->>>>
->>>> on "goto out" we'll end with "return available;"
->>>>
->>> ‘available’ defaults to ‘false’, so that seems fine to me.
->>>
->>
->> looks fragile :)
->>
->> I do not see benefits of such an approach. But it will work indeed
->>
-> The reasoning is that it keeps the error handing consistent. If we ever extend the function to e.g. open another file descriptor we’d only have to change the error handling in one location.
-> 
-> We’re not adding new ways for the function to fail either. The next potential error is the ioctl() call, where we do exactly the same thing (i.e. goto out) on error, so it already relies on available being set to false.
-> 
+On Wed, May 17, 2023 at 04:43:01PM -0400, Kristof Provost wrote:
+> Fwiw: I usually don???t bother handling malloc failure in userspace,
+> because modern systems all overallocate anyway, so the first thing
+> you know about lack of memory is the out-of-memory killer terminating
+> you. It???s a policy choice for the project, so I don???t object
+> to handling it either.
 
-I agree on this style too.
+In OpenVPN, we do check malloc() returns :-) - and there's cases where
+it actually hit, like running with too low ulimits and --mlock.
 
-Should we require more clean up work in the future, we can just add 
-extra lines right after the out label (with the appropriate checks, of 
-course), thus keeping error handling in one place.
+If a malloc fail is not recoverable, we have check_malloc_return(p),
+which will do
 
-Cheers,
+void
+out_of_memory(void)
+{
+    fprintf(stderr, PACKAGE_NAME ": Out of Memory\n");
+    exit(1);
+}
+static inline void
+check_malloc_return(const void *p)
+{
+    if (!p)
+    {
+        out_of_memory();
+    }
+}
 
-> Best regards,
-> Kristof
-> 
-> 
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+so it depends a bit on the context if "return an error upstream, and
+wait for the next allocation to fail" or "abort right away" is the best
+choice.  In low level functions, "return error" might lead to a better
+error message from upstream (or not).
 
--- 
-Antonio Quartulli
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
--- 
-Antonio Quartulli
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--ojzKXvCQMM2aUn7m
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJkZcoLAAoJEB2Cnv7KVigSpnsL/jFfw8XSUmH/7fyKb7X3aqZy
+0LRhMWkYxJ5iraBgwK+Eoe2DHC/vfuAspYbBjQ20AfkUHPubqodjMZ6qAJmHmQzf
+M5sWvE5thBQU4CYxcvy56IYmywzJbqssSdqVF/XQEA/FGo6SYeKXPZ5Ldr8NgHyb
+CCqIyKUsL1eq+p/dFM1IOB3yJN6YXKE0teuPWFI36oZyIGFtGjcLJ238BSGnJ4Hc
+M+vf7drTURbvdt0m2z4hRLPuYShjHKsC7g2CxDzWZ3BEJQI8OiACX188FtYoMee3
+ebnMvyWLVEcrcQHnR2jFK9/fbW5g2et64jbmTfLDJCEVpkUkeThFrbule8qNaPLw
+J5w1UNDmWJn8xNUDIYyQ2y5sdt+04QnJmKrt/HQqmHy/WriLJb5Nm5acE+csFecf
+gLt0K7jHNN2ArYygfFWn+q6YCZjtDA2N+uSwh0MhNkMHNm4jU4hl49UxM+bZovtK
+DaOVWcOeKGG6AmRp0A/+q5GoVZzKISanUUvL5/1mOg==
+=7SVP
+-----END PGP SIGNATURE-----
+
+--ojzKXvCQMM2aUn7m--
 
