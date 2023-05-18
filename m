@@ -1,13 +1,11 @@
-Date: Thu, 18 May 2023 08:47:39 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <ZGXKCwNgcA2P7Hiu@...1296...>
-References: <20230517200143.216-1-chipitsine@...277...>
- <02835E0F-FA73-4722-83EB-17A33A3A8DA5@...1376...>
+Message-ID: <f1428331-1d68-aafc-ba18-e7ce96ba363c@...68...>
+Date: Thu, 18 May 2023 09:00:26 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="ojzKXvCQMM2aUn7m"
-Content-Disposition: inline
-In-Reply-To: <02835E0F-FA73-4722-83EB-17A33A3A8DA5@...1376...>
+Content-Language: en-US
+References: <20230517200143.216-1-chipitsine@...277...>
+ <a362a6e5-c80b-1473-d503-4e51befd22ee@...2181...>
+From: Matthias Andree <matthias.andree@...68...>
+In-Reply-To: <a362a6e5-c80b-1473-d503-4e51befd22ee@...2181...>
 Subject: Re: [Openvpn-devel] [PATCH] src/openvpn/dco_freebsd.c: handle
  malloc failure
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,76 +16,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Kristof Provost <kp@...1249...>
-Cc: Ilya Shipitsin <chipitsine@...277...>, openvpn-devel@lists.sourceforge.net
-
---ojzKXvCQMM2aUn7m
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Am 17.05.23 um 22:47 schrieb Antonio Quartulli:
+> Hi,
+>
+> On 17/05/2023 22:01, Ilya Shipitsin wrote:
+>> malloc was not checked against NULL, I was able
+>> to get core dump in case of failure
+>>
+>> Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
+>> ---
+>> =C2=A0 src/openvpn/dco_freebsd.c | 5 +++++
+>> =C2=A0 1 file changed, 5 insertions(+)
+>>
+>> diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+>> index 1111abeb..adbd1120 100644
+>> --- a/src/openvpn/dco_freebsd.c
+>> +++ b/src/openvpn/dco_freebsd.c
+>> @@ -594,6 +594,11 @@ dco_available(int msglevel)
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+>> =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 buf =3D malloc(ifcr.ifcr_total * I=
+FNAMSIZ);
+>> +=C2=A0=C2=A0=C2=A0 if (buf =3D=3D NULL)
+>
+> as style guideline, we wanted to go for if (!A) rather than if (A =3D=3D
+> NULL). Although I am not sure if the whole codebase was cleaned up yet
+> or not.
 
-On Wed, May 17, 2023 at 04:43:01PM -0400, Kristof Provost wrote:
-> Fwiw: I usually don???t bother handling malloc failure in userspace,
-> because modern systems all overallocate anyway, so the first thing
-> you know about lack of memory is the out-of-memory killer terminating
-> you. It???s a policy choice for the project, so I don???t object
-> to handling it either.
+That, and constants usually go on the left-hand side of comparison so
+the compiler flags the accidental if (foo =3D NULL) even if it does not
+produce "add a pair of parentheses if you really mean to use an
+assignment as if() expression" like warnings. You can't if (NULL =3D foo)...
 
-In OpenVPN, we do check malloc() returns :-) - and there's cases where
-it actually hit, like running with too low ulimits and --mlock.
+And in practice, if anyone hits C++ some day, it might make a difference
+if you're in boolean or pointer contexts, so use if (!A).
 
-If a malloc fail is not recoverable, we have check_malloc_return(p),
-which will do
 
-void
-out_of_memory(void)
-{
-    fprintf(stderr, PACKAGE_NAME ": Out of Memory\n");
-    exit(1);
-}
-static inline void
-check_malloc_return(const void *p)
-{
-    if (!p)
-    {
-        out_of_memory();
-    }
-}
-
-so it depends a bit on the context if "return an error upstream, and
-wait for the next allocation to fail" or "abort right away" is the best
-choice.  In low level functions, "return error" might lead to a better
-error message from upstream (or not).
-
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
-
-Gert Doering - Munich, Germany                             gert@...1296...
-
---ojzKXvCQMM2aUn7m
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJkZcoLAAoJEB2Cnv7KVigSpnsL/jFfw8XSUmH/7fyKb7X3aqZy
-0LRhMWkYxJ5iraBgwK+Eoe2DHC/vfuAspYbBjQ20AfkUHPubqodjMZ6qAJmHmQzf
-M5sWvE5thBQU4CYxcvy56IYmywzJbqssSdqVF/XQEA/FGo6SYeKXPZ5Ldr8NgHyb
-CCqIyKUsL1eq+p/dFM1IOB3yJN6YXKE0teuPWFI36oZyIGFtGjcLJ238BSGnJ4Hc
-M+vf7drTURbvdt0m2z4hRLPuYShjHKsC7g2CxDzWZ3BEJQI8OiACX188FtYoMee3
-ebnMvyWLVEcrcQHnR2jFK9/fbW5g2et64jbmTfLDJCEVpkUkeThFrbule8qNaPLw
-J5w1UNDmWJn8xNUDIYyQ2y5sdt+04QnJmKrt/HQqmHy/WriLJb5Nm5acE+csFecf
-gLt0K7jHNN2ArYygfFWn+q6YCZjtDA2N+uSwh0MhNkMHNm4jU4hl49UxM+bZovtK
-DaOVWcOeKGG6AmRp0A/+q5GoVZzKISanUUvL5/1mOg==
-=7SVP
------END PGP SIGNATURE-----
-
---ojzKXvCQMM2aUn7m--
 
