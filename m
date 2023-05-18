@@ -1,8 +1,10 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 18 May 2023 15:54:34 +0300
-Message-Id: <20230518125434.1537-1-lstipakov@...277...>
+Date: Thu, 18 May 2023 19:23:50 +0300
+Message-Id: <20230518162350.1633-1-lstipakov@...277...>
+In-Reply-To: <20230518125434.1537-1-lstipakov@...277...>
+References: <20230518125434.1537-1-lstipakov@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] tapctl: generate driver-specific adapter
+Subject: [Openvpn-devel] [PATCH v2] tapctl: generate driver-specific adapter
  names
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -51,7 +53,7 @@ Signed-off-by: Lev Stipakov <lev@...515...>
  1 file changed, 107 insertions(+), 26 deletions(-)
 
 diff --git a/src/tapctl/main.c b/src/tapctl/main.c
-index 1194036f..5bdcae41 100644
+index 1194036f..e4d44794 100644
 --- a/src/tapctl/main.c
 +++ b/src/tapctl/main.c
 @@ -126,6 +126,90 @@ usage(void)
@@ -119,20 +121,20 @@ index 1194036f..5bdcae41 100644
 +        return _tcsdup(base_name);
 +    }
 +
-+    size_t name_len = (_tcslen(base_name) + _MAX_ITOSTR_BASE10_COUNT + 2);
++    TCHAR itot_buf[10];
++    size_t name_len = (_tcslen(base_name) + sizeof(itot_buf) / sizeof(TCHAR) + 2);
 +    LPTSTR name = malloc(name_len * sizeof(TCHAR));
 +    if (name == NULL)
 +    {
 +        return NULL;
 +    }
-+    TCHAR buf[_MAX_ITOSTR_BASE10_COUNT];
 +    for (int i = 1; i < 100; ++i)
 +    {
 +        *name = TEXT('\0');
 +        _tcscat_s(name, name_len, base_name);
 +        _tcscat_s(name, name_len, TEXT(" #"));
-+        _itot_s(i, buf, sizeof(buf) / sizeof(TCHAR), 10);
-+        _tcscat_s(name, name_len, buf);
++        _itot_s(i, itot_buf, sizeof(itot_buf) / sizeof(TCHAR), 10);
++        _tcscat_s(name, name_len, itot_buf);
 +
 +        if (is_adapter_name_available(name, adapter_list, FALSE))
 +        {
