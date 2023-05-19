@@ -1,9 +1,13 @@
-Date: Fri, 19 May 2023 08:39:14 +0200 (CEST)
-Message-Id: <202305190639.34J6dE65014988@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230518110058.1382-1-lstipakov@...277...>
-References: <20230518110058.1382-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco-win: support for --dev-node
+MIME-Version: 1.0
+References: <20230518125434.1537-1-lstipakov@...277...>
+ <20230518162350.1633-1-lstipakov@...277...>
+ <CAKuzo_gU7btMnk2qbwe2maYFjS10FLRVFgV1Uxeyz=4YHorGKA@...278...>
+In-Reply-To: <CAKuzo_gU7btMnk2qbwe2maYFjS10FLRVFgV1Uxeyz=4YHorGKA@...278...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri, 19 May 2023 10:11:08 +0300
+Message-ID: <CAGyAFMUJA0-sn=Aow=ERYnLLk4FS4gw7XirceKeJcney97L8-Q@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2] tapctl: generate driver-specific
+ adapter names
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,37 +16,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lev@...515...>
 
-Acked-by: Gert Doering <gert@...1296...>
+Hi,
 
-The patch is actually quite trivial - just prevent the "if (dco)"
-option checker from unsetting --dev-node...
+> It looks much simpler to write the above 5 lines as
+>
+> _stprintf_s(name, name_len, TEXT("%ls #%d"), base_name, i)
 
-I have not tested it beyond "stare-at-code" and "do a MinGW test compile".
+Agreed.
 
-Your patch has been applied to the master and release/2.6 branch.
+> If (adapter_name) is false, we reach here with iResult not set, but it gets referenced below. Add an else { iResult = 1; } or initialize iResult to 1 at top?
 
-commit c543cf464e97866e20345feb46c82752fedc9d71 (master)
-commit ea9382d7b41849a92a9d18fa3f5420925277144e (release/2.6)
-Author: Lev Stipakov
-Date:   Thu May 18 14:00:58 2023 +0300
+Normally this should not happen, adapter_name is currently set either
+by --name or using a hwid-generated name. But surely let's handle this
+case too.
 
-     dco-win: support for --dev-node
+I think iResult should be set to 0, since if we don't set the name
+this is not an error - same behavior has been before.
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230518110058.1382-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26702.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+Agreed with the rest, V3 is coming.
 
