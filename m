@@ -1,9 +1,14 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon, 22 May 2023 11:12:31 +0200
-Message-Id: <20230522091231.2837468-1-arne@...1227...>
+Message-ID: <9963b338-ae7c-b786-babc-4f1d005dfff6@...1227...>
+Date: Mon, 22 May 2023 12:11:07 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Print a more user-friendly error when
- tls-crypt-v2 client auth fails
+References: <20230517110230.2234266-1-arne@...1227...>
+ <20230517110230.2234266-2-arne@...1227...>
+ <CAKuzo_jQ6nCjWr-jCEUTvZKJC=XSdNrGx=jK+vguLuVd4eRkLA@...278...>
+Content-Language: en-GB
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <CAKuzo_jQ6nCjWr-jCEUTvZKJC=XSdNrGx=jK+vguLuVd4eRkLA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Fix CR_RESPONSE mangaement message
+ using wrong key_id
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,35 +17,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-While it might be clear to people being (too?) well versed in
-typical crypto applications that an authentication failure probably
-mean wrong decryption key, this is not really obvious for the typical
-user/server admin.
+Am 19.05.23 um 15:45 schrieb Selva Nair:
+> Hi,
+> 
+> While this bugfix should be merged, I'm a conflicted about the way these 
+> two patches are split up. It just makes reviewing harder than it should 
+> be. They actually form two independent changes but with one half 
+> intersecting with the other for no reason.
 
-Change-Id: If0f0e7d53f915d39ab69aaaac43dc73bb9c26ae9
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/tls_crypt.c | 2 ++
- 1 file changed, 2 insertions(+)
+Yeah. I moved the logging to 1/2. It seems to fit much better in that patch.
 
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index 88b2d6d7c..73542368e 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -524,6 +524,8 @@ tls_crypt_v2_unwrap_client_key(struct key2 *client_key, struct buffer *metadata,
-         dmsg(D_CRYPTO_DEBUG, "tag_check: %s",
-              format_hex(tag_check, sizeof(tag_check), 0, &gc));
-         CRYPT_ERROR("client key authentication error");
-+        msg(D_TLS_DEBUG_LOW, "This might be a client-key that was generated for "
-+            "a different tls-crypt-v2 server key)");
-     }
- 
-     if (buf_len(&plaintext) < sizeof(client_key->keys))
--- 
-2.39.2 (Apple Git-143)
+Arne
 
 
