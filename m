@@ -1,8 +1,11 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed, 24 May 2023 15:24:23 +0200
-Message-Id: <20230524132424.3098475-1-arne@...1227...>
+Date: Wed, 24 May 2023 18:06:22 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <ZG41/misxYNR+gp/@flichtenheld-TUXEDO-InfinityBook-S-15-17-Gen7>
+References: <20230509154657.2756-1-gianmarco@...2726...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/2] Revert commit 423ced962d
+In-Reply-To: <20230509154657.2756-1-gianmarco@...2726...>
+Subject: Re: [Openvpn-devel] [PATCH] Persist-key: enable persist-key option
+ by default.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,159 +14,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: Gianmarco De Gregori <gianmarco@...2726...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This reverts commit 423ced962db3129b4ed551c489624faba4340652, which
-has Jason A. Donenfeld listed as author as the patch was based on his
-initial submission.
+On Tue, May 09, 2023 at 05:46:58PM +0200, Gianmarco De Gregori wrote:
+> This commit changes the default behavior of
+> the OpenVPN configuration to enable the
+> persist-key option by default.
+> 
+> This means that all the key file content will be kept
+> in memory throughout the lifetime of the VPN connection.
+> 
+> Fixes: Trac #1405
+> Signed-off-by: Gianmarco De Gregori <gianmarco@...2726...>
+> ---
+>  doc/man-sections/generic-options.rst |  2 ++
+>  src/openvpn/init.c                   | 12 ++----------
+>  src/openvpn/options.c                | 23 +++++++++++------------
+>  src/openvpn/options.h                |  1 -
+>  4 files changed, 15 insertions(+), 23 deletions(-)
+> 
+> diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
+> index 97e1b5aa..5f74ab67 100644
+> --- a/doc/man-sections/generic-options.rst
+> +++ b/doc/man-sections/generic-options.rst
+> @@ -303,6 +303,8 @@ which mode OpenVPN is configured as.
+>    lower priority, ``n`` less than zero is higher priority).
+>  
+>  --persist-key
+> +  DEPRECATED OPTION, corresponding behavior is now always enabled.
 
-We have not received permission to relicense the original patch.
+The usual style in the documentation seems to be "**DEPRECATED**". See
+e.g. --disable-occ in the same file.
 
-Change-Id: I8142753928498169032450c56d0497a5042bdc9b
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/init.c               |  1 -
- src/openvpn/options.c            | 26 +++++++++++++-------------
- src/openvpn/options.h            |  1 -
- src/openvpn/ssl_common.h         |  1 -
- src/openvpn/ssl_verify_mbedtls.c | 16 ----------------
- src/openvpn/ssl_verify_openssl.c |  2 +-
- 6 files changed, 14 insertions(+), 33 deletions(-)
+> +
+>    Don't re-read key files across :code:`SIGUSR1` or ``--ping-restart``.
+>  
+>    This option can be combined with ``--user`` to allow restarts
+[...]
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 2680f268..9ef21bc9 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index d358ad003..c023b33c6 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -3347,7 +3347,6 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
-     to.verify_hash = options->verify_hash;
-     to.verify_hash_algo = options->verify_hash_algo;
-     to.verify_hash_depth = options->verify_hash_depth;
--    to.verify_hash_no_ca = options->verify_hash_no_ca;
- #ifdef ENABLE_X509ALTUSERNAME
-     memcpy(to.x509_username_field, options->x509_username_field, sizeof(to.x509_username_field));
- #else
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index e4c596b89..fe9285384 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2991,11 +2991,21 @@ options_postprocess_verify_ce(const struct options *options,
-         else
-         {
- #ifdef ENABLE_CRYPTO_MBEDTLS
-+            if (!(options->ca_file))
-+            {
-+                msg(M_USAGE, "You must define CA file (--ca)");
-+            }
-+
-             if (options->ca_path)
-             {
-                 msg(M_USAGE, "Parameter --capath cannot be used with the mbed TLS version version of OpenVPN.");
-             }
--#endif  /* ifdef ENABLE_CRYPTO_MBEDTLS */
-+#else  /* ifdef ENABLE_CRYPTO_MBEDTLS */
-+            if ((!(options->ca_file)) && (!(options->ca_path)))
-+            {
-+                msg(M_USAGE, "You must define CA file (--ca) or CA path (--capath)");
-+            }
-+#endif
-             if (pull)
-             {
- 
-@@ -3727,13 +3737,6 @@ options_postprocess_mutate(struct options *o, struct env_set *es)
-         options_postprocess_http_proxy_override(o);
-     }
- #endif
--    if (!o->ca_file && !o->ca_path && o->verify_hash
--        && o->verify_hash_depth == 0)
--    {
--        msg(M_INFO, "Using certificate fingerprint to verify peer (no CA "
--            "option set). ");
--        o->verify_hash_no_ca = true;
--    }
- 
-     if (o->config && streq(o->config, "stdin") && o->remap_sigusr1 == SIGHUP)
-     {
-@@ -4029,11 +4032,8 @@ options_postprocess_filechecks(struct options *options)
-     errs |= check_file_access_inline(options->dh_file_inline, CHKACC_FILE,
-                                      options->dh_file, R_OK, "--dh");
- 
--    if (!options->verify_hash_no_ca)
--    {
--        errs |= check_file_access_inline(options->ca_file_inline, CHKACC_FILE,
--                                         options->ca_file, R_OK, "--ca");
--    }
-+    errs |= check_file_access_inline(options->ca_file_inline, CHKACC_FILE,
-+                                     options->ca_file, R_OK, "--ca");
- 
-     errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE,
-                                      options->ca_path, R_OK, "--capath");
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index f5890b90f..95f1158a4 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -604,7 +604,6 @@ struct options
-     struct verify_hash_list *verify_hash;
-     hash_algo_type verify_hash_algo;
-     int verify_hash_depth;
--    bool verify_hash_no_ca;
-     unsigned int ssl_flags; /* set to SSLF_x flags from ssl.h */
- 
- #ifdef ENABLE_PKCS11
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 27b029479..c0b3caa71 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -345,7 +345,6 @@ struct tls_options
-     const char *remote_cert_eku;
-     struct verify_hash_list *verify_hash;
-     int verify_hash_depth;
--    bool verify_hash_no_ca;
-     hash_algo_type verify_hash_algo;
- #ifdef ENABLE_X509ALTUSERNAME
-     char *x509_username_field[MAX_PARMS];
-diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
-index e3437f740..c9ef7a171 100644
---- a/src/openvpn/ssl_verify_mbedtls.c
-+++ b/src/openvpn/ssl_verify_mbedtls.c
-@@ -62,22 +62,6 @@ verify_callback(void *session_obj, mbedtls_x509_crt *cert, int cert_depth,
-     struct buffer cert_fingerprint = x509_get_sha256_fingerprint(cert, &gc);
-     cert_hash_remember(session, cert_depth, &cert_fingerprint);
- 
--    if (session->opt->verify_hash_no_ca)
--    {
--        /*
--         * If we decide to verify the peer certificate based on the fingerprint
--         * we ignore wrong dates and the certificate not being trusted.
--         * Any other problem with the certificate (wrong key, bad cert,...)
--         * will still trigger an error.
--         * Clearing these flags relies on verify_cert will later rejecting a
--         * certificate that has no matching fingerprint.
--         */
--        uint32_t flags_ignore = MBEDTLS_X509_BADCERT_NOT_TRUSTED
--                                | MBEDTLS_X509_BADCERT_EXPIRED
--                                | MBEDTLS_X509_BADCERT_FUTURE;
--        *flags = *flags & ~flags_ignore;
--    }
--
-     /* did peer present cert which was signed by our root cert? */
-     if (*flags != 0)
-     {
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index e24ce4e4a..ac36f09db 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -67,7 +67,7 @@ verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
-     cert_hash_remember(session, X509_STORE_CTX_get_error_depth(ctx), &cert_hash);
- 
-     /* did peer present cert which was signed by our root cert? */
--    if (!preverify_ok && !session->opt->verify_hash_no_ca)
-+    if (!preverify_ok)
-     {
-         /* get the X509 name */
-         char *subject = x509_get_subject(current_cert, &gc);
+
+Please also add (DEPRECATED) marker in usage_message.
+
+[...]
+
+Regards,
 -- 
-2.39.2 (Apple Git-143)
-
+  Frank Lichtenheld
 
