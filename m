@@ -1,9 +1,10 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Sat, 27 May 2023 11:55:04 +0200
-Message-Id: <20230527095504.17915-1-frank@...2641...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] msvc-generate: include version.m4.in in
- tarball
+Date: Sat, 27 May 2023 18:37:00 +0200 (CEST)
+Message-Id: <202305271637.34RGb0rT000877@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230527095504.17915-1-frank@...2641...>
+References: <20230527095504.17915-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: msvc-generate: include
+ version.m4.in in tarball
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,28 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Fixes openvpn#344
+Acked-by: Gert Doering <gert@...1296...>
 
-Change-Id: I7d8a25df8ef62a1e46fdb4a2358972eb4419c564
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
- build/msvc/msvc-generate/Makefile.am | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Thanks.  Trivial, but me and automake...  tested by building a 2.6
+tarball, and comparing tarball contents vs. 2.6.4 ("as expected", it
+just adds the version.m4.in), and pushing to GHA "just to see that
+it won't do something unexpected" (doesn't).
 
-diff --git a/build/msvc/msvc-generate/Makefile.am b/build/msvc/msvc-generate/Makefile.am
-index aa4f0dae..9d04326d 100644
---- a/build/msvc/msvc-generate/Makefile.am
-+++ b/build/msvc/msvc-generate/Makefile.am
-@@ -15,4 +15,5 @@ MAINTAINERCLEANFILES = \
- dist_noinst_DATA = \
- 	msvc-generate.vcxproj \
- 	Makefile.mak \
--	msvc-generate.js
-+	msvc-generate.js \
-+	version.m4.in
--- 
-2.34.1
+Your patch has been applied to the master and release/2.6 branch.
+
+commit 72d70b5d8a9d6ac01134df006a03607a79e76294 (master)
+commit cfcc20ff2bf184edb06e2d918d697f0ef81a0e82 (release/2.6)
+Author: Frank Lichtenheld
+Date:   Sat May 27 11:55:04 2023 +0200
+
+     msvc-generate: include version.m4.in in tarball
+
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230527095504.17915-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26732.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
