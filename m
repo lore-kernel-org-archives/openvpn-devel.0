@@ -1,10 +1,9 @@
-Date: Sat, 27 May 2023 09:33:11 +0200 (CEST)
-Message-Id: <202305270733.34R7XBBY093137@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230525144657.40732-1-frank@...2641...>
-References: <20230525144657.40732-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: options: remove --key-method
- from usage message
+From: Frank Lichtenheld <frank@...2641...>
+Date: Sat, 27 May 2023 11:55:04 +0200
+Message-Id: <20230527095504.17915-1-frank@...2641...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] msvc-generate: include version.m4.in in
+ tarball
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +14,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+Fixes openvpn#344
 
-"Because it makes sense".  Compile tested.
+Change-Id: I7d8a25df8ef62a1e46fdb4a2358972eb4419c564
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ build/msvc/msvc-generate/Makefile.am | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Your patch has been applied to the master and release/2.6 branch.
-
-commit e8a026ac770592670b0dcf8f81cee6a98b4b4f65 (master)
-commit 763cf2acdd6954e5e92117996c239fe890ef8996 (release/2.6)
-Author: Frank Lichtenheld
-Date:   Thu May 25 16:46:57 2023 +0200
-
-     options: remove --key-method from usage message
-
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230525144657.40732-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26726.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/build/msvc/msvc-generate/Makefile.am b/build/msvc/msvc-generate/Makefile.am
+index aa4f0dae..9d04326d 100644
+--- a/build/msvc/msvc-generate/Makefile.am
++++ b/build/msvc/msvc-generate/Makefile.am
+@@ -15,4 +15,5 @@ MAINTAINERCLEANFILES = \
+ dist_noinst_DATA = \
+ 	msvc-generate.vcxproj \
+ 	Makefile.mak \
+-	msvc-generate.js
++	msvc-generate.js \
++	version.m4.in
+-- 
+2.34.1
 
 
