@@ -1,10 +1,10 @@
-Date: Sat, 3 Jun 2023 10:03:30 +0200 (CEST)
-Message-Id: <202306030803.35383URg046763@...2054...>
+Date: Sat, 3 Jun 2023 10:31:24 +0200 (CEST)
+Message-Id: <202306030831.3538VOj6057706@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230601095721.4065834-1-arne@...1227...>
-References: <20230601095721.4065834-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix use-after-free with
- EVP_CIPHER_free
+In-Reply-To: <20230601102506.4068185-1-arne@...1227...>
+References: <20230601102506.4068185-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove key_type argument from
+ generate_key_random
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,25 +18,27 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I have not tested this beyond a simple "does it compile" (it does) - and
-the fix is quite "obviously correct" - good find.
+Acked-by: Gert Doering <gert@...1296...>
 
-I have also removed the spurious extra blank line on merge.
+"git show -w" confirms that this is really just indent changes plus
+taking away the "kt != NULL" path - and since this is called from just
+a single place, with NULL, just removing the second argument is indeed
+a good strategy.
 
-Your patch has been applied to the master and release/2.6 branch
-(relevant code is not part of 2.5).
+Tested with a t_client run on FreeBSD (succeeds).
 
-commit 13f5e615310ea64ab69f521e622a10f2d0ad3f4e (master)
-commit 205c66bd0ed2661c47b9fe7317089fbb09cc7aa4 (release/2.6)
+Your patch has been applied to the master branch.
+
+commit 68e45eda7b75b412d7e2568adb2e07a94d3cf594
 Author: Arne Schwabe
-Date:   Thu Jun 1 11:57:21 2023 +0200
+Date:   Thu Jun 1 12:25:06 2023 +0200
 
-     Fix use-after-free with EVP_CIPHER_free
+     Remove key_type argument from generate_key_random
 
      Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20230601095721.4065834-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26735.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230601102506.4068185-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26737.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
