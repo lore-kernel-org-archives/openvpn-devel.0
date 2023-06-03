@@ -1,9 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Thu,  1 Jun 2023 12:25:06 +0200
-Message-Id: <20230601102506.4068185-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Remove key_type argument from
- generate_key_random
+Date: Sat, 3 Jun 2023 10:03:30 +0200 (CEST)
+Message-Id: <202306030803.35383URg046763@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230601095721.4065834-1-arne@...1227...>
+References: <20230601095721.4065834-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix use-after-free with
+ EVP_CIPHER_free
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,102 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This part of the function is not used by any part of
-our source code. It looks also broken if called with kt!=NULL
-The function cipher_kt_key_size expects its argument to be not
-NULL and would break. So remove the unused code instead of fixing
-it.
+I have not tested this beyond a simple "does it compile" (it does) - and
+the fix is quite "obviously correct" - good find.
 
-Found by Coverity.
+I have also removed the spurious extra blank line on merge.
 
-Change-Id: Id56628cfb3dfd2f306bd9bdcca2e567ac0ca9ab2
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/crypto.c | 38 +++++++++++---------------------------
- src/openvpn/crypto.h |  2 --
- 2 files changed, 11 insertions(+), 29 deletions(-)
+Your patch has been applied to the master and release/2.6 branch
+(relevant code is not part of 2.5).
 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index b5ae17ec8..930f15a42 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -957,41 +957,25 @@ check_replay_consistency(const struct key_type *kt, bool packet_id)
- }
- 
- /*
-- * Generate a random key.  If key_type is provided, make
-- * sure generated key is valid for key_type.
-+ * Generate a random key.
-  */
--void
--generate_key_random(struct key *key, const struct key_type *kt)
-+static void
-+generate_key_random(struct key *key)
- {
-     int cipher_len = MAX_CIPHER_KEY_LENGTH;
-     int hmac_len = MAX_HMAC_KEY_LENGTH;
- 
-     struct gc_arena gc = gc_new();
- 
--    do
-+    CLEAR(*key);
-+    if (!rand_bytes(key->cipher, cipher_len)
-+        || !rand_bytes(key->hmac, hmac_len))
-     {
--        CLEAR(*key);
--        if (kt)
--        {
--            cipher_len = cipher_kt_key_size(kt->cipher);
--
--            int kt_hmac_length = md_kt_size(kt->digest);
--
--            if (kt->digest && kt_hmac_length > 0 && kt_hmac_length <= hmac_len)
--            {
--                hmac_len = kt_hmac_length;
--            }
--        }
--        if (!rand_bytes(key->cipher, cipher_len)
--            || !rand_bytes(key->hmac, hmac_len))
--        {
--            msg(M_FATAL, "ERROR: Random number generator cannot obtain entropy for key generation");
--        }
--
--        dmsg(D_SHOW_KEY_SOURCE, "Cipher source entropy: %s", format_hex(key->cipher, cipher_len, 0, &gc));
--        dmsg(D_SHOW_KEY_SOURCE, "HMAC source entropy: %s", format_hex(key->hmac, hmac_len, 0, &gc));
-+        msg(M_FATAL, "ERROR: Random number generator cannot obtain entropy for key generation");
-+    }
- 
--    } while (kt && !check_key(key, kt));
-+    dmsg(D_SHOW_KEY_SOURCE, "Cipher source entropy: %s", format_hex(key->cipher, cipher_len, 0, &gc));
-+    dmsg(D_SHOW_KEY_SOURCE, "HMAC source entropy: %s", format_hex(key->hmac, hmac_len, 0, &gc));
- 
-     gc_free(&gc);
- }
-@@ -1398,7 +1382,7 @@ write_key_file(const int nkeys, const char *filename)
-         char *fmt;
- 
-         /* generate random bits */
--        generate_key_random(&key, NULL);
-+        generate_key_random(&key);
- 
-         /* format key as ascii */
-         fmt = format_hex_ex((const uint8_t *)&key,
-diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index 229a4eb1c..88f8f4472 100644
---- a/src/openvpn/crypto.h
-+++ b/src/openvpn/crypto.h
-@@ -304,8 +304,6 @@ void read_key_file(struct key2 *key2, const char *file, const unsigned int flags
-  */
- int write_key_file(const int nkeys, const char *filename);
- 
--void generate_key_random(struct key *key, const struct key_type *kt);
--
- void check_replay_consistency(const struct key_type *kt, bool packet_id);
- 
- bool check_key(struct key *key, const struct key_type *kt);
--- 
-2.39.2 (Apple Git-143)
+commit 13f5e615310ea64ab69f521e622a10f2d0ad3f4e (master)
+commit 205c66bd0ed2661c47b9fe7317089fbb09cc7aa4 (release/2.6)
+Author: Arne Schwabe
+Date:   Thu Jun 1 11:57:21 2023 +0200
+
+     Fix use-after-free with EVP_CIPHER_free
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <20230601095721.4065834-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26735.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
