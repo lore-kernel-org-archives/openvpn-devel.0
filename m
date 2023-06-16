@@ -1,11 +1,8 @@
+Date: Fri, 16 Jun 2023 18:03:13 +0200
 From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 14 Jun 2023 12:21:15 +0200
-Message-Id: <20230614102115.138724-2-frank@...2641...>
-In-Reply-To: <20230614102115.138724-1-frank@...2641...>
-References: <20230614102115.138724-1-frank@...2641...>
+Message-ID: <ZIyHwZY0c6+KdFpv@...2685...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/2] vcpkg-ports/pkcs11-helper: rename
- patches to make file names shorter
+Subject: [Openvpn-devel] OpenVPN 2.6.5 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,58 +13,49 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
 
-Remove the number prefixes we do not use anyway.
+The OpenVPN community project team is proud to release OpenVPN 2.6.5.
 
-And then rename Allow-the-build-to-succeed-if-configured-with-disabl.patch
-to make it short enough that it can fit in a tar archive
-built with --old-archive. Otherwise make dist might not include it:
+This is a small bugfix release.
 
-tar: openvpn-2.7_git/contrib/vcpkg-ports/pkcs11-helper/Allow-the-build-to-succeed-if-configured-with-disabl.patch:
-file name is too long (max 99); not dumped
+User visible changes:
 
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
- ...ith-disabl.patch => Fix-build-with-disable-shared.patch} | 0
- ...nSSL.patch => config-w32-vc.h.in-indicate-OpenSSL.patch} | 0
- ...ake.patch => nmake-compatibility-with-vcpkg-nmake.patch} | 0
- contrib/vcpkg-ports/pkcs11-helper/portfile.cmake            | 6 +++---
- 4 files changed, 3 insertions(+), 3 deletions(-)
- rename contrib/vcpkg-ports/pkcs11-helper/{0001-Allow-the-build-to-succeed-if-configured-with-disabl.patch => Fix-build-with-disable-shared.patch} (100%)
- rename contrib/vcpkg-ports/pkcs11-helper/{0002-config-w32-vc.h.in-indicate-OpenSSL.patch => config-w32-vc.h.in-indicate-OpenSSL.patch} (100%)
- rename contrib/vcpkg-ports/pkcs11-helper/{0001-nmake-compatibility-with-vcpkg-nmake.patch => nmake-compatibility-with-vcpkg-nmake.patch} (100%)
+* tapctl (windows): generate driver-specific names (if using tapctl to create
+  additional tap/wintun/dco devices, and not using --name).
+  See GH ​#337.
+* interactive service (windows): do not force target desktop for openvpn.exe
+  - this has no impact for normal use, but enables running of OpenVPN in a scripted
+  way when no user is logged on (for example, via task scheduler).
+  See GH ​openvpn-gui#626 
 
-diff --git a/contrib/vcpkg-ports/pkcs11-helper/0001-Allow-the-build-to-succeed-if-configured-with-disabl.patch b/contrib/vcpkg-ports/pkcs11-helper/Fix-build-with-disable-shared.patch
-similarity index 100%
-rename from contrib/vcpkg-ports/pkcs11-helper/0001-Allow-the-build-to-succeed-if-configured-with-disabl.patch
-rename to contrib/vcpkg-ports/pkcs11-helper/Fix-build-with-disable-shared.patch
-diff --git a/contrib/vcpkg-ports/pkcs11-helper/0002-config-w32-vc.h.in-indicate-OpenSSL.patch b/contrib/vcpkg-ports/pkcs11-helper/config-w32-vc.h.in-indicate-OpenSSL.patch
-similarity index 100%
-rename from contrib/vcpkg-ports/pkcs11-helper/0002-config-w32-vc.h.in-indicate-OpenSSL.patch
-rename to contrib/vcpkg-ports/pkcs11-helper/config-w32-vc.h.in-indicate-OpenSSL.patch
-diff --git a/contrib/vcpkg-ports/pkcs11-helper/0001-nmake-compatibility-with-vcpkg-nmake.patch b/contrib/vcpkg-ports/pkcs11-helper/nmake-compatibility-with-vcpkg-nmake.patch
-similarity index 100%
-rename from contrib/vcpkg-ports/pkcs11-helper/0001-nmake-compatibility-with-vcpkg-nmake.patch
-rename to contrib/vcpkg-ports/pkcs11-helper/nmake-compatibility-with-vcpkg-nmake.patch
-diff --git a/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake b/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
-index 67e9a2bf..47919bc6 100644
---- a/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
-+++ b/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
-@@ -11,9 +11,9 @@ vcpkg_extract_source_archive_ex(
-     ARCHIVE ${ARCHIVE}
-     REF ${VERSION}
-     PATCHES
--        0001-nmake-compatibility-with-vcpkg-nmake.patch
--        0002-config-w32-vc.h.in-indicate-OpenSSL.patch
--        0001-Allow-the-build-to-succeed-if-configured-with-disabl.patch
-+        nmake-compatibility-with-vcpkg-nmake.patch
-+        config-w32-vc.h.in-indicate-OpenSSL.patch
-+        Fix-build-with-disable-shared.patch
-         pkcs11-helper-001-RFC7512.patch
-         pkcs11-helper-002-dynamic_loader_flags.patch
- )
+Windows MSI changes since 2.6.4:
+
+* MSIs now use OpenSSL 3.1.1 
+
+Debian/Ubuntu packages in official apt repositories are now available for arm64. 
+
+More details can be found in the Changes document:
+
+<https://github.com/OpenVPN/openvpn/blob/release/2.6/Changes.rst>
+
+(The Changes document also contains a section with work-arounds for
+common problems encountered when using OpenVPN with OpenSSL 3)
+
+Source code and Windows installers can be downloaded from our download page:
+
+<https://openvpn.net/community-downloads/>
+
+Debian and Ubuntu packages are available in the official apt repositories:
+
+<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos#DebianUbuntu:UsingOpenVPNaptrepositories>
+
+On Red Hat derivatives we recommend using the Fedora Copr repository.
+
+<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release-2.6/>
+
+Kind regards,
 -- 
-2.34.1
-
+  Frank Lichtenheld
 
