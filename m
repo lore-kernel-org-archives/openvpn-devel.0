@@ -1,8 +1,11 @@
-Date: Fri, 16 Jun 2023 18:03:13 +0200
+Date: Mon, 19 Jun 2023 14:47:07 +0200
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZIyHwZY0c6+KdFpv@...2685...>
+Message-ID: <ZJBOS3MkHFEXahtv@...2685...>
+References: <20230614102115.138724-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.6.5 released
+In-Reply-To: <20230614102115.138724-1-frank@...2641...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] dist: add more missing files only
+ used in the MSVC build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,51 +14,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-The OpenVPN community project team is proud to release OpenVPN 2.6.5.
+On Wed, Jun 14, 2023 at 12:21:14PM +0200, Frank Lichtenheld wrote:
+> So it is possible to build with MSVC from the release
+> tarballs.
+> 
+> Fixes #344.
+> 
+> Signed-off-by: Frank Lichtenheld <frank@...2641...>
+> ---
+>  build/msvc/msvc-generate/Makefile.am | 1 +
+>  src/openvpn/Makefile.am              | 3 ++-
+>  2 files changed, 3 insertions(+), 1 deletion(-)
 
-This is a small bugfix release.
+NAK. More files are missing.
 
-User visible changes:
-
-* tapctl (windows): generate driver-specific names (if using tapctl to create
-  additional tap/wintun/dco devices, and not using --name).
-  See GH ​#337.
-* interactive service (windows): do not force target desktop for openvpn.exe
-  - this has no impact for normal use, but enables running of OpenVPN in a scripted
-  way when no user is logged on (for example, via task scheduler).
-  See GH ​openvpn-gui#626 
-
-Windows MSI changes since 2.6.4:
-
-* MSIs now use OpenSSL 3.1.1 
-
-Debian/Ubuntu packages in official apt repositories are now available for arm64. 
-
-More details can be found in the Changes document:
-
-<https://github.com/OpenVPN/openvpn/blob/release/2.6/Changes.rst>
-
-(The Changes document also contains a section with work-arounds for
-common problems encountered when using OpenVPN with OpenSSL 3)
-
-Source code and Windows installers can be downloaded from our download page:
-
-<https://openvpn.net/community-downloads/>
-
-Debian and Ubuntu packages are available in the official apt repositories:
-
-<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos#DebianUbuntu:UsingOpenVPNaptrepositories>
-
-On Red Hat derivatives we recommend using the Fedora Copr repository.
-
-<https://copr.fedorainfracloud.org/coprs/dsommers/openvpn-release-2.6/>
-
-Kind regards,
+Regards,
 -- 
   Frank Lichtenheld
 
