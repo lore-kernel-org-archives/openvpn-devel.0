@@ -1,10 +1,12 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Mon, 19 Jun 2023 15:29:30 +0200
-Message-Id: <20230619132934.76085-1-frank@...2641...>
-In-Reply-To: <20230614102115.138724-1-frank@...2641...>
+Date: Mon, 19 Jun 2023 15:29:33 +0200
+Message-Id: <20230619132934.76085-4-frank@...2641...>
+In-Reply-To: <20230619132934.76085-1-frank@...2641...>
 References: <20230614102115.138724-1-frank@...2641...>
+ <20230619132934.76085-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 0/4] Various dist-related fixes
+Subject: [Openvpn-devel] [PATCH 3/4] unit_tests: Add missing cert_data.h to
+ source list for unit tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,48 +19,36 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-After this series the diff between git and the tarball
-is:
+Document the dependency. Also fixes cert_data.h missing from
+distribution.
 
-Only in ../: dev-tools
-Only in openvpn-2.7_git/doc: openvpn.8
-Only in openvpn-2.7_git/doc: openvpn.8.html
-Only in openvpn-2.7_git/doc: openvpn-examples.5
-Only in openvpn-2.7_git/doc: openvpn-examples.5.html
-Only in ../: .git
-Only in ../: .git-blame-ignore-revs
-Only in ../: .github
-Only in openvpn-2.7_git/include: openvpn-plugin.h
-Only in ../m4: .keep
-Only in ../: .mailmap
-Only in openvpn-2.7_git/sample/sample-plugins: Makefile
-Only in ../: .svncommitters
-Only in ../: .travis
-Only in ../: .travis.yml
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ tests/unit_tests/openvpn/Makefile.am | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-That looks reasonable to me.
-
-Frank Lichtenheld (4):
-  dist: add more missing files only used in the MSVC build
-  vcpkg-ports/pkcs11-helper: rename patches to make file names shorter
-  unit_tests: Add missing cert_data.h to source list for unit tests
-  dist: Include all documentation in distribution
-
- Makefile.am                                   |  5 ++++-
- build/msvc/msvc-generate/Makefile.am          |  1 +
- ...ch => Fix-build-with-disable-shared.patch} |  0
- ...config-w32-vc.h.in-indicate-OpenSSL.patch} |  0
- ...make-compatibility-with-vcpkg-nmake.patch} |  0
- .../vcpkg-ports/pkcs11-helper/portfile.cmake  |  6 +++---
- doc/Makefile.am                               |  9 +++++++-
- doc/doxygen/Makefile.am                       | 21 ++++++++++++++++++-
- src/openvpn/Makefile.am                       |  3 ++-
- tests/unit_tests/openvpn/Makefile.am          |  4 ++--
- 10 files changed, 40 insertions(+), 9 deletions(-)
- rename contrib/vcpkg-ports/pkcs11-helper/{0001-Allow-the-build-to-succeed-if-configured-with-disabl.patch => Fix-build-with-disable-shared.patch} (100%)
- rename contrib/vcpkg-ports/pkcs11-helper/{0002-config-w32-vc.h.in-indicate-OpenSSL.patch => config-w32-vc.h.in-indicate-OpenSSL.patch} (100%)
- rename contrib/vcpkg-ports/pkcs11-helper/{0001-nmake-compatibility-with-vcpkg-nmake.patch => nmake-compatibility-with-vcpkg-nmake.patch} (100%)
-
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index ccd0e37b..dbf658ac 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -162,7 +162,7 @@ cryptoapi_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+ cryptoapi_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
+ 	$(OPTIONAL_CRYPTO_LIBS) -lcrypt32 -lncrypt
+ cryptoapi_testdriver_SOURCES = test_cryptoapi.c mock_msg.c \
+-	pkey_test_utils.c \
++	pkey_test_utils.c cert_data.h \
+ 	$(top_srcdir)/src/openvpn/xkey_helper.c \
+ 	$(top_srcdir)/src/openvpn/xkey_provider.c \
+ 	$(top_srcdir)/src/openvpn/buffer.c \
+@@ -180,7 +180,7 @@ pkcs11_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+ pkcs11_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
+ 	$(OPTIONAL_CRYPTO_LIBS)
+ pkcs11_testdriver_SOURCES = test_pkcs11.c mock_msg.c \
+-	pkey_test_utils.c mock_get_random.c \
++	pkey_test_utils.c cert_data.h mock_get_random.c \
+ 	$(top_srcdir)/src/openvpn/xkey_helper.c \
+ 	$(top_srcdir)/src/openvpn/xkey_provider.c \
+ 	$(top_srcdir)/src/openvpn/argv.c \
 -- 
 2.34.1
 
