@@ -1,10 +1,10 @@
-Date: Wed, 21 Jun 2023 14:18:27 +0200 (CEST)
-Message-Id: <202306211218.35LCIR0M060682@...2054...>
+Date: Wed, 21 Jun 2023 14:34:52 +0200 (CEST)
+Message-Id: <202306211234.35LCYqox061029@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230619132934.76085-3-frank@...2641...>
-References: <20230619132934.76085-3-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: vcpkg-ports/pkcs11-helper:
- rename patches to make file names shorter
+In-Reply-To: <20230619132934.76085-4-frank@...2641...>
+References: <20230619132934.76085-4-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: unit_tests: Add missing
+ cert_data.h to source list for unit tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,27 +20,24 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Indeed, this fixes bundling for the one patch with an extra-long name
-(so the tar file diffs have 2 file renames, plus one extra file).
+"make sense".  Verified that it still builds ;-) - and adds this extra
+file to the tarball.
 
-To verify whether things still build, I've run via local mingw build
-(works) and GHA (works).
-
-This does not apply to release/2.6, because the "fix build with disable 
-shared" commit (commit 17746e53f6) is not in 2.6.  Do we need it there?
+The patch does not apply to release/2.6, because the whole pkey_test_utils.c
+part is not part of 2.6.
 
 Your patch has been applied to the master branch.
 
-commit 0c25a5462e945f537d1836b47a5f147a2132875c
+commit 97223cb057a0edfafd28b34427449bb3eda7d0be
 Author: Frank Lichtenheld
-Date:   Mon Jun 19 15:29:32 2023 +0200
+Date:   Mon Jun 19 15:29:33 2023 +0200
 
-     vcpkg-ports/pkcs11-helper: rename patches to make file names shorter
+     unit_tests: Add missing cert_data.h to source list for unit tests
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230619132934.76085-3-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26747.html
+     Message-Id: <20230619132934.76085-4-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26750.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
