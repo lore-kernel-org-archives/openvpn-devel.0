@@ -1,9 +1,12 @@
+Date: Wed, 21 Jun 2023 15:00:58 +0200
 From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 21 Jun 2023 14:58:42 +0200
-Message-Id: <20230621125842.191355-1-frank@...2641...>
+Message-ID: <ZJL0iuACtP5ruMdF@...2685...>
+References: <20230619132934.76085-3-frank@...2641...>
+ <202306211218.35LCIR0M060682@...2054...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2.6] unit_tests: Add missing cert_data.h to
- source list for unit tests
+In-Reply-To: <202306211218.35LCIR0M060682@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: vcpkg-ports/pkcs11-helper:
+ rename patches to make file names shorter
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,35 +15,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Document the dependency. Also fixes cert_data.h missing from
-distribution.
+On Wed, Jun 21, 2023 at 02:18:27PM +0200, Gert Doering wrote:
+> Acked-by: Gert Doering <gert@...1296...>
+> 
+> Indeed, this fixes bundling for the one patch with an extra-long name
+> (so the tar file diffs have 2 file renames, plus one extra file).
+> 
+> To verify whether things still build, I've run via local mingw build
+> (works) and GHA (works).
+> 
+> This does not apply to release/2.6, because the "fix build with disable 
+> shared" commit (commit 17746e53f6) is not in 2.6.  Do we need it there?
 
-This is the "backport" of commit
-97223cb057a0edfafd28b34427449bb3eda7d0be to release/2.6.
+Not right now. But if we want to merge CMake to release/2.6 we will need
+to merge the pkcs11 changes as well and then we need this patch as well.
 
-Change-Id: Ib82208bfa12cc8ba5ff08b4c010bf398bc92d249
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
- tests/unit_tests/openvpn/Makefile.am | 1 +
- 1 file changed, 1 insertion(+)
+The CMake patches will also not apply cleanly on release/2.6 so we would
+need to make a separate patch series for that anyway.
 
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index 4391a54e..650126c7 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -156,6 +156,7 @@ cryptoapi_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- cryptoapi_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
- 	$(OPTIONAL_CRYPTO_LIBS) -lcrypt32 -lncrypt
- cryptoapi_testdriver_SOURCES = test_cryptoapi.c mock_msg.c \
-+	cert_data.h \
- 	$(top_srcdir)/src/openvpn/xkey_helper.c \
- 	$(top_srcdir)/src/openvpn/xkey_provider.c \
- 	$(top_srcdir)/src/openvpn/buffer.c \
+> Your patch has been applied to the master branch.
+> 
+> commit 0c25a5462e945f537d1836b47a5f147a2132875c
+> Author: Frank Lichtenheld
+> Date:   Mon Jun 19 15:29:32 2023 +0200
+> 
+>      vcpkg-ports/pkcs11-helper: rename patches to make file names shorter
+> 
+>      Signed-off-by: Frank Lichtenheld <frank@...2641...>
+>      Acked-by: Gert Doering <gert@...1296...>
+>      Message-Id: <20230619132934.76085-3-frank@...2641...>
+>      URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26747.html
+>      Signed-off-by: Gert Doering <gert@...1296...>
+> 
+> 
+> --
+> kind regards,
+> 
+> Gert Doering
+> 
+
 -- 
-2.34.1
-
+  Frank Lichtenheld
 
