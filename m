@@ -1,12 +1,8 @@
-Date: Wed, 21 Jun 2023 15:00:58 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZJL0iuACtP5ruMdF@...2685...>
-References: <20230619132934.76085-3-frank@...2641...>
- <202306211218.35LCIR0M060682@...2054...>
+From: Sergey Korolev <sergey.korolev@...2736...>
+Date: Mon, 26 Jun 2023 16:09:39 +0300
+Message-Id: <20230626130939.3267280-1-sergey.korolev@...2736...>
 MIME-Version: 1.0
-In-Reply-To: <202306211218.35LCIR0M060682@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: vcpkg-ports/pkcs11-helper:
- rename patches to make file names shorter
+Subject: [Openvpn-devel] [PATCH] dco-linux: fix counter print format
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,51 +11,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Wed, Jun 21, 2023 at 02:18:27PM +0200, Gert Doering wrote:
-> Acked-by: Gert Doering <gert@...1296...>
-> 
-> Indeed, this fixes bundling for the one patch with an extra-long name
-> (so the tar file diffs have 2 file renames, plus one extra file).
-> 
-> To verify whether things still build, I've run via local mingw build
-> (works) and GHA (works).
-> 
-> This does not apply to release/2.6, because the "fix build with disable 
-> shared" commit (commit 17746e53f6) is not in 2.6.  Do we need it there?
+Avoid compilation warnings on 32 bit platforms.
 
-Not right now. But if we want to merge CMake to release/2.6 we will need
-to merge the pkcs11 changes as well and then we need this patch as well.
+dco_linux.c: In function 'dco_update_peer_stat':
+dco_linux.c:830:26: error: format '%lu' expects argument of type
+'long unsigned int', but argument 4 has type 'counter_type'
+{aka 'long long unsigned int'} [-Werror=format=]
+  830 |         msg(D_DCO_DEBUG, "%s / dco_read_bytes: %lu", __func__,
+      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~
+  831 |             c2->dco_read_bytes);
+      |             ~~~~~~~~~~~~~~~~~~
+      |               |
+      |               counter_type {aka long long unsigned int}
 
-The CMake patches will also not apply cleanly on release/2.6 so we would
-need to make a separate patch series for that anyway.
+Signed-off-by: Sergey Korolev <sergey.korolev@...2736...>
+---
+ src/openvpn/dco_linux.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-> Your patch has been applied to the master branch.
-> 
-> commit 0c25a5462e945f537d1836b47a5f147a2132875c
-> Author: Frank Lichtenheld
-> Date:   Mon Jun 19 15:29:32 2023 +0200
-> 
->      vcpkg-ports/pkcs11-helper: rename patches to make file names shorter
-> 
->      Signed-off-by: Frank Lichtenheld <frank@...2641...>
->      Acked-by: Gert Doering <gert@...1296...>
->      Message-Id: <20230619132934.76085-3-frank@...2641...>
->      URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26747.html
->      Signed-off-by: Gert Doering <gert@...1296...>
-> 
-> 
-> --
-> kind regards,
-> 
-> Gert Doering
-> 
-
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index 2bfdf980..0cf36ba7 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -827,7 +827,7 @@ dco_update_peer_stat(struct context_2 *c2, struct nlattr *tb[], uint32_t id)
+     if (tb[OVPN_GET_PEER_RESP_ATTR_LINK_RX_BYTES])
+     {
+         c2->dco_read_bytes = nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_LINK_RX_BYTES]);
+-        msg(D_DCO_DEBUG, "%s / dco_read_bytes: %lu", __func__,
++        msg(D_DCO_DEBUG, "%s / dco_read_bytes: " counter_format, __func__,
+             c2->dco_read_bytes);
+     }
+     else
+@@ -839,7 +839,7 @@ dco_update_peer_stat(struct context_2 *c2, struct nlattr *tb[], uint32_t id)
+     if (tb[OVPN_GET_PEER_RESP_ATTR_LINK_TX_BYTES])
+     {
+         c2->dco_write_bytes = nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_LINK_TX_BYTES]);
+-        msg(D_DCO_DEBUG, "%s / dco_write_bytes: %lu", __func__,
++        msg(D_DCO_DEBUG, "%s / dco_write_bytes: " counter_format, __func__,
+             c2->dco_write_bytes);
+     }
+     else
+@@ -851,7 +851,7 @@ dco_update_peer_stat(struct context_2 *c2, struct nlattr *tb[], uint32_t id)
+     if (tb[OVPN_GET_PEER_RESP_ATTR_VPN_RX_BYTES])
+     {
+         c2->tun_read_bytes = nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_VPN_RX_BYTES]);
+-        msg(D_DCO_DEBUG, "%s / tun_read_bytes: %lu", __func__,
++        msg(D_DCO_DEBUG, "%s / tun_read_bytes: " counter_format, __func__,
+             c2->tun_read_bytes);
+     }
+     else
+@@ -863,7 +863,7 @@ dco_update_peer_stat(struct context_2 *c2, struct nlattr *tb[], uint32_t id)
+     if (tb[OVPN_GET_PEER_RESP_ATTR_VPN_TX_BYTES])
+     {
+         c2->tun_write_bytes = nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_VPN_TX_BYTES]);
+-        msg(D_DCO_DEBUG, "%s / tun_write_bytes: %lu", __func__,
++        msg(D_DCO_DEBUG, "%s / tun_write_bytes: " counter_format, __func__,
+             c2->tun_write_bytes);
+     }
+     else
 -- 
-  Frank Lichtenheld
+2.30.2
+
 
