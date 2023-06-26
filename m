@@ -1,8 +1,15 @@
-From: Sergey Korolev <sergey.korolev@...2736...>
-Date: Mon, 26 Jun 2023 16:09:39 +0300
-Message-Id: <20230626130939.3267280-1-sergey.korolev@...2736...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] dco-linux: fix counter print format
+References: <20230128215901.2207208-1-selva.nair@...277...>
+ <Y9jx+xrcrids9fgk@...2685...>
+ <CAKuzo_i898TWdDNEV+MeaBWQneCqsemp7CmkzOwsnFXwzU9KPQ@...278...>
+ <ZHT4Byn9GUBRl8oX@...1296...>
+In-Reply-To: <ZHT4Byn9GUBRl8oX@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 26 Jun 2023 09:49:12 -0400
+Message-ID: <CAKuzo_iFMuUUgBhiW2LWA3u7j5UWFSdpR1VCKE-FrOCU-_gW7w@...278...>
+Content-Type: multipart/alternative; boundary="00000000000094ef1c05ff089ea7"
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Improve signal handling using POSIX
+ sigaction
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,69 +18,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Avoid compilation warnings on 32 bit platforms.
+--00000000000094ef1c05ff089ea7
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-dco_linux.c: In function 'dco_update_peer_stat':
-dco_linux.c:830:26: error: format '%lu' expects argument of type
-'long unsigned int', but argument 4 has type 'counter_type'
-{aka 'long long unsigned int'} [-Werror=format=]
-  830 |         msg(D_DCO_DEBUG, "%s / dco_read_bytes: %lu", __func__,
-      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~
-  831 |             c2->dco_read_bytes);
-      |             ~~~~~~~~~~~~~~~~~~
-      |               |
-      |               counter_type {aka long long unsigned int}
+On Mon, May 29, 2023 at 3:07=E2=80=AFPM Gert Doering <gert@...1296...> wrot=
+e:
 
-Signed-off-by: Sergey Korolev <sergey.korolev@...2736...>
----
- src/openvpn/dco_linux.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+> Hi,
+>
+> On Thu, May 25, 2023 at 02:41:10PM -0400, Selva Nair wrote:
+> > Now that 2.6 appears to have reached a fairly stable state, may I reque=
+st
+> > you to look into this patch for 2.7 -- this one has an ACK (thanks to
+> > Frank), 2/2 may need a closer look but that one is small.
+> >
+> > I dread the prospect of this developing serious merge conflicts and
+> having
+> > to drill down into the details to resolve them. Right now it looks like
+> no
+> > one has yet touched related chunks.
+>
+> Will not really have much available time next week, but I have heard
+> the message - will look into this the week after.  If not, please feel
+> free to send me another reminder.
+>
 
-diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
-index 2bfdf980..0cf36ba7 100644
---- a/src/openvpn/dco_linux.c
-+++ b/src/openvpn/dco_linux.c
-@@ -827,7 +827,7 @@ dco_update_peer_stat(struct context_2 *c2, struct nlattr *tb[], uint32_t id)
-     if (tb[OVPN_GET_PEER_RESP_ATTR_LINK_RX_BYTES])
-     {
-         c2->dco_read_bytes = nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_LINK_RX_BYTES]);
--        msg(D_DCO_DEBUG, "%s / dco_read_bytes: %lu", __func__,
-+        msg(D_DCO_DEBUG, "%s / dco_read_bytes: " counter_format, __func__,
-             c2->dco_read_bytes);
-     }
-     else
-@@ -839,7 +839,7 @@ dco_update_peer_stat(struct context_2 *c2, struct nlattr *tb[], uint32_t id)
-     if (tb[OVPN_GET_PEER_RESP_ATTR_LINK_TX_BYTES])
-     {
-         c2->dco_write_bytes = nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_LINK_TX_BYTES]);
--        msg(D_DCO_DEBUG, "%s / dco_write_bytes: %lu", __func__,
-+        msg(D_DCO_DEBUG, "%s / dco_write_bytes: " counter_format, __func__,
-             c2->dco_write_bytes);
-     }
-     else
-@@ -851,7 +851,7 @@ dco_update_peer_stat(struct context_2 *c2, struct nlattr *tb[], uint32_t id)
-     if (tb[OVPN_GET_PEER_RESP_ATTR_VPN_RX_BYTES])
-     {
-         c2->tun_read_bytes = nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_VPN_RX_BYTES]);
--        msg(D_DCO_DEBUG, "%s / tun_read_bytes: %lu", __func__,
-+        msg(D_DCO_DEBUG, "%s / tun_read_bytes: " counter_format, __func__,
-             c2->tun_read_bytes);
-     }
-     else
-@@ -863,7 +863,7 @@ dco_update_peer_stat(struct context_2 *c2, struct nlattr *tb[], uint32_t id)
-     if (tb[OVPN_GET_PEER_RESP_ATTR_VPN_TX_BYTES])
-     {
-         c2->tun_write_bytes = nla_get_u64(tb[OVPN_GET_PEER_RESP_ATTR_VPN_TX_BYTES]);
--        msg(D_DCO_DEBUG, "%s / tun_write_bytes: %lu", __func__,
-+        msg(D_DCO_DEBUG, "%s / tun_write_bytes: " counter_format, __func__,
-             c2->tun_write_bytes);
-     }
-     else
--- 
-2.30.2
+Here it is :)
 
+Selva
+
+--00000000000094ef1c05ff089ea7
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
+<div dir=3D"ltr" class=3D"gmail_attr">On Mon, May 29, 2023 at 3:07=E2=80=AF=
+PM Gert Doering &lt;<a href=3D"mailto:gert@...1296..." target=3D"_blank">ge=
+rt@...1296...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" sty=
+le=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);paddi=
+ng-left:1ex">Hi,<br>
+<br>
+On Thu, May 25, 2023 at 02:41:10PM -0400, Selva Nair wrote:<br>
+&gt; Now that 2.6 appears to have reached a fairly stable state, may I requ=
+est<br>
+&gt; you to look into this patch for 2.7 -- this one has an ACK (thanks to<=
+br>
+&gt; Frank), 2/2 may need a closer look but that one is small.<br>
+&gt; <br>
+&gt; I dread the prospect of this developing serious merge conflicts and ha=
+ving<br>
+&gt; to drill down into the details to resolve them. Right now it looks lik=
+e no<br>
+&gt; one has yet touched related chunks.<br>
+<br>
+Will not really have much available time next week, but I have heard<br>
+the message - will look into this the week after.=C2=A0 If not, please feel=
+<br>
+free to send me another reminder.<br></blockquote><div><br></div><div>Here =
+it is :)</div><div><br></div><div>Selva</div></div></div>
+
+--00000000000094ef1c05ff089ea7--
 
