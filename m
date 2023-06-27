@@ -1,10 +1,10 @@
-Date: Tue, 27 Jun 2023 20:39:03 +0200 (CEST)
-Message-Id: <202306271839.35RId3uD000213@...2054...>
+Date: Tue, 27 Jun 2023 22:08:34 +0200 (CEST)
+Message-Id: <202306272008.35RK8Y7i002717@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230621125842.191355-1-frank@...2641...>
-References: <20230621125842.191355-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: unit_tests: Add missing
- cert_data.h to source list for unit tests
+In-Reply-To: <20230620135310.94455-4-frank@...2641...>
+References: <20230620135310.94455-4-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove all traces of the
+ previous MSVC build system
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,22 +18,35 @@ Content-Transfer-Encoding: 8bit
 To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+This patch touches a large number of files, but all the source code
+changes are trivial (remove the "config-msvc.h" include).
 
-Verified by building a tarball on 2.6, cert_data.h is now included.
+The larger change "get rid of the evil MSVC xml files" is very 
+welcome :-) - one of the changes confuses me, though - this recent
+"tapctl.exe.manifest" inclusion in EXTRA_DIST, and now removing all
+of it again.  Was that intentional?
 
-Your patch has been applied to the release/2.6 branch.
+Github says "it still builds fine", and Lev has tested the resulting
+binaries, good enough for me :-)
 
-commit 5eb84eb19749eb7e12f3becb36d6aaae89457b5b
+I'm a bit unsure how to proceed with 2.6 - people are (trying to) build
+this with MSVC, so pulling up that changeset will break their ways of
+doing things.  And it's quite large...  OTOH, *not* pulling it in
+means we're stuck with MSVC building for 2.6 "until it reaches end of
+life", including regular updates to these XML files.
+
+Your patch has been applied to the master branch.
+
+commit 7fbb9484116dc5d9d618d74f1ee253cf6fef4101
 Author: Frank Lichtenheld
-Date:   Wed Jun 21 14:58:42 2023 +0200
+Date:   Tue Jun 20 15:53:08 2023 +0200
 
-     unit_tests: Add missing cert_data.h to source list for unit tests
+     Remove all traces of the previous MSVC build system
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230621125842.191355-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26765.html
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20230620135310.94455-4-frank@...2641...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20230620135310.94455-4-frank@...2641...
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
