@@ -1,9 +1,10 @@
-Date: Tue, 27 Jun 2023 18:03:22 +0200 (CEST)
-Message-Id: <202306271603.35RG3MUr097646@...2054...>
+Date: Tue, 27 Jun 2023 20:35:33 +0200 (CEST)
+Message-Id: <202306271835.35RIZX0m000071@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230620135310.94455-2-frank@...2641...>
-References: <20230620135310.94455-2-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: add basic CMake based build
+In-Reply-To: <20230620135310.94455-3-frank@...2641...>
+References: <20230620135310.94455-3-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: CMake: Add complete MinGW and
+ MSVC build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,31 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I understand that this is work in progress, does not change anything,
-and is not feature-complete either (but due to shared authorship, this
-is a separate commit).  It is not packaged into tarballs either.
+I have tested this by pushing to GHA (as there are quite significant
+changes to build.yaml) - it seems to still pass, which is good :-)
 
-According to one of Frank's latest mails, this patch series does not
-work with 2.6 - so I'm going to apply all of it to master only, and if
-we decide "we want this in 2.6", we can do a proper backport of the
-relevant bits, in useful chunks.
+I do wonder why all unit tests now produce differently-named .exe
+files (packet_id_testdriver.exe -> test_packet_id.exe etc)?  Is this
+a side effect of a new cmocka version, or...?
+
+This patch also adds bundling of the CMake related files to tarballs
+(which I missed in 1/5).  Good :-) - besides this, there should be no
+change to "autoconf based building", and there are also no code changes.
 
 Your patch has been applied to the master branch.
 
-commit 0134184012dd46ec44cbca7eb3ece39037ae0bfa
-Author: Arne Schwabe
-Date:   Tue Jun 20 15:53:06 2023 +0200
+commit e8881ec6dd63bd80ce05202573eac54ab8657fcb
+Author: Frank Lichtenheld
+Date:   Tue Jun 20 15:53:07 2023 +0200
 
-     add basic CMake based build
+     CMake: Add complete MinGW and MSVC build
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20230620135310.94455-2-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26758.html
+     Message-Id: <20230620135310.94455-3-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26754.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
