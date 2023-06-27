@@ -1,13 +1,10 @@
-Date: Tue, 27 Jun 2023 13:39:21 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZJrKaSKxN8Q/EnUv@...2685...>
-References: <20230509111205.138997-1-frank@...2641...>
- <20230620135310.94455-1-frank@...2641...>
- <20230620135310.94455-6-frank@...2641...>
- <CAGyAFMVmyguju2CUtP2kmDppx2Lq9ByZaPde9VfK4sO9nYm58Q@...278...>
-MIME-Version: 1.0
-In-Reply-To: <CAGyAFMVmyguju2CUtP2kmDppx2Lq9ByZaPde9VfK4sO9nYm58Q@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 5/5] GHA: update to run-vcpkg@...2735...
+Date: Tue, 27 Jun 2023 16:59:50 +0200 (CEST)
+Message-Id: <202306271459.35RExoZM096512@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230626130939.3267280-1-sergey.korolev@...2736...>
+References: <20230626130939.3267280-1-sergey.korolev@...2736...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco-linux: fix counter print
+ format
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,23 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Lev Stipakov <lstipakov@...277...>
+To: Sergey Korolev <sergey.korolev@...2736...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Tue, Jun 27, 2023 at 11:40:30AM +0300, Lev Stipakov wrote:
-> It would be nice to see the reason for the version bump in the commit message.
+I have not tested this beyond "does it still compile?", but a quick
+glance at the changes and the definitions agrees with Antonio's ACK.
 
-We could add something like: "Uses improved binary cache handling."
-Not sure that helps much ;)
+Your patch has been applied to the master and release/2.6 branches.
 
-> Anyway, GHA is happy with this.
-> 
-> Acked-by: Lev Stipakov <lstipakov@...277...>
+commit 330bef679544b6a22d16a800c898927a785d74fc (master)
+commit fa434643534d506c834df3eb1dbb6073fb74b9f4 (HEAD -> release/2.6)
+Author: Sergey Korolev via Openvpn-devel
+Date:   Mon Jun 26 16:09:39 2023 +0300
 
-Regards,
--- 
-  Frank Lichtenheld
+     dco-linux: fix counter print format
+
+     Signed-off-by: Sergey Korolev <sergey.korolev@...2736...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <20230626130939.3267280-1-sergey.korolev@...2736...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26767.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
