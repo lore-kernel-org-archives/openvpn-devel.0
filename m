@@ -1,10 +1,9 @@
-Date: Tue, 27 Jun 2023 16:59:50 +0200 (CEST)
-Message-Id: <202306271459.35RExoZM096512@...2054...>
+Date: Tue, 27 Jun 2023 18:03:22 +0200 (CEST)
+Message-Id: <202306271603.35RG3MUr097646@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230626130939.3267280-1-sergey.korolev@...2736...>
-References: <20230626130939.3267280-1-sergey.korolev@...2736...>
-Subject: [Openvpn-devel] [PATCH applied] Re: dco-linux: fix counter print
- format
+In-Reply-To: <20230620135310.94455-2-frank@...2641...>
+References: <20230620135310.94455-2-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: add basic CMake based build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,25 +14,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Sergey Korolev <sergey.korolev@...2736...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-I have not tested this beyond "does it still compile?", but a quick
-glance at the changes and the definitions agrees with Antonio's ACK.
+I understand that this is work in progress, does not change anything,
+and is not feature-complete either (but due to shared authorship, this
+is a separate commit).  It is not packaged into tarballs either.
 
-Your patch has been applied to the master and release/2.6 branches.
+According to one of Frank's latest mails, this patch series does not
+work with 2.6 - so I'm going to apply all of it to master only, and if
+we decide "we want this in 2.6", we can do a proper backport of the
+relevant bits, in useful chunks.
 
-commit 330bef679544b6a22d16a800c898927a785d74fc (master)
-commit fa434643534d506c834df3eb1dbb6073fb74b9f4 (HEAD -> release/2.6)
-Author: Sergey Korolev via Openvpn-devel
-Date:   Mon Jun 26 16:09:39 2023 +0300
+Your patch has been applied to the master branch.
 
-     dco-linux: fix counter print format
+commit 0134184012dd46ec44cbca7eb3ece39037ae0bfa
+Author: Arne Schwabe
+Date:   Tue Jun 20 15:53:06 2023 +0200
 
-     Signed-off-by: Sergey Korolev <sergey.korolev@...2736...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20230626130939.3267280-1-sergey.korolev@...2736...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26767.html
+     add basic CMake based build
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20230620135310.94455-2-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26758.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
