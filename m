@@ -1,12 +1,12 @@
-Date: Wed, 28 Jun 2023 12:47:36 +0200
+Date: Wed, 28 Jun 2023 13:27:11 +0200
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZJwPyC9BZnVgDaBK@...2685...>
-References: <9160f6a3-1a61-d112-7a48-a7da4af38644@...2108...>
- <1d6d0f35-26e6-5791-ab7f-d5ec0ac04628@...1227...>
+Message-ID: <ZJwZD3DW40vu3gbQ@...2685...>
+References: <20230620135310.94455-4-frank@...2641...>
+ <202306272008.35RK8Y7i002717@...2054...>
 MIME-Version: 1.0
-In-Reply-To: <1d6d0f35-26e6-5791-ab7f-d5ec0ac04628@...1227...>
-Subject: Re: [Openvpn-devel] OpenVPN Linking Exception - current status
- report
+In-Reply-To: <202306272008.35RK8Y7i002717@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Remove all traces of the
+ previous MSVC build system
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,53 +15,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Wed, May 17, 2023 at 03:01:38PM +0200, Arne Schwabe wrote:
-> Am 15.02.23 um 13:31 schrieb David Sommerseth:
-> >=20
-> > OpenVPN 2.x is licensed under the GNU Public License v2.0 (GPL-2.0).
-> > This license has served us well in the past and we are not trying to
-> > change that.=A0 However, changes in licenses of our dependencies put us=
- in
-> > an unfortunate situation.
->=20
-> So a good amount of time has passed and we got a lot of positive feedback=
- to
-> the license agreement. We got 107 positive responses back contributors
-> including a positive one from Fox IT that covers all Fox It employers and=
- a
-> positive one from OpenVPN Inc that cover all code that OpenVPN Inc owns. =
-And
-> big thanks to everyone who said yes so far.
->=20
->=20
-> With that we are down to a small number of people (10) that are still
-> missing acknowledgment.
->=20
->=20
-> Note that the actions for the individual source are my opinion/suggestion=
-s.
->=20
-[...]
-> - Josh Cepek <josh.cepek@...1085...>
->=20
->   No response at all to my emails. Commits were in 2013 and 2016
->=20
->   All seven commits look trivial to me. Need someone else to form an opin=
-ion
-> if this can be seen as trivial in total or not.
->=20
+On Tue, Jun 27, 2023 at 10:08:34PM +0200, Gert Doering wrote:
+> This patch touches a large number of files, but all the source code
+> changes are trivial (remove the "config-msvc.h" include).
+> 
+> The larger change "get rid of the evil MSVC xml files" is very 
+> welcome :-) - one of the changes confuses me, though - this recent
+> "tapctl.exe.manifest" inclusion in EXTRA_DIST, and now removing all
+> of it again.  Was that intentional?
 
-I have reviewed his patches and I agree that they are all individual bug fi=
-xes
-and are all individually trivial.
+That was a "rebase" bug. Somehow I managed to introduce a second EXTRA_DIST.
+So make dist might be slightly broken in the CMake commit. But this commit
+then fixes it, so the end-state is correct.
+
+> Github says "it still builds fine", and Lev has tested the resulting
+> binaries, good enough for me :-)
+> 
+> I'm a bit unsure how to proceed with 2.6 - people are (trying to) build
+> this with MSVC, so pulling up that changeset will break their ways of
+> doing things.  And it's quite large...  OTOH, *not* pulling it in
+> means we're stuck with MSVC building for 2.6 "until it reaches end of
+> life", including regular updates to these XML files.
+> 
+> Your patch has been applied to the master branch.
+> 
+> commit 7fbb9484116dc5d9d618d74f1ee253cf6fef4101
+> Author: Frank Lichtenheld
+> Date:   Tue Jun 20 15:53:08 2023 +0200
+> 
+>      Remove all traces of the previous MSVC build system
+> 
+>      Signed-off-by: Frank Lichtenheld <frank@...2641...>
+>      Acked-by: Lev Stipakov <lstipakov@...277...>
+>      Message-Id: <20230620135310.94455-4-frank@...2641...>
+>      URL: https://www.mail-archive.com/search?l=mid&q=20230620135310.94455-4-frank@...2641...
+>      Signed-off-by: Gert Doering <gert@...1296...>
 
 Regards,
---=20
+-- 
   Frank Lichtenheld
 
