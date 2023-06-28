@@ -1,8 +1,12 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 28 Jun 2023 13:03:50 +0300
-Message-Id: <20230628100350.1793-1-lstipakov@...277...>
+Date: Wed, 28 Jun 2023 12:47:36 +0200
+From: Frank Lichtenheld <frank@...2641...>
+Message-ID: <ZJwPyC9BZnVgDaBK@...2685...>
+References: <9160f6a3-1a61-d112-7a48-a7da4af38644@...2108...>
+ <1d6d0f35-26e6-5791-ab7f-d5ec0ac04628@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] openvpnmsica: link C runtime statically
+In-Reply-To: <1d6d0f35-26e6-5791-ab7f-d5ec0ac04628@...1227...>
+Subject: Re: [Openvpn-devel] OpenVPN Linking Exception - current status
+ report
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,42 +15,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev@...515...>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Lev Stipakov <lev@...515...>
+On Wed, May 17, 2023 at 03:01:38PM +0200, Arne Schwabe wrote:
+> Am 15.02.23 um 13:31 schrieb David Sommerseth:
+> >=20
+> > OpenVPN 2.x is licensed under the GNU Public License v2.0 (GPL-2.0).
+> > This license has served us well in the past and we are not trying to
+> > change that.=A0 However, changes in licenses of our dependencies put us=
+ in
+> > an unfortunate situation.
+>=20
+> So a good amount of time has passed and we got a lot of positive feedback=
+ to
+> the license agreement. We got 107 positive responses back contributors
+> including a positive one from Fox IT that covers all Fox It employers and=
+ a
+> positive one from OpenVPN Inc that cover all code that OpenVPN Inc owns. =
+And
+> big thanks to everyone who said yes so far.
+>=20
+>=20
+> With that we are down to a small number of people (10) that are still
+> missing acknowledgment.
+>=20
+>=20
+> Note that the actions for the individual source are my opinion/suggestion=
+s.
+>=20
+[...]
+> - Josh Cepek <josh.cepek@...1085...>
+>=20
+>   No response at all to my emails. Commits were in 2013 and 2016
+>=20
+>   All seven commits look trivial to me. Need someone else to form an opin=
+ion
+> if this can be seen as trivial in total or not.
+>=20
 
-By default CMake links C runtime dynamically,
-which doesn't work on Windows 7, for example.
+I have reviewed his patches and I agree that they are all individual bug fi=
+xes
+and are all individually trivial.
 
-This is not an issue with other openvpn binaries,
-since we bundle C runtime, but it is not yet available
-during installation.
-
-Change-Id: Ib2b014f075908e7db0d9115abaa2240e47fd27b9
-Signed-off-by: Lev Stipakov <lev@...515...>
----
- src/openvpnmsica/CMakeLists.txt | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/src/openvpnmsica/CMakeLists.txt b/src/openvpnmsica/CMakeLists.txt
-index 683d38e0..6816b119 100644
---- a/src/openvpnmsica/CMakeLists.txt
-+++ b/src/openvpnmsica/CMakeLists.txt
-@@ -25,7 +25,10 @@ target_compile_options(openvpnmsica PRIVATE
-     -D_UNICODE
-     -UNTDDI_VERSION
-     -D_WIN32_WINNT=_WIN32_WINNT_VISTA
-+    "$<$<CONFIG:Release>:/MT>"
-+    "$<$<CONFIG:Debug>:/MTd>"
-     )
-+
- target_link_libraries(openvpnmsica
-     advapi32.lib ole32.lib msi.lib setupapi.lib iphlpapi.lib shell32.lib shlwapi.lib version.lib newdev.lib)
- if (MINGW)
--- 
-2.23.0.windows.1
-
+Regards,
+--=20
+  Frank Lichtenheld
 
