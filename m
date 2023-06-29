@@ -1,12 +1,9 @@
-Date: Wed, 28 Jun 2023 13:31:23 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZJwaC49DpFNxRrxw@...2685...>
-References: <20230620135310.94455-3-frank@...2641...>
- <202306271835.35RIZX0m000071@...2054...>
+From: Arne Schwabe <arne@...1227...>
+Date: Thu, 29 Jun 2023 12:39:53 +0200
+Message-Id: <20230629103953.3238575-1-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <202306271835.35RIZX0m000071@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: CMake: Add complete MinGW
- and MSVC build
+Subject: [Openvpn-devel] [PATCH] [CMake] Only add -Wno-stringop-truncation
+ on supported compilers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,46 +12,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Tue, Jun 27, 2023 at 08:35:33PM +0200, Gert Doering wrote:
-> I have tested this by pushing to GHA (as there are quite significant
-> changes to build.yaml) - it seems to still pass, which is good :-)
-> 
-> I do wonder why all unit tests now produce differently-named .exe
-> files (packet_id_testdriver.exe -> test_packet_id.exe etc)?  Is this
-> a side effect of a new cmocka version, or...?
+The -Wno-stringop-truncation flag is only supported by some GCC versions
+and not by Clang (macOS, FreeBSD) at all.
 
-No, there is no technical reason for this. I think we can freely choose
-the name. We probably just applied the usual naming we use in all our
-CMake code. While the autotools buildsystem uses a different naming
-scheme.
+Change-Id: I452bc4ee935d13f8e9095d0a31805a3bbaff0cec
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ CMakeLists.txt | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-The old MSVC build had no support for the UTs at all.
-
-> This patch also adds bundling of the CMake related files to tarballs
-> (which I missed in 1/5).  Good :-) - besides this, there should be no
-> change to "autoconf based building", and there are also no code changes.
-> 
-> Your patch has been applied to the master branch.
-> 
-> commit e8881ec6dd63bd80ce05202573eac54ab8657fcb
-> Author: Frank Lichtenheld
-> Date:   Tue Jun 20 15:53:07 2023 +0200
-> 
->      CMake: Add complete MinGW and MSVC build
-> 
->      Signed-off-by: Frank Lichtenheld <frank@...2641...>
->      Acked-by: Lev Stipakov <lstipakov@...277...>
->      Message-Id: <20230620135310.94455-3-frank@...2641...>
->      URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26754.html
->      Signed-off-by: Gert Doering <gert@...1296...>
-
-Regards,
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 3cbba5a38..ec0915bb0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -12,6 +12,14 @@ project(openvpn)
+ # and OpenSSL having version 1.1.1+ and generally does not offer the same
+ # configurability like autoconf
+ 
++find_package(PkgConfig REQUIRED)
++include(CheckSymbolExists)
++include(CheckIncludeFiles)
++include(CheckCCompilerFlag)
++include(CheckTypeSize)
++include(CheckStructHasMember)
++include(CTest)
++
+ option(UNSUPPORTED_BUILDS "Allow unsupported builds" OFF)
+ 
+ if (NOT WIN32 AND NOT ${UNSUPPORTED_BUILDS})
+@@ -70,7 +78,10 @@ else ()
+     set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+     set(CMAKE_C_FLAGS_DEBUG "-g -O1")
+     set(CMAKE_CXX_FLAGS_DEBUG "-g -O1")
+-    add_compile_options(-Wall -Wuninitialized -Wno-stringop-truncation)
++    check_c_compiler_flag(-Wno-stringop-truncation NoStringOpTruncation)
++    if (${NoStringOpTruncation})
++        add_compile_options(-Wall -Wuninitialized )
++    endif()
+     # We are not ready for this
+     #add_compile_options(-Wconversion -Wno-sign-conversion -Wsign-compare)
+     if (USE_WERROR)
+@@ -78,13 +89,6 @@ else ()
+     endif ()
+ endif ()
+ 
+-find_package(PkgConfig REQUIRED)
+-include(CheckSymbolExists)
+-include(CheckIncludeFiles)
+-include(CheckTypeSize)
+-include(CheckStructHasMember)
+-include(CTest)
+-
+ find_program(PYTHON NAMES python3 python)
+ execute_process(
+     COMMAND ${PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmake/parse-version.m4.py ${CMAKE_CURRENT_SOURCE_DIR}/version.m4
 -- 
-  Frank Lichtenheld
+2.39.2 (Apple Git-143)
+
 
