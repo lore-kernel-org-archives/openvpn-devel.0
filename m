@@ -1,12 +1,9 @@
-Date: Fri, 30 Jun 2023 13:58:26 +0200
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZJ7DYuA0ZULUWAji@...2685...>
-References: <20230629215611.3292788-1-arne@...1227...>
- <20230629215611.3292788-2-arne@...1227...>
+Date: Fri, 30 Jun 2023 14:39:08 +0200
+Message-Id: <20230630123908.82588-1-frank@...2641...>
 MIME-Version: 1.0
-In-Reply-To: <20230629215611.3292788-2-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 1/4] Do not blindly assume python3 is
- also the interpreter that runs rst2html
+Subject: [Openvpn-devel] [PATCH] test_tls_crypt: Improve mock() usage to be
+ more portable
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,22 +12,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Thu, Jun 29, 2023 at 11:56:07PM +0200, Arne Schwabe wrote:
-> On my system python3 is the macOS system python3 while rst2html has
-> 
->    #!/opt/homebrew/opt/python@...2737.../bin/python3.9
-> 
-> as its first line. Running that with a different python results in missing
-> python modules. So directly execute the rst2html script instead.
+Use the casting variants of mock(). Using the mock_ptr_type
+fixes an existing bug where test_tls_crypt.c couldn't
+build in MinGW 32bit:
 
-Acked-By: Frank Lichtenheld <frank@...2641...> 
+test_tls_crypt.c:127:27: error:
+cast to pointer from integer of different size [-Werror=int-to-pointer-cast]
+  127 |     const char *pem_str = (const char *) mock();
 
+Change-Id: I6c03313b8677fa07c07e718b1f85f7efd3c4dea8
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ tests/unit_tests/openvpn/test_tls_crypt.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
+index 8bed042f..ed7c7948 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -116,7 +116,7 @@ __wrap_buffer_write_file(const char *filename, const struct buffer *buf)
+     check_expected(filename);
+     check_expected(pem);
+ 
+-    return mock();
++    return mock_type(bool);
+ }
+ 
+ struct buffer
+@@ -124,7 +124,7 @@ __wrap_buffer_read_from_file(const char *filename, struct gc_arena *gc)
+ {
+     check_expected(filename);
+ 
+-    const char *pem_str = (const char *) mock();
++    const char *pem_str = mock_ptr_type(const char *);
+     struct buffer ret = alloc_buf_gc(strlen(pem_str) + 1, gc);
+     buf_write(&ret, pem_str, strlen(pem_str) + 1);
+ 
 -- 
-  Frank Lichtenheld
+2.34.1
+
 
