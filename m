@@ -1,9 +1,12 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Tue,  4 Jul 2023 16:08:05 +0200
-Message-Id: <20230704140805.3851328-1-arne@...1227...>
+Message-ID: <f3d3347e-6f4a-4c5e-31f4-d95e34fb2053@...1227...>
+Date: Tue, 4 Jul 2023 16:13:50 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Mock openvpn_exece on win32 also for
- test_tls_crypt
+Content-Language: en-GB
+References: <20230704130902.105585-1-frank@...2641...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20230704130902.105585-1-frank@...2641...>
+Subject: Re: [Openvpn-devel] [PATCH] CMake: Support doc builds on Windows
+ machines that do not have .py file association
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,106 +15,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Frank Lichtenheld <frank@...2641...>, openvpn-devel@lists.sourceforge.net
 
-This function is needed to commpile on win32 as run_command.c defines it
-on Unix Linux but on windows it is defined in win32.c which pulls in too
-many other unresolvable symbols.
+Am 04.07.23 um 16:09 schrieb Frank Lichtenheld:
+> On Windows we might need to call python because .py files are not
+> directly executable. This is true e.g. for GHA runners.
+> For now we assume that rst2html and rst2man can be handled in the same
+> way and do not test both of them.
+> 
+> Commit e8881ec6dd63bd80ce05202573eac54ab8657fcb unconditionally
+> used $PYTHON, but that broke build on systems where the default
+> python can't be used and we need to respect the shebang.
+> Commit 5dbec1c019d14880ae7bf364b062d3589c7fd9e7 unconditionally
+> did not use $PYTHON, but that broke build on the aformentioned
+> GHA runners.
+> This commit tries to establish a solution that works for both
+> systems.
+> 
 
-Change-Id: I8c8fe298eb30e211279f3fc010584b9d3bc14b4a
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- CMakeLists.txt                               |  2 ++
- tests/unit_tests/openvpn/mock_win32_execve.c | 37 ++++++++++++++++++++
- tests/unit_tests/openvpn/test_pkt.c          |  8 -----
- 3 files changed, 39 insertions(+), 8 deletions(-)
- create mode 100644 tests/unit_tests/openvpn/mock_win32_execve.c
+This is annoying and should be necessary but I also don't have no better 
+idea how to handle this better.
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 597dc9074..2d0cd5dd0 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -679,6 +679,7 @@ if (BUILD_TESTING)
-         )
- 
-     target_sources(test_pkt PRIVATE
-+        tests/unit_tests/openvpn/mock_win32_execve.c
-         src/openvpn/argv.c
-         src/openvpn/base64.c
-         src/openvpn/crypto_mbedtls.c
-@@ -740,6 +741,7 @@ if (BUILD_TESTING)
-             -Wl,--wrap=buffer_write_file
-             -Wl,--wrap=rand_bytes)
-         target_sources(test_tls_crypt PRIVATE
-+            tests/unit_tests/openvpn/mock_win32_execve.c
-             src/openvpn/argv.c
-             src/openvpn/base64.c
-             src/openvpn/crypto_mbedtls.c
-diff --git a/tests/unit_tests/openvpn/mock_win32_execve.c b/tests/unit_tests/openvpn/mock_win32_execve.c
-new file mode 100644
-index 000000000..4d37ebe33
---- /dev/null
-+++ b/tests/unit_tests/openvpn/mock_win32_execve.c
-@@ -0,0 +1,37 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2023 OpenVPN Inc <sales@...515...>
-+ *  Copyright (C) 2023 Arne Schwabe <arne@...1227...>
-+ *
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
-+
-+#include "config.h"
-+#include "syshead.h"
-+
-+#include "win32.h"
-+
-+#ifdef _WIN32
-+int
-+openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags)
-+{
-+    ASSERT(0);
-+}
-+#endif
-diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
-index 5a53f702e..9f49ee7bd 100644
---- a/tests/unit_tests/openvpn/test_pkt.c
-+++ b/tests/unit_tests/openvpn/test_pkt.c
-@@ -69,14 +69,6 @@ print_link_socket_actual(const struct link_socket_actual *act, struct gc_arena *
-     return "dummy print_link_socket_actual from unit test";
- }
- 
--#ifdef _WIN32
--int
--openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags)
--{
--    ASSERT(0);
--}
--#endif
--
- struct test_pkt_context {
-     struct tls_auth_standalone tas_tls_auth;
-     struct tls_auth_standalone tas_crypt;
--- 
-2.39.2 (Apple Git-143)
-
+Acked-BY: Arne Schwabe <arne@...1227...>
 
