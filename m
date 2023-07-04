@@ -1,9 +1,13 @@
+Date: Tue, 4 Jul 2023 16:00:11 +0200
 From: Frank Lichtenheld <frank@...2641...>
-Date: Tue,  4 Jul 2023 15:09:02 +0200
-Message-Id: <20230704130902.105585-1-frank@...2641...>
+Message-ID: <ZKQl67ZdxQlos1y1@...2685...>
+References: <20230517110230.2234266-1-arne@...1227...>
+ <20230522101138.2842378-1-arne@...1227...>
+ <20230522101138.2842378-2-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] CMake: Support doc builds on Windows
- machines that do not have .py file association
+In-Reply-To: <20230522101138.2842378-2-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v2 2/2] Fix CR_RESPONSE mangaement
+ message using wrong key_id
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,114 +16,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Windows we might need to call python because .py files are not
-directly executable. This is true e.g. for GHA runners.
-For now we assume that rst2html and rst2man can be handled in the same
-way and do not test both of them.
+On Mon, May 22, 2023 at 12:11:38PM +0200, Arne Schwabe wrote:
+> the management interface expects the management key id instead
+> of the openvpn key id. In the past they often were the same for low ids
+> which hid the bug quite well.
+> 
+> Also do not pick uninitialised keystates (management key_id is not valid
+> in these).
+> 
+> Patch v2: do not add logging
 
-Commit e8881ec6dd63bd80ce05202573eac54ab8657fcb unconditionally
-used $PYTHON, but that broke build on systems where the default
-python can't be used and we need to respect the shebang.
-Commit 5dbec1c019d14880ae7bf364b062d3589c7fd9e7 unconditionally
-did not use $PYTHON, but that broke build on the aformentioned
-GHA runners.
-This commit tries to establish a solution that works for both
-systems.
+Similar patch was sent in via https://github.com/OpenVPN/openvpn/pull/359,
+so kinda sorta acked?
 
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
- doc/CMakeLists.txt | 42 +++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 37 insertions(+), 5 deletions(-)
+> Change-Id: If9fa1165a0e886b570b3738546ed810a32367cbe
+> Signed-off-by: Arne Schwabe <arne@...1227...>
+> ---
+>  src/openvpn/push.c       | 4 ++--
+>  src/openvpn/ssl_common.h | 2 +-
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+> index 8e9627199..8f0a534ac 100644
+> --- a/src/openvpn/push.c
+> +++ b/src/openvpn/push.c
+> @@ -267,9 +267,9 @@ receive_cr_response(struct context *c, const struct buffer *buffer)
+>      struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
+>      struct man_def_auth_context *mda = session->opt->mda_context;
+>      struct env_set *es = session->opt->es;
+> -    int key_id = get_primary_key(c->c2.tls_multi)->key_id;
+> +    unsigned int mda_key_id = get_primary_key(c->c2.tls_multi)->mda_key_id;
+>  
+> -    management_notify_client_cr_response(key_id, mda, es, m);
+> +    management_notify_client_cr_response(mda_key_id, mda, es, m);
+>  #endif
+>  #if ENABLE_PLUGIN
+>      verify_crresponse_plugin(c->c2.tls_multi, m);
+> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+> index ebfd25432..be0f18746 100644
+> --- a/src/openvpn/ssl_common.h
+> +++ b/src/openvpn/ssl_common.h
+> @@ -733,7 +733,7 @@ get_key_by_management_key_id(struct tls_multi *multi, unsigned int mda_key_id)
+>      for (int i = 0; i < KEY_SCAN_SIZE; ++i)
+>      {
+>          struct key_state *ks = get_key_scan(multi, i);
+> -        if (ks->mda_key_id == mda_key_id)
+> +        if (ks->mda_key_id == mda_key_id && ks->state > S_UNDEF)
+>          {
+>              return ks;
+>          }
 
-diff --git a/doc/CMakeLists.txt b/doc/CMakeLists.txt
-index 2fba80bb..5e729efa 100644
---- a/doc/CMakeLists.txt
-+++ b/doc/CMakeLists.txt
-@@ -1,14 +1,46 @@
- set(_GENERATE_HTML_DOC YES)
- set(_GENERATE_MAN_DOC  YES)
-+set(_MAYBE_PYTHON "")
- find_program(RST2HTML NAMES rst2html rst2html.py)
- find_program(RST2MAN  NAMES rst2man  rst2man.py)
- 
- if (RST2HTML STREQUAL "RST2HTML-NOTFOUND")
-     message(STATUS "rst2html not found, not generating HTML documentation")
-     set(_GENERATE_HTML_DOC NO)
-+else ()
-+    # We only run this for RST2HTML and assume the result would be the same
-+    # for RST2MAN
-+    if (DEFINED CACHE{DOCUTILS_NEED_PYTHON})
-+        if ($CACHE{DOCUTILS_NEED_PYTHON})
-+            set(_MAYBE_PYTHON ${PYTHON})
-+        endif ()
-+    else ()
-+        execute_process(
-+            COMMAND ${RST2HTML} --version
-+            OUTPUT_VARIABLE RST2HTML_VERSION_EXE
-+            )
-+        execute_process(
-+            COMMAND ${PYTHON} ${RST2HTML} --version
-+            OUTPUT_VARIABLE RST2HTML_VERSION_PY
-+            )
-+        set(_DOCUTILS_NEED_PYTHON OFF)
-+        if(RST2HTML_VERSION_EXE STREQUAL "")
-+            if(RST2HTML_VERSION_PY STREQUAL "")
-+                message(STATUS "${RST2HTML} found but not working, not generating documentation")
-+                set(_GENERATE_HTML_DOC NO)
-+                set(_GENERATE_MAN_DOC NO)
-+            else ()
-+                message(STATUS "${RST2HTML} needs to be executed by ${PYTHON} to work")
-+                set(_MAYBE_PYTHON ${PYTHON})
-+                set(_DOCUTILS_NEED_PYTHON ON)
-+            endif ()
-+        endif ()
-+        set(DOCUTILS_NEED_PYTHON ${_DOCUTILS_NEED_PYTHON} CACHE BOOL
-+            "Whether we need to call python instead of rst2*.py directly")
-+    endif (DEFINED CACHE{DOCUTILS_NEED_PYTHON})
- endif ()
- if (RST2MAN STREQUAL "RST2MAN-NOTFOUND")
--    message(STATUS "rst2man not found, not generating HTML documentation")
-+    message(STATUS "rst2man not found, not generating man pages")
-     set(_GENERATE_MAN_DOC NO)
- endif ()
- 
-@@ -50,13 +82,13 @@ if (_GENERATE_HTML_DOC)
-     list(APPEND ALL_DOCS openvpn.8.html openvpn-examples.5.html)
-     add_custom_command(
-         OUTPUT openvpn.8.html
--        COMMAND ${RST2HTML} ${RST_FLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/openvpn.8.rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn.8.html
-+        COMMAND ${_MAYBE_PYTHON} ${RST2HTML} ${RST_FLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/openvpn.8.rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn.8.html
-         MAIN_DEPENDENCY openvpn.8.rst
-         DEPENDS ${OPENVPN_SECTIONS}
-         )
-     add_custom_command(
-         OUTPUT openvpn-examples.5.html
--        COMMAND ${RST2HTML} ${RST_FLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/openvpn-examples.5.rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn-examples.5.html
-+        COMMAND ${_MAYBE_PYTHON} ${RST2HTML} ${RST_FLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/openvpn-examples.5.rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn-examples.5.html
-         MAIN_DEPENDENCY openvpn-examples.5.rst
-         DEPENDS ${OPENVPN_EXAMPLES_SECTIONS}
-         )
-@@ -65,13 +97,13 @@ if (_GENERATE_MAN_DOC)
-     list(APPEND ALL_DOCS openvpn.8 openvpn-examples.5)
-     add_custom_command(
-         OUTPUT openvpn.8
--        COMMAND ${RST2MAN} ${RST_FLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/openvpn.8.rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn.8
-+        COMMAND ${_MAYBE_PYTHON} ${RST2MAN} ${RST_FLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/openvpn.8.rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn.8
-         MAIN_DEPENDENCY openvpn.8.rst
-         DEPENDS ${OPENVPN_SECTIONS}
-         )
-     add_custom_command(
-         OUTPUT openvpn-examples.5
--        COMMAND ${RST2MAN} ${RST_FLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/openvpn-examples.5.rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn-examples.5
-+        COMMAND ${_MAYBE_PYTHON} ${RST2MAN} ${RST_FLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/openvpn-examples.5.rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn-examples.5
-         MAIN_DEPENDENCY openvpn-examples.5.rst
-         DEPENDS ${OPENVPN_EXAMPLES_SECTIONS}
-         )
+Regards,
 -- 
-2.34.1
-
+  Frank Lichtenheld
 
