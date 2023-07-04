@@ -1,13 +1,9 @@
-Date: Tue, 4 Jul 2023 16:00:11 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZKQl67ZdxQlos1y1@...2685...>
-References: <20230517110230.2234266-1-arne@...1227...>
- <20230522101138.2842378-1-arne@...1227...>
- <20230522101138.2842378-2-arne@...1227...>
+From: Arne Schwabe <arne@...1227...>
+Date: Tue,  4 Jul 2023 16:08:05 +0200
+Message-Id: <20230704140805.3851328-1-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <20230522101138.2842378-2-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v2 2/2] Fix CR_RESPONSE mangaement
- message using wrong key_id
+Subject: [Openvpn-devel] [PATCH] Mock openvpn_exece on win32 also for
+ test_tls_crypt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,63 +12,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Mon, May 22, 2023 at 12:11:38PM +0200, Arne Schwabe wrote:
-> the management interface expects the management key id instead
-> of the openvpn key id. In the past they often were the same for low ids
-> which hid the bug quite well.
-> 
-> Also do not pick uninitialised keystates (management key_id is not valid
-> in these).
-> 
-> Patch v2: do not add logging
+This function is needed to commpile on win32 as run_command.c defines it
+on Unix Linux but on windows it is defined in win32.c which pulls in too
+many other unresolvable symbols.
 
-Similar patch was sent in via https://github.com/OpenVPN/openvpn/pull/359,
-so kinda sorta acked?
+Change-Id: I8c8fe298eb30e211279f3fc010584b9d3bc14b4a
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ CMakeLists.txt                               |  2 ++
+ tests/unit_tests/openvpn/mock_win32_execve.c | 37 ++++++++++++++++++++
+ tests/unit_tests/openvpn/test_pkt.c          |  8 -----
+ 3 files changed, 39 insertions(+), 8 deletions(-)
+ create mode 100644 tests/unit_tests/openvpn/mock_win32_execve.c
 
-> Change-Id: If9fa1165a0e886b570b3738546ed810a32367cbe
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  src/openvpn/push.c       | 4 ++--
->  src/openvpn/ssl_common.h | 2 +-
->  2 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-> index 8e9627199..8f0a534ac 100644
-> --- a/src/openvpn/push.c
-> +++ b/src/openvpn/push.c
-> @@ -267,9 +267,9 @@ receive_cr_response(struct context *c, const struct buffer *buffer)
->      struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
->      struct man_def_auth_context *mda = session->opt->mda_context;
->      struct env_set *es = session->opt->es;
-> -    int key_id = get_primary_key(c->c2.tls_multi)->key_id;
-> +    unsigned int mda_key_id = get_primary_key(c->c2.tls_multi)->mda_key_id;
->  
-> -    management_notify_client_cr_response(key_id, mda, es, m);
-> +    management_notify_client_cr_response(mda_key_id, mda, es, m);
->  #endif
->  #if ENABLE_PLUGIN
->      verify_crresponse_plugin(c->c2.tls_multi, m);
-> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-> index ebfd25432..be0f18746 100644
-> --- a/src/openvpn/ssl_common.h
-> +++ b/src/openvpn/ssl_common.h
-> @@ -733,7 +733,7 @@ get_key_by_management_key_id(struct tls_multi *multi, unsigned int mda_key_id)
->      for (int i = 0; i < KEY_SCAN_SIZE; ++i)
->      {
->          struct key_state *ks = get_key_scan(multi, i);
-> -        if (ks->mda_key_id == mda_key_id)
-> +        if (ks->mda_key_id == mda_key_id && ks->state > S_UNDEF)
->          {
->              return ks;
->          }
-
-Regards,
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 597dc9074..2d0cd5dd0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -679,6 +679,7 @@ if (BUILD_TESTING)
+         )
+ 
+     target_sources(test_pkt PRIVATE
++        tests/unit_tests/openvpn/mock_win32_execve.c
+         src/openvpn/argv.c
+         src/openvpn/base64.c
+         src/openvpn/crypto_mbedtls.c
+@@ -740,6 +741,7 @@ if (BUILD_TESTING)
+             -Wl,--wrap=buffer_write_file
+             -Wl,--wrap=rand_bytes)
+         target_sources(test_tls_crypt PRIVATE
++            tests/unit_tests/openvpn/mock_win32_execve.c
+             src/openvpn/argv.c
+             src/openvpn/base64.c
+             src/openvpn/crypto_mbedtls.c
+diff --git a/tests/unit_tests/openvpn/mock_win32_execve.c b/tests/unit_tests/openvpn/mock_win32_execve.c
+new file mode 100644
+index 000000000..4d37ebe33
+--- /dev/null
++++ b/tests/unit_tests/openvpn/mock_win32_execve.c
+@@ -0,0 +1,37 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2023 OpenVPN Inc <sales@...515...>
++ *  Copyright (C) 2023 Arne Schwabe <arne@...1227...>
++ *
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#include "config.h"
++#include "syshead.h"
++
++#include "win32.h"
++
++#ifdef _WIN32
++int
++openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags)
++{
++    ASSERT(0);
++}
++#endif
+diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
+index 5a53f702e..9f49ee7bd 100644
+--- a/tests/unit_tests/openvpn/test_pkt.c
++++ b/tests/unit_tests/openvpn/test_pkt.c
+@@ -69,14 +69,6 @@ print_link_socket_actual(const struct link_socket_actual *act, struct gc_arena *
+     return "dummy print_link_socket_actual from unit test";
+ }
+ 
+-#ifdef _WIN32
+-int
+-openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags)
+-{
+-    ASSERT(0);
+-}
+-#endif
+-
+ struct test_pkt_context {
+     struct tls_auth_standalone tas_tls_auth;
+     struct tls_auth_standalone tas_crypt;
 -- 
-  Frank Lichtenheld
+2.39.2 (Apple Git-143)
+
 
