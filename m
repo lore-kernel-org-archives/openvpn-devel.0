@@ -1,12 +1,11 @@
-Date: Tue, 4 Jul 2023 17:17:47 +0200
+Date: Tue, 4 Jul 2023 17:39:18 +0200
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZKQ4GwJL+nAoFl9v@...2685...>
-References: <20230629215611.3292788-1-arne@...1227...>
- <20230701202453.3517822-1-arne@...1227...>
+Message-ID: <ZKQ9Jt3Q11A9t5YK@...2685...>
+References: <20230704140805.3851328-1-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <20230701202453.3517822-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v2 3/4] Check if the -wrap argument is
- actually supported by the platform's ld
+In-Reply-To: <20230704140805.3851328-1-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Mock openvpn_exece on win32 also for
+ test_tls_crypt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,67 +20,12 @@ Content-Disposition: inline
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Sat, Jul 01, 2023 at 10:24:52PM +0200, Arne Schwabe wrote:
-> This avoids build errors on macOS. Also the test_tls_crypt command works
-> just fine on FreeBSD with its linkers, so do not make that test Linux only.
-> 
-> Patch v2: allow running with old cmake version (cmake 3 on RHEL7 with EPEL
->           is only 3.17)
-> 
-> Change-Id: Id26676bdc576c7d3d6726afa43fe6c7a397c579b
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  CMakeLists.txt | 15 +++++++++++----
->  1 file changed, 11 insertions(+), 4 deletions(-)
-> 
-> diff --git a/CMakeLists.txt b/CMakeLists.txt
-> index acebbb73c..a982c478a 100644
-> --- a/CMakeLists.txt
-> +++ b/CMakeLists.txt
-> @@ -16,6 +16,7 @@ find_package(PkgConfig REQUIRED)
->  include(CheckSymbolExists)
->  include(CheckIncludeFiles)
->  include(CheckCCompilerFlag)
-> +include(CheckLinkerFlag)
+On Tue, Jul 04, 2023 at 04:08:05PM +0200, Arne Schwabe wrote:
+> This function is needed to commpile on win32 as run_command.c defines it
+> on Unix Linux but on windows it is defined in win32.c which pulls in too
+> many other unresolvable symbols.
 
-Tested with Ubuntu 20.04 LTS (cmake 3.16) and I needed to use "include(CheckLinkerFlag OPTIONAL)",
-otherwise it just threw an error.
-
->  include(CheckTypeSize)
->  include(CheckStructHasMember)
->  include(CTest)
-> @@ -560,18 +561,24 @@ if (BUILD_TESTING)
->              )
->      endif ()
->  
-> -    if (NOT MSVC)
-> -        # MSVC does not support --wrap
-> +    # MSVC and Apple's LLVM ld do not support --wrap
-> +    # This test requires cmake >= 1.17, so check if check_linker_flag is
-
-"> 3.17" or ">= 3.18"
-
-> +    # available
-> +    if (COMMAND check_linker_flag)
-> +        check_linker_flag(C -Wl,--wrap=parse_line LD_SUPPORTS_WRAP)
-> +    endif()
-> +
-> +    if (${LD_SUPPORTS_WRAP})
->          list(APPEND unit_tests
->              "test_argv"
-> +            "test_tls_crypt"
->              )
->      endif ()
->  
-> -    # These tests work on only on Linux since they depend on special linker features
-> +    # These tests work on only on Linux since they depend on special Linux features
->      if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
->          list(APPEND unit_tests
->              "test_networking"
-> -            "test_tls_crypt"
->              )
->      endif ()
->  
+Also need to add mock_win32_execve.c in Makefile.am.
 
 Regards,
 -- 
