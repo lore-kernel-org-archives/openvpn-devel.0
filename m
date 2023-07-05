@@ -1,10 +1,10 @@
-Date: Wed, 5 Jul 2023 16:00:44 +0200 (CEST)
-Message-Id: <202307051400.365E0iYf003236@...2054...>
+Date: Wed, 5 Jul 2023 18:29:41 +0200 (CEST)
+Message-Id: <202307051629.365GTfRS005430@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20221127085933.3487177-1-arne@...1227...>
-References: <20221127085933.3487177-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: fix warning with gcc 12.2.0
- (compiler bug?)
+In-Reply-To: <20230705122528.1625-1-lstipakov@...277...>
+References: <20230705122528.1625-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: openvpnmsica: link C runtime
+ statically
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Lev Stipakov <lev@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Since the patch is so straightforward, and has an ACK, not tested anything.
+Build tested via GHA, which does mingw and MSVC builds.
 
-Your patch has been applied to the master and release/2.6 branch.
+Not tested actual installers.
 
-commit 5ad793e8cab8fcccae93fe9442eca6a6de8c044c (master)
-commit 5bdeda19e7aaa89523180e46369fc85ba204f70f (release/2.6)
-Author: Arne Schwabe
-Date:   Sun Nov 27 09:59:33 2022 +0100
+Your patch has been applied to the master branch.
 
-     fix warning with gcc 12.2.0 (compiler bug?)
+commit 3be4986ea3d6e27acd3e3a317c15dfe07688e135 (master)
+Author: Lev Stipakov
+Date:   Wed Jul 5 15:25:28 2023 +0300
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Heiko Hund <heiko@...2662...>
-     Message-Id: <20221127085933.3487177-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg25549.html
+     openvpnmsica: link C runtime statically
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20230705122528.1625-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26821.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
