@@ -1,12 +1,10 @@
-Message-ID: <4cde32b9-c40a-74a4-84bd-ae365439d812@...1227...>
-Date: Thu, 6 Jul 2023 19:28:57 +0200
-MIME-Version: 1.0
-Content-Language: en-GB
-References: <20230706171922.752429-1-heiko@...2662...>
-From: Arne Schwabe <arne@...1227...>
+Date: Fri, 7 Jul 2023 08:16:27 +0200 (CEST)
+Message-Id: <202307070616.3676GRws051265@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20230706171922.752429-1-heiko@...2662...>
-Subject: Re: [Openvpn-devel] [PATCH] work around false positive warning with
- mingw 12
+References: <20230706171922.752429-1-heiko@...2662...>
+Subject: [Openvpn-devel] [PATCH applied] Re: work around false positive
+ warning with mingw 12
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,41 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Heiko Hund <heiko@...2662...>, openvpn-devel@lists.sourceforge.net
+To: Heiko Hund <heiko@...2662...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 06.07.23 um 19:19 schrieb Heiko Hund:
-> When cross compiling for Windows with Ubuntu 23.04 mingw complains about
-> 
->    route.c:344:26: warning: ‘special.S_un.S_addr’ may be used uninitialized
-> 
-> which is wrong technically. However the workaround isn't really
-> intrusive and while there are other warnings caused by libtool, the
-> cmake mingw build completes with -Werror now.
-> 
-> Change-Id: I8a0f59707570722eab41af2db76980ced04e6d54
-> Signed-off-by: Heiko Hund <heiko@...2662...>
-> ---
->   src/openvpn/route.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-> index 0d04a5a3..0b369da4 100644
-> --- a/src/openvpn/route.c
-> +++ b/src/openvpn/route.c
-> @@ -319,7 +319,7 @@ init_route(struct route_ipv4 *r,
->       const in_addr_t default_netmask = IPV4_NETMASK_HOST;
->       bool status;
->       int ret;
-> -    struct in_addr special;
-> +    struct in_addr special = {0};
->   
->       CLEAR(*r);
->       r->option = ro;
+Test compiled on Linux and FreeBSD, just to get two more compiler's
+opinions...
+
+Your patch has been applied to the master and release/2.6 branch.
+
+commit d559affd313a8f995db15908887fbc8f16a24659 (master)
+commit cbf295ab42affcbdc09261cf3a39eb1d3d9f9cb2 (release/2.6)
+Author: Heiko Hund
+Date:   Thu Jul 6 19:19:22 2023 +0200
+
+     work around false positive warning with mingw 12
+
+     Signed-off-by: Heiko Hund <heiko@...2662...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20230706171922.752429-1-heiko@...2662...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26831.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-Good enough.
+--
+kind regards,
 
-Acked-By: Arne Schwabe <arne@...1227...>
+Gert Doering
+
 
