@@ -1,10 +1,10 @@
-Date: Fri, 7 Jul 2023 18:33:19 +0200 (CEST)
-Message-Id: <202307071633.367GXJmP062756@...2054...>
+Date: Fri, 7 Jul 2023 19:08:38 +0200 (CEST)
+Message-Id: <202307071708.367H8cge063362@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230707144628.378541-1-frank@...2641...>
-References: <20230707144628.378541-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove old Travis CI related
- files
+In-Reply-To: <20230707150523.385264-1-frank@...2641...>
+References: <20230707150523.385264-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: README.cmake.md: Add new
+ documentation for CMake buildsystem
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,25 +20,25 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Trivial, and makes sense.
+Welcome addition.  I have not verified that the instructions are correct
+to the last letter, but I assume they come from "this is how I build", so
+they do work :-)
 
-Since this does not touch source files, haven't tested anything
-(it does bring up the question "can we get coverity scans up and
-running again, somehow?").
+Also, not applied to release/2.6, as I think this can be part of the
+jumbo cmake backport.
 
-Your patch has been applied to the master and release/2.6 branch.
+Your patch has been applied to the master branch.
 
-commit fd43636c417b479e95ca9f3eca6b90c410bc7686 (master)
-commit c5d31ddead4ce12903fb36cbf8b154afbd2aa7f1 (release/2.6)
+commit 53055fd23efb6209b12d3662427158e25247f1fe
 Author: Frank Lichtenheld
-Date:   Fri Jul 7 16:46:28 2023 +0200
+Date:   Fri Jul 7 17:05:23 2023 +0200
 
-     Remove old Travis CI related files
+     README.cmake.md: Add new documentation for CMake buildsystem
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230707144628.378541-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26834.html
+     Message-Id: <20230707150523.385264-1-frank@...2641...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20230707150523.385264-1-frank@...2641...
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
