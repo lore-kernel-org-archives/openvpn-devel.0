@@ -1,10 +1,10 @@
-Date: Fri, 7 Jul 2023 18:28:54 +0200 (CEST)
-Message-Id: <202307071628.367GSsdE062529@...2054...>
+Date: Fri, 7 Jul 2023 18:33:19 +0200 (CEST)
+Message-Id: <202307071633.367GXJmP062756@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230522101138.2842378-2-arne@...1227...>
-References: <20230522101138.2842378-2-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix CR_RESPONSE mangaement
- message using wrong key_id
+In-Reply-To: <20230707144628.378541-1-frank@...2641...>
+References: <20230707144628.378541-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove old Travis CI related
+ files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,37 +15,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks for reminding me that there was something pending here as well...
+Acked-by: Gert Doering <gert@...1296...>
 
-This is a bit complicated, though.  The bugfix needs to go to 2.6 as
-well, so "2/2 applied", but the v2 as sent to the list has a hunk that
-is really a bugfix for get_key_by_management_key_id(), which is in
-1/2, and that is refactoring -> master.
+Trivial, and makes sense.
 
-So I've only applied the first hunk here, and the second hunk should
-go together with all of 1/2 into a "master only" patch.  Right?
-
-I have run this through the basic client test, which isn't exactly
-excercising the management interface (not at all) but I have nothing
-for that - so I'm relying on Selva's ACK and Jemmy Wang's test
-results in GH #359 on "does it actually fix the bug".
+Since this does not touch source files, haven't tested anything
+(it does bring up the question "can we get coverity scans up and
+running again, somehow?").
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit 223baa9c9b818e4c542a9037f190f53ce6f7af5c (master)
-commit 0caf0389454c75ae9dfeda096a820446d2d1a926 (HEAD -> release/2.6)
-Author: Arne Schwabe
-Date:   Mon May 22 12:11:38 2023 +0200
+commit fd43636c417b479e95ca9f3eca6b90c410bc7686 (master)
+commit c5d31ddead4ce12903fb36cbf8b154afbd2aa7f1 (release/2.6)
+Author: Frank Lichtenheld
+Date:   Fri Jul 7 16:46:28 2023 +0200
 
-     Fix CR_RESPONSE mangaement message using wrong key_id
+     Remove old Travis CI related files
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <20230522101138.2842378-2-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26719.html
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230707144628.378541-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26834.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
