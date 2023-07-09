@@ -1,8 +1,9 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri,  7 Jul 2023 20:58:11 +0200
-Message-Id: <20230707185811.30132-1-arne@...1227...>
+From: Jeremy Fleischman <jeremyfleischman@...277...>
+Date: Sun,  9 Jul 2023 16:19:26 -0700
+Message-ID: <20230709231929.195048-1-jeremyfleischman@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] show extra info for OpenSSL errors
+Subject: [Openvpn-devel] [PATCH] Fix StatusChangeCallback so it works
+ without a LogCallback
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,93 +16,136 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This also shows the extra data from the OpenSSL error function that
-can contain extra information. For example, the command
+`StatusChangeCallback` requires that LogForward be enabled, which
+previously only happened in `LogCallback`. Now both of them do it, which
+requires a bit of bookkeeping. This fixes
+https://github.com/OpenVPN/openvpn3-linux/issues/197
 
-    openvpn --providers vollbit
+Notes:
 
-will print out (on macOS):
+1. I'm not sure if this would place nicely with a multithreaded program
+   or not. Hopefully that's not something we care to support?
+2. To keep the bookkeeping accurate, I opted to explictly remove any
+   preexisting callbacks before registering a new one. This means that
+   when you're clobbering an existing LogCallback (for example), you'll
+   actually end disabling LogForward right before you re-enable it. I
+   don't think this is a big deal, but just wanted to call it out.
 
-     OpenSSLerror:12800067:DSO support routines::could not load the shared library:filename(/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib): dlopen(/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib, 0x0002): tried: '/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib' (no such file), '/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib' (no such file)
-
-Change-Id: Ic2ee89937dcd85721bcacd1b700a20c640364f80
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Signed-off-by: Jeremy Fleischman <jeremyfleischman@...277...>
 ---
- src/openvpn/crypto_openssl.c | 20 ++++++++++++++++++--
- src/openvpn/openssl_compat.h | 12 ++++++++++++
- 2 files changed, 30 insertions(+), 2 deletions(-)
+ src/python/openvpn3/SessionManager.py | 63 ++++++++++++++++++++++-----
+ 1 file changed, 51 insertions(+), 12 deletions(-)
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index b043bb95e..d6916fc9b 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -238,9 +238,16 @@ void
- crypto_print_openssl_errors(const unsigned int flags)
- {
-     unsigned long err = 0;
-+    int line, errflags;
-+    const char *file, *data, *func;
+diff --git a/src/python/openvpn3/SessionManager.py b/src/python/openvpn3/SessionManager.py
+index 3632790..05126aa 100644
+--- a/src/python/openvpn3/SessionManager.py
++++ b/src/python/openvpn3/SessionManager.py
+@@ -114,6 +114,7 @@ def __init__(self, dbuscon, objpath):
+         self.__log_callback = None
+         self.__status_callback = None
+         self.__deleted = False
++        self.__LogForward_receiver_count = 0
  
--    while ((err = ERR_get_error()))
-+    while ((err = ERR_get_error_all(&file, &line, &func, &data, &errflags)) != 0)
-     {
-+        if (!(errflags & ERR_TXT_STRING))
-+        {
-+            data = "";
-+        }
+ 
+     def __del__(self):
+@@ -285,22 +286,24 @@ def GetFormattedStatistics(self, prefix='Connection statistics:\n', format_str='
+     #
+     def LogCallback(self, cbfnc):
+         if cbfnc is not None:
++            # Remove the existing callback if there is one.
++            if self.__log_callback is not None:
++                self.LogCallback(None)
 +
-         /* Be more clear about frequently occurring "no shared cipher" error */
-         if (ERR_GET_REASON(err) == SSL_R_NO_SHARED_CIPHER)
-         {
-@@ -258,7 +265,16 @@ crypto_print_openssl_errors(const unsigned int flags)
-                 "tls-version-min 1.0 to the client configuration to use TLS 1.0+ "
-                 "instead of TLS 1.0 only");
-         }
--        msg(flags, "OpenSSL: %s", ERR_error_string(err, NULL));
+             self.__log_callback = cbfnc
+             self.__dbuscon.add_signal_receiver(cbfnc,
+                                                signal_name='Log',
+                                                dbus_interface='net.openvpn.v3.backends',
+                                                bus_name='net.openvpn.v3.log',
+                                                path=self.__session_path)
+-            self.__session_intf.LogForward(True)
++            self.__add_LogForward_receiver()
+         else:
+-            try:
+-                self.__session_intf.LogForward(False)
+-            except dbus.exceptions.DBusException:
+-                # If this fails, the session is typically already removed
+-                pass
+-            self.__dbuscon.remove_signal_receiver(self.__log_callback, 'Log')
+-            self.__log_callback = None
+-
++            # Only remove the callback if there actually *is* a callback
++            # currently.
++            if self.__log_callback is not None:
++                self.__remove_LogForward_receiver()
++                self.__dbuscon.remove_signal_receiver(self.__log_callback, 'Log')
++                self.__log_callback = None
+ 
+     ##
+     #  Subscribes to the StatusChange signals for this session and register
+@@ -311,16 +314,25 @@ def LogCallback(self, cbfnc):
+     #
+     def StatusChangeCallback(self, cbfnc):
+         if cbfnc is not None:
++            # Remove the existing callback if there is one.
++            if self.__status_callback is not None:
++                self.StatusChangeCallback(None)
 +
-+        /* print file and line if verb >=8 */
-+        if (!check_debug_level(D_TLS_DEBUG_MED))
-+        {
-+            msg(flags, "OpenSSL%s:%s", ERR_error_string(err, NULL), data);
-+        }
-+        else
-+        {
-+            msg(flags, "OpenSSL (%s:%d %s): %s:%s", file, line, func, ERR_error_string(err, NULL), data);
-+        }
-     }
- }
+             self.__status_callback = cbfnc
+             self.__dbuscon.add_signal_receiver(cbfnc,
+                                                signal_name='StatusChange',
+                                                dbus_interface='net.openvpn.v3.backends',
+                                                bus_name='net.openvpn.v3.log',
+                                                path=self.__session_path)
++            self.__add_LogForward_receiver()
+         else:
+-            self.__dbuscon.remove_signal_receiver(self.__status_callback,
+-                                                  'StatusChange')
+-            self.__status_callback = None
++            # Only remove the callback if there actually *is* a callback
++            # currently.
++            if self.__status_callback is not None:
++                self.__remove_LogForward_receiver()
++                self.__dbuscon.remove_signal_receiver(self.__status_callback,
++                                                      'StatusChange')
++                self.__status_callback = None
  
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index ffb64adf6..736ce1bd5 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -43,6 +43,7 @@
- #include <openssl/rsa.h>
- #include <openssl/ssl.h>
- #include <openssl/x509.h>
-+#include <openssl/err.h>
  
- /* Functionality missing in 1.1.0 */
- #if OPENSSL_VERSION_NUMBER < 0x10101000L && !defined(ENABLE_CRYPTO_WOLFSSL)
-@@ -799,6 +800,17 @@ EVP_MD_free(const EVP_MD *md)
-     /* OpenSSL 1.1.1 and lower use only const EVP_MD, nothing to free */
- }
  
-+static inline unsigned long
-+ERR_get_error_all(const char **file, int *line,
-+                  const char **func,
-+                  const char **data, int *flags)
-+{
-+    static const char *empty = "";
-+    *func = empty;
-+    long err = ERR_get_error_line_data(file, line, data, flags);
-+    return err;
-+}
+@@ -417,6 +429,33 @@ def GetDCO(self):
+     def SetDCO(self, dco):
+         self.__prop_intf.Set('net.openvpn.v3.sessions', 'dco', dco)
+ 
++    ##
++    #  Internal method to increase the count of how many signal receivers need
++    #  LogForward. Turns on LogForward if this is the first receiver.
++    #
++    def __add_LogForward_receiver(self):
++        # This is our first need for LogForward. Turn it on.
++        if self.__LogForward_receiver_count == 0:
++            self.__session_intf.LogForward(True)
 +
- #endif /* OPENSSL_VERSION_NUMBER < 0x30000000L */
++        self.__LogForward_receiver_count += 1
++
++    ##
++    #  Internal method track to reduce the count of how many signal receivers
++    #  need LogForward. Turns off LogForward if this was the last receiver.
++    #
++    def __remove_LogForward_receiver(self):
++        assert self.__LogForward_receiver_count > 0
++        self.__LogForward_receiver_count -= 1
++
++        # No receivers are left in need of LogForward. Turn it off.
++        if self.__LogForward_receiver_count == 0:
++            try:
++                self.__session_intf.LogForward(False)
++            except dbus.exceptions.DBusException:
++                # If this fails, the session is typically already removed
++                pass
++
  
- #endif /* OPENSSL_COMPAT_H_ */
+ 
+ ##
 -- 
-2.39.2 (Apple Git-143)
+2.41.0
 
 
