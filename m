@@ -1,13 +1,13 @@
-Date: Mon, 10 Jul 2023 17:56:40 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <ZKwqOENpY1rpBM2X@...1296...>
-References: <20230707185811.30132-1-arne@...1227...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="qSYQnOPuHX1ViY/4"
-Content-Disposition: inline
-In-Reply-To: <20230707185811.30132-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] show extra info for OpenSSL errors
+References: <20230710112122.576-1-lstipakov@...277...>
+ <CAKuzo_hCt3iHo=6tXRLofj0O2rfOwZvjar41MSb0MFP3_4Vv4Q@...278...>
+In-Reply-To: <CAKuzo_hCt3iHo=6tXRLofj0O2rfOwZvjar41MSb0MFP3_4Vv4Q@...278...>
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 10 Jul 2023 12:57:14 -0400
+Message-ID: <CAKuzo_i1NbwVXzWKE9HbBCoSUwT3BAZfCcxO=ZNvK4bL8A=B4Q@...278...>
+Content-Type: multipart/alternative; boundary="000000000000c82f17060024e06b"
+Subject: [Openvpn-devel] Fwd: [PATCH] tun.c: enclose DNS domain in single
+ quotes in WMIC call
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,87 +16,130 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---qSYQnOPuHX1ViY/4
-Content-Type: text/plain; charset="us-ascii"
+--000000000000c82f17060024e06b
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-On Fri, Jul 07, 2023 at 08:58:11PM +0200, Arne Schwabe wrote:
-> This also shows the extra data from the OpenSSL error function that
-> can contain extra information. For example, the command
->=20
->     openvpn --providers vollbit
->=20
-> will print out (on macOS):
->=20
->      OpenSSLerror:12800067:DSO support routines::could not load the share=
-d library:filename(/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl=
--modules/vollbit.dylib): dlopen(/opt/homebrew/Cellar/openssl@...1554.../3.1=
-.1_1/lib/ossl-modules/vollbit.dylib, 0x0002): tried: '/opt/homebrew/Cellar/=
-openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib' (no such file), =
-'/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/Cellar/openssl@...2738...=
-./3.1.1_1/lib/ossl-modules/vollbit.dylib' (no such file), '/opt/homebrew/Ce=
-llar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib' (no such fi=
-le)
+On Mon, Jul 10, 2023 at 7:22=E2=80=AFAM Lev Stipakov <lstipakov@...277...> =
+wrote:
 
-Feature-ACK on providing more detail, because otherwise these errors
-can get really hard to track down.
-
-Your example above is somewhat excessive on repeating paths, but I do
-not see this on my FreeBSD test case
-
-$ src/openvpn/openvpn --providers legacyXX default --show-tls
-2023-07-10 17:44:27 OpenSSLerror:12800067:DSO support routines::could not l=
-oad the shared library:filename(/usr/lib/ossl-modules/legacyXX.so): /usr/li=
-b/ossl-modules/legacyXX.so: Undefined symbol "ossl_md4_functions"
-2023-07-10 17:44:27 OpenSSLerror:12800067:DSO support routines::could not l=
-oad the shared library:
-2023-07-10 17:44:27 OpenSSLerror:07880025:common libcrypto routines::reason=
-(524325):name=3DlegacyXX
-
-"this is just the right amount of details" :-) - for something that
-does not exist, I get
-
-2023-07-10 17:45:17 OpenSSLerror:12800067:DSO support routines::could not l=
-oad the shared library:filename(/usr/lib/ossl-modules/legacyYY.so): Cannot =
-open "/usr/lib/ossl-modules/legacyYY.so"
+> From: Lev Stipakov <lev@...515...>
+>
+> This is needed to support domains with hyphens.
+>
+> Not using double quotes here, since our code replaces
+> them with underbars (see
+> https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/win32.c#L980).
+>
+> Fixes https://github.com/OpenVPN/openvpn/issues/363
 
 
-Code-wise, I would prefer to have someone who understands OpenSSL give
-this another look...  Selva, Antonio?  Thanks :-)
+>
+> Change-Id: Iab536922d0731635cef529b5caf542f637b8d491
+> Signed-off-by: Lev Stipakov <lev@...515...>
+> ---
+>  src/openvpn/tun.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+> index d1fd6def..60974208 100644
+> --- a/src/openvpn/tun.c
+> +++ b/src/openvpn/tun.c
+> @@ -333,7 +333,7 @@ do_dns_domain_wmic(bool add, const struct tuntap *tt)
+>      }
+>
+>      struct argv argv =3D argv_new();
+> -    argv_printf(&argv, "%s%s nicconfig where (InterfaceIndex=3D%ld) call
+> SetDNSDomain %s",
+> +    argv_printf(&argv, "%s%s nicconfig where (InterfaceIndex=3D%ld) call
+> SetDNSDomain '%s'",
+>                  get_win_sys_path(), WMIC_PATH_SUFFIX, tt->adapter_index,
+> add ? tt->options.domain : "");
+>      exec_command("WMIC", &argv, 1, M_WARN);
+>
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Quoting is required as wmic interprets characters such as hyphen and /.
+Double quotes would have been better (as in interactive.c) as there are
+some cases where characters within single quotes get interpreted special
+(like 'foo>bar' vs "foo>bar").
 
-Gert Doering - Munich, Germany                             gert@...1296...
+That said, for valid domain names, the only expected characters are
+alpha-numeric, hyphen and period, and single quotes should work. I have
+only tested this using wmic command line, not the resulting openvpn.exe.
 
---qSYQnOPuHX1ViY/4
-Content-Type: application/pgp-signature; name="signature.asc"
+Acked-by: Selva Nair <selva.nair@...277...>
 
------BEGIN PGP SIGNATURE-----
+P.S.
+We probably need to sanitize the user-supplied domain name before passing
+it to wmic.
 
-iQGcBAEBAgAGBQJkrCo4AAoJEB2Cnv7KVigSbOcL/jb5C0KBocRFlekCzB/OBjDy
-LQrGkKgJcP9IxGDsHnGy/XTCog5sgF4oGi0a5AR+NFKzGLO/gpgCQG0dRqlkrvIX
-ZBh9Cq2r4ndwnG1xfUIOlXbwUEPDtKX64qo8BgcIwkUQEWNr81o05yyUujem/BuG
-jWp5Xq03Nl/7696gs3+iWeYtF05qDdfDaADZ+v/CLxo5vE06XVK8P1+fp77naMxU
-Ifh2deXZrpkcfVz/RROWm8D5b1/TGakKOxRRCqyMk4OVEQ+gpOZC4+CoixIaBOGi
-m3K3bp7vsh1W5zmHsA0ou6PuFtwc9bYkSPgS2uQl3DwiyNpbA0dQ69WMNmYGDq0Q
-dPAeC268GE4VzkcJwTyEyyVsuU/+QLx0YK6ewkqGln55BVJLExY7PyCVuD+gbHIH
-KBaalrtcNdiP5ilDqSkSgGouNy12Gvdk6navJwFJwBIDr3bsc2z1k8kIqQzHzufd
-qIwfSRsEfWO/as6/z9ar0aKsuSMeYvYmObkHYoCKlA==
-=n62D
------END PGP SIGNATURE-----
+--000000000000c82f17060024e06b
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---qSYQnOPuHX1ViY/4--
+<div dir=3D"ltr"><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail=
+_attr">Hi,<br></div><div dir=3D"ltr"><br><div class=3D"gmail_quote"><div di=
+r=3D"ltr" class=3D"gmail_attr">On Mon, Jul 10, 2023 at 7:22=E2=80=AFAM Lev =
+Stipakov &lt;<a href=3D"mailto:lstipakov@...277..." target=3D"_blank">lstip=
+akov@...277...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" st=
+yle=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padd=
+ing-left:1ex">From: Lev Stipakov &lt;<a href=3D"mailto:lev@...515..." targe=
+t=3D"_blank">lev@...515...</a>&gt;<br>
+<br>
+This is needed to support domains with hyphens.<br>
+<br>
+Not using double quotes here, since our code replaces<br>
+them with underbars (see<br>
+<a href=3D"https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/win32=
+.c#L980" rel=3D"noreferrer" target=3D"_blank">https://github.com/OpenVPN/op=
+envpn/blob/master/src/openvpn/win32.c#L980</a>).<br>
+<br>
+Fixes <a href=3D"https://github.com/OpenVPN/openvpn/issues/363" rel=3D"nore=
+ferrer" target=3D"_blank">https://github.com/OpenVPN/openvpn/issues/363</a>=
+</blockquote><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px =
+0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><br>
+<br>
+Change-Id: Iab536922d0731635cef529b5caf542f637b8d491<br>
+Signed-off-by: Lev Stipakov &lt;<a href=3D"mailto:lev@...515..." target=3D"=
+_blank">lev@...515...</a>&gt;<br>
+---<br>
+=C2=A0src/openvpn/tun.c | 2 +-<br>
+=C2=A01 file changed, 1 insertion(+), 1 deletion(-)<br>
+<br>
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c<br>
+index d1fd6def..60974208 100644<br>
+--- a/src/openvpn/tun.c<br>
++++ b/src/openvpn/tun.c<br>
+@@ -333,7 +333,7 @@ do_dns_domain_wmic(bool add, const struct tuntap *tt)<b=
+r>
+=C2=A0 =C2=A0 =C2=A0}<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0struct argv argv =3D argv_new();<br>
+-=C2=A0 =C2=A0 argv_printf(&amp;argv, &quot;%s%s nicconfig where (Interface=
+Index=3D%ld) call SetDNSDomain %s&quot;,<br>
++=C2=A0 =C2=A0 argv_printf(&amp;argv, &quot;%s%s nicconfig where (Interface=
+Index=3D%ld) call SetDNSDomain &#39;%s&#39;&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0get_win_sys_p=
+ath(), WMIC_PATH_SUFFIX, tt-&gt;adapter_index, add ? tt-&gt;options.domain =
+: &quot;&quot;);<br>
+=C2=A0 =C2=A0 =C2=A0exec_command(&quot;WMIC&quot;, &amp;argv, 1, M_WARN);<b=
+r></blockquote><div><br></div><div>Quoting is required as wmic interprets c=
+haracters such as hyphen and /. Double quotes would have been better (as in=
+ interactive.c) as there are some cases where characters within single quot=
+es get=C2=A0interpreted special (like &#39;foo&gt;bar&#39; vs &quot;foo&gt;=
+bar&quot;).=C2=A0</div><div><br></div><div>That said, for valid domain name=
+s, the only expected characters are alpha-numeric, hyphen and period, and s=
+ingle quotes should work. I have only tested this using wmic command line, =
+not the=C2=A0resulting openvpn.exe.</div><div><br></div><div>Acked-by: Selv=
+a Nair &lt;<a href=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.=
+nair@...277...</a>&gt;</div><div><br></div><div>P.S.</div><div>We probably =
+need to sanitize the user-supplied domain name before passing it to wmic.<b=
+r></div></div></div>
+</div></div>
+
+--000000000000c82f17060024e06b--
 
