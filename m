@@ -1,11 +1,13 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Mon, 10 Jul 2023 13:37:04 +0200
-Message-Id: <20230710113704.344360-1-arne@...1227...>
-In-Reply-To: <20230517110230.2234266-1-arne@...1227...>
-References: <20230517110230.2234266-1-arne@...1227...>
+Date: Mon, 10 Jul 2023 17:56:40 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZKwqOENpY1rpBM2X@...1296...>
+References: <20230707185811.30132-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Introduce get_key_by_management_key_id
- helper function
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="qSYQnOPuHX1ViY/4"
+Content-Disposition: inline
+In-Reply-To: <20230707185811.30132-1-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] show extra info for OpenSSL errors
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,93 +16,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This function allows us to map from a management key id to a key structure
-and also allows this function to be reused.
+--qSYQnOPuHX1ViY/4
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Patch v2: add message when key is not found.
-Patch v3: only consider valid keys
+Hi,
 
-Change-Id: I42d8785959c24bf688190965e58b9b98251b8557
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/ssl_common.h | 20 ++++++++++++++++++++
- src/openvpn/ssl_verify.c | 23 +++++++++++++----------
- 2 files changed, 33 insertions(+), 10 deletions(-)
+On Fri, Jul 07, 2023 at 08:58:11PM +0200, Arne Schwabe wrote:
+> This also shows the extra data from the OpenSSL error function that
+> can contain extra information. For example, the command
+>=20
+>     openvpn --providers vollbit
+>=20
+> will print out (on macOS):
+>=20
+>      OpenSSLerror:12800067:DSO support routines::could not load the share=
+d library:filename(/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl=
+-modules/vollbit.dylib): dlopen(/opt/homebrew/Cellar/openssl@...1554.../3.1=
+.1_1/lib/ossl-modules/vollbit.dylib, 0x0002): tried: '/opt/homebrew/Cellar/=
+openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib' (no such file), =
+'/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/Cellar/openssl@...2738...=
+./3.1.1_1/lib/ossl-modules/vollbit.dylib' (no such file), '/opt/homebrew/Ce=
+llar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib' (no such fi=
+le)
 
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 27b029479..be0f18746 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -722,4 +722,24 @@ get_primary_key(const struct tls_multi *multi)
-     return &multi->session[TM_ACTIVE].key[KS_PRIMARY];
- }
- 
-+#ifdef ENABLE_MANAGEMENT
-+/**
-+ * Gets the \c key_state  object that belong to the management key id or
-+ * return NULL if not found.
-+ */
-+static inline struct key_state *
-+get_key_by_management_key_id(struct tls_multi *multi, unsigned int mda_key_id)
-+{
-+    for (int i = 0; i < KEY_SCAN_SIZE; ++i)
-+    {
-+        struct key_state *ks = get_key_scan(multi, i);
-+        if (ks->mda_key_id == mda_key_id && ks->state > S_UNDEF)
-+        {
-+            return ks;
-+        }
-+    }
-+    return NULL;
-+}
-+#endif
-+
- #endif /* SSL_COMMON_H_ */
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 90416b69e..2395e55c8 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -1266,22 +1266,25 @@ tls_authentication_status(struct tls_multi *multi)
- bool
- tls_authenticate_key(struct tls_multi *multi, const unsigned int mda_key_id, const bool auth, const char *client_reason)
- {
--    bool ret = false;
-+    struct key_state *ks = NULL;
-     if (multi)
-     {
--        int i;
-+
-         auth_set_client_reason(multi, client_reason);
--        for (i = 0; i < KEY_SCAN_SIZE; ++i)
-+        ks = get_key_by_management_key_id(multi, mda_key_id);
-+
-+        if (ks)
-         {
--            struct key_state *ks = get_key_scan(multi, i);
--            if (ks->mda_key_id == mda_key_id)
--            {
--                ks->mda_status = auth ? ACF_SUCCEEDED : ACF_FAILED;
--                ret = true;
--            }
-+            ks->mda_status = auth ? ACF_SUCCEEDED : ACF_FAILED;
-         }
-+        else
-+        {
-+            msg(D_TLS_DEBUG_LOW, "%s: no key state found for management key id "
-+                "%d", __func__, mda_key_id);
-+        }
-+
-     }
--    return ret;
-+    return (bool) ks;
- }
- #endif /* ifdef ENABLE_MANAGEMENT */
- 
--- 
-2.39.2 (Apple Git-143)
+Feature-ACK on providing more detail, because otherwise these errors
+can get really hard to track down.
 
+Your example above is somewhat excessive on repeating paths, but I do
+not see this on my FreeBSD test case
+
+$ src/openvpn/openvpn --providers legacyXX default --show-tls
+2023-07-10 17:44:27 OpenSSLerror:12800067:DSO support routines::could not l=
+oad the shared library:filename(/usr/lib/ossl-modules/legacyXX.so): /usr/li=
+b/ossl-modules/legacyXX.so: Undefined symbol "ossl_md4_functions"
+2023-07-10 17:44:27 OpenSSLerror:12800067:DSO support routines::could not l=
+oad the shared library:
+2023-07-10 17:44:27 OpenSSLerror:07880025:common libcrypto routines::reason=
+(524325):name=3DlegacyXX
+
+"this is just the right amount of details" :-) - for something that
+does not exist, I get
+
+2023-07-10 17:45:17 OpenSSLerror:12800067:DSO support routines::could not l=
+oad the shared library:filename(/usr/lib/ossl-modules/legacyYY.so): Cannot =
+open "/usr/lib/ossl-modules/legacyYY.so"
+
+
+Code-wise, I would prefer to have someone who understands OpenSSL give
+this another look...  Selva, Antonio?  Thanks :-)
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--qSYQnOPuHX1ViY/4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJkrCo4AAoJEB2Cnv7KVigSbOcL/jb5C0KBocRFlekCzB/OBjDy
+LQrGkKgJcP9IxGDsHnGy/XTCog5sgF4oGi0a5AR+NFKzGLO/gpgCQG0dRqlkrvIX
+ZBh9Cq2r4ndwnG1xfUIOlXbwUEPDtKX64qo8BgcIwkUQEWNr81o05yyUujem/BuG
+jWp5Xq03Nl/7696gs3+iWeYtF05qDdfDaADZ+v/CLxo5vE06XVK8P1+fp77naMxU
+Ifh2deXZrpkcfVz/RROWm8D5b1/TGakKOxRRCqyMk4OVEQ+gpOZC4+CoixIaBOGi
+m3K3bp7vsh1W5zmHsA0ou6PuFtwc9bYkSPgS2uQl3DwiyNpbA0dQ69WMNmYGDq0Q
+dPAeC268GE4VzkcJwTyEyyVsuU/+QLx0YK6ewkqGln55BVJLExY7PyCVuD+gbHIH
+KBaalrtcNdiP5ilDqSkSgGouNy12Gvdk6navJwFJwBIDr3bsc2z1k8kIqQzHzufd
+qIwfSRsEfWO/as6/z9ar0aKsuSMeYvYmObkHYoCKlA==
+=n62D
+-----END PGP SIGNATURE-----
+
+--qSYQnOPuHX1ViY/4--
 
