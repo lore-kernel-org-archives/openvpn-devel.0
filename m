@@ -1,11 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Tue, 11 Jul 2023 09:36:54 +0200
-Message-Id: <20230711073654.442125-1-arne@...1227...>
-In-Reply-To: <20230517110230.2234266-1-arne@...1227...>
-References: <20230517110230.2234266-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Introduce get_key_by_management_key_id
- helper function
+Date: Tue, 11 Jul 2023 21:40:02 +0200 (CEST)
+Message-Id: <202307111940.36BJe2rb060337@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230710112122.576-1-lstipakov@...277...>
+References: <20230710112122.576-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: tun.c: enclose DNS domain in
+ single quotes in WMIC call
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,91 +15,49 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This function allows us to map from a management key id to a key structure
-and also allows this function to be reused.
+I have not tested this beyond "does it still compile?" (it does) - the
+whole concept of "how do quotation marks work in windows, and when and
+why do we need them?" is a bit fuzzy to me - but I fully trust Selva
+and Lev on this.
 
-Patch v2: add message when key is not found.
-Patch v3: only consider valid keys
+On Selva's comment "do we need to sanitize this?" - I tried to figure
+out how tt->options.domain is populated, and gave up - for "dhcp-option",
+we start with o->domain, for "--dns" we start with something else, and
+I couldn't find where this moves over to tt->options.domain, and whether
+there is a check at this place.
 
-Change-Id: I42d8785959c24bf688190965e58b9b98251b8557
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/ssl_common.h | 20 ++++++++++++++++++++
- src/openvpn/ssl_verify.c | 23 +++++++++++++----------
- 2 files changed, 33 insertions(+), 10 deletions(-)
+In the "dhcp-option DOMAIN" block, we just do
 
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 27b029479..be0f18746 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -722,4 +722,24 @@ get_primary_key(const struct tls_multi *multi)
-     return &multi->session[TM_ACTIVE].key[KS_PRIMARY];
- }
- 
-+#ifdef ENABLE_MANAGEMENT
-+/**
-+ * Gets the \c key_state  object that belong to the management key id or
-+ * return NULL if not found.
-+ */
-+static inline struct key_state *
-+get_key_by_management_key_id(struct tls_multi *multi, unsigned int mda_key_id)
-+{
-+    for (int i = 0; i < KEY_SCAN_SIZE; ++i)
-+    {
-+        struct key_state *ks = get_key_scan(multi, i);
-+        if (ks->mda_key_id == mda_key_id && ks->state > S_UNDEF)
-+        {
-+            return ks;
-+        }
-+    }
-+    return NULL;
-+}
-+#endif
-+
- #endif /* SSL_COMMON_H_ */
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 90416b69e..2395e55c8 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -1266,22 +1266,25 @@ tls_authentication_status(struct tls_multi *multi)
- bool
- tls_authenticate_key(struct tls_multi *multi, const unsigned int mda_key_id, const bool auth, const char *client_reason)
- {
--    bool ret = false;
-+    struct key_state *ks = NULL;
-     if (multi)
-     {
--        int i;
-+
-         auth_set_client_reason(multi, client_reason);
--        for (i = 0; i < KEY_SCAN_SIZE; ++i)
-+        ks = get_key_by_management_key_id(multi, mda_key_id);
-+
-+        if (ks)
-         {
--            struct key_state *ks = get_key_scan(multi, i);
--            if (ks->mda_key_id == mda_key_id)
--            {
--                ks->mda_status = auth ? ACF_SUCCEEDED : ACF_FAILED;
--                ret = true;
--            }
-+            ks->mda_status = auth ? ACF_SUCCEEDED : ACF_FAILED;
-         }
-+        else
-+        {
-+            msg(D_TLS_DEBUG_LOW, "%s: no key state found for management key id "
-+                "%d", __func__, mda_key_id);
-+        }
-+
-     }
--    return ret;
-+    return (bool) ks;
- }
- #endif /* ifdef ENABLE_MANAGEMENT */
- 
--- 
-2.39.2 (Apple Git-143)
+        if ((streq(p[1], "DOMAIN") || streq(p[1], "ADAPTER_DOMAIN_SUFFIX"))
+            && p[2] && !p[3])
+        {
+            o->domain = p[2];
+
+.. so indeed, depending on how windows exec_command() "does things",
+this might or might not be a problem.
+
+Your patch has been applied to the master and release/2.6 branch (bugfix).
+
+commit 4057814a8a783d4fb1475f49f073f6b3a7797677 (master)
+commit aceecaef79cd2dae5265e328874ee8263ac79492 (release/2.6)
+Author: Lev Stipakov
+Date:   Mon Jul 10 14:21:22 2023 +0300
+
+     tun.c: enclose DNS domain in single quotes in WMIC call
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <20230710112122.576-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26841.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
