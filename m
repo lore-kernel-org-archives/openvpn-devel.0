@@ -1,10 +1,11 @@
-Date: Mon, 10 Jul 2023 19:13:28 +0200 (CEST)
-Message-Id: <202307101713.36AHDSvp035491@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230522091231.2837468-1-arne@...1227...>
-References: <20230522091231.2837468-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Print a more user-friendly
- error when tls-crypt-v2 client auth fails
+From: Arne Schwabe <arne@...1227...>
+Date: Tue, 11 Jul 2023 09:36:54 +0200
+Message-Id: <20230711073654.442125-1-arne@...1227...>
+In-Reply-To: <20230517110230.2234266-1-arne@...1227...>
+References: <20230517110230.2234266-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v3] Introduce get_key_by_management_key_id
+ helper function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,37 +16,91 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Acked-by: Gert Doering <gert@...1296...>
+This function allows us to map from a management key id to a key structure
+and also allows this function to be reused.
 
-I find this a useful addition - with all these crypto stuff it can be
-quite hard to figure out what particular detail is not right.
+Patch v2: add message when key is not found.
+Patch v3: only consider valid keys
 
-The patch is trivial, just adding a msg(), so I did not really test
-it beyond "compile?" and "does it have a space before or after the
-wrap?" (it has).
+Change-Id: I42d8785959c24bf688190965e58b9b98251b8557
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/ssl_common.h | 20 ++++++++++++++++++++
+ src/openvpn/ssl_verify.c | 23 +++++++++++++----------
+ 2 files changed, 33 insertions(+), 10 deletions(-)
 
-Your patch has been applied to the master branch.
-
-commit 7a477c16a7c2a7016c7b15ea98fe3c40e8ef675b (master)
-commit 66f51e80b981f08ebc3c38f3fac7d0c88caeb85d (release/2.6)
-Author: Arne Schwabe
-Date:   Mon May 22 11:12:31 2023 +0200
-
-     Print a more user-friendly error when tls-crypt-v2 client auth fails
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230522091231.2837468-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26718.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 27b029479..be0f18746 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -722,4 +722,24 @@ get_primary_key(const struct tls_multi *multi)
+     return &multi->session[TM_ACTIVE].key[KS_PRIMARY];
+ }
+ 
++#ifdef ENABLE_MANAGEMENT
++/**
++ * Gets the \c key_state  object that belong to the management key id or
++ * return NULL if not found.
++ */
++static inline struct key_state *
++get_key_by_management_key_id(struct tls_multi *multi, unsigned int mda_key_id)
++{
++    for (int i = 0; i < KEY_SCAN_SIZE; ++i)
++    {
++        struct key_state *ks = get_key_scan(multi, i);
++        if (ks->mda_key_id == mda_key_id && ks->state > S_UNDEF)
++        {
++            return ks;
++        }
++    }
++    return NULL;
++}
++#endif
++
+ #endif /* SSL_COMMON_H_ */
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 90416b69e..2395e55c8 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -1266,22 +1266,25 @@ tls_authentication_status(struct tls_multi *multi)
+ bool
+ tls_authenticate_key(struct tls_multi *multi, const unsigned int mda_key_id, const bool auth, const char *client_reason)
+ {
+-    bool ret = false;
++    struct key_state *ks = NULL;
+     if (multi)
+     {
+-        int i;
++
+         auth_set_client_reason(multi, client_reason);
+-        for (i = 0; i < KEY_SCAN_SIZE; ++i)
++        ks = get_key_by_management_key_id(multi, mda_key_id);
++
++        if (ks)
+         {
+-            struct key_state *ks = get_key_scan(multi, i);
+-            if (ks->mda_key_id == mda_key_id)
+-            {
+-                ks->mda_status = auth ? ACF_SUCCEEDED : ACF_FAILED;
+-                ret = true;
+-            }
++            ks->mda_status = auth ? ACF_SUCCEEDED : ACF_FAILED;
+         }
++        else
++        {
++            msg(D_TLS_DEBUG_LOW, "%s: no key state found for management key id "
++                "%d", __func__, mda_key_id);
++        }
++
+     }
+-    return ret;
++    return (bool) ks;
+ }
+ #endif /* ifdef ENABLE_MANAGEMENT */
+ 
+-- 
+2.39.2 (Apple Git-143)
 
 
