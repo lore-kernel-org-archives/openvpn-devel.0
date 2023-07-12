@@ -1,9 +1,11 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 12 Jul 2023 11:46:20 +0200
-Message-Id: <20230712094620.569273-1-arne@...1227...>
+Date: Wed, 12 Jul 2023 11:54:12 +0200
+Message-Id: <20230712095412.570106-1-arne@...1227...>
+In-Reply-To: <20230704140805.3851328-1-arne@...1227...>
+References: <20230704140805.3851328-1-arne@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Ignore Ipv6 route delete request on Android
- and set ipv4 verbosity to 7
+Subject: [Openvpn-devel] [PATCH v2] Mock openvpn_exece on win32 also for
+ test_tls_crypt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,44 +18,125 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Android has no facility nor need one to delete routes as routes are
-automatically cleaned up when the tun interface is closed. Also adjust
-the IPv4 message to be only shown and verb 7 and rephrase the message.
+This function is needed to commpile on win32 as run_command.c defines it
+on Unix Linux but on windows it is defined in win32.c which pulls in too
+many other unresolvable symbols.
 
-Change-Id: If8f920d378c31e9ea773ce1f56f3df50f1ec36cd
+Patch v2: Also add mock_win32_execve.c to automake files
+
+Change-Id: I8c8fe298eb30e211279f3fc010584b9d3bc14b4a
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
- src/openvpn/route.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ CMakeLists.txt                               |  2 ++
+ tests/unit_tests/openvpn/Makefile.am         |  3 +-
+ tests/unit_tests/openvpn/mock_win32_execve.c | 37 ++++++++++++++++++++
+ tests/unit_tests/openvpn/test_pkt.c          |  8 -----
+ 4 files changed, 41 insertions(+), 9 deletions(-)
+ create mode 100644 tests/unit_tests/openvpn/mock_win32_execve.c
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 0b369da44..6028de9c2 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -2302,8 +2302,9 @@ delete_route(struct route_ipv4 *r,
-     openvpn_execve_check(&argv, es, 0, "ERROR: OpenBSD/NetBSD route delete command failed");
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 597dc9074..2d0cd5dd0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -679,6 +679,7 @@ if (BUILD_TESTING)
+         )
  
- #elif defined(TARGET_ANDROID)
--    msg(M_NONFATAL, "Sorry, deleting routes on Android is not possible. The VpnService API allows routes to be set on connect only.");
--
-+    msg(D_ROUTE_DEBUG, "Deleting routes on Android is not possible/not "
-+                       "needed. The VpnService API allows routes to be set "
-+                       "on connect only and will clean up automatically.");
- #elif defined(TARGET_AIX)
+     target_sources(test_pkt PRIVATE
++        tests/unit_tests/openvpn/mock_win32_execve.c
+         src/openvpn/argv.c
+         src/openvpn/base64.c
+         src/openvpn/crypto_mbedtls.c
+@@ -740,6 +741,7 @@ if (BUILD_TESTING)
+             -Wl,--wrap=buffer_write_file
+             -Wl,--wrap=rand_bytes)
+         target_sources(test_tls_crypt PRIVATE
++            tests/unit_tests/openvpn/mock_win32_execve.c
+             src/openvpn/argv.c
+             src/openvpn/base64.c
+             src/openvpn/crypto_mbedtls.c
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index dbf658ac7..6b56f8480 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -83,7 +83,7 @@ packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c mock_msg.h \
+ pkt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
+ 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpn
+ pkt_testdriver_LDFLAGS = @TEST_LDFLAGS@
+-pkt_testdriver_SOURCES = test_pkt.c mock_msg.c mock_msg.h \
++pkt_testdriver_SOURCES = test_pkt.c mock_msg.c mock_msg.h mock_win32_execve.c \
+ 	$(top_srcdir)/src/openvpn/argv.c \
+ 	$(top_srcdir)/src/openvpn/base64.c \
+ 	$(top_srcdir)/src/openvpn/buffer.c \
+@@ -110,6 +110,7 @@ tls_crypt_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
+ 	-Wl,--wrap=parse_line \
+ 	-Wl,--wrap=rand_bytes
+ tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c mock_msg.h \
++    mock_win32_execve.c \
+ 	$(top_srcdir)/src/openvpn/argv.c \
+ 	$(top_srcdir)/src/openvpn/base64.c \
+ 	$(top_srcdir)/src/openvpn/buffer.c \
+diff --git a/tests/unit_tests/openvpn/mock_win32_execve.c b/tests/unit_tests/openvpn/mock_win32_execve.c
+new file mode 100644
+index 000000000..4d37ebe33
+--- /dev/null
++++ b/tests/unit_tests/openvpn/mock_win32_execve.c
+@@ -0,0 +1,37 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2023 OpenVPN Inc <sales@...515...>
++ *  Copyright (C) 2023 Arne Schwabe <arne@...1227...>
++ *
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License along
++ *  with this program; if not, write to the Free Software Foundation, Inc.,
++ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#include "config.h"
++#include "syshead.h"
++
++#include "win32.h"
++
++#ifdef _WIN32
++int
++openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags)
++{
++    ASSERT(0);
++}
++#endif
+diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
+index 5a53f702e..9f49ee7bd 100644
+--- a/tests/unit_tests/openvpn/test_pkt.c
++++ b/tests/unit_tests/openvpn/test_pkt.c
+@@ -69,14 +69,6 @@ print_link_socket_actual(const struct link_socket_actual *act, struct gc_arena *
+     return "dummy print_link_socket_actual from unit test";
+ }
  
-     {
-@@ -2490,7 +2491,10 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt,
-                 network, r6->netbits, gateway);
-     argv_msg(D_ROUTE, &argv);
-     openvpn_execve_check(&argv, es, 0, "ERROR: AIX route add command failed");
+-#ifdef _WIN32
+-int
+-openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags)
+-{
+-    ASSERT(0);
+-}
+-#endif
 -
-+#elif defined(TARGET_ANDROID)
-+    msg(D_ROUTE_DEBUG, "Deleting routes on Android is not possible/not "
-+                       "needed. The VpnService API allows routes to be set "
-+                       "on connect only and will clean up automatically.");
- #else  /* if defined(TARGET_LINUX) */
-     msg(M_FATAL, "Sorry, but I don't know how to do 'route ipv6' commands on this operating system.  Try putting your routes in a --route-down script");
- #endif /* if defined(TARGET_LINUX) */
+ struct test_pkt_context {
+     struct tls_auth_standalone tas_tls_auth;
+     struct tls_auth_standalone tas_crypt;
 -- 
 2.39.2 (Apple Git-143)
 
