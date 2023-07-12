@@ -1,10 +1,9 @@
-Date: Tue, 11 Jul 2023 21:40:02 +0200 (CEST)
-Message-Id: <202307111940.36BJe2rb060337@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230710112122.576-1-lstipakov@...277...>
-References: <20230710112122.576-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tun.c: enclose DNS domain in
- single quotes in WMIC call
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 12 Jul 2023 11:46:20 +0200
+Message-Id: <20230712094620.569273-1-arne@...1227...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Ignore Ipv6 route delete request on Android
+ and set ipv4 verbosity to 7
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,49 +14,47 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-I have not tested this beyond "does it still compile?" (it does) - the
-whole concept of "how do quotation marks work in windows, and when and
-why do we need them?" is a bit fuzzy to me - but I fully trust Selva
-and Lev on this.
+Android has no facility nor need one to delete routes as routes are
+automatically cleaned up when the tun interface is closed. Also adjust
+the IPv4 message to be only shown and verb 7 and rephrase the message.
 
-On Selva's comment "do we need to sanitize this?" - I tried to figure
-out how tt->options.domain is populated, and gave up - for "dhcp-option",
-we start with o->domain, for "--dns" we start with something else, and
-I couldn't find where this moves over to tt->options.domain, and whether
-there is a check at this place.
+Change-Id: If8f920d378c31e9ea773ce1f56f3df50f1ec36cd
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/route.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-In the "dhcp-option DOMAIN" block, we just do
-
-        if ((streq(p[1], "DOMAIN") || streq(p[1], "ADAPTER_DOMAIN_SUFFIX"))
-            && p[2] && !p[3])
-        {
-            o->domain = p[2];
-
-.. so indeed, depending on how windows exec_command() "does things",
-this might or might not be a problem.
-
-Your patch has been applied to the master and release/2.6 branch (bugfix).
-
-commit 4057814a8a783d4fb1475f49f073f6b3a7797677 (master)
-commit aceecaef79cd2dae5265e328874ee8263ac79492 (release/2.6)
-Author: Lev Stipakov
-Date:   Mon Jul 10 14:21:22 2023 +0300
-
-     tun.c: enclose DNS domain in single quotes in WMIC call
-
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <20230710112122.576-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26841.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 0b369da44..6028de9c2 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2302,8 +2302,9 @@ delete_route(struct route_ipv4 *r,
+     openvpn_execve_check(&argv, es, 0, "ERROR: OpenBSD/NetBSD route delete command failed");
+ 
+ #elif defined(TARGET_ANDROID)
+-    msg(M_NONFATAL, "Sorry, deleting routes on Android is not possible. The VpnService API allows routes to be set on connect only.");
+-
++    msg(D_ROUTE_DEBUG, "Deleting routes on Android is not possible/not "
++                       "needed. The VpnService API allows routes to be set "
++                       "on connect only and will clean up automatically.");
+ #elif defined(TARGET_AIX)
+ 
+     {
+@@ -2490,7 +2491,10 @@ delete_route_ipv6(const struct route_ipv6 *r6, const struct tuntap *tt,
+                 network, r6->netbits, gateway);
+     argv_msg(D_ROUTE, &argv);
+     openvpn_execve_check(&argv, es, 0, "ERROR: AIX route add command failed");
+-
++#elif defined(TARGET_ANDROID)
++    msg(D_ROUTE_DEBUG, "Deleting routes on Android is not possible/not "
++                       "needed. The VpnService API allows routes to be set "
++                       "on connect only and will clean up automatically.");
+ #else  /* if defined(TARGET_LINUX) */
+     msg(M_FATAL, "Sorry, but I don't know how to do 'route ipv6' commands on this operating system.  Try putting your routes in a --route-down script");
+ #endif /* if defined(TARGET_LINUX) */
+-- 
+2.39.2 (Apple Git-143)
 
 
