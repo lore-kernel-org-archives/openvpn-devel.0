@@ -1,12 +1,13 @@
-Date: Wed, 12 Jul 2023 13:17:28 +0200
+Date: Wed, 12 Jul 2023 13:19:27 +0200
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZK6LyL4M6YvDzgIw@...2685...>
-References: <20230704140805.3851328-1-arne@...1227...>
- <20230712095412.570106-1-arne@...1227...>
+Message-ID: <ZK6MPwbQwajXWT2N@...2685...>
+References: <20230629215611.3292788-1-arne@...1227...>
+ <20230712095529.570306-1-arne@...1227...>
+ <ZK6KPdXCI6pesssQ@...2685...>
 MIME-Version: 1.0
-In-Reply-To: <20230712095412.570106-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Mock openvpn_exece on win32 also for
- test_tls_crypt
+In-Reply-To: <ZK6KPdXCI6pesssQ@...2685...>
+Subject: Re: [Openvpn-devel] [PATCH v3 3/4] Check if the -wrap argument is
+ actually supported by the platform's ld
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,21 +22,29 @@ Content-Disposition: inline
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Wed, Jul 12, 2023 at 11:54:12AM +0200, Arne Schwabe wrote:
-> This function is needed to commpile on win32 as run_command.c defines it
-> on Unix Linux but on windows it is defined in win32.c which pulls in too
-> many other unresolvable symbols.
+On Wed, Jul 12, 2023 at 01:10:53PM +0200, Frank Lichtenheld wrote:
+> On Wed, Jul 12, 2023 at 11:55:29AM +0200, Arne Schwabe wrote:
+> > This avoids build errors on macOS. Also the test_tls_crypt command works
+> > just fine on FreeBSD with its linkers, so do not make that test Linux only.
+> > 
+> > Patch v2: allow running with old cmake version (cmake 3 on RHEL7 with EPEL
+> >           is only 3.17)
+> > Patch v3: add OPTIONAL keyword to Incldue required by some cmake versions
 > 
-> Patch v2: Also add mock_win32_execve.c to automake files
+> Yeah, I also have no idea why you didn't need that for your CMake. Anyway,
+> it is correct according to the documentation. And it is definitely required
+> on Ubuntu 20.04.
+> 
+> Tested on Ubuntu 20.04 (cmake 3.16.3), Ubuntu 22.04 (cmake 3.22.1), and
+> checked build results for GHA.
+> 
+> Acked-by: Frank Lichtenheld <frank@...2641...>
 
-I checked "make distdir" and the file now appears in there.
+Note: please merge after
+"Mock openvpn_exece on win32 also for test_tls_crypt" to avoid
+broken MinGW builds.
 
-Please note that this should be merged BEFORE
-"Check if the -wrap argument is actually supported by the platform's ld"
-since it fixes the MinGW build issue that arises from that.
-
-Acked-by: Frank Lichtenheld <frank@...2641...>
-
+Regards,
 -- 
   Frank Lichtenheld
 
