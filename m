@@ -1,13 +1,14 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Mon, 17 Jul 2023 14:17:22 +0000
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Mon, 17 Jul 2023 14:17:17 +0000
+In-Reply-To: <gerrit.1679478483000.I465febdf7ee5fe573e88255844f718efb60f8e8a@...2715...>
 References: <gerrit.1679478483000.I465febdf7ee5fe573e88255844f718efb60f8e8a@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
-Message-ID: <3ddf7a93b6ac1215fe1bab9a3bfe32c7c054c1f4-HTML@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, lstipakov@...277..., a@...2181...
+Message-ID: <f856bfd7f55dc089e0875db077914c6eac398696-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="VX5akffTklc="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="e+I5FS/VS9c="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: Print DCO
  client stats on SIGUSR2
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,15 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, flichtenheld <frank@...2641...>, d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>
+To: stipa <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>
 
---VX5akffTklc=
+--e+I5FS/VS9c=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-stipa has uploaded this change for review. ( http://gerrit.openvpn.net/c/op=
-envpn/+/202?usp=3Demail )
-
+flichtenheld has submitted this change. ( http://gerrit.openvpn.net/c/openv=
+pn/+/202?usp=3Demail )
 
 Change subject: Print DCO client stats on SIGUSR2
 ......................................................................
@@ -48,7 +49,6 @@ M src/openvpn/sig.h
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/02/202/2
 
 diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
 index 5b89bb4..05c0054 100644
@@ -64,7 +64,7 @@ index 5b89bb4..05c0054 100644
      struct gc_arena gc =3D gc_new();
 
      status_reset(so);
-=20
+
 +    if (dco_enabled(&c->options))
 +    {
 +        dco_get_peer_stats(c);
@@ -129,79 +129,79 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: ordex <a@...2181...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newchange
+Gerrit-MessageType: merged
 
---VX5akffTklc=
+--e+I5FS/VS9c=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>stipa has uploaded this change for <strong>review</strong>.</p><p><a hre=
-f=3D"http://gerrit.openvpn.net/c/openvpn/+/202?usp=3Demail">View Change</a>=
-</p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
->Print DCO client stats on SIGUSR2<br><br>Change-Id: I465febdf7ee5fe573e882=
-55844f718efb60f8e8a<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br=
->Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20230322=
-113249.2039-1-lstipakov@...277...&gt;<br>URL: https://www.mail-archive.com/=
-openvpn-devel@lists.sourceforge.net/msg26471.html<br>Signed-off-by: Gert Do=
-ering &lt;gert@...1296...&gt;<br>(cherry picked from commit d5238627e4fab93=
-a6c09816c60eb90e237b626c3)<br>---<br>M src/openvpn/sig.c<br>M src/openvpn/s=
-ig.h<br>2 files changed, 10 insertions(+), 5 deletions(-)<br><br></pre><pre=
- style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pul=
-l ssh://gerrit.openvpn.net:29418/openvpn refs/changes/02/202/2</pre><pre st=
-yle=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff=
- --git a/src/openvpn/sig.c b/src/openvpn/sig.c</span><br><span>index 5b89bb=
-4..05c0054 100644</span><br><span>--- a/src/openvpn/sig.c</span><br><span>+=
-++ b/src/openvpn/sig.c</span><br><span>@@ -300,18 +300,23 @@</span><br><spa=
-n>  * Triggered by SIGUSR2 or F2 on Windows.</span><br><span>  */</span><br=
-><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-print_sta=
-tus(const struct context *c, struct status_output *so)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+print_status(struct context *c, struct s=
-tatus_output *so)</span><br><span> {</span><br><span>     struct gc_arena g=
-c =3D gc_new();</span><br><span> </span><br><span>     status_reset(so);</s=
-pan><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-if (dco_enabled(&amp;c-&gt;options))</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        dco_get_peer_stats(c);</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span>     status_printf(so, &quot;OpenVPN STATISTICS&quot;);</s=
-pan><br><span>     status_printf(so, &quot;Updated,%s&quot;, time_string(0,=
- 0, false, &amp;gc));</span><br><span>     status_printf(so, &quot;TUN/TAP =
-read bytes,&quot; counter_format, c-&gt;c2.tun_read_bytes);</span><br><span=
->     status_printf(so, &quot;TUN/TAP write bytes,&quot; counter_format, c-=
-&gt;c2.tun_write_bytes);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    status_printf(so, &quot;TCP/UDP read bytes,&quot; counter_format, c-=
-&gt;c2.link_read_bytes);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    status_printf(so, &quot;TCP/UDP write bytes,&quot; counter_format, c=
--&gt;c2.link_write_bytes);</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    status_printf(so, &quot;TCP/UDP read bytes,&quot; counter_format=
-, c-&gt;c2.link_read_bytes + c-&gt;c2.dco_read_bytes);</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    status_printf(so, &quot;TCP/UDP writ=
-e bytes,&quot; counter_format, c-&gt;c2.link_write_bytes + c-&gt;c2.dco_wri=
-te_bytes);</span><br><span>     status_printf(so, &quot;Auth read bytes,&qu=
-ot; counter_format, c-&gt;c2.link_read_bytes_auth);</span><br><span> #ifdef=
- USE_COMP</span><br><span>     if (c-&gt;c2.comp_context)</span><br><span>@=
-@ -402,7 +407,7 @@</span><br><span> }</span><br><span> </span><br><span> st=
-atic void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-process_sigu=
-sr2(const struct context *c)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+process_sigusr2(struct context *c)</span><br><span> {</span><br><s=
-pan>     struct status_output *so =3D status_open(NULL, 0, M_INFO, NULL, 0)=
-;</span><br><span>     print_status(c, so);</span><br><span>diff --git a/sr=
-c/openvpn/sig.h b/src/openvpn/sig.h</span><br><span>index 4858eb9..b09dfab =
-100644</span><br><span>--- a/src/openvpn/sig.h</span><br><span>+++ b/src/op=
-envpn/sig.h</span><br><span>@@ -69,7 +69,7 @@</span><br><span> </span><br><=
-span> void print_signal(const struct signal_info *si, const char *title, in=
-t msglevel);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-void print_status(const struct context *c, struct status_output *s=
-o);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void print_statu=
-s(struct context *c, struct status_output *so);</span><br><span> </span><br=
-><span> void remap_signal(struct context *c);</span><br><span> </span><br><=
-span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/202?usp=3Demail">change 202</a>. To unsubscribe, or for help =
-writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">=
-settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"=
-><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewActio=
-n"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/202=
-?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>flichtenheld <strong>submitted</strong> this change.</p><p><a href=3D"ht=
+tp://gerrit.openvpn.net/c/openvpn/+/202?usp=3Demail">View Change</a></p><di=
+v style=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace=
+,monospace; white-space: pre-wrap;">Print DCO client stats on SIGUSR2<br><b=
+r>Change-Id: I465febdf7ee5fe573e88255844f718efb60f8e8a<br>Signed-off-by: Le=
+v Stipakov &lt;lev@...515...&gt;<br>Acked-by: Gert Doering &lt;gert@...1726...=
+...&gt;<br>Message-Id: &lt;20230322113249.2039-1-lstipakov@...277...&gt;<br=
+>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg2=
+6471.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>(cherry=
+ picked from commit d5238627e4fab93a6c09816c60eb90e237b626c3)<br>---<br>M s=
+rc/openvpn/sig.c<br>M src/openvpn/sig.h<br>2 files changed, 10 insertions(+=
+), 5 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c</span><br><span>index=
+ 5b89bb4..05c0054 100644</span><br><span>--- a/src/openvpn/sig.c</span><br>=
+<span>+++ b/src/openvpn/sig.c</span><br><span>@@ -300,18 +300,23 @@</span><=
+br><span>  * Triggered by SIGUSR2 or F2 on Windows.</span><br><span>  */</s=
+pan><br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-pr=
+int_status(const struct context *c, struct status_output *so)</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+print_status(struct context *c, s=
+truct status_output *so)</span><br><span> {</span><br><span>     struct gc_=
+arena gc =3D gc_new();</span><br><span> </span><br><span>     status_reset(=
+so);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    if (dco_enabled(&amp;c-&gt;options))</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+        dco_get_peer_stats(c);</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span>     status_printf(so, &quot;OpenVPN STATISTICS&quo=
+t;);</span><br><span>     status_printf(so, &quot;Updated,%s&quot;, time_st=
+ring(0, 0, false, &amp;gc));</span><br><span>     status_printf(so, &quot;T=
+UN/TAP read bytes,&quot; counter_format, c-&gt;c2.tun_read_bytes);</span><b=
+r><span>     status_printf(so, &quot;TUN/TAP write bytes,&quot; counter_for=
+mat, c-&gt;c2.tun_write_bytes);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    status_printf(so, &quot;TCP/UDP read bytes,&quot; counter_for=
+mat, c-&gt;c2.link_read_bytes);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    status_printf(so, &quot;TCP/UDP write bytes,&quot; counter_fo=
+rmat, c-&gt;c2.link_write_bytes);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    status_printf(so, &quot;TCP/UDP read bytes,&quot; counter=
+_format, c-&gt;c2.link_read_bytes + c-&gt;c2.dco_read_bytes);</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    status_printf(so, &quot;TCP/U=
+DP write bytes,&quot; counter_format, c-&gt;c2.link_write_bytes + c-&gt;c2.=
+dco_write_bytes);</span><br><span>     status_printf(so, &quot;Auth read by=
+tes,&quot; counter_format, c-&gt;c2.link_read_bytes_auth);</span><br><span>=
+ #ifdef USE_COMP</span><br><span>     if (c-&gt;c2.comp_context)</span><br>=
+<span>@@ -402,7 +407,7 @@</span><br><span> }</span><br><span> </span><br><s=
+pan> static void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-proce=
+ss_sigusr2(const struct context *c)</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+process_sigusr2(struct context *c)</span><br><span> {</span=
+><br><span>     struct status_output *so =3D status_open(NULL, 0, M_INFO, N=
+ULL, 0);</span><br><span>     print_status(c, so);</span><br><span>diff --g=
+it a/src/openvpn/sig.h b/src/openvpn/sig.h</span><br><span>index 4858eb9..b=
+09dfab 100644</span><br><span>--- a/src/openvpn/sig.h</span><br><span>+++ b=
+/src/openvpn/sig.h</span><br><span>@@ -69,7 +69,7 @@</span><br><span> </spa=
+n><br><span> void print_signal(const struct signal_info *si, const char *ti=
+tle, int msglevel);</span><br><span> </span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-void print_status(const struct context *c, struct status_ou=
+tput *so);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void prin=
+t_status(struct context *c, struct status_output *so);</span><br><span> </s=
+pan><br><span> void remap_signal(struct context *c);</span><br><span> </spa=
+n><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/202?usp=3Demail">change 202</a>. To unsubscribe, or fo=
+r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
+tings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
+essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
+ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/202?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
+v></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
@@ -222,8 +222,8 @@ div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---VX5akffTklc=--
+--e+I5FS/VS9c=--
 
