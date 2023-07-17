@@ -1,12 +1,10 @@
-Date: Mon, 17 Jul 2023 16:28:46 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZLVQHvCC/+AwSvNb@...2685...>
-References: <gerrit.1679478483000.I465febdf7ee5fe573e88255844f718efb60f8e8a@...2715...>
- <f856bfd7f55dc089e0875db077914c6eac398696-HTML@...2715...>
-MIME-Version: 1.0
-In-Reply-To: <f856bfd7f55dc089e0875db077914c6eac398696-HTML@...2715...>
-Subject: Re: [Openvpn-devel] [S] Change in openvpn[release/2.6]: Print DCO
- client stats on SIGUSR2
+Date: Mon, 17 Jul 2023 18:39:40 +0200 (CEST)
+Message-Id: <202307171639.36HGdeZH090989@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230714111802.1773-1-lstipakov@...277...>
+References: <20230714111802.1773-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: manage.c: document missing KID
+ parameter
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,36 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: arne-openvpn@...1227..., heiko@...515..., openvpn-devel@lists.sourceforge.net, lstipakov@...277..., a@...2181...
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Mon, Jul 17, 2023 at 02:17:17PM +0000, flichtenheld (Code Review) wrote:
-> flichtenheld has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/202?usp=email )
-> 
-> Change subject: Print DCO client stats on SIGUSR2
-> ......................................................................
-> 
-> Print DCO client stats on SIGUSR2
-> 
-> Change-Id: I465febdf7ee5fe573e88255844f718efb60f8e8a
-> Signed-off-by: Lev Stipakov <lev@...515...>
-> Acked-by: Gert Doering <gert@...1296...>
-> Message-Id: <20230322113249.2039-1-lstipakov@...277...>
-> URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26471.html
-> Signed-off-by: Gert Doering <gert@...1296...>
-> (cherry picked from commit d5238627e4fab93a6c09816c60eb90e237b626c3)
-> ---
-> M src/openvpn/sig.c
-> M src/openvpn/sig.h
-> 2 files changed, 10 insertions(+), 5 deletions(-)
+Since this is a pure textual change, I haven't tested this any way -
+and the change matches "Changes.rst" and "doc/management-notes.txt".
 
-release/2.6 on Gerrit server was far behind and also had some wrong commits.
-I force-pushed it to the correct state now. I assume that these mails were
-hallucinations caused by that.
+Your patch has been applied to the master and release/2.6 branch.
 
-Regards,
--- 
-  Frank Lichtenheld
+commit f5201eedd4ea55414bf8310668a3d00e7bf8ea71 (master)
+commit d3fe78af5dde169fcb13a6fde3b532e5d1a3a633 (release/2.6)
+Author: Lev Stipakov
+Date:   Fri Jul 14 14:18:02 2023 +0300
+
+     manage.c: document missing KID parameter
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20230714111802.1773-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26856.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
