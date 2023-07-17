@@ -1,10 +1,10 @@
-Date: Mon, 17 Jul 2023 18:39:40 +0200 (CEST)
-Message-Id: <202307171639.36HGdeZH090989@...2054...>
+Date: Mon, 17 Jul 2023 19:00:50 +0200 (CEST)
+Message-Id: <202307171700.36HH0oD0091515@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230714111802.1773-1-lstipakov@...277...>
-References: <20230714111802.1773-1-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: manage.c: document missing KID
- parameter
+In-Reply-To: <20230712094620.569273-1-arne@...1227...>
+References: <20230712094620.569273-1-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Ignore Ipv6 route delete
+ request on Android and set ipv4 verbosity to 7
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,25 +15,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lev@...515...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Since this is a pure textual change, I haven't tested this any way -
-and the change matches "Changes.rst" and "doc/management-notes.txt".
+Acked-by: Gert Doering <gert@...1296...>
 
-Your patch has been applied to the master and release/2.6 branch.
+"because it makes sense"
 
-commit f5201eedd4ea55414bf8310668a3d00e7bf8ea71 (master)
-commit d3fe78af5dde169fcb13a6fde3b532e5d1a3a633 (release/2.6)
-Author: Lev Stipakov
-Date:   Fri Jul 14 14:18:02 2023 +0300
+Not tested beyond stare-at-code and have GHA do a test build, because
+this is all #ifdef TARGET_ANDROID, and "only msg() calls" at that.
 
-     manage.c: document missing KID parameter
+Uncrustify complains about indentation, so whitespace adjusted accordingly.
 
-     Signed-off-by: Lev Stipakov <lev@...515...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20230714111802.1773-1-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26856.html
+Your patch has been applied to the master and release/2.6 branch (one
+could argue that branch, but it's "fix a misleading error message" so
+it qualifies as a mini bugfix).  Not applying to 2.5 or 2.4 :-)
+
+commit ab01eaf49fa9341ff647206bd6e3017770cc0674 (master)
+commit 4ed7d7f72515c7df34edf617cb0bb8f2ac533e48 (release/2.6)
+Author: Arne Schwabe
+Date:   Wed Jul 12 11:46:20 2023 +0200
+
+     Ignore Ipv6 route delete request on Android and set ipv4 verbosity to 7
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230712094620.569273-1-arne@...1227...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26848.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
