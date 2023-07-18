@@ -1,8 +1,12 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Tue, 18 Jul 2023 12:52:41 +0200
-Message-Id: <20230718105241.620221-1-frank@...2641...>
+Message-ID: <5866db1a-4c75-fed6-3c45-bfd691bb0427@...1227...>
+Date: Tue, 18 Jul 2023 12:59:33 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] GHA: Add macos-13
+References: <20230718105233.620193-1-frank@...2641...>
+Content-Language: en-GB
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20230718105233.620193-1-frank@...2641...>
+Subject: Re: [Openvpn-devel] [PATCH] GHA: refactor mingw UTs and add missing
+ tls_crypt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,30 +15,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Frank Lichtenheld <frank@...2641...>, openvpn-devel@lists.sourceforge.net
 
-Change-Id: Ica2e4b5a6b8da1368b487a33cd4b03ed9fc36011
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
- .github/workflows/build.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Am 18.07.23 um 12:52 schrieb Frank Lichtenheld:
+> I thought instead about moving this into a loop inside
+> powershell. But then error handling becomes annoying.
+> So let's GitHub handle it.
+> 
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 2ae231ee..1b75a1a7 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -198,7 +198,7 @@ jobs:
-       matrix:
-         ssllib: [ openssl11, openssl3, libressl]
-         build: [ normal, asan ]
--        os: [macos-11, macos-12]
-+        os: [macos-11, macos-12, macos-13]
-         include:
-           - build: asan
-             cflags: "-fsanitize=address -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
--- 
-2.34.1
+Acked-By: Arne Schwabe <arne@...1227...>
+
+I personally do not mind the long list of repeated unit tests in the 
+file but this way is also fine.
+
+I checked Frank's repository to verify that this actually works.
+
+Arne
 
 
