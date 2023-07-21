@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 21 Jul 2023 13:55:46 +0000
-References: <gerrit.1689947729000.I6de18261d5dc7f8561612184059656c73f33a5f2@...2715...>
+Date: Fri, 21 Jul 2023 13:55:48 +0000
+References: <gerrit.1689947729000.I807cffa40f18faa1adec4e15e84c032877a2b92e@...2715...>
 Reply-To: frank@...2641..., openvpn-devel@lists.sourceforge.net
-Message-ID: <b8c6bb0c399dc2dc55455d08c65cc03211be28f5-HTML@...2715...>
+Message-ID: <81bc6fc4b46a1473a071b48ba71de9ccf6594e4a-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="w9/13h64Bn8="; charset=UTF-8
-Subject: [Openvpn-devel] [XL] Change in openvpn[release/2.6]: CMake:
- backport CMake buildsystem from master to release/2.6
+Content-Type: multipart/alternative; boundary="DNHVEW2nt3Y="; charset=UTF-8
+Subject: [Openvpn-devel] [XL] Change in openvpn[release/2.6]: Remove all
+ traces of the previous MSVC build system
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,5957 +19,9314 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---w9/13h64Bn8=
+--DNHVEW2nt3Y=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 flichtenheld has uploaded this change for review. ( http://gerrit.openvpn.n=
-et/c/openvpn/+/315?usp=3Demail )
+et/c/openvpn/+/316?usp=3Demail )
 
 
-Change subject: CMake: backport CMake buildsystem from master to release/2.6
+Change subject: Remove all traces of the previous MSVC build system
 ......................................................................
 
-CMake: backport CMake buildsystem from master to release/2.6
+Remove all traces of the previous MSVC build system
 
-This is based on the initial CMake patch by
-Arne Schwabe, but extends that to provide
-a complete replacement for existing MinGW
-build (autotools based) and MSVC build
-(openvpn.sln).
+Completely replaced by the CMake build system now.
 
-The following features are added while switching
-these builds to CMake:
- - vcpkg support for MinGW build, allowing for
-   trivial cross-compilation on Linux
- - Add unittests to MSVC build
- - Rework MSVC config header generation, removing
-   need for separate headers between autotools
-   and MSVC
+v2:
+ - rebase on top of my dist fixes
 
-The following advantages are reasons for switching
-to CMake over the existing MSVC build:
- - Easier to maintain CMake files without IDE
-   than the sln and vcxproj files
- - Able to maintain MSVC and MinGW build side-by-side
-
-The plan is to completely remove the existing MSVC
-build system but leave the existing autotools builds
-in place as-is, including MinGW support.
-
-CMake is not the intended build system for Unix-like
-platforms and there are no current plans to switch
-to it.
-
-This commits squashes a lot of commits from master
-together, since most of them are just fixes or
-enhancements for the original CMake commit. The
-decisions was not to bloat the release/2.6 commit
-history with these detours.
-
-It contains the following commits:
-- add basic CMake based build
-  (commit 0134184012dd46ec44cbca7eb3ece39037ae0bfa by
-   Arne Schwabe)
-- CMake: Add complete MinGW and MSVC build
-  (commit e8881ec6dd63bd80ce05202573eac54ab8657fcb)
-- CMake: Add /Brepro to MSVC link options
-  (commit 5e94e8de4bfaf6637124947a3489710b591e5e26)
-- Do not blindly assume python3 is also the interpreter that runs rst2html
-  (commit 5dbec1c019d14880ae7bf364b062d3589c7fd9e7 by
-   Arne Schwabe)
-- Only add -Wno-stringop-truncation on supported compilers
-  (commit eb3cd5ea36f9bf235da7b8a51fd6ce29780f0e39 by
-   Arne Schwabe)
-- CMake: Throw a clear error when config.h in top-level source directory
-  (commit 0652ae84f4528daa57da344eee28b7385a6659a1)
-- openvpnmsica: link C runtime statically
-  (commit 3be4986ea3d6e27acd3e3a317c15dfe07688e135 by
-   Lev Stipakov)
-- CMake: Support doc builds on Windows machines that do not have .py file a=
-ssociation
-  (commit 22213a8834ba5ba5c9818015730edbf3766ad915)
-- README.cmake.md: Add new documentation for CMake buildsystem
-  (commit 53055fd23efb6209b12d3662427158e25247f1fe)
-- Check if the -wrap argument is actually supported by the platform's ld
-  (commit 4ef76f0ee4e122dcd616e1b1e2d652562ab10756 by
-   Arne Schwabe)
-- GHA: update to run-vcpkg@...2735...
-  (commit 66e33ee81d1d7fa3495ae3aad6e673766e296687)
-- GHA: refactor mingw UTs and add missing tls_crypt
-  (commit 26c663f12815f55c483dbe660e28448dc63221d1)
-
-Change-Id: I6de18261d5dc7f8561612184059656c73f33a5f2
+Change-Id: I807cffa40f18faa1adec4e15e84c032877a2b92e
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Co-authored-by: Arne Schwabe <arne@...1227...>
-Co-authored-by: Lev Stipakov <lev@...515...>
 ---
-M .github/workflows/build.yaml
 M .gitignore
-A CMakeLists.txt
-A CMakePresets.json
 M Makefile.am
-M README
-A README.cmake.md
-M README.dco.md
-A config.h.cmake.in
-A contrib/cmake/git-version.py
-A contrib/cmake/parse-version.m4.py
-A contrib/vcpkg-manifests/mingw/vcpkg.json
-A contrib/vcpkg-manifests/windows/vcpkg.json
-M contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
-A doc/CMakeLists.txt
-M doc/Makefile.am
-M src/openvpn/lzo.h
-A src/openvpnmsica/CMakeLists.txt
+M build/Makefile.am
+D build/msvc/Makefile.am
+D build/msvc/msvc-generate/Makefile.am
+D build/msvc/msvc-generate/Makefile.mak
+D build/msvc/msvc-generate/git-version.py
+D build/msvc/msvc-generate/msvc-generate.js
+D build/msvc/msvc-generate/msvc-generate.vcxproj
+D build/msvc/msvc-generate/version.m4.in
+D config-msvc-version.h.in
+D config-msvc.h
+M configure.ac
+D openvpn.sln
+D src/compat/Debug.props
+M src/compat/Makefile.am
+D src/compat/PropertySheet.props
+D src/compat/Release.props
+M src/compat/compat-basename.c
+M src/compat/compat-daemon.c
+M src/compat/compat-dirname.c
+M src/compat/compat-gettimeofday.c
+M src/compat/compat-strsep.c
+D src/compat/compat.vcxproj
+M src/openvpn/Makefile.am
+M src/openvpn/argv.c
+M src/openvpn/auth_token.c
+M src/openvpn/base64.c
+M src/openvpn/block_dns.c
+M src/openvpn/buffer.c
+M src/openvpn/clinat.c
+M src/openvpn/comp-lz4.c
+M src/openvpn/comp.c
+M src/openvpn/compstub.c
+M src/openvpn/console.c
+M src/openvpn/console_builtin.c
+M src/openvpn/crypto.c
+M src/openvpn/crypto_mbedtls.c
+M src/openvpn/crypto_openssl.c
+M src/openvpn/cryptoapi.c
+M src/openvpn/dco.c
+M src/openvpn/dco_freebsd.c
+M src/openvpn/dco_linux.c
+M src/openvpn/dco_win.c
+M src/openvpn/dhcp.c
+M src/openvpn/dns.c
+M src/openvpn/env_set.c
+M src/openvpn/error.c
+M src/openvpn/event.c
+M src/openvpn/fdmisc.c
+M src/openvpn/forward.c
+M src/openvpn/fragment.c
+M src/openvpn/gremlin.c
+M src/openvpn/helper.c
+M src/openvpn/httpdigest.c
+M src/openvpn/init.c
+M src/openvpn/interval.c
+M src/openvpn/list.c
+M src/openvpn/lladdr.c
+M src/openvpn/lzo.c
+M src/openvpn/manage.c
+M src/openvpn/mbuf.c
+M src/openvpn/misc.c
+M src/openvpn/mroute.c
+M src/openvpn/mss.c
+M src/openvpn/mstats.c
+M src/openvpn/mtcp.c
+M src/openvpn/mtu.c
+M src/openvpn/mudp.c
+M src/openvpn/multi.c
+M src/openvpn/networking_freebsd.c
+M src/openvpn/networking_iproute2.c
+M src/openvpn/networking_sitnl.c
+M src/openvpn/ntlm.c
+M src/openvpn/occ.c
+M src/openvpn/openssl_compat.h
+M src/openvpn/openvpn.c
+D src/openvpn/openvpn.vcxproj
+M src/openvpn/openvpn_win32_resources.rc
+M src/openvpn/options.c
+M src/openvpn/options_util.c
+M src/openvpn/otime.c
+M src/openvpn/packet_id.c
+M src/openvpn/perf.c
+M src/openvpn/ping.c
+M src/openvpn/pkcs11.c
+M src/openvpn/pkcs11_mbedtls.c
+M src/openvpn/pkcs11_openssl.c
+M src/openvpn/platform.c
+M src/openvpn/plugin.c
+M src/openvpn/pool.c
+M src/openvpn/proto.c
+M src/openvpn/proxy.c
+M src/openvpn/ps.c
+M src/openvpn/push.c
+M src/openvpn/reflect_filter.c
+M src/openvpn/reliable.c
+M src/openvpn/route.c
+M src/openvpn/run_command.c
+M src/openvpn/schedule.c
+M src/openvpn/session_id.c
+M src/openvpn/shaper.c
+M src/openvpn/sig.c
+M src/openvpn/socket.c
+M src/openvpn/socks.c
+M src/openvpn/ssl.c
+M src/openvpn/ssl_mbedtls.c
+M src/openvpn/ssl_ncp.c
+M src/openvpn/ssl_openssl.c
+M src/openvpn/ssl_pkt.c
+M src/openvpn/ssl_util.c
+M src/openvpn/ssl_verify.c
+M src/openvpn/ssl_verify_mbedtls.c
+M src/openvpn/ssl_verify_openssl.c
+M src/openvpn/status.c
+M src/openvpn/tls_crypt.c
+M src/openvpn/tun.c
+D src/openvpn/vcpkg.json
+M src/openvpn/vlan.c
+M src/openvpn/win32-util.c
+M src/openvpn/win32.c
+M src/openvpn/xkey_helper.c
+M src/openvpn/xkey_provider.c
 M src/openvpnmsica/Makefile.am
-A src/openvpnserv/CMakeLists.txt
+M src/openvpnmsica/dllmain.c
+M src/openvpnmsica/msica_arg.c
+M src/openvpnmsica/msiex.c
+D src/openvpnmsica/openvpnmsica-Debug.props
+D src/openvpnmsica/openvpnmsica-Release.props
+M src/openvpnmsica/openvpnmsica.c
+D src/openvpnmsica/openvpnmsica.props
+D src/openvpnmsica/openvpnmsica.vcxproj
+M src/openvpnmsica/openvpnmsica_resources.rc
 M src/openvpnserv/Makefile.am
-A src/tapctl/CMakeLists.txt
+D src/openvpnserv/openvpnserv.vcxproj
+M src/openvpnserv/openvpnserv_resources.rc
+M src/openvpnserv/service.h
 M src/tapctl/Makefile.am
-23 files changed, 2,084 insertions(+), 246 deletions(-)
+M src/tapctl/main.c
+M src/tapctl/tap.c
+D src/tapctl/tapctl.props
+D src/tapctl/tapctl.vcxproj
+M src/tapctl/tapctl_resources.rc
+M tests/unit_tests/openvpn/mock_msg.c
+M tests/unit_tests/openvpn/test_auth_token.c
+M tests/unit_tests/openvpn/test_buffer.c
+M tests/unit_tests/openvpn/test_crypto.c
+M tests/unit_tests/openvpn/test_cryptoapi.c
+M tests/unit_tests/openvpn/test_misc.c
+M tests/unit_tests/openvpn/test_ncp.c
+M tests/unit_tests/openvpn/test_packet_id.c
+M tests/unit_tests/openvpn/test_pkt.c
+M tests/unit_tests/openvpn/test_provider.c
+M tests/unit_tests/openvpn/test_tls_crypt.c
+154 files changed, 2 insertions(+), 2,403 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/15/315/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/16/316/1
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 8a80c67..29fe6d7 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -39,230 +39,64 @@
-     strategy:
-       fail-fast: false
-       matrix:
--        osslver: [1.1.1q, 3.0.5]
--        target: [mingw64, mingw]
--        include:
--          - target: mingw64
--            chost: x86_64-w64-mingw32
--          - target: mingw
--            chost: i686-w64-mingw32
-+        arch: [x86, x64]
-
--    name: "gcc-mingw - ${{matrix.target}} - OSSL ${{ matrix.osslver }}"
-+    name: "gcc-mingw - ${{ matrix.arch }} - OSSL"
-     runs-on: ubuntu-22.04
-     env:
--      MAKEFLAGS: -j3
--      LZO_VERSION: "2.10"
--      PKCS11_HELPER_VERSION: "1.29.0"
--      OPENSSL_VERSION: "${{ matrix.osslver }}"
--      TAP_WINDOWS_VERSION: "9.23.3"
--      CMOCKA_VERSION: "1.1.5"
-+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-     steps:
-       - name: Install dependencies
--        run: sudo apt update && sudo apt install -y mingw-w64 libtool auto=
-make autoconf man2html unzip cmake ninja-build build-essential wget
-+        run: sudo apt update && sudo apt install -y mingw-w64 unzip cmake =
-ninja-build build-essential wget python3-docutils man2html-base
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2689...
-+
-+      - name: Restore from cache and install vcpkg
-+        uses: lukka/run-vcpkg@...2735...
-         with:
--          path: openvpn
-+          vcpkgGitCommitId: '1ba9a2591f15af5900f2ce2b3e2bf31771e3ac48'
-+          vcpkgJsonGlob: '**/mingw/vcpkg.json'
-
--      - name: autoconf
--        run: autoreconf -fvi
--        working-directory: openvpn
--
--      - name: Cache dependencies
--        id: cache
--        uses: actions/cache@...2689...
-+      - name: Run CMake with vcpkg.json manifest
-+        uses: lukka/run-cmake@...2637...
-         with:
--          path: '~/mingw/'
--          key: ${{ matrix.target }}-mingw-${{ matrix.osslver }}-${{ env.LZ=
-O_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_WINDOWS_VERSION }=
-}--${{ env.CMOCKA_VERSION }}
-+          configurePreset: mingw-${{ matrix.arch }}
-+          buildPreset: mingw-${{ matrix.arch }}
-+          buildPresetAdditionalArgs: "['--config Debug']"
-
--      # Repeating  if: steps.cache.outputs.cache-hit !=3D 'true'
--      # on every step for building dependencies is ugly but
--      # I haven't found a better solution so far.
--
--      - name: Download mingw dependencies
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        run: |
--          wget -c -P download-cache/ "https://build.openvpn.net/downloads/=
-releases/tap-windows-${TAP_WINDOWS_VERSION}.zip"
--          wget -c -P download-cache/ "https://www.oberhumer.com/opensource=
-/lzo/download/lzo-${LZO_VERSION}.tar.gz"
--          wget -c -P download-cache/ "https://github.com/OpenSC/pkcs11-hel=
-per/releases/download/pkcs11-helper-${PKCS11_HELPER_VERSION}/pkcs11-helper-=
-${PKCS11_HELPER_VERSION}.tar.bz2"
--          wget -c -P download-cache/ "https://github.com/coreboot/cmocka/a=
-rchive/refs/tags/cmocka-${CMOCKA_VERSION}.tar.gz"
--          tar jxf "download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.t=
-ar.bz2"
--          wget -c -P download-cache/ "https://www.openssl.org/source/old/1=
-.1.1/openssl-${OPENSSL_VERSION}.tar.gz" || wget -c -P download-cache/ "http=
-s://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
--          tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
--          tar zxf "download-cache/lzo-${LZO_VERSION}.tar.gz"
--          tar zxf "download-cache/cmocka-${CMOCKA_VERSION}.tar.gz"
--          unzip download-cache/tap-windows-${TAP_WINDOWS_VERSION}.zip
--
--      - name: create cmocka build directory
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        run: mkdir cmocka-build
--
--      - name: configure cmocka
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        working-directory: "./cmocka-build"
--        run: cmake -GNinja -DCMAKE_C_COMPILER=3D${{ matrix.chost }}-gcc -D=
-CMAKE_CXX_COMPILER=3D${{ matrix.chost }}-g++ -DCMAKE_SYSTEM_NAME=3DWindows =
--DCMAKE_SHARED_LINKER_FLAGS=3D-static-libgcc -DCMAKE_PREFIX_PATH=3D${HOME}/=
-mingw/opt/lib/pkgconfig/ -DCMAKE_INCLUDE_PATH=3D${HOME}/mingw/opt/lib/inclu=
-de -DCMAKE_LIBRARY_PATH=3D${HOME}/mingw/opt/lib -DCMAKE_INSTALL_PREFIX=3D${=
-HOME}/mingw/opt/ ../cmocka-cmocka-${{ env.CMOCKA_VERSION }}
--
--      - name: build cmocka
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        working-directory: "./cmocka-build"
--        run: ninja
--
--      - name: install cmocka
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        working-directory: "./cmocka-build"
--        run: ninja install
--
--      - name: Configure OpenSSL
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        run: ./Configure --cross-compile-prefix=3D${{ matrix.chost }}- sha=
-red ${{ matrix.target }} no-capieng --prefix=3D"${HOME}/mingw/opt" --openss=
-ldir=3D"${HOME}/mingw/opt" -static-libgcc
--        working-directory: "./openssl-${{ env.OPENSSL_VERSION }}"
--
--      - name: Build OpenSSL
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        run: make
--        working-directory: "./openssl-${{ env.OPENSSL_VERSION }}"
--
--      # OpenSSL 3.0.5 installs itself into mingw/opt/lib64 instead of
--      # mingw/opt/lib, so we include both dirs in the following steps
--      # (pkcs11-helper and OpenVPN) so the libraries will be found
--      - name: Install OpenSSL
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        run: make install
--        working-directory: "./openssl-${{ env.OPENSSL_VERSION }}"
--
--      - name: autoreconf pkcs11-helper
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        run: autoreconf -iv
--        working-directory: "./pkcs11-helper-${{ env.PKCS11_HELPER_VERSION =
-}}"
--
--      - name: configure pkcs11-helper
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        run: OPENSSL_LIBS=3D"-L${HOME}/mingw/opt/lib -L${HOME}/mingw/opt/l=
-ib64 -lssl -lcrypto" OPENSSL_CFLAGS=3D-I$HOME/mingw/opt/include PKG_CONFIG_=
-PATH=3D${HOME}/mingw/opt/lib/pkgconfig ./configure --host=3D${{ matrix.chos=
-t }} --program-prefix=3D'' --libdir=3D${HOME}/mingw/opt/lib --prefix=3D${HO=
-ME}/mingw/opt --build=3Dx86_64-pc-linux-gnu --disable-crypto-engine-gnutls =
---disable-crypto-engine-nss --disable-crypto-engine-polarssl --disable-cryp=
-to-engine-mbedtls
--        working-directory: "./pkcs11-helper-${{ env.PKCS11_HELPER_VERSION =
-}}"
--
--      - name: build pkcs11-helper
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        run: make all
--        working-directory: "./pkcs11-helper-${{ env.PKCS11_HELPER_VERSION =
-}}"
--
--      - name: install pkcs11-helper
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        run: make install
--        working-directory: "./pkcs11-helper-${{ env.PKCS11_HELPER_VERSION =
-}}"
--
--      - name: Configure lzo
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        run: ./configure --host=3D${{ matrix.chost }} --program-prefix=3D'=
-' --libdir=3D${HOME}/mingw/opt/lib --prefix=3D${HOME}/mingw/opt --build=3Dx=
-86_64-pc-linux-gnu
--        working-directory: "./lzo-${{ env.LZO_VERSION }}"
--
--      - name: build lzo
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        working-directory: "./lzo-${{ env.LZO_VERSION }}"
--        run: make
--
--      - name: install lzo
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        working-directory: "./lzo-${{ env.LZO_VERSION }}"
--        run: make install
--
--      - name: copy tap-windows.h header
--        if: steps.cache.outputs.cache-hit !=3D 'true'
--        run: cp ./tap-windows-${TAP_WINDOWS_VERSION}/include/tap-windows.h=
- ${HOME}/mingw/opt/include/
--
--      - name: configure OpenVPN
--        run: PKG_CONFIG_PATH=3D${HOME}/mingw/opt/lib/pkgconfig LDFLAGS=3D-=
-L$HOME/mingw/opt/lib CFLAGS=3D-I$HOME/mingw/opt/include OPENSSL_LIBS=3D"-L$=
-{HOME}/opt/lib -L$HOME/mingw/opt/lib64 -lssl -lcrypto" OPENSSL_CFLAGS=3D-I$=
-HOME/mingw/opt/include PREFIX=3D$HOME/mingw/opt LZO_CFLAGS=3D-I$HOME/mingw/=
-opt/include LZO_LIBS=3D"-L${HOME}/mingw/opt/lib -llzo2" ./configure  --host=
-=3D${{ matrix.chost }} --disable-lz4
--        working-directory: openvpn
--
--      - name: build OpenVPN
--        run: make -j3
--        working-directory: openvpn
--      - name: build OpenVPN unittests
--        run: make -j3 check
--        working-directory: openvpn
--
--      # We use multiple upload-artifact here, so it becomes a flat folder
--      # structure since we need the dlls on the same level as the binaries
--      - name: Archive cmocka/openssl/lzo dlls
--        uses: actions/upload-artifact@...2689...
-+      - uses: actions/upload-artifact@...2689...
-         with:
--          retention-days: 1
--          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }=
-}-dlls
--          path: '~/mingw/opt/bin/*.dll'
-+          name: openvpn-mingw-${{ matrix.arch }}
-+          path: |
-+            ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Deb=
-ug/*.exe
-+            ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Deb=
-ug/*.dll
-+            !${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/De=
-bug/test_*.exe
-
--      # libtool puts some wrapper binaries in openvpn/tests/unit_tests/ope=
-nvpn/
--      # and the real binaries in openvpn/tests/unit_tests/openvpn/.libs/
--      - name: Archive unittest artifacts
--        uses: actions/upload-artifact@...2689...
-+      - uses: actions/upload-artifact@...2689...
-         with:
--          retention-days: 1
--          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }=
-}-tests
--          path: openvpn/tests/unit_tests/openvpn/.libs/*.exe
--
--      # Currently not used by the unit test but might in the future and al=
-so
--      # helpful if manually downloading and running openvpn.exe from a min=
-gw
--      # build
--      - name: Archive openvpn binary
--        uses: actions/upload-artifact@...2689...
--        with:
--          retention-days: 1
--          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }=
-}-tests
--          path: openvpn/src/openvpn/.libs/*.exe
-+          name: openvpn-mingw-${{ matrix.arch }}-tests
-+          path: |
-+            ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Deb=
-ug/test_*.exe
-+            ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Deb=
-ug/*.dll
-
-   mingw-unittest:
-     needs: [ mingw ]
-     strategy:
-       fail-fast: false
-       matrix:
--        osslver: [ 1.1.1q, 3.0.5 ]
--        target: [ mingw64, mingw ]
-+        arch: [x86, x64]
-+        test: [argv, auth_token, buffer, cryptoapi, crypto, misc, ncp, pac=
-ket_id, pkt, provider, tls_crypt]
-
-     runs-on: windows-latest
--    name: "mingw unittests - ${{matrix.target}} - OSSL ${{ matrix.osslver =
-}}"
-+    name: "mingw unittest ${{ matrix.test }} - ${{ matrix.arch }} - OSSL"
-     steps:
--      - name: Retrieve mingw unittest dlls
--        uses: actions/download-artifact@...2689...
--        with:
--          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }=
-}-dlls
--          path: unittests
--
-       - name: Retrieve mingw unittest
-         uses: actions/download-artifact@...2689...
-         with:
--          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }=
-}-tests
-+          name: openvpn-mingw-${{ matrix.arch }}-tests
-           path: unittests
--
--      - name: List unittests directory
--        run: "dir unittests"
--
--      - name: Run argvunit test
--        run: ./unittests/argv_testdriver.exe
--
--      - name: Run auth_tokenunit test
--        run: ./unittests/auth_token_testdriver.exe
--
--      - name: Run bufferunit test
--        run: ./unittests/buffer_testdriver.exe
--
--      - name: Run cryptoapi unit test
--        run: ./unittests/cryptoapi_testdriver.exe
--
--      - name: Run cryptounit test
--        run: ./unittests/crypto_testdriver.exe
--
--      - name: Run miscunit test
--        run: ./unittests/misc_testdriver.exe
--
--      - name: Run ncpunit test
--        run: ./unittests/ncp_testdriver.exe
--
--      - name: Run packet idunit test
--        run: ./unittests/packet_id_testdriver.exe
--
--      - name: Run pktunit test
--        run: ./unittests/pkt_testdriver.exe
--
--      - name: Run providerunit test
--        run: ./unittests/provider_testdriver.exe
-+      - name: Run ${{ matrix.test }} unit test
-+        run: ./unittests/test_${{ matrix.test }}.exe
-
-   ubuntu:
-     strategy:
-@@ -407,60 +241,50 @@
-       strategy:
-         fail-fast: false
-         matrix:
--          plat: [ARM64, Win32, x64]
--          include:
--            - plat: ARM64
--              triplet: arm64
--            - plat: Win32
--              triplet: x86
--            - plat: x64
--              triplet: x64
-+          arch: [amd64, x86, arm64]
-
--      name: "msbuild - ${{matrix.triplet}} - openssl"
-+      name: "msbuild - ${{ matrix.arch }} - openssl"
-       env:
-         BUILD_CONFIGURATION: Release
--        VCPKG_OVERLAY_PORTS: ${{ github.workspace }}/contrib/vcpkg-ports
--        VCPKG_OVERLAY_TRIPLETS: ${{ github.workspace }}/contrib/vcpkg-trip=
-lets
-
-       runs-on: windows-latest
-       steps:
-       - uses: actions/checkout@...2689...
--
--      - name: Add MSBuild to PATH
--        uses: microsoft/setup-msbuild@...2690...
--
--      - name: Set up Python
--        uses: actions/setup-python@...2691...
--        with:
--          python-version: '3.x'
-+      - uses: lukka/get-cmake@...2729...
-
-       - name: Install rst2html
--        run: python -m pip install --upgrade pip rst2html
-+        run: python -m pip install --upgrade pip docutils
-
-       - name: Restore artifacts, or setup vcpkg (do not install any packag=
-e)
--        uses: lukka/run-vcpkg@...2637...
-+        uses: lukka/run-vcpkg@...2735...
-         with:
--          vcpkgGitCommitId: 'd10d511f25620ca0f315cd83dcef6485efc63010'
--          vcpkgJsonGlob: '**/openvpn/vcpkg.json'
--          appendedCacheKey: '${{matrix.triplet}}'
-+          vcpkgGitCommitId: '1ba9a2591f15af5900f2ce2b3e2bf31771e3ac48'
-+          vcpkgJsonGlob: '**/windows/vcpkg.json'
-
--      - name: Run MSBuild consuming vcpkg.json
--        working-directory: ${{env.GITHUB_WORKSPACE}}
--        run: |
--            # workaround for GHA runner bug where vcpkg installation is de=
-tected at c:\vcpkg
--            # see https://github.com/lukka/run-vcpkg/issues/170
--            ${{ github.workspace }}/vcpkg/vcpkg.exe integrate install
--            msbuild /m /p:Configuration=3D${{env.BUILD_CONFIGURATION}} /p:=
-Platform=3D"${{ matrix.plat }}" .
--
--      - name: Archive artifacts
--        uses: actions/upload-artifact@...2689...
-+      - name: Run CMake with vcpkg.json manifest (NO TESTS)
-+        uses: lukka/run-cmake@...2637...
-+        if: ${{ matrix.arch =3D=3D 'arm64' }}
-         with:
--          name: artifacts-${{ matrix.plat }}
-+          configurePreset: win-${{ matrix.arch }}-release
-+          buildPreset: win-${{ matrix.arch }}-release
-+
-+      - name: Run CMake with vcpkg.json manifest
-+        uses: lukka/run-cmake@...2637...
-+        if: ${{ matrix.arch !=3D 'arm64' }}
-+        with:
-+          configurePreset: win-${{ matrix.arch }}-release
-+          buildPreset: win-${{ matrix.arch }}-release
-+          testPreset: win-${{ matrix.arch }}-release
-+
-+      - uses: actions/upload-artifact@...2689...
-+        with:
-+          name: openvpn-msvc-${{ matrix.arch }}
-           path: |
--            ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.exe
--            ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.dll
--            ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.pdb
--            doc/openvpn.8.html
-+            ${{ github.workspace }}/out/**/*.exe
-+            ${{ github.workspace }}/out/**/*.dll
-+            !${{ github.workspace }}/out/**/test_*.exe
-+            !${{ github.workspace }}/out/**/CMakeFiles/**
-+            !${{ github.workspace }}/out/**/vcpkg_installed/**
-
-   trigger_openvpn_build:
-     runs-on: windows-latest
 diff --git a/.gitignore b/.gitignore
-index 813413f..f44b924 100644
+index f44b924..70fc5f9 100644
 --- a/.gitignore
 +++ b/.gitignore
-@@ -17,6 +17,7 @@
- Release
- Debug
- Win32-Output
-+out
+@@ -10,13 +10,7 @@
+ *.idb
+ *.suo
+ *.ncb
+-*.vcproj.*
+-*.vcxproj.user
+-*.sln.cache
+ *.log
+-Release
+-Debug
+-Win32-Output
+ out
  .vs
  .deps
- .libs
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-new file mode 100644
-index 0000000..5490582
---- /dev/null
-+++ b/CMakeLists.txt
-@@ -0,0 +1,738 @@
-+cmake_minimum_required(VERSION 3.12)
-+set(CMAKE_CONFIGURATION_TYPES "Release;Debug;ASAN")
-+project(openvpn)
-+
-+# This CMake file implements building OpenVPN with CMAKE
-+#
-+# Note that this is *NOT* the official way to build openvpn on anything
-+# other than Windows/mingw despite working on other platforms too. You wil=
-l need
-+# to add -DUNSUPPORTED_BUILDS=3Dtrue to build on non Windows platforms.
-+#
-+# This cmake also makes a few assertions like lzo, lz4 being used
-+# and OpenSSL having version 1.1.1+ and generally does not offer the same
-+# configurability like autoconf
-+
-+find_package(PkgConfig REQUIRED)
-+include(CheckSymbolExists)
-+include(CheckIncludeFiles)
-+include(CheckCCompilerFlag)
-+include(CheckLinkerFlag OPTIONAL)
-+include(CheckTypeSize)
-+include(CheckStructHasMember)
-+include(CTest)
-+
-+option(UNSUPPORTED_BUILDS "Allow unsupported builds" OFF)
-+
-+if (NOT WIN32 AND NOT ${UNSUPPORTED_BUILDS})
-+    message(FATAL_ERROR "Note: on Unix platform the official and supported=
- build method is using autoconfig. CMake based build should be only used fo=
-r Windows and internal testing/development.")
-+endif()
-+
-+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/config.h")
-+    message(FATAL_ERROR "The top level source directory has a config.h fil=
-e. Note that you can't mix in-tree autoconfig builds with out-of-tree cmake=
- builds.")
-+endif ()
-+
-+option(MBED "BUILD with mbed" OFF)
-+option(WOLFSSL "BUILD with wolfSSL" OFF)
-+option(ENABLE_LZ4 "BUILD with lz4" ON)
-+option(ENABLE_LZO "BUILD with lzo" ON)
-+option(ENABLE_PKCS11 "BUILD with pkcs11-helper" ON)
-+option(USE_WERROR "Treat compiler warnings as errors (-Werror)" ON)
-+
-+set(PLUGIN_DIR /usr/local/lib/openvpn/plugins CACHE FILEPATH "Location of =
-the plugin directory")
-+
-+# AddressSanitize - use CXX=3Dclang++ CC=3Dclang cmake -DCMAKE_BUILD_TYPE=
-=3Dasan to build with ASAN
-+set(CMAKE_C_FLAGS_ASAN
-+    "-fsanitize=3Daddress,undefined -fno-sanitize-recover=3Dall -fno-optim=
-ize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointe=
-r -g -O1"
-+    CACHE STRING "Flags used by the C compiler during AddressSanitizer bui=
-lds."
-+    FORCE)
-+set(CMAKE_CXX_FLAGS_ASAN
-+    "-fsanitize=3Daddress,undefined -fno-sanitize-recover=3Dall -fno-optim=
-ize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointe=
-r -g -O1"
-+    CACHE STRING "Flags used by the C++ compiler during AddressSanitizer b=
-uilds."
-+    FORCE)
-+
-+if (MSVC)
-+    add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_DEPRECATE =
--D_WINSOCK_DEPRECATED_NO_WARNINGS)
-+    if (USE_WERROR)
-+        add_compile_options(/WX)
-+    endif ()
-+    add_compile_options(
-+        /MP
-+        /W2
-+        /sdl
-+        /Qspectre
-+        /guard:cf
-+        /FC
-+        /ZH:SHA_256
-+        "$<$<CONFIG:Release>:/GL>"
-+        "$<$<CONFIG:Release>:/Oi>"
-+        "$<$<CONFIG:Release>:/Gy>"
-+        "$<$<CONFIG:Release>:/Zi>"
-+        )
-+    add_link_options(
-+        /Brepro
-+        "$<$<CONFIG:Release>:/LTCG:incremental>"
-+        "$<$<CONFIG:Release>:/DEBUG:FULL>"
-+        "$<$<CONFIG:Release>:/OPT:REF>"
-+        "$<$<CONFIG:Release>:/OPT:ICF>"
-+        )
-+    if (${CMAKE_GENERATOR_PLATFORM} STREQUAL "x64" OR ${CMAKE_GENERATOR_PL=
-ATFORM} STREQUAL "x86")
-+        add_link_options("$<$<CONFIG:Release>:/CETCOMPAT>")
-+    endif()
-+else ()
-+    set(CMAKE_C_FLAGS_RELEASE "-O2")
-+    set(CMAKE_CXX_FLAGS_RELEASE "-O2")
-+    set(CMAKE_C_FLAGS_DEBUG "-g -O1")
-+    set(CMAKE_CXX_FLAGS_DEBUG "-g -O1")
-+    add_compile_options(-Wall -Wuninitialized)
-+    check_c_compiler_flag(-Wno-stringop-truncation NoStringOpTruncation)
-+
-+    if (${NoStringOpTruncation})
-+        add_compile_options(-Wno-stringop-truncation)
-+    endif()
-+    # We are not ready for this
-+    #add_compile_options(-Wconversion -Wno-sign-conversion -Wsign-compare)
-+    if (USE_WERROR)
-+        add_compile_options(-Werror)
-+    endif ()
-+endif ()
-+
-+find_program(PYTHON NAMES python3 python)
-+execute_process(
-+    COMMAND ${PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmake/parse-vers=
-ion.m4.py ${CMAKE_CURRENT_SOURCE_DIR}/version.m4
-+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-+    )
-+include(${CMAKE_CURRENT_BINARY_DIR}/version.cmake)
-+
-+set(OPENVPN_VERSION_MAJOR ${PRODUCT_VERSION_MAJOR})
-+set(OPENVPN_VERSION_MINOR ${PRODUCT_VERSION_MINOR})
-+set(OPENVPN_VERSION_PATCH ${PRODUCT_VERSION_PATCH})
-+set(OPENVPN_VERSION_RESOURCE ${PRODUCT_VERSION_RESOURCE})
-+
-+set(CMAKE_C_STANDARD 99)
-+
-+# Set the various defines for config.h.cmake.in
-+if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-+    set(TARGET_LINUX YES)
-+    set(ENABLE_ASYNC_PUSH YES)
-+    set(ENABLE_LINUXDCO YES)
-+    set(ENABLE_SITNL YES)
-+    set(HAVE_DECL_SO_MARK YES)
-+    set(ENABLE_FEATURE_TUN_PERSIST 1)
-+    set(HAVE_LINUX_TYPES_H 1)
-+    set(ENABLE_DCO YES)
-+    set(HAVE_CMSGHDR YES)
-+elseif (${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
-+    set(TARGET_FREEBSD YES)
-+    set(ENABLE_DCO YES)
-+    link_libraries(-lnv)
-+elseif (WIN32)
-+    set(ENABLE_DCO YES)
-+elseif (APPLE)
-+    set(TARGET_DARWIN YES)
-+    set(HAVE_NET_IF_UTUN_H YES)
-+endif ()
-+
-+if (UNIX)
-+    set(PATH_SEPARATOR /)
-+    set(ENABLE_PORT_SHARE YES)
-+    set(HAVE_SA_FAMILY_T YES)
-+elseif (WIN32)
-+    set(PATH_SEPARATOR \\\\)
-+    set(TARGET_WIN32 YES)
-+endif ()
-+
-+check_symbol_exists(chroot unistd.h HAVE_CHROOT)
-+check_symbol_exists(chdir unistd.h HAVE_CHDIR)
-+check_symbol_exists(dup unistd.h HAVE_DUP)
-+check_symbol_exists(dup2 unistd.h HAVE_DUP2)
-+check_symbol_exists(fork unistd.h HAVE_FORK)
-+check_symbol_exists(execve unistd.h HAVE_EXECVE)
-+check_symbol_exists(ftruncate unistd.h HAVE_FTRUNCATE)
-+check_symbol_exists(setgid unistd.h HAVE_SETGID)
-+check_symbol_exists(setuid unistd.h HAVE_SETUID)
-+check_symbol_exists(getpeereid unistd.h HAVE_GETPEEREID)
-+
-+check_symbol_exists(epoll_create sys/epoll.h HAVE_EPOLL_CREATE)
-+
-+check_symbol_exists(gettimeofday sys/time.h HAVE_GETTIMEOFDAY)
-+check_symbol_exists(basename libgen.h HAVE_BASENAME)
-+check_symbol_exists(chsize io.h HAVE_CHSIZE)
-+check_symbol_exists(daemon stdlib.h HAVE_DAEMON)
-+check_symbol_exists(dirname libgen.h HAVE_DIRNAME)
-+check_symbol_exists(getrlimit sys/resource.h HAVE_GETRLIMIT)
-+check_symbol_exists(mlockall sys/mman.h HAVE_MLOCKALL)
-+
-+check_symbol_exists(sendmsg sys/socket.h HAVE_SENDMSG)
-+check_symbol_exists(recvmsg sys/socket.h HAVE_RECVMSG)
-+check_symbol_exists(cmsghdr sys/socket.h HAVE_CMSGHDR)
-+check_symbol_exists(openlog syslog.h HAVE_OPENLOG)
-+check_symbol_exists(syslog syslog.h HAVE_SYSLOG)
-+check_symbol_exists(getgrnam grp.h HAVE_GETGRNAM)
-+check_symbol_exists(getpwnam pwd.h HAVE_GETPWNAM)
-+check_symbol_exists(getsockname sys/socket.h HAVE_GETSOCKNAME)
-+
-+# Some OS (e.g. FreeBSD) need some basic headers to allow
-+# including network headers
-+set(NETEXTRA sys/types.h)
-+check_include_files("${NETEXTRA};netinet/in.h" HAVE_NETINET_IN_H)
-+
-+if (HAVE_NETINET_IN_H)
-+    list(APPEND NETEXTRA netinet/in.h)
-+endif ()
-+
-+check_include_files("${NETEXTRA};netinet/in6.h" HAVE_NETINET_IN_H)
-+check_include_files(linux/if_tun.h HAVE_LINUX_IF_TUN_H)
-+check_include_files(linux/sockios.h HAVE_LINUX_SOCKIOS_H)
-+check_include_files(dlfcn.h HAVE_DLFCN_H)
-+check_include_files(fcntl.h HAVE_FCNTL_H)
-+check_include_files(dmalloc.h HAVE_DMALLOC_H)
-+check_include_files(err.h HAVE_ERR_H)
-+check_include_files(sys/epoll.h HAVE_SYS_EPOLL_H)
-+check_include_files(poll.h HAVE_POLL_H)
-+check_include_files(sys/socket.h HAVE_SYS_SOCKET_H)
-+check_include_files(sys/time.h HAVE_SYS_TIME_H)
-+check_include_files(netdb.h HAVE_NETDB_H)
-+check_include_files(unistd.h HAVE_UNISTD_H)
-+check_include_files(sys/un.h HAVE_SYS_UN_H)
-+check_include_files(libgen.h HAVE_LIBGEN_H)
-+check_include_files(net/if.h HAVE_NET_IF_H)
-+check_include_files("${NETEXTRA};netinet/ip.h" HAVE_NETINET_IP_H)
-+check_include_files(arpa/inet.h HAVE_ARPA_INET_H)
-+check_include_files(net/if_utun.h HAVE_NET_UTUN_H)
-+check_include_files(sys/ioctl.h HAVE_SYS_IOCTL_H)
-+check_include_files(sys/inotify.h HAVE_SYS_INOTIFY_H)
-+check_include_files("${NETEXTRA};sys/uio.h" HAVE_SYS_UIO_H)
-+check_include_files(syslog.h HAVE_SYSLOG_H)
-+check_include_files(sys/wait.h HAVE_SYS_WAIT_H)
-+check_include_files(grp.h HAVE_GRP_H)
-+check_include_files(pwd.h HAVE_PWD_H)
-+check_include_files(sys/mman.h HAVE_SYS_MMAN_H)
-+
-+
-+check_include_files("${NETEXTRA};resolv.h" HAVE_RESOLV_H)
-+check_include_files("${NETEXTRA};net/if_tun.h" HAVE_NET_IF_TUN_H)
-+
-+set(CMAKE_EXTRA_INCLUDE_FILES netinet/ip.h)
-+check_type_size("struct in_pktinfo" IN_PKTINFO)
-+check_struct_has_member("struct in_pktinfo" ipi_spec_dst netinet/ip.h HAVE=
-_IPI_SPEC_DST)
-+check_type_size("struct msghdr" MSGHDR)
-+set(CMAKE_EXTRA_INCLUDE_FILES)
-+
-+find_program(IFCONFIG_PATH ifconfig)
-+find_program(IPROUTE_PATH ip)
-+find_program(ROUTE_PATH route)
-+
-+if (${ENABLE_LZ4})
-+    pkg_search_module(liblz4 liblz4 REQUIRED IMPORTED_TARGET)
-+endif ()
-+
-+if (${ENABLE_LZO})
-+    pkg_search_module(lzo2 lzo2 REQUIRED IMPORTED_TARGET)
-+endif ()
-+
-+if (${ENABLE_PKCS11})
-+    pkg_search_module(pkcs11-helper libpkcs11-helper-1 REQUIRED IMPORTED_T=
-ARGET)
-+endif ()
-+
-+function(add_library_deps target)
-+    if (${MBED})
-+        target_link_libraries(${target} -lmbedtls -lmbedx509 -lmbedcrypto)
-+    elseif (${WOLFSSL})
-+        pkg_search_module(wolfssl wolfssl REQUIRED)
-+        target_link_libraries(${target} PUBLIC ${wolfssl_LINK_LIBRARIES})
-+        target_include_directories(${target} PRIVATE ${wolfssl_INCLUDE_DIR=
-S}/wolfssl)
-+    else ()
-+        set(ENABLE_X509ALTUSERNAME YES)
-+
-+        find_package(OpenSSL REQUIRED)
-+        target_link_libraries(${target} PUBLIC OpenSSL::SSL OpenSSL::Crypt=
-o)
-+        if (WIN32)
-+            target_link_libraries(${target} PUBLIC
-+                ws2_32.lib crypt32.lib fwpuclnt.lib iphlpapi.lib
-+                wininet.lib setupapi.lib rpcrt4.lib wtsapi32.lib ncrypt.li=
-b bcrypt.lib)
-+        endif ()
-+
-+    endif ()
-+
-+    # optional dependencies
-+    target_link_libraries(${target} PUBLIC
-+        $<TARGET_NAME_IF_EXISTS:PkgConfig::liblz4>
-+        $<TARGET_NAME_IF_EXISTS:PkgConfig::lzo2>
-+        $<TARGET_NAME_IF_EXISTS:PkgConfig::pkcs11-helper>
-+        )
-+
-+    if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-+        pkg_search_module(libcapng REQUIRED libcap-ng IMPORTED_TARGET)
-+        pkg_search_module(libnl REQUIRED libnl-genl-3.0 IMPORTED_TARGET)
-+
-+        target_link_libraries(${target} PUBLIC PkgConfig::libcapng PkgConf=
-ig::libnl)
-+    endif ()
-+
-+endfunction()
-+
-+if (${MBED})
-+    set(ENABLE_CRYPTO_MBEDTLS YES)
-+elseif (${WOLFSSL})
-+    set(ENABLE_CRYPTO_OPENSSL YES)
-+    set(ENABLE_CRYPTO_WOLFSSL YES)
-+    set(ENABLE_X509ALTUSERNAME YES)
-+else ()
-+    set(ENABLE_CRYPTO_OPENSSL YES)
-+    set(ENABLE_X509ALTUSERNAME YES)
-+endif ()
-+
-+include_directories(${CMAKE_CURRENT_SOURCE_DIR} src/compat include)
-+
-+add_custom_command(
-+    OUTPUT always_rebuild config-version.h
-+    COMMAND ${PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmake/git-versio=
-n.py
-+    )
-+set(HAVE_CONFIG_VERSION_H YES)
-+
-+configure_file(config.h.cmake.in config.h)
-+configure_file(include/openvpn-plugin.h.in openvpn-plugin.h)
-+# TODO remove later when msvc-config.h is removed and we can always includ=
-e config.h
-+add_definitions(-DHAVE_CONFIG_H)
-+
-+include_directories(${CMAKE_CURRENT_BINARY_DIR})
-+
-+add_subdirectory(doc)
-+add_subdirectory(src/openvpnmsica)
-+add_subdirectory(src/openvpnserv)
-+add_subdirectory(src/tapctl)
-+
-+set(SOURCE_FILES
-+    ${CMAKE_CURRENT_BINARY_DIR}/config.h
-+    ${CMAKE_CURRENT_BINARY_DIR}/config-version.h
-+    ${CMAKE_CURRENT_BINARY_DIR}/openvpn-plugin.h
-+
-+    src/compat/compat-basename.c
-+    src/compat/compat-daemon.c
-+    src/compat/compat-dirname.c
-+    src/compat/compat-gettimeofday.c
-+    src/compat/compat-strsep.c
-+    src/compat/compat-versionhelpers.h
-+    src/openvpn/argv.c
-+    src/openvpn/argv.h
-+    src/openvpn/base64.c
-+    src/openvpn/base64.h
-+    src/openvpn/basic.h
-+    src/openvpn/block_dns.h
-+    src/openvpn/block_dns.c
-+    src/openvpn/buffer.c
-+    src/openvpn/buffer.h
-+    src/openvpn/circ_list.h
-+    src/openvpn/clinat.c
-+    src/openvpn/clinat.h
-+    src/openvpn/common.h
-+    src/openvpn/comp-lz4.c
-+    src/openvpn/comp-lz4.h
-+    src/openvpn/comp.c
-+    src/openvpn/comp.h
-+    src/openvpn/compstub.c
-+    src/openvpn/console.c
-+    src/openvpn/console_builtin.c
-+    src/openvpn/console.h
-+    src/openvpn/crypto.c
-+    src/openvpn/crypto.h
-+    src/openvpn/crypto_backend.h
-+    src/openvpn/crypto_openssl.c
-+    src/openvpn/crypto_openssl.h
-+    src/openvpn/crypto_mbedtls.c
-+    src/openvpn/crypto_mbedtls.h
-+    src/openvpn/cryptoapi.c
-+    src/openvpn/cryptoapi.h
-+    src/openvpn/dco.c
-+    src/openvpn/dco.h
-+    src/openvpn/dco_win.c
-+    src/openvpn/dco_win.h
-+    src/openvpn/dco_linux.c
-+    src/openvpn/dco_linux.h
-+    src/openvpn/dco_freebsd.c
-+    src/openvpn/dco_freebsd.h
-+    src/openvpn/dhcp.c
-+    src/openvpn/dhcp.h
-+    src/openvpn/dns.c
-+    src/openvpn/dns.h
-+    src/openvpn/errlevel.h
-+    src/openvpn/env_set.c
-+    src/openvpn/env_set.h
-+    src/openvpn/error.c
-+    src/openvpn/error.h
-+    src/openvpn/event.c
-+    src/openvpn/event.h
-+    src/openvpn/fdmisc.c
-+    src/openvpn/fdmisc.h
-+    src/openvpn/forward.c
-+    src/openvpn/forward.h
-+    src/openvpn/fragment.c
-+    src/openvpn/fragment.h
-+    src/openvpn/gremlin.c
-+    src/openvpn/gremlin.h
-+    src/openvpn/helper.c
-+    src/openvpn/helper.h
-+    src/openvpn/httpdigest.c
-+    src/openvpn/httpdigest.h
-+    src/openvpn/init.c
-+    src/openvpn/init.h
-+    src/openvpn/integer.h
-+    src/openvpn/interval.c
-+    src/openvpn/interval.h
-+    src/openvpn/list.c
-+    src/openvpn/list.h
-+    src/openvpn/lladdr.c
-+    src/openvpn/lladdr.h
-+    src/openvpn/lzo.c
-+    src/openvpn/lzo.h
-+    src/openvpn/manage.c
-+    src/openvpn/manage.h
-+    src/openvpn/mbuf.c
-+    src/openvpn/mbuf.h
-+    src/openvpn/memdbg.h
-+    src/openvpn/misc.c
-+    src/openvpn/misc.h
-+    src/openvpn/mroute.c
-+    src/openvpn/mroute.h
-+    src/openvpn/mss.c
-+    src/openvpn/mss.h
-+    src/openvpn/mstats.c
-+    src/openvpn/mstats.h
-+    src/openvpn/mtcp.c
-+    src/openvpn/mtcp.h
-+    src/openvpn/mtu.c
-+    src/openvpn/mtu.h
-+    src/openvpn/mudp.c
-+    src/openvpn/mudp.h
-+    src/openvpn/multi.c
-+    src/openvpn/multi.h
-+    src/openvpn/ntlm.c
-+    src/openvpn/ntlm.h
-+    src/openvpn/occ.c
-+    src/openvpn/occ.h
-+    src/openvpn/openvpn.c
-+    src/openvpn/openvpn.h
-+    src/openvpn/openvpn_win32_resources.rc
-+    src/openvpn/options.c
-+    src/openvpn/options.h
-+    src/openvpn/options_util.c
-+    src/openvpn/options_util.h
-+    src/openvpn/otime.c
-+    src/openvpn/otime.h
-+    src/openvpn/ovpn_dco_win.h
-+    src/openvpn/packet_id.c
-+    src/openvpn/packet_id.h
-+    src/openvpn/perf.c
-+    src/openvpn/perf.h
-+    src/openvpn/ping.c
-+    src/openvpn/ping.h
-+    src/openvpn/pkcs11.c
-+    src/openvpn/pkcs11.h
-+    src/openvpn/pkcs11_backend.h
-+    src/openvpn/pkcs11_openssl.c
-+    src/openvpn/pkcs11_mbedtls.c
-+    src/openvpn/platform.c
-+    src/openvpn/platform.h
-+    src/openvpn/plugin.c
-+    src/openvpn/plugin.h
-+    src/openvpn/pool.c
-+    src/openvpn/pool.h
-+    src/openvpn/proto.c
-+    src/openvpn/proto.h
-+    src/openvpn/proxy.c
-+    src/openvpn/proxy.h
-+    src/openvpn/ps.c
-+    src/openvpn/ps.h
-+    src/openvpn/push.c
-+    src/openvpn/push.h
-+    src/openvpn/pushlist.h
-+    src/openvpn/reflect_filter.c
-+    src/openvpn/reflect_filter.h
-+    src/openvpn/reliable.c
-+    src/openvpn/reliable.h
-+    src/openvpn/route.c
-+    src/openvpn/route.h
-+    src/openvpn/run_command.c
-+    src/openvpn/run_command.h
-+    src/openvpn/schedule.c
-+    src/openvpn/schedule.h
-+    src/openvpn/session_id.c
-+    src/openvpn/session_id.h
-+    src/openvpn/shaper.c
-+    src/openvpn/shaper.h
-+    src/openvpn/sig.c
-+    src/openvpn/sig.h
-+    src/openvpn/socket.c
-+    src/openvpn/socket.h
-+    src/openvpn/socks.c
-+    src/openvpn/socks.h
-+    src/openvpn/ssl.c
-+    src/openvpn/ssl.h
-+    src/openvpn/ssl_backend.h
-+    src/openvpn/ssl_common.h
-+    src/openvpn/ssl_openssl.c
-+    src/openvpn/ssl_openssl.h
-+    src/openvpn/ssl_mbedtls.c
-+    src/openvpn/ssl_mbedtls.h
-+    src/openvpn/ssl_verify.c
-+    src/openvpn/ssl_verify.h
-+    src/openvpn/ssl_verify_backend.h
-+    src/openvpn/ssl_verify_openssl.c
-+    src/openvpn/ssl_verify_openssl.h
-+    src/openvpn/ssl_verify_mbedtls.c
-+    src/openvpn/ssl_verify_mbedtls.h
-+    src/openvpn/status.c
-+    src/openvpn/status.h
-+    src/openvpn/syshead.h
-+    src/openvpn/tls_crypt.c
-+    src/openvpn/tun.c
-+    src/openvpn/tun.h
-+    src/openvpn/networking_sitnl.c
-+    src/openvpn/networking_freebsd.c
-+    src/openvpn/auth_token.c
-+    src/openvpn/auth_token.h
-+    src/openvpn/ssl_ncp.c
-+    src/openvpn/ssl_ncp.h
-+    src/openvpn/ssl_pkt.c
-+    src/openvpn/ssl_pkt.h
-+    src/openvpn/ssl_util.c
-+    src/openvpn/ssl_util.h
-+    src/openvpn/vlan.c
-+    src/openvpn/vlan.h
-+    src/openvpn/win32.c
-+    src/openvpn/win32-util.c
-+    src/openvpn/win32.h
-+    src/openvpn/win32-util.h
-+    src/openvpn/xkey_helper.c
-+    src/openvpn/xkey_provider.c
-+    )
-+
-+add_executable(openvpn ${SOURCE_FILES})
-+
-+add_library_deps(openvpn)
-+
-+if (MINGW)
-+    target_compile_options(openvpn PRIVATE
-+        -DWIN32_LEAN_AND_MEAN
-+        -DNTDDI_VERSION=3DNTDDI_VISTA -D_WIN32_WINNT=3D_WIN32_WINNT_VISTA
-+        )
-+    target_compile_options(openvpn PRIVATE -municode -UUNICODE)
-+    target_link_options(openvpn PRIVATE -municode)
-+endif()
-+
-+if (MSVC)
-+    # we have our own manifest
-+    target_link_options(openvpn PRIVATE /MANIFEST:NO)
-+endif()
-+
-+if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-+    target_link_libraries(openvpn PUBLIC -ldl)
-+endif ()
-+
-+if (NOT WIN32)
-+    target_compile_options(openvpn PRIVATE -DPLUGIN_LIBDIR=3D\"${PLUGIN_DI=
-R}\")
-+
-+    find_library(resolv resolv)
-+    # some platform like BSDs already include resolver functionality in th=
-e libc and not have an extra resolv library
-+    if (${resolv} OR APPLE)
-+        target_link_libraries(openvpn PUBLIC -lresolv)
-+    endif ()
-+endif ()
-+
-+
-+if (BUILD_TESTING)
-+    find_package(cmocka CONFIG)
-+    if (TARGET cmocka::cmocka)
-+        set(CMOCKA_LIBRARIES cmocka::cmocka)
-+    else ()
-+        pkg_search_module(cmocka cmocka REQUIRED IMPORTED_TARGET)
-+        set(CMOCKA_LIBRARIES PkgConfig::cmocka)
-+    endif ()
-+
-+    set(unit_tests
-+        "test_auth_token"
-+        "test_buffer"
-+        "test_crypto"
-+        "test_misc"
-+        "test_ncp"
-+        "test_packet_id"
-+        "test_pkt"
-+        "test_provider"
-+        )
-+
-+    if (WIN32)
-+        list(APPEND unit_tests
-+            "test_cryptoapi"
-+            )
-+    endif ()
-+
-+    # MSVC and Apple's LLVM ld do not support --wrap
-+    # This test requires cmake >=3D 3.18, so check if check_linker_flag is
-+    # available
-+    if (COMMAND check_linker_flag)
-+        check_linker_flag(C -Wl,--wrap=3Dparse_line LD_SUPPORTS_WRAP)
-+    endif()
-+
-+    if (${LD_SUPPORTS_WRAP})
-+        list(APPEND unit_tests
-+            "test_argv"
-+            "test_tls_crypt"
-+            )
-+    endif ()
-+
-+    # These tests work on only on Linux since they depend on special Linux=
- features
-+    if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-+        list(APPEND unit_tests
-+            "test_networking"
-+            )
-+    endif ()
-+
-+    foreach (test_name ${unit_tests})
-+        # test_networking needs special environment
-+        if (NOT ${test_name} STREQUAL "test_networking")
-+            add_test(${test_name} ${test_name})
-+        endif ()
-+        add_executable(${test_name}
-+            tests/unit_tests/openvpn/${test_name}.c
-+            tests/unit_tests/openvpn/mock_msg.c
-+            tests/unit_tests/openvpn/mock_msg.h
-+            src/openvpn/platform.c
-+            src/openvpn/win32-util.c
-+            src/compat/compat-gettimeofday.c
-+            )
-+
-+        add_library_deps(${test_name})
-+        target_link_libraries(${test_name} PUBLIC ${CMOCKA_LIBRARIES})
-+
-+        target_include_directories(${test_name} PRIVATE src/openvpn)
-+
-+        if (NOT ${test_name} STREQUAL "test_buffer")
-+            target_sources(${test_name} PRIVATE
-+                src/openvpn/buffer.c
-+                )
-+        endif ()
-+
-+    endforeach()
-+
-+    target_sources(test_auth_token PRIVATE
-+        src/openvpn/base64.c
-+        src/openvpn/crypto_mbedtls.c
-+        src/openvpn/crypto_openssl.c
-+        src/openvpn/crypto.c
-+        src/openvpn/otime.c
-+        src/openvpn/packet_id.c
-+        )
-+
-+    target_sources(test_buffer PRIVATE
-+        tests/unit_tests/openvpn/mock_get_random.c
-+        )
-+
-+    target_sources(test_crypto PRIVATE
-+        src/openvpn/crypto_mbedtls.c
-+        src/openvpn/crypto_openssl.c
-+        src/openvpn/crypto.c
-+        src/openvpn/otime.c
-+        src/openvpn/packet_id.c
-+        src/openvpn/mtu.c
-+        src/openvpn/mss.c
-+        )
-+
-+    target_sources(test_misc PRIVATE
-+        tests/unit_tests/openvpn/mock_get_random.c
-+        src/openvpn/options_util.c
-+        src/openvpn/ssl_util.c
-+        )
-+
-+    target_sources(test_ncp PRIVATE
-+        src/openvpn/crypto_mbedtls.c
-+        src/openvpn/crypto_openssl.c
-+        src/openvpn/crypto.c
-+        src/openvpn/otime.c
-+        src/openvpn/packet_id.c
-+        src/openvpn/ssl_util.c
-+        src/compat/compat-strsep.c
-+        )
-+
-+    target_sources(test_packet_id PRIVATE
-+        tests/unit_tests/openvpn/mock_get_random.c
-+        src/openvpn/otime.c
-+        src/openvpn/packet_id.c
-+        src/openvpn/reliable.c
-+        src/openvpn/session_id.c
-+        )
-+
-+    target_sources(test_pkt PRIVATE
-+        tests/unit_tests/openvpn/mock_win32_execve.c
-+        src/openvpn/argv.c
-+        src/openvpn/base64.c
-+        src/openvpn/crypto_mbedtls.c
-+        src/openvpn/crypto_openssl.c
-+        src/openvpn/crypto.c
-+        src/openvpn/env_set.c
-+        src/openvpn/otime.c
-+        src/openvpn/packet_id.c
-+        src/openvpn/reliable.c
-+        src/openvpn/run_command.c
-+        src/openvpn/session_id.c
-+        src/openvpn/ssl_pkt.c
-+        src/openvpn/tls_crypt.c
-+        )
-+
-+    target_sources(test_provider PRIVATE
-+        tests/unit_tests/openvpn/mock_get_random.c
-+        src/openvpn/xkey_provider.c
-+        src/openvpn/xkey_helper.c
-+        src/openvpn/base64.c
-+        )
-+
-+    if (TARGET test_argv)
-+        target_link_options(test_argv PRIVATE -Wl,--wrap=3Dparse_line)
-+        target_sources(test_argv PRIVATE
-+            tests/unit_tests/openvpn/mock_get_random.c
-+            src/openvpn/argv.c
-+            )
-+    endif ()
-+
-+    if (TARGET test_cryptoapi)
-+        target_sources(test_cryptoapi PRIVATE
-+            tests/unit_tests/openvpn/mock_get_random.c
-+            tests/unit_tests/openvpn/cert_data.h
-+            src/openvpn/xkey_provider.c
-+            src/openvpn/xkey_helper.c
-+            src/openvpn/base64.c
-+            )
-+    endif ()
-+
-+    if (TARGET test_networking)
-+        target_link_options(test_networking PRIVATE -Wl,--wrap=3Dparse_lin=
-e)
-+        target_compile_options(test_networking PRIVATE -UNDEBUG)
-+        target_sources(test_networking PRIVATE
-+            src/openvpn/networking_sitnl.c
-+            src/openvpn/crypto_mbedtls.c
-+            src/openvpn/crypto_openssl.c
-+            src/openvpn/crypto.c
-+            src/openvpn/otime.c
-+            src/openvpn/packet_id.c
-+            )
-+    endif ()
-+
-+    if (TARGET test_tls_crypt)
-+        target_link_options(test_tls_crypt PRIVATE -Wl,--wrap=3Dparse_line)
-+        target_link_options(test_tls_crypt PRIVATE
-+            -Wl,--wrap=3Dbuffer_read_from_file
-+            -Wl,--wrap=3Dbuffer_write_file
-+            -Wl,--wrap=3Drand_bytes)
-+        target_sources(test_tls_crypt PRIVATE
-+            tests/unit_tests/openvpn/mock_win32_execve.c
-+            src/openvpn/argv.c
-+            src/openvpn/base64.c
-+            src/openvpn/crypto_mbedtls.c
-+            src/openvpn/crypto_openssl.c
-+            src/openvpn/crypto.c
-+            src/openvpn/env_set.c
-+            src/openvpn/otime.c
-+            src/openvpn/packet_id.c
-+            src/openvpn/run_command.c
-+            )
-+    endif ()
-+
-+endif (BUILD_TESTING)
-diff --git a/CMakePresets.json b/CMakePresets.json
-new file mode 100644
-index 0000000..135b19d
---- /dev/null
-+++ b/CMakePresets.json
-@@ -0,0 +1,228 @@
-+{
-+    "version": 3,
-+    "configurePresets": [
-+        {
-+            "name": "base",
-+            "hidden": true,
-+            "cacheVariables": {
-+                "CMAKE_TOOLCHAIN_FILE": {
-+                    "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.=
-cmake",
-+                    "type": "FILEPATH"
-+                },
-+                "VCPKG_OVERLAY_TRIPLETS": {
-+                    "value": "${sourceDir}/contrib/vcpkg-triplets",
-+                    "type": "FILEPATH"
-+                },
-+                "VCPKG_OVERLAY_PORTS": {
-+                    "value": "${sourceDir}/contrib/vcpkg-ports",
-+                    "type": "FILEPATH"
-+                }
-+            }
-+        },
-+        {
-+            "name": "base-windows",
-+            "hidden": true,
-+            "binaryDir": "${sourceDir}/out/build/${presetName}",
-+            "generator": "Visual Studio 17 2022",
-+            "cacheVariables": {
-+                "VCPKG_MANIFEST_DIR": "${sourceDir}/contrib/vcpkg-manifest=
-s/windows",
-+                "VCPKG_HOST_TRIPLET": "x64-windows"
-+            },
-+            "vendor": { "microsoft.com/VisualStudioSettings/CMake/1.0": { =
-"hostOS": [ "Windows" ] } }
-+        },
-+        {
-+            "name": "base-mingw",
-+            "hidden": true,
-+            "generator": "Ninja Multi-Config",
-+            "cacheVariables": {
-+                "CMAKE_SYSTEM_NAME": {
-+                    "value": "Windows",
-+                    "type": "STRING"
-+                },
-+                "VCPKG_MANIFEST_DIR": "${sourceDir}/contrib/vcpkg-manifest=
-s/mingw"
-+            }
-+        },
-+        {
-+            "name": "x64",
-+            "hidden": true,
-+            "architecture": {
-+                "value": "x64",
-+                "strategy": "set"
-+            },
-+            "cacheVariables": {
-+                "VCPKG_TARGET_TRIPLET": "x64-windows-ovpn"
-+            }
-+        },
-+        {
-+            "name": "x64-mingw",
-+            "hidden": true,
-+            "binaryDir": "out/build/mingw/x64",
-+            "cacheVariables": {
-+                "CMAKE_C_COMPILER": {
-+                    "value": "x86_64-w64-mingw32-gcc",
-+                    "type": "STRING"
-+                },
-+                "CMAKE_CXX_COMPILER": {
-+                    "value": "x86_64-w64-mingw32-g++",
-+                    "type": "STRING"
-+                },
-+                "VCPKG_TARGET_TRIPLET": "x64-mingw-ovpn"
-+            }
-+        },
-+        {
-+            "name": "arm64",
-+            "hidden": true,
-+            "architecture": {
-+                "value": "arm64",
-+                "strategy": "set"
-+            },
-+            "cacheVariables": {
-+                "VCPKG_TARGET_TRIPLET": "arm64-windows-ovpn"
-+            }
-+        },
-+        {
-+            "name": "x86",
-+            "hidden": true,
-+            "architecture": {
-+                "value": "Win32",
-+                "strategy": "set"
-+            },
-+            "cacheVariables": {
-+                "VCPKG_TARGET_TRIPLET": "x86-windows-ovpn"
-+            }
-+        },
-+        {
-+            "name": "i686-mingw",
-+            "hidden": true,
-+            "binaryDir": "out/build/mingw/x86",
-+            "cacheVariables": {
-+                "CMAKE_C_COMPILER": {
-+                    "value": "i686-w64-mingw32-gcc",
-+                    "type": "STRING"
-+                },
-+                "CMAKE_CXX_COMPILER": {
-+                    "value": "i686-w64-mingw32-g++",
-+                    "type": "STRING"
-+                },
-+                "VCPKG_TARGET_TRIPLET": "x86-mingw-ovpn"
-+            }
-+        },
-+        {
-+            "name": "debug",
-+            "hidden": true,
-+            "cacheVariables": {
-+                "CMAKE_BUILD_TYPE": "Debug"
-+            }
-+        },
-+        {
-+            "name": "release",
-+            "hidden": true,
-+            "cacheVariables": {
-+                "CMAKE_BUILD_TYPE": "Release"
-+            }
-+        },
-+        {
-+            "name": "mingw-x64",
-+            "inherits": [ "base", "base-mingw", "x64-mingw" ]
-+        },
-+        {
-+            "name": "mingw-x86",
-+            "inherits": [ "base", "base-mingw", "i686-mingw" ]
-+        },
-+        {
-+            "name": "win-amd64-release",
-+            "inherits": [ "base", "base-windows", "x64", "release" ]
-+        },
-+        {
-+            "name": "win-arm64-release",
-+            "inherits": [ "base", "base-windows", "arm64", "release" ]
-+        },
-+        {
-+            "name": "win-x86-release",
-+            "inherits": [ "base", "base-windows", "x86", "release" ]
-+        },
-+        {
-+            "name": "win-amd64-debug",
-+            "inherits": [ "base", "base-windows", "x64", "debug" ]
-+        },
-+        {
-+            "name": "win-arm64-debug",
-+            "inherits": [ "base", "base-windows", "arm64", "debug" ]
-+        },
-+        {
-+            "name": "win-x86-debug",
-+            "inherits": [ "base", "base-windows", "x86", "debug" ]
-+        },
-+        {
-+            "name": "unix-native",
-+            "generator": "Ninja Multi-Config",
-+            "binaryDir": "out/build/unix"
-+        }
-+    ],
-+    "buildPresets": [
-+        {
-+            "name": "mingw-x64",
-+            "configurePreset": "mingw-x64"
-+        },
-+        {
-+            "name": "mingw-x86",
-+            "configurePreset": "mingw-x86"
-+        },
-+        {
-+            "name": "win-amd64-release",
-+            "configurePreset": "win-amd64-release",
-+            "configuration": "Release"
-+        },
-+        {
-+            "name": "win-arm64-release",
-+            "configurePreset": "win-arm64-release",
-+            "configuration": "Release"
-+        },
-+        {
-+            "name": "win-x86-release",
-+            "configurePreset": "win-x86-release",
-+            "configuration": "Release"
-+        },
-+        {
-+            "name": "win-amd64-debug",
-+            "configurePreset": "win-amd64-debug",
-+            "configuration": "Debug"
-+        },
-+        {
-+            "name": "win-arm64-debug",
-+            "configurePreset": "win-arm64-debug",
-+            "configuration": "Debug"
-+        },
-+        {
-+            "name": "win-x86-debug",
-+            "configurePreset": "win-x86-debug",
-+            "configuration": "Debug"
-+        },
-+        {
-+            "name": "unix-native",
-+            "configurePreset": "unix-native"
-+        }
-+    ],
-+    "testPresets": [
-+        {
-+            "name": "win-amd64-release",
-+            "configurePreset": "win-amd64-release"
-+        },
-+        {
-+            "name": "win-x86-release",
-+            "configurePreset": "win-x86-release"
-+        },
-+        {
-+            "name": "win-amd64-debug",
-+            "configurePreset": "win-amd64-debug"
-+        },
-+        {
-+            "name": "win-x86-debug",
-+            "configurePreset": "win-x86-debug"
-+        },
-+        {
-+            "name": "unix-native",
-+            "configurePreset": "unix-native"
-+        }
-+     ]
-+}
+@@ -45,12 +39,8 @@
+ m4/ltsugar.m4
+ m4/ltversion.m4
+ m4/lt~obsolete.m4
+-vcpkg_installed
+
+ version.sh
+-msvc-env-local.bat
+-config-msvc-local.h
+-config-msvc-version.h
+ doc/openvpn-examples.5
+ doc/openvpn-examples.5.html
+ doc/openvpn.8
+@@ -62,7 +52,6 @@
+ sample/sample-keys/sample-ca/
+ vendor/cmocka_build
+ vendor/dist
+-build/msvc/msvc-generate/version.m4
+
+ tests/t_client.sh
+ tests/t_client-*-20??????-??????/
 diff --git a/Makefile.am b/Makefile.am
-index 2ddf6f7..f4ac7be 100644
+index f4ac7be..7478cc5 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -41,7 +41,10 @@
-
- EXTRA_DIST =3D \
- 	contrib \
--	debug
-+	debug \
-+	CMakeLists.txt \
-+	CMakePresets.json \
-+	config.h.cmake.in
-
- .PHONY: config-version.h doxygen
-
-@@ -64,6 +67,7 @@
- 	.gitattributes \
- 	CONTRIBUTING.rst \
- 	PORTS \
-+	README.cmake.md \
+@@ -71,11 +71,7 @@
  	README.dco.md \
  	README.ec \
  	README.wolfssl \
-diff --git a/README b/README
-index 04eb16f..8576dba 100644
---- a/README
-+++ b/README
-@@ -21,6 +21,9 @@
-
- or see the file INSTALL for more info.
-
-+For information on how to build OpenVPN on/for Windows with MinGW
-+or MSVC see README.cmake.md.
-+
- *************************************************************************
-
- For detailed information on OpenVPN, including examples, see the man page
-@@ -69,8 +72,7 @@
-   https://github.com/OpenVPN/easy-rsa
-   https://github.com/OpenVPN/tap-windows6
-
--The old cross-compilation environment (domake-win) and the Python-based
--buildsystem have been replaced with openvpn-build:
-+Community-provided Windows installers (MSI) and Debian packages are built =
-from
-
-   https://github.com/OpenVPN/openvpn-build
-
-diff --git a/README.cmake.md b/README.cmake.md
-new file mode 100644
-index 0000000..599d8dc
---- /dev/null
-+++ b/README.cmake.md
-@@ -0,0 +1,137 @@
-+OpenVPN Builds with CMake
-+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-+
-+For Windows builds we do not use the autotools-based buildsystem that we u=
-se
-+for our Unix-like (Linux, BSDs, macOS, etc.) builds. Instead we added a
-+separate (CMake)[https://cmake.org/]-based buildsystem.
-+
-+This buildsystem supports building for Windows both with MSVC (i.e. Visual
-+Studio) and MinGW. MinGW builds are also supported as cross-compile
-+from Linux.
-+
-+The official builds, which are also available as CMake presets (see
-+`cmake --list-presets` and `CMakePresets.json`) all use
-+(VCPKG)[https://github.com/microsoft/vcpkg/#vcpkg-overview] for dependency
-+management. This allows us to do proper supply-chain management and
-+also makes cross-building with MinGW on Linux much simpler. However,
-+builds are also possible by providing the build dependencies manually,
-+but that might require specifying more information to CMake.
-+
-+If you're looking to build the full Windows installer MSI, take a look
-+at https://github.com/OpenVPN/openvpn-build.git .
-+
-+MSVC builds
-+-----------
-+
-+The following tools are expected to be present on the system, you
-+can them install with a package manager of your choice (e.g.
-+chocolatey, winget) or manually:
-+
-+* CMake
-+* Git
-+* Python (3.x), plus the Python module `docutils`
-+* Visual Studion 17 (2022), C/C++ Enviroment
-+
-+For example, to prepare the required tools with chocolatey, you
-+can use the following commands (Powershell):
-+
-+    # Installing Chocolatey
-+    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServiceP=
-ointManager]::SecurityProtocol =3D [System.Net.ServicePointManager]::Securi=
-tyProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString=
-('https://chocolatey.org/install.ps1'))
-+    & choco.exe install -y git --params "/GitAndUnixToolsOnPath"
-+    & choco.exe install -y python
-+    & python.exe -m ensurepip
-+    & python.exe -m pip install --upgrade pip
-+    & python.exe -m pip install docutils
-+    & choco.exe install -y cmake --installargs 'ADD_CMAKE_TO_PATH=3DSystem'
-+    & choco.exe install -y "visualstudio2022buildtools"
-+    & choco.exe install -y "visualstudio2022-workload-vctools" --params "-=
--add Microsoft.VisualStudio.Component.UWP.VC.ARM64 --add Microsoft.VisualSt=
-udio.Component.VC.Tools.ARM64 --add Microsoft.VisualStudio.Component.VC.ATL=
-.Spectre --add Microsoft.VisualStudio.Component.VC.ATLMFC.Spectre --add Mic=
-rosoft.VisualStudio.Component.VC.ATL.ARM64.Spectre --add Microsoft.VisualSt=
-udio.Component.VC.MFC.ARM64.Spectre --add Microsoft.VisualStudio.Component.=
-VC.Runtimes.ARM64.Spectre --add Microsoft.VisualStudio.Component.VC.Runtime=
-s.x86.x64.Spectre --quiet"
-+    & choco.exe install -y windows-sdk-10-version-2004-windbg
-+
-+One or more restarts of Powershell might be required to pick up new additi=
-ons
-+to `PATH` between steps. A Windows restart is probably required after
-+installing Visual Studio before being able to use it.
-+You can find the exact commands we use to set up the community build machi=
-nes
-+at https://github.com/OpenVPN/openvpn-buildbot/blob/master/jenkins/windows=
--server/msibuild.pkr.hcl
-+
-+To do a default build, assuming you are in a MSVC 17 2022 environment:
-+
-+    mkdir C:\OpenVPN
-+    cd C:\OpenVPN
-+    git clone https://github.com/microsoft/vcpkg.git
-+    git clone https://github.com/OpenVPN/openvpn.git
-+    set VCPKG_ROOT=3DC:\OpenVPN\vcpkg
-+    cd openvpn
-+    cmake --preset win-amd64-release
-+    cmake --build --preset win-amd64-release
-+    ctest --preset win-amd64-release
-+
-+When using the presets, the build directory is
-+`out/build/<preset-name>/`, you can find the output files there.
-+No install support is provided directly in OpenVPN build, take a look
-+at https://github.com/OpenVPN/openvpn-build.git instead.
-+
-+MinGW builds (cross-compile on Linux)
-+-------------------------------------
-+
-+To build the Windows executables on a Linux system:
-+
-+    # install mingw with the package manager of your choice, e.g.
-+    sudo apt-get install -y mingw-w64
-+    # in addition to mingw we also need a toolchain for host builds, e.g.
-+    sudo apt-get install -y build-essential
-+    # minimum required tools for vcpkg bootstrap: curl, zip, unzip, tar, e=
-.g.
-+    sudo apt-get install -y curl zip unzip tar
-+    # additionally vcpkg requires powershell when building Windows binarie=
-s.
-+    # See https://learn.microsoft.com/en-us/powershell/scripting/install/i=
-nstalling-powershell-on-linux
-+    # e.g.
-+    sudo apt-get install -y wget apt-transport-https software-properties-c=
-ommon
-+    wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -r=
-s)/packages-microsoft-prod.deb"
-+    sudo dpkg -i packages-microsoft-prod.deb
-+    sudo apt-get update
-+    sudo apt-get install -y powershell
-+    # minimum required tools for build: cmake, docutils, git, ninja,
-+    # pkg-config, python e.g.
-+    sudo apt-get install -y cmake git ninja-build pkg-config python3 pytho=
-n3-docutils
-+    # additionally required to build pkcs11-helper: automake, autoconf,
-+    # man2html, e.g.
-+    sudo apt-get install -y automake autoconf man2html-base
-+    mkdir mingw
-+    cd mingw
-+    git clone https://github.com/microsoft/vcpkg.git
-+    git clone https://github.com/OpenVPN/openvpn.git
-+    export VCPKG_ROOT=3D$PWD/vcpkg
-+    cd openvpn
-+    cmake --preset mingw-x64
-+    cmake --build --preset mingw-x64
-+    # unit tests are built, but no testPreset is provided. You need to copy
-+    # them to a Windows system manually
-+
-+The instructions have been verified on a Ubuntu 22.04 LTS system in a
-+bash shell, and might need adaptions to other Linux distributions/versions.
-+
-+Note that the MinGW preset builds use the `Ninja multi-config` generator, =
-so
-+if you want to build the Debug binaries, use
-+
-+    cmake --build --preset mingw-x64 --config Debug
-+
-+The default build is equivalent to specifying `--config Release`.
-+
-+When using the presets, the build directory is
-+`out/build/mingw/<arch>`, you can find the actual output files in
-+sub-directories called `<buildtype>`.
-+No install support is provided directly in OpenVPN build, take a look
-+at https://github.com/OpenVPN/openvpn-build.git instead.
-+
-+Unsupported builds
-+------------------
-+
-+The CMake buildsystem also supports builds on Unix-like platforms. These b=
-uilds
-+are sometimes useful for OpenVPN developers (e.g. when they use IDEs with
-+integrated CMake support). However, they are not officially supported, do =
-not
-+include any install support and should not be used to distribute/package
-+OpenVPN. To emphasize this fact, you need to specify `-DUNSUPPORTED_BUILDS=
-=3DON`
-+to cmake to be able to use these builds.
-+
-+The `unix-native` CMake preset is available for these builds. This preset =
-does
-+not require VCPKG and instead assumes all build-dependencies are provided =
-by
-+the system natively.
-diff --git a/README.dco.md b/README.dco.md
-index aa93d66..3f7e00c 100644
---- a/README.dco.md
-+++ b/README.dco.md
-@@ -59,8 +59,11 @@
-
- Getting started (Windows)
- -------------------------
--The simplest way to test DCO under Windows is to download the latest insta=
-ller
--from https://build.openvpn.net/downloads/snapshots/github-actions/openvpn2=
-/ .
-+Official releases published at https://openvpn.net/community-downloads/
-+include ovpn-dco-win driver since 2.6.0.
-+
-+There are also snapshot releases available at
-+https://build.openvpn.net/downloads/snapshots/github-actions/openvpn2/ .
- This installer contains the latest OpenVPN code and the ovpn-dco-win drive=
-r.
-
-
-diff --git a/config.h.cmake.in b/config.h.cmake.in
-new file mode 100644
-index 0000000..7ef7175
---- /dev/null
-+++ b/config.h.cmake.in
-@@ -0,0 +1,479 @@
-+
-+/* Configuration settings */
-+#define CONFIGURE_DEFINES "N/A"
-+
-+/* Enable async push */
-+#cmakedefine ENABLE_ASYNC_PUSH
-+
-+/* Use mbed TLS library */
-+#cmakedefine ENABLE_CRYPTO_MBEDTLS
-+
-+/* Use Openssl */
-+#cmakedefine ENABLE_CRYPTO_OPENSSL
-+
-+/* Use wolfSSL crypto library */
-+#cmakedefine ENABLE_CRYPTO_WOLFSSL
-+
-+/* Enable shared data channel offload */
-+#cmakedefine ENABLE_DCO
-+
-+/* Enable debugging support (needed for verb>=3D4) */
-+#define ENABLE_DEBUG 1
-+
-+/* We have persist tun capability */
-+#cmakedefine ENABLE_FEATURE_TUN_PERSIST
-+
-+/* Enable internal fragmentation support */
-+#define ENABLE_FRAGMENT 1
-+
-+/* Enable linux data channel offload */
-+#cmakedefine ENABLE_LINUXDCO
-+
-+/* Enable LZ4 compression library */
-+#cmakedefine ENABLE_LZ4
-+
-+/* Enable LZO compression library */
-+#cmakedefine ENABLE_LZO
-+
-+/* Enable management server capability */
-+#define ENABLE_MANAGEMENT 1
-+
-+/* Enable OFB and CFB cipher modes */
-+#define ENABLE_OFB_CFB_MODE
-+
-+/* Enable PKCS11 */
-+#cmakedefine ENABLE_PKCS11
-+
-+/* Enable plug-in support */
-+#define ENABLE_PLUGIN 1
-+
-+/* Enable TCP Server port sharing */
-+#cmakedefine ENABLE_PORT_SHARE
-+
-+/* SELinux support */
-+#cmakedefine ENABLE_SELINUX
-+
-+/* enable sitnl support */
-+#cmakedefine ENABLE_SITNL
-+
-+/* Enable systemd integration */
-+/* #undef ENABLE_SYSTEMD */
-+
-+/* Enable --x509-username-field feature */
-+#cmakedefine ENABLE_X509ALTUSERNAME
-+
-+/* Compiler supports anonymous unions */
-+#define HAVE_ANONYMOUS_UNION_SUPPORT
-+
-+/* Define to 1 if you have the <arpa/inet.h> header file. */
-+#cmakedefine HAVE_ARPA_INET_H 1
-+
-+/* Define to 1 if you have the `basename' function. */
-+#cmakedefine HAVE_BASENAME
-+
-+/* Define to 1 if you have the `chdir' function. */
-+#cmakedefine HAVE_CHDIR
-+
-+/* Define to 1 if you have the `chroot' function. */
-+#cmakedefine HAVE_CHROOT
-+
-+/* Define to 1 if you have the `chsize' function. */
-+#cmakedefine HAVE_CHSIZE
-+
-+/* struct cmsghdr needed for extended socket error support */
-+#cmakedefine HAVE_CMSGHDR
-+
-+/* git version information in config-version.h */
-+#cmakedefine HAVE_CONFIG_VERSION_H
-+
-+/* Define to 1 if you have the `daemon' function. */
-+#cmakedefine HAVE_DAEMON
-+
-+/* Define to 1 if you have the declaration of `SO_MARK', and to 0 if you
-+don't. */
-+#cmakedefine01 HAVE_DECL_SO_MARK
-+
-+/* Define to 1 if you have the <direct.h> header file. */
-+#cmakedefine HAVE_DIRECT_H
-+
-+/* Define to 1 if you have the `dirname' function. */
-+#cmakedefine HAVE_DIRNAME
-+
-+/* Define to 1 if you have the <dlfcn.h> header file. */
-+#cmakedefine HAVE_DLFCN_H
-+
-+/* Define to 1 if you have the <dmalloc.h> header file. */
-+#cmakedefine HAVE_DMALLOC_H
-+
-+/* Define to 1 if you have the `dup' function. */
-+#cmakedefine HAVE_DUP
-+
-+/* Define to 1 if you have the `dup2' function. */
-+#cmakedefine HAVE_DUP2
-+
-+/* Define to 1 if you have the `epoll_create' function. */
-+#cmakedefine HAVE_EPOLL_CREATE
-+
-+/* Define to 1 if you have the <err.h> header file. */
-+#cmakedefine HAVE_ERR_H
-+
-+/* Crypto library supports keying material exporter */
-+#define HAVE_EXPORT_KEYING_MATERIAL 1
-+
-+/* Define to 1 if you have the <fcntl.h> header file. */
-+#cmakedefine HAVE_FCNTL_H
-+
-+/* Define to 1 if you have the `fork' function. */
-+#cmakedefine HAVE_FORK
-+#cmakedefine HAVE_EXECVE
-+
-+/* Define to 1 if you have the `ftruncate' function. */
-+#cmakedefine HAVE_FTRUNCATE
-+
-+/* Define to 1 if you have the `getgrnam' function. */
-+#cmakedefine HAVE_GETGRNAM
-+
-+/* Define to 1 if you have the `getpeereid' function. */
-+#cmakedefine HAVE_GETPEEREID
-+
-+/* Define to 1 if you have the `getpwnam' function. */
-+#cmakedefine HAVE_GETPWNAM
-+
-+/* Define to 1 if you have the `getrlimit' function. */
-+#undef HAVE_GETRLIMIT
-+
-+/* Define to 1 if you have the `getsockname' function. */
-+#cmakedefine HAVE_GETSOCKNAME
-+
-+/* Define to 1 if you have the `gettimeofday' function. */
-+#cmakedefine HAVE_GETTIMEOFDAY
-+
-+/* Define to 1 if you have the <grp.h> header file. */
-+#cmakedefine HAVE_GRP_H
-+
-+/* struct in_pktinfo needed for IP_PKTINFO support */
-+#cmakedefine HAVE_IN_PKTINFO
-+
-+/* Define to 1 if you have the <io.h> header file. */
-+#cmakedefine HAVE_IO_H
-+
-+/* struct in_pktinfo.ipi_spec_dst needed for IP_PKTINFO support */
-+#cmakedefine HAVE_IPI_SPEC_DST
-+
-+/* Define to 1 if you have the <libgen.h> header file. */
-+#cmakedefine HAVE_LIBGEN_H
-+
-+/* Define to 1 if you have the <limits.h> header file. */
-+#define HAVE_LIMITS_H 1
-+
-+/* Define to 1 if you have the <linux/if_tun.h> header file. */
-+#cmakedefine HAVE_LINUX_IF_TUN_H
-+
-+/* Define to 1 if you have the <linux/sockios.h> header file. */
-+#cmakedefine HAVE_LINUX_SOCKIOS_H
-+
-+/* Define to 1 if you have the <linux/types.h> header file. */
-+#cmakedefine HAVE_LINUX_TYPES_H
-+
-+/* Define to 1 if you have the <lzoconf.h> header file. */
-+#define HAVE_LZO_CONF_H
-+
-+/* Define to 1 if you have the <lzo1x.h> header file. */
-+#define HAVE_LZO1X_H 1
-+
-+/* Define to 1 if you have the <lzoutil.h> header file. */
-+#define HAVE_LZOUTIL_H 1
-+
-+/* Define to 1 if you have the `mlockall' function. */
-+#cmakedefine HAVE_MLOCKALL
-+
-+/* struct msghdr needed for extended socket error support */
-+#cmakedefine HAVE_MSGHDR
-+
-+/* Define to 1 if you have the <netdb.h> header file. */
-+#cmakedefine HAVE_NETDB_H
-+
-+/* Define to 1 if you have the <netinet/in.h> header file. */
-+#cmakedefine HAVE_NETINET_IN_H
-+
-+/* Define to 1 if you have the <netinet/ip.h> header file. */
-+#cmakedefine HAVE_NETINET_IP_H
-+
-+/* Define to 1 if you have the <netinet/tcp.h> header file. */
-+#undef HAVE_NETINET_TCP_H
-+
-+/* Define to 1 if you have the <net/if.h> header file. */
-+#cmakedefine HAVE_NET_IF_H
-+
-+/* Define to 1 if you have the <net/if_tun.h> header file. */
-+#cmakedefine HAVE_NET_IF_TUN_H
-+
-+/* Define to 1 if you have the <net/if_utun.h> header file. */
-+#cmakedefine01 HAVE_NET_IF_UTUN_H
-+
-+/* Define to 1 if you have the <net/tun/if_tun.h> header file. */
-+#cmakedefine HAVE_NET_TUN_IF_TUN_H
-+
-+/* Define to 1 if you have the `nice' function. */
-+#undef HAVE_NICE
-+
-+/* Define to 1 if you have the `openlog' function. */
-+#undef HAVE_OPENLOG
-+
-+/* OpenSSL engine support available */
-+#undef HAVE_OPENSSL_ENGINE
-+
-+/* Define to 1 if you have the `poll' function. */
-+#undef HAVE_POLL
-+
-+/* Define to 1 if you have the <poll.h> header file. */
-+#cmakedefine HAVE_POLL_H
-+
-+/* Define to 1 if you have the `putenv' function. */
-+#undef HAVE_PUTENV
-+
-+/* Define to 1 if you have the <pwd.h> header file. */
-+#cmakedefine HAVE_PWD_H
-+
-+/* Define to 1 if you have the `readv' function. */
-+#undef HAVE_READV
-+
-+/* Define to 1 if you have the `recvmsg' function. */
-+#cmakedefine HAVE_RECVMSG
-+#cmakedefine HAVE_SENDMSG
-+
-+/* Define to 1 if you have the <resolv.h> header file. */
-+#cmakedefine HAVE_RESOLV_H
-+
-+/* sa_family_t, needed to hold AF_* info */
-+#cmakedefine HAVE_SA_FAMILY_T
-+
-+/* Define to 1 if you have the `sd_booted' function. */
-+#undef HAVE_SD_BOOTED
-+
-+/* Define to 1 if you have the `setgid' function. */
-+#cmakedefine HAVE_SETGID
-+
-+/* Define to 1 if you have the `setgroups' function. */
-+#undef HAVE_SETGROUPS
-+
-+/* Define to 1 if you have the `setsid' function. */
-+#undef HAVE_SETSID
-+
-+/* Define to 1 if you have the `setsockopt' function. */
-+#define HAVE_SETSOCKOPT 1
-+
-+/* Define to 1 if you have the `setuid' function. */
-+#cmakedefine HAVE_SETUID
-+
-+/* Define to 1 if you have the <signal.h> header file. */
-+#undef HAVE_SIGNAL_H
-+
-+/* Define to 1 if you have the `socket' function. */
-+#undef HAVE_SOCKET
-+
-+/* struct sock_extended_err needed for extended socket error support */
-+#undef HAVE_SOCK_EXTENDED_ERR
-+
-+/* Define to 1 if you have the `stat' function. */
-+#define HAVE_STAT 1
-+
-+/* Define to 1 if you have the <stdarg.h> header file. */
-+#define HAVE_STDARG_H 1
-+
-+/* Define to 1 if you have the <stdint.h> header file. */
-+#define HAVE_STDINT_H 1
-+
-+/* Define to 1 if you have the <stdio.h> header file. */
-+#define HAVE_STDIO_H 1
-+
-+/* Define to 1 if you have the <stdlib.h> header file. */
-+#define HAVE_STDLIB_H 1
-+
-+/* Define to 1 if you have the `strdup' function. */
-+#undef HAVE_STRDUP
-+
-+/* Define to 1 if you have the <strings.h> header file. */
-+#define HAVE_STRINGS_H 1
-+
-+/* Define to 1 if you have the <string.h> header file. */
-+#define HAVE_STRING_H 1
-+
-+/* Define to 1 if you have the `strsep' function. */
-+#undef HAVE_STRSEP
-+
-+/* Define to 1 if you have the `syslog' function. */
-+#undef HAVE_SYSLOG
-+
-+/* Define to 1 if you have the <syslog.h> header file. */
-+#cmakedefine HAVE_SYSLOG_H
-+
-+/* Define to 1 if you have the `system' function. */
-+#undef HAVE_SYSTEM
-+
-+/* Define to 1 if you have the <systemd/sd-daemon.h> header file. */
-+#undef HAVE_SYSTEMD_SD_DAEMON_H
-+
-+/* Define to 1 if you have the <sys/epoll.h> header file. */
-+#cmakedefine HAVE_SYS_EPOLL_H
-+
-+/* Define to 1 if you have the <sys/file.h> header file. */
-+#undef HAVE_SYS_FILE_H
-+
-+/* Define to 1 if you have the <sys/inotify.h> header file. */
-+#cmakedefine HAVE_SYS_INOTIFY_H
-+
-+/* Define to 1 if you have the <sys/ioctl.h> header file. */
-+#cmakedefine HAVE_SYS_IOCTL_H
-+
-+/* Define to 1 if you have the <sys/kern_control.h> header file. */
-+#undef HAVE_SYS_KERN_CONTROL_H
-+
-+/* Define to 1 if you have the <sys/mman.h> header file. */
-+#cmakedefine HAVE_SYS_MMAN_H
-+
-+/* Define to 1 if you have the <sys/socket.h> header file. */
-+#cmakedefine HAVE_SYS_SOCKET_H
-+
-+/* Define to 1 if you have the <sys/sockio.h> header file. */
-+#undef HAVE_SYS_SOCKIO_H
-+
-+/* Define to 1 if you have the <sys/stat.h> header file. */
-+#define HAVE_SYS_STAT_H 1
-+
-+/* Define to 1 if you have the <sys/time.h> header file. */
-+#cmakedefine HAVE_SYS_TIME_H
-+
-+/* Define to 1 if you have the <sys/types.h> header file. */
-+#undef HAVE_SYS_TYPES_H
-+
-+/* Define to 1 if you have the <sys/uio.h> header file. */
-+#cmakedefine HAVE_SYS_UIO_H
-+
-+/* Define to 1 if you have the <sys/un.h> header file. */
-+#cmakedefine HAVE_SYS_UN_H
-+
-+/* Define to 1 if you have the <sys/wait.h> header file. */
-+#cmakedefine HAVE_SYS_WAIT_H
-+
-+/* Define to 1 if you have the <tap-windows.h> header file. */
-+#undef HAVE_TAP_WINDOWS_H
-+
-+/* Define to 1 if you have the `time' function. */
-+#define HAVE_TIME 1
-+
-+/* Define to 1 if you have the <time.h> header file. */
-+#define HAVE_TIME_H 1
-+
-+/* Define to 1 if you have the <uapi.h> header file. */
-+#undef HAVE_UAPI_H
-+
-+/* Define to 1 if you have the <unistd.h> header file. */
-+#cmakedefine HAVE_UNISTD_H
-+
-+/* Define to 1 if you have the <valgrind/memcheck.h> header file. */
-+#undef HAVE_VALGRIND_MEMCHECK_H
-+
-+/* Define to 1 if you have the <versionhelpers.h> header file. */
-+#undef HAVE_VERSIONHELPERS_H
-+
-+/* Define to 1 if you have the `vfork' function. */
-+#undef HAVE_VFORK
-+
-+/* Define to 1 if you have the <vfork.h> header file. */
-+#undef HAVE_VFORK_H
-+
-+/* Define to 1 if you have the `vsnprintf' function. */
-+#undef HAVE_VSNPRINTF
-+
-+/* we always assume a recent mbed TLS version */
-+#define HAVE_CTR_DRBG_UPDATE_RET 1
-+
-+/* Path to ifconfig tool */
-+#define IFCONFIG_PATH "@IFCONFIG_PATH@"
-+
-+/* Path to iproute tool */
-+#define IPROUTE_PATH "@IPROUTE_PATH@"
-+
-+/* Path to route tool */
-+#define ROUTE_PATH "@ROUTE_PATH@"
-+
-+/* OpenVPN version in Windows resource format - string */
-+#define OPENVPN_VERSION_RESOURCE @OPENVPN_VERSION_RESOURCE@
-+
-+/* Name of package */
-+#define PACKAGE "openvpn"
-+
-+/* Define to the address where bug reports for this package should be sent=
-. */
-+#undef PACKAGE_BUGREPORT
-+
-+/* Define to the full name of this package. */
-+#define PACKAGE_NAME "OpenVPN"
-+
-+/* Define to the full name and version of this package. */
-+#define PACKAGE_STRING "OpenVPN @OPENVPN_VERSION_MAJOR@...220...@OPENVPN_V=
-ERSION_MINOR@@OPENVPN_VERSION_PATCH@"
-+
-+/* Define to the version of this package. */
-+#define PACKAGE_VERSION "@OPENVPN_VERSION_MAJOR@...220...@OPENVPN_VERSION_=
-MINOR@@OPENVPN_VERSION_PATCH@"
-+
-+/* Path to systemd-ask-password tool */
-+#undef SYSTEMD_ASK_PASSWORD_PATH
-+
-+/* systemd is newer than v216 */
-+#define SYSTEMD_NEWER_THAN_216
-+
-+/* The tap-windows id */
-+#define TAP_WIN_COMPONENT_ID "tap0901"
-+
-+/* The tap-windows version number is required for OpenVPN */
-+#define TAP_WIN_MIN_MAJOR 9
-+
-+/* The tap-windows version number is required for OpenVPN */
-+#define TAP_WIN_MIN_MINOR 9
-+
-+/* Are we running on Mac OS X? */
-+#cmakedefine TARGET_DARWIN
-+
-+/* Are we running on FreeBSD? */
-+#cmakedefine TARGET_FREEBSD
-+
-+/* Are we running on Linux? */
-+#cmakedefine TARGET_LINUX
-+
-+/* Are we running WIN32? */
-+#cmakedefine TARGET_WIN32
-+
-+#define TARGET_ALIAS "@CMAKE_SYSTEM_NAME@"
-+
-+/* Enable GNU extensions on systems that have them.  */
-+#ifndef _GNU_SOURCE
-+# define _GNU_SOURCE 1
-+#endif
-+
-+
-+#if defined(_WIN32)
-+#include <inttypes.h>
-+typedef uint32_t in_addr_t;
-+typedef uint16_t in_port_t;
-+
-+#define SIGHUP    1
-+#define SIGINT    2
-+#define SIGUSR1   10
-+#define SIGUSR2   12
-+#define SIGTERM   15
-+#endif
-+
-+#if defined(_MSC_VER)
-+#include <BaseTsd.h>
-+typedef SSIZE_T ssize_t;
-+#define strncasecmp strnicmp
-+#define strcasecmp _stricmp
-+
-+#define S_IRUSR 0
-+#define S_IWUSR 0
-+#define R_OK 4
-+#define W_OK 2
-+#define X_OK 1
-+#define F_OK 0
-+#endif
-+
-diff --git a/contrib/cmake/git-version.py b/contrib/cmake/git-version.py
-new file mode 100644
-index 0000000..c2b4452
---- /dev/null
-+++ b/contrib/cmake/git-version.py
-@@ -0,0 +1,75 @@
-+#
-+#  OpenVPN -- An application to securely tunnel IP networks
-+#             over a single UDP port, with support for SSL/TLS-based
-+#             session authentication and key exchange,
-+#             packet encryption, packet authentication, and
-+#             packet compression.
-+#
-+#  Copyright (C) 2022-2023 OpenVPN Inc <sales@...515...>
-+#  Copyright (C) 2022-2022 Lev Stipakov <lev@...2698...>
-+#
-+#  This program is free software; you can redistribute it and/or modify
-+#  it under the terms of the GNU General Public License version 2
-+#  as published by the Free Software Foundation.
-+#
-+#  This program is distributed in the hope that it will be useful,
-+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+#  GNU General Public License for more details.
-+#
-+#  You should have received a copy of the GNU General Public License along
-+#  with this program; if not, write to the Free Software Foundation, Inc.,
-+#  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+#
-+
-+import os
-+import sys
-+import subprocess
-+
-+def run_command(args):
-+    sp =3D subprocess.Popen(args, stdout=3Dsubprocess.PIPE, stderr=3Dsubpr=
-ocess.DEVNULL)
-+    o, _ =3D sp.communicate()
-+    return o.decode("utf-8")[:-1]
-+
-+def get_branch_commit_id():
-+    commit_id =3D run_command(["git", "rev-parse", "--short=3D16", "HEAD"])
-+    if not commit_id:
-+        raise
-+    branch =3D run_command(["git", "describe", "--exact-match"])
-+    if not branch:
-+        # this returns an array like ["master"] or ["release", "2.6"]
-+        branch =3D run_command(["git", "rev-parse", "--symbolic-full-name"=
-, "HEAD"]).split("/")[2:]
-+        if not branch:
-+            branch =3D ["none"]
-+        branch =3D "/" .join(branch) # handle cases like release/2.6
-+
-+    return branch, commit_id
-+
-+def main():
-+    try:
-+        branch, commit_id =3D get_branch_commit_id()
-+    except:
-+        branch, commit_id =3D "unknown", "unknown"
-+
-+    prev_content =3D ""
-+
-+    name =3D os.path.join("%s" %  (sys.argv[1] if len(sys.argv) > 1 else "=
-."), "config-version.h")
-+    try:
-+        with open(name, "r") as f:
-+            prev_content =3D f.read()
-+    except:
-+        # file doesn't exist
-+        pass
-+
-+    content =3D "#define CONFIGURE_GIT_REVISION \"%s/%s\"\n" % (branch, co=
-mmit_id)
-+    content +=3D "#define CONFIGURE_GIT_FLAGS \"\"\n"
-+
-+    if prev_content !=3D content:
-+        print("Writing %s" % name)
-+        with open(name, "w") as f:
-+            f.write(content)
-+    else:
-+        print("Content of %s hasn't changed" % name)
-+
-+if __name__ =3D=3D "__main__":
-+    main()
-diff --git a/contrib/cmake/parse-version.m4.py b/contrib/cmake/parse-versio=
-n.m4.py
-new file mode 100644
-index 0000000..26af6a8
---- /dev/null
-+++ b/contrib/cmake/parse-version.m4.py
-@@ -0,0 +1,58 @@
-+#
-+#  OpenVPN -- An application to securely tunnel IP networks
-+#             over a single UDP port, with support for SSL/TLS-based
-+#             session authentication and key exchange,
-+#             packet encryption, packet authentication, and
-+#             packet compression.
-+#
-+#  Copyright (C) 2022-2023 OpenVPN Inc <sales@...515...>
-+#  Copyright (C) 2022-2022 Lev Stipakov <lev@...2698...>
-+#
-+#  This program is free software; you can redistribute it and/or modify
-+#  it under the terms of the GNU General Public License version 2
-+#  as published by the Free Software Foundation.
-+#
-+#  This program is distributed in the hope that it will be useful,
-+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+#  GNU General Public License for more details.
-+#
-+#  You should have received a copy of the GNU General Public License along
-+#  with this program; if not, write to the Free Software Foundation, Inc.,
-+#  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+#
-+
-+import os
-+import re
-+import sys
-+
-+def main():
-+    assert len(sys.argv) > 1
-+    version_path =3D sys.argv[1]
-+    output =3D []
-+    with open(version_path, 'r') as version_file:
-+        for line in version_file:
-+            match =3D re.match(r'[ \t]*define\(\[(.*)\],[ \t]*\[(.*)\]\)[ =
-\t]*', line)
-+            if match is not None:
-+                output.append(match.expand(r'set(\1 \2)'))
-+    out_path =3D os.path.join("%s" %  (sys.argv[2] if len(sys.argv) > 2 el=
-se "."), "version.cmake")
-+
-+    prev_content =3D ""
-+    try:
-+        with open(out_path, "r") as out_file:
-+            prev_content =3D out_file.read()
-+    except:
-+        # file doesn't exist
-+        pass
-+
-+    content =3D "\n".join(output) + "\n"
-+    if prev_content !=3D content:
-+        print("Writing %s" % out_path)
-+        with open(out_path, "w") as out_file:
-+            out_file.write(content)
-+    else:
-+        print("Content of %s hasn't changed" % out_path)
-+
-+if __name__ =3D=3D "__main__":
-+    main()
-+
-diff --git a/contrib/vcpkg-manifests/mingw/vcpkg.json b/contrib/vcpkg-manif=
-ests/mingw/vcpkg.json
-new file mode 100644
-index 0000000..fc00b01
---- /dev/null
-+++ b/contrib/vcpkg-manifests/mingw/vcpkg.json
-@@ -0,0 +1,13 @@
-+{
-+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scr=
-ipts/vcpkg.schema.json",
-+  "name": "openvpn",
-+  "version": "2.7",
-+  "dependencies": [
-+      "openssl",
-+      "tap-windows6",
-+      "lzo",
-+      "lz4",
-+      "pkcs11-helper",
-+      "cmocka"
-+  ]
-+}
-diff --git a/contrib/vcpkg-manifests/windows/vcpkg.json b/contrib/vcpkg-man=
-ifests/windows/vcpkg.json
-new file mode 100644
-index 0000000..67a1f87
---- /dev/null
-+++ b/contrib/vcpkg-manifests/windows/vcpkg.json
-@@ -0,0 +1,20 @@
-+{
-+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scr=
-ipts/vcpkg.schema.json",
-+  "name": "openvpn",
-+  "version": "2.7",
-+  "dependencies": [
-+      {
-+        "name": "openssl",
-+        "features": ["tools"]
-+      },
-+      "tap-windows6",
-+      "lzo",
-+      "lz4",
-+      "pkcs11-helper",
-+      "cmocka",
-+      {
-+          "name": "pkgconf",
-+          "host": true
-+      }
-+  ]
-+}
-diff --git a/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake b/contrib/vcp=
-kg-ports/pkcs11-helper/portfile.cmake
-index 47919bc..f8da979 100644
---- a/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
-+++ b/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake
-@@ -28,12 +28,28 @@
-         OPENSSL_HOME=3D${CURRENT_PACKAGES_DIR}/../openssl_${TARGET_TRIPLET}
-   )
-
--  file(INSTALL ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/lib/pkcs11-=
-helper.dll.lib DESTINATION ${CURRENT_PACKAGES_DIR}/lib)
--  file(INSTALL ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/lib/pkcs11-=
-helper.dll.lib DESTINATION ${CURRENT_PACKAGES_DIR}/debug/lib)
-+  file(INSTALL ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/lib/pkcs11-=
-helper.dll.lib DESTINATION ${CURRENT_PACKAGES_DIR}/lib RENAME pkcs11-helper=
-.lib)
-+  file(INSTALL ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/lib/pkcs11-=
-helper.dll.lib DESTINATION ${CURRENT_PACKAGES_DIR}/debug/lib RENAME pkcs11-=
-helper.lib)
-
-   file(INSTALL ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/lib/libpkcs=
-11-helper-1.dll DESTINATION ${CURRENT_PACKAGES_DIR}/bin)
-   file(INSTALL ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/lib/libpkcs=
-11-helper-1.dll DESTINATION ${CURRENT_PACKAGES_DIR}/debug/bin)
-
-+  set(PACKAGE_VERSION "${VERSION}")
-+    set(libdir [[${prefix}/lib]])
-+    set(exec_prefix [[${prefix}]])
-+    set(PKCS11H_FEATURES key_prompt openssl engine_crypto_cryptoapi engine=
-_crypto_openssl debug threading token data certificate slotevent engine_cry=
-pto)
-+    set(LIBS -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -lol=
-eaut32 -luuid -lcomdlg32 -ladvapi32)
-+    if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "release")
-+        set(includedir [[${prefix}/include]])
-+        set(outfile "${CURRENT_PACKAGES_DIR}/lib/pkgconfig/libpkcs11-helpe=
-r-1.pc")
-+        configure_file("${SOURCE_PATH}/lib/libpkcs11-helper-1.pc.in" "${ou=
-tfile}" @ONLY)
-+    endif()
-+    if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "debug")
-+        set(includedir [[${prefix}/../include]])
-+        set(outfile "${CURRENT_PACKAGES_DIR}/debug/lib/pkgconfig/libpkcs11=
--helper-1.pc")
-+        configure_file("${SOURCE_PATH}/lib/libpkcs11-helper-1.pc.in" "${ou=
-tfile}" @ONLY)
-+    endif()
-+
-   file(INSTALL ${SOURCE_PATH}/include/pkcs11-helper-1.0 DESTINATION ${CURR=
-ENT_PACKAGES_DIR}/include/)
-
- else()
-@@ -45,11 +61,11 @@
-     --disable-crypto-engine-polarssl --disable-crypto-engine-mbedtls
-     )
-   vcpkg_install_make()
--  vcpkg_fixup_pkgconfig()
-
-   file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
- endif()
-
-+vcpkg_fixup_pkgconfig()
- vcpkg_copy_pdbs()
-
- file(INSTALL ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/sh=
-are/${PORT} RENAME copyright)
-diff --git a/doc/CMakeLists.txt b/doc/CMakeLists.txt
-new file mode 100644
-index 0000000..8dfb883
---- /dev/null
-+++ b/doc/CMakeLists.txt
-@@ -0,0 +1,113 @@
-+set(_GENERATE_HTML_DOC YES)
-+set(_GENERATE_MAN_DOC  YES)
-+set(_MAYBE_PYTHON "")
-+find_program(RST2HTML NAMES rst2html rst2html.py)
-+find_program(RST2MAN  NAMES rst2man  rst2man.py)
-+
-+if (RST2HTML STREQUAL "RST2HTML-NOTFOUND")
-+    message(STATUS "rst2html not found, not generating HTML documentation")
-+    set(_GENERATE_HTML_DOC NO)
-+else ()
-+    # We only run this for RST2HTML and assume the result would be the same
-+    # for RST2MAN
-+    if (DEFINED CACHE{DOCUTILS_NEED_PYTHON})
-+        if ($CACHE{DOCUTILS_NEED_PYTHON})
-+            set(_MAYBE_PYTHON ${PYTHON})
-+        endif ()
-+    else ()
-+        execute_process(
-+            COMMAND ${RST2HTML} --version
-+            OUTPUT_VARIABLE RST2HTML_VERSION_EXE
-+            )
-+        execute_process(
-+            COMMAND ${PYTHON} ${RST2HTML} --version
-+            OUTPUT_VARIABLE RST2HTML_VERSION_PY
-+            )
-+        set(_DOCUTILS_NEED_PYTHON OFF)
-+        if(RST2HTML_VERSION_EXE STREQUAL "")
-+            if(RST2HTML_VERSION_PY STREQUAL "")
-+                message(STATUS "${RST2HTML} found but not working, not gen=
-erating documentation")
-+                set(_GENERATE_HTML_DOC NO)
-+                set(_GENERATE_MAN_DOC NO)
-+            else ()
-+                message(STATUS "${RST2HTML} needs to be executed by ${PYTH=
-ON} to work")
-+                set(_MAYBE_PYTHON ${PYTHON})
-+                set(_DOCUTILS_NEED_PYTHON ON)
-+            endif ()
-+        endif ()
-+        set(DOCUTILS_NEED_PYTHON ${_DOCUTILS_NEED_PYTHON} CACHE BOOL
-+            "Whether we need to call python instead of rst2*.py directly")
-+    endif (DEFINED CACHE{DOCUTILS_NEED_PYTHON})
-+endif ()
-+if (RST2MAN STREQUAL "RST2MAN-NOTFOUND")
-+    message(STATUS "rst2man not found, not generating man pages")
-+    set(_GENERATE_MAN_DOC NO)
-+endif ()
-+
-+set(OPENVPN_SECTIONS
-+    man-sections/advanced-options.rst
-+    man-sections/cipher-negotiation.rst
-+    man-sections/client-options.rst
-+    man-sections/connection-profiles.rst
-+    man-sections/encryption-options.rst
-+    man-sections/generic-options.rst
-+    man-sections/inline-files.rst
-+    man-sections/link-options.rst
-+    man-sections/log-options.rst
-+    man-sections/management-options.rst
-+    man-sections/network-config.rst
-+    man-sections/pkcs11-options.rst
-+    man-sections/plugin-options.rst
-+    man-sections/protocol-options.rst
-+    man-sections/proxy-options.rst
-+    man-sections/renegotiation.rst
-+    man-sections/signals.rst
-+    man-sections/script-options.rst
-+    man-sections/server-options.rst
-+    man-sections/tls-options.rst
-+    man-sections/unsupported-options.rst
-+    man-sections/virtual-routing-and-forwarding.rst
-+    man-sections/vpn-network-options.rst
-+    man-sections/windows-options.rst
-+    )
-+
-+set(OPENVPN_EXAMPLES_SECTIONS
-+    man-sections/example-fingerprint.rst
-+    man-sections/examples.rst
-+    )
-+
-+set(RST_FLAGS --strict)
-+
-+if (_GENERATE_HTML_DOC)
-+    list(APPEND ALL_DOCS openvpn.8.html openvpn-examples.5.html)
-+    add_custom_command(
-+        OUTPUT openvpn.8.html
-+        COMMAND ${_MAYBE_PYTHON} ${RST2HTML} ${RST_FLAGS} ${CMAKE_CURRENT_=
-SOURCE_DIR}/openvpn.8.rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn.8.html
-+        MAIN_DEPENDENCY openvpn.8.rst
-+        DEPENDS ${OPENVPN_SECTIONS}
-+        )
-+    add_custom_command(
-+        OUTPUT openvpn-examples.5.html
-+        COMMAND ${_MAYBE_PYTHON} ${RST2HTML} ${RST_FLAGS} ${CMAKE_CURRENT_=
-SOURCE_DIR}/openvpn-examples.5.rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn-exam=
-ples.5.html
-+        MAIN_DEPENDENCY openvpn-examples.5.rst
-+        DEPENDS ${OPENVPN_EXAMPLES_SECTIONS}
-+        )
-+endif ()
-+if (_GENERATE_MAN_DOC)
-+    list(APPEND ALL_DOCS openvpn.8 openvpn-examples.5)
-+    add_custom_command(
-+        OUTPUT openvpn.8
-+        COMMAND ${_MAYBE_PYTHON} ${RST2MAN} ${RST_FLAGS} ${CMAKE_CURRENT_S=
-OURCE_DIR}/openvpn.8.rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn.8
-+        MAIN_DEPENDENCY openvpn.8.rst
-+        DEPENDS ${OPENVPN_SECTIONS}
-+        )
-+    add_custom_command(
-+        OUTPUT openvpn-examples.5
-+        COMMAND ${_MAYBE_PYTHON} ${RST2MAN} ${RST_FLAGS} ${CMAKE_CURRENT_S=
-OURCE_DIR}/openvpn-examples.5.rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn-examp=
-les.5
-+        MAIN_DEPENDENCY openvpn-examples.5.rst
-+        DEPENDS ${OPENVPN_EXAMPLES_SECTIONS}
-+        )
-+endif ()
-+
-+add_custom_target(documentation ALL DEPENDS ${ALL_DOCS})
-+
-diff --git a/doc/Makefile.am b/doc/Makefile.am
-index d8ffe2e..087f0ce 100644
---- a/doc/Makefile.am
-+++ b/doc/Makefile.am
-@@ -63,7 +63,8 @@
- 	README.plugins \
- 	tls-crypt-v2.txt \
- 	$(openvpn_sections) \
--	$(openvpn_examples_sections)
-+	$(openvpn_examples_sections) \
-+	CMakeLists.txt
-
- EXTRA_DIST =3D tests
-
-diff --git a/src/openvpn/lzo.h b/src/openvpn/lzo.h
-index c572354..f05c002 100644
---- a/src/openvpn/lzo.h
-+++ b/src/openvpn/lzo.h
-@@ -37,7 +37,14 @@
-  * @addtogroup compression
-  * @{
-  */
+-	openvpn.sln
 -
-+#if defined(HAVE_LZO_CONF_H)
-+/* The lzo.h magic gets confused and still wants
-+ * to include lzo/lzoconf.h even if our include paths
-+ * are setup to include the paths without lzo/ include lzoconf.h to
-+ * avoid it being include by lzoutil.h */
-+#include <lzodefs.h>
-+#include <lzoconf.h>
-+#endif
- #if defined(HAVE_LZO_LZOUTIL_H)
- #include <lzo/lzoutil.h>
- #elif defined(HAVE_LZOUTIL_H)
-diff --git a/src/openvpnmsica/CMakeLists.txt b/src/openvpnmsica/CMakeLists.=
-txt
-new file mode 100644
-index 0000000..9126b80
---- /dev/null
-+++ b/src/openvpnmsica/CMakeLists.txt
-@@ -0,0 +1,44 @@
-+if (NOT WIN32)
-+    return ()
-+endif ()
-+
-+project(openvpnmsica)
-+
-+add_library(openvpnmsica SHARED)
-+
-+target_include_directories(openvpnmsica PRIVATE
-+    ${CMAKE_CURRENT_BINARY_DIR}/../../
-+    ../../include/
-+    ../compat/
-+    )
-+target_sources(openvpnmsica PRIVATE
-+    dllmain.c
-+    msiex.c msiex.h
-+    msica_arg.c msica_arg.h
-+    openvpnmsica.c openvpnmsica.h
-+    ../tapctl/basic.h
-+    ../tapctl/error.c ../tapctl/error.h
-+    ../tapctl/tap.c ../tapctl/tap.h
-+    openvpnmsica_resources.rc
-+    )
-+target_compile_options(openvpnmsica PRIVATE
-+    -D_UNICODE
-+    -UNTDDI_VERSION
-+    -D_WIN32_WINNT=3D_WIN32_WINNT_VISTA
-+    )
-+
-+if (MSVC)
-+    target_compile_options(openvpnmsica PRIVATE
-+        "$<$<CONFIG:Release>:/MT>"
-+        "$<$<CONFIG:Debug>:/MTd>"
-+        )
-+endif ()
-+
-+target_link_libraries(openvpnmsica
-+    advapi32.lib ole32.lib msi.lib setupapi.lib iphlpapi.lib shell32.lib s=
-hlwapi.lib version.lib newdev.lib)
-+if (MINGW)
-+    target_compile_options(openvpnmsica PRIVATE -municode)
-+    target_link_options(openvpnmsica PRIVATE -municode)
-+    target_link_options(openvpnmsica PRIVATE
-+        -Wl,--kill-at)
-+endif ()
+-dist_noinst_HEADERS =3D \
+-	config-msvc.h \
+-	config-msvc-version.h.in
++	README.mbedtls
+
+ if WIN32
+ rootdir=3D$(prefix)
+diff --git a/build/Makefile.am b/build/Makefile.am
+index a914d57..e7cc4d8 100644
+--- a/build/Makefile.am
++++ b/build/Makefile.am
+@@ -13,5 +13,3 @@
+
+ EXTRA_DIST =3D \
+ 	ltrc.inc
+-
+-SUBDIRS =3D msvc
+diff --git a/build/msvc/Makefile.am b/build/msvc/Makefile.am
+deleted file mode 100644
+index df3b41f..0000000
+--- a/build/msvc/Makefile.am
++++ /dev/null
+@@ -1,15 +0,0 @@
+-#
+-#  OpenVPN -- An application to securely tunnel IP networks
+-#             over a single UDP port, with support for SSL/TLS-based
+-#             session authentication and key exchange,
+-#             packet encryption, packet authentication, and
+-#             packet compression.
+-#
+-#  Copyright (C) 2002-2023 OpenVPN Inc <sales@...515...>
+-#  Copyright (C) 2006-2012 Alon Bar-Lev <alon.barlev@...277...>
+-#
+-
+-MAINTAINERCLEANFILES =3D \
+-	$(srcdir)/Makefile.in
+-
+-SUBDIRS =3D msvc-generate
+diff --git a/build/msvc/msvc-generate/Makefile.am b/build/msvc/msvc-generat=
+e/Makefile.am
+deleted file mode 100644
+index fe13b37..0000000
+--- a/build/msvc/msvc-generate/Makefile.am
++++ /dev/null
+@@ -1,20 +0,0 @@
+-#
+-#  OpenVPN -- An application to securely tunnel IP networks
+-#             over a single UDP port, with support for SSL/TLS-based
+-#             session authentication and key exchange,
+-#             packet encryption, packet authentication, and
+-#             packet compression.
+-#
+-#  Copyright (C) 2002-2023 OpenVPN Inc <sales@...515...>
+-#  Copyright (C) 2006-2012 Alon Bar-Lev <alon.barlev@...277...>
+-#
+-
+-MAINTAINERCLEANFILES =3D \
+-	$(srcdir)/Makefile.in
+-
+-dist_noinst_DATA =3D \
+-	git-version.py \
+-	msvc-generate.vcxproj \
+-	Makefile.mak \
+-	msvc-generate.js \
+-	version.m4.in
+diff --git a/build/msvc/msvc-generate/Makefile.mak b/build/msvc/msvc-genera=
+te/Makefile.mak
+deleted file mode 100644
+index 9190742..0000000
+--- a/build/msvc/msvc-generate/Makefile.mak
++++ /dev/null
+@@ -1,67 +0,0 @@
+-#
+-#  OpenVPN -- An application to securely tunnel IP networks
+-#             over a single UDP port, with support for SSL/TLS-based
+-#             session authentication and key exchange,
+-#             packet encryption, packet authentication, and
+-#             packet compression.
+-#
+-#  Copyright (C) 2002-2023 OpenVPN Inc <sales@...515...>
+-#  Copyright (C) 2008-2012 Alon Bar-Lev <alon.barlev@...277...>
+-#  Copyright (C) 2022-2022 Lev Stipakov <lev@...2698...>
+-#
+-#  This program is free software; you can redistribute it and/or modify
+-#  it under the terms of the GNU General Public License version 2
+-#  as published by the Free Software Foundation.
+-#
+-#  This program is distributed in the hope that it will be useful,
+-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-#  GNU General Public License for more details.
+-#
+-#  You should have received a copy of the GNU General Public License along
+-#  with this program; if not, write to the Free Software Foundation, Inc.,
+-#  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+-#
+-
+-CONFIG=3D$(SOLUTIONDIR)/version.m4
+-
+-INPUT_MSVC_VER=3D$(SOLUTIONDIR)/config-msvc-version.h.in
+-OUTPUT_MSVC_VER=3D$(SOLUTIONDIR)/config-msvc-version.h
+-
+-INPUT_PLUGIN=3D$(SOLUTIONDIR)/include/openvpn-plugin.h.in
+-OUTPUT_PLUGIN=3D$(SOLUTIONDIR)/include/openvpn-plugin.h
+-
+-INPUT_PLUGIN_CONFIG=3Dversion.m4.in
+-OUTPUT_PLUGIN_CONFIG=3Dversion.m4
+-
+-INPUT_MAN=3D$(SOLUTIONDIR)/doc/openvpn.8.rst
+-OUTPUT_MAN=3D$(SOLUTIONDIR)/doc/openvpn.8.html
+-
+-OUTPUT_MSVC_GIT_CONFIG=3D$(SOLUTIONDIR)/config-version.h
+-
+-all:	$(OUTPUT_MSVC_VER) $(OUTPUT_PLUGIN) $(OUTPUT_MAN) $(OUTPUT_MSVC_GIT_C=
+ONFIG)
+-
+-$(OUTPUT_MSVC_VER): $(INPUT_MSVC_VER) $(CONFIG)
+-	cscript //nologo msvc-generate.js --config=3D"$(CONFIG)" --input=3D"$(INP=
+UT_MSVC_VER)" --output=3D"$(OUTPUT_MSVC_VER)"
+-
+-$(OUTPUT_PLUGIN_CONFIG): $(INPUT_PLUGIN_CONFIG)
+-	cscript //nologo msvc-generate.js --config=3D"$(CONFIG)" --input=3D"$(INP=
+UT_PLUGIN_CONFIG)" --output=3D"$(OUTPUT_PLUGIN_CONFIG)"
+-
+-$(OUTPUT_PLUGIN): $(INPUT_PLUGIN) $(OUTPUT_PLUGIN_CONFIG)
+-	cscript //nologo msvc-generate.js --config=3D"$(OUTPUT_PLUGIN_CONFIG)" --=
+input=3D"$(INPUT_PLUGIN)" --output=3D"$(OUTPUT_PLUGIN)"
+-
+-$(OUTPUT_MAN): $(INPUT_MAN)
+-	-FOR /F %i IN ('where rst2html.py') DO python %i "$(INPUT_MAN)" "$(OUTPUT=
+_MAN)"
+-
+-# Force regeneration because we can't detect whether it is outdated
+-$(OUTPUT_MSVC_GIT_CONFIG): FORCE
+-	python git-version.py $(SOLUTIONDIR)
+-
+-FORCE:
+-
+-clean:
+-	-del "$(OUTPUT_MSVC_VER)"
+-	-del "$(OUTPUT_PLUGIN)"
+-	-del "$(OUTPUT_PLUGIN_CONFIG)"
+-	-del "$(OUTPUT_MAN)"
+-	-del "$(OUTPUT_MSVC_GIT_CONFIG)"
+diff --git a/build/msvc/msvc-generate/git-version.py b/build/msvc/msvc-gene=
+rate/git-version.py
+deleted file mode 100644
+index c2b4452..0000000
+--- a/build/msvc/msvc-generate/git-version.py
++++ /dev/null
+@@ -1,75 +0,0 @@
+-#
+-#  OpenVPN -- An application to securely tunnel IP networks
+-#             over a single UDP port, with support for SSL/TLS-based
+-#             session authentication and key exchange,
+-#             packet encryption, packet authentication, and
+-#             packet compression.
+-#
+-#  Copyright (C) 2022-2023 OpenVPN Inc <sales@...515...>
+-#  Copyright (C) 2022-2022 Lev Stipakov <lev@...2698...>
+-#
+-#  This program is free software; you can redistribute it and/or modify
+-#  it under the terms of the GNU General Public License version 2
+-#  as published by the Free Software Foundation.
+-#
+-#  This program is distributed in the hope that it will be useful,
+-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-#  GNU General Public License for more details.
+-#
+-#  You should have received a copy of the GNU General Public License along
+-#  with this program; if not, write to the Free Software Foundation, Inc.,
+-#  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+-#
+-
+-import os
+-import sys
+-import subprocess
+-
+-def run_command(args):
+-    sp =3D subprocess.Popen(args, stdout=3Dsubprocess.PIPE, stderr=3Dsubpr=
+ocess.DEVNULL)
+-    o, _ =3D sp.communicate()
+-    return o.decode("utf-8")[:-1]
+-
+-def get_branch_commit_id():
+-    commit_id =3D run_command(["git", "rev-parse", "--short=3D16", "HEAD"])
+-    if not commit_id:
+-        raise
+-    branch =3D run_command(["git", "describe", "--exact-match"])
+-    if not branch:
+-        # this returns an array like ["master"] or ["release", "2.6"]
+-        branch =3D run_command(["git", "rev-parse", "--symbolic-full-name"=
+, "HEAD"]).split("/")[2:]
+-        if not branch:
+-            branch =3D ["none"]
+-        branch =3D "/" .join(branch) # handle cases like release/2.6
+-
+-    return branch, commit_id
+-
+-def main():
+-    try:
+-        branch, commit_id =3D get_branch_commit_id()
+-    except:
+-        branch, commit_id =3D "unknown", "unknown"
+-
+-    prev_content =3D ""
+-
+-    name =3D os.path.join("%s" %  (sys.argv[1] if len(sys.argv) > 1 else "=
+."), "config-version.h")
+-    try:
+-        with open(name, "r") as f:
+-            prev_content =3D f.read()
+-    except:
+-        # file doesn't exist
+-        pass
+-
+-    content =3D "#define CONFIGURE_GIT_REVISION \"%s/%s\"\n" % (branch, co=
+mmit_id)
+-    content +=3D "#define CONFIGURE_GIT_FLAGS \"\"\n"
+-
+-    if prev_content !=3D content:
+-        print("Writing %s" % name)
+-        with open(name, "w") as f:
+-            f.write(content)
+-    else:
+-        print("Content of %s hasn't changed" % name)
+-
+-if __name__ =3D=3D "__main__":
+-    main()
+diff --git a/build/msvc/msvc-generate/msvc-generate.js b/build/msvc/msvc-ge=
+nerate/msvc-generate.js
+deleted file mode 100644
+index d9564cf..0000000
+--- a/build/msvc/msvc-generate/msvc-generate.js
++++ /dev/null
+@@ -1,118 +0,0 @@
+-/*
+- * msvc-generate.js  - string transformation
+- *
+- * Copyright (C) 2008-2012 Alon Bar-Lev <alon.barlev@...277...>
+- *
+- * BSD License
+- * =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are =
+met:
+- *
+- *     o Redistributions of source code must retain the above copyright no=
+tice,
+- *       this list of conditions and the following disclaimer.
+- *     o Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in t=
+he
+- *       documentation and/or other materials provided with the distributi=
+on.
+- *     o Neither the name of the Alon Bar-Lev nor the names of its
+- *       contributors may be used to endorse or promote products derived f=
+rom
+- *       this software without specific prior written permission.
+- *
+- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS=
+ IS"
+- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, T=
+HE
+- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURP=
+OSE
+- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF =
+THE
+- * POSSIBILITY OF SUCH DAMAGE.
+- *
+- */
+-
+-var ForReading =3D 1;
+-var fso =3D new ActiveXObject("Scripting.FileSystemObject");
+-var input =3D "nul";
+-var output =3D "nul";
+-var files =3D new Array();
+-var env =3D new Array();
+-
+-function initialize() {
+-	for (var i=3D0;i<WScript.Arguments.length;i++) {
+-		var arg =3D WScript.Arguments(i);
+-		if (arg.match(/^--input=3D(.*)$/)) {
+-			input=3DRegExp.$1;
+-		}
+-		else if (arg.match(/^--output=3D(.*)$/)) {
+-			output=3DRegExp.$1;
+-		}
+-		else if (arg.match(/^--config=3D(.*)$/)) {
+-			files.push(RegExp.$1);
+-		}
+-		else if (arg.match(/^--var=3D([^=3D]*)=3D(.*)$/)) {
+-			env[RegExp.$1] =3D RegExp.$2;
+-		}
+-	}
+-}
+-
+-function process_config(vars, file) {
+-	try {
+-		var fin =3D fso.OpenTextFile(file, ForReading);
+-
+-		while (!fin.AtEndOfStream) {
+-			var content =3D fin.ReadLine();
+-			if (content.match(/^[ \t]*define\(\[(.*)\],[ \t]*\[(.*)\]\)[ \t]*/)) {
+-				vars[RegExp.$1] =3D RegExp.$2;
+-			}
+-		}
+-	}
+-	catch(e) {
+-		throw new Error(1, "Cannot process '" + file + "'.");
+-	}
+-}
+-
+-function process_file(vars, input, output) {
+-	var fin =3D fso.OpenTextFile(input, ForReading);
+-	var fout =3D fso.CreateTextFile(output);
+-	var content =3D fin.ReadAll();
+-
+-	for (var i in vars) {
+-		content =3D content.replace(new RegExp("@"+i+"@", "g"), vars[i]);
+-	}
+-
+-	fout.Write(content);
+-}
+-
+-function build_vars() {
+-	var vars =3D new Array();
+-	for (var f in files) {
+-		process_config(vars, files[f]);
+-	}
+-	for (var e in env) {
+-		vars[e] =3D env[e];
+-	}
+-	return vars;
+-}
+-
+-function main() {
+-	try {
+-		initialize();
+-
+-		var vars =3D build_vars();
+-
+-		process_file(
+-			vars,
+-			input,
+-			output
+-		);
+-
+-		WScript.Quit(0);
+-	}
+-	catch(e) {
+-		WScript.Echo("ERROR: when procssing " + output + ": " + e.description);
+-		WScript.Quit(1);
+-	}
+-}
+-
+-main();
+diff --git a/build/msvc/msvc-generate/msvc-generate.vcxproj b/build/msvc/ms=
+vc-generate/msvc-generate.vcxproj
+deleted file mode 100644
+index 70d411e..0000000
+--- a/build/msvc/msvc-generate/msvc-generate.vcxproj
++++ /dev/null
+@@ -1,158 +0,0 @@
+-=EF=BB=BF<?xml version=3D"1.0" encoding=3D"utf-8"?>
+-<Project DefaultTargets=3D"Build" ToolsVersion=3D"15.0" xmlns=3D"http://sc=
+hemas.microsoft.com/developer/msbuild/2003">
+-  <ItemGroup Label=3D"ProjectConfigurations">
+-    <ProjectConfiguration Include=3D"Debug|ARM64">
+-      <Configuration>Debug</Configuration>
+-      <Platform>ARM64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Debug|Win32">
+-      <Configuration>Debug</Configuration>
+-      <Platform>Win32</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Debug|x64">
+-      <Configuration>Debug</Configuration>
+-      <Platform>x64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|ARM64">
+-      <Configuration>Release</Configuration>
+-      <Platform>ARM64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|Win32">
+-      <Configuration>Release</Configuration>
+-      <Platform>Win32</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|x64">
+-      <Configuration>Release</Configuration>
+-      <Platform>x64</Platform>
+-    </ProjectConfiguration>
+-  </ItemGroup>
+-  <PropertyGroup Label=3D"Globals">
+-    <ProjectGuid>{8598C2C8-34C4-47A1-99B0-7C295A890615}</ProjectGuid>
+-    <RootNamespace>msvc-generate</RootNamespace>
+-    <Keyword>MakeFileProj</Keyword>
+-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+-  </PropertyGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|Win32'" Label=3D"Configuration">
+-    <ConfigurationType>Makefile</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|x64'" Label=3D"Configuration">
+-    <ConfigurationType>Makefile</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|ARM64'" Label=3D"Configuration">
+-    <ConfigurationType>Makefile</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|W=
+in32'" Label=3D"Configuration">
+-    <ConfigurationType>Makefile</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x=
+64'" Label=3D"Configuration">
+-    <ConfigurationType>Makefile</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|A=
+RM64'" Label=3D"Configuration">
+-    <ConfigurationType>Makefile</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
+-  </PropertyGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.props" />
+-  <ImportGroup Label=3D"ExtensionSettings">
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|W=
+in32'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\..\..\src\compat\PropertySheet.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x=
+64'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\..\..\src\compat\PropertySheet.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|A=
+RM64'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\..\..\src\compat\PropertySheet.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win=
+32'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\..\..\src\compat\PropertySheet.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x64=
+'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\..\..\src\compat\PropertySheet.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|ARM=
+64'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\..\..\src\compat\PropertySheet.props" />
+-  </ImportGroup>
+-  <PropertyGroup Label=3D"UserMacros" />
+-  <PropertyGroup>
+-    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+-    <OutDir Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win32'=
+">$(Configuration)\</OutDir>
+-    <IntDir Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win32'=
+">$(Configuration)\</IntDir>
+-    <NMakeBuildCommandLine Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Debug|Win32'">nmake -f Makefile.mak all</NMakeBuildCommandLine>
+-    <NMakeBuildCommandLine Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Debug|x64'">nmake -f Makefile.mak all</NMakeBuildCommandLine>
+-    <NMakeBuildCommandLine Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Debug|ARM64'">nmake -f Makefile.mak all</NMakeBuildCommandLine>
+-    <NMakeReBuildCommandLine Condition=3D"'$(Configuration)|$(Platform)'=
+=3D=3D'Debug|Win32'">nmake -f Makefile.mak clean all</NMakeReBuildCommandLi=
+ne>
+-    <NMakeReBuildCommandLine Condition=3D"'$(Configuration)|$(Platform)'=
+=3D=3D'Debug|x64'">nmake -f Makefile.mak clean all</NMakeReBuildCommandLine>
+-    <NMakeReBuildCommandLine Condition=3D"'$(Configuration)|$(Platform)'=
+=3D=3D'Debug|ARM64'">nmake -f Makefile.mak clean all</NMakeReBuildCommandLi=
+ne>
+-    <NMakeCleanCommandLine Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Debug|Win32'">nmake -f Makefile.mak clean</NMakeCleanCommandLine>
+-    <NMakeCleanCommandLine Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Debug|x64'">nmake -f Makefile.mak clean</NMakeCleanCommandLine>
+-    <NMakeCleanCommandLine Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Debug|ARM64'">nmake -f Makefile.mak clean</NMakeCleanCommandLine>
+-    <NMakeOutput Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|W=
+in32'">config-msvc-version.h</NMakeOutput>
+-    <NMakeOutput Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x=
+64'">config-msvc-version.h</NMakeOutput>
+-    <NMakeOutput Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|A=
+RM64'">config-msvc-version.h</NMakeOutput>
+-    <NMakePreprocessorDefinitions Condition=3D"'$(Configuration)|$(Platfor=
+m)'=3D=3D'Debug|Win32'">WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMake=
+PreprocessorDefinitions>
+-    <NMakePreprocessorDefinitions Condition=3D"'$(Configuration)|$(Platfor=
+m)'=3D=3D'Debug|x64'">WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePr=
+eprocessorDefinitions>
+-    <NMakePreprocessorDefinitions Condition=3D"'$(Configuration)|$(Platfor=
+m)'=3D=3D'Debug|ARM64'">WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMake=
+PreprocessorDefinitions>
+-    <NMakeIncludeSearchPath Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Debug|Win32'">$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+-    <NMakeIncludeSearchPath Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Debug|x64'">$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+-    <NMakeIncludeSearchPath Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Debug|ARM64'">$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+-    <NMakeForcedIncludes Condition=3D"'$(Configuration)|$(Platform)'=3D=3D=
+'Debug|Win32'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
+-    <NMakeForcedIncludes Condition=3D"'$(Configuration)|$(Platform)'=3D=3D=
+'Debug|x64'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
+-    <NMakeForcedIncludes Condition=3D"'$(Configuration)|$(Platform)'=3D=3D=
+'Debug|ARM64'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
+-    <NMakeAssemblySearchPath Condition=3D"'$(Configuration)|$(Platform)'=
+=3D=3D'Debug|Win32'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
+-    <NMakeAssemblySearchPath Condition=3D"'$(Configuration)|$(Platform)'=
+=3D=3D'Debug|x64'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
+-    <NMakeAssemblySearchPath Condition=3D"'$(Configuration)|$(Platform)'=
+=3D=3D'Debug|ARM64'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
+-    <NMakeForcedUsingAssemblies Condition=3D"'$(Configuration)|$(Platform)=
+'=3D=3D'Debug|Win32'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAssemb=
+lies>
+-    <NMakeForcedUsingAssemblies Condition=3D"'$(Configuration)|$(Platform)=
+'=3D=3D'Debug|x64'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAssembli=
+es>
+-    <NMakeForcedUsingAssemblies Condition=3D"'$(Configuration)|$(Platform)=
+'=3D=3D'Debug|ARM64'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAssemb=
+lies>
+-    <OutDir Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|Win3=
+2'">$(Configuration)\</OutDir>
+-    <IntDir Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|Win3=
+2'">$(Configuration)\</IntDir>
+-    <NMakeBuildCommandLine Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Release|Win32'">nmake -f Makefile.mak all</NMakeBuildCommandLine>
+-    <NMakeBuildCommandLine Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Release|x64'">nmake -f Makefile.mak all</NMakeBuildCommandLine>
+-    <NMakeBuildCommandLine Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Release|ARM64'">nmake -f Makefile.mak all</NMakeBuildCommandLine>
+-    <NMakeReBuildCommandLine Condition=3D"'$(Configuration)|$(Platform)'=
+=3D=3D'Release|Win32'">nmake -f Makefile.mak clean all</NMakeReBuildCommand=
+Line>
+-    <NMakeReBuildCommandLine Condition=3D"'$(Configuration)|$(Platform)'=
+=3D=3D'Release|x64'">nmake -f Makefile.mak clean all</NMakeReBuildCommandLi=
+ne>
+-    <NMakeReBuildCommandLine Condition=3D"'$(Configuration)|$(Platform)'=
+=3D=3D'Release|ARM64'">nmake -f Makefile.mak clean all</NMakeReBuildCommand=
+Line>
+-    <NMakeCleanCommandLine Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Release|Win32'">nmake -f Makefile.mak clean</NMakeCleanCommandLine>
+-    <NMakeCleanCommandLine Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Release|x64'">nmake -f Makefile.mak clean</NMakeCleanCommandLine>
+-    <NMakeCleanCommandLine Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Release|ARM64'">nmake -f Makefile.mak clean</NMakeCleanCommandLine>
+-    <NMakeOutput Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|Win32'">config-msvc-version.h</NMakeOutput>
+-    <NMakeOutput Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|x64'">config-msvc-version.h</NMakeOutput>
+-    <NMakeOutput Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|ARM64'">config-msvc-version.h</NMakeOutput>
+-    <NMakePreprocessorDefinitions Condition=3D"'$(Configuration)|$(Platfor=
+m)'=3D=3D'Release|Win32'">WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMa=
+kePreprocessorDefinitions>
+-    <NMakePreprocessorDefinitions Condition=3D"'$(Configuration)|$(Platfor=
+m)'=3D=3D'Release|x64'">WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMake=
+PreprocessorDefinitions>
+-    <NMakePreprocessorDefinitions Condition=3D"'$(Configuration)|$(Platfor=
+m)'=3D=3D'Release|ARM64'">WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMa=
+kePreprocessorDefinitions>
+-    <NMakeIncludeSearchPath Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Release|Win32'">$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+-    <NMakeIncludeSearchPath Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Release|x64'">$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+-    <NMakeIncludeSearchPath Condition=3D"'$(Configuration)|$(Platform)'=3D=
+=3D'Release|ARM64'">$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+-    <NMakeForcedIncludes Condition=3D"'$(Configuration)|$(Platform)'=3D=3D=
+'Release|Win32'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
+-    <NMakeForcedIncludes Condition=3D"'$(Configuration)|$(Platform)'=3D=3D=
+'Release|x64'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
+-    <NMakeForcedIncludes Condition=3D"'$(Configuration)|$(Platform)'=3D=3D=
+'Release|ARM64'">$(NMakeForcedIncludes)</NMakeForcedIncludes>
+-    <NMakeAssemblySearchPath Condition=3D"'$(Configuration)|$(Platform)'=
+=3D=3D'Release|Win32'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
+-    <NMakeAssemblySearchPath Condition=3D"'$(Configuration)|$(Platform)'=
+=3D=3D'Release|x64'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
+-    <NMakeAssemblySearchPath Condition=3D"'$(Configuration)|$(Platform)'=
+=3D=3D'Release|ARM64'">$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
+-    <NMakeForcedUsingAssemblies Condition=3D"'$(Configuration)|$(Platform)=
+'=3D=3D'Release|Win32'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAsse=
+mblies>
+-    <NMakeForcedUsingAssemblies Condition=3D"'$(Configuration)|$(Platform)=
+'=3D=3D'Release|x64'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAssemb=
+lies>
+-    <NMakeForcedUsingAssemblies Condition=3D"'$(Configuration)|$(Platform)=
+'=3D=3D'Release|ARM64'">$(NMakeForcedUsingAssemblies)</NMakeForcedUsingAsse=
+mblies>
+-  </PropertyGroup>
+-  <ItemDefinitionGroup>
+-  </ItemDefinitionGroup>
+-  <ItemGroup>
+-    <None Include=3D"Makefile.mak" />
+-    <None Include=3D"msvc-generate.js" />
+-  </ItemGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.targets" />
+-  <ImportGroup Label=3D"ExtensionTargets">
+-  </ImportGroup>
+-</Project>
+\ No newline at end of file
+diff --git a/build/msvc/msvc-generate/version.m4.in b/build/msvc/msvc-gener=
+ate/version.m4.in
+deleted file mode 100644
+index cbb4fef..0000000
+--- a/build/msvc/msvc-generate/version.m4.in
++++ /dev/null
+@@ -1,3 +0,0 @@
+-define([OPENVPN_VERSION_MAJOR], [@PRODUCT_VERSION_MAJOR@])
+-define([OPENVPN_VERSION_MINOR], [@PRODUCT_VERSION_MINOR@])
+-define([OPENVPN_VERSION_PATCH], [@PRODUCT_VERSION_PATCH@])
+diff --git a/config-msvc-version.h.in b/config-msvc-version.h.in
+deleted file mode 100644
+index 59ca654..0000000
+--- a/config-msvc-version.h.in
++++ /dev/null
+@@ -1,14 +0,0 @@
+-#define PACKAGE_NAME "@PRODUCT_NAME@"
+-#define PACKAGE_STRING "@PRODUCT_NAME@ @PRODUCT_VERSION_MAJOR@...220...@PR=
+ODUCT_VERSION_MINOR@@PRODUCT_VERSION_PATCH@"
+-#define PACKAGE_TARNAME "@PRODUCT_TARNAME@"
+-#define PACKAGE "@PRODUCT_TARNAME@"
+-#define PRODUCT_VERSION_MAJOR "@PRODUCT_VERSION_MAJOR@"
+-#define PRODUCT_VERSION_MINOR "@PRODUCT_VERSION_MINOR@"
+-#define PRODUCT_VERSION_PATCH "@PRODUCT_VERSION_PATCH@"
+-#define PACKAGE_VERSION "@PRODUCT_VERSION_MAJOR@...220...@PRODUCT_VERSION_=
+MINOR@@PRODUCT_VERSION_PATCH@"
+-#define PRODUCT_VERSION "@PRODUCT_VERSION_MAJOR@...220...@PRODUCT_VERSION_=
+MINOR@@PRODUCT_VERSION_PATCH@"
+-#define PRODUCT_BUGREPORT "@PRODUCT_BUGREPORT@"
+-#define OPENVPN_VERSION_RESOURCE @PRODUCT_VERSION_RESOURCE@
+-#define TAP_WIN_COMPONENT_ID "@PRODUCT_TAP_WIN_COMPONENT_ID@"
+-#define TAP_WIN_MIN_MAJOR @PRODUCT_TAP_WIN_MIN_MAJOR@
+-#define TAP_WIN_MIN_MINOR @PRODUCT_TAP_WIN_MIN_MINOR@
+diff --git a/config-msvc.h b/config-msvc.h
+deleted file mode 100644
+index a3c687e..0000000
+--- a/config-msvc.h
++++ /dev/null
+@@ -1,93 +0,0 @@
+-#include <config-msvc-version.h>
+-
+-#define CONFIGURE_DEFINES "N/A"
+-
+-#define ENABLE_PF 1
+-#define ENABLE_CRYPTO_OPENSSL 1
+-#define ENABLE_FRAGMENT 1
+-#define ENABLE_HTTP_PROXY 1
+-#define ENABLE_LZO 1
+-#define ENABLE_LZ4 1
+-#define ENABLE_MANAGEMENT 1
+-#define ENABLE_PKCS11 1
+-#define ENABLE_PLUGIN 1
+-#define ENABLE_PORT_SHARE 1
+-#define ENABLE_SOCKS 1
+-
+-#define HAVE_FCNTL_H 1
+-#define HAVE_STDIO_H 1
+-#define HAVE_STDLIB_H 1
+-#define HAVE_STRERROR 1
+-#define HAVE_STRINGS_H 1
+-#define HAVE_STRING_H 1
+-#define HAVE_LIMITS_H 1
+-#define HAVE_SYSTEM 1
+-#define HAVE_TIME 1
+-#define HAVE_TIME_H 1
+-#define HAVE_WINDOWS_H 1
+-#define HAVE_WINSOCK2_H 1
+-#define HAVE_WS2TCPIP_H 1
+-#define HAVE_IO_H 1
+-#define HAVE_SYS_TYPES_H 1
+-#define HAVE_SYS_STAT_H 1
+-#define HAVE_LZO_LZO1X_H 1
+-#define HAVE_LZO_LZOUTIL_H 1
+-#define HAVE_VERSIONHELPERS_H 1
+-
+-#define HAVE_ACCESS 1
+-#define HAVE_CHDIR 1
+-#define HAVE_CHSIZE 1
+-#define HAVE_IN_PKTINFO 1
+-
+-#define HAVE_OPENSSL_ENGINE 1
+-#define HAVE_EXPORT_KEYING_MATERIAL 1
+-
+-#define HAVE_DIINSTALLDEVICE 1
+-
+-#ifndef __cplusplus
+-#define inline __inline
+-#endif
+-
+-#define TARGET_WIN32 1
+-#define TARGET_ALIAS "Windows-MSVC"
+-
+-#define HAVE_DECL_SO_MARK 0
+-
+-#define strncasecmp strnicmp
+-#define strcasecmp _stricmp
+-
+-#if _MSC_VER<1900
+-#define snprintf _snprintf
+-#endif
+-
+-#if _MSC_VER < 1800
+-#define strtoull strtoul
+-#endif
+-
+-#define in_addr_t uint32_t
+-#define ssize_t SSIZE_T
+-
+-#define S_IRUSR _S_IREAD
+-#define S_IWUSR _S_IWRITE
+-#define S_IRGRP (S_IRUSR >> 3)
+-#define R_OK 4
+-#define W_OK 2
+-#define X_OK 1
+-#define F_OK 0
+-
+-#define SIGHUP    1
+-#define SIGINT    2
+-#define SIGUSR1   10
+-#define SIGUSR2   12
+-#define SIGTERM   15
+-
+-#include <inttypes.h>
+-typedef uint16_t in_port_t;
+-
+-#ifdef HAVE_CONFIG_MSVC_LOCAL_H
+-#include <config-msvc-local.h>
+-#endif
+-
+-#define ENABLE_DCO 1
+-
+-#define HAVE_CONFIG_VERSION_H 1
+diff --git a/configure.ac b/configure.ac
+index 67f680b..7313308 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1492,8 +1492,6 @@
+ 	version.sh
+ 	Makefile
+ 	build/Makefile
+-	build/msvc/Makefile
+-	build/msvc/msvc-generate/Makefile
+ 	distro/Makefile
+ 	distro/systemd/Makefile
+ 	doc/Makefile
+diff --git a/openvpn.sln b/openvpn.sln
+deleted file mode 100644
+index 3485bc9..0000000
+--- a/openvpn.sln
++++ /dev/null
+@@ -1,107 +0,0 @@
+-=EF=BB=BF
+-Microsoft Visual Studio Solution File, Format Version 12.00
+-# Visual Studio Version 16
+-VisualStudioVersion =3D 16.0.31205.134
+-MinimumVisualStudioVersion =3D 10.0.40219.1
+-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") =3D "openvpnserv", "src\=
+openvpnserv\openvpnserv.vcxproj", "{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}"
+-EndProject
+-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") =3D "openvpn", "src\open=
+vpn\openvpn.vcxproj", "{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}"
+-EndProject
+-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") =3D "msvc-generate", "bu=
+ild\msvc\msvc-generate\msvc-generate.vcxproj", "{8598C2C8-34C4-47A1-99B0-7C=
+295A890615}"
+-EndProject
+-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") =3D "compat", "src\compa=
+t\compat.vcxproj", "{4B2E2719-E661-45D7-9203-F6F456B22F19}"
+-EndProject
+-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") =3D "tapctl", "src\tapct=
+l\tapctl.vcxproj", "{A06436E7-D576-490D-8BA0-0751D920334A}"
+-EndProject
+-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") =3D "openvpnmsica", "src=
+\openvpnmsica\openvpnmsica.vcxproj", "{D41AA9D6-B818-476E-992E-0E16EB86BEE2=
+}"
+-EndProject
+-Global
+-	GlobalSection(SolutionConfigurationPlatforms) =3D preSolution
+-		Debug|ARM64 =3D Debug|ARM64
+-		Debug|Win32 =3D Debug|Win32
+-		Debug|x64 =3D Debug|x64
+-		Release|ARM64 =3D Release|ARM64
+-		Release|Win32 =3D Release|Win32
+-		Release|x64 =3D Release|x64
+-	EndGlobalSection
+-	GlobalSection(ProjectConfigurationPlatforms) =3D postSolution
+-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|ARM64.ActiveCfg =3D Debug|A=
+RM64
+-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|ARM64.Build.0 =3D Debug|ARM=
+64
+-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|Win32.ActiveCfg =3D Debug|W=
+in32
+-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|Win32.Build.0 =3D Debug|Win=
+32
+-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|x64.ActiveCfg =3D Debug|x64
+-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|x64.Build.0 =3D Debug|x64
+-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|ARM64.ActiveCfg =3D Relea=
+se|ARM64
+-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|ARM64.Build.0 =3D Release=
+|ARM64
+-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|Win32.ActiveCfg =3D Relea=
+se|Win32
+-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|Win32.Build.0 =3D Release=
+|Win32
+-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|x64.ActiveCfg =3D Release=
+|x64
+-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|x64.Build.0 =3D Release|x=
+64
+-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|ARM64.ActiveCfg =3D Debug|A=
+RM64
+-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|ARM64.Build.0 =3D Debug|ARM=
+64
+-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|Win32.ActiveCfg =3D Debug|W=
+in32
+-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|Win32.Build.0 =3D Debug|Win=
+32
+-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|x64.ActiveCfg =3D Debug|x64
+-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|x64.Build.0 =3D Debug|x64
+-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|ARM64.ActiveCfg =3D Relea=
+se|ARM64
+-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|ARM64.Build.0 =3D Release=
+|ARM64
+-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|Win32.ActiveCfg =3D Relea=
+se|Win32
+-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|Win32.Build.0 =3D Release=
+|Win32
+-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|x64.ActiveCfg =3D Release=
+|x64
+-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|x64.Build.0 =3D Release|x=
+64
+-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|ARM64.ActiveCfg =3D Debug|A=
+RM64
+-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|ARM64.Build.0 =3D Debug|ARM=
+64
+-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|Win32.ActiveCfg =3D Debug|W=
+in32
+-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|Win32.Build.0 =3D Debug|Win=
+32
+-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|x64.ActiveCfg =3D Debug|x64
+-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|x64.Build.0 =3D Debug|x64
+-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|ARM64.ActiveCfg =3D Relea=
+se|ARM64
+-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|ARM64.Build.0 =3D Release=
+|ARM64
+-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|Win32.ActiveCfg =3D Relea=
+se|Win32
+-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|Win32.Build.0 =3D Release=
+|Win32
+-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|x64.ActiveCfg =3D Release=
+|x64
+-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|x64.Build.0 =3D Release|x=
+64
+-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|ARM64.ActiveCfg =3D Debug|A=
+RM64
+-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|ARM64.Build.0 =3D Debug|ARM=
+64
+-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|Win32.ActiveCfg =3D Debug|W=
+in32
+-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|Win32.Build.0 =3D Debug|Win=
+32
+-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|x64.ActiveCfg =3D Debug|x64
+-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|x64.Build.0 =3D Debug|x64
+-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|ARM64.ActiveCfg =3D Relea=
+se|ARM64
+-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|ARM64.Build.0 =3D Release=
+|ARM64
+-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|Win32.ActiveCfg =3D Relea=
+se|Win32
+-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|Win32.Build.0 =3D Release=
+|Win32
+-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|x64.ActiveCfg =3D Release=
+|x64
+-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|x64.Build.0 =3D Release|x=
+64
+-		{A06436E7-D576-490D-8BA0-0751D920334A}.Debug|ARM64.ActiveCfg =3D Debug|A=
+RM64
+-		{A06436E7-D576-490D-8BA0-0751D920334A}.Debug|ARM64.Build.0 =3D Debug|ARM=
+64
+-		{A06436E7-D576-490D-8BA0-0751D920334A}.Debug|Win32.ActiveCfg =3D Debug|W=
+in32
+-		{A06436E7-D576-490D-8BA0-0751D920334A}.Debug|Win32.Build.0 =3D Debug|Win=
+32
+-		{A06436E7-D576-490D-8BA0-0751D920334A}.Debug|x64.ActiveCfg =3D Debug|x64
+-		{A06436E7-D576-490D-8BA0-0751D920334A}.Debug|x64.Build.0 =3D Debug|x64
+-		{A06436E7-D576-490D-8BA0-0751D920334A}.Release|ARM64.ActiveCfg =3D Relea=
+se|ARM64
+-		{A06436E7-D576-490D-8BA0-0751D920334A}.Release|ARM64.Build.0 =3D Release=
+|ARM64
+-		{A06436E7-D576-490D-8BA0-0751D920334A}.Release|Win32.ActiveCfg =3D Relea=
+se|Win32
+-		{A06436E7-D576-490D-8BA0-0751D920334A}.Release|Win32.Build.0 =3D Release=
+|Win32
+-		{A06436E7-D576-490D-8BA0-0751D920334A}.Release|x64.ActiveCfg =3D Release=
+|x64
+-		{A06436E7-D576-490D-8BA0-0751D920334A}.Release|x64.Build.0 =3D Release|x=
+64
+-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|ARM64.ActiveCfg =3D Debug|A=
+RM64
+-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|ARM64.Build.0 =3D Debug|ARM=
+64
+-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|Win32.ActiveCfg =3D Debug|W=
+in32
+-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|Win32.Build.0 =3D Debug|Win=
+32
+-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|x64.ActiveCfg =3D Debug|x64
+-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|x64.Build.0 =3D Debug|x64
+-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Release|ARM64.ActiveCfg =3D Relea=
+se|ARM64
+-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Release|ARM64.Build.0 =3D Release=
+|ARM64
+-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Release|Win32.ActiveCfg =3D Relea=
+se|Win32
+-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Release|Win32.Build.0 =3D Release=
+|Win32
+-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Release|x64.ActiveCfg =3D Release=
+|x64
+-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Release|x64.Build.0 =3D Release|x=
+64
+-	EndGlobalSection
+-	GlobalSection(SolutionProperties) =3D preSolution
+-		HideSolutionNode =3D FALSE
+-	EndGlobalSection
+-	GlobalSection(ExtensibilityGlobals) =3D postSolution
+-		SolutionGuid =3D {EB3CE5D3-415C-46F0-96AB-E1CDA287AB6D}
+-	EndGlobalSection
+-EndGlobal
+diff --git a/src/compat/Debug.props b/src/compat/Debug.props
+deleted file mode 100644
+index 31bb9d9..0000000
+--- a/src/compat/Debug.props
++++ /dev/null
+@@ -1,21 +0,0 @@
+-<?xml version=3D"1.0" encoding=3D"utf-8"?>
+-<Project ToolsVersion=3D"4.0" xmlns=3D"http://schemas.microsoft.com/develo=
+per/msbuild/2003">
+-  <ImportGroup Label=3D"PropertySheets">
+-    <Import Project=3D"PropertySheet.props" />
+-  </ImportGroup>
+-  <PropertyGroup Label=3D"UserMacros" />
+-  <PropertyGroup>
+-    <_PropertySheetDisplayName>compat-Debug</_PropertySheetDisplayName>
+-    <LinkIncremental>true</LinkIncremental>
+-  </PropertyGroup>
+-  <ItemDefinitionGroup>
+-    <ClCompile>
+-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+-      <Optimization>Disabled</Optimization>
+-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</Preproce=
+ssorDefinitions>
+-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemGroup />
+-</Project>
+\ No newline at end of file
+diff --git a/src/compat/Makefile.am b/src/compat/Makefile.am
+index a42ec39..f5de451 100644
+--- a/src/compat/Makefile.am
++++ b/src/compat/Makefile.am
+@@ -12,12 +12,6 @@
+ MAINTAINERCLEANFILES =3D \
+ 	$(srcdir)/Makefile.in
+
+-EXTRA_DIST =3D \
+-	compat.vcxproj \
+-	PropertySheet.props \
+-	Debug.props \
+-	Release.props
+-
+ noinst_LTLIBRARIES =3D libcompat.la
+
+ libcompat_la_SOURCES =3D \
+diff --git a/src/compat/PropertySheet.props b/src/compat/PropertySheet.props
+deleted file mode 100644
+index 57f6995..0000000
+--- a/src/compat/PropertySheet.props
++++ /dev/null
+@@ -1,29 +0,0 @@
+-<?xml version=3D"1.0" encoding=3D"utf-8"?>
+-<Project ToolsVersion=3D"4.0" xmlns=3D"http://schemas.microsoft.com/develo=
+per/msbuild/2003">
+-  <ImportGroup Label=3D"PropertySheets" />
+-  <PropertyGroup Label=3D"UserMacros" />
+-  <PropertyGroup>
+-    <OutDir>$(SolutionDir)$(Platform)-Output\$(Configuration)\</OutDir>
+-    <_PropertySheetDisplayName>compat</_PropertySheetDisplayName>
+-  </PropertyGroup>
+-  <ItemDefinitionGroup>
+-    <ClCompile>
+-      <WarningLevel>Level3</WarningLevel>
+-      <PreprocessorDefinitions>WIN32;$(CPPFLAGS);%(PreprocessorDefinitions=
+)</PreprocessorDefinitions>
+-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)include;%=
+(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+-    </ClCompile>
+-    <Link>
+-      <GenerateDebugInformation>true</GenerateDebugInformation>
+-    </Link>
+-    <ResourceCompile />
+-    <ResourceCompile>
+-      <AdditionalIncludeDirectories>$(SOLUTIONDIR)</AdditionalIncludeDirec=
+tories>
+-    </ResourceCompile>
+-  </ItemDefinitionGroup>
+-  <ItemGroup>
+-    <BuildMacro Include=3D"SOLUTIONDIR">
+-      <Value>$(SOLUTIONDIR)</Value>
+-      <EnvironmentVariable>true</EnvironmentVariable>
+-    </BuildMacro>
+-  </ItemGroup>
+-</Project>
+\ No newline at end of file
+diff --git a/src/compat/Release.props b/src/compat/Release.props
+deleted file mode 100644
+index 50eaa8d..0000000
+--- a/src/compat/Release.props
++++ /dev/null
+@@ -1,26 +0,0 @@
+-<?xml version=3D"1.0" encoding=3D"utf-8"?>
+-<Project ToolsVersion=3D"4.0" xmlns=3D"http://schemas.microsoft.com/develo=
+per/msbuild/2003">
+-  <ImportGroup Label=3D"PropertySheets">
+-    <Import Project=3D"PropertySheet.props" />
+-  </ImportGroup>
+-  <PropertyGroup Label=3D"UserMacros" />
+-  <PropertyGroup>
+-    <_PropertySheetDisplayName>compat-Release</_PropertySheetDisplayName>
+-    <LinkIncremental>false</LinkIncremental>
+-  </PropertyGroup>
+-  <ItemDefinitionGroup>
+-    <ClCompile>
+-      <IntrinsicFunctions>true</IntrinsicFunctions>
+-      <FunctionLevelLinking>true</FunctionLevelLinking>
+-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</Preproce=
+ssorDefinitions>
+-      <ControlFlowGuard>Guard</ControlFlowGuard>
+-    </ClCompile>
+-    <Link>
+-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+-      <OptimizeReferences>true</OptimizeReferences>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemGroup />
+-</Project>
+\ No newline at end of file
+diff --git a/src/compat/compat-basename.c b/src/compat/compat-basename.c
+index e66e225..abb4f49 100644
+--- a/src/compat/compat-basename.c
++++ b/src/compat/compat-basename.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #ifndef HAVE_BASENAME
+diff --git a/src/compat/compat-daemon.c b/src/compat/compat-daemon.c
+index 460b9e9..aebb8f4 100644
+--- a/src/compat/compat-daemon.c
++++ b/src/compat/compat-daemon.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #ifndef HAVE_DAEMON
+diff --git a/src/compat/compat-dirname.c b/src/compat/compat-dirname.c
+index c1523d9..c131dee 100644
+--- a/src/compat/compat-dirname.c
++++ b/src/compat/compat-dirname.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+
+diff --git a/src/compat/compat-gettimeofday.c b/src/compat/compat-gettimeof=
+day.c
+index 0dc7460..69843fb 100644
+--- a/src/compat/compat-gettimeofday.c
++++ b/src/compat/compat-gettimeofday.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #ifndef HAVE_GETTIMEOFDAY
+diff --git a/src/compat/compat-strsep.c b/src/compat/compat-strsep.c
+index 6db013f..fbad98d 100644
+--- a/src/compat/compat-strsep.c
++++ b/src/compat/compat-strsep.c
+@@ -24,8 +24,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #ifndef HAVE_STRSEP
+diff --git a/src/compat/compat.vcxproj b/src/compat/compat.vcxproj
+deleted file mode 100644
+index 9fcfd6c..0000000
+--- a/src/compat/compat.vcxproj
++++ /dev/null
+@@ -1,179 +0,0 @@
+-=EF=BB=BF<?xml version=3D"1.0" encoding=3D"utf-8"?>
+-<Project DefaultTargets=3D"Build" ToolsVersion=3D"15.0" xmlns=3D"http://sc=
+hemas.microsoft.com/developer/msbuild/2003">
+-  <ItemGroup Label=3D"ProjectConfigurations">
+-    <ProjectConfiguration Include=3D"Debug|ARM64">
+-      <Configuration>Debug</Configuration>
+-      <Platform>ARM64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Debug|Win32">
+-      <Configuration>Debug</Configuration>
+-      <Platform>Win32</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Debug|x64">
+-      <Configuration>Debug</Configuration>
+-      <Platform>x64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|ARM64">
+-      <Configuration>Release</Configuration>
+-      <Platform>ARM64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|Win32">
+-      <Configuration>Release</Configuration>
+-      <Platform>Win32</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|x64">
+-      <Configuration>Release</Configuration>
+-      <Platform>x64</Platform>
+-    </ProjectConfiguration>
+-  </ItemGroup>
+-  <PropertyGroup Label=3D"Globals">
+-    <ProjectGuid>{4B2E2719-E661-45D7-9203-F6F456B22F19}</ProjectGuid>
+-    <RootNamespace>compat</RootNamespace>
+-    <Keyword>Win32Proj</Keyword>
+-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+-  </PropertyGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|Win32'" Label=3D"Configuration">
+-    <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <CharacterSet>MultiByte</CharacterSet>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|x64'" Label=3D"Configuration">
+-    <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <CharacterSet>MultiByte</CharacterSet>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|ARM64'" Label=3D"Configuration">
+-    <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <CharacterSet>MultiByte</CharacterSet>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|W=
+in32'" Label=3D"Configuration">
+-    <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <CharacterSet>MultiByte</CharacterSet>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x=
+64'" Label=3D"Configuration">
+-    <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <CharacterSet>MultiByte</CharacterSet>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|A=
+RM64'" Label=3D"Configuration">
+-    <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <CharacterSet>MultiByte</CharacterSet>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.props" />
+-  <ImportGroup Label=3D"ExtensionSettings">
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|W=
+in32'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"Release.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x=
+64'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"Release.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|A=
+RM64'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"Release.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win=
+32'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"Debug.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x64=
+'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"Debug.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|ARM=
+64'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"Debug.props" />
+-  </ImportGroup>
+-  <PropertyGroup Label=3D"UserMacros" />
+-  <PropertyGroup>
+-    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Debug|ARM64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Release|ARM64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Debug|Win32'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Release|Win32'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Debug|x64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Release|x64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
+ebug|Win32'">
+-    <ClCompile>
+-      <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDire=
+ctories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</Preprocess=
+orDefinitions>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
+ebug|x64'">
+-    <ClCompile>
+-      <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDire=
+ctories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</Preprocess=
+orDefinitions>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
+ebug|ARM64'">
+-    <ClCompile>
+-      <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDire=
+ctories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</Preprocess=
+orDefinitions>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
+elease|Win32'">
+-    <ClCompile>
+-      <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDire=
+ctories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</Preprocess=
+orDefinitions>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
+elease|x64'">
+-    <ClCompile>
+-      <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDire=
+ctories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</Preprocess=
+orDefinitions>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
+elease|ARM64'">
+-    <ClCompile>
+-      <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDire=
+ctories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</Preprocess=
+orDefinitions>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemGroup>
+-    <ClCompile Include=3D"compat-basename.c" />
+-    <ClCompile Include=3D"compat-dirname.c" />
+-    <ClCompile Include=3D"compat-gettimeofday.c" />
+-    <ClCompile Include=3D"compat-daemon.c" />
+-    <ClCompile Include=3D"compat-strsep.c" />
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ClInclude Include=3D"compat.h" />
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ProjectReference Include=3D"..\..\build\msvc\msvc-generate\msvc-gener=
+ate.vcxproj">
+-      <Project>{8598c2c8-34c4-47a1-99b0-7c295a890615}</Project>
+-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+-    </ProjectReference>
+-  </ItemGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.targets" />
+-  <ImportGroup Label=3D"ExtensionTargets">
+-  </ImportGroup>
+-</Project>
+\ No newline at end of file
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 2f97991..52deef8 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -15,9 +15,7 @@
+ 	$(srcdir)/Makefile.in
+
+ EXTRA_DIST =3D \
+-	openvpn.vcxproj \
+-	openvpn.manifest \
+-	vcpkg.json
++	openvpn.manifest
+
+ AM_CPPFLAGS =3D \
+ 	-I$(top_srcdir)/include \
+diff --git a/src/openvpn/argv.c b/src/openvpn/argv.c
+index cef0da9..50083ba 100644
+--- a/src/openvpn/argv.c
++++ b/src/openvpn/argv.c
+@@ -29,8 +29,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/auth_token.c b/src/openvpn/auth_token.c
+index e4486eb..6787ea7 100644
+--- a/src/openvpn/auth_token.c
++++ b/src/openvpn/auth_token.c
+@@ -1,7 +1,5 @@
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/base64.c b/src/openvpn/base64.c
+index 0ac65e9..a9c2f4c 100644
+--- a/src/openvpn/base64.c
++++ b/src/openvpn/base64.c
+@@ -33,8 +33,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/block_dns.c b/src/openvpn/block_dns.c
+index 4af429b..05b2599 100644
+--- a/src/openvpn/block_dns.c
++++ b/src/openvpn/block_dns.c
+@@ -25,8 +25,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index 7725438..24f1ef2 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/clinat.c b/src/openvpn/clinat.c
+index 514bd43..2b91f7b 100644
+--- a/src/openvpn/clinat.c
++++ b/src/openvpn/clinat.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
+index e544a8d..33a480c 100644
+--- a/src/openvpn/comp-lz4.c
++++ b/src/openvpn/comp-lz4.c
+@@ -24,8 +24,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/comp.c b/src/openvpn/comp.c
+index 27b640c..6e30369 100644
+--- a/src/openvpn/comp.c
++++ b/src/openvpn/comp.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/compstub.c b/src/openvpn/compstub.c
+index 496e60e..adb1f28 100644
+--- a/src/openvpn/compstub.c
++++ b/src/openvpn/compstub.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/console.c b/src/openvpn/console.c
+index bbdd59c..5b367f2 100644
+--- a/src/openvpn/console.c
++++ b/src/openvpn/console.c
+@@ -25,8 +25,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/console_builtin.c b/src/openvpn/console_builtin.c
+index 4101feb..b5264d8 100644
+--- a/src/openvpn/console_builtin.c
++++ b/src/openvpn/console_builtin.c
+@@ -30,8 +30,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index b5ae17e..b5268f1 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -24,8 +24,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
+index cd43ee5..98cac60 100644
+--- a/src/openvpn/crypto_mbedtls.c
++++ b/src/openvpn/crypto_mbedtls.c
+@@ -28,8 +28,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index f5372f8..b043bb9 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -28,8 +28,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
+index 20b7d98..3b92e48 100644
+--- a/src/openvpn/cryptoapi.c
++++ b/src/openvpn/cryptoapi.c
+@@ -31,8 +31,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
+index 308578b..7c7eaac 100644
+--- a/src/openvpn/dco.c
++++ b/src/openvpn/dco.c
+@@ -26,8 +26,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #if defined(ENABLE_DCO)
+diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dco_freebsd.c
+index af7776b..3ba1c81 100644
+--- a/src/openvpn/dco_freebsd.c
++++ b/src/openvpn/dco_freebsd.c
+@@ -20,8 +20,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #if defined(ENABLE_DCO) && defined(TARGET_FREEBSD)
+diff --git a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c
+index 0cf36ba..b033f85 100644
+--- a/src/openvpn/dco_linux.c
++++ b/src/openvpn/dco_linux.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #if defined(ENABLE_DCO) && defined(TARGET_LINUX)
+diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
+index 4b414ef..53f1523 100644
+--- a/src/openvpn/dco_win.c
++++ b/src/openvpn/dco_win.c
+@@ -21,8 +21,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #if defined(_WIN32)
+diff --git a/src/openvpn/dhcp.c b/src/openvpn/dhcp.c
+index b9cd3c6..ac7f538 100644
+--- a/src/openvpn/dhcp.c
++++ b/src/openvpn/dhcp.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
+index b7808db..530e6d5 100644
+--- a/src/openvpn/dns.c
++++ b/src/openvpn/dns.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/env_set.c b/src/openvpn/env_set.c
+index 7905914..97b011f 100644
+--- a/src/openvpn/env_set.c
++++ b/src/openvpn/env_set.c
+@@ -26,8 +26,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index 9a234e6..56addff 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/event.c b/src/openvpn/event.c
+index fa5aee2..6b6f951 100644
+--- a/src/openvpn/event.c
++++ b/src/openvpn/event.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/fdmisc.c b/src/openvpn/fdmisc.c
+index 3f74171..3570ed4 100644
+--- a/src/openvpn/fdmisc.c
++++ b/src/openvpn/fdmisc.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 5bffe07..d8ad0d1 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/fragment.c b/src/openvpn/fragment.c
+index 50391de..974ebda 100644
+--- a/src/openvpn/fragment.c
++++ b/src/openvpn/fragment.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/gremlin.c b/src/openvpn/gremlin.c
+index c77fc40..501d70c 100644
+--- a/src/openvpn/gremlin.c
++++ b/src/openvpn/gremlin.c
+@@ -28,8 +28,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
+index 7c219fd..fa011ff 100644
+--- a/src/openvpn/helper.c
++++ b/src/openvpn/helper.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/httpdigest.c b/src/openvpn/httpdigest.c
+index 6714ef9..5c255b2 100644
+--- a/src/openvpn/httpdigest.c
++++ b/src/openvpn/httpdigest.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index d358ad0..6fb6900 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/interval.c b/src/openvpn/interval.c
+index 8308df4..bde9dd9 100644
+--- a/src/openvpn/interval.c
++++ b/src/openvpn/interval.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/list.c b/src/openvpn/list.c
+index f65d8a8..480f39d 100644
+--- a/src/openvpn/list.c
++++ b/src/openvpn/list.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/lladdr.c b/src/openvpn/lladdr.c
+index ee67718..cc677b4 100644
+--- a/src/openvpn/lladdr.c
++++ b/src/openvpn/lladdr.c
+@@ -4,8 +4,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/lzo.c b/src/openvpn/lzo.c
+index 848cb06..1901780 100644
+--- a/src/openvpn/lzo.c
++++ b/src/openvpn/lzo.c
+@@ -27,8 +27,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 2eaf2f1..739ed40 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/mbuf.c b/src/openvpn/mbuf.c
+index a44f8c3..318b9ed 100644
+--- a/src/openvpn/mbuf.c
++++ b/src/openvpn/mbuf.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 774ea06..ce6e4fd 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -25,8 +25,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
+index 2683b40..91af2b6 100644
+--- a/src/openvpn/mroute.c
++++ b/src/openvpn/mroute.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
+index 98d5406..816e65b 100644
+--- a/src/openvpn/mss.c
++++ b/src/openvpn/mss.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/mstats.c b/src/openvpn/mstats.c
+index 1e92b41..04be449 100644
+--- a/src/openvpn/mstats.c
++++ b/src/openvpn/mstats.c
+@@ -27,8 +27,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
+index 6c56a26..62eb14b 100644
+--- a/src/openvpn/mtcp.c
++++ b/src/openvpn/mtcp.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
+index 2925b7f..132f93c 100644
+--- a/src/openvpn/mtu.c
++++ b/src/openvpn/mtu.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index 8698aef..81625ea 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 6fb9cff..aad11b1 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #ifdef HAVE_SYS_INOTIFY_H
+diff --git a/src/openvpn/networking_freebsd.c b/src/openvpn/networking_free=
+bsd.c
+index 0633dce..1c94756 100644
+--- a/src/openvpn/networking_freebsd.c
++++ b/src/openvpn/networking_freebsd.c
+@@ -1,7 +1,5 @@
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+ #include "syshead.h"
+ #include "errlevel.h"
+diff --git a/src/openvpn/networking_iproute2.c b/src/openvpn/networking_ipr=
+oute2.c
+index 0efeed0..9d2351c 100644
+--- a/src/openvpn/networking_iproute2.c
++++ b/src/openvpn/networking_iproute2.c
+@@ -20,8 +20,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #if defined(TARGET_LINUX) && defined(ENABLE_IPROUTE)
+diff --git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c
+index cb9a47c..662e0e2 100644
+--- a/src/openvpn/networking_sitnl.c
++++ b/src/openvpn/networking_sitnl.c
+@@ -20,8 +20,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #ifdef TARGET_LINUX
+diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
+index 20527d4..0cb0a32 100644
+--- a/src/openvpn/ntlm.c
++++ b/src/openvpn/ntlm.c
+@@ -22,8 +22,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c
+index 94b82e0..8541f6e 100644
+--- a/src/openvpn/occ.c
++++ b/src/openvpn/occ.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index 56b1dcf..ffb64ad 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -36,8 +36,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "buffer.h"
+diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
+index 1aaddcd..348392e 100644
+--- a/src/openvpn/openvpn.c
++++ b/src/openvpn/openvpn.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
+deleted file mode 100644
+index 97baf67..0000000
+--- a/src/openvpn/openvpn.vcxproj
++++ /dev/null
+@@ -1,470 +0,0 @@
+-=EF=BB=BF<?xml version=3D"1.0" encoding=3D"utf-8"?>
+-<Project DefaultTargets=3D"Build" ToolsVersion=3D"15.0" xmlns=3D"http://sc=
+hemas.microsoft.com/developer/msbuild/2003">
+-  <ItemGroup Label=3D"ProjectConfigurations">
+-    <ProjectConfiguration Include=3D"Debug|ARM64">
+-      <Configuration>Debug</Configuration>
+-      <Platform>ARM64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Debug|Win32">
+-      <Configuration>Debug</Configuration>
+-      <Platform>Win32</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Debug|x64">
+-      <Configuration>Debug</Configuration>
+-      <Platform>x64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|ARM64">
+-      <Configuration>Release</Configuration>
+-      <Platform>ARM64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|Win32">
+-      <Configuration>Release</Configuration>
+-      <Platform>Win32</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|x64">
+-      <Configuration>Release</Configuration>
+-      <Platform>x64</Platform>
+-    </ProjectConfiguration>
+-  </ItemGroup>
+-  <PropertyGroup Label=3D"Globals">
+-    <ProjectGuid>{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}</ProjectGuid>
+-    <RootNamespace>openvpn</RootNamespace>
+-    <Keyword>Win32Proj</Keyword>
+-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+-  </PropertyGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|Win32'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <CharacterSet>NotSet</CharacterSet>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|x64'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <CharacterSet>NotSet</CharacterSet>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|ARM64'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <CharacterSet>NotSet</CharacterSet>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|W=
+in32'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <CharacterSet>NotSet</CharacterSet>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x=
+64'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <CharacterSet>NotSet</CharacterSet>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|A=
+RM64'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <CharacterSet>NotSet</CharacterSet>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.props" />
+-  <ImportGroup Label=3D"ExtensionSettings">
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|W=
+in32'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Release.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x=
+64'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Release.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|A=
+RM64'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Release.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win=
+32'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Debug.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x64=
+'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Debug.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|ARM=
+64'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Debug.props" />
+-  </ImportGroup>
+-  <PropertyGroup Label=3D"UserMacros" />
+-  <PropertyGroup>
+-    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x=
+64'">
+-    <GenerateManifest>false</GenerateManifest>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|A=
+RM64'">
+-    <GenerateManifest>false</GenerateManifest>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|x64'">
+-    <GenerateManifest>false</GenerateManifest>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|ARM64'">
+-    <GenerateManifest>false</GenerateManifest>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|Win32'">
+-    <GenerateManifest>false</GenerateManifest>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|W=
+in32'">
+-    <GenerateManifest>false</GenerateManifest>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Debug|ARM64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-    <VcpkgTriplet>arm64-windows-ovpn</VcpkgTriplet>
+-    <VcpkgAdditionalInstallOptions>--overlay-triplets=3D$(SolutionDir)cont=
+rib\vcpkg-triplets --overlay-ports=3D$(SolutionDir)contrib\vcpkg-ports</Vcp=
+kgAdditionalInstallOptions>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Release|ARM64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-    <VcpkgTriplet>arm64-windows-ovpn</VcpkgTriplet>
+-    <VcpkgAdditionalInstallOptions>--overlay-triplets=3D$(SolutionDir)cont=
+rib\vcpkg-triplets --overlay-ports=3D$(SolutionDir)contrib\vcpkg-ports</Vcp=
+kgAdditionalInstallOptions>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Debug|Win32'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-    <VcpkgTriplet>x86-windows-ovpn</VcpkgTriplet>
+-    <VcpkgAdditionalInstallOptions>--overlay-triplets=3D$(SolutionDir)cont=
+rib\vcpkg-triplets --overlay-ports=3D$(SolutionDir)contrib\vcpkg-ports</Vcp=
+kgAdditionalInstallOptions>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Release|Win32'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-    <VcpkgTriplet>x86-windows-ovpn</VcpkgTriplet>
+-    <VcpkgAdditionalInstallOptions>--overlay-triplets=3D$(SolutionDir)cont=
+rib\vcpkg-triplets --overlay-ports=3D$(SolutionDir)contrib\vcpkg-ports</Vcp=
+kgAdditionalInstallOptions>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Debug|x64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-    <VcpkgTriplet>x64-windows-ovpn</VcpkgTriplet>
+-    <VcpkgAdditionalInstallOptions>--overlay-triplets=3D$(SolutionDir)cont=
+rib\vcpkg-triplets --overlay-ports=3D$(SolutionDir)contrib\vcpkg-ports</Vcp=
+kgAdditionalInstallOptions>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Release|x64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-    <VcpkgTriplet>x64-windows-ovpn</VcpkgTriplet>
+-    <VcpkgAdditionalInstallOptions>--overlay-triplets=3D$(SolutionDir)cont=
+rib\vcpkg-triplets --overlay-ports=3D$(SolutionDir)contrib\vcpkg-ports</Vcp=
+kgAdditionalInstallOptions>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg">
+-    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+-  </PropertyGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
+ebug|Win32'">
+-    <ClCompile>
+-      <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WA=
+RNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)<=
+/PreprocessorDefinitions>
+-      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)<=
+/UndefinePreprocessorDefinitions>
+-      <TreatWarningAsError>true</TreatWarningAsError>
+-      <AdditionalIncludeDirectories>..\compat;%(AdditionalIncludeDirectori=
+es)</AdditionalIncludeDirectories>
+-      <WarningLevel>Level2</WarningLevel>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-      <SDLCheck>true</SDLCheck>
+-    </ClCompile>
+-    <ResourceCompile />
+-    <Link>
+-      <AdditionalDependencies>Ncrypt.lib;gdi32.lib;ws2_32.lib;wininet.lib;=
+crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;Adv=
+api32.lib</AdditionalDependencies>
+-      <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(=
+PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirecto=
+ries>
+-      <SubSystem>Console</SubSystem>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
+ebug|x64'">
+-    <ClCompile>
+-      <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WA=
+RNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)<=
+/PreprocessorDefinitions>
+-      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)<=
+/UndefinePreprocessorDefinitions>
+-      <TreatWarningAsError>true</TreatWarningAsError>
+-      <AdditionalIncludeDirectories>..\compat;%(AdditionalIncludeDirectori=
+es)</AdditionalIncludeDirectories>
+-      <WarningLevel>Level2</WarningLevel>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-      <SDLCheck>true</SDLCheck>
+-    </ClCompile>
+-    <ResourceCompile />
+-    <Link>
+-      <AdditionalDependencies>Ncrypt.lib;gdi32.lib;ws2_32.lib;wininet.lib;=
+crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;Adv=
+api32.lib</AdditionalDependencies>
+-      <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(=
+PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirecto=
+ries>
+-      <SubSystem>Console</SubSystem>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
+ebug|ARM64'">
+-    <ClCompile>
+-      <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WA=
+RNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)<=
+/PreprocessorDefinitions>
+-      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)<=
+/UndefinePreprocessorDefinitions>
+-      <TreatWarningAsError>true</TreatWarningAsError>
+-      <AdditionalIncludeDirectories>..\compat;%(AdditionalIncludeDirectori=
+es)</AdditionalIncludeDirectories>
+-      <WarningLevel>Level2</WarningLevel>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-      <SDLCheck>true</SDLCheck>
+-    </ClCompile>
+-    <ResourceCompile />
+-    <Link>
+-      <AdditionalDependencies>Ncrypt.lib;gdi32.lib;ws2_32.lib;wininet.lib;=
+crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;Adv=
+api32.lib</AdditionalDependencies>
+-      <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(=
+PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirecto=
+ries>
+-      <SubSystem>Console</SubSystem>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
+elease|Win32'">
+-    <ClCompile>
+-      <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WA=
+RNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)<=
+/PreprocessorDefinitions>
+-      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)<=
+/UndefinePreprocessorDefinitions>
+-      <TreatWarningAsError>true</TreatWarningAsError>
+-      <AdditionalIncludeDirectories>..\compat;%(AdditionalIncludeDirectori=
+es)</AdditionalIncludeDirectories>
+-      <ControlFlowGuard>Guard</ControlFlowGuard>
+-      <WarningLevel>Level2</WarningLevel>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-      <SDLCheck>true</SDLCheck>
+-    </ClCompile>
+-    <ResourceCompile />
+-    <Link>
+-      <AdditionalDependencies>Ncrypt.lib;gdi32.lib;ws2_32.lib;wininet.lib;=
+crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;Adv=
+api32.lib</AdditionalDependencies>
+-      <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(=
+PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirecto=
+ries>
+-      <SubSystem>Console</SubSystem>
+-      <CETCompat>true</CETCompat>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
+elease|x64'">
+-    <ClCompile>
+-      <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WA=
+RNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)<=
+/PreprocessorDefinitions>
+-      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)<=
+/UndefinePreprocessorDefinitions>
+-      <TreatWarningAsError>true</TreatWarningAsError>
+-      <AdditionalIncludeDirectories>..\compat;%(AdditionalIncludeDirectori=
+es)</AdditionalIncludeDirectories>
+-      <ControlFlowGuard>Guard</ControlFlowGuard>
+-      <SDLCheck>true</SDLCheck>
+-      <WarningLevel>Level2</WarningLevel>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-    </ClCompile>
+-    <ResourceCompile />
+-    <Link>
+-      <AdditionalDependencies>Ncrypt.lib;gdi32.lib;ws2_32.lib;wininet.lib;=
+crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;Adv=
+api32.lib</AdditionalDependencies>
+-      <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(=
+PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirecto=
+ries>
+-      <SubSystem>Console</SubSystem>
+-      <CETCompat>true</CETCompat>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
+elease|ARM64'">
+-    <ClCompile>
+-      <PreprocessorDefinitions>_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WA=
+RNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)<=
+/PreprocessorDefinitions>
+-      <UndefinePreprocessorDefinitions>%(UndefinePreprocessorDefinitions)<=
+/UndefinePreprocessorDefinitions>
+-      <TreatWarningAsError>true</TreatWarningAsError>
+-      <AdditionalIncludeDirectories>..\compat;%(AdditionalIncludeDirectori=
+es)</AdditionalIncludeDirectories>
+-      <ControlFlowGuard>Guard</ControlFlowGuard>
+-      <WarningLevel>Level2</WarningLevel>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-      <SDLCheck>true</SDLCheck>
+-    </ClCompile>
+-    <ResourceCompile />
+-    <Link>
+-      <AdditionalDependencies>Ncrypt.lib;gdi32.lib;ws2_32.lib;wininet.lib;=
+crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;Adv=
+api32.lib</AdditionalDependencies>
+-      <AdditionalLibraryDirectories>$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(=
+PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirecto=
+ries>
+-      <SubSystem>Console</SubSystem>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemGroup>
+-    <ClCompile Include=3D"argv.c" />
+-    <ClCompile Include=3D"auth_token.c" />
+-    <ClCompile Include=3D"base64.c" />
+-    <ClCompile Include=3D"block_dns.c" />
+-    <ClCompile Include=3D"buffer.c" />
+-    <ClCompile Include=3D"clinat.c" />
+-    <ClCompile Include=3D"comp-lz4.c" />
+-    <ClCompile Include=3D"comp.c" />
+-    <ClCompile Include=3D"compstub.c" />
+-    <ClCompile Include=3D"console.c" />
+-    <ClCompile Include=3D"console_builtin.c" />
+-    <ClCompile Include=3D"crypto.c" />
+-    <ClCompile Include=3D"crypto_openssl.c" />
+-    <ClCompile Include=3D"cryptoapi.c" />
+-    <ClCompile Include=3D"dco.c" />
+-    <ClCompile Include=3D"dco_win.c" />
+-    <ClCompile Include=3D"dhcp.c" />
+-    <ClCompile Include=3D"dns.c" />
+-    <ClCompile Include=3D"env_set.c" />
+-    <ClCompile Include=3D"error.c" />
+-    <ClCompile Include=3D"event.c" />
+-    <ClCompile Include=3D"fdmisc.c" />
+-    <ClCompile Include=3D"forward.c" />
+-    <ClCompile Include=3D"fragment.c" />
+-    <ClCompile Include=3D"gremlin.c" />
+-    <ClCompile Include=3D"helper.c" />
+-    <ClCompile Include=3D"httpdigest.c" />
+-    <ClCompile Include=3D"init.c" />
+-    <ClCompile Include=3D"interval.c" />
+-    <ClCompile Include=3D"list.c" />
+-    <ClCompile Include=3D"lladdr.c" />
+-    <ClCompile Include=3D"lzo.c" />
+-    <ClCompile Include=3D"manage.c" />
+-    <ClCompile Include=3D"mbuf.c" />
+-    <ClCompile Include=3D"misc.c" />
+-    <ClCompile Include=3D"mroute.c" />
+-    <ClCompile Include=3D"mss.c" />
+-    <ClCompile Include=3D"mstats.c" />
+-    <ClCompile Include=3D"mtcp.c" />
+-    <ClCompile Include=3D"mtu.c" />
+-    <ClCompile Include=3D"mudp.c" />
+-    <ClCompile Include=3D"multi.c" />
+-    <ClCompile Include=3D"ntlm.c" />
+-    <ClCompile Include=3D"occ.c" />
+-    <ClCompile Include=3D"openvpn.c" />
+-    <ClCompile Include=3D"options.c" />
+-    <ClCompile Include=3D"options_util.c" />
+-    <ClCompile Include=3D"otime.c" />
+-    <ClCompile Include=3D"packet_id.c" />
+-    <ClCompile Include=3D"perf.c" />
+-    <ClCompile Include=3D"ping.c" />
+-    <ClCompile Include=3D"pkcs11.c" />
+-    <ClCompile Include=3D"pkcs11_openssl.c" />
+-    <ClCompile Include=3D"platform.c" />
+-    <ClCompile Include=3D"plugin.c" />
+-    <ClCompile Include=3D"pool.c" />
+-    <ClCompile Include=3D"proto.c" />
+-    <ClCompile Include=3D"proxy.c" />
+-    <ClCompile Include=3D"ps.c" />
+-    <ClCompile Include=3D"push.c" />
+-    <ClCompile Include=3D"reflect_filter.c" />
+-    <ClCompile Include=3D"reliable.c" />
+-    <ClCompile Include=3D"route.c" />
+-    <ClCompile Include=3D"run_command.c" />
+-    <ClCompile Include=3D"schedule.c" />
+-    <ClCompile Include=3D"session_id.c" />
+-    <ClCompile Include=3D"shaper.c" />
+-    <ClCompile Include=3D"sig.c" />
+-    <ClCompile Include=3D"socket.c" />
+-    <ClCompile Include=3D"socks.c" />
+-    <ClCompile Include=3D"ssl.c" />
+-    <ClCompile Include=3D"ssl_openssl.c" />
+-    <ClCompile Include=3D"ssl_ncp.c" />
+-    <ClCompile Include=3D"ssl_pkt.c" />
+-    <ClCompile Include=3D"ssl_util.c" />
+-    <ClCompile Include=3D"ssl_verify.c" />
+-    <ClCompile Include=3D"ssl_verify_openssl.c" />
+-    <ClCompile Include=3D"status.c" />
+-    <ClCompile Include=3D"tls_crypt.c" />
+-    <ClCompile Include=3D"tun.c" />
+-    <ClCompile Include=3D"vlan.c" />
+-    <ClCompile Include=3D"win32.c" />
+-    <ClCompile Include=3D"win32-util.c" />
+-    <ClCompile Include=3D"xkey_helper.c" />
+-    <ClCompile Include=3D"xkey_provider.c" />
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ClInclude Include=3D"argv.h" />
+-    <ClInclude Include=3D"auth_token.h" />
+-    <ClInclude Include=3D"base64.h" />
+-    <ClInclude Include=3D"basic.h" />
+-    <ClInclude Include=3D"block_dns.h" />
+-    <ClInclude Include=3D"buffer.h" />
+-    <ClInclude Include=3D"circ_list.h" />
+-    <ClInclude Include=3D"clinat.h" />
+-    <ClInclude Include=3D"common.h" />
+-    <ClInclude Include=3D"comp-lz4.h" />
+-    <ClInclude Include=3D"comp.h" />
+-    <ClInclude Include=3D"compstub.h" />
+-    <ClInclude Include=3D"console.h" />
+-    <ClInclude Include=3D"crypto.h" />
+-    <ClInclude Include=3D"crypto_backend.h" />
+-    <ClInclude Include=3D"crypto_openssl.h" />
+-    <ClInclude Include=3D"cryptoapi.h" />
+-    <ClInclude Include=3D"dco.h" />
+-    <ClInclude Include=3D"dco_internal.h" />
+-    <ClInclude Include=3D"dco_win.h" />
+-    <ClInclude Include=3D"dhcp.h" />
+-    <ClInclude Include=3D"dns.h" />
+-    <ClInclude Include=3D"env_set.h" />
+-    <ClInclude Include=3D"errlevel.h" />
+-    <ClInclude Include=3D"error.h" />
+-    <ClInclude Include=3D"event.h" />
+-    <ClInclude Include=3D"fdmisc.h" />
+-    <ClInclude Include=3D"forward.h" />
+-    <ClInclude Include=3D"fragment.h" />
+-    <ClInclude Include=3D"gremlin.h" />
+-    <ClInclude Include=3D"helper.h" />
+-    <ClInclude Include=3D"httpdigest.h" />
+-    <ClInclude Include=3D"init.h" />
+-    <ClInclude Include=3D"integer.h" />
+-    <ClInclude Include=3D"interval.h" />
+-    <ClInclude Include=3D"list.h" />
+-    <ClInclude Include=3D"lladdr.h" />
+-    <ClInclude Include=3D"lzo.h" />
+-    <ClInclude Include=3D"manage.h" />
+-    <ClInclude Include=3D"mbuf.h" />
+-    <ClInclude Include=3D"memdbg.h" />
+-    <ClInclude Include=3D"misc.h" />
+-    <ClInclude Include=3D"mroute.h" />
+-    <ClInclude Include=3D"mss.h" />
+-    <ClInclude Include=3D"mstats.h" />
+-    <ClInclude Include=3D"mtcp.h" />
+-    <ClInclude Include=3D"mtu.h" />
+-    <ClInclude Include=3D"mudp.h" />
+-    <ClInclude Include=3D"multi.h" />
+-    <ClInclude Include=3D"ntlm.h" />
+-    <ClInclude Include=3D"occ.h" />
+-    <ClInclude Include=3D"openvpn.h" />
+-    <ClInclude Include=3D"options.h" />
+-    <ClInclude Include=3D"options_util.h" />
+-    <ClInclude Include=3D"otime.h" />
+-    <ClInclude Include=3D"ovpn_dco_win.h" />
+-    <ClInclude Include=3D"packet_id.h" />
+-    <ClInclude Include=3D"perf.h" />
+-    <ClInclude Include=3D"ping.h" />
+-    <ClInclude Include=3D"pkcs11.h" />
+-    <ClInclude Include=3D"pkcs11_backend.h" />
+-    <ClInclude Include=3D"platform.h" />
+-    <ClInclude Include=3D"plugin.h" />
+-    <ClInclude Include=3D"pool.h" />
+-    <ClInclude Include=3D"proto.h" />
+-    <ClInclude Include=3D"proxy.h" />
+-    <ClInclude Include=3D"ps.h" />
+-    <ClInclude Include=3D"push.h" />
+-    <ClInclude Include=3D"pushlist.h" />
+-    <ClInclude Include=3D"reflect_filter.h" />
+-    <ClInclude Include=3D"reliable.h" />
+-    <ClInclude Include=3D"ring_buffer.h" />
+-    <ClInclude Include=3D"route.h" />
+-    <ClInclude Include=3D"run_command.h" />
+-    <ClInclude Include=3D"schedule.h" />
+-    <ClInclude Include=3D"session_id.h" />
+-    <ClInclude Include=3D"shaper.h" />
+-    <ClInclude Include=3D"sig.h" />
+-    <ClInclude Include=3D"socket.h" />
+-    <ClInclude Include=3D"socks.h" />
+-    <ClInclude Include=3D"ssl.h" />
+-    <ClInclude Include=3D"ssl_backend.h" />
+-    <ClInclude Include=3D"ssl_common.h" />
+-    <ClInclude Include=3D"ssl_ncp.h" />
+-    <ClInclude Include=3D"ssl_openssl.h" />
+-    <ClInclude Include=3D"ssl_pkt.h" />
+-    <ClInclude Include=3D"ssl_util.h" />
+-    <ClInclude Include=3D"ssl_verify.h" />
+-    <ClInclude Include=3D"ssl_verify_backend.h" />
+-    <ClInclude Include=3D"ssl_verify_openssl.h" />
+-    <ClInclude Include=3D"status.h" />
+-    <ClInclude Include=3D"syshead.h" />
+-    <ClInclude Include=3D"tls_crypt.h" />
+-    <ClInclude Include=3D"tun.h" />
+-    <ClInclude Include=3D"vlan.h" />
+-    <ClInclude Include=3D"win32.h" />
+-    <ClInclude Include=3D"win32-util.h" />
+-    <ClInclude Include=3D"xkey_common.h" />
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ResourceCompile Include=3D"openvpn_win32_resources.rc" />
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ProjectReference Include=3D"..\..\build\msvc\msvc-generate\msvc-gener=
+ate.vcxproj">
+-      <Project>{8598c2c8-34c4-47a1-99b0-7c295a890615}</Project>
+-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+-    </ProjectReference>
+-    <ProjectReference Include=3D"..\compat\compat.vcxproj">
+-      <Project>{4b2e2719-e661-45d7-9203-f6f456b22f19}</Project>
+-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+-    </ProjectReference>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <Manifest Include=3D"openvpn.manifest" />
+-  </ItemGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.targets" />
+-  <ImportGroup Label=3D"ExtensionTargets">
+-  </ImportGroup>
+-</Project>
+\ No newline at end of file
+diff --git a/src/openvpn/openvpn_win32_resources.rc b/src/openvpn/openvpn_w=
+in32_resources.rc
+index 1ea5f87..a843b1b 100644
+--- a/src/openvpn/openvpn_win32_resources.rc
++++ b/src/openvpn/openvpn_win32_resources.rc
+@@ -1,7 +1,5 @@
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+-#else
+-#include <config-msvc-version.h>
+ #endif
+ #include <winresrc.h>
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index efddc58..90d85be 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -29,8 +29,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+ #ifdef HAVE_CONFIG_VERSION_H
+ #include "config-version.h"
+diff --git a/src/openvpn/options_util.c b/src/openvpn/options_util.c
+index b071f37..3660da0 100644
+--- a/src/openvpn/options_util.c
++++ b/src/openvpn/options_util.c
+@@ -24,8 +24,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/otime.c b/src/openvpn/otime.c
+index 0bbed81..b28a90f 100644
+--- a/src/openvpn/otime.c
++++ b/src/openvpn/otime.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
+index bb790f0..ef83248 100644
+--- a/src/openvpn/packet_id.c
++++ b/src/openvpn/packet_id.c
+@@ -32,8 +32,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/perf.c b/src/openvpn/perf.c
+index 5eb8926..ca4f810 100644
+--- a/src/openvpn/perf.c
++++ b/src/openvpn/perf.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/ping.c b/src/openvpn/ping.c
+index 25822c9..ccf9870 100644
+--- a/src/openvpn/ping.c
++++ b/src/openvpn/ping.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c
+index b6c3bf1..cfe6cf6 100644
+--- a/src/openvpn/pkcs11.c
++++ b/src/openvpn/pkcs11.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/pkcs11_mbedtls.c b/src/openvpn/pkcs11_mbedtls.c
+index a286a23..7e4be14 100644
+--- a/src/openvpn/pkcs11_mbedtls.c
++++ b/src/openvpn/pkcs11_mbedtls.c
+@@ -28,8 +28,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c
+index 9b0ab39..7c07152 100644
+--- a/src/openvpn/pkcs11_openssl.c
++++ b/src/openvpn/pkcs11_openssl.c
+@@ -28,8 +28,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
+index f6b856f..32c4fe6 100644
+--- a/src/openvpn/platform.c
++++ b/src/openvpn/platform.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
+index d662998..b4d4a98 100644
+--- a/src/openvpn/plugin.c
++++ b/src/openvpn/plugin.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+ #ifdef HAVE_CONFIG_VERSION_H
+ #include "config-version.h"
+diff --git a/src/openvpn/pool.c b/src/openvpn/pool.c
+index 4af9bcb..5ab0f95 100644
+--- a/src/openvpn/pool.c
++++ b/src/openvpn/pool.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/proto.c b/src/openvpn/proto.c
+index 7a84407..cab60c3 100644
+--- a/src/openvpn/proto.c
++++ b/src/openvpn/proto.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
+index ed47eaa..76e27cb 100644
+--- a/src/openvpn/proxy.c
++++ b/src/openvpn/proxy.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
+index 3609630..4659e17 100644
+--- a/src/openvpn/ps.c
++++ b/src/openvpn/ps.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 8f0a534..01e7cd6 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/reflect_filter.c b/src/openvpn/reflect_filter.c
+index cfe69a6..0db456b 100644
+--- a/src/openvpn/reflect_filter.c
++++ b/src/openvpn/reflect_filter.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
+index 32b346b..e7d4d5f 100644
+--- a/src/openvpn/reliable.c
++++ b/src/openvpn/reliable.c
+@@ -28,8 +28,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index f2852b4..90e981e 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -27,8 +27,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/run_command.c b/src/openvpn/run_command.c
+index 8c2a6d7..864b317 100644
+--- a/src/openvpn/run_command.c
++++ b/src/openvpn/run_command.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/schedule.c b/src/openvpn/schedule.c
+index b0fca03..e1bc24a 100644
+--- a/src/openvpn/schedule.c
++++ b/src/openvpn/schedule.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/session_id.c b/src/openvpn/session_id.c
+index 89c67ef..25c5faa 100644
+--- a/src/openvpn/session_id.c
++++ b/src/openvpn/session_id.c
+@@ -32,8 +32,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/shaper.c b/src/openvpn/shaper.c
+index 6a0d7dd..c65dec8 100644
+--- a/src/openvpn/shaper.c
++++ b/src/openvpn/shaper.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
+index 05c0054..8b80aeb 100644
+--- a/src/openvpn/sig.c
++++ b/src/openvpn/sig.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index fc643c1..91a6d53 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
+index 2cf0cc9..a29eb83 100644
+--- a/src/openvpn/socks.c
++++ b/src/openvpn/socks.c
+@@ -31,8 +31,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 8641a51..c975dbc 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -36,8 +36,6 @@
+  */
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 49989d9..81dd906 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -29,8 +29,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/ssl_ncp.c b/src/openvpn/ssl_ncp.c
+index 22dbe21..dafaef1 100644
+--- a/src/openvpn/ssl_ncp.c
++++ b/src/openvpn/ssl_ncp.c
+@@ -37,8 +37,6 @@
+  */
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 65b36d1..0b310de 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -28,8 +28,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c
+index 8b3391e..afc5aab 100644
+--- a/src/openvpn/ssl_pkt.c
++++ b/src/openvpn/ssl_pkt.c
+@@ -22,8 +22,6 @@
+  */
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/ssl_util.c b/src/openvpn/ssl_util.c
+index e12ed3d..bca6eed 100644
+--- a/src/openvpn/ssl_util.c
++++ b/src/openvpn/ssl_util.c
+@@ -22,8 +22,6 @@
+  */
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 1b589f1..90416b6 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -28,8 +28,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbed=
+tls.c
+index e3437f7..a1ddf8d 100644
+--- a/src/openvpn/ssl_verify_mbedtls.c
++++ b/src/openvpn/ssl_verify_mbedtls.c
+@@ -28,8 +28,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_open=
+ssl.c
+index e24ce4e..3194c23 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -28,8 +28,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/status.c b/src/openvpn/status.c
+index 737f340..0cb4408 100644
+--- a/src/openvpn/status.c
++++ b/src/openvpn/status.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index 7354236..975d31f 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index af959bb..6097420 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -31,8 +31,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/vcpkg.json b/src/openvpn/vcpkg.json
+deleted file mode 100644
+index 0afd802..0000000
+--- a/src/openvpn/vcpkg.json
++++ /dev/null
+@@ -1,15 +0,0 @@
+-{
+-  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scr=
+ipts/vcpkg.schema.json",
+-  "name": "openvpn",
+-  "version": "2.6",
+-  "dependencies": [
+-     {
+-       "name": "openssl",
+-       "features": ["tools"]
+-     },
+-    "tap-windows6",
+-    "lzo",
+-    "lz4",
+-    "pkcs11-helper"
+-  ]
+-}
+diff --git a/src/openvpn/vlan.c b/src/openvpn/vlan.c
+index 2510042..0bb7abc 100644
+--- a/src/openvpn/vlan.c
++++ b/src/openvpn/vlan.c
+@@ -24,8 +24,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/win32-util.c b/src/openvpn/win32-util.c
+index 32f7a00..81e504a 100644
+--- a/src/openvpn/win32-util.c
++++ b/src/openvpn/win32-util.c
+@@ -28,8 +28,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index 25da54a..156ee74 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -28,8 +28,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/xkey_helper.c b/src/openvpn/xkey_helper.c
+index ee9677a..40839f2 100644
+--- a/src/openvpn/xkey_helper.c
++++ b/src/openvpn/xkey_helper.c
+@@ -24,8 +24,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/src/openvpn/xkey_provider.c b/src/openvpn/xkey_provider.c
+index b0f414f..db316fe 100644
+--- a/src/openvpn/xkey_provider.c
++++ b/src/openvpn/xkey_provider.c
+@@ -24,8 +24,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
 diff --git a/src/openvpnmsica/Makefile.am b/src/openvpnmsica/Makefile.am
-index 6da0754..d68a008 100644
+index d68a008..dc53f75 100644
 --- a/src/openvpnmsica/Makefile.am
 +++ b/src/openvpnmsica/Makefile.am
-@@ -34,6 +34,9 @@
- AM_CFLAGS =3D \
- 	$(TAP_CFLAGS)
+@@ -22,12 +22,6 @@
 
-+EXTRA_DIST =3D \
-+	CMakeLists.txt
-+
- if WIN32
- lib_LTLIBRARIES =3D libopenvpnmsica.la
- libopenvpnmsica_la_CFLAGS =3D \
-diff --git a/src/openvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.txt
-new file mode 100644
-index 0000000..17cd90c
---- /dev/null
-+++ b/src/openvpnserv/CMakeLists.txt
-@@ -0,0 +1,34 @@
-+if (NOT WIN32)
-+    return ()
-+endif ()
-+
-+project(openvpnserv)
-+
-+add_executable(openvpnserv)
-+
-+target_include_directories(openvpnserv PRIVATE
-+    ${CMAKE_CURRENT_BINARY_DIR}/../../
-+    ../../include/
-+    ../openvpn/
-+    ../compat/
-+    )
-+target_sources(openvpnserv PRIVATE
-+    common.c
-+    interactive.c
-+    service.c service.h
-+    validate.c validate.h
-+    ../openvpn/block_dns.c ../openvpn/block_dns.h
-+    openvpnserv_resources.rc
-+    ../openvpn/ring_buffer.h
-+    )
-+target_compile_options(openvpnserv PRIVATE
-+    -D_UNICODE
-+    -UNTDDI_VERSION
-+    -D_WIN32_WINNT=3D_WIN32_WINNT_VISTA
-+    )
-+target_link_libraries(openvpnserv
-+    advapi32.lib userenv.lib iphlpapi.lib fwpuclnt.lib rpcrt4.lib shlwapi.=
-lib netapi32.lib ws2_32.lib ntdll.lib)
-+if (MINGW)
-+    target_compile_options(openvpnserv PRIVATE -municode)
-+    target_link_options(openvpnserv PRIVATE -municode)
-+endif ()
+ MAINTAINERCLEANFILES =3D $(srcdir)/Makefile.in
+
+-EXTRA_DIST =3D \
+-	openvpnmsica.vcxproj \
+-	openvpnmsica.props \
+-	openvpnmsica-Debug.props \
+-	openvpnmsica-Release.props
+-
+ AM_CPPFLAGS =3D \
+ 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat
+
+diff --git a/src/openvpnmsica/dllmain.c b/src/openvpnmsica/dllmain.c
+index 7cff41a..1bf3d56 100644
+--- a/src/openvpnmsica/dllmain.c
++++ b/src/openvpnmsica/dllmain.c
+@@ -20,8 +20,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+-#elif defined(_MSC_VER)
+-#include <config-msvc.h>
+ #endif
+
+ #include "openvpnmsica.h"
+diff --git a/src/openvpnmsica/msica_arg.c b/src/openvpnmsica/msica_arg.c
+index ad6968f..d1eb404 100644
+--- a/src/openvpnmsica/msica_arg.c
++++ b/src/openvpnmsica/msica_arg.c
+@@ -20,8 +20,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+-#elif defined(_MSC_VER)
+-#include <config-msvc.h>
+ #endif
+
+ #include "msica_arg.h"
+diff --git a/src/openvpnmsica/msiex.c b/src/openvpnmsica/msiex.c
+index 3ea2c1a..78017eb 100644
+--- a/src/openvpnmsica/msiex.c
++++ b/src/openvpnmsica/msiex.c
+@@ -20,8 +20,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+-#elif defined(_MSC_VER)
+-#include <config-msvc.h>
+ #endif
+
+ #include "msiex.h"
+diff --git a/src/openvpnmsica/openvpnmsica-Debug.props b/src/openvpnmsica/o=
+penvpnmsica-Debug.props
+deleted file mode 100644
+index 43532cf..0000000
+--- a/src/openvpnmsica/openvpnmsica-Debug.props
++++ /dev/null
+@@ -1,14 +0,0 @@
+-<?xml version=3D"1.0" encoding=3D"utf-8"?>
+-<Project ToolsVersion=3D"4.0" xmlns=3D"http://schemas.microsoft.com/develo=
+per/msbuild/2003">
+-  <ImportGroup Label=3D"PropertySheets">
+-    <Import Project=3D"openvpnmsica.props" />
+-  </ImportGroup>
+-  <PropertyGroup Label=3D"UserMacros" />
+-  <PropertyGroup />
+-  <ItemDefinitionGroup>
+-    <ClCompile>
+-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemGroup />
+-</Project>
+\ No newline at end of file
+diff --git a/src/openvpnmsica/openvpnmsica-Release.props b/src/openvpnmsica=
+/openvpnmsica-Release.props
+deleted file mode 100644
+index 47727b3..0000000
+--- a/src/openvpnmsica/openvpnmsica-Release.props
++++ /dev/null
+@@ -1,15 +0,0 @@
+-<?xml version=3D"1.0" encoding=3D"utf-8"?>
+-<Project ToolsVersion=3D"4.0" xmlns=3D"http://schemas.microsoft.com/develo=
+per/msbuild/2003">
+-  <ImportGroup Label=3D"PropertySheets">
+-    <Import Project=3D"openvpnmsica.props" />
+-  </ImportGroup>
+-  <PropertyGroup Label=3D"UserMacros" />
+-  <PropertyGroup />
+-  <ItemDefinitionGroup>
+-    <ClCompile>
+-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+-      <ControlFlowGuard>Guard</ControlFlowGuard>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemGroup />
+-</Project>
+\ No newline at end of file
+diff --git a/src/openvpnmsica/openvpnmsica.c b/src/openvpnmsica/openvpnmsic=
+a.c
+index 06c9789..e5312d6 100644
+--- a/src/openvpnmsica/openvpnmsica.c
++++ b/src/openvpnmsica/openvpnmsica.c
+@@ -20,8 +20,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+-#elif defined(_MSC_VER)
+-#include <config-msvc.h>
+ #endif
+ #include <winsock2.h> /* Must be included _before_ <windows.h> */
+
+diff --git a/src/openvpnmsica/openvpnmsica.props b/src/openvpnmsica/openvpn=
+msica.props
+deleted file mode 100644
+index 1091c9f..0000000
+--- a/src/openvpnmsica/openvpnmsica.props
++++ /dev/null
+@@ -1,17 +0,0 @@
+-<?xml version=3D"1.0" encoding=3D"utf-8"?>
+-<Project ToolsVersion=3D"4.0" xmlns=3D"http://schemas.microsoft.com/develo=
+per/msbuild/2003">
+-  <ImportGroup Label=3D"PropertySheets" />
+-  <PropertyGroup Label=3D"UserMacros" />
+-  <PropertyGroup>
+-    <TargetName>lib$(ProjectName)</TargetName>
+-  </PropertyGroup>
+-  <ItemDefinitionGroup>
+-    <ClCompile>
+-      <PreprocessorDefinitions>_WIN32_WINNT=3D_WIN32_WINNT_VISTA;%(Preproc=
+essorDefinitions)</PreprocessorDefinitions>
+-    </ClCompile>
+-    <Link>
+-      <SubSystem>Windows</SubSystem>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemGroup />
+-</Project>
+\ No newline at end of file
+diff --git a/src/openvpnmsica/openvpnmsica.vcxproj b/src/openvpnmsica/openv=
+pnmsica.vcxproj
+deleted file mode 100644
+index c9154b3..0000000
+--- a/src/openvpnmsica/openvpnmsica.vcxproj
++++ /dev/null
+@@ -1,208 +0,0 @@
+-<?xml version=3D"1.0" encoding=3D"utf-8"?>
+-<Project DefaultTargets=3D"Build" ToolsVersion=3D"15.0" xmlns=3D"http://sc=
+hemas.microsoft.com/developer/msbuild/2003">
+-  <ItemGroup Label=3D"ProjectConfigurations">
+-    <ProjectConfiguration Include=3D"Debug|ARM64">
+-      <Configuration>Debug</Configuration>
+-      <Platform>ARM64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Debug|Win32">
+-      <Configuration>Debug</Configuration>
+-      <Platform>Win32</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Debug|x64">
+-      <Configuration>Debug</Configuration>
+-      <Platform>x64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|ARM64">
+-      <Configuration>Release</Configuration>
+-      <Platform>ARM64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|Win32">
+-      <Configuration>Release</Configuration>
+-      <Platform>Win32</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|x64">
+-      <Configuration>Release</Configuration>
+-      <Platform>x64</Platform>
+-    </ProjectConfiguration>
+-  </ItemGroup>
+-  <PropertyGroup Label=3D"Globals">
+-    <VCProjectVersion>15.0</VCProjectVersion>
+-    <ProjectGuid>{D41AA9D6-B818-476E-992E-0E16EB86BEE2}</ProjectGuid>
+-    <Keyword>Win32Proj</Keyword>
+-    <RootNamespace>openvpnmsica</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+-  </PropertyGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|A=
+RM64'" Label=3D"Configuration">
+-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+-    <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <WindowsSDKDesktopARM64Support>true</WindowsSDKDesktopARM64Support>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|W=
+in32'" Label=3D"Configuration">
+-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+-    <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x=
+64'" Label=3D"Configuration">
+-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+-    <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|ARM64'" Label=3D"Configuration">
+-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+-    <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <WindowsSDKDesktopARM64Support>true</WindowsSDKDesktopARM64Support>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|Win32'" Label=3D"Configuration">
+-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+-    <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|x64'" Label=3D"Configuration">
+-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+-    <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.props" />
+-  <ImportGroup Label=3D"ExtensionSettings">
+-  </ImportGroup>
+-  <ImportGroup Label=3D"Shared">
+-  </ImportGroup>
+-  <ImportGroup Label=3D"PropertySheets" Condition=3D"'$(Configuration)|$(P=
+latform)'=3D=3D'Debug|ARM64'">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Debug.props" />
+-    <Import Project=3D"openvpnmsica-Debug.props" />
+-  </ImportGroup>
+-  <ImportGroup Label=3D"PropertySheets" Condition=3D"'$(Configuration)|$(P=
+latform)'=3D=3D'Debug|Win32'">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Debug.props" />
+-    <Import Project=3D"openvpnmsica-Debug.props" />
+-  </ImportGroup>
+-  <ImportGroup Label=3D"PropertySheets" Condition=3D"'$(Configuration)|$(P=
+latform)'=3D=3D'Debug|x64'">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Debug.props" />
+-    <Import Project=3D"openvpnmsica-Debug.props" />
+-  </ImportGroup>
+-  <ImportGroup Label=3D"PropertySheets" Condition=3D"'$(Configuration)|$(P=
+latform)'=3D=3D'Release|ARM64'">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Release.props" />
+-    <Import Project=3D"openvpnmsica-Release.props" />
+-  </ImportGroup>
+-  <ImportGroup Label=3D"PropertySheets" Condition=3D"'$(Configuration)|$(P=
+latform)'=3D=3D'Release|Win32'">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Release.props" />
+-    <Import Project=3D"openvpnmsica-Release.props" />
+-  </ImportGroup>
+-  <ImportGroup Label=3D"PropertySheets" Condition=3D"'$(Configuration)|$(P=
+latform)'=3D=3D'Release|x64'">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Release.props" />
+-    <Import Project=3D"openvpnmsica-Release.props" />
+-  </ImportGroup>
+-  <PropertyGroup Label=3D"UserMacros" />
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Debug|ARM64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Release|ARM64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Debug|Win32'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Release|Win32'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Debug|x64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Release|x64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
+elease|x64'">
+-    <Link>
+-      <CETCompat>true</CETCompat>
+-    </Link>
+-    <ClCompile>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-      <SDLCheck>true</SDLCheck>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
+elease|Win32'">
+-    <Link>
+-      <CETCompat>true</CETCompat>
+-    </Link>
+-    <ClCompile>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-      <SDLCheck>true</SDLCheck>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
+ebug|ARM64'">
+-    <ClCompile>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-      <SDLCheck>true</SDLCheck>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
+elease|ARM64'">
+-    <ClCompile>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-      <SDLCheck>true</SDLCheck>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
+ebug|Win32'">
+-    <ClCompile>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-      <SDLCheck>true</SDLCheck>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
+ebug|x64'">
+-    <ClCompile>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-      <SDLCheck>true</SDLCheck>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemGroup>
+-    <ClCompile Include=3D"..\tapctl\error.c" />
+-    <ClCompile Include=3D"..\tapctl\tap.c" />
+-    <ClCompile Include=3D"dllmain.c" />
+-    <ClCompile Include=3D"msiex.c" />
+-    <ClCompile Include=3D"msica_arg.c" />
+-    <ClCompile Include=3D"openvpnmsica.c" />
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ClInclude Include=3D"..\tapctl\basic.h" />
+-    <ClInclude Include=3D"..\tapctl\error.h" />
+-    <ClInclude Include=3D"..\tapctl\tap.h" />
+-    <ClInclude Include=3D"msiex.h" />
+-    <ClInclude Include=3D"msica_arg.h" />
+-    <ClInclude Include=3D"openvpnmsica.h" />
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ResourceCompile Include=3D"openvpnmsica_resources.rc" />
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ProjectReference Include=3D"..\..\build\msvc\msvc-generate\msvc-gener=
+ate.vcxproj">
+-      <Project>{8598c2c8-34c4-47a1-99b0-7c295a890615}</Project>
+-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+-    </ProjectReference>
+-  </ItemGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.targets" />
+-  <ImportGroup Label=3D"ExtensionTargets">
+-  </ImportGroup>
+-</Project>
+\ No newline at end of file
+diff --git a/src/openvpnmsica/openvpnmsica_resources.rc b/src/openvpnmsica/=
+openvpnmsica_resources.rc
+index d7c14de..e30c8a1 100644
+--- a/src/openvpnmsica/openvpnmsica_resources.rc
++++ b/src/openvpnmsica/openvpnmsica_resources.rc
+@@ -19,8 +19,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+-#else
+-#include <config-msvc-version.h>
+ #endif
+ #include <winresrc.h>
+=20
 diff --git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.am
-index b8b2a37..4c0ac40 100644
+index 4c0ac40..d8ba4eb 100644
 --- a/src/openvpnserv/Makefile.am
 +++ b/src/openvpnserv/Makefile.am
-@@ -19,6 +19,9 @@
+@@ -13,9 +13,6 @@
+
+ MAINTAINERCLEANFILES =3D $(srcdir)/Makefile.in
+
+-EXTRA_DIST =3D \
+-	openvpnserv.vcxproj
+-
  AM_CPPFLAGS =3D \
  	-I$(top_srcdir)/include -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/src/c=
 ompat
 
-+EXTRA_DIST =3D \
-+	CMakeLists.txt
-+
- if WIN32
- sbin_PROGRAMS =3D openvpnserv
- openvpnserv_CFLAGS =3D \
-diff --git a/src/tapctl/CMakeLists.txt b/src/tapctl/CMakeLists.txt
-new file mode 100644
-index 0000000..97702c0
---- /dev/null
-+++ b/src/tapctl/CMakeLists.txt
-@@ -0,0 +1,31 @@
-+if (NOT WIN32)
-+    return ()
-+endif ()
-+
-+project(tapctl)
-+
-+add_executable(tapctl)
-+
-+target_include_directories(tapctl PRIVATE
-+    ${CMAKE_CURRENT_BINARY_DIR}/../../
-+    ../../include/
-+    ../compat/
-+    )
-+target_sources(tapctl PRIVATE
-+    basic.h
-+    error.c error.h
-+    main.c
-+    tap.c tap.h
-+    tapctl_resources.rc
-+    )
-+target_compile_options(tapctl PRIVATE
-+    -D_UNICODE
-+    -UNTDDI_VERSION
-+    -D_WIN32_WINNT=3D_WIN32_WINNT_VISTA
-+    )
-+target_link_libraries(tapctl
-+    advapi32.lib ole32.lib setupapi.lib)
-+if (MINGW)
-+    target_compile_options(tapctl PRIVATE -municode)
-+    target_link_options(tapctl PRIVATE -municode)
-+endif ()
+diff --git a/src/openvpnserv/openvpnserv.vcxproj b/src/openvpnserv/openvpns=
+erv.vcxproj
+deleted file mode 100644
+index db3a446..0000000
+--- a/src/openvpnserv/openvpnserv.vcxproj
++++ /dev/null
+@@ -1,229 +0,0 @@
+-=EF=BB=BF<?xml version=3D"1.0" encoding=3D"utf-8"?>
+-<Project DefaultTargets=3D"Build" ToolsVersion=3D"15.0" xmlns=3D"http://sc=
+hemas.microsoft.com/developer/msbuild/2003">
+-  <ItemGroup Label=3D"ProjectConfigurations">
+-    <ProjectConfiguration Include=3D"Debug|ARM64">
+-      <Configuration>Debug</Configuration>
+-      <Platform>ARM64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Debug|Win32">
+-      <Configuration>Debug</Configuration>
+-      <Platform>Win32</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Debug|x64">
+-      <Configuration>Debug</Configuration>
+-      <Platform>x64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|ARM64">
+-      <Configuration>Release</Configuration>
+-      <Platform>ARM64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|Win32">
+-      <Configuration>Release</Configuration>
+-      <Platform>Win32</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|x64">
+-      <Configuration>Release</Configuration>
+-      <Platform>x64</Platform>
+-    </ProjectConfiguration>
+-  </ItemGroup>
+-  <PropertyGroup Label=3D"Globals">
+-    <ProjectGuid>{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}</ProjectGuid>
+-    <RootNamespace>openvpnserv</RootNamespace>
+-    <Keyword>Win32Proj</Keyword>
+-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+-  </PropertyGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|Win32'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|x64'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|ARM64'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|W=
+in32'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x=
+64'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|A=
+RM64'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.props" />
+-  <ImportGroup Label=3D"ExtensionSettings">
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|W=
+in32'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Release.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|x=
+64'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Release.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release|A=
+RM64'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Release.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|Win=
+32'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Debug.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x64=
+'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Debug.props" />
+-  </ImportGroup>
+-  <ImportGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|ARM=
+64'" Label=3D"PropertySheets">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Debug.props" />
+-  </ImportGroup>
+-  <PropertyGroup Label=3D"UserMacros" />
+-  <PropertyGroup>
+-    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Debug|ARM64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Release|ARM64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Debug|Win32'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Release|Win32'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Debug|x64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Release|x64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
+ebug|Win32'">
+-    <ClCompile>
+-      <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalInclu=
+deDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Prepro=
+cessorDefinitions>
+-      <SDLCheck>true</SDLCheck>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-    </ClCompile>
+-    <ResourceCompile />
+-    <Link>
+-      <AdditionalDependencies>Userenv.lib;Iphlpapi.lib;ntdll.lib;Fwpuclnt.=
+lib;Netapi32.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependenc=
+ies>
+-      <SubSystem>Console</SubSystem>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
+ebug|x64'">
+-    <ClCompile>
+-      <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalInclu=
+deDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Prepro=
+cessorDefinitions>
+-      <SDLCheck>true</SDLCheck>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-    </ClCompile>
+-    <ResourceCompile />
+-    <Link>
+-      <AdditionalDependencies>legacy_stdio_definitions.lib;Userenv.lib;Iph=
+lpapi.lib;ntdll.lib;Fwpuclnt.lib;Netapi32.lib;Shlwapi.lib;%(AdditionalDepen=
+dencies)</AdditionalDependencies>
+-      <SubSystem>Console</SubSystem>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
+ebug|ARM64'">
+-    <ClCompile>
+-      <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalInclu=
+deDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Prepro=
+cessorDefinitions>
+-      <SDLCheck>true</SDLCheck>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-    </ClCompile>
+-    <ResourceCompile />
+-    <Link>
+-      <AdditionalDependencies>legacy_stdio_definitions.lib;Userenv.lib;Iph=
+lpapi.lib;ntdll.lib;Fwpuclnt.lib;Netapi32.lib;Shlwapi.lib;%(AdditionalDepen=
+dencies)</AdditionalDependencies>
+-      <SubSystem>Console</SubSystem>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
+elease|Win32'">
+-    <ClCompile>
+-      <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalInclu=
+deDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Prepro=
+cessorDefinitions>
+-      <SDLCheck>true</SDLCheck>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-    </ClCompile>
+-    <ResourceCompile />
+-    <Link>
+-      <AdditionalDependencies>Userenv.lib;Iphlpapi.lib;ntdll.lib;Fwpuclnt.=
+lib;Netapi32.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependenc=
+ies>
+-      <SubSystem>Console</SubSystem>
+-      <CETCompat>true</CETCompat>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
+elease|x64'">
+-    <ClCompile>
+-      <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalInclu=
+deDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Prepro=
+cessorDefinitions>
+-      <SDLCheck>true</SDLCheck>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-    </ClCompile>
+-    <ResourceCompile />
+-    <Link>
+-      <AdditionalDependencies>legacy_stdio_definitions.lib;Userenv.lib;Iph=
+lpapi.lib;ntdll.lib;Fwpuclnt.lib;Netapi32.lib;Shlwapi.lib;%(AdditionalDepen=
+dencies)</AdditionalDependencies>
+-      <SubSystem>Console</SubSystem>
+-      <CETCompat>true</CETCompat>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
+elease|ARM64'">
+-    <ClCompile>
+-      <AdditionalIncludeDirectories>..\openvpn;..\compat;%(AdditionalInclu=
+deDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</Prepro=
+cessorDefinitions>
+-      <SDLCheck>true</SDLCheck>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-    </ClCompile>
+-    <ResourceCompile />
+-    <Link>
+-      <AdditionalDependencies>legacy_stdio_definitions.lib;Userenv.lib;Iph=
+lpapi.lib;ntdll.lib;Fwpuclnt.lib;Netapi32.lib;Shlwapi.lib;%(AdditionalDepen=
+dencies)</AdditionalDependencies>
+-      <SubSystem>Console</SubSystem>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemGroup>
+-    <ClCompile Include=3D"common.c" />
+-    <ClCompile Include=3D"interactive.c" />
+-    <ClCompile Include=3D"service.c" />
+-    <ClCompile Include=3D"validate.c" />
+-    <ClCompile Include=3D"..\openvpn\block_dns.c" />
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ClInclude Include=3D"..\openvpn\ring_buffer.h" />
+-    <ClInclude Include=3D"service.h" />
+-    <ClInclude Include=3D"validate.h" />
+-    <ClInclude Include=3D"..\openvpn\block_dns.h" />
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ResourceCompile Include=3D"openvpnserv_resources.rc" />
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ProjectReference Include=3D"..\..\build\msvc\msvc-generate\msvc-gener=
+ate.vcxproj">
+-      <Project>{8598c2c8-34c4-47a1-99b0-7c295a890615}</Project>
+-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+-    </ProjectReference>
+-  </ItemGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.targets" />
+-  <ImportGroup Label=3D"ExtensionTargets">
+-  </ImportGroup>
+-</Project>
+\ No newline at end of file
+diff --git a/src/openvpnserv/openvpnserv_resources.rc b/src/openvpnserv/ope=
+nvpnserv_resources.rc
+index 4ea453e..ddd0cb8 100644
+--- a/src/openvpnserv/openvpnserv_resources.rc
++++ b/src/openvpnserv/openvpnserv_resources.rc
+@@ -1,7 +1,5 @@
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+-#else
+-#include <config-msvc-version.h>
+ #endif
+ #include <winresrc.h>
+
+diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h
+index fc5ecda..d38a665 100644
+--- a/src/openvpnserv/service.h
++++ b/src/openvpnserv/service.h
+@@ -31,8 +31,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include <winsock2.h>
 diff --git a/src/tapctl/Makefile.am b/src/tapctl/Makefile.am
-index 3896351..fe8ab2a 100644
+index fe8ab2a..69ea161 100644
 --- a/src/tapctl/Makefile.am
 +++ b/src/tapctl/Makefile.am
-@@ -33,6 +33,10 @@
- AM_CFLAGS =3D \
- 	$(TAP_CFLAGS)
+@@ -22,11 +22,6 @@
 
-+EXTRA_DIST =3D \
-+	CMakeLists.txt \
-+	tapctl.exe.manifest
-+
- if WIN32
- sbin_PROGRAMS =3D tapctl
- tapctl_CFLAGS =3D \
+ MAINTAINERCLEANFILES =3D $(srcdir)/Makefile.in
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/315?usp=3Demail
+-EXTRA_DIST =3D \
+-	tapctl.vcxproj \
+-	tapctl.props \
+-	tapctl.exe.manifest
+-
+ AM_CPPFLAGS =3D \
+ 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat
+
+diff --git a/src/tapctl/main.c b/src/tapctl/main.c
+index d76d553..a946c2c 100644
+--- a/src/tapctl/main.c
++++ b/src/tapctl/main.c
+@@ -21,8 +21,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+-#elif defined(_MSC_VER)
+-#include <config-msvc.h>
+ #endif
+
+ #include "tap.h"
+diff --git a/src/tapctl/tap.c b/src/tapctl/tap.c
+index 44fcdde..5ae8044 100644
+--- a/src/tapctl/tap.c
++++ b/src/tapctl/tap.c
+@@ -20,8 +20,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+-#elif defined(_MSC_VER)
+-#include <config-msvc.h>
+ #endif
+
+ #include "tap.h"
+diff --git a/src/tapctl/tapctl.props b/src/tapctl/tapctl.props
+deleted file mode 100644
+index 0257b9f..0000000
+--- a/src/tapctl/tapctl.props
++++ /dev/null
+@@ -1,18 +0,0 @@
+-<?xml version=3D"1.0" encoding=3D"utf-8"?>
+-<Project ToolsVersion=3D"4.0" xmlns=3D"http://schemas.microsoft.com/develo=
+per/msbuild/2003">
+-  <ImportGroup Label=3D"PropertySheets" />
+-  <PropertyGroup Label=3D"UserMacros" />
+-  <PropertyGroup>
+-    <GenerateManifest>false</GenerateManifest>
+-  </PropertyGroup>
+-  <ItemDefinitionGroup>
+-    <ClCompile>
+-      <PreprocessorDefinitions>_CONSOLE;_WIN32_WINNT=3D_WIN32_WINNT_VISTA;=
+%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <AdditionalIncludeDirectories>..\compat;$(TAP_WINDOWS_HOME)/include;=
+%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+-    </ClCompile>
+-    <Link>
+-      <SubSystem>Console</SubSystem>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemGroup />
+-</Project>
+\ No newline at end of file
+diff --git a/src/tapctl/tapctl.vcxproj b/src/tapctl/tapctl.vcxproj
+deleted file mode 100644
+index 6311d7f..0000000
+--- a/src/tapctl/tapctl.vcxproj
++++ /dev/null
+@@ -1,205 +0,0 @@
+-<?xml version=3D"1.0" encoding=3D"utf-8"?>
+-<Project DefaultTargets=3D"Build" ToolsVersion=3D"15.0" xmlns=3D"http://sc=
+hemas.microsoft.com/developer/msbuild/2003">
+-  <ItemGroup Label=3D"ProjectConfigurations">
+-    <ProjectConfiguration Include=3D"Debug|ARM64">
+-      <Configuration>Debug</Configuration>
+-      <Platform>ARM64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Debug|Win32">
+-      <Configuration>Debug</Configuration>
+-      <Platform>Win32</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Debug|x64">
+-      <Configuration>Debug</Configuration>
+-      <Platform>x64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|ARM64">
+-      <Configuration>Release</Configuration>
+-      <Platform>ARM64</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|Win32">
+-      <Configuration>Release</Configuration>
+-      <Platform>Win32</Platform>
+-    </ProjectConfiguration>
+-    <ProjectConfiguration Include=3D"Release|x64">
+-      <Configuration>Release</Configuration>
+-      <Platform>x64</Platform>
+-    </ProjectConfiguration>
+-  </ItemGroup>
+-  <PropertyGroup Label=3D"Globals">
+-    <VCProjectVersion>15.0</VCProjectVersion>
+-    <ProjectGuid>{A06436E7-D576-490D-8BA0-0751D920334A}</ProjectGuid>
+-    <Keyword>Win32Proj</Keyword>
+-    <RootNamespace>tapctl</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+-  </PropertyGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|A=
+RM64'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <WindowsSDKDesktopARM64Support>true</WindowsSDKDesktopARM64Support>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|W=
+in32'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Debug|x=
+64'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <UseDebugLibraries>true</UseDebugLibraries>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|ARM64'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <WindowsSDKDesktopARM64Support>true</WindowsSDKDesktopARM64Support>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|Win32'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <PropertyGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'Release=
+|x64'" Label=3D"Configuration">
+-    <ConfigurationType>Application</ConfigurationType>
+-    <UseDebugLibraries>false</UseDebugLibraries>
+-    <PlatformToolset>v143</PlatformToolset>
+-    <WholeProgramOptimization>true</WholeProgramOptimization>
+-    <CharacterSet>Unicode</CharacterSet>
+-    <SpectreMitigation>Spectre</SpectreMitigation>
+-  </PropertyGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.props" />
+-  <ImportGroup Label=3D"ExtensionSettings">
+-  </ImportGroup>
+-  <ImportGroup Label=3D"Shared">
+-  </ImportGroup>
+-  <ImportGroup Label=3D"PropertySheets" Condition=3D"'$(Configuration)|$(P=
+latform)'=3D=3D'Debug|ARM64'">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Debug.props" />
+-    <Import Project=3D"tapctl.props" />
+-  </ImportGroup>
+-  <ImportGroup Label=3D"PropertySheets" Condition=3D"'$(Configuration)|$(P=
+latform)'=3D=3D'Debug|Win32'">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Debug.props" />
+-    <Import Project=3D"tapctl.props" />
+-  </ImportGroup>
+-  <ImportGroup Label=3D"PropertySheets" Condition=3D"'$(Configuration)|$(P=
+latform)'=3D=3D'Debug|x64'">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Debug.props" />
+-    <Import Project=3D"tapctl.props" />
+-  </ImportGroup>
+-  <ImportGroup Label=3D"PropertySheets" Condition=3D"'$(Configuration)|$(P=
+latform)'=3D=3D'Release|ARM64'">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Release.props" />
+-    <Import Project=3D"tapctl.props" />
+-  </ImportGroup>
+-  <ImportGroup Label=3D"PropertySheets" Condition=3D"'$(Configuration)|$(P=
+latform)'=3D=3D'Release|Win32'">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Release.props" />
+-    <Import Project=3D"tapctl.props" />
+-  </ImportGroup>
+-  <ImportGroup Label=3D"PropertySheets" Condition=3D"'$(Configuration)|$(P=
+latform)'=3D=3D'Release|x64'">
+-    <Import Project=3D"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+" Condition=3D"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props'=
+)" Label=3D"LocalAppDataPlatform" />
+-    <Import Project=3D"..\compat\Release.props" />
+-    <Import Project=3D"tapctl.props" />
+-  </ImportGroup>
+-  <PropertyGroup Label=3D"UserMacros" />
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Debug|ARM64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Release|ARM64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Debug|Win32'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Release|Win32'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Debug|x64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <PropertyGroup Label=3D"Vcpkg" Condition=3D"'$(Configuration)|$(Platform=
+)'=3D=3D'Release|x64'">
+-    <VcpkgEnabled>true</VcpkgEnabled>
+-  </PropertyGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
+ebug|ARM64'">
+-    <ClCompile>
+-      <SDLCheck>true</SDLCheck>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
+elease|ARM64'">
+-    <ClCompile>
+-      <SDLCheck>true</SDLCheck>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
+ebug|Win32'">
+-    <ClCompile>
+-      <SDLCheck>true</SDLCheck>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
+elease|Win32'">
+-    <ClCompile>
+-      <SDLCheck>true</SDLCheck>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-    </ClCompile>
+-    <Link>
+-      <CETCompat>true</CETCompat>
+-    </Link>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'D=
+ebug|x64'">
+-    <ClCompile>
+-      <SDLCheck>true</SDLCheck>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemDefinitionGroup Condition=3D"'$(Configuration)|$(Platform)'=3D=3D'R=
+elease|x64'">
+-    <Link>
+-      <CETCompat>true</CETCompat>
+-    </Link>
+-    <ClCompile>
+-      <SDLCheck>true</SDLCheck>
+-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptio=
+ns>
+-    </ClCompile>
+-  </ItemDefinitionGroup>
+-  <ItemGroup>
+-    <ClCompile Include=3D"error.c" />
+-    <ClCompile Include=3D"tap.c" />
+-    <ClCompile Include=3D"main.c" />
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ClInclude Include=3D"basic.h" />
+-    <ClInclude Include=3D"error.h" />
+-    <ClInclude Include=3D"tap.h" />
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ResourceCompile Include=3D"tapctl_resources.rc" />
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ProjectReference Include=3D"..\..\build\msvc\msvc-generate\msvc-gener=
+ate.vcxproj">
+-      <Project>{8598c2c8-34c4-47a1-99b0-7c295a890615}</Project>
+-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+-    </ProjectReference>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <Manifest Include=3D"tapctl.exe.manifest" />
+-  </ItemGroup>
+-  <Import Project=3D"$(VCTargetsPath)\Microsoft.Cpp.targets" />
+-  <ImportGroup Label=3D"ExtensionTargets">
+-  </ImportGroup>
+-</Project>
+\ No newline at end of file
+diff --git a/src/tapctl/tapctl_resources.rc b/src/tapctl/tapctl_resources.rc
+index fc65b5a..c49f82d 100644
+--- a/src/tapctl/tapctl_resources.rc
++++ b/src/tapctl/tapctl_resources.rc
+@@ -19,8 +19,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
+-#else
+-#include <config-msvc-version.h>
+ #endif
+ #include <winresrc.h>
+
+diff --git a/tests/unit_tests/openvpn/mock_msg.c b/tests/unit_tests/openvpn=
+/mock_msg.c
+index 3fa9a16..3ff1ea8 100644
+--- a/tests/unit_tests/openvpn/mock_msg.c
++++ b/tests/unit_tests/openvpn/mock_msg.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include <stdarg.h>
+diff --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/=
+openvpn/test_auth_token.c
+index 57e98f5..d96984f 100644
+--- a/tests/unit_tests/openvpn/test_auth_token.c
++++ b/tests/unit_tests/openvpn/test_auth_token.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/open=
+vpn/test_buffer.c
+index 9e3b1d2..92ac77a 100644
+--- a/tests/unit_tests/openvpn/test_buffer.c
++++ b/tests/unit_tests/openvpn/test_buffer.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/open=
+vpn/test_crypto.c
+index aec4e04..58eebc0 100644
+--- a/tests/unit_tests/openvpn/test_crypto.c
++++ b/tests/unit_tests/openvpn/test_crypto.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/o=
+penvpn/test_cryptoapi.c
+index 0859b58..7b38e18 100644
+--- a/tests/unit_tests/openvpn/test_cryptoapi.c
++++ b/tests/unit_tests/openvpn/test_cryptoapi.c
+@@ -24,8 +24,6 @@
+=20
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvp=
+n/test_misc.c
+index 5a8978d..43ae96b 100644
+--- a/tests/unit_tests/openvpn/test_misc.c
++++ b/tests/unit_tests/openvpn/test_misc.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/tests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn=
+/test_ncp.c
+index 0e52ea2..72a1c3b 100644
+--- a/tests/unit_tests/openvpn/test_ncp.c
++++ b/tests/unit_tests/openvpn/test_ncp.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_tests/o=
+penvpn/test_packet_id.c
+index 9b653a8..90c67ac 100644
+--- a/tests/unit_tests/openvpn/test_packet_id.c
++++ b/tests/unit_tests/openvpn/test_packet_id.c
+@@ -24,8 +24,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn=
+/test_pkt.c
+index eb69829..9f49ee7 100644
+--- a/tests/unit_tests/openvpn/test_pkt.c
++++ b/tests/unit_tests/openvpn/test_pkt.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/tests/unit_tests/openvpn/test_provider.c b/tests/unit_tests/op=
+envpn/test_provider.c
+index 255067c..335fca2 100644
+--- a/tests/unit_tests/openvpn/test_provider.c
++++ b/tests/unit_tests/openvpn/test_provider.c
+@@ -24,8 +24,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/o=
+penvpn/test_tls_crypt.c
+index 8bbe600..ed7c794 100644
+--- a/tests/unit_tests/openvpn/test_tls_crypt.c
++++ b/tests/unit_tests/openvpn/test_tls_crypt.c
+@@ -23,8 +23,6 @@
+
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+-#elif defined(_MSC_VER)
+-#include "config-msvc.h"
+ #endif
+
+ #include "syshead.h"
+
+--=20
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/316?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I6de18261d5dc7f8561612184059656c73f33a5f2
-Gerrit-Change-Number: 315
+Gerrit-Change-Id: I807cffa40f18faa1adec4e15e84c032877a2b92e
+Gerrit-Change-Number: 316
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-MessageType: newchange
 
---w9/13h64Bn8=
+--DNHVEW2nt3Y=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p>flichtenheld has uploaded this change for <strong>review</strong>.</p><p=
-><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/315?usp=3Demail">View Cha=
+><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/316?usp=3Demail">View Cha=
 nge</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre=
--wrap;">CMake: backport CMake buildsystem from master to release/2.6<br><br=
->This is based on the initial CMake patch by<br>Arne Schwabe, but extends t=
-hat to provide<br>a complete replacement for existing MinGW<br>build (autot=
-ools based) and MSVC build<br>(openvpn.sln).<br><br>The following features =
-are added while switching<br>these builds to CMake:<br> - vcpkg support for=
- MinGW build, allowing for<br>   trivial cross-compilation on Linux<br> - A=
-dd unittests to MSVC build<br> - Rework MSVC config header generation, remo=
-ving<br>   need for separate headers between autotools<br>   and MSVC<br><b=
-r>The following advantages are reasons for switching<br>to CMake over the e=
-xisting MSVC build:<br> - Easier to maintain CMake files without IDE<br>   =
-than the sln and vcxproj files<br> - Able to maintain MSVC and MinGW build =
-side-by-side<br><br>The plan is to completely remove the existing MSVC<br>b=
-uild system but leave the existing autotools builds<br>in place as-is, incl=
-uding MinGW support.<br><br>CMake is not the intended build system for Unix=
--like<br>platforms and there are no current plans to switch<br>to it.<br><b=
-r>This commits squashes a lot of commits from master<br>together, since mos=
-t of them are just fixes or<br>enhancements for the original CMake commit. =
-The<br>decisions was not to bloat the release/2.6 commit<br>history with th=
-ese detours.<br><br>It contains the following commits:<br>- add basic CMake=
- based build<br>  (commit 0134184012dd46ec44cbca7eb3ece39037ae0bfa by<br>  =
- Arne Schwabe)<br>- CMake: Add complete MinGW and MSVC build<br>  (commit e=
-8881ec6dd63bd80ce05202573eac54ab8657fcb)<br>- CMake: Add /Brepro to MSVC li=
-nk options<br>  (commit 5e94e8de4bfaf6637124947a3489710b591e5e26)<br>- Do n=
-ot blindly assume python3 is also the interpreter that runs rst2html<br>  (=
-commit 5dbec1c019d14880ae7bf364b062d3589c7fd9e7 by<br>   Arne Schwabe)<br>-=
- Only add -Wno-stringop-truncation on supported compilers<br>  (commit eb3c=
-d5ea36f9bf235da7b8a51fd6ce29780f0e39 by<br>   Arne Schwabe)<br>- CMake: Thr=
-ow a clear error when config.h in top-level source directory<br>  (commit 0=
-652ae84f4528daa57da344eee28b7385a6659a1)<br>- openvpnmsica: link C runtime =
-statically<br>  (commit 3be4986ea3d6e27acd3e3a317c15dfe07688e135 by<br>   L=
-ev Stipakov)<br>- CMake: Support doc builds on Windows machines that do not=
- have .py file association<br>  (commit 22213a8834ba5ba5c9818015730edbf3766=
-ad915)<br>- README.cmake.md: Add new documentation for CMake buildsystem<br=
->  (commit 53055fd23efb6209b12d3662427158e25247f1fe)<br>- Check if the -wra=
-p argument is actually supported by the platform&#39;s ld<br>  (commit 4ef7=
-6f0ee4e122dcd616e1b1e2d652562ab10756 by<br>   Arne Schwabe)<br>- GHA: updat=
-e to run-vcpkg@...2735...<br>  (commit 66e33ee81d1d7fa3495ae3aad6e673766e29=
-6687)<br>- GHA: refactor mingw UTs and add missing tls_crypt<br>  (commit 2=
-6c663f12815f55c483dbe660e28448dc63221d1)<br><br>Change-Id: I6de18261d5dc7f8=
-561612184059656c73f33a5f2<br>Signed-off-by: Frank Lichtenheld &lt;frank@...493...=
-2641...&gt;<br>Co-authored-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Co-a=
-uthored-by: Lev Stipakov &lt;lev@...515...&gt;<br>---<br>M .github/workflow=
-s/build.yaml<br>M .gitignore<br>A CMakeLists.txt<br>A CMakePresets.json<br>=
-M Makefile.am<br>M README<br>A README.cmake.md<br>M README.dco.md<br>A conf=
-ig.h.cmake.in<br>A contrib/cmake/git-version.py<br>A contrib/cmake/parse-ve=
-rsion.m4.py<br>A contrib/vcpkg-manifests/mingw/vcpkg.json<br>A contrib/vcpk=
-g-manifests/windows/vcpkg.json<br>M contrib/vcpkg-ports/pkcs11-helper/portf=
-ile.cmake<br>A doc/CMakeLists.txt<br>M doc/Makefile.am<br>M src/openvpn/lzo=
-.h<br>A src/openvpnmsica/CMakeLists.txt<br>M src/openvpnmsica/Makefile.am<b=
-r>A src/openvpnserv/CMakeLists.txt<br>M src/openvpnserv/Makefile.am<br>A sr=
-c/tapctl/CMakeLists.txt<br>M src/tapctl/Makefile.am<br>23 files changed, 2,=
-084 insertions(+), 246 deletions(-)<br><br></pre><pre style=3D"font-family:=
- monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn=
-.net:29418/openvpn refs/changes/15/315/1</pre><pre style=3D"font-family: mo=
-nospace,monospace; white-space: pre-wrap;"><span>diff --git a/.github/workf=
-lows/build.yaml b/.github/workflows/build.yaml</span><br><span>index 8a80c6=
-7..29fe6d7 100644</span><br><span>--- a/.github/workflows/build.yaml</span>=
-<br><span>+++ b/.github/workflows/build.yaml</span><br><span>@@ -39,230 +39=
-,64 @@</span><br><span>     strategy:</span><br><span>       fail-fast: fal=
-se</span><br><span>       matrix:</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        osslver: [1.1.1q, 3.0.5]</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        target: [mingw64, mingw]</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        include:</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-          - target: mingw64</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-            chost: x86_64-w64-mingw32</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-          - target: ming=
-w</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            chost: i=
-686-w64-mingw32</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    arch: [x86, x64]</span><br><span> </span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-    name: &quot;gcc-mingw - ${{matrix.target}} - OSSL ${{ =
-matrix.osslver }}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    name: &quot;gcc-mingw - ${{ matrix.arch }} - OSSL&quot;</span><br><=
-span>     runs-on: ubuntu-22.04</span><br><span>     env:</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-      MAKEFLAGS: -j3</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-      LZO_VERSION: &quot;2.10&quot;</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-      PKCS11_HELPER_VERSIO=
-N: &quot;1.29.0&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-      OPENSSL_VERSION: &quot;${{ matrix.osslver }}&quot;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-      TAP_WINDOWS_VERSION: &quot;9.23.3&=
-quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      CMOCKA_VER=
-SION: &quot;1.1.5&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      VCPKG_ROOT: ${{ github.workspace }}/vcpkg</span><br><span>     st=
-eps:</span><br><span>       - name: Install dependencies</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        run: sudo apt update &amp;&amp; =
-sudo apt install -y mingw-w64 libtool automake autoconf man2html unzip cmak=
-e ninja-build build-essential wget</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        run: sudo apt update &amp;&amp; sudo apt install -y =
-mingw-w64 unzip cmake ninja-build build-essential wget python3-docutils man=
-2html-base</span><br><span>       - name: Checkout OpenVPN</span><br><span>=
-         uses: actions/checkout@...2689...</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+      - name: Restore from cache and install vcpkg</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        uses: lukka/run-vcpkg@...2735...=
-</span><br><span>         with:</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-          path: openvpn</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+          vcpkgGitCommitId: &#39;1ba9a2591f15af5900f2ce2b3e2b=
-f31771e3ac48&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-        vcpkgJsonGlob: &#39;**/mingw/vcpkg.json&#39;</span><br><span> </spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: autoconf</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: autoreconf -=
-fvi</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        working-di=
-rectory: openvpn</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: Cache depend=
-encies</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        id: cac=
-he</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        uses: actio=
-ns/cache@...2689...</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-      - name: Run CMake with vcpkg.json manifest</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        uses: lukka/run-cmake@...2637...</span=
-><br><span>         with:</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-          path: &#39;~/mingw/&#39;</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-          key: ${{ matrix.target }}-mingw-${{ matrix.osslv=
-er }}-${{ env.LZO_VERSION }}-${{ env.PKCS11_HELPER_VERSION }}-${{ env.TAP_W=
-INDOWS_VERSION }}--${{ env.CMOCKA_VERSION }}</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+          configurePreset: mingw-${{ matrix.arch }=
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          buildPre=
-set: mingw-${{ matrix.arch }}</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+          buildPresetAdditionalArgs: &quot;[&#39;--config Debug&#=
-39;]&quot;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-      # Repeating  if: steps.cache.outputs.cache-hit !=3D &#39;true&=
-#39;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      # on every =
-step for building dependencies is ugly but</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-      # I haven&#39;t found a better solution so far.<=
+-wrap;">Remove all traces of the previous MSVC build system<br><br>Complete=
+ly replaced by the CMake build system now.<br><br>v2:<br> - rebase on top o=
+f my dist fixes<br><br>Change-Id: I807cffa40f18faa1adec4e15e84c032877a2b92e=
+<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M .=
+gitignore<br>M Makefile.am<br>M build/Makefile.am<br>D build/msvc/Makefile.=
+am<br>D build/msvc/msvc-generate/Makefile.am<br>D build/msvc/msvc-generate/=
+Makefile.mak<br>D build/msvc/msvc-generate/git-version.py<br>D build/msvc/m=
+svc-generate/msvc-generate.js<br>D build/msvc/msvc-generate/msvc-generate.v=
+cxproj<br>D build/msvc/msvc-generate/version.m4.in<br>D config-msvc-version=
+.h.in<br>D config-msvc.h<br>M configure.ac<br>D openvpn.sln<br>D src/compat=
+/Debug.props<br>M src/compat/Makefile.am<br>D src/compat/PropertySheet.prop=
+s<br>D src/compat/Release.props<br>M src/compat/compat-basename.c<br>M src/=
+compat/compat-daemon.c<br>M src/compat/compat-dirname.c<br>M src/compat/com=
+pat-gettimeofday.c<br>M src/compat/compat-strsep.c<br>D src/compat/compat.v=
+cxproj<br>M src/openvpn/Makefile.am<br>M src/openvpn/argv.c<br>M src/openvp=
+n/auth_token.c<br>M src/openvpn/base64.c<br>M src/openvpn/block_dns.c<br>M =
+src/openvpn/buffer.c<br>M src/openvpn/clinat.c<br>M src/openvpn/comp-lz4.c<=
+br>M src/openvpn/comp.c<br>M src/openvpn/compstub.c<br>M src/openvpn/consol=
+e.c<br>M src/openvpn/console_builtin.c<br>M src/openvpn/crypto.c<br>M src/o=
+penvpn/crypto_mbedtls.c<br>M src/openvpn/crypto_openssl.c<br>M src/openvpn/=
+cryptoapi.c<br>M src/openvpn/dco.c<br>M src/openvpn/dco_freebsd.c<br>M src/=
+openvpn/dco_linux.c<br>M src/openvpn/dco_win.c<br>M src/openvpn/dhcp.c<br>M=
+ src/openvpn/dns.c<br>M src/openvpn/env_set.c<br>M src/openvpn/error.c<br>M=
+ src/openvpn/event.c<br>M src/openvpn/fdmisc.c<br>M src/openvpn/forward.c<b=
+r>M src/openvpn/fragment.c<br>M src/openvpn/gremlin.c<br>M src/openvpn/help=
+er.c<br>M src/openvpn/httpdigest.c<br>M src/openvpn/init.c<br>M src/openvpn=
+/interval.c<br>M src/openvpn/list.c<br>M src/openvpn/lladdr.c<br>M src/open=
+vpn/lzo.c<br>M src/openvpn/manage.c<br>M src/openvpn/mbuf.c<br>M src/openvp=
+n/misc.c<br>M src/openvpn/mroute.c<br>M src/openvpn/mss.c<br>M src/openvpn/=
+mstats.c<br>M src/openvpn/mtcp.c<br>M src/openvpn/mtu.c<br>M src/openvpn/mu=
+dp.c<br>M src/openvpn/multi.c<br>M src/openvpn/networking_freebsd.c<br>M sr=
+c/openvpn/networking_iproute2.c<br>M src/openvpn/networking_sitnl.c<br>M sr=
+c/openvpn/ntlm.c<br>M src/openvpn/occ.c<br>M src/openvpn/openssl_compat.h<b=
+r>M src/openvpn/openvpn.c<br>D src/openvpn/openvpn.vcxproj<br>M src/openvpn=
+/openvpn_win32_resources.rc<br>M src/openvpn/options.c<br>M src/openvpn/opt=
+ions_util.c<br>M src/openvpn/otime.c<br>M src/openvpn/packet_id.c<br>M src/=
+openvpn/perf.c<br>M src/openvpn/ping.c<br>M src/openvpn/pkcs11.c<br>M src/o=
+penvpn/pkcs11_mbedtls.c<br>M src/openvpn/pkcs11_openssl.c<br>M src/openvpn/=
+platform.c<br>M src/openvpn/plugin.c<br>M src/openvpn/pool.c<br>M src/openv=
+pn/proto.c<br>M src/openvpn/proxy.c<br>M src/openvpn/ps.c<br>M src/openvpn/=
+push.c<br>M src/openvpn/reflect_filter.c<br>M src/openvpn/reliable.c<br>M s=
+rc/openvpn/route.c<br>M src/openvpn/run_command.c<br>M src/openvpn/schedule=
+.c<br>M src/openvpn/session_id.c<br>M src/openvpn/shaper.c<br>M src/openvpn=
+/sig.c<br>M src/openvpn/socket.c<br>M src/openvpn/socks.c<br>M src/openvpn/=
+ssl.c<br>M src/openvpn/ssl_mbedtls.c<br>M src/openvpn/ssl_ncp.c<br>M src/op=
+envpn/ssl_openssl.c<br>M src/openvpn/ssl_pkt.c<br>M src/openvpn/ssl_util.c<=
+br>M src/openvpn/ssl_verify.c<br>M src/openvpn/ssl_verify_mbedtls.c<br>M sr=
+c/openvpn/ssl_verify_openssl.c<br>M src/openvpn/status.c<br>M src/openvpn/t=
+ls_crypt.c<br>M src/openvpn/tun.c<br>D src/openvpn/vcpkg.json<br>M src/open=
+vpn/vlan.c<br>M src/openvpn/win32-util.c<br>M src/openvpn/win32.c<br>M src/=
+openvpn/xkey_helper.c<br>M src/openvpn/xkey_provider.c<br>M src/openvpnmsic=
+a/Makefile.am<br>M src/openvpnmsica/dllmain.c<br>M src/openvpnmsica/msica_a=
+rg.c<br>M src/openvpnmsica/msiex.c<br>D src/openvpnmsica/openvpnmsica-Debug=
+.props<br>D src/openvpnmsica/openvpnmsica-Release.props<br>M src/openvpnmsi=
+ca/openvpnmsica.c<br>D src/openvpnmsica/openvpnmsica.props<br>D src/openvpn=
+msica/openvpnmsica.vcxproj<br>M src/openvpnmsica/openvpnmsica_resources.rc<=
+br>M src/openvpnserv/Makefile.am<br>D src/openvpnserv/openvpnserv.vcxproj<b=
+r>M src/openvpnserv/openvpnserv_resources.rc<br>M src/openvpnserv/service.h=
+<br>M src/tapctl/Makefile.am<br>M src/tapctl/main.c<br>M src/tapctl/tap.c<b=
+r>D src/tapctl/tapctl.props<br>D src/tapctl/tapctl.vcxproj<br>M src/tapctl/=
+tapctl_resources.rc<br>M tests/unit_tests/openvpn/mock_msg.c<br>M tests/uni=
+t_tests/openvpn/test_auth_token.c<br>M tests/unit_tests/openvpn/test_buffer=
+.c<br>M tests/unit_tests/openvpn/test_crypto.c<br>M tests/unit_tests/openvp=
+n/test_cryptoapi.c<br>M tests/unit_tests/openvpn/test_misc.c<br>M tests/uni=
+t_tests/openvpn/test_ncp.c<br>M tests/unit_tests/openvpn/test_packet_id.c<b=
+r>M tests/unit_tests/openvpn/test_pkt.c<br>M tests/unit_tests/openvpn/test_=
+provider.c<br>M tests/unit_tests/openvpn/test_tls_crypt.c<br>154 files chan=
+ged, 2 insertions(+), 2,403 deletions(-)<br><br></pre><pre style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.op=
+envpn.net:29418/openvpn refs/changes/16/316/1</pre><pre style=3D"font-famil=
+y: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/.gitigno=
+re b/.gitignore</span><br><span>index f44b924..70fc5f9 100644</span><br><sp=
+an>--- a/.gitignore</span><br><span>+++ b/.gitignore</span><br><span>@@ -10=
+,13 +10,7 @@</span><br><span> *.idb</span><br><span> *.suo</span><br><span>=
+ *.ncb</span><br><span style=3D"color: hsl(0, 100%, 40%);">-*.vcproj.*</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-*.vcxproj.user</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-*.sln.cache</span><br><span> *.lo=
+g</span><br><span style=3D"color: hsl(0, 100%, 40%);">-Release</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-Debug</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-Win32-Output</span><br><span> out</span><br><span>=
+ .vs</span><br><span> .deps</span><br><span>@@ -45,12 +39,8 @@</span><br><s=
+pan> m4/ltsugar.m4</span><br><span> m4/ltversion.m4</span><br><span> m4/lt~=
+obsolete.m4</span><br><span style=3D"color: hsl(0, 100%, 40%);">-vcpkg_inst=
+alled</span><br><span> </span><br><span> version.sh</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-msvc-env-local.bat</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-config-msvc-local.h</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-config-msvc-version.h</span><br><span> doc/openv=
+pn-examples.5</span><br><span> doc/openvpn-examples.5.html</span><br><span>=
+ doc/openvpn.8</span><br><span>@@ -62,7 +52,6 @@</span><br><span> sample/sa=
+mple-keys/sample-ca/</span><br><span> vendor/cmocka_build</span><br><span> =
+vendor/dist</span><br><span style=3D"color: hsl(0, 100%, 40%);">-build/msvc=
+/msvc-generate/version.m4</span><br><span> </span><br><span> tests/t_client=
+.sh</span><br><span> tests/t_client-*-20??????-??????/</span><br><span>diff=
+ --git a/Makefile.am b/Makefile.am</span><br><span>index f4ac7be..7478cc5 1=
+00644</span><br><span>--- a/Makefile.am</span><br><span>+++ b/Makefile.am</=
+span><br><span>@@ -71,11 +71,7 @@</span><br><span> 	README.dco.md \</span><=
+br><span> 	README.ec \</span><br><span> 	README.wolfssl \</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-	openvpn.sln</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-dist_noinst_HEADERS =3D \</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-	config-msvc.h \</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-	config-msvc-version.h.in</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+	README.mbedtls</span><br><span> </span><br><span> if WIN32</spa=
+n><br><span> rootdir=3D$(prefix)</span><br><span>diff --git a/build/Makefil=
+e.am b/build/Makefile.am</span><br><span>index a914d57..e7cc4d8 100644</spa=
+n><br><span>--- a/build/Makefile.am</span><br><span>+++ b/build/Makefile.am=
+</span><br><span>@@ -13,5 +13,3 @@</span><br><span> </span><br><span> EXTRA=
+_DIST =3D \</span><br><span> 	ltrc.inc</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SUBD=
+IRS =3D msvc</span><br><span>diff --git a/build/msvc/Makefile.am b/build/ms=
+vc/Makefile.am</span><br><span>deleted file mode 100644</span><br><span>ind=
+ex df3b41f..0000000</span><br><span>--- a/build/msvc/Makefile.am</span><br>=
+<span>+++ /dev/null</span><br><span>@@ -1,15 +0,0 @@</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-#  OpenVPN -- An application to securely tunnel IP networks</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#             over a sing=
+le UDP port, with support for SSL/TLS-based</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#             session authentication and key exchange=
+,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#             packet=
+ encryption, packet authentication, and</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#             packet compression.</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-#  Copyright (C) 2002-2023 OpenVPN Inc &lt;sales@...515...&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#  Copyright (C) 2006-=
+2012 Alon Bar-Lev &lt;alon.barlev@...277...&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-MAINTAINERCLEAN=
+FILES =3D \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	$(srcdir)=
+/Makefile.in</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-SUBDIRS =3D msvc-generate</spa=
+n><br><span>diff --git a/build/msvc/msvc-generate/Makefile.am b/build/msvc/=
+msvc-generate/Makefile.am</span><br><span>deleted file mode 100644</span><b=
+r><span>index fe13b37..0000000</span><br><span>--- a/build/msvc/msvc-genera=
+te/Makefile.am</span><br><span>+++ /dev/null</span><br><span>@@ -1,20 +0,0 =
+@@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#  OpenVPN -- An application to securel=
+y tunnel IP networks</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+             over a single UDP port, with support for SSL/TLS-based</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#             session authent=
+ication and key exchange,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#             packet encryption, packet authentication, and</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#             packet compression.=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#  Copyright (C) 2002-2023 OpenVPN Inc &l=
+t;sales@...515...&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#  Copyright (C) 2006-2012 Alon Bar-Lev &lt;alon.barlev@...277...&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-MAINTAINERCLEANFILES =3D \</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-	$(srcdir)/Makefile.in</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-dist_noi=
+nst_DATA =3D \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	git-ve=
+rsion.py \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	msvc-gener=
+ate.vcxproj \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	Makefil=
+e.mak \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	msvc-generate=
+.js \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	version.m4.in</=
+span><br><span>diff --git a/build/msvc/msvc-generate/Makefile.mak b/build/m=
+svc/msvc-generate/Makefile.mak</span><br><span>deleted file mode 100644</sp=
+an><br><span>index 9190742..0000000</span><br><span>--- a/build/msvc/msvc-g=
+enerate/Makefile.mak</span><br><span>+++ /dev/null</span><br><span>@@ -1,67=
+ +0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#  OpenVPN -- An application to s=
+ecurely tunnel IP networks</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-#             over a single UDP port, with support for SSL/TLS-based</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-#             session a=
+uthentication and key exchange,</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#             packet encryption, packet authentication, and</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#             packet compre=
+ssion.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#  Copyright (C) 2002-2023 OpenVPN =
+Inc &lt;sales@...515...&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#  Copyright (C) 2008-2012 Alon Bar-Lev &lt;alon.barlev@...277...&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#  Copyright (C) 2022=
+-2022 Lev Stipakov &lt;lev@...2698...&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#  This program is free software; you can redistribute it and/or modify</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#  it under the terms of =
+the GNU General Public License version 2</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-#  as published by the Free Software Foundation.</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#  This program is distributed in the hope that i=
+t will be useful,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#  b=
+ut WITHOUT ANY WARRANTY; without even the implied warranty of</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#  MERCHANTABILITY or FITNESS FOR A=
+ PARTICULAR PURPOSE.  See the</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-#  GNU General Public License for more details.</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#  You should have received a copy of the GNU General Public =
+License along</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#  with =
+this program; if not, write to the Free Software Foundation, Inc.,</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#  51 Franklin Street, Fifth F=
+loor, Boston, MA 02110-1301 USA.</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-CONFIG=3D$(SOLUTIONDIR)/versio=
+n.m4</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-INPUT_MSVC_VER=3D$(SOLUTIONDIR)/config=
+-msvc-version.h.in</span><br><span style=3D"color: hsl(0, 100%, 40%);">-OUT=
+PUT_MSVC_VER=3D$(SOLUTIONDIR)/config-msvc-version.h</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-INPUT_PLUGIN=3D$(SOLUTIONDIR)/include/openvpn-plugin.h.in</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-OUTPUT_PLUGIN=3D$(SOLUTIONDI=
+R)/include/openvpn-plugin.h</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-INPUT_PLUGIN_CO=
+NFIG=3Dversion.m4.in</span><br><span style=3D"color: hsl(0, 100%, 40%);">-O=
+UTPUT_PLUGIN_CONFIG=3Dversion.m4</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-INPUT_MAN=
+=3D$(SOLUTIONDIR)/doc/openvpn.8.rst</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-OUTPUT_MAN=3D$(SOLUTIONDIR)/doc/openvpn.8.html</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-OUTPUT_MSVC_GIT_CONFIG=3D$(SOLUTIONDIR)/config-version.h<=
 /span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-      - name: Download mingw dependencies</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if: steps.cache=
-.outputs.cache-hit !=3D &#39;true&#39;</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        run: |</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-          wget -c -P download-cache/ &quot;https://build.openvpn.=
-net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip&quot;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-          wget -c -P download=
--cache/ &quot;https://www.oberhumer.com/opensource/lzo/download/lzo-${LZO_V=
-ERSION}.tar.gz&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-         wget -c -P download-cache/ &quot;https://github.com/OpenSC/pkcs11-=
-helper/releases/download/pkcs11-helper-${PKCS11_HELPER_VERSION}/pkcs11-help=
-er-${PKCS11_HELPER_VERSION}.tar.bz2&quot;</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-          wget -c -P download-cache/ &quot;https://gith=
-ub.com/coreboot/cmocka/archive/refs/tags/cmocka-${CMOCKA_VERSION}.tar.gz&qu=
-ot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          tar jxf =
-&quot;download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2&quot;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-          wget -c -P do=
-wnload-cache/ &quot;https://www.openssl.org/source/old/1.1.1/openssl-${OPEN=
-SSL_VERSION}.tar.gz&quot; || wget -c -P download-cache/ &quot;https://www.o=
-penssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz&quot;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-          tar zxf &quot;download-cache/=
-openssl-${OPENSSL_VERSION}.tar.gz&quot;</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-          tar zxf &quot;download-cache/lzo-${LZO_VERSION}=
-.tar.gz&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-  tar zxf &quot;download-cache/cmocka-${CMOCKA_VERSION}.tar.gz&quot;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-          unzip download-cac=
-he/tap-windows-${TAP_WINDOWS_VERSION}.zip</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-     - name: create cmocka build directory</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-        if: steps.cache.outputs.cache-hit !=3D &#39;tr=
-ue&#39;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: m=
-kdir cmocka-build</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: configure c=
-mocka</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if: step=
-s.cache.outputs.cache-hit !=3D &#39;true&#39;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        working-directory: &quot;./cmocka-build&quo=
-t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: cmake =
--GNinja -DCMAKE_C_COMPILER=3D${{ matrix.chost }}-gcc -DCMAKE_CXX_COMPILER=
-=3D${{ matrix.chost }}-g++ -DCMAKE_SYSTEM_NAME=3DWindows -DCMAKE_SHARED_LIN=
-KER_FLAGS=3D-static-libgcc -DCMAKE_PREFIX_PATH=3D${HOME}/mingw/opt/lib/pkgc=
-onfig/ -DCMAKE_INCLUDE_PATH=3D${HOME}/mingw/opt/lib/include -DCMAKE_LIBRARY=
-_PATH=3D${HOME}/mingw/opt/lib -DCMAKE_INSTALL_PREFIX=3D${HOME}/mingw/opt/ .=
-./cmocka-cmocka-${{ env.CMOCKA_VERSION }}</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-     - name: build cmocka</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        if: steps.cache.outputs.cache-hit !=3D &#39;true&#39;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        working-directory: &quo=
-t;./cmocka-build&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        run: ninja</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: install c=
-mocka</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if: step=
-s.cache.outputs.cache-hit !=3D &#39;true&#39;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        working-directory: &quot;./cmocka-build&quo=
-t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: ninja =
-install</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-      - name: Configure OpenSSL</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        if: steps.cache.o=
-utputs.cache-hit !=3D &#39;true&#39;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        run: ./Configure --cross-compile-prefix=3D${{ matrix=
-.chost }}- shared ${{ matrix.target }} no-capieng --prefix=3D&quot;${HOME}/=
-mingw/opt&quot; --openssldir=3D&quot;${HOME}/mingw/opt&quot; -static-libgcc=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        working-direc=
-tory: &quot;./openssl-${{ env.OPENSSL_VERSION }}&quot;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-      - name: Build OpenSSL</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        if: steps.cache.outputs.cache-hit !=3D &#39;true&=
-#39;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: make=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        working-direc=
-tory: &quot;./openssl-${{ env.OPENSSL_VERSION }}&quot;</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-      # OpenSSL 3.0.5 installs itself into mingw/opt/lib64 inst=
-ead of</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      # mingw/o=
-pt/lib, so we include both dirs in the following steps</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-      # (pkcs11-helper and OpenVPN) so the=
- libraries will be found</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-      - name: Install OpenSSL</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        if: steps.cache.outputs.cache-hit !=3D &#39;true&#39;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: make instal=
-l</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        working-dire=
-ctory: &quot;./openssl-${{ env.OPENSSL_VERSION }}&quot;</span><br><span sty=
+=3D"color: hsl(0, 100%, 40%);">-all:	$(OUTPUT_MSVC_VER) $(OUTPUT_PLUGIN) $(=
+OUTPUT_MAN) $(OUTPUT_MSVC_GIT_CONFIG)</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-$(OUT=
+PUT_MSVC_VER): $(INPUT_MSVC_VER) $(CONFIG)</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-	cscript //nologo msvc-generate.js --config=3D&quot;$(=
+CONFIG)&quot; --input=3D&quot;$(INPUT_MSVC_VER)&quot; --output=3D&quot;$(OU=
+TPUT_MSVC_VER)&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-$(OUTPUT_PLUGIN_CONFIG=
+): $(INPUT_PLUGIN_CONFIG)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-	cscript //nologo msvc-generate.js --config=3D&quot;$(CONFIG)&quot; --i=
+nput=3D&quot;$(INPUT_PLUGIN_CONFIG)&quot; --output=3D&quot;$(OUTPUT_PLUGIN_=
+CONFIG)&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-$(OUTPUT_PLUGIN): $(INPUT_PLU=
+GIN) $(OUTPUT_PLUGIN_CONFIG)</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-	cscript //nologo msvc-generate.js --config=3D&quot;$(OUTPUT_PLUGIN_=
+CONFIG)&quot; --input=3D&quot;$(INPUT_PLUGIN)&quot; --output=3D&quot;$(OUTP=
+UT_PLUGIN)&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-$(OUTPUT_MAN): $(INPUT_MAN=
+)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	-FOR /F %i IN (&#39=
+;where rst2html.py&#39;) DO python %i &quot;$(INPUT_MAN)&quot; &quot;$(OUTP=
+UT_MAN)&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-# Force regeneration because =
+we can&#39;t detect whether it is outdated</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-$(OUTPUT_MSVC_GIT_CONFIG): FORCE</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-	python git-version.py $(SOLUTIONDIR)</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-FORCE:</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-clean:</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-	-del &quot;$(OUTPUT_MSV=
+C_VER)&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	-del &qu=
+ot;$(OUTPUT_PLUGIN)&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-	-del &quot;$(OUTPUT_PLUGIN_CONFIG)&quot;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-	-del &quot;$(OUTPUT_MAN)&quot;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-	-del &quot;$(OUTPUT_MSVC_GIT_CONFIG)&quo=
+t;</span><br><span>diff --git a/build/msvc/msvc-generate/git-version.py b/b=
+uild/msvc/msvc-generate/git-version.py</span><br><span>deleted file mode 10=
+0644</span><br><span>index c2b4452..0000000</span><br><span>--- a/build/msv=
+c/msvc-generate/git-version.py</span><br><span>+++ /dev/null</span><br><spa=
+n>@@ -1,75 +0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-#  OpenVPN -- An applic=
+ation to securely tunnel IP networks</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#             over a single UDP port, with support for SSL/T=
+LS-based</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#            =
+ session authentication and key exchange,</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#             packet encryption, packet authentication,=
+ and</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#             pac=
+ket compression.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#  Copyright (C) 2022-202=
+3 OpenVPN Inc &lt;sales@...515...&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#  Copyright (C) 2022-2022 Lev Stipakov &lt;lev@...2698...&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#  This program is free software; you =
+can redistribute it and/or modify</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-#  it under the terms of the GNU General Public License version=
+ 2</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#  as published by =
+the Free Software Foundation.</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-#</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#  This prog=
+ram is distributed in the hope that it will be useful,</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#  but WITHOUT ANY WARRANTY; without even =
+the implied warranty of</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#  GNU General Public License =
+for more details.</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#  You should have recei=
+ved a copy of the GNU General Public License along</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#  with this program; if not, write to the Fre=
+e Software Foundation, Inc.,</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-import os</span><br><span style=3D"color: hsl(0, 100%, 40%);">-impor=
+t sys</span><br><span style=3D"color: hsl(0, 100%, 40%);">-import subproces=
+s</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-def run_command(args):</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    sp =3D subprocess.Popen(args, stdout=
+=3Dsubprocess.PIPE, stderr=3Dsubprocess.DEVNULL)</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    o, _ =3D sp.communicate()</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    return o.decode(&quot;utf-8&quot;)[:=
+-1]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-def get_branch_commit_id():</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    commit_id =3D run_command([&q=
+uot;git&quot;, &quot;rev-parse&quot;, &quot;--short=3D16&quot;, &quot;HEAD&=
+quot;])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if not com=
+mit_id:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        raise<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    branch =3D run_com=
+mand([&quot;git&quot;, &quot;describe&quot;, &quot;--exact-match&quot;])</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    if not branch:</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-        # this returns an a=
+rray like [&quot;master&quot;] or [&quot;release&quot;, &quot;2.6&quot;]</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        branch =3D run_c=
+ommand([&quot;git&quot;, &quot;rev-parse&quot;, &quot;--symbolic-full-name&=
+quot;, &quot;HEAD&quot;]).split(&quot;/&quot;)[2:]</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-        if not branch:</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            branch =3D [&quot;none&quot;]</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        branch =3D &quo=
+t;/&quot; .join(branch) # handle cases like release/2.6</span><br><span sty=
 le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-      - name: autoreconf pkcs11-helper</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        if: steps.cache.outputs.cache-hit !=
-=3D &#39;true&#39;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     run: autoreconf -iv</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        working-directory: &quot;./pkcs11-helper-${{ env.PKCS11_HELPER_V=
-ERSION }}&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: configure pkc=
-s11-helper</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if:=
- steps.cache.outputs.cache-hit !=3D &#39;true&#39;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        run: OPENSSL_LIBS=3D&quot;-L${HOME}/mi=
-ngw/opt/lib -L${HOME}/mingw/opt/lib64 -lssl -lcrypto&quot; OPENSSL_CFLAGS=
-=3D-I$HOME/mingw/opt/include PKG_CONFIG_PATH=3D${HOME}/mingw/opt/lib/pkgcon=
-fig ./configure --host=3D${{ matrix.chost }} --program-prefix=3D&#39;&#39; =
---libdir=3D${HOME}/mingw/opt/lib --prefix=3D${HOME}/mingw/opt --build=3Dx86=
-_64-pc-linux-gnu --disable-crypto-engine-gnutls --disable-crypto-engine-nss=
- --disable-crypto-engine-polarssl --disable-crypto-engine-mbedtls</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        working-directory: &quo=
-t;./pkcs11-helper-${{ env.PKCS11_HELPER_VERSION }}&quot;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-      - name: build pkcs11-helper</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        if: steps.cache.outputs.cache-hit !=3D &#=
-39;true&#39;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        r=
-un: make all</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        w=
-orking-directory: &quot;./pkcs11-helper-${{ env.PKCS11_HELPER_VERSION }}&qu=
-ot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-      - name: install pkcs11-helper</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        if: steps.cache.o=
-utputs.cache-hit !=3D &#39;true&#39;</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        run: make install</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        working-directory: &quot;./pkcs11-helper-${{ env=
-.PKCS11_HELPER_VERSION }}&quot;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - nam=
-e: Configure lzo</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   if: steps.cache.outputs.cache-hit !=3D &#39;true&#39;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        run: ./configure --host=3D${{ ma=
-trix.chost }} --program-prefix=3D&#39;&#39; --libdir=3D${HOME}/mingw/opt/li=
-b --prefix=3D${HOME}/mingw/opt --build=3Dx86_64-pc-linux-gnu</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        working-directory: &quot;./l=
-zo-${{ env.LZO_VERSION }}&quot;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - nam=
-e: build lzo</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        i=
-f: steps.cache.outputs.cache-hit !=3D &#39;true&#39;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        working-directory: &quot;./lzo-${{ =
-env.LZO_VERSION }}&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        run: make</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: install =
-lzo</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if: steps.=
-cache.outputs.cache-hit !=3D &#39;true&#39;</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        working-directory: &quot;./lzo-${{ env.LZO_VE=
-RSION }}&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- run: make install</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: copy tap-w=
-indows.h header</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  if: steps.cache.outputs.cache-hit !=3D &#39;true&#39;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        run: cp ./tap-windows-${TAP_WINDO=
-WS_VERSION}/include/tap-windows.h ${HOME}/mingw/opt/include/</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-      - name: configure OpenVPN</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        run: PKG_CONFIG_PATH=3D${HOME}/mingw/op=
-t/lib/pkgconfig LDFLAGS=3D-L$HOME/mingw/opt/lib CFLAGS=3D-I$HOME/mingw/opt/=
-include OPENSSL_LIBS=3D&quot;-L${HOME}/opt/lib -L$HOME/mingw/opt/lib64 -lss=
-l -lcrypto&quot; OPENSSL_CFLAGS=3D-I$HOME/mingw/opt/include PREFIX=3D$HOME/=
-mingw/opt LZO_CFLAGS=3D-I$HOME/mingw/opt/include LZO_LIBS=3D&quot;-L${HOME}=
-/mingw/opt/lib -llzo2&quot; ./configure  --host=3D${{ matrix.chost }} --dis=
-able-lz4</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        worki=
-ng-directory: openvpn</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: build O=
-penVPN</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: ma=
-ke -j3</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        working=
--directory: openvpn</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-    - name: build OpenVPN unittests</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        run: make -j3 check</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        working-directory: openvpn</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-      # We use multiple upload-artifact here, so it becomes a f=
-lat folder</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      # str=
-ucture since we need the dlls on the same level as the binaries</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-      - name: Archive cmocka/open=
-ssl/lzo dlls</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        u=
-ses: actions/upload-artifact@...2689...</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+      - uses: actions/upload-artifact@...2689...</span>=
-<br><span>         with:</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-          retention-days: 1</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-          name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.o=
-sslver }}-dlls</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
-   path: &#39;~/mingw/opt/bin/*.dll&#39;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+          name: openvpn-mingw-${{ matrix.arch }}</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+          path: |</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            ${{ github.work=
-space }}/out/build/mingw/${{ matrix.arch }}/Debug/*.exe</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            ${{ github.workspace }}/out=
-/build/mingw/${{ matrix.arch }}/Debug/*.dll</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            !${{ github.workspace }}/out/build/ming=
-w/${{ matrix.arch }}/Debug/test_*.exe</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-      # libtool puts some wrapper binarie=
-s in openvpn/tests/unit_tests/openvpn/</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-      # and the real binaries in openvpn/tests/unit_tests/=
-openvpn/.libs/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      -=
- name: Archive unittest artifacts</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        uses: actions/upload-artifact@...2689...</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+      - uses: actions/upload-artif=
-act@...2689...</span><br><span>         with:</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-          retention-days: 1</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-          name: mingw-unittest-${{matrix.ta=
-rget}}-ossl${{ matrix.osslver }}-tests</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-          path: openvpn/tests/unit_tests/openvpn/.libs/*.e=
-xe</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-      # Currently not used by the unit t=
-est but might in the future and also</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-      # helpful if manually downloading and running openvpn.=
-exe from a mingw</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
- # build</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - name:=
- Archive openvpn binary</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        uses: actions/upload-artifact@...2689...</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        with:</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-          retention-days: 1</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-          name: mingw-unittest-${{matrix.target}=
-}-ossl${{ matrix.osslver }}-tests</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-          path: openvpn/src/openvpn/.libs/*.exe</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+          name: openvpn-mingw-${{ m=
-atrix.arch }}-tests</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-          path: |</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Debug/=
-test_*.exe</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   ${{ github.workspace }}/out/build/mingw/${{ matrix.arch }}/Debug/*.dll</=
-span><br><span> </span><br><span>   mingw-unittest:</span><br><span>     ne=
-eds: [ mingw ]</span><br><span>     strategy:</span><br><span>       fail-f=
-ast: false</span><br><span>       matrix:</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        osslver: [ 1.1.1q, 3.0.5 ]</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        target: [ mingw64, mingw ]</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        arch: [x86, x64]</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        test: [argv, a=
-uth_token, buffer, cryptoapi, crypto, misc, ncp, packet_id, pkt, provider, =
-tls_crypt]</span><br><span> </span><br><span>     runs-on: windows-latest</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    name: &quot;mingw u=
-nittests - ${{matrix.target}} - OSSL ${{ matrix.osslver }}&quot;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    name: &quot;mingw unittest=
- ${{ matrix.test }} - ${{ matrix.arch }} - OSSL&quot;</span><br><span>     =
-steps:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: R=
-etrieve mingw unittest dlls</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        uses: actions/download-artifact@...2689...</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        with:</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-          name: mingw-unittest-${{matrix.target}=
-}-ossl${{ matrix.osslver }}-dlls</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-          path: unittests</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-</span><br><span>       - name: Retrieve mingw unittest</spa=
-n><br><span>         uses: actions/download-artifact@...2689...</span><br><=
-span>         with:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-        name: mingw-unittest-${{matrix.target}}-ossl${{ matrix.osslver }}-t=
-ests</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          name:=
- openvpn-mingw-${{ matrix.arch }}-tests</span><br><span>           path: un=
-ittests</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-      - name: List unittests direct=
-ory</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: &quot=
-;dir unittests&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: Run argv=
-unit test</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        run:=
- ./unittests/argv_testdriver.exe</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - na=
-me: Run auth_tokenunit test</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        run: ./unittests/auth_token_testdriver.exe</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-      - name: Run bufferunit test</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        run: ./unittests/buffer_testdriver.exe</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-      - name: Run cryptoapi unit test</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: ./unittests/cr=
-yptoapi_testdriver.exe</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: Run cr=
-yptounit test</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-run: ./unittests/crypto_testdriver.exe</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-  - name: Run miscunit test</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        run: ./unittests/misc_testdriver.exe</span><br><span style=3D=
+00%, 40%);">-    return branch, commit_id</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-d=
+ef main():</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    try:</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        branch, commit_i=
+d =3D get_branch_commit_id()</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    except:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     branch, commit_id =3D &quot;unknown&quot;, &quot;unknown&quot;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    prev_content =3D &quot;&quot;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    name =3D os.path.join(&quot;%s&quot; %  (sys.argv[1] if=
+ len(sys.argv) &gt; 1 else &quot;.&quot;), &quot;config-version.h&quot;)</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    try:</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        with open(name, &quot;r&quot;=
+) as f:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            pr=
+ev_content =3D f.read()</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    except:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+# file doesn&#39;t exist</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        pass</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    content =3D &quot;#defi=
+ne CONFIGURE_GIT_REVISION \&quot;%s/%s\&quot;\n&quot; % (branch, commit_id)=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    content +=3D &quo=
+t;#define CONFIGURE_GIT_FLAGS \&quot;\&quot;\n&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    if prev_content !=3D content:</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        print(&quot;Writing %s&quot; % name)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        with open(name, &quot=
+;w&quot;) as f:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+      f.write(content)</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    else:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        pri=
+nt(&quot;Content of %s hasn&#39;t changed&quot; % name)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-if __name__ =3D=3D &quot;__main__&quot;:</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    main()</span><br><span>diff --git a/bui=
+ld/msvc/msvc-generate/msvc-generate.js b/build/msvc/msvc-generate/msvc-gene=
+rate.js</span><br><span>deleted file mode 100644</span><br><span>index d956=
+4cf..0000000</span><br><span>--- a/build/msvc/msvc-generate/msvc-generate.j=
+s</span><br><span>+++ /dev/null</span><br><span>@@ -1,118 +0,0 @@</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">- * msvc-generate.js  - string transformation</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">- * Copyright (C) 2008-2012 Alon Bar-Lev &lt;al=
+on.barlev@...277...&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * BSD License</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">- * =3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Red=
+istribution and use in source and binary forms, with or without</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">- * modification, are permitted pr=
+ovided that the following conditions are met:</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">- *     o Redistributions of source code must retain the above copyrigh=
+t notice,</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *       thi=
+s list of conditions and the following disclaimer.</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">- *     o Redistributions in binary form must r=
+eproduce the above copyright</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">- *       notice, this list of conditions and the following disclaime=
+r in the</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *       docu=
+mentation and/or other materials provided with the distribution.</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">- *     o Neither the name of the=
+ Alon Bar-Lev nor the names of its</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">- *       contributors may be used to endorse or promote produc=
+ts derived from</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *    =
+   this software without specific prior written permission.</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AN=
+D CONTRIBUTORS &quot;AS IS&quot;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIM=
+ITED TO, THE</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * IMPLIE=
+D WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">- * ARE DISCLAIMED. IN NO EVE=
+NT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, S=
+PECIAL, EXEMPLARY, OR</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">- * SUBSTITUTE GOODS OR SE=
+RVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THE=
+ORY OF LIABILITY, WHETHER IN</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHE=
+RWISE)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * ARISING IN A=
+NY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">- * POSSIBILITY OF SUCH DAMAGE.</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-var For=
+Reading =3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-var fso=
+ =3D new ActiveXObject(&quot;Scripting.FileSystemObject&quot;);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-var input =3D &quot;nul&quot;;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-var output =3D &quot;nul=
+&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-var files =3D =
+new Array();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-var env =
+=3D new Array();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-function initialize() {</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-	for (var i=3D0;i&lt;WSc=
+ript.Arguments.length;i++) {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-		var arg =3D WScript.Arguments(i);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-		if (arg.match(/^--input=3D(.*)$/)) {</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-			input=3DRegExp.$1;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-		}</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-		else if (arg.match(/^--output=3D(.*)$/)) {</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-			output=3DRegExp.$1;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-		}</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-		else if (arg.match(/^--config=3D(.*)$/)) {</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-			files.push(RegExp.$1);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-		}</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-		else if (arg.match(/^--var=3D([^=3D]*)=
+=3D(.*)$/)) {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-			env[R=
+egExp.$1] =3D RegExp.$2;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-		}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	}</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+function process_config(vars, file) {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-	try {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-		var fin =3D fso.OpenTextFile(file, ForReading);</span><br><span style=3D=
 "color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-      - name: Run ncpunit test</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        run: ./unittests/ncp_testdriver.exe</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-      - name: Run packet idunit test</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        run: ./unittests/packet_id_testdri=
-ver.exe</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-      - name: Run pktunit test</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: ./unittests/p=
-kt_testdriver.exe</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: Run provide=
-runit test</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        run=
-: ./unittests/provider_testdriver.exe</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+      - name: Run ${{ matrix.test }} unit test</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        run: ./unittests/test_=
-${{ matrix.test }}.exe</span><br><span> </span><br><span>   ubuntu:</span><=
-br><span>     strategy:</span><br><span>@@ -407,60 +241,50 @@</span><br><sp=
-an>       strategy:</span><br><span>         fail-fast: false</span><br><sp=
-an>         matrix:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-        plat: [ARM64, Win32, x64]</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-          include:</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-            - plat: ARM64</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-              triplet: arm64</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            - plat: Win32</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-              triplet: x86</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-            - plat: x64</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-              triplet: x64</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+          arch: [amd64, x86, arm64]<=
-/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-  name: &quot;msbuild - ${{matrix.triplet}} - openssl&quot;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+      name: &quot;msbuild - ${{ mat=
-rix.arch }} - openssl&quot;</span><br><span>       env:</span><br><span>   =
-      BUILD_CONFIGURATION: Release</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-        VCPKG_OVERLAY_PORTS: ${{ github.workspace }}/contrib/v=
-cpkg-ports</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        VCP=
-KG_OVERLAY_TRIPLETS: ${{ github.workspace }}/contrib/vcpkg-triplets</span><=
-br><span> </span><br><span>       runs-on: windows-latest</span><br><span> =
-      steps:</span><br><span>       - uses: actions/checkout@...2689...</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-      - name: Add MSBuild to PATH</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        uses: microsoft/setup-msbu=
-ild@...2690...</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: Set up Python<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        uses: actions/=
-setup-python@...2691...</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        with:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-    python-version: &#39;3.x&#39;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+      - uses: lukka/get-cmake@...2729...</span><br><span> </s=
-pan><br><span>       - name: Install rst2html</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        run: python -m pip install --upgrade pip rs=
-t2html</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        run: =
-python -m pip install --upgrade pip docutils</span><br><span> </span><br><s=
-pan>       - name: Restore artifacts, or setup vcpkg (do not install any pa=
-ckage)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        uses: l=
-ukka/run-vcpkg@...2637...</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        uses: lukka/run-vcpkg@...2735...</span><br><span>         wit=
-h:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          vcpkgGitC=
-ommitId: &#39;d10d511f25620ca0f315cd83dcef6485efc63010&#39;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-          vcpkgJsonGlob: &#39;**/open=
-vpn/vcpkg.json&#39;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-        appendedCacheKey: &#39;${{matrix.triplet}}&#39;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+          vcpkgGitCommitId: &#39;1ba9a2=
-591f15af5900f2ce2b3e2bf31771e3ac48&#39;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+          vcpkgJsonGlob: &#39;**/windows/vcpkg.json&#39=
-;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-    - name: Run MSBuild consuming vcpkg.json</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        working-directory: ${{env.GITHUB_WORKSPACE}}=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: |</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            # workaround for=
- GHA runner bug where vcpkg installation is detected at c:\vcpkg</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-            # see https://github=
-.com/lukka/run-vcpkg/issues/170</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            ${{ github.workspace }}/vcpkg/vcpkg.exe integrate ins=
-tall</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msbui=
-ld /m /p:Configuration=3D${{env.BUILD_CONFIGURATION}} /p:Platform=3D&quot;$=
-{{ matrix.plat }}&quot; .</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: Arc=
-hive artifacts</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- uses: actions/upload-artifact@...2689...</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+      - name: Run CMake with vcpkg.json manifest (NO =
-TESTS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        uses:=
- lukka/run-cmake@...2637...</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        if: ${{ matrix.arch =3D=3D &#39;arm64&#39; }}</span><br><sp=
-an>         with:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-      name: artifacts-${{ matrix.plat }}</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+          configurePreset: win-${{ matrix.arch }}-rele=
-ase</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          buildP=
-reset: win-${{ matrix.arch }}-release</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-     - name: Run CMake with vcpkg.json manifest</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        uses: lukka/run-cmake@...2637...</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        if: ${{ matrix.arc=
-h !=3D &#39;arm64&#39; }}</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        with:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-          configurePreset: win-${{ matrix.arch }}-release</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+          buildPreset: win-${{ matrix=
-.arch }}-release</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-       testPreset: win-${{ matrix.arch }}-release</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+      - uses: actions/upload-artifact@...2689...</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        with:</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+          name: openvpn-msvc-${{ matrix.a=
-rch }}</span><br><span>           path: |</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            ${{ matrix.plat }}-Output/${{env.BUILD_CONF=
-IGURATION}}/*.exe</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        ${{ matrix.plat }}-Output/${{env.BUILD_CONFIGURATION}}/*.dll</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            ${{ matrix.plat =
-}}-Output/${{env.BUILD_CONFIGURATION}}/*.pdb</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            doc/openvpn.8.html</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            ${{ github.workspace }}/out/*=
-*/*.exe</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-${{ github.workspace }}/out/**/*.dll</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            !${{ github.workspace }}/out/**/test_*.exe</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            !${{ github=
-.workspace }}/out/**/CMakeFiles/**</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            !${{ github.workspace }}/out/**/vcpkg_installed/=
-**</span><br><span> </span><br><span>   trigger_openvpn_build:</span><br><s=
-pan>     runs-on: windows-latest</span><br><span>diff --git a/.gitignore b/=
-.gitignore</span><br><span>index 813413f..f44b924 100644</span><br><span>--=
-- a/.gitignore</span><br><span>+++ b/.gitignore</span><br><span>@@ -17,6 +1=
-7,7 @@</span><br><span> Release</span><br><span> Debug</span><br><span> Win=
-32-Output</span><br><span style=3D"color: hsl(120, 100%, 40%);">+out</span>=
-<br><span> .vs</span><br><span> .deps</span><br><span> .libs</span><br><spa=
-n>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>new file mod=
-e 100644</span><br><span>index 0000000..5490582</span><br><span>--- /dev/nu=
-ll</span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -0,0 +1,738 @@</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+cmake_minimum_require=
-d(VERSION 3.12)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+set(=
-CMAKE_CONFIGURATION_TYPES &quot;Release;Debug;ASAN&quot;)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+project(openvpn)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+# This CMake file implements building OpenVPN with CMAKE</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+# Note that this is *NOT* the official w=
-ay to build openvpn on anything</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+# other than Windows/mingw despite working on other platforms t=
-oo. You will need</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# =
-to add -DUNSUPPORTED_BUILDS=3Dtrue to build on non Windows platforms.</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+# This cmake also makes a few assertions =
-like lzo, lz4 being used</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+# and OpenSSL having version 1.1.1+ and generally does not offer the s=
-ame</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# configurabilit=
-y like autoconf</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+find_package(PkgConfig =
-REQUIRED)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+include(Ch=
-eckSymbolExists)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+inc=
-lude(CheckIncludeFiles)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+include(CheckCCompilerFlag)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+include(CheckLinkerFlag OPTIONAL)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+include(CheckTypeSize)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+include(CheckStructHasMember)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+include(CTest)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+option(UNSUPPORTED_BUILDS &quot;Allow unsupported builds&quo=
-t; OFF)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+if (NOT WIN32 AND NOT ${UNSUPPO=
-RTED_BUILDS})</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    me=
-ssage(FATAL_ERROR &quot;Note: on Unix platform the official and supported b=
-uild method is using autoconfig. CMake based build should be only used for =
-Windows and internal testing/development.&quot;)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+endif()</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if=
- (EXISTS &quot;${CMAKE_CURRENT_SOURCE_DIR}/config.h&quot;)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    message(FATAL_ERROR &quot;The to=
-p level source directory has a config.h file. Note that you can&#39;t mix i=
-n-tree autoconfig builds with out-of-tree cmake builds.&quot;)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+endif ()</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+option(MBED &quot;BUILD with mbed&quot; OFF)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+option(WOLFSSL &quot;BUILD with wol=
-fSSL&quot; OFF)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+opti=
-on(ENABLE_LZ4 &quot;BUILD with lz4&quot; ON)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+option(ENABLE_LZO &quot;BUILD with lzo&quot; ON)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+option(ENABLE_PKCS11 =
-&quot;BUILD with pkcs11-helper&quot; ON)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+option(USE_WERROR &quot;Treat compiler warnings as err=
-ors (-Werror)&quot; ON)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+set(PLUGIN_DIR =
-/usr/local/lib/openvpn/plugins CACHE FILEPATH &quot;Location of the plugin =
-directory&quot;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+# AddressSanitize - us=
-e CXX=3Dclang++ CC=3Dclang cmake -DCMAKE_BUILD_TYPE=3Dasan to build with AS=
-AN</span><br><span style=3D"color: hsl(120, 100%, 40%);">+set(CMAKE_C_FLAGS=
-_ASAN</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;-fsa=
-nitize=3Daddress,undefined -fno-sanitize-recover=3Dall -fno-optimize-siblin=
-g-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1&q=
-uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    CACHE STRIN=
-G &quot;Flags used by the C compiler during AddressSanitizer builds.&quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    FORCE)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+set(CMAKE_CXX_FLAGS_ASAN</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;-fsanitize=3Da=
-ddress,undefined -fno-sanitize-recover=3Dall -fno-optimize-sibling-calls -f=
-sanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1&quot;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    CACHE STRING &quot;Fl=
-ags used by the C++ compiler during AddressSanitizer builds.&quot;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    FORCE)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+if (MSVC)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_DE=
-PRECATE -D_WINSOCK_DEPRECATED_NO_WARNINGS)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    if (USE_WERROR)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        add_compile_options(/WX)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    endif ()</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    add_compile_options(</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        /MP</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        /W2</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        /sdl</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        /Qspectre</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        /guard:cf</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        /FC</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       /ZH:SHA_256</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       &quot;$&lt;$&lt;CONFIG:Release&gt;:/GL&gt;&quot;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        &quot;$&lt;$&lt;CONFIG:Release&=
-gt;:/Oi&gt;&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      &quot;$&lt;$&lt;CONFIG:Release&gt;:/Gy&gt;&quot;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        &quot;$&lt;$&lt;CONFIG:Release&g=
-t;:/Zi&gt;&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    add_link_=
-options(</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /Br=
-epro</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;$=
-&lt;$&lt;CONFIG:Release&gt;:/LTCG:incremental&gt;&quot;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        &quot;$&lt;$&lt;CONFIG:Release&=
-gt;:/DEBUG:FULL&gt;&quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        &quot;$&lt;$&lt;CONFIG:Release&gt;:/OPT:REF&gt;&quot;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;$&lt;$&lt;CON=
-FIG:Release&gt;:/OPT:ICF&gt;&quot;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        )</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    if (${CMAKE_GENERATOR_PLATFORM} STREQUAL &quot;x64&quot; OR ${CMAK=
-E_GENERATOR_PLATFORM} STREQUAL &quot;x86&quot;)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        add_link_options(&quot;$&lt;$&lt;CONFIG=
-:Release&gt;:/CETCOMPAT&gt;&quot;)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    endif()</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+else ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s=
-et(CMAKE_C_FLAGS_RELEASE &quot;-O2&quot;)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    set(CMAKE_CXX_FLAGS_RELEASE &quot;-O2&quot;)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    set(CMAKE_C_FLAGS_DE=
-BUG &quot;-g -O1&quot;)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    set(CMAKE_CXX_FLAGS_DEBUG &quot;-g -O1&quot;)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    add_compile_options(-Wall -Wuninitial=
-ized)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_c_co=
-mpiler_flag(-Wno-stringop-truncation NoStringOpTruncation)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    if (${NoStringOpTruncation})</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        add_compile_options(-Wno-stringop=
--truncation)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    end=
-if()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # We are no=
-t ready for this</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- #add_compile_options(-Wconversion -Wno-sign-conversion -Wsign-compare)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (USE_WERROR)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        add_compile_opt=
-ions(-Werror)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    en=
-dif ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif ()</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+find_program(PYTHON NAMES python3 python)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+execute_process(</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    COMMAND ${PYTHON} =
-${CMAKE_CURRENT_SOURCE_DIR}/contrib/cmake/parse-version.m4.py ${CMAKE_CURRE=
-NT_SOURCE_DIR}/version.m4</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    )</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+include(${CMAKE_CURRENT_BINARY_DIR}/version.cmake)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+set(OPENVPN_VERSION_MAJOR ${PRODUCT_VERSI=
-ON_MAJOR})</span><br><span style=3D"color: hsl(120, 100%, 40%);">+set(OPENV=
-PN_VERSION_MINOR ${PRODUCT_VERSION_MINOR})</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+set(OPENVPN_VERSION_PATCH ${PRODUCT_VERSION_PATCH})<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+set(OPENVPN_VERSION_=
-RESOURCE ${PRODUCT_VERSION_RESOURCE})</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
-et(CMAKE_C_STANDARD 99)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# Set the vario=
-us defines for config.h.cmake.in</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+if (${CMAKE_SYSTEM_NAME} STREQUAL &quot;Linux&quot;)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    set(TARGET_LINUX YES)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    set(ENABLE_ASYNC_PU=
-SH YES)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    set(ENAB=
-LE_LINUXDCO YES)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- set(ENABLE_SITNL YES)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    set(HAVE_DECL_SO_MARK YES)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    set(ENABLE_FEATURE_TUN_PERSIST 1)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    set(HAVE_LINUX_TYPES_H 1)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    set(ENABLE_DCO YES)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    set(HAVE_CMSGHDR YES)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+elseif (${CMAKE_SYSTE=
-M_NAME} STREQUAL &quot;FreeBSD&quot;)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    set(TARGET_FREEBSD YES)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    set(ENABLE_DCO YES)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    link_libraries(-lnv)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+elseif (WIN32)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    set(ENABLE_DCO YES)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+elseif (APPLE)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    set(TARGET_DARWIN YES)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    set(HAVE_NET_IF_UTUN_H YES)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+endif ()</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+if (UNIX)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    set(PATH_SEPARATOR /)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    set(ENABLE_PORT_SHARE YES)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    set(HAVE_SA_FAMILY_T YES)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+elseif (WIN32)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    set(PATH_SEPARATOR \\\\)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    set(TARGET_WIN32 YES)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+endif ()</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+check_symbol_exists(chroot unistd.h HAVE_CHROOT)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+check_symbol_exists(chdir unist=
-d.h HAVE_CHDIR)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+chec=
-k_symbol_exists(dup unistd.h HAVE_DUP)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+check_symbol_exists(dup2 unistd.h HAVE_DUP2)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+check_symbol_exists(fork unistd=
-.h HAVE_FORK)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_=
-symbol_exists(execve unistd.h HAVE_EXECVE)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+check_symbol_exists(ftruncate unistd.h HAVE_FTRUNCAT=
-E)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_symbol_exis=
-ts(setgid unistd.h HAVE_SETGID)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+check_symbol_exists(setuid unistd.h HAVE_SETUID)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+check_symbol_exists(getpeereid uni=
-std.h HAVE_GETPEEREID)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_symbol_exi=
-sts(epoll_create sys/epoll.h HAVE_EPOLL_CREATE)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+check_symbol_exists(gettimeofday sys/time.h HAVE_GETTIMEOFDAY)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+check_symbol_exists(bas=
-ename libgen.h HAVE_BASENAME)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+check_symbol_exists(chsize io.h HAVE_CHSIZE)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+check_symbol_exists(daemon stdlib.h HAVE=
-_DAEMON)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_symbo=
-l_exists(dirname libgen.h HAVE_DIRNAME)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+check_symbol_exists(getrlimit sys/resource.h HAVE_GETRL=
-IMIT)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_symbol_e=
-xists(mlockall sys/mman.h HAVE_MLOCKALL)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+check_symbol_exists(sendmsg sys/socket.h HAVE_SENDMSG)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+check_symbol_exists(recvmsg sys/socket=
-.h HAVE_RECVMSG)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+che=
-ck_symbol_exists(cmsghdr sys/socket.h HAVE_CMSGHDR)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+check_symbol_exists(openlog syslog.h HAVE=
-_OPENLOG)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_symb=
-ol_exists(syslog syslog.h HAVE_SYSLOG)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+check_symbol_exists(getgrnam grp.h HAVE_GETGRNAM)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+check_symbol_exists(getpwn=
-am pwd.h HAVE_GETPWNAM)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+check_symbol_exists(getsockname sys/socket.h HAVE_GETSOCKNAME)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+# Some OS (e.g. FreeBSD) need some basic header=
-s to allow</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# includi=
-ng network headers</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
-et(NETEXTRA sys/types.h)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+check_include_files(&quot;${NETEXTRA};netinet/in.h&quot; HAVE_NETINET_=
-IN_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+if (HAVE_NETINET_IN_H)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    list(APPEND NETEXTRA netin=
-et/in.h)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif ()</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+check_include_files(&quot;${NETEXTRA};net=
-inet/in6.h&quot; HAVE_NETINET_IN_H)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+check_include_files(linux/if_tun.h HAVE_LINUX_IF_TUN_H)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+check_include_files(lin=
-ux/sockios.h HAVE_LINUX_SOCKIOS_H)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+check_include_files(dlfcn.h HAVE_DLFCN_H)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+check_include_files(fcntl.h HAVE_FCNTL=
-_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_include_fi=
-les(dmalloc.h HAVE_DMALLOC_H)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+check_include_files(err.h HAVE_ERR_H)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+check_include_files(sys/epoll.h HAVE_SYS_EPOLL_=
-H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_include_fil=
-es(poll.h HAVE_POLL_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+check_include_files(sys/socket.h HAVE_SYS_SOCKET_H)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+check_include_files(sys/time.h HAVE_SYS_=
-TIME_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_includ=
-e_files(netdb.h HAVE_NETDB_H)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+check_include_files(unistd.h HAVE_UNISTD_H)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+check_include_files(sys/un.h HAVE_SYS_UN_=
-H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_include_fil=
-es(libgen.h HAVE_LIBGEN_H)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+check_include_files(net/if.h HAVE_NET_IF_H)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+check_include_files(&quot;${NETEXTRA};netine=
-t/ip.h&quot; HAVE_NETINET_IP_H)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+check_include_files(arpa/inet.h HAVE_ARPA_INET_H)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+check_include_files(net/if_utun.h=
- HAVE_NET_UTUN_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ch=
-eck_include_files(sys/ioctl.h HAVE_SYS_IOCTL_H)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+check_include_files(sys/inotify.h HAVE_SYS_INOT=
-IFY_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_include=
-_files(&quot;${NETEXTRA};sys/uio.h&quot; HAVE_SYS_UIO_H)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+check_include_files(syslog.h HAVE_SYSL=
-OG_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+check_include_=
-files(sys/wait.h HAVE_SYS_WAIT_H)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+check_include_files(grp.h HAVE_GRP_H)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+check_include_files(pwd.h HAVE_PWD_H)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+check_include_files(sys=
-/mman.h HAVE_SYS_MMAN_H)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+check_include_files(&quot;${NETEX=
-TRA};resolv.h&quot; HAVE_RESOLV_H)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+check_include_files(&quot;${NETEXTRA};net/if_tun.h&quot; HAV=
-E_NET_IF_TUN_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+set(CMAKE_EXTRA_INCLUDE=
-_FILES netinet/ip.h)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+check_type_size(&quot;struct in_pktinfo&quot; IN_PKTINFO)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+check_struct_has_member(&quot;struct=
- in_pktinfo&quot; ipi_spec_dst netinet/ip.h HAVE_IPI_SPEC_DST)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+check_type_size(&quot;struct msg=
-hdr&quot; MSGHDR)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+se=
-t(CMAKE_EXTRA_INCLUDE_FILES)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+find_progr=
-am(IFCONFIG_PATH ifconfig)</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+find_program(IPROUTE_PATH ip)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+find_program(ROUTE_PATH route)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+if (${ENABLE_LZ4})</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    pkg_search_module(liblz4 liblz4 REQUIRED IMPORTED_TARGET)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+endif ()</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+if (${ENABLE_LZO})</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    pkg_search_module(lzo2 lzo2 REQUIRED IMPORTED_TARGET=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif ()</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+if (${ENABLE_PKCS11})</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    pkg_search_module(pkcs11-helper libpkcs11-=
-helper-1 REQUIRED IMPORTED_TARGET)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+endif ()</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+function(add_li=
-brary_deps target)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   if (${MBED})</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    target_link_libraries(${target} -lmbedtls -lmbedx509 -lmbedcrypto)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    elseif (${WOLFSSL})<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        pkg_search_m=
-odule(wolfssl wolfssl REQUIRED)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        target_link_libraries(${target} PUBLIC ${wolfssl_LINK_L=
-IBRARIES})</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        t=
-arget_include_directories(${target} PRIVATE ${wolfssl_INCLUDE_DIRS}/wolfssl=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else ()</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        set(ENABLE_X509ALT=
-USERNAME YES)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        find_package(Open=
-SSL REQUIRED)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  target_link_libraries(${target} PUBLIC OpenSSL::SSL OpenSSL::Crypto)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (WIN32)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            target_link_l=
-ibraries(${target} PUBLIC</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                ws2_32.lib crypt32.lib fwpuclnt.lib iphlpapi.lib</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                wininet.=
-lib setupapi.lib rpcrt4.lib wtsapi32.lib ncrypt.lib bcrypt.lib)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        endif ()</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    endif ()</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-# optional dependencies</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    target_link_libraries(${target} PUBLIC</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        $&lt;TARGET_NAME_IF_EXISTS:PkgConfig::li=
-blz4&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        $&l=
-t;TARGET_NAME_IF_EXISTS:PkgConfig::lzo2&gt;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        $&lt;TARGET_NAME_IF_EXISTS:PkgConfig::pkcs1=
-1-helper&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    if (${CMAKE_SYSTEM_NAME} STREQUA=
-L &quot;Linux&quot;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        pkg_search_module(libcapng REQUIRED libcap-ng IMPORTED_TARGET)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        pkg_search_modu=
-le(libnl REQUIRED libnl-genl-3.0 IMPORTED_TARGET)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        target_link_libraries(${target} PUBLIC PkgConfig::libcap=
-ng PkgConfig::libnl)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    endif ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+endfunction()</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+if (${MBED})</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    set(ENABLE_CRYPTO_MBEDTLS YES)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+elseif (${WOLFSSL})</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    set(ENABLE_CRYPTO_OPENSSL YES)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    set(ENABLE_CRYPTO_WOLF=
-SSL YES)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    set(ENA=
-BLE_X509ALTUSERNAME YES)</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+else ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    set=
-(ENABLE_CRYPTO_OPENSSL YES)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    set(ENABLE_X509ALTUSERNAME YES)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+endif ()</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+includ=
-e_directories(${CMAKE_CURRENT_SOURCE_DIR} src/compat include)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+add_custom_command(</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    OUTPUT always_rebuild config-version.h</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    COMMAND ${PYTHON} ${CMAKE=
-_CURRENT_SOURCE_DIR}/contrib/cmake/git-version.py</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    )</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+set(HAVE_CONFIG_VERSION_H YES)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+configure_file(config.h.cmake.in config.h)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+configure_file(include/openvpn-plugin.h.in o=
-penvpn-plugin.h)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# T=
-ODO remove later when msvc-config.h is removed and we can always include co=
-nfig.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+add_definitio=
-ns(-DHAVE_CONFIG_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+include_directories=
-(${CMAKE_CURRENT_BINARY_DIR})</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+add_subdi=
-rectory(doc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+add_sub=
-directory(src/openvpnmsica)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+add_subdirectory(src/openvpnserv)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+add_subdirectory(src/tapctl)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+set(SOURCE_FILES</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    ${CMAKE_CURRENT_BINARY_DIR}/config.h</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    ${CMAKE_CURRENT_BINARY_DIR}/config-versio=
-n.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ${CMAKE_CURR=
-ENT_BINARY_DIR}/openvpn-plugin.h</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sr=
-c/compat/compat-basename.c</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    src/compat/compat-daemon.c</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    src/compat/compat-dirname.c</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    src/compat/compat-gettimeofday.c</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    src/compat/compat-strsep=
-.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/compat/co=
-mpat-versionhelpers.h</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    src/openvpn/argv.c</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    src/openvpn/argv.h</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    src/openvpn/base64.c</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    src/openvpn/base64.h</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    src/openvpn/basic.h</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    src/openvpn/block_dns.h</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    src/openvpn/block_dns.c</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/buffer.c</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/buffer.h</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/circ_list.h=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/cli=
-nat.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvp=
-n/clinat.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/o=
-penvpn/common.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-src/openvpn/comp-lz4.c</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    src/openvpn/comp-lz4.h</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    src/openvpn/comp.c</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    src/openvpn/comp.h</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    src/openvpn/compstub.c</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    src/openvpn/console.c</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    src/openvpn/console_builtin.c</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/console.h</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/crypto.c</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/crypt=
-o.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/=
-crypto_backend.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- src/openvpn/crypto_openssl.c</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    src/openvpn/crypto_openssl.h</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    src/openvpn/crypto_mbedtls.c</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/crypto_mbedtls.h</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/cryptoapi.=
-c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/cr=
-yptoapi.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/op=
-envpn/dco.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/=
-openvpn/dco.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sr=
-c/openvpn/dco_win.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    src/openvpn/dco_win.h</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    src/openvpn/dco_linux.c</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    src/openvpn/dco_linux.h</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    src/openvpn/dco_freebsd.c</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/dco_freebsd.h</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/dhcp.c</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/dhcp.h</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/dns.c</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/dns.h</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/errle=
-vel.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvp=
-n/env_set.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/=
-openvpn/env_set.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  src/openvpn/error.c</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    src/openvpn/error.h</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    src/openvpn/event.c</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    src/openvpn/event.h</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    src/openvpn/fdmisc.c</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    src/openvpn/fdmisc.h</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    src/openvpn/forward.c</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    src/openvpn/forward.h</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/fragment.c</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/fragment.h</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/gremlin.c=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/gre=
-mlin.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openv=
-pn/helper.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/=
-openvpn/helper.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- src/openvpn/httpdigest.c</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    src/openvpn/httpdigest.h</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    src/openvpn/init.c</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    src/openvpn/init.h</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    src/openvpn/integer.h</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    src/openvpn/interval.c</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/interval.h</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/list.c</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/list.h</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/lladdr.c</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/lladdr.=
-h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/lz=
-o.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/=
-lzo.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvp=
-n/manage.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/o=
-penvpn/manage.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-src/openvpn/mbuf.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   src/openvpn/mbuf.h</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    src/openvpn/memdbg.h</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    src/openvpn/misc.c</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    src/openvpn/misc.h</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    src/openvpn/mroute.c</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    src/openvpn/mroute.h</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    src/openvpn/mss.c</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    src/openvpn/mss.h</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    src/openvpn/mstats.c</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/mstats.h</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/mtcp.c</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/mtcp.h</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/mtu.c</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/mtu.h</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/mudp.c</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/mudp.h<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/mult=
-i.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/=
-multi.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/open=
-vpn/ntlm.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/o=
-penvpn/ntlm.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sr=
-c/openvpn/occ.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-src/openvpn/occ.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  src/openvpn/openvpn.c</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    src/openvpn/openvpn.h</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    src/openvpn/openvpn_win32_resources.rc</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/options.c</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/options.h</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/options_util.=
-c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/op=
-tions_util.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src=
-/openvpn/otime.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- src/openvpn/otime.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    src/openvpn/ovpn_dco_win.h</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    src/openvpn/packet_id.c</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    src/openvpn/packet_id.h</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    src/openvpn/perf.c</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    src/openvpn/perf.h</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/ping.c</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/ping.h</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/pkcs11.c</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/pkcs11.h</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/pkcs11_ba=
-ckend.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/open=
-vpn/pkcs11_openssl.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    src/openvpn/pkcs11_mbedtls.c</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    src/openvpn/platform.c</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    src/openvpn/platform.h</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    src/openvpn/plugin.c</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/plugin.h</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/pool.c</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/pool.h</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/proto.c</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/proto.h</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/proxy.=
-c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/pr=
-oxy.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvp=
-n/ps.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openv=
-pn/ps.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/open=
-vpn/push.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/o=
-penvpn/push.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sr=
-c/openvpn/pushlist.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    src/openvpn/reflect_filter.c</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    src/openvpn/reflect_filter.h</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    src/openvpn/reliable.c</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/reliable.h</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/route.c</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/route.h</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/run_comman=
-d.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/=
-run_command.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sr=
-c/openvpn/schedule.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    src/openvpn/schedule.h</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    src/openvpn/session_id.c</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    src/openvpn/session_id.h</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    src/openvpn/shaper.c</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    src/openvpn/shaper.h</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/sig.c</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/sig.h</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/socket.c</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/socket.h</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/socks.c</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/socks=
-.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/s=
-sl.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn=
-/ssl.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openv=
-pn/ssl_backend.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- src/openvpn/ssl_common.h</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    src/openvpn/ssl_openssl.c</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    src/openvpn/ssl_openssl.h</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    src/openvpn/ssl_mbedtls.c</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/ssl_mbedtls.h</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/ssl_verify.c<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/ssl_=
-verify.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/ope=
-nvpn/ssl_verify_backend.h</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    src/openvpn/ssl_verify_openssl.c</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    src/openvpn/ssl_verify_openssl.h</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/ssl_verify_mbedtls.=
-c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/ss=
-l_verify_mbedtls.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   src/openvpn/status.c</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    src/openvpn/status.h</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    src/openvpn/syshead.h</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    src/openvpn/tls_crypt.c</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    src/openvpn/tun.c</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    src/openvpn/tun.h</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    src/openvpn/networking_sitnl.c</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/networking_freebs=
-d.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/=
-auth_token.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src=
-/openvpn/auth_token.h</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    src/openvpn/ssl_ncp.c</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    src/openvpn/ssl_ncp.h</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    src/openvpn/ssl_pkt.c</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    src/openvpn/ssl_pkt.h</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    src/openvpn/ssl_util.c</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/ssl_util.h</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/vlan.c</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/vlan.h</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/win32.c</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn/win32-ut=
-il.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/openvpn=
-/win32.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    src/ope=
-nvpn/win32-util.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  src/openvpn/xkey_helper.c</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    src/openvpn/xkey_provider.c</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    )</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+add_executabl=
-e(openvpn ${SOURCE_FILES})</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+add_library_=
-deps(openvpn)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+if (MINGW)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    target_compile_options(openvpn=
- PRIVATE</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        -DW=
-IN32_LEAN_AND_MEAN</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       -DNTDDI_VERSION=3DNTDDI_VISTA -D_WIN32_WINNT=3D_WIN32_WINNT_VISTA</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        )</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    target_compile_options(openv=
-pn PRIVATE -municode -UUNICODE)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    target_link_options(openvpn PRIVATE -municode)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+endif()</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+if (MSVC)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    # we have our own manifest</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    target_link_options(openvpn PRIVATE /MANIFEST:NO)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+endif()</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+if (${CMAKE_SYSTEM_NAME} STREQUAL &quot;Linux&quot;)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    target_link_libraries(=
-openvpn PUBLIC -ldl)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+endif ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+if (NOT WIN32)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    target_compile_options(openvpn=
- PRIVATE -DPLUGIN_LIBDIR=3D\&quot;${PLUGIN_DIR}\&quot;)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    find_library(resolv resolv)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    # some platform like BSDs already include =
-resolver functionality in the libc and not have an extra resolv library</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (${resolv} OR AP=
-PLE)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        target_=
-link_libraries(openvpn PUBLIC -lresolv)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    endif ()</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+endif ()</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+if (BUILD_TESTING)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    find_package(cmocka CONFIG)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (TARGET cmocka::cm=
-ocka)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        set(CM=
-OCKA_LIBRARIES cmocka::cmocka)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    else ()</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        pkg_search_module(cmocka cmocka REQUIRED IMPORTED_TARGET)</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        set(CMOCKA_LIBRARI=
-ES PkgConfig::cmocka)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    endif ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    set(unit_tests</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;test_auth_t=
-oken&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &=
-quot;test_buffer&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        &quot;test_crypto&quot;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        &quot;test_misc&quot;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        &quot;test_ncp&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        &quot;test_packet_id&quot;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;test_pkt&quo=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;tes=
-t_provider&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    if (WIN32)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        list(APPEND unit_tests</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;test_cry=
-ptoapi&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    endif ()<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    # MSVC and Apple&#39;s LLVM ld do n=
-ot support --wrap</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  # This test requires cmake &gt;=3D 3.18, so check if check_linker_flag is=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # available</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (COMMAND check_l=
-inker_flag)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-check_linker_flag(C -Wl,--wrap=3Dparse_line LD_SUPPORTS_WRAP)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    endif()</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    if (${LD_SUPPORTS_WRAP})</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        list(APPEND unit_tests</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            &quot;test_argv&quot;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;test_tls=
-_crypt&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    endif ()<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    # These tests work on only on Linux=
- since they depend on special Linux features</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    if (${CMAKE_SYSTEM_NAME} STREQUAL &quot;Linux&=
-quot;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        list(=
-APPEND unit_tests</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          &quot;test_networking&quot;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            )</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    endif ()</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    foreach (t=
-est_name ${unit_tests})</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        # test_networking needs special environment</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        if (NOT ${test_name} STREQUAL &=
-quot;test_networking&quot;)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            add_test(${test_name} ${test_name})</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        endif ()</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        add_executable(${test_name}</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            tests/unit_te=
-sts/openvpn/${test_name}.c</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            tests/unit_tests/openvpn/mock_msg.c</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            tests/unit_tests/openvpn/moc=
-k_msg.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-src/openvpn/platform.c</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            src/openvpn/win32-util.c</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            src/compat/compat-gettimeofday.c</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            )</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        add_library_deps(${test_name})</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        target_link_libraries(${test=
-_name} PUBLIC ${CMOCKA_LIBRARIES})</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    target_include_directories(${test_name} PRIVATE src/openvpn)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        if (NOT ${test_name} STREQUAL &quot;test_=
-buffer&quot;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      target_sources(${test_name} PRIVATE</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                src/openvpn/buffer.c</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                )</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        endif ()</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    endforeach()</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tar=
-get_sources(test_auth_token PRIVATE</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        src/openvpn/base64.c</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        src/openvpn/crypto_mbedtls.c</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/crypto_openss=
-l.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        src/open=
-vpn/crypto.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- src/openvpn/otime.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        src/openvpn/packet_id.c</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        )</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    target_sourc=
-es(test_buffer PRIVATE</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        tests/unit_tests/openvpn/mock_get_random.c</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        )</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    target_sources(test_crypto PRIVATE</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        src/openvpn/crypto_mbedtls.c</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/crypto_openssl=
-.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        src/openv=
-pn/crypto.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-src/openvpn/otime.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        src/openvpn/packet_id.c</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        src/openvpn/mtu.c</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        src/openvpn/mss.c</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        )</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    t=
-arget_sources(test_misc PRIVATE</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        tests/unit_tests/openvpn/mock_get_random.c</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/options_util=
-.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        src/openv=
-pn/ssl_util.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    target_sources(test_ncp PRIVATE=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn=
-/crypto_mbedtls.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      src/openvpn/crypto_openssl.c</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        src/openvpn/crypto.c</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        src/openvpn/otime.c</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/packet_id.c</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/ssl_util.=
-c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        src/compat=
-/compat-strsep.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    target_sources(test_packet_i=
-d PRIVATE</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        te=
-sts/unit_tests/openvpn/mock_get_random.c</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        src/openvpn/otime.c</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        src/openvpn/packet_id.c</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/reliable.c</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/ses=
-sion_id.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        )<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    target_sources(test_pkt PRIVATE</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        tests/unit_test=
-s/openvpn/mock_win32_execve.c</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        src/openvpn/argv.c</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        src/openvpn/base64.c</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        src/openvpn/crypto_mbedtls.c</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/crypto_opens=
-sl.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        src/ope=
-nvpn/crypto.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-  src/openvpn/env_set.c</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        src/openvpn/otime.c</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        src/openvpn/packet_id.c</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        src/openvpn/reliable.c</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/run_command.c</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/sessio=
-n_id.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        src/o=
-penvpn/ssl_pkt.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     src/openvpn/tls_crypt.c</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    target_sources(t=
-est_provider PRIVATE</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        tests/unit_tests/openvpn/mock_get_random.c</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/xkey_provider.c</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        src/openvpn/xkey_=
-helper.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        src=
-/openvpn/base64.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    if (TARGET test_argv)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        target_link_optio=
-ns(test_argv PRIVATE -Wl,--wrap=3Dparse_line)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        target_sources(test_argv PRIVATE</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            tests/unit_tests=
-/openvpn/mock_get_random.c</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            src/openvpn/argv.c</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            )</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    endif ()</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (TARGET=
- test_cryptoapi)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     target_sources(test_cryptoapi PRIVATE</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+            tests/unit_tests/openvpn/mock_get_random=
-.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            tests=
-/unit_tests/openvpn/cert_data.h</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            src/openvpn/xkey_provider.c</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/xkey_helper.c</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn=
-/base64.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    endif ()</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    if (TARGET test_networking)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        target_link_options(t=
-est_networking PRIVATE -Wl,--wrap=3Dparse_line)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        target_compile_options(test_networking =
-PRIVATE -UNDEBUG)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-      target_sources(test_networking PRIVATE</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            src/openvpn/networking_sitnl.c</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/cry=
-pto_mbedtls.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      src/openvpn/crypto_openssl.c</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            src/openvpn/crypto.c</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+            src/openvpn/otime.c</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/packet_id.c=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            )</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    endif ()</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    if (TARGET test_tls_crypt)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        target_link_options(test_tls_cry=
-pt PRIVATE -Wl,--wrap=3Dparse_line)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        target_link_options(test_tls_crypt PRIVATE</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            -Wl,--wrap=3Dbuf=
-fer_read_from_file</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           -Wl,--wrap=3Dbuffer_write_file</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+            -Wl,--wrap=3Drand_bytes)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        target_sources(test_tls_cryp=
-t PRIVATE</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-  tests/unit_tests/openvpn/mock_win32_execve.c</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            src/openvpn/argv.c</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/base64.c</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/=
-crypto_mbedtls.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         src/openvpn/crypto_openssl.c</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            src/openvpn/crypto.c</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            src/openvpn/env_set.c</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/otime.=
-c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            src/op=
-envpn/packet_id.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-          src/openvpn/run_command.c</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            )</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    endif ()</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif (BUILD_TES=
-TING)</span><br><span>diff --git a/CMakePresets.json b/CMakePresets.json</s=
-pan><br><span>new file mode 100644</span><br><span>index 0000000..135b19d</=
-span><br><span>--- /dev/null</span><br><span>+++ b/CMakePresets.json</span>=
-<br><span>@@ -0,0 +1,228 @@</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;=
-version&quot;: 3,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  &quot;configurePresets&quot;: [</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            &quot;name&quot;: &quot;base&quot;,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            &quot;hidden&quot;: true,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;cache=
-Variables&quot;: {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-               &quot;CMAKE_TOOLCHAIN_FILE&quot;: {</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                    &quot;value&quot;: &quot=
-;$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake&quot;,</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+                    &quot;type&quot;:=
- &quot;FILEPATH&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+                },</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                &quot;VCPKG_OVERLAY_TRIPLETS&quot;: {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                    &quot;value&quot;: &=
-quot;${sourceDir}/contrib/vcpkg-triplets&quot;,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                    &quot;type&quot;: &quot;FIL=
-EPATH&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-        },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-       &quot;VCPKG_OVERLAY_PORTS&quot;: {</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+                    &quot;value&quot;: &quot;${source=
-Dir}/contrib/vcpkg-ports&quot;,</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                    &quot;type&quot;: &quot;FILEPATH&quot;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        },</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            &quot;name&quot;: &quot;base-windows&qu=
-ot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &qu=
-ot;hidden&quot;: true,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            &quot;binaryDir&quot;: &quot;${sourceDir}/out/build/${preset=
-Name}&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     &quot;generator&quot;: &quot;Visual Studio 17 2022&quot;,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            &quot;cacheVariables=
-&quot;: {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-      &quot;VCPKG_MANIFEST_DIR&quot;: &quot;${sourceDir}/contrib/vcpkg-mani=
-fests/windows&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                &quot;VCPKG_HOST_TRIPLET&quot;: &quot;x64-windows&quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            },</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;vendor&qu=
-ot;: { &quot;microsoft.com/VisualStudioSettings/CMake/1.0&quot;: { &quot;ho=
-stOS&quot;: [ &quot;Windows&quot; ] } }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        },</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            &quot;name&quot;: &quot;base-mingw&quot;,</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            &quot;hidden&quot;: true,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;gene=
-rator&quot;: &quot;Ninja Multi-Config&quot;,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            &quot;cacheVariables&quot;: {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+                &quot;CMAKE_=
-SYSTEM_NAME&quot;: {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                    &quot;value&quot;: &quot;Windows&quot;,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                    &quot;type&quo=
-t;: &quot;STRING&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                },</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+                &quot;VCPKG_MANIFEST_DIR&quot;: &quot;${sourceDir}/contri=
-b/vcpkg-manifests/mingw&quot;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &qu=
-ot;name&quot;: &quot;x64&quot;,</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            &quot;hidden&quot;: true,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            &quot;architecture&quot;: {</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                &quot;val=
-ue&quot;: &quot;x64&quot;,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+                &quot;strategy&quot;: &quot;set&quot;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            },</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            &quot;cacheVariables&quot;:=
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                &=
-quot;VCPKG_TARGET_TRIPLET&quot;: &quot;x64-windows-ovpn&quot;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        },</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            &quot;name&quot;: &quot;x64-mingw&quot;,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;hidden&=
-quot;: true,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     &quot;binaryDir&quot;: &quot;out/build/mingw/x64&quot;,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            &quot;cacheVariables&q=
-uot;: {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-    &quot;CMAKE_C_COMPILER&quot;: {</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                    &quot;value&quot;: &quot;x86_64-w64-min=
-gw32-gcc&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-                &quot;type&quot;: &quot;STRING&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                },</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                &quot;CMAKE_CXX_COMPILER&=
-quot;: {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
-         &quot;value&quot;: &quot;x86_64-w64-mingw32-g++&quot;,</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                    &quot;type&=
-quot;: &quot;STRING&quot;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                },</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                &quot;VCPKG_TARGET_TRIPLET&quot;: &quot;x64-mingw-ovpn=
-&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        },</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            &quot;name&quot;: &quot;ar=
-m64&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   &quot;hidden&quot;: true,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            &quot;architecture&quot;: {</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+                &quot;value&quot;: &quot;arm64=
-&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-    &quot;strategy&quot;: &quot;set&quot;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+            },</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            &quot;cacheVariables&quot;: {</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+                &quot;VCPKG_TARGET_T=
-RIPLET&quot;: &quot;arm64-windows-ovpn&quot;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        },</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            &quot;name&quot;: &quot;x86&quot;,</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            &quot;hidden&quot;: true,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+            &quot;architecture=
-&quot;: {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
-      &quot;value&quot;: &quot;Win32&quot;,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                &quot;strategy&quot;: &quot;set&quo=
-t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            },</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;cach=
-eVariables&quot;: {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-                &quot;VCPKG_TARGET_TRIPLET&quot;: &quot;x86-windows-ovpn&qu=
-ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        },</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            &quot;name&quot;: &quot;i686-=
-mingw&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     &quot;hidden&quot;: true,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            &quot;binaryDir&quot;: &quot;out/build/mingw/x86&quo=
-t;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quo=
-t;cacheVariables&quot;: {</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+                &quot;CMAKE_C_COMPILER&quot;: {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                    &quot;value&quot;: &q=
-uot;i686-w64-mingw32-gcc&quot;,</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+                    &quot;type&quot;: &quot;STRING&quot;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                },</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                &quot;CMAKE=
-_CXX_COMPILER&quot;: {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                    &quot;value&quot;: &quot;i686-w64-mingw32-g++&quot;,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
- &quot;type&quot;: &quot;STRING&quot;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+                },</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+                &quot;VCPKG_TARGET_TRIPLET&quot;: &quot;x8=
-6-mingw-ovpn&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
- },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;name&quo=
-t;: &quot;debug&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            &quot;hidden&quot;: true,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            &quot;cacheVariables&quot;: {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                &quot;CMAKE_BUIL=
-D_TYPE&quot;: &quot;Debug&quot;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-     {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &=
-quot;name&quot;: &quot;release&quot;,</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            &quot;hidden&quot;: true,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            &quot;cacheVariables&quot;:=
- {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                &=
-quot;CMAKE_BUILD_TYPE&quot;: &quot;Release&quot;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            }</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        },</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            &quot;name&quot;: &quot;mingw-x64&quot;,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            &quot;inherits&quot;: [ &q=
-uot;base&quot;, &quot;base-mingw&quot;, &quot;x64-mingw&quot; ]</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        },</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            &quot;name&quot;: &quot;mingw-x86&quot=
-;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot=
-;inherits&quot;: [ &quot;base&quot;, &quot;base-mingw&quot;, &quot;i686-min=
-gw&quot; ]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }=
-,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;name&quot;=
-: &quot;win-amd64-release&quot;,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            &quot;inherits&quot;: [ &quot;base&quot;, &quot;ba=
-se-windows&quot;, &quot;x64&quot;, &quot;release&quot; ]</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        },</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            &quot;name&quot;: &quot;win-arm64-release&quo=
-t;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quo=
-t;inherits&quot;: [ &quot;base&quot;, &quot;base-windows&quot;, &quot;arm64=
-&quot;, &quot;release&quot; ]</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        },</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   &quot;name&quot;: &quot;win-x86-release&quot;,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            &quot;inherits&quot;: [ &quot;bas=
-e&quot;, &quot;base-windows&quot;, &quot;x86&quot;, &quot;release&quot; ]</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        },</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            &quot;name&quot;: &quot;win-=
-amd64-debug&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           &quot;inherits&quot;: [ &quot;base&quot;, &quot;base-windows&quo=
-t;, &quot;x64&quot;, &quot;debug&quot; ]</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        },</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            &quot;name&quot;: &quot;win-arm64-debug&quot;,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            &quot;inherits&quot;: =
-[ &quot;base&quot;, &quot;base-windows&quot;, &quot;arm64&quot;, &quot;debu=
-g&quot; ]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        },=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;name&quot;:=
- &quot;win-x86-debug&quot;,</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            &quot;inherits&quot;: [ &quot;base&quot;, &quot;base-wi=
-ndows&quot;, &quot;x86&quot;, &quot;debug&quot; ]</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        },</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            &quot;name&quot;: &quot;unix-native&quot;,</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;generator&q=
-uot;: &quot;Ninja Multi-Config&quot;,</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            &quot;binaryDir&quot;: &quot;out/build/unix&q=
-uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    ],</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    &quot;buildPresets&quot;: [</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+            &quot;name&quot;: &quot;=
-mingw-x64&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         &quot;configurePreset&quot;: &quot;mingw-x64&quot;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        },</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            &quot;name&quot;: &quot;mingw-x86&quot;,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;con=
-figurePreset&quot;: &quot;mingw-x86&quot;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        },</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            &quot;name&quot;: &quot;win-amd64-release&quot;,</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            &quot;configurePres=
-et&quot;: &quot;win-amd64-release&quot;,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            &quot;configuration&quot;: &quot;Release&q=
-uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        },</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            &quot;name&quot;: &quo=
-t;win-arm64-release&quot;,</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            &quot;configurePreset&quot;: &quot;win-arm64-release&quo=
-t;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quo=
-t;configuration&quot;: &quot;Release&quot;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        },</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            &quot;name&quot;: &quot;win-x86-release&quot;,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            &quot;configurePrese=
-t&quot;: &quot;win-x86-release&quot;,</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            &quot;configuration&quot;: &quot;Release&quot=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        },</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            &quot;name&quot;: &quot;w=
-in-amd64-debug&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            &quot;configurePreset&quot;: &quot;win-amd64-debug&quot;,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;confi=
-guration&quot;: &quot;Debug&quot;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        },</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       &quot;name&quot;: &quot;win-arm64-debug&quot;,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            &quot;configurePreset&quot;: =
-&quot;win-arm64-debug&quot;,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            &quot;configuration&quot;: &quot;Debug&quot;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        },</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            &quot;name&quot;: &quot;win-x86-debu=
-g&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- &quot;configurePreset&quot;: &quot;win-x86-debug&quot;,</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            &quot;configuration&quot;:=
- &quot;Debug&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;na=
-me&quot;: &quot;unix-native&quot;,</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            &quot;configurePreset&quot;: &quot;unix-native&q=
-uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    ],</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    &quot;testPresets&quot;: [</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            &quot;name&quot;: &quot;w=
-in-amd64-release&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            &quot;configurePreset&quot;: &quot;win-amd64-release&quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        },</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+            &quot;name&quot;: &quot;win=
--x86-release&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            &quot;configurePreset&quot;: &quot;win-x86-release&quot;</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        },</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            &quot;name&quot;: &quot;win-amd64=
--debug&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      &quot;configurePreset&quot;: &quot;win-amd64-debug&quot;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        },</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            &quot;name&quot;: &quot;win-x86-debug&q=
-uot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            &q=
-uot;configurePreset&quot;: &quot;win-x86-debug&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        },</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+            &quot;name&quot;: &quot;unix-native&quot;,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            &quot;configu=
-rePreset&quot;: &quot;unix-native&quot;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+     ]</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</=
-span><br><span>diff --git a/Makefile.am b/Makefile.am</span><br><span>index=
- 2ddf6f7..f4ac7be 100644</span><br><span>--- a/Makefile.am</span><br><span>=
-+++ b/Makefile.am</span><br><span>@@ -41,7 +41,10 @@</span><br><span> </spa=
-n><br><span> EXTRA_DIST =3D \</span><br><span> 	contrib \</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-	debug</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+	debug \</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+	CMakeLists.txt \</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+	CMakePresets.json \</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+	config.h.cmake.in</span><br><span> </span><br><span> .PHONY: co=
-nfig-version.h doxygen</span><br><span> </span><br><span>@@ -64,6 +67,7 @@<=
-/span><br><span> 	.gitattributes \</span><br><span> 	CONTRIBUTING.rst \</sp=
-an><br><span> 	PORTS \</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+	README.cmake.md \</span><br><span> 	README.dco.md \</span><br><span> 	R=
-EADME.ec \</span><br><span> 	README.wolfssl \</span><br><span>diff --git a/=
-README b/README</span><br><span>index 04eb16f..8576dba 100644</span><br><sp=
-an>--- a/README</span><br><span>+++ b/README</span><br><span>@@ -21,6 +21,9=
- @@</span><br><span> </span><br><span> or see the file INSTALL for more inf=
-o.</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+For information on how to build OpenVPN on/for Windows with MinGW</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+or MSVC see README.cmake.md.=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> *=
-************************************************************************</s=
-pan><br><span> </span><br><span> For detailed information on OpenVPN, inclu=
-ding examples, see the man page</span><br><span>@@ -69,8 +72,7 @@</span><br=
-><span>   https://github.com/OpenVPN/easy-rsa</span><br><span>   https://gi=
-thub.com/OpenVPN/tap-windows6</span><br><span> </span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-The old cross-compilation environment (domake-win=
-) and the Python-based</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--buildsystem have been replaced with openvpn-build:</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+Community-provided Windows installers (MS=
-I) and Debian packages are built from</span><br><span> </span><br><span>   =
-https://github.com/OpenVPN/openvpn-build</span><br><span> </span><br><span>=
-diff --git a/README.cmake.md b/README.cmake.md</span><br><span>new file mod=
-e 100644</span><br><span>index 0000000..599d8dc</span><br><span>--- /dev/nu=
-ll</span><br><span>+++ b/README.cmake.md</span><br><span>@@ -0,0 +1,137 @@<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+OpenVPN Builds with =
-CMake</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+For Windows builds we do not use the autotools-bas=
-ed buildsystem that we use</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+for our Unix-like (Linux, BSDs, macOS, etc.) builds. Instead we adde=
-d a</span><br><span style=3D"color: hsl(120, 100%, 40%);">+separate (CMake)=
-[https://cmake.org/]-based buildsystem.</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+This buildsystem supports building for Windows both with MSVC (i.e. Visual=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Studio) and MinGW. =
-MinGW builds are also supported as cross-compile</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+from Linux.</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+The official builds, which are also available as CMake presets (see</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+`cmake --list-presets` an=
-d `CMakePresets.json`) all use</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+(VCPKG)[https://github.com/microsoft/vcpkg/#vcpkg-overview] for =
-dependency</span><br><span style=3D"color: hsl(120, 100%, 40%);">+managemen=
-t. This allows us to do proper supply-chain management and</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+also makes cross-building with MinGW=
- on Linux much simpler. However,</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+builds are also possible by providing the build dependencies m=
-anually,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+but that mi=
-ght require specifying more information to CMake.</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+If you&#39;re looking to build the full Windows installer MSI, t=
-ake a look</span><br><span style=3D"color: hsl(120, 100%, 40%);">+at https:=
-//github.com/OpenVPN/openvpn-build.git .</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+MSVC builds</span><br><span style=3D"color: hsl(120, 100%, 40%);">+------=
------</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+The following tools are expected =
-to be present on the system, you</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+can them install with a package manager of your choice (e.g.</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+chocolatey, winget) o=
-r manually:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+* CMake</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+* Git</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+* Python (3.x), plus the Python module `docutils`</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+* Visual Studion 17 (20=
-22), C/C++ Enviroment</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+For example, to p=
-repare the required tools with chocolatey, you</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+can use the following commands (Powershell):</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    # Installing Chocolatey</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    Set-ExecutionPolicy Bypass -S=
-cope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol =3D=
- [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Ob=
-ject System.Net.WebClient).DownloadString(&#39;https://chocolatey.org/insta=
-ll.ps1&#39;))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &a=
-mp; choco.exe install -y git --params &quot;/GitAndUnixToolsOnPath&quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    &amp; choco.exe in=
-stall -y python</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-&amp; python.exe -m ensurepip</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    &amp; python.exe -m pip install --upgrade pip</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    &amp; python.exe -m pip install=
- docutils</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &amp; =
-choco.exe install -y cmake --installargs &#39;ADD_CMAKE_TO_PATH=3DSystem&#3=
-9;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &amp; choco.e=
-xe install -y &quot;visualstudio2022buildtools&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    &amp; choco.exe install -y &quot;visu=
-alstudio2022-workload-vctools&quot; --params &quot;--add Microsoft.VisualSt=
-udio.Component.UWP.VC.ARM64 --add Microsoft.VisualStudio.Component.VC.Tools=
-.ARM64 --add Microsoft.VisualStudio.Component.VC.ATL.Spectre --add Microsof=
-t.VisualStudio.Component.VC.ATLMFC.Spectre --add Microsoft.VisualStudio.Com=
-ponent.VC.ATL.ARM64.Spectre --add Microsoft.VisualStudio.Component.VC.MFC.A=
-RM64.Spectre --add Microsoft.VisualStudio.Component.VC.Runtimes.ARM64.Spect=
-re --add Microsoft.VisualStudio.Component.VC.Runtimes.x86.x64.Spectre --qui=
-et&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &amp; c=
-hoco.exe install -y windows-sdk-10-version-2004-windbg</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+One or more restarts of Powershell might be required to pic=
-k up new additions</span><br><span style=3D"color: hsl(120, 100%, 40%);">+t=
-o `PATH` between steps. A Windows restart is probably required after</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+installing Visual Studio b=
-efore being able to use it.</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+You can find the exact commands we use to set up the community buil=
-d machines</span><br><span style=3D"color: hsl(120, 100%, 40%);">+at https:=
-//github.com/OpenVPN/openvpn-buildbot/blob/master/jenkins/windows-server/ms=
-ibuild.pkr.hcl</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+To do a default build, a=
-ssuming you are in a MSVC 17 2022 environment:</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    mkdir C:\OpenVPN</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    cd C:\OpenVPN</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    git clone https://github.com/microsoft/vcpkg.git</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    git clone https://github.com/Op=
-enVPN/openvpn.git</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  set VCPKG_ROOT=3DC:\OpenVPN\vcpkg</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    cd openvpn</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    cmake --preset win-amd64-release</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    cmake --build --preset win-amd64-release</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    ctest --preset win=
--amd64-release</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+When using the presets, =
-the build directory is</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+`out/build/&lt;preset-name&gt;/`, you can find the output files there.</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+No install support is=
- provided directly in OpenVPN build, take a look</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+at https://github.com/OpenVPN/openvpn-build.gi=
-t instead.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+MinGW builds (cross-compile =
-on Linux)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+----------=
----------------------------</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+To build th=
-e Windows executables on a Linux system:</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    # install mingw with the package manager of your choice, e.g.</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    sudo apt-get install -y=
- mingw-w64</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # in =
-addition to mingw we also need a toolchain for host builds, e.g.</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    sudo apt-get install -y bu=
-ild-essential</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # =
-minimum required tools for vcpkg bootstrap: curl, zip, unzip, tar, e.g.</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    sudo apt-get instal=
-l -y curl zip unzip tar</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    # additionally vcpkg requires powershell when building Windows bina=
-ries.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # See http=
-s://learn.microsoft.com/en-us/powershell/scripting/install/installing-power=
-shell-on-linux</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    #=
- e.g.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sudo apt-g=
-et install -y wget apt-transport-https software-properties-common</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    wget -q &quot;https://pac=
-kages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-pro=
-d.deb&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sudo=
- dpkg -i packages-microsoft-prod.deb</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    sudo apt-get update</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    sudo apt-get install -y powershell</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    # minimum required tools for bu=
-ild: cmake, docutils, git, ninja,</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    # pkg-config, python e.g.</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    sudo apt-get install -y cmake git ninja-build p=
-kg-config python3 python3-docutils</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    # additionally required to build pkcs11-helper: automake=
-, autoconf,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    # ma=
-n2html, e.g.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sud=
-o apt-get install -y automake autoconf man2html-base</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    mkdir mingw</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    cd mingw</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    git clone https://github.com/microsoft/vcpkg.git=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    git clone https=
-://github.com/OpenVPN/openvpn.git</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    export VCPKG_ROOT=3D$PWD/vcpkg</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    cd openvpn</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    cmake --preset mingw-x64</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    cmake --build --preset mingw-x64</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    # unit tests are bui=
-lt, but no testPreset is provided. You need to copy</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    # them to a Windows system manually</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+The instructions have been verified on a=
- Ubuntu 22.04 LTS system in a</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+bash shell, and might need adaptions to other Linux distributions=
-/versions.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+Note that the MinGW preset b=
-uilds use the `Ninja multi-config` generator, so</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+if you want to build the Debug binaries, use</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    cmake --build --preset mingw-x64 --c=
-onfig Debug</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+The default build is equiva=
-lent to specifying `--config Release`.</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-When using the presets, the build directory is</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+`out/build/mingw/&lt;arch&gt;`, you can find the=
- actual output files in</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+sub-directories called `&lt;buildtype&gt;`.</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+No install support is provided directly in Open=
-VPN build, take a look</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+at https://github.com/OpenVPN/openvpn-build.git instead.</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+Unsupported builds</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+------------------</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-The CMake buildsystem also supports builds on Unix-like platforms. These bu=
-ilds</span><br><span style=3D"color: hsl(120, 100%, 40%);">+are sometimes u=
-seful for OpenVPN developers (e.g. when they use IDEs with</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+integrated CMake support). However, =
-they are not officially supported, do not</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+include any install support and should not be used to=
- distribute/package</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-OpenVPN. To emphasize this fact, you need to specify `-DUNSUPPORTED_BUILDS=
-=3DON`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+to cmake to b=
-e able to use these builds.</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+The `unix-n=
-ative` CMake preset is available for these builds. This preset does</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+not require VCPKG and inste=
-ad assumes all build-dependencies are provided by</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+the system natively.</span><br><span>diff --g=
-it a/README.dco.md b/README.dco.md</span><br><span>index aa93d66..3f7e00c 1=
-00644</span><br><span>--- a/README.dco.md</span><br><span>+++ b/README.dco.=
-md</span><br><span>@@ -59,8 +59,11 @@</span><br><span> </span><br><span> Ge=
-tting started (Windows)</span><br><span> -------------------------</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-The simplest way to test DCO u=
-nder Windows is to download the latest installer</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-from https://build.openvpn.net/downloads/snapsho=
-ts/github-actions/openvpn2/ .</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+Official releases published at https://openvpn.net/community-down=
-loads/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+include ovpn-=
-dco-win driver since 2.6.0.</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+There are a=
-lso snapshot releases available at</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+https://build.openvpn.net/downloads/snapshots/github-actions=
-/openvpn2/ .</span><br><span> This installer contains the latest OpenVPN co=
-de and the ovpn-dco-win driver.</span><br><span> </span><br><span> </span><=
-br><span>diff --git a/config.h.cmake.in b/config.h.cmake.in</span><br><span=
->new file mode 100644</span><br><span>index 0000000..7ef7175</span><br><spa=
-n>--- /dev/null</span><br><span>+++ b/config.h.cmake.in</span><br><span>@@ =
--0,0 +1,479 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Configuration setting=
-s */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define CONFIGU=
-RE_DEFINES &quot;N/A&quot;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Enable as=
-ync push */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakede=
-fine ENABLE_ASYNC_PUSH</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Use mbed TLS =
-library */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedef=
-ine ENABLE_CRYPTO_MBEDTLS</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Use Openss=
-l */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine EN=
-ABLE_CRYPTO_OPENSSL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Use wolfSSL cryp=
-to library */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmake=
-define ENABLE_CRYPTO_WOLFSSL</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Enable =
-shared data channel offload */</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#cmakedefine ENABLE_DCO</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* E=
-nable debugging support (needed for verb&gt;=3D4) */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define ENABLE_DEBUG 1</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+/* We have persist tun capability */</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#cmakedefine ENABLE_FEATURE_TUN_PERSIST<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+/* Enable internal fragmentation suppor=
-t */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define ENABLE_=
-FRAGMENT 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+/* Enable linux data channel=
- offload */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakede=
-fine ENABLE_LINUXDCO</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Enable LZ4 comp=
-ression library */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-cmakedefine ENABLE_LZ4</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Enable LZO co=
-mpression library */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#cmakedefine ENABLE_LZO</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Enable mana=
-gement server capability */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#define ENABLE_MANAGEMENT 1</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* =
-Enable OFB and CFB cipher modes */</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#define ENABLE_OFB_CFB_MODE</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+/* Enable PKCS11 */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#cmakedefine ENABLE_PKCS11</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Enabl=
-e plug-in support */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#define ENABLE_PLUGIN 1</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Enable TCP =
-Server port sharing */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#cmakedefine ENABLE_PORT_SHARE</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* SE=
-Linux support */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cm=
-akedefine ENABLE_SELINUX</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* enable sitn=
-l support */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmaked=
-efine ENABLE_SITNL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Enable systemd in=
-tegration */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* #und=
-ef ENABLE_SYSTEMD */</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Enable --x509-u=
-sername-field feature */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#cmakedefine ENABLE_X509ALTUSERNAME</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+/* Compiler supports anonymous unions */</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+#define HAVE_ANONYMOUS_UNION_SUPPORT</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+/* Define to 1 if you have the &lt;arpa/inet.h&gt; hea=
-der file. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmaked=
-efine HAVE_ARPA_INET_H 1</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1=
- if you have the `basename&#39; function. */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#cmakedefine HAVE_BASENAME</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+/* Define to 1 if you have the `chdir&#39; function. */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_CHDIR<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the `chroot&=
-#39; function. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#c=
-makedefine HAVE_CHROOT</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 i=
-f you have the `chsize&#39; function. */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#cmakedefine HAVE_CHSIZE</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+/* struct cmsghdr needed for extended socket error support */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_CMSGHDR<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+/* git version information in config-ve=
-rsion.h */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedef=
-ine HAVE_CONFIG_VERSION_H</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to =
-1 if you have the `daemon&#39; function. */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#cmakedefine HAVE_DAEMON</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+/* Define to 1 if you have the declaration of `SO_MARK&#39;, and =
-to 0 if you</span><br><span style=3D"color: hsl(120, 100%, 40%);">+don&#39;=
-t. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine01=
- HAVE_DECL_SO_MARK</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if yo=
-u have the &lt;direct.h&gt; header file. */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#cmakedefine HAVE_DIRECT_H</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+/* Define to 1 if you have the `dirname&#39; function. */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_DIRNAME=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt;dlf=
-cn.h&gt; header file. */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#cmakedefine HAVE_DLFCN_H</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Defin=
-e to 1 if you have the &lt;dmalloc.h&gt; header file. */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_DMALLOC_H</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+/* Define to 1 if you have the `dup&#39; function=
-. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HA=
-VE_DUP</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the `=
-dup2&#39; function. */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#cmakedefine HAVE_DUP2</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to =
-1 if you have the `epoll_create&#39; function. */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_EPOLL_CREATE</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+/* Define to 1 if you have the &lt;err.h&gt; header f=
-ile. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine=
- HAVE_ERR_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+/* Crypto library supports =
-keying material exporter */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#define HAVE_EXPORT_KEYING_MATERIAL 1</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+/* Define to 1 if you have the &lt;fcntl.h&gt; header file. */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_FCNTL_H=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the `fork&#=
-39; function. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cm=
-akedefine HAVE_FORK</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#cmakedefine HAVE_EXECVE</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1=
- if you have the `ftruncate&#39; function. */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#cmakedefine HAVE_FTRUNCATE</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+/* Define to 1 if you have the `getgrnam&#39; function. */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_GET=
-GRNAM</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the `g=
-etpeereid&#39; function. */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#cmakedefine HAVE_GETPEEREID</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
- Define to 1 if you have the `getpwnam&#39; function. */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_GETPWNAM</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+/* Define to 1 if you have the `getrlimit&#39; fun=
-ction. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#undef HAV=
-E_GETRLIMIT</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have =
-the `getsockname&#39; function. */</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#cmakedefine HAVE_GETSOCKNAME</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+/* Define to 1 if you have the `gettimeofday&#39; function. */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_GETTIMEO=
-FDAY</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt=
-;grp.h&gt; header file. */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#cmakedefine HAVE_GRP_H</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* struc=
-t in_pktinfo needed for IP_PKTINFO support */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#cmakedefine HAVE_IN_PKTINFO</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+/* Define to 1 if you have the &lt;io.h&gt; header file. */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_I=
-O_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+/* struct in_pktinfo.ipi_spec_dst n=
-eeded for IP_PKTINFO support */</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+#cmakedefine HAVE_IPI_SPEC_DST</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+/* Define to 1 if you have the &lt;libgen.h&gt; header file. */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_LIBGEN_H<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt;limi=
-ts.h&gt; header file. */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#define HAVE_LIMITS_H 1</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define =
-to 1 if you have the &lt;linux/if_tun.h&gt; header file. */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_LINUX_IF_TUN_H</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt;linux/=
-sockios.h&gt; header file. */</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#cmakedefine HAVE_LINUX_SOCKIOS_H</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+/* Define to 1 if you have the &lt;linux/types.h&gt; header file. */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_LIN=
-UX_TYPES_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have t=
-he &lt;lzoconf.h&gt; header file. */</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#define HAVE_LZO_CONF_H</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+/* Define to 1 if you have the &lt;lzo1x.h&gt; header file. */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#define HAVE_LZO1X_H 1</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt;lzoutil.h&g=
-t; header file. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-define HAVE_LZOUTIL_H 1</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 =
-if you have the `mlockall&#39; function. */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#cmakedefine HAVE_MLOCKALL</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+/* struct msghdr needed for extended socket error support */</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_MSGH=
-DR</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt;n=
-etdb.h&gt; header file. */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#cmakedefine HAVE_NETDB_H</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Def=
-ine to 1 if you have the &lt;netinet/in.h&gt; header file. */</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_NETINET_IN_H</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt;netine=
-t/ip.h&gt; header file. */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#cmakedefine HAVE_NETINET_IP_H</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/=
-* Define to 1 if you have the &lt;netinet/tcp.h&gt; header file. */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#undef HAVE_NETINET_TCP_H</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt;net/i=
-f.h&gt; header file. */</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+#cmakedefine HAVE_NET_IF_H</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Defin=
-e to 1 if you have the &lt;net/if_tun.h&gt; header file. */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_NET_IF_TUN_H</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt;net/if=
-_utun.h&gt; header file. */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#cmakedefine01 HAVE_NET_IF_UTUN_H</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+/* Define to 1 if you have the &lt;net/tun/if_tun.h&gt; header file. */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_NE=
-T_TUN_IF_TUN_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you ha=
-ve the `nice&#39; function. */</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#undef HAVE_NICE</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define t=
-o 1 if you have the `openlog&#39; function. */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#undef HAVE_OPENLOG</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+/* OpenSSL engine support available */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#undef HAVE_OPENSSL_ENGINE</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+/* Define to 1 if you have the `poll&#39; function. */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#undef HAVE_POLL</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt;poll.h&gt; h=
-eader file. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmak=
-edefine HAVE_POLL_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if y=
-ou have the `putenv&#39; function. */</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#undef HAVE_PUTENV</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
- Define to 1 if you have the &lt;pwd.h&gt; header file. */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_PWD_H</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+/* Define to 1 if you have the `readv&#39; function=
-. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#undef HAVE_REA=
-DV</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the `recv=
-msg&#39; function. */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#cmakedefine HAVE_RECVMSG</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#cmakedefine HAVE_SENDMSG</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* De=
-fine to 1 if you have the &lt;resolv.h&gt; header file. */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_RESOLV_H</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+/* sa_family_t, needed to hold AF_* info */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_SA_FAM=
-ILY_T</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the `s=
-d_booted&#39; function. */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#undef HAVE_SD_BOOTED</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define =
-to 1 if you have the `setgid&#39; function. */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#cmakedefine HAVE_SETGID</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+/* Define to 1 if you have the `setgroups&#39; function. */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#undef HAVE_SETGROUP=
-S</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the `setsi=
-d&#39; function. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#undef HAVE_SETSID</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if yo=
-u have the `setsockopt&#39; function. */</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#define HAVE_SETSOCKOPT 1</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+/* Define to 1 if you have the `setuid&#39; function. */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_SETUID</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt;signal.h&=
-gt; header file. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#undef HAVE_SIGNAL_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if =
-you have the `socket&#39; function. */</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#undef HAVE_SOCKET</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/=
-* struct sock_extended_err needed for extended socket error support */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#undef HAVE_SOCK_EXTENDE=
-D_ERR</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the `s=
-tat&#39; function. */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#define HAVE_STAT 1</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if=
- you have the &lt;stdarg.h&gt; header file. */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#define HAVE_STDARG_H 1</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+/* Define to 1 if you have the &lt;stdint.h&gt; header file. */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define HAVE_STDINT=
-_H 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt=
-;stdio.h&gt; header file. */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#define HAVE_STDIO_H 1</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Defi=
-ne to 1 if you have the &lt;stdlib.h&gt; header file. */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#define HAVE_STDLIB_H 1</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+/* Define to 1 if you have the `strdup&#39; function.=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#undef HAVE_STRD=
-UP</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt;s=
-trings.h&gt; header file. */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#define HAVE_STRINGS_H 1</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* De=
-fine to 1 if you have the &lt;string.h&gt; header file. */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#define HAVE_STRING_H 1</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+/* Define to 1 if you have the `strsep&#39; functio=
-n. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#undef HAVE_ST=
-RSEP</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the `sy=
-slog&#39; function. */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#undef HAVE_SYSLOG</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if=
- you have the &lt;syslog.h&gt; header file. */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#cmakedefine HAVE_SYSLOG_H</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+/* Define to 1 if you have the `system&#39; function. */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#undef HAVE_SYSTEM</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt;system=
-d/sd-daemon.h&gt; header file. */</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#undef HAVE_SYSTEMD_SD_DAEMON_H</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+/* Define to 1 if you have the &lt;sys/epoll.h&gt; header file. */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_SYS=
-_EPOLL_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the=
- &lt;sys/file.h&gt; header file. */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#undef HAVE_SYS_FILE_H</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-/* Define to 1 if you have the &lt;sys/inotify.h&gt; header file. */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_SYS_INOT=
-IFY_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &l=
-t;sys/ioctl.h&gt; header file. */</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#cmakedefine HAVE_SYS_IOCTL_H</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+/* Define to 1 if you have the &lt;sys/kern_control.h&gt; header file.=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#undef HAVE_SYS_=
-KERN_CONTROL_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you ha=
-ve the &lt;sys/mman.h&gt; header file. */</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#cmakedefine HAVE_SYS_MMAN_H</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+/* Define to 1 if you have the &lt;sys/socket.h&gt; header file=
-. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HA=
-VE_SYS_SOCKET_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you h=
-ave the &lt;sys/sockio.h&gt; header file. */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#undef HAVE_SYS_SOCKIO_H</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+/* Define to 1 if you have the &lt;sys/stat.h&gt; header file. *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define HAVE_SYS_S=
-TAT_H 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the =
-&lt;sys/time.h&gt; header file. */</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#cmakedefine HAVE_SYS_TIME_H</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+/* Define to 1 if you have the &lt;sys/types.h&gt; header file. */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#undef HAVE_SYS_TYPES_H=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt;sys=
-/uio.h&gt; header file. */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#cmakedefine HAVE_SYS_UIO_H</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* D=
-efine to 1 if you have the &lt;sys/un.h&gt; header file. */</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_SYS_UN_H</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt;sys/wait.h&g=
-t; header file. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-cmakedefine HAVE_SYS_WAIT_H</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define t=
-o 1 if you have the &lt;tap-windows.h&gt; header file. */</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#undef HAVE_TAP_WINDOWS_H</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+/* Define to 1 if you have the `time&#39; function=
-. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define HAVE_TI=
-ME 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have the &lt=
-;time.h&gt; header file. */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#define HAVE_TIME_H 1</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define=
- to 1 if you have the &lt;uapi.h&gt; header file. */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#undef HAVE_UAPI_H</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+/* Define to 1 if you have the &lt;unistd.h&gt; header file.=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAV=
-E_UNISTD_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to 1 if you have t=
-he &lt;valgrind/memcheck.h&gt; header file. */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#undef HAVE_VALGRIND_MEMCHECK_H</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+/* Define to 1 if you have the &lt;versionhelpers.h&gt;=
- header file. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#un=
-def HAVE_VERSIONHELPERS_H</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Define to =
-1 if you have the `vfork&#39; function. */</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+#undef HAVE_VFORK</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+/* Define to 1 if you have the &lt;vfork.h&gt; header file. */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#undef HAVE_VFORK_H</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+/* Define to 1 if you have the `vsnprintf&#39; fu=
-nction. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#undef HA=
-VE_VSNPRINTF</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+/* we always assume a rece=
-nt mbed TLS version */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#define HAVE_CTR_DRBG_UPDATE_RET 1</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/=
-* Path to ifconfig tool */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#define IFCONFIG_PATH &quot;@IFCONFIG_PATH@&quot;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+/* Path to iproute tool */</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#define IPROUTE_PATH &quot;@IPROUTE_PATH@&quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+/* Path to route tool */</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+#define ROUTE_PATH &quot;@ROUTE_PATH=
-@&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+/* OpenVPN version in Windows r=
-esource format - string */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#define OPENVPN_VERSION_RESOURCE @OPENVPN_VERSION_RESOURCE@</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+/* Name of package */</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#define PACKAGE &quot;openvpn&quot;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+/* Define to the address where bug reports for t=
-his package should be sent. */</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+#undef PACKAGE_BUGREPORT</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* =
-Define to the full name of this package. */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#define PACKAGE_NAME &quot;OpenVPN&quot;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+/* Define to the full name and version of this pa=
-ckage. */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define PA=
-CKAGE_STRING &quot;OpenVPN @OPENVPN_VERSION_MAJOR@...220...@OPENVPN_VERSION=
-_MINOR@@OPENVPN_VERSION_PATCH@&quot;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*=
- Define to the version of this package. */</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+#define PACKAGE_VERSION &quot;@OPENVPN_VERSION_MAJOR=
-@...220...@...2740...@@OPENVPN_VERSION_PATCH@&quot;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+/* Path to systemd-ask-password tool */</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#undef SYSTEMD_ASK_PASSWORD_PAT=
-H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+/* systemd is newer than v216 */</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#define SYSTEMD_NEWER_TH=
-AN_216</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+/* The tap-windows id */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#define TAP_WIN_COMPONENT_I=
-D &quot;tap0901&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* The tap-window=
-s version number is required for OpenVPN */</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#define TAP_WIN_MIN_MAJOR 9</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+/* The tap-windows version number is required for OpenVPN */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define TAP_WIN_MIN=
-_MINOR 9</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+/* Are we running on Mac OS X?=
- */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine TAR=
-GET_DARWIN</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+/* Are we running on FreeBSD=
-? */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine TA=
-RGET_FREEBSD</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+/* Are we running on Linux=
-? */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine TA=
-RGET_LINUX</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+/* Are we running WIN32? */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine TARGET_=
-WIN32</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#define TARGET_ALIAS &quot;@CMAKE=
-_SYSTEM_NAME@&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* Enable GNU exten=
-sions on systems that have them.  */</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+#ifndef _GNU_SOURCE</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+# define _GNU_SOURCE 1</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#if defined(_WIN32)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;inttypes.h&gt;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef uint32_t in_add=
-r_t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef uint16_=
-t in_port_t;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#define SIGHUP    1</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#define SIGINT    2</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#define SIGUSR1   10</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#define SIGUSR2   12</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#define SIGTERM   15</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#if defined(_MSC_VER)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#include &lt;BaseTsd.h&gt;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+typedef SSIZE_T ssize_t;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define strncasecmp strnicmp</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+#define strcasecmp _stricmp</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define S_IRUSR 0</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define S_IWUSR 0</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#define R_OK 4</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#define W_OK 2</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#define X_OK 1</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#define F_OK 0</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span>diff --git a/contrib/cmake/git-version.py b/contrib/cmake=
-/git-version.py</span><br><span>new file mode 100644</span><br><span>index =
-0000000..c2b4452</span><br><span>--- /dev/null</span><br><span>+++ b/contri=
-b/cmake/git-version.py</span><br><span>@@ -0,0 +1,75 @@</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#  OpenVPN -- An application to securely tunnel IP networ=
-ks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#             ove=
-r a single UDP port, with support for SSL/TLS-based</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#             session authentication and =
-key exchange,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#     =
-        packet encryption, packet authentication, and</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#             packet compression.</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#  Copyright (C) 2022-2023 OpenVPN Inc &lt;sa=
-les@...515...&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+# =
- Copyright (C) 2022-2022 Lev Stipakov &lt;lev@...2698...&gt;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+#  This program is free software; you can redistribu=
-te it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#  it under the terms of the GNU General Public License version 2</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#  as published by the Free S=
-oftware Foundation.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#  This program is=
- distributed in the hope that it will be useful,</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#  but WITHOUT ANY WARRANTY; without even the =
-implied warranty of</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#  GNU General Public License =
-for more details.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#  You should have r=
-eceived a copy of the GNU General Public License along</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#  with this program; if not, write to t=
-he Free Software Foundation, Inc.,</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 US=
-A.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+import os</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+import sys</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+import subprocess</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+def run_command(arg=
-s):</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    sp =3D subpr=
-ocess.Popen(args, stdout=3Dsubprocess.PIPE, stderr=3Dsubprocess.DEVNULL)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    o, _ =3D sp.commun=
-icate()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return o=
-.decode(&quot;utf-8&quot;)[:-1]</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+def get=
-_branch_commit_id():</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    commit_id =3D run_command([&quot;git&quot;, &quot;rev-parse&quot;, &qu=
-ot;--short=3D16&quot;, &quot;HEAD&quot;])</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    if not commit_id:</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        raise</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    branch =3D run_command([&quot;git&quot;, &quot;descri=
-be&quot;, &quot;--exact-match&quot;])</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    if not branch:</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        # this returns an array like [&quot;master&quot;] =
-or [&quot;release&quot;, &quot;2.6&quot;]</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        branch =3D run_command([&quot;git&quot;, &quo=
-t;rev-parse&quot;, &quot;--symbolic-full-name&quot;, &quot;HEAD&quot;]).spl=
-it(&quot;/&quot;)[2:]</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        if not branch:</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            branch =3D [&quot;none&quot;]</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        branch =3D &quot;/&quot; .join(branch) #=
- handle cases like release/2.6</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retu=
-rn branch, commit_id</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+def main():</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    try:</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        branch, commit_id =3D get_bra=
-nch_commit_id()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-except:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        bran=
-ch, commit_id =3D &quot;unknown&quot;, &quot;unknown&quot;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    prev_content =3D &quot;&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    name =3D os.path.join(&quot;%s&quot; %  (sys.argv[1] if =
-len(sys.argv) &gt; 1 else &quot;.&quot;), &quot;config-version.h&quot;)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    try:</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        with open(name, &quot;r&qu=
-ot;) as f:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   prev_content =3D f.read()</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    except:</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        # file doesn&#39;t exist</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        pass</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    content =
-=3D &quot;#define CONFIGURE_GIT_REVISION \&quot;%s/%s\&quot;\n&quot; % (bra=
-nch, commit_id)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-content +=3D &quot;#define CONFIGURE_GIT_FLAGS \&quot;\&quot;\n&quot;</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    if prev_content !=3D content:</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        print(&quot;Writing %s=
-&quot; % name)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   with open(name, &quot;w&quot;) as f:</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            f.write(content)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    else:</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+        print(&quot;Content of %s hasn&#39;t changed&quo=
-t; % name)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+if __name__ =3D=3D &quot;__m=
-ain__&quot;:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mai=
-n()</span><br><span>diff --git a/contrib/cmake/parse-version.m4.py b/contri=
-b/cmake/parse-version.m4.py</span><br><span>new file mode 100644</span><br>=
-<span>index 0000000..26af6a8</span><br><span>--- /dev/null</span><br><span>=
-+++ b/contrib/cmake/parse-version.m4.py</span><br><span>@@ -0,0 +1,58 @@</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#  OpenVPN -- An application to securely=
- tunnel IP networks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#             over a single UDP port, with support for SSL/TLS-based</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#             session auth=
-entication and key exchange,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#             packet encryption, packet authentication, and</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+#             packet compr=
-ession.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#  Copyright (C) 2022-2023 Ope=
-nVPN Inc &lt;sales@...515...&gt;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+#  Copyright (C) 2022-2022 Lev Stipakov &lt;lev@...2698...&gt;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#  This program is free software; you=
- can redistribute it and/or modify</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#  it under the terms of the GNU General Public License vers=
-ion 2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#  as publishe=
-d by the Free Software Foundation.</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#  =
-This program is distributed in the hope that it will be useful,</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+#  but WITHOUT ANY WARRANTY; wi=
-thout even the implied warranty of</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See=
- the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#  GNU General =
-Public License for more details.</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+#</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#  Yo=
-u should have received a copy of the GNU General Public License along</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#  with this program; if =
-not, write to the Free Software Foundation, Inc.,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#  51 Franklin Street, Fifth Floor, Boston, M=
-A 02110-1301 USA.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+import os</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+import re</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+import sys</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+def main():<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert len(sys.a=
-rgv) &gt; 1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    vers=
-ion_path =3D sys.argv[1]</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    output =3D []</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    with open(version_path, &#39;r&#39;) as version_file:</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        for line in version_file:<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            match =
-=3D re.match(r&#39;[ \t]*define\(\[(.*)\],[ \t]*\[(.*)\]\)[ \t]*&#39;, line=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if mat=
-ch is not None:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-            output.append(match.expand(r&#39;set(\1 \2)&#39;))</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    out_path =3D os.path.join(&q=
-uot;%s&quot; %  (sys.argv[2] if len(sys.argv) &gt; 2 else &quot;.&quot;), &=
-quot;version.cmake&quot;)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    prev_cont=
-ent =3D &quot;&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    try:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        wi=
-th open(out_path, &quot;r&quot;) as out_file:</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+            prev_content =3D out_file.read()</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    except:</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+        # file doesn&#39;t exist=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        pass</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    content =3D &quot;\n&quot;.join(output) +=
- &quot;\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-if prev_content !=3D content:</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        print(&quot;Writing %s&quot; % out_path)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+        with open(out_path, &quot;w&=
-quot;) as out_file:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            out_file.write(content)</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    else:</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        print(&quot;Content of %s hasn&#39;t changed&quot; % out_path=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+if __name__ =3D=3D &quot;__main__&quo=
-t;:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    main()</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>diff --g=
-it a/contrib/vcpkg-manifests/mingw/vcpkg.json b/contrib/vcpkg-manifests/min=
-gw/vcpkg.json</span><br><span>new file mode 100644</span><br><span>index 00=
-00000..fc00b01</span><br><span>--- /dev/null</span><br><span>+++ b/contrib/=
-vcpkg-manifests/mingw/vcpkg.json</span><br><span>@@ -0,0 +1,13 @@</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+  &quot;$schema&quot;: &quot;https://raw.github=
-usercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json&quot;,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+  &quot;name&quot;: &qu=
-ot;openvpn&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-&quot;version&quot;: &quot;2.7&quot;,</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+  &quot;dependencies&quot;: [</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+      &quot;openssl&quot;,</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+      &quot;tap-windows6&quot;,</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+      &quot;lzo&quot;,</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+      &quot;lz4&quot;,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+      &quot;pkcs11-hel=
-per&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      &qu=
-ot;cmocka&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ]<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span>di=
-ff --git a/contrib/vcpkg-manifests/windows/vcpkg.json b/contrib/vcpkg-manif=
-ests/windows/vcpkg.json</span><br><span>new file mode 100644</span><br><spa=
-n>index 0000000..67a1f87</span><br><span>--- /dev/null</span><br><span>+++ =
-b/contrib/vcpkg-manifests/windows/vcpkg.json</span><br><span>@@ -0,0 +1,20 =
-@@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+  &quot;$schema&quot;: &quot;https:=
-//raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.jso=
-n&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  &quot;nam=
-e&quot;: &quot;openvpn&quot;,</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+  &quot;version&quot;: &quot;2.7&quot;,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+  &quot;dependencies&quot;: [</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+      {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        &quot;name&quot;: &quot;openssl&quot;,<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;featur=
-es&quot;: [&quot;tools&quot;]</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+      },</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-     &quot;tap-windows6&quot;,</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+      &quot;lzo&quot;,</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+      &quot;lz4&quot;,</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+      &quot;pkcs11-helper&quot;,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+      &quot;cmocka&quot;,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+      {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+          &quot;name&quot;: &quot;pkgconf&quot;,</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+          &quot;host&q=
-uot;: true</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+  ]</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span>diff --git a/contri=
-b/vcpkg-ports/pkcs11-helper/portfile.cmake b/contrib/vcpkg-ports/pkcs11-hel=
-per/portfile.cmake</span><br><span>index 47919bc..f8da979 100644</span><br>=
-<span>--- a/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake</span><br><spa=
-n>+++ b/contrib/vcpkg-ports/pkcs11-helper/portfile.cmake</span><br><span>@@=
- -28,12 +28,28 @@</span><br><span>         OPENSSL_HOME=3D${CURRENT_PACKAGE=
-S_DIR}/../openssl_${TARGET_TRIPLET}</span><br><span>   )</span><br><span> <=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-  file(INSTALL ${CURRE=
-NT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/lib/pkcs11-helper.dll.lib DESTINAT=
-ION ${CURRENT_PACKAGES_DIR}/lib)</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-  file(INSTALL ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/l=
-ib/pkcs11-helper.dll.lib DESTINATION ${CURRENT_PACKAGES_DIR}/debug/lib)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+  file(INSTALL ${CURREN=
-T_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/lib/pkcs11-helper.dll.lib DESTINATI=
-ON ${CURRENT_PACKAGES_DIR}/lib RENAME pkcs11-helper.lib)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+  file(INSTALL ${CURRENT_BUILDTREES_DI=
-R}/${TARGET_TRIPLET}-dbg/lib/pkcs11-helper.dll.lib DESTINATION ${CURRENT_PA=
-CKAGES_DIR}/debug/lib RENAME pkcs11-helper.lib)</span><br><span> </span><br=
-><span>   file(INSTALL ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel/lib/=
-libpkcs11-helper-1.dll DESTINATION ${CURRENT_PACKAGES_DIR}/bin)</span><br><=
-span>   file(INSTALL ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg/lib/li=
-bpkcs11-helper-1.dll DESTINATION ${CURRENT_PACKAGES_DIR}/debug/bin)</span><=
-br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+  set(PAC=
-KAGE_VERSION &quot;${VERSION}&quot;)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    set(libdir [[${prefix}/lib]])</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    set(exec_prefix [[${prefix}]])</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    set(PKCS11H_FEATURES key_=
-prompt openssl engine_crypto_cryptoapi engine_crypto_openssl debug threadin=
-g token data certificate slotevent engine_crypto)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    set(LIBS -lkernel32 -luser32 -lgdi32 -lwi=
-nspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    if(NOT DEFINED VCPKG_BUIL=
-D_TYPE OR VCPKG_BUILD_TYPE STREQUAL &quot;release&quot;)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        set(includedir [[${prefix}/inc=
-lude]])</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        set(=
-outfile &quot;${CURRENT_PACKAGES_DIR}/lib/pkgconfig/libpkcs11-helper-1.pc&q=
-uot;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        config=
-ure_file(&quot;${SOURCE_PATH}/lib/libpkcs11-helper-1.pc.in&quot; &quot;${ou=
-tfile}&quot; @ONLY)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    endif()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if(N=
-OT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL &quot;debug&quot;)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        set(include=
-dir [[${prefix}/../include]])</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+        set(outfile &quot;${CURRENT_PACKAGES_DIR}/debug/lib/pkgco=
-nfig/libpkcs11-helper-1.pc&quot;)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        configure_file(&quot;${SOURCE_PATH}/lib/libpkcs11-hel=
-per-1.pc.in&quot; &quot;${outfile}&quot; @ONLY)</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    endif()</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span>   file(INSTALL ${SOURCE_PATH}/include=
-/pkcs11-helper-1.0 DESTINATION ${CURRENT_PACKAGES_DIR}/include/)</span><br>=
-<span> </span><br><span> else()</span><br><span>@@ -45,11 +61,11 @@</span><=
-br><span>     --disable-crypto-engine-polarssl --disable-crypto-engine-mbed=
-tls</span><br><span>     )</span><br><span>   vcpkg_install_make()</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-  vcpkg_fixup_pkgconfig()</spa=
-n><br><span> </span><br><span>   file(REMOVE_RECURSE &quot;${CURRENT_PACKAG=
-ES_DIR}/debug/share&quot;)</span><br><span> endif()</span><br><span> </span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+vcpkg_fixup_pkgconfig()</=
-span><br><span> vcpkg_copy_pdbs()</span><br><span> </span><br><span> file(I=
-NSTALL ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/${P=
-ORT} RENAME copyright)</span><br><span>diff --git a/doc/CMakeLists.txt b/do=
-c/CMakeLists.txt</span><br><span>new file mode 100644</span><br><span>index=
- 0000000..8dfb883</span><br><span>--- /dev/null</span><br><span>+++ b/doc/C=
-MakeLists.txt</span><br><span>@@ -0,0 +1,113 @@</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+set(_GENERATE_HTML_DOC YES)</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+set(_GENERATE_MAN_DOC  YES)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+set(_MAYBE_PYTHON &quot;&quot;)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+find_program(RST2HT=
-ML NAMES rst2html rst2html.py)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+find_program(RST2MAN  NAMES rst2man  rst2man.py)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+if (RST2HTML STREQUAL &quot;RST2HTML-NOTFOUND&quot;)</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    message(STATUS &q=
-uot;rst2html not found, not generating HTML documentation&quot;)</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    set(_GENERATE_HTML_DOC NO)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+else ()</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    # We only run this for RST2=
-HTML and assume the result would be the same</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    # for RST2MAN</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    if (DEFINED CACHE{DOCUTILS_NEED_PYTHON})</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        if ($CACHE{DOCUTILS=
-_NEED_PYTHON})</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-       set(_MAYBE_PYTHON ${PYTHON})</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        endif ()</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    else ()</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        execute_process(</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            COMMAND ${RST2HTML} --version</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            OUTPUT_VARIABLE RST2HTML_VERS=
-ION_EXE</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        execute_pr=
-ocess(</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            C=
-OMMAND ${PYTHON} ${RST2HTML} --version</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+            OUTPUT_VARIABLE RST2HTML_VERSION_PY</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+            )</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        set(_DOCUTILS_NEED_PYTHON =
-OFF)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if(RST2=
-HTML_VERSION_EXE STREQUAL &quot;&quot;)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            if(RST2HTML_VERSION_PY STREQUAL &quot;&quot=
-;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                m=
-essage(STATUS &quot;${RST2HTML} found but not working, not generating docum=
-entation&quot;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-            set(_GENERATE_HTML_DOC NO)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+                set(_GENERATE_MAN_DOC NO)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            else ()</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                message(STATUS &qu=
-ot;${RST2HTML} needs to be executed by ${PYTHON} to work&quot;)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+                set(_MAYBE_PYTH=
-ON ${PYTHON})</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-          set(_DOCUTILS_NEED_PYTHON ON)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+            endif ()</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        endif ()</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        set(DOCUTILS_NEED_PYTHON ${_DOCUTILS_NEED_PYTHON}=
- CACHE BOOL</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    &quot;Whether we need to call python instead of rst2*.py directly&quot;=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    endif (DEFINED=
- CACHE{DOCUTILS_NEED_PYTHON})</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+endif ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+i=
-f (RST2MAN STREQUAL &quot;RST2MAN-NOTFOUND&quot;)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    message(STATUS &quot;rst2man not found, n=
-ot generating man pages&quot;)</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    set(_GENERATE_MAN_DOC NO)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+endif ()</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+set(OPENV=
-PN_SECTIONS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    man-=
-sections/advanced-options.rst</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    man-sections/cipher-negotiation.rst</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    man-sections/client-options.rst</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    man-sections/connection-p=
-rofiles.rst</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    man-=
-sections/encryption-options.rst</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    man-sections/generic-options.rst</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    man-sections/inline-files.rst</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    man-sections/link-options.rs=
-t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    man-sections/l=
-og-options.rst</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    m=
-an-sections/management-options.rst</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    man-sections/network-config.rst</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    man-sections/pkcs11-options.rst</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    man-sections/plugin-opti=
-ons.rst</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    man-sect=
-ions/protocol-options.rst</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    man-sections/proxy-options.rst</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    man-sections/renegotiation.rst</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    man-sections/signals.rst</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    man-sections/script-option=
-s.rst</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    man-sectio=
-ns/server-options.rst</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    man-sections/tls-options.rst</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    man-sections/unsupported-options.rst</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    man-sections/virtual-routing-and-fo=
-rwarding.rst</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    man=
--sections/vpn-network-options.rst</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    man-sections/windows-options.rst</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    )</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+se=
-t(OPENVPN_EXAMPLES_SECTIONS</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    man-sections/example-fingerprint.rst</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    man-sections/examples.rst</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    )</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+set(RST_FLAGS --strict)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if (_GENE=
-RATE_HTML_DOC)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    l=
-ist(APPEND ALL_DOCS openvpn.8.html openvpn-examples.5.html)</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    add_custom_command(</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        OUTPUT openvpn.8.html</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        COMMAND ${_MA=
-YBE_PYTHON} ${RST2HTML} ${RST_FLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/openvpn.8.=
-rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn.8.html</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        MAIN_DEPENDENCY openvpn.8.rst</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        DEPENDS ${OPENVPN_SECT=
-IONS}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        )</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    add_custom_command(<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        OUTPUT openv=
-pn-examples.5.html</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       COMMAND ${_MAYBE_PYTHON} ${RST2HTML} ${RST_FLAGS} ${CMAKE_CURRENT_SO=
-URCE_DIR}/openvpn-examples.5.rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn-exampl=
-es.5.html</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MA=
-IN_DEPENDENCY openvpn-examples.5.rst</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        DEPENDS ${OPENVPN_EXAMPLES_SECTIONS}</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        )</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+endif ()</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+if (_GENERATE_MAN_DOC)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    list(APPEND ALL_DOCS openvpn.8 openvpn-exampl=
-es.5)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    add_custom=
-_command(</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        OU=
-TPUT openvpn.8</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   COMMAND ${_MAYBE_PYTHON} ${RST2MAN} ${RST_FLAGS} ${CMAKE_CURRENT_SOURCE_=
-DIR}/openvpn.8.rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn.8</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        MAIN_DEPENDENCY openvpn.8.rst<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        DEPENDS ${OP=
-ENVPN_SECTIONS}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    add_custom=
-_command(</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        OU=
-TPUT openvpn-examples.5</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        COMMAND ${_MAYBE_PYTHON} ${RST2MAN} ${RST_FLAGS} ${CMAKE_CURREN=
-T_SOURCE_DIR}/openvpn-examples.5.rst ${CMAKE_CURRENT_BINARY_DIR}/openvpn-ex=
-amples.5</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        MAI=
-N_DEPENDENCY openvpn-examples.5.rst</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        DEPENDS ${OPENVPN_EXAMPLES_SECTIONS}</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        )</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+endif ()</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+add_custom_target(documentation ALL DEPENDS ${ALL_DOCS})</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span>diff --git a/doc/Mak=
-efile.am b/doc/Makefile.am</span><br><span>index d8ffe2e..087f0ce 100644</s=
-pan><br><span>--- a/doc/Makefile.am</span><br><span>+++ b/doc/Makefile.am</=
-span><br><span>@@ -63,7 +63,8 @@</span><br><span> 	README.plugins \</span><=
-br><span> 	tls-crypt-v2.txt \</span><br><span> 	$(openvpn_sections) \</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-	$(openvpn_examples_section=
-s)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(openvpn_exampl=
-es_sections) \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	CMak=
-eLists.txt</span><br><span> </span><br><span> EXTRA_DIST =3D tests</span><b=
-r><span> </span><br><span>diff --git a/src/openvpn/lzo.h b/src/openvpn/lzo.=
-h</span><br><span>index c572354..f05c002 100644</span><br><span>--- a/src/o=
-penvpn/lzo.h</span><br><span>+++ b/src/openvpn/lzo.h</span><br><span>@@ -37=
-,7 +37,14 @@</span><br><span>  * @addtogroup compression</span><br><span>  =
-* @{</span><br><span>  */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(HAV=
-E_LZO_CONF_H)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* The=
- lzo.h magic gets confused and still wants</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ * to include lzo/lzoconf.h even if our include path=
-s</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * are setup to in=
-clude the paths without lzo/ include lzoconf.h to</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+ * avoid it being include by lzoutil.h */</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;lzodefs.h&=
-gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;lzo=
-conf.h&gt;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</s=
-pan><br><span> #if defined(HAVE_LZO_LZOUTIL_H)</span><br><span> #include &l=
-t;lzo/lzoutil.h&gt;</span><br><span> #elif defined(HAVE_LZOUTIL_H)</span><b=
-r><span>diff --git a/src/openvpnmsica/CMakeLists.txt b/src/openvpnmsica/CMa=
-keLists.txt</span><br><span>new file mode 100644</span><br><span>index 0000=
-000..9126b80</span><br><span>--- /dev/null</span><br><span>+++ b/src/openvp=
-nmsica/CMakeLists.txt</span><br><span>@@ -0,0 +1,44 @@</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+if (NOT WIN32)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    return ()</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+endif ()</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+projec=
-t(openvpnmsica)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+add_library(openvpnmsic=
-a SHARED)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+target_include_directories(op=
-envpnmsica PRIVATE</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   ${CMAKE_CURRENT_BINARY_DIR}/../../</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    ../../include/</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    ../compat/</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ta=
-rget_sources(openvpnmsica PRIVATE</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    dllmain.c</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    msiex.c msiex.h</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    msica_arg.c msica_arg.h</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    openvpnmsica.c openvpnmsica.h</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    ../tapctl/basic.h</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    ../tapctl/error.c ../tapctl/error.h</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ../tapctl/tap.c .=
-./tapctl/tap.h</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    o=
-penvpnmsica_resources.rc</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+target_co=
-mpile_options(openvpnmsica PRIVATE</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    -D_UNICODE</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    -UNTDDI_VERSION</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    -D_WIN32_WINNT=3D_WIN32_WINNT_VISTA</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    )</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if =
-(MSVC)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    target_co=
-mpile_options(openvpnmsica PRIVATE</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        &quot;$&lt;$&lt;CONFIG:Release&gt;:/MT&gt;&quot;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        &quot;$&lt;$&lt=
-;CONFIG:Debug&gt;:/MTd&gt;&quot;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        )</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+endif ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+target_link_libraries(openv=
-pnmsica</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    advapi32=
-.lib ole32.lib msi.lib setupapi.lib iphlpapi.lib shell32.lib shlwapi.lib ve=
-rsion.lib newdev.lib)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+if (MINGW)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tar=
-get_compile_options(openvpnmsica PRIVATE -municode)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    target_link_options(openvpnmsica PRIV=
-ATE -municode)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    t=
-arget_link_options(openvpnmsica PRIVATE</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        -Wl,--kill-at)</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+endif ()</span><br><span>diff --git a/src/openvpnmsi=
-ca/Makefile.am b/src/openvpnmsica/Makefile.am</span><br><span>index 6da0754=
-..d68a008 100644</span><br><span>--- a/src/openvpnmsica/Makefile.am</span><=
-br><span>+++ b/src/openvpnmsica/Makefile.am</span><br><span>@@ -34,6 +34,9 =
-@@</span><br><span> AM_CFLAGS =3D \</span><br><span> 	$(TAP_CFLAGS)</span><=
-br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+EXTRA_DIS=
-T =3D \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	CMakeLists.=
-txt</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
-> if WIN32</span><br><span> lib_LTLIBRARIES =3D libopenvpnmsica.la</span><b=
-r><span> libopenvpnmsica_la_CFLAGS =3D \</span><br><span>diff --git a/src/o=
-penvpnserv/CMakeLists.txt b/src/openvpnserv/CMakeLists.txt</span><br><span>=
-new file mode 100644</span><br><span>index 0000000..17cd90c</span><br><span=
->--- /dev/null</span><br><span>+++ b/src/openvpnserv/CMakeLists.txt</span><=
-br><span>@@ -0,0 +1,34 @@</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+if (NOT WIN32)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    return ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif=
- ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+project(openvpnserv)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+add_executable(openvpnserv)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+target_include_directories(openvpnserv PRIVATE</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    ${CMAKE_CURRENT_BINARY_DIR}/../..=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ../../include/=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ../openvpn/</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    ../compat/</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    )</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+target_sources(openvpnserv PRIVATE</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    common.c</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    interactive.c</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    service.c service.h</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    validate.c validate.h</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    ../openvpn/block_dns.=
-c ../openvpn/block_dns.h</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+    openvpnserv_resources.rc</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    ../openvpn/ring_buffer.h</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    )</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+target_compile_options(openvpnserv PRIVATE</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    -D_UNICODE</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    -UNTDDI_VERSION</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    -D_WIN32_WINNT=3D_WIN32_WINNT_VISTA</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    )</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+target_link_libraries(openvpnserv</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    advapi32.lib userenv.l=
-ib iphlpapi.lib fwpuclnt.lib rpcrt4.lib shlwapi.lib netapi32.lib ws2_32.lib=
- ntdll.lib)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if (MING=
-W)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    target_compil=
-e_options(openvpnserv PRIVATE -municode)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    target_link_options(openvpnserv PRIVATE -municode)=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif ()</span><br>=
-<span>diff --git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.a=
-m</span><br><span>index b8b2a37..4c0ac40 100644</span><br><span>--- a/src/o=
-penvpnserv/Makefile.am</span><br><span>+++ b/src/openvpnserv/Makefile.am</s=
-pan><br><span>@@ -19,6 +19,9 @@</span><br><span> AM_CPPFLAGS =3D \</span><b=
-r><span> 	-I$(top_srcdir)/include -I$(top_srcdir)/src/openvpn -I$(top_srcdi=
-r)/src/compat</span><br><span> </span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+EXTRA_DIST =3D \</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+	CMakeLists.txt</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span> if WIN32</span><br><span> sbin_PROGRAMS =3D openvpns=
-erv</span><br><span> openvpnserv_CFLAGS =3D \</span><br><span>diff --git a/=
-src/tapctl/CMakeLists.txt b/src/tapctl/CMakeLists.txt</span><br><span>new f=
-ile mode 100644</span><br><span>index 0000000..97702c0</span><br><span>--- =
-/dev/null</span><br><span>+++ b/src/tapctl/CMakeLists.txt</span><br><span>@=
-@ -0,0 +1,31 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if (=
-NOT WIN32)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retur=
-n ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif ()</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+project(tapctl)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+add_executable(tapctl)</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+target_in=
-clude_directories(tapctl PRIVATE</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    ${CMAKE_CURRENT_BINARY_DIR}/../../</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    ../../include/</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    ../compat/</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    )</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+target_sources(tapctl PRIVATE</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    basic.h</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    error.c error.h</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    main.c</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    tap.c tap.h</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    tapctl_resources.rc</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+target=
-_compile_options(tapctl PRIVATE</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    -D_UNICODE</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    -UNTDDI_VERSION</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    -D_WIN32_WINNT=3D_WIN32_WINNT_VISTA</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    )</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+target_link_libraries(tapctl</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    advapi32.lib ole32.lib setupapi.lib)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+if (MINGW)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    target_compile_options(tapctl PRIVATE=
- -municode)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    targ=
-et_link_options(tapctl PRIVATE -municode)</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+endif ()</span><br><span>diff --git a/src/tapctl/Make=
-file.am b/src/tapctl/Makefile.am</span><br><span>index 3896351..fe8ab2a 100=
-644</span><br><span>--- a/src/tapctl/Makefile.am</span><br><span>+++ b/src/=
-tapctl/Makefile.am</span><br><span>@@ -33,6 +33,10 @@</span><br><span> AM_C=
-FLAGS =3D \</span><br><span> 	$(TAP_CFLAGS)</span><br><span> </span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+EXTRA_DIST =3D \</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+	CMakeLists.txt \</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+	tapctl.exe.manifest</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span> if WIN32</span><br>=
-<span> sbin_PROGRAMS =3D tapctl</span><br><span> tapctl_CFLAGS =3D \</span>=
-<br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/315?usp=3Demail">change 315</a>. To unsubscribe, or for =
-help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setti=
-ngs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMes=
-sage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/View=
-Action"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/315?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div>=
-</div>
+40%);">-		while (!fin.AtEndOfStream) {</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-			var content =3D fin.ReadLine();</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-			if (content.match(/^[ \t]*define\(\[(.*)=
+\],[ \t]*\[(.*)\]\)[ \t]*/)) {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-				vars[RegExp.$1] =3D RegExp.$2;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-			}</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-		}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	}</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-	catch(e) {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-		throw new Error(1, &quot;Cannot process =
+&#39;&quot; + file + &quot;&#39;.&quot;);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-	}</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-function process_file(vars, input, outpu=
+t) {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	var fin =3D fso.=
+OpenTextFile(input, ForReading);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-	var fout =3D fso.CreateTextFile(output);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-	var content =3D fin.ReadAll();</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-	for (var i in vars) {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-		content =3D content.replace(new RegExp(&quot;@&quot=
+;+i+&quot;@&quot;, &quot;g&quot;), vars[i]);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-	}</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	fout.Write(conte=
+nt);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-function build_vars() {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-	var vars =3D new Array();</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-	for (var f in files) {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-		process_config(vars, files[f]);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-	}</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-	for (var e in env) {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-		vars[e] =3D env[e];</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-	}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+	return vars;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-function main() {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-	try {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-		initialize();</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		var vars =3D build=
+_vars();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-		process_file(</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-			vars,</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-			input,</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-			output</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-		WScript.Quit(0);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-	}</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-	catch(e) {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-		WScript.Echo(&quot;ERROR: when procssing &quot; + output + &quot;: &qu=
+ot; + e.description);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+		WScript.Quit(1);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	}<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-main();</span><br><span>diff --git a/build/msvc/msvc-generate/m=
+svc-generate.vcxproj b/build/msvc/msvc-generate/msvc-generate.vcxproj</span=
+><br><span>deleted file mode 100644</span><br><span>index 70d411e..0000000<=
+/span><br><span>--- a/build/msvc/msvc-generate/msvc-generate.vcxproj</span>=
+<br><span>+++ /dev/null</span><br><span>@@ -1,158 +0,0 @@</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-=EF=BB=BF&lt;?xml version=3D&quot;1.0&q=
+uot; encoding=3D&quot;utf-8&quot;?&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-&lt;Project DefaultTargets=3D&quot;Build&quot; ToolsVersio=
+n=3D&quot;15.0&quot; xmlns=3D&quot;http://schemas.microsoft.com/developer/m=
+sbuild/2003&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+  &lt;ItemGroup Label=3D&quot;ProjectConfigurations&quot;&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectConfiguration Includ=
+e=3D&quot;Debug|ARM64&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-      &lt;Configuration&gt;Debug&lt;/Configuration&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Platform&gt;ARM64&lt;/=
+Platform&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/=
+ProjectConfiguration&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    &lt;ProjectConfiguration Include=3D&quot;Debug|Win32&quot;&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Configuration&gt;=
+Debug&lt;/Configuration&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-      &lt;Platform&gt;Win32&lt;/Platform&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfiguration&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectConfiguration Inclu=
+de=3D&quot;Debug|x64&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-      &lt;Configuration&gt;Debug&lt;/Configuration&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Platform&gt;x64&lt;/Pla=
+tform&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/Pro=
+jectConfiguration&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    &lt;ProjectConfiguration Include=3D&quot;Release|ARM64&quot;&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Configuration&gt;R=
+elease&lt;/Configuration&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-      &lt;Platform&gt;ARM64&lt;/Platform&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfiguration&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectConfiguration In=
+clude=3D&quot;Release|Win32&quot;&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-      &lt;Configuration&gt;Release&lt;/Configuration&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Platform&gt;Wi=
+n32&lt;/Platform&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   &lt;/ProjectConfiguration&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    &lt;ProjectConfiguration Include=3D&quot;Release|x64&quot;&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Configura=
+tion&gt;Release&lt;/Configuration&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-      &lt;Platform&gt;x64&lt;/Platform&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfiguration&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemGroup&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=
+=3D&quot;Globals&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    &lt;ProjectGuid&gt;{8598C2C8-34C4-47A1-99B0-7C295A890615}&lt;/Proj=
+ectGuid&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Ro=
+otNamespace&gt;msvc-generate&lt;/RootNamespace&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    &lt;Keyword&gt;MakeFileProj&lt;/Keyword&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;WindowsTarge=
+tPlatformVersion&gt;10.0&lt;/WindowsTargetPlatformVersion&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-  &lt;Import Project=3D&quot;$(V=
+CTargetsPath)\Microsoft.Cpp.Default.props&quot; /&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;=
+$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot; Label=
+=3D&quot;Configuration&quot;&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    &lt;ConfigurationType&gt;Makefile&lt;/ConfigurationType&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformToolse=
+t&gt;v143&lt;/PlatformToolset&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|=
+$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot; Label=3D&quot;Configurati=
+on&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;C=
+onfigurationType&gt;Makefile&lt;/ConfigurationType&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformToolset&gt;v143&lt;/Platfo=
+rmToolset&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/P=
+ropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt=
+;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=
+=3D&#39;Release|ARM64&#39;&quot; Label=3D&quot;Configuration&quot;&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ConfigurationType&=
+gt;Makefile&lt;/ConfigurationType&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    &lt;PlatformToolset&gt;v143&lt;/PlatformToolset&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Co=
+ndition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|Win3=
+2&#39;&quot; Label=3D&quot;Configuration&quot;&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    &lt;ConfigurationType&gt;Makefile&lt;/Conf=
+igurationType&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+&lt;PlatformToolset&gt;v143&lt;/PlatformToolset&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#=
+39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot; Label=
+=3D&quot;Configuration&quot;&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    &lt;ConfigurationType&gt;Makefile&lt;/ConfigurationType&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformToolse=
+t&gt;v143&lt;/PlatformToolset&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|=
+$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot; Label=3D&quot;Configurati=
+on&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;C=
+onfigurationType&gt;Makefile&lt;/ConfigurationType&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformToolset&gt;v143&lt;/Platfo=
+rmToolset&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/P=
+ropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt=
+;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.props&quot; /&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Label=
+=3D&quot;ExtensionSettings&quot;&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-  &lt;ImportGroup Condition=3D&quot;&#39;$(Configuration)|$=
+(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot; Label=3D&quot;PropertySh=
+eets&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt=
+;Import Project=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+&quot; Condition=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platfor=
+m).user.props&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=
+=3D&quot;..\..\..\src\compat\PropertySheet.props&quot; /&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Condition=3D&quot=
+;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot; La=
+bel=3D&quot;PropertySheets&quot;&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    &lt;Import Project=3D&quot;$(UserRootDir)\Microsoft.Cpp.=
+$(Platform).user.props&quot; Condition=3D&quot;exists(&#39;$(UserRootDir)\M=
+icrosoft.Cpp.$(Platform).user.props&#39;)&quot; Label=3D&quot;LocalAppDataP=
+latform&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  &lt;Import Project=3D&quot;..\..\..\src\compat\PropertySheet.props&quot; =
+/&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGro=
+up&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGro=
+up Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Relea=
+se|ARM64&#39;&quot; Label=3D&quot;PropertySheets&quot;&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;$(UserR=
+ootDir)\Microsoft.Cpp.$(Platform).user.props&quot; Condition=3D&quot;exists=
+(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&#39;)&quot; Label=
+=3D&quot;LocalAppDataPlatform&quot; /&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;..\..\..\src\compat\Prop=
+ertySheet.props&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-  &lt;ImportGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform=
+)&#39;=3D=3D&#39;Debug|Win32&#39;&quot; Label=3D&quot;PropertySheets&quot;&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Pro=
+ject=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&quot; Cond=
+ition=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.pro=
+ps&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;..\.=
+.\..\src\compat\PropertySheet.props&quot; /&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-  &lt;ImportGroup Condition=3D&quot;&#39;$(Confi=
+guration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot; Label=3D&quot;Pro=
+pertySheets&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    &lt;Import Project=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).use=
+r.props&quot; Condition=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(=
+Platform).user.props&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Pr=
+oject=3D&quot;..\..\..\src\compat\PropertySheet.props&quot; /&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Condition=3D=
+&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quo=
+t; Label=3D&quot;PropertySheets&quot;&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;$(UserRootDir)\Microsoft=
+.Cpp.$(Platform).user.props&quot; Condition=3D&quot;exists(&#39;$(UserRootD=
+ir)\Microsoft.Cpp.$(Platform).user.props&#39;)&quot; Label=3D&quot;LocalApp=
+DataPlatform&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    &lt;Import Project=3D&quot;..\..\..\src\compat\PropertySheet.props&q=
+uot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/Impo=
+rtGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;Prop=
+ertyGroup Label=3D&quot;UserMacros&quot; /&gt;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-  &lt;PropertyGroup&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    &lt;_ProjectFileVersion&gt;10.0.30319.1&lt;/=
+_ProjectFileVersion&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;OutDir Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=
+=3D=3D&#39;Debug|Win32&#39;&quot;&gt;$(Configuration)\&lt;/OutDir&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;IntDir Condition=3D=
+&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quo=
+t;&gt;$(Configuration)\&lt;/IntDir&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    &lt;NMakeBuildCommandLine Condition=3D&quot;&#39;$(Con=
+figuration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot;&gt;nmake -f M=
+akefile.mak all&lt;/NMakeBuildCommandLine&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    &lt;NMakeBuildCommandLine Condition=3D&quot;&#3=
+9;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot;&gt;nmake=
+ -f Makefile.mak all&lt;/NMakeBuildCommandLine&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    &lt;NMakeBuildCommandLine Condition=3D&quo=
+t;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot;&g=
+t;nmake -f Makefile.mak all&lt;/NMakeBuildCommandLine&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeReBuildCommandLine Conditi=
+on=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39=
+;&quot;&gt;nmake -f Makefile.mak clean all&lt;/NMakeReBuildCommandLine&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeReBuildCo=
+mmandLine Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#3=
+9;Debug|x64&#39;&quot;&gt;nmake -f Makefile.mak clean all&lt;/NMakeReBuildC=
+ommandLine&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt=
+;NMakeReBuildCommandLine Condition=3D&quot;&#39;$(Configuration)|$(Platform=
+)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;nmake -f Makefile.mak clean all&=
+lt;/NMakeReBuildCommandLine&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    &lt;NMakeCleanCommandLine Condition=3D&quot;&#39;$(Configurat=
+ion)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot;&gt;nmake -f Makefile=
+.mak clean&lt;/NMakeCleanCommandLine&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    &lt;NMakeCleanCommandLine Condition=3D&quot;&#39;$(C=
+onfiguration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot;&gt;nmake -f M=
+akefile.mak clean&lt;/NMakeCleanCommandLine&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;NMakeCleanCommandLine Condition=3D&quot;&=
+#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;n=
+make -f Makefile.mak clean&lt;/NMakeCleanCommandLine&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeOutput Condition=3D&quot;&#=
+39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot;&gt;co=
+nfig-msvc-version.h&lt;/NMakeOutput&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    &lt;NMakeOutput Condition=3D&quot;&#39;$(Configuratio=
+n)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot;&gt;config-msvc-version.h=
+&lt;/NMakeOutput&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   &lt;NMakeOutput Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=
+=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;config-msvc-version.h&lt;/NMakeOutput&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakePrepr=
+ocessorDefinitions Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=
+=3D=3D&#39;Debug|Win32&#39;&quot;&gt;WIN32;_DEBUG;$(NMakePreprocessorDefini=
+tions)&lt;/NMakePreprocessorDefinitions&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    &lt;NMakePreprocessorDefinitions Condition=3D&quo=
+t;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot;&gt;=
+WIN32;_DEBUG;$(NMakePreprocessorDefinitions)&lt;/NMakePreprocessorDefinitio=
+ns&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakePr=
+eprocessorDefinitions Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#=
+39;=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;WIN32;_DEBUG;$(NMakePreprocessorDef=
+initions)&lt;/NMakePreprocessorDefinitions&gt;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    &lt;NMakeIncludeSearchPath Condition=3D&quot;&=
+#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot;&gt;$=
+(NMakeIncludeSearchPath)&lt;/NMakeIncludeSearchPath&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeIncludeSearchPath Condition=
+=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&qu=
+ot;&gt;$(NMakeIncludeSearchPath)&lt;/NMakeIncludeSearchPath&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeIncludeSearchPath Co=
+ndition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|ARM6=
+4&#39;&quot;&gt;$(NMakeIncludeSearchPath)&lt;/NMakeIncludeSearchPath&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeForcedInclu=
+des Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debu=
+g|Win32&#39;&quot;&gt;$(NMakeForcedIncludes)&lt;/NMakeForcedIncludes&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeForcedInclu=
+des Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debu=
+g|x64&#39;&quot;&gt;$(NMakeForcedIncludes)&lt;/NMakeForcedIncludes&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeForcedInclude=
+s Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|=
+ARM64&#39;&quot;&gt;$(NMakeForcedIncludes)&lt;/NMakeForcedIncludes&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeAssemblySearc=
+hPath Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;De=
+bug|Win32&#39;&quot;&gt;$(NMakeAssemblySearchPath)&lt;/NMakeAssemblySearchP=
+ath&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeA=
+ssemblySearchPath Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=
+=3D=3D&#39;Debug|x64&#39;&quot;&gt;$(NMakeAssemblySearchPath)&lt;/NMakeAsse=
+mblySearchPath&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ &lt;NMakeAssemblySearchPath Condition=3D&quot;&#39;$(Configuration)|$(Plat=
+form)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;$(NMakeAssemblySearchPath)&l=
+t;/NMakeAssemblySearchPath&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    &lt;NMakeForcedUsingAssemblies Condition=3D&quot;&#39;$(Config=
+uration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot;&gt;$(NMakeForced=
+UsingAssemblies)&lt;/NMakeForcedUsingAssemblies&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeForcedUsingAssemblies Conditio=
+n=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&q=
+uot;&gt;$(NMakeForcedUsingAssemblies)&lt;/NMakeForcedUsingAssemblies&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeForcedUsing=
+Assemblies Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#=
+39;Debug|ARM64&#39;&quot;&gt;$(NMakeForcedUsingAssemblies)&lt;/NMakeForcedU=
+singAssemblies&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ &lt;OutDir Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&=
+#39;Release|Win32&#39;&quot;&gt;$(Configuration)\&lt;/OutDir&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    &lt;IntDir Condition=3D&quot=
+;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot;&=
+gt;$(Configuration)\&lt;/IntDir&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    &lt;NMakeBuildCommandLine Condition=3D&quot;&#39;$(Config=
+uration)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot;&gt;nmake -f Ma=
+kefile.mak all&lt;/NMakeBuildCommandLine&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    &lt;NMakeBuildCommandLine Condition=3D&quot;&#39=
+;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot;&gt;nmak=
+e -f Makefile.mak all&lt;/NMakeBuildCommandLine&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeBuildCommandLine Condition=3D&=
+quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&qu=
+ot;&gt;nmake -f Makefile.mak all&lt;/NMakeBuildCommandLine&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeReBuildCommandLine Co=
+ndition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|Wi=
+n32&#39;&quot;&gt;nmake -f Makefile.mak clean all&lt;/NMakeReBuildCommandLi=
+ne&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeRe=
+BuildCommandLine Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=
+=3D=3D&#39;Release|x64&#39;&quot;&gt;nmake -f Makefile.mak clean all&lt;/NM=
+akeReBuildCommandLine&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    &lt;NMakeReBuildCommandLine Condition=3D&quot;&#39;$(Configuration)=
+|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot;&gt;nmake -f Makefile.m=
+ak clean all&lt;/NMakeReBuildCommandLine&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    &lt;NMakeCleanCommandLine Condition=3D&quot;&#39=
+;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot;&gt;nm=
+ake -f Makefile.mak clean&lt;/NMakeCleanCommandLine&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeCleanCommandLine Condition=
+=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&=
+quot;&gt;nmake -f Makefile.mak clean&lt;/NMakeCleanCommandLine&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeCleanCommandLine =
+Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|=
+ARM64&#39;&quot;&gt;nmake -f Makefile.mak clean&lt;/NMakeCleanCommandLine&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeOutput=
+ Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release=
+|Win32&#39;&quot;&gt;config-msvc-version.h&lt;/NMakeOutput&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeOutput Condition=3D&q=
+uot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot;=
+&gt;config-msvc-version.h&lt;/NMakeOutput&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    &lt;NMakeOutput Condition=3D&quot;&#39;$(Config=
+uration)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot;&gt;config-msvc=
+-version.h&lt;/NMakeOutput&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    &lt;NMakePreprocessorDefinitions Condition=3D&quot;&#39;$(Conf=
+iguration)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot;&gt;WIN32;NDE=
+BUG;$(NMakePreprocessorDefinitions)&lt;/NMakePreprocessorDefinitions&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakePreprocesso=
+rDefinitions Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D=
+&#39;Release|x64&#39;&quot;&gt;WIN32;NDEBUG;$(NMakePreprocessorDefinitions)=
+&lt;/NMakePreprocessorDefinitions&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    &lt;NMakePreprocessorDefinitions Condition=3D&quot;&#39=
+;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot;&gt;WI=
+N32;NDEBUG;$(NMakePreprocessorDefinitions)&lt;/NMakePreprocessorDefinitions=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeIncl=
+udeSearchPath Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=
+=3D&#39;Release|Win32&#39;&quot;&gt;$(NMakeIncludeSearchPath)&lt;/NMakeIncl=
+udeSearchPath&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+&lt;NMakeIncludeSearchPath Condition=3D&quot;&#39;$(Configuration)|$(Platfo=
+rm)&#39;=3D=3D&#39;Release|x64&#39;&quot;&gt;$(NMakeIncludeSearchPath)&lt;/=
+NMakeIncludeSearchPath&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    &lt;NMakeIncludeSearchPath Condition=3D&quot;&#39;$(Configuration)=
+|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot;&gt;$(NMakeIncludeSearc=
+hPath)&lt;/NMakeIncludeSearchPath&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    &lt;NMakeForcedIncludes Condition=3D&quot;&#39;$(Config=
+uration)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot;&gt;$(NMakeForc=
+edIncludes)&lt;/NMakeForcedIncludes&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    &lt;NMakeForcedIncludes Condition=3D&quot;&#39;$(Conf=
+iguration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot;&gt;$(NMakeForc=
+edIncludes)&lt;/NMakeForcedIncludes&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    &lt;NMakeForcedIncludes Condition=3D&quot;&#39;$(Conf=
+iguration)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot;&gt;$(NMakeFo=
+rcedIncludes)&lt;/NMakeForcedIncludes&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    &lt;NMakeAssemblySearchPath Condition=3D&quot;&#39;=
+$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot;&gt;$(N=
+MakeAssemblySearchPath)&lt;/NMakeAssemblySearchPath&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeAssemblySearchPath Condition=
+=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&=
+quot;&gt;$(NMakeAssemblySearchPath)&lt;/NMakeAssemblySearchPath&gt;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeAssemblySearchPa=
+th Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Relea=
+se|ARM64&#39;&quot;&gt;$(NMakeAssemblySearchPath)&lt;/NMakeAssemblySearchPa=
+th&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;NMakeFo=
+rcedUsingAssemblies Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39=
+;=3D=3D&#39;Release|Win32&#39;&quot;&gt;$(NMakeForcedUsingAssemblies)&lt;/N=
+MakeForcedUsingAssemblies&gt;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    &lt;NMakeForcedUsingAssemblies Condition=3D&quot;&#39;$(Configu=
+ration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot;&gt;$(NMakeForcedU=
+singAssemblies)&lt;/NMakeForcedUsingAssemblies&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    &lt;NMakeForcedUsingAssemblies Condition=
+=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39=
+;&quot;&gt;$(NMakeForcedUsingAssemblies)&lt;/NMakeForcedUsingAssemblies&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemDefiniti=
+onGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/Ite=
+mDefinitionGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+ &lt;ItemGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ &lt;None Include=3D&quot;Makefile.mak&quot; /&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    &lt;None Include=3D&quot;msvc-generate.js&=
+quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/Ite=
+mGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;Impor=
+t Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.targets&quot; /&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Label=3D&q=
+uot;ExtensionTargets&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-&lt;/Project&gt;</span><br><span>\ No newline at end of file</spa=
+n><br><span>diff --git a/build/msvc/msvc-generate/version.m4.in b/build/msv=
+c/msvc-generate/version.m4.in</span><br><span>deleted file mode 100644</spa=
+n><br><span>index cbb4fef..0000000</span><br><span>--- a/build/msvc/msvc-ge=
+nerate/version.m4.in</span><br><span>+++ /dev/null</span><br><span>@@ -1,3 =
++0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-define([OPENVP=
+N_VERSION_MAJOR], [@PRODUCT_VERSION_MAJOR@])</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-define([OPENVPN_VERSION_MINOR], [@PRODUCT_VERSION_MI=
+NOR@])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-define([OPENVPN=
+_VERSION_PATCH], [@PRODUCT_VERSION_PATCH@])</span><br><span>diff --git a/co=
+nfig-msvc-version.h.in b/config-msvc-version.h.in</span><br><span>deleted f=
+ile mode 100644</span><br><span>index 59ca654..0000000</span><br><span>--- =
+a/config-msvc-version.h.in</span><br><span>+++ /dev/null</span><br><span>@@=
+ -1,14 +0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define=
+ PACKAGE_NAME &quot;@PRODUCT_NAME@&quot;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-#define PACKAGE_STRING &quot;@PRODUCT_NAME@ @PRODUCT_VER=
+SION_MAJOR@...220...@PRODUCT_VERSION_MINOR@@PRODUCT_VERSION_PATCH@&quot;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#define PACKAGE_TARNAME =
+&quot;@PRODUCT_TARNAME@&quot;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-#define PACKAGE &quot;@PRODUCT_TARNAME@&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#define PRODUCT_VERSION_MAJOR &quot;@PRODUC=
+T_VERSION_MAJOR@&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-#define PRODUCT_VERSION_MINOR &quot;@PRODUCT_VERSION_MINOR@&quot;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#define PRODUCT_VERSION_PATCH =
+&quot;@PRODUCT_VERSION_PATCH@&quot;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#define PACKAGE_VERSION &quot;@PRODUCT_VERSION_MAJOR@...2741...=
+.@...2742...@@PRODUCT_VERSION_PATCH@&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#define PRODUCT_VERSION &quot;@PRODUCT_VERS=
+ION_MAJOR@...220...@PRODUCT_VERSION_MINOR@@PRODUCT_VERSION_PATCH@&quot;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#define PRODUCT_BUGREPORT=
+ &quot;@PRODUCT_BUGREPORT@&quot;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#define OPENVPN_VERSION_RESOURCE @PRODUCT_VERSION_RESOURCE@</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#define TAP_WIN_COMPONENT_=
+ID &quot;@PRODUCT_TAP_WIN_COMPONENT_ID@&quot;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-#define TAP_WIN_MIN_MAJOR @PRODUCT_TAP_WIN_MIN_MAJO=
+R@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define TAP_WIN_MIN=
+_MINOR @PRODUCT_TAP_WIN_MIN_MINOR@</span><br><span>diff --git a/config-msvc=
+.h b/config-msvc.h</span><br><span>deleted file mode 100644</span><br><span=
+>index a3c687e..0000000</span><br><span>--- a/config-msvc.h</span><br><span=
+>+++ /dev/null</span><br><span>@@ -1,93 +0,0 @@</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#include &lt;config-msvc-version.h&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#define CONFIGURE_DEFINES &quot;N/A&quot;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#define ENABLE_PF 1</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-#define ENABLE_CRYPTO_OPENSSL 1</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#define ENABLE_FRAGMENT 1</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#define ENABLE_HTTP_PROXY 1</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-#define ENABLE_LZO 1</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#define ENABLE_LZ4 1</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#define ENABLE_MANAGEMENT 1</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#define ENABLE_PKCS11 1</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#define ENABLE_PLUGIN 1</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#define ENABLE_PORT_SHARE 1<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define ENABLE_SOCKS 1=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#define HAVE_FCNTL_H 1</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#define HAVE_STDIO_H 1</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-#define HAVE_STDLIB_H 1</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_STRERROR 1</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_STRINGS_H 1</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_STRING_H 1</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_LIMITS_H 1</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_SYSTEM 1</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_TIME 1</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_TIME_H 1</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_WINDOWS_H 1</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_WINSOCK2_H 1</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_WS2TCPIP_H =
+1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_IO_H 1<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_SYS_TYPES=
+_H 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_SYS_=
+STAT_H 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_=
+LZO_LZO1X_H 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define =
+HAVE_LZO_LZOUTIL_H 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+define HAVE_VERSIONHELPERS_H 1</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE=
+_ACCESS 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE=
+_CHDIR 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_=
+CHSIZE 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_=
+IN_PKTINFO 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_OPENSSL_ENGINE 1<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_EXPORT_KE=
+YING_MATERIAL 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#define HAVE_DIINSTALLDEVIC=
+E 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#ifndef __cplusplus</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#define inline __inline</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#define TARGET_WIN32 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-#define TARGET_ALIAS &quot;Windows-MSVC&quot;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#define HAVE_DECL_SO_MARK 0</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define str=
+ncasecmp strnicmp</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#def=
+ine strcasecmp _stricmp</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if _MSC_VER&lt;190=
+0</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define snprintf _sn=
+printf</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-#if _MSC_VER &lt; 1800</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#define strtoull strtoul</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define =
+in_addr_t uint32_t</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#de=
+fine ssize_t SSIZE_T</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define S_IRUSR _S_IRE=
+AD</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define S_IWUSR _S_=
+IWRITE</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define S_IRGRP=
+ (S_IRUSR &gt;&gt; 3)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#define R_OK 4</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define=
+ W_OK 2</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define X_OK 1=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define F_OK 0</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#define SIGHUP    1</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-#define SIGINT    2</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#define SIGUSR1   10</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#define SIGUSR2   12</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#define SIGTERM   15</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#i=
+nclude &lt;inttypes.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-typedef uint16_t in_port_t;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef HAVE=
+_CONFIG_MSVC_LOCAL_H</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+include &lt;config-msvc-local.h&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define ENABLE_DCO 1</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#define HAVE_CONFIG_VERSION_H 1</span><br><=
+span>diff --git a/configure.ac b/configure.ac</span><br><span>index 67f680b=
+..7313308 100644</span><br><span>--- a/configure.ac</span><br><span>+++ b/c=
+onfigure.ac</span><br><span>@@ -1492,8 +1492,6 @@</span><br><span> 	version=
+.sh</span><br><span> 	Makefile</span><br><span> 	build/Makefile</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-	build/msvc/Makefile</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-	build/msvc/msvc-generate/Makefile=
+</span><br><span> 	distro/Makefile</span><br><span> 	distro/systemd/Makefil=
+e</span><br><span> 	doc/Makefile</span><br><span>diff --git a/openvpn.sln b=
+/openvpn.sln</span><br><span>deleted file mode 100644</span><br><span>index=
+ 3485bc9..0000000</span><br><span>--- a/openvpn.sln</span><br><span>+++ /de=
+v/null</span><br><span>@@ -1,107 +0,0 @@</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-=EF=BB=BF</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-Microsoft Visual Studio Solution File, Format Version 12.00</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-# Visual Studio Version 16</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-VisualStudioVersion =3D 1=
+6.0.31205.134</span><br><span style=3D"color: hsl(0, 100%, 40%);">-MinimumV=
+isualStudioVersion =3D 10.0.40219.1</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-Project(&quot;{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}&quot;) =
+=3D &quot;openvpnserv&quot;, &quot;src\openvpnserv\openvpnserv.vcxproj&quot=
+;, &quot;{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-EndProject</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-Project(&quot;{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}&q=
+uot;) =3D &quot;openvpn&quot;, &quot;src\openvpn\openvpn.vcxproj&quot;, &qu=
+ot;{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}&quot;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-EndProject</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-Project(&quot;{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}&quot;) =
+=3D &quot;msvc-generate&quot;, &quot;build\msvc\msvc-generate\msvc-generate=
+.vcxproj&quot;, &quot;{8598C2C8-34C4-47A1-99B0-7C295A890615}&quot;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-EndProject</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-Project(&quot;{8BC9CEB8-8B4A-11D0-8D11-00=
+A0C91BC942}&quot;) =3D &quot;compat&quot;, &quot;src\compat\compat.vcxproj&=
+quot;, &quot;{4B2E2719-E661-45D7-9203-F6F456B22F19}&quot;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-EndProject</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-Project(&quot;{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC94=
+2}&quot;) =3D &quot;tapctl&quot;, &quot;src\tapctl\tapctl.vcxproj&quot;, &q=
+uot;{A06436E7-D576-490D-8BA0-0751D920334A}&quot;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-EndProject</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-Project(&quot;{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}&quot;)=
+ =3D &quot;openvpnmsica&quot;, &quot;src\openvpnmsica\openvpnmsica.vcxproj&=
+quot;, &quot;{D41AA9D6-B818-476E-992E-0E16EB86BEE2}&quot;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-EndProject</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-Global</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-	GlobalSection(SolutionConfigurationPlatforms) =3D preSolution</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-		Debug|ARM64 =3D Debug|=
+ARM64</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		Debug|Win32 =
+=3D Debug|Win32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		Debu=
+g|x64 =3D Debug|x64</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		=
+Release|ARM64 =3D Release|ARM64</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-		Release|Win32 =3D Release|Win32</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-		Release|x64 =3D Release|x64</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-	EndGlobalSection</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-	GlobalSection(ProjectConfigurationPlatforms) =
+=3D postSolution</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{9C=
+91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|ARM64.ActiveCfg =3D Debug|ARM64</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{9C91EE0B-817D-420A-A=
+1E6-15A5A9D98BAD}.Debug|ARM64.Build.0 =3D Debug|ARM64</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.De=
+bug|Win32.ActiveCfg =3D Debug|Win32</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|Win32.Build.0 =
+=3D Debug|Win32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{9C9=
+1EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|x64.ActiveCfg =3D Debug|x64</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-		{9C91EE0B-817D-420A-A1E6-1=
+5A5A9D98BAD}.Debug|x64.Build.0 =3D Debug|x64</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|ARM=
+64.ActiveCfg =3D Release|ARM64</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|ARM64.Build.0 =3D=
+ Release|ARM64</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{9C91=
+EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|Win32.ActiveCfg =3D Release|Win32=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{9C91EE0B-817D-420A=
+-A1E6-15A5A9D98BAD}.Release|Win32.Build.0 =3D Release|Win32</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-		{9C91EE0B-817D-420A-A1E6-15A5A9D98B=
+AD}.Release|x64.ActiveCfg =3D Release|x64</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|x64.Bu=
+ild.0 =3D Release|x64</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|ARM64.ActiveCfg =3D Debug|AR=
+M64</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{29DF226E-4D4E-4=
+40F-ADAF-5829CFD4CA94}.Debug|ARM64.Build.0 =3D Debug|ARM64</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA9=
+4}.Debug|Win32.ActiveCfg =3D Debug|Win32</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|Win32.Bui=
+ld.0 =3D Debug|Win32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	=
+	{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|x64.ActiveCfg =3D Debug|x64</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{29DF226E-4D4E-440F-A=
+DAF-5829CFD4CA94}.Debug|x64.Build.0 =3D Debug|x64</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Releas=
+e|ARM64.ActiveCfg =3D Release|ARM64</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|ARM64.Build.=
+0 =3D Release|ARM64</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		=
+{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|Win32.ActiveCfg =3D Release|=
+Win32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{29DF226E-4D4E=
+-440F-ADAF-5829CFD4CA94}.Release|Win32.Build.0 =3D Release|Win32</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-		{29DF226E-4D4E-440F-ADAF-5829C=
+FD4CA94}.Release|x64.ActiveCfg =3D Release|x64</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|x=
+64.Build.0 =3D Release|x64</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|ARM64.ActiveCfg =3D Deb=
+ug|ARM64</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{8598C2C8-3=
+4C4-47A1-99B0-7C295A890615}.Debug|ARM64.Build.0 =3D Debug|ARM64</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-		{8598C2C8-34C4-47A1-99B0-7C295A=
+890615}.Debug|Win32.ActiveCfg =3D Debug|Win32</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|Win3=
+2.Build.0 =3D Debug|Win32</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|x64.ActiveCfg =3D Debug|=
+x64</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{8598C2C8-34C4-4=
+7A1-99B0-7C295A890615}.Debug|x64.Build.0 =3D Debug|x64</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.R=
+elease|ARM64.ActiveCfg =3D Release|ARM64</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|ARM64.B=
+uild.0 =3D Release|ARM64</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|Win32.ActiveCfg =3D Rel=
+ease|Win32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{8598C2C8=
+-34C4-47A1-99B0-7C295A890615}.Release|Win32.Build.0 =3D Release|Win32</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-		{8598C2C8-34C4-47A1-99B0-=
+7C295A890615}.Release|x64.ActiveCfg =3D Release|x64</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Re=
+lease|x64.Build.0 =3D Release|x64</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|ARM64.ActiveCfg =
+=3D Debug|ARM64</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{4B2=
+E2719-E661-45D7-9203-F6F456B22F19}.Debug|ARM64.Build.0 =3D Debug|ARM64</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-		{4B2E2719-E661-45D7-9203=
+-F6F456B22F19}.Debug|Win32.ActiveCfg =3D Debug|Win32</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.De=
+bug|Win32.Build.0 =3D Debug|Win32</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|x64.ActiveCfg =
+=3D Debug|x64</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{4B2E2=
+719-E661-45D7-9203-F6F456B22F19}.Debug|x64.Build.0 =3D Debug|x64</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-		{4B2E2719-E661-45D7-9203-F6F45=
+6B22F19}.Release|ARM64.ActiveCfg =3D Release|ARM64</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Relea=
+se|ARM64.Build.0 =3D Release|ARM64</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|Win32.ActiveC=
+fg =3D Release|Win32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	=
+	{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|Win32.Build.0 =3D Release|W=
+in32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{4B2E2719-E661-=
+45D7-9203-F6F456B22F19}.Release|x64.ActiveCfg =3D Release|x64</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-		{4B2E2719-E661-45D7-9203-F6F456B2=
+2F19}.Release|x64.Build.0 =3D Release|x64</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-		{A06436E7-D576-490D-8BA0-0751D920334A}.Debug|ARM64.Ac=
+tiveCfg =3D Debug|ARM64</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-		{A06436E7-D576-490D-8BA0-0751D920334A}.Debug|ARM64.Build.0 =3D Debug|AR=
+M64</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{A06436E7-D576-4=
+90D-8BA0-0751D920334A}.Debug|Win32.ActiveCfg =3D Debug|Win32</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-		{A06436E7-D576-490D-8BA0-0751D9203=
+34A}.Debug|Win32.Build.0 =3D Debug|Win32</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-		{A06436E7-D576-490D-8BA0-0751D920334A}.Debug|x64.Activ=
+eCfg =3D Debug|x64</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{=
+A06436E7-D576-490D-8BA0-0751D920334A}.Debug|x64.Build.0 =3D Debug|x64</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-		{A06436E7-D576-490D-8BA0-=
+0751D920334A}.Release|ARM64.ActiveCfg =3D Release|ARM64</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-		{A06436E7-D576-490D-8BA0-0751D920334A}.=
+Release|ARM64.Build.0 =3D Release|ARM64</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-		{A06436E7-D576-490D-8BA0-0751D920334A}.Release|Win32.Ac=
+tiveCfg =3D Release|Win32</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-		{A06436E7-D576-490D-8BA0-0751D920334A}.Release|Win32.Build.0 =3D Rele=
+ase|Win32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{A06436E7-=
+D576-490D-8BA0-0751D920334A}.Release|x64.ActiveCfg =3D Release|x64</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-		{A06436E7-D576-490D-8BA0-075=
+1D920334A}.Release|x64.Build.0 =3D Release|x64</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|ARM=
+64.ActiveCfg =3D Debug|ARM64</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|ARM64.Build.0 =3D Deb=
+ug|ARM64</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{D41AA9D6-B=
+818-476E-992E-0E16EB86BEE2}.Debug|Win32.ActiveCfg =3D Debug|Win32</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-		{D41AA9D6-B818-476E-992E-0E16=
+EB86BEE2}.Debug|Win32.Build.0 =3D Debug|Win32</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|x64.=
+ActiveCfg =3D Debug|x64</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Debug|x64.Build.0 =3D Debug|x64<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{D41AA9D6-B818-476E-=
+992E-0E16EB86BEE2}.Release|ARM64.ActiveCfg =3D Release|ARM64</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-		{D41AA9D6-B818-476E-992E-0E16EB86B=
+EE2}.Release|ARM64.Build.0 =3D Release|ARM64</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Release|Win=
+32.ActiveCfg =3D Release|Win32</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-		{D41AA9D6-B818-476E-992E-0E16EB86BEE2}.Release|Win32.Build.0 =3D=
+ Release|Win32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		{D41A=
+A9D6-B818-476E-992E-0E16EB86BEE2}.Release|x64.ActiveCfg =3D Release|x64</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-		{D41AA9D6-B818-476E-992=
+E-0E16EB86BEE2}.Release|x64.Build.0 =3D Release|x64</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-	EndGlobalSection</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-	GlobalSection(SolutionProperties) =3D preSolut=
+ion</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		HideSolutionNode=
+ =3D FALSE</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	EndGlobalS=
+ection</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	GlobalSection(=
+ExtensibilityGlobals) =3D postSolution</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-		SolutionGuid =3D {EB3CE5D3-415C-46F0-96AB-E1CDA287AB6D}<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-	EndGlobalSection</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-EndGlobal</span><br><span>=
+diff --git a/src/compat/Debug.props b/src/compat/Debug.props</span><br><spa=
+n>deleted file mode 100644</span><br><span>index 31bb9d9..0000000</span><br=
+><span>--- a/src/compat/Debug.props</span><br><span>+++ /dev/null</span><br=
+><span>@@ -1,21 +0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-&lt;?xml version=3D&quot;1.0&quot; encoding=3D&quot;utf-8&quot;?&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-&lt;Project ToolsVersion=
+=3D&quot;4.0&quot; xmlns=3D&quot;http://schemas.microsoft.com/developer/msb=
+uild/2003&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+&lt;ImportGroup Label=3D&quot;PropertySheets&quot;&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;PropertyShe=
+et.props&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+ &lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+  &lt;PropertyGroup Label=3D&quot;UserMacros&quot; /&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    &lt;_PropertySheetDisplayName&gt;c=
+ompat-Debug&lt;/_PropertySheetDisplayName&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    &lt;LinkIncremental&gt;true&lt;/LinkIncremental=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGr=
+oup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemDefi=
+nitionGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &l=
+t;ClCompile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+&lt;BasicRuntimeChecks&gt;EnableFastChecks&lt;/BasicRuntimeChecks&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Optimization&gt;D=
+isabled&lt;/Optimization&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-      &lt;PreprocessorDefinitions&gt;_DEBUG;%(PreprocessorDefinition=
+s)&lt;/PreprocessorDefinitions&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-      &lt;RuntimeLibrary&gt;MultiThreadedDebugDLL&lt;/RuntimeL=
+ibrary&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;D=
+ebugInformationFormat&gt;EditAndContinue&lt;/DebugInformationFormat&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGro=
+up&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup=
+ /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-&lt;/Project&gt=
+;</span><br><span>\ No newline at end of file</span><br><span>diff --git a/=
+src/compat/Makefile.am b/src/compat/Makefile.am</span><br><span>index a42ec=
+39..f5de451 100644</span><br><span>--- a/src/compat/Makefile.am</span><br><=
+span>+++ b/src/compat/Makefile.am</span><br><span>@@ -12,12 +12,6 @@</span>=
+<br><span> MAINTAINERCLEANFILES =3D \</span><br><span> 	$(srcdir)/Makefile.=
+in</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-E=
+XTRA_DIST =3D \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	compa=
+t.vcxproj \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	PropertyS=
+heet.props \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	Debug.pr=
+ops \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	Release.props</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> noins=
+t_LTLIBRARIES =3D libcompat.la</span><br><span> </span><br><span> libcompat=
+_la_SOURCES =3D \</span><br><span>diff --git a/src/compat/PropertySheet.pro=
+ps b/src/compat/PropertySheet.props</span><br><span>deleted file mode 10064=
+4</span><br><span>index 57f6995..0000000</span><br><span>--- a/src/compat/P=
+ropertySheet.props</span><br><span>+++ /dev/null</span><br><span>@@ -1,29 +=
+0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-&lt;?xml versio=
+n=3D&quot;1.0&quot; encoding=3D&quot;utf-8&quot;?&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-&lt;Project ToolsVersion=3D&quot;4.0&quot; =
+xmlns=3D&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Lab=
+el=3D&quot;PropertySheets&quot; /&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;UserMacros&quot; /&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;OutDir&gt;$(So=
+lutionDir)$(Platform)-Output\$(Configuration)\&lt;/OutDir&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &lt;_PropertySheetDisplayName&g=
+t;compat&lt;/_PropertySheetDisplayName&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-  &lt;ItemDefinitionGroup&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-      &lt;WarningLevel&gt;Level3&lt;/Warnin=
+gLevel&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;P=
+reprocessorDefinitions&gt;WIN32;$(CPPFLAGS);%(PreprocessorDefinitions)&lt;/=
+PreprocessorDefinitions&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-      &lt;AdditionalIncludeDirectories&gt;$(SolutionDir);$(SolutionDi=
+r)include;%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDirectories&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompile=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Link&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;GenerateDebu=
+gInformation&gt;true&lt;/GenerateDebugInformation&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;/Link&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    &lt;ResourceCompile /&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    &lt;ResourceCompile&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalIncludeDirect=
+ories&gt;$(SOLUTIONDIR)&lt;/AdditionalIncludeDirectories&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ResourceCompile&gt;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;BuildMacro Inc=
+lude=3D&quot;SOLUTIONDIR&quot;&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-      &lt;Value&gt;$(SOLUTIONDIR)&lt;/Value&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-      &lt;EnvironmentVariable&gt;tru=
+e&lt;/EnvironmentVariable&gt;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    &lt;/BuildMacro&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-  &lt;/ItemGroup&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-&lt;/Project&gt;</span><br><span>\ No newline at end of file</span=
+><br><span>diff --git a/src/compat/Release.props b/src/compat/Release.props=
+</span><br><span>deleted file mode 100644</span><br><span>index 50eaa8d..00=
+00000</span><br><span>--- a/src/compat/Release.props</span><br><span>+++ /d=
+ev/null</span><br><span>@@ -1,26 +0,0 @@</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-&lt;?xml version=3D&quot;1.0&quot; encoding=3D&quot;utf-=
+8&quot;?&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-&lt;Proje=
+ct ToolsVersion=3D&quot;4.0&quot; xmlns=3D&quot;http://schemas.microsoft.co=
+m/developer/msbuild/2003&quot;&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-  &lt;ImportGroup Label=3D&quot;PropertySheets&quot;&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&q=
+uot;PropertySheet.props&quot; /&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;UserMacros&quot; /&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;_PropertySheetD=
+isplayName&gt;compat-Release&lt;/_PropertySheetDisplayName&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    &lt;LinkIncremental&gt;false&l=
+t;/LinkIncremental&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-  &lt;ItemDefinitionGroup&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-      &lt;IntrinsicFunctions&gt;true&lt;/IntrinsicFunctions&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;FunctionLev=
+elLinking&gt;true&lt;/FunctionLevelLinking&gt;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-      &lt;RuntimeLibrary&gt;MultiThreadedDLL&lt;/R=
+untimeLibrary&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+  &lt;DebugInformationFormat&gt;ProgramDatabase&lt;/DebugInformationFormat&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Preproce=
+ssorDefinitions&gt;NDEBUG;%(PreprocessorDefinitions)&lt;/PreprocessorDefini=
+tions&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Co=
+ntrolFlowGuard&gt;Guard&lt;/ControlFlowGuard&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    &lt;Link&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-      &lt;EnableCOMDATFolding&gt;true&lt;/EnableCOMD=
+ATFolding&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &l=
+t;OptimizeReferences&gt;true&lt;/OptimizeReferences&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    &lt;/Link&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup /&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-&lt;/Project&gt;</span><br><span>\=
+ No newline at end of file</span><br><span>diff --git a/src/compat/compat-b=
+asename.c b/src/compat/compat-basename.c</span><br><span>index e66e225..abb=
+4f49 100644</span><br><span>--- a/src/compat/compat-basename.c</span><br><s=
+pan>+++ b/src/compat/compat-basename.c</span><br><span>@@ -23,8 +23,6 @@</s=
+pan><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #inc=
+lude &quot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#include &quot;config-msvc.h&quot;</span><br><span> #endif</span><br>=
+<span> </span><br><span> #ifndef HAVE_BASENAME</span><br><span>diff --git a=
+/src/compat/compat-daemon.c b/src/compat/compat-daemon.c</span><br><span>in=
+dex 460b9e9..aebb8f4 100644</span><br><span>--- a/src/compat/compat-daemon.=
+c</span><br><span>+++ b/src/compat/compat-daemon.c</span><br><span>@@ -23,8=
+ +23,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br=
+><span> #include &quot;config.h&quot;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #endi=
+f</span><br><span> </span><br><span> #ifndef HAVE_DAEMON</span><br><span>di=
+ff --git a/src/compat/compat-dirname.c b/src/compat/compat-dirname.c</span>=
+<br><span>index c1523d9..c131dee 100644</span><br><span>--- a/src/compat/co=
+mpat-dirname.c</span><br><span>+++ b/src/compat/compat-dirname.c</span><br>=
+<span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONF=
+IG_H</span><br><span> #include &quot;config.h&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span>=
+<br><span> #endif</span><br><span> </span><br><span> </span><br><span>diff =
+--git a/src/compat/compat-gettimeofday.c b/src/compat/compat-gettimeofday.c=
+</span><br><span>index 0dc7460..69843fb 100644</span><br><span>--- a/src/co=
+mpat/compat-gettimeofday.c</span><br><span>+++ b/src/compat/compat-gettimeo=
+fday.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span>=
+ #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc=
+.h&quot;</span><br><span> #endif</span><br><span> </span><br><span> #ifndef=
+ HAVE_GETTIMEOFDAY</span><br><span>diff --git a/src/compat/compat-strsep.c =
+b/src/compat/compat-strsep.c</span><br><span>index 6db013f..fbad98d 100644<=
+/span><br><span>--- a/src/compat/compat-strsep.c</span><br><span>+++ b/src/=
+compat/compat-strsep.c</span><br><span>@@ -24,8 +24,6 @@</span><br><span> <=
+/span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;confi=
+g.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif define=
+d(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &=
+quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><b=
+r><span> #ifndef HAVE_STRSEP</span><br><span>diff --git a/src/compat/compat=
+.vcxproj b/src/compat/compat.vcxproj</span><br><span>deleted file mode 1006=
+44</span><br><span>index 9fcfd6c..0000000</span><br><span>--- a/src/compat/=
+compat.vcxproj</span><br><span>+++ /dev/null</span><br><span>@@ -1,179 +0,0=
+ @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=EF=BB=BF&lt;?xml =
+version=3D&quot;1.0&quot; encoding=3D&quot;utf-8&quot;?&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-&lt;Project DefaultTargets=3D&quot;Bu=
+ild&quot; ToolsVersion=3D&quot;15.0&quot; xmlns=3D&quot;http://schemas.micr=
+osoft.com/developer/msbuild/2003&quot;&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-  &lt;ItemGroup Label=3D&quot;ProjectConfigurations&qu=
+ot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Projec=
+tConfiguration Include=3D&quot;Debug|ARM64&quot;&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-      &lt;Configuration&gt;Debug&lt;/Config=
+uration&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;=
+Platform&gt;ARM64&lt;/Platform&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    &lt;/ProjectConfiguration&gt;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    &lt;ProjectConfiguration Include=3D&quot;Debug=
+|Win32&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+ &lt;Configuration&gt;Debug&lt;/Configuration&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-      &lt;Platform&gt;Win32&lt;/Platform&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfigur=
+ation&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Proj=
+ectConfiguration Include=3D&quot;Debug|x64&quot;&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-      &lt;Configuration&gt;Debug&lt;/Config=
+uration&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;=
+Platform&gt;x64&lt;/Platform&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    &lt;/ProjectConfiguration&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    &lt;ProjectConfiguration Include=3D&quot;Release=
+|ARM64&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+ &lt;Configuration&gt;Release&lt;/Configuration&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-      &lt;Platform&gt;ARM64&lt;/Platform&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConf=
+iguration&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;=
+ProjectConfiguration Include=3D&quot;Release|Win32&quot;&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-      &lt;Configuration&gt;Release&l=
+t;/Configuration&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+     &lt;Platform&gt;Win32&lt;/Platform&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    &lt;/ProjectConfiguration&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectConfiguration Include=3D&q=
+uot;Release|x64&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-      &lt;Configuration&gt;Release&lt;/Configuration&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-      &lt;Platform&gt;x64&lt;/Platfo=
+rm&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/Projec=
+tConfiguration&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &=
+lt;/ItemGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &l=
+t;PropertyGroup Label=3D&quot;Globals&quot;&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;ProjectGuid&gt;{4B2E2719-E661-45D7-9203-F=
+6F456B22F19}&lt;/ProjectGuid&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    &lt;RootNamespace&gt;compat&lt;/RootNamespace&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Keyword&gt;Win32Proj&lt;=
+/Keyword&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;W=
+indowsTargetPlatformVersion&gt;10.0&lt;/WindowsTargetPlatformVersion&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;Import Project=
+=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.Default.props&quot; /&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Condition=
+=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39=
+;&quot; Label=3D&quot;Configuration&quot;&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    &lt;ConfigurationType&gt;StaticLibrary&lt;/Conf=
+igurationType&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+&lt;CharacterSet&gt;MultiByte&lt;/CharacterSet&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    &lt;WholeProgramOptimization&gt;true&lt;/W=
+holeProgramOptimization&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &lt;PlatformToolset&gt;v143&lt;/PlatformToolset&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation&gt;Spectr=
+e&lt;/SpectreMitigation&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Plat=
+form)&#39;=3D=3D&#39;Release|x64&#39;&quot; Label=3D&quot;Configuration&quo=
+t;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Configu=
+rationType&gt;StaticLibrary&lt;/ConfigurationType&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;CharacterSet&gt;MultiByte&lt;/Chara=
+cterSet&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Wh=
+oleProgramOptimization&gt;true&lt;/WholeProgramOptimization&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformToolset&gt;v143&l=
+t;/PlatformToolset&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    &lt;SpectreMitigation&gt;Spectre&lt;/SpectreMitigation&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Condition=
+=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39=
+;&quot; Label=3D&quot;Configuration&quot;&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    &lt;ConfigurationType&gt;StaticLibrary&lt;/Conf=
+igurationType&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+&lt;CharacterSet&gt;MultiByte&lt;/CharacterSet&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    &lt;WholeProgramOptimization&gt;true&lt;/W=
+holeProgramOptimization&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &lt;PlatformToolset&gt;v143&lt;/PlatformToolset&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation&gt;Spectr=
+e&lt;/SpectreMitigation&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Plat=
+form)&#39;=3D=3D&#39;Debug|Win32&#39;&quot; Label=3D&quot;Configuration&quo=
+t;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Configu=
+rationType&gt;StaticLibrary&lt;/ConfigurationType&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;CharacterSet&gt;MultiByte&lt;/Chara=
+cterSet&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Pl=
+atformToolset&gt;v143&lt;/PlatformToolset&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation&gt;Spectre&lt;/SpectreMit=
+igation&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/Pro=
+pertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;P=
+ropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D=
+&#39;Debug|x64&#39;&quot; Label=3D&quot;Configuration&quot;&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ConfigurationType&gt;Stat=
+icLibrary&lt;/ConfigurationType&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    &lt;CharacterSet&gt;MultiByte&lt;/CharacterSet&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformToolset&gt;v=
+143&lt;/PlatformToolset&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &lt;SpectreMitigation&gt;Spectre&lt;/SpectreMitigation&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Condi=
+tion=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#=
+39;&quot; Label=3D&quot;Configuration&quot;&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;ConfigurationType&gt;StaticLibrary&lt;/Co=
+nfigurationType&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  &lt;CharacterSet&gt;MultiByte&lt;/CharacterSet&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformToolset&gt;v143&lt;/Platfor=
+mToolset&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;S=
+pectreMitigation&gt;Spectre&lt;/SpectreMitigation&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-  &lt;Import Project=3D&quot;$(VCTargets=
+Path)\Microsoft.Cpp.props&quot; /&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;ExtensionSettings&quot;&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Co=
+ndition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|Wi=
+n32&#39;&quot; Label=3D&quot;PropertySheets&quot;&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;$(UserRootDi=
+r)\Microsoft.Cpp.$(Platform).user.props&quot; Condition=3D&quot;exists(&#39=
+;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&#39;)&quot; Label=3D&q=
+uot;LocalAppDataPlatform&quot; /&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    &lt;Import Project=3D&quot;Release.props&quot; /&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Condit=
+ion=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#3=
+9;&quot; Label=3D&quot;PropertySheets&quot;&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;$(UserRootDir)\Mic=
+rosoft.Cpp.$(Platform).user.props&quot; Condition=3D&quot;exists(&#39;$(Use=
+rRootDir)\Microsoft.Cpp.$(Platform).user.props&#39;)&quot; Label=3D&quot;Lo=
+calAppDataPlatform&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    &lt;Import Project=3D&quot;Release.props&quot; /&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Condition=3D=
+&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&q=
+uot; Label=3D&quot;PropertySheets&quot;&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;$(UserRootDir)\Microso=
+ft.Cpp.$(Platform).user.props&quot; Condition=3D&quot;exists(&#39;$(UserRoo=
+tDir)\Microsoft.Cpp.$(Platform).user.props&#39;)&quot; Label=3D&quot;LocalA=
+ppDataPlatform&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    &lt;Import Project=3D&quot;Release.props&quot; /&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Condition=3D&quo=
+t;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot; L=
+abel=3D&quot;PropertySheets&quot;&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    &lt;Import Project=3D&quot;$(UserRootDir)\Microsoft.Cpp=
+.$(Platform).user.props&quot; Condition=3D&quot;exists(&#39;$(UserRootDir)\=
+Microsoft.Cpp.$(Platform).user.props&#39;)&quot; Label=3D&quot;LocalAppData=
+Platform&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   &lt;Import Project=3D&quot;Debug.props&quot; /&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Condition=3D&quot;&#39;$=
+(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot; Label=3D&qu=
+ot;PropertySheets&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &lt;Import Project=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platfor=
+m).user.props&quot; Condition=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.=
+Cpp.$(Platform).user.props&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&q=
+uot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Imp=
+ort Project=3D&quot;Debug.props&quot; /&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  &lt;ImportGroup Condition=3D&quot;&#39;$(Configura=
+tion)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot; Label=3D&quot;Prope=
+rtySheets&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  &lt;Import Project=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.=
+props&quot; Condition=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Pl=
+atform).user.props&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Proj=
+ect=3D&quot;Debug.props&quot; /&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;UserMacros&quot; /&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;_ProjectFileVer=
+sion&gt;10.0.30319.1&lt;/_ProjectFileVersion&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quo=
+t; Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug=
+|ARM64&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    &lt;VcpkgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quo=
+t; Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Relea=
+se|ARM64&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;VcpkgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&=
+quot; Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;De=
+bug|Win32&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    &lt;VcpkgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&=
+quot; Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Re=
+lease|Win32&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    &lt;VcpkgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg=
+&quot; Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;D=
+ebug|x64&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;VcpkgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&=
+quot; Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Re=
+lease|x64&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    &lt;VcpkgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemDefinitionGroup Condition=3D&q=
+uot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot;=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Additio=
+nalIncludeDirectories&gt;$(SolutionDir);%(AdditionalIncludeDirectories)&lt;=
+/AdditionalIncludeDirectories&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-      &lt;PreprocessorDefinitions&gt;_LIB;%(PreprocessorDefinit=
+ions)&lt;/PreprocessorDefinitions&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    &lt;/ClCompile&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-  &lt;ItemDefinitionGroup Condition=3D&quot;&#39;=
+$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot;&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalIncludeD=
+irectories&gt;$(SolutionDir);%(AdditionalIncludeDirectories)&lt;/Additional=
+IncludeDirectories&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-      &lt;PreprocessorDefinitions&gt;_LIB;%(PreprocessorDefinitions)&lt;/P=
+reprocessorDefinitions&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    &lt;/ClCompile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-  &lt;/ItemDefinitionGroup&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-  &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configura=
+tion)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalIncludeDirectorie=
+s&gt;$(SolutionDir);%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDi=
+rectories&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &l=
+t;PreprocessorDefinitions&gt;_LIB;%(PreprocessorDefinitions)&lt;/Preprocess=
+orDefinitions&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+&lt;/ClCompile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &=
+lt;/ItemDefinitionGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-  &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration)|$(P=
+latform)&#39;=3D=3D&#39;Release|Win32&#39;&quot;&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalIncludeDirectories&gt;$=
+(SolutionDir);%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDirector=
+ies&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Prep=
+rocessorDefinitions&gt;_LIB;%(PreprocessorDefinitions)&lt;/PreprocessorDefi=
+nitions&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/C=
+lCompile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/It=
+emDefinitionGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+  &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration)|$(Platfor=
+m)&#39;=3D=3D&#39;Release|x64&#39;&quot;&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-      &lt;AdditionalIncludeDirectories&gt;$(Solution=
+Dir);%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDirectories&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;PreprocessorD=
+efinitions&gt;_LIB;%(PreprocessorDefinitions)&lt;/PreprocessorDefinitions&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompile&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinit=
+ionGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;Ite=
+mDefinitionGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=
+=3D=3D&#39;Release|ARM64&#39;&quot;&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-      &lt;AdditionalIncludeDirectories&gt;$(SolutionDir);=
+%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDirectories&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;PreprocessorDefini=
+tions&gt;_LIB;%(PreprocessorDefinitions)&lt;/PreprocessorDefinitions&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGr=
+oup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGrou=
+p&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompil=
+e Include=3D&quot;compat-basename.c&quot; /&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;compat-dirname.=
+c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;=
+ClCompile Include=3D&quot;compat-gettimeofday.c&quot; /&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;com=
+pat-daemon.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    &lt;ClCompile Include=3D&quot;compat-strsep.c&quot; /&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemGroup&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;c=
+ompat.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+&lt;/ItemGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &=
+lt;ItemGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &=
+lt;ProjectReference Include=3D&quot;..\..\build\msvc\msvc-generate\msvc-gen=
+erate.vcxproj&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-      &lt;Project&gt;{8598c2c8-34c4-47a1-99b0-7c295a890615}&lt;/Project&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Reference=
+OutputAssembly&gt;false&lt;/ReferenceOutputAssembly&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectReference&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemGroup&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-  &lt;Import Project=3D&quot;$(VCT=
+argetsPath)\Microsoft.Cpp.targets&quot; /&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;ExtensionTargets&qu=
+ot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportG=
+roup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-&lt;/Project&=
+gt;</span><br><span>\ No newline at end of file</span><br><span>diff --git =
+a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am</span><br><span>index 2=
+f97991..52deef8 100644</span><br><span>--- a/src/openvpn/Makefile.am</span>=
+<br><span>+++ b/src/openvpn/Makefile.am</span><br><span>@@ -15,9 +15,7 @@</=
+span><br><span> 	$(srcdir)/Makefile.in</span><br><span> </span><br><span> E=
+XTRA_DIST =3D \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	openv=
+pn.vcxproj \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	openvpn.=
+manifest \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	vcpkg.json=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	openvpn.manifest</=
+span><br><span> </span><br><span> AM_CPPFLAGS =3D \</span><br><span> 	-I$(t=
+op_srcdir)/include \</span><br><span>diff --git a/src/openvpn/argv.c b/src/=
+openvpn/argv.c</span><br><span>index cef0da9..50083ba 100644</span><br><spa=
+n>--- a/src/openvpn/argv.c</span><br><span>+++ b/src/openvpn/argv.c</span><=
+br><span>@@ -29,8 +29,6 @@</span><br><span> </span><br><span> #ifdef HAVE_C=
+ONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span=
+><br><span> #endif</span><br><span> </span><br><span> #include &quot;syshea=
+d.h&quot;</span><br><span>diff --git a/src/openvpn/auth_token.c b/src/openv=
+pn/auth_token.c</span><br><span>index e4486eb..6787ea7 100644</span><br><sp=
+an>--- a/src/openvpn/auth_token.c</span><br><span>+++ b/src/openvpn/auth_to=
+ken.c</span><br><span>@@ -1,7 +1,5 @@</span><br><span> #ifdef HAVE_CONFIG_H=
+</span><br><span> #include &quot;config.h&quot;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><s=
+pan> #endif</span><br><span> </span><br><span> #include &quot;syshead.h&quo=
+t;</span><br><span>diff --git a/src/openvpn/base64.c b/src/openvpn/base64.c=
+</span><br><span>index 0ac65e9..a9c2f4c 100644</span><br><span>--- a/src/op=
+envpn/base64.c</span><br><span>+++ b/src/openvpn/base64.c</span><br><span>@=
+@ -33,8 +33,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</s=
+pan><br><span> #include &quot;config.h&quot;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><span=
+> #endif</span><br><span> </span><br><span> #include &quot;syshead.h&quot;<=
+/span><br><span>diff --git a/src/openvpn/block_dns.c b/src/openvpn/block_dn=
+s.c</span><br><span>index 4af429b..05b2599 100644</span><br><span>--- a/src=
+/openvpn/block_dns.c</span><br><span>+++ b/src/openvpn/block_dns.c</span><b=
+r><span>@@ -25,8 +25,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CO=
+NFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span>=
+<br><span> #endif</span><br><span> </span><br><span> #include &quot;syshead=
+.h&quot;</span><br><span>diff --git a/src/openvpn/buffer.c b/src/openvpn/bu=
+ffer.c</span><br><span>index 7725438..24f1ef2 100644</span><br><span>--- a/=
+src/openvpn/buffer.c</span><br><span>+++ b/src/openvpn/buffer.c</span><br><=
+span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFI=
+G_H</span><br><span> #include &quot;config.h&quot;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><b=
+r><span> #endif</span><br><span> </span><br><span> #include &quot;syshead.h=
+&quot;</span><br><span>diff --git a/src/openvpn/clinat.c b/src/openvpn/clin=
+at.c</span><br><span>index 514bd43..2b91f7b 100644</span><br><span>--- a/sr=
+c/openvpn/clinat.c</span><br><span>+++ b/src/openvpn/clinat.c</span><br><sp=
+an>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_=
+H</span><br><span> #include &quot;config.h&quot;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><=
+span> #endif</span><br><span> </span><br><span> #include &quot;syshead.h&qu=
+ot;</span><br><span>diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-=
+lz4.c</span><br><span>index e544a8d..33a480c 100644</span><br><span>--- a/s=
+rc/openvpn/comp-lz4.c</span><br><span>+++ b/src/openvpn/comp-lz4.c</span><b=
+r><span>@@ -24,8 +24,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CO=
+NFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span>=
+<br><span> #endif</span><br><span> </span><br><span> #include &quot;syshead=
+.h&quot;</span><br><span>diff --git a/src/openvpn/comp.c b/src/openvpn/comp=
+.c</span><br><span>index 27b640c..6e30369 100644</span><br><span>--- a/src/=
+openvpn/comp.c</span><br><span>+++ b/src/openvpn/comp.c</span><br><span>@@ =
+-23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</spa=
+n><br><span> #include &quot;config.h&quot;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> =
+#endif</span><br><span> </span><br><span> #include &quot;syshead.h&quot;</s=
+pan><br><span>diff --git a/src/openvpn/compstub.c b/src/openvpn/compstub.c<=
+/span><br><span>index 496e60e..adb1f28 100644</span><br><span>--- a/src/ope=
+nvpn/compstub.c</span><br><span>+++ b/src/openvpn/compstub.c</span><br><spa=
+n>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H=
+</span><br><span> #include &quot;config.h&quot;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><s=
+pan> #endif</span><br><span> </span><br><span> #include &quot;syshead.h&quo=
+t;</span><br><span>diff --git a/src/openvpn/console.c b/src/openvpn/console=
+.c</span><br><span>index bbdd59c..5b367f2 100644</span><br><span>--- a/src/=
+openvpn/console.c</span><br><span>+++ b/src/openvpn/console.c</span><br><sp=
+an>@@ -25,8 +25,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_=
+H</span><br><span> #include &quot;config.h&quot;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><=
+span> #endif</span><br><span> </span><br><span> #include &quot;syshead.h&qu=
+ot;</span><br><span>diff --git a/src/openvpn/console_builtin.c b/src/openvp=
+n/console_builtin.c</span><br><span>index 4101feb..b5264d8 100644</span><br=
+><span>--- a/src/openvpn/console_builtin.c</span><br><span>+++ b/src/openvp=
+n/console_builtin.c</span><br><span>@@ -30,8 +30,6 @@</span><br><span> </sp=
+an><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h=
+&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_=
+MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quo=
+t;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><=
+span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/openv=
+pn/crypto.c b/src/openvpn/crypto.c</span><br><span>index b5ae17e..b5268f1 1=
+00644</span><br><span>--- a/src/openvpn/crypto.c</span><br><span>+++ b/src/=
+openvpn/crypto.c</span><br><span>@@ -24,8 +24,6 @@</span><br><span> </span>=
+<br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&qu=
+ot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC=
+_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;c=
+onfig-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><spa=
+n> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/=
+crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c</span><br><span>index cd43e=
+e5..98cac60 100644</span><br><span>--- a/src/openvpn/crypto_mbedtls.c</span=
+><br><span>+++ b/src/openvpn/crypto_mbedtls.c</span><br><span>@@ -28,8 +28,=
+6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><spa=
+n> #include &quot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #endif</sp=
+an><br><span> </span><br><span> #include &quot;syshead.h&quot;</span><br><s=
+pan>diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.=
+c</span><br><span>index f5372f8..b043bb9 100644</span><br><span>--- a/src/o=
+penvpn/crypto_openssl.c</span><br><span>+++ b/src/openvpn/crypto_openssl.c<=
+/span><br><span>@@ -28,8 +28,6 @@</span><br><span> </span><br><span> #ifdef=
+ HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot=
+;</span><br><span> #endif</span><br><span> </span><br><span> #include &quot=
+;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/cryptoapi.c b/src=
+/openvpn/cryptoapi.c</span><br><span>index 20b7d98..3b92e48 100644</span><b=
+r><span>--- a/src/openvpn/cryptoapi.c</span><br><span>+++ b/src/openvpn/cry=
+ptoapi.c</span><br><span>@@ -31,8 +31,6 @@</span><br><span> </span><br><spa=
+n> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-ms=
+vc.h&quot;</span><br><span> #endif</span><br><span> </span><br><span> #incl=
+ude &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/dco.c b/=
+src/openvpn/dco.c</span><br><span>index 308578b..7c7eaac 100644</span><br><=
+span>--- a/src/openvpn/dco.c</span><br><span>+++ b/src/openvpn/dco.c</span>=
+<br><span>@@ -26,8 +26,6 @@</span><br><span> </span><br><span> #ifdef HAVE_=
+CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</spa=
+n><br><span> #endif</span><br><span> </span><br><span> #if defined(ENABLE_D=
+CO)</span><br><span>diff --git a/src/openvpn/dco_freebsd.c b/src/openvpn/dc=
+o_freebsd.c</span><br><span>index af7776b..3ba1c81 100644</span><br><span>-=
+-- a/src/openvpn/dco_freebsd.c</span><br><span>+++ b/src/openvpn/dco_freebs=
+d.c</span><br><span>@@ -20,8 +20,6 @@</span><br><span> </span><br><span> #i=
+fdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&=
+quot;</span><br><span> #endif</span><br><span> </span><br><span> #if define=
+d(ENABLE_DCO) &amp;&amp; defined(TARGET_FREEBSD)</span><br><span>diff --git=
+ a/src/openvpn/dco_linux.c b/src/openvpn/dco_linux.c</span><br><span>index =
+0cf36ba..b033f85 100644</span><br><span>--- a/src/openvpn/dco_linux.c</span=
+><br><span>+++ b/src/openvpn/dco_linux.c</span><br><span>@@ -23,8 +23,6 @@<=
+/span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #i=
+nclude &quot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #endif</span><b=
+r><span> </span><br><span> #if defined(ENABLE_DCO) &amp;&amp; defined(TARGE=
+T_LINUX)</span><br><span>diff --git a/src/openvpn/dco_win.c b/src/openvpn/d=
+co_win.c</span><br><span>index 4b414ef..53f1523 100644</span><br><span>--- =
+a/src/openvpn/dco_win.c</span><br><span>+++ b/src/openvpn/dco_win.c</span><=
+br><span>@@ -21,8 +21,6 @@</span><br><span> </span><br><span> #ifdef HAVE_C=
+ONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span=
+><br><span> #endif</span><br><span> </span><br><span> #if defined(_WIN32)</=
+span><br><span>diff --git a/src/openvpn/dhcp.c b/src/openvpn/dhcp.c</span><=
+br><span>index b9cd3c6..ac7f538 100644</span><br><span>--- a/src/openvpn/dh=
+cp.c</span><br><span>+++ b/src/openvpn/dhcp.c</span><br><span>@@ -23,8 +23,=
+6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><spa=
+n> #include &quot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #endif</sp=
+an><br><span> </span><br><span> #include &quot;syshead.h&quot;</span><br><s=
+pan>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</span><br><span>inde=
+x b7808db..530e6d5 100644</span><br><span>--- a/src/openvpn/dns.c</span><br=
+><span>+++ b/src/openvpn/dns.c</span><br><span>@@ -23,8 +23,6 @@</span><br>=
+<span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &qu=
+ot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#eli=
+f defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#i=
+nclude &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> <=
+/span><br><span> #include &quot;syshead.h&quot;</span><br><span>diff --git =
+a/src/openvpn/env_set.c b/src/openvpn/env_set.c</span><br><span>index 79059=
+14..97b011f 100644</span><br><span>--- a/src/openvpn/env_set.c</span><br><s=
+pan>+++ b/src/openvpn/env_set.c</span><br><span>@@ -26,8 +26,6 @@</span><br=
+><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &q=
+uot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#el=
+if defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+include &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> =
+</span><br><span> #include &quot;syshead.h&quot;</span><br><span>diff --git=
+ a/src/openvpn/error.c b/src/openvpn/error.c</span><br><span>index 9a234e6.=
+.56addff 100644</span><br><span>--- a/src/openvpn/error.c</span><br><span>+=
+++ b/src/openvpn/error.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span>=
+ </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;con=
+fig.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defi=
+ned(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include=
+ &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </span>=
+<br><span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/=
+openvpn/event.c b/src/openvpn/event.c</span><br><span>index fa5aee2..6b6f95=
+1 100644</span><br><span>--- a/src/openvpn/event.c</span><br><span>+++ b/sr=
+c/openvpn/event.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span=
+><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&q=
+uot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MS=
+C_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;=
+config-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><sp=
+an> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn=
+/fdmisc.c b/src/openvpn/fdmisc.c</span><br><span>index 3f74171..3570ed4 100=
+644</span><br><span>--- a/src/openvpn/fdmisc.c</span><br><span>+++ b/src/op=
+envpn/fdmisc.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><b=
+r><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_V=
+ER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;con=
+fig-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><span>=
+ #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/fo=
+rward.c b/src/openvpn/forward.c</span><br><span>index 5bffe07..d8ad0d1 1006=
+44</span><br><span>--- a/src/openvpn/forward.c</span><br><span>+++ b/src/op=
+envpn/forward.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><=
+br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quo=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_=
+VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;co=
+nfig-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><span=
+> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/f=
+ragment.c b/src/openvpn/fragment.c</span><br><span>index 50391de..974ebda 1=
+00644</span><br><span>--- a/src/openvpn/fragment.c</span><br><span>+++ b/sr=
+c/openvpn/fragment.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </s=
+pan><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.=
+h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(=
+_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &qu=
+ot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br>=
+<span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/open=
+vpn/gremlin.c b/src/openvpn/gremlin.c</span><br><span>index c77fc40..501d70=
+c 100644</span><br><span>--- a/src/openvpn/gremlin.c</span><br><span>+++ b/=
+src/openvpn/gremlin.c</span><br><span>@@ -28,8 +28,6 @@</span><br><span> </=
+span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config=
+.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined=
+(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &q=
+uot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br=
+><span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/ope=
+nvpn/helper.c b/src/openvpn/helper.c</span><br><span>index 7c219fd..fa011ff=
+ 100644</span><br><span>--- a/src/openvpn/helper.c</span><br><span>+++ b/sr=
+c/openvpn/helper.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </spa=
+n><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&=
+quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_M=
+SC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot=
+;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><s=
+pan> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvp=
+n/httpdigest.c b/src/openvpn/httpdigest.c</span><br><span>index 6714ef9..5c=
+255b2 100644</span><br><span>--- a/src/openvpn/httpdigest.c</span><br><span=
+>+++ b/src/openvpn/httpdigest.c</span><br><span>@@ -23,8 +23,6 @@</span><br=
+><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &q=
+uot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#el=
+if defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+include &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> =
+</span><br><span> #include &quot;syshead.h&quot;</span><br><span>diff --git=
+ a/src/openvpn/init.c b/src/openvpn/init.c</span><br><span>index d358ad0..6=
+fb6900 100644</span><br><span>--- a/src/openvpn/init.c</span><br><span>+++ =
+b/src/openvpn/init.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </s=
+pan><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.=
+h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(=
+_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &qu=
+ot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br>=
+<span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/open=
+vpn/interval.c b/src/openvpn/interval.c</span><br><span>index 8308df4..bde9=
+dd9 100644</span><br><span>--- a/src/openvpn/interval.c</span><br><span>+++=
+ b/src/openvpn/interval.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span=
+> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;co=
+nfig.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif def=
+ined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#includ=
+e &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </span=
+><br><span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src=
+/openvpn/list.c b/src/openvpn/list.c</span><br><span>index f65d8a8..480f39d=
+ 100644</span><br><span>--- a/src/openvpn/list.c</span><br><span>+++ b/src/=
+openvpn/list.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><b=
+r><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_V=
+ER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;con=
+fig-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><span>=
+ #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/ll=
+addr.c b/src/openvpn/lladdr.c</span><br><span>index ee67718..cc677b4 100644=
+</span><br><span>--- a/src/openvpn/lladdr.c</span><br><span>+++ b/src/openv=
+pn/lladdr.c</span><br><span>@@ -4,8 +4,6 @@</span><br><span> </span><br><sp=
+an> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-m=
+svc.h&quot;</span><br><span> #endif</span><br><span> </span><br><span> #inc=
+lude &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/lzo.c b=
+/src/openvpn/lzo.c</span><br><span>index 848cb06..1901780 100644</span><br>=
+<span>--- a/src/openvpn/lzo.c</span><br><span>+++ b/src/openvpn/lzo.c</span=
+><br><span>@@ -27,8 +27,6 @@</span><br><span> </span><br><span> #ifdef HAVE=
+_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</sp=
+an><br><span> #endif</span><br><span> </span><br><span> #include &quot;sysh=
+ead.h&quot;</span><br><span>diff --git a/src/openvpn/manage.c b/src/openvpn=
+/manage.c</span><br><span>index 2eaf2f1..739ed40 100644</span><br><span>---=
+ a/src/openvpn/manage.c</span><br><span>+++ b/src/openvpn/manage.c</span><b=
+r><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CO=
+NFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span>=
+<br><span> #endif</span><br><span> </span><br><span> #include &quot;syshead=
+.h&quot;</span><br><span>diff --git a/src/openvpn/mbuf.c b/src/openvpn/mbuf=
+.c</span><br><span>index a44f8c3..318b9ed 100644</span><br><span>--- a/src/=
+openvpn/mbuf.c</span><br><span>+++ b/src/openvpn/mbuf.c</span><br><span>@@ =
+-23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</spa=
+n><br><span> #include &quot;config.h&quot;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> =
+#endif</span><br><span> </span><br><span> #include &quot;syshead.h&quot;</s=
+pan><br><span>diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c</span><b=
+r><span>index 774ea06..ce6e4fd 100644</span><br><span>--- a/src/openvpn/mis=
+c.c</span><br><span>+++ b/src/openvpn/misc.c</span><br><span>@@ -25,8 +25,6=
+ @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span=
+> #include &quot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #endif</spa=
+n><br><span> </span><br><span> #include &quot;syshead.h&quot;</span><br><sp=
+an>diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c</span><br><span=
+>index 2683b40..91af2b6 100644</span><br><span>--- a/src/openvpn/mroute.c</=
+span><br><span>+++ b/src/openvpn/mroute.c</span><br><span>@@ -23,8 +23,6 @@=
+</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #=
+include &quot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #endif</span><=
+br><span> </span><br><span> #include &quot;syshead.h&quot;</span><br><span>=
+diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c</span><br><span>index 98=
+d5406..816e65b 100644</span><br><span>--- a/src/openvpn/mss.c</span><br><sp=
+an>+++ b/src/openvpn/mss.c</span><br><span>@@ -23,8 +23,6 @@</span><br><spa=
+n> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;c=
+onfig.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif de=
+fined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#inclu=
+de &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </spa=
+n><br><span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/sr=
+c/openvpn/mstats.c b/src/openvpn/mstats.c</span><br><span>index 1e92b41..04=
+be449 100644</span><br><span>--- a/src/openvpn/mstats.c</span><br><span>+++=
+ b/src/openvpn/mstats.c</span><br><span>@@ -27,8 +27,6 @@</span><br><span> =
+</span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;conf=
+ig.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defin=
+ed(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include =
+&quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><=
+br><span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/o=
+penvpn/mtcp.c b/src/openvpn/mtcp.c</span><br><span>index 6c56a26..62eb14b 1=
+00644</span><br><span>--- a/src/openvpn/mtcp.c</span><br><span>+++ b/src/op=
+envpn/mtcp.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br>=
+<span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER=
+)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;confi=
+g-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><span> #=
+include &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/mtu.=
+c b/src/openvpn/mtu.c</span><br><span>index 2925b7f..132f93c 100644</span><=
+br><span>--- a/src/openvpn/mtu.c</span><br><span>+++ b/src/openvpn/mtu.c</s=
+pan><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef H=
+AVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;<=
+/span><br><span> #endif</span><br><span> </span><br><span> #include &quot;s=
+yshead.h&quot;</span><br><span>diff --git a/src/openvpn/mudp.c b/src/openvp=
+n/mudp.c</span><br><span>index 8698aef..81625ea 100644</span><br><span>--- =
+a/src/openvpn/mudp.c</span><br><span>+++ b/src/openvpn/mudp.c</span><br><sp=
+an>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_=
+H</span><br><span> #include &quot;config.h&quot;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><=
+span> #endif</span><br><span> </span><br><span> #include &quot;syshead.h&qu=
+ot;</span><br><span>diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c<=
+/span><br><span>index 6fb9cff..aad11b1 100644</span><br><span>--- a/src/ope=
+nvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span><br><span>@@ -=
+23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span=
+><br><span> #include &quot;config.h&quot;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #=
+endif</span><br><span> </span><br><span> #ifdef HAVE_SYS_INOTIFY_H</span><b=
+r><span>diff --git a/src/openvpn/networking_freebsd.c b/src/openvpn/network=
+ing_freebsd.c</span><br><span>index 0633dce..1c94756 100644</span><br><span=
+>--- a/src/openvpn/networking_freebsd.c</span><br><span>+++ b/src/openvpn/n=
+etworking_freebsd.c</span><br><span>@@ -1,7 +1,5 @@</span><br><span> #ifdef=
+ HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot=
+;</span><br><span> #endif</span><br><span> #include &quot;syshead.h&quot;</=
+span><br><span> #include &quot;errlevel.h&quot;</span><br><span>diff --git =
+a/src/openvpn/networking_iproute2.c b/src/openvpn/networking_iproute2.c</sp=
+an><br><span>index 0efeed0..9d2351c 100644</span><br><span>--- a/src/openvp=
+n/networking_iproute2.c</span><br><span>+++ b/src/openvpn/networking_iprout=
+e2.c</span><br><span>@@ -20,8 +20,6 @@</span><br><span> </span><br><span> #=
+ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h=
+&quot;</span><br><span> #endif</span><br><span> </span><br><span> #if defin=
+ed(TARGET_LINUX) &amp;&amp; defined(ENABLE_IPROUTE)</span><br><span>diff --=
+git a/src/openvpn/networking_sitnl.c b/src/openvpn/networking_sitnl.c</span=
+><br><span>index cb9a47c..662e0e2 100644</span><br><span>--- a/src/openvpn/=
+networking_sitnl.c</span><br><span>+++ b/src/openvpn/networking_sitnl.c</sp=
+an><br><span>@@ -20,8 +20,6 @@</span><br><span> </span><br><span> #ifdef HA=
+VE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</=
+span><br><span> #endif</span><br><span> </span><br><span> #ifdef TARGET_LIN=
+UX</span><br><span>diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c</sp=
+an><br><span>index 20527d4..0cb0a32 100644</span><br><span>--- a/src/openvp=
+n/ntlm.c</span><br><span>+++ b/src/openvpn/ntlm.c</span><br><span>@@ -22,8 =
++22,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br>=
+<span> #include &quot;config.h&quot;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #endif=
+</span><br><span> </span><br><span> #include &quot;syshead.h&quot;</span><b=
+r><span>diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c</span><br><span>=
+index 94b82e0..8541f6e 100644</span><br><span>--- a/src/openvpn/occ.c</span=
+><br><span>+++ b/src/openvpn/occ.c</span><br><span>@@ -23,8 +23,6 @@</span>=
+<br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include=
+ &quot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-#include &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><spa=
+n> </span><br><span> #include &quot;syshead.h&quot;</span><br><span>diff --=
+git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h</span><br=
+><span>index 56b1dcf..ffb64ad 100644</span><br><span>--- a/src/openvpn/open=
+ssl_compat.h</span><br><span>+++ b/src/openvpn/openssl_compat.h</span><br><=
+span>@@ -36,8 +36,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFI=
+G_H</span><br><span> #include &quot;config.h&quot;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><b=
+r><span> #endif</span><br><span> </span><br><span> #include &quot;buffer.h&=
+quot;</span><br><span>diff --git a/src/openvpn/openvpn.c b/src/openvpn/open=
+vpn.c</span><br><span>index 1aaddcd..348392e 100644</span><br><span>--- a/s=
+rc/openvpn/openvpn.c</span><br><span>+++ b/src/openvpn/openvpn.c</span><br>=
+<span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONF=
+IG_H</span><br><span> #include &quot;config.h&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span>=
+<br><span> #endif</span><br><span> </span><br><span> #include &quot;syshead=
+.h&quot;</span><br><span>diff --git a/src/openvpn/openvpn.vcxproj b/src/ope=
+nvpn/openvpn.vcxproj</span><br><span>deleted file mode 100644</span><br><sp=
+an>index 97baf67..0000000</span><br><span>--- a/src/openvpn/openvpn.vcxproj=
+</span><br><span>+++ /dev/null</span><br><span>@@ -1,470 +0,0 @@</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-=EF=BB=BF&lt;?xml version=3D&quo=
+t;1.0&quot; encoding=3D&quot;utf-8&quot;?&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-&lt;Project DefaultTargets=3D&quot;Build&quot; Tool=
+sVersion=3D&quot;15.0&quot; xmlns=3D&quot;http://schemas.microsoft.com/deve=
+loper/msbuild/2003&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-  &lt;ItemGroup Label=3D&quot;ProjectConfigurations&quot;&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectConfiguration=
+ Include=3D&quot;Debug|ARM64&quot;&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-      &lt;Configuration&gt;Debug&lt;/Configuration&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Platform&gt;ARM=
+64&lt;/Platform&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  &lt;/ProjectConfiguration&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    &lt;ProjectConfiguration Include=3D&quot;Debug|Win32&quot;&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Configurat=
+ion&gt;Debug&lt;/Configuration&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-      &lt;Platform&gt;Win32&lt;/Platform&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfiguration&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectConfiguratio=
+n Include=3D&quot;Debug|x64&quot;&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-      &lt;Configuration&gt;Debug&lt;/Configuration&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Platform&gt;x64&=
+lt;/Platform&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &=
+lt;/ProjectConfiguration&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    &lt;ProjectConfiguration Include=3D&quot;Release|ARM64&quot;&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Configurati=
+on&gt;Release&lt;/Configuration&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-      &lt;Platform&gt;ARM64&lt;/Platform&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfiguration&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectConfigurati=
+on Include=3D&quot;Release|Win32&quot;&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-      &lt;Configuration&gt;Release&lt;/Configuration&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Platform&=
+gt;Win32&lt;/Platform&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    &lt;/ProjectConfiguration&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    &lt;ProjectConfiguration Include=3D&quot;Release|x64&qu=
+ot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Conf=
+iguration&gt;Release&lt;/Configuration&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-      &lt;Platform&gt;x64&lt;/Platform&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfiguration&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemGroup&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup La=
+bel=3D&quot;Globals&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    &lt;ProjectGuid&gt;{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}&lt;/P=
+rojectGuid&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt=
+;RootNamespace&gt;openvpn&lt;/RootNamespace&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;Keyword&gt;Win32Proj&lt;/Keyword&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;WindowsTargetPlatf=
+ormVersion&gt;10.0&lt;/WindowsTargetPlatformVersion&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-  &lt;Import Project=3D&quot;$(VCTarge=
+tsPath)\Microsoft.Cpp.Default.props&quot; /&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Conf=
+iguration)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot; Label=3D&quo=
+t;Configuration&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    &lt;ConfigurationType&gt;Application&lt;/ConfigurationType&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;WholeProgramOptimi=
+zation&gt;true&lt;/WholeProgramOptimization&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;CharacterSet&gt;NotSet&lt;/CharacterSet&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformToo=
+lset&gt;v143&lt;/PlatformToolset&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    &lt;SpectreMitigation&gt;Spectre&lt;/SpectreMitigation&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGrou=
+p&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGr=
+oup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Rele=
+ase|x64&#39;&quot; Label=3D&quot;Configuration&quot;&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    &lt;ConfigurationType&gt;Application=
+&lt;/ConfigurationType&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    &lt;WholeProgramOptimization&gt;true&lt;/WholeProgramOptimization&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;CharacterS=
+et&gt;NotSet&lt;/CharacterSet&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    &lt;PlatformToolset&gt;v143&lt;/PlatformToolset&gt;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation&gt;=
+Spectre&lt;/SpectreMitigation&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|=
+$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot; Label=3D&quot;Configura=
+tion&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt=
+;ConfigurationType&gt;Application&lt;/ConfigurationType&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    &lt;WholeProgramOptimization&gt;t=
+rue&lt;/WholeProgramOptimization&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    &lt;CharacterSet&gt;NotSet&lt;/CharacterSet&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformToolset&gt;v14=
+3&lt;/PlatformToolset&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    &lt;SpectreMitigation&gt;Spectre&lt;/SpectreMitigation&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Conditi=
+on=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39=
+;&quot; Label=3D&quot;Configuration&quot;&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    &lt;ConfigurationType&gt;Application&lt;/Config=
+urationType&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &l=
+t;CharacterSet&gt;NotSet&lt;/CharacterSet&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    &lt;PlatformToolset&gt;v143&lt;/PlatformToolset=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;SpectreMi=
+tigation&gt;Spectre&lt;/SpectreMitigation&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Con=
+figuration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot; Label=3D&quot;C=
+onfiguration&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    &lt;ConfigurationType&gt;Application&lt;/ConfigurationType&gt;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;CharacterSet&gt;NotSe=
+t&lt;/CharacterSet&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    &lt;PlatformToolset&gt;v143&lt;/PlatformToolset&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation&gt;Spectre&lt;=
+/SpectreMitigation&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)=
+&#39;=3D=3D&#39;Debug|ARM64&#39;&quot; Label=3D&quot;Configuration&quot;&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Configuratio=
+nType&gt;Application&lt;/ConfigurationType&gt;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    &lt;CharacterSet&gt;NotSet&lt;/CharacterSet&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformTool=
+set&gt;v143&lt;/PlatformToolset&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    &lt;SpectreMitigation&gt;Spectre&lt;/SpectreMitigation&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;Import Proj=
+ect=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.props&quot; /&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;Exte=
+nsionSettings&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-  &lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-  &lt;ImportGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#3=
+9;=3D=3D&#39;Release|Win32&#39;&quot; Label=3D&quot;PropertySheets&quot;&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Proje=
+ct=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&quot; Condit=
+ion=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props=
+&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;..\com=
+pat\Release.props&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-  &lt;ImportGroup Condition=3D&quot;&#39;$(Configuration)|$(Platfo=
+rm)&#39;=3D=3D&#39;Release|x64&#39;&quot; Label=3D&quot;PropertySheets&quot=
+;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import P=
+roject=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&quot; Co=
+ndition=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.p=
+rops&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;..=
+\compat\Release.props&quot; /&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-  &lt;ImportGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot; Label=3D&quot;PropertySheet=
+s&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Im=
+port Project=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&qu=
+ot; Condition=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platform).=
+user.props&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&q=
+uot;..\compat\Release.props&quot; /&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-  &lt;ImportGroup Condition=3D&quot;&#39;$(Configuration=
+)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot; Label=3D&quot;PropertyS=
+heets&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &l=
+t;Import Project=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.prop=
+s&quot; Condition=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platfo=
+rm).user.props&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=
+=3D&quot;..\compat\Debug.props&quot; /&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-  &lt;ImportGroup Condition=3D&quot;&#39;$(Configurat=
+ion)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot; Label=3D&quot;Property=
+Sheets&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &=
+lt;Import Project=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.pro=
+ps&quot; Condition=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platf=
+orm).user.props&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=
+=3D&quot;..\compat\Debug.props&quot; /&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-  &lt;ImportGroup Condition=3D&quot;&#39;$(Configurat=
+ion)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot; Label=3D&quot;Proper=
+tySheets&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ &lt;Import Project=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.p=
+rops&quot; Condition=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Pla=
+tform).user.props&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Proje=
+ct=3D&quot;..\compat\Debug.props&quot; /&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;UserMacros&quot; =
+/&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGr=
+oup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;_Proje=
+ctFileVersion&gt;10.0.30319.1&lt;/_ProjectFileVersion&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quo=
+t;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot;&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;GenerateManif=
+est&gt;false&lt;/GenerateManifest&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configurati=
+on)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    &lt;GenerateManifest&gt;false&lt;/G=
+enerateManifest&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+&lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#3=
+9;=3D=3D&#39;Release|x64&#39;&quot;&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    &lt;GenerateManifest&gt;false&lt;/GenerateManifest&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGro=
+up Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Relea=
+se|ARM64&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;GenerateManifest&gt;false&lt;/GenerateManifest&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Condition=3D&=
+quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&qu=
+ot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Genera=
+teManifest&gt;false&lt;/GenerateManifest&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Conf=
+iguration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot;&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    &lt;GenerateManifest&gt;fals=
+e&lt;/GenerateManifest&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=3D&quot;&#3=
+9;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgEnabled&gt;=
+true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    &lt;VcpkgTriplet&gt;arm64-windows-ovpn&lt;/VcpkgTriplet&gt;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgAdditionalInstal=
+lOptions&gt;--overlay-triplets=3D$(SolutionDir)contrib\vcpkg-triplets --ove=
+rlay-ports=3D$(SolutionDir)contrib\vcpkg-ports&lt;/VcpkgAdditionalInstallOp=
+tions&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/Prope=
+rtyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;Pro=
+pertyGroup Label=3D&quot;Vcpkg&quot; Condition=3D&quot;&#39;$(Configuration=
+)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot;&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgEnabled&gt;true&lt;/VcpkgE=
+nabled&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Vcp=
+kgTriplet&gt;arm64-windows-ovpn&lt;/VcpkgTriplet&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgAdditionalInstallOptions&gt;--=
+overlay-triplets=3D$(SolutionDir)contrib\vcpkg-triplets --overlay-ports=3D$=
+(SolutionDir)contrib\vcpkg-ports&lt;/VcpkgAdditionalInstallOptions&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Lab=
+el=3D&quot;Vcpkg&quot; Condition=3D&quot;&#39;$(Configuration)|$(Platform)&=
+#39;=3D=3D&#39;Debug|Win32&#39;&quot;&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    &lt;VcpkgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgTriplet&gt;x86=
+-windows-ovpn&lt;/VcpkgTriplet&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    &lt;VcpkgAdditionalInstallOptions&gt;--overlay-triplets=3D=
+$(SolutionDir)contrib\vcpkg-triplets --overlay-ports=3D$(SolutionDir)contri=
+b\vcpkg-ports&lt;/VcpkgAdditionalInstallOptions&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&=
+quot; Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Re=
+lease|Win32&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    &lt;VcpkgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgTriplet&gt;x86-windows-ovpn&l=
+t;/VcpkgTriplet&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  &lt;VcpkgAdditionalInstallOptions&gt;--overlay-triplets=3D$(SolutionDir)c=
+ontrib\vcpkg-triplets --overlay-ports=3D$(SolutionDir)contrib\vcpkg-ports&l=
+t;/VcpkgAdditionalInstallOptions&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=
+=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&qu=
+ot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgE=
+nabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    &lt;VcpkgTriplet&gt;x64-windows-ovpn&lt;/VcpkgTriplet&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgAddition=
+alInstallOptions&gt;--overlay-triplets=3D$(SolutionDir)contrib\vcpkg-triple=
+ts --overlay-ports=3D$(SolutionDir)contrib\vcpkg-ports&lt;/VcpkgAdditionalI=
+nstallOptions&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &l=
+t;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+ &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=3D&quot;&#39;$(Confi=
+guration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot;&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgEnabled&gt;true&lt;/=
+VcpkgEnabled&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &=
+lt;VcpkgTriplet&gt;x64-windows-ovpn&lt;/VcpkgTriplet&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgAdditionalInstallOptions&gt=
+;--overlay-triplets=3D$(SolutionDir)contrib\vcpkg-triplets --overlay-ports=
+=3D$(SolutionDir)contrib\vcpkg-ports&lt;/VcpkgAdditionalInstallOptions&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup=
+ Label=3D&quot;Vcpkg&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    &lt;VcpkgEnableManifest&gt;true&lt;/VcpkgEnableManifest&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemDefinitionG=
+roup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Deb=
+ug|Win32&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;ClCompile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-      &lt;PreprocessorDefinitions&gt;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECUR=
+E_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(PreprocessorDefini=
+tions)&lt;/PreprocessorDefinitions&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-      &lt;UndefinePreprocessorDefinitions&gt;%(UndefinePre=
+processorDefinitions)&lt;/UndefinePreprocessorDefinitions&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-      &lt;TreatWarningAsError&gt;tr=
+ue&lt;/TreatWarningAsError&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-      &lt;AdditionalIncludeDirectories&gt;..\compat;%(AdditionalIn=
+cludeDirectories)&lt;/AdditionalIncludeDirectories&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-      &lt;WarningLevel&gt;Level2&lt;/Warni=
+ngLevel&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;=
+AdditionalOptions&gt;/ZH:SHA_256 %(AdditionalOptions)&lt;/AdditionalOptions=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;SDLChec=
+k&gt;true&lt;/SDLCheck&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    &lt;/ClCompile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &lt;ResourceCompile /&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    &lt;Link&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-      &lt;AdditionalDependencies&gt;Ncrypt.lib;gdi32.lib;ws2_32.li=
+b;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;se=
+tupapi.lib;Advapi32.lib&lt;/AdditionalDependencies&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalLibraryDirectories&gt;=
+$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibrary=
+Directories)&lt;/AdditionalLibraryDirectories&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-      &lt;SubSystem&gt;Console&lt;/SubSystem&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/Link&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGro=
+up&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemDefin=
+itionGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#=
+39;Debug|x64&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &lt;ClCompile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-      &lt;PreprocessorDefinitions&gt;_CRT_NONSTDC_NO_DEPRECATE;_CRT_S=
+ECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(PreprocessorDe=
+finitions)&lt;/PreprocessorDefinitions&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-      &lt;UndefinePreprocessorDefinitions&gt;%(Undefin=
+ePreprocessorDefinitions)&lt;/UndefinePreprocessorDefinitions&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;TreatWarningAsError&g=
+t;true&lt;/TreatWarningAsError&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-      &lt;AdditionalIncludeDirectories&gt;..\compat;%(Addition=
+alIncludeDirectories)&lt;/AdditionalIncludeDirectories&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-      &lt;WarningLevel&gt;Level2&lt;/W=
+arningLevel&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+&lt;AdditionalOptions&gt;/ZH:SHA_256 %(AdditionalOptions)&lt;/AdditionalOpt=
+ions&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;SDL=
+Check&gt;true&lt;/SDLCheck&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    &lt;/ClCompile&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    &lt;ResourceCompile /&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    &lt;Link&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-      &lt;AdditionalDependencies&gt;Ncrypt.lib;gdi32.lib;ws2_3=
+2.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.li=
+b;setupapi.lib;Advapi32.lib&lt;/AdditionalDependencies&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalLibraryDirectories=
+&gt;$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLib=
+raryDirectories)&lt;/AdditionalLibraryDirectories&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-      &lt;SubSystem&gt;Console&lt;/SubSyste=
+m&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/Link&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitio=
+nGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemD=
+efinitionGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=
+=3D&#39;Debug|ARM64&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-      &lt;PreprocessorDefinitions&gt;_CRT_NONSTDC_NO_DEPRECATE=
+;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(Preproc=
+essorDefinitions)&lt;/PreprocessorDefinitions&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-      &lt;UndefinePreprocessorDefinitions&gt;%(=
+UndefinePreprocessorDefinitions)&lt;/UndefinePreprocessorDefinitions&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;TreatWarningAs=
+Error&gt;true&lt;/TreatWarningAsError&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-      &lt;AdditionalIncludeDirectories&gt;..\compat;%(A=
+dditionalIncludeDirectories)&lt;/AdditionalIncludeDirectories&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;WarningLevel&gt;Level=
+2&lt;/WarningLevel&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-      &lt;AdditionalOptions&gt;/ZH:SHA_256 %(AdditionalOptions)&lt;/Additi=
+onalOptions&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+&lt;SDLCheck&gt;true&lt;/SDLCheck&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    &lt;/ClCompile&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    &lt;ResourceCompile /&gt;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    &lt;Link&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-      &lt;AdditionalDependencies&gt;Ncrypt.lib;gdi32.li=
+b;ws2_32.lib;wininet.lib;crypt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rp=
+crt4.lib;setupapi.lib;Advapi32.lib&lt;/AdditionalDependencies&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalLibraryDire=
+ctories&gt;$(OPENSSL_HOME)/lib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(Additi=
+onalLibraryDirectories)&lt;/AdditionalLibraryDirectories&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-      &lt;SubSystem&gt;Console&lt;/S=
+ubSystem&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/=
+Link&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDe=
+finitionGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &l=
+t;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#=
+39;=3D=3D&#39;Release|Win32&#39;&quot;&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-      &lt;PreprocessorDefinitions&gt;_CRT_NONSTDC_NO_D=
+EPRECATE;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%=
+(PreprocessorDefinitions)&lt;/PreprocessorDefinitions&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-      &lt;UndefinePreprocessorDefinitio=
+ns&gt;%(UndefinePreprocessorDefinitions)&lt;/UndefinePreprocessorDefinition=
+s&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;TreatW=
+arningAsError&gt;true&lt;/TreatWarningAsError&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-      &lt;AdditionalIncludeDirectories&gt;..\co=
+mpat;%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDirectories&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;ControlFlowGu=
+ard&gt;Guard&lt;/ControlFlowGuard&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-      &lt;WarningLevel&gt;Level2&lt;/WarningLevel&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalOptions=
+&gt;/ZH:SHA_256 %(AdditionalOptions)&lt;/AdditionalOptions&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-      &lt;SDLCheck&gt;true&lt;/SDL=
+Check&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClC=
+ompile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Res=
+ourceCompile /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ &lt;Link&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &l=
+t;AdditionalDependencies&gt;Ncrypt.lib;gdi32.lib;ws2_32.lib;wininet.lib;cry=
+pt32.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;Advapi=
+32.lib&lt;/AdditionalDependencies&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-      &lt;AdditionalLibraryDirectories&gt;$(OPENSSL_HOME)/l=
+ib;$(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)&lt;/=
+AdditionalLibraryDirectories&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-      &lt;SubSystem&gt;Console&lt;/SubSystem&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-      &lt;CETCompat&gt;true&lt;/CETCo=
+mpat&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/Link=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefini=
+tionGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;It=
+emDefinitionGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=
+=3D=3D&#39;Release|x64&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-      &lt;PreprocessorDefinitions&gt;_CRT_NONSTDC_NO_DEPREC=
+ATE;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(Prep=
+rocessorDefinitions)&lt;/PreprocessorDefinitions&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-      &lt;UndefinePreprocessorDefinitions&g=
+t;%(UndefinePreprocessorDefinitions)&lt;/UndefinePreprocessorDefinitions&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;TreatWarni=
+ngAsError&gt;true&lt;/TreatWarningAsError&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-      &lt;AdditionalIncludeDirectories&gt;..\compat=
+;%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDirectories&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;ControlFlowGuard&=
+gt;Guard&lt;/ControlFlowGuard&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-      &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-      &lt;WarningLevel&gt;Level2&lt;/Warn=
+ingLevel&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt=
+;AdditionalOptions&gt;/ZH:SHA_256 %(AdditionalOptions)&lt;/AdditionalOption=
+s&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompi=
+le&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Resourc=
+eCompile /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt=
+;Link&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Ad=
+ditionalDependencies&gt;Ncrypt.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32=
+.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;Advapi32.l=
+ib&lt;/AdditionalDependencies&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-      &lt;AdditionalLibraryDirectories&gt;$(OPENSSL_HOME)/lib;$=
+(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)&lt;/Addi=
+tionalLibraryDirectories&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-      &lt;SubSystem&gt;Console&lt;/SubSystem&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-      &lt;CETCompat&gt;true&lt;/CETCompat=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/Link&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinition=
+Group&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemDe=
+finitionGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=
+=3D&#39;Release|ARM64&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-      &lt;PreprocessorDefinitions&gt;_CRT_NONSTDC_NO_DEPRECA=
+TE;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_CONSOLE;%(Prepr=
+ocessorDefinitions)&lt;/PreprocessorDefinitions&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-      &lt;UndefinePreprocessorDefinitions&g=
+t;%(UndefinePreprocessorDefinitions)&lt;/UndefinePreprocessorDefinitions&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;TreatWarni=
+ngAsError&gt;true&lt;/TreatWarningAsError&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-      &lt;AdditionalIncludeDirectories&gt;..\compat=
+;%(AdditionalIncludeDirectories)&lt;/AdditionalIncludeDirectories&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;ControlFlowGuard&=
+gt;Guard&lt;/ControlFlowGuard&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-      &lt;WarningLevel&gt;Level2&lt;/WarningLevel&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalOptions&gt;=
+/ZH:SHA_256 %(AdditionalOptions)&lt;/AdditionalOptions&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-      &lt;SDLCheck&gt;true&lt;/SDLChec=
+k&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompi=
+le&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Resourc=
+eCompile /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt=
+;Link&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Ad=
+ditionalDependencies&gt;Ncrypt.lib;gdi32.lib;ws2_32.lib;wininet.lib;crypt32=
+.lib;iphlpapi.lib;winmm.lib;Fwpuclnt.lib;Rpcrt4.lib;setupapi.lib;Advapi32.l=
+ib&lt;/AdditionalDependencies&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-      &lt;AdditionalLibraryDirectories&gt;$(OPENSSL_HOME)/lib;$=
+(LZO_HOME)/lib;$(PKCS11H_HOME)/lib;%(AdditionalLibraryDirectories)&lt;/Addi=
+tionalLibraryDirectories&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-      &lt;SubSystem&gt;Console&lt;/SubSystem&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    &lt;/Link&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;ar=
+gv.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &=
+lt;ClCompile Include=3D&quot;auth_token.c&quot; /&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;base64.c&=
+quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Cl=
+Compile Include=3D&quot;block_dns.c&quot; /&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;buffer.c&quot; =
+/&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompil=
+e Include=3D&quot;clinat.c&quot; /&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;comp-lz4.c&quot; /&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Inclu=
+de=3D&quot;comp.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    &lt;ClCompile Include=3D&quot;compstub.c&quot; /&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quo=
+t;console.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;ClCompile Include=3D&quot;console_builtin.c&quot; /&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&qu=
+ot;crypto.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;ClCompile Include=3D&quot;crypto_openssl.c&quot; /&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quo=
+t;cryptoapi.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    &lt;ClCompile Include=3D&quot;dco.c&quot; /&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;dco_win=
+.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt=
+;ClCompile Include=3D&quot;dhcp.c&quot; /&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;dns.c&quot; /&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Inc=
+lude=3D&quot;env_set.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    &lt;ClCompile Include=3D&quot;error.c&quot; /&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&q=
+uot;event.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;ClCompile Include=3D&quot;fdmisc.c&quot; /&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;forwar=
+d.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &l=
+t;ClCompile Include=3D&quot;fragment.c&quot; /&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;gremlin.c&qu=
+ot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCo=
+mpile Include=3D&quot;helper.c&quot; /&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;httpdigest.c&quot; /=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile=
+ Include=3D&quot;init.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    &lt;ClCompile Include=3D&quot;interval.c&quot; /&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=
+=3D&quot;list.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &lt;ClCompile Include=3D&quot;lladdr.c&quot; /&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;lz=
+o.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &l=
+t;ClCompile Include=3D&quot;manage.c&quot; /&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;mbuf.c&quot; /=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile=
+ Include=3D&quot;misc.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    &lt;ClCompile Include=3D&quot;mroute.c&quot; /&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D=
+&quot;mss.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;ClCompile Include=3D&quot;mstats.c&quot; /&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;mtcp.c=
+&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;C=
+lCompile Include=3D&quot;mtu.c&quot; /&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;mudp.c&quot; /&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Inclu=
+de=3D&quot;multi.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    &lt;ClCompile Include=3D&quot;ntlm.c&quot; /&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;o=
+cc.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &=
+lt;ClCompile Include=3D&quot;openvpn.c&quot; /&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;options.c&qu=
+ot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCo=
+mpile Include=3D&quot;options_util.c&quot; /&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;otime.c&quot; =
+/&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompil=
+e Include=3D&quot;packet_id.c&quot; /&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;perf.c&quot; /&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Includ=
+e=3D&quot;ping.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    &lt;ClCompile Include=3D&quot;pkcs11.c&quot; /&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;p=
+kcs11_openssl.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &lt;ClCompile Include=3D&quot;platform.c&quot; /&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;=
+plugin.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   &lt;ClCompile Include=3D&quot;pool.c&quot; /&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;proto.c&q=
+uot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClC=
+ompile Include=3D&quot;proxy.c&quot; /&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;ps.c&quot; /&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=
+=3D&quot;push.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &lt;ClCompile Include=3D&quot;reflect_filter.c&quot; /&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D=
+&quot;reliable.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    &lt;ClCompile Include=3D&quot;route.c&quot; /&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;ru=
+n_command.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;ClCompile Include=3D&quot;schedule.c&quot; /&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;sess=
+ion_id.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   &lt;ClCompile Include=3D&quot;shaper.c&quot; /&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;sig.c&quo=
+t; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCom=
+pile Include=3D&quot;socket.c&quot; /&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;socks.c&quot; /&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Inclu=
+de=3D&quot;ssl.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    &lt;ClCompile Include=3D&quot;ssl_openssl.c&quot; /&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&q=
+uot;ssl_ncp.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    &lt;ClCompile Include=3D&quot;ssl_pkt.c&quot; /&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;ssl=
+_util.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  &lt;ClCompile Include=3D&quot;ssl_verify.c&quot; /&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;ssl_ve=
+rify_openssl.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    &lt;ClCompile Include=3D&quot;status.c&quot; /&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;tls=
+_crypt.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   &lt;ClCompile Include=3D&quot;tun.c&quot; /&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;vlan.c&quot;=
+ /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompi=
+le Include=3D&quot;win32.c&quot; /&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;win32-util.c&quot; /&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Inc=
+lude=3D&quot;xkey_helper.c&quot; /&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;xkey_provider.c&quot; /&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemGroup&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Inc=
+lude=3D&quot;argv.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    &lt;ClInclude Include=3D&quot;auth_token.h&quot; /&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D=
+&quot;base64.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    &lt;ClInclude Include=3D&quot;basic.h&quot; /&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;bloc=
+k_dns.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  &lt;ClInclude Include=3D&quot;buffer.h&quot; /&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;circ_list=
+.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt=
+;ClInclude Include=3D&quot;clinat.h&quot; /&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;common.h&quot; =
+/&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclud=
+e Include=3D&quot;comp-lz4.h&quot; /&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;comp.h&quot; /&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=
+=3D&quot;compstub.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    &lt;ClInclude Include=3D&quot;console.h&quot; /&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&qu=
+ot;crypto.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;ClInclude Include=3D&quot;crypto_backend.h&quot; /&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quo=
+t;crypto_openssl.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    &lt;ClInclude Include=3D&quot;cryptoapi.h&quot; /&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&q=
+uot;dco.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    &lt;ClInclude Include=3D&quot;dco_internal.h&quot; /&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;dc=
+o_win.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  &lt;ClInclude Include=3D&quot;dhcp.h&quot; /&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;dns.h&quot; =
+/&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclud=
+e Include=3D&quot;env_set.h&quot; /&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;errlevel.h&quot; /&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Incl=
+ude=3D&quot;error.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    &lt;ClInclude Include=3D&quot;event.h&quot; /&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot=
+;fdmisc.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    &lt;ClInclude Include=3D&quot;forward.h&quot; /&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;fragmen=
+t.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &l=
+t;ClInclude Include=3D&quot;gremlin.h&quot; /&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;helper.h&quot=
+; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClIncl=
+ude Include=3D&quot;httpdigest.h&quot; /&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;init.h&quot; /&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Inc=
+lude=3D&quot;integer.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    &lt;ClInclude Include=3D&quot;interval.h&quot; /&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=
+=3D&quot;list.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &lt;ClInclude Include=3D&quot;lladdr.h&quot; /&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;lz=
+o.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &l=
+t;ClInclude Include=3D&quot;manage.h&quot; /&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;mbuf.h&quot; /=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude=
+ Include=3D&quot;memdbg.h&quot; /&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;misc.h&quot; /&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D=
+&quot;mroute.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    &lt;ClInclude Include=3D&quot;mss.h&quot; /&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;mstats=
+.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt=
+;ClInclude Include=3D&quot;mtcp.h&quot; /&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;mtu.h&quot; /&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Inc=
+lude=3D&quot;mudp.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    &lt;ClInclude Include=3D&quot;multi.h&quot; /&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot=
+;ntlm.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  &lt;ClInclude Include=3D&quot;occ.h&quot; /&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;openvpn.h&quo=
+t; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInc=
+lude Include=3D&quot;options.h&quot; /&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;options_util.h&quot;=
+ /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclu=
+de Include=3D&quot;otime.h&quot; /&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;ovpn_dco_win.h&quot; /&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude I=
+nclude=3D&quot;packet_id.h&quot; /&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;perf.h&quot; /&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=
+=3D&quot;ping.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &lt;ClInclude Include=3D&quot;pkcs11.h&quot; /&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;pk=
+cs11_backend.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    &lt;ClInclude Include=3D&quot;platform.h&quot; /&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;p=
+lugin.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  &lt;ClInclude Include=3D&quot;pool.h&quot; /&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;proto.h&quot=
+; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClIncl=
+ude Include=3D&quot;proxy.h&quot; /&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;ps.h&quot; /&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D=
+&quot;push.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    &lt;ClInclude Include=3D&quot;pushlist.h&quot; /&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;ref=
+lect_filter.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    &lt;ClInclude Include=3D&quot;reliable.h&quot; /&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;ri=
+ng_buffer.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;ClInclude Include=3D&quot;route.h&quot; /&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;run_com=
+mand.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ &lt;ClInclude Include=3D&quot;schedule.h&quot; /&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;session_i=
+d.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &l=
+t;ClInclude Include=3D&quot;shaper.h&quot; /&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;sig.h&quot; /&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude =
+Include=3D&quot;socket.h&quot; /&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    &lt;ClInclude Include=3D&quot;socks.h&quot; /&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D=
+&quot;ssl.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;ClInclude Include=3D&quot;ssl_backend.h&quot; /&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;s=
+sl_common.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;ClInclude Include=3D&quot;ssl_ncp.h&quot; /&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;ssl_o=
+penssl.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   &lt;ClInclude Include=3D&quot;ssl_pkt.h&quot; /&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;ssl_util=
+.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt=
+;ClInclude Include=3D&quot;ssl_verify.h&quot; /&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;ssl_verif=
+y_backend.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;ClInclude Include=3D&quot;ssl_verify_openssl.h&quot; /&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D=
+&quot;status.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    &lt;ClInclude Include=3D&quot;syshead.h&quot; /&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;tl=
+s_crypt.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    &lt;ClInclude Include=3D&quot;tun.h&quot; /&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;vlan.h&qu=
+ot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClIn=
+clude Include=3D&quot;win32.h&quot; /&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;win32-util.h&quot; /&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude =
+Include=3D&quot;xkey_common.h&quot; /&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-  &lt;/ItemGroup&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-  &lt;ItemGroup&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    &lt;ResourceCompile Include=3D&quot;openvpn_win32_reso=
+urces.rc&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+ &lt;/ItemGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+&lt;ItemGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+&lt;ProjectReference Include=3D&quot;..\..\build\msvc\msvc-generate\msvc-ge=
+nerate.vcxproj&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-      &lt;Project&gt;{8598c2c8-34c4-47a1-99b0-7c295a890615}&lt;/Project&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Referenc=
+eOutputAssembly&gt;false&lt;/ReferenceOutputAssembly&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectReference&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectReference Include=
+=3D&quot;..\compat\compat.vcxproj&quot;&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-      &lt;Project&gt;{4b2e2719-e661-45d7-9203-f6f456b=
+22f19}&lt;/Project&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-      &lt;ReferenceOutputAssembly&gt;false&lt;/ReferenceOutputAssembly&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectRefer=
+ence&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemGr=
+oup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGrou=
+p&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Manifest=
+ Include=3D&quot;openvpn.manifest&quot; /&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-  &lt;/ItemGroup&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  &lt;Import Project=3D&quot;$(VCTargetsPath)\Micros=
+oft.Cpp.targets&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-  &lt;ImportGroup Label=3D&quot;ExtensionTargets&quot;&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-&lt;/Project&gt;</span><br><spa=
+n>\ No newline at end of file</span><br><span>diff --git a/src/openvpn/open=
+vpn_win32_resources.rc b/src/openvpn/openvpn_win32_resources.rc</span><br><=
+span>index 1ea5f87..a843b1b 100644</span><br><span>--- a/src/openvpn/openvp=
+n_win32_resources.rc</span><br><span>+++ b/src/openvpn/openvpn_win32_resour=
+ces.rc</span><br><span>@@ -1,7 +1,5 @@</span><br><span> #ifdef HAVE_CONFIG_=
+H</span><br><span> #include &lt;config.h&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#else</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#include &lt;config-msvc-version.h&gt;</span><br><span> #endif</span=
+><br><span> #include &lt;winresrc.h&gt;</span><br><span> </span><br><span>d=
+iff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><span>i=
+ndex efddc58..90d85be 100644</span><br><span>--- a/src/openvpn/options.c</s=
+pan><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -29,8 +29,6 @@=
+</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #=
+include &quot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #endif</span><=
+br><span> #ifdef HAVE_CONFIG_VERSION_H</span><br><span> #include &quot;conf=
+ig-version.h&quot;</span><br><span>diff --git a/src/openvpn/options_util.c =
+b/src/openvpn/options_util.c</span><br><span>index b071f37..3660da0 100644<=
+/span><br><span>--- a/src/openvpn/options_util.c</span><br><span>+++ b/src/=
+openvpn/options_util.c</span><br><span>@@ -24,8 +24,6 @@</span><br><span> <=
+/span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;confi=
+g.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif define=
+d(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &=
+quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><b=
+r><span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/op=
+envpn/otime.c b/src/openvpn/otime.c</span><br><span>index 0bbed81..b28a90f =
+100644</span><br><span>--- a/src/openvpn/otime.c</span><br><span>+++ b/src/=
+openvpn/otime.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><=
+br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quo=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_=
+VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;co=
+nfig-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><span=
+> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/p=
+acket_id.c b/src/openvpn/packet_id.c</span><br><span>index bb790f0..ef83248=
+ 100644</span><br><span>--- a/src/openvpn/packet_id.c</span><br><span>+++ b=
+/src/openvpn/packet_id.c</span><br><span>@@ -32,8 +32,6 @@</span><br><span>=
+ </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;con=
+fig.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defi=
+ned(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include=
+ &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </span>=
+<br><span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/=
+openvpn/perf.c b/src/openvpn/perf.c</span><br><span>index 5eb8926..ca4f810 =
+100644</span><br><span>--- a/src/openvpn/perf.c</span><br><span>+++ b/src/o=
+penvpn/perf.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br=
+><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VE=
+R)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;conf=
+ig-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><span> =
+#include &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/pin=
+g.c b/src/openvpn/ping.c</span><br><span>index 25822c9..ccf9870 100644</spa=
+n><br><span>--- a/src/openvpn/ping.c</span><br><span>+++ b/src/openvpn/ping=
+.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #if=
+def HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&q=
+uot;</span><br><span> #endif</span><br><span> </span><br><span> #include &q=
+uot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/pkcs11.c b/src=
+/openvpn/pkcs11.c</span><br><span>index b6c3bf1..cfe6cf6 100644</span><br><=
+span>--- a/src/openvpn/pkcs11.c</span><br><span>+++ b/src/openvpn/pkcs11.c<=
+/span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef=
+ HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot=
+;</span><br><span> #endif</span><br><span> </span><br><span> #include &quot=
+;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/pkcs11_mbedtls.c =
+b/src/openvpn/pkcs11_mbedtls.c</span><br><span>index a286a23..7e4be14 10064=
+4</span><br><span>--- a/src/openvpn/pkcs11_mbedtls.c</span><br><span>+++ b/=
+src/openvpn/pkcs11_mbedtls.c</span><br><span>@@ -28,8 +28,6 @@</span><br><s=
+pan> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot=
+;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif =
+defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#inc=
+lude &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </s=
+pan><br><span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/=
+src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c</span><br><span=
+>index 9b0ab39..7c07152 100644</span><br><span>--- a/src/openvpn/pkcs11_ope=
+nssl.c</span><br><span>+++ b/src/openvpn/pkcs11_openssl.c</span><br><span>@=
+@ -28,8 +28,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</s=
+pan><br><span> #include &quot;config.h&quot;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><span=
+> #endif</span><br><span> </span><br><span> #include &quot;syshead.h&quot;<=
+/span><br><span>diff --git a/src/openvpn/platform.c b/src/openvpn/platform.=
+c</span><br><span>index f6b856f..32c4fe6 100644</span><br><span>--- a/src/o=
+penvpn/platform.c</span><br><span>+++ b/src/openvpn/platform.c</span><br><s=
+pan>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG=
+_H</span><br><span> #include &quot;config.h&quot;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><b=
+r><span> #endif</span><br><span> </span><br><span> #include &quot;syshead.h=
+&quot;</span><br><span>diff --git a/src/openvpn/plugin.c b/src/openvpn/plug=
+in.c</span><br><span>index d662998..b4d4a98 100644</span><br><span>--- a/sr=
+c/openvpn/plugin.c</span><br><span>+++ b/src/openvpn/plugin.c</span><br><sp=
+an>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_=
+H</span><br><span> #include &quot;config.h&quot;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><=
+span> #endif</span><br><span> #ifdef HAVE_CONFIG_VERSION_H</span><br><span>=
+ #include &quot;config-version.h&quot;</span><br><span>diff --git a/src/ope=
+nvpn/pool.c b/src/openvpn/pool.c</span><br><span>index 4af9bcb..5ab0f95 100=
+644</span><br><span>--- a/src/openvpn/pool.c</span><br><span>+++ b/src/open=
+vpn/pool.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><s=
+pan> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-=
+msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><span> #in=
+clude &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/proto.=
+c b/src/openvpn/proto.c</span><br><span>index 7a84407..cab60c3 100644</span=
+><br><span>--- a/src/openvpn/proto.c</span><br><span>+++ b/src/openvpn/prot=
+o.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #i=
+fdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&=
+quot;</span><br><span> #endif</span><br><span> </span><br><span> #include &=
+quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/proxy.c b/src=
+/openvpn/proxy.c</span><br><span>index ed47eaa..76e27cb 100644</span><br><s=
+pan>--- a/src/openvpn/proxy.c</span><br><span>+++ b/src/openvpn/proxy.c</sp=
+an><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HA=
+VE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</=
+span><br><span> #endif</span><br><span> </span><br><span> #include &quot;sy=
+shead.h&quot;</span><br><span>diff --git a/src/openvpn/ps.c b/src/openvpn/p=
+s.c</span><br><span>index 3609630..4659e17 100644</span><br><span>--- a/src=
+/openvpn/ps.c</span><br><span>+++ b/src/openvpn/ps.c</span><br><span>@@ -23=
+,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><=
+br><span> #include &quot;config.h&quot;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #en=
+dif</span><br><span> </span><br><span> #include &quot;syshead.h&quot;</span=
+><br><span>diff --git a/src/openvpn/push.c b/src/openvpn/push.c</span><br><=
+span>index 8f0a534..01e7cd6 100644</span><br><span>--- a/src/openvpn/push.c=
+</span><br><span>+++ b/src/openvpn/push.c</span><br><span>@@ -23,8 +23,6 @@=
+</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #=
+include &quot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #endif</span><=
+br><span> </span><br><span> #include &quot;syshead.h&quot;</span><br><span>=
+diff --git a/src/openvpn/reflect_filter.c b/src/openvpn/reflect_filter.c</s=
+pan><br><span>index cfe69a6..0db456b 100644</span><br><span>--- a/src/openv=
+pn/reflect_filter.c</span><br><span>+++ b/src/openvpn/reflect_filter.c</spa=
+n><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HAV=
+E_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</s=
+pan><br><span> #endif</span><br><span> </span><br><span> #include &quot;sys=
+head.h&quot;</span><br><span>diff --git a/src/openvpn/reliable.c b/src/open=
+vpn/reliable.c</span><br><span>index 32b346b..e7d4d5f 100644</span><br><spa=
+n>--- a/src/openvpn/reliable.c</span><br><span>+++ b/src/openvpn/reliable.c=
+</span><br><span>@@ -28,8 +28,6 @@</span><br><span> </span><br><span> #ifde=
+f HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quo=
+t;</span><br><span> #endif</span><br><span> </span><br><span> #include &quo=
+t;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/route.c b/src/op=
+envpn/route.c</span><br><span>index f2852b4..90e981e 100644</span><br><span=
+>--- a/src/openvpn/route.c</span><br><span>+++ b/src/openvpn/route.c</span>=
+<br><span>@@ -27,8 +27,6 @@</span><br><span> </span><br><span> #ifdef HAVE_=
+CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</spa=
+n><br><span> #endif</span><br><span> </span><br><span> #include &quot;syshe=
+ad.h&quot;</span><br><span>diff --git a/src/openvpn/run_command.c b/src/ope=
+nvpn/run_command.c</span><br><span>index 8c2a6d7..864b317 100644</span><br>=
+<span>--- a/src/openvpn/run_command.c</span><br><span>+++ b/src/openvpn/run=
+_command.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><s=
+pan> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-=
+msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><span> #in=
+clude &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/schedu=
+le.c b/src/openvpn/schedule.c</span><br><span>index b0fca03..e1bc24a 100644=
+</span><br><span>--- a/src/openvpn/schedule.c</span><br><span>+++ b/src/ope=
+nvpn/schedule.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><=
+br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quo=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_=
+VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;co=
+nfig-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><span=
+> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/s=
+ession_id.c b/src/openvpn/session_id.c</span><br><span>index 89c67ef..25c5f=
+aa 100644</span><br><span>--- a/src/openvpn/session_id.c</span><br><span>++=
++ b/src/openvpn/session_id.c</span><br><span>@@ -32,8 +32,6 @@</span><br><s=
+pan> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot=
+;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif =
+defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#inc=
+lude &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </s=
+pan><br><span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/=
+src/openvpn/shaper.c b/src/openvpn/shaper.c</span><br><span>index 6a0d7dd..=
+c65dec8 100644</span><br><span>--- a/src/openvpn/shaper.c</span><br><span>+=
+++ b/src/openvpn/shaper.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span=
+> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;co=
+nfig.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif def=
+ined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#includ=
+e &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </span=
+><br><span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src=
+/openvpn/sig.c b/src/openvpn/sig.c</span><br><span>index 05c0054..8b80aeb 1=
+00644</span><br><span>--- a/src/openvpn/sig.c</span><br><span>+++ b/src/ope=
+nvpn/sig.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><s=
+pan> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-=
+msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><span> #in=
+clude &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/socket=
+.c b/src/openvpn/socket.c</span><br><span>index fc643c1..91a6d53 100644</sp=
+an><br><span>--- a/src/openvpn/socket.c</span><br><span>+++ b/src/openvpn/s=
+ocket.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span=
+> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msv=
+c.h&quot;</span><br><span> #endif</span><br><span> </span><br><span> #inclu=
+de &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/socks.c b=
+/src/openvpn/socks.c</span><br><span>index 2cf0cc9..a29eb83 100644</span><b=
+r><span>--- a/src/openvpn/socks.c</span><br><span>+++ b/src/openvpn/socks.c=
+</span><br><span>@@ -31,8 +31,6 @@</span><br><span> </span><br><span> #ifde=
+f HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quo=
+t;</span><br><span> #endif</span><br><span> </span><br><span> #include &quo=
+t;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/ssl.c b/src/open=
+vpn/ssl.c</span><br><span>index 8641a51..c975dbc 100644</span><br><span>---=
+ a/src/openvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.c</span><br><spa=
+n>@@ -36,8 +36,6 @@</span><br><span>  */</span><br><span> #ifdef HAVE_CONFI=
+G_H</span><br><span> #include &quot;config.h&quot;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><b=
+r><span> #endif</span><br><span> </span><br><span> #include &quot;syshead.h=
+&quot;</span><br><span>diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn=
+/ssl_mbedtls.c</span><br><span>index 49989d9..81dd906 100644</span><br><spa=
+n>--- a/src/openvpn/ssl_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_mbe=
+dtls.c</span><br><span>@@ -29,8 +29,6 @@</span><br><span> </span><br><span>=
+ #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc=
+.h&quot;</span><br><span> #endif</span><br><span> </span><br><span> #includ=
+e &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/ssl_ncp.c =
+b/src/openvpn/ssl_ncp.c</span><br><span>index 22dbe21..dafaef1 100644</span=
+><br><span>--- a/src/openvpn/ssl_ncp.c</span><br><span>+++ b/src/openvpn/ss=
+l_ncp.c</span><br><span>@@ -37,8 +37,6 @@</span><br><span>  */</span><br><s=
+pan> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-=
+msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><span> #in=
+clude &quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/ssl_op=
+enssl.c b/src/openvpn/ssl_openssl.c</span><br><span>index 65b36d1..0b310de =
+100644</span><br><span>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ =
+b/src/openvpn/ssl_openssl.c</span><br><span>@@ -28,8 +28,6 @@</span><br><sp=
+an> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;=
+config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif d=
+efined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#incl=
+ude &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </sp=
+an><br><span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/s=
+rc/openvpn/ssl_pkt.c b/src/openvpn/ssl_pkt.c</span><br><span>index 8b3391e.=
+.afc5aab 100644</span><br><span>--- a/src/openvpn/ssl_pkt.c</span><br><span=
+>+++ b/src/openvpn/ssl_pkt.c</span><br><span>@@ -22,8 +22,6 @@</span><br><s=
+pan>  */</span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &q=
+uot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#el=
+if defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#=
+include &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> =
+</span><br><span> #include &quot;syshead.h&quot;</span><br><span>diff --git=
+ a/src/openvpn/ssl_util.c b/src/openvpn/ssl_util.c</span><br><span>index e1=
+2ed3d..bca6eed 100644</span><br><span>--- a/src/openvpn/ssl_util.c</span><b=
+r><span>+++ b/src/openvpn/ssl_util.c</span><br><span>@@ -22,8 +22,6 @@</spa=
+n><br><span>  */</span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #in=
+clude &quot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#include &quot;config-msvc.h&quot;</span><br><span> #endif</span><br=
+><span> </span><br><span> #include &quot;syshead.h&quot;</span><br><span>di=
+ff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c</span><br><s=
+pan>index 1b589f1..90416b6 100644</span><br><span>--- a/src/openvpn/ssl_ver=
+ify.c</span><br><span>+++ b/src/openvpn/ssl_verify.c</span><br><span>@@ -28=
+,8 +28,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><=
+br><span> #include &quot;config.h&quot;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #en=
+dif</span><br><span> </span><br><span> #include &quot;syshead.h&quot;</span=
+><br><span>diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_=
+verify_mbedtls.c</span><br><span>index e3437f7..a1ddf8d 100644</span><br><s=
+pan>--- a/src/openvpn/ssl_verify_mbedtls.c</span><br><span>+++ b/src/openvp=
+n/ssl_verify_mbedtls.c</span><br><span>@@ -28,8 +28,6 @@</span><br><span> <=
+/span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;confi=
+g.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif define=
+d(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &=
+quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><b=
+r><span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src/op=
+envpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c</span><br><sp=
+an>index e24ce4e..3194c23 100644</span><br><span>--- a/src/openvpn/ssl_veri=
+fy_openssl.c</span><br><span>+++ b/src/openvpn/ssl_verify_openssl.c</span><=
+br><span>@@ -28,8 +28,6 @@</span><br><span> </span><br><span> #ifdef HAVE_C=
+ONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span=
+><br><span> #endif</span><br><span> </span><br><span> #include &quot;syshea=
+d.h&quot;</span><br><span>diff --git a/src/openvpn/status.c b/src/openvpn/s=
+tatus.c</span><br><span>index 737f340..0cb4408 100644</span><br><span>--- a=
+/src/openvpn/status.c</span><br><span>+++ b/src/openvpn/status.c</span><br>=
+<span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONF=
+IG_H</span><br><span> #include &quot;config.h&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span>=
+<br><span> #endif</span><br><span> </span><br><span> #include &quot;syshead=
+.h&quot;</span><br><span>diff --git a/src/openvpn/tls_crypt.c b/src/openvpn=
+/tls_crypt.c</span><br><span>index 7354236..975d31f 100644</span><br><span>=
+--- a/src/openvpn/tls_crypt.c</span><br><span>+++ b/src/openvpn/tls_crypt.c=
+</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifde=
+f HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quo=
+t;</span><br><span> #endif</span><br><span> </span><br><span> #include &quo=
+t;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/tun.c b/src/open=
+vpn/tun.c</span><br><span>index af959bb..6097420 100644</span><br><span>---=
+ a/src/openvpn/tun.c</span><br><span>+++ b/src/openvpn/tun.c</span><br><spa=
+n>@@ -31,8 +31,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H=
+</span><br><span> #include &quot;config.h&quot;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><s=
+pan> #endif</span><br><span> </span><br><span> #include &quot;syshead.h&quo=
+t;</span><br><span>diff --git a/src/openvpn/vcpkg.json b/src/openvpn/vcpkg.=
+json</span><br><span>deleted file mode 100644</span><br><span>index 0afd802=
+..0000000</span><br><span>--- a/src/openvpn/vcpkg.json</span><br><span>+++ =
+/dev/null</span><br><span>@@ -1,15 +0,0 @@</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-  &quot;$schema&quot;: &quot;https://raw.githubusercontent.com/microsoft/v=
+cpkg/master/scripts/vcpkg.schema.json&quot;,</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  &quot;name&quot;: &quot;openvpn&quot;,</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-  &quot;version&quot;: &quot;2.6&=
+quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &quot;depende=
+ncies&quot;: [</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-       &quot;name&quot=
+;: &quot;openssl&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-       &quot;features&quot;: [&quot;tools&quot;]</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-     },</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    &quot;tap-windows6&quot;,</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    &quot;lzo&quot;,</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    &quot;lz4&quot;,</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    &quot;pkcs11-helper&quot;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-  ]</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-}</span><br><span>diff --git a/src/openvpn/vlan.c b/src/openvpn/=
+vlan.c</span><br><span>index 2510042..0bb7abc 100644</span><br><span>--- a/=
+src/openvpn/vlan.c</span><br><span>+++ b/src/openvpn/vlan.c</span><br><span=
+>@@ -24,8 +24,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H<=
+/span><br><span> #include &quot;config.h&quot;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><sp=
+an> #endif</span><br><span> </span><br><span> #include &quot;syshead.h&quot=
+;</span><br><span>diff --git a/src/openvpn/win32-util.c b/src/openvpn/win32=
+-util.c</span><br><span>index 32f7a00..81e504a 100644</span><br><span>--- a=
+/src/openvpn/win32-util.c</span><br><span>+++ b/src/openvpn/win32-util.c</s=
+pan><br><span>@@ -28,8 +28,6 @@</span><br><span> </span><br><span> #ifdef H=
+AVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;<=
+/span><br><span> #endif</span><br><span> </span><br><span> #include &quot;s=
+yshead.h&quot;</span><br><span>diff --git a/src/openvpn/win32.c b/src/openv=
+pn/win32.c</span><br><span>index 25da54a..156ee74 100644</span><br><span>--=
+- a/src/openvpn/win32.c</span><br><span>+++ b/src/openvpn/win32.c</span><br=
+><span>@@ -28,8 +28,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CON=
+FIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</span>=
+<br><span> #endif</span><br><span> </span><br><span> #include &quot;syshead=
+.h&quot;</span><br><span>diff --git a/src/openvpn/xkey_helper.c b/src/openv=
+pn/xkey_helper.c</span><br><span>index ee9677a..40839f2 100644</span><br><s=
+pan>--- a/src/openvpn/xkey_helper.c</span><br><span>+++ b/src/openvpn/xkey_=
+helper.c</span><br><span>@@ -24,8 +24,6 @@</span><br><span> </span><br><spa=
+n> #ifdef HAVE_CONFIG_H</span><br><span> #include &lt;config.h&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h=
+&quot;</span><br><span> #endif</span><br><span> </span><br><span> #include =
+&quot;syshead.h&quot;</span><br><span>diff --git a/src/openvpn/xkey_provide=
+r.c b/src/openvpn/xkey_provider.c</span><br><span>index b0f414f..db316fe 10=
+0644</span><br><span>--- a/src/openvpn/xkey_provider.c</span><br><span>+++ =
+b/src/openvpn/xkey_provider.c</span><br><span>@@ -24,8 +24,6 @@</span><br><=
+span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &lt;=
+config.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif def=
+ined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#includ=
+e &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </span=
+><br><span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/src=
+/openvpnmsica/Makefile.am b/src/openvpnmsica/Makefile.am</span><br><span>in=
+dex d68a008..dc53f75 100644</span><br><span>--- a/src/openvpnmsica/Makefile=
+.am</span><br><span>+++ b/src/openvpnmsica/Makefile.am</span><br><span>@@ -=
+22,12 +22,6 @@</span><br><span> </span><br><span> MAINTAINERCLEANFILES =3D =
+$(srcdir)/Makefile.in</span><br><span> </span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-EXTRA_DIST =3D \</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-	openvpnmsica.vcxproj \</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-	openvpnmsica.props \</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-	openvpnmsica-Debug.props \</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-	openvpnmsica-Release.props</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-</span><br><span> AM_CPPFLAGS =3D \</span><br><s=
+pan> 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat</span><br><span> <=
+/span><br><span>diff --git a/src/openvpnmsica/dllmain.c b/src/openvpnmsica/=
+dllmain.c</span><br><span>index 7cff41a..1bf3d56 100644</span><br><span>---=
+ a/src/openvpnmsica/dllmain.c</span><br><span>+++ b/src/openvpnmsica/dllmai=
+n.c</span><br><span>@@ -20,8 +20,6 @@</span><br><span> </span><br><span> #i=
+fdef HAVE_CONFIG_H</span><br><span> #include &lt;config.h&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;config-msvc.h&gt;</s=
+pan><br><span> #endif</span><br><span> </span><br><span> #include &quot;ope=
+nvpnmsica.h&quot;</span><br><span>diff --git a/src/openvpnmsica/msica_arg.c=
+ b/src/openvpnmsica/msica_arg.c</span><br><span>index ad6968f..d1eb404 1006=
+44</span><br><span>--- a/src/openvpnmsica/msica_arg.c</span><br><span>+++ b=
+/src/openvpnmsica/msica_arg.c</span><br><span>@@ -20,8 +20,6 @@</span><br><=
+span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &lt;=
+config.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif def=
+ined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#includ=
+e &lt;config-msvc.h&gt;</span><br><span> #endif</span><br><span> </span><br=
+><span> #include &quot;msica_arg.h&quot;</span><br><span>diff --git a/src/o=
+penvpnmsica/msiex.c b/src/openvpnmsica/msiex.c</span><br><span>index 3ea2c1=
+a..78017eb 100644</span><br><span>--- a/src/openvpnmsica/msiex.c</span><br>=
+<span>+++ b/src/openvpnmsica/msiex.c</span><br><span>@@ -20,8 +20,6 @@</spa=
+n><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #inclu=
+de &lt;config.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#e=
+lif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+#include &lt;config-msvc.h&gt;</span><br><span> #endif</span><br><span> </s=
+pan><br><span> #include &quot;msiex.h&quot;</span><br><span>diff --git a/sr=
+c/openvpnmsica/openvpnmsica-Debug.props b/src/openvpnmsica/openvpnmsica-Deb=
+ug.props</span><br><span>deleted file mode 100644</span><br><span>index 435=
+32cf..0000000</span><br><span>--- a/src/openvpnmsica/openvpnmsica-Debug.pro=
+ps</span><br><span>+++ /dev/null</span><br><span>@@ -1,14 +0,0 @@</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-&lt;?xml version=3D&quot;1.0&qu=
+ot; encoding=3D&quot;utf-8&quot;?&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-&lt;Project ToolsVersion=3D&quot;4.0&quot; xmlns=3D&quot;ht=
+tp://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;Prope=
+rtySheets&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  &lt;Import Project=3D&quot;openvpnmsica.props&quot; /&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Us=
+erMacros&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+ &lt;PropertyGroup /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-  &lt;ItemDefinitionGroup&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-      &lt;RuntimeLibrary&gt;MultiThreadedDebug&lt;/RuntimeLibrar=
+y&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompi=
+le&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefi=
+nitionGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;=
+ItemGroup /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-&lt;/P=
+roject&gt;</span><br><span>\ No newline at end of file</span><br><span>diff=
+ --git a/src/openvpnmsica/openvpnmsica-Release.props b/src/openvpnmsica/ope=
+nvpnmsica-Release.props</span><br><span>deleted file mode 100644</span><br>=
+<span>index 47727b3..0000000</span><br><span>--- a/src/openvpnmsica/openvpn=
+msica-Release.props</span><br><span>+++ /dev/null</span><br><span>@@ -1,15 =
++0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-&lt;?xml versi=
+on=3D&quot;1.0&quot; encoding=3D&quot;utf-8&quot;?&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-&lt;Project ToolsVersion=3D&quot;4.0&quot;=
+ xmlns=3D&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup La=
+bel=3D&quot;PropertySheets&quot;&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    &lt;Import Project=3D&quot;openvpnmsica.props&quot; /&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup=
+ Label=3D&quot;UserMacros&quot; /&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-  &lt;PropertyGroup /&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-  &lt;ItemDefinitionGroup&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-      &lt;RuntimeLibrary&gt;MultiThreaded&lt;/R=
+untimeLibrary&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+  &lt;ControlFlowGuard&gt;Guard&lt;/ControlFlowGuard&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup /&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-&lt;/Project&gt;</span><br><sp=
+an>\ No newline at end of file</span><br><span>diff --git a/src/openvpnmsic=
+a/openvpnmsica.c b/src/openvpnmsica/openvpnmsica.c</span><br><span>index 06=
+c9789..e5312d6 100644</span><br><span>--- a/src/openvpnmsica/openvpnmsica.c=
+</span><br><span>+++ b/src/openvpnmsica/openvpnmsica.c</span><br><span>@@ -=
+20,8 +20,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span=
+><br><span> #include &lt;config.h&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#include &lt;config-msvc.h&gt;</span><br><span> #endif</s=
+pan><br><span> #include &lt;winsock2.h&gt; /* Must be included _before_ &lt=
+;windows.h&gt; */</span><br><span> </span><br><span>diff --git a/src/openvp=
+nmsica/openvpnmsica.props b/src/openvpnmsica/openvpnmsica.props</span><br><=
+span>deleted file mode 100644</span><br><span>index 1091c9f..0000000</span>=
+<br><span>--- a/src/openvpnmsica/openvpnmsica.props</span><br><span>+++ /de=
+v/null</span><br><span>@@ -1,17 +0,0 @@</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-&lt;?xml version=3D&quot;1.0&quot; encoding=3D&quot;utf-8=
+&quot;?&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-&lt;Projec=
+t ToolsVersion=3D&quot;4.0&quot; xmlns=3D&quot;http://schemas.microsoft.com=
+/developer/msbuild/2003&quot;&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-  &lt;ImportGroup Label=3D&quot;PropertySheets&quot; /&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=
+=3D&quot;UserMacros&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-  &lt;PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    &lt;TargetName&gt;lib$(ProjectName)&lt;/TargetName&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemDefinitionGro=
+up&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompi=
+le&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Prepr=
+ocessorDefinitions&gt;_WIN32_WINNT=3D_WIN32_WINNT_VISTA;%(PreprocessorDefin=
+itions)&lt;/PreprocessorDefinitions&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    &lt;/ClCompile&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    &lt;Link&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-      &lt;SubSystem&gt;Windows&lt;/SubSystem&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    &lt;/Link&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup /&gt;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-&lt;/Project&gt;</span><br><s=
+pan>\ No newline at end of file</span><br><span>diff --git a/src/openvpnmsi=
+ca/openvpnmsica.vcxproj b/src/openvpnmsica/openvpnmsica.vcxproj</span><br><=
+span>deleted file mode 100644</span><br><span>index c9154b3..0000000</span>=
+<br><span>--- a/src/openvpnmsica/openvpnmsica.vcxproj</span><br><span>+++ /=
+dev/null</span><br><span>@@ -1,208 +0,0 @@</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-&lt;?xml version=3D&quot;1.0&quot; encoding=3D&quot;ut=
+f-8&quot;?&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-&lt;Pro=
+ject DefaultTargets=3D&quot;Build&quot; ToolsVersion=3D&quot;15.0&quot; xml=
+ns=3D&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup Label=3D=
+&quot;ProjectConfigurations&quot;&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    &lt;ProjectConfiguration Include=3D&quot;Debug|ARM64&qu=
+ot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Conf=
+iguration&gt;Debug&lt;/Configuration&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-      &lt;Platform&gt;ARM64&lt;/Platform&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfiguration&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectConfig=
+uration Include=3D&quot;Debug|Win32&quot;&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-      &lt;Configuration&gt;Debug&lt;/Configuration&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Platform=
+&gt;Win32&lt;/Platform&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    &lt;/ProjectConfiguration&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    &lt;ProjectConfiguration Include=3D&quot;Debug|x64&quo=
+t;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Confi=
+guration&gt;Debug&lt;/Configuration&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-      &lt;Platform&gt;x64&lt;/Platform&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfiguration&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectConfigura=
+tion Include=3D&quot;Release|ARM64&quot;&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-      &lt;Configuration&gt;Release&lt;/Configuration=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Platfor=
+m&gt;ARM64&lt;/Platform&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &lt;/ProjectConfiguration&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    &lt;ProjectConfiguration Include=3D&quot;Release|Win3=
+2&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;=
+Configuration&gt;Release&lt;/Configuration&gt;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-      &lt;Platform&gt;Win32&lt;/Platform&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfigurati=
+on&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Project=
+Configuration Include=3D&quot;Release|x64&quot;&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-      &lt;Configuration&gt;Release&lt;/Conf=
+iguration&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &l=
+t;Platform&gt;x64&lt;/Platform&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    &lt;/ProjectConfiguration&gt;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-  &lt;/ItemGroup&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Globals&quot;&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;VCProjectVers=
+ion&gt;15.0&lt;/VCProjectVersion&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    &lt;ProjectGuid&gt;{D41AA9D6-B818-476E-992E-0E16EB86BEE2=
+}&lt;/ProjectGuid&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    &lt;Keyword&gt;Win32Proj&lt;/Keyword&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    &lt;RootNamespace&gt;openvpnmsica&lt;/RootNamesp=
+ace&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Window=
+sTargetPlatformVersion&gt;10.0&lt;/WindowsTargetPlatformVersion&gt;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;Import Project=3D&qu=
+ot;$(VCTargetsPath)\Microsoft.Cpp.Default.props&quot; /&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot=
+;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot; La=
+bel=3D&quot;Configuration&quot;&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    &lt;ConfigurationType&gt;DynamicLibrary&lt;/Configuration=
+Type&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;UseDe=
+bugLibraries&gt;true&lt;/UseDebugLibraries&gt;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    &lt;PlatformToolset&gt;v143&lt;/PlatformToolse=
+t&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Characte=
+rSet&gt;Unicode&lt;/CharacterSet&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    &lt;WindowsSDKDesktopARM64Support&gt;true&lt;/WindowsSDK=
+DesktopARM64Support&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;SpectreMitigation&gt;Spectre&lt;/SpectreMitigation&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Condition=
+=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&=
+quot; Label=3D&quot;Configuration&quot;&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    &lt;ConfigurationType&gt;DynamicLibrary&lt;/Confi=
+gurationType&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &=
+lt;UseDebugLibraries&gt;true&lt;/UseDebugLibraries&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformToolset&gt;v143&lt;/Platfo=
+rmToolset&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;=
+CharacterSet&gt;Unicode&lt;/CharacterSet&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation&gt;Spectre&lt;/SpectreMiti=
+gation&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/Prop=
+ertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;Pr=
+opertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&=
+#39;Debug|x64&#39;&quot; Label=3D&quot;Configuration&quot;&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    &lt;ConfigurationType&gt;Dynam=
+icLibrary&lt;/ConfigurationType&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    &lt;UseDebugLibraries&gt;true&lt;/UseDebugLibraries&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformToolset=
+&gt;v143&lt;/PlatformToolset&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    &lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation&gt;Spec=
+tre&lt;/SpectreMitigation&gt;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Pl=
+atform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot; Label=3D&quot;Configuration=
+&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Con=
+figurationType&gt;DynamicLibrary&lt;/ConfigurationType&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    &lt;UseDebugLibraries&gt;false&lt;=
+/UseDebugLibraries&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    &lt;PlatformToolset&gt;v143&lt;/PlatformToolset&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    &lt;WholeProgramOptimization&gt;true=
+&lt;/WholeProgramOptimization&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    &lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    &lt;WindowsSDKDesktopARM64Su=
+pport&gt;true&lt;/WindowsSDKDesktopARM64Support&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation&gt;Spectre&lt;/Sp=
+ectreMitigation&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+&lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#3=
+9;=3D=3D&#39;Release|Win32&#39;&quot; Label=3D&quot;Configuration&quot;&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Configuration=
+Type&gt;DynamicLibrary&lt;/ConfigurationType&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    &lt;UseDebugLibraries&gt;false&lt;/UseDebugL=
+ibraries&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;P=
+latformToolset&gt;v143&lt;/PlatformToolset&gt;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    &lt;WholeProgramOptimization&gt;true&lt;/Whole=
+ProgramOptimization&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation&gt;Spectre&lt;/S=
+pectreMitigation&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+ &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#=
+39;=3D=3D&#39;Release|x64&#39;&quot; Label=3D&quot;Configuration&quot;&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ConfigurationT=
+ype&gt;DynamicLibrary&lt;/ConfigurationType&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;UseDebugLibraries&gt;false&lt;/UseDebugLi=
+braries&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Pl=
+atformToolset&gt;v143&lt;/PlatformToolset&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    &lt;WholeProgramOptimization&gt;true&lt;/WholeP=
+rogramOptimization&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    &lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation&gt;Spectre&lt;/Sp=
+ectreMitigation&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+&lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-  &lt;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.props&quot; /&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup =
+Label=3D&quot;ExtensionSettings&quot;&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;Shared&quot;&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Label=3D=
+&quot;PropertySheets&quot; Condition=3D&quot;&#39;$(Configuration)|$(Platfo=
+rm)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;$(UserRootDir)\Micro=
+soft.Cpp.$(Platform).user.props&quot; Condition=3D&quot;exists(&#39;$(UserR=
+ootDir)\Microsoft.Cpp.$(Platform).user.props&#39;)&quot; Label=3D&quot;Loca=
+lAppDataPlatform&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    &lt;Import Project=3D&quot;..\compat\Debug.props&quot; /&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D=
+&quot;openvpnmsica-Debug.props&quot; /&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;PropertySheets&quot; =
+Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|Wi=
+n32&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ &lt;Import Project=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.p=
+rops&quot; Condition=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Pla=
+tform).user.props&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Proje=
+ct=3D&quot;..\compat\Debug.props&quot; /&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;openvpnmsica-Debug.pr=
+ops&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;=
+/ImportGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt=
+;ImportGroup Label=3D&quot;PropertySheets&quot; Condition=3D&quot;&#39;$(Co=
+nfiguration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot;&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;$=
+(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&quot; Condition=3D&quot;=
+exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&#39;)&quot;=
+ Label=3D&quot;LocalAppDataPlatform&quot; /&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;..\compat\Debug.pr=
+ops&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &l=
+t;Import Project=3D&quot;openvpnmsica-Debug.props&quot; /&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;Pr=
+opertySheets&quot; Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=
+=3D=3D&#39;Release|ARM64&#39;&quot;&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    &lt;Import Project=3D&quot;$(UserRootDir)\Microsoft.C=
+pp.$(Platform).user.props&quot; Condition=3D&quot;exists(&#39;$(UserRootDir=
+)\Microsoft.Cpp.$(Platform).user.props&#39;)&quot; Label=3D&quot;LocalAppDa=
+taPlatform&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    &lt;Import Project=3D&quot;..\compat\Release.props&quot; /&gt;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quo=
+t;openvpnmsica-Release.props&quot; /&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;PropertySheets&quot; Co=
+ndition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|Wi=
+n32&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ &lt;Import Project=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.p=
+rops&quot; Condition=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Pla=
+tform).user.props&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Proje=
+ct=3D&quot;..\compat\Release.props&quot; /&gt;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;openvpnmsica-Releas=
+e.props&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+&lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+ &lt;ImportGroup Label=3D&quot;PropertySheets&quot; Condition=3D&quot;&#39;=
+$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot;&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&=
+quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&quot; Condition=3D=
+&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&#39;)=
+&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;..\compat\Re=
+lease.props&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;Import Project=3D&quot;openvpnmsica-Release.props&quot; /&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Labe=
+l=3D&quot;UserMacros&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=3D&quot;=
+&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgEnabled&=
+gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=3D&quot;&=
+#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot;&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgEnabled=
+&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=3D&quot;=
+&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot;&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgEnabled&=
+gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=3D&quot;&=
+#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot;&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgEnabled=
+&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=3D&quot;=
+&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot;&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgEnabled&gt=
+;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=3D&quot;&#3=
+9;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot;&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;VcpkgEnabled&gt;=
+true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-  &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration)|$(=
+Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot;&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;Link&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-      &lt;CETCompat&gt;true&lt;/CETCompat&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/Link&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalOptions&=
+gt;/ZH:SHA_256 %(AdditionalOptions)&lt;/AdditionalOptions&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-      &lt;SDLCheck&gt;true&lt;/SDLC=
+heck&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCo=
+mpile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemD=
+efinitionGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &=
+lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&=
+#39;=3D=3D&#39;Release|Win32&#39;&quot;&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    &lt;Link&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-      &lt;CETCompat&gt;true&lt;/CETCompat&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    &lt;/Link&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalOptions&gt;/ZH:SHA=
+_256 %(AdditionalOptions)&lt;/AdditionalOptions&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-      &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitio=
+nGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemD=
+efinitionGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=
+=3D&#39;Debug|ARM64&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-      &lt;AdditionalOptions&gt;/ZH:SHA_256 %(AdditionalOptions=
+)&lt;/AdditionalOptions&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-      &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemDefinitionGroup Condition=
+=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39=
+;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Cl=
+Compile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;=
+AdditionalOptions&gt;/ZH:SHA_256 %(AdditionalOptions)&lt;/AdditionalOptions=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;SDLChec=
+k&gt;true&lt;/SDLCheck&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    &lt;/ClCompile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-  &lt;/ItemDefinitionGroup&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-  &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configura=
+tion)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot;&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalOptions&gt;/ZH:SH=
+A_256 %(AdditionalOptions)&lt;/AdditionalOptions&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-      &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitio=
+nGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemD=
+efinitionGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=
+=3D&#39;Debug|x64&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-      &lt;AdditionalOptions&gt;/ZH:SHA_256 %(AdditionalOptions)&=
+lt;/AdditionalOptions&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-      &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;..\tapc=
+tl\error.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    &lt;ClCompile Include=3D&quot;..\tapctl\tap.c&quot; /&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;=
+dllmain.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    &lt;ClCompile Include=3D&quot;msiex.c&quot; /&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;msica_arg=
+.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt=
+;ClCompile Include=3D&quot;openvpnmsica.c&quot; /&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemGroup&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;..\tapctl=
+\basic.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   &lt;ClInclude Include=3D&quot;..\tapctl\error.h&quot; /&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;=
+..\tapctl\tap.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &lt;ClInclude Include=3D&quot;msiex.h&quot; /&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;msi=
+ca_arg.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   &lt;ClInclude Include=3D&quot;openvpnmsica.h&quot; /&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemGroup&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    &lt;ResourceCompile Include=3D&quot;=
+openvpnmsica_resources.rc&quot; /&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-  &lt;/ItemGroup&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-  &lt;ItemGroup&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    &lt;ProjectReference Include=3D&quot;..\..\build\msvc\msvc=
+-generate\msvc-generate.vcxproj&quot;&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-      &lt;Project&gt;{8598c2c8-34c4-47a1-99b0-7c295a890=
+615}&lt;/Project&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+     &lt;ReferenceOutputAssembly&gt;false&lt;/ReferenceOutputAssembly&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectReferen=
+ce&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemGrou=
+p&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;Import Pro=
+ject=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.targets&quot; /&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;E=
+xtensionTargets&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-&lt;/Project&gt;</span><br><span>\ No newline at end of file</span><br=
+><span>diff --git a/src/openvpnmsica/openvpnmsica_resources.rc b/src/openvp=
+nmsica/openvpnmsica_resources.rc</span><br><span>index d7c14de..e30c8a1 100=
+644</span><br><span>--- a/src/openvpnmsica/openvpnmsica_resources.rc</span>=
+<br><span>+++ b/src/openvpnmsica/openvpnmsica_resources.rc</span><br><span>=
+@@ -19,8 +19,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</=
+span><br><span> #include &lt;config.h&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#else</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#include &lt;config-msvc-version.h&gt;</span><br><span> #endif</span><b=
+r><span> #include &lt;winresrc.h&gt;</span><br><span> </span><br><span>diff=
+ --git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.am</span><b=
+r><span>index 4c0ac40..d8ba4eb 100644</span><br><span>--- a/src/openvpnserv=
+/Makefile.am</span><br><span>+++ b/src/openvpnserv/Makefile.am</span><br><s=
+pan>@@ -13,9 +13,6 @@</span><br><span> </span><br><span> MAINTAINERCLEANFIL=
+ES =3D $(srcdir)/Makefile.in</span><br><span> </span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-EXTRA_DIST =3D \</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-	openvpnserv.vcxproj</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span> AM_CPPFLAGS =3D \</span><br><span> 	-I=
+$(top_srcdir)/include -I$(top_srcdir)/src/openvpn -I$(top_srcdir)/src/compa=
+t</span><br><span> </span><br><span>diff --git a/src/openvpnserv/openvpnser=
+v.vcxproj b/src/openvpnserv/openvpnserv.vcxproj</span><br><span>deleted fil=
+e mode 100644</span><br><span>index db3a446..0000000</span><br><span>--- a/=
+src/openvpnserv/openvpnserv.vcxproj</span><br><span>+++ /dev/null</span><br=
+><span>@@ -1,229 +0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-=EF=BB=BF&lt;?xml version=3D&quot;1.0&quot; encoding=3D&quot;utf-8&quot;=
+?&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-&lt;Project Defa=
+ultTargets=3D&quot;Build&quot; ToolsVersion=3D&quot;15.0&quot; xmlns=3D&quo=
+t;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup Label=3D&quot;Pro=
+jectConfigurations&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    &lt;ProjectConfiguration Include=3D&quot;Debug|ARM64&quot;&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Configuration=
+&gt;Debug&lt;/Configuration&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-      &lt;Platform&gt;ARM64&lt;/Platform&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfiguration&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectConfiguration I=
+nclude=3D&quot;Debug|Win32&quot;&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-      &lt;Configuration&gt;Debug&lt;/Configuration&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Platform&gt;Win32=
+&lt;/Platform&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+&lt;/ProjectConfiguration&gt;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    &lt;ProjectConfiguration Include=3D&quot;Debug|x64&quot;&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Configuration&=
+gt;Debug&lt;/Configuration&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-      &lt;Platform&gt;x64&lt;/Platform&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfiguration&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectConfiguration In=
+clude=3D&quot;Release|ARM64&quot;&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-      &lt;Configuration&gt;Release&lt;/Configuration&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Platform&gt;AR=
+M64&lt;/Platform&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   &lt;/ProjectConfiguration&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    &lt;ProjectConfiguration Include=3D&quot;Release|Win32&quot;=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Configu=
+ration&gt;Release&lt;/Configuration&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-      &lt;Platform&gt;Win32&lt;/Platform&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfiguration&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectConfigu=
+ration Include=3D&quot;Release|x64&quot;&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-      &lt;Configuration&gt;Release&lt;/Configuration=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Platfor=
+m&gt;x64&lt;/Platform&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    &lt;/ProjectConfiguration&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-  &lt;/ItemGroup&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Globals&quot;&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectGuid&gt;{9C91EE=
+0B-817D-420A-A1E6-15A5A9D98BAD}&lt;/ProjectGuid&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;RootNamespace&gt;openvpnserv&lt;/Ro=
+otNamespace&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &l=
+t;Keyword&gt;Win32Proj&lt;/Keyword&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    &lt;WindowsTargetPlatformVersion&gt;10.0&lt;/WindowsTa=
+rgetPlatformVersion&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-  &lt;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.Default.pr=
+ops&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;=
+PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=
+=3D&#39;Release|Win32&#39;&quot; Label=3D&quot;Configuration&quot;&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ConfigurationType&=
+gt;Application&lt;/ConfigurationType&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    &lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;WholeProgramOptim=
+ization&gt;true&lt;/WholeProgramOptimization&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    &lt;PlatformToolset&gt;v143&lt;/PlatformTool=
+set&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Spectr=
+eMitigation&gt;Spectre&lt;/SpectreMitigation&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;=
+$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot; Label=3D=
+&quot;Configuration&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    &lt;ConfigurationType&gt;Application&lt;/ConfigurationType&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;CharacterSet&g=
+t;Unicode&lt;/CharacterSet&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    &lt;WholeProgramOptimization&gt;true&lt;/WholeProgramOptimizat=
+ion&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Platfo=
+rmToolset&gt;v143&lt;/PlatformToolset&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    &lt;SpectreMitigation&gt;Spectre&lt;/SpectreMitigat=
+ion&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/Propert=
+yGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;Prope=
+rtyGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39=
+;Release|ARM64&#39;&quot; Label=3D&quot;Configuration&quot;&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ConfigurationType&gt;Appl=
+ication&lt;/ConfigurationType&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    &lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    &lt;WholeProgramOptimization=
+&gt;true&lt;/WholeProgramOptimization&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    &lt;PlatformToolset&gt;v143&lt;/PlatformToolset&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;SpectreMitiga=
+tion&gt;Spectre&lt;/SpectreMitigation&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configu=
+ration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot; Label=3D&quot;Con=
+figuration&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   &lt;ConfigurationType&gt;Application&lt;/ConfigurationType&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;CharacterSet&gt;Unicode=
+&lt;/CharacterSet&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    &lt;PlatformToolset&gt;v143&lt;/PlatformToolset&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation&gt;Spectre&lt;/=
+SpectreMitigation&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&=
+#39;=3D=3D&#39;Debug|x64&#39;&quot; Label=3D&quot;Configuration&quot;&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ConfigurationTy=
+pe&gt;Application&lt;/ConfigurationType&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    &lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformToolse=
+t&gt;v143&lt;/PlatformToolset&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    &lt;SpectreMitigation&gt;Spectre&lt;/SpectreMitigation&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup=
+ Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|A=
+RM64&#39;&quot; Label=3D&quot;Configuration&quot;&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;ConfigurationType&gt;Application&lt=
+;/ConfigurationType&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformToolset&gt;v143&lt;/Platfo=
+rmToolset&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;=
+SpectreMitigation&gt;Spectre&lt;/SpectreMitigation&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-  &lt;Import Project=3D&quot;$(VCTarget=
+sPath)\Microsoft.Cpp.props&quot; /&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;ExtensionSettings&quot;&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup C=
+ondition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|W=
+in32&#39;&quot; Label=3D&quot;PropertySheets&quot;&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;$(UserRootD=
+ir)\Microsoft.Cpp.$(Platform).user.props&quot; Condition=3D&quot;exists(&#3=
+9;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&#39;)&quot; Label=3D&=
+quot;LocalAppDataPlatform&quot; /&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    &lt;Import Project=3D&quot;..\compat\Release.props&quot=
+; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportG=
+roup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportG=
+roup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Rel=
+ease|x64&#39;&quot; Label=3D&quot;PropertySheets&quot;&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;$(UserR=
+ootDir)\Microsoft.Cpp.$(Platform).user.props&quot; Condition=3D&quot;exists=
+(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&#39;)&quot; Label=
+=3D&quot;LocalAppDataPlatform&quot; /&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;..\compat\Release.props&=
+quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/Imp=
+ortGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;Imp=
+ortGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39=
+;Release|ARM64&#39;&quot; Label=3D&quot;PropertySheets&quot;&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;$=
+(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&quot; Condition=3D&quot;=
+exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&#39;)&quot;=
+ Label=3D&quot;LocalAppDataPlatform&quot; /&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;..\compat\Release.=
+props&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &l=
+t;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &=
+lt;ImportGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=
+=3D&#39;Debug|Win32&#39;&quot; Label=3D&quot;PropertySheets&quot;&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&q=
+uot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&quot; Condition=3D&=
+quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&#39;)&=
+quot; Label=3D&quot;LocalAppDataPlatform&quot; /&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;..\compat\De=
+bug.props&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+  &lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-  &lt;ImportGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=
+=3D=3D&#39;Debug|x64&#39;&quot; Label=3D&quot;PropertySheets&quot;&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&=
+quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&quot; Condition=3D=
+&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&#39;)=
+&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;..\compat\De=
+bug.props&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+  &lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-  &lt;ImportGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=
+=3D=3D&#39;Debug|ARM64&#39;&quot; Label=3D&quot;PropertySheets&quot;&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=
+=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&quot; Conditio=
+n=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&#=
+39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;..\compa=
+t\Debug.props&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-  &lt;PropertyGroup Label=3D&quot;UserMacros&quot; /&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;_ProjectFileVersion&gt;10=
+.0.30319.1&lt;/_ProjectFileVersion&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=
+=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&=
+quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Vcpk=
+gEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=
+=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39=
+;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Vc=
+pkgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Conditio=
+n=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;=
+&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Vcp=
+kgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=
+=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39=
+;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Vc=
+pkgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Conditio=
+n=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&q=
+uot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Vcpkg=
+Enabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=
+=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&=
+quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Vcpk=
+gEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-  &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Confi=
+guration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#39;&quot;&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalIncludeDirect=
+ories&gt;..\openvpn;..\compat;%(AdditionalIncludeDirectories)&lt;/Additiona=
+lIncludeDirectories&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-      &lt;PreprocessorDefinitions&gt;_CONSOLE;%(PreprocessorDefinitions)&=
+lt;/PreprocessorDefinitions&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-      &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalOptions&gt;/ZH:SHA_256 =
+%(AdditionalOptions)&lt;/AdditionalOptions&gt;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;ResourceCompile /&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    &lt;Link&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-      &lt;AdditionalDependencies&gt;Userenv.li=
+b;Iphlpapi.lib;ntdll.lib;Fwpuclnt.lib;Netapi32.lib;Shlwapi.lib;%(Additional=
+Dependencies)&lt;/AdditionalDependencies&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-      &lt;SubSystem&gt;Console&lt;/SubSystem&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/Link&gt;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemDefinition=
+Group Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;De=
+bug|x64&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    &lt;ClCompile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-      &lt;AdditionalIncludeDirectories&gt;..\openvpn;..\compat;%(Additiona=
+lIncludeDirectories)&lt;/AdditionalIncludeDirectories&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-      &lt;PreprocessorDefinitions&gt;_C=
+ONSOLE;%(PreprocessorDefinitions)&lt;/PreprocessorDefinitions&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;SDLCheck&gt;true&lt;/=
+SDLCheck&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt=
+;AdditionalOptions&gt;/ZH:SHA_256 %(AdditionalOptions)&lt;/AdditionalOption=
+s&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompi=
+le&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Resourc=
+eCompile /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt=
+;Link&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Ad=
+ditionalDependencies&gt;legacy_stdio_definitions.lib;Userenv.lib;Iphlpapi.l=
+ib;ntdll.lib;Fwpuclnt.lib;Netapi32.lib;Shlwapi.lib;%(AdditionalDependencies=
+)&lt;/AdditionalDependencies&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-      &lt;SubSystem&gt;Console&lt;/SubSystem&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    &lt;/Link&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemDefinitionGroup Condit=
+ion=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#3=
+9;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;C=
+lCompile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt=
+;AdditionalIncludeDirectories&gt;..\openvpn;..\compat;%(AdditionalIncludeDi=
+rectories)&lt;/AdditionalIncludeDirectories&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-      &lt;PreprocessorDefinitions&gt;_CONSOLE;%(P=
+reprocessorDefinitions)&lt;/PreprocessorDefinitions&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-      &lt;SDLCheck&gt;true&lt;/SDLCheck&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Additiona=
+lOptions&gt;/ZH:SHA_256 %(AdditionalOptions)&lt;/AdditionalOptions&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ResourceCompile /=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Link&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalDe=
+pendencies&gt;legacy_stdio_definitions.lib;Userenv.lib;Iphlpapi.lib;ntdll.l=
+ib;Fwpuclnt.lib;Netapi32.lib;Shlwapi.lib;%(AdditionalDependencies)&lt;/Addi=
+tionalDependencies&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-      &lt;SubSystem&gt;Console&lt;/SubSystem&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    &lt;/Link&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemDefinitionGroup Condition=3D&quo=
+t;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot;=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Additio=
+nalIncludeDirectories&gt;..\openvpn;..\compat;%(AdditionalIncludeDirectorie=
+s)&lt;/AdditionalIncludeDirectories&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-      &lt;PreprocessorDefinitions&gt;_CONSOLE;%(Preproces=
+sorDefinitions)&lt;/PreprocessorDefinitions&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-      &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalOptions=
+&gt;/ZH:SHA_256 %(AdditionalOptions)&lt;/AdditionalOptions&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ResourceCompile /&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Link&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalDependenci=
+es&gt;Userenv.lib;Iphlpapi.lib;ntdll.lib;Fwpuclnt.lib;Netapi32.lib;Shlwapi.=
+lib;%(AdditionalDependencies)&lt;/AdditionalDependencies&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-      &lt;SubSystem&gt;Console&lt;/S=
+ubSystem&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt=
+;CETCompat&gt;true&lt;/CETCompat&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    &lt;/Link&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-  &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Conf=
+iguration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot;&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalIncludeDirec=
+tories&gt;..\openvpn;..\compat;%(AdditionalIncludeDirectories)&lt;/Addition=
+alIncludeDirectories&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-      &lt;PreprocessorDefinitions&gt;_CONSOLE;%(PreprocessorDefinitions)=
+&lt;/PreprocessorDefinitions&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-      &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalOptions&gt;/ZH:SHA_256=
+ %(AdditionalOptions)&lt;/AdditionalOptions&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    &lt;ResourceCompile /&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    &lt;Link&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalDependencies&gt;legacy_=
+stdio_definitions.lib;Userenv.lib;Iphlpapi.lib;ntdll.lib;Fwpuclnt.lib;Netap=
+i32.lib;Shlwapi.lib;%(AdditionalDependencies)&lt;/AdditionalDependencies&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;SubSystem&=
+gt;Console&lt;/SubSystem&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-      &lt;CETCompat&gt;true&lt;/CETCompat&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;/Link&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemDefinitionGroup Condition=3D=
+&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&q=
+uot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCom=
+pile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Add=
+itionalIncludeDirectories&gt;..\openvpn;..\compat;%(AdditionalIncludeDirect=
+ories)&lt;/AdditionalIncludeDirectories&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-      &lt;PreprocessorDefinitions&gt;_CONSOLE;%(Prepr=
+ocessorDefinitions)&lt;/PreprocessorDefinitions&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-      &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalO=
+ptions&gt;/ZH:SHA_256 %(AdditionalOptions)&lt;/AdditionalOptions&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ResourceCompile /&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Link&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalDepe=
+ndencies&gt;legacy_stdio_definitions.lib;Userenv.lib;Iphlpapi.lib;ntdll.lib=
+;Fwpuclnt.lib;Netapi32.lib;Shlwapi.lib;%(AdditionalDependencies)&lt;/Additi=
+onalDependencies&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+     &lt;SubSystem&gt;Console&lt;/SubSystem&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;/Link&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;common.c&=
+quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Cl=
+Compile Include=3D&quot;interactive.c&quot; /&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;service.c&quo=
+t; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCom=
+pile Include=3D&quot;validate.c&quot; /&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;..\openvpn\block_dn=
+s.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;=
+/ItemGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;I=
+temGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;C=
+lInclude Include=3D&quot;..\openvpn\ring_buffer.h&quot; /&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;s=
+ervice.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   &lt;ClInclude Include=3D&quot;validate.h&quot; /&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&quot;..\open=
+vpn\block_dns.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-  &lt;/ItemGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-  &lt;ItemGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    &lt;ResourceCompile Include=3D&quot;openvpnserv_resources.rc&quot; /=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemGroup&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectRefer=
+ence Include=3D&quot;..\..\build\msvc\msvc-generate\msvc-generate.vcxproj&q=
+uot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Pro=
+ject&gt;{8598c2c8-34c4-47a1-99b0-7c295a890615}&lt;/Project&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-      &lt;ReferenceOutputAssembly&=
+gt;false&lt;/ReferenceOutputAssembly&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    &lt;/ProjectReference&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-  &lt;/ItemGroup&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-  &lt;Import Project=3D&quot;$(VCTargetsPath)\Mic=
+rosoft.Cpp.targets&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-  &lt;ImportGroup Label=3D&quot;ExtensionTargets&quot;&gt;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-&lt;/Project&gt;</span><br><=
+span>\ No newline at end of file</span><br><span>diff --git a/src/openvpnse=
+rv/openvpnserv_resources.rc b/src/openvpnserv/openvpnserv_resources.rc</spa=
+n><br><span>index 4ea453e..ddd0cb8 100644</span><br><span>--- a/src/openvpn=
+serv/openvpnserv_resources.rc</span><br><span>+++ b/src/openvpnserv/openvpn=
+serv_resources.rc</span><br><span>@@ -1,7 +1,5 @@</span><br><span> #ifdef H=
+AVE_CONFIG_H</span><br><span> #include &lt;config.h&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#else</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-#include &lt;config-msvc-version.h&gt;</span><br><span> #=
+endif</span><br><span> #include &lt;winresrc.h&gt;</span><br><span> </span>=
+<br><span>diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.=
+h</span><br><span>index fc5ecda..d38a665 100644</span><br><span>--- a/src/o=
+penvpnserv/service.h</span><br><span>+++ b/src/openvpnserv/service.h</span>=
+<br><span>@@ -31,8 +31,6 @@</span><br><span> </span><br><span> #ifdef HAVE_=
+CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;</spa=
+n><br><span> #endif</span><br><span> </span><br><span> #include &lt;winsock=
+2.h&gt;</span><br><span>diff --git a/src/tapctl/Makefile.am b/src/tapctl/Ma=
+kefile.am</span><br><span>index fe8ab2a..69ea161 100644</span><br><span>---=
+ a/src/tapctl/Makefile.am</span><br><span>+++ b/src/tapctl/Makefile.am</spa=
+n><br><span>@@ -22,11 +22,6 @@</span><br><span> </span><br><span> MAINTAINE=
+RCLEANFILES =3D $(srcdir)/Makefile.in</span><br><span> </span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-EXTRA_DIST =3D \</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-	tapctl.vcxproj \</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-	tapctl.props \</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-	tapctl.exe.manifest</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span> AM_CPPFLAGS =3D \</span><br><span> 	-I$=
+(top_srcdir)/include -I$(top_srcdir)/src/compat</span><br><span> </span><br=
+><span>diff --git a/src/tapctl/main.c b/src/tapctl/main.c</span><br><span>i=
+ndex d76d553..a946c2c 100644</span><br><span>--- a/src/tapctl/main.c</span>=
+<br><span>+++ b/src/tapctl/main.c</span><br><span>@@ -21,8 +21,6 @@</span><=
+br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include =
+&lt;config.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif=
+ defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#in=
+clude &lt;config-msvc.h&gt;</span><br><span> #endif</span><br><span> </span=
+><br><span> #include &quot;tap.h&quot;</span><br><span>diff --git a/src/tap=
+ctl/tap.c b/src/tapctl/tap.c</span><br><span>index 44fcdde..5ae8044 100644<=
+/span><br><span>--- a/src/tapctl/tap.c</span><br><span>+++ b/src/tapctl/tap=
+.c</span><br><span>@@ -20,8 +20,6 @@</span><br><span> </span><br><span> #if=
+def HAVE_CONFIG_H</span><br><span> #include &lt;config.h&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-#include &lt;config-msvc.h&gt;</sp=
+an><br><span> #endif</span><br><span> </span><br><span> #include &quot;tap.=
+h&quot;</span><br><span>diff --git a/src/tapctl/tapctl.props b/src/tapctl/t=
+apctl.props</span><br><span>deleted file mode 100644</span><br><span>index =
+0257b9f..0000000</span><br><span>--- a/src/tapctl/tapctl.props</span><br><s=
+pan>+++ /dev/null</span><br><span>@@ -1,18 +0,0 @@</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-&lt;?xml version=3D&quot;1.0&quot; encoding=3D=
+&quot;utf-8&quot;?&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-&lt;Project ToolsVersion=3D&quot;4.0&quot; xmlns=3D&quot;http://schemas.mi=
+crosoft.com/developer/msbuild/2003&quot;&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;PropertySheets&quot;=
+ /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyG=
+roup Label=3D&quot;UserMacros&quot; /&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-  &lt;PropertyGroup&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    &lt;GenerateManifest&gt;false&lt;/GenerateManifes=
+t&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/PropertyG=
+roup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemDef=
+initionGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &=
+lt;ClCompile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+ &lt;PreprocessorDefinitions&gt;_CONSOLE;_WIN32_WINNT=3D_WIN32_WINNT_VISTA;=
+%(PreprocessorDefinitions)&lt;/PreprocessorDefinitions&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalIncludeDirectories=
+&gt;..\compat;$(TAP_WINDOWS_HOME)/include;%(AdditionalIncludeDirectories)&l=
+t;/AdditionalIncludeDirectories&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    &lt;/ClCompile&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    &lt;Link&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-      &lt;SubSystem&gt;Console&lt;/SubSystem&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    &lt;/Link&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup /&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-&lt;/Project&gt;</span><br><span>=
+\ No newline at end of file</span><br><span>diff --git a/src/tapctl/tapctl.=
+vcxproj b/src/tapctl/tapctl.vcxproj</span><br><span>deleted file mode 10064=
+4</span><br><span>index 6311d7f..0000000</span><br><span>--- a/src/tapctl/t=
+apctl.vcxproj</span><br><span>+++ /dev/null</span><br><span>@@ -1,205 +0,0 =
+@@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-&lt;?xml version=3D=
+&quot;1.0&quot; encoding=3D&quot;utf-8&quot;?&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-&lt;Project DefaultTargets=3D&quot;Build&quot; =
+ToolsVersion=3D&quot;15.0&quot; xmlns=3D&quot;http://schemas.microsoft.com/=
+developer/msbuild/2003&quot;&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-  &lt;ItemGroup Label=3D&quot;ProjectConfigurations&quot;&gt;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectConfigura=
+tion Include=3D&quot;Debug|ARM64&quot;&gt;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-      &lt;Configuration&gt;Debug&lt;/Configuration&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Platform&gt=
+;ARM64&lt;/Platform&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;/ProjectConfiguration&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    &lt;ProjectConfiguration Include=3D&quot;Debug|Win32&quot=
+;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Config=
+uration&gt;Debug&lt;/Configuration&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-      &lt;Platform&gt;Win32&lt;/Platform&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfiguration&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectConfigur=
+ation Include=3D&quot;Debug|x64&quot;&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-      &lt;Configuration&gt;Debug&lt;/Configuration&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Platform&gt;=
+x64&lt;/Platform&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   &lt;/ProjectConfiguration&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    &lt;ProjectConfiguration Include=3D&quot;Release|ARM64&quot;=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Configu=
+ration&gt;Release&lt;/Configuration&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-      &lt;Platform&gt;ARM64&lt;/Platform&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfiguration&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectConfigu=
+ration Include=3D&quot;Release|Win32&quot;&gt;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-      &lt;Configuration&gt;Release&lt;/Configurati=
+on&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Platf=
+orm&gt;Win32&lt;/Platform&gt;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    &lt;/ProjectConfiguration&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    &lt;ProjectConfiguration Include=3D&quot;Release|x6=
+4&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;=
+Configuration&gt;Release&lt;/Configuration&gt;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-      &lt;Platform&gt;x64&lt;/Platform&gt;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ProjectConfiguration=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemGroup&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGrou=
+p Label=3D&quot;Globals&quot;&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    &lt;VCProjectVersion&gt;15.0&lt;/VCProjectVersion&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectGuid&gt;{A06=
+436E7-D576-490D-8BA0-0751D920334A}&lt;/ProjectGuid&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    &lt;Keyword&gt;Win32Proj&lt;/Keyword&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;RootNamespa=
+ce&gt;tapctl&lt;/RootNamespace&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    &lt;WindowsTargetPlatformVersion&gt;10.0&lt;/WindowsTarget=
+PlatformVersion&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+&lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-  &lt;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.Default.props&=
+quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;Prop=
+ertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#3=
+9;Debug|ARM64&#39;&quot; Label=3D&quot;Configuration&quot;&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    &lt;ConfigurationType&gt;Appli=
+cation&lt;/ConfigurationType&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    &lt;UseDebugLibraries&gt;true&lt;/UseDebugLibraries&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformToolset&gt=
+;v143&lt;/PlatformToolset&gt;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    &lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    &lt;WindowsSDKDesktopARM64Suppor=
+t&gt;true&lt;/WindowsSDKDesktopARM64Support&gt;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation&gt;Spectre&lt;/SpectreM=
+itigation&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/P=
+ropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt=
+;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=
+=3D&#39;Debug|Win32&#39;&quot; Label=3D&quot;Configuration&quot;&gt;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ConfigurationType&gt=
+;Application&lt;/ConfigurationType&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    &lt;UseDebugLibraries&gt;true&lt;/UseDebugLibraries&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;PlatformTool=
+set&gt;v143&lt;/PlatformToolset&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    &lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation&gt;S=
+pectre&lt;/SpectreMitigation&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration)|$=
+(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot; Label=3D&quot;Configuration&=
+quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Conf=
+igurationType&gt;Application&lt;/ConfigurationType&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    &lt;UseDebugLibraries&gt;true&lt;/UseD=
+ebugLibraries&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+&lt;PlatformToolset&gt;v143&lt;/PlatformToolset&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;CharacterSet&gt;Unicode&lt;/Charact=
+erSet&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Spec=
+treMitigation&gt;Spectre&lt;/SpectreMitigation&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;=
+$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#39;&quot; Label=
+=3D&quot;Configuration&quot;&gt;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    &lt;ConfigurationType&gt;Application&lt;/ConfigurationType&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;UseDebugLib=
+raries&gt;false&lt;/UseDebugLibraries&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    &lt;PlatformToolset&gt;v143&lt;/PlatformToolset&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;WholeProgramO=
+ptimization&gt;true&lt;/WholeProgramOptimization&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;CharacterSet&gt;Unicode&lt;/Charact=
+erSet&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Wind=
+owsSDKDesktopARM64Support&gt;true&lt;/WindowsSDKDesktopARM64Support&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation=
+&gt;Spectre&lt;/SpectreMitigation&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configurati=
+on)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot; Label=3D&quot;Confi=
+guration&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ &lt;ConfigurationType&gt;Application&lt;/ConfigurationType&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;UseDebugLibraries&gt;fals=
+e&lt;/UseDebugLibraries&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &lt;PlatformToolset&gt;v143&lt;/PlatformToolset&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &lt;WholeProgramOptimization&gt=
+;true&lt;/WholeProgramOptimization&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    &lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation&g=
+t;Spectre&lt;/SpectreMitigation&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-  &lt;PropertyGroup Condition=3D&quot;&#39;$(Configuration=
+)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&quot; Label=3D&quot;Configura=
+tion&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt=
+;ConfigurationType&gt;Application&lt;/ConfigurationType&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    &lt;UseDebugLibraries&gt;false&lt=
+;/UseDebugLibraries&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    &lt;PlatformToolset&gt;v143&lt;/PlatformToolset&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    &lt;WholeProgramOptimization&gt;tru=
+e&lt;/WholeProgramOptimization&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    &lt;CharacterSet&gt;Unicode&lt;/CharacterSet&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;SpectreMitigation&gt;Sp=
+ectre&lt;/SpectreMitigation&gt;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-  &lt;Import Project=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.pr=
+ops&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;=
+ImportGroup Label=3D&quot;ExtensionSettings&quot;&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;Shared&quo=
+t;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGr=
+oup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGr=
+oup Label=3D&quot;PropertySheets&quot; Condition=3D&quot;&#39;$(Configurati=
+on)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;$(UserRo=
+otDir)\Microsoft.Cpp.$(Platform).user.props&quot; Condition=3D&quot;exists(=
+&#39;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&#39;)&quot; Label=
+=3D&quot;LocalAppDataPlatform&quot; /&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;..\compat\Debug.props&qu=
+ot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Impo=
+rt Project=3D&quot;tapctl.props&quot; /&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;PropertySheets&quot;=
+ Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|W=
+in32&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  &lt;Import Project=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.=
+props&quot; Condition=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Pl=
+atform).user.props&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Proj=
+ect=3D&quot;..\compat\Debug.props&quot; /&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;tapctl.props&quot; /=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGrou=
+p&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGrou=
+p Label=3D&quot;PropertySheets&quot; Condition=3D&quot;&#39;$(Configuration=
+)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;&quot;&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;$(UserRootDi=
+r)\Microsoft.Cpp.$(Platform).user.props&quot; Condition=3D&quot;exists(&#39=
+;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&#39;)&quot; Label=3D&q=
+uot;LocalAppDataPlatform&quot; /&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    &lt;Import Project=3D&quot;..\compat\Debug.props&quot; /=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Pr=
+oject=3D&quot;tapctl.props&quot; /&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;PropertySheets&quot; Cond=
+ition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|ARM6=
+4&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &=
+lt;Import Project=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.pro=
+ps&quot; Condition=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(Platf=
+orm).user.props&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=
+=3D&quot;..\compat\Release.props&quot; /&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;tapctl.props&quot; /&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ImportGroup=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup=
+ Label=3D&quot;PropertySheets&quot; Condition=3D&quot;&#39;$(Configuration)=
+|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot;&gt;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;$(UserRoo=
+tDir)\Microsoft.Cpp.$(Platform).user.props&quot; Condition=3D&quot;exists(&=
+#39;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&#39;)&quot; Label=
+=3D&quot;LocalAppDataPlatform&quot; /&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;..\compat\Release.props&=
+quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Im=
+port Project=3D&quot;tapctl.props&quot; /&gt;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-  &lt;/ImportGroup&gt;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;PropertySheets&quo=
+t; Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Relea=
+se|x64&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    &lt;Import Project=3D&quot;$(UserRootDir)\Microsoft.Cpp.$(Platform).use=
+r.props&quot; Condition=3D&quot;exists(&#39;$(UserRootDir)\Microsoft.Cpp.$(=
+Platform).user.props&#39;)&quot; Label=3D&quot;LocalAppDataPlatform&quot; /=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Import Pr=
+oject=3D&quot;..\compat\Release.props&quot; /&gt;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    &lt;Import Project=3D&quot;tapctl.props&quo=
+t; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/Import=
+Group&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;Proper=
+tyGroup Label=3D&quot;UserMacros&quot; /&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condit=
+ion=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#3=
+9;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;V=
+cpkgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Conditi=
+on=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|ARM64&#=
+39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;=
+VcpkgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condit=
+ion=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#3=
+9;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;V=
+cpkgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Conditi=
+on=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#=
+39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;=
+VcpkgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condit=
+ion=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|x64&#39;=
+&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Vcp=
+kgEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-  &lt;PropertyGroup Label=3D&quot;Vcpkg&quot; Condition=
+=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Release|x64&#39;&=
+quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Vcpk=
+gEnabled&gt;true&lt;/VcpkgEnabled&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-  &lt;/PropertyGroup&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-  &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Confi=
+guration)|$(Platform)&#39;=3D=3D&#39;Debug|ARM64&#39;&quot;&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-      &lt;SDLCheck&gt;true&lt;/SD=
+LCheck&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;A=
+dditionalOptions&gt;/ZH:SHA_256 %(AdditionalOptions)&lt;/AdditionalOptions&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompile=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefini=
+tionGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;It=
+emDefinitionGroup Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=
+=3D=3D&#39;Release|ARM64&#39;&quot;&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-      &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalOptions&gt;/ZH:=
+SHA_256 %(AdditionalOptions)&lt;/AdditionalOptions&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemDefinitionGroup Condit=
+ion=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Debug|Win32&#3=
+9;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;C=
+lCompile&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt=
+;SDLCheck&gt;true&lt;/SDLCheck&gt;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-      &lt;AdditionalOptions&gt;/ZH:SHA_256 %(AdditionalOptions=
+)&lt;/AdditionalOptions&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    &lt;/ClCompile&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-  &lt;/ItemDefinitionGroup&gt;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-  &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configur=
+ation)|$(Platform)&#39;=3D=3D&#39;Release|Win32&#39;&quot;&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile&gt;</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-      &lt;SDLCheck&gt;true&lt;/SDL=
+Check&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Ad=
+ditionalOptions&gt;/ZH:SHA_256 %(AdditionalOptions)&lt;/AdditionalOptions&g=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompile&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;Link&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;CETCompat&gt;=
+true&lt;/CETCompat&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    &lt;/Link&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &=
+lt;/ItemDefinitionGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-  &lt;ItemDefinitionGroup Condition=3D&quot;&#39;$(Configuration)|$(P=
+latform)&#39;=3D=3D&#39;Debug|x64&#39;&quot;&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-      &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalOption=
+s&gt;/ZH:SHA_256 %(AdditionalOptions)&lt;/AdditionalOptions&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemDefinitionGro=
+up Condition=3D&quot;&#39;$(Configuration)|$(Platform)&#39;=3D=3D&#39;Relea=
+se|x64&#39;&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    &lt;Link&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+ &lt;CETCompat&gt;true&lt;/CETCompat&gt;</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    &lt;/Link&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    &lt;ClCompile&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-      &lt;SDLCheck&gt;true&lt;/SDLCheck&gt;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-      &lt;AdditionalOptions&gt;/ZH:SHA=
+_256 %(AdditionalOptions)&lt;/AdditionalOptions&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    &lt;/ClCompile&gt;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemDefinitionGroup&gt;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup&gt;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;e=
+rror.c&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ &lt;ClCompile Include=3D&quot;tap.c&quot; /&gt;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    &lt;ClCompile Include=3D&quot;main.c&quot; /=
+&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemGroup&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude In=
+clude=3D&quot;basic.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    &lt;ClInclude Include=3D&quot;error.h&quot; /&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ClInclude Include=3D&qu=
+ot;tap.h&quot; /&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+ &lt;/ItemGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+&lt;ItemGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+&lt;ResourceCompile Include=3D&quot;tapctl_resources.rc&quot; /&gt;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemGroup&gt;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;ItemGroup&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    &lt;ProjectReference Include=
+=3D&quot;..\..\build\msvc\msvc-generate\msvc-generate.vcxproj&quot;&gt;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-      &lt;Project&gt;{859=
+8c2c8-34c4-47a1-99b0-7c295a890615}&lt;/Project&gt;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-      &lt;ReferenceOutputAssembly&gt;false&lt;=
+/ReferenceOutputAssembly&gt;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    &lt;/ProjectReference&gt;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-  &lt;/ItemGroup&gt;</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-  &lt;ItemGroup&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    &lt;Manifest Include=3D&quot;tapctl.exe.manifest&quot; /&gt=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;/ItemGroup&gt;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  &lt;Import Project=
+=3D&quot;$(VCTargetsPath)\Microsoft.Cpp.targets&quot; /&gt;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-  &lt;ImportGroup Label=3D&quot;Exten=
+sionTargets&quot;&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+  &lt;/ImportGroup&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-&lt;/Project&gt;</span><br><span>\ No newline at end of file</span><br><sp=
+an>diff --git a/src/tapctl/tapctl_resources.rc b/src/tapctl/tapctl_resource=
+s.rc</span><br><span>index fc65b5a..c49f82d 100644</span><br><span>--- a/sr=
+c/tapctl/tapctl_resources.rc</span><br><span>+++ b/src/tapctl/tapctl_resour=
+ces.rc</span><br><span>@@ -19,8 +19,6 @@</span><br><span> </span><br><span>=
+ #ifdef HAVE_CONFIG_H</span><br><span> #include &lt;config.h&gt;</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-#else</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-#include &lt;config-msvc-version.h&gt;</span><br=
+><span> #endif</span><br><span> #include &lt;winresrc.h&gt;</span><br><span=
+> </span><br><span>diff --git a/tests/unit_tests/openvpn/mock_msg.c b/tests=
+/unit_tests/openvpn/mock_msg.c</span><br><span>index 3fa9a16..3ff1ea8 10064=
+4</span><br><span>--- a/tests/unit_tests/openvpn/mock_msg.c</span><br><span=
+>+++ b/tests/unit_tests/openvpn/mock_msg.c</span><br><span>@@ -23,8 +23,6 @=
+@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> =
+#include &quot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #endif</span>=
+<br><span> </span><br><span> #include &lt;stdarg.h&gt;</span><br><span>diff=
+ --git a/tests/unit_tests/openvpn/test_auth_token.c b/tests/unit_tests/open=
+vpn/test_auth_token.c</span><br><span>index 57e98f5..d96984f 100644</span><=
+br><span>--- a/tests/unit_tests/openvpn/test_auth_token.c</span><br><span>+=
+++ b/tests/unit_tests/openvpn/test_auth_token.c</span><br><span>@@ -23,8 +2=
+3,6 @@</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><s=
+pan> #include &quot;config.h&quot;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #endif</=
+span><br><span> </span><br><span> #include &quot;syshead.h&quot;</span><br>=
+<span>diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_test=
+s/openvpn/test_buffer.c</span><br><span>index 9e3b1d2..92ac77a 100644</span=
+><br><span>--- a/tests/unit_tests/openvpn/test_buffer.c</span><br><span>+++=
+ b/tests/unit_tests/openvpn/test_buffer.c</span><br><span>@@ -23,8 +23,6 @@=
+</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #=
+include &quot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #endif</span><=
+br><span> </span><br><span> #include &quot;syshead.h&quot;</span><br><span>=
+diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/open=
+vpn/test_crypto.c</span><br><span>index aec4e04..58eebc0 100644</span><br><=
+span>--- a/tests/unit_tests/openvpn/test_crypto.c</span><br><span>+++ b/tes=
+ts/unit_tests/openvpn/test_crypto.c</span><br><span>@@ -23,8 +23,6 @@</span=
+><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #includ=
+e &quot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-#include &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><sp=
+an> </span><br><span> #include &quot;syshead.h&quot;</span><br><span>diff -=
+-git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/openvpn=
+/test_cryptoapi.c</span><br><span>index 0859b58..7b38e18 100644</span><br><=
+span>--- a/tests/unit_tests/openvpn/test_cryptoapi.c</span><br><span>+++ b/=
+tests/unit_tests/openvpn/test_cryptoapi.c</span><br><span>@@ -24,8 +24,6 @@=
+</span><br><span> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #=
+include &quot;config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-#elif defined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#include &quot;config-msvc.h&quot;</span><br><span> #endif</span><=
+br><span> </span><br><span> #include &quot;syshead.h&quot;</span><br><span>=
+diff --git a/tests/unit_tests/openvpn/test_misc.c b/tests/unit_tests/openvp=
+n/test_misc.c</span><br><span>index 5a8978d..43ae96b 100644</span><br><span=
+>--- a/tests/unit_tests/openvpn/test_misc.c</span><br><span>+++ b/tests/uni=
+t_tests/openvpn/test_misc.c</span><br><span>@@ -23,8 +23,6 @@</span><br><sp=
+an> </span><br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;=
+config.h&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif d=
+efined(_MSC_VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#incl=
+ude &quot;config-msvc.h&quot;</span><br><span> #endif</span><br><span> </sp=
+an><br><span> #include &quot;syshead.h&quot;</span><br><span>diff --git a/t=
+ests/unit_tests/openvpn/test_ncp.c b/tests/unit_tests/openvpn/test_ncp.c</s=
+pan><br><span>index 0e52ea2..72a1c3b 100644</span><br><span>--- a/tests/uni=
+t_tests/openvpn/test_ncp.c</span><br><span>+++ b/tests/unit_tests/openvpn/t=
+est_ncp.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><sp=
+an> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-m=
+svc.h&quot;</span><br><span> #endif</span><br><span> </span><br><span> #inc=
+lude &quot;syshead.h&quot;</span><br><span>diff --git a/tests/unit_tests/op=
+envpn/test_packet_id.c b/tests/unit_tests/openvpn/test_packet_id.c</span><b=
+r><span>index 9b653a8..90c67ac 100644</span><br><span>--- a/tests/unit_test=
+s/openvpn/test_packet_id.c</span><br><span>+++ b/tests/unit_tests/openvpn/t=
+est_packet_id.c</span><br><span>@@ -24,8 +24,6 @@</span><br><span> </span><=
+br><span> #ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quo=
+t;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_=
+VER)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;co=
+nfig-msvc.h&quot;</span><br><span> #endif</span><br><span> </span><br><span=
+> #include &quot;syshead.h&quot;</span><br><span>diff --git a/tests/unit_te=
+sts/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c</span><br><spa=
+n>index eb69829..9f49ee7 100644</span><br><span>--- a/tests/unit_tests/open=
+vpn/test_pkt.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_pkt.c</s=
+pan><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> #ifdef H=
+AVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot;<=
+/span><br><span> #endif</span><br><span> </span><br><span> #include &quot;s=
+yshead.h&quot;</span><br><span>diff --git a/tests/unit_tests/openvpn/test_p=
+rovider.c b/tests/unit_tests/openvpn/test_provider.c</span><br><span>index =
+255067c..335fca2 100644</span><br><span>--- a/tests/unit_tests/openvpn/test=
+_provider.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_provider.c<=
+/span><br><span>@@ -24,8 +24,6 @@</span><br><span> </span><br><span> #ifdef=
+ HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.h&quot=
+;</span><br><span> #endif</span><br><span> </span><br><span> #include &quot=
+;syshead.h&quot;</span><br><span>diff --git a/tests/unit_tests/openvpn/test=
+_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c</span><br><span>in=
+dex 8bbe600..ed7c794 100644</span><br><span>--- a/tests/unit_tests/openvpn/=
+test_tls_crypt.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_tls_cr=
+ypt.c</span><br><span>@@ -23,8 +23,6 @@</span><br><span> </span><br><span> =
+#ifdef HAVE_CONFIG_H</span><br><span> #include &quot;config.h&quot;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(_MSC_VER)</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &quot;config-msvc.=
+h&quot;</span><br><span> #endif</span><br><span> </span><br><span> #include=
+ &quot;syshead.h&quot;</span><br><span></span><br></pre><p>To view, visit <=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/316?usp=3Demail">change 316=
+</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"ht=
+tp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/316?usp=3Demail"/><meta itemprop=3D"name" c=
+ontent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6de18261d5dc7f8561612184059=
-656c73f33a5f2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 315 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I807cffa40f18faa1adec4e15e84=
+c032877a2b92e </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 316 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -5978,5 +9335,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---w9/13h64Bn8=--
+--DNHVEW2nt3Y=--
 
