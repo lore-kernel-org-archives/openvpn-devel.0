@@ -1,16 +1,10 @@
-From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Fri, 21 Jul 2023 14:34:21 +0000
-In-Reply-To: <gerrit.1689947729000.Ifb961a4df2b8b8300633192e1a268669f6f41a35@...2715...>
-References: <gerrit.1689947729000.Ifb961a4df2b8b8300633192e1a268669f6f41a35@...2715...>
-Reply-To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <726954e4b06669faf85f197e68618e527b6c2cbb-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="4u4lC3bki9U="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: Make
- cert_data.h and test_cryptoapi/pkcs11.c MSVC compliant
+Date: Sun, 23 Jul 2023 11:28:18 +0200 (CEST)
+Message-Id: <202307230928.36N9SIIB029241@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230128215901.2207208-1-selva.nair@...277...>
+References: <20230128215901.2207208-1-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Improve signal handling using
+ POSIX sigaction
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,96 +13,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---4u4lC3bki9U=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Sorry for taking so long on this - it hit post-release fatigue...
 
-Attention is currently required from: flichtenheld.
+I did test this by running t_client test (which use signals to kill
+running openvpn) across all supported OSes, and server side tests on
+Linux, with and without DCO.  Of course this is not really excercising
+the signal handling code, but at least it confirms that nothing is
+grossly broken.
 
-selvanair has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/312?usp=3Demail )
+Stared at the code & the manpages as well.  Following my path through
+the twisty maze of passages (especially halt_low_priority_signals())
+was not easy, but "it seems to make sense" (this blocks signals, but
+there is no new code to unblock - if I'm reading this right, this is
+because we are at "exit (single) instance" time, and unblocking signals
+will be done at init_instance_handle_signals() on the reconnection).
 
-Change subject: Make cert_data.h and test_cryptoapi/pkcs11.c MSVC compliant
-......................................................................
+The actual "change to POSIX ways" part of this is fairly trivial
+and easy to understand :-) - though I do wonder why you're using
+an extra variable for block_mask -> sa.sa_mask, and not using
+sigfillset(&sa.sa_mask) - at least on BSD on Linux, both are sigset_t,
+so it should do the same thing in a slightly more direct way.
 
+Your patch has been applied to the master branch.
 
-Patch Set 1: Code-Review+1
+commit 3abfc0fb5ea522fb5fc45fddbf35c3cc5c8e9ef1
+Author: Selva Nair
+Date:   Sat Jan 28 16:59:00 2023 -0500
 
-(1 comment)
+     Improve signal handling using POSIX sigaction
 
-Patchset:
-
-PS1:
-Same as "cherry-pick 846951" with conflict resolved (test_pkcs11.c removed).
-ACK.
-
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20230128215901.2207208-1-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26087.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/312?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: Ifb961a4df2b8b8300633192e1a268669f6f41a35
-Gerrit-Change-Number: 312
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: selvanair <selva.nair@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 21 Jul 2023 14:34:21 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gert Doering
 
---4u4lC3bki9U=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/312?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/312?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">Same as &quot;cherry-pick 846951&quot; with co=
-nflict resolved (test_pkcs11.c removed).<br>ACK.</p></li></ul></li></ul><p>=
-To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/312?usp=3De=
-mail">change 312</a>. To unsubscribe, or for help writing mail filters, vis=
-it <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div ite=
-mscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
-" href=3D"http://gerrit.openvpn.net/c/openvpn/+/312?usp=3Demail"/><meta ite=
-mprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ifb961a4df2b8b8300633192e1a2=
-68669f6f41a35 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 312 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
-77...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 21 Jul 2023 14:34:21=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---4u4lC3bki9U=--
 
