@@ -1,16 +1,13 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Mon, 24 Jul 2023 12:56:30 +0000
-In-Reply-To: <gerrit.1689947729000.I807cffa40f18faa1adec4e15e84c032877a2b92e@...2715...>
-References: <gerrit.1689947729000.I807cffa40f18faa1adec4e15e84c032877a2b92e@...2715...>
-Reply-To: lstipakov@...277..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <3de47d0c7d1d0e6a9d8f407498dd24e0d665a9c0-EmailReviewComments-HTML@...2715...>
+Date: Mon, 24 Jul 2023 15:02:11 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZL52U58dke6j6SkA@...1296...>
+References: <CALn4OiNv11FHk6ZhahbUYZPa15AW53H7C85Awi+qrtgeVRPm1Q@...278...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="oBRfARP/9OmAJJCJ"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3Ux3f7it4Mo="; charset=UTF-8
-Subject: [Openvpn-devel] [XL] Change in openvpn[release/2.6]: Remove all
- traces of the previous MSVC build system
+In-Reply-To: <CALn4OiNv11FHk6ZhahbUYZPa15AW53H7C85Awi+qrtgeVRPm1Q@...278...>
+Subject: Re: [Openvpn-devel] Porting OpenVPN Problems
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,81 +16,121 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Swan Geon <swangeon@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---3Ux3f7it4Mo=
-Content-Type: text/plain; charset="UTF-8"
+--oBRfARP/9OmAJJCJ
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Attention is currently required from: flichtenheld.
+Hi,
 
-stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/316?usp=3Demail )
+On Mon, Jul 24, 2023 at 03:43:17AM -0500, Swan Geon wrote:
+> I am trying to port OpenVPN to Haiku OS and I am currently having an issue
+> as I run this test command from the PORTS
+> <https://github.com/OpenVPN/openvpn/blob/master/PORTS#L73> file `./openvpn
+> --remote 64.233.160.0 --verb 9 --ping 1 --dev tun` as I get the expected
+> output (comparing it to Linux at least) until it just hangs on the line `=
+I/O
+> WAIT status=3D0x0004`. I am not sure if this is a problem caused by the
+> driver I am writing or OpenVPN not being able to run the do_ifconfig()
+> command that has a TARGET_HAIKU definition and I wanted to ask you all
+> about it.=20
 
-Change subject: Remove all traces of the previous MSVC build system
-......................................................................
+Well, it would be helpful to actually see the few lines *before* that -
+so we can tell you what it did, and whether it's ifconfig or not.
+
+> Here
+> <https://review.haiku-os.org/c/haiku/+/6608/15/src/add-ons/kernel/drivers=
+/network/tun/driver.cpp>
+> I have the driver source code, here
+> <https://review.haiku-os.org/c/haiku/+/6608/15/src/add-ons/kernel/network=
+/devices/tun/tun.cpp>
+> is the interface source code, and here
+> <https://github.com/Swangeon/Haiku-Openvpn/commit/9954e48fa35dcb4f77fe088=
+63b1d12f0f3e29b72>
+> I have a forked version of the OpenVPN source code where I added the
+> definition for the OS and info on how to do the ifconfig command on the
+> system. I know that UDP sockets are working normally within Haiku since I
+> can switch the line `--dev tun` to `--dev null` and it will work just fin=
+e.
+> One problem that I think might be there is that it's not setting up a tun
+> interface properly and/or it might be going off of the assumption of a
+> Linux driver where the driver and the interface are the same when in this
+> case they are two separate things.=20
+
+It's always "two things" - one is the interface that the network stack=20
+sees ("ifconfig tun", route, etc) and the other is the file descriptor
+that OpenVPN uses to receive packets from the tun interface, and send
+packets back.
+
+You need to find out how tun interface creation works on your system -
+on some (FreeBSD, for example), the program just does open("/dev/tun3")
+and magically a "tun3" interface is created, which can then be configured
+with "ifconfig".  On Linux, it's slightly more complicated, and on
+Solaris it's very very complicated.
+
+So before adding code to OpenVPN, you need to understand how tun interfaces
+are configured and created on Haiku.  Is there a manpage ("man tun")?  On
+FreeBSD, most of the questions are answered in the manpage...
+
+> If I manually make an interface using
+> ifconfig, it still doesn't change where it hangs though interestingly
+> enough if I set the address within the command to that of the interface,
+> then the interface will respond with `read from TUN/TAP returned 44`
+> followed by `Recursive routing detected, drop tun packet to []AF_INET]
+> 1.1.1.1:1194` 1.1.1.1 being the address of the interface but only once and
+> that's it. Maybe I am confused about how that specific command works and/=
+or
+> I have something set up wrong somewhere down the line. I know that this is
+> a complicated issue with many facets and I am new to OpenVPN so I'm not
+> super sure how to debug it currently so please please be patient with me
+> and ask questions so that I can do my best to answer them.
+
+"recursive routing detected" will happen if the tun interface receives
+a packet destined for the VPN gateway - which must not be sent *into*
+the tunnel, because then there is no way to send it "out to the Internet".
+
+This will become a relevant question when you go into "redirect-gateway"
+land.  Start first with a dedicated VPN subnet ("10.8.0.0/24"), which=20
+uses distinct addresses from "the VPN server" and "the LAN interface"
+(on all machines involved).
 
 
-Patch Set 1: Code-Review+2
+If this is all voodoo to you, then you'll need to make yourself=20
+comfortable with "how does openvpn work?  what does it do?  what should
+be in the log files, at which point?" on an already-supported platform -
+starting with too many unknows at the same time will not give you
+satisfying results.
 
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/316?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+Gert Doering - Munich, Germany                             gert@...1296...
 
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I807cffa40f18faa1adec4e15e84c032877a2b92e
-Gerrit-Change-Number: 316
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 24 Jul 2023 12:56:30 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+--oBRfARP/9OmAJJCJ
+Content-Type: application/pgp-signature; name="signature.asc"
 
---3Ux3f7it4Mo=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+-----BEGIN PGP SIGNATURE-----
 
-<p> Attention is currently required from: flichtenheld. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/316?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/316?usp=3Demail">=
-change 316</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/316?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+iQGcBAEBAgAGBQJkvnZTAAoJEB2Cnv7KVigS6cAL/1PTSD+8RCWsEZsAxCGLzx55
+/CprYrxKMWfCvpxMyKFV0UIDXgWVOHVDo8ykcnjRXCNjPeksOKp8Uw/N+5eWIfvC
+cL6TPfQs3EaHOZlholUKJrqykiobtyNs6hiX1wCoTb7HKM0MIAeh9FWhgMPOdK0I
+FeemyzuiJ+aRLxMAhnbPjijtocVxwv0Ptb72a9KgnJHUrOFlkcFxUGgoWDnapoaJ
+qtwjcOrIz9zZgPO4bbvWHXdRr/xoycMHtv+DcwSMvtOoE7bhSOLa/LwS8z7mIhgL
+zyJUSEvK/8cx1lICh1L2wOHrPcLn5VAq8UsFfzqop7wSHTvW4/Pb50to4PKu/lY4
+iaZvrxd+oleugYyXxg8DHYZtlmjTmzIvQrHM3VW+BmVUBLquQTlYHzvyN+vatETN
+BX5sVNRjKk5NX4CoRKKYzk83oFMAWD1fNCXKuOk3kQ8xEJD9JKVO9LqhyDSUIvxC
+t6axAIOjjiGtc2wwnAKbAiR9GiP2idcyEGrdAbZahg==
+=6LPp
+-----END PGP SIGNATURE-----
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I807cffa40f18faa1adec4e15e84=
-c032877a2b92e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 316 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 24 Jul 2023 12:56:30=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---3Ux3f7it4Mo=--
+--oBRfARP/9OmAJJCJ--
 
