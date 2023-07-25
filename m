@@ -1,8 +1,10 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Tue, 25 Jul 2023 08:58:40 +0200
-Message-ID: <20230725065840.24568-1-a@...2181...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] configure.ac: fix typ0 in LIBCAPNG_CFALGS
+Date: Tue, 25 Jul 2023 09:06:32 +0200 (CEST)
+Message-Id: <202307250706.36P76WqE072484@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230725065840.24568-1-a@...2181...>
+References: <20230725065840.24568-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: configure.ac: fix typ0 in
+ LIBCAPNG_CFALGS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,30 +15,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>, Matt Whitlock <gentoo@...2743...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Reported-by: Matt Whitlock <gentoo@...2743...>
-Change-Id: Ic473fbc447741e54a9aac83c70bc4e6d87d91080
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- configure.ac | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Acked-by: Gert Doering <gert@...1296...>
 
-diff --git a/configure.ac b/configure.ac
-index 5ab1d0df..2f65cbd5 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -869,7 +869,7 @@ case "$host" in
- 		)
- 		AC_CHECK_HEADER([sys/prctl.h],,[AC_MSG_ERROR([sys/prctl.h not found!])])
- 
--		CFLAGS="${CFLAGS} ${LIBCAPNG_CFALGS}"
-+		CFLAGS="${CFLAGS} ${LIBCAPNG_CFLAGS}"
- 		LIBS="${LIBS} ${LIBCAPNG_LIBS}"
- 		AC_DEFINE(HAVE_LIBCAPNG, 1, [Enable libcap-ng support])
- 	;;
--- 
-2.41.0
+Obviously correct (and used only in this place, the definition comes
+out of autoconf and has no typos :) ).  Interesting that this wasn't
+spotted earlier, seems nobody buildt with "libcapng with non-default
+include path" yet.
+
+Not tested whatsoever, just stared at configure/configure.ac
+
+Your patch has been applied to the master and release/2.6 branch.
+
+commit bd95104a2b375f87eb37441d33c8e35bd1c19b1f (master)
+commit 2f0e7dd1444e3d29773c6b701f53afa4cadac970 (release/2.6)
+Author: Antonio Quartulli
+Date:   Tue Jul 25 08:58:40 2023 +0200
+
+     configure.ac: fix typ0 in LIBCAPNG_CFALGS
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230725065840.24568-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26890.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
