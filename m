@@ -1,14 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 28 Jul 2023 13:03:27 +0000
-References: <gerrit.1690549401000.I45cd0917d24570ae9e9db7eb6c370756e4595842@...2715...>
-Reply-To: frank@...2641..., openvpn-devel@lists.sourceforge.net
-Message-ID: <eec63649da3e2e5118634390cb6a88a02cbc5786-HTML@...2715...>
+Date: Mon, 31 Jul 2023 09:29:57 +0000
+In-Reply-To: <gerrit.1690550288000.I47c22dcb728011dcedaae47cd03a57219e9c7607@...2715...>
+References: <gerrit.1690550288000.I47c22dcb728011dcedaae47cd03a57219e9c7607@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., selva.nair@...277...,
+ openvpn-devel@lists.sourceforge.net, lstipakov@...277..., a@...2181...
+Message-ID: <e6525fea8c5accc882a731b1f1f4389cb3ae70a3-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="TeAVvlWl3wU="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix various
- "Uninitialized scalar variable" warnings from Coverity
+Content-Type: multipart/alternative; boundary="NNX8Cf7Sx6c="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: Set WINS
+ servers via interactice service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,232 +19,166 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: stipa <lstipakov@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, selvanair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---TeAVvlWl3wU=
+--NNX8Cf7Sx6c=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-flichtenheld has uploaded this change for review. ( http://gerrit.openvpn.n=
-et/c/openvpn/+/318?usp=3Demail )
+Attention is currently required from: cron2, ordex, plaisthos, selvanair, s=
+tipa.
 
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/321?usp=3Demail )
 
-Change subject: Fix various "Uninitialized scalar variable" warnings from C=
-overity
+Change subject: Set WINS servers via interactice service
 ......................................................................
 
-Fix various "Uninitialized scalar variable" warnings from Coverity
 
-These are all not actually problems, since the
-uninitialized parts are either .unused members of the
-struct (mroute_addr) or only written to (buflen), but
-still doesn't hurt to explicitely initialize them.
+Patch Set 1:
 
-Change-Id: I45cd0917d24570ae9e9db7eb6c370756e4595842
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
-M src/openvpn/mudp.c
-M src/openvpn/multi.c
-M src/openvpn/pkcs11_openssl.c
-M src/openvpn/socket.c
-4 files changed, 7 insertions(+), 7 deletions(-)
+(4 comments)
+
+File src/openvpnserv/interactive.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/321/comment/e7e6ec3b_6554de56 :
+PS1, Line 1089:  * @param  action      "delete" or "add"
+This says "add" but the rest of the function seems to use "set". But also s=
+ee below for "add" vs "set".
 
 
+http://gerrit.openvpn.net/c/openvpn/+/321/comment/9fdd7e73_de5a661e :
+PS1, Line 1094:  * if action =3D "set" then "static" is added before $addr
+Why are you using "set" here? The documentation (https://learn.microsoft.co=
+m/en-us/previous-versions/windows/it-pro/windows-server-2008-r2-and-2008/cc=
+731521(v=3Dws.10)#set-winsserver) seems to suggest that that can only set o=
+ne WINS server ("If the interface is already statically configured, the sta=
+tic parameter replaces the existing WINS server address list with the one s=
+pecified in the set winsserver command.") Shouldn't you use "add" instead?
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/18/318/1
 
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 81625ea..e6c99ae 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -188,7 +188,7 @@
- multi_get_create_instance_udp(struct multi_context *m, bool *floated)
- {
-     struct gc_arena gc =3D gc_new();
--    struct mroute_addr real;
-+    struct mroute_addr real =3D {0};
-     struct multi_instance *mi =3D NULL;
-     struct hash *hash =3D m->hash;
+http://gerrit.openvpn.net/c/openvpn/+/321/comment/a93a828d_867cc63f :
+PS1, Line 1406:     if (addr_len > 0 || msg->header.type =3D=3D msg_del_win=
+s_cfg)
+Is there ever a case where this would be false?
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index aad11b1..728a7b8 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1234,7 +1234,7 @@
-                       bool primary)
- {
-     struct openvpn_sockaddr remote_si;
--    struct mroute_addr addr;
-+    struct mroute_addr addr =3D {0};
 
-     CLEAR(remote_si);
-     remote_si.addr.in4.sin_family =3D AF_INET;
-@@ -1273,7 +1273,7 @@
-                      int netbits,   /* -1 if host route, otherwise # of ne=
-twork bits in address */
-                      bool primary)
- {
--    struct mroute_addr addr;
-+    struct mroute_addr addr =3D {0};
+http://gerrit.openvpn.net/c/openvpn/+/321/comment/f983786a_f046e4f1 :
+PS1, Line 1436:     if (msg->addr_len > 0)
+Nitpick: Should be addr_len, not msg->addr_len
 
-     addr.len =3D 16;
-     addr.type =3D MR_ADDR_IPV6;
-@@ -3118,7 +3118,7 @@
- void
- multi_process_float(struct multi_context *m, struct multi_instance *mi)
- {
--    struct mroute_addr real;
-+    struct mroute_addr real =3D {0};
-     struct hash *hash =3D m->hash;
-     struct gc_arena gc =3D gc_new();
 
-@@ -3532,7 +3532,7 @@
-     if (BLEN(&m->top.c2.buf) > 0)
-     {
-         unsigned int mroute_flags;
--        struct mroute_addr src, dest;
-+        struct mroute_addr src =3D {0}, dest =3D {0};
-         const int dev_type =3D TUNNEL_TYPE(m->top.c1.tuntap);
-         int16_t vid =3D 0;
-
-diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c
-index 40080ef..0ddabc7 100644
---- a/src/openvpn/pkcs11_openssl.c
-+++ b/src/openvpn/pkcs11_openssl.c
-@@ -166,7 +166,7 @@
-     CK_RSA_PKCS_PSS_PARAMS pss_params =3D {0};
-
-     unsigned char buf[EVP_MAX_MD_SIZE];
--    size_t buflen;
-+    size_t buflen =3D 0;
-     size_t siglen_max =3D *siglen;
-
-     unsigned char enc[EVP_MAX_MD_SIZE + 32]; /* 32 bytes enough for Digest=
-Info header */
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 2d765cc..58231fb 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -3301,7 +3301,7 @@
- {
-     struct iovec iov;
-     uint8_t pktinfo_buf[PKTINFO_BUF_SIZE];
--    struct msghdr mesg;
-+    struct msghdr mesg =3D {0};
-     socklen_t fromlen =3D sizeof(from->dest.addr);
-
-     ASSERT(sock->sd >=3D 0);                      /* can't happen */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/318?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/321?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I45cd0917d24570ae9e9db7eb6c370756e4595842
-Gerrit-Change-Number: 318
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: I47c22dcb728011dcedaae47cd03a57219e9c7607
+Gerrit-Change-Number: 321
 Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: cron2
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: ordex <a@...2181...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: selvanair <selva.nair@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newchange
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2
+Gerrit-Attention: ordex <a@...2181...>
+Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Mon, 31 Jul 2023 09:29:57 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
 
---TeAVvlWl3wU=
+--NNX8Cf7Sx6c=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>flichtenheld has uploaded this change for <strong>review</strong>.</p><p=
-><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/318?usp=3Demail">View Cha=
-nge</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre=
--wrap;">Fix various &quot;Uninitialized scalar variable&quot; warnings from=
- Coverity<br><br>These are all not actually problems, since the<br>uninitia=
-lized parts are either .unused members of the<br>struct (mroute_addr) or on=
-ly written to (buflen), but<br>still doesn&#39;t hurt to explicitely initia=
-lize them.<br><br>Change-Id: I45cd0917d24570ae9e9db7eb6c370756e4595842<br>S=
-igned-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/op=
-envpn/mudp.c<br>M src/openvpn/multi.c<br>M src/openvpn/pkcs11_openssl.c<br>=
-M src/openvpn/socket.c<br>4 files changed, 7 insertions(+), 7 deletions(-)<=
-br><br></pre><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/18/3=
-18/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
-wrap;"><span>diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c</span><br=
-><span>index 81625ea..e6c99ae 100644</span><br><span>--- a/src/openvpn/mudp=
-.c</span><br><span>+++ b/src/openvpn/mudp.c</span><br><span>@@ -188,7 +188,=
-7 @@</span><br><span> multi_get_create_instance_udp(struct multi_context *m=
-, bool *floated)</span><br><span> {</span><br><span>     struct gc_arena gc=
- =3D gc_new();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    str=
-uct mroute_addr real;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    struct mroute_addr real =3D {0};</span><br><span>     struct multi_in=
-stance *mi =3D NULL;</span><br><span>     struct hash *hash =3D m-&gt;hash;=
-</span><br><span> </span><br><span>diff --git a/src/openvpn/multi.c b/src/o=
-penvpn/multi.c</span><br><span>index aad11b1..728a7b8 100644</span><br><spa=
-n>--- a/src/openvpn/multi.c</span><br><span>+++ b/src/openvpn/multi.c</span=
-><br><span>@@ -1234,7 +1234,7 @@</span><br><span>                       boo=
-l primary)</span><br><span> {</span><br><span>     struct openvpn_sockaddr =
-remote_si;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct =
-mroute_addr addr;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  struct mroute_addr addr =3D {0};</span><br><span> </span><br><span>     C=
-LEAR(remote_si);</span><br><span>     remote_si.addr.in4.sin_family =3D AF_=
-INET;</span><br><span>@@ -1273,7 +1273,7 @@</span><br><span>               =
-       int netbits,   /* -1 if host route, otherwise # of network bits in a=
-ddress */</span><br><span>                      bool primary)</span><br><sp=
-an> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct mrout=
-e_addr addr;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    str=
-uct mroute_addr addr =3D {0};</span><br><span> </span><br><span>     addr.l=
-en =3D 16;</span><br><span>     addr.type =3D MR_ADDR_IPV6;</span><br><span=
->@@ -3118,7 +3118,7 @@</span><br><span> void</span><br><span> multi_process=
-_float(struct multi_context *m, struct multi_instance *mi)</span><br><span>=
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struct mroute_a=
-ddr real;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct=
- mroute_addr real =3D {0};</span><br><span>     struct hash *hash =3D m-&gt=
-;hash;</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><spa=
-n> </span><br><span>@@ -3532,7 +3532,7 @@</span><br><span>     if (BLEN(&am=
-p;m-&gt;top.c2.buf) &gt; 0)</span><br><span>     {</span><br><span>        =
- unsigned int mroute_flags;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        struct mroute_addr src, dest;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        struct mroute_addr src =3D {0}, dest =3D {0=
-};</span><br><span>         const int dev_type =3D TUNNEL_TYPE(m-&gt;top.c1=
-.tuntap);</span><br><span>         int16_t vid =3D 0;</span><br><span> </sp=
-an><br><span>diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11=
-_openssl.c</span><br><span>index 40080ef..0ddabc7 100644</span><br><span>--=
-- a/src/openvpn/pkcs11_openssl.c</span><br><span>+++ b/src/openvpn/pkcs11_o=
-penssl.c</span><br><span>@@ -166,7 +166,7 @@</span><br><span>     CK_RSA_PK=
-CS_PSS_PARAMS pss_params =3D {0};</span><br><span> </span><br><span>     un=
-signed char buf[EVP_MAX_MD_SIZE];</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    size_t buflen;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    size_t buflen =3D 0;</span><br><span>     size_t siglen_max =
-=3D *siglen;</span><br><span> </span><br><span>     unsigned char enc[EVP_M=
-AX_MD_SIZE + 32]; /* 32 bytes enough for DigestInfo header */</span><br><sp=
-an>diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c</span><br><span=
->index 2d765cc..58231fb 100644</span><br><span>--- a/src/openvpn/socket.c</=
-span><br><span>+++ b/src/openvpn/socket.c</span><br><span>@@ -3301,7 +3301,=
-7 @@</span><br><span> {</span><br><span>     struct iovec iov;</span><br><s=
-pan>     uint8_t pktinfo_buf[PKTINFO_BUF_SIZE];</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-    struct msghdr mesg;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    struct msghdr mesg =3D {0};</span><br><sp=
-an>     socklen_t fromlen =3D sizeof(from-&gt;dest.addr);</span><br><span> =
-</span><br><span>     ASSERT(sock-&gt;sd &gt;=3D 0);                      /=
-* can&#39;t happen */</span><br><span></span><br></pre><p>To view, visit <a=
- href=3D"http://gerrit.openvpn.net/c/openvpn/+/318?usp=3Demail">change 318<=
-/a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"htt=
-p://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/318?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
+<p> Attention is currently required from: cron2, ordex, plaisthos, selvanai=
+r, stipa. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/321?usp=3Demail">View C=
+hange</a></p><p>4 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpnserv/interactive.c:=
+</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; pad=
+ding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerri=
+t.openvpn.net/c/openvpn/+/321/comment/e7e6ec3b_6554de56">Patch Set #1, Line=
+ 1089:</a> <code style=3D"font-family:monospace,monospace"> * @param  actio=
+n      &quot;delete&quot; or &quot;add&quot;</code></p><p style=3D"white-sp=
+ace: pre-wrap; word-wrap: break-word;">This says &quot;add&quot; but the re=
+st of the function seems to use &quot;set&quot;. But also see below for &qu=
+ot;add&quot; vs &quot;set&quot;.</p></li><li style=3D"margin: 0; padding: 0=
+ 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openv=
+pn.net/c/openvpn/+/321/comment/9fdd7e73_de5a661e">Patch Set #1, Line 1094:<=
+/a> <code style=3D"font-family:monospace,monospace"> * if action =3D &quot;=
+set&quot; then &quot;static&quot; is added before $addr</code></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">Why are you using &quot;=
+set&quot; here? The documentation (https://learn.microsoft.com/en-us/previo=
+us-versions/windows/it-pro/windows-server-2008-r2-and-2008/cc731521(v=3Dws.=
+10)#set-winsserver) seems to suggest that that can only set one WINS server=
+ (&quot;If the interface is already statically configured, the static param=
+eter replaces the existing WINS server address list with the one specified =
+in the set winsserver command.&quot;) Shouldn&#39;t you use &quot;add&quot;=
+ instead?</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D=
+"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/321/=
+comment/a93a828d_867cc63f">Patch Set #1, Line 1406:</a> <code style=3D"font=
+-family:monospace,monospace">    if (addr_len &gt; 0 || msg-&gt;header.type=
+ =3D=3D msg_del_wins_cfg)</code></p><p style=3D"white-space: pre-wrap; word=
+-wrap: break-word;">Is there ever a case where this would be false?</p></li=
+><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4=
+px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/321/comment/f983786a_=
+f046e4f1">Patch Set #1, Line 1436:</a> <code style=3D"font-family:monospace=
+,monospace">    if (msg-&gt;addr_len &gt; 0)</code></p><p style=3D"white-sp=
+ace: pre-wrap; word-wrap: break-word;">Nitpick: Should be addr_len, not msg=
+-&gt;addr_len</p></li></ul></li></ul><p>To view, visit <a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/321?usp=3Demail">change 321</a>. To unsubscrib=
+e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
+.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
+g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
+a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
+c/openvpn/+/321?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
+e"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I45cd0917d24570ae9e9db7eb6c3=
-70756e4595842 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 318 </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I47c22dcb728011dcedaae47cd03=
+a57219e9c7607 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 321 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
+77...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 31 Jul 2023 09:29:57=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---TeAVvlWl3wU=--
+--NNX8Cf7Sx6c=--
 
