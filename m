@@ -1,13 +1,9 @@
-Message-ID: <ffffcce0-1c0b-cd4e-95c5-b17d523cbf30@...2108...>
-Date: Tue, 1 Aug 2023 20:22:24 +0200
-MIME-Version: 1.0
-Content-Language: en-US
-References: <CAEeEfvzkhp_FQ8cnOZcASiVbDN8=+Gw_2sV5SNonL5x7OYb1jA@...278...>
- <892bc3fa-b752-b959-1ea4-19b106c0915c@...1227...>
- <CAEeEfvyw2AKiKV1DW2mPA8C332pK7nroA9=BtpqEND2TPGmFog@...278...>
 From: David Sommerseth <dazo+openvpn@...2108...>
-In-Reply-To: <CAEeEfvyw2AKiKV1DW2mPA8C332pK7nroA9=BtpqEND2TPGmFog@...278...>
-Subject: Re: [Openvpn-devel] [PATCH OpenVPN3] Add 'pull' to ignored options
+Date: Wed,  2 Aug 2023 13:31:49 +0200
+Message-Id: <20230802113149.36497-1-dazo+openvpn@...2108...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] ntlm: Clarify details on NTLM phase 3
+ decoding
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,44 +12,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Merten Fermont <merten.fermont@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <davids@...515...>
 
-On 27/07/2023 14:21, Merten Fermont wrote:
-> Hi Arne,
-> 
-> I changed my patch to check the client and client+pull options.
-> Giving an error when neither options are declared.
-> 
-> This however may break current implementations that depend on 'client'
-> not being a required option?
-> 
-> Greetings,
-> Merten
-> 
-> Subject: [PATCH] Check for client options
-> 
+From: David Sommerseth <davids@...515...>
 
-Hi,
+The code was very clear if we accept that the base64 decode of the
+NTLM challenge was truncated or not.  Move the related code lines
+closer to where it first used and comment what we are not concerned
+about any truncation.
 
-Thanks for your patch.  Changes looks reasonable to me as well, and I 
-wanted to pull it in.  But it turns out that the patch has been mangled 
-somehow.  Even good old 'patch' refuses to apply anything.  This is not 
-an unknown issue with gmail.com; which is why we generally recommend to 
-use 'git send-mail' [1].
+If the decoded result is truncated, the NTLM server side will reject
+our new response to the challenge as it will be incorrect.  The
+buffer size fixed and known to be in a cleared state before the
+decode starts.
 
-In this specific case, resending the patch as an attachment can also work.
+Resolves: TOB-OVPN-14
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ src/openvpn/ntlm.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-
-[1] <https://git-scm.com/docs/git-send-email>
-
-
+diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
+index 0cb0a32f..2e772141 100644
+--- a/src/openvpn/ntlm.c
++++ b/src/openvpn/ntlm.c
+@@ -207,7 +207,6 @@ ntlm_phase_3(const struct http_proxy_info *p, const char *phase_2,
+      */
+ 
+     char pwbuf[sizeof(p->up.password) * 2]; /* for unicode password */
+-    uint8_t buf2[128]; /* decoded reply from proxy */
+     uint8_t phase3[464];
+ 
+     uint8_t md4_hash[MD4_DIGEST_LENGTH + 5];
+@@ -230,8 +229,6 @@ ntlm_phase_3(const struct http_proxy_info *p, const char *phase_2,
+ 
+     bool ntlmv2_enabled = (p->auth_method == HTTP_AUTH_NTLM2);
+ 
+-    CLEAR(buf2);
+-
+     ASSERT(strlen(p->up.username) > 0);
+     ASSERT(strlen(p->up.password) > 0);
+ 
+@@ -264,6 +261,12 @@ ntlm_phase_3(const struct http_proxy_info *p, const char *phase_2,
+     /* pad to 21 bytes */
+     memset(md4_hash + MD4_DIGEST_LENGTH, 0, 5);
+ 
++    /* If the decoded challenge is shorter than required by the protocol,
++     * the missing bytes will be NULL, as buf2 is known to be zeroed
++     * when this decode happens.
++     */
++    uint8_t buf2[128]; /* decoded reply from proxy */
++    CLEAR(buf2);
+     ret_val = openvpn_base64_decode(phase_2, buf2, -1);
+     if (ret_val < 0)
+     {
 -- 
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
+2.39.3
 
 
