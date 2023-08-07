@@ -1,10 +1,16 @@
-From: merten.fermont@...277...
-Date: Wed,  2 Aug 2023 13:52:12 +0200
-Message-ID: <20230802115212.25000-1-merten.fermont@...277...>
-In-Reply-To: <7e3baf77.AWYAACLanAUAAAAAAAAAAWpzJVQAAYCsnhYAAAAAABXTlQBkyU1m@...2677...>
-References: <7e3baf77.AWYAACLanAUAAAAAAAAAAWpzJVQAAYCsnhYAAAAAABXTlQBkyU1m@...2677...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Mon, 7 Aug 2023 09:03:20 +0000
+In-Reply-To: <gerrit.1690550288000.I47c22dcb728011dcedaae47cd03a57219e9c7607@...2715...>
+References: <gerrit.1690550288000.I47c22dcb728011dcedaae47cd03a57219e9c7607@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., selva.nair@...277...,
+ openvpn-devel@lists.sourceforge.net, lstipakov@...277..., a@...2181...
+Message-ID: <3a0620928fd82856f3d8d45cfe202fe27b940816-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Check for client options
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="OE2nGEF9AlE="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: Set WINS
+ servers via interactice service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,82 +19,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: stipa <lstipakov@...277...>
+Cc: plaisthos <arne-openvpn@...1227...>, selvanair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Merten Fermont <merten.fermont@...277...>
+--OE2nGEF9AlE=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Require 'client' or 'tls-client'+'pull' to be declared in the config.
-To prevent other errors, 'client' option is added when 'tls-client'
-and 'pull' are both declared.
+Attention is currently required from: cron2, ordex, plaisthos, selvanair, s=
+tipa.
 
-Fixes error that --pull is a unknown option.
----
- openvpn/client/cliopt.hpp       |  1 -
- openvpn/client/cliopthelper.hpp | 11 ++++++++++-
- openvpn/common/options.hpp      |  4 ++--
- 3 files changed, 12 insertions(+), 4 deletions(-)
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/321?usp=3Demail )
 
-diff --git a/openvpn/client/cliopt.hpp b/openvpn/client/cliopt.hpp
-index 431791f3..ce2e84cc 100644
---- a/openvpn/client/cliopt.hpp
-+++ b/openvpn/client/cliopt.hpp
-@@ -802,7 +802,6 @@ class ClientOptions : public RC<thread_unsafe_refcount>
-         "replay-persist", /* Makes little sense in TLS mode */
-         "script-security",
-         "sndbuf",
--        "tls-client", /* Always enabled */
-         "tmp-dir",
-         "tun-ipv6",   /* ignored in v2 as well */
-         "txqueuelen", /* so platforms evaluate that in tun, some do not, do not warn about that */
-diff --git a/openvpn/client/cliopthelper.hpp b/openvpn/client/cliopthelper.hpp
-index 95aa6664..ad3b4445 100644
---- a/openvpn/client/cliopthelper.hpp
-+++ b/openvpn/client/cliopthelper.hpp
-@@ -367,13 +367,22 @@ class ParseClientConfig
-             bool added = false;
- 
-             // client
--            if (!options.exists("client"))
-+            if (options.exists("client"))
-+            {
-+                options.touch("tls-client", true);
-+                options.touch("pull", true);
-+            }
-+            else if (options.exists("tls-client") && options.exists("pull"))
-             {
-                 Option opt;
-                 opt.push_back("client");
-                 options.push_back(std::move(opt));
-                 added = true;
-             }
-+            else
-+            {
-+                throw option_error("No 'client' or 'tls-client'+'pull' directive declared. Other roles are not supported.");
-+            }
- 
-             // dev
-             if (!options.exists("dev"))
-diff --git a/openvpn/common/options.hpp b/openvpn/common/options.hpp
-index d594c41a..a813647e 100644
---- a/openvpn/common/options.hpp
-+++ b/openvpn/common/options.hpp
-@@ -1460,11 +1460,11 @@ class OptionList : public std::vector<Option>, public RCCopyable<thread_unsafe_r
-     }
- 
-     // Touch an option, if it exists.
--    void touch(const std::string &name) const
-+    void touch(const std::string &name, bool lightly = false) const
-     {
-         const Option *o = get_ptr(name);
-         if (o)
--            o->touch();
-+            o->touch(lightly);
-     }
- 
-     // Render object as a string.
--- 
-2.41.0
+Change subject: Set WINS servers via interactice service
+......................................................................
 
+
+Patch Set 3: Code-Review+2
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/321?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: I47c22dcb728011dcedaae47cd03a57219e9c7607
+Gerrit-Change-Number: 321
+Gerrit-PatchSet: 3
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: cron2
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: ordex <a@...2181...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: selvanair <selva.nair@...277...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: cron2
+Gerrit-Attention: ordex <a@...2181...>
+Gerrit-Attention: selvanair <selva.nair@...277...>
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Mon, 07 Aug 2023 09:03:20 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--OE2nGEF9AlE=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: cron2, ordex, plaisthos, selvanai=
+r, stipa. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/321?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/321?usp=3Demail">=
+change 321</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/321?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I47c22dcb728011dcedaae47cd03=
+a57219e9c7607 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 321 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
+77...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Attention: selvanair &lt;selva.nair@...493...=
+277...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 07 Aug 2023 09:03:20=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--OE2nGEF9AlE=--
 
