@@ -1,14 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 7 Aug 2023 09:03:20 +0000
+Date: Mon, 7 Aug 2023 09:03:49 +0000
 In-Reply-To: <gerrit.1690550288000.I47c22dcb728011dcedaae47cd03a57219e9c7607@...2715...>
 References: <gerrit.1690550288000.I47c22dcb728011dcedaae47cd03a57219e9c7607@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227..., selva.nair@...277...,
  openvpn-devel@lists.sourceforge.net, lstipakov@...277..., a@...2181...
-Message-ID: <3a0620928fd82856f3d8d45cfe202fe27b940816-EmailReviewComments-HTML@...2715...>
+Message-ID: <d984e6fbdde2cc17d7ce3130defad9be72b713ed-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="OE2nGEF9AlE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="tCU1uZQF9XE="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[release/2.6]: Set WINS
  servers via interactice service
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: stipa <lstipakov@...277...>
 Cc: plaisthos <arne-openvpn@...1227...>, selvanair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---OE2nGEF9AlE=
+--tCU1uZQF9XE=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -36,7 +36,15 @@ Change subject: Set WINS servers via interactice service
 ......................................................................
 
 
-Patch Set 3: Code-Review+2
+Patch Set 3:
+
+(1 comment)
+
+Patchset:
+
+PS3:
+Acked-By: Frank Lichtenheld <frank@...2641...>
+
 
 
 --
@@ -61,28 +69,32 @@ Gerrit-Attention: cron2
 Gerrit-Attention: ordex <a@...2181...>
 Gerrit-Attention: selvanair <selva.nair@...277...>
 Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Mon, 07 Aug 2023 09:03:20 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Gerrit-Comment-Date: Mon, 07 Aug 2023 09:03:49 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---OE2nGEF9AlE=
+--tCU1uZQF9XE=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: cron2, ordex, plaisthos, selvanai=
 r, stipa. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/321?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/321?usp=3Demail">=
-change 321</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/321?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/321?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/3=
+21?tab=3Dcomments">Patch Set #3:</a> </p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">Acked-By: Frank Lichtenheld &lt;frank@...2641...&g=
+t;</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/321?usp=3Demail">change 321</a>. To unsubscribe, or for h=
+elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
+gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
+age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
+ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/321?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
+/div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
@@ -112,12 +124,12 @@ ts.sourceforge.net&gt; </div>
 277...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 07 Aug 2023 09:03:20=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 07 Aug 2023 09:03:49=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---OE2nGEF9AlE=--
+--tCU1uZQF9XE=--
 
