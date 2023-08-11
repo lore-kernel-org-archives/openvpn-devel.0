@@ -1,12 +1,10 @@
-Date: Fri, 11 Aug 2023 11:56:43 +0200
-From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZNYF2woKoybUT1lf@...2685...>
-References: <20230130172936.3444840-2-arne@...1227...>
- <20230810140210.4047842-1-arne@...1227...>
+From: Arne Schwabe <arne@...1227...>
+Date: Fri, 11 Aug 2023 14:15:03 +0200
+Message-Id: <20230811121503.4159089-1-arne@...1227...>
+In-Reply-To: <20230707185811.30132-1-arne@...1227...>
+References: <20230707185811.30132-1-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <20230810140210.4047842-1-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Fix unaligned access in
- macOS/Solaris hwaddr
+Subject: [Openvpn-devel] [PATCH v2] show extra info for OpenSSL errors
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,99 +13,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Thu, Aug 10, 2023 at 04:02:10PM +0200, Arne Schwabe wrote:
-> The undefined behaviour USAN clang checker found this.
-> 
-> This fix is a bit messy but so are the original structures.
-> 
-> Patch v2: handle the fact we need to beyond the struct ifr
->           correctly when mapping the result to struct sockaddr_dl
-> 
-> Change-Id: Ia797c8801fa9a9bc10b6674efde5fdbd7132e4a8
-> Signed-off-by: Arne Schwabe <arne@...1227...>
-> ---
->  src/openvpn/route.c | 32 +++++++++++++++++++++++---------
->  1 file changed, 23 insertions(+), 9 deletions(-)
-> 
-> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-> index 90e981e97..bcf6fb878 100644
-> --- a/src/openvpn/route.c
-> +++ b/src/openvpn/route.c
-> @@ -3641,7 +3641,7 @@ get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
->      if (rgi->flags & RGI_IFACE_DEFINED)
->      {
->          struct ifconf ifc;
-> -        struct ifreq *ifr;
-> +        struct ifreq ifr;
->          const int bufsize = 4096;
->          char *buffer;
->  
-> @@ -3666,23 +3666,37 @@ get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
->  
->          for (cp = buffer; cp <= buffer + ifc.ifc_len - sizeof(struct ifreq); )
->          {
-> -            ifr = (struct ifreq *)cp;
-> +            /* this is not always using an 8 byte alignment that struct ifr
-> +             * requires */
-> +            memcpy(&ifr, cp, sizeof(struct ifreq));
->  #if defined(TARGET_SOLARIS)
-> -            const size_t len = sizeof(ifr->ifr_name) + sizeof(ifr->ifr_addr);
-> +            const size_t len = sizeof(ifr.ifr_name) + sizeof(ifr.ifr_addr);
->  #else
-> -            const size_t len = sizeof(ifr->ifr_name) + max(sizeof(ifr->ifr_addr), ifr->ifr_addr.sa_len);
-> +            const size_t len = sizeof(ifr.ifr_name) + max(sizeof(ifr.ifr_addr), ifr.ifr_addr.sa_len);
->  #endif
->  
-> -            if (!ifr->ifr_addr.sa_family)
-> +            if (!ifr.ifr_addr.sa_family)
->              {
->                  break;
->              }
-> -            if (!strncmp(ifr->ifr_name, rgi->iface, IFNAMSIZ))
-> +            if (!strncmp(ifr.ifr_name, rgi->iface, IFNAMSIZ))
->              {
-> -                if (ifr->ifr_addr.sa_family == AF_LINK)
-> +                if (ifr.ifr_addr.sa_family == AF_LINK)
->                  {
-> -                    struct sockaddr_dl *sdl = (struct sockaddr_dl *)&ifr->ifr_addr;
-> -                    memcpy(rgi->hwaddr, LLADDR(sdl), 6);
-> +                    /* This is a broken member access. struct sockaddr_dl has
-> +                     * 20 bytes while if_addr has only 16 bytes. So casting if_addr
-> +                     * to struct sockaddr_dl gives (legitimate) warnings
-> +                     *
-> +                     * sockaddr_dl has 12 bytes space for the inrerface name and
+This also shows the extra data from the OpenSSL error function that
+can contain extra information. For example, the command
 
-"interface"
+    openvpn --providers vollbit
 
-> +                     * the hw address. So the last 4 that might be part of the
-> +                     * hw address are not in if_addr, so we need
+will print out (on macOS):
 
-Sentence missing words at the end?
+     OpenSSL: error:12800067:DSO support routines::could not load the shared library:filename(/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib): dlopen(/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib, 0x0002): tried: '/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib' (no such file), '/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib' (no such file)
 
-> +                     *
-> +                     * So we use a memcpy here to avoid the warnings with ASAN
-> +                     * that we are doing a very nasty cast here
-> +                     */
-> +                    struct sockaddr_dl sdl = { 0 };
-> +                    memcpy(&sdl, cp + offsetof(struct ifreq, ifr_addr), sizeof(sdl));
-> +                    memcpy(rgi->hwaddr, LLADDR(&sdl), 6);
->                      rgi->flags |= RGI_HWADDR_DEFINED;
+Patch v2: Format message more like current messages
 
-So, reading the documentation about sockaddr and sockaddr_dl, I'm not sure that even
-this code is safe. E.g. you say "sockaddr_dl has 12 bytes space", but is that actually true?
-The actual headers always seems to suggest "at least 12 bytes space". Similar to how the generic
-sockaddr has "at least 16 bytes size". So is that memcpy that you're doing actually guaranteed
-to copy enough data to make LLADDR work? Or can LLADDR actually point behind
-sizeof(sockaddr_dl)? The documentation and comments in the BSD headers seem to be vague
-about that?
+Change-Id: Ic2ee89937dcd85721bcacd1b700a20c640364f80
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+ src/openvpn/crypto_openssl.c | 21 +++++++++++++++++++--
+ src/openvpn/openssl_compat.h | 12 ++++++++++++
+ 2 files changed, 31 insertions(+), 2 deletions(-)
 
-Regards,
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index b043bb95e..22c6d6840 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -238,9 +238,16 @@ void
+ crypto_print_openssl_errors(const unsigned int flags)
+ {
+     unsigned long err = 0;
++    int line, errflags;
++    const char *file, *data, *func;
+ 
+-    while ((err = ERR_get_error()))
++    while ((err = ERR_get_error_all(&file, &line, &func, &data, &errflags)) != 0)
+     {
++        if (!(errflags & ERR_TXT_STRING))
++        {
++            data = "";
++        }
++
+         /* Be more clear about frequently occurring "no shared cipher" error */
+         if (ERR_GET_REASON(err) == SSL_R_NO_SHARED_CIPHER)
+         {
+@@ -258,7 +265,17 @@ crypto_print_openssl_errors(const unsigned int flags)
+                 "tls-version-min 1.0 to the client configuration to use TLS 1.0+ "
+                 "instead of TLS 1.0 only");
+         }
+-        msg(flags, "OpenSSL: %s", ERR_error_string(err, NULL));
++
++        /* print file and line if verb >=8 */
++        if (!check_debug_level(D_TLS_DEBUG_MED))
++        {
++            msg(flags, "OpenSSL: %s:%s", ERR_error_string(err, NULL), data);
++        }
++        else
++        {
++            msg(flags, "OpenSSL: %s:%s:%s:%d:%s", ERR_error_string(err, NULL),
++                data, file, line, func);
++        }
+     }
+ }
+ 
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index ffb64adf6..736ce1bd5 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -43,6 +43,7 @@
+ #include <openssl/rsa.h>
+ #include <openssl/ssl.h>
+ #include <openssl/x509.h>
++#include <openssl/err.h>
+ 
+ /* Functionality missing in 1.1.0 */
+ #if OPENSSL_VERSION_NUMBER < 0x10101000L && !defined(ENABLE_CRYPTO_WOLFSSL)
+@@ -799,6 +800,17 @@ EVP_MD_free(const EVP_MD *md)
+     /* OpenSSL 1.1.1 and lower use only const EVP_MD, nothing to free */
+ }
+ 
++static inline unsigned long
++ERR_get_error_all(const char **file, int *line,
++                  const char **func,
++                  const char **data, int *flags)
++{
++    static const char *empty = "";
++    *func = empty;
++    long err = ERR_get_error_line_data(file, line, data, flags);
++    return err;
++}
++
+ #endif /* OPENSSL_VERSION_NUMBER < 0x30000000L */
+ 
+ #endif /* OPENSSL_COMPAT_H_ */
 -- 
-  Frank Lichtenheld
+2.39.2 (Apple Git-143)
+
 
