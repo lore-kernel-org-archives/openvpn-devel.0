@@ -1,10 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri, 11 Aug 2023 14:15:03 +0200
-Message-Id: <20230811121503.4159089-1-arne@...1227...>
-In-Reply-To: <20230707185811.30132-1-arne@...1227...>
-References: <20230707185811.30132-1-arne@...1227...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] show extra info for OpenSSL errors
+Date: Fri, 11 Aug 2023 16:43:57 +0200 (CEST)
+Message-Id: <202308111443.37BEhvBE086233@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230728131246.694-1-lstipakov@...277...>
+References: <20230728131246.694-1-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Set WINS servers via
+ interactice service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,98 +15,41 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This also shows the extra data from the OpenSSL error function that
-can contain extra information. For example, the command
+NOTE: this is merging the v3 of the patch from Gerrit, which has an
+ACK in gerrit
 
-    openvpn --providers vollbit
+  https://gerrit.openvpn.net/c/openvpn/+/321
 
-will print out (on macOS):
+there are some diffs from v1 to v2, and rebase context from v2 to v3,
+but the gist of the patch is the same.
 
-     OpenSSL: error:12800067:DSO support routines::could not load the shared library:filename(/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib): dlopen(/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib, 0x0002): tried: '/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib' (no such file), '/opt/homebrew/Cellar/openssl@...1554.../3.1.1_1/lib/ossl-modules/vollbit.dylib' (no such file)
+I have not tested this beyond "does it look safe wrt memory/array
+usage" and "does GHA like it?".
 
-Patch v2: Format message more like current messages
+Your patch has been applied to the master and release/2.6 branch
+(it's somewhat of a bugfix, to restore missing functionality in the
+"with DCO" case).
 
-Change-Id: Ic2ee89937dcd85721bcacd1b700a20c640364f80
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/crypto_openssl.c | 21 +++++++++++++++++++--
- src/openvpn/openssl_compat.h | 12 ++++++++++++
- 2 files changed, 31 insertions(+), 2 deletions(-)
+commit 18826de5737789cb74b48fc40a9ff5cb37d38d98 (master)
+commit 64a75e75b8929f1290ba984f60d0c13447a41407 (release/2.6)
+Author: Lev Stipakov
+Date:   Thu Jul 27 18:47:06 2023 +0300
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index b043bb95e..22c6d6840 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -238,9 +238,16 @@ void
- crypto_print_openssl_errors(const unsigned int flags)
- {
-     unsigned long err = 0;
-+    int line, errflags;
-+    const char *file, *data, *func;
- 
--    while ((err = ERR_get_error()))
-+    while ((err = ERR_get_error_all(&file, &line, &func, &data, &errflags)) != 0)
-     {
-+        if (!(errflags & ERR_TXT_STRING))
-+        {
-+            data = "";
-+        }
-+
-         /* Be more clear about frequently occurring "no shared cipher" error */
-         if (ERR_GET_REASON(err) == SSL_R_NO_SHARED_CIPHER)
-         {
-@@ -258,7 +265,17 @@ crypto_print_openssl_errors(const unsigned int flags)
-                 "tls-version-min 1.0 to the client configuration to use TLS 1.0+ "
-                 "instead of TLS 1.0 only");
-         }
--        msg(flags, "OpenSSL: %s", ERR_error_string(err, NULL));
-+
-+        /* print file and line if verb >=8 */
-+        if (!check_debug_level(D_TLS_DEBUG_MED))
-+        {
-+            msg(flags, "OpenSSL: %s:%s", ERR_error_string(err, NULL), data);
-+        }
-+        else
-+        {
-+            msg(flags, "OpenSSL: %s:%s:%s:%d:%s", ERR_error_string(err, NULL),
-+                data, file, line, func);
-+        }
-     }
- }
- 
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index ffb64adf6..736ce1bd5 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -43,6 +43,7 @@
- #include <openssl/rsa.h>
- #include <openssl/ssl.h>
- #include <openssl/x509.h>
-+#include <openssl/err.h>
- 
- /* Functionality missing in 1.1.0 */
- #if OPENSSL_VERSION_NUMBER < 0x10101000L && !defined(ENABLE_CRYPTO_WOLFSSL)
-@@ -799,6 +800,17 @@ EVP_MD_free(const EVP_MD *md)
-     /* OpenSSL 1.1.1 and lower use only const EVP_MD, nothing to free */
- }
- 
-+static inline unsigned long
-+ERR_get_error_all(const char **file, int *line,
-+                  const char **func,
-+                  const char **data, int *flags)
-+{
-+    static const char *empty = "";
-+    *func = empty;
-+    long err = ERR_get_error_line_data(file, line, data, flags);
-+    return err;
-+}
-+
- #endif /* OPENSSL_VERSION_NUMBER < 0x30000000L */
- 
- #endif /* OPENSSL_COMPAT_H_ */
--- 
-2.39.2 (Apple Git-143)
+     Set WINS servers via interactice service
+
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20230728131246.694-1-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26903.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
