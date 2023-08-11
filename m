@@ -1,16 +1,14 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 11 Aug 2023 15:09:54 +0000
-In-Reply-To: <gerrit.1690549401000.I889de8bafb581b810a026c7359fbfee94f1b5a4e@...2715...>
-References: <gerrit.1690549401000.I889de8bafb581b810a026c7359fbfee94f1b5a4e@...2715...>
-Reply-To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <c8c71b765d0827deaeb3babe53ebfec774d6b910-HTML@...2715...>
+Date: Fri, 11 Aug 2023 17:12:20 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZNZP1EQIjFmgTqX1@...1296...>
+References: <20230728124005.177414-1-frank@...2641...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="TLdz+JAecZGW9fj9"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="cnqPwjhEe14="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: pkcs11_openssl:
- Disable unused code
+In-Reply-To: <20230728124005.177414-1-frank@...2641...>
+Subject: Re: [Openvpn-devel] [PATCH] GHA: new workflow to submit scan to
+ Coverity Scan service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,131 +17,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: selvanair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---cnqPwjhEe14=
-Content-Type: text/plain; charset="UTF-8"
+--TLdz+JAecZGW9fj9
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/31=
-7?usp=3Demail )
+Hi,
 
-Change subject: pkcs11_openssl: Disable unused code
-......................................................................
+generally good, but...
 
-pkcs11_openssl: Disable unused code
+On Fri, Jul 28, 2023 at 02:40:05PM +0200, Frank Lichtenheld wrote:
+> index 00000000..0620f638
+> --- /dev/null
+> +++ b/.github/workflows/coverity-scan.yml
+> @@ -0,0 +1,45 @@
+> +name: coverity-scan
+> +on:
+> +  schedule:
+> +    - cron: '0 20 * * *' # Daily at 20:00 UTC
+> +  workflow_dispatch:
 
-Coverity: CID 1539183 (#1 of 1): Structurally dead code (UNREACHABLE)
+... not sure this is the best way to approach the run limit, as
+we can have many days with no commits at all, so we'd waste credits.
 
-Change-Id: I889de8bafb581b810a026c7359fbfee94f1b5a4e
-Gerrit: http://gerrit.openvpn.net/c/openvpn/+/317
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Selva Nair <selva.nair@...277...>
-Message-Id: <6b941ce86c4031a5535d6c1997e6ae06c9aec7b3-HTML@...2715...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26=
-901.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/pkcs11_openssl.c
-1 file changed, 2 insertions(+), 2 deletions(-)
+Maybe cache the last commit ID and only run coverity if this has
+changed?  Or run it "on commit", but cache the current day, and only
+run it again on the next commit that's not on the same day?
 
+(My typical workflow is "you folks queue up patches, and then I find
+half a day of free time, and go merge&push as many as I can make sense of")
 
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
-diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c
-index 7c07152..40080ef 100644
---- a/src/openvpn/pkcs11_openssl.c
-+++ b/src/openvpn/pkcs11_openssl.c
-@@ -331,8 +331,7 @@
+--TLdz+JAecZGW9fj9
+Content-Type: application/pgp-signature; name="signature.asc"
 
- #ifdef HAVE_XKEY_PROVIDER
-     return (xkey_load_from_pkcs11h(certificate, ssl_ctx) =3D=3D 0); /* inv=
-erts the return value */
--#endif
--
-+#else
-     int ret =3D 1;
+-----BEGIN PGP SIGNATURE-----
 
-     X509 *x509 =3D NULL;
-@@ -402,6 +401,7 @@
-         openssl_session =3D NULL;
-     }
-     return ret;
-+#endif /* ifdef HAVE_XKEY_PROVIDER */
- }
+iQGcBAEBAgAGBQJk1k/UAAoJEB2Cnv7KVigSq3oL/i2EdyBSWwsN0XlCPKNwYktL
+Kg7HmhiVLn7OoHKqDVSrDgeHS+qigqPY3ki7GZaqGriHyKi1bu6Xl2eHMFu/c7sM
+BL+tMfQzeLU8XtdPqiDQwpxLLumDnoPjIfKrud5I+xKJla6NiWXMFBZIkxGzTGwS
+qBpoN8kz0PhtHebgVqDEyTR3WbvRXkDevbU0Ps0HnnbVb0w8Qc7zUHcqFQ4igvpJ
+x1ZcONjH39yYoAXD1dmjW4gZQ2oyEHh8cumbSJMBP8p0AcSoP2OfCR/zIKirESIp
+NzEdyb8LRZvAsqjq3FyFaKFS+ZSATCac/xAXZzLyznFdQn2BMmpLl8YmY8xjymTC
+dNfMaiebkS9qwxXeEh1N+TbdbhyaTtaSjiRWNeVlYNYHSA22clJ8YiP03l2wgfy5
+hWcWtlsS2k2hHvFid5obu1jG/3vrL6xmfUF1+6Pa2C/ilLiqXxbVlkJq8XaI5FxE
+kS5TMmYV/Kc8HFY/CIfBPG1d3cL9b3TYz8gVo6fbsQ==
+=dYvA
+-----END PGP SIGNATURE-----
 
- char *
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/317?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I889de8bafb581b810a026c7359fbfee94f1b5a4e
-Gerrit-Change-Number: 317
-Gerrit-PatchSet: 2
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: selvanair <selva.nair@...277...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
-
---cnqPwjhEe14=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/317?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">pkcs11_openssl: Disable unused code<br><br>Cov=
-erity: CID 1539183 (#1 of 1): Structurally dead code (UNREACHABLE)<br><br>C=
-hange-Id: I889de8bafb581b810a026c7359fbfee94f1b5a4e<br>Gerrit: http://gerri=
-t.openvpn.net/c/openvpn/+/317<br>Signed-off-by: Frank Lichtenheld &lt;frank=
-@...2641...&gt;<br>Acked-by: Selva Nair &lt;selva.nair@...277...&gt;<br>Mes=
-sage-Id: &lt;6b941ce86c4031a5535d6c1997e6ae06c9aec7b3-HTML@...2715...&gt;<b=
-r>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg=
-26901.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br=
->M src/openvpn/pkcs11_openssl.c<br>1 file changed, 2 insertions(+), 2 delet=
-ions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c=
-</span><br><span>index 7c07152..40080ef 100644</span><br><span>--- a/src/op=
-envpn/pkcs11_openssl.c</span><br><span>+++ b/src/openvpn/pkcs11_openssl.c</=
-span><br><span>@@ -331,8 +331,7 @@</span><br><span> </span><br><span> #ifde=
-f HAVE_XKEY_PROVIDER</span><br><span>     return (xkey_load_from_pkcs11h(ce=
-rtificate, ssl_ctx) =3D=3D 0); /* inverts the return value */</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#else</span><br><span>     int ret =3D 1;</span><br><span> </span><br=
-><span>     X509 *x509 =3D NULL;</span><br><span>@@ -402,6 +401,7 @@</span>=
-<br><span>         openssl_session =3D NULL;</span><br><span>     }</span><=
-br><span>     return ret;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#endif /* ifdef HAVE_XKEY_PROVIDER */</span><br><span> }</span><br><s=
-pan> </span><br><span> char *</span><br><span></span><br></pre><p>To view, =
-visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/317?usp=3Demail">cha=
-nge 317</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope it=
-emtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action=
-" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/317?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I889de8bafb581b810a026c7359f=
-bfee94f1b5a4e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 317 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
-77...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-
-
---cnqPwjhEe14=--
+--TLdz+JAecZGW9fj9--
 
