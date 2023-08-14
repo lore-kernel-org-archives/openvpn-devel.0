@@ -1,10 +1,9 @@
-Date: Fri, 11 Aug 2023 20:41:03 +0200 (CEST)
-Message-Id: <202308111841.37BIf3aC095200@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230811121503.4159089-1-arne@...1227...>
-References: <20230811121503.4159089-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: show extra info for OpenSSL
- errors
+Date: Mon, 14 Aug 2023 08:04:09 +0200
+Message-ID: <20230814060409.50742-1-gert@...1296...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Make received OCC exit messages more
+ visible in log.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,67 +14,49 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Thanks, Selva for having an extra eye :-) - I asked for the feature, and
-it works beautifully for me, but what do I understand about OpenSSL
-internals...  ("unsigned long" fixed on the fly).
+Currently, OCC exit messages are only logged at some high debug level
+(and if OpenVPN compiled with DEBUG), while control-channel EEN messages
+are logged on verb 1.  Make this consistent, both in wording and in
+log level.
 
-Tried on FreeBSD 14 with OpenSSL 3 and a broken provider (which is what
-triggered the whole thing):
+Both messages are prefixed with the "channel" where the exit message
+came in.
 
-$ src/openvpn/openvpn --providers legacyXX
-2023-08-11 20:19:53 OpenSSL: error:12800067:DSO support routines::could not load the shared library:filename(/usr/lib/ossl-modules/legacyXX.so): /usr/lib/ossl-modules/legacyXX.so: Undefined symbol "ossl_md4_functions"
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/occ.c  | 2 +-
+ src/openvpn/push.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-.. and on Linux with OpenSSL 1.1.1t, passing a wrong passphrase:
-
-2023-08-11 20:17:24 OpenSSL: error:06065064:digital envelope routines:EVP_DecryptFinal_ex:bad decrypt:
-2023-08-11 20:17:24 OpenSSL: error:23077074:PKCS12 routines:PKCS12_pbe_crypt:pkcs12 cipherfinal error:
-2023-08-11 20:17:24 OpenSSL: error:2306A075:PKCS12 routines:PKCS12_item_decrypt_d2i:pkcs12 pbe crypt error:
-2023-08-11 20:17:24 OpenSSL: error:0907B00D:PEM routines:PEM_read_bio_PrivateKey:ASN1 lib:
-2023-08-11 20:17:24 Cannot load private key file [[INLINE]]
-
-(which looks to be "the same what it printed before", so at least it
-does not break anything)
-
-With 3.0 it prints, in the same situation...
-
-2023-08-11 20:24:01 OpenSSL: error:1C800064:Provider routines::bad decrypt:
-2023-08-11 20:24:01 OpenSSL: error:11800074:PKCS12 routines::pkcs12 cipherfinal error:maybe wrong password
-
-.. or
-
-2023-08-11 20:23:21 OpenSSL: error:0308010C:digital envelope routines::unsupported:Global default library context, Algorithm (DES-CBC : 10), Properties ()
-
-(ahem...)
-
-So, very nice.
-
-
-For extra sanity checking pushed to GHA first, to get more OpenSSL/OS
-combinations tested.
-
-
-Your patch has been applied to the master and release/2.6 branch.
-
-commit 0f8485f2870277fb7ccdb4097380e35dc35b064e (master)
-commit 101499a43d222dcefbf5c6fc6f8b71a4f5d1f533 (release/2.6)
-Author: Arne Schwabe
-Date:   Fri Aug 11 14:15:03 2023 +0200
-
-     show extra info for OpenSSL errors
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <20230811121503.4159089-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26929.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c
+index 8541f6ec..2871449e 100644
+--- a/src/openvpn/occ.c
++++ b/src/openvpn/occ.c
+@@ -427,7 +427,7 @@ process_received_occ_msg(struct context *c)
+             break;
+ 
+         case OCC_EXIT:
+-            dmsg(D_PACKET_CONTENT, "RECEIVED OCC_EXIT");
++            dmsg(D_STREAM_ERRORS, "OCC exit message received by peer");
+             register_signal(c->sig, SIGUSR1, "remote-exit");
+             break;
+     }
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 01e7cd6e..5f5755ab 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -190,7 +190,7 @@ server_pushed_signal(struct context *c, const struct buffer *buffer, const bool
+ void
+ receive_exit_message(struct context *c)
+ {
+-    dmsg(D_STREAM_ERRORS, "Exit message received by peer");
++    dmsg(D_STREAM_ERRORS, "CC-EEN exit message received by peer");
+     /* With control channel exit notification, we want to give the session
+      * enough time to handle retransmits and acknowledgment, so that eventual
+      * retries from the client to resend the exit or ACKs will not trigger
+-- 
+2.41.0
 
 
