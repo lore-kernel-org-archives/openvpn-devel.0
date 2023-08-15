@@ -1,9 +1,15 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Wed, 16 Aug 2023 01:15:55 +0200
-Message-ID: <20230815231555.6465-1-a@...2181...>
+From: "ordex (Code Review)" <gerrit@...515...>
+Date: Tue, 15 Aug 2023 23:20:08 +0000
+References: <gerrit.1692141606000.I61adc26ce2ff737e020c3d980902a46758cb23e5@...2715...>
+Reply-To: a@...2181..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <020b4637527ee862752738889e4d19e91ae2b359-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] dco: fix crash when --multihome is used
- with --proto tcp
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="V+z7yLZpJlo="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: dco: fix crash when
+ --multihome is used with --proto tcp
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,10 +18,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+--V+z7yLZpJlo=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Attention is currently required from: flichtenheld.
+
+Hello flichtenheld,
+
+I'd like you to do a code review.
+Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/324?usp=3Demail
+
+to review the following change.
+
+
+Change subject: dco: fix crash when --multihome is used with --proto tcp
+......................................................................
+
+dco: fix crash when --multihome is used with --proto tcp
 
 Although it's a combination of options that is not really useful,
 when specifying --multihome along with --proto tcp and DCO is enabled,
@@ -31,23 +56,99 @@ Fixes: https://github.com/OpenVPN/openvpn/issues/390
 Change-Id: I61adc26ce2ff737e020c3d980902a46758cb23e5
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/dco.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+M src/openvpn/dco.c
+1 file changed, 1 insertion(+), 1 deletion(-)
+
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/24/324/1
 
 diff --git a/src/openvpn/dco.c b/src/openvpn/dco.c
-index 7c7eaac4..cd3e0ad3 100644
+index 7c7eaac..cd3e0ad 100644
 --- a/src/openvpn/dco.c
 +++ b/src/openvpn/dco.c
-@@ -509,7 +509,7 @@ dco_multi_get_localaddr(struct multi_context *m, struct multi_instance *mi,
+@@ -509,7 +509,7 @@
  #if ENABLE_IP_PKTINFO
-     struct context *c = &mi->context;
- 
+     struct context *c =3D &mi->context;
+
 -    if (!(c->options.sockflags & SF_USE_IP_PKTINFO))
-+    if (!proto_is_udp(c->c2.link_socket->info.proto) || !(c->options.sockflags & SF_USE_IP_PKTINFO))
++    if (!proto_is_udp(c->c2.link_socket->info.proto) || !(c->options.sockf=
+lags & SF_USE_IP_PKTINFO))
      {
          return false;
      }
--- 
-2.41.0
 
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/324?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I61adc26ce2ff737e020c3d980902a46758cb23e5
+Gerrit-Change-Number: 324
+Gerrit-PatchSet: 1
+Gerrit-Owner: ordex <a@...2181...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
+
+--V+z7yLZpJlo=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld. </p>
+<p>ordex would like flichtenheld to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/324?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">dco: fix crash when --multihome is used with --proto tcp<br><=
+br>Although it&#39;s a combination of options that is not really useful,<br=
+>when specifying --multihome along with --proto tcp and DCO is enabled,<br>=
+OpenVPN will crash while attempting to access c2.link_socket_actual<br>(NUL=
+L for the TCP case) in order to retrieve the local address (in<br>function =
+dco_multi_get_localaddr())<br><br>Prevent crash by running this code only i=
+f proto is UDP.<br>The same check is already performed in socket.c/h for th=
+e non-DCO<br>case.<br><br>Fixes: https://github.com/OpenVPN/openvpn/issues/=
+390<br>Change-Id: I61adc26ce2ff737e020c3d980902a46758cb23e5<br>Signed-off-b=
+y: Antonio Quartulli &lt;a@...2181...&gt;<br>---<br>M src/openvpn/dco.c<br>=
+1 file changed, 1 insertion(+), 1 deletion(-)<br><br></pre><pre style=3D"fo=
+nt-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerr=
+it.openvpn.net:29418/openvpn refs/changes/24/324/1</pre><pre style=3D"font-=
+family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src=
+/openvpn/dco.c b/src/openvpn/dco.c</span><br><span>index 7c7eaac..cd3e0ad 1=
+00644</span><br><span>--- a/src/openvpn/dco.c</span><br><span>+++ b/src/ope=
+nvpn/dco.c</span><br><span>@@ -509,7 +509,7 @@</span><br><span> #if ENABLE_=
+IP_PKTINFO</span><br><span>     struct context *c =3D &amp;mi-&gt;context;<=
+/span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+if (!(c-&gt;options.sockflags &amp; SF_USE_IP_PKTINFO))</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    if (!proto_is_udp(c-&gt;c2.link_soc=
+ket-&gt;info.proto) || !(c-&gt;options.sockflags &amp; SF_USE_IP_PKTINFO))<=
+/span><br><span>     {</span><br><span>         return false;</span><br><sp=
+an>     }</span><br><span></span><br></pre><p>To view, visit <a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/324?usp=3Demail">change 324</a>. To unsu=
+bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.o=
+penvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sch=
+ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
+/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/324?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
+ Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I61adc26ce2ff737e020c3d98090=
+2a46758cb23e5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 324 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--V+z7yLZpJlo=--
 
