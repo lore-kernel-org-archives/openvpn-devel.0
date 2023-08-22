@@ -1,16 +1,14 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 21 Aug 2023 09:26:40 +0000
-In-Reply-To: <gerrit.1692364556000.I4f29953b91cf8e8daf2c9503da44073ad96d0ff5@...2715...>
-References: <gerrit.1692364556000.I4f29953b91cf8e8daf2c9503da44073ad96d0ff5@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <fae0cc753da60d1da7048b7a761053d930d20b78-EmailReviewComments-HTML@...2715...>
+Date: Tue, 22 Aug 2023 13:06:56 +0000
+References: <gerrit.1692709613000.I052bebe720ddf26340827f25b94705945e470bfa@...2715...>
+Reply-To: frank@...2641..., openvpn-devel@lists.sourceforge.net
+Message-ID: <cf8019aa36d050a58ec2aab0995f471d351ed81a-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Opyfxis9JDs="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove ability to
- use configurations without TLS by default
+Content-Type: multipart/alternative; boundary="LHdCaUu3N0I="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Remove last uses of
+ inet_ntoa
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,173 +17,300 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Opyfxis9JDs=
+--LHdCaUu3N0I=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+flichtenheld has uploaded this change for review. ( http://gerrit.openvpn.n=
+et/c/openvpn/+/326?usp=3Demail )
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/325?usp=3Demail )
 
-Change subject: Remove ability to use configurations without TLS by default
+Change subject: Remove last uses of inet_ntoa
 ......................................................................
 
+Remove last uses of inet_ntoa
 
-Patch Set 2: Code-Review-1
+inet_ntoa is officially deprecated and in some places
+its use already causes warnings (e.g. Fedora submissions).
+Since we mostly use inet_ntop already, just convert the
+remaining usages to that.
 
-(7 comments)
-
-Commit Message:
-
-http://gerrit.openvpn.net/c/openvpn/+/325/comment/379190bd_a9c3fa7a :
-PS2, Line 12: line or the configuration itself. This will server as a last =
-and final
-"serve"
-
-
-Patchset:
-
-PS2:
-Some documentation fixes required. But overall looks okay.
+Change-Id: I052bebe720ddf26340827f25b94705945e470bfa
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+M src/openvpn/manage.c
+M src/openvpn/route.c
+M src/openvpn/socket.c
+3 files changed, 17 insertions(+), 15 deletions(-)
 
 
-File doc/man-sections/protocol-options.rst:
 
-http://gerrit.openvpn.net/c/openvpn/+/325/comment/f506bc1e_c4d07ee5 :
-PS2, Line 237: --secret args
-I think we should at least add a basic documentation for the "allow-depreca=
-ted-insecure-static-crypto" to the man page. I think there should be some d=
-ocumentation where people can look up what it means when they encounter it.
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/26/326/1
 
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 739ed40..feb62b2 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -3058,9 +3058,11 @@
+         /* listen on our local TUN/TAP IP address */
+         struct in_addr ia;
+         int ret;
++        char buf[INET_ADDRSTRLEN];
 
-File src/openvpn/options.c:
+         ia.s_addr =3D htonl(tun_local_ip);
+-        ret =3D openvpn_getaddrinfo(GETADDR_PASSIVE, inet_ntoa(ia), NULL, =
+0, NULL,
++        inet_ntop(AF_INET, &ia, buf, sizeof(buf));
++        ret =3D openvpn_getaddrinfo(GETADDR_PASSIVE, buf, NULL, 0, NULL,
+                                   AF_INET, &man->settings.local);
+         ASSERT(ret=3D=3D0);
+         man_connection_init(man);
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 9212186..ff64938 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -342,7 +342,9 @@
+             goto fail;
+         }
+         special.s_addr =3D htonl(special.s_addr);
+-        ret =3D openvpn_getaddrinfo(0, inet_ntoa(special), NULL, 0, NULL,
++        char buf[INET_ADDRSTRLEN];
++        inet_ntop(AF_INET, &special, buf, sizeof(buf));
++        ret =3D openvpn_getaddrinfo(0, buf, NULL, 0, NULL,
+                                   AF_INET, network_list);
+     }
+     else
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 501e023..903f98b 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -2901,16 +2901,16 @@
+ print_in_addr_t(in_addr_t addr, unsigned int flags, struct gc_arena *gc)
+ {
+     struct in_addr ia;
+-    struct buffer out =3D alloc_buf_gc(64, gc);
++    char *out =3D gc_malloc(INET_ADDRSTRLEN, true, gc);
 
-http://gerrit.openvpn.net/c/openvpn/+/325/comment/2666ce9a_7234c17d :
-PS2, Line 618: ,\
-Change trailing comma to full stop.
+     if (addr || !(flags & IA_EMPTY_IF_UNDEF))
+     {
+         CLEAR(ia);
+         ia.s_addr =3D (flags & IA_NET_ORDER) ? addr : htonl(addr);
 
+-        buf_printf(&out, "%s", inet_ntoa(ia));
++        inet_ntop(AF_INET, &ia, out, INET_ADDRSTRLEN);
+     }
+-    return BSTR(&out);
++    return out;
+ }
 
-http://gerrit.openvpn.net/c/openvpn/+/325/comment/5089d435_2a81c525 :
-PS2, Line 756: secret
-Should be we change the "secret" here?
+ /*
+@@ -2920,16 +2920,14 @@
+ const char *
+ print_in6_addr(struct in6_addr a6, unsigned int flags, struct gc_arena *gc)
+ {
+-    struct buffer out =3D alloc_buf_gc(64, gc);
+-    char tmp_out_buf[64];       /* inet_ntop wants pointer to buffer */
++    char *out =3D gc_malloc(INET6_ADDRSTRLEN, true, gc);
 
+     if (memcmp(&a6, &in6addr_any, sizeof(a6)) !=3D 0
+         || !(flags & IA_EMPTY_IF_UNDEF))
+     {
+-        inet_ntop(AF_INET6, &a6, tmp_out_buf, sizeof(tmp_out_buf)-1);
+-        buf_printf(&out, "%s", tmp_out_buf );
++        inet_ntop(AF_INET6, &a6, out, INET6_ADDRSTRLEN);
+     }
+-    return BSTR(&out);
++    return out;
+ }
 
-http://gerrit.openvpn.net/c/openvpn/+/325/comment/310f2f25_827ef514 :
-PS2, Line 2843:             "OpenVPN 2.7 allow using this configuration whe=
-n using "
-"allows"
+ /*
+@@ -2978,7 +2976,7 @@
+ {
+     char name_buf[256];
 
+-    char buf[128];
++    char buf[INET6_ADDRSTRLEN];
+     switch (addr->addr.sa.sa_family)
+     {
+         case AF_INET:
+@@ -2991,7 +2989,8 @@
+                 openvpn_snprintf(name_buf, sizeof(name_buf), "%s", name_pr=
+efix);
+             }
 
-http://gerrit.openvpn.net/c/openvpn/+/325/comment/3b4c5d7f_d4849c88 :
-PS2, Line 2845: configuration
-"proper configuration" =3D> "TLS mode"?
+-            setenv_str(es, name_buf, inet_ntoa(addr->addr.in4.sin_addr));
++            inet_ntop(AF_INET, &addr->addr.in4.sin_addr, buf, sizeof(buf));
++            setenv_str(es, name_buf, buf);
 
+             if ((flags & SA_IP_PORT) && addr->addr.in4.sin_port)
+             {
+@@ -3007,13 +3006,12 @@
+                 memcpy(&ia.s_addr, &addr->addr.in6.sin6_addr.s6_addr[12],
+                        sizeof(ia.s_addr));
+                 openvpn_snprintf(name_buf, sizeof(name_buf), "%s_ip", name=
+_prefix);
+-                openvpn_snprintf(buf, sizeof(buf), "%s", inet_ntoa(ia) );
++                inet_ntop(AF_INET, &ia, buf, sizeof(buf));
+             }
+             else
+             {
+                 openvpn_snprintf(name_buf, sizeof(name_buf), "%s_ip6", nam=
+e_prefix);
+-                getnameinfo(&addr->addr.sa, sizeof(struct sockaddr_in6),
+-                            buf, sizeof(buf), NULL, 0, NI_NUMERICHOST);
++                inet_ntop(AF_INET6, &addr->addr.in6.sin6_addr, buf, sizeof=
+(buf));
+             }
+             setenv_str(es, name_buf, buf);
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/325?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/326?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I4f29953b91cf8e8daf2c9503da44073ad96d0ff5
-Gerrit-Change-Number: 325
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: I052bebe720ddf26340827f25b94705945e470bfa
+Gerrit-Change-Number: 326
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Mon, 21 Aug 2023 09:26:40 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-MessageType: newchange
 
---Opyfxis9JDs=
+--LHdCaUu3N0I=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/325?usp=3Demail">Vi=
-ew Change</a></p><p>7 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D=
-"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px=
-;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/325/comment/379190bd_a9c3fa7a">Patch Set #2, Line 12:</a> <code s=
-tyle=3D"font-family:monospace,monospace">line or the configuration itself. =
-This will server as a last and final</code></p><p style=3D"white-space: pre=
--wrap; word-wrap: break-word;">&quot;serve&quot;</p></li></ul></li><li styl=
-e=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style: none;=
- padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"mar=
-gin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/325?tab=
-=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-wrap; word-=
-wrap: break-word;">Some documentation fixes required. But overall looks oka=
-y.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File doc/man-s=
-ections/protocol-options.rst:</p><ul style=3D"list-style: none; padding: 0;=
-"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: =
-4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/325/comment/f506bc1e=
-_c4d07ee5">Patch Set #2, Line 237:</a> <code style=3D"font-family:monospace=
-,monospace">--secret args</code></p><p style=3D"white-space: pre-wrap; word=
--wrap: break-word;">I think we should at least add a basic documentation fo=
-r the &quot;allow-deprecated-insecure-static-crypto&quot; to the man page. =
-I think there should be some documentation where people can look up what it=
- means when they encounter it.</p></li></ul></li><li style=3D"margin: 0; pa=
-dding: 0;"><p>File src/openvpn/options.c:</p><ul style=3D"list-style: none;=
- padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"mar=
-gin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/325/comm=
-ent/2666ce9a_7234c17d">Patch Set #2, Line 618:</a> <code style=3D"font-fami=
-ly:monospace,monospace">,\</code></p><p style=3D"white-space: pre-wrap; wor=
-d-wrap: break-word;">Change trailing comma to full stop.</p></li><li style=
-=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/325/comment/5089d435_2a81c525">=
-Patch Set #2, Line 756:</a> <code style=3D"font-family:monospace,monospace"=
->secret</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;=
-">Should be we change the &quot;secret&quot; here?</p></li><li style=3D"mar=
-gin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/325/comment/310f2f25_827ef514">Patch S=
-et #2, Line 2843:</a> <code style=3D"font-family:monospace,monospace">     =
-       &quot;OpenVPN 2.7 allow using this configuration when using &quot;</=
-code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">&quot;a=
-llows&quot;</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/3=
-25/comment/3b4c5d7f_d4849c88">Patch Set #2, Line 2845:</a> <code style=3D"f=
-ont-family:monospace,monospace">configuration</code></p><p style=3D"white-s=
-pace: pre-wrap; word-wrap: break-word;">&quot;proper configuration&quot; =
-=3D&gt; &quot;TLS mode&quot;?</p></li></ul></li></ul><p>To view, visit <a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/325?usp=3Demail">change 325</a=
->. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
-//gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"=
-http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/325?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
+<p>flichtenheld has uploaded this change for <strong>review</strong>.</p><p=
+><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/326?usp=3Demail">View Cha=
+nge</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre=
+-wrap;">Remove last uses of inet_ntoa<br><br>inet_ntoa is officially deprec=
+ated and in some places<br>its use already causes warnings (e.g. Fedora sub=
+missions).<br>Since we mostly use inet_ntop already, just convert the<br>re=
+maining usages to that.<br><br>Change-Id: I052bebe720ddf26340827f25b9470594=
+5e470bfa<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>--=
+-<br>M src/openvpn/manage.c<br>M src/openvpn/route.c<br>M src/openvpn/socke=
+t.c<br>3 files changed, 17 insertions(+), 15 deletions(-)<br><br></pre><pre=
+ style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pul=
+l ssh://gerrit.openvpn.net:29418/openvpn refs/changes/26/326/1</pre><pre st=
+yle=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff=
+ --git a/src/openvpn/manage.c b/src/openvpn/manage.c</span><br><span>index =
+739ed40..feb62b2 100644</span><br><span>--- a/src/openvpn/manage.c</span><b=
+r><span>+++ b/src/openvpn/manage.c</span><br><span>@@ -3058,9 +3058,11 @@</=
+span><br><span>         /* listen on our local TUN/TAP IP address */</span>=
+<br><span>         struct in_addr ia;</span><br><span>         int ret;</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        char buf[INET_A=
+DDRSTRLEN];</span><br><span> </span><br><span>         ia.s_addr =3D htonl(=
+tun_local_ip);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ ret =3D openvpn_getaddrinfo(GETADDR_PASSIVE, inet_ntoa(ia), NULL, 0, NULL,=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        inet_ntop(A=
+F_INET, &amp;ia, buf, sizeof(buf));</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        ret =3D openvpn_getaddrinfo(GETADDR_PASSIVE, buf, N=
+ULL, 0, NULL,</span><br><span>                                   AF_INET, &=
+amp;man-&gt;settings.local);</span><br><span>         ASSERT(ret=3D=3D0);</=
+span><br><span>         man_connection_init(man);</span><br><span>diff --gi=
+t a/src/openvpn/route.c b/src/openvpn/route.c</span><br><span>index 9212186=
+..ff64938 100644</span><br><span>--- a/src/openvpn/route.c</span><br><span>=
++++ b/src/openvpn/route.c</span><br><span>@@ -342,7 +342,9 @@</span><br><sp=
+an>             goto fail;</span><br><span>         }</span><br><span>     =
+    special.s_addr =3D htonl(special.s_addr);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-        ret =3D openvpn_getaddrinfo(0, inet_ntoa(sp=
+ecial), NULL, 0, NULL,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        char buf[INET_ADDRSTRLEN];</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+        inet_ntop(AF_INET, &amp;special, buf, sizeof(buf)=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ret =3D o=
+penvpn_getaddrinfo(0, buf, NULL, 0, NULL,</span><br><span>                 =
+                  AF_INET, network_list);</span><br><span>     }</span><br>=
+<span>     else</span><br><span>diff --git a/src/openvpn/socket.c b/src/ope=
+nvpn/socket.c</span><br><span>index 501e023..903f98b 100644</span><br><span=
+>--- a/src/openvpn/socket.c</span><br><span>+++ b/src/openvpn/socket.c</spa=
+n><br><span>@@ -2901,16 +2901,16 @@</span><br><span> print_in_addr_t(in_add=
+r_t addr, unsigned int flags, struct gc_arena *gc)</span><br><span> {</span=
+><br><span>     struct in_addr ia;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    struct buffer out =3D alloc_buf_gc(64, gc);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    char *out =3D gc_malloc(INET_A=
+DDRSTRLEN, true, gc);</span><br><span> </span><br><span>     if (addr || !(=
+flags &amp; IA_EMPTY_IF_UNDEF))</span><br><span>     {</span><br><span>    =
+     CLEAR(ia);</span><br><span>         ia.s_addr =3D (flags &amp; IA_NET_=
+ORDER) ? addr : htonl(addr);</span><br><span> </span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        buf_printf(&amp;out, &quot;%s&quot;, inet_=
+ntoa(ia));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        i=
+net_ntop(AF_INET, &amp;ia, out, INET_ADDRSTRLEN);</span><br><span>     }</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    return BSTR(&amp;out=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return out;</=
+span><br><span> }</span><br><span> </span><br><span> /*</span><br><span>@@ =
+-2920,16 +2920,14 @@</span><br><span> const char *</span><br><span> print_i=
+n6_addr(struct in6_addr a6, unsigned int flags, struct gc_arena *gc)</span>=
+<br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    struc=
+t buffer out =3D alloc_buf_gc(64, gc);</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    char tmp_out_buf[64];       /* inet_ntop wants pointer=
+ to buffer */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ch=
+ar *out =3D gc_malloc(INET6_ADDRSTRLEN, true, gc);</span><br><span> </span>=
+<br><span>     if (memcmp(&amp;a6, &amp;in6addr_any, sizeof(a6)) !=3D 0</sp=
+an><br><span>         || !(flags &amp; IA_EMPTY_IF_UNDEF))</span><br><span>=
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        inet_nt=
+op(AF_INET6, &amp;a6, tmp_out_buf, sizeof(tmp_out_buf)-1);</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        buf_printf(&amp;out, &quot;%s&=
+quot;, tmp_out_buf );</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        inet_ntop(AF_INET6, &amp;a6, out, INET6_ADDRSTRLEN);</span><br><s=
+pan>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return =
+BSTR(&amp;out);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+return out;</span><br><span> }</span><br><span> </span><br><span> /*</span>=
+<br><span>@@ -2978,7 +2976,7 @@</span><br><span> {</span><br><span>     cha=
+r name_buf[256];</span><br><span> </span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    char buf[128];</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    char buf[INET6_ADDRSTRLEN];</span><br><span>     switch (ad=
+dr-&gt;addr.sa.sa_family)</span><br><span>     {</span><br><span>         c=
+ase AF_INET:</span><br><span>@@ -2991,7 +2989,8 @@</span><br><span>        =
+         openvpn_snprintf(name_buf, sizeof(name_buf), &quot;%s&quot;, name_=
+prefix);</span><br><span>             }</span><br><span> </span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-            setenv_str(es, name_buf, in=
+et_ntoa(addr-&gt;addr.in4.sin_addr));</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+            inet_ntop(AF_INET, &amp;addr-&gt;addr.in4.sin=
+_addr, buf, sizeof(buf));</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+            setenv_str(es, name_buf, buf);</span><br><span> </span><b=
+r><span>             if ((flags &amp; SA_IP_PORT) &amp;&amp; addr-&gt;addr.=
+in4.sin_port)</span><br><span>             {</span><br><span>@@ -3007,13 +3=
+006,12 @@</span><br><span>                 memcpy(&amp;ia.s_addr, &amp;addr=
+-&gt;addr.in6.sin6_addr.s6_addr[12],</span><br><span>                      =
+  sizeof(ia.s_addr));</span><br><span>                 openvpn_snprintf(nam=
+e_buf, sizeof(name_buf), &quot;%s_ip&quot;, name_prefix);</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                openvpn_snprintf(buf, s=
+izeof(buf), &quot;%s&quot;, inet_ntoa(ia) );</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+                inet_ntop(AF_INET, &amp;ia, buf, s=
+izeof(buf));</span><br><span>             }</span><br><span>             el=
+se</span><br><span>             {</span><br><span>                 openvpn_=
+snprintf(name_buf, sizeof(name_buf), &quot;%s_ip6&quot;, name_prefix);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-                getnameinf=
+o(&amp;addr-&gt;addr.sa, sizeof(struct sockaddr_in6),</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                            buf, sizeof(buf=
+), NULL, 0, NI_NUMERICHOST);</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                inet_ntop(AF_INET6, &amp;addr-&gt;addr.in6.sin6_ad=
+dr, buf, sizeof(buf));</span><br><span>             }</span><br><span>     =
+        setenv_str(es, name_buf, buf);</span><br><span> </span><br><span></=
+span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/326?usp=3Demail">change 326</a>. To unsubscribe, or for help writing=
+ mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">setting=
+s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
+temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
+k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/326?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I4f29953b91cf8e8daf2c9503da4=
-4073ad96d0ff5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 325 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I052bebe720ddf26340827f25b94=
+705945e470bfa </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 326 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 21 Aug 2023 09:26:40=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---Opyfxis9JDs=--
+--LHdCaUu3N0I=--
 
