@@ -1,10 +1,10 @@
-Message-ID: <c0ecc754-7dda-313f-8cd2-047ebd1ae8cd@...2181...>
-Date: Sun, 3 Sep 2023 16:47:31 +0200
-MIME-Version: 1.0
-Content-Language: en-US
+Date: Sun, 3 Sep 2023 09:17:21 -0700
+From: orbea <orbea@...2744...>
+Message-ID: <20230903091721.4a810beb@...2745...>
+In-Reply-To: <c0ecc754-7dda-313f-8cd2-047ebd1ae8cd@...2181...>
 References: <20230903142947.20906-1-orbea@...2744...>
-From: Antonio Quartulli <a@...2181...>
-In-Reply-To: <20230903142947.20906-1-orbea@...2744...>
+ <c0ecc754-7dda-313f-8cd2-047ebd1ae8cd@...2181...>
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH] configure: disable engines if
  OPENSSL_NO_ENGINE is defined
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,47 +15,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-To: orbea@...2744..., openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+On Sun, 3 Sep 2023 16:47:31 +0200
+Antonio Quartulli <a@...2181...> wrote:
 
-On 03/09/2023 16:29, orbea@...2744... wrote:
-> From: orbea <orbea@...2744...>
+> Hi,
 > 
-> Starting with LibreSSL 3.8.1 the engines have been removed which causes
-> the OpenVPN build to fail. This can be solved during configure by
-> checking if OPENSSL_NO_ENGINE is defined in opensslconf.h.
-> ---
->   configure.ac | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
+> On 03/09/2023 16:29, orbea@...2744... wrote:
+> > From: orbea <orbea@...2744...>
+> > 
+> > Starting with LibreSSL 3.8.1 the engines have been removed which
+> > causes the OpenVPN build to fail. This can be solved during
+> > configure by checking if OPENSSL_NO_ENGINE is defined in
+> > opensslconf.h. ---
+> >   configure.ac | 3 ++-
+> >   1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/configure.ac b/configure.ac
+> > index 2f65cbd5..b5a835dc 100644
+> > --- a/configure.ac
+> > +++ b/configure.ac
+> > @@ -926,11 +926,12 @@ if test "${with_crypto_library}" = "openssl";
+> > then AC_COMPILE_IFELSE(
+> >   				    [AC_LANG_PROGRAM(
+> >   					    [[
+> > +	    #include <openssl/opensslconf.h>
+> >   	    #include <openssl/opensslv.h>
+> >   					    ]],
+> >   					    [[
+> >   	    /*	     Version encoding: MNNFFPPS - see
+> > opensslv.h for details */
+> > -	    #if OPENSSL_VERSION_NUMBER >= 0x30000000L
+> > +	    #if OPENSSL_VERSION_NUMBER >= 0x30000000L ||
+> > defined(OPENSSL_NO_ENGINE) #error Engine supported disabled by
+> > default in OpenSSL 3.0+  
 > 
-> diff --git a/configure.ac b/configure.ac
-> index 2f65cbd5..b5a835dc 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -926,11 +926,12 @@ if test "${with_crypto_library}" = "openssl"; then
->   	    AC_COMPILE_IFELSE(
->   				    [AC_LANG_PROGRAM(
->   					    [[
-> +	    #include <openssl/opensslconf.h>
->   	    #include <openssl/opensslv.h>
->   					    ]],
->   					    [[
->   	    /*	     Version encoding: MNNFFPPS - see opensslv.h for details */
-> -	    #if OPENSSL_VERSION_NUMBER >= 0x30000000L
-> +	    #if OPENSSL_VERSION_NUMBER >= 0x30000000L || defined(OPENSSL_NO_ENGINE)
->   	    #error Engine supported disabled by default in OpenSSL 3.0+
+> Maybe the message should be changed now? Or we could have an entirely 
+> different message for this case?
+> 
+> Cheers,
+> 
+> >   	    #endif
+> >   					    ]]  
+> 
 
-Maybe the message should be changed now? Or we could have an entirely 
-different message for this case?
-
-Cheers,
-
->   	    #endif
->   					    ]]
-
--- 
-Antonio Quartulli
+Do you think it might be preferable to only check OPENSSL_NO_ENGINE? I
+see other code bases such as Tor only checking that define.
 
