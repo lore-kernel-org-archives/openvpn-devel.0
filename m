@@ -1,12 +1,15 @@
-Message-ID: <8d81c30e-06e1-adc0-e504-7949c0219d9e@...2108...>
-Date: Mon, 4 Sep 2023 00:56:45 +0200
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Mon, 4 Sep 2023 14:22:14 +0000
+References: <gerrit.1693837331000.I2139b62117ba69d643b585d2610e8aef15f71d3e@...2715...>
+Reply-To: lstipakov@...277..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <a8e62f9022afe4ed26441e86b08bcc06289ca828-HTML@...2715...>
 MIME-Version: 1.0
-Content-Language: en-US
-References: <20230709231929.195048-1-jeremyfleischman@...277...>
-From: David Sommerseth <dazo+openvpn@...2108...>
-In-Reply-To: <20230709231929.195048-1-jeremyfleischman@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix StatusChangeCallback so it works
- without a LogCallback
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="q+EXQ+pfGCA="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: Support for
+ long INFO/INFO_PRE messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,123 +18,128 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Jeremy Fleischman <jeremyfleischman@...277...>
+To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+--q+EXQ+pfGCA=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Jeremy,
+Attention is currently required from: flichtenheld.
 
-First of all; sorry it's taken so long time to get back to you.  GH 
-issue #171 has unfortunately taken most of my time, so this patch went 
-on the side burner.
+Hello flichtenheld,
 
-I've looked at your patch, and I wonder if it can be done a bit simpler. 
-  I'm open to hear your views; I might have overlooked some details.
+I'd like you to do a code review.
+Please visit
 
+    http://gerrit.openvpn.net/c/openvpn/+/327?usp=3Demail
 
-On 10/07/2023 01:19, Jeremy Fleischman wrote:
-[...snip...]
-> @@ -285,22 +286,24 @@ def GetFormattedStatistics(self, prefix='Connection statistics:\n', format_str='
->       #
->       def LogCallback(self, cbfnc):
->           if cbfnc is not None:
-> +            # Remove the existing callback if there is one.
-> +            if self.__log_callback is not None:
-> +                self.LogCallback(None)
-> +
->               self.__log_callback = cbfnc
->               self.__dbuscon.add_signal_receiver(cbfnc,
->                                                  signal_name='Log',
->                                                  dbus_interface='net.openvpn.v3.backends',
->                                                  bus_name='net.openvpn.v3.log',
->                                                  path=self.__session_path)
-> -            self.__session_intf.LogForward(True)
-> +            self.__add_LogForward_receiver()
+to review the following change.
 
 
-I'm wondering if this could be made cleared.  The recursion is kinda 
-clever, but feels like it hides the purpose.
+Change subject: Support for long INFO/INFO_PRE messages
+......................................................................
 
-Wouldn't this code below work just as well (consider this more a concept 
-code than proper Python code)?  Here there is no recursion and no 
-reference counting which could go wrong.
+Support for long INFO/INFO_PRE messages
 
-------------------------------------------------------------------------
-class Session(object):
-      [...]
-      self.__log_forward_enabled = False
+Current hardcoded limit is not defined anywhere and
+the server (CloudConnexa) sends the longer string in some cases.
 
-      def LogCallback(self, cbfnc):	
-	if cbfnc is not None and self.__log_callback is None:
-	    # Log Callback function is being enabled; not
-             # set before
-             self.__log_callback = cbfnc
-	    self.__dbuscon.add_signal_receiver(cbfnc, ...)
-	    self.__set_log_forward(True)
-
-	elif cbfnc is None and self.__log_callback is not None:
-	    # Log Callback function is being disabled; can only
-             # happen because it was set
-             self.__dbuscon.remove_signal_receiver(self.__log_callback,
-                                                   ...)
-             self.__log_callback = None
-	    try:
-		self.__set_log_forward(False)
-	    except dbus.exception.DBusException:
-		pass
-
-	elif (cbfnc is not None and self.__log_callback is not None):
-             # In this case, the program must first disable the
-             # current LogCallback() before setting a new one.
-	    raise RuntimeErrpr('LogCallback() is already enabled')
-
-	# No need to complain if unsetting an unset log callback
-         # function; this will not have any behavioral impact at all.
+Change-Id: I2139b62117ba69d643b585d2610e8aef15f71d3e
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+M src/openvpn/push.c
+1 file changed, 1 insertion(+), 1 deletion(-)
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/27/327/1
 
-      def __set_log_forward(self, enable):
-          # This method can only be called *after* callback
-          # function has been set in this object
-
-          if not self.__log_forward_enabled and enable:
-              # If log forwarding is disabled it can be enabled
-              self.__log_forward_enabled = True
-              self.__session_intf.LogForward(True)
-
-	 elif self.__log_forward_enabled and not enable:
-              # Log forwarding can only be disabled if
-              # both Log and StatusChange callbacks are unset
-	     if (self.__log_callback is None)
-                 and (self.__status_callback is None):
-		 self.__log_forward_enabled = False
-                  self.__session_intf.LogForward(False)
-
-------------------------------------------------------------------------
-
-The StatusChangeCallback() would need a similar implementation as 
-LogCallback() too.
-
-In regards to multi-threading; I would not expect this code to be used 
-in a multi-threaded setup where different callbacks would be 
-enabled/disabled on the fly in parallel.  But it might be good to add 
-this as a comment in general, that these methods are not considered 
-thread-safe.  However, since the code snippets above does not use 
-reference counting, it should be a bit more robust as it bases the 
-decision on the value of the callback function pointers.
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index d468211..663cfbd 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -243,7 +243,7 @@
+          * We use >INFOMSG here instead of plain >INFO since INFO is used =
+to
+          * for management greeting and we don't want to confuse the client
+          */
+-        struct buffer out =3D alloc_buf_gc(256, &gc);
++        struct buffer out =3D alloc_buf_gc(1 + 7 + 1 + BLEN(&buf) + 1, &gc=
+);
+         buf_printf(&out, ">%s:%s", "INFOMSG", m);
+         management_notify_generic(management, BSTR(&out));
 
 
-Thoughts?
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/327?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: I2139b62117ba69d643b585d2610e8aef15f71d3e
+Gerrit-Change-Number: 327
+Gerrit-PatchSet: 1
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
+
+--q+EXQ+pfGCA=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld. </p>
+<p>stipa would like flichtenheld to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/327?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Support for long INFO/INFO_PRE messages<br><br>Current hardco=
+ded limit is not defined anywhere and<br>the server (CloudConnexa) sends th=
+e longer string in some cases.<br><br>Change-Id: I2139b62117ba69d643b585d26=
+10e8aef15f71d3e<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>---=
+<br>M src/openvpn/push.c<br>1 file changed, 1 insertion(+), 1 deletion(-)<b=
+r><br></pre><pre style=3D"font-family: monospace,monospace; white-space: pr=
+e-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/27/32=
+7/1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;"><span>diff --git a/src/openvpn/push.c b/src/openvpn/push.c</span><br>=
+<span>index d468211..663cfbd 100644</span><br><span>--- a/src/openvpn/push.=
+c</span><br><span>+++ b/src/openvpn/push.c</span><br><span>@@ -243,7 +243,7=
+ @@</span><br><span>          * We use &gt;INFOMSG here instead of plain &g=
+t;INFO since INFO is used to</span><br><span>          * for management gre=
+eting and we don&#39;t want to confuse the client</span><br><span>         =
+ */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        struct buf=
+fer out =3D alloc_buf_gc(256, &amp;gc);</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        struct buffer out =3D alloc_buf_gc(1 + 7 + 1 + =
+BLEN(&amp;buf) + 1, &amp;gc);</span><br><span>         buf_printf(&amp;out,=
+ &quot;&gt;%s:%s&quot;, &quot;INFOMSG&quot;, m);</span><br><span>         m=
+anagement_notify_generic(management, BSTR(&amp;out));</span><br><span> </sp=
+an><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/327?usp=3Demail">change 327</a>. To unsubscribe, or f=
+or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
+ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
+Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
+iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/327?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
+iv></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I2139b62117ba69d643b585d2610=
+e8aef15f71d3e </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 327 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
--- 
-kind regards,
-
-David Sommerseth
-OpenVPN Inc
-
-
+--q+EXQ+pfGCA=--
 
