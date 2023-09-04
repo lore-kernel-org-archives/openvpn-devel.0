@@ -1,16 +1,12 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Mon, 4 Sep 2023 15:44:36 +0000
-In-Reply-To: <gerrit.1693837331000.I2139b62117ba69d643b585d2610e8aef15f71d3e@...2715...>
-References: <gerrit.1693837331000.I2139b62117ba69d643b585d2610e8aef15f71d3e@...2715...>
-Reply-To: lstipakov@...277..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <106601ea82951ea5d1543ffb81fa6a507eef7b4e-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ejHws4YkNd0="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: Support for
- long INFO/INFO_PRE messages
+References: <20230709231929.195048-1-jeremyfleischman@...277...>
+ <a647bbd5.AWYAACY5qkoAAAAAAAAAAW9e-ykAAYCsnhYAAAAAABXTlQBk9Q8z@...2677...>
+In-Reply-To: <a647bbd5.AWYAACY5qkoAAAAAAAAAAW9e-ykAAYCsnhYAAAAAABXTlQBk9Q8z@...2677...>
+From: Jeremy Fleischman <jeremyfleischman@...277...>
+Date: Mon, 4 Sep 2023 10:46:37 -0700
+Message-ID: <CAHpv4cMjwtdViA8A0yqZjpeTk0Syb6jZogm4oNXsQ+bM1XMTjA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix StatusChangeCallback so it works
+ without a LogCallback
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,102 +15,126 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---ejHws4YkNd0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+To: David Sommerseth <dazo+openvpn@...2108...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Attention is currently required from: flichtenheld.
+Hey David,
 
-stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/327?usp=3Demail )
+On Sun, Sep 3, 2023 at 3:56=E2=80=AFPM David Sommerseth
+<dazo+openvpn@...2108...> wrote:
+>
+> First of all; sorry it's taken so long time to get back to you.  GH
+> issue #171 has unfortunately taken most of my time, so this patch went
+> on the side burner.
 
-Change subject: Support for long INFO/INFO_PRE messages
-......................................................................
+No worries, thanks for getting around to this!
 
+> I've looked at your patch, and I wonder if it can be done a bit simpler.
+>   I'm open to hear your views; I might have overlooked some details.
 
-Patch Set 2:
+I like this! At a high level, your proposal consolidates the logic
+about "who needs LogForward enabled" into this new __set_log_forward
+method. It maybe makes it a little more complicated to add more
+callbacks in the future that require LogForward, but that's an
+incredibly minor point, and I don't think it's worth the complication
+of the reference counting implementation I originally proposed.
 
-(1 comment)
+I took your idea, and rolled with it a bit. I think we can simplify
+things a bit further if we let __set_log_forward be completely
+responsible for determining if LogForward should be enabled (it knows
+if it should be enabled because it can check if there are any
+callbacks registered that require LogForward). How does this updated
+diff look?
 
-File src/openvpn/push.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/327/comment/a70eded3_8b1ba798 :
-PS1, Line 246:         struct buffer out =3D alloc_buf_gc(1 + 7 + 1 + BLEN(=
-&buf) + 1, &gc);
-> "1 + 7 + 1" -> strlen(">INFOMSG:") [=E2=80=A6]
-Acknowledged
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/327?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I2139b62117ba69d643b585d2610e8aef15f71d3e
-Gerrit-Change-Number: 327
-Gerrit-PatchSet: 2
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 04 Sep 2023 15:44:36 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Gerrit-MessageType: comment
-
---ejHws4YkNd0=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/327?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/push.c:</p><ul styl=
-e=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 =
-16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/327/comment/a70eded3_8b1ba798">Patch Set #1, Line 246:</a> <c=
-ode style=3D"font-family:monospace,monospace">        struct buffer out =3D=
- alloc_buf_gc(1 + 7 + 1 + BLEN(&amp;buf) + 1, &amp;gc);</code></p><p><block=
-quote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px=
-;">&quot;1 + 7 + 1&quot; -&gt; strlen(&quot;&gt;INFOMSG:&quot;) [=E2=80=A6]=
-</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;"=
->Acknowledged</p></li></ul></li></ul><p>To view, visit <a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/327?usp=3Demail">change 327</a>. To unsubscrib=
-e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
-.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
-g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
-a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
-c/openvpn/+/327?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
-e"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2139b62117ba69d643b585d2610=
-e8aef15f71d3e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 327 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 04 Sep 2023 15:44:36=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+diff --git a/src/python/openvpn3/SessionManager.py
+b/src/python/openvpn3/SessionManager.py
+index 3632790..1a567be 100644
+--- a/src/python/openvpn3/SessionManager.py
++++ b/src/python/openvpn3/SessionManager.py
+@@ -114,6 +114,7 @@ def __init__(self, dbuscon, objpath):
+         self.__log_callback =3D None
+         self.__status_callback =3D None
+         self.__deleted =3D False
++        self.__log_forward_enabled =3D False
 
 
---ejHws4YkNd0=--
+     def __del__(self):
+@@ -291,16 +292,11 @@ def LogCallback(self, cbfnc):
+
+dbus_interface=3D'net.openvpn.v3.backends',
+                                                bus_name=3D'net.openvpn.v3.=
+log',
+                                                path=3Dself.__session_path)
+-            self.__session_intf.LogForward(True)
+         else:
+-            try:
+-                self.__session_intf.LogForward(False)
+-            except dbus.exceptions.DBusException:
+-                # If this fails, the session is typically already removed
+-                pass
+             self.__dbuscon.remove_signal_receiver(self.__log_callback, 'Lo=
+g')
+             self.__log_callback =3D None
+
++        self.__set_log_forward()
+
+     ##
+     #  Subscribes to the StatusChange signals for this session and register
+@@ -318,10 +314,14 @@ def StatusChangeCallback(self, cbfnc):
+                                                bus_name=3D'net.openvpn.v3.=
+log',
+                                                path=3Dself.__session_path)
+         else:
+-            self.__dbuscon.remove_signal_receiver(self.__status_callback,
+-                                                  'StatusChange')
+-            self.__status_callback =3D None
++            # Only remove the callback if there actually *is* a callback
++            # currently.
++            if self.__status_callback is not None:
++                self.__dbuscon.remove_signal_receiver(self.__status_callba=
+ck,
++                                                      'StatusChange')
++                self.__status_callback =3D None
+
++        self.__set_log_forward()
+
+
+     ##
+@@ -417,6 +417,30 @@ def GetDCO(self):
+     def SetDCO(self, dco):
+         self.__prop_intf.Set('net.openvpn.v3.sessions', 'dco', dco)
+
++    ##
++    #  Internal method to enable/disable LogForward as needed.
++    #  Must be called whenever a callback that needs LogForward enabled is
++    #  added or removed.
++    #
++    def __set_log_forward(self):
++        # The LogCallback and the StatusChangeCallback both need LogForward
++        # enabled. In other words, LogForward should be enabled iff one or=
+ both
++        # of those callbacks are registered.
++        should_log_forward_be_enabled =3D (
++            self.__log_callback is not None or self.__status_callback
+is not None
++        )
++
++        if should_log_forward_be_enabled and not self.__log_forward_enable=
+d:
++            self.__session_intf.LogForward(True)
++            self.__log_forward_enabled =3D True
++        elif not should_log_forward_be_enabled and self.__log_forward_enab=
+led:
++            try:
++                self.__session_intf.LogForward(False)
++            except dbus.exceptions.DBusException:
++                # If this fails, the session is typically already removed
++                pass
++
++            self.__log_forward_enabled =3D False
+
+
+ ##
 
