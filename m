@@ -1,9 +1,11 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Tue,  5 Sep 2023 23:13:57 +0200
-Message-ID: <20230905211357.581-1-a@...2181...>
+From: Jeremy Fleischman <jeremyfleischman@...277...>
+Date: Wed,  6 Sep 2023 10:17:58 -0700
+Message-ID: <20230906171758.344862-1-jeremyfleischman@...277...>
+In-Reply-To: <20230709231929.195048-1-jeremyfleischman@...277...>
+References: <20230709231929.195048-1-jeremyfleischman@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] man: extend description for "dhcp-option
- DNS" on Windows
+Subject: [Openvpn-devel] [PATCH v2] Fix StatusChangeCallback so it works
+ without a LogCallback
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,37 +17,135 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...2726...>
 
-From: Antonio Quartulli <antonio@...2726...>
+`StatusChangeCallback` requires that LogForward be enabled, which
+previously only happened in `LogCallback`. Now both of them do it, which
+requires a bit of bookkeeping. This fixes
+https://github.com/OpenVPN/openvpn3-linux/issues/197
 
-Add an important detail about the DNS configured via this option
-to be an "interface-specific" DNS. This detail is important when
-troubleshooting DNS issues since this logic will bypass the
-routing table.
-
-Signed-off-by: Antonio Quartulli <antonio@...2726...>
+Signed-off-by: Jeremy Fleischman <jeremyfleischman@...277...>
 ---
- doc/man-sections/vpn-network-options.rst | 6 ++++++
- 1 file changed, 6 insertions(+)
+ src/python/openvpn3/SessionManager.py | 69 ++++++++++++++++++++++-----
+ 1 file changed, 58 insertions(+), 11 deletions(-)
 
-diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vpn-network-options.rst
-index b7f33acd..17c7d4a2 100644
---- a/doc/man-sections/vpn-network-options.rst
-+++ b/doc/man-sections/vpn-network-options.rst
-@@ -158,6 +158,12 @@ routing.
-         Set primary domain name server IPv4 or IPv6 address.
-         Repeat this option to set secondary DNS server addresses.
+diff --git a/src/python/openvpn3/SessionManager.py b/src/python/openvpn3/SessionManager.py
+index 3632790..a175015 100644
+--- a/src/python/openvpn3/SessionManager.py
++++ b/src/python/openvpn3/SessionManager.py
+@@ -114,6 +114,7 @@ def __init__(self, dbuscon, objpath):
+         self.__log_callback = None
+         self.__status_callback = None
+         self.__deleted = False
++        self.__log_forward_enabled = False
  
-+        On Windows this option sets an "interface-specific" DNS, meaning
-+        that the system will try to reach it via the VPN interface, no
-+        matter what the routing table says. If the wanted DNS is not
-+        expected to be reached via VPN, please don't use this option, but
-+        rather set the DNS manually (or via DHCP).
+ 
+     def __del__(self):
+@@ -284,6 +285,16 @@ def GetFormattedStatistics(self, prefix='Connection statistics:\n', format_str='
+     #
+     #
+     def LogCallback(self, cbfnc):
++        if cbfnc is not None and self.__log_callback is not None:
++            # In this case, the program must first disable the
++            # current LogCallback() before setting a new one.
++            raise RuntimeError('LogCallback() is already enabled')
 +
-         Note: DNS IPv6 servers are currently set using netsh (the existing
-         DHCP code can only do IPv4 DHCP, and that protocol only permits
-         IPv4 addresses anywhere). The option will be put into the
++        if cbfnc is None and self.__log_callback is None:
++            # This is fine: disabling a callback when there is no callback is a
++            # simple no-op.
++            return
++
+         if cbfnc is not None:
+             self.__log_callback = cbfnc
+             self.__dbuscon.add_signal_receiver(cbfnc,
+@@ -291,16 +302,14 @@ def LogCallback(self, cbfnc):
+                                                dbus_interface='net.openvpn.v3.backends',
+                                                bus_name='net.openvpn.v3.log',
+                                                path=self.__session_path)
+-            self.__session_intf.LogForward(True)
+         else:
+-            try:
+-                self.__session_intf.LogForward(False)
+-            except dbus.exceptions.DBusException:
+-                # If this fails, the session is typically already removed
+-                pass
+-            self.__dbuscon.remove_signal_receiver(self.__log_callback, 'Log')
+-            self.__log_callback = None
++            # Only remove the callback if there actually *is* a callback
++            # currently.
++            if self.__log_callback is not None:
++                self.__dbuscon.remove_signal_receiver(self.__log_callback, 'Log')
++                self.__log_callback = None
+ 
++        self.__set_log_forward()
+ 
+     ##
+     #  Subscribes to the StatusChange signals for this session and register
+@@ -310,6 +319,16 @@ def LogCallback(self, cbfnc):
+     #     (integer) StatusMajor, (integer) StatusMinor, (string) message
+     #
+     def StatusChangeCallback(self, cbfnc):
++        if cbfnc is not None and self.__status_callback is not None:
++            # In this case, the program must first disable the
++            # current StatusChangeCallback() before setting a new one.
++            raise RuntimeError('StatusChangeCallback() is already enabled')
++
++        if cbfnc is None and self.__status_callback is None:
++            # This is fine: disabling a callback when there is no callback is a
++            # simple no-op.
++            return
++
+         if cbfnc is not None:
+             self.__status_callback = cbfnc
+             self.__dbuscon.add_signal_receiver(cbfnc,
+@@ -318,10 +337,14 @@ def StatusChangeCallback(self, cbfnc):
+                                                bus_name='net.openvpn.v3.log',
+                                                path=self.__session_path)
+         else:
+-            self.__dbuscon.remove_signal_receiver(self.__status_callback,
+-                                                  'StatusChange')
+-            self.__status_callback = None
++            # Only remove the callback if there actually *is* a callback
++            # currently.
++            if self.__status_callback is not None:
++                self.__dbuscon.remove_signal_receiver(self.__status_callback,
++                                                      'StatusChange')
++                self.__status_callback = None
+ 
++        self.__set_log_forward()
+ 
+ 
+     ##
+@@ -417,6 +440,30 @@ def GetDCO(self):
+     def SetDCO(self, dco):
+         self.__prop_intf.Set('net.openvpn.v3.sessions', 'dco', dco)
+ 
++    ##
++    #  Internal method to enable/disable LogForward as needed.
++    #  Must be called whenever a callback that needs LogForward enabled is
++    #  added or removed.
++    #
++    def __set_log_forward(self):
++        # The LogCallback and the StatusChangeCallback both need LogForward
++        # enabled. In other words, LogForward should be enabled iff one or both
++        # of those callbacks are registered.
++        should_log_forward_be_enabled = (
++            self.__log_callback is not None or self.__status_callback is not None
++        )
++
++        if should_log_forward_be_enabled and not self.__log_forward_enabled:
++            self.__session_intf.LogForward(True)
++            self.__log_forward_enabled = True
++        elif not should_log_forward_be_enabled and self.__log_forward_enabled:
++            try:
++                self.__session_intf.LogForward(False)
++            except dbus.exceptions.DBusException:
++                # If this fails, the session is typically already removed
++                pass
++
++            self.__log_forward_enabled = False
+ 
+ 
+ ##
 -- 
 2.41.0
 
