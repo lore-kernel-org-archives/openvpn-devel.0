@@ -1,16 +1,16 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Thu, 7 Sep 2023 08:45:02 +0000
-In-Reply-To: <gerrit.1683717398000.I6818b153bdeb1eed65870af99b0531e95807fe0f@...2715...>
-References: <gerrit.1683717398000.I6818b153bdeb1eed65870af99b0531e95807fe0f@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <ad9791782ef350f0ae650b4f8dec08c96299acf1-EmailReviewComments-HTML@...2715...>
+Date: Fri, 8 Sep 2023 18:10:38 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZPtHfn913IPBdNwK@...1296...>
+References: <20230903142947.20906-1-orbea@...2744...>
+ <c0ecc754-7dda-313f-8cd2-047ebd1ae8cd@...2181...>
+ <20230903091721.4a810beb@...2745...> <20230903095545.0f6d9d03@...2745...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="FHi6aw3EItc02yxB"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="DeLTv2Ge9kQ="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Various fixes for
- -Wconversion errors
+In-Reply-To: <20230903095545.0f6d9d03@...2745...>
+Subject: Re: [Openvpn-devel] [PATCH] configure: disable engines if
+ OPENSSL_NO_ENGINE is defined
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,91 +19,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: orbea <orbea@...2744...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---DeLTv2Ge9kQ=
-Content-Type: text/plain; charset="UTF-8"
+--FHi6aw3EItc02yxB
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Attention is currently required from: plaisthos.
+Hi,
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/267?usp=3Demail )
+so the v2 patch itself is good, but...
 
-Change subject: Various fixes for -Wconversion errors
-......................................................................
+On Sun, Sep 03, 2023 at 09:55:45AM -0700, orbea wrote:
+> From d6700ec0f5af2522bb4eb136d3760f5b1445c9d1 Mon Sep 17 00:00:00 2001
+> From: orbea <orbea@...2744...>
 
+... it would be really preferred to have a real author name here, and
+a "Signed-off-by:" line (git commit -s), and...
 
-Patch Set 3:
+> Date: Sat, 2 Sep 2023 23:06:22 -0700
+> Subject: [PATCH] configure: disable engines if OPENSSL_NO_ENGINE is defin=
+ed
+>=20
+> Starting with LibreSSL 3.8.1 the engines have been removed which causes
+> the OpenVPN build to fail. This can be solved during configure by
+> checking if OPENSSL_NO_ENGINE is defined in opensslconf.h.
+> ---
+[..]
+> +	    /*	     BoringSSL and LibreSSL >=3D 3.8.1 removed engine support */
+> +	    #ifdef OPENSSL_NO_ENGINE
+> +	    #error Engine support disabled by default in openssl/opensslconf.h
+>  	    #endif
 
-(1 comment)
+... I think the "by default" needs to go from this #error - it's disabled,
+period.  "disabled by default" is the OpenSSL 3.0 thing...
 
-Patchset:
+(The code change itself looks reasonable, and passes our GHA build
+farm with various OSes and mbedTLS / OpenSSL 1.1 / OpenSSL 3.0)
 
-PS3:
-Blocks applying changes to openvpn3
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--FHi6aw3EItc02yxB
+Content-Type: application/pgp-signature; name="signature.asc"
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/267?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+-----BEGIN PGP SIGNATURE-----
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I6818b153bdeb1eed65870af99b0531e95807fe0f
-Gerrit-Change-Number: 267
-Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Thu, 07 Sep 2023 08:45:02 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
+iQGcBAEBAgAGBQJk+0d+AAoJEB2Cnv7KVigS7n0L+wWZ/WpPgmED7CIyk8j8cqZa
++dOiNk0daPw4GHhsqgqVDLzZCNLxAA2c2SBz4ah4LfuAznRtmqCx1JxH69PULYL+
+qQPbvLg6o2vhqcMnq2xYmMqr2wgc6F+6/2Kvpor70uaDeMaC46AMvR8rPWZaMxG2
+LGK0bHVGV+hMMDGHmX+vR4vb5KWlYvLG87g9q6sJisLSxNQeOoMqTD34Q93H2yBz
+zfESjY4e0/kOj55RIcSXon88YDdglUF2L/qpyDvD03dKc53k61oDBSnw57rrKNEZ
+uS353qL7pY/PTvhU1qW+JfnZiP17zFvXW+DyD9IIvGy0euByV0WLLLES3SWWHQiP
+g9BEVOiJXI9VEA4FzoofNrCGJM9d+aOLYrX8cyJE47ofSTnE2kTXgk/QvQGYkWHg
+WcTyjVsRdy5TLf9agMnXwO3nKmC7flf/7iinwjUQnR7wwlGtrznp/PyA01j8Mc++
+ExbLYkqeH/ZiG5jMZzHPTmRd8w+Q73EedEeNJiB94Q==
+=HyJ/
+-----END PGP SIGNATURE-----
 
---DeLTv2Ge9kQ=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/267?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/2=
-67?tab=3Dcomments">Patch Set #3:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">Blocks applying changes to openvpn3</p></li></ul><=
-/li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/267?usp=3Demail">change 267</a>. To unsubscribe, or for help writing mail =
-filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.=
-</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
-pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
-prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/267?usp=3Demail"=
-/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6818b153bdeb1eed65870af99b0=
-531e95807fe0f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 267 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 07 Sep 2023 08:45:02=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---DeLTv2Ge9kQ=--
+--FHi6aw3EItc02yxB--
 
