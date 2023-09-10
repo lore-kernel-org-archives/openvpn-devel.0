@@ -1,10 +1,10 @@
-Date: Sun, 10 Sep 2023 17:05:26 +0200 (CEST)
-Message-Id: <202309101505.38AF5QRc057775@...2054...>
+Date: Sun, 10 Sep 2023 17:31:28 +0200 (CEST)
+Message-Id: <202309101531.38AFVSE6058279@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230909134956.5902-1-orbea@...2744...>
-References: <20230909134956.5902-1-orbea@...2744...>
-Subject: [Openvpn-devel] [PATCH applied] Re: configure: disable engines if
- OPENSSL_NO_ENGINE is defined
+In-Reply-To: <20230815231555.6465-1-a@...2181...>
+References: <20230815231555.6465-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco: fix crash when --multihome
+ is used with --proto tcp
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,53 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: orbea <orbea@...2744...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-Compile-tested on our GH Actions farm (OpenSSL 1.1 and 3.0, on various
-OSes).  Not tested against LibreSSL.
+Code looks good.
 
-Your patch has been applied to the master and release/2.6 branch (compat).
+Done a quick test on a Linux/DCO server, with TCP and --multihome.  Without
+the patch:
 
-commit 34bf473e19118eecf525e7401ef37b1cbf661e67 (master)
-commit a22f017ac249df1170a9480b5d7a1f9cc81201e5 (release/2.6)
-Author: orbea
-Date:   Sat Sep 9 06:49:56 2023 -0700
+2023-09-10 17:15:20 us=552871 freebsd-14-amd64/194.97.140.5:33293 MULTI: primary virtual IPv6 for freebsd-14-amd64/194.97.140.5:33293: fd00:abcd:220:1::1002
+Segmentation fault (core dumped)
 
-     configure: disable engines if OPENSSL_NO_ENGINE is defined
+with the patch:
 
-     Signed-off-by: orbea <orbea@...2744...>
+2023-09-10 17:16:57 us=590075 freebsd-14-amd64/194.97.140.5:41489 MULTI: primary virtual IPv6 for freebsd-14-amd64/194.97.140.5:41489: fd00:abcd:220:1::1002
+2023-09-10 17:16:57 us=590252 freebsd-14-amd64/194.97.140.5:41489 Data Channel MTU parms [ mss_fix:1366 max_frag:0 tun_mtu:1500 tun_max_mtu:1600 headroom:136 payload:1768 tailroom:562 ET:0 ]
+2023-09-10 17:16:57 us=590348 freebsd-14-amd64/194.97.140.5:41489 Outgoing dynamic tls-crypt: Cipher 'AES-256-CTR' initialized with 256 bit key
+..
+
+"and it just works".
+
+Since the logic for "what do we need to do differently?" is the same
+as for the non-DCO case now, I have not done more in-depth tests
+(though I maybe *should* set up a server with multiple v4+v6 addresses
+and run client tests against either one).
+
+
+I have adjusted the github tag - our established format is
+
+  Github: fixes OpenVPN/openvpn#390
+
+not anything else.
+
+Your patch has been applied to the master and release/2.6 branch (bugfix).
+
+commit 0793eb105c5720c4eb31af71c9db81459439e510 (master)
+commit 70ef43f2b9b938256e0f689f4ddba0d6fbb3a371 (release/2.6)
+Author: Antonio Quartulli
+Date:   Wed Aug 16 01:15:55 2023 +0200
+
+     dco: fix crash when --multihome is used with --proto tcp
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20230909134956.5902-1-orbea@...2744...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26994.html
+     Message-Id: <20230815231555.6465-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26953.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
