@@ -1,10 +1,9 @@
-From: orbea@...2744...
-Date: Sat,  9 Sep 2023 06:49:56 -0700
-Message-ID: <20230909134956.5902-1-orbea@...2744...>
-In-Reply-To: <https://sourceforge.net/p/openvpn/mailman/message/37893638/>
-References: <https://sourceforge.net/p/openvpn/mailman/message/37893638/>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] configure: disable engines if
+Date: Sun, 10 Sep 2023 17:05:26 +0200 (CEST)
+Message-Id: <202309101505.38AF5QRc057775@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230909134956.5902-1-orbea@...2744...>
+References: <20230909134956.5902-1-orbea@...2744...>
+Subject: [Openvpn-devel] [PATCH applied] Re: configure: disable engines if
  OPENSSL_NO_ENGINE is defined
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,43 +15,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: orbea <orbea@...2744...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: orbea <orbea@...2744...>
+Acked-by: Gert Doering <gert@...1296...>
 
-Starting with LibreSSL 3.8.1 the engines have been removed which causes
-the OpenVPN build to fail. This can be solved during configure by
-checking if OPENSSL_NO_ENGINE is defined in opensslconf.h.
+Compile-tested on our GH Actions farm (OpenSSL 1.1 and 3.0, on various
+OSes).  Not tested against LibreSSL.
 
-Signed-off-by: orbea <orbea@...2744...>
----
- configure.ac | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+Your patch has been applied to the master and release/2.6 branch (compat).
 
-diff --git a/configure.ac b/configure.ac
-index 2f65cbd5..266b66f0 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -927,11 +927,17 @@ if test "${with_crypto_library}" = "openssl"; then
- 				    [AC_LANG_PROGRAM(
- 					    [[
- 	    #include <openssl/opensslv.h>
-+	    #include <openssl/opensslconf.h>
- 					    ]],
- 					    [[
- 	    /*	     Version encoding: MNNFFPPS - see opensslv.h for details */
- 	    #if OPENSSL_VERSION_NUMBER >= 0x30000000L
--	    #error Engine supported disabled by default in OpenSSL 3.0+
-+	    #error Engine support disabled by default in OpenSSL 3.0+
-+	    #endif
-+
-+	    /*	     BoringSSL and LibreSSL >= 3.8.1 removed engine support */
-+	    #ifdef OPENSSL_NO_ENGINE
-+	    #error Engine support disabled in openssl/opensslconf.h
- 	    #endif
- 					    ]]
- 				    )],
--- 
-2.41.0
+commit 34bf473e19118eecf525e7401ef37b1cbf661e67 (master)
+commit a22f017ac249df1170a9480b5d7a1f9cc81201e5 (release/2.6)
+Author: orbea
+Date:   Sat Sep 9 06:49:56 2023 -0700
+
+     configure: disable engines if OPENSSL_NO_ENGINE is defined
+
+     Signed-off-by: orbea <orbea@...2744...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20230909134956.5902-1-orbea@...2744...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg26994.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
