@@ -1,10 +1,12 @@
+Date: Mon, 11 Sep 2023 13:14:45 +0200
 From: Frank Lichtenheld <frank@...2641...>
-Date: Mon, 11 Sep 2023 13:07:35 +0200
-Message-Id: <20230911110735.34491-1-frank@...2641...>
-In-Reply-To: <20230728124005.177414-1-frank@...2641...>
+Message-ID: <ZP72pSVMq0+JhKoO@...2685...>
 References: <20230728124005.177414-1-frank@...2641...>
+ <ZNZP1EQIjFmgTqX1@...1296...>
+ <8cbced43-54e2-3f0d-c607-dea2f3def3ae@...1227...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] GHA: new workflow to submit scan to
+In-Reply-To: <8cbced43-54e2-3f0d-c607-dea2f3def3ae@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] GHA: new workflow to submit scan to
  Coverity Scan service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -14,102 +16,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: Arne Schwabe <arne@...1227...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Not on every push due to submit limits.
+On Fri, Aug 11, 2023 at 05:35:03PM +0200, Arne Schwabe wrote:
+> Am 11.08.23 um 17:12 schrieb Gert Doering:
+> > Hi,
+> > 
+> > generally good, but...
+> > 
+> > On Fri, Jul 28, 2023 at 02:40:05PM +0200, Frank Lichtenheld wrote:
+> > > index 00000000..0620f638
+> > > --- /dev/null
+> > > +++ b/.github/workflows/coverity-scan.yml
+> > > @@ -0,0 +1,45 @@
+> > > +name: coverity-scan
+> > > +on:
+> > > +  schedule:
+> > > +    - cron: '0 20 * * *' # Daily at 20:00 UTC
+> > > +  workflow_dispatch:
+> > 
+> > ... not sure this is the best way to approach the run limit, as
+> > we can have many days with no commits at all, so we'd waste credits.
+> > 
+> > Maybe cache the last commit ID and only run coverity if this has
+> > changed?  Or run it "on commit", but cache the current day, and only
+> > run it again on the next commit that's not on the same day?
+> > 
+> > (My typical workflow is "you folks queue up patches, and then I find
+> > half a day of free time, and go merge&push as many as I can make sense of")
+> 
+> You can get that behaviour but it is tricky. You have to resort tricks like
+> this: https://github.com/orgs/community/discussions/26519 of saving
+> something to a cache and then reading the cache on the next run and check if
+> something changed. We can probably implement like that and then trigger on
+> push too?
 
-Use caching to not submit a scan for the same git commit
-twice. Since we have many days without pushes to master
-this saves a lot of Github and Coverity resources.
+I've basically implemented this now in v2 of the patch (just updated to v3 of
+cache action). This should address the resource waste concern and also remove
+unnecessary noise.
 
-v2:
- - add caching to not submit redundant scans
+I've still left the action to trigger on schedule instead of push.
+I think implementing rate limiting based on push is not worth the effort.
+Especially since it would often mean that if you have multiple pushes per
+day the end-result is actually likely to be scanned later since the first
+pushes eat your rate limit.
 
-Change-Id: I302ccc82f9d5c43b58350bbbf7f16ad1c559248f
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
- .github/workflows/coverity-scan.yml | 69 +++++++++++++++++++++++++++++
- 1 file changed, 69 insertions(+)
- create mode 100644 .github/workflows/coverity-scan.yml
+If some changes should be scanned immediately you can always trigger the
+workflow manually. Otherwise once per day should be fine.
 
-diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coverity-scan.yml
-new file mode 100644
-index 00000000..c1079332
---- /dev/null
-+++ b/.github/workflows/coverity-scan.yml
-@@ -0,0 +1,69 @@
-+name: coverity-scan
-+on:
-+  schedule:
-+    - cron: '0 20 * * *' # Daily at 20:00 UTC
-+  workflow_dispatch:
-+
-+jobs:
-+  latest:
-+    runs-on: ubuntu-latest
-+    steps:
-+      - name: Check submission cache
-+        id: check_submit
-+        uses: actions/cache/restore@...2689...
-+        with:
-+          path: |
-+            cov-int
-+          key: check-submit-${{ github.sha }}
-+
-+      - name: Install dependencies
-+        if: steps.check_submit.outputs.cache-hit != 'true'
-+        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf libssl-dev libpkcs11-helper1-dev softhsm2 gnutls-bin
-+
-+      - name: Checkout OpenVPN
-+        if: steps.check_submit.outputs.cache-hit != 'true'
-+        uses: actions/checkout@...2689...
-+
-+      - name: Download Coverity Build Tool
-+        if: steps.check_submit.outputs.cache-hit != 'true'
-+        run: |
-+          wget -q https://scan.coverity.com/download/cxx/linux64 --post-data "token=$TOKEN&project=OpenVPN%2Fopenvpn" -O cov-analysis-linux64.tar.gz
-+          mkdir cov-analysis-linux64
-+          tar xzf cov-analysis-linux64.tar.gz --strip 1 -C cov-analysis-linux64
-+        env:
-+          TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
-+
-+      - name: autoconf
-+        if: steps.check_submit.outputs.cache-hit != 'true'
-+        run: autoreconf -fvi
-+      - name: configure
-+        if: steps.check_submit.outputs.cache-hit != 'true'
-+        run: ./configure --enable-pkcs11
-+
-+      - name: Build with cov-build
-+        if: steps.check_submit.outputs.cache-hit != 'true'
-+        run: |
-+          PATH=`pwd`/cov-analysis-linux64/bin:$PATH
-+          cov-build --dir cov-int make
-+
-+      - name: Submit the result to Coverity Scan
-+        if: steps.check_submit.outputs.cache-hit != 'true'
-+        run: |
-+          tar czvf openvpn.tgz cov-int
-+          curl --form token=$TOKEN \
-+          --form email=$EMAIL \
-+          --form file=@openvpn.tgz \
-+          --form version="$GITHUB_SHA" \
-+          --form description="master" \
-+          https://scan.coverity.com/builds?project=OpenVPN%2Fopenvpn
-+        env:
-+          TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
-+          EMAIL: ${{ secrets.COVERITY_SCAN_EMAIL }}
-+
-+      - name: Cache submission
-+        if: steps.check_submit.outputs.cache-hit != 'true'
-+        uses: actions/cache/save@...2689...
-+        with:
-+          path: |
-+            cov-int
-+          key: ${{ steps.check_submit.outputs.cache-primary-key }}
+Regards,
 -- 
-2.34.1
-
+  Frank Lichtenheld
 
