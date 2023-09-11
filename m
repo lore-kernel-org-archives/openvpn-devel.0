@@ -1,14 +1,11 @@
+From: Frank Lichtenheld <frank@...2641...>
+Date: Mon, 11 Sep 2023 13:07:35 +0200
+Message-Id: <20230911110735.34491-1-frank@...2641...>
+In-Reply-To: <20230728124005.177414-1-frank@...2641...>
+References: <20230728124005.177414-1-frank@...2641...>
 MIME-Version: 1.0
-References: <20230709231929.195048-1-jeremyfleischman@...277...>
- <20230906171758.344862-1-jeremyfleischman@...277...>
- <f4cd60f6.AMcAACR4FjUAAAAAAAAAAW9e-ykAAYCsnhYAAAAAABXTlQBk_taJ@...2677...>
-In-Reply-To: <f4cd60f6.AMcAACR4FjUAAAAAAAAAAW9e-ykAAYCsnhYAAAAAABXTlQBk_taJ@...2677...>
-From: Jeremy Fleischman <jeremyfleischman@...277...>
-Date: Mon, 11 Sep 2023 02:00:17 -0700
-Message-ID: <CAHpv4cP2zuSHn+KNy5X6LGL+4tKQt400sy7WgoeHbXY0q7u9GA@...278...>
-Content-Type: multipart/alternative; boundary="000000000000f101de0605118e17"
-Subject: Re: [Openvpn-devel] [PATCH v2] Fix StatusChangeCallback so it works
- without a LogCallback
+Subject: [Openvpn-devel] [PATCH v2] GHA: new workflow to submit scan to
+ Coverity Scan service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,105 +14,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <dazo+openvpn@...2108...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---000000000000f101de0605118e17
-Content-Type: text/plain; charset="UTF-8"
+Not on every push due to submit limits.
 
-Thank you for the update, and patience. My first email-based patch :)
+Use caching to not submit a scan for the same git commit
+twice. Since we have many days without pushes to master
+this saves a lot of Github and Coverity resources.
 
-On Mon, Sep 11, 2023, 1:57 AM David Sommerseth <dazo+openvpn@...2108...>
-wrote:
+v2:
+ - add caching to not submit redundant scans
 
-> On 06/09/2023 19:17, Jeremy Fleischman wrote:
-> > `StatusChangeCallback` requires that LogForward be enabled, which
-> > previously only happened in `LogCallback`. Now both of them do it, which
-> > requires a bit of bookkeeping. This fixes
-> > https://github.com/OpenVPN/openvpn3-linux/issues/197
-> >
-> > Signed-off-by: Jeremy Fleischman <jeremyfleischman@...277...>
-> > ---
-> >   src/python/openvpn3/SessionManager.py | 69 ++++++++++++++++++++++-----
-> >   1 file changed, 58 insertions(+), 11 deletions(-)
-> >
->
-> Thanks a lot for your patience and persistence through this review.
->
-> Your patch has been put into the queue for the coming v21 release.  I've
-> not yet pushed out that branch, as I'm waiting for our QA team to
-> complete the testing of an updated OpenVPN 3 Core library release first;
-> which is required to be able to build OpenVPN 3 Linux from the public
-> repos.
->
-> But consider your patch applied.  I've only done minor edits to some
-> comments and commit messages, but the code itself is unchanged.
->
-> I'll follow-up with an update once this commit is public.
->
->
-> --
-> kind regards,
->
-> David Sommerseth
-> OpenVPN Inc
->
->
->
+Change-Id: I302ccc82f9d5c43b58350bbbf7f16ad1c559248f
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ .github/workflows/coverity-scan.yml | 69 +++++++++++++++++++++++++++++
+ 1 file changed, 69 insertions(+)
+ create mode 100644 .github/workflows/coverity-scan.yml
 
---000000000000f101de0605118e17
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+diff --git a/.github/workflows/coverity-scan.yml b/.github/workflows/coverity-scan.yml
+new file mode 100644
+index 00000000..c1079332
+--- /dev/null
++++ b/.github/workflows/coverity-scan.yml
+@@ -0,0 +1,69 @@
++name: coverity-scan
++on:
++  schedule:
++    - cron: '0 20 * * *' # Daily at 20:00 UTC
++  workflow_dispatch:
++
++jobs:
++  latest:
++    runs-on: ubuntu-latest
++    steps:
++      - name: Check submission cache
++        id: check_submit
++        uses: actions/cache/restore@...2689...
++        with:
++          path: |
++            cov-int
++          key: check-submit-${{ github.sha }}
++
++      - name: Install dependencies
++        if: steps.check_submit.outputs.cache-hit != 'true'
++        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev libcap-ng-dev libnl-genl-3-dev linux-libc-dev man2html libcmocka-dev python3-docutils libtool automake autoconf libssl-dev libpkcs11-helper1-dev softhsm2 gnutls-bin
++
++      - name: Checkout OpenVPN
++        if: steps.check_submit.outputs.cache-hit != 'true'
++        uses: actions/checkout@...2689...
++
++      - name: Download Coverity Build Tool
++        if: steps.check_submit.outputs.cache-hit != 'true'
++        run: |
++          wget -q https://scan.coverity.com/download/cxx/linux64 --post-data "token=$TOKEN&project=OpenVPN%2Fopenvpn" -O cov-analysis-linux64.tar.gz
++          mkdir cov-analysis-linux64
++          tar xzf cov-analysis-linux64.tar.gz --strip 1 -C cov-analysis-linux64
++        env:
++          TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
++
++      - name: autoconf
++        if: steps.check_submit.outputs.cache-hit != 'true'
++        run: autoreconf -fvi
++      - name: configure
++        if: steps.check_submit.outputs.cache-hit != 'true'
++        run: ./configure --enable-pkcs11
++
++      - name: Build with cov-build
++        if: steps.check_submit.outputs.cache-hit != 'true'
++        run: |
++          PATH=`pwd`/cov-analysis-linux64/bin:$PATH
++          cov-build --dir cov-int make
++
++      - name: Submit the result to Coverity Scan
++        if: steps.check_submit.outputs.cache-hit != 'true'
++        run: |
++          tar czvf openvpn.tgz cov-int
++          curl --form token=$TOKEN \
++          --form email=$EMAIL \
++          --form file=@openvpn.tgz \
++          --form version="$GITHUB_SHA" \
++          --form description="master" \
++          https://scan.coverity.com/builds?project=OpenVPN%2Fopenvpn
++        env:
++          TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
++          EMAIL: ${{ secrets.COVERITY_SCAN_EMAIL }}
++
++      - name: Cache submission
++        if: steps.check_submit.outputs.cache-hit != 'true'
++        uses: actions/cache/save@...2689...
++        with:
++          path: |
++            cov-int
++          key: ${{ steps.check_submit.outputs.cache-primary-key }}
+-- 
+2.34.1
 
-<div dir=3D"auto"><div>Thank you for the update, and patience. My first ema=
-il-based patch :)=C2=A0</div><div dir=3D"auto"><br><div class=3D"gmail_quot=
-e" dir=3D"auto"><div dir=3D"ltr" class=3D"gmail_attr">On Mon, Sep 11, 2023,=
- 1:57 AM David Sommerseth &lt;<a href=3D"mailto:dazo%2Bopenvpn@...2108...">=
-dazo+openvpn@...2108...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_=
-quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1=
-ex">On 06/09/2023 19:17, Jeremy Fleischman wrote:<br>
-&gt; `StatusChangeCallback` requires that LogForward be enabled, which<br>
-&gt; previously only happened in `LogCallback`. Now both of them do it, whi=
-ch<br>
-&gt; requires a bit of bookkeeping. This fixes<br>
-&gt; <a href=3D"https://github.com/OpenVPN/openvpn3-linux/issues/197" rel=
-=3D"noreferrer noreferrer" target=3D"_blank">https://github.com/OpenVPN/ope=
-nvpn3-linux/issues/197</a><br>
-&gt; <br>
-&gt; Signed-off-by: Jeremy Fleischman &lt;<a href=3D"mailto:jeremyfleischma=
-n@...277..." target=3D"_blank" rel=3D"noreferrer">jeremyfleischman@...1663...=
-.</a>&gt;<br>
-&gt; ---<br>
-&gt;=C2=A0 =C2=A0src/python/openvpn3/SessionManager.py | 69 +++++++++++++++=
-+++++++-----<br>
-&gt;=C2=A0 =C2=A01 file changed, 58 insertions(+), 11 deletions(-)<br>
-&gt; <br>
-<br>
-Thanks a lot for your patience and persistence through this review.<br>
-<br>
-Your patch has been put into the queue for the coming v21 release.=C2=A0 I&=
-#39;ve <br>
-not yet pushed out that branch, as I&#39;m waiting for our QA team to <br>
-complete the testing of an updated OpenVPN 3 Core library release first; <b=
-r>
-which is required to be able to build OpenVPN 3 Linux from the public repos=
-.<br>
-<br>
-But consider your patch applied.=C2=A0 I&#39;ve only done minor edits to so=
-me <br>
-comments and commit messages, but the code itself is unchanged.<br>
-<br>
-I&#39;ll follow-up with an update once this commit is public.<br>
-<br>
-<br>
--- <br>
-kind regards,<br>
-<br>
-David Sommerseth<br>
-OpenVPN Inc<br>
-<br>
-<br>
-</blockquote></div></div></div>
-
---000000000000f101de0605118e17--
 
