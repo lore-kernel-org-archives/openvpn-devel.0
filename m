@@ -1,14 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 12 Sep 2023 11:09:58 +0000
+Date: Tue, 12 Sep 2023 11:10:50 +0000
 In-Reply-To: <gerrit.1677715752000.I1f97d8e5ae8f049d72db5c12ce627f601d87505c@...2715...>
 References: <gerrit.1677715752000.I1f97d8e5ae8f049d72db5c12ce627f601d87505c@...2715...>
 Reply-To: arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <29879f139a004e23fd2394ecddb083a5d5de6c59-EmailReviewComments-HTML@...2715...>
+Message-ID: <8ccf04950f6cb842a1af6a5584e6201e87e5784c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="GOO++nuWvPs="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="boxJJjmz/wc="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: dns option: make
  server id/priority optional
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: d12fk <heiko@...515...>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---GOO++nuWvPs=
+--boxJJjmz/wc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -42,9 +42,7 @@ Patch Set 5:
 Patchset:
 
 PS5:
-I am really behind this idea. Is dropping the priority important enough to =
-warrant having to deal with the difference between versions that suppport t=
-his and version that do not support this (2.6 and 3.8) worth the trouble?
+I meant "not behind the idea" I cannot find a way tol edit my comment.
 
 
 
@@ -64,12 +62,12 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Tue, 12 Sep 2023 11:09:58 +0000
+Gerrit-Comment-Date: Tue, 12 Sep 2023 11:10:50 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---GOO++nuWvPs=
+--boxJJjmz/wc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -80,17 +78,15 @@ i style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style:=
  none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
 =3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/4=
 0?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre-wrap; =
-word-wrap: break-word;">I am really behind this idea. Is dropping the prior=
-ity important enough to warrant having to deal with the difference between =
-versions that suppport this and version that do not support this (2.6 and 3=
-.8) worth the trouble?</p></li></ul></li></ul><p>To view, visit <a href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/40?usp=3Demail">change 40</a>. To uns=
-ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
-openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sc=
-hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
-//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/40?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
- Change"/></div></div>
+word-wrap: break-word;">I meant &quot;not behind the idea&quot; I cannot fi=
+nd a way tol edit my comment.</p></li></ul></li></ul><p>To view, visit <a h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/40?usp=3Demail">change 40</a>.=
+ To unsubscribe, or for help writing mail filters, visit <a href=3D"http://=
+gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"ht=
+tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/40?usp=3Demail"/><meta itemprop=3D"name" conten=
+t=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -110,12 +106,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 12 Sep 2023 11:09:58=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 12 Sep 2023 11:10:50=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---GOO++nuWvPs=--
+--boxJJjmz/wc=--
 
