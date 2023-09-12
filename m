@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 12 Sep 2023 10:19:09 +0000
-References: <gerrit.1683717398000.Id8321dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
+Date: Tue, 12 Sep 2023 10:46:47 +0000
+References: <gerrit.1677684971000.I7f422add22f3f01e9f47985065782dd67bca46eb@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <37155e5f782173d96d1de2117e4545024e3aaafb-HTML@...2715...>
+Message-ID: <9f260ea40477c10f6b9184163dcba573d7abdf34-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="zSUzM+IOPLY="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Change type of
- frame.mss_fix to uint16_t
+Content-Type: multipart/alternative; boundary="AfrG9EvXeac="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: dns option: remove
+ support for exclude-domains
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,385 +18,400 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>
 
---zSUzM+IOPLY=
+--AfrG9EvXeac=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
-Hello cron2,
-
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/268?usp=3Demail
-
-to review the following change.
+d12fk has uploaded this change for review. ( http://gerrit.openvpn.net/c/op=
+envpn/+/39?usp=3Demail )
 
 
-Change subject: Change type of frame.mss_fix to uint16_t
+Change subject: dns option: remove support for exclude-domains
 ......................................................................
 
-Change type of frame.mss_fix to uint16_t
+dns option: remove support for exclude-domains
 
-Since in the end this always ends up as an uint16_t
-anyway, just make the conversion much earlier. Cleans
-up the code and removes some -Wconversion warnings.
+No DNS resolver currently supports this and it is not possible to
+emulate the behavior without the chance of errors. Finding the
+effective default system DNS server(s) to specify the exclude
+DNS routes is not trivial and cannot be verified to be correct
+without resolver internal knowledge. So, it is better to not
+support this instead of supporting it, but incorrectly.
 
-v2:
- - proper error handling in options.c
-
-Change-Id: Id8321dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Change-Id: I7f422add22f3f01e9f47985065782dd67bca46eb
+Signed-off-by: Heiko Hund <heiko@...2662...>
 ---
-M src/openvpn/mss.c
-M src/openvpn/mss.h
-M src/openvpn/mtu.c
-M src/openvpn/mtu.h
+M doc/man-sections/client-options.rst
+M doc/man-sections/script-options.rst
+M src/openvpn/dns.c
+M src/openvpn/dns.h
 M src/openvpn/options.c
-5 files changed, 23 insertions(+), 15 deletions(-)
+5 files changed, 7 insertions(+), 45 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/68/268/3
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/39/39/6
 
-diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
-index dbd3681..d7ee4c2 100644
---- a/src/openvpn/mss.c
-+++ b/src/openvpn/mss.c
-@@ -44,7 +44,7 @@
-  *              if yes, hand to mss_fixup_dowork()
-  */
- void
--mss_fixup_ipv4(struct buffer *buf, int maxmss)
-+mss_fixup_ipv4(struct buffer *buf, uint16_t maxmss)
- {
-     const struct openvpn_iphdr *pip;
-     int hlen;
-@@ -72,7 +72,7 @@
-             struct openvpn_tcphdr *tc =3D (struct openvpn_tcphdr *) BPTR(&=
-newbuf);
-             if (tc->flags & OPENVPN_TCPH_SYN_MASK)
+diff --git a/doc/man-sections/client-options.rst b/doc/man-sections/client-=
+options.rst
+index fe9ffa6..4555534 100644
+--- a/doc/man-sections/client-options.rst
++++ b/doc/man-sections/client-options.rst
+@@ -169,7 +169,7 @@
+
+      dns search-domains domain [domain ...]
+      dns server n address addr[:port] [addr[:port] ...]
+-     dns server n resolve-domains|exclude-domains domain [domain ...]
++     dns server n resolve-domains domain [domain ...]
+      dns server n dnssec yes|optional|no
+      dns server n transport DoH|DoT|plain
+      dns server n sni server-name
+@@ -191,14 +191,10 @@
+   Optionally a port can be appended after a colon. IPv6 addresses need to
+   be enclosed in brackets if a port is appended.
+
+-  The ``resolve-domains`` and ``exclude-domains`` options take one or
+-  more DNS domains which are explicitly resolved or explicitly not resolved
+-  by a server. Only one of the options can be configured for a server.
+-  ``resolve-domains`` is used to define a split-dns setup, where only
+-  given domains are resolved by a server. ``exclude-domains`` is used to
+-  define domains which will never be resolved by a server (e.g. domains
+-  which can only be resolved locally). Systems which do not support fine
+-  grained DNS domain configuration, will ignore these settings.
++  The ``resolve-domains`` option takes one or more DNS domains used to def=
+ine
++  a split-dns or dns-routing setup, where only the given domains are resol=
+ved
++  by the server. Systems which do not support fine grained DNS domain
++  configuration, will ignore this setting.
+
+   The ``dnssec`` option is used to configure validation of DNSSEC records.
+   While the exact semantics may differ for resolvers on different systems,
+diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-=
+options.rst
+index d73231e..8c0be0c 100644
+--- a/doc/man-sections/script-options.rst
++++ b/doc/man-sections/script-options.rst
+@@ -663,7 +663,6 @@
+        dns_server_{n}_address_{m}
+        dns_server_{n}_port_{m}
+        dns_server_{n}_resolve_domain_{m}
+-       dns_server_{n}_exclude_domain_{m}
+        dns_server_{n}_dnssec
+        dns_server_{n}_transport
+        dns_server_{n}_sni
+diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c
+index b7808db..51fca2f 100644
+--- a/src/openvpn/dns.c
++++ b/src/openvpn/dns.c
+@@ -402,11 +402,9 @@
+
+         if (s->domains)
+         {
+-            const char *format =3D s->domain_type =3D=3D DNS_RESOLVE_DOMAI=
+NS ?
+-                                 "dns_server_%d_resolve_domain_%d" : "dns_=
+server_%d_exclude_domain_%d";
+             for (j =3D 1, d =3D s->domains; d !=3D NULL; j++, d =3D d->nex=
+t)
              {
--                mss_fixup_dowork(&newbuf, (uint16_t) maxmss);
-+                mss_fixup_dowork(&newbuf, maxmss);
+-                setenv_dns_option(es, format, i, j, d->name);
++                setenv_dns_option(es, "dns_server_%d_resolve_domain_%d", i=
+, j, d->name);
              }
          }
-     }
-@@ -84,7 +84,7 @@
-  *              (IPv6 header structure is sufficiently different from IPv4=
-...)
-  */
- void
--mss_fixup_ipv6(struct buffer *buf, int maxmss)
-+mss_fixup_ipv6(struct buffer *buf, uint16_t maxmss)
- {
-     const struct openvpn_ipv6hdr *pip6;
-     struct buffer newbuf;
-@@ -130,7 +130,7 @@
-         struct openvpn_tcphdr *tc =3D (struct openvpn_tcphdr *) BPTR(&newb=
-uf);
-         if (tc->flags & OPENVPN_TCPH_SYN_MASK)
+
+@@ -484,14 +482,7 @@
+         struct dns_domain *domain =3D server->domains;
+         if (domain)
          {
--            mss_fixup_dowork(&newbuf, (uint16_t) maxmss-20);
-+            mss_fixup_dowork(&newbuf, maxmss-20);
-         }
-     }
- }
-@@ -191,13 +191,14 @@
-                 {
-                     continue;
-                 }
--                mssval =3D (opt[2]<<8)+opt[3];
-+                mssval =3D opt[2] << 8;
-+                mssval +=3D opt[3];
-                 if (mssval > maxmss)
-                 {
--                    dmsg(D_MSS, "MSS: %d -> %d", (int) mssval, (int) maxms=
-s);
-+                    dmsg(D_MSS, "MSS: %" PRIu16 " -> %" PRIu16, mssval, ma=
-xmss);
-                     accumulate =3D htons(mssval);
--                    opt[2] =3D (maxmss>>8)&0xff;
--                    opt[3] =3D maxmss&0xff;
-+                    opt[2] =3D (uint8_t)((maxmss>>8)&0xff);
-+                    opt[3] =3D (uint8_t)(maxmss&0xff);
-                     accumulate -=3D htons(maxmss);
-                     ADJUST_CHECKSUM(accumulate, tc->check);
-                 }
-@@ -291,7 +292,7 @@
-     {
-         /* we subtract IPv4 and TCP overhead here, mssfix method will add =
-the
-          * extra 20 for IPv6 */
--        frame->mss_fix =3D options->ce.mssfix - (20 + 20);
-+        frame->mss_fix =3D (uint16_t)(options->ce.mssfix - (20 + 20));
-         return;
-     }
+-            if (server->domain_type =3D=3D DNS_RESOLVE_DOMAINS)
+-            {
+-                msg(D_SHOW_PARMS, "    resolve domains:");
+-            }
+-            else
+-            {
+-                msg(D_SHOW_PARMS, "    exclude domains:");
+-            }
++            msg(D_SHOW_PARMS, "    resolve domains:");
+             while (domain)
+             {
+                 msg(D_SHOW_PARMS, "      %s", domain->name);
+diff --git a/src/openvpn/dns.h b/src/openvpn/dns.h
+index 162dec1..e497857 100644
+--- a/src/openvpn/dns.h
++++ b/src/openvpn/dns.h
+@@ -27,12 +27,6 @@
+ #include "buffer.h"
+ #include "env_set.h"
 
-@@ -325,7 +326,7 @@
-
-     /* This is the target value our payload needs to be smaller */
-     unsigned int target =3D options->ce.mssfix - overhead;
--    frame->mss_fix =3D adjust_payload_max_cbc(kt, target) - payload_overhe=
-ad;
-+    frame->mss_fix =3D (uint16_t)(adjust_payload_max_cbc(kt, target) - pay=
-load_overhead);
-
-
- }
-diff --git a/src/openvpn/mss.h b/src/openvpn/mss.h
-index 1c4704b..b2a68cf 100644
---- a/src/openvpn/mss.h
-+++ b/src/openvpn/mss.h
-@@ -29,9 +29,9 @@
- #include "mtu.h"
- #include "ssl_common.h"
-=20
--void mss_fixup_ipv4(struct buffer *buf, int maxmss);
-+void mss_fixup_ipv4(struct buffer *buf, uint16_t maxmss);
-
--void mss_fixup_ipv6(struct buffer *buf, int maxmss);
-+void mss_fixup_ipv6(struct buffer *buf, uint16_t maxmss);
-
- void mss_fixup_dowork(struct buffer *buf, uint16_t maxmss);
-
-diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index 132f93c..389d140 100644
---- a/src/openvpn/mtu.c
-+++ b/src/openvpn/mtu.c
-@@ -210,7 +210,7 @@
-         buf_printf(&out, "%s ", prefix);
-     }
-     buf_printf(&out, "[");
--    buf_printf(&out, " mss_fix:%d", frame->mss_fix);
-+    buf_printf(&out, " mss_fix:%" PRIu16, frame->mss_fix);
- #ifdef ENABLE_FRAGMENT
-     buf_printf(&out, " max_frag:%d", frame->max_fragment_size);
- #endif
-diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index b602b86..c64398d 100644
---- a/src/openvpn/mtu.h
-+++ b/src/openvpn/mtu.h
-@@ -115,7 +115,7 @@
-                                   *  decryption/encryption or compression.=
- */
-     } buf;
-
--    unsigned int mss_fix;       /**< The actual MSS value that should be
-+    uint16_t mss_fix;           /**< The actual MSS value that should be
-                                  *   written to the payload packets. This
-                                  *   is the value for IPv4 TCP packets. For
-                                  *   IPv6 packets another 20 bytes must
+-enum dns_domain_type {
+-    DNS_DOMAINS_UNSET,
+-    DNS_RESOLVE_DOMAINS,
+-    DNS_EXCLUDE_DOMAINS
+-};
+-
+ enum dns_security {
+     DNS_SECURITY_UNSET,
+     DNS_SECURITY_NO,
+@@ -68,7 +62,6 @@
+     size_t addr_count;
+     struct dns_server_addr addr[8];
+     struct dns_domain *domains;
+-    enum dns_domain_type domain_type;
+     enum dns_security dnssec;
+     enum dns_server_transport transport;
+     const char *sni;
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 90d85be..bdef703 100644
+index 17ce2b0..3e0cb62 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -7253,9 +7253,16 @@
-         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
-         if (p[1])
-         {
-+            int mssfix =3D positive_atoi(p[1]);
-+            if (mssfix > UINT16_MAX)
-+            {
-+                msg(msglevel, "--mssfix value '%s' is invalid", p[1]);
-+                goto err;
-+            }
-+
-             /* value specified, assume encapsulation is not
-              * included unless "mtu" follows later */
--            options->ce.mssfix =3D positive_atoi(p[1]);
-+            options->ce.mssfix =3D mssfix;
-             options->ce.mssfix_encap =3D false;
-             options->ce.mssfix_default =3D false;
-         }
+@@ -514,7 +514,6 @@
+     "                  Valid options are :\n"
+     "                  address <addr[:port]> [addr[:port] ...] : server ad=
+dresses 4/6\n"
+     "                  resolve-domains <domain> [domain ...] : split domai=
+ns\n"
+-    "                  exclude-domains <domain> [domain ...] : domains not=
+ to resolve\n"
+     "                  dnssec <yes|no|optional> : option to use DNSSEC\n"
+     "                  type <DoH|DoT> : query server over HTTPS / TLS\n"
+     "                  sni <domain> : DNS server name indication\n"
+@@ -8022,22 +8021,6 @@
+             }
+             else if (streq(p[3], "resolve-domains"))
+             {
+-                if (server->domain_type =3D=3D DNS_EXCLUDE_DOMAINS)
+-                {
+-                    msg(msglevel, "--dns server %ld: cannot use resolve-do=
+mains and exclude-domains", priority);
+-                    goto err;
+-                }
+-                server->domain_type =3D DNS_RESOLVE_DOMAINS;
+-                dns_domain_list_append(&server->domains, &p[4], &options->=
+dns_options.gc);
+-            }
+-            else if (streq(p[3], "exclude-domains"))
+-            {
+-                if (server->domain_type =3D=3D DNS_RESOLVE_DOMAINS)
+-                {
+-                    msg(msglevel, "--dns server %ld: cannot use exclude-do=
+mains and resolve-domains", priority);
+-                    goto err;
+-                }
+-                server->domain_type =3D DNS_EXCLUDE_DOMAINS;
+                 dns_domain_list_append(&server->domains, &p[4], &options->=
+dns_options.gc);
+             }
+             else if (streq(p[3], "dnssec") && !p[5])
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/268?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/39?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id8321dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26
-Gerrit-Change-Number: 268
-Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2
+Gerrit-Change-Id: I7f422add22f3f01e9f47985065782dd67bca46eb
+Gerrit-Change-Number: 39
+Gerrit-PatchSet: 6
+Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2
+Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---zSUzM+IOPLY=
+--AfrG9EvXeac=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, plaisthos. </p>
-<p>flichtenheld would like cron2 to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/268?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Change type of frame.mss_fix to uint16_t<br><br>Since in the =
-end this always ends up as an uint16_t<br>anyway, just make the conversion =
-much earlier. Cleans<br>up the code and removes some -Wconversion warnings.=
-<br><br>v2:<br> - proper error handling in options.c<br><br>Change-Id: Id83=
-21dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26<br>Signed-off-by: Frank Lichtenheld &=
-lt;frank@...2641...&gt;<br>---<br>M src/openvpn/mss.c<br>M src/openvpn/mss.=
-h<br>M src/openvpn/mtu.c<br>M src/openvpn/mtu.h<br>M src/openvpn/options.c<=
-br>5 files changed, 23 insertions(+), 15 deletions(-)<br><br></pre><pre sty=
-le=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ss=
-h://gerrit.openvpn.net:29418/openvpn refs/changes/68/268/3</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/src/openvpn/mss.c b/src/openvpn/mss.c</span><br><span>index dbd3681..=
-d7ee4c2 100644</span><br><span>--- a/src/openvpn/mss.c</span><br><span>+++ =
-b/src/openvpn/mss.c</span><br><span>@@ -44,7 +44,7 @@</span><br><span>  *  =
-            if yes, hand to mss_fixup_dowork()</span><br><span>  */</span><=
-br><span> void</span><br><span style=3D"color: hsl(0, 100%, 40%);">-mss_fix=
-up_ipv4(struct buffer *buf, int maxmss)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+mss_fixup_ipv4(struct buffer *buf, uint16_t maxmss)</sp=
-an><br><span> {</span><br><span>     const struct openvpn_iphdr *pip;</span=
-><br><span>     int hlen;</span><br><span>@@ -72,7 +72,7 @@</span><br><span=
->             struct openvpn_tcphdr *tc =3D (struct openvpn_tcphdr *) BPTR(=
-&amp;newbuf);</span><br><span>             if (tc-&gt;flags &amp; OPENVPN_T=
-CPH_SYN_MASK)</span><br><span>             {</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-                mss_fixup_dowork(&amp;newbuf, (uint1=
-6_t) maxmss);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-          mss_fixup_dowork(&amp;newbuf, maxmss);</span><br><span>          =
-   }</span><br><span>         }</span><br><span>     }</span><br><span>@@ -=
-84,7 +84,7 @@</span><br><span>  *              (IPv6 header structure is su=
-fficiently different from IPv4...)</span><br><span>  */</span><br><span> vo=
-id</span><br><span style=3D"color: hsl(0, 100%, 40%);">-mss_fixup_ipv6(stru=
-ct buffer *buf, int maxmss)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+mss_fixup_ipv6(struct buffer *buf, uint16_t maxmss)</span><br><span=
-> {</span><br><span>     const struct openvpn_ipv6hdr *pip6;</span><br><spa=
-n>     struct buffer newbuf;</span><br><span>@@ -130,7 +130,7 @@</span><br>=
-<span>         struct openvpn_tcphdr *tc =3D (struct openvpn_tcphdr *) BPTR=
-(&amp;newbuf);</span><br><span>         if (tc-&gt;flags &amp; OPENVPN_TCPH=
-_SYN_MASK)</span><br><span>         {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-            mss_fixup_dowork(&amp;newbuf, (uint16_t) maxmss=
--20);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            ms=
-s_fixup_dowork(&amp;newbuf, maxmss-20);</span><br><span>         }</span><b=
-r><span>     }</span><br><span> }</span><br><span>@@ -191,13 +191,14 @@</sp=
-an><br><span>                 {</span><br><span>                     contin=
-ue;</span><br><span>                 }</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-                mssval =3D (opt[2]&lt;&lt;8)+opt[3];</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+                mssval =
-=3D opt[2] &lt;&lt; 8;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                mssval +=3D opt[3];</span><br><span>                 if =
-(mssval &gt; maxmss)</span><br><span>                 {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-                    dmsg(D_MSS, &quot;MSS=
-: %d -&gt; %d&quot;, (int) mssval, (int) maxmss);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                    dmsg(D_MSS, &quot;MSS: %&=
-quot; PRIu16 &quot; -&gt; %&quot; PRIu16, mssval, maxmss);</span><br><span>=
-                     accumulate =3D htons(mssval);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-                    opt[2] =3D (maxmss&gt;&gt;=
-8)&amp;0xff;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-           opt[3] =3D maxmss&amp;0xff;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+                    opt[2] =3D (uint8_t)((maxmss&gt;&gt;=
-8)&amp;0xff);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-              opt[3] =3D (uint8_t)(maxmss&amp;0xff);</span><br><span>      =
-               accumulate -=3D htons(maxmss);</span><br><span>             =
-        ADJUST_CHECKSUM(accumulate, tc-&gt;check);</span><br><span>        =
-         }</span><br><span>@@ -291,7 +292,7 @@</span><br><span>     {</span=
-><br><span>         /* we subtract IPv4 and TCP overhead here, mssfix metho=
-d will add the</span><br><span>          * extra 20 for IPv6 */</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        frame-&gt;mss_fix =3D opt=
-ions-&gt;ce.mssfix - (20 + 20);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        frame-&gt;mss_fix =3D (uint16_t)(options-&gt;ce.mssfix =
-- (20 + 20));</span><br><span>         return;</span><br><span>     }</span=
-><br><span> </span><br><span>@@ -325,7 +326,7 @@</span><br><span> </span><b=
-r><span>     /* This is the target value our payload needs to be smaller */=
-</span><br><span>     unsigned int target =3D options-&gt;ce.mssfix - overh=
-ead;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    frame-&gt;mss=
-_fix =3D adjust_payload_max_cbc(kt, target) - payload_overhead;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    frame-&gt;mss_fix =3D (uint=
-16_t)(adjust_payload_max_cbc(kt, target) - payload_overhead);</span><br><sp=
-an> </span><br><span> </span><br><span> }</span><br><span>diff --git a/src/=
-openvpn/mss.h b/src/openvpn/mss.h</span><br><span>index 1c4704b..b2a68cf 10=
-0644</span><br><span>--- a/src/openvpn/mss.h</span><br><span>+++ b/src/open=
-vpn/mss.h</span><br><span>@@ -29,9 +29,9 @@</span><br><span> #include &quot=
-;mtu.h&quot;</span><br><span> #include &quot;ssl_common.h&quot;</span><br><=
-span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-void mss_fixup_=
-ipv4(struct buffer *buf, int maxmss);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+void mss_fixup_ipv4(struct buffer *buf, uint16_t maxmss);=
-</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-voi=
-d mss_fixup_ipv6(struct buffer *buf, int maxmss);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+void mss_fixup_ipv6(struct buffer *buf, uint1=
-6_t maxmss);</span><br><span> </span><br><span> void mss_fixup_dowork(struc=
-t buffer *buf, uint16_t maxmss);</span><br><span> </span><br><span>diff --g=
-it a/src/openvpn/mtu.c b/src/openvpn/mtu.c</span><br><span>index 132f93c..3=
-89d140 100644</span><br><span>--- a/src/openvpn/mtu.c</span><br><span>+++ b=
-/src/openvpn/mtu.c</span><br><span>@@ -210,7 +210,7 @@</span><br><span>    =
-     buf_printf(&amp;out, &quot;%s &quot;, prefix);</span><br><span>     }<=
-/span><br><span>     buf_printf(&amp;out, &quot;[&quot;);</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    buf_printf(&amp;out, &quot; mss_fix=
-:%d&quot;, frame-&gt;mss_fix);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+    buf_printf(&amp;out, &quot; mss_fix:%&quot; PRIu16, frame-&g=
-t;mss_fix);</span><br><span> #ifdef ENABLE_FRAGMENT</span><br><span>     bu=
-f_printf(&amp;out, &quot; max_frag:%d&quot;, frame-&gt;max_fragment_size);<=
-/span><br><span> #endif</span><br><span>diff --git a/src/openvpn/mtu.h b/sr=
-c/openvpn/mtu.h</span><br><span>index b602b86..c64398d 100644</span><br><sp=
-an>--- a/src/openvpn/mtu.h</span><br><span>+++ b/src/openvpn/mtu.h</span><b=
-r><span>@@ -115,7 +115,7 @@</span><br><span>                               =
-    *  decryption/encryption or compression. */</span><br><span>     } buf;=
-</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- unsigned int mss_fix;       /**&lt; The actual MSS value that should be</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    uint16_t mss_fix; =
-          /**&lt; The actual MSS value that should be</span><br><span>     =
-                             *   written to the payload packets. This</span=
-><br><span>                                  *   is the value for IPv4 TCP =
-packets. For</span><br><span>                                  *   IPv6 pac=
-kets another 20 bytes must</span><br><span>diff --git a/src/openvpn/options=
-.c b/src/openvpn/options.c</span><br><span>index 90d85be..bdef703 100644</s=
-pan><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn=
-/options.c</span><br><span>@@ -7253,9 +7253,16 @@</span><br><span>         =
-VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);</span><br><span>        =
- if (p[1])</span><br><span>         {</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+            int mssfix =3D positive_atoi(p[1]);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+            if (mssfix &gt; U=
-INT16_MAX)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-   {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
- msg(msglevel, &quot;--mssfix value &#39;%s&#39; is invalid&quot;, p[1]);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                goto =
-err;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>    =
-         /* value specified, assume encapsulation is not</span><br><span>  =
-            * included unless &quot;mtu&quot; follows later */</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-            options-&gt;ce.mssfix =
-=3D positive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+            options-&gt;ce.mssfix =3D mssfix;</span><br><span>        =
-     options-&gt;ce.mssfix_encap =3D false;</span><br><span>             op=
-tions-&gt;ce.mssfix_default =3D false;</span><br><span>         }</span><br=
-><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/268?usp=3Demail">change 268</a>. To unsubscribe, or for hel=
-p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
-">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
-e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
-ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/2=
-68?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
-iv>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>d12fk has uploaded this change for <strong>review</strong>.</p><p><a hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/39?usp=3Demail">View Change</a><=
+/p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+dns option: remove support for exclude-domains<br><br>No DNS resolver curre=
+ntly supports this and it is not possible to<br>emulate the behavior withou=
+t the chance of errors. Finding the<br>effective default system DNS server(=
+s) to specify the exclude<br>DNS routes is not trivial and cannot be verifi=
+ed to be correct<br>without resolver internal knowledge. So, it is better t=
+o not<br>support this instead of supporting it, but incorrectly.<br><br>Cha=
+nge-Id: I7f422add22f3f01e9f47985065782dd67bca46eb<br>Signed-off-by: Heiko H=
+und &lt;heiko@...2662...&gt;<br>---<br>M doc/man-sections/client-options.rs=
+t<br>M doc/man-sections/script-options.rst<br>M src/openvpn/dns.c<br>M src/=
+openvpn/dns.h<br>M src/openvpn/options.c<br>5 files changed, 7 insertions(+=
+), 45 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvp=
+n refs/changes/39/39/6</pre><pre style=3D"font-family: monospace,monospace;=
+ white-space: pre-wrap;"><span>diff --git a/doc/man-sections/client-options=
+.rst b/doc/man-sections/client-options.rst</span><br><span>index fe9ffa6..4=
+555534 100644</span><br><span>--- a/doc/man-sections/client-options.rst</sp=
+an><br><span>+++ b/doc/man-sections/client-options.rst</span><br><span>@@ -=
+169,7 +169,7 @@</span><br><span> </span><br><span>      dns search-domains =
+domain [domain ...]</span><br><span>      dns server n address addr[:port] =
+[addr[:port] ...]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+ dns server n resolve-domains|exclude-domains domain [domain ...]</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+     dns server n resolve-dom=
+ains domain [domain ...]</span><br><span>      dns server n dnssec yes|opti=
+onal|no</span><br><span>      dns server n transport DoH|DoT|plain</span><b=
+r><span>      dns server n sni server-name</span><br><span>@@ -191,14 +191,=
+10 @@</span><br><span>   Optionally a port can be appended after a colon. I=
+Pv6 addresses need to</span><br><span>   be enclosed in brackets if a port =
+is appended.</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-  The ``resolve-domains`` and ``exclude-domains`` options take one=
+ or</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  more DNS domains=
+ which are explicitly resolved or explicitly not resolved</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-  by a server. Only one of the options =
+can be configured for a server.</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-  ``resolve-domains`` is used to define a split-dns setup, where =
+only</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  given domains a=
+re resolved by a server. ``exclude-domains`` is used to</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-  define domains which will never be reso=
+lved by a server (e.g. domains</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-  which can only be resolved locally). Systems which do not suppor=
+t fine</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  grained DNS d=
+omain configuration, will ignore these settings.</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+  The ``resolve-domains`` option takes one or =
+more DNS domains used to define</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+  a split-dns or dns-routing setup, where only the given domain=
+s are resolved</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  by =
+the server. Systems which do not support fine grained DNS domain</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+  configuration, will ignore t=
+his setting.</span><br><span> </span><br><span>   The ``dnssec`` option is =
+used to configure validation of DNSSEC records.</span><br><span>   While th=
+e exact semantics may differ for resolvers on different systems,</span><br>=
+<span>diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/s=
+cript-options.rst</span><br><span>index d73231e..8c0be0c 100644</span><br><=
+span>--- a/doc/man-sections/script-options.rst</span><br><span>+++ b/doc/ma=
+n-sections/script-options.rst</span><br><span>@@ -663,7 +663,6 @@</span><br=
+><span>        dns_server_{n}_address_{m}</span><br><span>        dns_serve=
+r_{n}_port_{m}</span><br><span>        dns_server_{n}_resolve_domain_{m}</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-       dns_server_{n}_ex=
+clude_domain_{m}</span><br><span>        dns_server_{n}_dnssec</span><br><s=
+pan>        dns_server_{n}_transport</span><br><span>        dns_server_{n}=
+_sni</span><br><span>diff --git a/src/openvpn/dns.c b/src/openvpn/dns.c</sp=
+an><br><span>index b7808db..51fca2f 100644</span><br><span>--- a/src/openvp=
+n/dns.c</span><br><span>+++ b/src/openvpn/dns.c</span><br><span>@@ -402,11 =
++402,9 @@</span><br><span> </span><br><span>         if (s-&gt;domains)</sp=
+an><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-            const char *format =3D s-&gt;domain_type =3D=3D DNS_RESOLVE_D=
+OMAINS ?</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
+                    &quot;dns_server_%d_resolve_domain_%d&quot; : &quot;dns=
+_server_%d_exclude_domain_%d&quot;;</span><br><span>             for (j =3D=
+ 1, d =3D s-&gt;domains; d !=3D NULL; j++, d =3D d-&gt;next)</span><br><spa=
+n>             {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+           setenv_dns_option(es, format, i, j, d-&gt;name);</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+                setenv_dns_option(e=
+s, &quot;dns_server_%d_resolve_domain_%d&quot;, i, j, d-&gt;name);</span><b=
+r><span>             }</span><br><span>         }</span><br><span> </span><=
+br><span>@@ -484,14 +482,7 @@</span><br><span>         struct dns_domain *d=
+omain =3D server-&gt;domains;</span><br><span>         if (domain)</span><b=
+r><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+         if (server-&gt;domain_type =3D=3D DNS_RESOLVE_DOMAINS)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                msg(D_SHOW_PARMS, &quot; =
+   resolve domains:&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
+ msg(D_SHOW_PARMS, &quot;    exclude domains:&quot;);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            msg(D_SHOW_PARMS, &quot;    resolve d=
+omains:&quot;);</span><br><span>             while (domain)</span><br><span=
+>             {</span><br><span>                 msg(D_SHOW_PARMS, &quot;  =
+    %s&quot;, domain-&gt;name);</span><br><span>diff --git a/src/openvpn/dn=
+s.h b/src/openvpn/dns.h</span><br><span>index 162dec1..e497857 100644</span=
+><br><span>--- a/src/openvpn/dns.h</span><br><span>+++ b/src/openvpn/dns.h<=
+/span><br><span>@@ -27,12 +27,6 @@</span><br><span> #include &quot;buffer.h=
+&quot;</span><br><span> #include &quot;env_set.h&quot;</span><br><span> </s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-enum dns_domain_type {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    DNS_DOMAINS_UNSET,<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    DNS_RESOLVE_DOMAIN=
+S,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    DNS_EXCLUDE_DOM=
+AINS</span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> enum dns_security =
+{</span><br><span>     DNS_SECURITY_UNSET,</span><br><span>     DNS_SECURIT=
+Y_NO,</span><br><span>@@ -68,7 +62,6 @@</span><br><span>     size_t addr_co=
+unt;</span><br><span>     struct dns_server_addr addr[8];</span><br><span> =
+    struct dns_domain *domains;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    enum dns_domain_type domain_type;</span><br><span>     enum d=
+ns_security dnssec;</span><br><span>     enum dns_server_transport transpor=
+t;</span><br><span>     const char *sni;</span><br><span>diff --git a/src/o=
+penvpn/options.c b/src/openvpn/options.c</span><br><span>index 17ce2b0..3e0=
+cb62 100644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++=
+ b/src/openvpn/options.c</span><br><span>@@ -514,7 +514,6 @@</span><br><spa=
+n>     &quot;                  Valid options are :\n&quot;</span><br><span>=
+     &quot;                  address &lt;addr[:port]&gt; [addr[:port] ...] =
+: server addresses 4/6\n&quot;</span><br><span>     &quot;                 =
+ resolve-domains &lt;domain&gt; [domain ...] : split domains\n&quot;</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    &quot;                  =
+exclude-domains &lt;domain&gt; [domain ...] : domains not to resolve\n&quot=
+;</span><br><span>     &quot;                  dnssec &lt;yes|no|optional&g=
+t; : option to use DNSSEC\n&quot;</span><br><span>     &quot;              =
+    type &lt;DoH|DoT&gt; : query server over HTTPS / TLS\n&quot;</span><br>=
+<span>     &quot;                  sni &lt;domain&gt; : DNS server name ind=
+ication\n&quot;</span><br><span>@@ -8022,22 +8021,6 @@</span><br><span>    =
+         }</span><br><span>             else if (streq(p[3], &quot;resolve-=
+domains&quot;))</span><br><span>             {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                if (server-&gt;domain_type =3D=3D =
+DNS_EXCLUDE_DOMAINS)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+               {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+               msg(msglevel, &quot;--dns server %ld: cannot use resolve-dom=
+ains and exclude-domains&quot;, priority);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                    goto err;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-                }</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                server-&gt;domain_type =3D DNS_RES=
+OLVE_DOMAINS;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
+        dns_domain_list_append(&amp;server-&gt;domains, &amp;p[4], &amp;opt=
+ions-&gt;dns_options.gc);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        else if (streq(p[3], &quot;exclude-domains&quot;))</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-                if (server-&gt;domain_type =3D=
+=3D DNS_RESOLVE_DOMAINS)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-                {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+                   msg(msglevel, &quot;--dns server %ld: cannot use exclude=
+-domains and resolve-domains&quot;, priority);</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                    goto err;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-                }</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-                server-&gt;domain_type =3D DNS=
+_EXCLUDE_DOMAINS;</span><br><span>                 dns_domain_list_append(&=
+amp;server-&gt;domains, &amp;p[4], &amp;options-&gt;dns_options.gc);</span>=
+<br><span>             }</span><br><span>             else if (streq(p[3], =
+&quot;dnssec&quot;) &amp;&amp; !p[5])</span><br><span></span><br></pre><p>T=
+o view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/39?usp=3Dema=
+il">change 39</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/39?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id8321dfbb8ad8d79f4bb2a9da61=
-f8cd6b6c6ee26 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 268 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7f422add22f3f01e9f479850657=
+82dd67bca46eb </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 39 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
+div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---zSUzM+IOPLY=--
+--AfrG9EvXeac=--
 
