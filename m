@@ -1,14 +1,14 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Thu, 14 Sep 2023 11:40:09 +0000
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Thu, 14 Sep 2023 15:54:56 +0000
 In-Reply-To: <gerrit.1693919528000.I8b00d7d79a26ad4aaae529cb496e125398169b50@...2715...>
 References: <gerrit.1693919528000.I8b00d7d79a26ad4aaae529cb496e125398169b50@...2715...>
-Reply-To: lstipakov@...277..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <58f2e436954d69789e2692820188267c953ac05a-EmailReviewComments-HTML@...2715...>
+Reply-To: frank@...2641..., openvpn-devel@lists.sourceforge.net,
+ lstipakov@...277...
+Message-ID: <1947c055563a4a8ab89c4a3f113f69ed8407544c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="rSgiFFnxzJY="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="L04EYJNBapI="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: GHA: do not trigger
  builds in openvpn-build anymore
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,17 +19,16 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: stipa <lstipakov@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---rSgiFFnxzJY=
+--L04EYJNBapI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld.
+Attention is currently required from: cron2.
 
-stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/328?usp=3Demail )
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/328?usp=3Demail )
 
 Change subject: GHA: do not trigger builds in openvpn-build anymore
 ......................................................................
@@ -42,7 +41,8 @@ Patch Set 1:
 Patchset:
 
 PS1:
-We should probably remove that GHA secret if it is not needed anymore.
+> We should probably remove that GHA secret if it is not needed anymore.
+Yes, I will take care of that once the patch is merged.
 
 
 
@@ -61,32 +61,34 @@ Gerrit-Reviewer: cron2
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: cron2
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Thu, 14 Sep 2023 11:40:09 +0000
+Gerrit-Comment-Date: Thu, 14 Sep 2023 15:54:56 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: stipa <lstipakov@...277...>
 Gerrit-MessageType: comment
 
---rSgiFFnxzJY=
+--L04EYJNBapI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, flichtenheld. </p>
+<p> Attention is currently required from: cron2. </p>
 <p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/328?usp=3Demail">View C=
 hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
 li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
 : none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
 =3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/3=
-28?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">We should probably remove that GHA secret if it is=
- not needed anymore.</p></li></ul></li></ul><p>To view, visit <a href=3D"ht=
-tp://gerrit.openvpn.net/c/openvpn/+/328?usp=3Demail">change 328</a>. To uns=
-ubscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.=
-openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sc=
-hema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:=
-//schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openv=
-pn.net/c/openvpn/+/328?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vie=
-w Change"/></div></div>
+28?tab=3Dcomments">Patch Set #1:</a> </p><p><blockquote style=3D"border-lef=
+t: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">We should probably rem=
+ove that GHA secret if it is not needed anymore.</blockquote></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">Yes, I will take care of=
+ that once the patch is merged.</p></li></ul></li></ul><p>To view, visit <a=
+ href=3D"http://gerrit.openvpn.net/c/openvpn/+/328?usp=3Demail">change 328<=
+/a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"htt=
+p://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/328?usp=3Demail"/><meta itemprop=3D"name" c=
+ontent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -102,14 +104,14 @@ e125398169b50 </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: cron2 </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 14 Sep 2023 11:40:09=
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 14 Sep 2023 15:54:56=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: stipa &lt;lstipakov@...1664...=
+7...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---rSgiFFnxzJY=--
+--L04EYJNBapI=--
 
