@@ -1,16 +1,9 @@
-From: "uddr (Code Review)" <gerrit@...515...>
-Date: Tue, 19 Sep 2023 15:23:01 +0000
-In-Reply-To: <gerrit.1680209488000.I08d5574e5ed6098b5147357eee09fa796853efb8@...2715...>
-References: <gerrit.1680209488000.I08d5574e5ed6098b5147357eee09fa796853efb8@...2715...>
-Reply-To: yura.uddr@...277..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., yura.uddr@...277..., yura.darnobyt@...515...
-Message-ID: <75f73fadfd46c2cc5d62b76983f19a95753bd550-EmailReplacePatchSet-HTML@...2715...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Tue, 19 Sep 2023 17:56:35 +0200
+Message-Id: <20230919155635.708557-1-frank@...2641...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="He8tqL8hqNI="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Please ignore -
- Uncrustify code check
+Subject: [Openvpn-devel] [PATCH] CMake: various small non-functional
+ improvements
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,157 +12,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: uddr <yura.uddr@...277...>, buildbot <yura.darnobyt@...515...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---He8tqL8hqNI=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+These are based on review comments for the 2.6 backport.
+But since they apply to the original master implementation
+as well, I address them in this separate patch.
 
-Attention is currently required from: flichtenheld.
+- Add documentation to contrib/cmake/*.py
+- Fix grammar in README.cmake.md
+- Update a TODO in CMakeLists.txt to better reflect
+  the status quo
+- Fix indentation in unit_tests' Makefile.am
 
-Hello flichtenheld,=20
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/261?usp=3Demail
-
-to look at the new patch set (#24).
-
-
-Change subject: Please ignore - Uncrustify code check
-......................................................................
-
-Please ignore - Uncrustify code check
-
-Change-Id: I08d5574e5ed6098b5147357eee09fa796853efb8
+Change-Id: I4e16767ee221e1aefdd18d13b3411c27d8dd844a
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Lev Stipakov <lstipakov@...277...>
 ---
-M INSTALL
-1 file changed, 23 insertions(+), 0 deletions(-)
 
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/61/261/24
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/342
+This mail reflects revision 1 of this Change.
+Acked-by according to Gerrit (reflected above):
+Acked-by: lstipakov <lstipakov@...277...>
 
-diff --git a/INSTALL b/INSTALL
-index a63bab6..3e3fa99 100644
---- a/INSTALL
-+++ b/INSTALL
-@@ -6,6 +6,29 @@
- as published by the Free Software Foundation.
-
- *************************************************************************
-+Uncrustify code check
-+Owners check 2
-+R 3
-+R 4
-+R 5
-+R 6
-+R 7
-+R 8
-+R 9
-+R 10
-+R 11
-+R 12
-+R 13
-+R 14
-+R 15
-+R 16
-+R 17
-+R 18
-+R 19
-+R 20
-+R 21
-+R 22
-+*************************************************************************
-
- QUICK START:
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/261?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I08d5574e5ed6098b5147357eee09fa796853efb8
-Gerrit-Change-Number: 261
-Gerrit-PatchSet: 24
-Gerrit-Owner: uddr <yura.uddr@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: uddr <yura.uddr@...277...>
-Gerrit-CC: buildbot <yura.darnobyt@...515...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
-
---He8tqL8hqNI=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld. </p>
-<p>uddr <strong>uploaded patch set #24</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/261?usp=3Demail">View Change</a=
-></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-">Please ignore - Uncrustify code check<br><br>Change-Id: I08d5574e5ed6098b=
-5147357eee09fa796853efb8<br>---<br>M INSTALL<br>1 file changed, 23 insertio=
-ns(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/ope=
-nvpn refs/changes/61/261/24</pre><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;"><span>diff --git a/INSTALL b/INSTALL</span><b=
-r><span>index a63bab6..3e3fa99 100644</span><br><span>--- a/INSTALL</span><=
-br><span>+++ b/INSTALL</span><br><span>@@ -6,6 +6,29 @@</span><br><span> as=
- published by the Free Software Foundation.</span><br><span> </span><br><sp=
-an> ***********************************************************************=
-**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Uncrustify code c=
-heck</span><br><span style=3D"color: hsl(120, 100%, 40%);">+Owners check 2<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+R 3</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+R 4</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+R 5</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+R 6</span><br><span style=3D"color: hsl(120, 100%, 40%);">+R 7</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+R 8</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+R 9</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+R 10</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+R 11</span><br><span style=3D"color: hsl(120, 100%, 40%);">+R 12</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+R 13</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+R 14</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+R 15</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+R 16</span><br><span style=3D"color: hsl(120, 100%, 40%);">+R 17</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+R 18</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+R 19</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+R 20</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+R 21</span><br><span style=3D"color: hsl(120, 100%, 40%);">+R 22</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+**************************=
-***********************************************</span><br><span> </span><br=
-><span> QUICK START:</span><br><span> </span><br><span></span><br></pre><p>=
-To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/261?usp=3De=
-mail">change 261</a>. To unsubscribe, or for help writing mail filters, vis=
-it <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div ite=
-mscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
-" href=3D"http://gerrit.openvpn.net/c/openvpn/+/261?usp=3Demail"/><meta ite=
-mprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I08d5574e5ed6098b5147357eee0=
-9fa796853efb8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 261 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 24 </div>
-<div style=3D"display:none"> Gerrit-Owner: uddr &lt;yura.uddr@...277...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: uddr &lt;yura.uddr@...277...&=
-gt; </div>
-<div style=3D"display:none"> Gerrit-CC: buildbot &lt;yura.darnobyt@...1699...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-
-
---He8tqL8hqNI=--
+Manual changes:
+ - Fixed Lev's name in Acked-by line.
+        
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7dae665..da5f883 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -291,7 +291,7 @@
+ 
+ configure_file(config.h.cmake.in config.h)
+ configure_file(include/openvpn-plugin.h.in openvpn-plugin.h)
+-# TODO remove later when msvc-config.h is removed and we can always include config.h
++# TODO we should remove the need for this, and always include config.h
+ add_definitions(-DHAVE_CONFIG_H)
+ 
+ include_directories(${CMAKE_CURRENT_BINARY_DIR})
+diff --git a/README.cmake.md b/README.cmake.md
+index 599d8dc..d181b64 100644
+--- a/README.cmake.md
++++ b/README.cmake.md
+@@ -24,7 +24,7 @@
+ -----------
+ 
+ The following tools are expected to be present on the system, you
+-can them install with a package manager of your choice (e.g.
++can install them with a package manager of your choice (e.g.
+ chocolatey, winget) or manually:
+ 
+ * CMake
+diff --git a/contrib/cmake/git-version.py b/contrib/cmake/git-version.py
+index c2b4452..4f78ac4 100644
+--- a/contrib/cmake/git-version.py
++++ b/contrib/cmake/git-version.py
+@@ -22,6 +22,14 @@
+ #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ #
+ 
++# Usage: ./git-version.py [directory]
++# Find a good textual representation of the git commit currently checked out.
++# Make that representation available as CONFIGURE_GIT_REVISION in
++# <directory>/config-version.h.
++# It will prefer a tag name if it is checked out exactly, otherwise will use
++# the branch name. 'none' if no branch is checked out (detached HEAD).
++# This is used to enhance the output of openvpn --version with Git information.
++
+ import os
+ import sys
+ import subprocess
+diff --git a/contrib/cmake/parse-version.m4.py b/contrib/cmake/parse-version.m4.py
+index d5ff2bd..3dfb31f 100644
+--- a/contrib/cmake/parse-version.m4.py
++++ b/contrib/cmake/parse-version.m4.py
+@@ -22,6 +22,12 @@
+ #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ #
+ 
++# Usage: ./parse-version.m4.py m4file [directory]
++# Read <m4file>, extract all lines looking like M4 define(), and translate
++# them into CMake style set(). Those are then written out to file
++# <directory>/version.cmake.
++# Intended to be used on top-level version.m4 file.
++
+ import os
+ import re
+ import sys
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index 6b56f84..ef45b11 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -110,7 +110,7 @@
+ 	-Wl,--wrap=parse_line \
+ 	-Wl,--wrap=rand_bytes
+ tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c mock_msg.h \
+-    mock_win32_execve.c \
++	mock_win32_execve.c \
+ 	$(top_srcdir)/src/openvpn/argv.c \
+ 	$(top_srcdir)/src/openvpn/base64.c \
+ 	$(top_srcdir)/src/openvpn/buffer.c \
 
