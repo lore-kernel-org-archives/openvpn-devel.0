@@ -1,16 +1,16 @@
-From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Mon, 18 Sep 2023 22:20:36 +0000
-In-Reply-To: <gerrit.1689947729000.I6de18261d5dc7f8561612184059656c73f33a5f2@...2715...>
-References: <gerrit.1689947729000.I6de18261d5dc7f8561612184059656c73f33a5f2@...2715...>
-Reply-To: heiko@...515..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., lstipakov@...277...
-Message-ID: <3a352497bef3f7366e426fae720e032e87aee3b4-EmailReviewComments-HTML@...2715...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Tue, 19 Sep 2023 07:51:32 +0000
+In-Reply-To: <gerrit.1689947729000.Ifb961a4df2b8b8300633192e1a268669f6f41a35@...2715...>
+References: <gerrit.1689947729000.Ifb961a4df2b8b8300633192e1a268669f6f41a35@...2715...>
+Reply-To: lstipakov@...277..., heiko@...515..., selva.nair@...277...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <8f67ad352c2ed4b5abc10595485987d620fe6b93-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="N0DQ7Y4aTSo="; charset=UTF-8
-Subject: [Openvpn-devel] [XL] Change in openvpn[release/2.6]: CMake:
- backport CMake buildsystem from master to release/2.6
+Content-Type: multipart/alternative; boundary="irNqrCv9CEw="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: Make
+ cert_data.h and test_cryptoapi/pkcs11.c MSVC compliant
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,131 +19,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: stipa <lstipakov@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, selvanair <selva.nair@...277...>
+Cc: d12fk <heiko@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---N0DQ7Y4aTSo=
+--irNqrCv9CEw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld.
 
-d12fk has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/315?usp=3Demail )
+stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/312?usp=3Demail )
 
-Change subject: CMake: backport CMake buildsystem from master to release/2.6
+Change subject: Make cert_data.h and test_cryptoapi/pkcs11.c MSVC compliant
 ......................................................................
 
 
-Patch Set 1: Code-Review+2
+Patch Set 1:
 
-(3 comments)
+(1 comment)
 
-File README.cmake.md:
+Patchset:
 
-http://gerrit.openvpn.net/c/openvpn/+/315/comment/1db29f03_003dbb6b :
-PS1, Line 27: can them install with a package manager of your choice (e.g.
-*install them
-
-
-File contrib/cmake/git-version.py:
-
-http://gerrit.openvpn.net/c/openvpn/+/315/comment/7da55e9b_6b13084e :
-PS1, Line 23: #
-A comment what this does and why would be cool, but then maybe in master or=
-  both here and there
-
-
-File contrib/cmake/parse-version.m4.py:
-
-http://gerrit.openvpn.net/c/openvpn/+/315/comment/df755f5f_7c8d4861 :
-PS1, Line 23: #
-A comment what this does and why would be cool, but then maybe in master or=
-  both here and there
+PS1:
+Acked-by: Lev Stipakov <lstipakov@...277...>
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/315?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/312?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I6de18261d5dc7f8561612184059656c73f33a5f2
-Gerrit-Change-Number: 315
+Gerrit-Change-Id: Ifb961a4df2b8b8300633192e1a268669f6f41a35
+Gerrit-Change-Number: 312
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: d12fk <heiko@...515...>
+Gerrit-Reviewer: selvanair <selva.nair@...277...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 18 Sep 2023 22:20:36 +0000
+Gerrit-Comment-Date: Tue, 19 Sep 2023 07:51:32 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
+Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---N0DQ7Y4aTSo=
+--irNqrCv9CEw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/315?usp=3Demail">Vi=
-ew Change</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File README.cmake.md:</p><ul st=
-yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
-0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/315/comment/1db29f03_003dbb6b">Patch Set #1, Line 27:</a> <=
-code style=3D"font-family:monospace,monospace">can them install with a pack=
-age manager of your choice (e.g.</code></p><p style=3D"white-space: pre-wra=
-p; word-wrap: break-word;">*install them</p></li></ul></li><li style=3D"mar=
-gin: 0; padding: 0;"><p>File contrib/cmake/git-version.py:</p><ul style=3D"=
-list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;=
-"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/o=
-penvpn/+/315/comment/7da55e9b_6b13084e">Patch Set #1, Line 23:</a> <code st=
-yle=3D"font-family:monospace,monospace">#</code></p><p style=3D"white-space=
-: pre-wrap; word-wrap: break-word;">A comment what this does and why would =
-be cool, but then maybe in master or  both here and there</p></li></ul></li=
-><li style=3D"margin: 0; padding: 0;"><p>File contrib/cmake/parse-version.m=
-4.py:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0=
-; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/315/comment/df755f5f_7c8d4861">Patch Set #1,=
- Line 23:</a> <code style=3D"font-family:monospace,monospace">#</code></p><=
-p style=3D"white-space: pre-wrap; word-wrap: break-word;">A comment what th=
-is does and why would be cool, but then maybe in master or  both here and t=
-here</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/315?usp=3Demail">change 315</a>. To unsubscribe, or for=
- help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
-ings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
-ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
-wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/315?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
-></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/312?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/3=
+12?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">Acked-by: Lev Stipakov &lt;lstipakov@...277...&gt;=
+</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/312?usp=3Demail">change 312</a>. To unsubscribe, or for hel=
+p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
+">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
+e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
+ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/3=
+12?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
+iv>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6de18261d5dc7f8561612184059=
-656c73f33a5f2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 315 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifb961a4df2b8b8300633192e1a2=
+68669f6f41a35 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 312 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: d12fk &lt;heiko@...515...&gt;=
  </div>
+<div style=3D"display:none"> Gerrit-Reviewer: selvanair &lt;selva.nair@...1665...=
+77...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
 &gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 18 Sep 2023 22:20:36=
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 19 Sep 2023 07:51:32=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---N0DQ7Y4aTSo=--
+--irNqrCv9CEw=--
 
