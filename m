@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
 Date: Fri, 22 Sep 2023 16:28:39 +0000
-In-Reply-To: <gerrit.1689947729000.I8c8fe298eb30e211279f3fc010584b9d3bc14b4a@...2715...>
-References: <gerrit.1689947729000.I8c8fe298eb30e211279f3fc010584b9d3bc14b4a@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <2f3d822ae47555ee3c2c6840034bb670d87bafa2-EmailReplacePatchSet-HTML@...2715...>
+In-Reply-To: <gerrit.1689947729000.If4a67adac4d2e870fd719b58075d39efcd67c671@...2715...>
+References: <gerrit.1689947729000.If4a67adac4d2e870fd719b58075d39efcd67c671@...2715...>
+Reply-To: frank@...2641..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296..., a@...2181...
+Message-ID: <2dda40cd67a1369dc95ff5af0dc8ed3e02a60eb3-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Yodfn60XhAA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: Mock
- openvpn_exece on win32 also for test_tls_crypt
+Content-Type: multipart/alternative; boundary="wpVDQpntTmA="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: buffer: use
+ memcpy in buf_catrunc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,285 +19,178 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: d12fk <heiko@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: cron2 <gert@...1296...>, d12fk <heiko@...515...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Yodfn60XhAA=
+--wpVDQpntTmA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: d12fk.
+Attention is currently required from: cron2, flichtenheld.
 
-Hello plaisthos,
+Hello cron2, d12fk, ordex,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/313?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/314?usp=3Demail
 
 to look at the new patch set (#2).
 
+The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
+ now.
 
-Change subject: Mock openvpn_exece on win32 also for test_tls_crypt
+
+Change subject: buffer: use memcpy in buf_catrunc
 ......................................................................
 
-Mock openvpn_exece on win32 also for test_tls_crypt
+buffer: use memcpy in buf_catrunc
 
-This function is needed to commpile on win32 as run_command.c defines it
-on Unix Linux but on windows it is defined in win32.c which pulls in too
-many other unresolvable symbols.
+Since we use strlen() to determine the length
+and then check it ourselves, there is really
+no point in using strncpy.
 
-Patch v2: Also add mock_win32_execve.c to automake files
+But the compiler might complain that we use
+the output of strlen() for the length of
+strncpy which is usually a sign for bugs:
 
-Change-Id: I8c8fe298eb30e211279f3fc010584b9d3bc14b4a
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-(cherry picked from commit ede590e57c96c2b16d9bf462c4b1dd967b37c432)
+error: =E2=80=98strncpy=E2=80=99 specified bound depends
+ on the length of the source argument
+ [-Werror=3Dstringop-overflow=3D]
+
+Warning was at least triggered for
+mingw-gcc version 10-win32 20220113.
+
+Also change the type of len to size_t
+which avoids potential problems with
+signed overflow.
+
+v2:
+ - make len size_t and change code to avoid any theoretical overflows
+ - remove useless casts
+v3:
+ - fix off-by-one introduced by v2 %)
+v4:
+ - ignore unsigned overflow to simplify code
+
+Change-Id: If4a67adac4d2e870fd719b58075d39efcd67c671
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Gert Doering <gert@...1296...>
+(cherry picked from commit c89a97e449baaf60924a362555d35184f188a646)
 ---
-M tests/unit_tests/openvpn/Makefile.am
-A tests/unit_tests/openvpn/mock_win32_execve.c
-M tests/unit_tests/openvpn/test_pkt.c
-3 files changed, 39 insertions(+), 9 deletions(-)
+M src/openvpn/buffer.c
+1 file changed, 2 insertions(+), 2 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/13/313/2
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/14/314/2
 
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvp=
-n/Makefile.am
-index 650126c..dd3985d 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -77,7 +77,7 @@
- pkt_testdriver_CFLAGS  =3D @TEST_CFLAGS@ \
- 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/op=
-envpn
- pkt_testdriver_LDFLAGS =3D @TEST_LDFLAGS@
--pkt_testdriver_SOURCES =3D test_pkt.c mock_msg.c mock_msg.h \
-+pkt_testdriver_SOURCES =3D test_pkt.c mock_msg.c mock_msg.h mock_win32_exe=
-cve.c \
- 	$(top_srcdir)/src/openvpn/argv.c \
- 	$(top_srcdir)/src/openvpn/base64.c \
- 	$(top_srcdir)/src/openvpn/buffer.c \
-@@ -104,6 +104,7 @@
- 	-Wl,--wrap=3Dparse_line \
- 	-Wl,--wrap=3Drand_bytes
- tls_crypt_testdriver_SOURCES =3D test_tls_crypt.c mock_msg.c mock_msg.h \
-+	mock_win32_execve.c \
- 	$(top_srcdir)/src/openvpn/argv.c \
- 	$(top_srcdir)/src/openvpn/base64.c \
- 	$(top_srcdir)/src/openvpn/buffer.c \
-diff --git a/tests/unit_tests/openvpn/mock_win32_execve.c b/tests/unit_test=
-s/openvpn/mock_win32_execve.c
-new file mode 100644
-index 0000000..4d37ebe
---- /dev/null
-+++ b/tests/unit_tests/openvpn/mock_win32_execve.c
-@@ -0,0 +1,37 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2023 OpenVPN Inc <sales@...515...>
-+ *  Copyright (C) 2023 Arne Schwabe <arne@...1227...>
-+ *
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
-+
-+#include "config.h"
-+#include "syshead.h"
-+
-+#include "win32.h"
-+
-+#ifdef _WIN32
-+int
-+openvpn_execve(const struct argv *a, const struct env_set *es, const unsig=
-ned int flags)
-+{
-+    ASSERT(0);
-+}
-+#endif
-diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn=
-/test_pkt.c
-index 736f131..eb69829 100644
---- a/tests/unit_tests/openvpn/test_pkt.c
-+++ b/tests/unit_tests/openvpn/test_pkt.c
-@@ -71,14 +71,6 @@
-     return "dummy print_link_socket_actual from unit test";
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index d099795..7725438 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -316,10 +316,10 @@
+ {
+     if (buf_forward_capacity(buf) <=3D 1)
+     {
+-        int len =3D (int) strlen(str) + 1;
++        size_t len =3D strlen(str) + 1;
+         if (len < buf_forward_capacity_total(buf))
+         {
+-            strncpynt((char *)(buf->data + buf->capacity - len), str, len);
++            memcpy(buf->data + buf->capacity - len, str, len);
+         }
+     }
  }
 
--#ifdef _WIN32
--int
--openvpn_execve(const struct argv *a, const struct env_set *es, const unsig=
-ned int flags)
--{
--    ASSERT(0);
--}
--#endif
--
- struct test_pkt_context {
-     struct tls_auth_standalone tas_tls_auth;
-     struct tls_auth_standalone tas_crypt;
-
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/313?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/314?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I8c8fe298eb30e211279f3fc010584b9d3bc14b4a
-Gerrit-Change-Number: 313
+Gerrit-Change-Id: If4a67adac4d2e870fd719b58075d39efcd67c671
+Gerrit-Change-Number: 314
 Gerrit-PatchSet: 2
 Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-CC: d12fk <heiko@...515...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: d12fk <heiko@...515...>
+Gerrit-Reviewer: ordex <a@...2181...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Attention: cron2 <gert@...1296...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---Yodfn60XhAA=
+--wpVDQpntTmA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: d12fk. </p>
+<p> Attention is currently required from: cron2, flichtenheld. </p>
 <p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/313?usp=3Demail">View Ch=
-ange</a></p><pre style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">Mock openvpn_exece on win32 also for test_tls_crypt<br><br>This fu=
-nction is needed to commpile on win32 as run_command.c defines it<br>on Uni=
-x Linux but on windows it is defined in win32.c which pulls in too<br>many =
-other unresolvable symbols.<br><br>Patch v2: Also add mock_win32_execve.c t=
-o automake files<br><br>Change-Id: I8c8fe298eb30e211279f3fc010584b9d3bc14b4=
-a<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Frank=
- Lichtenheld &lt;frank@...2641...&gt;<br>(cherry picked from commit ede590e=
-57c96c2b16d9bf462c4b1dd967b37c432)<br>---<br>M tests/unit_tests/openvpn/Mak=
-efile.am<br>A tests/unit_tests/openvpn/mock_win32_execve.c<br>M tests/unit_=
-tests/openvpn/test_pkt.c<br>3 files changed, 39 insertions(+), 9 deletions(=
--)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space=
-: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/1=
-3/313/2</pre><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;"><span>diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/u=
-nit_tests/openvpn/Makefile.am</span><br><span>index 650126c..dd3985d 100644=
-</span><br><span>--- a/tests/unit_tests/openvpn/Makefile.am</span><br><span=
->+++ b/tests/unit_tests/openvpn/Makefile.am</span><br><span>@@ -77,7 +77,7 =
-@@</span><br><span> pkt_testdriver_CFLAGS  =3D @TEST_CFLAGS@ \</span><br><s=
-pan> 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/sr=
-c/openvpn</span><br><span> pkt_testdriver_LDFLAGS =3D @TEST_LDFLAGS@</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-pkt_testdriver_SOURCES =3D t=
-est_pkt.c mock_msg.c mock_msg.h \</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+pkt_testdriver_SOURCES =3D test_pkt.c mock_msg.c mock_msg.h m=
-ock_win32_execve.c \</span><br><span> 	$(top_srcdir)/src/openvpn/argv.c \</=
-span><br><span> 	$(top_srcdir)/src/openvpn/base64.c \</span><br><span> 	$(t=
-op_srcdir)/src/openvpn/buffer.c \</span><br><span>@@ -104,6 +104,7 @@</span=
-><br><span> 	-Wl,--wrap=3Dparse_line \</span><br><span> 	-Wl,--wrap=3Drand_=
-bytes</span><br><span> tls_crypt_testdriver_SOURCES =3D test_tls_crypt.c mo=
-ck_msg.c mock_msg.h \</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+	mock_win32_execve.c \</span><br><span> 	$(top_srcdir)/src/openvpn/argv.c=
- \</span><br><span> 	$(top_srcdir)/src/openvpn/base64.c \</span><br><span> =
-	$(top_srcdir)/src/openvpn/buffer.c \</span><br><span>diff --git a/tests/un=
-it_tests/openvpn/mock_win32_execve.c b/tests/unit_tests/openvpn/mock_win32_=
-execve.c</span><br><span>new file mode 100644</span><br><span>index 0000000=
-..4d37ebe</span><br><span>--- /dev/null</span><br><span>+++ b/tests/unit_te=
-sts/openvpn/mock_win32_execve.c</span><br><span>@@ -0,0 +1,37 @@</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ *  OpenVPN -- An application to securely tunne=
-l IP networks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *    =
-         over a single TCP/UDP port, with support for SSL/TLS-based</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ *             session auth=
-entication and key exchange,</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ *             packet encryption, packet authentication, and</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             packet com=
-pression.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright (C) 2023 Open=
-VPN Inc &lt;sales@...515...&gt;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+ *  Copyright (C) 2023 Arne Schwabe &lt;arne@...1227...&gt;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+ *  This program is free software; you can redistribute i=
-t and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  =
-it under the terms of the GNU General Public License version 2</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Free Sof=
-tware Foundation.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program is=
- distributed in the hope that it will be useful,</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even the=
- implied warranty of</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public Licen=
-se for more details.</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You should h=
-ave received a copy of the GNU General Public License along</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if not, writ=
-e to the Free Software Foundation, Inc.,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-=
-1301 USA.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#include &quot;config.h&quot;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead.h&quot;</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#include &quot;win32.h&quot;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+openvpn_execve(const struct argv *a, const struct env_set *es, const unsi=
-gned int flags)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#endif</span><br><span>diff --git a/tests/uni=
-t_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c</span><br>=
-<span>index 736f131..eb69829 100644</span><br><span>--- a/tests/unit_tests/=
-openvpn/test_pkt.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_pkt.=
-c</span><br><span>@@ -71,14 +71,6 @@</span><br><span>     return &quot;dumm=
-y print_link_socket_actual from unit test&quot;;</span><br><span> }</span><=
-br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifdef _WIN=
-32</span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-openvpn_execve(const struct argv *a, =
-const struct env_set *es, const unsigned int flags)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    ASSERT(0);</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> struct test_=
-pkt_context {</span><br><span>     struct tls_auth_standalone tas_tls_auth;=
-</span><br><span>     struct tls_auth_standalone tas_crypt;</span><br><span=
-></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/313?usp=3Demail">change 313</a>. To unsubscribe, or for help writ=
-ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">sett=
-ings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><di=
-v itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><=
-link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/313?usp=
-=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/314?usp=3Demail">View Ch=
+ange</a></p><p>The change is no longer submittable: checks~ChecksSubmitRule=
+ is unsatisfied now.</p><pre style=3D"font-family: monospace,monospace; whi=
+te-space: pre-wrap;">buffer: use memcpy in buf_catrunc<br><br>Since we use =
+strlen() to determine the length<br>and then check it ourselves, there is r=
+eally<br>no point in using strncpy.<br><br>But the compiler might complain =
+that we use<br>the output of strlen() for the length of<br>strncpy which is=
+ usually a sign for bugs:<br><br>error: =E2=80=98strncpy=E2=80=99 specified=
+ bound depends<br> on the length of the source argument<br> [-Werror=3Dstri=
+ngop-overflow=3D]<br><br>Warning was at least triggered for<br>mingw-gcc ve=
+rsion 10-win32 20220113.<br><br>Also change the type of len to size_t<br>wh=
+ich avoids potential problems with<br>signed overflow.<br><br>v2:<br> - mak=
+e len size_t and change code to avoid any theoretical overflows<br> - remov=
+e useless casts<br>v3:<br> - fix off-by-one introduced by v2 %)<br>v4:<br> =
+- ignore unsigned overflow to simplify code<br><br>Change-Id: If4a67adac4d2=
+e870fd719b58075d39efcd67c671<br>Signed-off-by: Frank Lichtenheld &lt;frank@=
+...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&gt;<br>(cherry=
+ picked from commit c89a97e449baaf60924a362555d35184f188a646)<br>---<br>M s=
+rc/openvpn/buffer.c<br>1 file changed, 2 insertions(+), 2 deletions(-)<br><=
+br></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/14/314/2=
+</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
+;"><span>diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c</span><br=
+><span>index d099795..7725438 100644</span><br><span>--- a/src/openvpn/buff=
+er.c</span><br><span>+++ b/src/openvpn/buffer.c</span><br><span>@@ -316,10 =
++316,10 @@</span><br><span> {</span><br><span>     if (buf_forward_capacity=
+(buf) &lt;=3D 1)</span><br><span>     {</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        int len =3D (int) strlen(str) + 1;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+        size_t len =3D strlen(str)=
+ + 1;</span><br><span>         if (len &lt; buf_forward_capacity_total(buf)=
+)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-            strncpynt((char *)(buf-&gt;data + buf-&gt;capacity - len=
+), str, len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      memcpy(buf-&gt;data + buf-&gt;capacity - len, str, len);</span><br><s=
+pan>         }</span><br><span>     }</span><br><span> }</span><br><span></=
+span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/314?usp=3Demail">change 314</a>. To unsubscribe, or for help writing=
+ mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">setting=
+s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
+temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
+k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/314?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I8c8fe298eb30e211279f3fc0105=
-84b9d3bc14b4a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 313 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If4a67adac4d2e870fd719b58075=
+d39efcd67c671 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 314 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: d12fk &lt;heiko@...515...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: d12fk &lt;heiko@...515...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
+div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: plaisthos &lt;arne-openvpn@...2639...=
-..&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
 ; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---Yodfn60XhAA=--
+--wpVDQpntTmA=--
 
