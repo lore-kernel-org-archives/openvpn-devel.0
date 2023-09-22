@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 22 Sep 2023 12:06:17 +0000
-In-Reply-To: <gerrit.1694436141000.If3c27a2a2ba24f2af0e3e3c95eea57ed420b2542@...2715...>
-References: <gerrit.1694436141000.If3c27a2a2ba24f2af0e3e3c95eea57ed420b2542@...2715...>
-Reply-To: gert@...1296..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., lstipakov@...277...
-Message-ID: <d793a2a3f4cb2abac5604b83f1c97cc4f30247e7-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="6Z3w7q0qXtc="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: Warn user if
- INFO control command is too long
+Date: Fri, 22 Sep 2023 14:08:39 +0200 (CEST)
+Message-Id: <202309221208.38MC8dq3031446@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20230922103936.37230-1-frank@...2641...>
+References: <20230922103936.37230-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: GHA: do not trigger builds in
+ openvpn-build anymore
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,141 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---6Z3w7q0qXtc=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+.. as discussed on the list and on IRC, yes.
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/32=
-9?usp=3Demail )
+Your patch has been applied to the master and release/2.6 branch.
 
-Change subject: Warn user if INFO control command is too long
-......................................................................
+commit 1864a19e85d89bc0b34cb1c6eac186f3fe323c0b (master)
+commit cd09e073752fbad5d70adc2af66a29c7ed99a9e9 (release/2.6)
+Author: Frank Lichtenheld
+Date:   Fri Sep 22 12:39:36 2023 +0200
 
-Warn user if INFO control command is too long
+     GHA: do not trigger builds in openvpn-build anymore
 
-"INFO_PRE,..." command length is limited to 256 bytes. If the server
-implementation pushes command which is too long, warn the user and
-don't send the truncated command to a management client.
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <20230922103936.37230-1-frank@...2641...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20230922103936.37230-1-frank@...2641...
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Change-Id: If3c27a2a2ba24f2af0e3e3c95eea57ed420b2542
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Message-Id: <20230922105055.37969-1-frank@...2641...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27=
-062.html
-Signed-off-by: Gert Doering <gert@...1296...>
-(cherry picked from commit df624fb6d63db6b2a3b0c40597cee74c61b8ab2c)
----
-M src/openvpn/push.c
-1 file changed, 8 insertions(+), 2 deletions(-)
-
-
-
-
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index d468211..19849c5 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -244,8 +244,14 @@
-          * for management greeting and we don't want to confuse the client
-          */
-         struct buffer out =3D alloc_buf_gc(256, &gc);
--        buf_printf(&out, ">%s:%s", "INFOMSG", m);
--        management_notify_generic(management, BSTR(&out));
-+        if (buf_printf(&out, ">%s:%s", "INFOMSG", m))
-+        {
-+            management_notify_generic(management, BSTR(&out));
-+        }
-+        else
-+        {
-+            msg(D_PUSH_ERRORS, "WARNING: Received INFO command is too long=
-, won't notify management client.");
-+        }
-
-         gc_free(&gc);
-     }
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/329?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: If3c27a2a2ba24f2af0e3e3c95eea57ed420b2542
-Gerrit-Change-Number: 329
-Gerrit-PatchSet: 2
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gert Doering
 
---6Z3w7q0qXtc=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/329?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Warn user if INFO control command is too long<=
-br><br>&quot;INFO_PRE,...&quot; command length is limited to 256 bytes. If =
-the server<br>implementation pushes command which is too long, warn the use=
-r and<br>don&#39;t send the truncated command to a management client.<br><b=
-r>Change-Id: If3c27a2a2ba24f2af0e3e3c95eea57ed420b2542<br>Signed-off-by: Le=
-v Stipakov &lt;lev@...515...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...220...=
-..2641...&gt;<br>Message-Id: &lt;20230922105055.37969-1-frank@...2641...&gt=
-;<br>URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/=
-msg27062.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>(ch=
-erry picked from commit df624fb6d63db6b2a3b0c40597cee74c61b8ab2c)<br>---<br=
->M src/openvpn/push.c<br>1 file changed, 8 insertions(+), 2 deletions(-)<br=
-><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/push.c b/src/openvpn/push.c</span><br><span>ind=
-ex d468211..19849c5 100644</span><br><span>--- a/src/openvpn/push.c</span><=
-br><span>+++ b/src/openvpn/push.c</span><br><span>@@ -244,8 +244,14 @@</spa=
-n><br><span>          * for management greeting and we don&#39;t want to co=
-nfuse the client</span><br><span>          */</span><br><span>         stru=
-ct buffer out =3D alloc_buf_gc(256, &amp;gc);</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        buf_printf(&amp;out, &quot;&gt;%s:%s&quot;,=
- &quot;INFOMSG&quot;, m);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        management_notify_generic(management, BSTR(&amp;out));</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        if (buf_printf(&amp;=
-out, &quot;&gt;%s:%s&quot;, &quot;INFOMSG&quot;, m))</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            management_notify_generic(management, B=
-STR(&amp;out));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        else</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            msg(D_PUSH_ERRORS, =
-&quot;WARNING: Received INFO command is too long, won&#39;t notify manageme=
-nt client.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       }</span><br><span> </span><br><span>         gc_free(&amp;gc);</span=
-><br><span>     }</span><br><span></span><br></pre><p>To view, visit <a hre=
-f=3D"http://gerrit.openvpn.net/c/openvpn/+/329?usp=3Demail">change 329</a>.=
- To unsubscribe, or for help writing mail filters, visit <a href=3D"http://=
-gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"ht=
-tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/329?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If3c27a2a2ba24f2af0e3e3c95ee=
-a57ed420b2542 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 329 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
-
-
---6Z3w7q0qXtc=--
 
