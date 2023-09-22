@@ -1,15 +1,14 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 22 Sep 2023 12:39:20 +0000
-In-Reply-To: <gerrit.1685031225000.I58706019add6d348483ba222dd74e1466ff6c709@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Fri, 22 Sep 2023 12:39:23 +0000
 References: <gerrit.1685031225000.I58706019add6d348483ba222dd74e1466ff6c709@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277..., a@...2181...
-Message-ID: <718b1b331ca608abf79965e16d965374c4c198db-HTML@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296..., lstipakov@...277...,
+ a@...2181...
+Message-ID: <1a838914a60b857bf491d7c77e4b4fa0cd90c71d-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="49XFE6wM/GA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="L8XjEWMPP/k="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove --no-replay
  option
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,15 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, stipa <lstipakov@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, cron2 <gert@...1296...>, d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, stipa <lstipakov@...277...>
 
---49XFE6wM/GA=
+--L8XjEWMPP/k=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/28=
-1?usp=3Demail )
+flichtenheld has uploaded this change for review. ( http://gerrit.openvpn.n=
+et/c/openvpn/+/281?usp=3Demail )
+
 
 Change subject: Remove --no-replay option
 ......................................................................
@@ -63,6 +62,7 @@ M tests/unit_tests/openvpn/test_crypto.c
 
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/81/281/4
 
 diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-opti=
 ons.rst
@@ -456,92 +456,93 @@ Gerrit-Reviewer: ordex <a@...2181...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: stipa <lstipakov@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newchange
 
---49XFE6wM/GA=
+--L8XjEWMPP/k=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/281?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Remove --no-replay option<br><br>Officially de=
-precated since v2.4.<br>We have warned about using this forever.<br>It is t=
-ime to pull the plug.<br><br>Change-Id: I58706019add6d348483ba222dd74e1466f=
-f6c709<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acke=
-d-by: Heiko Hund &lt;heiko@...515...&gt;<br>Message-Id: &lt;20230922103830.=
-37151-1-frank@...2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-d=
-evel@lists.sourceforge.net/msg27059.html<br>Signed-off-by: Gert Doering &lt=
-;gert@...1296...&gt;<br>---<br>M doc/man-sections/link-options.rst<br>M doc=
-/man-sections/server-options.rst<br>M doc/man-sections/unsupported-options.=
-rst<br>M src/openvpn/crypto.c<br>M src/openvpn/crypto.h<br>M src/openvpn/in=
-it.c<br>M src/openvpn/mtu.c<br>M src/openvpn/options.c<br>M src/openvpn/opt=
-ions.h<br>M src/openvpn/ssl.c<br>M src/openvpn/ssl_common.h<br>M tests/unit=
-_tests/openvpn/test_crypto.c<br>12 files changed, 22 insertions(+), 90 dele=
-tions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-o=
-ptions.rst</span><br><span>index 14e76b4..675fee4 100644</span><br><span>--=
-- a/doc/man-sections/link-options.rst</span><br><span>+++ b/doc/man-section=
-s/link-options.rst</span><br><span>@@ -366,8 +366,7 @@</span><br><span>   o=
-rder they were received to the TCP/IP protocol stack, provided they</span><=
-br><span>   satisfy several constraints.</span><br><span> </span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-  (a)   The packet cannot be a replay =
-(unless ``--no-replay`` is</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        specified, which disables replay protection altogether).</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+  (a)   The packet cannot=
- be a replay.</span><br><span> </span><br><span>   (b)   If a packet arrive=
-s out of order, it will only be accepted if</span><br><span>         the di=
-fference between its sequence number and the highest sequence</span><br><sp=
-an>diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/serv=
-er-options.rst</span><br><span>index 6b9ad21..80dc77d 100644</span><br><spa=
-n>--- a/doc/man-sections/server-options.rst</span><br><span>+++ b/doc/man-s=
-ections/server-options.rst</span><br><span>@@ -406,7 +406,7 @@</span><br><s=
-pan>   Options that will be compared for compatibility include ``dev-type``=
-,</span><br><span>   ``link-mtu``, ``tun-mtu``, ``proto``, ``ifconfig``,</s=
-pan><br><span>   ``comp-lzo``, ``fragment``, ``keydir``, ``cipher``,</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-  ``auth``, ``keysize``, ``s=
-ecret``, ``no-replay``,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+  ``auth``, ``keysize``, ``secret``,</span><br><span>   ``tls-auth``, `=
-`key-method``, ``tls-server``</span><br><span>   and ``tls-client``.</span>=
-<br><span> </span><br><span>diff --git a/doc/man-sections/unsupported-optio=
-ns.rst b/doc/man-sections/unsupported-options.rst</span><br><span>index 5c4=
-e3a0..a0c1232 100644</span><br><span>--- a/doc/man-sections/unsupported-opt=
-ions.rst</span><br><span>+++ b/doc/man-sections/unsupported-options.rst</sp=
-an><br><span>@@ -30,8 +30,9 @@</span><br><span>   VPN tunnel security.  Thi=
-s has been a NOOP option since OpenVPN 2.4.</span><br><span> </span><br><sp=
-an> --no-replay</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Remo=
-ved in OpenVPN 2.5.  This option should not be used as it weakens the</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-  VPN tunnel security.</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+  Removed in OpenVPN 2.7=
-.  This option should not be used as it weakens the</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+  VPN tunnel security.  Previously we cla=
-imed to have removed this in</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+  OpenVPN 2.5, but this wasn&#39;t actually the case.</span><br><s=
-pan> </span><br><span> --ns-cert-type</span><br><span>   Removed in OpenVPN=
- 2.5.  The ``nsCertType`` field is no longer supported</span><br><span>diff=
- --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c</span><br><span>index =
-a77b5a1..e4452d7 100644</span><br><span>--- a/src/openvpn/crypto.c</span><b=
-r><span>+++ b/src/openvpn/crypto.c</span><br><span>@@ -328,7 +328,7 @@</spa=
-n><br><span>         if (!(opt-&gt;flags &amp; CO_MUTE_REPLAY_WARNINGS))</s=
-pan><br><span>         {</span><br><span>             msg(D_REPLAY_ERRORS, =
-&quot;%s: bad packet ID (may be a replay): %s -- &quot;</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-                &quot;see the man page en=
-try for --no-replay and --replay-window for &quot;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+                &quot;see the man page entry=
- for --replay-window for &quot;</span><br><span>                 &quot;more=
- info or silence this warning with --mute-replay-warnings&quot;,</span><br>=
-<span>                 error_prefix, packet_id_net_print(pin, true, gc));</=
-span><br><span>         }</span><br><span>@@ -942,18 +942,6 @@</span><br><s=
-pan>     return true;</span><br><span> }</span><br><span> </span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-check_replay_consistency(const struct key_type *kt, boo=
-l packet_id)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(kt);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    if (!packet_id &amp;&amp; (cipher_kt_mode_ofb_cfb(kt=
--&gt;cipher)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-              || cipher_kt_mode_aead(kt-&gt;cipher)))</span><br><span style=
+<p>flichtenheld has uploaded this change for <strong>review</strong>.</p><p=
+><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/281?usp=3Demail">View Cha=
+nge</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre=
+-wrap;">Remove --no-replay option<br><br>Officially deprecated since v2.4.<=
+br>We have warned about using this forever.<br>It is time to pull the plug.=
+<br><br>Change-Id: I58706019add6d348483ba222dd74e1466ff6c709<br>Signed-off-=
+by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Heiko Hund &lt;=
+heiko@...515...&gt;<br>Message-Id: &lt;20230922103830.37151-1-frank@...2746...=
+...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1483...=
+e.net/msg27059.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<=
+br>---<br>M doc/man-sections/link-options.rst<br>M doc/man-sections/server-=
+options.rst<br>M doc/man-sections/unsupported-options.rst<br>M src/openvpn/=
+crypto.c<br>M src/openvpn/crypto.h<br>M src/openvpn/init.c<br>M src/openvpn=
+/mtu.c<br>M src/openvpn/options.c<br>M src/openvpn/options.h<br>M src/openv=
+pn/ssl.c<br>M src/openvpn/ssl_common.h<br>M tests/unit_tests/openvpn/test_c=
+rypto.c<br>12 files changed, 22 insertions(+), 90 deletions(-)<br><br></pre=
+><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
+t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/81/281/4</pre><p=
+re style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span=
+>diff --git a/doc/man-sections/link-options.rst b/doc/man-sections/link-opt=
+ions.rst</span><br><span>index 14e76b4..675fee4 100644</span><br><span>--- =
+a/doc/man-sections/link-options.rst</span><br><span>+++ b/doc/man-sections/=
+link-options.rst</span><br><span>@@ -366,8 +366,7 @@</span><br><span>   ord=
+er they were received to the TCP/IP protocol stack, provided they</span><br=
+><span>   satisfy several constraints.</span><br><span> </span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-  (a)   The packet cannot be a replay (u=
+nless ``--no-replay`` is</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        specified, which disables replay protection altogether).</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+  (a)   The packet cannot b=
+e a replay.</span><br><span> </span><br><span>   (b)   If a packet arrives =
+out of order, it will only be accepted if</span><br><span>         the diff=
+erence between its sequence number and the highest sequence</span><br><span=
+>diff --git a/doc/man-sections/server-options.rst b/doc/man-sections/server=
+-options.rst</span><br><span>index 6b9ad21..80dc77d 100644</span><br><span>=
+--- a/doc/man-sections/server-options.rst</span><br><span>+++ b/doc/man-sec=
+tions/server-options.rst</span><br><span>@@ -406,7 +406,7 @@</span><br><spa=
+n>   Options that will be compared for compatibility include ``dev-type``,<=
+/span><br><span>   ``link-mtu``, ``tun-mtu``, ``proto``, ``ifconfig``,</spa=
+n><br><span>   ``comp-lzo``, ``fragment``, ``keydir``, ``cipher``,</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-  ``auth``, ``keysize``, ``sec=
+ret``, ``no-replay``,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+  ``auth``, ``keysize``, ``secret``,</span><br><span>   ``tls-auth``, ``k=
+ey-method``, ``tls-server``</span><br><span>   and ``tls-client``.</span><b=
+r><span> </span><br><span>diff --git a/doc/man-sections/unsupported-options=
+.rst b/doc/man-sections/unsupported-options.rst</span><br><span>index 5c4e3=
+a0..a0c1232 100644</span><br><span>--- a/doc/man-sections/unsupported-optio=
+ns.rst</span><br><span>+++ b/doc/man-sections/unsupported-options.rst</span=
+><br><span>@@ -30,8 +30,9 @@</span><br><span>   VPN tunnel security.  This =
+has been a NOOP option since OpenVPN 2.4.</span><br><span> </span><br><span=
+> --no-replay</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  Remove=
+d in OpenVPN 2.5.  This option should not be used as it weakens the</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-  VPN tunnel security.</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+  Removed in OpenVPN 2.7. =
+ This option should not be used as it weakens the</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+  VPN tunnel security.  Previously we claimed=
+ to have removed this in</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+  OpenVPN 2.5, but this wasn&#39;t actually the case.</span><br><span>=
+ </span><br><span> --ns-cert-type</span><br><span>   Removed in OpenVPN 2.5=
+.  The ``nsCertType`` field is no longer supported</span><br><span>diff --g=
+it a/src/openvpn/crypto.c b/src/openvpn/crypto.c</span><br><span>index a77b=
+5a1..e4452d7 100644</span><br><span>--- a/src/openvpn/crypto.c</span><br><s=
+pan>+++ b/src/openvpn/crypto.c</span><br><span>@@ -328,7 +328,7 @@</span><b=
+r><span>         if (!(opt-&gt;flags &amp; CO_MUTE_REPLAY_WARNINGS))</span>=
+<br><span>         {</span><br><span>             msg(D_REPLAY_ERRORS, &quo=
+t;%s: bad packet ID (may be a replay): %s -- &quot;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                &quot;see the man page entr=
+y for --no-replay and --replay-window for &quot;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                &quot;see the man page entry f=
+or --replay-window for &quot;</span><br><span>                 &quot;more i=
+nfo or silence this warning with --mute-replay-warnings&quot;,</span><br><s=
+pan>                 error_prefix, packet_id_net_print(pin, true, gc));</sp=
+an><br><span>         }</span><br><span>@@ -942,18 +942,6 @@</span><br><spa=
+n>     return true;</span><br><span> }</span><br><span> </span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-check_replay_consistency(const struct key_type *kt, bool =
+packet_id)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(kt);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    if (!packet_id &amp;&amp; (cipher_kt_mode_ofb_cfb(kt-&=
+gt;cipher)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+            || cipher_kt_mode_aead(kt-&gt;cipher)))</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
 , 100%, 40%);">-        msg(M_FATAL, &quot;--no-replay cannot be used with =
 a CFB, OFB or AEAD mode cipher&quot;);</span><br><span style=3D"color: hsl(=
@@ -807,8 +808,8 @@ div>
 &gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---49XFE6wM/GA=--
+--L8XjEWMPP/k=--
 
