@@ -1,14 +1,16 @@
-Date: Fri, 22 Sep 2023 16:32:58 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <ZQ2lmjFwm9T53BDc@...1296...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Fri, 22 Sep 2023 14:58:38 +0000
+In-Reply-To: <gerrit.1677676721000.I3bd27a8d34d8cb4896a3b78508b7d16911571543@...2715...>
 References: <gerrit.1677676721000.I3bd27a8d34d8cb4896a3b78508b7d16911571543@...2715...>
- <20230922134800.61755-1-frank@...2641...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <54cf2fac67ec9f1612e7e256887227b77489823c-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="i0lWy2OqaKJAwC97"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <20230922134800.61755-1-frank@...2641...>
-Subject: Re: [Openvpn-devel] [PATCH] Improve description of compat-mode
+Content-Type: multipart/alternative; boundary="UnF3GD65I1Y="; charset=UTF-8
+Subject: [Openvpn-devel] [NoOp] Change in openvpn[master]: Improve
+ description of compat-mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,60 +19,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---i0lWy2OqaKJAwC97
-Content-Type: text/plain; charset="us-ascii"
+--UnF3GD65I1Y=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+flichtenheld has abandoned this change. ( http://gerrit.openvpn.net/c/openv=
+pn/+/34?usp=3Demail )
 
-On Fri, Sep 22, 2023 at 03:48:00PM +0200, Frank Lichtenheld wrote:
-> From: Arne Schwabe <arne@...1227...>
->=20
-> Explicitly say that the version specified is the one of the peer and not
-> the version we try to emulate.
+Change subject: Improve description of compat-mode
+......................................................................
 
-This has been merged ages ago ;-)
 
-commit daf66f4013d8facc085ea6cfaaf8a42f4d45a461
-Author: Arne Schwabe <arne@...1227...>
-Date:   Mon Mar 20 17:55:38 2023 +0100
+Abandoned
 
-    Improve description of compat-mode
-=20=20=20=20
-    Explicitly say that the version specified is the one of the peer and not
-    the version we try to emulate.
+merged with wrong Change-Id
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/34?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-gert
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I3bd27a8d34d8cb4896a3b78508b7d16911571543
+Gerrit-Change-Number: 34
+Gerrit-PatchSet: 4
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: abandon
 
-Gert Doering - Munich, Germany                             gert@...1296...
+--UnF3GD65I1Y=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---i0lWy2OqaKJAwC97
-Content-Type: application/pgp-signature; name="signature.asc"
+<p>flichtenheld <strong>abandoned</strong> this change.</p><p><a href=3D"ht=
+tp://gerrit.openvpn.net/c/openvpn/+/34?usp=3Demail">View Change</a></p><div=
+ style=3D"white-space:pre-wrap">Abandoned
 
------BEGIN PGP SIGNATURE-----
+merged with wrong Change-Id</div><p>To view, visit <a href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/34?usp=3Demail">change 34</a>. To unsubscribe, or =
+for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
+ettings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Emai=
+lMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/=
+ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/open=
+vpn/+/34?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
+iv></div>
 
-iQGcBAEBAgAGBQJlDaWaAAoJEB2Cnv7KVigSgskL/1xHOw7xoZLr81arEbeX1H7J
-MOGhBfNIZ84/R6H0RljMnFQmi8eEpArR+dnlgX6ScmbhI586EjoxKRTu4+DTd3FY
-k4N4q/1wCgWQTxfmmXycDJBJjyt9rMYlc4Nt27XWf3qiAGeV6gXn+iFXjkznbaps
-FbcFFkBlaqNDvzh6VLQjQFXnGyA+5VtzdDEszanJalXkEk65P6kb38yyXIFeisRj
-QI++HjewxCVnTdU9AxDi3M0hxuzfiImsay/G3X826RzCDQ2/EAtYpTwA0Y0btyhL
-ibChBDkU1Uytk0eAXYkcUPc9iGcEAQ12VXK8P5FXqNz0S8VGt4o/0Lf61qznFBgm
-nTvUted0GsBXoygsmcykvy39J8ltklqa79E1n5a8MhnPUEpZRSHwBr0NaCHxwtc7
-KgH9Zss32zjETfE0It3uLkNusxee+qOYM7w4TxKoLjMoGuxHGC9S4KtTYWo4k95C
-yKa6QvoLaHnGkM5Cvm+XgMxJHojPNmzus8YlZZ1PxQ==
-=Uwns
------END PGP SIGNATURE-----
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I3bd27a8d34d8cb4896a3b78508b=
+7d16911571543 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 34 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: abandon </div>
 
---i0lWy2OqaKJAwC97--
+
+--UnF3GD65I1Y=--
 
