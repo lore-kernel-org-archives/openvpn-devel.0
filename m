@@ -1,10 +1,14 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Fri, 22 Sep 2023 15:48:00 +0200
-Message-Id: <20230922134800.61755-1-frank@...2641...>
-In-Reply-To: <gerrit.1677676721000.I3bd27a8d34d8cb4896a3b78508b7d16911571543@...2715...>
+Date: Fri, 22 Sep 2023 16:32:58 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZQ2lmjFwm9T53BDc@...1296...>
 References: <gerrit.1677676721000.I3bd27a8d34d8cb4896a3b78508b7d16911571543@...2715...>
+ <20230922134800.61755-1-frank@...2641...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Improve description of compat-mode
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="i0lWy2OqaKJAwC97"
+Content-Disposition: inline
+In-Reply-To: <20230922134800.61755-1-frank@...2641...>
+Subject: Re: [Openvpn-devel] [PATCH] Improve description of compat-mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,71 +17,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+--i0lWy2OqaKJAwC97
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Explicitly say that the version specified is the one of the peer and not
-the version we try to emulate.
+Hi,
 
-Change-Id: I3bd27a8d34d8cb4896a3b78508b7d16911571543
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
+On Fri, Sep 22, 2023 at 03:48:00PM +0200, Frank Lichtenheld wrote:
+> From: Arne Schwabe <arne@...1227...>
+>=20
+> Explicitly say that the version specified is the one of the peer and not
+> the version we try to emulate.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+This has been merged ages ago ;-)
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/34
-This mail reflects revision 3 of this Change.
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+commit daf66f4013d8facc085ea6cfaaf8a42f4d45a461
+Author: Arne Schwabe <arne@...1227...>
+Date:   Mon Mar 20 17:55:38 2023 +0100
 
-        
-diff --git a/doc/man-sections/generic-options.rst b/doc/man-sections/generic-options.rst
-index c827651..97e1b5a 100644
---- a/doc/man-sections/generic-options.rst
-+++ b/doc/man-sections/generic-options.rst
-@@ -53,10 +53,17 @@
-   need for /dev/urandom to be available.
- 
- --compat-mode version
--  This option provides a way to alter the default of OpenVPN to be more
--  compatible with the version ``version`` specified. All of the changes
--  this option does can also be achieved using individual configuration
--  options.
-+  This option provides a convenient way to alter the defaults of OpenVPN
-+  to be more compatible with the version ``version`` specified. All of
-+  the changes this option applies can also be achieved using individual
-+  configuration options.
-+
-+  The version specified with this option is the version of OpenVPN peer
-+  OpenVPN should try to be compatible with. In general OpenVPN should be
-+  compatible with the last two previous version without this option. E.g.
-+  OpenVPN 2.6.0 should be compatible with 2.5.x and 2.4.x without this option.
-+  However, there might be some edge cases that still require this option even
-+  in these cases.
- 
-   Note: Using this option reverts defaults to no longer recommended
-   values and should be avoided if possible.
-@@ -67,12 +74,15 @@
-   - 2.5.x or lower: ``--allow-compression asym`` is automatically added
-     to the configuration if no other compression options are present.
-   - 2.4.x or lower: The cipher in ``--cipher`` is appended to
--    ``--data-ciphers``
-+    ``--data-ciphers``.
-   - 2.3.x or lower: ``--data-cipher-fallback`` is automatically added with
--    the same cipher as ``--cipher``
-+    the same cipher as ``--cipher``.
-   - 2.3.6 or lower: ``--tls-version-min 1.0`` is added to the configuration
-     when ``--tls-version-min`` is not explicitly set.
- 
-+  If not required, this is option should be avoided. Setting this option can
-+  lower security or disable features like data-channel offloading.
-+
- --config file
-   Load additional config options from ``file`` where each line corresponds
-   to one command line option, but with the leading :code:`--` removed.
+    Improve description of compat-mode
+=20=20=20=20
+    Explicitly say that the version specified is the one of the peer and not
+    the version we try to emulate.
+
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
+
+Gert Doering - Munich, Germany                             gert@...1296...
+
+--i0lWy2OqaKJAwC97
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJlDaWaAAoJEB2Cnv7KVigSgskL/1xHOw7xoZLr81arEbeX1H7J
+MOGhBfNIZ84/R6H0RljMnFQmi8eEpArR+dnlgX6ScmbhI586EjoxKRTu4+DTd3FY
+k4N4q/1wCgWQTxfmmXycDJBJjyt9rMYlc4Nt27XWf3qiAGeV6gXn+iFXjkznbaps
+FbcFFkBlaqNDvzh6VLQjQFXnGyA+5VtzdDEszanJalXkEk65P6kb38yyXIFeisRj
+QI++HjewxCVnTdU9AxDi3M0hxuzfiImsay/G3X826RzCDQ2/EAtYpTwA0Y0btyhL
+ibChBDkU1Uytk0eAXYkcUPc9iGcEAQ12VXK8P5FXqNz0S8VGt4o/0Lf61qznFBgm
+nTvUted0GsBXoygsmcykvy39J8ltklqa79E1n5a8MhnPUEpZRSHwBr0NaCHxwtc7
+KgH9Zss32zjETfE0It3uLkNusxee+qOYM7w4TxKoLjMoGuxHGC9S4KtTYWo4k95C
+yKa6QvoLaHnGkM5Cvm+XgMxJHojPNmzus8YlZZ1PxQ==
+=Uwns
+-----END PGP SIGNATURE-----
+
+--i0lWy2OqaKJAwC97--
 
