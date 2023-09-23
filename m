@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 23 Sep 2023 09:57:03 +0000
+Date: Sat, 23 Sep 2023 09:57:00 +0000
 In-Reply-To: <gerrit.1689947729000.If4a67adac4d2e870fd719b58075d39efcd67c671@...2715...>
 References: <gerrit.1689947729000.If4a67adac4d2e870fd719b58075d39efcd67c671@...2715...>
 Reply-To: gert@...1296..., heiko@...515...,
  openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
-Message-ID: <da9fdcef16260113a1cc63c2c34310a249c306cc-HTML@...2715...>
+Message-ID: <da9fdcef16260113a1cc63c2c34310a249c306cc-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="4G7zu1AInNI="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="SnSz0uVaDaA="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: buffer: use
  memcpy in buf_catrunc
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: d12fk <heiko@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>, d12fk <heiko@...515...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---4G7zu1AInNI=
+--SnSz0uVaDaA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/31=
-4?usp=3Demail )
+cron2 has uploaded a new patch set (#3) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/314?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by d12fk, Code-Review+2 by ordex
+
 
 Change subject: buffer: use memcpy in buf_catrunc
 ......................................................................
@@ -76,7 +80,7 @@ M src/openvpn/buffer.c
 1 file changed, 2 insertions(+), 2 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/14/314/3
 
 diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
 index d099795..7725438 100644
@@ -111,57 +115,61 @@ Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: d12fk <heiko@...515...>
 Gerrit-Reviewer: ordex <a@...2181...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---4G7zu1AInNI=
+--SnSz0uVaDaA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/314?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">buffer: use memcpy in buf_catrunc<br><br>Since=
- we use strlen() to determine the length<br>and then check it ourselves, th=
-ere is really<br>no point in using strncpy.<br><br>But the compiler might c=
-omplain that we use<br>the output of strlen() for the length of<br>strncpy =
-which is usually a sign for bugs:<br><br>error: =E2=80=98strncpy=E2=80=99 s=
-pecified bound depends<br> on the length of the source argument<br> [-Werro=
-r=3Dstringop-overflow=3D]<br><br>Warning was at least triggered for<br>ming=
-w-gcc version 10-win32 20220113.<br><br>Also change the type of len to size=
-_t<br>which avoids potential problems with<br>signed overflow.<br><br>v2:<b=
-r> - make len size_t and change code to avoid any theoretical overflows<br>=
- - remove useless casts<br>v3:<br> - fix off-by-one introduced by v2 %)<br>=
-v4:<br> - ignore unsigned overflow to simplify code<br><br>Change-Id: If4a6=
-7adac4d2e870fd719b58075d39efcd67c671<br>Signed-off-by: Frank Lichtenheld &l=
-t;frank@...2641...&gt;<br>Acked-by: Antonio Quartulli &lt;a@...2181...&gt;<=
-br>Acked-by: Heiko Hund &lt;heiko@...515...&gt;<br>Acked-by: Gert Doering &=
-lt;gert@...1296...&gt;<br>(cherry picked from commit c89a97e449baaf60924a36=
-2555d35184f188a646)<br>Message-Id: &lt;20230922160441.167168-1-frank@...2716...=
-1...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1768...=
-ge.net/msg27085.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;=
-<br>---<br>M src/openvpn/buffer.c<br>1 file changed, 2 insertions(+), 2 del=
-etions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c</span><br><span=
->index d099795..7725438 100644</span><br><span>--- a/src/openvpn/buffer.c</=
-span><br><span>+++ b/src/openvpn/buffer.c</span><br><span>@@ -316,10 +316,1=
-0 @@</span><br><span> {</span><br><span>     if (buf_forward_capacity(buf) =
-&lt;=3D 1)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        int len =3D (int) strlen(str) + 1;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        size_t len =3D strlen(str) + 1;<=
-/span><br><span>         if (len &lt; buf_forward_capacity_total(buf))</spa=
-n><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--            strncpynt((char *)(buf-&gt;data + buf-&gt;capacity - len), str=
-, len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-memcpy(buf-&gt;data + buf-&gt;capacity - len, str, len);</span><br><span>  =
-       }</span><br><span>     }</span><br><span> }</span><br><span></span><=
-br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/314?usp=3Demail">change 314</a>. To unsubscribe, or for help writing mail =
-filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.=
-</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
-pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
-prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/314?usp=3Demail"=
-/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
+eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/314?usp=3Demail">View Change</a></p><p>The following approvals got outda=
+ted and were removed:
+Code-Review+2 by d12fk, Code-Review+2 by ordex</p><pre style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;">buffer: use memcpy in buf_ca=
+trunc<br><br>Since we use strlen() to determine the length<br>and then chec=
+k it ourselves, there is really<br>no point in using strncpy.<br><br>But th=
+e compiler might complain that we use<br>the output of strlen() for the len=
+gth of<br>strncpy which is usually a sign for bugs:<br><br>error: =E2=80=98=
+strncpy=E2=80=99 specified bound depends<br> on the length of the source ar=
+gument<br> [-Werror=3Dstringop-overflow=3D]<br><br>Warning was at least tri=
+ggered for<br>mingw-gcc version 10-win32 20220113.<br><br>Also change the t=
+ype of len to size_t<br>which avoids potential problems with<br>signed over=
+flow.<br><br>v2:<br> - make len size_t and change code to avoid any theoret=
+ical overflows<br> - remove useless casts<br>v3:<br> - fix off-by-one intro=
+duced by v2 %)<br>v4:<br> - ignore unsigned overflow to simplify code<br><b=
+r>Change-Id: If4a67adac4d2e870fd719b58075d39efcd67c671<br>Signed-off-by: Fr=
+ank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Antonio Quartulli &lt=
+;a@...2181...&gt;<br>Acked-by: Heiko Hund &lt;heiko@...515...&gt;<br>Acked-=
+by: Gert Doering &lt;gert@...1296...&gt;<br>(cherry picked from commit c89a=
+97e449baaf60924a362555d35184f188a646)<br>Message-Id: &lt;20230922160441.167=
+168-1-frank@...2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-dev=
+el@lists.sourceforge.net/msg27085.html<br>Signed-off-by: Gert Doering &lt;g=
+ert@...1296...&gt;<br>---<br>M src/openvpn/buffer.c<br>1 file changed, 2 in=
+sertions(+), 2 deletions(-)<br><br></pre><pre style=3D"font-family: monospa=
+ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:294=
+18/openvpn refs/changes/14/314/3</pre><pre style=3D"font-family: monospace,=
+monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/buffer.c =
+b/src/openvpn/buffer.c</span><br><span>index d099795..7725438 100644</span>=
+<br><span>--- a/src/openvpn/buffer.c</span><br><span>+++ b/src/openvpn/buff=
+er.c</span><br><span>@@ -316,10 +316,10 @@</span><br><span> {</span><br><sp=
+an>     if (buf_forward_capacity(buf) &lt;=3D 1)</span><br><span>     {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        int len =3D (int)=
+ strlen(str) + 1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      size_t len =3D strlen(str) + 1;</span><br><span>         if (len &lt;=
+ buf_forward_capacity_total(buf))</span><br><span>         {</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            strncpynt((char *)(buf-&=
+gt;data + buf-&gt;capacity - len), str, len);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            memcpy(buf-&gt;data + buf-&gt;capacit=
+y - len, str, len);</span><br><span>         }</span><br><span>     }</span=
+><br><span> }</span><br><span></span><br></pre><p>To view, visit <a href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/314?usp=3Demail">change 314</a>. To =
+unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
+it.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:/=
+/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
+tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/314?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
+View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
@@ -179,8 +187,8 @@ d39efcd67c671 </div>
 div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---4G7zu1AInNI=--
+--SnSz0uVaDaA=--
 
