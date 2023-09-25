@@ -1,11 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Mon, 25 Sep 2023 11:44:09 +0200
-Message-Id: <20230925094409.40429-1-frank@...2641...>
-In-Reply-To: <gerrit.1689947729000.I8c8fe298eb30e211279f3fc010584b9d3bc14b4a@...2715...>
-References: <gerrit.1689947729000.I8c8fe298eb30e211279f3fc010584b9d3bc14b4a@...2715...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Mon, 25 Sep 2023 09:50:56 +0000
+In-Reply-To: <gerrit.1689947729000.I6de18261d5dc7f8561612184059656c73f33a5f2@...2715...>
+References: <gerrit.1689947729000.I6de18261d5dc7f8561612184059656c73f33a5f2@...2715...>
+Reply-To: lstipakov@...277..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <c58087feae88955dcf6f882c705d4ea4154bceda-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Mock openvpn_exece on win32 also for
- test_tls_crypt
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="xjz7jcnJ33A="; charset=UTF-8
+Subject: [Openvpn-devel] [XL] Change in openvpn[release/2.6]: CMake:
+ backport CMake buildsystem from master to release/2.6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,116 +19,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne@...1227...>, Heiko Hund <heiko@...515...>
+To: flichtenheld <frank@...2641...>
+Cc: d12fk <heiko@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--xjz7jcnJ33A=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This function is needed to commpile on win32 as run_command.c defines it
-on Unix Linux but on windows it is defined in win32.c which pulls in too
-many other unresolvable symbols.
+Attention is currently required from: d12fk, flichtenheld.
 
-Patch v2: Also add mock_win32_execve.c to automake files
+stipa has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/315?usp=3Demail )
 
-Change-Id: I8c8fe298eb30e211279f3fc010584b9d3bc14b4a
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Heiko Hund <heiko@...515...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-(cherry picked from commit ede590e57c96c2b16d9bf462c4b1dd967b37c432)
----
+Change subject: CMake: backport CMake buildsystem from master to release/2.6
+......................................................................
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to release/2.6.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/313
-This mail reflects revision 2 of this Change.
-Acked-by according to Gerrit (reflected above):
-Heiko Hund <heiko@...515...>
+Patch Set 2: Code-Review+2
 
-        
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index 650126c..dd3985d 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -77,7 +77,7 @@
- pkt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpn
- pkt_testdriver_LDFLAGS = @TEST_LDFLAGS@
--pkt_testdriver_SOURCES = test_pkt.c mock_msg.c mock_msg.h \
-+pkt_testdriver_SOURCES = test_pkt.c mock_msg.c mock_msg.h mock_win32_execve.c \
- 	$(top_srcdir)/src/openvpn/argv.c \
- 	$(top_srcdir)/src/openvpn/base64.c \
- 	$(top_srcdir)/src/openvpn/buffer.c \
-@@ -104,6 +104,7 @@
- 	-Wl,--wrap=parse_line \
- 	-Wl,--wrap=rand_bytes
- tls_crypt_testdriver_SOURCES = test_tls_crypt.c mock_msg.c mock_msg.h \
-+	mock_win32_execve.c \
- 	$(top_srcdir)/src/openvpn/argv.c \
- 	$(top_srcdir)/src/openvpn/base64.c \
- 	$(top_srcdir)/src/openvpn/buffer.c \
-diff --git a/tests/unit_tests/openvpn/mock_win32_execve.c b/tests/unit_tests/openvpn/mock_win32_execve.c
-new file mode 100644
-index 0000000..4d37ebe
---- /dev/null
-+++ b/tests/unit_tests/openvpn/mock_win32_execve.c
-@@ -0,0 +1,37 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2023 OpenVPN Inc <sales@...515...>
-+ *  Copyright (C) 2023 Arne Schwabe <arne@...1227...>
-+ *
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-+ */
-+
-+#include "config.h"
-+#include "syshead.h"
-+
-+#include "win32.h"
-+
-+#ifdef _WIN32
-+int
-+openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags)
-+{
-+    ASSERT(0);
-+}
-+#endif
-diff --git a/tests/unit_tests/openvpn/test_pkt.c b/tests/unit_tests/openvpn/test_pkt.c
-index 736f131..eb69829 100644
---- a/tests/unit_tests/openvpn/test_pkt.c
-+++ b/tests/unit_tests/openvpn/test_pkt.c
-@@ -71,14 +71,6 @@
-     return "dummy print_link_socket_actual from unit test";
- }
- 
--#ifdef _WIN32
--int
--openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned int flags)
--{
--    ASSERT(0);
--}
--#endif
--
- struct test_pkt_context {
-     struct tls_auth_standalone tas_tls_auth;
-     struct tls_auth_standalone tas_crypt;
+(1 comment)
+
+File README.cmake.md:
+
+http://gerrit.openvpn.net/c/openvpn/+/315/comment/f39fcf5a_d00bbdc2 :
+PS2, Line 33: Enviroment
+environment
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/315?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: I6de18261d5dc7f8561612184059656c73f33a5f2
+Gerrit-Change-Number: 315
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: d12fk <heiko@...515...>
+Gerrit-Reviewer: stipa <lstipakov@...277...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Mon, 25 Sep 2023 09:50:56 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--xjz7jcnJ33A=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: d12fk, flichtenheld. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/315?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>File README.cmake.md:</p><ul sty=
+le=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0=
+ 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/315/comment/f39fcf5a_d00bbdc2">Patch Set #2, Line 33:</a> <c=
+ode style=3D"font-family:monospace,monospace">Enviroment</code></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">environment</p></li></ul=
+></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/315?usp=3Demail">change 315</a>. To unsubscribe, or for help writing mai=
+l filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a=
+>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div items=
+cope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link it=
+emprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/315?usp=3Demai=
+l"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I6de18261d5dc7f8561612184059=
+656c73f33a5f2 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 315 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: d12fk &lt;heiko@...515...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 25 Sep 2023 09:50:56=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--xjz7jcnJ33A=--
 
