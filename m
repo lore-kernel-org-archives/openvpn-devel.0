@@ -1,10 +1,10 @@
-Date: Tue, 26 Sep 2023 17:55:02 +0200 (CEST)
-Message-Id: <202309261555.38QFt2JO037241@...2054...>
+Date: Tue, 26 Sep 2023 18:11:29 +0200 (CEST)
+Message-Id: <202309261611.38QGBT1m038709@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20230926095030.29779-1-frank@...2641...>
-References: <20230926095030.29779-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: CMake: backport CMake
- buildsystem from master to release/2.6
+In-Reply-To: <20230926095118.29924-1-frank@...2641...>
+References: <20230926095118.29924-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove all traces of the
+ previous MSVC build system
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,32 +18,29 @@ Content-Transfer-Encoding: 8bit
 To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-A quick review shows that this is really only "Windows buildsystem and
-CMake" related stuff, no code changes - a number of "master" patches
-squashed together (introducing new files, now we've ironed out the bugs
-in master - let's not do the step-by-step thing here again, littel benefit
-and just extra work for me).
+And gone with the wind... :-) - getting rid of these complicated .xml
+files that we never managed to update on "there is a new source file!"
+is a big win.
 
-If I read the "build.yaml" change right, we lose testing mingw+ossl 1.1.1q
-in this change - OTOH, 1.1.1 is EOL, our official installers ship 3.0.x,
-and other parts of the test matrix *do* test 1.1.1 - just not for windows
-builds.  So, saving a few CPU cycles (good), no real loss here.
+Tested via GH build (pass), local MinGW build (pass), and a linux
+"make dist(check)", since this fixes a number of "make dist does not
+include what it should" bugs.
 
-Tested local MinGW/autoconf build (still works fine) plus GHA build
-("looks different, but all builders succeed").  Good enough.
+The actual source code changes here are all 'get rid of the #ifdef
+and #include "config-msvc.h"' - big win again.
 
 Your patch has been applied to the release/2.6 branch.
 
-commit 96ca5a5a2a0b278f6cc47199fc3311143fd9a6b7
+commit f04ce77e8da54b6dbf3e016506b7ffdba0713004
 Author: Frank Lichtenheld
-Date:   Tue Sep 26 11:50:30 2023 +0200
+Date:   Tue Sep 26 11:51:18 2023 +0200
 
-     CMake: backport CMake buildsystem from master to release/2.6
+     Remove all traces of the previous MSVC build system
 
      Signed-off-by: Frank Lichtenheld <frank@...2641...>
      Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <20230926095030.29779-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27107.html
+     Message-Id: <20230926095118.29924-1-frank@...2641...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20230926095118.29924-1-frank@...2641...
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
