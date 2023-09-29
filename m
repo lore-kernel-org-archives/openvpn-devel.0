@@ -1,13 +1,13 @@
-Content-Type: multipart/alternative;
- boundary="------------afnKzVkUEIrXfr0uURNKxLti"
-Message-ID: <850037b2-36d0-4240-8c73-04dab1a90777@...1800...>
-Date: Thu, 28 Sep 2023 19:08:26 -0400
 MIME-Version: 1.0
-Content-Language: en-US
 References: <f80646d4-0fc3-4e5a-bc05-22b929452d00@...1800...>
  <CAKuzo_hqwfqgSb57fwCEx6C+HBVawt-ECZuNkacVBb4y-CYwcw@...278...>
-From: mike tancsa <mike@...1800...>
-In-Reply-To: <CAKuzo_hqwfqgSb57fwCEx6C+HBVawt-ECZuNkacVBb4y-CYwcw@...278...>
+ <850037b2-36d0-4240-8c73-04dab1a90777@...1800...>
+ <68a68aa4-0c57-655c-e0c9-ff9f1e0bf040@...1227...>
+In-Reply-To: <68a68aa4-0c57-655c-e0c9-ff9f1e0bf040@...1227...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 28 Sep 2023 21:25:03 -0400
+Message-ID: <CAKuzo_iUEcp0Au0vHTfr4fwozDccxgRXCmV+C2eWc=W4ciTxog@...278...>
+Content-Type: multipart/alternative; boundary="00000000000031b6ed0606754cf9"
 Subject: Re: [Openvpn-devel] pkcs11 config changes from 2.5.4 to 2.6.6 ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,160 +17,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Arne Schwabe <arne@...1227...>
+Cc: mike tancsa <mike@...1800...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------afnKzVkUEIrXfr0uURNKxLti
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+--00000000000031b6ed0606754cf9
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Selva,
+On Thu, Sep 28, 2023 at 8:55=E2=80=AFPM Arne Schwabe <arne@...1227...> wrot=
+e:
 
-     Thank you for looking!
-
-
-> My guess is that something in the certificate or private key is not to
-> OpenSSL 3.1's liking and it rejects it. Is there any way for you to 
-> check the
-> contents of the token independently using a tool linked against 
-> OpenSSL 3.1 ?
 >
-What am I looking for in that case ?  Taking a look at the cert just 
-with openssl 3.0 on FreeBSD releng14 it seems ok with it. Same with the 
-Windows version 3.1.x that comes with OpenVPN. Is it possible it doesnt 
-like the sha1RSA sig ?
+> Am 29.09.2023 um 01:08 schrieb mike tancsa:
+>
+> Hi Selva,
+>
+>     Thank you for looking!
+>
+> My guess is that something in the certificate or private key is not to
+> OpenSSL 3.1's liking and it rejects it. Is there any way for you to check
+> the
+> contents of the token independently using a tool linked against OpenSSL
+> 3.1 ?
+>
+> What am I looking for in that case ?  Taking a look at the cert just with
+> openssl 3.0 on FreeBSD releng14 it seems ok with it. Same with the Windows
+> version 3.1.x that comes with OpenVPN. Is it possible it doesnt like the
+> sha1RSA sig ?
+>
+> OpenSSL 3.0 has security 1 by default (OpenSSL 3.1 has 2 by default)  and
+> that does not allow SHA1 signatures anymore. See
+> https://www.openssl.org/docs/man3.1/man3/SSL_CTX_set_security_level.html
+>
 
-# openssl version
-OpenSSL 3.0.10 1 Aug 2023 (Library: OpenSSL 3.0.10 1 Aug 2023)
-#
+Good point. But, unless the config has "tls-cert-profile foo", we still
+default to legacy and call SSL_CTX_set_security_level(ctx, 1), isn't it?
+Wouldn't that allow SHA1 with 3.1.x ?
 
-Certificate:
-     Data:
-         Version: 3 (0x2)
-         Serial Number: 7109 (0x1bc5)
-         Signature Algorithm: sha1WithRSAEncryption
-         Issuer: C = CA, ST = ON, L = Cambridge, O = Sentex CA, CN = 
-Sentex private1test CA CA, emailAddress = mike@...2750...
-         Validity
-             Not Before: Sep 27 19:43:01 2023 GMT
-             Not After : Nov 13 19:43:01 2033 GMT
-         Subject: C = CA, ST = ON, L = Cambridge, O = Sentex CA, OU = 
-win10, CN = test123456mdt, emailAddress = mike@...2750...
-         Subject Public Key Info:
-             Public Key Algorithm: rsaEncryption
-                 Public-Key: (2048 bit)
-                 Modulus:
-                     00:f5:e0:27:b5:28:0a:f8:a9:ce:13:33:a2:ca:27:
+Selva
 
-...
+--00000000000031b6ed0606754cf9
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-                     ac:a8:b6:55:bb:a3:a4:43:e5:74:05:aa:c8:69:3d:
-                     ed:ef
-                 Exponent: 65537 (0x10001)
-         X509v3 extensions:
-             X509v3 Basic Constraints:
-                 CA:FALSE
-             Netscape Comment:
-                 Easy-RSA Generated Certificate
-             X509v3 Subject Key Identifier:
-74:72:3A:87:0D:34:7B:1E:11:C6:18:D2:41:99:C6:5E:D1:8A:81:95
-             X509v3 Authority Key Identifier:
-keyid:4F:A0:B0:94:92:6F:24:A7:D4:C6:93:A6:AA:25:63:6C:ED:1E:E3:8C
-                 DirName:/C=CA/ST=ON/L=Cambridge/O=Sentex Parklands 
-CA/CN=Sentex Parklands CA CA/emailAddress=ppsupport@...2750...
-                 serial:F5:3E:37:76:69:AC:EF:EC
-             X509v3 Extended Key Usage:
-                 TLS Web Client Authentication
-             X509v3 Key Usage:
-                 Digital Signature
-     Signature Algorithm: sha1WithRSAEncryption
-     Signature Value:
-         10:72:36:db:5c:f3:f5:fb:52:82:c7:4c:72:8f:31:ae:
-
---------------afnKzVkUEIrXfr0uURNKxLti
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p>Hi Selva,</p>
-    <p>    Thank you for looking!<br>
+<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
+<div dir=3D"ltr" class=3D"gmail_attr">On Thu, Sep 28, 2023 at 8:55=E2=80=AF=
+PM Arne Schwabe &lt;<a href=3D"mailto:arne@...1227..." target=3D"_blank">ar=
+ne@...1227...</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" sty=
+le=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);paddi=
+ng-left:1ex">
+=20=20
+=20=20=20=20
+=20=20
+  <div>
+    <p><br>
     </p>
-    <br>
-    <blockquote type="cite"
-cite="mid:CAKuzo_hqwfqgSb57fwCEx6C+HBVawt-ECZuNkacVBb4y-CYwcw@...278...">
-      <div dir="ltr">
-        <div class="gmail_quote">
-          <div>My guess is that something in the certificate or private
-            key is not to</div>
-          <div>OpenSSL 3.1's liking and it rejects it. Is there any way
-            for you to check the</div>
-          <div>contents of the token independently using a tool linked
-            against OpenSSL 3.1 ?</div>
-          <div><br>
+    <div>Am 29.09.2023 um 01:08 schrieb mike
+      tancsa:<br>
+    </div>
+    <blockquote type=3D"cite">
+=20=20=20=20=20=20
+      <p>Hi Selva,</p>
+      <p>=C2=A0=C2=A0=C2=A0 Thank you for looking!<br>
+      </p>
+      <br>
+      <blockquote type=3D"cite">
+        <div dir=3D"ltr">
+          <div class=3D"gmail_quote">
+            <div>My guess is that something in the certificate or
+              private key is not to</div>
+            <div>OpenSSL 3.1&#39;s liking and it rejects it. Is there any
+              way for you to check the</div>
+            <div>contents of the token independently using a tool linked
+              against OpenSSL 3.1 ?</div>
+            <div><br>
+            </div>
           </div>
         </div>
-      </div>
+      </blockquote>
+      <p>What am I looking for in that case ?=C2=A0 Taking a look at the ce=
+rt
+        just with openssl 3.0 on FreeBSD releng14 it seems ok with it.
+        Same with the Windows version 3.1.x that comes with OpenVPN. Is
+        it possible it doesnt like the sha1RSA sig ?<br>
+      </p>
+      <br>
     </blockquote>
-    <p>What am I looking for in that case ?  Taking a look at the cert
-      just with openssl 3.0 on FreeBSD releng14 it seems ok with it.
-      Same with the Windows version 3.1.x that comes with OpenVPN. Is it
-      possible it doesnt like the sha1RSA sig ?<br>
-    </p>
-    <p># openssl version<br>
-      OpenSSL 3.0.10 1 Aug 2023 (Library: OpenSSL 3.0.10 1 Aug 2023)<br>
-      # <br>
-    </p>
-    <p>Certificate:<br>
-          Data:<br>
-              Version: 3 (0x2)<br>
-              Serial Number: 7109 (0x1bc5)<br>
-              Signature Algorithm: sha1WithRSAEncryption<br>
-              Issuer: C = CA, ST = ON, L = Cambridge, O = Sentex CA, CN
-      = Sentex private1test CA CA, emailAddress = <a class="moz-txt-link-abbreviated" href="mailto:mike@...2750...">mike@...2750...</a><br>
-              Validity<br>
-                  Not Before: Sep 27 19:43:01 2023 GMT<br>
-                  Not After : Nov 13 19:43:01 2033 GMT<br>
-              Subject: C = CA, ST = ON, L = Cambridge, O = Sentex CA, OU
-      = win10, CN = test123456mdt, emailAddress = <a class="moz-txt-link-abbreviated" href="mailto:mike@...2750...">mike@...2750...</a><br>
-              Subject Public Key Info:<br>
-                  Public Key Algorithm: rsaEncryption<br>
-                      Public-Key: (2048 bit)<br>
-                      Modulus:<br>
-                          00:f5:e0:27:b5:28:0a:f8:a9:ce:13:33:a2:ca:27:</p>
-    <p>...</p>
-    <p>                    ac:a8:b6:55:bb:a3:a4:43:e5:74:05:aa:c8:69:3d:<br>
-                          ed:ef<br>
-                      Exponent: 65537 (0x10001)<br>
-              X509v3 extensions:<br>
-                  X509v3 Basic Constraints: <br>
-                      CA:FALSE<br>
-                  Netscape Comment: <br>
-                      Easy-RSA Generated Certificate<br>
-                  X509v3 Subject Key Identifier: <br>
-                     
-      74:72:3A:87:0D:34:7B:1E:11:C6:18:D2:41:99:C6:5E:D1:8A:81:95<br>
-                  X509v3 Authority Key Identifier: <br>
-                     
-      keyid:4F:A0:B0:94:92:6F:24:A7:D4:C6:93:A6:AA:25:63:6C:ED:1E:E3:8C<br>
-                      DirName:/C=CA/ST=ON/L=Cambridge/O=Sentex Parklands
-      CA/CN=Sentex Parklands CA <a class="moz-txt-link-abbreviated" href="mailto:CA/emailAddress=ppsupport@...2750...">CA/emailAddress=ppsupport@...2750...</a><br>
-                      serial:F5:3E:37:76:69:AC:EF:EC<br>
-                  X509v3 Extended Key Usage: <br>
-                      TLS Web Client Authentication<br>
-                  X509v3 Key Usage: <br>
-                      Digital Signature<br>
-          Signature Algorithm: sha1WithRSAEncryption<br>
-          Signature Value:<br>
-              10:72:36:db:5c:f3:f5:fb:52:82:c7:4c:72:8f:31:ae:<br>
-    </p>
-  </body>
-</html>
+    <p>OpenSSL 3.0 has security 1 by default (OpenSSL 3.1 has 2 by
+      default)=C2=A0 and that does not allow SHA1 signatures anymore. See
+      <a href=3D"https://www.openssl.org/docs/man3.1/man3/SSL_CTX_set_secur=
+ity_level.html" target=3D"_blank">https://www.openssl.org/docs/man3.1/man3/=
+SSL_CTX_set_security_level.html</a></p></div></blockquote><div><br></div><d=
+iv>Good point. But, unless the config has &quot;tls-cert-profile foo&quot;,=
+ we still default to legacy and call SSL_CTX_set_security_level(ctx, 1), is=
+n&#39;t it? Wouldn&#39;t that allow SHA1 with 3.1.x ?</div><div><br></div><=
+div>Selva</div></div></div>
 
---------------afnKzVkUEIrXfr0uURNKxLti--
+--00000000000031b6ed0606754cf9--
 
