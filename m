@@ -1,16 +1,9 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 1 Oct 2023 12:02:56 +0000
-In-Reply-To: <gerrit.1683717398000.Id8321dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26@...2715...>
-References: <gerrit.1683717398000.Id8321dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <075578c79043b335f7f8f4a825af31b83dc8990b-EmailReviewComments-HTML@...2715...>
+From: selva.nair@...277...
+Date: Sun,  1 Oct 2023 13:49:20 -0400
+Message-Id: <20231001174920.54154-1-selva.nair@...277...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="1o0DiKjaOnk="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Change type of
- frame.mss_fix to uint16_t
+Subject: [Openvpn-devel] [PATCH] Log OpenSSL errors on failure to set
+ certificate
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,126 +12,140 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, plaisthos <arne-openvpn@...1227...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---1o0DiKjaOnk=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Selva Nair <selva.nair@...277...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+Currently we log a bogus error message saying private key password verification
+failed when SSL_CTX_use_cert_and_key() fails in pkcs11_openssl.c. Instead print
+OpenSSL error queue and exit promptly.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/268?usp=3Demail )
+Also log OpenSSL errors when SSL_CTX_use_certiifcate() fails in cryptoapi.c
+and elsewhere. Such logging could be useful especially when the ceritficate is
+rejected by OpenSSL due to stricter security restrictions in recent versions
+of the library.
 
-Change subject: Change type of frame.mss_fix to uint16_t
-......................................................................
+Change-Id: Ic7ec25ac0503a91d5869b8da966d0065f264af22
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/cryptoapi.c                   |  2 ++
+ src/openvpn/pkcs11_openssl.c              |  6 ++++--
+ src/openvpn/ssl_openssl.c                 |  2 ++
+ tests/unit_tests/openvpn/test_cryptoapi.c | 11 +++++++++++
+ tests/unit_tests/openvpn/test_pkcs11.c    | 11 +++++++++++
+ 5 files changed, 30 insertions(+), 2 deletions(-)
 
+diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
+index 3b92e481..f7e5b674 100644
+--- a/src/openvpn/cryptoapi.c
++++ b/src/openvpn/cryptoapi.c
+@@ -51,6 +51,7 @@
+ #include "openssl_compat.h"
+ #include "win32.h"
+ #include "xkey_common.h"
++#include "crypto_openssl.h"
+ 
+ #ifndef HAVE_XKEY_PROVIDER
+ 
+@@ -505,6 +506,7 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
+     if (SSL_CTX_use_certificate(ssl_ctx, cert)
+         && SSL_CTX_use_PrivateKey(ssl_ctx, privkey))
+     {
++        crypto_print_openssl_errors(M_WARN);
+         ret = 1;
+     }
+ 
+diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c
+index 40080efa..aa0819f9 100644
+--- a/src/openvpn/pkcs11_openssl.c
++++ b/src/openvpn/pkcs11_openssl.c
+@@ -302,7 +302,8 @@ xkey_load_from_pkcs11h(pkcs11h_certificate_t certificate,
+ 
+     if (!SSL_CTX_use_cert_and_key(ctx->ctx, x509, pkey, NULL, 0))
+     {
+-        msg(M_WARN, "PKCS#11: Failed to set cert and private key for OpenSSL");
++        crypto_print_openssl_errors(M_WARN);
++        msg(M_FATAL, "PKCS#11: Failed to set cert and private key for OpenSSL");
+         goto cleanup;
+     }
+     ret = 1;
+@@ -369,7 +370,8 @@ pkcs11_init_tls_session(pkcs11h_certificate_t certificate,
+ 
+     if (!SSL_CTX_use_certificate(ssl_ctx->ctx, x509))
+     {
+-        msg(M_WARN, "PKCS#11: Cannot set certificate for openssl");
++        crypto_print_openssl_errors(M_WARN);
++        msg(M_FATAL, "PKCS#11: Cannot set certificate for openssl");
+         goto cleanup;
+     }
+     ret = 0;
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 0b310de3..b5cc9a7f 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -857,6 +857,7 @@ tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char *pkcs12_file,
+     /* Load Certificate */
+     if (!SSL_CTX_use_certificate(ctx->ctx, cert))
+     {
++        crypto_print_openssl_errors(M_WARN);
+         crypto_msg(M_FATAL, "Cannot use certificate");
+     }
+ 
+@@ -1007,6 +1008,7 @@ tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,
+ end:
+     if (!ret)
+     {
++        crypto_print_openssl_errors(M_WARN);
+         if (cert_file_inline)
+         {
+             crypto_msg(M_FATAL, "Cannot load inline certificate file");
+diff --git a/tests/unit_tests/openvpn/test_cryptoapi.c b/tests/unit_tests/openvpn/test_cryptoapi.c
+index 008f41c0..d90bfc35 100644
+--- a/tests/unit_tests/openvpn/test_cryptoapi.c
++++ b/tests/unit_tests/openvpn/test_cryptoapi.c
+@@ -58,6 +58,17 @@ management_query_pk_sig(struct management *man, const char *b64_data,
+     return NULL;
+ }
+ 
++/* replacement for crypto_print_openssl_errors() */
++void
++crypto_print_openssl_errors(const unsigned int flags)
++{
++    unsigned long e;
++    while ((e = ERR_get_error()))
++    {
++        msg(flags, "OpenSSL error %lu: %s\n", e, ERR_error_string(e, NULL));
++    }
++}
++
+ /* tls_libctx is defined in ssl_openssl.c which we do not want to compile in */
+ OSSL_LIB_CTX *tls_libctx;
+ 
+diff --git a/tests/unit_tests/openvpn/test_pkcs11.c b/tests/unit_tests/openvpn/test_pkcs11.c
+index 235cc43f..b6c130ec 100644
+--- a/tests/unit_tests/openvpn/test_pkcs11.c
++++ b/tests/unit_tests/openvpn/test_pkcs11.c
+@@ -44,6 +44,17 @@
+ 
+ struct management *management; /* global */
+ 
++/* replacement for crypto_print_openssl_errors() */
++void
++crypto_print_openssl_errors(const unsigned int flags)
++{
++    unsigned long e;
++    while ((e = ERR_get_error()))
++    {
++        msg(flags, "OpenSSL error %lu: %s\n", e, ERR_error_string(e, NULL));
++    }
++}
++
+ /* stubs for some unused functions instead of pulling in too many dependencies */
+ int
+ parse_line(const char *line, char **p, const int n, const char *file,
+-- 
+2.34.1
 
-Patch Set 3:
-
-(2 comments)
-
-File src/openvpn/mss.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/268/comment/94038c59_cb6b931f :
-PS3, Line 195:                 mssval +=3D opt[3];
-why is this change needed?
-
-
-File src/openvpn/options.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/268/comment/817b1791_91077f03 :
-PS3, Line 7257:             if (mssfix > UINT16_MAX)
-If we introduce a check here, we should also ensure a minimum value - we as=
-sign `ce.mssfix-40` to `frame->mss_fix`, which is (now) unsigned, so the re=
-sult will be something huge for values 1..39, and 0 for `--mssfix 40`.  For=
- IPv6, only values >=3D 60 make sense.
-
-Now, the code in `mss_fixup_dowork()` won't adjust a given mss upwards, but=
- it's still kind of unexpected behaviour...
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/268?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Id8321dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26
-Gerrit-Change-Number: 268
-Gerrit-PatchSet: 3
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sun, 01 Oct 2023 12:02:56 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
-
---1o0DiKjaOnk=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/268?usp=3Demail">View C=
-hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/mss.c:</p><ul styl=
-e=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 =
-16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/268/comment/94038c59_cb6b931f">Patch Set #3, Line 195:</a> <c=
-ode style=3D"font-family:monospace,monospace">                mssval +=3D o=
-pt[3];</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;"=
->why is this change needed?</p></li></ul></li><li style=3D"margin: 0; paddi=
-ng: 0;"><p>File src/openvpn/options.c:</p><ul style=3D"list-style: none; pa=
-dding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin=
--bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/268/comment=
-/817b1791_91077f03">Patch Set #3, Line 7257:</a> <code style=3D"font-family=
-:monospace,monospace">            if (mssfix &gt; UINT16_MAX)</code></p><p =
-style=3D"white-space: pre-wrap; word-wrap: break-word;">If we introduce a c=
-heck here, we should also ensure a minimum value - we assign `ce.mssfix-40`=
- to `frame-&gt;mss_fix`, which is (now) unsigned, so the result will be som=
-ething huge for values 1..39, and 0 for `--mssfix 40`.  For IPv6, only valu=
-es &gt;=3D 60 make sense.</p><p style=3D"white-space: pre-wrap; word-wrap: =
-break-word;">Now, the code in `mss_fixup_dowork()` won&#39;t adjust a given=
- mss upwards, but it&#39;s still kind of unexpected behaviour...</p></li></=
-ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/268?usp=3Demail">change 268</a>. To unsubscribe, or for help writing m=
-ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings<=
-/a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div ite=
-mscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link =
-itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/268?usp=3Dem=
-ail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id8321dfbb8ad8d79f4bb2a9da61=
-f8cd6b6c6ee26 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 268 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 01 Oct 2023 12:02:56=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---1o0DiKjaOnk=--
 
