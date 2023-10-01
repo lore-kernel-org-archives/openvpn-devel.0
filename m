@@ -1,14 +1,14 @@
 From: "selvanair (Code Review)" <gerrit@...515...>
-Date: Sun, 1 Oct 2023 19:07:53 +0000
+Date: Sun, 1 Oct 2023 19:08:26 +0000
 In-Reply-To: <gerrit.1696183368000.Ic7ec25ac0503a91d5869b8da966d0065f264af22@...2715...>
 References: <gerrit.1696183368000.Ic7ec25ac0503a91d5869b8da966d0065f264af22@...2715...>
 Reply-To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <5e7ee6a01bb8c3b7fdce194af747f8dc95da746f-EmailReviewComments-HTML@...2715...>
+Message-ID: <bd88ced723cc08f3557ab25204220c9fc9628405-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="5d+NhUJJjNA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="ejtEjbgq3JU="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Log OpenSSL errors
  on failure to set certificate
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,22 +21,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---5d+NhUJJjNA=
+--ejtEjbgq3JU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld.
 
-selvanair has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/363?usp=3Demail )
+selvanair has removed a vote from this change. ( http://gerrit.openvpn.net/=
+c/openvpn/+/363?usp=3Demail )
+
 
 Change subject: Log OpenSSL errors on failure to set certificate
 ......................................................................
 
 
-Patch Set 2: Code-Review+2
-
-
+Removed Code-Review+2 by selvanair <selva.nair@...277...>
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/363?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
@@ -52,27 +51,24 @@ Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: selvanair <selva.nair@...277...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sun, 01 Oct 2023 19:07:53 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-MessageType: deleteVote
 
---5d+NhUJJjNA=
+--ejtEjbgq3JU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/363?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/363?usp=3Demail">=
-change 363</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/363?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p>selvanair <strong>removed a vote</strong> from this change.</p><p><a hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/363?usp=3Demail">View Change</a>=
+</p><div style=3D"white-space:pre-wrap">Removed Code-Review+2 by selvanair =
+&lt;selva.nair@...277...&gt;</div><p>To view, visit <a href=3D"http://gerri=
+t.openvpn.net/c/openvpn/+/363?usp=3Demail">change 363</a>. To unsubscribe, =
+or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.ne=
+t/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/E=
+mailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.o=
+rg/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/363?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/=
+></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -90,12 +86,8 @@ d0065f264af22 </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 01 Oct 2023 19:07:53=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: deleteVote </div>
 
 
---5d+NhUJJjNA=--
+--ejtEjbgq3JU=--
 
