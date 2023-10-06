@@ -1,9 +1,10 @@
-Date: Fri, 6 Oct 2023 16:13:32 +0200
+Date: Fri, 6 Oct 2023 16:23:19 +0200
 From: Frank Lichtenheld <frank@...2641...>
-Message-ID: <ZSAWDMIsFUJW9nQA@...2685...>
+Message-ID: <ZSAYVyQYFIJ6t6Tv@...2685...>
 References: <20231006111910.3541180-1-arne@...1227...>
+ <ZSAWDMIsFUJW9nQA@...2685...>
 MIME-Version: 1.0
-In-Reply-To: <20231006111910.3541180-1-arne@...1227...>
+In-Reply-To: <ZSAWDMIsFUJW9nQA@...2685...>
 Subject: Re: [Openvpn-devel] [PATCH] Remove openssl engine method for
  loading the key
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,20 +21,25 @@ Content-Disposition: inline
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Fri, Oct 06, 2023 at 01:19:10PM +0200, Arne Schwabe wrote:
-> This is a contribution for loading engine key. OpenSSL engine is
-> deprecated since OpenSSL 3.0 and James Bottomlehy has not agreed
+On Fri, Oct 06, 2023 at 04:13:32PM +0200, Frank Lichtenheld wrote:
+> On Fri, Oct 06, 2023 at 01:19:10PM +0200, Arne Schwabe wrote:
+> > This is a contribution for loading engine key. OpenSSL engine is
+> > deprecated since OpenSSL 3.0 and James Bottomlehy has not agreed
+> 
+> "Bottomley"
+> 
+> > to the proposed license chagne. He is also okay with removing
+> > with the feature from the current code base as it is obsolete with
+> 
+> superflouos "with"
+> 
+> > OpenSSL 3.0.
+> 
+> Should mention the original commit id.
 
-"Bottomley"
+On the actual patch:
 
-> to the proposed license chagne. He is also okay with removing
-> with the feature from the current code base as it is obsolete with
-
-superflouos "with"
-
-> OpenSSL 3.0.
-
-Should mention the original commit id.
+Acked-by: Frank Lichtenheld <frank@...2641...>
 
 Regards,
 -- 
