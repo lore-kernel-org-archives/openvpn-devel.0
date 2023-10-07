@@ -1,14 +1,14 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Sat, 7 Oct 2023 11:34:15 +0000
+Date: Sat, 7 Oct 2023 13:05:37 +0000
 In-Reply-To: <gerrit.1696678214000.I1d0d909e7fca3f51b5c848f1a771a989ab040f17@...2715...>
 References: <gerrit.1696678214000.I1d0d909e7fca3f51b5c848f1a771a989ab040f17@...2715...>
 Reply-To: lstipakov@...277..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <395e4e856737f0f91e081841fc432400c4837b1c-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <5c99c2afc67336cf10fd23f7432ae57e4314d92a-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="/oFHGgR56ic="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="v98n6cv7WXc="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: dco-win: get
  driver version
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---/oFHGgR56ic=
+--v98n6cv7WXc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/367?usp=3Demail
 
-to look at the new patch set (#2).
+to look at the new patch set (#3).
 
 
 Change subject: dco-win: get driver version
@@ -53,10 +53,10 @@ M src/openvpn/ovpn_dco_win.h
 2 files changed, 33 insertions(+), 1 deletion(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/67/367/2
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/67/367/3
 
 diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 53f1523..9dc3961 100644
+index 53f1523..a775c82 100644
 --- a/src/openvpn/dco_win.c
 +++ b/src/openvpn/dco_win.c
 @@ -386,7 +386,32 @@
@@ -89,8 +89,8 @@ FILE_FLAG_OVERLAPPED, NULL);
 +    CloseHandle(h);
 +
 +    struct buffer out =3D alloc_buf_gc(256, gc);
-+    buf_printf(&out, "%d.%d.%d", version.Major, version.Minor, version.Pat=
-ch);
++    buf_printf(&out, "%ld.%ld.%ld", version.Major, version.Minor, version.=
+Patch);
 +
 +    return BSTR(&out);
  }
@@ -135,19 +135,19 @@ Gerrit-Project: openvpn
 Gerrit-Branch: release/2.6
 Gerrit-Change-Id: I1d0d909e7fca3f51b5c848f1a771a989ab040f17
 Gerrit-Change-Number: 367
-Gerrit-PatchSet: 2
+Gerrit-PatchSet: 3
 Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---/oFHGgR56ic=
+--v98n6cv7WXc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
-<p>stipa <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+<p>stipa <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
 ef=3D"http://gerrit.openvpn.net/c/openvpn/+/367?usp=3Demail">View Change</a=
 ></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
 ">dco-win: get driver version<br><br>Print dco-win driver version using the=
@@ -156,10 +156,10 @@ e-Id: I1d0d909e7fca3f51b5c848f1a771a989ab040f17<br>Signed-off-by: Lev Stipa=
 kov &lt;lev@...515...&gt;<br>---<br>M src/openvpn/dco_win.c<br>M src/openvp=
 n/ovpn_dco_win.h<br>2 files changed, 33 insertions(+), 1 deletion(-)<br><br=
 ></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/67/367/2</=
+p;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/67/367/3</=
 pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
 ><span>diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c</span><br=
-><span>index 53f1523..9dc3961 100644</span><br><span>--- a/src/openvpn/dco_=
+><span>index 53f1523..a775c82 100644</span><br><span>--- a/src/openvpn/dco_=
 win.c</span><br><span>+++ b/src/openvpn/dco_win.c</span><br><span>@@ -386,7=
  +386,32 @@</span><br><span> const char *</span><br><span> dco_version_stri=
 ng(struct gc_arena *gc)</span><br><span> {</span><br><span style=3D"color: =
@@ -191,47 +191,47 @@ loseHandle(h);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
 <br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
 color: hsl(120, 100%, 40%);">+    struct buffer out =3D alloc_buf_gc(256, g=
 c);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_printf(&=
-amp;out, &quot;%d.%d.%d&quot;, version.Major, version.Minor, version.Patch)=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    return BSTR(&amp;out);</span><br>=
-<span> }</span><br><span> </span><br><span> int</span><br><span>diff --git =
-a/src/openvpn/ovpn_dco_win.h b/src/openvpn/ovpn_dco_win.h</span><br><span>i=
-ndex cbbdf92..ea2a733 100644</span><br><span>--- a/src/openvpn/ovpn_dco_win=
-.h</span><br><span>+++ b/src/openvpn/ovpn_dco_win.h</span><br><span>@@ -100=
-,6 +100,12 @@</span><br><span> 	LONG MSS;</span><br><span> } OVPN_SET_PEER,=
- * POVPN_SET_PEER;</span><br><span> </span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+typedef struct _OVPN_VERSION {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    LONG Major;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    LONG Minor;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    LONG Patch;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+} OVPN_VERSION, * POVPN_VERSION;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span> #define OVPN_IOCTL_NEW_PEER =
-    CTL_CODE(FILE_DEVICE_UNKNOWN, 1, METHOD_BUFFERED, FILE_ANY_ACCESS)</spa=
-n><br><span> #define OVPN_IOCTL_GET_STATS    CTL_CODE(FILE_DEVICE_UNKNOWN, =
-2, METHOD_BUFFERED, FILE_ANY_ACCESS)</span><br><span> #define OVPN_IOCTL_NE=
-W_KEY      CTL_CODE(FILE_DEVICE_UNKNOWN, 3, METHOD_BUFFERED, FILE_ANY_ACCES=
-S)</span><br><span>@@ -107,3 +113,4 @@</span><br><span> #define OVPN_IOCTL_=
-SET_PEER     CTL_CODE(FILE_DEVICE_UNKNOWN, 5, METHOD_BUFFERED, FILE_ANY_ACC=
-ESS)</span><br><span> #define OVPN_IOCTL_START_VPN    CTL_CODE(FILE_DEVICE_=
-UNKNOWN, 6, METHOD_BUFFERED, FILE_ANY_ACCESS)</span><br><span> #define OVPN=
-_IOCTL_DEL_PEER     CTL_CODE(FILE_DEVICE_UNKNOWN, 7, METHOD_BUFFERED, FILE_=
-ANY_ACCESS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define =
-OVPN_IOCTL_GET_VERSION  CTL_CODE(FILE_DEVICE_UNKNOWN, 8, METHOD_BUFFERED, F=
-ILE_ANY_ACCESS)</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/367?usp=3Demail">change 367</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/367?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+amp;out, &quot;%ld.%ld.%ld&quot;, version.Major, version.Minor, version.Pat=
+ch);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    return BSTR(&amp;out);</span><=
+br><span> }</span><br><span> </span><br><span> int</span><br><span>diff --g=
+it a/src/openvpn/ovpn_dco_win.h b/src/openvpn/ovpn_dco_win.h</span><br><spa=
+n>index cbbdf92..ea2a733 100644</span><br><span>--- a/src/openvpn/ovpn_dco_=
+win.h</span><br><span>+++ b/src/openvpn/ovpn_dco_win.h</span><br><span>@@ -=
+100,6 +100,12 @@</span><br><span> 	LONG MSS;</span><br><span> } OVPN_SET_PE=
+ER, * POVPN_SET_PEER;</span><br><span> </span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+typedef struct _OVPN_VERSION {</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    LONG Major;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    LONG Minor;</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    LONG Patch;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+} OVPN_VERSION, * POVPN_VERSION;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span> #define OVPN_IOCTL_NEW_=
+PEER     CTL_CODE(FILE_DEVICE_UNKNOWN, 1, METHOD_BUFFERED, FILE_ANY_ACCESS)=
+</span><br><span> #define OVPN_IOCTL_GET_STATS    CTL_CODE(FILE_DEVICE_UNKN=
+OWN, 2, METHOD_BUFFERED, FILE_ANY_ACCESS)</span><br><span> #define OVPN_IOC=
+TL_NEW_KEY      CTL_CODE(FILE_DEVICE_UNKNOWN, 3, METHOD_BUFFERED, FILE_ANY_=
+ACCESS)</span><br><span>@@ -107,3 +113,4 @@</span><br><span> #define OVPN_I=
+OCTL_SET_PEER     CTL_CODE(FILE_DEVICE_UNKNOWN, 5, METHOD_BUFFERED, FILE_AN=
+Y_ACCESS)</span><br><span> #define OVPN_IOCTL_START_VPN    CTL_CODE(FILE_DE=
+VICE_UNKNOWN, 6, METHOD_BUFFERED, FILE_ANY_ACCESS)</span><br><span> #define=
+ OVPN_IOCTL_DEL_PEER     CTL_CODE(FILE_DEVICE_UNKNOWN, 7, METHOD_BUFFERED, =
+FILE_ANY_ACCESS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#de=
+fine OVPN_IOCTL_GET_VERSION  CTL_CODE(FILE_DEVICE_UNKNOWN, 8, METHOD_BUFFER=
+ED, FILE_ANY_ACCESS)</span><br><span></span><br></pre><p>To view, visit <a =
+href=3D"http://gerrit.openvpn.net/c/openvpn/+/367?usp=3Demail">change 367</=
+a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
+://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D=
+"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
+e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/367?usp=3Demail"/><meta itemprop=3D"name" cont=
+ent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I1d0d909e7fca3f51b5c848f1a77=
 1a989ab040f17 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 367 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -243,5 +243,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---/oFHGgR56ic=--
+--v98n6cv7WXc=--
 
