@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Sun, 8 Oct 2023 13:42:36 +0000
-In-Reply-To: <gerrit.1696674325000.I86641bf60d62a50e9b2719e809d2429d65c00097@...2715...>
-References: <gerrit.1696674325000.I86641bf60d62a50e9b2719e809d2429d65c00097@...2715...>
+Date: Sun, 8 Oct 2023 13:45:03 +0000
+In-Reply-To: <gerrit.1692364556000.I4f29953b91cf8e8daf2c9503da44073ad96d0ff5@...2715...>
+References: <gerrit.1692364556000.I4f29953b91cf8e8daf2c9503da44073ad96d0ff5@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <2115aad57d564ee1ca45bccead2fc9b740c9445b-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <8dcf0e0857448b6de0459d94928e33460006f04b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="5ho099Q9OSM="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Add warning for the
- --show-groups command that some groups are missing
+Content-Type: multipart/alternative; boundary="NApLtU3H2cc="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove ability to
+ use configurations without TLS by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,142 +19,108 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---5ho099Q9OSM=
+--NApLtU3H2cc=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: flichtenheld.
 
-Hello flichtenheld,
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/325?usp=3Demail )
 
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/366?usp=3Demail
-
-to look at the new patch set (#7).
-
-The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
- now.
-
-
-Change subject: Add warning for the --show-groups command that some groups =
-are missing
+Change subject: Remove ability to use configurations without TLS by default
 ......................................................................
 
-Add warning for the --show-groups command that some groups are missing
 
-OpenSSL has a weird way of only reporting EC curves that are implemented
-in a certain way in the list of all EC cruves. Note this fact and point
-out that also the very important curves X448 and X25519 are affected.
+Patch Set 3:
 
-Change-Id: I86641bf60d62a50e9b2719e809d2429d65c00097
----
-M src/openvpn/ssl_openssl.c
-1 file changed, 4 insertions(+), 2 deletions(-)
+(1 comment)
+
+File doc/man-sections/encryption-options.rst:
+
+http://gerrit.openvpn.net/c/openvpn/+/325/comment/8c4b10b4_2a32ee8f :
+PS3, Line 84:     This file must be shared with the peer over a pre-existin=
+g secure
+> Is this sentence still correct? You just removed the "if using this for -=
+-secret," thereby changing  [=E2=80=A6]
+You don't wan to post that key public or any other way that people can see =
+that. So I think that is still correct. The comment about that being only f=
+or --secret on the other hand does not really make sense like it was before.
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/66/366/7
-
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 686ecf7..2b3f4f4 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -2359,8 +2359,10 @@
- void
- show_available_curves(void)
- {
--    printf("Consider using openssl 'ecparam -list_curves' as\n"
--           "alternative to running this command.\n");
-+    printf("Consider using 'openssl ecparam -list_curves' as alternative t=
-o running\n"
-+           "this command.\n"
-+           "Note this output does only list curves/group that OpenSSL cons=
-iders as\n"
-+           "builtin EC curves. It does not list additional curves nor X448=
- or X25519\n");
- #ifndef OPENSSL_NO_EC
-     EC_builtin_curve *curves =3D NULL;
-     size_t crv_len =3D 0;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/366?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/325?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I86641bf60d62a50e9b2719e809d2429d65c00097
-Gerrit-Change-Number: 366
-Gerrit-PatchSet: 7
+Gerrit-Change-Id: I4f29953b91cf8e8daf2c9503da44073ad96d0ff5
+Gerrit-Change-Number: 325
+Gerrit-PatchSet: 3
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Sun, 08 Oct 2023 13:45:03 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-MessageType: comment
 
---5ho099Q9OSM=
+--NApLtU3H2cc=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>plaisthos <strong>uploaded patch set #7</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/366?usp=3Demail">View Chang=
-e</a></p><p>The change is no longer submittable: checks~ChecksSubmitRule is=
- unsatisfied now.</p><pre style=3D"font-family: monospace,monospace; white-=
-space: pre-wrap;">Add warning for the --show-groups command that some group=
-s are missing<br><br>OpenSSL has a weird way of only reporting EC curves th=
-at are implemented<br>in a certain way in the list of all EC cruves. Note t=
-his fact and point<br>out that also the very important curves X448 and X255=
-19 are affected.<br><br>Change-Id: I86641bf60d62a50e9b2719e809d2429d65c0009=
-7<br>---<br>M src/openvpn/ssl_openssl.c<br>1 file changed, 4 insertions(+),=
- 2 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace=
-; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn r=
-efs/changes/66/366/7</pre><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;"><span>diff --git a/src/openvpn/ssl_openssl.c b/src/o=
-penvpn/ssl_openssl.c</span><br><span>index 686ecf7..2b3f4f4 100644</span><b=
-r><span>--- a/src/openvpn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/s=
-sl_openssl.c</span><br><span>@@ -2359,8 +2359,10 @@</span><br><span> void</=
-span><br><span> show_available_curves(void)</span><br><span> {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    printf(&quot;Consider using op=
-enssl &#39;ecparam -list_curves&#39; as\n&quot;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-           &quot;alternative to running this comm=
-and.\n&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    p=
-rintf(&quot;Consider using &#39;openssl ecparam -list_curves&#39; as altern=
-ative to running\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+           &quot;this command.\n&quot;</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+           &quot;Note this output does only list cu=
-rves/group that OpenSSL considers as\n&quot;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+           &quot;builtin EC curves. It does not li=
-st additional curves nor X448 or X25519\n&quot;);</span><br><span> #ifndef =
-OPENSSL_NO_EC</span><br><span>     EC_builtin_curve *curves =3D NULL;</span=
-><br><span>     size_t crv_len =3D 0;</span><br><span></span><br></pre><p>T=
-o view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/366?usp=3Dem=
-ail">change 366</a>. To unsubscribe, or for help writing mail filters, visi=
-t <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div item=
-scope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=
-=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url=
-" href=3D"http://gerrit.openvpn.net/c/openvpn/+/366?usp=3Demail"/><meta ite=
-mprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/325?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/encryption-opt=
+ions.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margi=
+n: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"htt=
+p://gerrit.openvpn.net/c/openvpn/+/325/comment/8c4b10b4_2a32ee8f">Patch Set=
+ #3, Line 84:</a> <code style=3D"font-family:monospace,monospace">    This =
+file must be shared with the peer over a pre-existing secure</code></p><p><=
+blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0=
+ 10px;">Is this sentence still correct? You just removed the &quot;if using=
+ this for --secret,&quot; thereby changing  [=E2=80=A6]</blockquote></p><p =
+style=3D"white-space: pre-wrap; word-wrap: break-word;">You don&#39;t wan t=
+o post that key public or any other way that people can see that. So I thin=
+k that is still correct. The comment about that being only for --secret on =
+the other hand does not really make sense like it was before.</p></li></ul>=
+</li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
++/325?usp=3Demail">change 325</a>. To unsubscribe, or for help writing mail=
+ filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>=
+.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
+ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
+mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/325?usp=3Demail=
+"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I86641bf60d62a50e9b2719e809d=
-2429d65c00097 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 366 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I4f29953b91cf8e8daf2c9503da4=
+4073ad96d0ff5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 325 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 08 Oct 2023 13:45:03=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---5ho099Q9OSM=--
+--NApLtU3H2cc=--
 
