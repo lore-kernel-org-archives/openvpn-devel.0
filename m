@@ -1,16 +1,10 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Sun, 8 Oct 2023 09:47:43 +0000
-In-Reply-To: <gerrit.1691675487000.I85ae4e1167e1395b4f59d5d0ecf6c38befcaa8a7@...2715...>
-References: <gerrit.1691675487000.I85ae4e1167e1395b4f59d5d0ecf6c38befcaa8a7@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <db0226b23d39aa8ad4aff199c18d2fd63ae08d6c-EmailReviewComments-HTML@...2715...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Sun,  8 Oct 2023 12:34:15 +0200
+Message-Id: <20231008103415.19625-1-frank@...2641...>
+In-Reply-To: <gerrit.1692709613000.I052bebe720ddf26340827f25b94705945e470bfa@...2715...>
+References: <gerrit.1692709613000.I052bebe720ddf26340827f25b94705945e470bfa@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="KqJQt781Qvc="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Add warning if a p2p
- NCP client connects to a p2mp server
+Subject: [Openvpn-devel] [PATCH] Remove last uses of inet_ntoa
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,116 +13,139 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Arne Schwabe <arne-openvpn@...1227...>
 
---KqJQt781Qvc=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+inet_ntoa is officially deprecated and in some places
+its use already causes warnings (e.g. Fedora submissions).
+Since we mostly use inet_ntop already, just convert the
+remaining usages to that.
 
-Attention is currently required from: flichtenheld.
+Change-Id: I052bebe720ddf26340827f25b94705945e470bfa
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+---
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/323?usp=3Demail )
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Change subject: Add warning if a p2p NCP client connects to a p2mp server
-......................................................................
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/326
+This mail reflects revision 1 of this Change.
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-
-Patch Set 2:
-
-(2 comments)
-
-File src/openvpn/ssl_ncp.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/323/comment/6defb60e_c19f4781 :
-PS1, Line 262:     /* For client doing the newer version of NCP (that send =
-IV_CIPHER)
-> Also should be "IV_CIPHERS"
-Done
-
-
-http://gerrit.openvpn.net/c/openvpn/+/323/comment/58e912f0_7db474a0 :
-PS1, Line 270:     if (extract_iv_proto(peer_info) & IV_PROTO_NCP_P2P)
-> This function is only called from multi_client_set_protocol_options which=
- already extracts proto and [=E2=80=A6]
-Done
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/323?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I85ae4e1167e1395b4f59d5d0ecf6c38befcaa8a7
-Gerrit-Change-Number: 323
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sun, 08 Oct 2023 09:47:43 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Gerrit-MessageType: comment
-
---KqJQt781Qvc=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/323?usp=3Demail">View C=
-hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_ncp.c:</p><ul =
-style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 =
-0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/323/comment/6defb60e_c19f4781">Patch Set #1, Line 262:</a=
-> <code style=3D"font-family:monospace,monospace">    /* For client doing t=
-he newer version of NCP (that send IV_CIPHER)</code></p><p><blockquote styl=
-e=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Also sh=
-ould be &quot;IV_CIPHERS&quot;</blockquote></p><p style=3D"white-space: pre=
--wrap; word-wrap: break-word;">Done</p></li><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/323/comment/58e912f0_7db474a0">Patch Set #1, Line 270=
-:</a> <code style=3D"font-family:monospace,monospace">    if (extract_iv_pr=
-oto(peer_info) &amp; IV_PROTO_NCP_P2P)</code></p><p><blockquote style=3D"bo=
-rder-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">This function =
-is only called from multi_client_set_protocol_options which already extract=
-s proto and [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; =
-word-wrap: break-word;">Done</p></li></ul></li></ul><p>To view, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/323?usp=3Demail">change 323</a>=
-. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
-/gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"h=
-ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/323?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I85ae4e1167e1395b4f59d5d0ecf=
-6c38befcaa8a7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 323 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 08 Oct 2023 09:47:43=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---KqJQt781Qvc=--
+        
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 739ed40..feb62b2 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -3058,9 +3058,11 @@
+         /* listen on our local TUN/TAP IP address */
+         struct in_addr ia;
+         int ret;
++        char buf[INET_ADDRSTRLEN];
+ 
+         ia.s_addr = htonl(tun_local_ip);
+-        ret = openvpn_getaddrinfo(GETADDR_PASSIVE, inet_ntoa(ia), NULL, 0, NULL,
++        inet_ntop(AF_INET, &ia, buf, sizeof(buf));
++        ret = openvpn_getaddrinfo(GETADDR_PASSIVE, buf, NULL, 0, NULL,
+                                   AF_INET, &man->settings.local);
+         ASSERT(ret==0);
+         man_connection_init(man);
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 9212186..ff64938 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -342,7 +342,9 @@
+             goto fail;
+         }
+         special.s_addr = htonl(special.s_addr);
+-        ret = openvpn_getaddrinfo(0, inet_ntoa(special), NULL, 0, NULL,
++        char buf[INET_ADDRSTRLEN];
++        inet_ntop(AF_INET, &special, buf, sizeof(buf));
++        ret = openvpn_getaddrinfo(0, buf, NULL, 0, NULL,
+                                   AF_INET, network_list);
+     }
+     else
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 501e023..903f98b 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -2901,16 +2901,16 @@
+ print_in_addr_t(in_addr_t addr, unsigned int flags, struct gc_arena *gc)
+ {
+     struct in_addr ia;
+-    struct buffer out = alloc_buf_gc(64, gc);
++    char *out = gc_malloc(INET_ADDRSTRLEN, true, gc);
+ 
+     if (addr || !(flags & IA_EMPTY_IF_UNDEF))
+     {
+         CLEAR(ia);
+         ia.s_addr = (flags & IA_NET_ORDER) ? addr : htonl(addr);
+ 
+-        buf_printf(&out, "%s", inet_ntoa(ia));
++        inet_ntop(AF_INET, &ia, out, INET_ADDRSTRLEN);
+     }
+-    return BSTR(&out);
++    return out;
+ }
+ 
+ /*
+@@ -2920,16 +2920,14 @@
+ const char *
+ print_in6_addr(struct in6_addr a6, unsigned int flags, struct gc_arena *gc)
+ {
+-    struct buffer out = alloc_buf_gc(64, gc);
+-    char tmp_out_buf[64];       /* inet_ntop wants pointer to buffer */
++    char *out = gc_malloc(INET6_ADDRSTRLEN, true, gc);
+ 
+     if (memcmp(&a6, &in6addr_any, sizeof(a6)) != 0
+         || !(flags & IA_EMPTY_IF_UNDEF))
+     {
+-        inet_ntop(AF_INET6, &a6, tmp_out_buf, sizeof(tmp_out_buf)-1);
+-        buf_printf(&out, "%s", tmp_out_buf );
++        inet_ntop(AF_INET6, &a6, out, INET6_ADDRSTRLEN);
+     }
+-    return BSTR(&out);
++    return out;
+ }
+ 
+ /*
+@@ -2978,7 +2976,7 @@
+ {
+     char name_buf[256];
+ 
+-    char buf[128];
++    char buf[INET6_ADDRSTRLEN];
+     switch (addr->addr.sa.sa_family)
+     {
+         case AF_INET:
+@@ -2991,7 +2989,8 @@
+                 openvpn_snprintf(name_buf, sizeof(name_buf), "%s", name_prefix);
+             }
+ 
+-            setenv_str(es, name_buf, inet_ntoa(addr->addr.in4.sin_addr));
++            inet_ntop(AF_INET, &addr->addr.in4.sin_addr, buf, sizeof(buf));
++            setenv_str(es, name_buf, buf);
+ 
+             if ((flags & SA_IP_PORT) && addr->addr.in4.sin_port)
+             {
+@@ -3007,13 +3006,12 @@
+                 memcpy(&ia.s_addr, &addr->addr.in6.sin6_addr.s6_addr[12],
+                        sizeof(ia.s_addr));
+                 openvpn_snprintf(name_buf, sizeof(name_buf), "%s_ip", name_prefix);
+-                openvpn_snprintf(buf, sizeof(buf), "%s", inet_ntoa(ia) );
++                inet_ntop(AF_INET, &ia, buf, sizeof(buf));
+             }
+             else
+             {
+                 openvpn_snprintf(name_buf, sizeof(name_buf), "%s_ip6", name_prefix);
+-                getnameinfo(&addr->addr.sa, sizeof(struct sockaddr_in6),
+-                            buf, sizeof(buf), NULL, 0, NI_NUMERICHOST);
++                inet_ntop(AF_INET6, &addr->addr.in6.sin6_addr, buf, sizeof(buf));
+             }
+             setenv_str(es, name_buf, buf);
+ 
 
