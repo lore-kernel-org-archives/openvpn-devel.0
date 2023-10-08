@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
 Date: Sun, 8 Oct 2023 11:07:01 +0000
-In-Reply-To: <gerrit.1696674325000.Iaf12bb51a2aac7bcf19070f0b56fa3b1a5863bc3@...2715...>
-References: <gerrit.1696674325000.Iaf12bb51a2aac7bcf19070f0b56fa3b1a5863bc3@...2715...>
+In-Reply-To: <gerrit.1696674325000.Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5@...2715...>
+References: <gerrit.1696674325000.Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <c821e54d63b47429c7b03eb88eff0db412d072e9-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <6e761f99d3647baedcb9d9b91661496560f9c17d-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="rcHM3eOWMVI="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Print server temp
- key details
+Content-Type: multipart/alternative; boundary="X2N5VqOZNQw="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Print SSL peer
+ signature information in handshake debug details
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---rcHM3eOWMVI=
+--X2N5VqOZNQw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,289 +32,333 @@ Hello flichtenheld,=20
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/364?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail
 
-to look at the new patch set (#4).
+to look at the new patch set (#5).
 
 
-Change subject: Print server temp key details
+Change subject: Print SSL peer signature information in handshake debug det=
+ails
 ......................................................................
 
-Print server temp key details
+Print SSL peer signature information in handshake debug details
 
-Change-Id: Iaf12bb51a2aac7bcf19070f0b56fa3b1a5863bc3
+This is more SSL debug information that most people do not really need
+or care about. OpenSSL's own s_client also logs them:
+
+Peer signing digest: SHA256
+Peer signature type: ECDSA
+
+The complete message looks like this:
+
+   Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer ce=
+rtificate: 2048 bits RSA, signature: RSA-SHA256, server temp key: 253 bits =
+X25519, peer signing digest/type: SHA256 RSASSA-PSS
+
+or when forcing a specific group via tls-groups X448 with a ECDSA server:
+
+   Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer ce=
+rtificate: 384 bits ECsecp384r1, signature: ecdsa-with-SHA256, server temp =
+key: 448 bits X448, peer signing digest/type: SHA384 ECDSA
+
+Change-Id: Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5
 ---
-M src/openvpn/openssl_compat.h
 M src/openvpn/ssl_openssl.c
-2 files changed, 48 insertions(+), 12 deletions(-)
+1 file changed, 81 insertions(+), 3 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/64/364/4
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/65/365/5
 
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index efc85d4..f487b1b 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -75,6 +75,10 @@
- #define RSA_F_RSA_OSSL_PRIVATE_ENCRYPT       RSA_F_RSA_EAY_PRIVATE_ENCRYPT
- #endif
-
-+#if (OPENSSL_VERSION_NUMBER < 0x10100000L && !defined(ENABLE_CRYPTO_WOLFSS=
-L)) || (defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER < 0x305=
-0400fL)
-+#define SSL_get_peer_tmp_key SSL_get_server_tmp_key
-+#endif
-+
- /* Functionality missing in 1.0.2 */
- #if OPENSSL_VERSION_NUMBER < 0x10100000L && !defined(ENABLE_CRYPTO_WOLFSSL)
- /**
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index b5cc9a7..b91ea07 100644
+index b91ea07..26a478b 100644
 --- a/src/openvpn/ssl_openssl.c
 +++ b/src/openvpn/ssl_openssl.c
-@@ -2052,18 +2052,11 @@
-     return ret;
+@@ -2163,12 +2163,88 @@
+     char pkeybuf[128] =3D { 0 };
+     print_pkey_details(pkey, pkeybuf, sizeof(pkeybuf));
+
+-    openvpn_snprintf(buf, buflen, ", server temp key: %s",
++    openvpn_snprintf(buf, buflen, ", peer temporary key: %s",
+                      pkeybuf);
+
+     EVP_PKEY_free(pkey);
  }
 
--/**
-- * Print human readable information about the certifcate into buf
-- * @param cert      the certificate being used
-- * @param buf       output buffer
-- * @param buflen    output buffer length
-- */
- static void
--print_cert_details(X509 *cert, char *buf, size_t buflen)
-+print_pkey_details(EVP_PKEY *pkey, char *buf, size_t buflen)
- {
-     const char *curve =3D "";
-     const char *type =3D "(error getting type)";
--    EVP_PKEY *pkey =3D X509_get_pubkey(cert);
-
-     if (pkey =3D=3D NULL)
-     {
-@@ -2126,6 +2119,23 @@
- #endif /* if OPENSSL_VERSION_NUMBER < 0x30000000L */
-     }
-
-+    openvpn_snprintf(buf, buflen, "%d bits %s%s",
-+                     EVP_PKEY_bits(pkey), type, curve);
++#if !defined(LIBRESSL_VERSION_NUMBER)  && OPENSSL_VERSION_NUMBER >=3D 0x10=
+10000fL
++/**
++ * Translate an OpenSSL NID into a more human readable name
++ * @param nid
++ * @return
++ */
++static const char *
++get_sigtype(int nid)
++{
++    /* Fix a few OpenSSL names to be better understandable */
++    switch (nid)
++    {
++        case EVP_PKEY_RSA:
++            /* will otherwise say rsaEncryption */
++            return "RSA";
++
++        case EVP_PKEY_DSA:
++            /* dsaEncryption otherwise */
++            return "DSA";
++
++        case EVP_PKEY_EC:
++            /* will say id-ecPublicKey */
++            return "ECDSA";
++
++        case -1:
++            return "(error getting name)";
++
++        default:
++            return OBJ_nid2sn(nid);
++    }
 +}
++#endif /* ifndef LIBRESSL_VERSION_NUMBER */
 +
 +/**
-+ * Print human readable information about the certifcate into buf
-+ * @param cert      the certificate being used
-+ * @param buf       output buffer
-+ * @param buflen    output buffer length
++ * Get the type of the signature that is used by the peer during the
++ * TLS handshake
 + */
 +static void
-+print_cert_details(X509 *cert, char *buf, size_t buflen)
++print_peer_signature(SSL *ssl, char *buf, size_t buflen)
 +{
-+    EVP_PKEY *pkey =3D X509_get_pubkey(cert);
-+    char pkeybuf[128] =3D { 0 };
-+    print_pkey_details(pkey, pkeybuf, sizeof(pkeybuf));
++    int peer_sig_nid =3D NID_undef, peer_sig_type_nid =3D NID_undef;
++    const char *peer_sig =3D "";
++    const char *peer_sig_type =3D "";
 +
-     char sig[128] =3D { 0 };
-     int signature_nid =3D X509_get_signature_nid(cert);
-     if (signature_nid !=3D 0)
-@@ -2134,8 +2144,27 @@
-                          OBJ_nid2sn(signature_nid));
-     }
-
--    openvpn_snprintf(buf, buflen, ", peer certificate: %d bit %s%s%s",
--                     EVP_PKEY_bits(pkey), type, curve, sig);
-+    openvpn_snprintf(buf, buflen, ", peer certificate: %s%s",
-+                     pkeybuf, sig);
++    /* Even though these methods use the deprecated NIDs instead of using
++     * string as new OpenSSL APIs do, there seem to be no API that replaces
++     * it yet */
++#if !defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x30504=
+00fL
++    if (SSL_get_peer_signature_nid(ssl, &peer_sig_nid)
++        && peer_sig_nid !=3D NID_undef)
++    {
++        peer_sig =3D OBJ_nid2sn(peer_sig_nid);
++    }
++#endif
 +
-+    EVP_PKEY_free(pkey);
-+}
++#if !defined(LIBRESSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >=3D 0x101=
+0000fL
++    /* LibreSSL 3.7.x and 3.8.0 weirdly implement this function but fail on
++     * linking with an unresolved symbol */
++    if (SSL_get_peer_signature_type_nid(ssl, &peer_sig_type_nid)
++        && peer_sig_type_nid !=3D NID_undef)
++    {
++        peer_sig_type =3D get_sigtype(peer_sig_type_nid);
++    }
++#endif
 +
-+static void
-+print_server_tempkey(SSL *ssl, char *buf, size_t buflen)
-+{
-+    EVP_PKEY *pkey =3D NULL;
-+    SSL_get_peer_tmp_key(ssl, &pkey);
-+    if (!pkey)
++    if (peer_sig_nid =3D=3D NID_undef && peer_sig_type_nid =3D=3D NID_unde=
+f)
 +    {
 +        return;
 +    }
 +
-+    char pkeybuf[128] =3D { 0 };
-+    print_pkey_details(pkey, pkeybuf, sizeof(pkeybuf));
++    openvpn_snprintf(buf, buflen, ", peer signing digest/type: %s %s",
++                     peer_sig, peer_sig_type);
++}
 +
-+    openvpn_snprintf(buf, buflen, ", server temp key: %s",
-+                     pkeybuf);
-
-     EVP_PKEY_free(pkey);
- }
-@@ -2153,8 +2182,9 @@
-     const SSL_CIPHER *ciph;
++
++
+ /* **************************************
+  *
+  * Information functions
+@@ -2183,8 +2259,9 @@
      char s1[256];
      char s2[256];
-+    char s3[256];
+     char s3[256];
++    char s4[256];
 
--    s1[0] =3D s2[0] =3D 0;
-+    s1[0] =3D s2[0] =3D s3[0] =3D 0;
+-    s1[0] =3D s2[0] =3D s3[0] =3D 0;
++    s1[0] =3D s2[0] =3D s3[0] =3D s4[0] =3D 0;
      ciph =3D SSL_get_current_cipher(ks_ssl->ssl);
      openvpn_snprintf(s1, sizeof(s1), "%s %s, cipher %s %s",
                       prefix,
-@@ -2168,7 +2198,9 @@
-         print_cert_details(cert, s2, sizeof(s2));
+@@ -2199,8 +2276,9 @@
          X509_free(cert);
      }
--    msg(D_HANDSHAKE, "%s%s", s1, s2);
-+    print_server_tempkey(ks_ssl->ssl, s3, sizeof(s3));
-+
-+    msg(D_HANDSHAKE, "%s%s%s", s1, s2, s3);
+     print_server_tempkey(ks_ssl->ssl, s3, sizeof(s3));
++    print_peer_signature(ks_ssl->ssl, s4, sizeof(s4));
+
+-    msg(D_HANDSHAKE, "%s%s%s", s1, s2, s3);
++    msg(D_HANDSHAKE, "%s%s%s%s", s1, s2, s3, s4);
  }
 
  void
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/364?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Iaf12bb51a2aac7bcf19070f0b56fa3b1a5863bc3
-Gerrit-Change-Number: 364
-Gerrit-PatchSet: 4
+Gerrit-Change-Id: Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5
+Gerrit-Change-Number: 365
+Gerrit-PatchSet: 5
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---rcHM3eOWMVI=
+--X2N5VqOZNQw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
-<p>plaisthos <strong>uploaded patch set #4</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/364?usp=3Demail">View Chang=
+<p>plaisthos <strong>uploaded patch set #5</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail">View Chang=
 e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;">Print server temp key details<br><br>Change-Id: Iaf12bb51a2aac7bcf190=
-70f0b56fa3b1a5863bc3<br>---<br>M src/openvpn/openssl_compat.h<br>M src/open=
-vpn/ssl_openssl.c<br>2 files changed, 48 insertions(+), 12 deletions(-)<br>=
-<br></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/64/364/=
-4</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
-p;"><span>diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_c=
-ompat.h</span><br><span>index efc85d4..f487b1b 100644</span><br><span>--- a=
-/src/openvpn/openssl_compat.h</span><br><span>+++ b/src/openvpn/openssl_com=
-pat.h</span><br><span>@@ -75,6 +75,10 @@</span><br><span> #define RSA_F_RSA=
-_OSSL_PRIVATE_ENCRYPT       RSA_F_RSA_EAY_PRIVATE_ENCRYPT</span><br><span> =
-#endif</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#if (OPENSSL_VERSION_NUMBER &lt; 0x10100000L &amp;&amp; !defined(ENABL=
-E_CRYPTO_WOLFSSL)) || (defined(LIBRESSL_VERSION_NUMBER) &amp;&amp; LIBRESSL=
-_VERSION_NUMBER &lt; 0x3050400fL)</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+#define SSL_get_peer_tmp_key SSL_get_server_tmp_key</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span> /* Functionality missin=
-g in 1.0.2 */</span><br><span> #if OPENSSL_VERSION_NUMBER &lt; 0x10100000L =
-&amp;&amp; !defined(ENABLE_CRYPTO_WOLFSSL)</span><br><span> /**</span><br><=
-span>diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c</sp=
-an><br><span>index b5cc9a7..b91ea07 100644</span><br><span>--- a/src/openvp=
-n/ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span><br><=
-span>@@ -2052,18 +2052,11 @@</span><br><span>     return ret;</span><br><sp=
-an> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-/**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Print human r=
-eadable information about the certifcate into buf</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">- * @param cert      the certificate being used<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param buf       ou=
-tput buffer</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param =
-buflen    output buffer length</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">- */</span><br><span> static void</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-print_cert_details(X509 *cert, char *buf, size_t buflen=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+print_pkey_details=
-(EVP_PKEY *pkey, char *buf, size_t buflen)</span><br><span> {</span><br><sp=
-an>     const char *curve =3D &quot;&quot;;</span><br><span>     const char=
- *type =3D &quot;(error getting type)&quot;;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    EVP_PKEY *pkey =3D X509_get_pubkey(cert);</span>=
-<br><span> </span><br><span>     if (pkey =3D=3D NULL)</span><br><span>    =
- {</span><br><span>@@ -2126,6 +2119,23 @@</span><br><span> #endif /* if OPE=
-NSSL_VERSION_NUMBER &lt; 0x30000000L */</span><br><span>     }</span><br><s=
-pan> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_sn=
-printf(buf, buflen, &quot;%d bits %s%s&quot;,</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+                     EVP_PKEY_bits(pkey), type, c=
-urve);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+rap;">Print SSL peer signature information in handshake debug details<br><b=
+r>This is more SSL debug information that most people do not really need<br=
+>or care about. OpenSSL&#39;s own s_client also logs them:<br><br>Peer sign=
+ing digest: SHA256<br>Peer signature type: ECDSA<br><br>The complete messag=
+e looks like this:<br><br>   Control Channel: TLSv1.3, cipher TLSv1.3 TLS_A=
+ES_256_GCM_SHA384, peer certificate: 2048 bits RSA, signature: RSA-SHA256, =
+server temp key: 253 bits X25519, peer signing digest/type: SHA256 RSASSA-P=
+SS<br><br>or when forcing a specific group via tls-groups X448 with a ECDSA=
+ server:<br><br>   Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM=
+_SHA384, peer certificate: 384 bits ECsecp384r1, signature: ecdsa-with-SHA2=
+56, server temp key: 448 bits X448, peer signing digest/type: SHA384 ECDSA<=
+br><br>Change-Id: Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5<br>---<br>M src=
+/openvpn/ssl_openssl.c<br>1 file changed, 81 insertions(+), 3 deletions(-)<=
+br><br></pre><pre style=3D"font-family: monospace,monospace; white-space: p=
+re-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/65/3=
+65/5</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
+wrap;"><span>diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_opens=
+sl.c</span><br><span>index b91ea07..26a478b 100644</span><br><span>--- a/sr=
+c/openvpn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</sp=
+an><br><span>@@ -2163,12 +2163,88 @@</span><br><span>     char pkeybuf[128]=
+ =3D { 0 };</span><br><span>     print_pkey_details(pkey, pkeybuf, sizeof(p=
+keybuf));</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    openvpn_snprintf(buf, buflen, &quot;, server temp key: %s&quot;,<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_snprintf=
+(buf, buflen, &quot;, peer temporary key: %s&quot;,</span><br><span>       =
+               pkeybuf);</span><br><span> </span><br><span>     EVP_PKEY_fr=
+ee(pkey);</span><br><span> }</span><br><span> </span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#if !defined(LIBRESSL_VERSION_NUMBER)  &amp;&amp=
+; OPENSSL_VERSION_NUMBER &gt;=3D 0x1010000fL</span><br><span style=3D"color=
 : hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+ * Print human readable information about the certifcate into buf<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param cert      =
-the certificate being used</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+ * @param buf       output buffer</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ * @param buflen    output buffer length</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+static void</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+print_cert_details(X509 *cert, char *buf, size_t buflen)<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    EVP_PKEY *pkey =3D X509_get_pubkey=
-(cert);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char pke=
-ybuf[128] =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    print_pkey_details(pkey, pkeybuf, sizeof(pkeybuf));</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     char sig[128] =
-=3D { 0 };</span><br><span>     int signature_nid =3D X509_get_signature_ni=
-d(cert);</span><br><span>     if (signature_nid !=3D 0)</span><br><span>@@ =
--2134,8 +2144,27 @@</span><br><span>                          OBJ_nid2sn(si=
-gnature_nid));</span><br><span>     }</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    openvpn_snprintf(buf, buflen, &quot;,=
- peer certificate: %d bit %s%s%s&quot;,</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-                     EVP_PKEY_bits(pkey), type, curve, si=
-g);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_snpr=
-intf(buf, buflen, &quot;, peer certificate: %s%s&quot;,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                     pkeybuf, sig);</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    EVP_PKEY_free(pkey);</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+print_=
-server_tempkey(SSL *ssl, char *buf, size_t buflen)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    EVP_PKEY *pkey =3D NULL;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    SSL_get_peer_tmp_key(ssl, &amp;pkey);</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    if (!pkey)</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+        return;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    char pke=
-ybuf[128] =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    print_pkey_details(pkey, pkeybuf, sizeof(pkeybuf));</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    openvpn_snprintf(buf, buflen, &quot;, server temp key=
-: %s&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-             pkeybuf);</span><br><span> </span><br><span>     EVP_PKEY_free=
-(pkey);</span><br><span> }</span><br><span>@@ -2153,8 +2182,9 @@</span><br>=
-<span>     const SSL_CIPHER *ciph;</span><br><span>     char s1[256];</span=
-><br><span>     char s2[256];</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    char s3[256];</span><br><span> </span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    s1[0] =3D s2[0] =3D 0;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+    s1[0] =3D s2[0] =3D s3[0] =3D 0;</span><=
-br><span>     ciph =3D SSL_get_current_cipher(ks_ssl-&gt;ssl);</span><br><s=
-pan>     openvpn_snprintf(s1, sizeof(s1), &quot;%s %s, cipher %s %s&quot;,<=
-/span><br><span>                      prefix,</span><br><span>@@ -2168,7 +2=
-198,9 @@</span><br><span>         print_cert_details(cert, s2, sizeof(s2));=
-</span><br><span>         X509_free(cert);</span><br><span>     }</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    msg(D_HANDSHAKE, &quot;%s%s=
-&quot;, s1, s2);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- print_server_tempkey(ks_ssl-&gt;ssl, s3, sizeof(s3));</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    msg(D_HANDSHAKE, &quot;%s%s%s&quot;, s1, s2, s3);</span=
-><br><span> }</span><br><span> </span><br><span> void</span><br><span></spa=
-n><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/364?usp=3Demail">change 364</a>. To unsubscribe, or for help writing ma=
-il filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</=
-a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div item=
-scope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link i=
-temprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/364?usp=3Dema=
-il"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+ 40%);">+ * Translate an OpenSSL NID into a more human readable name</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param nid</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * @return</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+static const char *</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+get_sigtype(int nid)</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    /* Fix a few OpenSSL names to be better understandable */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    switch (nid)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        case EVP_PKEY_RSA:</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            /* will otherwise say rsaEncr=
+yption */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+  return &quot;RSA&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        case =
+EVP_PKEY_DSA:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      /* dsaEncryption otherwise */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            return &quot;DSA&quot;;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        case EVP_PKEY_EC:</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            /* will say id-ecPublicKey */</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+            return &quot;ECDSA&q=
+uot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        case -1:</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            return &quot;(error gett=
+ing name)&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        default:</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+            return OBJ_ni=
+d2sn(nid);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#endif /* ifndef LIBRESSL_VERSION_NUMBER =
+*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ * Get the type of the signature that is used by the=
+ peer during the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
+TLS handshake</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+print_peer_signature(SSL *ssl,=
+ char *buf, size_t buflen)</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int pee=
+r_sig_nid =3D NID_undef, peer_sig_type_nid =3D NID_undef;</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    const char *peer_sig =3D &quot;&q=
+uot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char=
+ *peer_sig_type =3D &quot;&quot;;</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /=
+* Even though these methods use the deprecated NIDs instead of using</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+     * string as new OpenS=
+SL APIs do, there seem to be no API that replaces</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+     * it yet */</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+#if !defined(LIBRESSL_VERSION_NUMBER) || LIBRESS=
+L_VERSION_NUMBER &gt; 0x3050400fL</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    if (SSL_get_peer_signature_nid(ssl, &amp;peer_sig_nid)</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; pee=
+r_sig_nid !=3D NID_undef)</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+peer_sig =3D OBJ_nid2sn(peer_sig_nid);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#if !defined(LIBRESSL_VERSI=
+ON_NUMBER) &amp;&amp; OPENSSL_VERSION_NUMBER &gt;=3D 0x1010000fL</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    /* LibreSSL 3.7.x and 3.8.=
+0 weirdly implement this function but fail on</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+     * linking with an unresolved symbol */</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (SSL_get_peer_sign=
+ature_type_nid(ssl, &amp;peer_sig_type_nid)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        &amp;&amp; peer_sig_type_nid !=3D NID_undef=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+        peer_sig_type =3D get_si=
+gtype(peer_sig_type_nid);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    if (peer_sig_nid =3D=3D NID_undef &a=
+mp;&amp; peer_sig_type_nid =3D=3D NID_undef)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+        return;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_snprintf(buf, =
+buflen, &quot;, peer signing digest/type: %s %s&quot;,</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+                     peer_sig, peer_sig_=
+type);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span> /* **************************************</span><br=
+><span>  *</span><br><span>  * Information functions</span><br><span>@@ -21=
+83,8 +2259,9 @@</span><br><span>     char s1[256];</span><br><span>     cha=
+r s2[256];</span><br><span>     char s3[256];</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    char s4[256];</span><br><span> </span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    s1[0] =3D s2[0] =3D s3[0] =3D 0=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    s1[0] =3D s2[0=
+] =3D s3[0] =3D s4[0] =3D 0;</span><br><span>     ciph =3D SSL_get_current_=
+cipher(ks_ssl-&gt;ssl);</span><br><span>     openvpn_snprintf(s1, sizeof(s1=
+), &quot;%s %s, cipher %s %s&quot;,</span><br><span>                      p=
+refix,</span><br><span>@@ -2199,8 +2276,9 @@</span><br><span>         X509_=
+free(cert);</span><br><span>     }</span><br><span>     print_server_tempke=
+y(ks_ssl-&gt;ssl, s3, sizeof(s3));</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    print_peer_signature(ks_ssl-&gt;ssl, s4, sizeof(s4));</s=
+pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ms=
+g(D_HANDSHAKE, &quot;%s%s%s&quot;, s1, s2, s3);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    msg(D_HANDSHAKE, &quot;%s%s%s%s&quot;, s1, =
+s2, s3, s4);</span><br><span> }</span><br><span> </span><br><span> void</sp=
+an><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/365?usp=3Demail">change 365</a>. To unsubscribe, or f=
+or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
+ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
+Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
+iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/365?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
+iv></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Iaf12bb51a2aac7bcf19070f0b56=
-fa3b1a5863bc3 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 364 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib5fc0c4b8f164596681ac5ad730=
+02068ec6de1e5 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 365 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -326,5 +370,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---rcHM3eOWMVI=--
+--X2N5VqOZNQw=--
 
