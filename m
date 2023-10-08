@@ -1,16 +1,17 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Sun, 8 Oct 2023 11:08:31 +0000
-In-Reply-To: <gerrit.1696678214000.I1d0d909e7fca3f51b5c848f1a771a989ab040f17@...2715...>
-References: <gerrit.1696678214000.I1d0d909e7fca3f51b5c848f1a771a989ab040f17@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., lstipakov@...277...
-Message-ID: <b022c5cd03943141be01fd1cf641d450ffeb5064-EmailReviewComments-HTML@...2715...>
+Date: Sun, 8 Oct 2023 11:10:15 +0000
+In-Reply-To: <gerrit.1695213156000.If4e9c2e58441efb3fd00872cd62d1cc6c607f160@...2715...>
+References: <gerrit.1695213156000.If4e9c2e58441efb3fd00872cd62d1cc6c607f160@...2715...>
+Reply-To: arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ gert@...1296...
+Message-ID: <661db4c80b7781c3b40838f7ba0630c5737fa407-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="SawSmP2jW40="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: dco-win: get
- driver version
+Content-Type: multipart/alternative; boundary="Wjbd8a2oOH8="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]:
+ dev-tools/gerrit-send-mail.py: tool to send Gerrit patchsets to Patch...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +20,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: d12fk <heiko@...515...>, cron2 <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---SawSmP2jW40=
+--Wjbd8a2oOH8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, stipa.
+Attention is currently required from: cron2, d12fk, flichtenheld.
 
 plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/367?usp=3Demail )
+/openvpn/+/361?usp=3Demail )
 
-Change subject: dco-win: get driver version
+Change subject: dev-tools/gerrit-send-mail.py: tool to send Gerrit patchset=
+s to Patchwork
 ......................................................................
 
 
-Patch Set 3: Code-Review+2
+Patch Set 4: Code-Review+1
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/367?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/361?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I1d0d909e7fca3f51b5c848f1a771a989ab040f17
-Gerrit-Change-Number: 367
-Gerrit-PatchSet: 3
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Branch: master
+Gerrit-Change-Id: If4e9c2e58441efb3fd00872cd62d1cc6c607f160
+Gerrit-Change-Number: 361
+Gerrit-PatchSet: 4
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: d12fk <heiko@...515...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: cron2 <gert@...1296...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Sun, 08 Oct 2023 11:08:31 +0000
+Gerrit-Attention: d12fk <heiko@...515...>
+Gerrit-Comment-Date: Sun, 08 Oct 2023 11:10:15 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---SawSmP2jW40=
+--Wjbd8a2oOH8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, stipa. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/367?usp=3Demail">Vi=
+<p> Attention is currently required from: cron2, d12fk, flichtenheld. </p>
+<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/361?usp=3Demail">Vi=
 ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/367?usp=3Demail">=
-change 367</a>. To unsubscribe, or for help writing mail filters, visit <a =
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/361?usp=3Demail">=
+change 361</a>. To unsubscribe, or for help writing mail filters, visit <a =
 href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
  itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
 ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/367?usp=3Demail"/><meta itemprop=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/361?usp=3Demail"/><meta itemprop=
 =3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1d0d909e7fca3f51b5c848f1a77=
-1a989ab040f17 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 367 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: If4e9c2e58441efb3fd00872cd62=
+d1cc6c607f160 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 361 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: d12fk &lt;heiko@...515...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 08 Oct 2023 11:08:31=
+<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 08 Oct 2023 11:10:15=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---SawSmP2jW40=--
+--Wjbd8a2oOH8=--
 
