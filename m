@@ -1,16 +1,10 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 9 Oct 2023 10:43:14 +0000
-In-Reply-To: <gerrit.1696674325000.Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5@...2715...>
-References: <gerrit.1696674325000.Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <bfc2b91cbfb9eb622dbc4c9110ed592765fe96a8-EmailReviewComments-HTML@...2715...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Mon,  9 Oct 2023 12:51:51 +0200
+Message-Id: <20231009105151.34074-1-frank@...2641...>
+In-Reply-To: <gerrit.1683717398000.Id8321dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26@...2715...>
+References: <gerrit.1683717398000.Id8321dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="njxyAKBFpEA="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Print SSL peer
- signature information in handshake debug details
+Subject: [Openvpn-devel] [PATCH] Change type of frame.mss_fix to uint16_t
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,121 +13,176 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Arne Schwabe <arne-openvpn@...1227...>
 
---njxyAKBFpEA=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Since in the end this always ends up as an uint16_t
+anyway, just make the conversion much earlier. Cleans
+up the code and removes some -Wconversion warnings.
 
-Attention is currently required from: plaisthos.
+v2:
+ - proper error handling in options.c
+v4:
+ - also introduce a minimum mssfix
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/365?usp=3Demail )
+Change-Id: Id8321dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+---
 
-Change subject: Print SSL peer signature information in handshake debug det=
-ails
-......................................................................
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/268
+This mail reflects revision 4 of this Change.
+Acked-by according to Gerrit (reflected above):
+Arne Schwabe <arne-openvpn@...1227...>
 
-Patch Set 7:
-
-(2 comments)
-
-File src/openvpn/ssl_openssl.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/365/comment/3b343ee7_423d9351 :
-PS5, Line 2166:     openvpn_snprintf(buf, buflen, ", peer temporary key: %s=
-",
-> This probably belongs in the previous commit.
-Done
-
-
-File src/openvpn/ssl_openssl.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/365/comment/be8eca11_de41140b :
-PS7, Line 2214:     const char *peer_sig_type =3D "";
-With libressl or openssl 1.0.2 this will print "" for now. Should we maybe =
-change the default to "UNKNOWN" or something similar? Or would you consider=
- that useless clutter?
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5
-Gerrit-Change-Number: 365
-Gerrit-PatchSet: 7
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Mon, 09 Oct 2023 10:43:14 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Gerrit-MessageType: comment
-
---njxyAKBFpEA=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail">View C=
-hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_openssl.c:</p>=
-<ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding=
-: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/365/comment/3b343ee7_423d9351">Patch Set #5, Line 216=
-6:</a> <code style=3D"font-family:monospace,monospace">    openvpn_snprintf=
-(buf, buflen, &quot;, peer temporary key: %s&quot;,</code></p><p><blockquot=
-e style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">T=
-his probably belongs in the previous commit.</blockquote></p><p style=3D"wh=
-ite-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><li sty=
-le=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_openssl.c:</p><ul sty=
-le=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0=
- 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/365/comment/be8eca11_de41140b">Patch Set #7, Line 2214:</a> =
-<code style=3D"font-family:monospace,monospace">    const char *peer_sig_ty=
-pe =3D &quot;&quot;;</code></p><p style=3D"white-space: pre-wrap; word-wrap=
-: break-word;">With libressl or openssl 1.0.2 this will print &quot;&quot; =
-for now. Should we maybe change the default to &quot;UNKNOWN&quot; or somet=
-hing similar? Or would you consider that useless clutter?</p></li></ul></li=
-></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/36=
-5?usp=3Demail">change 365</a>. To unsubscribe, or for help writing mail fil=
-ters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib5fc0c4b8f164596681ac5ad730=
-02068ec6de1e5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 365 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 7 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 09 Oct 2023 10:43:14=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---njxyAKBFpEA=--
+        
+diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
+index dbd3681..d7ee4c2 100644
+--- a/src/openvpn/mss.c
++++ b/src/openvpn/mss.c
+@@ -44,7 +44,7 @@
+  *              if yes, hand to mss_fixup_dowork()
+  */
+ void
+-mss_fixup_ipv4(struct buffer *buf, int maxmss)
++mss_fixup_ipv4(struct buffer *buf, uint16_t maxmss)
+ {
+     const struct openvpn_iphdr *pip;
+     int hlen;
+@@ -72,7 +72,7 @@
+             struct openvpn_tcphdr *tc = (struct openvpn_tcphdr *) BPTR(&newbuf);
+             if (tc->flags & OPENVPN_TCPH_SYN_MASK)
+             {
+-                mss_fixup_dowork(&newbuf, (uint16_t) maxmss);
++                mss_fixup_dowork(&newbuf, maxmss);
+             }
+         }
+     }
+@@ -84,7 +84,7 @@
+  *              (IPv6 header structure is sufficiently different from IPv4...)
+  */
+ void
+-mss_fixup_ipv6(struct buffer *buf, int maxmss)
++mss_fixup_ipv6(struct buffer *buf, uint16_t maxmss)
+ {
+     const struct openvpn_ipv6hdr *pip6;
+     struct buffer newbuf;
+@@ -130,7 +130,7 @@
+         struct openvpn_tcphdr *tc = (struct openvpn_tcphdr *) BPTR(&newbuf);
+         if (tc->flags & OPENVPN_TCPH_SYN_MASK)
+         {
+-            mss_fixup_dowork(&newbuf, (uint16_t) maxmss-20);
++            mss_fixup_dowork(&newbuf, maxmss-20);
+         }
+     }
+ }
+@@ -191,13 +191,14 @@
+                 {
+                     continue;
+                 }
+-                mssval = (opt[2]<<8)+opt[3];
++                mssval = opt[2] << 8;
++                mssval += opt[3];
+                 if (mssval > maxmss)
+                 {
+-                    dmsg(D_MSS, "MSS: %d -> %d", (int) mssval, (int) maxmss);
++                    dmsg(D_MSS, "MSS: %" PRIu16 " -> %" PRIu16, mssval, maxmss);
+                     accumulate = htons(mssval);
+-                    opt[2] = (maxmss>>8)&0xff;
+-                    opt[3] = maxmss&0xff;
++                    opt[2] = (uint8_t)((maxmss>>8)&0xff);
++                    opt[3] = (uint8_t)(maxmss&0xff);
+                     accumulate -= htons(maxmss);
+                     ADJUST_CHECKSUM(accumulate, tc->check);
+                 }
+@@ -291,7 +292,7 @@
+     {
+         /* we subtract IPv4 and TCP overhead here, mssfix method will add the
+          * extra 20 for IPv6 */
+-        frame->mss_fix = options->ce.mssfix - (20 + 20);
++        frame->mss_fix = (uint16_t)(options->ce.mssfix - (20 + 20));
+         return;
+     }
+ 
+@@ -325,7 +326,7 @@
+ 
+     /* This is the target value our payload needs to be smaller */
+     unsigned int target = options->ce.mssfix - overhead;
+-    frame->mss_fix = adjust_payload_max_cbc(kt, target) - payload_overhead;
++    frame->mss_fix = (uint16_t)(adjust_payload_max_cbc(kt, target) - payload_overhead);
+ 
+ 
+ }
+diff --git a/src/openvpn/mss.h b/src/openvpn/mss.h
+index 1c4704b..b2a68cf 100644
+--- a/src/openvpn/mss.h
++++ b/src/openvpn/mss.h
+@@ -29,9 +29,9 @@
+ #include "mtu.h"
+ #include "ssl_common.h"
+ 
+-void mss_fixup_ipv4(struct buffer *buf, int maxmss);
++void mss_fixup_ipv4(struct buffer *buf, uint16_t maxmss);
+ 
+-void mss_fixup_ipv6(struct buffer *buf, int maxmss);
++void mss_fixup_ipv6(struct buffer *buf, uint16_t maxmss);
+ 
+ void mss_fixup_dowork(struct buffer *buf, uint16_t maxmss);
+ 
+diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
+index 56db118..81851d3 100644
+--- a/src/openvpn/mtu.c
++++ b/src/openvpn/mtu.c
+@@ -203,7 +203,7 @@
+         buf_printf(&out, "%s ", prefix);
+     }
+     buf_printf(&out, "[");
+-    buf_printf(&out, " mss_fix:%d", frame->mss_fix);
++    buf_printf(&out, " mss_fix:%" PRIu16, frame->mss_fix);
+ #ifdef ENABLE_FRAGMENT
+     buf_printf(&out, " max_frag:%d", frame->max_fragment_size);
+ #endif
+diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
+index b602b86..c64398d 100644
+--- a/src/openvpn/mtu.h
++++ b/src/openvpn/mtu.h
+@@ -115,7 +115,7 @@
+                                   *  decryption/encryption or compression. */
+     } buf;
+ 
+-    unsigned int mss_fix;       /**< The actual MSS value that should be
++    uint16_t mss_fix;           /**< The actual MSS value that should be
+                                  *   written to the payload packets. This
+                                  *   is the value for IPv4 TCP packets. For
+                                  *   IPv6 packets another 20 bytes must
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index c6f9ac3..b42aa69 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -7234,9 +7234,19 @@
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
+         if (p[1])
+         {
++            int mssfix = positive_atoi(p[1]);
++            /* can be 0, but otherwise it needs to be high enough so we can
++             * substract room for headers. */
++            if (mssfix != 0
++                && (mssfix < TLS_CHANNEL_MTU_MIN || mssfix > UINT16_MAX))
++            {
++                msg(msglevel, "--mssfix value '%s' is invalid", p[1]);
++                goto err;
++            }
++
+             /* value specified, assume encapsulation is not
+              * included unless "mtu" follows later */
+-            options->ce.mssfix = positive_atoi(p[1]);
++            options->ce.mssfix = mssfix;
+             options->ce.mssfix_encap = false;
+             options->ce.mssfix_default = false;
+         }
 
