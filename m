@@ -1,17 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 15 Oct 2023 14:36:12 +0000
-In-Reply-To: <gerrit.1696678214000.I1d0d909e7fca3f51b5c848f1a771a989ab040f17@...2715...>
-References: <gerrit.1696678214000.I1d0d909e7fca3f51b5c848f1a771a989ab040f17@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <6b5943f97c95790da7ed27d5650e9ca2066cfc75-EmailReplacePatchSet-HTML@...2715...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Mon, 16 Oct 2023 12:08:26 +0000
+In-Reply-To: <gerrit.1696685196000.I8cb2cb083e3cdadf187b7874979d79af3974e759@...2715...>
+References: <gerrit.1696685196000.I8cb2cb083e3cdadf187b7874979d79af3974e759@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <7600425edad23da4e2fdab976af9e637919cd164-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="sc45eT+tMmM="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: dco-win: get
- driver version
+Content-Type: multipart/alternative; boundary="K7AUZ8yJrKM="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: dco: warn if
+ DATA_V1 packets are sent to userspace
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,227 +19,215 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---sc45eT+tMmM=
+--K7AUZ8yJrKM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#4) to the change originally created by=
- stipa. ( http://gerrit.openvpn.net/c/openvpn/+/367?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos, stipa.
+
+Hello flichtenheld, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/368?usp=3Demail
+
+to look at the new patch set (#2).
 
 The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos
+Code-Review+2 by flichtenheld, Code-Review+2 by plaisthos
+
+The change is no longer submittable: Code-Review and checks~ChecksSubmitRul=
+e are unsatisfied now.
 
 
-Change subject: dco-win: get driver version
+Change subject: dco: warn if DATA_V1 packets are sent to userspace
 ......................................................................
 
-dco-win: get driver version
+dco: warn if DATA_V1 packets are sent to userspace
 
-Print dco-win driver version using the new ioctl.
-Requires dco-win driver 1.0.0 or newer to work.
+Servers 2.4.0 - 2.4.4 support peer-id and AEAD ciphers,
+but only send DATA_V1 packets. With DCO enabled on the
+client, connection is established but not working.
 
-Change-Id: I1d0d909e7fca3f51b5c848f1a771a989ab040f17
+This is because DCO driver(s) are unable to handle
+DATA_V1 packets and forwards them to userspace, where
+they silently disappear since crypto context is in
+DCO and not in userspace.
+
+Starting from 2.4.5 server sends DATA_V2 so problem
+doesn't happen.
+
+We cannot switch to non-DCO on the fly, so we log this
+and advice user to upgrade the server to 2.4.5 or newer.
+
+This fixes https://github.com/OpenVPN/openvpn/issues/422
+
+Change-Id: I8cb2cb083e3cdadf187b7874979d79af3974e759
 Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Message-Id: <20231008112755.23568-1-frank@...2641...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27=
-174.html
-Signed-off-by: Gert Doering <gert@...1296...>
-(cherry picked from commit e8e5f8a4c4f8e01dc7317ac87a85d3204882d6bf)
 ---
-M src/openvpn/dco_win.c
-M src/openvpn/ovpn_dco_win.h
-2 files changed, 33 insertions(+), 1 deletion(-)
+M src/openvpn/forward.c
+1 file changed, 20 insertions(+), 3 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/67/367/4
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/68/368/2
 
-diff --git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c
-index 53f1523..a775c82 100644
---- a/src/openvpn/dco_win.c
-+++ b/src/openvpn/dco_win.c
-@@ -386,7 +386,32 @@
- const char *
- dco_version_string(struct gc_arena *gc)
- {
--    return "v0";
-+    OVPN_VERSION version;
-+    ZeroMemory(&version, sizeof(OVPN_VERSION));
-+
-+    /* try to open device by symbolic name */
-+    HANDLE h =3D CreateFile("\\\\.\\ovpn-dco", GENERIC_READ | GENERIC_WRIT=
-E,
-+                          0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | =
-FILE_FLAG_OVERLAPPED, NULL);
-+
-+    if (h =3D=3D INVALID_HANDLE_VALUE)
-+    {
-+        return "N/A";
-+    }
-+
-+    DWORD bytes_returned =3D 0;
-+    if (!DeviceIoControl(h, OVPN_IOCTL_GET_VERSION, NULL, 0,
-+                         &version, sizeof(version), &bytes_returned, NULL))
-+    {
-+        CloseHandle(h);
-+        return "N/A";
-+    }
-+
-+    CloseHandle(h);
-+
-+    struct buffer out =3D alloc_buf_gc(256, gc);
-+    buf_printf(&out, "%ld.%ld.%ld", version.Major, version.Minor, version.=
-Patch);
-+
-+    return BSTR(&out);
- }
-=20
- int
-diff --git a/src/openvpn/ovpn_dco_win.h b/src/openvpn/ovpn_dco_win.h
-index cbbdf92..ea2a733 100644
---- a/src/openvpn/ovpn_dco_win.h
-+++ b/src/openvpn/ovpn_dco_win.h
-@@ -100,6 +100,12 @@
- 	LONG MSS;
- } OVPN_SET_PEER, * POVPN_SET_PEER;
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index d8ad0d1..40f21bc 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -1047,6 +1047,24 @@
 
-+typedef struct _OVPN_VERSION {
-+    LONG Major;
-+    LONG Minor;
-+    LONG Patch;
-+} OVPN_VERSION, * POVPN_VERSION;
+         if (c->c2.tls_multi)
+         {
++            uint8_t opcode =3D *BPTR(&c->c2.buf) >> P_OPCODE_SHIFT;
 +
- #define OVPN_IOCTL_NEW_PEER     CTL_CODE(FILE_DEVICE_UNKNOWN, 1, METHOD_BU=
-FFERED, FILE_ANY_ACCESS)
- #define OVPN_IOCTL_GET_STATS    CTL_CODE(FILE_DEVICE_UNKNOWN, 2, METHOD_BU=
-FFERED, FILE_ANY_ACCESS)
- #define OVPN_IOCTL_NEW_KEY      CTL_CODE(FILE_DEVICE_UNKNOWN, 3, METHOD_BU=
-FFERED, FILE_ANY_ACCESS)
-@@ -107,3 +113,4 @@
- #define OVPN_IOCTL_SET_PEER     CTL_CODE(FILE_DEVICE_UNKNOWN, 5, METHOD_BU=
-FFERED, FILE_ANY_ACCESS)
- #define OVPN_IOCTL_START_VPN    CTL_CODE(FILE_DEVICE_UNKNOWN, 6, METHOD_BU=
-FFERED, FILE_ANY_ACCESS)
- #define OVPN_IOCTL_DEL_PEER     CTL_CODE(FILE_DEVICE_UNKNOWN, 7, METHOD_BU=
-FFERED, FILE_ANY_ACCESS)
-+#define OVPN_IOCTL_GET_VERSION  CTL_CODE(FILE_DEVICE_UNKNOWN, 8, METHOD_BU=
-FFERED, FILE_ANY_ACCESS)
++            /*
++             * If DCO is enabled, the kernel drivers require that the
++             * other end only sends P_DATA_V2 packets. V1 are unknown
++             * to kernel and passed to userland, but we cannot handle them
++             * either because crypto context is missing - so drop the pack=
+et.
++             *
++             * This can only happen with particular old (2.4.0-2.4.4) serv=
+ers.
++             */
++            if ((opcode =3D=3D P_DATA_V1) && dco_enabled(&c->options))
++            {
++                msg(D_LINK_ERRORS,
++                    "Data Channel Offload doesn't support DATA_V1 packets.=
+ "
++                    "Upgrade your server to 2.4.5 or newer.");
++                c->c2.buf.len =3D 0;
++            }
++
+             /*
+              * If tls_pre_decrypt returns true, it means the incoming
+              * packet was a good TLS control channel packet.  If so, TLS c=
+ode
+@@ -1057,9 +1075,8 @@
+              * will load crypto_options with the correct encryption key
+              * and return false.
+              */
+-            uint8_t opcode =3D *BPTR(&c->c2.buf) >> P_OPCODE_SHIFT;
+-            if (tls_pre_decrypt(c->c2.tls_multi, &c->c2.from, &c->c2.buf, =
+&co,
+-                                floated, &ad_start))
++            if (tls_pre_decrypt(c->c2.tls_multi, &c->c2.from, &c->c2.buf,
++                                &co, floated, &ad_start))
+             {
+                 /* Restore pre-NCP frame parameters */
+                 if (is_hard_reset_method2(opcode))
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/367?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/368?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I1d0d909e7fca3f51b5c848f1a771a989ab040f17
-Gerrit-Change-Number: 367
-Gerrit-PatchSet: 4
+Gerrit-Change-Id: I8cb2cb083e3cdadf187b7874979d79af3974e759
+Gerrit-Change-Number: 368
+Gerrit-PatchSet: 2
 Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: stipa <lstipakov@...277...>
 Gerrit-MessageType: newpatchset
 
---sc45eT+tMmM=
+--K7AUZ8yJrKM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #4</strong> to the change originally cr=
-eated by stipa.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/367?=
-usp=3Demail">View Change</a></p><p>The following approvals got outdated and=
- were removed:
-Code-Review+2 by plaisthos</p><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">dco-win: get driver version<br><br>Print dco-win=
- driver version using the new ioctl.<br>Requires dco-win driver 1.0.0 or ne=
-wer to work.<br><br>Change-Id: I1d0d909e7fca3f51b5c848f1a771a989ab040f17<br=
->Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>Acked-by: Arne Schwab=
-e &lt;arne-openvpn@...1227...&gt;<br>Message-Id: &lt;20231008112755.23568-1=
--frank@...2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1224...=
-sts.sourceforge.net/msg27174.html<br>Signed-off-by: Gert Doering &lt;gert@...220...=
-..1296...&gt;<br>(cherry picked from commit e8e5f8a4c4f8e01dc7317ac87a85d32=
-04882d6bf)<br>---<br>M src/openvpn/dco_win.c<br>M src/openvpn/ovpn_dco_win.=
-h<br>2 files changed, 33 insertions(+), 1 deletion(-)<br><br></pre><pre sty=
-le=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ss=
-h://gerrit.openvpn.net:29418/openvpn refs/changes/67/367/4</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/src/openvpn/dco_win.c b/src/openvpn/dco_win.c</span><br><span>index 5=
-3f1523..a775c82 100644</span><br><span>--- a/src/openvpn/dco_win.c</span><b=
-r><span>+++ b/src/openvpn/dco_win.c</span><br><span>@@ -386,7 +386,32 @@</s=
-pan><br><span> const char *</span><br><span> dco_version_string(struct gc_a=
-rena *gc)</span><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    return &quot;v0&quot;;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    OVPN_VERSION version;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    ZeroMemory(&amp;version, sizeof(OVPN_VERSION));</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    /* try to open device by symbolic nam=
-e */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    HANDLE h =
-=3D CreateFile(&quot;\\\\.\\ovpn-dco&quot;, GENERIC_READ | GENERIC_WRITE,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
-     0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_OVERLAPPED, =
-NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    if (h =3D=3D INVALID_HANDLE_=
-VALUE)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        return &quot;N/A&qu=
-ot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    DWORD bytes_returned =3D 0;</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    if (!DeviceIoControl(h, OVPN_IOC=
-TL_GET_VERSION, NULL, 0,</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+                         &amp;version, sizeof(version), &amp;bytes_ret=
-urned, NULL))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        CloseHandle(=
-h);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return &=
-quot;N/A&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    CloseHandle(h);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    struct buffer out =3D alloc_buf_gc(256, gc);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    buf_printf(&amp;out, &q=
-uot;%ld.%ld.%ld&quot;, version.Major, version.Minor, version.Patch);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    return BSTR(&amp;out);</span><br><span> }=
-</span><br><span> </span><br><span> int</span><br><span>diff --git a/src/op=
-envpn/ovpn_dco_win.h b/src/openvpn/ovpn_dco_win.h</span><br><span>index cbb=
-df92..ea2a733 100644</span><br><span>--- a/src/openvpn/ovpn_dco_win.h</span=
-><br><span>+++ b/src/openvpn/ovpn_dco_win.h</span><br><span>@@ -100,6 +100,=
-12 @@</span><br><span> 	LONG MSS;</span><br><span> } OVPN_SET_PEER, * POVPN=
-_SET_PEER;</span><br><span> </span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+typedef struct _OVPN_VERSION {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    LONG Major;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    LONG Minor;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+    LONG Patch;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+} OVPN_VERSION, * POVPN_VERSION;</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span> #define OVPN_IOCTL_NEW_PEER     CTL_=
-CODE(FILE_DEVICE_UNKNOWN, 1, METHOD_BUFFERED, FILE_ANY_ACCESS)</span><br><s=
-pan> #define OVPN_IOCTL_GET_STATS    CTL_CODE(FILE_DEVICE_UNKNOWN, 2, METHO=
-D_BUFFERED, FILE_ANY_ACCESS)</span><br><span> #define OVPN_IOCTL_NEW_KEY   =
-   CTL_CODE(FILE_DEVICE_UNKNOWN, 3, METHOD_BUFFERED, FILE_ANY_ACCESS)</span=
-><br><span>@@ -107,3 +113,4 @@</span><br><span> #define OVPN_IOCTL_SET_PEER=
-     CTL_CODE(FILE_DEVICE_UNKNOWN, 5, METHOD_BUFFERED, FILE_ANY_ACCESS)</sp=
-an><br><span> #define OVPN_IOCTL_START_VPN    CTL_CODE(FILE_DEVICE_UNKNOWN,=
- 6, METHOD_BUFFERED, FILE_ANY_ACCESS)</span><br><span> #define OVPN_IOCTL_D=
-EL_PEER     CTL_CODE(FILE_DEVICE_UNKNOWN, 7, METHOD_BUFFERED, FILE_ANY_ACCE=
-SS)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#define OVPN_IOC=
-TL_GET_VERSION  CTL_CODE(FILE_DEVICE_UNKNOWN, 8, METHOD_BUFFERED, FILE_ANY_=
-ACCESS)</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/367?usp=3Demail">change 367</a>. To unsubs=
-cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
-nvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schem=
-a.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://s=
-chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/367?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
-hange"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
+/p>
+<p>stipa <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/368?usp=3Demail">View Change</a=
+></p><p>The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld, Code-Review+2 by plaisthos</p><p>The change =
+is no longer submittable: Code-Review and checks~ChecksSubmitRule are unsat=
+isfied now.</p><pre style=3D"font-family: monospace,monospace; white-space:=
+ pre-wrap;">dco: warn if DATA_V1 packets are sent to userspace<br><br>Serve=
+rs 2.4.0 - 2.4.4 support peer-id and AEAD ciphers,<br>but only send DATA_V1=
+ packets. With DCO enabled on the<br>client, connection is established but =
+not working.<br><br>This is because DCO driver(s) are unable to handle<br>D=
+ATA_V1 packets and forwards them to userspace, where<br>they silently disap=
+pear since crypto context is in<br>DCO and not in userspace.<br><br>Startin=
+g from 2.4.5 server sends DATA_V2 so problem<br>doesn&#39;t happen.<br><br>=
+We cannot switch to non-DCO on the fly, so we log this<br>and advice user t=
+o upgrade the server to 2.4.5 or newer.<br><br>This fixes https://github.co=
+m/OpenVPN/openvpn/issues/422<br><br>Change-Id: I8cb2cb083e3cdadf187b7874979=
+d79af3974e759<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>---<b=
+r>M src/openvpn/forward.c<br>1 file changed, 20 insertions(+), 3 deletions(=
+-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/6=
+8/368/2</pre><pre style=3D"font-family: monospace,monospace; white-space: p=
+re-wrap;"><span>diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c<=
+/span><br><span>index d8ad0d1..40f21bc 100644</span><br><span>--- a/src/ope=
+nvpn/forward.c</span><br><span>+++ b/src/openvpn/forward.c</span><br><span>=
+@@ -1047,6 +1047,24 @@</span><br><span> </span><br><span>         if (c-&gt=
+;c2.tls_multi)</span><br><span>         {</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            uint8_t opcode =3D *BPTR(&amp;c-&gt;c2.bu=
+f) &gt;&gt; P_OPCODE_SHIFT;</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ /*</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             * I=
+f DCO is enabled, the kernel drivers require that the</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+             * other end only sends P_DAT=
+A_V2 packets. V1 are unknown</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+             * to kernel and passed to userland, but we cannot han=
+dle them</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+  * either because crypto context is missing - so drop the packet.</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+             *</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+             * This can only happ=
+en with particular old (2.4.0-2.4.4) servers.</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+             */</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            if ((opcode =3D=3D P_DATA_V1) &amp;&amp; =
+dco_enabled(&amp;c-&gt;options))</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+                msg(D_LINK_ERRORS,</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+                    &quot;Data Channel Offload doesn&=
+#39;t support DATA_V1 packets. &quot;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                    &quot;Upgrade your server to 2.4.5 or=
+ newer.&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+            c-&gt;c2.buf.len =3D 0;</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span>             /*</span><br><span>              * =
+If tls_pre_decrypt returns true, it means the incoming</span><br><span>    =
+          * packet was a good TLS control channel packet.  If so, TLS code<=
+/span><br><span>@@ -1057,9 +1075,8 @@</span><br><span>              * will =
+load crypto_options with the correct encryption key</span><br><span>       =
+       * and return false.</span><br><span>              */</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-            uint8_t opcode =3D *BPTR(=
+&amp;c-&gt;c2.buf) &gt;&gt; P_OPCODE_SHIFT;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-            if (tls_pre_decrypt(c-&gt;c2.tls_multi, &=
+amp;c-&gt;c2.from, &amp;c-&gt;c2.buf, &amp;co,</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-                                floated, &amp;ad_s=
+tart))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            i=
+f (tls_pre_decrypt(c-&gt;c2.tls_multi, &amp;c-&gt;c2.from, &amp;c-&gt;c2.bu=
+f,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
+               &amp;co, floated, &amp;ad_start))</span><br><span>          =
+   {</span><br><span>                 /* Restore pre-NCP frame parameters *=
+/</span><br><span>                 if (is_hard_reset_method2(opcode))</span=
+><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/368?usp=3Demail">change 368</a>. To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
+ings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
+ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
+wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/368?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
+></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I1d0d909e7fca3f51b5c848f1a77=
-1a989ab040f17 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 367 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8cb2cb083e3cdadf187b7874979=
+d79af3974e759 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 368 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -249,8 +236,14 @@ hange"/></div></div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---sc45eT+tMmM=--
+--K7AUZ8yJrKM=--
 
