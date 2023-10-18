@@ -1,16 +1,9 @@
-From: "MaxF (Code Review)" <gerrit@...515...>
-Date: Wed, 18 Oct 2023 17:22:38 +0000
-In-Reply-To: <gerrit.1697562354000.I445a93e84dc54b865b757038d22318ac427fce96@...2715...>
-References: <gerrit.1697562354000.I445a93e84dc54b865b757038d22318ac427fce96@...2715...>
-Reply-To: max@...2606..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <3b591ac8fee6e01f0524602f560c7435c37afeda-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="x9gfRI92nmU="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add support for
- mbedtls 3.X.Y
+Date: Wed, 18 Oct 2023 19:46:44 +0200 (CEST)
+Message-Id: <202310181746.39IHkiW3074551@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20231008103415.19625-1-frank@...2641...>
+References: <20231008103415.19625-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove last uses of inet_ntoa
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,108 +12,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---x9gfRI92nmU=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+I wouldn't claim to understand what management_post_tunnel_open() or
+init_route() *does* here (why is it converting a numeric address back
+to ascii, just to feed it to getaddrinfo() afterwards?), but the actual
+code changes look reasonable.
 
-Attention is currently required from: flichtenheld, plaisthos.
+Same for the "buffer" to "char *" changes, especially in print_in6_addr().
 
-MaxF has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
-vpn/+/370?usp=3Demail )
+As this is "refactoring to appease compilers", and neither a bugfix nor
+"real" compat stuff, it only goes to master.
 
-Change subject: Add support for mbedtls 3.X.Y
-......................................................................
+Your patch has been applied to the master branch.
 
+commit 7c637b35038e4cc7d2f16e07f413cfa2b0f1f97a
+Author: Frank Lichtenheld
+Date:   Sun Oct 8 12:34:15 2023 +0200
 
-Patch Set 3:
+     Remove last uses of inet_ntoa
 
-(1 comment)
-
-File src/openvpn/crypto_mbedtls.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/370/comment/4e79d9a4_7b49f2b5 :
-PS3, Line 427:         msg(D_LOW, "Cipher algorithm '%s' uses a default key=
- size (%lu bytes) "
-> I think for size_t you should use %zu
-I learned something new today!
-
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+     Message-Id: <20231008103415.19625-1-frank@...2641...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20231008103415.19625-1-frank@...2641...
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/370?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I445a93e84dc54b865b757038d22318ac427fce96
-Gerrit-Change-Number: 370
-Gerrit-PatchSet: 3
-Gerrit-Owner: MaxF <max@...2606...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 18 Oct 2023 17:22:38 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: comment
+Gert Doering
 
---x9gfRI92nmU=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/370?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/crypto_mbedtls.c:</=
-p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddi=
-ng: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/370/comment/4e79d9a4_7b49f2b5">Patch Set #3, Line 4=
-27:</a> <code style=3D"font-family:monospace,monospace">        msg(D_LOW, =
-&quot;Cipher algorithm &#39;%s&#39; uses a default key size (%lu bytes) &qu=
-ot;</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: =
-10px 0; padding: 0 10px;">I think for size_t you should use %zu</blockquote=
-></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">I learned s=
-omething new today!</p></li></ul></li></ul><p>To view, visit <a href=3D"htt=
-p://gerrit.openvpn.net/c/openvpn/+/370?usp=3Demail">change 370</a>. To unsu=
-bscribe, or for help writing mail filters, visit <a href=3D"http://gerrit.o=
-penvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sch=
-ema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http:/=
-/schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/370?usp=3Demail"/><meta itemprop=3D"name" content=3D"View=
- Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I445a93e84dc54b865b757038d22=
-318ac427fce96 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 370 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
-v>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 18 Oct 2023 17:22:38=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
-n@...1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---x9gfRI92nmU=--
 
