@@ -1,15 +1,15 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 18 Oct 2023 17:19:50 +0000
-References: <gerrit.1697649588000.I3ca6965799b23d542ababc3e38880317cb46a3ac@...2715...>
+Date: Wed, 18 Oct 2023 17:21:42 +0000
+References: <gerrit.1697649699000.I8f06a1213fdca233671f8d5746216ae46e84233b@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <0bc90bdbc1a9a0780e5ddf06670978476c609522-HTML@...2715...>
+Message-ID: <1e26c6425110ab7b2363fe9e87179e3d2df5e7db-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="+rPFKl0kmrw="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Remove CMake custom
- compiler flags for RELEASE and DEBUG build
+Content-Type: multipart/alternative; boundary="2Bd9qElABtI="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Add --enable-werror
+ to all platforms in Github Actions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---+rPFKl0kmrw=
+--2Bd9qElABtI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,55 +32,74 @@ Hello flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/374?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/376?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Remove CMake custom compiler flags for RELEASE and DEBUG bu=
-ild
+Change subject: Add --enable-werror to all platforms in Github Actions
 ......................................................................
 
-Remove CMake custom compiler flags for RELEASE and DEBUG build
+Add --enable-werror to all platforms in Github Actions
 
-This overwrites the default that cmake automatically sets. In the
-case of debug builds, this breaks debugging as -O1 already optimises
-many variables away.
-
-Change-Id: I3ca6965799b23d542ababc3e38880317cb46a3ac
+Change-Id: I8f06a1213fdca233671f8d5746216ae46e84233b
 ---
-M CMakeLists.txt
-1 file changed, 0 insertions(+), 4 deletions(-)
+M .github/workflows/build.yaml
+1 file changed, 3 insertions(+), 3 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/74/374/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/376/1
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 376a060..d21c9bd 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -79,10 +79,6 @@
-         add_link_options("$<$<CONFIG:Release>:/CETCOMPAT>")
-     endif()
- else ()
--    set(CMAKE_C_FLAGS_RELEASE "-O2")
--    set(CMAKE_CXX_FLAGS_RELEASE "-O2")
--    set(CMAKE_C_FLAGS_DEBUG "-g -O1")
--    set(CMAKE_CXX_FLAGS_DEBUG "-g -O1")
-     add_compile_options(-Wall -Wuninitialized)
-     check_c_compiler_flag(-Wno-stringop-truncation NoStringOpTruncation)
-
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 2a25582..4344121 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -186,7 +186,7 @@
+       - name: autoconf
+         run: autoreconf -fvi
+       - name: configure
+-        run: CFLAGS=3D"-fsanitize=3Daddress,undefined -fno-sanitize-recove=
+r=3Dall  -fno-omit-frame-pointer -O2" CC=3Dclang ./configure --with-crypto-=
+library=3D${{matrix.ssllib}}
++        run: CFLAGS=3D"-fsanitize=3Daddress,undefined -fno-sanitize-recove=
+r=3Dall  -fno-omit-frame-pointer -O2" CC=3Dclang ./configure --with-crypto-=
+library=3D${{matrix.ssllib}} --enable-werror
+       - name: make all
+         run: make -j3
+       - name: make check
+@@ -235,7 +235,7 @@
+       - name: autoconf
+         run: autoreconf -fvi
+       - name: configure
+-        run: ./configure --enable-werror ${{matrix.configureflags}} ${{mat=
+rix.configuressllib}}
++        run: ./configure --enable-werror ${{matrix.configureflags}} ${{mat=
+rix.configuressllib}} --enable-werror
+       - name: make all
+         run: make -j4
+       - name: make check
+@@ -355,7 +355,7 @@
+       - name: autoconf
+         run: autoreconf -fvi
+       - name: configure
+-        run: ./configure --with-crypto-library=3Dopenssl ${{matrix.configu=
+reflags}}
++        run: ./configure --with-crypto-library=3Dopenssl ${{matrix.configu=
+reflags}} --enable-werror
+       - name: make all
+         run: make -j3
+       - name: make check
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/374?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/376?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I3ca6965799b23d542ababc3e38880317cb46a3ac
-Gerrit-Change-Number: 374
+Gerrit-Change-Id: I8f06a1213fdca233671f8d5746216ae46e84233b
+Gerrit-Change-Number: 376
 Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -88,48 +107,63 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---+rPFKl0kmrw=
+--2Bd9qElABtI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
 <p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/374?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/376?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Remove CMake custom compiler flags for RELEASE and DEBUG buil=
-d<br><br>This overwrites the default that cmake automatically sets. In the<=
-br>case of debug builds, this breaks debugging as -O1 already optimises<br>=
-many variables away.<br><br>Change-Id: I3ca6965799b23d542ababc3e38880317cb4=
-6a3ac<br>---<br>M CMakeLists.txt<br>1 file changed, 0 insertions(+), 4 dele=
-tions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white=
--space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/cha=
-nges/74/374/1</pre><pre style=3D"font-family: monospace,monospace; white-sp=
-ace: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><b=
-r><span>index 376a060..d21c9bd 100644</span><br><span>--- a/CMakeLists.txt<=
-/span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -79,10 +79,6 @@</sp=
-an><br><span>         add_link_options(&quot;$&lt;$&lt;CONFIG:Release&gt;:/=
-CETCOMPAT&gt;&quot;)</span><br><span>     endif()</span><br><span> else ()<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    set(CMAKE_C_FLAGS_=
-RELEASE &quot;-O2&quot;)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    set(CMAKE_CXX_FLAGS_RELEASE &quot;-O2&quot;)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    set(CMAKE_C_FLAGS_DEBUG &quot;-g -O1&qu=
-ot;)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    set(CMAKE_CXX=
-_FLAGS_DEBUG &quot;-g -O1&quot;)</span><br><span>     add_compile_options(-=
-Wall -Wuninitialized)</span><br><span>     check_c_compiler_flag(-Wno-strin=
-gop-truncation NoStringOpTruncation)</span><br><span> </span><br><span></sp=
-an><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/374?usp=3Demail">change 374</a>. To unsubscribe, or for help writing m=
-ail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings<=
-/a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div ite=
-mscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link =
-itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/374?usp=3Dem=
-ail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+e: pre-wrap;">Add --enable-werror to all platforms in Github Actions<br><br=
+>Change-Id: I8f06a1213fdca233671f8d5746216ae46e84233b<br>---<br>M .github/w=
+orkflows/build.yaml<br>1 file changed, 3 insertions(+), 3 deletions(-)<br><=
+br></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/376/1=
+</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap=
+;"><span>diff --git a/.github/workflows/build.yaml b/.github/workflows/buil=
+d.yaml</span><br><span>index 2a25582..4344121 100644</span><br><span>--- a/=
+.github/workflows/build.yaml</span><br><span>+++ b/.github/workflows/build.=
+yaml</span><br><span>@@ -186,7 +186,7 @@</span><br><span>       - name: aut=
+oconf</span><br><span>         run: autoreconf -fvi</span><br><span>       =
+- name: configure</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    run: CFLAGS=3D&quot;-fsanitize=3Daddress,undefined -fno-sanitize-recove=
+r=3Dall  -fno-omit-frame-pointer -O2&quot; CC=3Dclang ./configure --with-cr=
+ypto-library=3D${{matrix.ssllib}}</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+        run: CFLAGS=3D&quot;-fsanitize=3Daddress,undefined -f=
+no-sanitize-recover=3Dall  -fno-omit-frame-pointer -O2&quot; CC=3Dclang ./c=
+onfigure --with-crypto-library=3D${{matrix.ssllib}} --enable-werror</span><=
+br><span>       - name: make all</span><br><span>         run: make -j3</sp=
+an><br><span>       - name: make check</span><br><span>@@ -235,7 +235,7 @@<=
+/span><br><span>       - name: autoconf</span><br><span>         run: autor=
+econf -fvi</span><br><span>       - name: configure</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        run: ./configure --enable-werror ${=
+{matrix.configureflags}} ${{matrix.configuressllib}}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        run: ./configure --enable-werror =
+${{matrix.configureflags}} ${{matrix.configuressllib}} --enable-werror</spa=
+n><br><span>       - name: make all</span><br><span>         run: make -j4<=
+/span><br><span>       - name: make check</span><br><span>@@ -355,7 +355,7 =
+@@</span><br><span>       - name: autoconf</span><br><span>         run: au=
+toreconf -fvi</span><br><span>       - name: configure</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        run: ./configure --with-crypto-lib=
+rary=3Dopenssl ${{matrix.configureflags}}</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+        run: ./configure --with-crypto-library=3Dopen=
+ssl ${{matrix.configureflags}} --enable-werror</span><br><span>       - nam=
+e: make all</span><br><span>         run: make -j3</span><br><span>       -=
+ name: make check</span><br><span></span><br></pre><p>To view, visit <a hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/376?usp=3Demail">change 376</a>.=
+ To unsubscribe, or for help writing mail filters, visit <a href=3D"http://=
+gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"ht=
+tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/376?usp=3Demail"/><meta itemprop=3D"name" conte=
+nt=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I3ca6965799b23d542ababc3e388=
-80317cb46a3ac </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 374 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8f06a1213fdca233671f8d57462=
+16ae46e84233b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 376 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -142,5 +176,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---+rPFKl0kmrw=--
+--2Bd9qElABtI=--
 
