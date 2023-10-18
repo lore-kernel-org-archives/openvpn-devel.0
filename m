@@ -1,16 +1,15 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 18 Oct 2023 10:49:00 +0000
-In-Reply-To: <gerrit.1697562354000.I143ca14c27c0c378b5e6b4184e80890d2c0e225e@...2715...>
-References: <gerrit.1697562354000.I143ca14c27c0c378b5e6b4184e80890d2c0e225e@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., max@...2606...
-Message-ID: <b92309812e0e37f01c293e675b386c091cc48aa4-EmailReviewComments-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 18 Oct 2023 10:52:07 +0000
+In-Reply-To: <gerrit.1697562354000.Ia61c467d85d690752011bafcf112e39d5b252aa7@...2715...>
+References: <gerrit.1697562354000.Ia61c467d85d690752011bafcf112e39d5b252aa7@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, max@...2606...
+Message-ID: <931d154d4ee63739e962ac09f1c196c175c9acaf-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="FcdQXiSWUME="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add compatibility
- functions for mbedtls 2.X.Y
+Content-Type: multipart/alternative; boundary="v7uN8Y2sQUQ="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Update README.mbedtls
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,88 +19,80 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: MaxF <max@...2606...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---FcdQXiSWUME=
+--v7uN8Y2sQUQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: MaxF, flichtenheld.
+Attention is currently required from: MaxF, plaisthos.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/371?usp=3Demail )
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/372?usp=3Demail )
 
-Change subject: Add compatibility functions for mbedtls 2.X.Y
+Change subject: Update README.mbedtls
 ......................................................................
 
 
-Patch Set 2:
+Patch Set 2: Code-Review+2
 
 (1 comment)
 
 Patchset:
 
 PS2:
-The actions for Ubuntu 20.04 and older mbed TLS versions are not workign an=
-ymore. We either need to remove those or extend compatibility.
-
-I have commit for adding testing the current mbed TLS versions already: htt=
-ps://github.com/schwabe/openvpn/commit/1da7e15984a3c7b1e926f1ce3370f733826c=
-74b4
+LGTM
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/371?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/372?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I143ca14c27c0c378b5e6b4184e80890d2c0e225e
-Gerrit-Change-Number: 371
+Gerrit-Change-Id: Ia61c467d85d690752011bafcf112e39d5b252aa7
+Gerrit-Change-Number: 372
 Gerrit-PatchSet: 2
 Gerrit-Owner: MaxF <max@...2606...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: MaxF <max@...2606...>
-Gerrit-Comment-Date: Wed, 18 Oct 2023 10:49:00 +0000
+Gerrit-Comment-Date: Wed, 18 Oct 2023 10:52:07 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
+Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---FcdQXiSWUME=
+--v7uN8Y2sQUQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: MaxF, flichtenheld. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/371?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/3=
-71?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">The actions for Ubuntu 20.04 and older mbed TLS ve=
-rsions are not workign anymore. We either need to remove those or extend co=
-mpatibility. </p><p style=3D"white-space: pre-wrap; word-wrap: break-word;"=
->I have commit for adding testing the current mbed TLS versions already: ht=
-tps://github.com/schwabe/openvpn/commit/1da7e15984a3c7b1e926f1ce3370f733826=
-c74b4</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/371?usp=3Demail">change 371</a>. To unsubscribe, or fo=
-r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
-tings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
-essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
-ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/371?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
-v></div>
+<p> Attention is currently required from: MaxF, plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/372?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
+tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
+tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/372?tab=3Dcomments">Patch Set #2:</a> </p><p style=3D"white-space: pre-w=
+rap; word-wrap: break-word;">LGTM</p></li></ul></li></ul><p>To view, visit =
+<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/372?usp=3Demail">change 37=
+2</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/372?usp=3Demail"/><meta itemprop=3D"name" c=
+ontent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I143ca14c27c0c378b5e6b4184e8=
-0890d2c0e225e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 371 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia61c467d85d690752011bafcf11=
+2e39d5b252aa7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 372 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
 v>
@@ -111,16 +102,16 @@ v>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
 </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 18 Oct 2023 10:49:00=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 18 Oct 2023 10:52:07=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---FcdQXiSWUME=--
+--v7uN8Y2sQUQ=--
 
