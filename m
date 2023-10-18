@@ -1,16 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 18 Oct 2023 13:15:51 +0000
-In-Reply-To: <gerrit.1683717398000.Id8321dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26@...2715...>
-References: <gerrit.1683717398000.Id8321dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <5895134db4e0fdf9096653973d1dadcc2a6bdae0-EmailReplacePatchSet-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Wed, 18 Oct 2023 13:21:38 +0000
+In-Reply-To: <gerrit.1697629414000.I2d353a0cea0a62f289b8c1060244df66dd7a14cb@...2715...>
+References: <gerrit.1697629414000.I2d353a0cea0a62f289b8c1060244df66dd7a14cb@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <bf89787b3ad018fab1bd7534a20ed4b5804e44bb-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="9cBqHfdPWGk="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Change type of
- frame.mss_fix to uint16_t
+Content-Type: multipart/alternative; boundary="fV6Md1dtQzk="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove openssl
+ engine method for loading the key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,396 +19,873 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---9cBqHfdPWGk=
+--fV6Md1dtQzk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#5) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/268?usp=3Demail )
+Attention is currently required from: flichtenheld, plaisthos.
+
+Hello flichtenheld,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/373?usp=3Demail
+
+to look at the new patch set (#2).
 
 The following approvals got outdated and were removed:
-Code-Review+2 by plaisthos
+Code-Review-1 by flichtenheld
 
 
-Change subject: Change type of frame.mss_fix to uint16_t
+Change subject: Remove openssl engine method for loading the key
 ......................................................................
 
-Change type of frame.mss_fix to uint16_t
+Remove openssl engine method for loading the key
 
-Since in the end this always ends up as an uint16_t
-anyway, just make the conversion much earlier. Cleans
-up the code and removes some -Wconversion warnings.
+This is a contribution for loading engine key. OpenSSL engine is
+deprecated since OpenSSL 3.0 and James Bottomley has not agreed
+to the proposed license change. He is also okay removing
+with the feature from the current code base as it is obsolete with
+OpenSSL 3.0.
 
-v2:
- - proper error handling in options.c
-v4:
- - also introduce a minimum mssfix
+The main commits that are reverted by this commit are
+8155f8aa0 and 542c69c37 (unit test)
 
-Change-Id: Id8321dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-Message-Id: <20231009105151.34074-1-frank@...2641...>
-URL: https://www.mail-archive.com/search?l=3Dmid&q=3D20231009105151.34074-1=
--frank@...2641...
-Signed-off-by: Gert Doering <gert@...1296...>
+Change-Id: I2d353a0cea0a62f289b8c1060244df66dd7a14cb
 ---
-M src/openvpn/mss.c
-M src/openvpn/mss.h
-M src/openvpn/mtu.c
-M src/openvpn/mtu.h
-M src/openvpn/options.c
-5 files changed, 26 insertions(+), 15 deletions(-)
+M .gitignore
+M configure.ac
+M src/openvpn/crypto_openssl.c
+M src/openvpn/crypto_openssl.h
+M src/openvpn/ssl_openssl.c
+M tests/unit_tests/Makefile.am
+D tests/unit_tests/engine-key/Makefile.am
+D tests/unit_tests/engine-key/check_engine_keys.sh
+D tests/unit_tests/engine-key/libtestengine.c
+D tests/unit_tests/engine-key/openssl.cnf.in
+10 files changed, 0 insertions(+), 279 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/68/268/5
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/73/373/2
 
-diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
-index 816e65b..4227047 100644
---- a/src/openvpn/mss.c
-+++ b/src/openvpn/mss.c
-@@ -44,7 +44,7 @@
-  *              if yes, hand to mss_fixup_dowork()
-  */
- void
--mss_fixup_ipv4(struct buffer *buf, int maxmss)
-+mss_fixup_ipv4(struct buffer *buf, uint16_t maxmss)
- {
-     const struct openvpn_iphdr *pip;
-     int hlen;
-@@ -72,7 +72,7 @@
-             struct openvpn_tcphdr *tc =3D (struct openvpn_tcphdr *) BPTR(&=
-newbuf);
-             if (tc->flags & OPENVPN_TCPH_SYN_MASK)
-             {
--                mss_fixup_dowork(&newbuf, (uint16_t) maxmss);
-+                mss_fixup_dowork(&newbuf, maxmss);
-             }
-         }
-     }
-@@ -84,7 +84,7 @@
-  *              (IPv6 header structure is sufficiently different from IPv4=
-...)
-  */
- void
--mss_fixup_ipv6(struct buffer *buf, int maxmss)
-+mss_fixup_ipv6(struct buffer *buf, uint16_t maxmss)
- {
-     const struct openvpn_ipv6hdr *pip6;
-     struct buffer newbuf;
-@@ -130,7 +130,7 @@
-         struct openvpn_tcphdr *tc =3D (struct openvpn_tcphdr *) BPTR(&newb=
-uf);
-         if (tc->flags & OPENVPN_TCPH_SYN_MASK)
-         {
--            mss_fixup_dowork(&newbuf, (uint16_t) maxmss-20);
-+            mss_fixup_dowork(&newbuf, maxmss-20);
-         }
-     }
+diff --git a/.gitignore b/.gitignore
+index ed03aaa..a1da366 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -57,10 +57,6 @@
+ t_client.rc
+ t_client_ips.rc
+ tests/unit_tests/**/*_testdriver
+-tests/unit_tests/engine-key/client.key
+-tests/unit_tests/engine-key/log.txt
+-tests/unit_tests/engine-key/openssl.cnf
+-tests/unit_tests/engine-key/passwd
+
+ src/openvpn/openvpn
+ include/openvpn-plugin.h
+diff --git a/configure.ac b/configure.ac
+index 266b66f..128ab86 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1532,7 +1532,6 @@
+         tests/unit_tests/openvpn/Makefile
+         tests/unit_tests/plugins/Makefile
+         tests/unit_tests/plugins/auth-pam/Makefile
+-	tests/unit_tests/engine-key/Makefile
+ 	sample/Makefile
+ ])
+ AC_CONFIG_FILES([tests/t_client.sh], [chmod +x tests/t_client.sh])
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 22c6d68..fe1254f 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -1374,66 +1374,6 @@
+     return CRYPTO_memcmp(a, b, size);
  }
-@@ -191,13 +191,14 @@
-                 {
-                     continue;
-                 }
--                mssval =3D (opt[2]<<8)+opt[3];
-+                mssval =3D opt[2] << 8;
-+                mssval +=3D opt[3];
-                 if (mssval > maxmss)
-                 {
--                    dmsg(D_MSS, "MSS: %d -> %d", (int) mssval, (int) maxms=
-s);
-+                    dmsg(D_MSS, "MSS: %" PRIu16 " -> %" PRIu16, mssval, ma=
-xmss);
-                     accumulate =3D htons(mssval);
--                    opt[2] =3D (maxmss>>8)&0xff;
--                    opt[3] =3D maxmss&0xff;
-+                    opt[2] =3D (uint8_t)((maxmss>>8)&0xff);
-+                    opt[3] =3D (uint8_t)(maxmss&0xff);
-                     accumulate -=3D htons(maxmss);
-                     ADJUST_CHECKSUM(accumulate, tc->check);
-                 }
-@@ -291,7 +292,7 @@
+
+-#if HAVE_OPENSSL_ENGINE
+-static int
+-ui_reader(UI *ui, UI_STRING *uis)
+-{
+-    SSL_CTX *ctx =3D UI_get0_user_data(ui);
+-
+-    if (UI_get_string_type(uis) =3D=3D UIT_PROMPT)
+-    {
+-        pem_password_cb *cb =3D SSL_CTX_get_default_passwd_cb(ctx);
+-        void *d =3D SSL_CTX_get_default_passwd_cb_userdata(ctx);
+-        char password[64];
+-
+-        cb(password, sizeof(password), 0, d);
+-        UI_set_result(ui, uis, password);
+-
+-        return 1;
+-    }
+-    return 0;
+-}
+-#endif
+-
+-EVP_PKEY *
+-engine_load_key(const char *file, SSL_CTX *ctx)
+-{
+-#if HAVE_OPENSSL_ENGINE
+-    UI_METHOD *ui;
+-    EVP_PKEY *pkey;
+-
+-    if (!engine_persist)
+-    {
+-        return NULL;
+-    }
+-
+-    /* this will print out the error from BIO_read */
+-    crypto_msg(M_INFO, "PEM_read_bio failed, now trying engine method to l=
+oad private key");
+-
+-    ui =3D UI_create_method("openvpn");
+-    if (!ui)
+-    {
+-        crypto_msg(M_FATAL, "Engine UI creation failed");
+-        return NULL;
+-    }
+-
+-    UI_method_set_reader(ui, ui_reader);
+-
+-    ENGINE_init(engine_persist);
+-    pkey =3D ENGINE_load_private_key(engine_persist, file, ui, ctx);
+-    ENGINE_finish(engine_persist);
+-    if (!pkey)
+-    {
+-        crypto_msg(M_FATAL, "Engine could not load key file");
+-    }
+-
+-    UI_destroy_method(ui);
+-    return pkey;
+-#else  /* if HAVE_OPENSSL_ENGINE */
+-    return NULL;
+-#endif /* if HAVE_OPENSSL_ENGINE */
+-}
+-
+ #if (OPENSSL_VERSION_NUMBER >=3D 0x10100000L) && !defined(LIBRESSL_VERSION=
+_NUMBER)
+ bool
+ ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_t *secret,
+diff --git a/src/openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h
+index 32849fd..c5a5393 100644
+--- a/src/openvpn/crypto_openssl.h
++++ b/src/openvpn/crypto_openssl.h
+@@ -118,16 +118,4 @@
+         msg((flags), __VA_ARGS__); \
+     } while (false)
+
+-/**
+- * Load a key file from an engine
+- *
+- * @param file  The engine file to load
+- * @param ui    The UI method for the password prompt
+- * @param data  The data to pass to the UI method
+- *
+- * @return      The private key if successful or NULL if not
+- */
+-EVP_PKEY *
+-engine_load_key(const char *file, SSL_CTX *ctx);
+-
+ #endif /* CRYPTO_OPENSSL_H_ */
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 4c08add..23e7623 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1057,10 +1057,6 @@
+     pkey =3D PEM_read_bio_PrivateKey(in, NULL,
+                                    SSL_CTX_get_default_passwd_cb(ctx->ctx),
+                                    SSL_CTX_get_default_passwd_cb_userdata(=
+ctx->ctx));
+-    if (!pkey)
+-    {
+-        pkey =3D engine_load_key(priv_key_file, ctx->ctx);
+-    }
+
+     if (!pkey || !SSL_CTX_use_PrivateKey(ssl_ctx, pkey))
      {
-         /* we subtract IPv4 and TCP overhead here, mssfix method will add =
-the
-          * extra 20 for IPv6 */
--        frame->mss_fix =3D options->ce.mssfix - (20 + 20);
-+        frame->mss_fix =3D (uint16_t)(options->ce.mssfix - (20 + 20));
-         return;
-     }
+diff --git a/tests/unit_tests/Makefile.am b/tests/unit_tests/Makefile.am
+index f27cd90..33fefaa 100644
+--- a/tests/unit_tests/Makefile.am
++++ b/tests/unit_tests/Makefile.am
+@@ -2,7 +2,4 @@
 
-@@ -325,7 +326,7 @@
-
-     /* This is the target value our payload needs to be smaller */
-     unsigned int target =3D options->ce.mssfix - overhead;
--    frame->mss_fix =3D adjust_payload_max_cbc(kt, target) - payload_overhe=
-ad;
-+    frame->mss_fix =3D (uint16_t)(adjust_payload_max_cbc(kt, target) - pay=
-load_overhead);
-
-
- }
-diff --git a/src/openvpn/mss.h b/src/openvpn/mss.h
-index 1c4704b..b2a68cf 100644
---- a/src/openvpn/mss.h
-+++ b/src/openvpn/mss.h
-@@ -29,9 +29,9 @@
- #include "mtu.h"
- #include "ssl_common.h"
-
--void mss_fixup_ipv4(struct buffer *buf, int maxmss);
-+void mss_fixup_ipv4(struct buffer *buf, uint16_t maxmss);
-
--void mss_fixup_ipv6(struct buffer *buf, int maxmss);
-+void mss_fixup_ipv6(struct buffer *buf, uint16_t maxmss);
-
- void mss_fixup_dowork(struct buffer *buf, uint16_t maxmss);
-
-diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index 56db118..81851d3 100644
---- a/src/openvpn/mtu.c
-+++ b/src/openvpn/mtu.c
-@@ -203,7 +203,7 @@
-         buf_printf(&out, "%s ", prefix);
-     }
-     buf_printf(&out, "[");
--    buf_printf(&out, " mss_fix:%d", frame->mss_fix);
-+    buf_printf(&out, " mss_fix:%" PRIu16, frame->mss_fix);
- #ifdef ENABLE_FRAGMENT
-     buf_printf(&out, " max_frag:%d", frame->max_fragment_size);
- #endif
-diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-index b602b86..c64398d 100644
---- a/src/openvpn/mtu.h
-+++ b/src/openvpn/mtu.h
-@@ -115,7 +115,7 @@
-                                   *  decryption/encryption or compression.=
- */
-     } buf;
-
--    unsigned int mss_fix;       /**< The actual MSS value that should be
-+    uint16_t mss_fix;           /**< The actual MSS value that should be
-                                  *   written to the payload packets. This
-                                  *   is the value for IPv4 TCP packets. For
-                                  *   IPv6 packets another 20 bytes must
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 134bb72..2b68bac 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -7236,9 +7236,19 @@
-         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
-         if (p[1])
-         {
-+            int mssfix =3D positive_atoi(p[1]);
-+            /* can be 0, but otherwise it needs to be high enough so we can
-+             * substract room for headers. */
-+            if (mssfix !=3D 0
-+                && (mssfix < TLS_CHANNEL_MTU_MIN || mssfix > UINT16_MAX))
-+            {
-+                msg(msglevel, "--mssfix value '%s' is invalid", p[1]);
-+                goto err;
-+            }
-+
-             /* value specified, assume encapsulation is not
-              * included unless "mtu" follows later */
--            options->ce.mssfix =3D positive_atoi(p[1]);
-+            options->ce.mssfix =3D mssfix;
-             options->ce.mssfix_encap =3D false;
-             options->ce.mssfix_default =3D false;
-         }
+ if ENABLE_UNITTESTS
+ SUBDIRS =3D example_test openvpn plugins
+-if OPENSSL_ENGINE
+-SUBDIRS +=3D engine-key
+-endif
+ endif
+diff --git a/tests/unit_tests/engine-key/Makefile.am b/tests/unit_tests/eng=
+ine-key/Makefile.am
+deleted file mode 100644
+index 0c28885..0000000
+--- a/tests/unit_tests/engine-key/Makefile.am
++++ /dev/null
+@@ -1,31 +0,0 @@
+-AUTOMAKE_OPTIONS =3D foreign
+-
+-check_LTLIBRARIES =3D libtestengine.la
+-conffiles =3D openssl.cnf
+-EXTRA_DIST =3D \
+-	openssl.cnf.in \
+-	check_engine_keys.sh
+-
+-TESTS_ENVIRONMENT =3D srcdir=3D"$(abs_srcdir)"; \
+-	builddir=3D"$(abs_builddir)"; \
+-	top_builddir=3D"$(top_builddir)"; \
+-	top_srcdir=3D"$(top_srcdir)"; \
+-	export srcdir builddir top_builddir top_srcdir;
+-
+-if !CROSS_COMPILING
+-TESTS =3D check_engine_keys.sh
+-endif
+-check_engine_keys.sh: $(conffiles)
+-
+-CLEANFILES =3D \
+-	client.key \
+-	passwd \
+-	log.txt \
+-	$(conffiles)
+-
+-openssl.cnf: $(srcdir)/openssl.cnf.in
+-	sed "s|ABSBUILDDIR|$(abs_builddir)|" < $(srcdir)/openssl.cnf.in > $@
+-
+-libtestengine_la_SOURCES =3D libtestengine.c
+-libtestengine_la_LDFLAGS =3D @TEST_LDFLAGS@ -rpath /lib -shrext .so
+-libtestengine_la_CFLAGS =3D @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(compat_s=
+rcdir)
+diff --git a/tests/unit_tests/engine-key/check_engine_keys.sh b/tests/unit_=
+tests/engine-key/check_engine_keys.sh
+deleted file mode 100755
+index 12dd230..0000000
+--- a/tests/unit_tests/engine-key/check_engine_keys.sh
++++ /dev/null
+@@ -1,36 +0,0 @@
+-#!/bin/sh
+-
+-OPENSSL_CONF=3D"${builddir}/openssl.cnf"
+-export OPENSSL_CONF
+-
+-password=3D'AT3S4PASSWD'
+-
+-key=3D"${builddir}/client.key"
+-pwdfile=3D"${builddir}/passwd"
+-
+-# create an engine key for us
+-sed 's/PRIVATE KEY/TEST ENGINE KEY/' < ${top_srcdir}/sample/sample-keys/cl=
+ient.key > ${key}
+-echo "$password" > $pwdfile
+-
+-# our version of grep to output log.txt on failure in case it's an openssl
+-# error mismatch and the grep expression needs updating
+-loggrep() {
+-    egrep -q "$1" log.txt || { echo '---- begin log.txt ----'; cat log.txt=
+; echo '--- end log.txt ---'; return 1; }
+-}
+-
+-# note here we've induced a mismatch in the client key and the server
+-# cert which openvpn should report and die.  Check that it does.  Note
+-# also that this mismatch depends on openssl not openvpn, so it is
+-# somewhat fragile
+-${top_builddir}/src/openvpn/openvpn --cd ${top_srcdir}/sample --config sam=
+ple-config-files/loopback-server --engine testengine --key ${key} --askpass=
+ $pwdfile > log.txt 2>&1
+-
+-# first off check we died because of a key mismatch.  If this doesn't
+-# pass, suspect openssl of returning different messages and update the
+-# test accordingly
+-loggrep '(x509 certificate routines:(X509_check_private_key)?:key values m=
+ismatch|func\(128\):reason\(116\))' log.txt || { echo "Key mismatch not det=
+ected"; exit 1; }
+-
+-# now look for the engine prints (these are under our control)
+-loggrep 'ENGINE: engine_init called' || { echo "Engine initialization not =
+detected"; exit 1; }
+-loggrep 'ENGINE: engine_load_key called' || { echo "Key was not loaded fro=
+m engine"; exit 1; }
+-loggrep "ENGINE: engine_load_key got password ${password}" || { echo "Key =
+password was not retrieved by the engine"; exit 1; }
+-exit 0
+diff --git a/tests/unit_tests/engine-key/libtestengine.c b/tests/unit_tests=
+/engine-key/libtestengine.c
+deleted file mode 100644
+index 8bcfa92..0000000
+--- a/tests/unit_tests/engine-key/libtestengine.c
++++ /dev/null
+@@ -1,116 +0,0 @@
+-#include <string.h>
+-#include <openssl/engine.h>
+-#include <openssl/evp.h>
+-#include <openssl/pem.h>
+-
+-static char *engine_id =3D "testengine";
+-static char *engine_name =3D "Engine for testing openvpn engine key suppor=
+t";
+-
+-static int is_initialized =3D 0;
+-
+-static int
+-engine_init(ENGINE *e)
+-{
+-    is_initialized =3D 1;
+-    fprintf(stderr, "ENGINE: engine_init called\n");
+-    return 1;
+-}
+-
+-static int
+-engine_finish(ENGINE *e)
+-{
+-    fprintf(stderr, "ENGINE: engine_finsh called\n");
+-    is_initialized =3D 0;
+-    return 1;
+-}
+-
+-static EVP_PKEY *
+-engine_load_key(ENGINE *e, const char *key_id,
+-                UI_METHOD *ui_method, void *cb_data)
+-{
+-    BIO *b;
+-    EVP_PKEY *pkey;
+-    PKCS8_PRIV_KEY_INFO *p8inf;
+-    UI *ui;
+-    char auth[256];
+-
+-    fprintf(stderr, "ENGINE: engine_load_key called\n");
+-
+-    if (!is_initialized)
+-    {
+-        fprintf(stderr, "Load Key called without correct initialization\n"=
+);
+-        return NULL;
+-    }
+-    b =3D BIO_new_file(key_id, "r");
+-    if (!b)
+-    {
+-        fprintf(stderr, "File %s does not exist or cannot be read\n", key_=
+id);
+-        return 0;
+-    }
+-    /* Basically read an EVP_PKEY private key file with different
+-     * PEM guards --- we are a test engine */
+-    p8inf =3D PEM_ASN1_read_bio((d2i_of_void *)d2i_PKCS8_PRIV_KEY_INFO,
+-                              "TEST ENGINE KEY", b,
+-                              NULL, NULL, NULL);
+-    BIO_free(b);
+-    if (!p8inf)
+-    {
+-        fprintf(stderr, "Failed to read engine private key\n");
+-        return NULL;
+-    }
+-    pkey =3D EVP_PKCS82PKEY(p8inf);
+-
+-    /* now we have a private key, pretend it had a password
+-     * this verifies the password makes it through openvpn OK */
+-    ui =3D UI_new();
+-
+-    if (ui_method)
+-    {
+-        UI_set_method(ui, ui_method);
+-    }
+-
+-    UI_add_user_data(ui, cb_data);
+-
+-    if (UI_add_input_string(ui, "enter test engine key",
+-                            UI_INPUT_FLAG_DEFAULT_PWD,
+-                            auth, 0, sizeof(auth)) =3D=3D 0)
+-    {
+-        fprintf(stderr, "UI_add_input_string failed\n");
+-        goto out;
+-    }
+-
+-    if (UI_process(ui))
+-    {
+-        fprintf(stderr, "UI_process failed\n");
+-        goto out;
+-    }
+-
+-    fprintf(stderr, "ENGINE: engine_load_key got password %s\n", auth);
+-
+-out:
+-    UI_free(ui);
+-
+-    return pkey;
+-}
+-
+-
+-static int
+-engine_bind_fn(ENGINE *e, const char *id)
+-{
+-    if (id && strcmp(id, engine_id) !=3D 0)
+-    {
+-        return 0;
+-    }
+-    if (!ENGINE_set_id(e, engine_id)
+-        || !ENGINE_set_name(e, engine_name)
+-        || !ENGINE_set_init_function(e, engine_init)
+-        || !ENGINE_set_finish_function(e, engine_finish)
+-        || !ENGINE_set_load_privkey_function(e, engine_load_key))
+-    {
+-        return 0;
+-    }
+-    return 1;
+-}
+-
+-IMPLEMENT_DYNAMIC_CHECK_FN()
+-IMPLEMENT_DYNAMIC_BIND_FN(engine_bind_fn)
+diff --git a/tests/unit_tests/engine-key/openssl.cnf.in b/tests/unit_tests/=
+engine-key/openssl.cnf.in
+deleted file mode 100644
+index 5eda9fa..0000000
+--- a/tests/unit_tests/engine-key/openssl.cnf.in
++++ /dev/null
+@@ -1,12 +0,0 @@
+-HOME		=3D .
+-openssl_conf	=3D openssl_init
+-
+-[req]
+-[openssl_init]
+-engines		=3D engines_section
+-
+-[engines_section]
+-testengine	=3D testengine_section
+-
+-[testengine_section]
+-dynamic_path	=3D ABSBUILDDIR/.libs/libtestengine.so
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/268?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/373?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Id8321dfbb8ad8d79f4bb2a9da61f8cd6b6c6ee26
-Gerrit-Change-Number: 268
-Gerrit-PatchSet: 5
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Change-Id: I2d353a0cea0a62f289b8c1060244df66dd7a14cb
+Gerrit-Change-Number: 373
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---9cBqHfdPWGk=
+--fV6Md1dtQzk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #5</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/268?usp=3Demail">View Change</a></p><p>The following approvals got outda=
-ted and were removed:
-Code-Review+2 by plaisthos</p><pre style=3D"font-family: monospace,monospac=
-e; white-space: pre-wrap;">Change type of frame.mss_fix to uint16_t<br><br>=
-Since in the end this always ends up as an uint16_t<br>anyway, just make th=
-e conversion much earlier. Cleans<br>up the code and removes some -Wconvers=
-ion warnings.<br><br>v2:<br> - proper error handling in options.c<br>v4:<br=
-> - also introduce a minimum mssfix<br><br>Change-Id: Id8321dfbb8ad8d79f4bb=
-2a9da61f8cd6b6c6ee26<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2724...=
-..&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>Message=
--Id: &lt;20231009105151.34074-1-frank@...2641...&gt;<br>URL: https://www.ma=
-il-archive.com/search?l=3Dmid&amp;q=3D20231009105151.34074-1-frank@...2724...=
-..<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/o=
-penvpn/mss.c<br>M src/openvpn/mss.h<br>M src/openvpn/mtu.c<br>M src/openvpn=
-/mtu.h<br>M src/openvpn/options.c<br>5 files changed, 26 insertions(+), 15 =
-deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs=
-/changes/68/268/5</pre><pre style=3D"font-family: monospace,monospace; whit=
-e-space: pre-wrap;"><span>diff --git a/src/openvpn/mss.c b/src/openvpn/mss.=
-c</span><br><span>index 816e65b..4227047 100644</span><br><span>--- a/src/o=
-penvpn/mss.c</span><br><span>+++ b/src/openvpn/mss.c</span><br><span>@@ -44=
-,7 +44,7 @@</span><br><span>  *              if yes, hand to mss_fixup_dowo=
-rk()</span><br><span>  */</span><br><span> void</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-mss_fixup_ipv4(struct buffer *buf, int maxmss)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+mss_fixup_ipv4(struct =
-buffer *buf, uint16_t maxmss)</span><br><span> {</span><br><span>     const=
- struct openvpn_iphdr *pip;</span><br><span>     int hlen;</span><br><span>=
-@@ -72,7 +72,7 @@</span><br><span>             struct openvpn_tcphdr *tc =
-=3D (struct openvpn_tcphdr *) BPTR(&amp;newbuf);</span><br><span>          =
-   if (tc-&gt;flags &amp; OPENVPN_TCPH_SYN_MASK)</span><br><span>          =
-   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                m=
-ss_fixup_dowork(&amp;newbuf, (uint16_t) maxmss);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+                mss_fixup_dowork(&amp;newbuf, =
-maxmss);</span><br><span>             }</span><br><span>         }</span><b=
-r><span>     }</span><br><span>@@ -84,7 +84,7 @@</span><br><span>  *       =
-       (IPv6 header structure is sufficiently different from IPv4...)</span=
-><br><span>  */</span><br><span> void</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-mss_fixup_ipv6(struct buffer *buf, int maxmss)</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+mss_fixup_ipv6(struct buffer *bu=
-f, uint16_t maxmss)</span><br><span> {</span><br><span>     const struct op=
-envpn_ipv6hdr *pip6;</span><br><span>     struct buffer newbuf;</span><br><=
-span>@@ -130,7 +130,7 @@</span><br><span>         struct openvpn_tcphdr *tc=
- =3D (struct openvpn_tcphdr *) BPTR(&amp;newbuf);</span><br><span>         =
-if (tc-&gt;flags &amp; OPENVPN_TCPH_SYN_MASK)</span><br><span>         {</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-            mss_fixup_do=
-work(&amp;newbuf, (uint16_t) maxmss-20);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            mss_fixup_dowork(&amp;newbuf, maxmss-20);<=
-/span><br><span>         }</span><br><span>     }</span><br><span> }</span>=
-<br><span>@@ -191,13 +191,14 @@</span><br><span>                 {</span><b=
-r><span>                     continue;</span><br><span>                 }</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                mssval =
-=3D (opt[2]&lt;&lt;8)+opt[3];</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                mssval =3D opt[2] &lt;&lt; 8;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+                mssval +=3D opt[3];</sp=
-an><br><span>                 if (mssval &gt; maxmss)</span><br><span>     =
-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-            dmsg(D_MSS, &quot;MSS: %d -&gt; %d&quot;, (int) mssval, (int) m=
-axmss);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-        dmsg(D_MSS, &quot;MSS: %&quot; PRIu16 &quot; -&gt; %&quot; PRIu16, =
-mssval, maxmss);</span><br><span>                     accumulate =3D htons(=
-mssval);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-       opt[2] =3D (maxmss&gt;&gt;8)&amp;0xff;</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-                    opt[3] =3D maxmss&amp;0xff;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                    opt=
-[2] =3D (uint8_t)((maxmss&gt;&gt;8)&amp;0xff);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+                    opt[3] =3D (uint8_t)(maxmss&=
-amp;0xff);</span><br><span>                     accumulate -=3D htons(maxms=
-s);</span><br><span>                     ADJUST_CHECKSUM(accumulate, tc-&gt=
-;check);</span><br><span>                 }</span><br><span>@@ -291,7 +292,=
-7 @@</span><br><span>     {</span><br><span>         /* we subtract IPv4 an=
-d TCP overhead here, mssfix method will add the</span><br><span>          *=
- extra 20 for IPv6 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        frame-&gt;mss_fix =3D options-&gt;ce.mssfix - (20 + 20);</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        frame-&gt;mss_fix =3D =
-(uint16_t)(options-&gt;ce.mssfix - (20 + 20));</span><br><span>         ret=
-urn;</span><br><span>     }</span><br><span> </span><br><span>@@ -325,7 +32=
-6,7 @@</span><br><span> </span><br><span>     /* This is the target value o=
-ur payload needs to be smaller */</span><br><span>     unsigned int target =
-=3D options-&gt;ce.mssfix - overhead;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    frame-&gt;mss_fix =3D adjust_payload_max_cbc(kt, target=
-) - payload_overhead;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    frame-&gt;mss_fix =3D (uint16_t)(adjust_payload_max_cbc(kt, target) -=
- payload_overhead);</span><br><span> </span><br><span> </span><br><span> }<=
-/span><br><span>diff --git a/src/openvpn/mss.h b/src/openvpn/mss.h</span><b=
-r><span>index 1c4704b..b2a68cf 100644</span><br><span>--- a/src/openvpn/mss=
-.h</span><br><span>+++ b/src/openvpn/mss.h</span><br><span>@@ -29,9 +29,9 @=
-@</span><br><span> #include &quot;mtu.h&quot;</span><br><span> #include &qu=
-ot;ssl_common.h&quot;</span><br><span> </span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-void mss_fixup_ipv4(struct buffer *buf, int maxmss);</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+void mss_fixup_ipv4(stru=
-ct buffer *buf, uint16_t maxmss);</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-void mss_fixup_ipv6(struct buffer *buf, int=
- maxmss);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void mss_f=
-ixup_ipv6(struct buffer *buf, uint16_t maxmss);</span><br><span> </span><br=
-><span> void mss_fixup_dowork(struct buffer *buf, uint16_t maxmss);</span><=
-br><span> </span><br><span>diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu=
-.c</span><br><span>index 56db118..81851d3 100644</span><br><span>--- a/src/=
-openvpn/mtu.c</span><br><span>+++ b/src/openvpn/mtu.c</span><br><span>@@ -2=
-03,7 +203,7 @@</span><br><span>         buf_printf(&amp;out, &quot;%s &quot=
-;, prefix);</span><br><span>     }</span><br><span>     buf_printf(&amp;out=
-, &quot;[&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-buf_printf(&amp;out, &quot; mss_fix:%d&quot;, frame-&gt;mss_fix);</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    buf_printf(&amp;out, &quo=
-t; mss_fix:%&quot; PRIu16, frame-&gt;mss_fix);</span><br><span> #ifdef ENAB=
-LE_FRAGMENT</span><br><span>     buf_printf(&amp;out, &quot; max_frag:%d&qu=
-ot;, frame-&gt;max_fragment_size);</span><br><span> #endif</span><br><span>=
-diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h</span><br><span>index b6=
-02b86..c64398d 100644</span><br><span>--- a/src/openvpn/mtu.h</span><br><sp=
-an>+++ b/src/openvpn/mtu.h</span><br><span>@@ -115,7 +115,7 @@</span><br><s=
-pan>                                   *  decryption/encryption or compress=
-ion. */</span><br><span>     } buf;</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    unsigned int mss_fix;       /**&lt; The=
- actual MSS value that should be</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    uint16_t mss_fix;           /**&lt; The actual MSS value t=
-hat should be</span><br><span>                                  *   written=
- to the payload packets. This</span><br><span>                             =
-     *   is the value for IPv4 TCP packets. For</span><br><span>           =
-                       *   IPv6 packets another 20 bytes must</span><br><sp=
-an>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><sp=
-an>index 134bb72..2b68bac 100644</span><br><span>--- a/src/openvpn/options.=
-c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -7236,9 +7=
-236,19 @@</span><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CO=
-NNECTION);</span><br><span>         if (p[1])</span><br><span>         {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            int mssfix=
- =3D positive_atoi(p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            /* can be 0, but otherwise it needs to be high enough so =
-we can</span><br><span style=3D"color: hsl(120, 100%, 40%);">+             =
-* substract room for headers. */</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            if (mssfix !=3D 0</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                &amp;&amp; (mssfix &lt; TLS_CHANNEL_=
-MTU_MIN || mssfix &gt; UINT16_MAX))</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+            {</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                msg(msglevel, &quot;--mssfix value &#39;%s&#39; i=
-s invalid&quot;, p[1]);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+                goto err;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span>             /* value specified, assume encapsulation =
-is not</span><br><span>              * included unless &quot;mtu&quot; foll=
-ows later */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   options-&gt;ce.mssfix =3D positive_atoi(p[1]);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+            options-&gt;ce.mssfix =3D mssfix;=
-</span><br><span>             options-&gt;ce.mssfix_encap =3D false;</span>=
-<br><span>             options-&gt;ce.mssfix_default =3D false;</span><br><=
-span>         }</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/268?usp=3Demail">change 268</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/268?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>plaisthos <strong>uploaded patch set #2</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/373?usp=3Demail">View Chang=
+e</a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">Remove openssl engine method for loading the =
+key<br><br>This is a contribution for loading engine key. OpenSSL engine is=
+<br>deprecated since OpenSSL 3.0 and James Bottomley has not agreed<br>to t=
+he proposed license change. He is also okay removing<br>with the feature fr=
+om the current code base as it is obsolete with<br>OpenSSL 3.0.<br><br>The =
+main commits that are reverted by this commit are<br>8155f8aa0 and 542c69c3=
+7 (unit test)<br><br>Change-Id: I2d353a0cea0a62f289b8c1060244df66dd7a14cb<b=
+r>---<br>M .gitignore<br>M configure.ac<br>M src/openvpn/crypto_openssl.c<b=
+r>M src/openvpn/crypto_openssl.h<br>M src/openvpn/ssl_openssl.c<br>M tests/=
+unit_tests/Makefile.am<br>D tests/unit_tests/engine-key/Makefile.am<br>D te=
+sts/unit_tests/engine-key/check_engine_keys.sh<br>D tests/unit_tests/engine=
+-key/libtestengine.c<br>D tests/unit_tests/engine-key/openssl.cnf.in<br>10 =
+files changed, 0 insertions(+), 279 deletions(-)<br><br></pre><pre style=3D=
+"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://g=
+errit.openvpn.net:29418/openvpn refs/changes/73/373/2</pre><pre style=3D"fo=
+nt-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/=
+.gitignore b/.gitignore</span><br><span>index ed03aaa..a1da366 100644</span=
+><br><span>--- a/.gitignore</span><br><span>+++ b/.gitignore</span><br><spa=
+n>@@ -57,10 +57,6 @@</span><br><span> t_client.rc</span><br><span> t_client=
+_ips.rc</span><br><span> tests/unit_tests/**/*_testdriver</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-tests/unit_tests/engine-key/client.key<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-tests/unit_tests/engin=
+e-key/log.txt</span><br><span style=3D"color: hsl(0, 100%, 40%);">-tests/un=
+it_tests/engine-key/openssl.cnf</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-tests/unit_tests/engine-key/passwd</span><br><span> </span><br><s=
+pan> src/openvpn/openvpn</span><br><span> include/openvpn-plugin.h</span><b=
+r><span>diff --git a/configure.ac b/configure.ac</span><br><span>index 266b=
+66f..128ab86 100644</span><br><span>--- a/configure.ac</span><br><span>+++ =
+b/configure.ac</span><br><span>@@ -1532,7 +1532,6 @@</span><br><span>      =
+   tests/unit_tests/openvpn/Makefile</span><br><span>         tests/unit_te=
+sts/plugins/Makefile</span><br><span>         tests/unit_tests/plugins/auth=
+-pam/Makefile</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	tests/u=
+nit_tests/engine-key/Makefile</span><br><span> 	sample/Makefile</span><br><=
+span> ])</span><br><span> AC_CONFIG_FILES([tests/t_client.sh], [chmod +x te=
+sts/t_client.sh])</span><br><span>diff --git a/src/openvpn/crypto_openssl.c=
+ b/src/openvpn/crypto_openssl.c</span><br><span>index 22c6d68..fe1254f 1006=
+44</span><br><span>--- a/src/openvpn/crypto_openssl.c</span><br><span>+++ b=
+/src/openvpn/crypto_openssl.c</span><br><span>@@ -1374,66 +1374,6 @@</span>=
+<br><span>     return CRYPTO_memcmp(a, b, size);</span><br><span> }</span><=
+br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if HAVE_OP=
+ENSSL_ENGINE</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static in=
+t</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ui_reader(UI *ui, UI=
+_STRING *uis)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    SSL_CTX *ctx =3D UI_get0=
+_user_data(ui);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (UI_get_string_type(=
+uis) =3D=3D UIT_PROMPT)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        pem_pa=
+ssword_cb *cb =3D SSL_CTX_get_default_passwd_cb(ctx);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        void *d =3D SSL_CTX_get_default_pas=
+swd_cb_userdata(ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        char password[64];</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        cb(passw=
+ord, sizeof(password), 0, d);</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        UI_set_result(ui, uis, password);</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        return 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return 0;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-EV=
+P_PKEY *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-engine_load_k=
+ey(const char *file, SSL_CTX *ctx)</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if HAV=
+E_OPENSSL_ENGINE</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    U=
+I_METHOD *ui;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_=
+PKEY *pkey;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    if (!engine_persist)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        return NULL;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /=
+* this will print out the error from BIO_read */</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    crypto_msg(M_INFO, &quot;PEM_read_bio failed=
+, now trying engine method to load private key&quot;);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    ui =3D UI_create_method(&quot;openvpn&quot;);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    if (!ui)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        crypto_msg(M_FATAL, &quot;Engine UI creation failed=
+&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        retur=
+n NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    UI_method_set_reader(ui, ui_reader);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    ENGINE_init(engine_persist);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    pkey =3D ENGINE_load_private_key(engin=
+e_persist, file, ui, ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    ENGINE_finish(engine_persist);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    if (!pkey)</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   crypto_msg(M_FATAL, &quot;Engine could not load key file&quot;);</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    UI_destroy_method(ui);</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    return pkey;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-#else  /* if HAVE_OPENSSL_ENGINE */</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    return NULL;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-#endif /* if HAVE_OPENSSL_ENGINE */</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-</span><br><span> #if (OPENSSL_VERSION_NUMBER &gt;=3D 0x10100=
+000L) &amp;&amp; !defined(LIBRESSL_VERSION_NUMBER)</span><br><span> bool</s=
+pan><br><span> ssl_tls1_PRF(const uint8_t *seed, int seed_len, const uint8_=
+t *secret,</span><br><span>diff --git a/src/openvpn/crypto_openssl.h b/src/=
+openvpn/crypto_openssl.h</span><br><span>index 32849fd..c5a5393 100644</spa=
+n><br><span>--- a/src/openvpn/crypto_openssl.h</span><br><span>+++ b/src/op=
+envpn/crypto_openssl.h</span><br><span>@@ -118,16 +118,4 @@</span><br><span=
+>         msg((flags), __VA_ARGS__); \</span><br><span>     } while (false)=
+</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/**=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Load a key file fr=
+om an engine</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">- * @param file  The engine f=
+ile to load</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param =
+ui    The UI method for the password prompt</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">- * @param data  The data to pass to the UI method</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">- * @return      The private key if successf=
+ul or NULL if not</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-EVP_PKEY *</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-engine_load_key(const char *file,=
+ SSL_CTX *ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span=
+><br><span> #endif /* CRYPTO_OPENSSL_H_ */</span><br><span>diff --git a/src=
+/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c</span><br><span>index 4c=
+08add..23e7623 100644</span><br><span>--- a/src/openvpn/ssl_openssl.c</span=
+><br><span>+++ b/src/openvpn/ssl_openssl.c</span><br><span>@@ -1057,10 +105=
+7,6 @@</span><br><span>     pkey =3D PEM_read_bio_PrivateKey(in, NULL,</spa=
+n><br><span>                                    SSL_CTX_get_default_passwd_=
+cb(ctx-&gt;ctx),</span><br><span>                                    SSL_CT=
+X_get_default_passwd_cb_userdata(ctx-&gt;ctx));</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    if (!pkey)</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        pkey =3D engine_load_key(priv_key_file, ctx-&gt;ctx);</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span> </span><b=
+r><span>     if (!pkey || !SSL_CTX_use_PrivateKey(ssl_ctx, pkey))</span><br=
+><span>     {</span><br><span>diff --git a/tests/unit_tests/Makefile.am b/t=
+ests/unit_tests/Makefile.am</span><br><span>index f27cd90..33fefaa 100644</=
+span><br><span>--- a/tests/unit_tests/Makefile.am</span><br><span>+++ b/tes=
+ts/unit_tests/Makefile.am</span><br><span>@@ -2,7 +2,4 @@</span><br><span> =
+</span><br><span> if ENABLE_UNITTESTS</span><br><span> SUBDIRS =3D example_=
+test openvpn plugins</span><br><span style=3D"color: hsl(0, 100%, 40%);">-i=
+f OPENSSL_ENGINE</span><br><span style=3D"color: hsl(0, 100%, 40%);">-SUBDI=
+RS +=3D engine-key</span><br><span style=3D"color: hsl(0, 100%, 40%);">-end=
+if</span><br><span> endif</span><br><span>diff --git a/tests/unit_tests/eng=
+ine-key/Makefile.am b/tests/unit_tests/engine-key/Makefile.am</span><br><sp=
+an>deleted file mode 100644</span><br><span>index 0c28885..0000000</span><b=
+r><span>--- a/tests/unit_tests/engine-key/Makefile.am</span><br><span>+++ /=
+dev/null</span><br><span>@@ -1,31 +0,0 @@</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-AUTOMAKE_OPTIONS =3D foreign</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-check_LTLIBRARIES =3D libtestengine.la</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-conffiles =3D openssl.cnf</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-EXTRA_DIST =3D \</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-	openssl.cnf.in \</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-	check_engine_keys.sh</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-TES=
+TS_ENVIRONMENT =3D srcdir=3D&quot;$(abs_srcdir)&quot;; \</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-	builddir=3D&quot;$(abs_builddir)&quot;;=
+ \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	top_builddir=3D&qu=
+ot;$(top_builddir)&quot;; \</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-	top_srcdir=3D&quot;$(top_srcdir)&quot;; \</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-	export srcdir builddir top_builddir top_srcdir;=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-if !CROSS_COMPILING</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-TESTS =3D check_engine_keys.sh</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-endif</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-check_engine_keys.sh: $(conffiles)</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-CLEANFILES =3D \</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-	client.key \</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-	passwd \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	log.txt=
+ \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	$(conffiles)</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-openssl.cnf: $(srcdir)/openssl.cnf.in</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-	sed &quot;s|ABSBUILDDIR|$(abs_b=
+uilddir)|&quot; &lt; $(srcdir)/openssl.cnf.in &gt; $@</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-libtestengine_la_SOURCES =3D libtestengine.c</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-libtestengine_la_LDFLAGS =3D @TEST_LDFLAG=
+S@ -rpath /lib -shrext .so</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-libtestengine_la_CFLAGS =3D @TEST_CFLAGS@ -I$(openvpn_srcdir) -I$(comp=
+at_srcdir)</span><br><span>diff --git a/tests/unit_tests/engine-key/check_e=
+ngine_keys.sh b/tests/unit_tests/engine-key/check_engine_keys.sh</span><br>=
+<span>deleted file mode 100755</span><br><span>index 12dd230..0000000</span=
+><br><span>--- a/tests/unit_tests/engine-key/check_engine_keys.sh</span><br=
+><span>+++ /dev/null</span><br><span>@@ -1,36 +0,0 @@</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#!/bin/sh</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-O=
+PENSSL_CONF=3D&quot;${builddir}/openssl.cnf&quot;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-export OPENSSL_CONF</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-password=3D&#39;AT3S4PASSWD&#39;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-key=
+=3D&quot;${builddir}/client.key&quot;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-pwdfile=3D&quot;${builddir}/passwd&quot;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-# create an engine key for us</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-sed &#39;s/PRIVATE KEY/TEST ENGINE KEY/&#39; &lt; ${t=
+op_srcdir}/sample/sample-keys/client.key &gt; ${key}</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-echo &quot;$password&quot; &gt; $pwdfile</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-# our version of grep to output log.txt on =
+failure in case it&#39;s an openssl</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-# error mismatch and the grep expression needs updating</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-loggrep() {</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    egrep -q &quot;$1&quot; log.txt |=
+| { echo &#39;---- begin log.txt ----&#39;; cat log.txt; echo &#39;--- end =
+log.txt ---&#39;; return 1; }</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-# note here we&#39;ve induced a m=
+ismatch in the client key and the server</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-# cert which openvpn should report and die.  Check that =
+it does.  Note</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# also =
+that this mismatch depends on openssl not openvpn, so it is</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-# somewhat fragile</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-${top_builddir}/src/openvpn/openvpn --cd=
+ ${top_srcdir}/sample --config sample-config-files/loopback-server --engine=
+ testengine --key ${key} --askpass $pwdfile &gt; log.txt 2&gt;&amp;1</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-# first off check we died because of a key mismat=
+ch.  If this doesn&#39;t</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-# pass, suspect openssl of returning different messages and update the</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-# test accordingly</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-loggrep &#39;(x509 certifi=
+cate routines:(X509_check_private_key)?:key values mismatch|func\(128\):rea=
+son\(116\))&#39; log.txt || { echo &quot;Key mismatch not detected&quot;; e=
+xit 1; }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-# now look for the engine prints (=
+these are under our control)</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-loggrep &#39;ENGINE: engine_init called&#39; || { echo &quot;Engine =
+initialization not detected&quot;; exit 1; }</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-loggrep &#39;ENGINE: engine_load_key called&#39; || =
+{ echo &quot;Key was not loaded from engine&quot;; exit 1; }</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-loggrep &quot;ENGINE: engine_load_ke=
+y got password ${password}&quot; || { echo &quot;Key password was not retri=
+eved by the engine&quot;; exit 1; }</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-exit 0</span><br><span>diff --git a/tests/unit_tests/engine-k=
+ey/libtestengine.c b/tests/unit_tests/engine-key/libtestengine.c</span><br>=
+<span>deleted file mode 100644</span><br><span>index 8bcfa92..0000000</span=
+><br><span>--- a/tests/unit_tests/engine-key/libtestengine.c</span><br><spa=
+n>+++ /dev/null</span><br><span>@@ -1,116 +0,0 @@</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#include &lt;string.h&gt;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#include &lt;openssl/engine.h&gt;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;openssl/evp.h&gt;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;openssl/p=
+em.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-static char *engine_id =3D &quot;t=
+estengine&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-stati=
+c char *engine_name =3D &quot;Engine for testing openvpn engine key support=
+&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-static int is_initialized =3D 0;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-static int</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-engine_init(ENGINE *e)</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    is_initialized =3D 1;</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    fprintf(stderr, &quot;ENGINE: engine_init called\n&quot;);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    return 1;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-st=
+atic int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-engine_finish=
+(ENGINE *e)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    fprintf(stderr, &quot;ENGI=
+NE: engine_finsh called\n&quot;);</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    is_initialized =3D 0;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    return 1;</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-static EVP_PKEY *</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-engine_load_key(ENGINE *e, const char=
+ *key_id,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+    UI_METHOD *ui_method, void *cb_data)</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   BIO *b;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_PKE=
+Y *pkey;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    PKCS8_PRI=
+V_KEY_INFO *p8inf;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ UI *ui;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    char auth=
+[256];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    fprintf(stderr, &quot;ENGINE: en=
+gine_load_key called\n&quot;);</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!is_=
+initialized)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        fprintf(stderr, &=
+quot;Load Key called without correct initialization\n&quot;);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        return NULL;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    b =3D BIO_new_file(key_id, &quot;r&quot;);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!b)</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        fprintf(stderr, &quot;File %s does not exist =
+or cannot be read\n&quot;, key_id);</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-        return 0;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /*=
+ Basically read an EVP_PKEY private key file with different</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-     * PEM guards --- we are a test e=
+ngine */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    p8inf =3D=
+ PEM_ASN1_read_bio((d2i_of_void *)d2i_PKCS8_PRIV_KEY_INFO,</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-                              &quot;TE=
+ST ENGINE KEY&quot;, b,</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-                              NULL, NULL, NULL);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    BIO_free(b);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    if (!p8inf)</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-        fprintf(stderr, &quot;Failed to read engine private key\n&quot;);=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return NULL;<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    pkey =3D EVP_PKCS82PKEY(p8inf);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    /* now we have a private key, pretend i=
+t had a password</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+* this verifies the password makes it through openvpn OK */</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    ui =3D UI_new();</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    if (ui_method)</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+     UI_set_method(ui, ui_method);</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    UI_add_user_data(ui,=
+ cb_data);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    if (UI_add_input_string(ui, =
+&quot;enter test engine key&quot;,</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                            UI_INPUT_FLAG_DEFAULT_PWD,</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                            a=
+uth, 0, sizeof(auth)) =3D=3D 0)</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  fprintf(stderr, &quot;UI_add_input_string failed\n&quot;);</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        goto out;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  if (UI_process(ui))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        fprintf(=
+stderr, &quot;UI_process failed\n&quot;);</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        goto out;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    fprintf(stderr, &=
+quot;ENGINE: engine_load_key got password %s\n&quot;, auth);</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-out:</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    UI_free(ui);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    return pkey;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static int</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-engine_bind_fn(ENGINE *e, co=
+nst char *id)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    if (id &amp;&amp; strcmp=
+(id, engine_id) !=3D 0)</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return=
+ 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    if (!ENGINE_set_id(e, engine_i=
+d)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        || !ENGINE_=
+set_name(e, engine_name)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        || !ENGINE_set_init_function(e, engine_init)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        || !ENGINE_set_finish_function(e,=
+ engine_finish)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+  || !ENGINE_set_load_privkey_function(e, engine_load_key))</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        return 0;</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    return 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-IMPLEMENT_DYNAMIC_CHECK_FN()</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-IMPLEMENT_DYNAMIC_BIND_FN(engine_bind_fn=
+)</span><br><span>diff --git a/tests/unit_tests/engine-key/openssl.cnf.in b=
+/tests/unit_tests/engine-key/openssl.cnf.in</span><br><span>deleted file mo=
+de 100644</span><br><span>index 5eda9fa..0000000</span><br><span>--- a/test=
+s/unit_tests/engine-key/openssl.cnf.in</span><br><span>+++ /dev/null</span>=
+<br><span>@@ -1,12 +0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-HOME		=3D .</span><br><span style=3D"color: hsl(0, 100%, 40%);">-opens=
+sl_conf	=3D openssl_init</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-[req]</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-[openssl_init]</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-engines		=3D engines_section</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-[engines_section]</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-testengine	=3D testengine_section</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-[testengine_section]</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-dynamic_path	=3D ABSBUILDDIR/.libs/libtestengine.so</span><br><span><=
+/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/373?usp=3Demail">change 373</a>. To unsubscribe, or for help writin=
+g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settin=
+gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
+itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
+nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/373?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Id8321dfbb8ad8d79f4bb2a9da61=
-f8cd6b6c6ee26 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 268 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I2d353a0cea0a62f289b8c106024=
+4df66dd7a14cb </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 373 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---9cBqHfdPWGk=--
+--fV6Md1dtQzk=--
 
