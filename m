@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 18 Oct 2023 15:10:36 +0000
+Date: Wed, 18 Oct 2023 15:10:34 +0000
 In-Reply-To: <gerrit.1697629414000.I2d353a0cea0a62f289b8c1060244df66dd7a14cb@...2715...>
 References: <gerrit.1697629414000.I2d353a0cea0a62f289b8c1060244df66dd7a14cb@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <f226ed1944bb18bf37b4f7d91ec222a93adcd66f-HTML@...2715...>
+Message-ID: <f226ed1944bb18bf37b4f7d91ec222a93adcd66f-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="GWh9PSBJMMA="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="+vCN4jAISxo="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove openssl
  engine method for loading the key
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,16 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---GWh9PSBJMMA=
+--+vCN4jAISxo=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/37=
-3?usp=3Demail )
+cron2 has uploaded a new patch set (#3) to the change originally created by=
+ plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/373?usp=3Demail )
+
 
 Change subject: Remove openssl engine method for loading the key
 ......................................................................
@@ -62,7 +63,7 @@ D tests/unit_tests/engine-key/openssl.cnf.in
 10 files changed, 0 insertions(+), 279 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/73/373/3
 
 diff --git a/.gitignore b/.gitignore
 index ed03aaa..a1da366 100644
@@ -463,402 +464,403 @@ Gerrit-PatchSet: 3
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---GWh9PSBJMMA=
+--+vCN4jAISxo=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/373?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Remove openssl engine method for loading the k=
-ey<br><br>This is a contribution for loading engine key. OpenSSL engine is<=
-br>deprecated since OpenSSL 3.0 and James Bottomley has not agreed to<br>th=
-e proposed license chagne. He is also okay with removing the<br>feature fro=
-m the current code base as it is obsolete with OpenSSL 3.0.<br><br>The orig=
-inal commit ID was a0a8d801dd0d84e0ec844b9ca4c225df7 (plus<br>subsequent fi=
-xes).<br><br>Change-Id: I2d353a0cea0a62f289b8c1060244df66dd7a14cb<br>Signed=
--off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Message-Id: &lt;2023100611=
-1910.3541180-1-arne@...1227...&gt;<br>URL: https://www.mail-archive.com/ope=
-nvpn-devel@lists.sourceforge.net/msg27133.html<br>Signed-off-by: Gert Doeri=
-ng &lt;gert@...1296...&gt;<br>---<br>M .gitignore<br>M configure.ac<br>M sr=
-c/openvpn/crypto_openssl.c<br>M src/openvpn/crypto_openssl.h<br>M src/openv=
-pn/ssl_openssl.c<br>M tests/unit_tests/Makefile.am<br>D tests/unit_tests/en=
-gine-key/Makefile.am<br>D tests/unit_tests/engine-key/check_engine_keys.sh<=
-br>D tests/unit_tests/engine-key/libtestengine.c<br>D tests/unit_tests/engi=
-ne-key/openssl.cnf.in<br>10 files changed, 0 insertions(+), 279 deletions(-=
-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/.gitignore b/.gitignore</span><br><span>index ed03aaa..a1da=
-366 100644</span><br><span>--- a/.gitignore</span><br><span>+++ b/.gitignor=
-e</span><br><span>@@ -57,10 +57,6 @@</span><br><span> t_client.rc</span><br=
-><span> t_client_ips.rc</span><br><span> tests/unit_tests/**/*_testdriver</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-tests/unit_tests/engine=
--key/client.key</span><br><span style=3D"color: hsl(0, 100%, 40%);">-tests/=
-unit_tests/engine-key/log.txt</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-tests/unit_tests/engine-key/openssl.cnf</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-tests/unit_tests/engine-key/passwd</span><br><spa=
-n> </span><br><span> src/openvpn/openvpn</span><br><span> include/openvpn-p=
-lugin.h</span><br><span>diff --git a/configure.ac b/configure.ac</span><br>=
-<span>index 266b66f..128ab86 100644</span><br><span>--- a/configure.ac</spa=
-n><br><span>+++ b/configure.ac</span><br><span>@@ -1532,7 +1532,6 @@</span>=
-<br><span>         tests/unit_tests/openvpn/Makefile</span><br><span>      =
-   tests/unit_tests/plugins/Makefile</span><br><span>         tests/unit_te=
-sts/plugins/auth-pam/Makefile</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-	tests/unit_tests/engine-key/Makefile</span><br><span> 	sample/Make=
-file</span><br><span> ])</span><br><span> AC_CONFIG_FILES([tests/t_client.s=
-h], [chmod +x tests/t_client.sh])</span><br><span>diff --git a/src/openvpn/=
-crypto_openssl.c b/src/openvpn/crypto_openssl.c</span><br><span>index 22c6d=
-68..fe1254f 100644</span><br><span>--- a/src/openvpn/crypto_openssl.c</span=
-><br><span>+++ b/src/openvpn/crypto_openssl.c</span><br><span>@@ -1374,66 +=
-1374,6 @@</span><br><span>     return CRYPTO_memcmp(a, b, size);</span><br>=
-<span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-#if HAVE_OPENSSL_ENGINE</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-static int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-ui_r=
-eader(UI *ui, UI_STRING *uis)</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    SSL_CTX =
-*ctx =3D UI_get0_user_data(ui);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (UI_=
-get_string_type(uis) =3D=3D UIT_PROMPT)</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        pem_password_cb *cb =3D SSL_CTX_get_default_passwd_cb(ctx);</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        void *d =3D SSL_CTX=
-_get_default_passwd_cb_userdata(ctx);</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        char password[64];</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        cb(password, sizeof(password), 0, d);</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        UI_set_result(ui, uis, password);</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        return 1;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    return 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-EVP_PKEY *</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-engine_load_key(const char *file, SSL_CTX *ctx)</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-#if HAVE_OPENSSL_ENGINE</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    UI_METHOD *ui;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-    EVP_PKEY *pkey;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!engine=
-_persist)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        return NULL;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    /* this will print out the error from BIO_read */</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    crypto_msg(M_INFO, &quot;PEM=
-_read_bio failed, now trying engine method to load private key&quot;);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    ui =3D UI_create_method(&quot;openvpn&quot;=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!ui)</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        crypto_msg(M_FATAL, &quot;Engine UI=
- creation failed&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        return NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    UI_method_set_reader(ui, ui_rea=
-der);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    ENGINE_init(engine_persist);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-    pkey =3D ENGINE_load_p=
-rivate_key(engine_persist, file, ui, ctx);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    ENGINE_finish(engine_persist);</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    if (!pkey)</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        crypto_msg(M_FATAL, &quot;Engine could not load key file=
-&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    UI_destroy_method(ui);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    return pkey;</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-#else  /* if HAVE_OPENSSL_ENGINE */</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    return NULL;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#endif /* if HAVE_OPENSSL_ENGINE */</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #if (OPENSSL_VERSION_NUMB=
-ER &gt;=3D 0x10100000L) &amp;&amp; !defined(LIBRESSL_VERSION_NUMBER)</span>=
-<br><span> bool</span><br><span> ssl_tls1_PRF(const uint8_t *seed, int seed=
-_len, const uint8_t *secret,</span><br><span>diff --git a/src/openvpn/crypt=
-o_openssl.h b/src/openvpn/crypto_openssl.h</span><br><span>index 32849fd..c=
-5a5393 100644</span><br><span>--- a/src/openvpn/crypto_openssl.h</span><br>=
-<span>+++ b/src/openvpn/crypto_openssl.h</span><br><span>@@ -118,16 +118,4 =
-@@</span><br><span>         msg((flags), __VA_ARGS__); \</span><br><span>  =
-   } while (false)</span><br><span> </span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-/**</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
-Load a key file from an engine</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param =
-file  The engine file to load</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">- * @param ui    The UI method for the password prompt</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">- * @param data  The data to pass to=
- the UI method</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">- * @return      The privat=
-e key if successful or NULL if not</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-EVP_P=
-KEY *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-engine_load_key(=
-const char *file, SSL_CTX *ctx);</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-</span><br><span> #endif /* CRYPTO_OPENSSL_H_ */</span><br><span=
->diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c</span><=
-br><span>index 4c08add..23e7623 100644</span><br><span>--- a/src/openvpn/ss=
-l_openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span><br><span=
->@@ -1057,10 +1057,6 @@</span><br><span>     pkey =3D PEM_read_bio_PrivateK=
-ey(in, NULL,</span><br><span>                                    SSL_CTX_ge=
-t_default_passwd_cb(ctx-&gt;ctx),</span><br><span>                         =
-           SSL_CTX_get_default_passwd_cb_userdata(ctx-&gt;ctx));</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-    if (!pkey)</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        pkey =3D engine_load_key(priv_key_file, ctx-&gt=
-;ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br=
-><span> </span><br><span>     if (!pkey || !SSL_CTX_use_PrivateKey(ssl_ctx,=
- pkey))</span><br><span>     {</span><br><span>diff --git a/tests/unit_test=
-s/Makefile.am b/tests/unit_tests/Makefile.am</span><br><span>index f27cd90.=
-.33fefaa 100644</span><br><span>--- a/tests/unit_tests/Makefile.am</span><b=
-r><span>+++ b/tests/unit_tests/Makefile.am</span><br><span>@@ -2,7 +2,4 @@<=
-/span><br><span> </span><br><span> if ENABLE_UNITTESTS</span><br><span> SUB=
-DIRS =3D example_test openvpn plugins</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-if OPENSSL_ENGINE</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-SUBDIRS +=3D engine-key</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-endif</span><br><span> endif</span><br><span>diff --git a/tes=
-ts/unit_tests/engine-key/Makefile.am b/tests/unit_tests/engine-key/Makefile=
-.am</span><br><span>deleted file mode 100644</span><br><span>index 0c28885.=
-.0000000</span><br><span>--- a/tests/unit_tests/engine-key/Makefile.am</spa=
-n><br><span>+++ /dev/null</span><br><span>@@ -1,31 +0,0 @@</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-AUTOMAKE_OPTIONS =3D foreign</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-check_LTLIBRARIES =3D libtestengine.la</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-conffiles =3D openssl.cnf</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-EXTRA_DIST =3D \</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-	openssl.cnf.in \</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-	check_engine_keys.sh</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-TESTS_ENVIRONMENT =3D srcdir=3D&quot;$(abs_srcdir)&quot;; \</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-	builddir=3D&quot;$(abs=
-_builddir)&quot;; \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	t=
-op_builddir=3D&quot;$(top_builddir)&quot;; \</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-	top_srcdir=3D&quot;$(top_srcdir)&quot;; \</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-	export srcdir builddir top_bui=
-lddir top_srcdir;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-if !CROSS_COMPILING</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-TESTS =3D check_engine_keys=
-.sh</span><br><span style=3D"color: hsl(0, 100%, 40%);">-endif</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-check_engine_keys.sh: $(conffiles)=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-CLEANFILES =3D \</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-	client.key \</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-	passwd \</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-	log.txt \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	$(=
-conffiles)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-openssl.cnf: $(srcdir)/openssl.c=
-nf.in</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	sed &quot;s|ABS=
-BUILDDIR|$(abs_builddir)|&quot; &lt; $(srcdir)/openssl.cnf.in &gt; $@</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-libtestengine_la_SOURCES =3D libtestengine.c</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-libtestengine_la_LDFLAGS =
-=3D @TEST_LDFLAGS@ -rpath /lib -shrext .so</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-libtestengine_la_CFLAGS =3D @TEST_CFLAGS@ -I$(openvpn_=
-srcdir) -I$(compat_srcdir)</span><br><span>diff --git a/tests/unit_tests/en=
-gine-key/check_engine_keys.sh b/tests/unit_tests/engine-key/check_engine_ke=
-ys.sh</span><br><span>deleted file mode 100755</span><br><span>index 12dd23=
-0..0000000</span><br><span>--- a/tests/unit_tests/engine-key/check_engine_k=
-eys.sh</span><br><span>+++ /dev/null</span><br><span>@@ -1,36 +0,0 @@</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-#!/bin/sh</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-OPENSSL_CONF=3D&quot;${builddir}/openssl.cnf&quot;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-export OPENSSL_CONF</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-password=3D&#39;AT3S4PASSWD&#39;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-key=3D&quot;${builddir}/client.key&quot;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-pwdfile=3D&quot;${builddir}/passwd&quot;</s=
+<p>cron2 <strong>uploaded patch set #3</strong> to the change originally cr=
+eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+373?usp=3Demail">View Change</a></p><pre style=3D"font-family: monospace,mo=
+nospace; white-space: pre-wrap;">Remove openssl engine method for loading t=
+he key<br><br>This is a contribution for loading engine key. OpenSSL engine=
+ is<br>deprecated since OpenSSL 3.0 and James Bottomley has not agreed to<b=
+r>the proposed license chagne. He is also okay with removing the<br>feature=
+ from the current code base as it is obsolete with OpenSSL 3.0.<br><br>The =
+original commit ID was a0a8d801dd0d84e0ec844b9ca4c225df7 (plus<br>subsequen=
+t fixes).<br><br>Change-Id: I2d353a0cea0a62f289b8c1060244df66dd7a14cb<br>Si=
+gned-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Message-Id: &lt;202310=
+06111910.3541180-1-arne@...1227...&gt;<br>URL: https://www.mail-archive.com=
+/openvpn-devel@lists.sourceforge.net/msg27133.html<br>Signed-off-by: Gert D=
+oering &lt;gert@...1296...&gt;<br>---<br>M .gitignore<br>M configure.ac<br>=
+M src/openvpn/crypto_openssl.c<br>M src/openvpn/crypto_openssl.h<br>M src/o=
+penvpn/ssl_openssl.c<br>M tests/unit_tests/Makefile.am<br>D tests/unit_test=
+s/engine-key/Makefile.am<br>D tests/unit_tests/engine-key/check_engine_keys=
+.sh<br>D tests/unit_tests/engine-key/libtestengine.c<br>D tests/unit_tests/=
+engine-key/openssl.cnf.in<br>10 files changed, 0 insertions(+), 279 deletio=
+ns(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-sp=
+ace: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/change=
+s/73/373/3</pre><pre style=3D"font-family: monospace,monospace; white-space=
+: pre-wrap;"><span>diff --git a/.gitignore b/.gitignore</span><br><span>ind=
+ex ed03aaa..a1da366 100644</span><br><span>--- a/.gitignore</span><br><span=
+>+++ b/.gitignore</span><br><span>@@ -57,10 +57,6 @@</span><br><span> t_cli=
+ent.rc</span><br><span> t_client_ips.rc</span><br><span> tests/unit_tests/*=
+*/*_testdriver</span><br><span style=3D"color: hsl(0, 100%, 40%);">-tests/u=
+nit_tests/engine-key/client.key</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-tests/unit_tests/engine-key/log.txt</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-tests/unit_tests/engine-key/openssl.cnf</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-tests/unit_tests/engine-key/passw=
+d</span><br><span> </span><br><span> src/openvpn/openvpn</span><br><span> i=
+nclude/openvpn-plugin.h</span><br><span>diff --git a/configure.ac b/configu=
+re.ac</span><br><span>index 266b66f..128ab86 100644</span><br><span>--- a/c=
+onfigure.ac</span><br><span>+++ b/configure.ac</span><br><span>@@ -1532,7 +=
+1532,6 @@</span><br><span>         tests/unit_tests/openvpn/Makefile</span>=
+<br><span>         tests/unit_tests/plugins/Makefile</span><br><span>      =
+   tests/unit_tests/plugins/auth-pam/Makefile</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-	tests/unit_tests/engine-key/Makefile</span><br><sp=
+an> 	sample/Makefile</span><br><span> ])</span><br><span> AC_CONFIG_FILES([=
+tests/t_client.sh], [chmod +x tests/t_client.sh])</span><br><span>diff --gi=
+t a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c</span><br><=
+span>index 22c6d68..fe1254f 100644</span><br><span>--- a/src/openvpn/crypto=
+_openssl.c</span><br><span>+++ b/src/openvpn/crypto_openssl.c</span><br><sp=
+an>@@ -1374,66 +1374,6 @@</span><br><span>     return CRYPTO_memcmp(a, b, s=
+ize);</span><br><span> }</span><br><span> </span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-#if HAVE_OPENSSL_ENGINE</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-static int</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-ui_reader(UI *ui, UI_STRING *uis)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    SSL_CTX *ctx =3D UI_get0_user_data(ui);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    if (UI_get_string_type(uis) =3D=3D UIT_PROMPT)</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        pem_password_cb *cb =3D SSL_CTX_get_default_passw=
+d_cb(ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        voi=
+d *d =3D SSL_CTX_get_default_passwd_cb_userdata(ctx);</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-        char password[64];</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        cb(password, sizeof(password), 0, d);</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        UI_set_result(ui, uis, pass=
+word);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-        return 1;</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    return 0;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</s=
 pan><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-# create an engine key for us</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-sed &#39;s/PRIVATE KEY/TEST ENGINE =
-KEY/&#39; &lt; ${top_srcdir}/sample/sample-keys/client.key &gt; ${key}</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-echo &quot;$password&quot;=
- &gt; $pwdfile</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-# our version of grep to out=
-put log.txt on failure in case it&#39;s an openssl</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-# error mismatch and the grep expression needs=
- updating</span><br><span style=3D"color: hsl(0, 100%, 40%);">-loggrep() {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    egrep -q &quot;$1&=
-quot; log.txt || { echo &#39;---- begin log.txt ----&#39;; cat log.txt; ech=
-o &#39;--- end log.txt ---&#39;; return 1; }</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# note here we&#39=
-;ve induced a mismatch in the client key and the server</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-# cert which openvpn should report and di=
-e.  Check that it does.  Note</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-# also that this mismatch depends on openssl not openvpn, so it is<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-# somewhat fragile</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-${top_builddir}/src/openv=
-pn/openvpn --cd ${top_srcdir}/sample --config sample-config-files/loopback-=
-server --engine testengine --key ${key} --askpass $pwdfile &gt; log.txt 2&g=
-t;&amp;1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-# first off check we died because =
-of a key mismatch.  If this doesn&#39;t</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-# pass, suspect openssl of returning different messages a=
-nd update the</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# test a=
-ccordingly</span><br><span style=3D"color: hsl(0, 100%, 40%);">-loggrep &#3=
-9;(x509 certificate routines:(X509_check_private_key)?:key values mismatch|=
-func\(128\):reason\(116\))&#39; log.txt || { echo &quot;Key mismatch not de=
-tected&quot;; exit 1; }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# now look for the =
-engine prints (these are under our control)</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-loggrep &#39;ENGINE: engine_init called&#39; || { ech=
-o &quot;Engine initialization not detected&quot;; exit 1; }</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-loggrep &#39;ENGINE: engine_load_key =
-called&#39; || { echo &quot;Key was not loaded from engine&quot;; exit 1; }=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-loggrep &quot;ENGINE:=
- engine_load_key got password ${password}&quot; || { echo &quot;Key passwor=
-d was not retrieved by the engine&quot;; exit 1; }</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-exit 0</span><br><span>diff --git a/tests/unit=
-_tests/engine-key/libtestengine.c b/tests/unit_tests/engine-key/libtestengi=
-ne.c</span><br><span>deleted file mode 100644</span><br><span>index 8bcfa92=
-..0000000</span><br><span>--- a/tests/unit_tests/engine-key/libtestengine.c=
-</span><br><span>+++ /dev/null</span><br><span>@@ -1,116 +0,0 @@</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;string.h&gt;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;openssl/engine.=
-h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;ope=
-nssl/evp.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#includ=
-e &lt;openssl/pem.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static char *engine=
-_id =3D &quot;testengine&quot;;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-static char *engine_name =3D &quot;Engine for testing openvpn eng=
-ine key support&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static int is_initia=
-lized =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-static int</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-engine_init(ENGINE *e)</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    is_initialized =3D 1;</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-    fprintf(stderr, &quot;ENGINE: engine_init called\n&q=
-uot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return 1;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-static int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-engine_finish(ENGINE *e)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    fprintf(stder=
-r, &quot;ENGINE: engine_finsh called\n&quot;);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    is_initialized =3D 0;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    return 1;</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static EVP_PKEY *</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-engine_load_key(ENGINE *=
-e, const char *key_id,</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--                UI_METHOD *ui_method, void *cb_data)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    BIO *b;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-    EVP_PKEY *pkey;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    PKCS8_PRIV_KEY_INFO *p8inf;</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-    UI *ui;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    char auth[256];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    fprintf(stderr, &qu=
-ot;ENGINE: engine_load_key called\n&quot;);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    if (!is_initialized)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        fpri=
-ntf(stderr, &quot;Load Key called without correct initialization\n&quot;);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return NULL;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    b =3D BIO_new_file(key_id, &quot;r&=
-quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!b)</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        fprintf(stderr, &quot;File %s do=
-es not exist or cannot be read\n&quot;, key_id);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        return 0;</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-    /* Basically read an EVP_PKEY private key file with different</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-     * PEM guards --- we=
- are a test engine */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    p8inf =3D PEM_ASN1_read_bio((d2i_of_void *)d2i_PKCS8_PRIV_KEY_INFO,</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-                         =
-     &quot;TEST ENGINE KEY&quot;, b,</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-                              NULL, NULL, NULL);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    BIO_free(b);</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    if (!p8inf)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-EVP_PKEY *</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-engine_load_key(const char *file, SSL_CTX *ctx)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-#if HAVE_OPENSSL_ENGINE</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    UI_METHOD *ui;</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    EVP_PKEY *pkey;</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    if (!engine_persist)</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        re=
+turn NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    /* this will print out the error from BIO_re=
+ad */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    crypto_msg(M=
+_INFO, &quot;PEM_read_bio failed, now trying engine method to load private =
+key&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    ui =3D UI_create_method(&qu=
+ot;openvpn&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ if (!ui)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-        crypto_msg(M_FATAL, =
+&quot;Engine UI creation failed&quot;);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-        return NULL;</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    UI_method_set_re=
+ader(ui, ui_reader);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ENGINE_init(engine=
+_persist);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    pkey =
+=3D ENGINE_load_private_key(engine_persist, file, ui, ctx);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    ENGINE_finish(engine_persist);</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!pkey)</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        crypto_msg(M_FATAL, &quot;Engine could =
+not load key file&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    UI_destroy_method(ui);</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    return pkey;</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-#else  /* if HAVE_OPENSSL_ENGINE =
+*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return NULL;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif /* if HAVE_OPENSS=
+L_ENGINE */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> #if (OPENSSL=
+_VERSION_NUMBER &gt;=3D 0x10100000L) &amp;&amp; !defined(LIBRESSL_VERSION_N=
+UMBER)</span><br><span> bool</span><br><span> ssl_tls1_PRF(const uint8_t *s=
+eed, int seed_len, const uint8_t *secret,</span><br><span>diff --git a/src/=
+openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h</span><br><span>ind=
+ex 32849fd..c5a5393 100644</span><br><span>--- a/src/openvpn/crypto_openssl=
+.h</span><br><span>+++ b/src/openvpn/crypto_openssl.h</span><br><span>@@ -1=
+18,16 +118,4 @@</span><br><span>         msg((flags), __VA_ARGS__); \</span=
+><br><span>     } while (false)</span><br><span> </span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-/**</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">- * Load a key file from an engine</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">- * @param file  The engine file to load</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">- * @param ui    The UI method for the password prompt<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param data  The da=
+ta to pass to the UI method</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @return   =
+   The private key if successful or NULL if not</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-EVP_PKEY *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-eng=
+ine_load_key(const char *file, SSL_CTX *ctx);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-</span><br><span> #endif /* CRYPTO_OPENSSL_H_ */</s=
+pan><br><span>diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_open=
+ssl.c</span><br><span>index 4c08add..23e7623 100644</span><br><span>--- a/s=
+rc/openvpn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</s=
+pan><br><span>@@ -1057,10 +1057,6 @@</span><br><span>     pkey =3D PEM_read=
+_bio_PrivateKey(in, NULL,</span><br><span>                                 =
+   SSL_CTX_get_default_passwd_cb(ctx-&gt;ctx),</span><br><span>            =
+                        SSL_CTX_get_default_passwd_cb_userdata(ctx-&gt;ctx)=
+);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!pkey)</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        pkey =3D engine_load_key(priv_key_=
+file, ctx-&gt;ctx);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  }</span><br><span> </span><br><span>     if (!pkey || !SSL_CTX_use_Privat=
+eKey(ssl_ctx, pkey))</span><br><span>     {</span><br><span>diff --git a/te=
+sts/unit_tests/Makefile.am b/tests/unit_tests/Makefile.am</span><br><span>i=
+ndex f27cd90..33fefaa 100644</span><br><span>--- a/tests/unit_tests/Makefil=
+e.am</span><br><span>+++ b/tests/unit_tests/Makefile.am</span><br><span>@@ =
+-2,7 +2,4 @@</span><br><span> </span><br><span> if ENABLE_UNITTESTS</span><=
+br><span> SUBDIRS =3D example_test openvpn plugins</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-if OPENSSL_ENGINE</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-SUBDIRS +=3D engine-key</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-endif</span><br><span> endif</span><br><span>dif=
+f --git a/tests/unit_tests/engine-key/Makefile.am b/tests/unit_tests/engine=
+-key/Makefile.am</span><br><span>deleted file mode 100644</span><br><span>i=
+ndex 0c28885..0000000</span><br><span>--- a/tests/unit_tests/engine-key/Mak=
+efile.am</span><br><span>+++ /dev/null</span><br><span>@@ -1,31 +0,0 @@</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-AUTOMAKE_OPTIONS =3D fore=
+ign</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-check_LTLIBRARIES =3D libtestengine.la<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-conffiles =3D openssl.=
+cnf</span><br><span style=3D"color: hsl(0, 100%, 40%);">-EXTRA_DIST =3D \</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-	openssl.cnf.in \</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-	check_engine_keys.sh</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-TESTS_ENVIRONMENT =3D srcdir=3D&quot;$(abs_srcdi=
+r)&quot;; \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	builddir=
+=3D&quot;$(abs_builddir)&quot;; \</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-	top_builddir=3D&quot;$(top_builddir)&quot;; \</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-	top_srcdir=3D&quot;$(top_srcdir)&quot=
+;; \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	export srcdir bu=
+ilddir top_builddir top_srcdir;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-if !CROSS_C=
+OMPILING</span><br><span style=3D"color: hsl(0, 100%, 40%);">-TESTS =3D che=
+ck_engine_keys.sh</span><br><span style=3D"color: hsl(0, 100%, 40%);">-endi=
+f</span><br><span style=3D"color: hsl(0, 100%, 40%);">-check_engine_keys.sh=
+: $(conffiles)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-CLEANFILES =3D \</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-	client.key \</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-	passwd \</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-	log.txt \</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-	$(conffiles)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-openssl.cnf: $(src=
+dir)/openssl.cnf.in</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	s=
+ed &quot;s|ABSBUILDDIR|$(abs_builddir)|&quot; &lt; $(srcdir)/openssl.cnf.in=
+ &gt; $@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-libtestengine_la_SOURCES =3D libte=
+stengine.c</span><br><span style=3D"color: hsl(0, 100%, 40%);">-libtestengi=
+ne_la_LDFLAGS =3D @TEST_LDFLAGS@ -rpath /lib -shrext .so</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-libtestengine_la_CFLAGS =3D @TEST_CFLAGS=
+@ -I$(openvpn_srcdir) -I$(compat_srcdir)</span><br><span>diff --git a/tests=
+/unit_tests/engine-key/check_engine_keys.sh b/tests/unit_tests/engine-key/c=
+heck_engine_keys.sh</span><br><span>deleted file mode 100755</span><br><spa=
+n>index 12dd230..0000000</span><br><span>--- a/tests/unit_tests/engine-key/=
+check_engine_keys.sh</span><br><span>+++ /dev/null</span><br><span>@@ -1,36=
+ +0,0 @@</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#!/bin/sh</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-OPENSSL_CONF=3D&quot;${builddir}/openssl.cnf&q=
+uot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-export OPENSSL_CO=
+NF</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-password=3D&#39;AT3S4PASSWD&#39;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-key=3D&quot;${builddir}/client.key&quot;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-pwdfile=3D&quot;${builddir}/pas=
+swd&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-# create an engine key for us</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-sed &#39;s/PRIVATE KEY/TE=
+ST ENGINE KEY/&#39; &lt; ${top_srcdir}/sample/sample-keys/client.key &gt; $=
+{key}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-echo &quot;$pass=
+word&quot; &gt; $pwdfile</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# our version of g=
+rep to output log.txt on failure in case it&#39;s an openssl</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-# error mismatch and the grep expres=
+sion needs updating</span><br><span style=3D"color: hsl(0, 100%, 40%);">-lo=
+ggrep() {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    egrep -q=
+ &quot;$1&quot; log.txt || { echo &#39;---- begin log.txt ----&#39;; cat lo=
+g.txt; echo &#39;--- end log.txt ---&#39;; return 1; }</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# note h=
+ere we&#39;ve induced a mismatch in the client key and the server</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-# cert which openvpn should rep=
+ort and die.  Check that it does.  Note</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-# also that this mismatch depends on openssl not openvpn,=
+ so it is</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# somewhat f=
+ragile</span><br><span style=3D"color: hsl(0, 100%, 40%);">-${top_builddir}=
+/src/openvpn/openvpn --cd ${top_srcdir}/sample --config sample-config-files=
+/loopback-server --engine testengine --key ${key} --askpass $pwdfile &gt; l=
+og.txt 2&gt;&amp;1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-# first off check we die=
+d because of a key mismatch.  If this doesn&#39;t</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-# pass, suspect openssl of returning different =
+messages and update the</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-# test accordingly</span><br><span style=3D"color: hsl(0, 100%, 40%);">-l=
+oggrep &#39;(x509 certificate routines:(X509_check_private_key)?:key values=
+ mismatch|func\(128\):reason\(116\))&#39; log.txt || { echo &quot;Key misma=
+tch not detected&quot;; exit 1; }</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-# now loo=
+k for the engine prints (these are under our control)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-loggrep &#39;ENGINE: engine_init called&#39=
+; || { echo &quot;Engine initialization not detected&quot;; exit 1; }</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-loggrep &#39;ENGINE: engine=
+_load_key called&#39; || { echo &quot;Key was not loaded from engine&quot;;=
+ exit 1; }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-loggrep &qu=
+ot;ENGINE: engine_load_key got password ${password}&quot; || { echo &quot;K=
+ey password was not retrieved by the engine&quot;; exit 1; }</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-exit 0</span><br><span>diff --git a/=
+tests/unit_tests/engine-key/libtestengine.c b/tests/unit_tests/engine-key/l=
+ibtestengine.c</span><br><span>deleted file mode 100644</span><br><span>ind=
+ex 8bcfa92..0000000</span><br><span>--- a/tests/unit_tests/engine-key/libte=
+stengine.c</span><br><span>+++ /dev/null</span><br><span>@@ -1,116 +0,0 @@<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;string.h&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#include &lt;opens=
+sl/engine.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#inclu=
+de &lt;openssl/evp.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-#include &lt;openssl/pem.h&gt;</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static ch=
+ar *engine_id =3D &quot;testengine&quot;;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-static char *engine_name =3D &quot;Engine for testing o=
+penvpn engine key support&quot;;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static int=
+ is_initialized =3D 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static int</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-engine_init(ENGINE *e)</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    is_initialized =3D 1;</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    fprintf(stderr, &quot;ENGINE: engine_init =
+called\n&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    r=
+eturn 1;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-static int</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-engine_finish(ENGINE *e)</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    fpr=
+intf(stderr, &quot;ENGINE: engine_finsh called\n&quot;);</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    is_initialized =3D 0;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    return 1;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-static EV=
+P_PKEY *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-engine_load_k=
+ey(ENGINE *e, const char *key_id,</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-                UI_METHOD *ui_method, void *cb_data)</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    BIO *b;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    EVP_PKEY *pkey;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    PKCS8_PRIV_KEY_INFO *p8inf;</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    UI *ui;</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    char auth[256];</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    fprintf(=
+stderr, &quot;ENGINE: engine_load_key called\n&quot;);</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    if (!is_initialized)</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       fprintf(stderr, &quot;Load Key called without correct initialization=
+\n&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ret=
+urn NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    b =3D BIO_new_file(key_i=
+d, &quot;r&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ if (!b)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        fprintf(stderr, &quot=
+;File %s does not exist or cannot be read\n&quot;, key_id);</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-        return 0;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    /* Basically read an EVP_PKEY private key file with d=
+ifferent</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * PEM gu=
+ards --- we are a test engine */</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    p8inf =3D PEM_ASN1_read_bio((d2i_of_void *)d2i_PKCS8_PRIV_KE=
+Y_INFO,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
+                &quot;TEST ENGINE KEY&quot;, b,</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-                              NULL, NULL, NULL);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    BIO_free(b);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!p8inf)</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-        fprintf(stderr, &quot;Failed to read engi=
+ne private key\n&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        return NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    pkey =3D E=
+VP_PKCS82PKEY(p8inf);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* now we have a =
+private key, pretend it had a password</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-     * this verifies the password makes it through openvpn=
+ OK */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ui =3D UI_n=
+ew();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    if (ui_method)</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        UI_set_method(ui, ui_method);</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  UI_add_user_data(ui, cb_data);</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (UI=
+_add_input_string(ui, &quot;enter test engine key&quot;,</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-                            UI_INPUT_FLA=
+G_DEFAULT_PWD,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+                     auth, 0, sizeof(auth)) =3D=3D 0)</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        fprintf(stderr, &quot;Failed to read engine private=
- key\n&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- return NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    pkey =3D EVP_PKCS82P=
-KEY(p8inf);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-    /* now we have a private ke=
-y, pretend it had a password</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-     * this verifies the password makes it through openvpn OK */</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    ui =3D UI_new();</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-    if (ui_method)</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        UI_set_method(ui, ui_method);</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    UI_add_u=
-ser_data(ui, cb_data);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (UI_add_input=
-_string(ui, &quot;enter test engine key&quot;,</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-                            UI_INPUT_FLAG_DEFAULT_=
-PWD,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
-           auth, 0, sizeof(auth)) =3D=3D 0)</span><br><span style=3D"color:=
+, 100%, 40%);">-        fprintf(stderr, &quot;UI_add_input_string failed\n&=
+quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        goto o=
+ut;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    if (UI_process(ui))</span><br><span style=3D"color:=
  hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        fprintf(stderr, &quot;UI_add_input_string failed\n&quot;);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        goto out;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    if (UI_process(ui))</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     fprintf(stderr, &quot;UI_process failed\n&quot;);</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-        goto out;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    fpri=
-ntf(stderr, &quot;ENGINE: engine_load_key got password %s\n&quot;, auth);</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-out:</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    UI_free(ui);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return =
-pkey;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-sta=
-tic int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-engine_bind_fn=
-(ENGINE *e, const char *id)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (id &am=
-p;&amp; strcmp(id, engine_id) !=3D 0)</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        return 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!ENGINE_set_=
-id(e, engine_id)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   || !ENGINE_set_name(e, engine_name)</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        || !ENGINE_set_init_function(e, engine_init)</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-        || !ENGINE_set_fini=
-sh_function(e, engine_finish)</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        || !ENGINE_set_load_privkey_function(e, engine_load_key))</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-        return 0;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    return 1;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-IMPLEMENT_DYNAMIC_CHECK_FN()</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-IMPLEMENT_DYNAMIC_BIND_FN(=
-engine_bind_fn)</span><br><span>diff --git a/tests/unit_tests/engine-key/op=
-enssl.cnf.in b/tests/unit_tests/engine-key/openssl.cnf.in</span><br><span>d=
-eleted file mode 100644</span><br><span>index 5eda9fa..0000000</span><br><s=
-pan>--- a/tests/unit_tests/engine-key/openssl.cnf.in</span><br><span>+++ /d=
-ev/null</span><br><span>@@ -1,12 +0,0 @@</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-HOME		=3D .</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-openssl_conf	=3D openssl_init</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-[req=
-]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-[openssl_init]</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-engines		=3D engines_sectio=
-n</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-[engines_section]</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-testengine	=3D testengine_section</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-[testengine_section]</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-dynamic_path	=3D ABSBUILDDIR/.libs/libtestengine.so</=
-span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/373?usp=3Demail">change 373</a>. To unsubscribe, or=
- for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/=
-settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
-ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
-/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/373?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/><=
-/div></div>
+%);">-        fprintf(stderr, &quot;UI_process failed\n&quot;);</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-        goto out;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    fprintf(stderr, &quot;ENGINE: engine_load_key got password %s\n&quot;,=
+ auth);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-out:</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    UI_free(ui);</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ return pkey;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-static int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-engine=
+_bind_fn(ENGINE *e, const char *id)</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if=
+ (id &amp;&amp; strcmp(id, engine_id) !=3D 0)</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        return 0;</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!ENG=
+INE_set_id(e, engine_id)</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        || !ENGINE_set_name(e, engine_name)</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        || !ENGINE_set_init_function(e, engine_ini=
+t)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        || !ENGINE_=
+set_finish_function(e, engine_finish)</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-        || !ENGINE_set_load_privkey_function(e, engine_load=
+_key))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        return 0;</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    return 1;</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-IMPLEMENT_DYNAMIC_CHECK_F=
+N()</span><br><span style=3D"color: hsl(0, 100%, 40%);">-IMPLEMENT_DYNAMIC_=
+BIND_FN(engine_bind_fn)</span><br><span>diff --git a/tests/unit_tests/engin=
+e-key/openssl.cnf.in b/tests/unit_tests/engine-key/openssl.cnf.in</span><br=
+><span>deleted file mode 100644</span><br><span>index 5eda9fa..0000000</spa=
+n><br><span>--- a/tests/unit_tests/engine-key/openssl.cnf.in</span><br><spa=
+n>+++ /dev/null</span><br><span>@@ -1,12 +0,0 @@</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-HOME		=3D .</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-openssl_conf	=3D openssl_init</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-[req]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-[openssl_ini=
+t]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-engines		=3D engine=
+s_section</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-[engines_section]</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-testengine	=3D testengine_section</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-[testengine_section]</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-dynamic_path	=3D ABSBUILDDIR/.libs/libtestengin=
+e.so</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://g=
+errit.openvpn.net/c/openvpn/+/373?usp=3Demail">change 373</a>. To unsubscri=
+be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
+n.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
+rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
+ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/373?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
+ge"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -872,8 +874,8 @@ nvpn/+/373?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/><=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---GWh9PSBJMMA=--
+--+vCN4jAISxo=--
 
