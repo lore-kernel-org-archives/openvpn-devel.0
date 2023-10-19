@@ -1,14 +1,14 @@
 From: "MaxF (Code Review)" <gerrit@...515...>
-Date: Thu, 19 Oct 2023 17:25:38 +0000
+Date: Thu, 19 Oct 2023 17:28:06 +0000
 In-Reply-To: <gerrit.1697562354000.I445a93e84dc54b865b757038d22318ac427fce96@...2715...>
 References: <gerrit.1697562354000.I445a93e84dc54b865b757038d22318ac427fce96@...2715...>
 Reply-To: max@...2606..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <8b2bf558d8db8e914a2e3b668f47551c8adaa5a6-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <bf77cff5656ddd2fd96259b77a7d1ec49ff7666e-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="feckhhO0XTg="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="pbZwwqE2S7w="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add support for
  mbedtls 3.X.Y
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---feckhhO0XTg=
+--pbZwwqE2S7w=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -34,7 +34,7 @@ I'd like you to reexamine a change. Please visit
 
     http://gerrit.openvpn.net/c/openvpn/+/370?usp=3Demail
 
-to look at the new patch set (#5).
+to look at the new patch set (#6).
 
 
 Change subject: Add support for mbedtls 3.X.Y
@@ -66,10 +66,10 @@ A src/openvpn/mbedtls_compat.h
 M src/openvpn/options.c
 M src/openvpn/ssl_mbedtls.c
 M src/openvpn/ssl_verify_mbedtls.c
-6 files changed, 325 insertions(+), 100 deletions(-)
+6 files changed, 323 insertions(+), 100 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/70/370/5
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/70/370/6
 
 diff --git a/configure.ac b/configure.ac
 index 128ab86..7e5763d 100644
@@ -332,10 +332,10 @@ _get_iv_size(ctx))))
  void
 diff --git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbedtls_compat.h
 new file mode 100644
-index 0000000..25c2168
+index 0000000..fe7c3f9
 --- /dev/null
 +++ b/src/openvpn/mbedtls_compat.h
-@@ -0,0 +1,188 @@
+@@ -0,0 +1,186 @@
 +/*
 + *  OpenVPN -- An application to securely tunnel IP networks
 + *             over a single TCP/UDP port, with support for SSL/TLS-based
@@ -417,13 +417,11 @@ eturns
 +{
 +#if HAVE_CTR_DRBG_UPDATE_RET
 +    return mbedtls_ctr_drbg_update_ret(ctx, additional, add_len);
-+#else
-+  #if MBEDTLS_VERSION_NUMBER < 0x03020100
++#elif MBEDTLS_VERSION_NUMBER < 0x03020100
 +    mbedtls_ctr_drbg_update(ctx, additional, add_len);
 +    return 0;
-+  #else
++#else
 +    return mbedtls_ctr_drbg_update(ctx, additional, add_len);
-+  #endif /* MBEDTLS_VERSION_NUMBER < 0x03020100 */
 +#endif /* HAVE_CTR_DRBG_UPDATE_RET */
 +}
 +
@@ -974,7 +972,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I445a93e84dc54b865b757038d22318ac427fce96
 Gerrit-Change-Number: 370
-Gerrit-PatchSet: 5
+Gerrit-PatchSet: 6
 Gerrit-Owner: MaxF <max@...2606...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -983,12 +981,12 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---feckhhO0XTg=
+--pbZwwqE2S7w=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>MaxF <strong>uploaded patch set #5</strong> to this change.</p><p><a hre=
+<p>MaxF <strong>uploaded patch set #6</strong> to this change.</p><p><a hre=
 f=3D"http://gerrit.openvpn.net/c/openvpn/+/370?usp=3Demail">View Change</a>=
 </p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"=
 >Add support for mbedtls 3.X.Y<br><br>Most struct fields in mbedtls 3 are p=
@@ -1004,10 +1002,10 @@ ns harder to exploit.<br><br>Change-Id: I445a93e84dc54b865b757038d22318ac42=
 7fce96<br>Signed-off-by: Max Fillinger &lt;max@...2606...&gt;<br>---<br>M c=
 onfigure.ac<br>M src/openvpn/crypto_mbedtls.c<br>A src/openvpn/mbedtls_comp=
 at.h<br>M src/openvpn/options.c<br>M src/openvpn/ssl_mbedtls.c<br>M src/ope=
-nvpn/ssl_verify_mbedtls.c<br>6 files changed, 325 insertions(+), 100 deleti=
+nvpn/ssl_verify_mbedtls.c<br>6 files changed, 323 insertions(+), 100 deleti=
 ons(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-s=
 pace: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/chang=
-es/70/370/5</pre><pre style=3D"font-family: monospace,monospace; white-spac=
+es/70/370/6</pre><pre style=3D"font-family: monospace,monospace; white-spac=
 e: pre-wrap;"><span>diff --git a/configure.ac b/configure.ac</span><br><spa=
 n>index 128ab86..7e5763d 100644</span><br><span>--- a/configure.ac</span><b=
 r><span>+++ b/configure.ac</span><br><span>@@ -1016,15 +1016,21 @@</span><b=
@@ -1199,8 +1197,8 @@ r: hsl(120, 100%, 40%);">+    return mbedtls_md_get_size(mbedtls_md_info_fr=
 om_ctx(ctx));</span><br><span> }</span><br><span> </span><br><span> void</s=
 pan><br><span>diff --git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbedt=
 ls_compat.h</span><br><span>new file mode 100644</span><br><span>index 0000=
-000..25c2168</span><br><span>--- /dev/null</span><br><span>+++ b/src/openvp=
-n/mbedtls_compat.h</span><br><span>@@ -0,0 +1,188 @@</span><br><span style=
+000..fe7c3f9</span><br><span>--- /dev/null</span><br><span>+++ b/src/openvp=
+n/mbedtls_compat.h</span><br><span>@@ -0,0 +1,186 @@</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+/*</span><br><span style=3D"color: hsl(12=
 0, 100%, 40%);">+ *  OpenVPN -- An application to securely tunnel IP networ=
 ks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *             ov=
@@ -1294,503 +1292,501 @@ add_len)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br=
 ><span style=3D"color: hsl(120, 100%, 40%);">+#if HAVE_CTR_DRBG_UPDATE_RET<=
 /span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_c=
 tr_drbg_update_ret(ctx, additional, add_len);</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+  #if MBEDTLS_VERSION_NUMBER &lt; 0x03020100</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    mbedtls_ctr_drbg_update(ctx, addit=
-ional, add_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  #else</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_ct=
-r_drbg_update(ctx, additional, add_len);</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+  #endif /* MBEDTLS_VERSION_NUMBER &lt; 0x03020100 */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* HAVE_CTR_D=
-RBG_UPDATE_RET */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+static inline int</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+mbedtls_compat_pk_check_pair(const mbedtl=
-s_pk_context *pub, const mbedtls_pk_context *prv,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                             int (*f_rng)(voi=
-d *, unsigned char *, size_t), void *p_rng)</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x03020100</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    return mbedtls_pk_check_pair(pub, prv);</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_pk_check_pair(pub=
-, prv, f_rng, p_rng);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x03020100 */</span><br><span style=
+r: hsl(120, 100%, 40%);">+#elif MBEDTLS_VERSION_NUMBER &lt; 0x03020100</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_ctr_drbg_upd=
+ate(ctx, additional, add_len);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retur=
+n mbedtls_ctr_drbg_update(ctx, additional, add_len);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#endif /* HAVE_CTR_DRBG_UPDATE_RET */</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+static inline int</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+mbedtls_compat_pk_check_pair(const mbedtls_pk_context *pub, co=
+nst mbedtls_pk_context *prv,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                             int (*f_rng)(void *, unsigned char *,=
+ size_t), void *p_rng)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VER=
+SION_NUMBER &lt; 0x03020100</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    return mbedtls_pk_check_pair(pub, prv);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    return mbedtls_pk_check_pair(pub, prv, f_rng, p_rng=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif /* MBEDTLS=
+_VERSION_NUMBER &lt; 0x03020100 */</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+static inline int</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+mbedtls_compat_pk_parse_=
+key(mbedtls_pk_context *ctx,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                            const unsigned char *key, size_t keyle=
+n,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 =
+           const unsigned char *pwd, size_t pwdlen,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                            int (*f_rng)(=
+void *, unsigned char *, size_t), void *p_rng)</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x03020100</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_pk_parse_key(ctx, key,=
+ keylen, pwd, pwdlen);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+#else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return =
+mbedtls_pk_parse_key(ctx, key, keylen, pwd, pwdlen, f_rng, p_rng);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
 , 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
 tic inline int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mbedt=
-ls_compat_pk_parse_key(mbedtls_pk_context *ctx,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                            const unsigned char=
- *key, size_t keylen,</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+                            const unsigned char *pwd, size_t pwdlen,</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+                        =
-    int (*f_rng)(void *, unsigned char *, size_t), void *p_rng)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x03020100</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_pk_pars=
-e_key(ctx, key, keylen, pwd, pwdlen);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+#else</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    return mbedtls_pk_parse_key(ctx, key, keylen, pwd, pwdlen, f_rng, p=
-_rng);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+static inline int</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+mbedtls_compat_pk_parse_keyfile(mbedtls_pk_context *ctx,</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
-    const char *path, const char *password,</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+                                int (*f_rng)(void *=
-, unsigned char *, size_t), void *p_rng)</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+#if MBEDTLS_VERSION_NUMBER &lt; 0x03020100</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    return mbedtls_pk_parse_keyfile(ctx, path, pa=
-ssword);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_pk_par=
-se_keyfile(ctx, path, password, f_rng, p_rng);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUM=
-BER &lt; 0x03020100</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-static inline size_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+mbedtls_cipher_info_get_block_size(const mbedtls_cipher_info_t *cipher)</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    return (size_t)cipher-&gt;block_size=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+static inline size_t</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+mbedtls_cipher_info_get_iv_size(const mbedtls_cipher_i=
-nfo_t *cipher)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    return (size_t)ciph=
-er-&gt;iv_size;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
+ls_compat_pk_parse_keyfile(mbedtls_pk_context *ctx,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                                const cha=
+r *path, const char *password,</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+                                int (*f_rng)(void *, unsigned ch=
+ar *, size_t), void *p_rng)</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTL=
+S_VERSION_NUMBER &lt; 0x03020100</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    return mbedtls_pk_parse_keyfile(ctx, path, password);</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_pk_parse_keyfile(ct=
+x, path, password, f_rng, p_rng);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x03=
+020100</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static inline=
+ size_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mbedtls_ciph=
+er_info_get_block_size(const mbedtls_cipher_info_t *cipher)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    return (size_t)cipher-&gt;block_size;</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+static inline size_t</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+mbedtls_cipher_info_get_iv_size(const mbedtls_cipher_info_t *cipher=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    return (size_t)cipher-&gt;iv_siz=
+e;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+static inline size_t</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+mbedtls_cipher_info_get_key_bitlen(const mbedtls_ciph=
+er_info_t *cipher)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return (size_t)=
+cipher-&gt;key_bitlen;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+static inline mbedtls_cipher_mode_=
+t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mbedtls_cipher_inf=
+o_get_mode(const mbedtls_cipher_info_t *cipher)</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    return cipher-&gt;mode;</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static inline const=
+ char *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mbedtls_ciph=
+er_info_get_name(const mbedtls_cipher_info_t *cipher)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    return cipher-&gt;name;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static inline=
+ mbedtls_cipher_type_t</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+mbedtls_cipher_info_get_type(const mbedtls_cipher_info_t *cipher)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    return cipher-&gt;type;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+static inline size_t</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+mbedtls_dhm_get_bitlen(const mbedtls_dhm_context *ctx)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+    return 8 * ctx-&gt;len;</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static in=
+line const mbedtls_md_info_t *</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+mbedtls_md_info_from_ctx(const mbedtls_md_context_t *ctx)</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    return ctx-&gt;md_info;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+static inline const unsigned char *</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+mbedtls_pem_get_buffer(const mbedtls_pem_context *ctx, si=
+ze_t *buf_size)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+    *buf_size =3D ctx-=
+&gt;buflen;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    retu=
+rn ctx-&gt;buf;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
 pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+static inline size_t</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+mbedtls_cipher_info_get_key_bitlen(const=
- mbedtls_cipher_info_t *cipher)</span><br><span style=3D"color: hsl(120, 10=
+=3D"color: hsl(120, 100%, 40%);">+static inline int</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+mbedtls_x509_crt_has_ext_type(const mbedt=
+ls_x509_crt *ctx, int ext_type)</span><br><span style=3D"color: hsl(120, 10=
 0%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    re=
-turn (size_t)cipher-&gt;key_bitlen;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+static inline mbedtls=
-_cipher_mode_t</span><br><span style=3D"color: hsl(120, 100%, 40%);">+mbedt=
-ls_cipher_info_get_mode(const mbedtls_cipher_info_t *cipher)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    return cipher-&gt;mode;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+static=
- inline const char *</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+mbedtls_cipher_info_get_name(const mbedtls_cipher_info_t *cipher)</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    return cipher-&gt;name;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-static inline mbedtls_cipher_type_t</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+mbedtls_cipher_info_get_type(const mbedtls_cipher_info_t *c=
-ipher)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+    return cipher-&gt;type;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=
+turn ctx-&gt;ext_types &amp; ext_type;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x03020100 */</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+static inline size_t</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+mbedtls_dhm_get_bitlen(const mbedtls_dhm_context *ctx)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    return 8 * ctx-&gt;len;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+static inline const mbedtls_md_info_t *</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+mbedtls_md_info_from_ctx(const mbedtls_md_context_=
-t *ctx)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    return ctx-&gt;md_info;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+static inline const unsigned char *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+mbedtls_pem_get_buffer(const mbedtls_pem_=
-context *ctx, size_t *buf_size)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    *b=
-uf_size =3D ctx-&gt;buflen;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    return ctx-&gt;buf;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+static inline int</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+mbedtls_x509_crt_has_ext_ty=
-pe(const mbedtls_x509_crt *ctx, int ext_type)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    return ctx-&gt;ext_types &amp; ext_type;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#endif /* MBEDTLS_VERSION_NUMBER &lt; 0x03020100 */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#endif /* MBEDTLS_COMPAT_H_ */</span><br><span=
->diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><span=
->index 2b68bac..d238269 100644</span><br><span>--- a/src/openvpn/options.c<=
-/span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -644,8 +644,=
-10 @@</span><br><span>     &quot;--verify-x509-name name: Accept connection=
-s only from a host with X509 subject\n&quot;</span><br><span>     &quot;   =
-               DN name. The remote host must also pass all other tests\n&qu=
-ot;</span><br><span>     &quot;                  of verification.\n&quot;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifndef ENABLE_CRYPTO=
-_MBEDTLS</span><br><span>     &quot;--ns-cert-type t: (DEPRECATED) Require =
-that peer certificate was signed with \n&quot;</span><br><span>     &quot; =
-                 an explicit nsCertType designation t =3D &#39;client&#39; =
-| &#39;server&#39;.\n&quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#endif</span><br><span>     &quot;--x509-track x  : Save peer X509 =
-attribute x in environment for use by\n&quot;</span><br><span>     &quot;  =
-                plugins and management interface.\n&quot;</span><br><span> =
-#ifdef HAVE_EXPORT_KEYING_MATERIAL</span><br><span>@@ -9051,6 +9053,10 @@</=
-span><br><span>     }</span><br><span>     else if (streq(p[0], &quot;ns-ce=
-rt-type&quot;) &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_CRYPTO_MB=
-EDTLS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(ms=
-glevel, &quot;--ns-cert-type is not available with mbedtls.&quot;);</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+        goto err;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span>       =
-  VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span>         if (streq(p[1]=
-, &quot;server&quot;))</span><br><span>         {</span><br><span>@@ -9065,=
-6 +9071,7 @@</span><br><span>             msg(msglevel, &quot;--ns-cert-typ=
-e must be &#39;client&#39; or &#39;server&#39;&quot;);</span><br><span>    =
-         goto err;</span><br><span>         }</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#endif /* ENABLE_CRYPTO_MBEDTLS */</span><br><spa=
-n>     }</span><br><span>     else if (streq(p[0], &quot;remote-cert-ku&quo=
-t;))</span><br><span>     {</span><br><span>diff --git a/src/openvpn/ssl_mb=
-edtls.c b/src/openvpn/ssl_mbedtls.c</span><br><span>index 81dd906..4e79c82 =
-100644</span><br><span>--- a/src/openvpn/ssl_mbedtls.c</span><br><span>+++ =
-b/src/openvpn/ssl_mbedtls.c</span><br><span>@@ -41,6 +41,7 @@</span><br><sp=
-an> #include &quot;buffer.h&quot;</span><br><span> #include &quot;misc.h&qu=
-ot;</span><br><span> #include &quot;manage.h&quot;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#include &quot;mbedtls_compat.h&quot;</span>=
-<br><span> #include &quot;pkcs11_backend.h&quot;</span><br><span> #include =
-&quot;ssl_common.h&quot;</span><br><span> </span><br><span>@@ -49,34 +50,11=
- @@</span><br><span> #include &lt;mbedtls/error.h&gt;</span><br><span> #inc=
-lude &lt;mbedtls/version.h&gt;</span><br><span> </span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-#if MBEDTLS_VERSION_NUMBER &gt;=3D 0x02040000</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    #include &lt;mbedtls=
-/net_sockets.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#el=
-se</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    #include &lt;mb=
-edtls/net.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtl=
-s/net_sockets.h&gt;</span><br><span> </span><br><span> #include &lt;mbedtls=
-/oid.h&gt;</span><br><span> #include &lt;mbedtls/pem.h&gt;</span><br><span>=
- </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/**</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">- * Compatibility: mbedtls_ctr_drbg_upd=
-ate was deprecated in mbedtls 2.16 and</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">- * replaced with mbedtls_ctr_drbg_update_ret, which return=
-s an error code.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * Fo=
-r older versions, we call mbedtls_ctr_drbg_update and return 0 (success).</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">- * Note: this change was backported to oth=
-er mbedTLS branches, therefore we</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">- * rely on function detection at configure time.</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-#ifndef HAVE_CTR_DRBG_UPDATE_RET</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-static int</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-mbedtls_ctr_drbg_update_ret(mbedtls_ctr_drbg_context *=
-ctx,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                 =
-           const unsigned char *additional,</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-                            size_t add_len)</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-    mbedtls_ctr_drbg_update(ctx, additional, add_le=
-n);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return 0;</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-</span><br><span> static const mbedtls_x509_crt_profile openv=
-pn_x509_crt_profile_legacy =3D</span><br><span> {</span><br><span>     /* H=
-ashes from SHA-1 and above */</span><br><span>@@ -108,6 +86,7 @@</span><br>=
-<span> void</span><br><span> tls_init_lib(void)</span><br><span> {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+    mbedtls_compat_psa_crypt=
-o_init();</span><br><span> }</span><br><span> </span><br><span> void</span>=
-<br><span>@@ -430,7 +409,7 @@</span><br><span>     }</span><br><span> </spa=
-n><br><span>     msg(D_TLS_DEBUG_LOW, &quot;Diffie-Hellman initialized with=
- &quot; counter_format &quot; bit key&quot;,</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        (counter_type) 8 * mbedtls_mpi_size(&amp;ctx=
--&gt;dhm_ctx-&gt;P));</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        (counter_type) mbedtls_dhm_get_bitlen(ctx-&gt;dhm_ctx));</span><b=
-r><span> }</span><br><span> </span><br><span> void</span><br><span>@@ -504,=
-29 +483,40 @@</span><br><span> </span><br><span>     if (priv_key_inline)</=
-span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        status =3D mbedtls_pk_parse_key(ctx-&gt;priv_key,</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-                                      (=
-const unsigned char *) priv_key_file,</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-                                      strlen(priv_key_file)=
- + 1, NULL, 0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    status =3D mbedtls_compat_pk_parse_key(ctx-&gt;priv_key,</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+                                  =
-           (const unsigned char *) priv_key_file,</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                                             =
-strlen(priv_key_file) + 1, NULL, 0,</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+                                             mbedtls_ctr_dr=
-bg_random,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-                                    rand_ctx_get());</span><br><span> </spa=
-n><br><span>         if (MBEDTLS_ERR_PK_PASSWORD_REQUIRED =3D=3D status)</s=
-pan><br><span>         {</span><br><span>             char passbuf[512] =3D=
- {0};</span><br><span>             pem_password_callback(passbuf, 512, 0, N=
-ULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            stat=
+ 100%, 40%);">+#endif /* MBEDTLS_COMPAT_H_ */</span><br><span>diff --git a/=
+src/openvpn/options.c b/src/openvpn/options.c</span><br><span>index 2b68bac=
+..d238269 100644</span><br><span>--- a/src/openvpn/options.c</span><br><spa=
+n>+++ b/src/openvpn/options.c</span><br><span>@@ -644,8 +644,10 @@</span><b=
+r><span>     &quot;--verify-x509-name name: Accept connections only from a =
+host with X509 subject\n&quot;</span><br><span>     &quot;                 =
+ DN name. The remote host must also pass all other tests\n&quot;</span><br>=
+<span>     &quot;                  of verification.\n&quot;</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+#ifndef ENABLE_CRYPTO_MBEDTLS</span=
+><br><span>     &quot;--ns-cert-type t: (DEPRECATED) Require that peer cert=
+ificate was signed with \n&quot;</span><br><span>     &quot;               =
+   an explicit nsCertType designation t =3D &#39;client&#39; | &#39;server&=
+#39;.\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif=
+</span><br><span>     &quot;--x509-track x  : Save peer X509 attribute x in=
+ environment for use by\n&quot;</span><br><span>     &quot;                =
+  plugins and management interface.\n&quot;</span><br><span> #ifdef HAVE_EX=
+PORT_KEYING_MATERIAL</span><br><span>@@ -9051,6 +9053,10 @@</span><br><span=
+>     }</span><br><span>     else if (streq(p[0], &quot;ns-cert-type&quot;)=
+ &amp;&amp; p[1] &amp;&amp; !p[2])</span><br><span>     {</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_CRYPTO_MBEDTLS</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+        msg(msglevel, &quot;=
+--ns-cert-type is not available with mbedtls.&quot;);</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        goto err;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span>         VERIFY_PER=
+MISSION(OPT_P_GENERAL);</span><br><span>         if (streq(p[1], &quot;serv=
+er&quot;))</span><br><span>         {</span><br><span>@@ -9065,6 +9071,7 @@=
+</span><br><span>             msg(msglevel, &quot;--ns-cert-type must be &#=
+39;client&#39; or &#39;server&#39;&quot;);</span><br><span>             got=
+o err;</span><br><span>         }</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+#endif /* ENABLE_CRYPTO_MBEDTLS */</span><br><span>     }</sp=
+an><br><span>     else if (streq(p[0], &quot;remote-cert-ku&quot;))</span><=
+br><span>     {</span><br><span>diff --git a/src/openvpn/ssl_mbedtls.c b/sr=
+c/openvpn/ssl_mbedtls.c</span><br><span>index 81dd906..4e79c82 100644</span=
+><br><span>--- a/src/openvpn/ssl_mbedtls.c</span><br><span>+++ b/src/openvp=
+n/ssl_mbedtls.c</span><br><span>@@ -41,6 +41,7 @@</span><br><span> #include=
+ &quot;buffer.h&quot;</span><br><span> #include &quot;misc.h&quot;</span><b=
+r><span> #include &quot;manage.h&quot;</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+#include &quot;mbedtls_compat.h&quot;</span><br><span> #=
+include &quot;pkcs11_backend.h&quot;</span><br><span> #include &quot;ssl_co=
+mmon.h&quot;</span><br><span> </span><br><span>@@ -49,34 +50,11 @@</span><b=
+r><span> #include &lt;mbedtls/error.h&gt;</span><br><span> #include &lt;mbe=
+dtls/version.h&gt;</span><br><span> </span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-#if MBEDTLS_VERSION_NUMBER &gt;=3D 0x02040000</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    #include &lt;mbedtls/net_sockets=
+.h&gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    #include &lt;mbedtls/net.h&=
+gt;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+#include &lt;mbedtls/net_socket=
+s.h&gt;</span><br><span> </span><br><span> #include &lt;mbedtls/oid.h&gt;</=
+span><br><span> #include &lt;mbedtls/pem.h&gt;</span><br><span> </span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-/**</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">- * Compatibility: mbedtls_ctr_drbg_update was depr=
+ecated in mbedtls 2.16 and</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">- * replaced with mbedtls_ctr_drbg_update_ret, which returns an error c=
+ode.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * For older vers=
+ions, we call mbedtls_ctr_drbg_update and return 0 (success).</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">- * Note: this change was backported to other mbedTLS b=
+ranches, therefore we</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+ * rely on function detection at configure time.</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-#ifndef HAVE_CTR_DRBG_UPDATE_RET</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-static int</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-mbedtls_ctr_drbg_update_ret(mbedtls_ctr_drbg_context *ctx,</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-                            c=
+onst unsigned char *additional,</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-                            size_t add_len)</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    mbedtls_ctr_drbg_update(ctx, additional, add_len);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    return 0;</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-</span><br><span> static const mbedtls_x509_crt_profile openvpn_x509_crt_=
+profile_legacy =3D</span><br><span> {</span><br><span>     /* Hashes from S=
+HA-1 and above */</span><br><span>@@ -108,6 +86,7 @@</span><br><span> void<=
+/span><br><span> tls_init_lib(void)</span><br><span> {</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    mbedtls_compat_psa_crypto_init();</s=
+pan><br><span> }</span><br><span> </span><br><span> void</span><br><span>@@=
+ -430,7 +409,7 @@</span><br><span>     }</span><br><span> </span><br><span>=
+     msg(D_TLS_DEBUG_LOW, &quot;Diffie-Hellman initialized with &quot; coun=
+ter_format &quot; bit key&quot;,</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        (counter_type) 8 * mbedtls_mpi_size(&amp;ctx-&gt;dhm_ctx=
+-&gt;P));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        (c=
+ounter_type) mbedtls_dhm_get_bitlen(ctx-&gt;dhm_ctx));</span><br><span> }</=
+span><br><span> </span><br><span> void</span><br><span>@@ -504,29 +483,40 @=
+@</span><br><span> </span><br><span>     if (priv_key_inline)</span><br><sp=
+an>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        stat=
 us =3D mbedtls_pk_parse_key(ctx-&gt;priv_key,</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-                                          (const un=
-signed char *) priv_key_file,</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-                                          strlen(priv_key_file) + 1=
-,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                    =
-                      (unsigned char *) passbuf,</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-                                          strlen=
-(passbuf));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    status =3D mbedtls_compat_pk_parse_key(ctx-&gt;priv_key,</span><br><spa=
+r: hsl(0, 100%, 40%);">-                                      (const unsign=
+ed char *) priv_key_file,</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-                                      strlen(priv_key_file) + 1, NULL, =
+0);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        status =
+=3D mbedtls_compat_pk_parse_key(ctx-&gt;priv_key,</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                                             =
+(const unsigned char *) priv_key_file,</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                                             strlen(priv=
+_key_file) + 1, NULL, 0,</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                                             mbedtls_ctr_drbg_random,<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+                    =
+                         rand_ctx_get());</span><br><span> </span><br><span=
+>         if (MBEDTLS_ERR_PK_PASSWORD_REQUIRED =3D=3D status)</span><br><sp=
+an>         {</span><br><span>             char passbuf[512] =3D {0};</span=
+><br><span>             pem_password_callback(passbuf, 512, 0, NULL);</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-            status =3D mbed=
+tls_pk_parse_key(ctx-&gt;priv_key,</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-                                          (const unsigned char=
+ *) priv_key_file,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+                                       strlen(priv_key_file) + 1,</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-                               =
+           (unsigned char *) passbuf,</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-                                          strlen(passbuf));=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            status =
+=3D mbedtls_compat_pk_parse_key(ctx-&gt;priv_key,</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+                                             =
+    (const unsigned char *) priv_key_file,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                                                 str=
+len(priv_key_file) + 1,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+                                                 (unsigned char *) pass=
+buf,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+               =
+                                  strlen(passbuf),</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+                                            =
+     mbedtls_ctr_drbg_random,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                                                 rand_ctx_get());=
+</span><br><span>         }</span><br><span>     }</span><br><span>     els=
+e</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        status =3D mbedtls_pk_parse_keyfile(ctx-&gt;priv_key, priv_key_f=
+ile, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+status =3D mbedtls_compat_pk_parse_keyfile(ctx-&gt;priv_key,</span><br><spa=
 n style=3D"color: hsl(120, 100%, 40%);">+                                  =
-               (const unsigned char *) priv_key_file,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                                         =
-        strlen(priv_key_file) + 1,</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+                                                 (unsigned c=
-har *) passbuf,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-                                             strlen(passbuf),</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+                                 =
-                mbedtls_ctr_drbg_random,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                                                 rand_=
-ctx_get());</span><br><span>         }</span><br><span>     }</span><br><sp=
-an>     else</span><br><span>     {</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        status =3D mbedtls_pk_parse_keyfile(ctx-&gt;priv_key,=
- priv_key_file, NULL);</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        status =3D mbedtls_compat_pk_parse_keyfile(ctx-&gt;priv_key,</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
-                          priv_key_file,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                                                 NULL,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                   =
-                              mbedtls_ctr_drbg_random,</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                                        =
-         rand_ctx_get());</span><br><span>         if (MBEDTLS_ERR_PK_PASSW=
-ORD_REQUIRED =3D=3D status)</span><br><span>         {</span><br><span>    =
-         char passbuf[512] =3D {0};</span><br><span>             pem_passwo=
-rd_callback(passbuf, 512, 0, NULL);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-            status =3D mbedtls_pk_parse_keyfile(ctx-&gt;priv_=
-key, priv_key_file, passbuf);</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+            status =3D mbedtls_compat_pk_parse_keyfile(ctx-&gt;pr=
-iv_key,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
-                                         priv_key_file, passbuf,</span><br>=
+               priv_key_file,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                                                 NULL,</span><br>=
 <span style=3D"color: hsl(120, 100%, 40%);">+                              =
-                       mbedtls_ctr_drbg_random,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                                               =
-      rand_ctx_get());</span><br><span>         }</span><br><span>     }</s=
-pan><br><span>     if (!mbed_ok(status))</span><br><span>@@ -542,7 +532,10 =
-@@</span><br><span>         return 1;</span><br><span>     }</span><br><spa=
-n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!mbed_ok(m=
-bedtls_pk_check_pair(&amp;ctx-&gt;crt_chain-&gt;pk, ctx-&gt;priv_key)))</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!mbed_ok(mbedtl=
-s_compat_pk_check_pair(&amp;ctx-&gt;crt_chain-&gt;pk,</span><br><span style=
+                   mbedtls_ctr_drbg_random,</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+                                                 ra=
+nd_ctx_get());</span><br><span>         if (MBEDTLS_ERR_PK_PASSWORD_REQUIRE=
+D =3D=3D status)</span><br><span>         {</span><br><span>             ch=
+ar passbuf[512] =3D {0};</span><br><span>             pem_password_callback=
+(passbuf, 512, 0, NULL);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-            status =3D mbedtls_pk_parse_keyfile(ctx-&gt;priv_key, priv_k=
+ey_file, passbuf);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+           status =3D mbedtls_compat_pk_parse_keyfile(ctx-&gt;priv_key,</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+                       =
+                              priv_key_file, passbuf,</span><br><span style=
 =3D"color: hsl(120, 100%, 40%);">+                                         =
-     ctx-&gt;priv_key,</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+                                              mbedtls_ctr_drbg_random,</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                     =
-                         rand_ctx_get())))</span><br><span>     {</span><br=
-><span>         msg(M_WARN, &quot;Private key does not match the certificat=
-e&quot;);</span><br><span>         return 1;</span><br><span>@@ -558,7 +551=
-,6 @@</span><br><span>  * @param ctx_voidptr   Management external key cont=
-ext.</span><br><span>  * @param f_rng         (Unused)</span><br><span>  * =
-@param p_rng         (Unused)</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">- * @param mode          RSA mode (should be RSA_PRIVATE).</span><br=
-><span>  * @param md_alg        Message digest (&#39;hash&#39;) algorithm t=
-ype.</span><br><span>  * @param hashlen       Length of hash (overridden by=
- length specified by md_alg</span><br><span>  *                      if md_=
-alg !=3D MBEDTLS_MD_NONE).</span><br><span>@@ -572,7 +564,10 @@</span><br><=
-span>  */</span><br><span> static inline int</span><br><span> external_pkcs=
-1_sign( void *ctx_voidptr,</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-                     int (*f_rng)(void *, unsigned char *, size_t), vo=
-id *p_rng, int mode,</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                     int (*f_rng)(void *, unsigned char *, size_t), void *=
-p_rng,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_V=
-ERSION_NUMBER &lt; 0x03020100</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+                     int mode,</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+#endif</span><br><span>                      mbedtls_m=
-d_type_t md_alg, unsigned int hashlen, const unsigned char *hash,</span><br=
-><span>                      unsigned char *sig )</span><br><span> {</span>=
-<br><span>@@ -587,10 +582,12 @@</span><br><span>         return MBEDTLS_ERR=
-_RSA_BAD_INPUT_DATA;</span><br><span>     }</span><br><span> </span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0=
-x03020100</span><br><span>     if (MBEDTLS_RSA_PRIVATE !=3D mode)</span><br=
-><span>     {</span><br><span>         return MBEDTLS_ERR_RSA_BAD_INPUT_DAT=
-A;</span><br><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#endif</span><br><span> </span><br><span>     /*</span><br><span>    =
-  * Support a wide range of hashes. TLSv1.1 and before only need SIG_RSA_RA=
-W,</span><br><span>@@ -967,7 +964,7 @@</span><br><span> </span><br><span>  =
-       if (0 !=3D memcmp(old_sha256_hash, sha256_hash, sizeof(sha256_hash))=
-)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-            if (!mbed_ok(mbedtls_ctr_drbg_update_ret(cd_ctx, sha256_=
-hash, 32)))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-    if (!mbed_ok(mbedtls_compat_ctr_drbg_update(cd_ctx, sha256_hash, 32)))<=
-/span><br><span>             {</span><br><span>                 msg(M_WARN,=
- &quot;WARNING: failed to personalise random, could not update CTR_DRBG&quo=
-t;);</span><br><span>             }</span><br><span>@@ -979,12 +976,16 @@</=
-span><br><span> int</span><br><span> tls_version_max(void)</span><br><span>=
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(MBEDTLS=
-_SSL_MAJOR_VERSION_3) &amp;&amp; defined(MBEDTLS_SSL_MINOR_VERSION_3)</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(MBEDTLS_SSL_P=
-ROTO_TLS1_3)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ret=
-urn TLS_VER_1_3;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#el=
-if defined(MBEDTLS_SSL_PROTO_TLS1_2)</span><br><span>     return TLS_VER_1_=
-2;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(MBEDT=
-LS_SSL_MAJOR_VERSION_3) &amp;&amp; defined(MBEDTLS_SSL_MINOR_VERSION_2)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+#elif defined(MBEDTLS_S=
-SL_PROTO_TLS1_1)</span><br><span>     return TLS_VER_1_1;</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-#else</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+#elif defined(MBEDTLS_SSL_PROTO_TLS1)</span><br><span=
->     return TLS_VER_1_0;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#else /* if defined(MBEDTLS_SSL_PROTO_TLS1_3) */</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    #error &quot;mbedtls is compiled wit=
-hout support for any version of TLS.&quot;</span><br><span> #endif</span><b=
-r><span> }</span><br><span> </span><br><span>@@ -1006,23 +1007,36 @@</span>=
-<br><span> </span><br><span>     switch (tls_ver)</span><br><span>     {</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(MBEDTLS_SS=
-L_PROTO_TLS1)</span><br><span>         case TLS_VER_1_0:</span><br><span>  =
-           *major =3D MBEDTLS_SSL_MAJOR_VERSION_3;</span><br><span>        =
-     *minor =3D MBEDTLS_SSL_MINOR_VERSION_1;</span><br><span>             b=
-reak;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><=
-br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defin=
-ed(MBEDTLS_SSL_PROTO_TLS1_1)</span><br><span>         case TLS_VER_1_1:</sp=
-an><br><span>             *major =3D MBEDTLS_SSL_MAJOR_VERSION_3;</span><br=
-><span>             *minor =3D MBEDTLS_SSL_MINOR_VERSION_2;</span><br><span=
->             break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#endif</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+#if defined(MBEDTLS_SSL_PROTO_TLS1_2)</span><br><span>         case T=
-LS_VER_1_2:</span><br><span>             *major =3D MBEDTLS_SSL_MAJOR_VERSI=
-ON_3;</span><br><span>             *minor =3D MBEDTLS_SSL_MINOR_VERSION_3;<=
-/span><br><span>             break;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(MBED=
-TLS_SSL_PROTO_TLS1_3)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        case TLS_VER_1_3:</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            *major =3D MBEDTLS_SSL_MAJOR_VERSION_3;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            *minor =3D MBEDTLS_SSL_=
-MINOR_VERSION_4;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#end=
-if</span><br><span> </span><br><span>         default:</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-            msg(M_FATAL, &quot;%s: invalid=
- TLS version %d&quot;, __func__, tls_ver);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+            msg(M_FATAL, &quot;%s: invalid or unsupp=
-orted TLS version %d&quot;, __func__, tls_ver);</span><br><span>           =
-  break;</span><br><span>     }</span><br><span> }</span><br><span>@@ -1149=
-,17 +1163,17 @@</span><br><span> </span><br><span>     /* Initialize minimu=
-m TLS version */</span><br><span>     {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        const int tls_version_min =3D</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+        const int configured_tls_versio=
-n_min =3D</span><br><span>             (session-&gt;opt-&gt;ssl_flags &gt;&=
-gt; SSLF_TLS_VERSION_MIN_SHIFT)</span><br><span>             &amp;SSLF_TLS_=
-VERSION_MIN_MASK;</span><br><span> </span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        /* default to TLS 1.0 */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        /* default to TLS 1.2 */</span><br><span=
->         int major =3D MBEDTLS_SSL_MAJOR_VERSION_3;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        int minor =3D MBEDTLS_SSL_MINOR_VER=
-SION_1;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        int =
-minor =3D MBEDTLS_SSL_MINOR_VERSION_3;</span><br><span> </span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        if (tls_version_min &gt; TLS_VER=
-_UNSPEC)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if =
-(configured_tls_version_min &gt; TLS_VER_UNSPEC)</span><br><span>         {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            tls_versi=
-on_to_major_minor(tls_version_min, &amp;major, &amp;minor);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+            tls_version_to_major_mi=
-nor(configured_tls_version_min, &amp;major, &amp;minor);</span><br><span>  =
-       }</span><br><span> </span><br><span>         mbedtls_ssl_conf_min_ve=
-rsion(ks_ssl-&gt;ssl_config, major, minor);</span><br><span>@@ -1167,16 +11=
-81,24 @@</span><br><span> </span><br><span>     /* Initialize maximum TLS v=
-ersion */</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        const int tls_version_max =3D</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        const int configured_tls_version_max =
-=3D</span><br><span>             (session-&gt;opt-&gt;ssl_flags &gt;&gt; SS=
-LF_TLS_VERSION_MAX_SHIFT)</span><br><span>             &amp;SSLF_TLS_VERSIO=
-N_MAX_MASK;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        if (tls_version_max &gt; TLS_VER_UNSPEC)</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        int major =3D 0;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        int minor =3D 0;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+        if (configured_tls_version_max &gt; TLS=
-_VER_UNSPEC)</span><br><span>         {</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-            int major, minor;</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-            tls_version_to_major_minor(tls_versio=
-n_max, &amp;major, &amp;minor);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            mbedtls_ssl_conf_max_version(ks_ssl-&gt;ssl_config, m=
-ajor, minor);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      tls_version_to_major_minor(configured_tls_version_max, &amp;major, &a=
-mp;minor);</span><br><span>         }</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        else</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+            /* Default to tls_version_max(). */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+            tls_version_to_major_minor(tls_ver=
-sion_max(), &amp;major, &amp;minor);</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        mbed=
-tls_ssl_conf_max_version(ks_ssl-&gt;ssl_config, major, minor);</span><br><s=
-pan>     }</span><br><span> </span><br><span> #ifdef HAVE_EXPORT_KEYING_MAT=
-ERIAL</span><br><span>@@ -1188,7 +1210,7 @@</span><br><span>     /* Initial=
-ise SSL context */</span><br><span>     ALLOC_OBJ_CLEAR(ks_ssl-&gt;ctx, mbe=
-dtls_ssl_context);</span><br><span>     mbedtls_ssl_init(ks_ssl-&gt;ctx);</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    mbedtls_ssl_setup(k=
-s_ssl-&gt;ctx, ks_ssl-&gt;ssl_config);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    mbed_ok(mbedtls_ssl_setup(ks_ssl-&gt;ctx, ks_ssl-&gt=
-;ssl_config));</span><br><span> </span><br><span>     /* Initialise BIOs */=
-</span><br><span>     ALLOC_OBJ_CLEAR(ks_ssl-&gt;bio_ctx, bio_ctx);</span><=
-br><span>diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_ve=
-rify_mbedtls.c</span><br><span>index a1ddf8d..ce21324 100644</span><br><spa=
-n>--- a/src/openvpn/ssl_verify_mbedtls.c</span><br><span>+++ b/src/openvpn/=
-ssl_verify_mbedtls.c</span><br><span>@@ -35,6 +35,7 @@</span><br><span> #if=
- defined(ENABLE_CRYPTO_MBEDTLS)</span><br><span> </span><br><span> #include=
- &quot;crypto_mbedtls.h&quot;</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+#include &quot;mbedtls_compat.h&quot;</span><br><span> #include &=
-quot;ssl_verify.h&quot;</span><br><span> #include &lt;mbedtls/asn1.h&gt;</s=
-pan><br><span> #include &lt;mbedtls/error.h&gt;</span><br><span>@@ -432,6 +=
-433,8 @@</span><br><span>     }</span><br><span> }</span><br><span> </span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+/* Dummy function because =
-Netscape certificate types are not supported in OpenVPN with mbedtls.</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Returns SUCCESS if usa=
-ge is NS_CERT_CHECK_NONE, FAILURE otherwise. */</span><br><span> result_t</=
-span><br><span> x509_verify_ns_cert_type(mbedtls_x509_crt *cert, const int =
-usage)</span><br><span> {</span><br><span>@@ -439,18 +442,6 @@</span><br><s=
-pan>     {</span><br><span>         return SUCCESS;</span><br><span>     }<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (usage =3D=3D N=
-S_CERT_CHECK_CLIENT)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-   {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return ((=
-cert-&gt;ext_types &amp; MBEDTLS_X509_EXT_NS_CERT_TYPE)</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-                &amp;&amp; (cert-&gt;ns_c=
-ert_type &amp; MBEDTLS_X509_NS_CERT_TYPE_SSL_CLIENT)) ?</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-               SUCCESS : FAILURE;</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    if (usage =3D=3D NS_CERT_CHECK_SERVER)<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        return ((cert-&gt;ext_types &a=
-mp; MBEDTLS_X509_EXT_NS_CERT_TYPE)</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                &amp;&amp; (cert-&gt;ns_cert_type &amp; MBEDTL=
-S_X509_NS_CERT_TYPE_SSL_SERVER)) ?</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-               SUCCESS : FAILURE;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    }</span><br><span> </span><br><span>     retur=
-n FAILURE;</span><br><span> }</span><br><span>@@ -461,7 +452,7 @@</span><br=
-><span> {</span><br><span>     msg(D_HANDSHAKE, &quot;Validating certificat=
-e key usage&quot;);</span><br><span> </span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    if (!(cert-&gt;ext_types &amp; MBEDTLS_X509_EXT_KEY_USA=
-GE))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!mbedtl=
-s_x509_crt_has_ext_type(cert, MBEDTLS_X509_EXT_KEY_USAGE))</span><br><span>=
-     {</span><br><span>         msg(D_TLS_ERRORS,</span><br><span>         =
-    &quot;ERROR: Certificate does not have key usage extension&quot;);</spa=
-n><br><span>@@ -486,9 +477,7 @@</span><br><span> </span><br><span>     if (=
-fFound !=3D SUCCESS)</span><br><span>     {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        msg(D_TLS_ERRORS,</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-            &quot;ERROR: Certificate has key usag=
-e %04x, expected one of:&quot;,</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-            cert-&gt;key_usage);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        msg(D_TLS_ERRORS, &quot;ERROR: Certificate h=
-as invalid key usage, expected one of:&quot;);</span><br><span>         for=
- (size_t i =3D 0; i &lt; expected_len &amp;&amp; expected_ku[i]; i++)</span=
-><br><span>         {</span><br><span>             msg(D_TLS_ERRORS, &quot;=
- * %04x&quot;, expected_ku[i]);</span><br><span>@@ -503,7 +492,7 @@</span><=
-br><span> {</span><br><span>     result_t fFound =3D FAILURE;</span><br><sp=
-an> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!(cert-&g=
-t;ext_types &amp; MBEDTLS_X509_EXT_EXTENDED_KEY_USAGE))</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    if (!mbedtls_x509_crt_has_ext_type(=
-cert, MBEDTLS_X509_EXT_EXTENDED_KEY_USAGE))</span><br><span>     {</span><b=
-r><span>         msg(D_HANDSHAKE, &quot;Certificate does not have extended =
-key usage extension&quot;);</span><br><span>     }</span><br><span></span><=
-br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/370?usp=3Demail">change 370</a>. To unsubscribe, or for help writing mail =
-filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.=
-</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsco=
-pe itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link item=
-prop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/370?usp=3Demail"=
-/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+            mbedtls_ctr_drbg_random,</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+                                                     rand_=
+ctx_get());</span><br><span>         }</span><br><span>     }</span><br><sp=
+an>     if (!mbed_ok(status))</span><br><span>@@ -542,7 +532,10 @@</span><b=
+r><span>         return 1;</span><br><span>     }</span><br><span> </span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!mbed_ok(mbedtls_pk_c=
+heck_pair(&amp;ctx-&gt;crt_chain-&gt;pk, ctx-&gt;priv_key)))</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    if (!mbed_ok(mbedtls_compat_pk=
+_check_pair(&amp;ctx-&gt;crt_chain-&gt;pk,</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+                                              ctx-&g=
+t;priv_key,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+                                      mbedtls_ctr_drbg_random,</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+                                =
+              rand_ctx_get())))</span><br><span>     {</span><br><span>    =
+     msg(M_WARN, &quot;Private key does not match the certificate&quot;);</=
+span><br><span>         return 1;</span><br><span>@@ -558,7 +551,6 @@</span=
+><br><span>  * @param ctx_voidptr   Management external key context.</span>=
+<br><span>  * @param f_rng         (Unused)</span><br><span>  * @param p_rn=
+g         (Unused)</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
+@param mode          RSA mode (should be RSA_PRIVATE).</span><br><span>  * =
+@param md_alg        Message digest (&#39;hash&#39;) algorithm type.</span>=
+<br><span>  * @param hashlen       Length of hash (overridden by length spe=
+cified by md_alg</span><br><span>  *                      if md_alg !=3D MB=
+EDTLS_MD_NONE).</span><br><span>@@ -572,7 +564,10 @@</span><br><span>  */</=
+span><br><span> static inline int</span><br><span> external_pkcs1_sign( voi=
+d *ctx_voidptr,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+               int (*f_rng)(void *, unsigned char *, size_t), void *p_rng, =
+int mode,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          =
+           int (*f_rng)(void *, unsigned char *, size_t), void *p_rng,</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMB=
+ER &lt; 0x03020100</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+                    int mode,</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+#endif</span><br><span>                      mbedtls_md_type_t md=
+_alg, unsigned int hashlen, const unsigned char *hash,</span><br><span>    =
+                  unsigned char *sig )</span><br><span> {</span><br><span>@=
+@ -587,10 +582,12 @@</span><br><span>         return MBEDTLS_ERR_RSA_BAD_IN=
+PUT_DATA;</span><br><span>     }</span><br><span> </span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+#if MBEDTLS_VERSION_NUMBER &lt; 0x03020100</=
+span><br><span>     if (MBEDTLS_RSA_PRIVATE !=3D mode)</span><br><span>    =
+ {</span><br><span>         return MBEDTLS_ERR_RSA_BAD_INPUT_DATA;</span><b=
+r><span>     }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endi=
+f</span><br><span> </span><br><span>     /*</span><br><span>      * Support=
+ a wide range of hashes. TLSv1.1 and before only need SIG_RSA_RAW,</span><b=
+r><span>@@ -967,7 +964,7 @@</span><br><span> </span><br><span>         if (=
+0 !=3D memcmp(old_sha256_hash, sha256_hash, sizeof(sha256_hash)))</span><br=
+><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+        if (!mbed_ok(mbedtls_ctr_drbg_update_ret(cd_ctx, sha256_hash, 32)))=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (!mb=
+ed_ok(mbedtls_compat_ctr_drbg_update(cd_ctx, sha256_hash, 32)))</span><br><=
+span>             {</span><br><span>                 msg(M_WARN, &quot;WARN=
+ING: failed to personalise random, could not update CTR_DRBG&quot;);</span>=
+<br><span>             }</span><br><span>@@ -979,12 +976,16 @@</span><br><s=
+pan> int</span><br><span> tls_version_max(void)</span><br><span> {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#if defined(MBEDTLS_SSL_MAJOR_=
+VERSION_3) &amp;&amp; defined(MBEDTLS_SSL_MINOR_VERSION_3)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#if defined(MBEDTLS_SSL_PROTO_TLS1_3=
+)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return TLS_VER=
+_1_3;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#elif defined(=
+MBEDTLS_SSL_PROTO_TLS1_2)</span><br><span>     return TLS_VER_1_2;</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#elif defined(MBEDTLS_SSL_MAJO=
+R_VERSION_3) &amp;&amp; defined(MBEDTLS_SSL_MINOR_VERSION_2)</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+#elif defined(MBEDTLS_SSL_PROTO_TL=
+S1_1)</span><br><span>     return TLS_VER_1_1;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-#else</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#elif defined(MBEDTLS_SSL_PROTO_TLS1)</span><br><span>     retur=
+n TLS_VER_1_0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#else=
+ /* if defined(MBEDTLS_SSL_PROTO_TLS1_3) */</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    #error &quot;mbedtls is compiled without suppor=
+t for any version of TLS.&quot;</span><br><span> #endif</span><br><span> }<=
+/span><br><span> </span><br><span>@@ -1006,23 +1007,36 @@</span><br><span> =
+</span><br><span>     switch (tls_ver)</span><br><span>     {</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+#if defined(MBEDTLS_SSL_PROTO_TLS=
+1)</span><br><span>         case TLS_VER_1_0:</span><br><span>             =
+*major =3D MBEDTLS_SSL_MAJOR_VERSION_3;</span><br><span>             *minor=
+ =3D MBEDTLS_SSL_MINOR_VERSION_1;</span><br><span>             break;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span> <=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(MBEDTLS_=
+SSL_PROTO_TLS1_1)</span><br><span>         case TLS_VER_1_1:</span><br><spa=
+n>             *major =3D MBEDTLS_SSL_MAJOR_VERSION_3;</span><br><span>    =
+         *minor =3D MBEDTLS_SSL_MINOR_VERSION_2;</span><br><span>          =
+   break;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</sp=
+an><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if d=
+efined(MBEDTLS_SSL_PROTO_TLS1_2)</span><br><span>         case TLS_VER_1_2:=
+</span><br><span>             *major =3D MBEDTLS_SSL_MAJOR_VERSION_3;</span=
+><br><span>             *minor =3D MBEDTLS_SSL_MINOR_VERSION_3;</span><br><=
+span>             break;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+#if defined(MBEDTLS_SSL_PRO=
+TO_TLS1_3)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        c=
+ase TLS_VER_1_3:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+         *major =3D MBEDTLS_SSL_MAJOR_VERSION_3;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+            *minor =3D MBEDTLS_SSL_MINOR_VERSI=
+ON_4;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            br=
+eak;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><b=
+r><span> </span><br><span>         default:</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-            msg(M_FATAL, &quot;%s: invalid TLS versio=
+n %d&quot;, __func__, tls_ver);</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            msg(M_FATAL, &quot;%s: invalid or unsupported TLS v=
+ersion %d&quot;, __func__, tls_ver);</span><br><span>             break;</s=
+pan><br><span>     }</span><br><span> }</span><br><span>@@ -1149,17 +1163,1=
+7 @@</span><br><span> </span><br><span>     /* Initialize minimum TLS versi=
+on */</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        const int tls_version_min =3D</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        const int configured_tls_version_min =3D</=
+span><br><span>             (session-&gt;opt-&gt;ssl_flags &gt;&gt; SSLF_TL=
+S_VERSION_MIN_SHIFT)</span><br><span>             &amp;SSLF_TLS_VERSION_MIN=
+_MASK;</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-        /* default to TLS 1.0 */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        /* default to TLS 1.2 */</span><br><span>         i=
+nt major =3D MBEDTLS_SSL_MAJOR_VERSION_3;</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-        int minor =3D MBEDTLS_SSL_MINOR_VERSION_1;</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        int minor =3D MB=
+EDTLS_SSL_MINOR_VERSION_3;</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        if (tls_version_min &gt; TLS_VER_UNSPEC)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (configured_=
+tls_version_min &gt; TLS_VER_UNSPEC)</span><br><span>         {</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-            tls_version_to_major_=
+minor(tls_version_min, &amp;major, &amp;minor);</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+            tls_version_to_major_minor(configur=
+ed_tls_version_min, &amp;major, &amp;minor);</span><br><span>         }</sp=
+an><br><span> </span><br><span>         mbedtls_ssl_conf_min_version(ks_ssl=
+-&gt;ssl_config, major, minor);</span><br><span>@@ -1167,16 +1181,24 @@</sp=
+an><br><span> </span><br><span>     /* Initialize maximum TLS version */</s=
+pan><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+       const int tls_version_max =3D</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        const int configured_tls_version_max =3D</span><br=
+><span>             (session-&gt;opt-&gt;ssl_flags &gt;&gt; SSLF_TLS_VERSIO=
+N_MAX_SHIFT)</span><br><span>             &amp;SSLF_TLS_VERSION_MAX_MASK;</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   if (tls_version_max &gt; TLS_VER_UNSPEC)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        int major =3D 0;</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+        int minor =3D 0;</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+        if (configured_tls_version_max &gt; TLS_VER_UNSPEC)<=
+/span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-            int major, minor;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            tls_version_to_major_minor(tls_version_max, &amp;m=
+ajor, &amp;minor);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+         mbedtls_ssl_conf_max_version(ks_ssl-&gt;ssl_config, major, minor);=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            tls_ver=
+sion_to_major_minor(configured_tls_version_max, &amp;major, &amp;minor);</s=
+pan><br><span>         }</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+        else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+      {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            =
+/* Default to tls_version_max(). */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+            tls_version_to_major_minor(tls_version_max(), &=
+amp;major, &amp;minor);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+        mbedtls_ssl_conf_=
+max_version(ks_ssl-&gt;ssl_config, major, minor);</span><br><span>     }</s=
+pan><br><span> </span><br><span> #ifdef HAVE_EXPORT_KEYING_MATERIAL</span><=
+br><span>@@ -1188,7 +1210,7 @@</span><br><span>     /* Initialise SSL conte=
+xt */</span><br><span>     ALLOC_OBJ_CLEAR(ks_ssl-&gt;ctx, mbedtls_ssl_cont=
+ext);</span><br><span>     mbedtls_ssl_init(ks_ssl-&gt;ctx);</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    mbedtls_ssl_setup(ks_ssl-&gt;ctx=
+, ks_ssl-&gt;ssl_config);</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    mbed_ok(mbedtls_ssl_setup(ks_ssl-&gt;ctx, ks_ssl-&gt;ssl_config))=
+;</span><br><span> </span><br><span>     /* Initialise BIOs */</span><br><s=
+pan>     ALLOC_OBJ_CLEAR(ks_ssl-&gt;bio_ctx, bio_ctx);</span><br><span>diff=
+ --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.=
+c</span><br><span>index a1ddf8d..ce21324 100644</span><br><span>--- a/src/o=
+penvpn/ssl_verify_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_verify_mb=
+edtls.c</span><br><span>@@ -35,6 +35,7 @@</span><br><span> #if defined(ENAB=
+LE_CRYPTO_MBEDTLS)</span><br><span> </span><br><span> #include &quot;crypto=
+_mbedtls.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#in=
+clude &quot;mbedtls_compat.h&quot;</span><br><span> #include &quot;ssl_veri=
+fy.h&quot;</span><br><span> #include &lt;mbedtls/asn1.h&gt;</span><br><span=
+> #include &lt;mbedtls/error.h&gt;</span><br><span>@@ -432,6 +433,8 @@</spa=
+n><br><span>     }</span><br><span> }</span><br><span> </span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+/* Dummy function because Netscape cert=
+ificate types are not supported in OpenVPN with mbedtls.</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ * Returns SUCCESS if usage is NS_CERT=
+_CHECK_NONE, FAILURE otherwise. */</span><br><span> result_t</span><br><spa=
+n> x509_verify_ns_cert_type(mbedtls_x509_crt *cert, const int usage)</span>=
+<br><span> {</span><br><span>@@ -439,18 +442,6 @@</span><br><span>     {</s=
+pan><br><span>         return SUCCESS;</span><br><span>     }</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    if (usage =3D=3D NS_CERT_CHECK_=
+CLIENT)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-        return ((cert-&gt;ext_=
+types &amp; MBEDTLS_X509_EXT_NS_CERT_TYPE)</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-                &amp;&amp; (cert-&gt;ns_cert_type &amp=
+; MBEDTLS_X509_NS_CERT_TYPE_SSL_CLIENT)) ?</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-               SUCCESS : FAILURE;</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    if (usage =3D=3D NS_CERT_CHECK_SERVER)</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-        return ((cert-&gt;ext_types &amp; MBEDTLS_X50=
+9_EXT_NS_CERT_TYPE)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+              &amp;&amp; (cert-&gt;ns_cert_type &amp; MBEDTLS_X509_NS_CERT_=
+TYPE_SSL_SERVER)) ?</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+             SUCCESS : FAILURE;</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    }</span><br><span> </span><br><span>     return FAILURE;</spa=
+n><br><span> }</span><br><span>@@ -461,7 +452,7 @@</span><br><span> {</span=
+><br><span>     msg(D_HANDSHAKE, &quot;Validating certificate key usage&quo=
+t;);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    if (!(cert-&gt;ext_types &amp; MBEDTLS_X509_EXT_KEY_USAGE))</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    if (!mbedtls_x509_crt_has_=
+ext_type(cert, MBEDTLS_X509_EXT_KEY_USAGE))</span><br><span>     {</span><b=
+r><span>         msg(D_TLS_ERRORS,</span><br><span>             &quot;ERROR=
+: Certificate does not have key usage extension&quot;);</span><br><span>@@ =
+-486,9 +477,7 @@</span><br><span> </span><br><span>     if (fFound !=3D SUC=
+CESS)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        msg(D_TLS_ERRORS,</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-            &quot;ERROR: Certificate has key usage %04x, expecte=
+d one of:&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+       cert-&gt;key_usage);</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+        msg(D_TLS_ERRORS, &quot;ERROR: Certificate has invalid key =
+usage, expected one of:&quot;);</span><br><span>         for (size_t i =3D =
+0; i &lt; expected_len &amp;&amp; expected_ku[i]; i++)</span><br><span>    =
+     {</span><br><span>             msg(D_TLS_ERRORS, &quot; * %04x&quot;, =
+expected_ku[i]);</span><br><span>@@ -503,7 +492,7 @@</span><br><span> {</sp=
+an><br><span>     result_t fFound =3D FAILURE;</span><br><span> </span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    if (!(cert-&gt;ext_types &am=
+p; MBEDTLS_X509_EXT_EXTENDED_KEY_USAGE))</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+    if (!mbedtls_x509_crt_has_ext_type(cert, MBEDTLS_X=
+509_EXT_EXTENDED_KEY_USAGE))</span><br><span>     {</span><br><span>       =
+  msg(D_HANDSHAKE, &quot;Certificate does not have extended key usage exten=
+sion&quot;);</span><br><span>     }</span><br><span></span><br></pre><p>To =
+view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/370?usp=3Demai=
+l">change 370</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/370?usp=3Demail"/><meta itempro=
+p=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I445a93e84dc54b865b757038d22=
 318ac427fce96 </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 370 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
 <div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
 v>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -1806,5 +1802,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---feckhhO0XTg=--
+--pbZwwqE2S7w=--
 
