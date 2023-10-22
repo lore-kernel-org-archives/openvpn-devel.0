@@ -1,15 +1,15 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 22 Oct 2023 09:04:16 +0000
+Date: Sun, 22 Oct 2023 09:06:38 +0000
 In-Reply-To: <gerrit.1695213156000.If4e9c2e58441efb3fd00872cd62d1cc6c607f160@...2715...>
 References: <gerrit.1695213156000.If4e9c2e58441efb3fd00872cd62d1cc6c607f160@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
  flichtenheld79@...277..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <ffe1b4b25126bb1be2b1b87ba9b3038cf20b0c69-EmailReviewComments-HTML@...2715...>
+Message-ID: <b8955aec49b73f68648c055f08842c1f20770717-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="NN4Q1dzjzXg="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="EfDZu7TxBF4="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]:
  dev-tools/gerrit-send-mail.py: tool to send Gerrit patchsets to Patch...
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,7 +23,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: unauthorized <flichtenheld79@...277...>, plaisthos <arne-openvpn@...1227...>, d12fk <heiko@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---NN4Q1dzjzXg=
+--EfDZu7TxBF4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -37,7 +37,20 @@ s to Patchwork
 ......................................................................
 
 
-Patch Set 5: Code-Review+2
+Patch Set 5:
+
+(1 comment)
+
+Patchset:
+
+PS5:
+I tested this today, and besides needing extra python modules (dateutils) t=
+hat neither Gentoo nor FreeBSD had before, it nicely did the job on #368 fo=
+r me.
+
+For extra benefits, the produced "git send-email" line could have the "-v3"=
+ for "patch v3"...
+
 
 
 --
@@ -58,27 +71,34 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-CC: unauthorized <flichtenheld79@...277...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Sun, 22 Oct 2023 09:04:16 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Gerrit-Comment-Date: Sun, 22 Oct 2023 09:06:38 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---NN4Q1dzjzXg=
+--EfDZu7TxBF4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: d12fk, flichtenheld. </p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/361?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/361?usp=3Demail">=
-change 361</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/361?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/361?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/3=
+61?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">I tested this today, and besides needing extra pyt=
+hon modules (dateutils) that neither Gentoo nor FreeBSD had before, it nice=
+ly did the job on #368 for me.</p><p style=3D"white-space: pre-wrap; word-w=
+rap: break-word;">For extra benefits, the produced &quot;git send-email&quo=
+t; line could have the &quot;-v3&quot; for &quot;patch v3&quot;...</p></li>=
+</ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/ope=
+nvpn/+/361?usp=3Demail">change 361</a>. To unsubscribe, or for help writing=
+ mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">setting=
+s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
+temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
+k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/361?usp=3D=
+email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -101,12 +121,12 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
 ; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 22 Oct 2023 09:04:16=
+<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 22 Oct 2023 09:06:38=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---NN4Q1dzjzXg=--
+--EfDZu7TxBF4=--
 
