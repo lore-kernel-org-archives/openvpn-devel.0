@@ -1,17 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 22 Oct 2023 09:06:38 +0000
-In-Reply-To: <gerrit.1695213156000.If4e9c2e58441efb3fd00872cd62d1cc6c607f160@...2715...>
-References: <gerrit.1695213156000.If4e9c2e58441efb3fd00872cd62d1cc6c607f160@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227..., heiko@...515...,
- flichtenheld79@...277..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <b8955aec49b73f68648c055f08842c1f20770717-EmailReviewComments-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="EfDZu7TxBF4="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]:
- dev-tools/gerrit-send-mail.py: tool to send Gerrit patchsets to Patch...
+Date: Sun, 22 Oct 2023 12:48:51 +0200 (CEST)
+Message-Id: <202310221048.39MAmpCC060057@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20231022082751.8868-1-gert@...1296...>
+References: <20231022082751.8868-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dco: warn if DATA_V1 packets
+ are sent to userspace
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,113 +13,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: unauthorized <flichtenheld79@...277...>, plaisthos <arne-openvpn@...1227...>, d12fk <heiko@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---EfDZu7TxBF4=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is actually "V3" of the patch, but I forgot to add the -v3 when
+sending from gerrit to the list.
 
-Attention is currently required from: d12fk, flichtenheld.
+The change is basically the same as in v1, just leaving the "real"
+code alone, defusing it by setting c->c2.buf.len = 0 in the new
+branch.  Plus comments :-)
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/361?usp=3Demail )
+As in v1, this adds diagnostics to detect a non-fixable incompatibility
+between 2.4.0-2.4.4 servers and DCO-enabled clients (it can only be fixed
+by upgrading the server, not by a code change on the client side, or by
+disabling DCO on the client - but neither can be done automatically).
 
-Change subject: dev-tools/gerrit-send-mail.py: tool to send Gerrit patchset=
-s to Patchwork
-......................................................................
+Tested on the server testbed, which has DCO and no-DCO peers, V1 and V2,
+which should trigger "false alarms" nicely.
 
+Your patch has been applied to the master and release/2.6 branch (compat).
 
-Patch Set 5:
+commit df7beea404df48745a608c584d863c5a377b7a1e (master)
+commit e78f88d8ea113585ca16945ef0361710b838ec7d (HEAD -> release/2.6)
+Author: Lev Stipakov
+Date:   Sun Oct 22 10:27:40 2023 +0200
 
-(1 comment)
+     dco: warn if DATA_V1 packets are sent to userspace
 
-Patchset:
-
-PS5:
-I tested this today, and besides needing extra python modules (dateutils) t=
-hat neither Gentoo nor FreeBSD had before, it nicely did the job on #368 fo=
-r me.
-
-For extra benefits, the produced "git send-email" line could have the "-v3"=
- for "patch v3"...
-
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20231022082751.8868-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27272.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/361?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: If4e9c2e58441efb3fd00872cd62d1cc6c607f160
-Gerrit-Change-Number: 361
-Gerrit-PatchSet: 5
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: d12fk <heiko@...515...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-CC: unauthorized <flichtenheld79@...277...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Sun, 22 Oct 2023 09:06:38 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
+Gert Doering
 
---EfDZu7TxBF4=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: d12fk, flichtenheld. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/361?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/3=
-61?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">I tested this today, and besides needing extra pyt=
-hon modules (dateutils) that neither Gentoo nor FreeBSD had before, it nice=
-ly did the job on #368 for me.</p><p style=3D"white-space: pre-wrap; word-w=
-rap: break-word;">For extra benefits, the produced &quot;git send-email&quo=
-t; line could have the &quot;-v3&quot; for &quot;patch v3&quot;...</p></li>=
-</ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/361?usp=3Demail">change 361</a>. To unsubscribe, or for help writing=
- mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">setting=
-s</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div i=
-temscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><lin=
-k itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/361?usp=3D=
-email"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: If4e9c2e58441efb3fd00872cd62=
-d1cc6c607f160 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 361 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: d12fk &lt;heiko@...515...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: unauthorized &lt;flichtenheld79@...493...=
-277...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 22 Oct 2023 09:06:38=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---EfDZu7TxBF4=--
 
