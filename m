@@ -1,10 +1,16 @@
-Content-Type: multipart/mixed; boundary="------------4biHq0GLcP3SWlUINOXSwNEp"
-Message-ID: <8237adde-2523-9e48-5cd4-070463887dc1@...277...>
-Date: Mon, 30 Oct 2023 10:58:27 +0100
+From: "MaxF (Code Review)" <gerrit@...515...>
+Date: Mon, 30 Oct 2023 15:50:22 +0000
+In-Reply-To: <gerrit.1698504866000.I7fd9e730e87210d2b7d090c8f9c7c6734bd7374e@...2715...>
+References: <gerrit.1698504866000.I7fd9e730e87210d2b7d090c8f9c7c6734bd7374e@...2715...>
+Reply-To: max@...2606..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <5ee8f0c4365c110b6d0a678c8a6cab54fa17d0f8-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Language: en-US
-From: Reynir <reynirr@...277...>
-Subject: [Openvpn-devel] [PATCH] protocol_dump: support tls-crypt
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="BlS4uwF9w8g="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix building with
+ cmake and mbed TLS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,89 +19,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------4biHq0GLcP3SWlUINOXSwNEp
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+--BlS4uwF9w8g=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Dear list,
+Attention is currently required from: flichtenheld, plaisthos.
 
-Please find attached a patch to add support for tls-crypt packets in 
-protocol_dump. Currently, protocol_dump will print garbage for tls-crypt 
-packets.
+MaxF has posted comments on this change. ( http://gerrit.openvpn.net/c/open=
+vpn/+/377?usp=3Demail )
 
-This patch makes protocol_dump print the clear text parts of the packet 
-such as the auth tag and replay packet id. It does not try to print the 
-wKc for HARD_RESET_CLIENT_V3 or CONTROL_WKC_V1 packets. A previous 
-iteration, not submitted to the list, printed ENCRYPTED placeholders for 
-ack list and DATA, but I decided to cut down on the noise instead.
+Change subject: Fix building with cmake and mbed TLS
+......................................................................
 
-This is my first patch submitted to openvpn so please bear with me.
 
-Best,
-Reynir Björnsson
---------------4biHq0GLcP3SWlUINOXSwNEp
-Content-Type: text/x-patch; charset=UTF-8;
- name="0001-protocol_dump-tls-crypt-support.patch"
-Content-Disposition: attachment;
- filename="0001-protocol_dump-tls-crypt-support.patch"
-Content-Transfer-Encoding: base64
+Patch Set 1:
 
-RnJvbSAxMTkyNmE2MjM0Yjg2MGEwOTk2NWU1YTA3NDQ2MGFiZTRiNGY2ZTcxIE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiA9P1VURi04P3E/UmV5bmlyPTIwQmo9QzM9QjZybnNz
-b24/PSA8cmV5bmlyQHJleW5pci5kaz4KRGF0ZTogVGh1LCAyNiBPY3QgMjAyMyAxNjo1NToz
-MiArMDIwMApTdWJqZWN0OiBbUEFUQ0hdIHByb3RvY29sX2R1bXA6IHRscy1jcnlwdCBzdXBw
-b3J0CgotLS0KIHNyYy9vcGVudnBuL29wZW52cG4uaCB8ICAzICsrLQogc3JjL29wZW52cG4v
-c3NsLmMgICAgIHwgMjYgKysrKysrKysrKysrKysrKysrKysrKysrKysKIHNyYy9vcGVudnBu
-L3NzbC5oICAgICB8ICAxICsKIDMgZmlsZXMgY2hhbmdlZCwgMjkgaW5zZXJ0aW9ucygrKSwg
-MSBkZWxldGlvbigtKQoKZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL29wZW52cG4uaCBiL3Ny
-Yy9vcGVudnBuL29wZW52cG4uaAppbmRleCAwNzdlZmZlYi4uMDgxNjM2MGQgMTAwNjQ0Ci0t
-LSBhL3NyYy9vcGVudnBuL29wZW52cG4uaAorKysgYi9zcmMvb3BlbnZwbi9vcGVudnBuLmgK
-QEAgLTU0NCw3ICs1NDQsOCBAQCBzdHJ1Y3QgY29udGV4dAogI2RlZmluZSBQUk9UT19EVU1Q
-KGJ1ZiwgZ2MpIHByb3RvY29sX2R1bXAoKGJ1ZiksIFwKICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIFBST1RPX0RVTVBfRkxBR1MgICBcCiAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8KGMtPmMyLnRsc19tdWx0aSA/IFBE
-X1RMUyA6IDApICAgXAotICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgfChjLT5vcHRpb25zLnRsc19hdXRoX2ZpbGUgPyBtZF9rdF9zaXplKGMtPmMxLmtzLmtl
-eV90eXBlLmRpZ2VzdCkgOiAwKSwgXAorICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgfChjLT5vcHRpb25zLnRsc19hdXRoX2ZpbGUgPyBtZF9rdF9zaXplKGMt
-PmMxLmtzLmtleV90eXBlLmRpZ2VzdCkgOiAwKSBcCisgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICB8KGMtPm9wdGlvbnMudGxzX2NyeXB0X2ZpbGUgfHwgYy0+
-b3B0aW9ucy50bHNfY3J5cHRfdjJfZmlsZSA/IFBEX1RMU19DUllQVCA6IDApLCBcCiAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBnYykKIAogLyogdGhpcyBy
-ZXByZXNlbnRzICJkaXNhYmxlZCBwZWVyLWlkIiAqLwpkaWZmIC0tZ2l0IGEvc3JjL29wZW52
-cG4vc3NsLmMgYi9zcmMvb3BlbnZwbi9zc2wuYwppbmRleCA1ZTYyMDVjYy4uOGJkM2NiMDAg
-MTAwNjQ0Ci0tLSBhL3NyYy9vcGVudnBuL3NzbC5jCisrKyBiL3NyYy9vcGVudnBuL3NzbC5j
-CkBAIC00MjAyLDYgKzQyMDIsMzIgQEAgcHJvdG9jb2xfZHVtcChzdHJ1Y3QgYnVmZmVyICpi
-dWZmZXIsIHVuc2lnbmVkIGludCBmbGFncywgc3RydWN0IGdjX2FyZW5hICpnYykKICAgICAg
-ICAgfQogICAgICAgICBidWZfcHJpbnRmKCZvdXQsICIgcGlkPSVzIiwgcGFja2V0X2lkX25l
-dF9wcmludCgmcGluLCAoZmxhZ3MgJiBQRF9WRVJCT1NFKSwgZ2MpKTsKICAgICB9CisgICAg
-LyoKKyAgICAgKiBwYWNrZXRfaWQgKyB0bHMtY3J5cHQgaG1hYworICAgICAqLworICAgIGlm
-IChmbGFncyAmIFBEX1RMU19DUllQVCkKKyAgICB7CisgICAgICAgIHN0cnVjdCBwYWNrZXRf
-aWRfbmV0IHBpbjsKKyAgICAgICAgdWludDhfdCB0bHNfY3J5cHRfaG1hY1tUTFNfQ1JZUFRf
-VEFHX1NJWkVdOworCisgICAgICAgIGlmICghcGFja2V0X2lkX3JlYWQoJnBpbiwgJmJ1Ziwg
-dHJ1ZSkpCisgICAgICAgIHsKKyAgICAgICAgICAgIGdvdG8gZG9uZTsKKyAgICAgICAgfQor
-ICAgICAgICBidWZfcHJpbnRmKCZvdXQsICIgcGlkPSVzIiwgcGFja2V0X2lkX25ldF9wcmlu
-dCgmcGluLCAoZmxhZ3MgJiBQRF9WRVJCT1NFKSwgZ2MpKTsKKyAgICAgICAgaWYgKCFidWZf
-cmVhZCgmYnVmLCB0bHNfY3J5cHRfaG1hYywgVExTX0NSWVBUX1RBR19TSVpFKSkKKyAgICAg
-ICAgeworICAgICAgICAgICAgZ290byBkb25lOworICAgICAgICB9CisgICAgICAgIGlmIChm
-bGFncyAmIFBEX1ZFUkJPU0UpCisgICAgICAgIHsKKyAgICAgICAgICAgIGJ1Zl9wcmludGYo
-Jm91dCwgIiB0bHNfY3J5cHRfaG1hYz0lcyIsIGZvcm1hdF9oZXgodGxzX2NyeXB0X2htYWMs
-IFRMU19DUllQVF9UQUdfU0laRSwgMCwgZ2MpKTsKKyAgICAgICAgfQorICAgICAgICAvKgor
-ICAgICAgICAgKiBSZW1haW5kZXIgaXMgZW5jcnlwdGVkIGFuZCBvcHRpb25hbCB3S2MKKyAg
-ICAgICAgICovCisgICAgICAgIGdvdG8gZG9uZTsKKyAgICB9CiAKICAgICAvKgogICAgICAq
-IEFDSyBsaXN0CmRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9zc2wuaCBiL3NyYy9vcGVudnBu
-L3NzbC5oCmluZGV4IDNjNDBmYmVkLi5lODQyNzQ2MSAxMDA2NDQKLS0tIGEvc3JjL29wZW52
-cG4vc3NsLmgKKysrIGIvc3JjL29wZW52cG4vc3NsLmgKQEAgLTUyNSw2ICs1MjUsNyBAQCB0
-bHNfc2V0X3NpbmdsZV9zZXNzaW9uKHN0cnVjdCB0bHNfbXVsdGkgKm11bHRpKQogI2RlZmlu
-ZSBQRF9TSE9XX0RBVEEgICAgICAgICAgICAgICAoMTw8OCkKICNkZWZpbmUgUERfVExTICAg
-ICAgICAgICAgICAgICAgICAgKDE8PDkpCiAjZGVmaW5lIFBEX1ZFUkJPU0UgICAgICAgICAg
-ICAgICAgICgxPDwxMCkKKyNkZWZpbmUgUERfVExTX0NSWVBUICAgICAgICAgICAgICAgKDE8
-PDExKQogCiBjb25zdCBjaGFyICpwcm90b2NvbF9kdW1wKHN0cnVjdCBidWZmZXIgKmJ1ZmZl
-ciwKICAgICAgICAgICAgICAgICAgICAgICAgICAgdW5zaWduZWQgaW50IGZsYWdzLAotLSAK
-Mi4zMC4yCgo=
+(1 comment)
 
---------------4biHq0GLcP3SWlUINOXSwNEp--
+File config.h.cmake.in:
+
+http://gerrit.openvpn.net/c/openvpn/+/377/comment/fcaebfd4_9a7211d4 :
+PS1, Line 390: #cmakedefine HAVE_CTR_DRBG_UPDATE_RET
+In mbed TLS 3, the function mbedtls_ctr_drbg_update_ret does not exist, but=
+ mbedtls_ctr_drbg_update now has a return value.
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/377?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I7fd9e730e87210d2b7d090c8f9c7c6734bd7374e
+Gerrit-Change-Number: 377
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: MaxF <max@...2606...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 30 Oct 2023 15:50:22 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Gerrit-MessageType: comment
+
+--BlS4uwF9w8g=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/377?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File config.h.cmake.in:</p><ul style=
+=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
+6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/377/comment/fcaebfd4_9a7211d4">Patch Set #1, Line 390:</a> <co=
+de style=3D"font-family:monospace,monospace">#cmakedefine HAVE_CTR_DRBG_UPD=
+ATE_RET</code></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;=
+">In mbed TLS 3, the function mbedtls_ctr_drbg_update_ret does not exist, b=
+ut mbedtls_ctr_drbg_update now has a return value.</p></li></ul></li></ul><=
+p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/377?usp=
+=3Demail">change 377</a>. To unsubscribe, or for help writing mail filters,=
+ visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
+ itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/377?usp=3Demail"/><meta =
+itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7fd9e730e87210d2b7d090c8f9c=
+7c6734bd7374e </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 377 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: MaxF &lt;max@...2606...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 30 Oct 2023 15:50:22=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--BlS4uwF9w8g=--
 
