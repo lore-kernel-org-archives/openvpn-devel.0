@@ -1,8 +1,9 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Mon, 30 Oct 2023 18:13:15 +0100
-Message-Id: <20231030171315.68933-1-frank@...2641...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Add mbedtls3 GHA build
+Date: Tue, 31 Oct 2023 07:27:09 +0100 (CET)
+Message-Id: <202310310627.39V6R9pR006881@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20231030171315.68933-1-frank@...2641...>
+References: <20231030171315.68933-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add mbedtls3 GHA build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,74 +14,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Frank Lichtenheld <frank@...2641...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Change-Id: I9edb3e336bb9efe6f555fa6b323a4a0a944f683d
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
----
- .github/workflows/build.yaml | 51 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 51 insertions(+)
+Acked-by: Gert Doering <gert@...1296...>
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 60d3da5e..cd72f3db 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -360,3 +360,54 @@ jobs:
-         run: make -j3
-       - name: make check
-         run: make check
-+
-+  mbedtls3:
-+    strategy:
-+      fail-fast: false
-+      matrix:
-+        os: [ubuntu-22.04]
-+        ssllib: [mbedtls3]
-+        build: [ normal, asan ]
-+        include:
-+          - build: asan
-+            cflags: "-fsanitize=address -fno-sanitize-recover=all  -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
-+            ldflags: -fsanitize=address -fno-sanitize-recover=all
-+            cc: clang
-+          - build: normal
-+            cflags: "-O2 -g"
-+            ldflags: ""
-+            cc: gcc
-+
-+    name: "${{matrix.cc}} ${{matrix.build}} - ${{matrix.os}} - ${{matrix.ssllib}}"
-+    runs-on: ${{matrix.os}}
-+    env:
-+      CFLAGS: ${{ matrix.cflags }}
-+      LDFLAGS: ${{ matrix.ldflags }}
-+      CC: ${{matrix.cc}}
-+      UBSAN_OPTIONS: print_stacktrace=1
-+
-+    steps:
-+      - name: Install dependencies
-+        run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils python3-jinja2 python3-jsonschema libtool automake autoconf pkg-config libcap-ng-dev libnl-genl-3-dev
-+      - name: "mbedtls: checkout"
-+        uses: actions/checkout@...2689...
-+        with:
-+          path: mbedtls
-+          repository: Mbed-TLS/mbedtls
-+          ref: v3.5.0
-+      - name: "mbedtls: make no_test"
-+        run: make -j3 no_test SHARED=1
-+        working-directory: mbedtls
-+      - name: "mbedtls: make install"
-+        run: sudo make install DESTDIR=/usr
-+        working-directory: mbedtls
-+      - name: Checkout OpenVPN
-+        uses: actions/checkout@...2689...
-+      - name: autoconf
-+        run: autoreconf -fvi
-+      - name: configure
-+        run: ./configure --with-crypto-library=mbedtls
-+      - name: make all
-+        run: make -j3
-+      - name: make check
-+        run: make check
--- 
-2.34.1
+Looks reasonable and succeeds in my GH test repo.
+
+Your patch has been applied to the master branch.
+
+commit 5af57e348ed3a5f451aca1bba5ba57b3a34e5d11
+Author: Frank Lichtenheld
+Date:   Mon Oct 30 18:13:15 2023 +0100
+
+     Add mbedtls3 GHA build
+
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20231030171315.68933-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27314.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
