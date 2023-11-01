@@ -1,11 +1,10 @@
-Content-Type: multipart/alternative;
- boundary="------------A02U5vUZ2TeRH6PV0IIfEduy"
-Message-ID: <16a407d3-53ec-470e-a987-33b5596f680b@...2751...>
-Date: Wed, 1 Nov 2023 16:56:55 +0100
 MIME-Version: 1.0
-From: Johan Draaisma <johan@...2751...>
-Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Date: Wed, 01 Nov 2023 18:23:57 +0000
+From: aquilamacedo@...2744...
+Message-ID: <4a3a9f1d691704f25f07653bb0de2583@...2744...>
+Content-Type: multipart/mixed;
+ boundary="=_cb53e36692bf196f439efc2804b90788"
+Subject: [Openvpn-devel] Typographical Error Corrections - Patch Submission
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,110 +15,98 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------A02U5vUZ2TeRH6PV0IIfEduy
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+--=_cb53e36692bf196f439efc2804b90788
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Meeting summary for 1 November 2023:
+I am writing to inform you that I have identified and rectified several
+typographical errors in the manpages. An attached patch contains the
+necessary changes I've made.
 
-  * *Updated: OpenVPN 2.6.7 release*
-    /CMake backport is in./
-    /We are working on some outstanding patches that we are working to
-    get in./
-    /Also there is a div-by-zero bug and a critical bug we want to get
-    out soon so we're waiting until that is in./
-    /The patch for it is on security mailing list and being reviewed by
-    dazo and df12k./
+In addition to the typographical error fixes, I am recommending these
+changes in response to the lintian warnings generated during the Debian
+packaging process for package updates.
+--=_cb53e36692bf196f439efc2804b90788
+Content-Transfer-Encoding: base64
+Content-Type: text/x-diff;
+ name=Fix-typos-in-multiple-documentation-files.patch
+Content-Disposition: attachment;
+ filename=Fix-typos-in-multiple-documentation-files.patch;
+ size=4163
 
-  * *Updated: Publish security assessment of OpenVPN2 codebase on main
-    website.*
-    /Approvals and preparations are done for this./
-    /Marketing sent a draft over internally which was reviewed by
-    novaflash and dazo and looks almost reasonable./
-    /Expected to be published within the next 2 weeks./
-
-  * *Updated: Tunnelcrack published
-    now​https://tunnelcrack.mathyvanhoef.com
-    <https://tunnelcrack.mathyvanhoef.com/>*
-    /A post was published atTunnelCrack community wiki article
-    <https://community.openvpn.net/openvpn/wiki/TunnelCrack>/
-    /More details are in thewiki:Hackathon2023
-    <https://community.openvpn.net/openvpn/wiki/Hackathon2023>meeting
-    summary./
-    /A security advisory went up on the main
-    websitehttps://openvpn.net/security-advisories/
-    /
-
-As always you're welcome to join at #openvpn-meeting on Libera IRC 
-network every Wednesday at 13:00 Central European Time.
-
-Kind regards,
-Johan Draaisma
-
---------------A02U5vUZ2TeRH6PV0IIfEduy
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  </head>
-  <body>
-    <p> Meeting summary for 1 November 2023:</p>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: OpenVPN 2.6.7 release</strong><br>
-        <em>CMake backport is in.</em><br>
-        <em>We are working on some outstanding patches that we are
-          working to get in.</em><br>
-        <em>Also there is a div-by-zero bug and a critical bug we want
-          to get out soon so we're waiting until that is in.</em><br>
-        <em>The patch for it is on security mailing list and being
-          reviewed by dazo and df12k.</em><br>
-      </li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: Publish security assessment of OpenVPN2
-          codebase on main website.</strong><br>
-        <em>Approvals and preparations are done for this.</em><br>
-        <em>Marketing sent a draft over internally which was reviewed by
-          novaflash and dazo and looks almost reasonable.</em><br>
-        <em>Expected to be published within the next 2 weeks.</em><br>
-      </li>
-    </ul>
-    <ul
-style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
-      <li><strong>Updated: Tunnelcrack published now<span> </span><a
-            class="ext-link"
-            href="https://tunnelcrack.mathyvanhoef.com/"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
-              class="icon"
-style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://tunnelcrack.mathyvanhoef.com</a></strong><br>
-        <em>A post was published at<span> </span><a class="wiki"
-href="https://community.openvpn.net/openvpn/wiki/TunnelCrack"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">TunnelCrack
-            community wiki article</a></em><br>
-        <em>More details are in the<span> </span><a class="wiki"
-href="https://community.openvpn.net/openvpn/wiki/Hackathon2023"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);">wiki:Hackathon2023</a><span> </span>meeting
-          summary.</em><br>
-        <em>A security advisory went up on the main website<span> </span><a
-            href="https://openvpn.net/security-advisories/"
-style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"
-            class="moz-txt-link-freetext">https://openvpn.net/security-advisories/</a><br>
-        </em></li>
-    </ul>
-    <p></p>
-    <p>As always you're welcome to join at #openvpn-meeting on Libera
-      IRC network every Wednesday at 13:00 Central European Time.</p>
-    <p>Kind regards,<br>
-      Johan Draaisma<br>
-    </p>
-  </body>
-</html>
-
---------------A02U5vUZ2TeRH6PV0IIfEduy--
+RnJvbSAzNDJhMGVjMWYyYTBiMGE2OTg3ZDBkY2RmNTRiMmNjZjAzYWM5NWUyIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBBcXVpbGEgTWFjZWRvIDxhcXVpbGFtYWNlZG9AcmlzZXVwLm5l
+dD4KRGF0ZTogVGh1LCAxOSBPY3QgMjAyMyAxNjo0MDo0OSAtMDMwMApTdWJqZWN0OiBbUEFUQ0hd
+IGRvYzogQ29ycmVjdCB0eXBvcyBpbiBtdWx0aXBsZSBkb2N1bWVudGF0aW9uIGZpbGVzCgpGaXhl
+ZCB0eXBvZ3JhcGhpY2FsIGVycm9ycyBpbiB2YXJpb3VzIGRvY3VtZW50YXRpb24gZmlsZXMgZm9y
+IGltcHJvdmVkIGNsYXJpdHkgYW5kIHJlYWRhYmlsaXR5LgoKU2lnbmVkLW9mZi1ieTogQXF1aWxh
+IE1hY2VkbyA8YXF1aWxhbWFjZWRvQHJpc2V1cC5uZXQ+Ci0tLQogZG9jL21hbi1zZWN0aW9ucy9j
+bGllbnQtb3B0aW9ucy5yc3QgICAgICB8IDQgKystLQogZG9jL21hbi1zZWN0aW9ucy9nZW5lcmlj
+LW9wdGlvbnMucnN0ICAgICB8IDIgKy0KIGRvYy9tYW4tc2VjdGlvbnMvc2VydmVyLW9wdGlvbnMu
+cnN0ICAgICAgfCAyICstCiBkb2MvbWFuLXNlY3Rpb25zL3Zwbi1uZXR3b3JrLW9wdGlvbnMucnN0
+IHwgMiArLQogc3JjL29wZW52cG4vb3B0aW9ucy5jICAgICAgICAgICAgICAgICAgICB8IDIgKy0K
+IDUgZmlsZXMgY2hhbmdlZCwgNiBpbnNlcnRpb25zKCspLCA2IGRlbGV0aW9ucygtKQoKZGlmZiAt
+LWdpdCBhL2RvYy9tYW4tc2VjdGlvbnMvY2xpZW50LW9wdGlvbnMucnN0IGIvZG9jL21hbi1zZWN0
+aW9ucy9jbGllbnQtb3B0aW9ucy5yc3QKaW5kZXggMzYxNmVkN2YzZjguLjU0YzRlYzYzMDczIDEw
+MDY0NAotLS0gYS9kb2MvbWFuLXNlY3Rpb25zL2NsaWVudC1vcHRpb25zLnJzdAorKysgYi9kb2Mv
+bWFuLXNlY3Rpb25zL2NsaWVudC1vcHRpb25zLnJzdApAQCAtNTEsOSArNTEsOSBAQCBjb25maWd1
+cmF0aW9uLgogICByZWFjdCBhY2NvcmRpbmcgdG8gYGAtLWF1dGgtcmV0cnlgYAogCiAtLWF1dGgt
+dG9rZW4tdXNlciBiYXNlNjR1c2VybmFtZQotICBDb21wYW5pb24gb3B0aW9uIHRvIGBgLS1hdXRo
+LXRva2VuYGAuIFRoaXMgb3B0aW9ucyBhbGxvd3MgdG8gb3ZlcnJpZGUKKyAgQ29tcGFuaW9uIG9w
+dGlvbiB0byBgYC0tYXV0aC10b2tlbmBgLiBUaGlzIG9wdGlvbnMgYWxsb3dzIG9uZSB0byBvdmVy
+cmlkZQogICB0aGUgdXNlcm5hbWUgdXNlZCBieSB0aGUgY2xpZW50IHdoZW4gcmVhdXRoZW50aWNh
+dGluZyB3aXRoIHRoZSBgYGF1dGgtdG9rZW5gYC4KLSAgSXQgYWxzbyBhbGxvd3MgdG8gdXNlIGBg
+LS1hdXRoLXRva2VuYGAgaW4gc2V0dXBzIHRoYXQgbm9ybWFsbHkgZG8gbm90IHVzZQorICBJdCBh
+bHNvIGFsbG93cyBvbmUgdG8gdXNlIGBgLS1hdXRoLXRva2VuYGAgaW4gc2V0dXBzIHRoYXQgbm9y
+bWFsbHkgZG8gbm90IHVzZQogICB1c2VybmFtZSBhbmQgcGFzc3dvcmQuCiAKICAgVGhlIHVzZXJu
+YW1lIGhhcyB0byBiZSBiYXNlNjQgZW5jb2RlZC4KZGlmZiAtLWdpdCBhL2RvYy9tYW4tc2VjdGlv
+bnMvZ2VuZXJpYy1vcHRpb25zLnJzdCBiL2RvYy9tYW4tc2VjdGlvbnMvZ2VuZXJpYy1vcHRpb25z
+LnJzdAppbmRleCA5N2UxYjVhYTYxMC4uOTVlNGNhMjMzYmQgMTAwNjQ0Ci0tLSBhL2RvYy9tYW4t
+c2VjdGlvbnMvZ2VuZXJpYy1vcHRpb25zLnJzdAorKysgYi9kb2MvbWFuLXNlY3Rpb25zL2dlbmVy
+aWMtb3B0aW9ucy5yc3QKQEAgLTQ4Myw3ICs0ODMsNyBAQCB3aGljaCBtb2RlIE9wZW5WUE4gaXMg
+Y29uZmlndXJlZCBhcy4KIAogICAqIDpjb2RlOmBPUEVOVlBOX1BMVUdJTl9BVVRIX1VTRVJfUEFT
+U19WRVJJRllgIHBsdWctaW4gaG9va3MgcmV0dXJucwogICAgIHN1Y2Nlc3MvZmFpbHVyZSB2aWEg
+OmNvZGU6YGF1dGhfY29udHJvbF9maWxlYCB3aGVuIHVzaW5nIGRlZmVycmVkIGF1dGgKLSAgICBt
+ZXRob2QgYW5kIHBlbmRpbmcgYXV0aGVudGlmaWNhdGlvbiB2aWEgOmNvZGU6YHBlbmRpbmdfYXV0
+aF9maWxlYC4KKyAgICBtZXRob2QgYW5kIHBlbmRpbmcgYXV0aGVudGljYXRpb24gdmlhIDpjb2Rl
+OmBwZW5kaW5nX2F1dGhfZmlsZWAuCiAKIC0tdXNlLXByZWRpY3Rpb24tcmVzaXN0YW5jZQogICBF
+bmFibGUgcHJlZGljdGlvbiByZXNpc3RhbmNlIG9uIG1iZWQgVExTJ3MgUk5HLgpkaWZmIC0tZ2l0
+IGEvZG9jL21hbi1zZWN0aW9ucy9zZXJ2ZXItb3B0aW9ucy5yc3QgYi9kb2MvbWFuLXNlY3Rpb25z
+L3NlcnZlci1vcHRpb25zLnJzdAppbmRleCAxNGE5NDgwMWJiNS4uOThmNTM0MDI3NGYgMTAwNjQ0
+Ci0tLSBhL2RvYy9tYW4tc2VjdGlvbnMvc2VydmVyLW9wdGlvbnMucnN0CisrKyBiL2RvYy9tYW4t
+c2VjdGlvbnMvc2VydmVyLW9wdGlvbnMucnN0CkBAIC03MzksNyArNzM5LDcgQEAgZmFzdCBoYXJk
+d2FyZS4gU1NML1RMUyBhdXRoZW50aWNhdGlvbiBtdXN0IGJlIHVzZWQgaW4gdGhpcyBtb2RlLgog
+CiAtLXZsYW4tcHZpZCB2CiAgIFNwZWNpZmllcyB3aGljaCBWTEFOIGlkZW50aWZpZXIgYSAicG9y
+dCIgaXMgYXNzb2NpYXRlZCB3aXRoLiBPbmx5IHZhbGlkCi0gIHdoZW4gYGAtLXZsYW4tdGFnZ2lu
+Z2BgIGlzIHNwZWZpY2llZC4KKyAgd2hlbiBgYC0tdmxhbi10YWdnaW5nYGAgaXMgc3BlY2lmaWVk
+LgogCiAgIEluIHRoZSBjbGllbnQgY29udGV4dCwgdGhlIHNldHRpbmcgc3BlY2lmaWVzIHdoaWNo
+IFZMQU4gSUQgYSBjbGllbnQgaXMKICAgYXNzb2NpYXRlZCB3aXRoLiBJbiB0aGUgZ2xvYmFsIGNv
+bnRleHQsIHRoZSBWTEFOIElEIG9mIHRoZSBzZXJ2ZXIgVEFQCmRpZmYgLS1naXQgYS9kb2MvbWFu
+LXNlY3Rpb25zL3Zwbi1uZXR3b3JrLW9wdGlvbnMucnN0IGIvZG9jL21hbi1zZWN0aW9ucy92cG4t
+bmV0d29yay1vcHRpb25zLnJzdAppbmRleCAzZmEzY2NmMTA3My4uNDFkMzY3YmZkMGUgMTAwNjQ0
+Ci0tLSBhL2RvYy9tYW4tc2VjdGlvbnMvdnBuLW5ldHdvcmstb3B0aW9ucy5yc3QKKysrIGIvZG9j
+L21hbi1zZWN0aW9ucy92cG4tbmV0d29yay1vcHRpb25zLnJzdApAQCAtNTQ4LDcgKzU0OCw3IEBA
+IHJvdXRpbmcuCiAgIEl0J3MgYmVzdCB0byB1c2UgdGhlIGBgLS1mcmFnbWVudGBgIGFuZC9vciBg
+YC0tbXNzZml4YGAgb3B0aW9ucyB0byBkZWFsCiAgIHdpdGggTVRVIHNpemluZyBpc3N1ZXMuCiAK
+LSAgTm90ZTogRGVwZW5kaW5nIG9uIHRoZSBwbGF0Zm9ybSwgdGhlIG9wZXJhdGluZyBzeXN0ZW0g
+YWxsb3dzIHRvIHJlY2VpdmUKKyAgTm90ZTogRGVwZW5kaW5nIG9uIHRoZSBwbGF0Zm9ybSwgdGhl
+IG9wZXJhdGluZyBzeXN0ZW0gYWxsb3dzIG9uZSB0byByZWNlaXZlCiAgIHBhY2tldHMgbGFyZ2Vy
+IHRoYW4gYGB0dW4tbXR1YGAgKGUuZy4gTGludXggYW5kIEZyZWVCU0QpIGJ1dCBvdGhlciBwbGF0
+Zm9ybXMKICAgKGxpa2UgbWFjT1MpIGxpbWl0IHJlY2VpdmVkIHBhY2tldHMgdG8gdGhlIHNhbWUg
+c2l6ZSBhcyB0aGUgTVRVLgogCmRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9vcHRpb25zLmMgYi9z
+cmMvb3BlbnZwbi9vcHRpb25zLmMKaW5kZXggMmI2OGJhYzhjNjcuLjIxZmMyOWVjMzI0IDEwMDY0
+NAotLS0gYS9zcmMvb3BlbnZwbi9vcHRpb25zLmMKKysrIGIvc3JjL29wZW52cG4vb3B0aW9ucy5j
+CkBAIC01OTEsNyArNTkxLDcgQEAgc3RhdGljIGNvbnN0IGNoYXIgdXNhZ2VfbWVzc2FnZVtdID0K
+ICAgICAiICAgICAgICAgICAgICAgICAgV2luZG93cyBDZXJ0aWZpY2F0ZSBTeXN0ZW0gU3RvcmUu
+XG4iCiAjZW5kaWYKICAgICAiLS10bHMtY2lwaGVyIGwgIDogQSBsaXN0IGwgb2YgYWxsb3dhYmxl
+IFRMUyBjaXBoZXJzIHNlcGFyYXRlZCBieSA6IChvcHRpb25hbCkuXG4iCi0gICAgIi0tdGxzLWNp
+cGhlcnN1aXRlcyBsOiBBIGxpc3Qgb2YgYWxsb3dlZCBUTFMgMS4zIGNpcGhlciBzdWl0ZXMgc2Vw
+ZXJhdGVkIGJ5IDogKG9wdGlvbmFsKVxuIgorICAgICItLXRscy1jaXBoZXJzdWl0ZXMgbDogQSBs
+aXN0IG9mIGFsbG93ZWQgVExTIDEuMyBjaXBoZXIgc3VpdGVzIHNlcGFyYXRlZCBieSA6IChvcHRp
+b25hbClcbiIKICAgICAiICAgICAgICAgICAgICAgIDogVXNlIC0tc2hvdy10bHMgdG8gc2VlIGEg
+bGlzdCBvZiBzdXBwb3J0ZWQgVExTIGNpcGhlcnMgKHN1aXRlcykuXG4iCiAgICAgIi0tdGxzLWNl
+cnQtcHJvZmlsZSBwIDogU2V0IHRoZSBhbGxvd2VkIGNlcnRpZmljYXRlIGNyeXB0byBhbGdvcml0
+aG0gcHJvZmlsZVxuIgogICAgICIgICAgICAgICAgICAgICAgICAoZGVmYXVsdD1sZWdhY3kpLlxu
+Igo=
+--=_cb53e36692bf196f439efc2804b90788--
 
