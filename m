@@ -1,16 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 6 Nov 2023 13:01:57 +0000
-In-Reply-To: <gerrit.1699031887000.I0dcb2dac4136f194da7050a8ea8495e9faba9dd9@...2715...>
-References: <gerrit.1699031887000.I0dcb2dac4136f194da7050a8ea8495e9faba9dd9@...2715...>
+Date: Mon, 6 Nov 2023 17:32:51 +0000
+References: <gerrit.1699291967000.Ice8b95f953c3f7e71657a78ea12b02a08c60aa67@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <8a1e4a043ec23885ff9698aa7cc6d8bb906f1b48-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <7c3726a795f0379b5b9c8617e6411a9b6636d3fe-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="xULIPMkr4MY="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove support for
- NTLM v1 proxy authentication
+Content-Type: multipart/alternative; boundary="Ni+yr0k2Sfw="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: tun: use is_tun_p2p
+ more consistently
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---xULIPMkr4MY=
+--Ni+yr0k2Sfw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -30,1165 +29,789 @@ Attention is currently required from: plaisthos.
 
 Hello plaisthos,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/379?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/380?usp=3Demail
 
-to look at the new patch set (#2).
+to review the following change.
 
 
-Change subject: Remove support for NTLM v1 proxy authentication
+Change subject: tun: use is_tun_p2p more consistently
 ......................................................................
 
-Remove support for NTLM v1 proxy authentication
+tun: use is_tun_p2p more consistently
 
-Due to the limitation of the protocol it is not
-considered secure. Better to use basic auth instead
-of a false sense of security. NTLM v2 remains
-supported for now.
+Using "tun" as the variable name for the return of
+is_tun_p2p is probably a historical accident. But
+it has actual consequences in that the other code
+often seems to assume that it does less checks
+than it actually does.
 
-Change-Id: I0dcb2dac4136f194da7050a8ea8495e9faba9dd9
+Use "tun_p2p" as the variable name and remove checks
+that are not required. Also use is_tun_p2p in more
+places.
+
+Change-Id: Ice8b95f953c3f7e71657a78ea12b02a08c60aa67
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M doc/man-sections/proxy-options.rst
-M src/openvpn/crypto_backend.h
-M src/openvpn/crypto_mbedtls.c
-M src/openvpn/crypto_openssl.c
-M src/openvpn/ntlm.c
-M src/openvpn/options.c
-M src/openvpn/proxy.c
-M src/openvpn/proxy.h
-M tests/unit_tests/openvpn/test_crypto.c
-9 files changed, 95 insertions(+), 226 deletions(-)
+M src/openvpn/tun.c
+1 file changed, 48 insertions(+), 72 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/79/379/2
 
-diff --git a/doc/man-sections/proxy-options.rst b/doc/man-sections/proxy-op=
-tions.rst
-index 465bea0..3fb1060 100644
---- a/doc/man-sections/proxy-options.rst
-+++ b/doc/man-sections/proxy-options.rst
-@@ -11,7 +11,7 @@
-   ``--http-proxy-user-pass`` option. (See section on inline files)
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/80/380/1
 
-   The last optional argument is an ``auth-method`` which should be one
--  of :code:`none`, :code:`basic`, or :code:`ntlm`.
-+  of :code:`none`, :code:`basic`, or :code:`ntlm2`.
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index f857ed1..45559fc 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -507,31 +507,31 @@
+ static const char ifconfig_warn_how_to_silence[] =3D "(silence this warnin=
+g with --ifconfig-nowarn)";
 
-   HTTP Digest authentication is supported as well, but only via the
-   :code:`auto` or :code:`auto-nct` flags (below).  This must replace
-@@ -33,7 +33,9 @@
-      http-proxy proxy.example.net 3128 authfile.txt
-      http-proxy proxy.example.net 3128 stdin
-      http-proxy proxy.example.net 3128 auto basic
--     http-proxy proxy.example.net 3128 auto-nct ntlm
-+     http-proxy proxy.example.net 3128 auto-nct ntlm2
-+
-+  Note that support for NTLMv1 proxies was removed with OpenVPN 2.7.
-
- --http-proxy-option args
-   Set extended HTTP proxy options. Requires an option ``type`` as argument
-diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index 842e73e..a5371c8 100644
---- a/src/openvpn/crypto_backend.h
-+++ b/src/openvpn/crypto_backend.h
-@@ -157,17 +157,6 @@
+ /*
+- * If !tun, make sure ifconfig_remote_netmask looks
++ * If !tun_p2p, make sure ifconfig_remote_netmask looks
+  *  like a netmask.
+  *
+- * If tun, make sure ifconfig_remote_netmask looks
++ * If tun_p2p, make sure ifconfig_remote_netmask looks
+  *  like an IPv4 address.
   */
- int rand_bytes(uint8_t *output, int len);
-
--/**
-- * Encrypt the given block, using DES ECB mode
-- *
-- * @param key           DES key to use.
-- * @param src           Buffer containing the 8-byte source.
-- * @param dst           Buffer containing the 8-byte destination
-- */
--void cipher_des_encrypt_ecb(const unsigned char key[DES_KEY_LENGTH],
--                            unsigned char src[DES_KEY_LENGTH],
--                            unsigned char dst[DES_KEY_LENGTH]);
--
- /*
-  *
-  * Generic cipher key type functions
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index aaf6ef7..ea52f0c 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -758,17 +758,6 @@
-     return 1;
- }
-
--void
--cipher_des_encrypt_ecb(const unsigned char key[DES_KEY_LENGTH],
--                       unsigned char src[DES_KEY_LENGTH],
--                       unsigned char dst[DES_KEY_LENGTH])
--{
--    mbedtls_des_context ctx;
--
--    ASSERT(mbed_ok(mbedtls_des_setkey_enc(&ctx, key)));
--    ASSERT(mbed_ok(mbedtls_des_crypt_ecb(&ctx, src, dst)));
--}
--
-
-=20
- /*
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index fe1254f..e8ddf14 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -988,50 +988,6 @@
-     return cipher_ctx_final(ctx, dst, dst_len);
- }
-
--void
--cipher_des_encrypt_ecb(const unsigned char key[DES_KEY_LENGTH],
--                       unsigned char src[DES_KEY_LENGTH],
--                       unsigned char dst[DES_KEY_LENGTH])
--{
--    /* We are using 3DES here with three times the same key to cheat
--     * and emulate DES as 3DES is better supported than DES */
--    EVP_CIPHER_CTX *ctx =3D EVP_CIPHER_CTX_new();
--    if (!ctx)
--    {
--        crypto_msg(M_FATAL, "%s: EVP_CIPHER_CTX_new() failed", __func__);
--    }
--
--    unsigned char key3[DES_KEY_LENGTH*3];
--    for (int i =3D 0; i < 3; i++)
--    {
--        memcpy(key3 + (i * DES_KEY_LENGTH), key, DES_KEY_LENGTH);
--    }
--
--    if (!EVP_EncryptInit_ex(ctx, EVP_des_ede3_ecb(), NULL, key3, NULL))
--    {
--        crypto_msg(M_FATAL, "%s: EVP_EncryptInit_ex() failed", __func__);
--    }
--
--    int len;
--
--    /* The EVP_EncryptFinal method will write to the dst+len pointer even
--     * though there is nothing to encrypt anymore, provide space for that =
-to
--     * not overflow the stack */
--    unsigned char dst2[DES_KEY_LENGTH * 2];
--    if (!EVP_EncryptUpdate(ctx, dst2, &len, src, DES_KEY_LENGTH))
--    {
--        crypto_msg(M_FATAL, "%s: EVP_EncryptUpdate() failed", __func__);
--    }
--
--    if (!EVP_EncryptFinal(ctx, dst2 + len, &len))
--    {
--        crypto_msg(M_FATAL, "%s: EVP_EncryptFinal() failed", __func__);
--    }
--
--    memcpy(dst, dst2, DES_KEY_LENGTH);
--
--    EVP_CIPHER_CTX_free(ctx);
--}
-
- /*
-  *
-diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
-index 2e77214..bc33f41 100644
---- a/src/openvpn/ntlm.c
-+++ b/src/openvpn/ntlm.c
-@@ -55,19 +55,6 @@
-
-
  static void
--create_des_keys(const unsigned char *hash, unsigned char *key)
--{
--    key[0] =3D hash[0];
--    key[1] =3D ((hash[0] & 1) << 7) | (hash[1] >> 1);
--    key[2] =3D ((hash[1] & 3) << 6) | (hash[2] >> 2);
--    key[3] =3D ((hash[2] & 7) << 5) | (hash[3] >> 3);
--    key[4] =3D ((hash[3] & 15) << 4) | (hash[4] >> 4);
--    key[5] =3D ((hash[4] & 31) << 3) | (hash[5] >> 5);
--    key[6] =3D ((hash[5] & 63) << 2) | (hash[6] >> 6);
--    key[7] =3D ((hash[6] & 127) << 1);
--}
--
--static void
- gen_md4_hash(const uint8_t *data, int data_len, uint8_t *result)
+-ifconfig_sanity_check(bool tun, in_addr_t addr, int topology)
++ifconfig_sanity_check(bool tun_p2p, in_addr_t addr)
  {
-     /* result is 16 byte md4 hash */
-@@ -210,7 +197,7 @@
-     uint8_t phase3[464];
-
-     uint8_t md4_hash[MD4_DIGEST_LENGTH + 5];
--    uint8_t challenge[8], ntlm_response[24];
-+    uint8_t challenge[8];
-     int i, ret_val;
-
-     uint8_t ntlmv2_response[144];
-@@ -227,8 +214,6 @@
-     char username[128];
-     char *separator;
-
--    bool ntlmv2_enabled =3D (p->auth_method =3D=3D HTTP_AUTH_NTLM2);
--
-     ASSERT(strlen(p->up.username) > 0);
-     ASSERT(strlen(p->up.password) > 0);
-
-@@ -282,126 +267,102 @@
-         challenge[i] =3D buf2[i+24];
-     }
-
--    if (ntlmv2_enabled)      /* Generate NTLMv2 response */
-+    /* Generate NTLMv2 response */
-+    int tib_len;
-+
-+    /* NTLMv2 hash */
-+    strcpy(userdomain, username);
-+    my_strupr(userdomain);
-+    if (strlen(username) + strlen(domain) < sizeof(userdomain))
+     struct gc_arena gc =3D gc_new();
+     const bool looks_like_netmask =3D ((addr & 0xFF000000) =3D=3D 0xFF0000=
+00);
+-    if (tun)
++    if (tun_p2p)
      {
--        int tib_len;
--
--        /* NTLMv2 hash */
--        strcpy(userdomain, username);
--        my_strupr(userdomain);
--        if (strlen(username) + strlen(domain) < sizeof(userdomain))
--        {
--            strcat(userdomain, domain);
--        }
--        else
--        {
--            msg(M_INFO, "Warning: Username or domain too long");
--        }
--        unicodize(userdomain_u, userdomain);
--        gen_hmac_md5((uint8_t *)userdomain_u, 2 * strlen(userdomain), md4_=
-hash,
--                     ntlmv2_hash);
--
--        /* NTLMv2 Blob */
--        memset(ntlmv2_blob, 0, 128);                        /* Clear blob =
-buffer */
--        ntlmv2_blob[0x00] =3D 1;                              /* Signature=
- */
--        ntlmv2_blob[0x01] =3D 1;                              /* Signature=
- */
--        ntlmv2_blob[0x04] =3D 0;                              /* Reserved =
-*/
--        gen_timestamp(&ntlmv2_blob[0x08]);                  /* 64-bit Time=
-stamp */
--        gen_nonce(&ntlmv2_blob[0x10]);                      /* 64-bit Clie=
-nt Nonce */
--        ntlmv2_blob[0x18] =3D 0;                              /* Unknown, =
-zero should work */
--
--        /* Add target information block to the blob */
--
--        /* Check for Target Information block */
--        /* The NTLM spec instructs to interpret these 4 consecutive bytes =
-as a
--         * 32bit long integer. However, no endianness is specified.
--         * The code here and that found in other NTLM implementations point
--         * towards the assumption that the byte order on the wire has to
--         * match the order on the sending and receiving hosts. Probably NT=
-LM has
--         * been thought to be always running on x86_64/i386 machine thus
--         * implying Little-Endian everywhere.
--         *
--         * This said, in case of future changes, we should keep in mind th=
-at the
--         * byte order on the wire for the NTLM header is LE.
--         */
--        const size_t hoff =3D 0x14;
--        unsigned long flags =3D buf2[hoff] | (buf2[hoff + 1] << 8)
--                              |(buf2[hoff + 2] << 16) | (buf2[hoff + 3] <<=
- 24);
--        if ((flags & 0x00800000) =3D=3D 0x00800000)
--        {
--            tib_len =3D buf2[0x28];            /* Get Target Information b=
-lock size */
--            if (tib_len > 96)
--            {
--                tib_len =3D 96;
--            }
--
--            {
--                uint8_t *tib_ptr;
--                uint8_t tib_pos =3D buf2[0x2c];
--                if (tib_pos + tib_len > sizeof(buf2))
--                {
--                    return NULL;
--                }
--                /* Get Target Information block pointer */
--                tib_ptr =3D buf2 + tib_pos;
--                /* Copy Target Information block into the blob */
--                memcpy(&ntlmv2_blob[0x1c], tib_ptr, tib_len);
--            }
--        }
--        else
--        {
--            tib_len =3D 0;
--        }
--
--        /* Unknown, zero works */
--        ntlmv2_blob[0x1c + tib_len] =3D 0;
--
--        /* Get blob length */
--        ntlmv2_blob_size =3D 0x20 + tib_len;
--
--        /* Add challenge from message 2 */
--        memcpy(&ntlmv2_response[8], challenge, 8);
--
--        /* hmac-md5 */
--        gen_hmac_md5(&ntlmv2_response[8], ntlmv2_blob_size + 8, ntlmv2_has=
-h,
--                     ntlmv2_hmacmd5);
--
--        /* Add hmac-md5 result to the blob.
--         * Note: This overwrites challenge previously written at
--         * ntlmv2_response[8..15] */
--        memcpy(ntlmv2_response, ntlmv2_hmacmd5, MD5_DIGEST_LENGTH);
-+        strcat(userdomain, domain);
+-        if (looks_like_netmask && (topology =3D=3D TOP_NET30 || topology =
+=3D=3D TOP_P2P))
++        if (looks_like_netmask)
+         {
+             msg(M_WARN, "WARNING: Since you are using --dev tun with a poi=
+nt-to-point topology, the second argument to --ifconfig must be an IP addre=
+ss.  You are using something (%s) that looks more like a netmask. %s",
+                 print_in_addr_t(addr, 0, &gc),
+                 ifconfig_warn_how_to_silence);
+         }
      }
--    else /* Generate NTLM response */
+-    else /* tap */
 +    else
      {
--        unsigned char key1[DES_KEY_LENGTH], key2[DES_KEY_LENGTH];
--        unsigned char key3[DES_KEY_LENGTH];
-+        msg(M_INFO, "Warning: Username or domain too long");
-+    }
-+    unicodize(userdomain_u, userdomain);
-+    gen_hmac_md5((uint8_t *)userdomain_u, 2 * strlen(userdomain), md4_hash,
-+                 ntlmv2_hash);
-
--        create_des_keys(md4_hash, key1);
--        cipher_des_encrypt_ecb(key1, challenge, ntlm_response);
-+    /* NTLMv2 Blob */
-+    memset(ntlmv2_blob, 0, 128);                        /* Clear blob buff=
-er */
-+    ntlmv2_blob[0x00] =3D 1;                              /* Signature */
-+    ntlmv2_blob[0x01] =3D 1;                              /* Signature */
-+    ntlmv2_blob[0x04] =3D 0;                              /* Reserved */
-+    gen_timestamp(&ntlmv2_blob[0x08]);                  /* 64-bit Timestam=
-p */
-+    gen_nonce(&ntlmv2_blob[0x10]);                      /* 64-bit Client N=
-once */
-+    ntlmv2_blob[0x18] =3D 0;                              /* Unknown, zero=
- should work */
-
--        create_des_keys(&md4_hash[DES_KEY_LENGTH - 1], key2);
--        cipher_des_encrypt_ecb(key2, challenge, &ntlm_response[DES_KEY_LEN=
-GTH]);
-+    /* Add target information block to the blob */
-
--        create_des_keys(&md4_hash[2 * (DES_KEY_LENGTH - 1)], key3);
--        cipher_des_encrypt_ecb(key3, challenge,
--                               &ntlm_response[DES_KEY_LENGTH * 2]);
-+    /* Check for Target Information block */
-+    /* The NTLM spec instructs to interpret these 4 consecutive bytes as a
-+     * 32bit long integer. However, no endianness is specified.
-+     * The code here and that found in other NTLM implementations point
-+     * towards the assumption that the byte order on the wire has to
-+     * match the order on the sending and receiving hosts. Probably NTLM h=
-as
-+     * been thought to be always running on x86_64/i386 machine thus
-+     * implying Little-Endian everywhere.
-+     *
-+     * This said, in case of future changes, we should keep in mind that t=
-he
-+     * byte order on the wire for the NTLM header is LE.
-+     */
-+    const size_t hoff =3D 0x14;
-+    unsigned long flags =3D buf2[hoff] | (buf2[hoff + 1] << 8)
-+                          |(buf2[hoff + 2] << 16) | (buf2[hoff + 3] << 24);
-+    if ((flags & 0x00800000) =3D=3D 0x00800000)
-+    {
-+        tib_len =3D buf2[0x28];            /* Get Target Information block=
- size */
-+        if (tib_len > 96)
-+        {
-+            tib_len =3D 96;
-+        }
-+
-+        {
-+            uint8_t *tib_ptr;
-+            uint8_t tib_pos =3D buf2[0x2c];
-+            if (tib_pos + tib_len > sizeof(buf2))
-+            {
-+                return NULL;
-+            }
-+            /* Get Target Information block pointer */
-+            tib_ptr =3D buf2 + tib_pos;
-+            /* Copy Target Information block into the blob */
-+            memcpy(&ntlmv2_blob[0x1c], tib_ptr, tib_len);
-+        }
-+    }
-+    else
-+    {
-+        tib_len =3D 0;
-     }
-
-+    /* Unknown, zero works */
-+    ntlmv2_blob[0x1c + tib_len] =3D 0;
-+
-+    /* Get blob length */
-+    ntlmv2_blob_size =3D 0x20 + tib_len;
-+
-+    /* Add challenge from message 2 */
-+    memcpy(&ntlmv2_response[8], challenge, 8);
-+
-+    /* hmac-md5 */
-+    gen_hmac_md5(&ntlmv2_response[8], ntlmv2_blob_size + 8, ntlmv2_hash,
-+                 ntlmv2_hmacmd5);
-+
-+    /* Add hmac-md5 result to the blob.
-+     * Note: This overwrites challenge previously written at
-+     * ntlmv2_response[8..15] */
-+    memcpy(ntlmv2_response, ntlmv2_hmacmd5, MD5_DIGEST_LENGTH);
-
-     memset(phase3, 0, sizeof(phase3));       /* clear reply */
-
-     strcpy((char *)phase3, "NTLMSSP\0");      /* signature */
-     phase3[8] =3D 3;     /* type 3 */
-
--    if (ntlmv2_enabled)      /* NTLMv2 response */
--    {
--        add_security_buffer(0x14, ntlmv2_response, ntlmv2_blob_size + 16,
--                            phase3, &phase3_bufpos);
--    }
--    else       /* NTLM response */
--    {
--        add_security_buffer(0x14, ntlm_response, 24, phase3, &phase3_bufpo=
-s);
--    }
-+    /* NTLMv2 response */
-+    add_security_buffer(0x14, ntlmv2_response, ntlmv2_blob_size + 16,
-+                        phase3, &phase3_bufpos);
-
-     /* username in ascii */
-     add_security_buffer(0x24, username, strlen(username), phase3,
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index fbf54ef..7aa8514 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -144,7 +144,7 @@
-     "                  through an HTTP proxy at address s and port p.\n"
-     "                  If proxy authentication is required,\n"
-     "                  up is a file containing username/password on 2 line=
-s, or\n"
--    "                  'stdin' to prompt from console.  Add auth=3D'ntlm' =
-if\n"
-+    "                  'stdin' to prompt from console.  Add auth=3D'ntlm2'=
- if\n"
-     "                  the proxy requires NTLM authentication.\n"
-     "--http-proxy s p 'auto[-nct]' : Like the above directive, but automat=
-ically\n"
-     "                  determine auth method and query for username/passwo=
-rd\n"
-diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-index 3b6f7df..5a1b4e1 100644
---- a/src/openvpn/proxy.c
-+++ b/src/openvpn/proxy.c
-@@ -354,7 +354,7 @@
-             {
-                 msg(D_PROXY, "PROXY AUTH NTLM: '%s'", buf);
-                 *data =3D NULL;
--                ret =3D HTTP_AUTH_NTLM;
-+                ret =3D HTTP_AUTH_NTLM2;
-             }
- #endif
+         if (!looks_like_netmask)
+         {
+-            msg(M_WARN, "WARNING: Since you are using --dev tap, the secon=
+d argument to --ifconfig must be a netmask, for example something like 255.=
+255.255.0. %s",
++            msg(M_WARN, "WARNING: Since you are using subnet topology, the=
+ second argument to --ifconfig must be a netmask, for example something lik=
+e 255.255.255.0. %s",
+                 ifconfig_warn_how_to_silence);
          }
-@@ -517,9 +517,7 @@
- #if NTLM
-         else if (!strcmp(o->auth_method_string, "ntlm"))
+     }
+@@ -675,13 +675,13 @@
+     struct buffer out =3D alloc_buf_gc(256, gc);
+     if (tt->did_ifconfig_setup && !disable)
+     {
+-        if (tt->type =3D=3D DEV_TYPE_TAP || (tt->type =3D=3D DEV_TYPE_TUN =
+&& tt->topology =3D=3D TOP_SUBNET))
++        if (!is_tun_p2p(tt))
          {
--            msg(M_INFO, "NTLM v1 authentication is deprecated and will be =
-removed in "
--                "OpenVPN 2.7");
--            p->auth_method =3D HTTP_AUTH_NTLM;
-+            msg(M_FATAL, "ERROR: NTLM v1 support has been removed. For now=
-, you can use NTLM v2 by selecting ntlm2 but it is deprecated as well.");
+             buf_printf(&out, "%s %s",
+                        print_in_addr_t(tt->local & tt->remote_netmask, 0, =
+gc),
+                        print_in_addr_t(tt->remote_netmask, 0, gc));
          }
-         else if (!strcmp(o->auth_method_string, "ntlm2"))
+-        else if (tt->type =3D=3D DEV_TYPE_TUN)
++        else if (tt->type =3D=3D DEV_TYPE_TUN) /* tun p2p topology */
          {
-@@ -534,13 +532,13 @@
-     }
+             const char *l, *r;
+             if (remote)
+@@ -745,24 +745,24 @@
+ bool
+ is_tun_p2p(const struct tuntap *tt)
+ {
+-    bool tun =3D false;
++    bool tun_p2p =3D false;
 
-     /* only basic and NTLM/NTLMv2 authentication supported so far */
--    if (p->auth_method =3D=3D HTTP_AUTH_BASIC || p->auth_method =3D=3D HTT=
-P_AUTH_NTLM || p->auth_method =3D=3D HTTP_AUTH_NTLM2)
-+    if (p->auth_method =3D=3D HTTP_AUTH_BASIC || p->auth_method =3D=3D HTT=
-P_AUTH_NTLM2)
+     if (tt->type =3D=3D DEV_TYPE_TAP
+         || (tt->type =3D=3D DEV_TYPE_TUN && tt->topology =3D=3D TOP_SUBNET)
+         || tt->type =3D=3D DEV_TYPE_NULL)
      {
-         get_user_pass_http(p, true);
+-        tun =3D false;
++        tun_p2p =3D false;
      }
-
- #if !NTLM
--    if (p->auth_method =3D=3D HTTP_AUTH_NTLM || p->auth_method =3D=3D HTTP=
-_AUTH_NTLM2)
-+    if (p->auth_method =3D=3D HTTP_AUTH_NTLM2)
+     else if (tt->type =3D=3D DEV_TYPE_TUN)
      {
-         msg(M_FATAL, "Sorry, this version of " PACKAGE_NAME " was built wi=
-thout NTLM Proxy support.");
+-        tun =3D true;
++        tun_p2p =3D true;
      }
-@@ -646,8 +644,7 @@
-
-     /* get user/pass if not previously given */
-     if (p->auth_method =3D=3D HTTP_AUTH_BASIC
--        || p->auth_method =3D=3D HTTP_AUTH_DIGEST
--        || p->auth_method =3D=3D HTTP_AUTH_NTLM)
-+        || p->auth_method =3D=3D HTTP_AUTH_DIGEST)
+     else
      {
-         get_user_pass_http(p, false);
+         msg(M_FATAL, "Error: problem with tun vs. tap setting"); /* JYFIXM=
+E -- needs to be caught earlier, in init_tun? */
+
      }
-@@ -697,7 +694,6 @@
-                 break;
-
- #if NTLM
--            case HTTP_AUTH_NTLM:
-             case HTTP_AUTH_NTLM2:
-                 /* keep-alive connection */
-                 openvpn_snprintf(buf, sizeof(buf), "Proxy-Connection: Keep=
--Alive");
-@@ -752,7 +748,7 @@
-         {
-             processed =3D true;
-         }
--        else if ((p->auth_method =3D=3D HTTP_AUTH_NTLM || p->auth_method =
-=3D=3D HTTP_AUTH_NTLM2) && !processed) /* check for NTLM */
-+        else if ((p->auth_method =3D=3D HTTP_AUTH_NTLM2) && !processed) /*=
- check for NTLM */
-         {
- #if NTLM
-             /* look for the phase 2 response */
-diff --git a/src/openvpn/proxy.h b/src/openvpn/proxy.h
-index 83b799e..7900244 100644
---- a/src/openvpn/proxy.h
-+++ b/src/openvpn/proxy.h
-@@ -31,7 +31,7 @@
- #define HTTP_AUTH_NONE   0
- #define HTTP_AUTH_BASIC  1
- #define HTTP_AUTH_DIGEST 2
--#define HTTP_AUTH_NTLM   3
-+/* #define HTTP_AUTH_NTLM   3 removed in OpenVPN 2.7 */
- #define HTTP_AUTH_NTLM2  4
- #define HTTP_AUTH_N      5 /* number of HTTP_AUTH methods */
-
-diff --git a/tests/unit_tests/openvpn/test_crypto.c b/tests/unit_tests/open=
-vpn/test_crypto.c
-index 5564524..edca861 100644
---- a/tests/unit_tests/openvpn/test_crypto.c
-+++ b/tests/unit_tests/openvpn/test_crypto.c
-@@ -211,29 +211,6 @@
-     hmac_ctx_free(hmac);
+-    return tun;
++    return tun_p2p;
  }
 
--void
--test_des_encrypt(void **state)
--{
--    /* We have a small des encrypt method that is only for NTLMv1. This un=
-it
--     * test ensures that it is not accidentally broken */
+ /*
+@@ -839,12 +839,10 @@
+
+     if (ifconfig_local_parm && ifconfig_remote_netmask_parm)
+     {
+-        bool tun =3D false;
 -
--    const unsigned char des_key[DES_KEY_LENGTH] =3D {0x42, 0x23};
+         /*
+          * We only handle TUN/TAP devices here, not --dev null devices.
+          */
+-        tun =3D is_tun_p2p(tt);
++        bool tun_p2p =3D is_tun_p2p(tt);
+
+         /*
+          * Convert arguments to binary IPv4 addresses.
+@@ -861,7 +859,7 @@
+             NULL);
+
+         tt->remote_netmask =3D getaddr(
+-            (tun ? GETADDR_RESOLVE : 0)
++            (tun_p2p ? GETADDR_RESOLVE : 0)
+             | GETADDR_HOST_ORDER
+             | GETADDR_FATAL_ON_SIGNAL
+             | GETADDR_FATAL,
+@@ -876,7 +874,7 @@
+         if (strict_warn)
+         {
+             struct addrinfo *curele;
+-            ifconfig_sanity_check(tt->type =3D=3D DEV_TYPE_TUN, tt->remote=
+_netmask, tt->topology);
++            ifconfig_sanity_check(tun_p2p, tt->remote_netmask);
+
+             /*
+              * If local_public or remote_public addresses are defined,
+@@ -907,11 +905,11 @@
+                 }
+             }
+
+-            if (tt->type =3D=3D DEV_TYPE_TAP || (tt->type =3D=3D DEV_TYPE_=
+TUN && tt->topology =3D=3D TOP_SUBNET))
++            if (!tun_p2p)
+             {
+                 check_subnet_conflict(tt->local, tt->remote_netmask, "TUN/=
+TAP adapter");
+             }
+-            else if (tt->type =3D=3D DEV_TYPE_TUN)
++            else
+             {
+                 check_subnet_conflict(tt->local, IPV4_NETMASK_HOST, "TUN/T=
+AP adapter");
+             }
+@@ -922,7 +920,7 @@
+          * Make sure that both ifconfig addresses are part of the
+          * same .252 subnet.
+          */
+-        if (tun)
++        if (tun_p2p)
+         {
+             verify_255_255_255_252(tt->local, tt->remote_netmask);
+             tt->adapter_netmask =3D ~3;
+@@ -1305,7 +1303,7 @@
+     /*
+      * We only handle TUN/TAP devices here, not --dev null devices.
+      */
+-    bool tun =3D is_tun_p2p(tt);
++    bool tun_p2p =3D is_tun_p2p(tt);
+ #endif
+
+ #if !defined(TARGET_LINUX)
+@@ -1332,7 +1330,7 @@
+         msg(M_FATAL, "Linux can't bring %s up", ifname);
+     }
+
+-    if (tun)
++    if (tun_p2p)
+     {
+         if (net_addr_ptp_v4_add(ctx, ifname, &tt->local,
+                                 &tt->remote_netmask) < 0)
+@@ -1351,27 +1349,8 @@
+ #elif defined(TARGET_ANDROID)
+     char out[64];
+
+-    char *top;
+-    switch (tt->topology)
+-    {
+-        case TOP_NET30:
+-            top =3D "net30";
+-            break;
 -
--    const char *src =3D "MoinWelt";
+-        case TOP_P2P:
+-            top =3D "p2p";
+-            break;
 -
--    /* cipher_des_encrypt_ecb wants a non const */
--    unsigned char *src2 =3D (unsigned char *) strdup(src);
+-        case TOP_SUBNET:
+-            top =3D "subnet";
+-            break;
 -
--    unsigned char dst[DES_KEY_LENGTH];
--    cipher_des_encrypt_ecb(des_key, src2, dst);
+-        default:
+-            top =3D "undef";
+-    }
 -
--    const unsigned char dst_good[DES_KEY_LENGTH] =3D {0xd3, 0x8f, 0x61, 0x=
-f7, 0xbe, 0x27, 0xb6, 0xa2};
--
--    assert_memory_equal(dst, dst_good, DES_KEY_LENGTH);
--
--    free(src2);
--}
--
- /* This test is in test_crypto as it calls into the functions that calcula=
-te
-  * the crypto overhead */
- static void
-@@ -474,7 +451,6 @@
-         cmocka_unit_test(crypto_translate_cipher_names),
-         cmocka_unit_test(crypto_test_tls_prf),
-         cmocka_unit_test(crypto_test_hmac),
--        cmocka_unit_test(test_des_encrypt),
-         cmocka_unit_test(test_occ_mtu_calculation),
-         cmocka_unit_test(test_mssfix_mtu_calculation)
-     };
+     openvpn_snprintf(out, sizeof(out), "%s %s %d %s", ifconfig_local,
+-                     ifconfig_remote_netmask, tun_mtu, top);
++                     ifconfig_remote_netmask, tun_mtu, print_topology(tt->=
+topology));
+     management_android_control(management, "IFCONFIG", out);
+
+ #elif defined(TARGET_SOLARIS)
+@@ -1380,7 +1359,7 @@
+      *    ifconfig tun2 10.2.0.2 10.2.0.1 mtu 1450 up
+      *    ifconfig tun2 netmask 255.255.255.255
+      */
+-    if (tun)
++    if (tun_p2p)
+     {
+         argv_printf(&argv, "%s %s %s %s mtu %d up", IFCONFIG_PATH, ifname,
+                     ifconfig_local, ifconfig_remote_netmask, tun_mtu);
+@@ -1394,13 +1373,13 @@
+         argv_printf(&argv, "%s %s netmask 255.255.255.255", IFCONFIG_PATH,
+                     ifname);
+     }
+-    else if (tt->type =3D=3D DEV_TYPE_TUN && tt->topology =3D=3D TOP_SUBNE=
+T)
++    else if (tt->type =3D=3D DEV_TYPE_TUN)
+     {
+         argv_printf(&argv, "%s %s %s %s netmask %s mtu %d up", IFCONFIG_PA=
+TH,
+                     ifname, ifconfig_local, ifconfig_local,
+                     ifconfig_remote_netmask, tun_mtu);
+     }
+-    else
++    else /* tap */
+     {
+         argv_printf(&argv, "%s %s %s netmask %s up",
+                     IFCONFIG_PATH, ifname, ifconfig_local,
+@@ -1413,7 +1392,7 @@
+         solaris_error_close(tt, es, ifname, false);
+     }
+
+-    if (!tun && tt->type =3D=3D DEV_TYPE_TUN && tt->topology =3D=3D TOP_SU=
+BNET)
++    if (!tun_p2p && tt->type =3D=3D DEV_TYPE_TUN)
+     {
+         /* Add a network route for the local tun interface */
+         struct route_ipv4 r;
+@@ -1437,14 +1416,14 @@
+      */
+
+     /* example: ifconfig tun2 10.2.0.2 10.2.0.1 mtu 1450 netmask 255.255.2=
+55.255 up */
+-    if (tun)
++    if (tun_p2p)
+     {
+         argv_printf(&argv,
+                     "%s %s %s %s mtu %d netmask 255.255.255.255 up -link0",
+                     IFCONFIG_PATH, ifname, ifconfig_local,
+                     ifconfig_remote_netmask, tun_mtu);
+     }
+-    else if (tt->type =3D=3D DEV_TYPE_TUN && tt->topology =3D=3D TOP_SUBNE=
+T)
++    else if (tt->type =3D=3D DEV_TYPE_TUN)
+     {
+         remote_end =3D create_arbitrary_remote( tt );
+         argv_printf(&argv, "%s %s %s %s mtu %d netmask %s up -link0",
+@@ -1452,7 +1431,7 @@
+                     print_in_addr_t(remote_end, 0, &gc), tun_mtu,
+                     ifconfig_remote_netmask);
+     }
+-    else
++    else /* tap */
+     {
+         argv_printf(&argv, "%s %s %s netmask %s mtu %d link0",
+                     IFCONFIG_PATH, ifname, ifconfig_local,
+@@ -1462,7 +1441,7 @@
+     openvpn_execve_check(&argv, es, S_FATAL, "OpenBSD ifconfig failed");
+
+     /* Add a network route for the local tun interface */
+-    if (!tun && tt->type =3D=3D DEV_TYPE_TUN && tt->topology =3D=3D TOP_SU=
+BNET)
++    if (!tun_p2p && tt->type =3D=3D DEV_TYPE_TUN)
+     {
+         struct route_ipv4 r;
+         CLEAR(r);
+@@ -1476,20 +1455,20 @@
+ #elif defined(TARGET_NETBSD)
+     in_addr_t remote_end =3D INADDR_ANY;  /* for "virtual" subnet topology=
+ */
+
+-    if (tun)
++    if (tun_p2p)
+     {
+         argv_printf(&argv, "%s %s %s %s mtu %d netmask 255.255.255.255 up",
+                     IFCONFIG_PATH, ifname, ifconfig_local,
+                     ifconfig_remote_netmask, tun_mtu);
+     }
+-    else if (tt->type =3D=3D DEV_TYPE_TUN && tt->topology =3D=3D TOP_SUBNE=
+T)
++    else if (tt->type =3D=3D DEV_TYPE_TUN)
+     {
+         remote_end =3D create_arbitrary_remote(tt);
+         argv_printf(&argv, "%s %s %s %s mtu %d netmask %s up", IFCONFIG_PA=
+TH,
+                     ifname, ifconfig_local, print_in_addr_t(remote_end, 0,=
+ &gc),
+                     tun_mtu, ifconfig_remote_netmask);
+     }
+-    else
++    else /* tap */
+     {
+         /*
+          * NetBSD has distinct tun and tap devices
+@@ -1504,7 +1483,7 @@
+     openvpn_execve_check(&argv, es, S_FATAL, "NetBSD ifconfig failed");
+
+     /* Add a network route for the local tun interface */
+-    if (!tun && tt->type =3D=3D DEV_TYPE_TUN && tt->topology =3D=3D TOP_SU=
+BNET)
++    if (!tun_p2p && tt->type =3D=3D DEV_TYPE_TUN)
+     {
+         struct route_ipv4 r;
+         CLEAR(r);
+@@ -1528,33 +1507,30 @@
+
+
+     /* example: ifconfig tun2 10.2.0.2 10.2.0.1 mtu 1450 netmask 255.255.2=
+55.255 up */
+-    if (tun)
++    if (tun_p2p)
+     {
+         argv_printf(&argv, "%s %s %s %s mtu %d netmask 255.255.255.255 up",
+                     IFCONFIG_PATH, ifname, ifconfig_local,
+                     ifconfig_remote_netmask, tun_mtu);
+     }
+-    else
++    else if (tt->type =3D=3D DEV_TYPE_TUN)
+     {
+-        if (tt->type =3D=3D DEV_TYPE_TUN && tt->topology =3D=3D TOP_SUBNET)
+-        {
+-            argv_printf(&argv, "%s %s %s %s netmask %s mtu %d up",
+-                        IFCONFIG_PATH, ifname, ifconfig_local, ifconfig_lo=
+cal,
+-                        ifconfig_remote_netmask, tun_mtu);
+-        }
+-        else
+-        {
+-            argv_printf(&argv, "%s %s %s netmask %s mtu %d up", IFCONFIG_P=
+ATH,
+-                        ifname, ifconfig_local, ifconfig_remote_netmask,
+-                        tun_mtu);
+-        }
++        argv_printf(&argv, "%s %s %s %s netmask %s mtu %d up",
++                    IFCONFIG_PATH, ifname, ifconfig_local, ifconfig_local,
++                    ifconfig_remote_netmask, tun_mtu);
++    }
++    else /* tap */
++    {
++        argv_printf(&argv, "%s %s %s netmask %s mtu %d up", IFCONFIG_PATH,
++                    ifname, ifconfig_local, ifconfig_remote_netmask,
++                    tun_mtu);
+     }
+
+     argv_msg(M_INFO, &argv);
+     openvpn_execve_check(&argv, es, S_FATAL, "Mac OS X ifconfig failed");
+
+     /* Add a network route for the local tun interface */
+-    if (!tun && tt->type =3D=3D DEV_TYPE_TUN && tt->topology =3D=3D TOP_SU=
+BNET)
++    if (!tun_p2p && tt->type =3D=3D DEV_TYPE_TUN)
+     {
+         struct route_ipv4 r;
+         CLEAR(r);
+@@ -1568,7 +1544,7 @@
+ #elif defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)
+
+     /* example: ifconfig tun2 10.2.0.2 10.2.0.1 mtu 1450 netmask 255.255.2=
+55.255 up */
+-    if (tun)       /* point-to-point tun */
++    if (tun_p2p)    /* point-to-point tun */
+     {
+         argv_printf(&argv, "%s %s %s %s mtu %d netmask 255.255.255.255 up",
+                     IFCONFIG_PATH, ifname, ifconfig_local,
+@@ -1590,7 +1566,7 @@
+         struct env_set *aix_es =3D env_set_create(NULL);
+         env_set_add( aix_es, "ODMDIR=3D/etc/objrepos" );
+
+-        if (tun)
++        if (tt->type =3D=3D DEV_TYPE_TUN)
+         {
+             msg(M_FATAL, "no tun support on AIX (canthappen)");
+         }
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/379?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/380?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I0dcb2dac4136f194da7050a8ea8495e9faba9dd9
-Gerrit-Change-Number: 379
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: Ice8b95f953c3f7e71657a78ea12b02a08c60aa67
+Gerrit-Change-Number: 380
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 
---xULIPMkr4MY=
+--Ni+yr0k2Sfw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
-p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/379?usp=3Demail">View Ch=
-ange</a></p><pre style=3D"font-family: monospace,monospace; white-space: pr=
-e-wrap;">Remove support for NTLM v1 proxy authentication<br><br>Due to the =
-limitation of the protocol it is not<br>considered secure. Better to use ba=
-sic auth instead<br>of a false sense of security. NTLM v2 remains<br>suppor=
-ted for now.<br><br>Change-Id: I0dcb2dac4136f194da7050a8ea8495e9faba9dd9<br=
->Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M doc/=
-man-sections/proxy-options.rst<br>M src/openvpn/crypto_backend.h<br>M src/o=
-penvpn/crypto_mbedtls.c<br>M src/openvpn/crypto_openssl.c<br>M src/openvpn/=
-ntlm.c<br>M src/openvpn/options.c<br>M src/openvpn/proxy.c<br>M src/openvpn=
-/proxy.h<br>M tests/unit_tests/openvpn/test_crypto.c<br>9 files changed, 95=
- insertions(+), 226 deletions(-)<br><br></pre><pre style=3D"font-family: mo=
-nospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.ne=
-t:29418/openvpn refs/changes/79/379/2</pre><pre style=3D"font-family: monos=
-pace,monospace; white-space: pre-wrap;"><span>diff --git a/doc/man-sections=
-/proxy-options.rst b/doc/man-sections/proxy-options.rst</span><br><span>ind=
-ex 465bea0..3fb1060 100644</span><br><span>--- a/doc/man-sections/proxy-opt=
-ions.rst</span><br><span>+++ b/doc/man-sections/proxy-options.rst</span><br=
-><span>@@ -11,7 +11,7 @@</span><br><span>   ``--http-proxy-user-pass`` opti=
-on. (See section on inline files)</span><br><span> </span><br><span>   The =
-last optional argument is an ``auth-method`` which should be one</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-  of :code:`none`, :code:`basic`=
-, or :code:`ntlm`.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
- of :code:`none`, :code:`basic`, or :code:`ntlm2`.</span><br><span> </span>=
-<br><span>   HTTP Digest authentication is supported as well, but only via =
-the</span><br><span>   :code:`auto` or :code:`auto-nct` flags (below).  Thi=
-s must replace</span><br><span>@@ -33,7 +33,9 @@</span><br><span>      http=
--proxy proxy.example.net 3128 authfile.txt</span><br><span>      http-proxy=
- proxy.example.net 3128 stdin</span><br><span>      http-proxy proxy.exampl=
-e.net 3128 auto basic</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-     http-proxy proxy.example.net 3128 auto-nct ntlm</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+     http-proxy proxy.example.net 3128 au=
-to-nct ntlm2</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+  Note that support for NT=
-LMv1 proxies was removed with OpenVPN 2.7.</span><br><span> </span><br><spa=
-n> --http-proxy-option args</span><br><span>   Set extended HTTP proxy opti=
-ons. Requires an option ``type`` as argument</span><br><span>diff --git a/s=
-rc/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h</span><br><span>=
-index 842e73e..a5371c8 100644</span><br><span>--- a/src/openvpn/crypto_back=
-end.h</span><br><span>+++ b/src/openvpn/crypto_backend.h</span><br><span>@@=
- -157,17 +157,6 @@</span><br><span>  */</span><br><span> int rand_bytes(uin=
-t8_t *output, int len);</span><br><span> </span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-/**</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->- * Encrypt the given block, using DES ECB mode</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">- * @param key           DES key to use.</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">- * @param src           Buffer containing the 8-b=
-yte source.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param =
-dst           Buffer containing the 8-byte destination</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-void cipher_des_encrypt_ecb(const unsigned char key[DES_KEY_=
-LENGTH],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-               unsigned char src[DES_KEY_LENGTH],</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-                            unsigned char dst[D=
-ES_KEY_LENGTH]);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span> /*</span><br><span>  *</span><br><span>  * Generic cipher key =
-type functions</span><br><span>diff --git a/src/openvpn/crypto_mbedtls.c b/=
-src/openvpn/crypto_mbedtls.c</span><br><span>index aaf6ef7..ea52f0c 100644<=
-/span><br><span>--- a/src/openvpn/crypto_mbedtls.c</span><br><span>+++ b/sr=
-c/openvpn/crypto_mbedtls.c</span><br><span>@@ -758,17 +758,6 @@</span><br><=
-span>     return 1;</span><br><span> }</span><br><span> </span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-cipher_des_encrypt_ecb(const unsigned char key[DES_KEY_LE=
-NGTH],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
-        unsigned char src[DES_KEY_LENGTH],</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-                       unsigned char dst[DES_KEY_LENGT=
-H])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-    mbedtls_des_context ctx;</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    ASSERT(mbed_ok(mbedtls_des_setkey_enc(&amp;ctx, =
-key)));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(mbe=
-d_ok(mbedtls_des_crypt_ecb(&amp;ctx, src, dst)));</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-</span><br><span> </span><br><span> </span><br><span> /*</span><br>=
-<span>diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openss=
-l.c</span><br><span>index fe1254f..e8ddf14 100644</span><br><span>--- a/src=
-/openvpn/crypto_openssl.c</span><br><span>+++ b/src/openvpn/crypto_openssl.=
-c</span><br><span>@@ -988,50 +988,6 @@</span><br><span>     return cipher_c=
-tx_final(ctx, dst, dst_len);</span><br><span> }</span><br><span> </span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-void</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-cipher_des_encrypt_ecb(const unsigned char key[D=
-ES_KEY_LENGTH],</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-                 unsigned char src[DES_KEY_LENGTH],</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                       unsigned char dst[DE=
-S_KEY_LENGTH])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span=
-><br><span style=3D"color: hsl(0, 100%, 40%);">-    /* We are using 3DES he=
-re with three times the same key to cheat</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-     * and emulate DES as 3DES is better supported than=
- DES */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    EVP_CIPHER=
-_CTX *ctx =3D EVP_CIPHER_CTX_new();</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-    if (!ctx)</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        cr=
-ypto_msg(M_FATAL, &quot;%s: EVP_CIPHER_CTX_new() failed&quot;, __func__);</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    unsigned char key3[DES_KEY_LENGTH*3];</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    for (int i =3D 0; i &lt; 3; i++)</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        memcpy(key3 + (i * DES_KEY_LENGTH=
-), key, DES_KEY_LENGTH);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    if (!EVP_EncryptInit_ex(ctx, E=
-VP_des_ede3_ecb(), NULL, key3, NULL))</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        crypto_msg(M_FATAL, &quot;%s: EVP_EncryptInit_ex() failed&quot;, __=
-func__);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    int len;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    /=
-* The EVP_EncryptFinal method will write to the dst+len pointer even</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-     * though there is nothi=
-ng to encrypt anymore, provide space for that to</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-     * not overflow the stack */</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-    unsigned char dst2[DES_KEY_LENGTH=
- * 2];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!EVP_En=
-cryptUpdate(ctx, dst2, &amp;len, src, DES_KEY_LENGTH))</span><br><span styl=
-e=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        crypto_msg(M_FATAL, &quot;%s: EVP_EncryptUpdate() =
-failed&quot;, __func__);</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-    if (!EVP_EncryptFinal(ctx, dst=
-2 + len, &amp;len))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        crypto_msg=
-(M_FATAL, &quot;%s: EVP_EncryptFinal() failed&quot;, __func__);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    memcpy(dst, dst2, DES_KEY_LENGTH);</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--    EVP_CIPHER_CTX_free(ctx);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-}</span><br><span> </span><br><span> /*</span><br><span>  *</span>=
-<br><span>diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c</span><br><s=
-pan>index 2e77214..bc33f41 100644</span><br><span>--- a/src/openvpn/ntlm.c<=
-/span><br><span>+++ b/src/openvpn/ntlm.c</span><br><span>@@ -55,19 +55,6 @@=
-</span><br><span> </span><br><span> </span><br><span> static void</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-create_des_keys(const unsigned =
-char *hash, unsigned char *key)</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    key[0]=
- =3D hash[0];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    key[=
-1] =3D ((hash[0] &amp; 1) &lt;&lt; 7) | (hash[1] &gt;&gt; 1);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-    key[2] =3D ((hash[1] &amp; 3) &=
-lt;&lt; 6) | (hash[2] &gt;&gt; 2);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-    key[3] =3D ((hash[2] &amp; 7) &lt;&lt; 5) | (hash[3] &gt;&=
-gt; 3);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    key[4] =3D=
- ((hash[3] &amp; 15) &lt;&lt; 4) | (hash[4] &gt;&gt; 4);</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-    key[5] =3D ((hash[4] &amp; 31) &lt;&=
-lt; 3) | (hash[5] &gt;&gt; 5);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    key[6] =3D ((hash[5] &amp; 63) &lt;&lt; 2) | (hash[6] &gt;&gt;=
- 6);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    key[7] =3D ((=
-hash[6] &amp; 127) &lt;&lt; 1);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-static void</span><br><span> ge=
-n_md4_hash(const uint8_t *data, int data_len, uint8_t *result)</span><br><s=
-pan> {</span><br><span>     /* result is 16 byte md4 hash */</span><br><spa=
-n>@@ -210,7 +197,7 @@</span><br><span>     uint8_t phase3[464];</span><br><=
-span> </span><br><span>     uint8_t md4_hash[MD4_DIGEST_LENGTH + 5];</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    uint8_t challenge[8], nt=
-lm_response[24];</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- uint8_t challenge[8];</span><br><span>     int i, ret_val;</span><br><span=
-> </span><br><span>     uint8_t ntlmv2_response[144];</span><br><span>@@ -2=
-27,8 +214,6 @@</span><br><span>     char username[128];</span><br><span>   =
-  char *separator;</span><br><span> </span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    bool ntlmv2_enabled =3D (p-&gt;auth_method =3D=3D HTTP_A=
-UTH_NTLM2);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span>     ASSERT(strlen(p-&gt;up.username) &gt; 0);</span><br><span>     =
-ASSERT(strlen(p-&gt;up.password) &gt; 0);</span><br><span> </span><br><span=
->@@ -282,126 +267,102 @@</span><br><span>         challenge[i] =3D buf2[i+2=
-4];</span><br><span>     }</span><br><span> </span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-    if (ntlmv2_enabled)      /* Generate NTLMv2 resp=
-onse */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Gener=
-ate NTLMv2 response */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    int tib_len;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* NTLMv2 hash =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    strcpy(userdo=
-main, username);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- my_strupr(userdomain);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+    if (strlen(username) + strlen(domain) &lt; sizeof(userdomain))</spa=
-n><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-     int tib_len;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* NTLMv2 hash */=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        strcpy(userdo=
-main, username);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-   my_strupr(userdomain);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        if (strlen(username) + strlen(domain) &lt; sizeof(userdomain))<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-            strcat(userdomain, dom=
-ain);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-            msg(M_INFO, &quot;Warning: Username o=
-r domain too long&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%)=
-;">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-unicodize(userdomain_u, userdomain);</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-        gen_hmac_md5((uint8_t *)userdomain_u, 2 * strlen(use=
-rdomain), md4_hash,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-                   ntlmv2_hash);</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /*=
- NTLMv2 Blob */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-  memset(ntlmv2_blob, 0, 128);                        /* Clear blob buffer =
-*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ntlmv2_blob=
-[0x00] =3D 1;                              /* Signature */</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        ntlmv2_blob[0x01] =3D 1;      =
-                        /* Signature */</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        ntlmv2_blob[0x04] =3D 0;                         =
-     /* Reserved */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-      gen_timestamp(&amp;ntlmv2_blob[0x08]);                  /* 64-bit Tim=
-estamp */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        gen_=
-nonce(&amp;ntlmv2_blob[0x10]);                      /* 64-bit Client Nonce =
-*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ntlmv2_blob=
-[0x18] =3D 0;                              /* Unknown, zero should work */<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        /* Add target information block to =
-the blob */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-        /* Check for Target Inf=
-ormation block */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    /* The NTLM spec instructs to interpret these 4 consecutive bytes as a<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-         * 32bit long =
-integer. However, no endianness is specified.</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-         * The code here and that found in other NT=
-LM implementations point</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-         * towards the assumption that the byte order on the wire has to=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         * match the =
-order on the sending and receiving hosts. Probably NTLM has</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-         * been thought to be always =
-running on x86_64/i386 machine thus</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-         * implying Little-Endian everywhere.</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-         *</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-         * This said, in case of future changes,=
- we should keep in mind that the</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-         * byte order on the wire for the NTLM header is LE.</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-         */</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        const size_t hoff =3D 0x14;=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        unsigned long=
- flags =3D buf2[hoff] | (buf2[hoff + 1] &lt;&lt; 8)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-                              |(buf2[hoff +=
- 2] &lt;&lt; 16) | (buf2[hoff + 3] &lt;&lt; 24);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        if ((flags &amp; 0x00800000) =3D=3D 0x00=
-800000)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-            tib_len =3D bu=
-f2[0x28];            /* Get Target Information block size */</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-            if (tib_len &gt; 96)</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                tib_len =3D 96;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-            }</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-                uint8_t *tib_ptr;</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-                uint8_t tib_pos =3D buf2[0x2c];<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                if (ti=
-b_pos + tib_len &gt; sizeof(buf2))</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                {</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-                    return NULL;</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-                }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-                /* Get Target Information block pointer */<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-                tib_pt=
-r =3D buf2 + tib_pos;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-                /* Copy Target Information block into the blob */</span><br=
-><span style=3D"color: hsl(0, 100%, 40%);">-                memcpy(&amp;ntl=
-mv2_blob[0x1c], tib_ptr, tib_len);</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-            tib_len =3D 0;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-        /* Unknown, zero works */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        ntlmv2_blob[0x1c + tib_len] =3D 0;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        /* Get blob length */</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        ntlmv2_blob_size =3D 0x20 +=
- tib_len;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        /* Add challenge from mes=
-sage 2 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        memc=
-py(&amp;ntlmv2_response[8], challenge, 8);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        /* hmac-md5 */</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--        gen_hmac_md5(&amp;ntlmv2_response[8], ntlmv2_blob_size + 8, ntlmv2=
-_hash,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-               =
-      ntlmv2_hmacmd5);</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        /* Add hmac-=
-md5 result to the blob.</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-         * Note: This overwrites challenge previously written at</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-         * ntlmv2_response[8..=
-15] */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        memcpy(=
-ntlmv2_response, ntlmv2_hmacmd5, MD5_DIGEST_LENGTH);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        strcat(userdomain, domain);</span=
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/380?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">tun: use is_tun_p2p more consistently<br><br>Using &quot;tun&=
+quot; as the variable name for the return of<br>is_tun_p2p is probably a hi=
+storical accident. But<br>it has actual consequences in that the other code=
+<br>often seems to assume that it does less checks<br>than it actually does=
+.<br><br>Use &quot;tun_p2p&quot; as the variable name and remove checks<br>=
+that are not required. Also use is_tun_p2p in more<br>places.<br><br>Change=
+-Id: Ice8b95f953c3f7e71657a78ea12b02a08c60aa67<br>Signed-off-by: Frank Lich=
+tenheld &lt;frank@...2641...&gt;<br>---<br>M src/openvpn/tun.c<br>1 file ch=
+anged, 48 insertions(+), 72 deletions(-)<br><br></pre><pre style=3D"font-fa=
+mily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.op=
+envpn.net:29418/openvpn refs/changes/80/380/1</pre><pre style=3D"font-famil=
+y: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/open=
+vpn/tun.c b/src/openvpn/tun.c</span><br><span>index f857ed1..45559fc 100644=
+</span><br><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/src/openvpn/=
+tun.c</span><br><span>@@ -507,31 +507,31 @@</span><br><span> static const c=
+har ifconfig_warn_how_to_silence[] =3D &quot;(silence this warning with --i=
+fconfig-nowarn)&quot;;</span><br><span> </span><br><span> /*</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">- * If !tun, make sure ifconfig_remot=
+e_netmask looks</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * I=
+f !tun_p2p, make sure ifconfig_remote_netmask looks</span><br><span>  *  li=
+ke a netmask.</span><br><span>  *</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">- * If tun, make sure ifconfig_remote_netmask looks</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+ * If tun_p2p, make sure ifconfi=
+g_remote_netmask looks</span><br><span>  *  like an IPv4 address.</span><br=
+><span>  */</span><br><span> static void</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-ifconfig_sanity_check(bool tun, in_addr_t addr, int topo=
+logy)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ifconfig_sanit=
+y_check(bool tun_p2p, in_addr_t addr)</span><br><span> {</span><br><span>  =
+   struct gc_arena gc =3D gc_new();</span><br><span>     const bool looks_l=
+ike_netmask =3D ((addr &amp; 0xFF000000) =3D=3D 0xFF000000);</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    if (tun)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    if (tun_p2p)</span><br><span>     {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (looks_like_=
+netmask &amp;&amp; (topology =3D=3D TOP_NET30 || topology =3D=3D TOP_P2P))<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (looks_li=
+ke_netmask)</span><br><span>         {</span><br><span>             msg(M_W=
+ARN, &quot;WARNING: Since you are using --dev tun with a point-to-point top=
+ology, the second argument to --ifconfig must be an IP address.  You are us=
+ing something (%s) that looks more like a netmask. %s&quot;,</span><br><spa=
+n>                 print_in_addr_t(addr, 0, &amp;gc),</span><br><span>     =
+            ifconfig_warn_how_to_silence);</span><br><span>         }</span=
 ><br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-else /* Generate NTLM response */</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    else</span><br><span>     {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        unsigned char key1[DES_KEY_LENGTH], key2[DE=
-S_KEY_LENGTH];</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- unsigned char key3[DES_KEY_LENGTH];</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+        msg(M_INFO, &quot;Warning: Username or domain too =
-long&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    unicodize(userdom=
-ain_u, userdomain);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-    gen_hmac_md5((uint8_t *)userdomain_u, 2 * strlen(userdomain), md4_hash,=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                 nt=
-lmv2_hash);</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        create_des_keys(md4_hash, key1);</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        cipher_des_encrypt_ecb(key1, challenge, =
-ntlm_response);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-/* NTLMv2 Blob */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
-  memset(ntlmv2_blob, 0, 128);                        /* Clear blob buffer =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ntlmv2_blob[0=
-x00] =3D 1;                              /* Signature */</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    ntlmv2_blob[0x01] =3D 1;          =
-                    /* Signature */</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    ntlmv2_blob[0x04] =3D 0;                              /=
-* Reserved */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ge=
-n_timestamp(&amp;ntlmv2_blob[0x08]);                  /* 64-bit Timestamp *=
-/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gen_nonce(&amp=
-;ntlmv2_blob[0x10]);                      /* 64-bit Client Nonce */</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    ntlmv2_blob[0x18] =3D 0=
-;                              /* Unknown, zero should work */</span><br><s=
-pan> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        create_d=
-es_keys(&amp;md4_hash[DES_KEY_LENGTH - 1], key2);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        cipher_des_encrypt_ecb(key2, challenge,=
- &amp;ntlm_response[DES_KEY_LENGTH]);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    /* Add target information block to the blob */</span>=
-<br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-        cr=
-eate_des_keys(&amp;md4_hash[2 * (DES_KEY_LENGTH - 1)], key3);</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        cipher_des_encrypt_ecb(key3=
-, challenge,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-                      &amp;ntlm_response[DES_KEY_LENGTH * 2]);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    /* Check for Target Informat=
-ion block */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* =
-The NTLM spec instructs to interpret these 4 consecutive bytes as a</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+     * 32bit long integer. =
-However, no endianness is specified.</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+     * The code here and that found in other NTLM implemen=
-tations point</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     *=
- towards the assumption that the byte order on the wire has to</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+     * match the order on the se=
-nding and receiving hosts. Probably NTLM has</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+     * been thought to be always running on x86_64=
-/i386 machine thus</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-    * implying Little-Endian everywhere.</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+     *</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+     * This said, in case of future changes, we should keep in mind=
- that the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * byt=
-e order on the wire for the NTLM header is LE.</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+     */</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    const size_t hoff =3D 0x14;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    unsigned long flags =3D buf2[hoff] | (buf2[h=
-off + 1] &lt;&lt; 8)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                          |(buf2[hoff + 2] &lt;&lt; 16) | (buf2[hoff + 3] =
-&lt;&lt; 24);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if=
- ((flags &amp; 0x00800000) =3D=3D 0x00800000)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        tib_len =3D buf2[0x28];            /* Get Target Inform=
-ation block size */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-        if (tib_len &gt; 96)</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-           tib_len =3D 96;</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            uint8_t *tib_ptr;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+            uint8_t ti=
-b_pos =3D buf2[0x2c];</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            if (tib_pos + tib_len &gt; sizeof(buf2))</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+                return NULL;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            /* Get Target Information blo=
-ck pointer */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      tib_ptr =3D buf2 + tib_pos;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            /* Copy Target Information block into the blob */=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            memcpy(=
-&amp;ntlmv2_blob[0x1c], tib_ptr, tib_len);</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   else</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        tib_len =3D 0;</sp=
-an><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    /* Unknown, zero works */</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    ntlmv2_blob[0x1c + tib_len] =3D 0;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    /* Get blob length */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    ntlmv2_blob_size =3D 0x20 + tib_len;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    /* Add challenge from message 2 */<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    memcpy(&amp;ntlm=
-v2_response[8], challenge, 8);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* h=
-mac-md5 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    gen_h=
-mac_md5(&amp;ntlmv2_response[8], ntlmv2_blob_size + 8, ntlmv2_hash,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                 ntlmv2_hma=
-cmd5);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    /* Add hmac-md5 result to th=
-e blob.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * Note:=
- This overwrites challenge previously written at</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+     * ntlmv2_response[8..15] */</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    memcpy(ntlmv2_response, ntlmv=
-2_hmacmd5, MD5_DIGEST_LENGTH);</span><br><span> </span><br><span>     memse=
-t(phase3, 0, sizeof(phase3));       /* clear reply */</span><br><span> </sp=
-an><br><span>     strcpy((char *)phase3, &quot;NTLMSSP\0&quot;);      /* si=
-gnature */</span><br><span>     phase3[8] =3D 3;     /* type 3 */</span><br=
-><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (ntlmv=
-2_enabled)      /* NTLMv2 response */</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        add_security_buffer(0x14, ntlmv2_response, ntlmv2_blob_size + 16,</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-                       =
-     phase3, &amp;phase3_bufpos);</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-else       /* NTLM response */</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- add_security_buffer(0x14, ntlm_response, 24, phase3, &amp;phase3_bufpos);<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    /* NTLMv2 response */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+    add_security_buffer(0x14, =
-ntlmv2_response, ntlmv2_blob_size + 16,</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                        phase3, &amp;phase3_bufpos);</s=
-pan><br><span> </span><br><span>     /* username in ascii */</span><br><spa=
-n>     add_security_buffer(0x24, username, strlen(username), phase3,</span>=
-<br><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span>=
-<br><span>index fbf54ef..7aa8514 100644</span><br><span>--- a/src/openvpn/o=
-ptions.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -14=
-4,7 +144,7 @@</span><br><span>     &quot;                  through an HTTP =
-proxy at address s and port p.\n&quot;</span><br><span>     &quot;         =
-         If proxy authentication is required,\n&quot;</span><br><span>     =
-&quot;                  up is a file containing username/password on 2 line=
-s, or\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    &quo=
-t;                  &#39;stdin&#39; to prompt from console.  Add auth=3D&#3=
-9;ntlm&#39; if\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    &quot;                  &#39;stdin&#39; to prompt from console.  Add=
- auth=3D&#39;ntlm2&#39; if\n&quot;</span><br><span>     &quot;             =
-     the proxy requires NTLM authentication.\n&quot;</span><br><span>     &=
-quot;--http-proxy s p &#39;auto[-nct]&#39; : Like the above directive, but =
-automatically\n&quot;</span><br><span>     &quot;                  determin=
-e auth method and query for username/password\n&quot;</span><br><span>diff =
---git a/src/openvpn/proxy.c b/src/openvpn/proxy.c</span><br><span>index 3b6=
-f7df..5a1b4e1 100644</span><br><span>--- a/src/openvpn/proxy.c</span><br><s=
-pan>+++ b/src/openvpn/proxy.c</span><br><span>@@ -354,7 +354,7 @@</span><br=
-><span>             {</span><br><span>                 msg(D_PROXY, &quot;P=
-ROXY AUTH NTLM: &#39;%s&#39;&quot;, buf);</span><br><span>                 =
-*data =3D NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
-          ret =3D HTTP_AUTH_NTLM;</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+                ret =3D HTTP_AUTH_NTLM2;</span><br><span>    =
-         }</span><br><span> #endif</span><br><span>         }</span><br><sp=
-an>@@ -517,9 +517,7 @@</span><br><span> #if NTLM</span><br><span>         e=
-lse if (!strcmp(o-&gt;auth_method_string, &quot;ntlm&quot;))</span><br><spa=
-n>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-   msg(M_INFO, &quot;NTLM v1 authentication is deprecated and will be remov=
-ed in &quot;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-         =
-       &quot;OpenVPN 2.7&quot;);</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-            p-&gt;auth_method =3D HTTP_AUTH_NTLM;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            msg(M_FATAL, &quot;ERR=
-OR: NTLM v1 support has been removed. For now, you can use NTLM v2 by selec=
-ting ntlm2 but it is deprecated as well.&quot;);</span><br><span>         }=
-</span><br><span>         else if (!strcmp(o-&gt;auth_method_string, &quot;=
-ntlm2&quot;))</span><br><span>         {</span><br><span>@@ -534,13 +532,13=
- @@</span><br><span>     }</span><br><span> </span><br><span>     /* only b=
-asic and NTLM/NTLMv2 authentication supported so far */</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-    if (p-&gt;auth_method =3D=3D HTTP_AUT=
-H_BASIC || p-&gt;auth_method =3D=3D HTTP_AUTH_NTLM || p-&gt;auth_method =3D=
-=3D HTTP_AUTH_NTLM2)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+    if (p-&gt;auth_method =3D=3D HTTP_AUTH_BASIC || p-&gt;auth_method =3D=
-=3D HTTP_AUTH_NTLM2)</span><br><span>     {</span><br><span>         get_us=
-er_pass_http(p, true);</span><br><span>     }</span><br><span> </span><br><=
-span> #if !NTLM</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if=
- (p-&gt;auth_method =3D=3D HTTP_AUTH_NTLM || p-&gt;auth_method =3D=3D HTTP_=
-AUTH_NTLM2)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (=
-p-&gt;auth_method =3D=3D HTTP_AUTH_NTLM2)</span><br><span>     {</span><br>=
-<span>         msg(M_FATAL, &quot;Sorry, this version of &quot; PACKAGE_NAM=
-E &quot; was built without NTLM Proxy support.&quot;);</span><br><span>    =
- }</span><br><span>@@ -646,8 +644,7 @@</span><br><span> </span><br><span>  =
-   /* get user/pass if not previously given */</span><br><span>     if (p-&=
-gt;auth_method =3D=3D HTTP_AUTH_BASIC</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        || p-&gt;auth_method =3D=3D HTTP_AUTH_DIGEST</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-        || p-&gt;auth_method=
- =3D=3D HTTP_AUTH_NTLM)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        || p-&gt;auth_method =3D=3D HTTP_AUTH_DIGEST)</span><br><span> =
-    {</span><br><span>         get_user_pass_http(p, false);</span><br><spa=
-n>     }</span><br><span>@@ -697,7 +694,6 @@</span><br><span>              =
-   break;</span><br><span> </span><br><span> #if NTLM</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            case HTTP_AUTH_NTLM:</span><br>=
-<span>             case HTTP_AUTH_NTLM2:</span><br><span>                 /=
-* keep-alive connection */</span><br><span>                 openvpn_snprint=
-f(buf, sizeof(buf), &quot;Proxy-Connection: Keep-Alive&quot;);</span><br><s=
-pan>@@ -752,7 +748,7 @@</span><br><span>         {</span><br><span>        =
-     processed =3D true;</span><br><span>         }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        else if ((p-&gt;auth_method =3D=3D =
-HTTP_AUTH_NTLM || p-&gt;auth_method =3D=3D HTTP_AUTH_NTLM2) &amp;&amp; !pro=
-cessed) /* check for NTLM */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        else if ((p-&gt;auth_method =3D=3D HTTP_AUTH_NTLM2) &amp;&=
-amp; !processed) /* check for NTLM */</span><br><span>         {</span><br>=
-<span> #if NTLM</span><br><span>             /* look for the phase 2 respon=
-se */</span><br><span>diff --git a/src/openvpn/proxy.h b/src/openvpn/proxy.=
-h</span><br><span>index 83b799e..7900244 100644</span><br><span>--- a/src/o=
-penvpn/proxy.h</span><br><span>+++ b/src/openvpn/proxy.h</span><br><span>@@=
- -31,7 +31,7 @@</span><br><span> #define HTTP_AUTH_NONE   0</span><br><span=
-> #define HTTP_AUTH_BASIC  1</span><br><span> #define HTTP_AUTH_DIGEST 2</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-#define HTTP_AUTH_NTLM  =
- 3</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/* #define HTTP_A=
-UTH_NTLM   3 removed in OpenVPN 2.7 */</span><br><span> #define HTTP_AUTH_N=
-TLM2  4</span><br><span> #define HTTP_AUTH_N      5 /* number of HTTP_AUTH =
-methods */</span><br><span> </span><br><span>diff --git a/tests/unit_tests/=
-openvpn/test_crypto.c b/tests/unit_tests/openvpn/test_crypto.c</span><br><s=
-pan>index 5564524..edca861 100644</span><br><span>--- a/tests/unit_tests/op=
-envpn/test_crypto.c</span><br><span>+++ b/tests/unit_tests/openvpn/test_cry=
-pto.c</span><br><span>@@ -211,29 +211,6 @@</span><br><span>     hmac_ctx_fr=
-ee(hmac);</span><br><span> }</span><br><span> </span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-void</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-test_des_encrypt(void **state)</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
- /* We have a small des encrypt method that is only for NTLMv1. This unit</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-     * test ensures tha=
-t it is not accidentally broken */</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    cons=
-t unsigned char des_key[DES_KEY_LENGTH] =3D {0x42, 0x23};</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-    const char *src =3D &quot;MoinWelt&quot;;</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-    /* cipher_des_encrypt_ecb wants a non const */</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned char *src2 =3D =
-(unsigned char *) strdup(src);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    unsigned=
- char dst[DES_KEY_LENGTH];</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    cipher_des_encrypt_ecb(des_key, src2, dst);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    const unsigned char dst_good[DES_KEY_LENGTH] =3D {0xd3, 0x8f=
-, 0x61, 0xf7, 0xbe, 0x27, 0xb6, 0xa2};</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-assert_memory_equal(dst, dst_good, DES_KEY_LENGTH);</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-    free(src2);</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><spa=
-n> /* This test is in test_crypto as it calls into the functions that calcu=
-late</span><br><span>  * the crypto overhead */</span><br><span> static voi=
-d</span><br><span>@@ -474,7 +451,6 @@</span><br><span>         cmocka_unit_=
-test(crypto_translate_cipher_names),</span><br><span>         cmocka_unit_t=
-est(crypto_test_tls_prf),</span><br><span>         cmocka_unit_test(crypto_=
-test_hmac),</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        cm=
-ocka_unit_test(test_des_encrypt),</span><br><span>         cmocka_unit_test=
-(test_occ_mtu_calculation),</span><br><span>         cmocka_unit_test(test_=
-mssfix_mtu_calculation)</span><br><span>     };</span><br><span></span><br>=
-</pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/37=
-9?usp=3Demail">change 379</a>. To unsubscribe, or for help writing mail fil=
-ters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p=
-><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
-itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
-p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/379?usp=3Demail"/><=
-meta itemprop=3D"name" content=3D"View Change"/></div></div>
+else /* tap */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    e=
+lse</span><br><span>     {</span><br><span>         if (!looks_like_netmask=
+)</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-            msg(M_WARN, &quot;WARNING: Since you are using --dev tap=
+, the second argument to --ifconfig must be a netmask, for example somethin=
+g like 255.255.255.0. %s&quot;,</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+            msg(M_WARN, &quot;WARNING: Since you are using subn=
+et topology, the second argument to --ifconfig must be a netmask, for examp=
+le something like 255.255.255.0. %s&quot;,</span><br><span>                =
+ ifconfig_warn_how_to_silence);</span><br><span>         }</span><br><span>=
+     }</span><br><span>@@ -675,13 +675,13 @@</span><br><span>     struct bu=
+ffer out =3D alloc_buf_gc(256, gc);</span><br><span>     if (tt-&gt;did_ifc=
+onfig_setup &amp;&amp; !disable)</span><br><span>     {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        if (tt-&gt;type =3D=3D DEV_TYPE_T=
+AP || (tt-&gt;type =3D=3D DEV_TYPE_TUN &amp;&amp; tt-&gt;topology =3D=3D TO=
+P_SUBNET))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        i=
+f (!is_tun_p2p(tt))</span><br><span>         {</span><br><span>            =
+ buf_printf(&amp;out, &quot;%s %s&quot;,</span><br><span>                  =
+      print_in_addr_t(tt-&gt;local &amp; tt-&gt;remote_netmask, 0, gc),</sp=
+an><br><span>                        print_in_addr_t(tt-&gt;remote_netmask,=
+ 0, gc));</span><br><span>         }</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-        else if (tt-&gt;type =3D=3D DEV_TYPE_TUN)</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        else if (tt-&gt;type =
+=3D=3D DEV_TYPE_TUN) /* tun p2p topology */</span><br><span>         {</spa=
+n><br><span>             const char *l, *r;</span><br><span>             if=
+ (remote)</span><br><span>@@ -745,24 +745,24 @@</span><br><span> bool</span=
+><br><span> is_tun_p2p(const struct tuntap *tt)</span><br><span> {</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    bool tun =3D false;</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    bool tun_p2p =3D false=
+;</span><br><span> </span><br><span>     if (tt-&gt;type =3D=3D DEV_TYPE_TA=
+P</span><br><span>         || (tt-&gt;type =3D=3D DEV_TYPE_TUN &amp;&amp; t=
+t-&gt;topology =3D=3D TOP_SUBNET)</span><br><span>         || tt-&gt;type =
+=3D=3D DEV_TYPE_NULL)</span><br><span>     {</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        tun =3D false;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        tun_p2p =3D false;</span><br><span>     }=
+</span><br><span>     else if (tt-&gt;type =3D=3D DEV_TYPE_TUN)</span><br><=
+span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        tu=
+n =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+tun_p2p =3D true;</span><br><span>     }</span><br><span>     else</span><b=
+r><span>     {</span><br><span>         msg(M_FATAL, &quot;Error: problem w=
+ith tun vs. tap setting&quot;); /* JYFIXME -- needs to be caught earlier, i=
+n init_tun? */</span><br><span> </span><br><span>     }</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    return tun;</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    return tun_p2p;</span><br><span> }</span>=
+<br><span> </span><br><span> /*</span><br><span>@@ -839,12 +839,10 @@</span=
+><br><span> </span><br><span>     if (ifconfig_local_parm &amp;&amp; ifconf=
+ig_remote_netmask_parm)</span><br><span>     {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        bool tun =3D false;</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span>         /*</span><br><spa=
+n>          * We only handle TUN/TAP devices here, not --dev null devices.<=
+/span><br><span>          */</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        tun =3D is_tun_p2p(tt);</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+        bool tun_p2p =3D is_tun_p2p(tt);</span><br><span=
+> </span><br><span>         /*</span><br><span>          * Convert argument=
+s to binary IPv4 addresses.</span><br><span>@@ -861,7 +859,7 @@</span><br><=
+span>             NULL);</span><br><span> </span><br><span>         tt-&gt;=
+remote_netmask =3D getaddr(</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-            (tun ? GETADDR_RESOLVE : 0)</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+            (tun_p2p ? GETADDR_RESOLVE : 0)</span=
+><br><span>             | GETADDR_HOST_ORDER</span><br><span>             |=
+ GETADDR_FATAL_ON_SIGNAL</span><br><span>             | GETADDR_FATAL,</spa=
+n><br><span>@@ -876,7 +874,7 @@</span><br><span>         if (strict_warn)</=
+span><br><span>         {</span><br><span>             struct addrinfo *cur=
+ele;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            ifcon=
+fig_sanity_check(tt-&gt;type =3D=3D DEV_TYPE_TUN, tt-&gt;remote_netmask, tt=
+-&gt;topology);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+        ifconfig_sanity_check(tun_p2p, tt-&gt;remote_netmask);</span><br><s=
+pan> </span><br><span>             /*</span><br><span>              * If lo=
+cal_public or remote_public addresses are defined,</span><br><span>@@ -907,=
+11 +905,11 @@</span><br><span>                 }</span><br><span>          =
+   }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-            if (tt-&gt;type =3D=3D DEV_TYPE_TAP || (tt-&gt;type =3D=3D DEV=
+_TYPE_TUN &amp;&amp; tt-&gt;topology =3D=3D TOP_SUBNET))</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+            if (!tun_p2p)</span><br><s=
+pan>             {</span><br><span>                 check_subnet_conflict(t=
+t-&gt;local, tt-&gt;remote_netmask, &quot;TUN/TAP adapter&quot;);</span><br=
+><span>             }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+            else if (tt-&gt;type =3D=3D DEV_TYPE_TUN)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            else</span><br><span>        =
+     {</span><br><span>                 check_subnet_conflict(tt-&gt;local,=
+ IPV4_NETMASK_HOST, &quot;TUN/TAP adapter&quot;);</span><br><span>         =
+    }</span><br><span>@@ -922,7 +920,7 @@</span><br><span>          * Make =
+sure that both ifconfig addresses are part of the</span><br><span>         =
+ * same .252 subnet.</span><br><span>          */</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-        if (tun)</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+        if (tun_p2p)</span><br><span>         {</s=
+pan><br><span>             verify_255_255_255_252(tt-&gt;local, tt-&gt;remo=
+te_netmask);</span><br><span>             tt-&gt;adapter_netmask =3D ~3;</s=
+pan><br><span>@@ -1305,7 +1303,7 @@</span><br><span>     /*</span><br><span=
+>      * We only handle TUN/TAP devices here, not --dev null devices.</span=
+><br><span>      */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  bool tun =3D is_tun_p2p(tt);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    bool tun_p2p =3D is_tun_p2p(tt);</span><br><span> #endif</sp=
+an><br><span> </span><br><span> #if !defined(TARGET_LINUX)</span><br><span>=
+@@ -1332,7 +1330,7 @@</span><br><span>         msg(M_FATAL, &quot;Linux can=
+&#39;t bring %s up&quot;, ifname);</span><br><span>     }</span><br><span> =
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tun)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    if (tun_p2p)</span><br><=
+span>     {</span><br><span>         if (net_addr_ptp_v4_add(ctx, ifname, &=
+amp;tt-&gt;local,</span><br><span>                                 &amp;tt-=
+&gt;remote_netmask) &lt; 0)</span><br><span>@@ -1351,27 +1349,8 @@</span><b=
+r><span> #elif defined(TARGET_ANDROID)</span><br><span>     char out[64];</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    c=
+har *top;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    switch (=
+tt-&gt;topology)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        case TOP_NET3=
+0:</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            top =3D=
+ &quot;net30&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+          break;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-        case TOP_P2P:</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            top =3D &quot;=
+p2p&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           =
+ break;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-        case TOP_SUBNET:</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-            top =3D &quot;subnet=
+&quot;;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            br=
+eak;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-        default:</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-            top =3D &quot;undef&quot;;</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-</span><br><span>     openvpn_snprintf(out=
+, sizeof(out), &quot;%s %s %d %s&quot;, ifconfig_local,</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-                     ifconfig_remote_netm=
+ask, tun_mtu, top);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+                     ifconfig_remote_netmask, tun_mtu, print_topology(tt-&g=
+t;topology));</span><br><span>     management_android_control(management, &=
+quot;IFCONFIG&quot;, out);</span><br><span> </span><br><span> #elif defined=
+(TARGET_SOLARIS)</span><br><span>@@ -1380,7 +1359,7 @@</span><br><span>    =
+  *    ifconfig tun2 10.2.0.2 10.2.0.1 mtu 1450 up</span><br><span>      * =
+   ifconfig tun2 netmask 255.255.255.255</span><br><span>      */</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    if (tun)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    if (tun_p2p)</span><br><span>     =
+{</span><br><span>         argv_printf(&amp;argv, &quot;%s %s %s %s mtu %d =
+up&quot;, IFCONFIG_PATH, ifname,</span><br><span>                     ifcon=
+fig_local, ifconfig_remote_netmask, tun_mtu);</span><br><span>@@ -1394,13 +=
+1373,13 @@</span><br><span>         argv_printf(&amp;argv, &quot;%s %s netm=
+ask 255.255.255.255&quot;, IFCONFIG_PATH,</span><br><span>                 =
+    ifname);</span><br><span>     }</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    else if (tt-&gt;type =3D=3D DEV_TYPE_TUN &amp;&amp; tt-&g=
+t;topology =3D=3D TOP_SUBNET)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    else if (tt-&gt;type =3D=3D DEV_TYPE_TUN)</span><br><span>   =
+  {</span><br><span>         argv_printf(&amp;argv, &quot;%s %s %s %s netma=
+sk %s mtu %d up&quot;, IFCONFIG_PATH,</span><br><span>                     =
+ifname, ifconfig_local, ifconfig_local,</span><br><span>                   =
+  ifconfig_remote_netmask, tun_mtu);</span><br><span>     }</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    else</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    else /* tap */</span><br><span>     {</span>=
+<br><span>         argv_printf(&amp;argv, &quot;%s %s %s netmask %s up&quot=
+;,</span><br><span>                     IFCONFIG_PATH, ifname, ifconfig_loc=
+al,</span><br><span>@@ -1413,7 +1392,7 @@</span><br><span>         solaris_=
+error_close(tt, es, ifname, false);</span><br><span>     }</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (!tun &amp;&a=
+mp; tt-&gt;type =3D=3D DEV_TYPE_TUN &amp;&amp; tt-&gt;topology =3D=3D TOP_S=
+UBNET)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (!tun_=
+p2p &amp;&amp; tt-&gt;type =3D=3D DEV_TYPE_TUN)</span><br><span>     {</spa=
+n><br><span>         /* Add a network route for the local tun interface */<=
+/span><br><span>         struct route_ipv4 r;</span><br><span>@@ -1437,14 +=
+1416,14 @@</span><br><span>      */</span><br><span> </span><br><span>     =
+/* example: ifconfig tun2 10.2.0.2 10.2.0.1 mtu 1450 netmask 255.255.255.25=
+5 up */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tun)</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (tun_p2p)</spa=
+n><br><span>     {</span><br><span>         argv_printf(&amp;argv,</span><b=
+r><span>                     &quot;%s %s %s %s mtu %d netmask 255.255.255.2=
+55 up -link0&quot;,</span><br><span>                     IFCONFIG_PATH, ifn=
+ame, ifconfig_local,</span><br><span>                     ifconfig_remote_n=
+etmask, tun_mtu);</span><br><span>     }</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    else if (tt-&gt;type =3D=3D DEV_TYPE_TUN &amp;&amp; =
+tt-&gt;topology =3D=3D TOP_SUBNET)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    else if (tt-&gt;type =3D=3D DEV_TYPE_TUN)</span><br><spa=
+n>     {</span><br><span>         remote_end =3D create_arbitrary_remote( t=
+t );</span><br><span>         argv_printf(&amp;argv, &quot;%s %s %s %s mtu =
+%d netmask %s up -link0&quot;,</span><br><span>@@ -1452,7 +1431,7 @@</span>=
+<br><span>                     print_in_addr_t(remote_end, 0, &amp;gc), tun=
+_mtu,</span><br><span>                     ifconfig_remote_netmask);</span>=
+<br><span>     }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    e=
+lse</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else /* tap =
+*/</span><br><span>     {</span><br><span>         argv_printf(&amp;argv, &=
+quot;%s %s %s netmask %s mtu %d link0&quot;,</span><br><span>              =
+       IFCONFIG_PATH, ifname, ifconfig_local,</span><br><span>@@ -1462,7 +1=
+441,7 @@</span><br><span>     openvpn_execve_check(&amp;argv, es, S_FATAL, =
+&quot;OpenBSD ifconfig failed&quot;);</span><br><span> </span><br><span>   =
+  /* Add a network route for the local tun interface */</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    if (!tun &amp;&amp; tt-&gt;type =3D=
+=3D DEV_TYPE_TUN &amp;&amp; tt-&gt;topology =3D=3D TOP_SUBNET)</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    if (!tun_p2p &amp;&amp; tt-&=
+gt;type =3D=3D DEV_TYPE_TUN)</span><br><span>     {</span><br><span>       =
+  struct route_ipv4 r;</span><br><span>         CLEAR(r);</span><br><span>@=
+@ -1476,20 +1455,20 @@</span><br><span> #elif defined(TARGET_NETBSD)</span>=
+<br><span>     in_addr_t remote_end =3D INADDR_ANY;  /* for &quot;virtual&q=
+uot; subnet topology */</span><br><span> </span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    if (tun)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    if (tun_p2p)</span><br><span>     {</span><br><span>      =
+   argv_printf(&amp;argv, &quot;%s %s %s %s mtu %d netmask 255.255.255.255 =
+up&quot;,</span><br><span>                     IFCONFIG_PATH, ifname, ifcon=
+fig_local,</span><br><span>                     ifconfig_remote_netmask, tu=
+n_mtu);</span><br><span>     }</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    else if (tt-&gt;type =3D=3D DEV_TYPE_TUN &amp;&amp; tt-&gt;top=
+ology =3D=3D TOP_SUBNET)</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    else if (tt-&gt;type =3D=3D DEV_TYPE_TUN)</span><br><span>     {</=
+span><br><span>         remote_end =3D create_arbitrary_remote(tt);</span><=
+br><span>         argv_printf(&amp;argv, &quot;%s %s %s %s mtu %d netmask %=
+s up&quot;, IFCONFIG_PATH,</span><br><span>                     ifname, ifc=
+onfig_local, print_in_addr_t(remote_end, 0, &amp;gc),</span><br><span>     =
+                tun_mtu, ifconfig_remote_netmask);</span><br><span>     }</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    else /* tap */</span><br><span=
+>     {</span><br><span>         /*</span><br><span>          * NetBSD has =
+distinct tun and tap devices</span><br><span>@@ -1504,7 +1483,7 @@</span><b=
+r><span>     openvpn_execve_check(&amp;argv, es, S_FATAL, &quot;NetBSD ifco=
+nfig failed&quot;);</span><br><span> </span><br><span>     /* Add a network=
+ route for the local tun interface */</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    if (!tun &amp;&amp; tt-&gt;type =3D=3D DEV_TYPE_TUN &am=
+p;&amp; tt-&gt;topology =3D=3D TOP_SUBNET)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    if (!tun_p2p &amp;&amp; tt-&gt;type =3D=3D DEV_T=
+YPE_TUN)</span><br><span>     {</span><br><span>         struct route_ipv4 =
+r;</span><br><span>         CLEAR(r);</span><br><span>@@ -1528,33 +1507,30 =
+@@</span><br><span> </span><br><span> </span><br><span>     /* example: ifc=
+onfig tun2 10.2.0.2 10.2.0.1 mtu 1450 netmask 255.255.255.255 up */</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    if (tun)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    if (tun_p2p)</span><br><span>   =
+  {</span><br><span>         argv_printf(&amp;argv, &quot;%s %s %s %s mtu %=
+d netmask 255.255.255.255 up&quot;,</span><br><span>                     IF=
+CONFIG_PATH, ifname, ifconfig_local,</span><br><span>                     i=
+fconfig_remote_netmask, tun_mtu);</span><br><span>     }</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    else</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    else if (tt-&gt;type =3D=3D DEV_TYPE_TUN)</span=
+><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+    if (tt-&gt;type =3D=3D DEV_TYPE_TUN &amp;&amp; tt-&gt;topology =3D=3D T=
+OP_SUBNET)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-            argv_printf=
+(&amp;argv, &quot;%s %s %s %s netmask %s mtu %d up&quot;,</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-                        IFCONFIG_PATH, =
+ifname, ifconfig_local, ifconfig_local,</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                        ifconfig_remote_netmask, tun_mtu)=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-            argv_printf(&amp;argv, &quot;%s %s %s net=
+mask %s mtu %d up&quot;, IFCONFIG_PATH,</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                        ifname, ifconfig_local, ifconfig_=
+remote_netmask,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      =
+                  tun_mtu);</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    argv_printf(&amp;argv, &quot;%s %s %s %s netmask %s mtu %d up&quot;,</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                    IF=
+CONFIG_PATH, ifname, ifconfig_local, ifconfig_local,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                    ifconfig_remote_netma=
+sk, tun_mtu);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    else /* tap */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+        argv_printf(&amp;argv, &quo=
+t;%s %s %s netmask %s mtu %d up&quot;, IFCONFIG_PATH,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+                    ifname, ifconfig_loca=
+l, ifconfig_remote_netmask,</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+                    tun_mtu);</span><br><span>     }</span><br><spa=
+n> </span><br><span>     argv_msg(M_INFO, &amp;argv);</span><br><span>     =
+openvpn_execve_check(&amp;argv, es, S_FATAL, &quot;Mac OS X ifconfig failed=
+&quot;);</span><br><span> </span><br><span>     /* Add a network route for =
+the local tun interface */</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    if (!tun &amp;&amp; tt-&gt;type =3D=3D DEV_TYPE_TUN &amp;&amp; tt-=
+&gt;topology =3D=3D TOP_SUBNET)</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    if (!tun_p2p &amp;&amp; tt-&gt;type =3D=3D DEV_TYPE_TUN)</s=
+pan><br><span>     {</span><br><span>         struct route_ipv4 r;</span><b=
+r><span>         CLEAR(r);</span><br><span>@@ -1568,7 +1544,7 @@</span><br>=
+<span> #elif defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY)</span><br=
+><span> </span><br><span>     /* example: ifconfig tun2 10.2.0.2 10.2.0.1 m=
+tu 1450 netmask 255.255.255.255 up */</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    if (tun)       /* point-to-point tun */</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    if (tun_p2p)    /* point-to-poi=
+nt tun */</span><br><span>     {</span><br><span>         argv_printf(&amp;=
+argv, &quot;%s %s %s %s mtu %d netmask 255.255.255.255 up&quot;,</span><br>=
+<span>                     IFCONFIG_PATH, ifname, ifconfig_local,</span><br=
+><span>@@ -1590,7 +1566,7 @@</span><br><span>         struct env_set *aix_e=
+s =3D env_set_create(NULL);</span><br><span>         env_set_add( aix_es, &=
+quot;ODMDIR=3D/etc/objrepos&quot; );</span><br><span> </span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-        if (tun)</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+        if (tt-&gt;type =3D=3D DEV_TYPE_TUN)<=
+/span><br><span>         {</span><br><span>             msg(M_FATAL, &quot;=
+no tun support on AIX (canthappen)&quot;);</span><br><span>         }</span=
+><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/380?usp=3Demail">change 380</a>. To unsubscribe, or for=
+ help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
+ings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
+ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
+wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/380?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
+></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0dcb2dac4136f194da7050a8ea8=
-495e9faba9dd9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 379 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ice8b95f953c3f7e71657a78ea12=
+b02a08c60aa67 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 380 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -1197,8 +820,8 @@ meta itemprop=3D"name" content=3D"View Change"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---xULIPMkr4MY=--
+--Ni+yr0k2Sfw=--
 
