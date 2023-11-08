@@ -1,11 +1,11 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Tue,  7 Nov 2023 15:17:55 +0100
-Message-Id: <20231107141755.30559-1-frank@...2641...>
-In-Reply-To: <gerrit.1697649588000.I3ca6965799b23d542ababc3e38880317cb46a3ac@...2715...>
-References: <gerrit.1697649588000.I3ca6965799b23d542ababc3e38880317cb46a3ac@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------Sfgj8uetumsqqKFywpezzB4m"
+Message-ID: <eeb5fac5-0a49-4382-acf0-acf9c1ccf4e7@...2751...>
+Date: Wed, 8 Nov 2023 14:27:11 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Remove CMake custom compiler flags for
- RELEASE and DEBUG build
+From: Johan Draaisma <johan@...2751...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,42 +14,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+This is a multi-part message in MIME format.
+--------------Sfgj8uetumsqqKFywpezzB4m
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-This overwrites the default that cmake automatically sets. In the
-case of debug builds, this breaks debugging as -O1 already optimises
-many variables away.
+Meeting summary for 8 November 2023:
 
-Change-Id: I3ca6965799b23d542ababc3e38880317cb46a3ac
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
+  * *Updated: OpenVPN 2.6.7 release*
+    /There is a div-by-zero bug and a critical bug we were waiting to
+    get fixed before proceeding./
+    /The patch for fixing both is on security mailing list and has acks
+    so will go in now./
+    /The release is expected to happen today./
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+  * *Updated: Publish security assessment of OpenVPN2 codebase on main
+    website.*
+    /Expected to be published either this or next week./
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/374
-This mail reflects revision 1 of this Change.
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 13:00 Central European Time.
 
-        
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 376a060..d21c9bd 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -79,10 +79,6 @@
-         add_link_options("$<$<CONFIG:Release>:/CETCOMPAT>")
-     endif()
- else ()
--    set(CMAKE_C_FLAGS_RELEASE "-O2")
--    set(CMAKE_CXX_FLAGS_RELEASE "-O2")
--    set(CMAKE_C_FLAGS_DEBUG "-g -O1")
--    set(CMAKE_CXX_FLAGS_DEBUG "-g -O1")
-     add_compile_options(-Wall -Wuninitialized)
-     check_c_compiler_flag(-Wno-stringop-truncation NoStringOpTruncation)
- 
+Kind regards,
+Johan Draaisma
+
+--------------Sfgj8uetumsqqKFywpezzB4m
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 8 November 2023:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: OpenVPN 2.6.7 release</strong><br>
+        <em>There is a div-by-zero bug and a critical bug we were
+          waiting to get fixed before proceeding.</em><br>
+        <em>The patch for fixing both is on security mailing list and
+          has acks so will go in now.</em><br>
+        <em>The release is expected to happen today.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: Publish security assessment of OpenVPN2
+          codebase on main website.</strong><br>
+        <em>Expected to be published either this or next week.</em></li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 13:00 Central European Time.</p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
+
+--------------Sfgj8uetumsqqKFywpezzB4m--
 
