@@ -1,12 +1,9 @@
-Resent-Message-ID: <ZUzBoQlX2Vj0nUxf@...1296...>
-Resent-To: openvpn-devel@lists.sourceforge.net
+Date: Thu, 9 Nov 2023 12:31:46 +0100 (CET)
+Message-Id: <202311091131.3A9BVkHJ020329@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Wed,  8 Nov 2023 13:49:47 +0100
-Message-ID: <20231108124947.76816-3-gert@...1296...>
 In-Reply-To: <20231108124947.76816-1-gert@...1296...>
 References: <20231108124947.76816-1-gert@...1296...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 3/3] Fix using to_link buffer after freed
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove saving initial frame code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,53 +14,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+Since this was security related (CVE) it was posted to the security@ list
+first, and reviewed and ACKed by core team members there.  Re-Posting the
+patches + the commit message here, after 2.6.7 release.
 
-When I refactored the tls_state_change method in
-9a7b95fda5 I accidentally changed a break into
-a return true while it should return a false.
+I have skimmed the code change and it looks reasonable - and I have
+subjected this (+ 2/3 and 3/3) to the full set of t_client and t_server
+patches, and things work as well as before.
 
-The code here is extremely fragile in the sense
-that it assumes that settings a keystate to S_ERROR
-cannot have any outgoing buffer or we will have a
-use after free.  The previous break and now restored
-return false ensure this by skipping any further
-tls_process_state loops that might set to ks->S_ERROR
-and ensure that the to_link is sent out and cleared
-before having more loops in tls_state_change.
+Your patch has been applied to the release/2.6 and master branch.
 
-CVE: 2023-46850
+commit 1cfca659244e362f372d9843351257f456392a2f (release/2.6)
+commit a341914246d16ff277f2d521c2dc9273d41fa5ed (master)
+Author: Arne Schwabe
+Date:   Thu Oct 19 15:14:33 2023 +0200
 
-This affects everyone, even with tls-auth/tls-crypt enabled.
+     Remove saving initial frame code
 
-Change-Id: I2a0f1c665d992da8e24a421ff0ddcb40f7945ea8
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
- src/openvpn/ssl.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Acked-by: Heiko Hund <heiko@...2662...>
+     Message-Id: <20231108124947.76816-1-gert@...1296...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20231108124947.76816-1-gert@...1296...
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index e15f951d6..cee4afe19 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2903,7 +2903,13 @@ tls_process_state(struct tls_multi *multi,
-                            CONTROL_SEND_ACK_MAX, true);
-         *to_link = b;
-         dmsg(D_TLS_DEBUG, "Reliable -> TCP/UDP");
--        return true;
-+
-+        /* This changed the state of the outgoing buffer. In order to avoid
-+         * running this function again/further and invalidating the key_state
-+         * buffer and accessing the buffer that is now in to_link after it being
-+         * freed for a potential error, we shortcircuit exiting of the outer
-+         * process here. */
-+        return false;
-     }
- 
-     /* Write incoming ciphertext to TLS object */
--- 
-2.39.3 (Apple Git-145)
+
+--
+kind regards,
+
+Gert Doering
 
 
