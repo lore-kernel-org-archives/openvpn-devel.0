@@ -1,10 +1,10 @@
-Date: Thu, 9 Nov 2023 12:31:51 +0100 (CET)
-Message-Id: <202311091131.3A9BVpYK020337@...2054...>
+Date: Thu, 9 Nov 2023 12:36:39 +0100 (CET)
+Message-Id: <202311091136.3A9BadFB020580@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20231108124947.76816-3-gert@...1296...>
-References: <20231108124947.76816-3-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix using to_link buffer after
- freed
+In-Reply-To: <20231107141755.30559-1-frank@...2641...>
+References: <20231107141755.30559-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove CMake custom compiler
+ flags for RELEASE and DEBUG build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,24 +18,17 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Third in the series.  This is the actual bug fix for the use-after-free
-leak - looks trivial enough... as Arne says, this part of the code is
-too full of magic and easy to break.
+Your patch has been applied to the master branch.
 
-Your patch has been applied to the release/2.6 and master branch.
-
-commit 57a5cd1e12f193927c9b7429f8778fec7e04c50a (release/2.6)
-commit a0afe035cbca26f8c74b670a8c2a20b3d9c2294b (master)
+commit 753cba211c4752ef13d810b757f1aa7dee89626b
 Author: Arne Schwabe
-Date:   Fri Oct 27 14:19:37 2023 +0200
+Date:   Tue Nov 7 15:17:55 2023 +0100
 
-     Fix using to_link buffer after freed
+     Remove CMake custom compiler flags for RELEASE and DEBUG build
 
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Acked-by: Heiko Hund <heiko@...2662...>
-     Message-Id: <20231108124947.76816-3-gert@...1296...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20231108124947.76816-3-gert@...1296...
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20231107141755.30559-1-frank@...2641...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20231107141755.30559-1-frank@...2641...
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
