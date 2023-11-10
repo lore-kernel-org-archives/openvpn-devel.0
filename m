@@ -1,18 +1,15 @@
-Date: Fri, 10 Nov 2023 10:51:34 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <ZU39JoRBq8R_NgD6@...1296...>
-References: <13E5C41C-8358-4252-A751-8FDA9EE95B7D@...2722...>
- <0acc8d93-6175-4d7e-a39a-269a9652ac3e@...1823...>
- <f2f54207-f37c-4c0d-96a3-a600cd2bb811@...1823...>
- <ZU3aVt0EgPyOQWEe@...1296...>
- <ae5ddbf4-44fd-4d4b-a045-53274aa9cc5d@...1823...>
- <fe0a4e43-4015-4834-a9bd-8764baf0134a@...1823...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Fri, 10 Nov 2023 10:22:01 +0000
+References: <gerrit.1699611717000.I24f43ad319bd1ca530fe17442d02a97412eb75c7@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <0cc2f4aee0de22a0a54cf7c9761de5de4cf1c819-HTML@...2715...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="uJx1Qn7HTTALkggc"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-In-Reply-To: <fe0a4e43-4015-4834-a9bd-8764baf0134a@...1823...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.6.7 released
+Content-Type: multipart/alternative; boundary="0yJGPxC43Qc="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: Make --dns
+ options apply for tap-windows6 driver
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,59 +18,168 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Dmitry Melekhov <dm@...1823...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---uJx1Qn7HTTALkggc
-Content-Type: text/plain; charset="iso-8859-1"
+--0yJGPxC43Qc=
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Attention is currently required from: flichtenheld, plaisthos.
 
-On Fri, Nov 10, 2023 at 12:25:22PM +0400, Dmitry Melekhov wrote:
-> btw, what I missed, openvpn dies:
->=20
-> openvpn[11346]: segfault at 0 ip 000055e33503f5f3 sp 00007fff33642390 err=
-or
-> 4 in openvpn[55e334fc8000+8f000]
->=20
-> but only=A0 multipoint udp .
+Hello plaisthos, flichtenheld,
 
-This is bad (but very different from "it stops forwarding", so it should
-be much easier to reproduce).  Can you produce a log file with "verb 4" so
-it shows what is happening before that?
+I'd like you to do a code review.
+Please visit
 
-I'll see if I can reproduce this case here and we'll fix it ASAP.
+    http://gerrit.openvpn.net/c/openvpn/+/423?usp=3Demail
 
-gert
+to review the following change.
 
---=20
-"If was one thing all people took for granted, was conviction that if you=20
- feed honest figures into a computer, honest figures come out. Never doubte=
-d=20
- it myself till I met a computer with a sense of humor."
-                             Robert A. Heinlein, The Moon is a Harsh Mistre=
-ss
 
-Gert Doering - Munich, Germany                             gert@...1296...
+Change subject: Make --dns options apply for tap-windows6 driver
+......................................................................
 
---uJx1Qn7HTTALkggc
-Content-Type: application/pgp-signature; name="signature.asc"
+Make --dns options apply for tap-windows6 driver
 
------BEGIN PGP SIGNATURE-----
+When tap-windows6 driver is used, both --dhcp-option and
+--dns options are applied with DHCP. When processing --dns options,
+we don't set "tuntap_options.dhcp_options" member, which is required
+for DHCP string to be sent to the driver. As a result, --dns options
+are not applied at all.
 
-iQGcBAEBAgAGBQJlTf0mAAoJEB2Cnv7KVigSBeUL/jyNRXvQh4lUsmK6Z2TNechZ
-HX1V+rahkAn91aMqLMISsmBMMqR4TAKpJet37W3fOGh75sRdEj7ExodaZ4WGBCjZ
-Fcu6HQqRNo0MtXflpwJbQ9kAyE3C31u8Iiv2MjGG4BeagW2b0L5A47zb5zgjr0wv
-fNiTgBs5uO9giaMz0WpGC1FpVH2E0OELaDnC1KKG0u8xayzEqIasZfuJRz9OxDKK
-+daiF2mFw3wkIjZwQbbVeO1bQQjwkgYjgJ7ihGAsgDCnz1tyKQsjsK0T3JqdNBFL
-jKrYX5/2j9Ba+wJRANI159qDi34yyablwCKbdL/YJrwsUIxp3XDo043dL+vhArwf
-X8WLW1ubp4BTPmcACLatm6v3wq8kVVBeUvQvTbqcZD1Gcy/lGjZuHR7d5jlh9A0d
-oc6XRwc5xUAQZgHMDrs0WZbw7drM0lntIYA9V3eDfrWqGC4Qo5ywIxPyciaRONXX
-m+wbvh7ZmELwHAOTLXLKb76o9CS15NlCa+hDhAYWXA==
-=TYOR
------END PGP SIGNATURE-----
+Fix by adding missing assignment of tuntap_options.dhcp_options.
 
---uJx1Qn7HTTALkggc--
+Fixes https://github.com/OpenVPN/openvpn/issues/447
+
+Change-Id: I24f43ad319bd1ca530fe17442d02a97412eb75c7
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+M src/openvpn/options.c
+1 file changed, 6 insertions(+), 0 deletions(-)
+
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/23/423/1
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 631ac73..e793a96 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -8014,6 +8014,9 @@
+         if (streq(p[1], "search-domains") && p[2])
+         {
+             dns_domain_list_append(&options->dns_options.search_domains, &=
+p[2], &options->dns_options.gc);
++#ifdef _WIN32
++            options->tuntap_options.dhcp_options |=3D DHCP_OPTIONS_DHCP_RE=
+QUIRED;
++#endif
+         }
+         else if (streq(p[1], "server") && p[2] && p[3] && p[4])
+         {
+@@ -8090,6 +8093,9 @@
+                 msg(msglevel, "--dns server %ld: unknown option type '%s' =
+or missing or unknown parameter", priority, p[3]);
+                 goto err;
+             }
++#ifdef _WIN32
++            options->tuntap_options.dhcp_options |=3D DHCP_OPTIONS_DHCP_OP=
+TIONAL;
++#endif
+         }
+         else
+         {
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/423?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: release/2.6
+Gerrit-Change-Id: I24f43ad319bd1ca530fe17442d02a97412eb75c7
+Gerrit-Change-Number: 423
+Gerrit-PatchSet: 1
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
+
+--0yJGPxC43Qc=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>stipa would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/423?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Make --dns options apply for tap-windows6 driver<br><br>When =
+tap-windows6 driver is used, both --dhcp-option and<br>--dns options are ap=
+plied with DHCP. When processing --dns options,<br>we don&#39;t set &quot;t=
+untap_options.dhcp_options&quot; member, which is required<br>for DHCP stri=
+ng to be sent to the driver. As a result, --dns options<br>are not applied =
+at all.<br><br>Fix by adding missing assignment of tuntap_options.dhcp_opti=
+ons.<br><br>Fixes https://github.com/OpenVPN/openvpn/issues/447<br><br>Chan=
+ge-Id: I24f43ad319bd1ca530fe17442d02a97412eb75c7<br>Signed-off-by: Lev Stip=
+akov &lt;lev@...515...&gt;<br>---<br>M src/openvpn/options.c<br>1 file chan=
+ged, 6 insertions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family=
+: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvp=
+n.net:29418/openvpn refs/changes/23/423/1</pre><pre style=3D"font-family: m=
+onospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/=
+options.c b/src/openvpn/options.c</span><br><span>index 631ac73..e793a96 10=
+0644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/=
+openvpn/options.c</span><br><span>@@ -8014,6 +8014,9 @@</span><br><span>   =
+      if (streq(p[1], &quot;search-domains&quot;) &amp;&amp; p[2])</span><b=
+r><span>         {</span><br><span>             dns_domain_list_append(&amp=
+;options-&gt;dns_options.search_domains, &amp;p[2], &amp;options-&gt;dns_op=
+tions.gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef _W=
+IN32</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            opt=
+ions-&gt;tuntap_options.dhcp_options |=3D DHCP_OPTIONS_DHCP_REQUIRED;</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span>  =
+       }</span><br><span>         else if (streq(p[1], &quot;server&quot;) =
+&amp;&amp; p[2] &amp;&amp; p[3] &amp;&amp; p[4])</span><br><span>         {=
+</span><br><span>@@ -8090,6 +8093,9 @@</span><br><span>                 msg=
+(msglevel, &quot;--dns server %ld: unknown option type &#39;%s&#39; or miss=
+ing or unknown parameter&quot;, priority, p[3]);</span><br><span>          =
+       goto err;</span><br><span>             }</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+            options-&gt;tuntap_options.dhcp_options |=
+=3D DHCP_OPTIONS_DHCP_OPTIONAL;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+#endif</span><br><span>         }</span><br><span>         else=
+</span><br><span>         {</span><br><span></span><br></pre><p>To view, vi=
+sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/423?usp=3Demail">chang=
+e 423</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/423?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I24f43ad319bd1ca530fe17442d0=
+2a97412eb75c7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 423 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--0yJGPxC43Qc=--
 
