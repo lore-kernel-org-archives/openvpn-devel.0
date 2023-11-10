@@ -1,13 +1,14 @@
-Date: Fri, 10 Nov 2023 08:21:24 +0100
+Date: Fri, 10 Nov 2023 08:23:02 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <ZU3Z9AOkQRmPFmWJ@...1296...>
+Message-ID: <ZU3aVt0EgPyOQWEe@...1296...>
 References: <13E5C41C-8358-4252-A751-8FDA9EE95B7D@...2722...>
  <0acc8d93-6175-4d7e-a39a-269a9652ac3e@...1823...>
+ <f2f54207-f37c-4c0d-96a3-a600cd2bb811@...1823...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="ExVu5lCQrJ3urL3R"
+ protocol="application/pgp-signature"; boundary="7iB8DGFjGH4a94hS"
 Content-Disposition: inline
-In-Reply-To: <0acc8d93-6175-4d7e-a39a-269a9652ac3e@...1823...>
+In-Reply-To: <f2f54207-f37c-4c0d-96a3-a600cd2bb811@...1823...>
 Subject: Re: [Openvpn-devel] OpenVPN 2.6.7 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -20,30 +21,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Dmitry Melekhov <dm@...1823...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---ExVu5lCQrJ3urL3R
-Content-Type: text/plain; charset="us-ascii"
+--7iB8DGFjGH4a94hS
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Nov 10, 2023 at 10:21:35AM +0400, Dmitry Melekhov wrote:
-> 10.11.2023 00:56, Yuriy Darnobyt ??????????:
-> > The OpenVPN community project team is proud to release OpenVPN 2.6.7.
+On Fri, Nov 10, 2023 at 11:19:58AM +0400, Dmitry Melekhov wrote:
+> OK, now I know what is broken.
 >=20
-> something is broken in 2.6.7. it stops passing traffic after several seco=
-nds
-> after connection when acts as server,
+> I have so called multihomed server,=A0 and multihomed udp does not work in
+> 2.6.7.
+>=20
+> On server with only one external interface everything works OK.
 
-Anything in the logs, when running with --verb 4?  Is this UDP or TCP?  Are
-you using --fragment?
+Are you using --multihome in your config?  If not, please add this - UDP
+on a server with multiple IP addresses of the same family (v4 or v6) can
+not work reliably without --multihome.
 
-I ran the full server side test setup here, and all tests pass - now,
-these are only running ~15 seconds per client connect, so might have
-overlooked something... just to be sure, I've run a 15-minute ipv4/ipv6
-ping test to a UDP server now, and that succeeded just fine.
+If it does not work with --multihome, please send logs.
+
+(There is one multihome-related code change in 2.6.6 -> 2.6.7, but that
+should only ever trigger if you use DCO)
 
 gert
+
+
 --=20
 "If was one thing all people took for granted, was conviction that if you=20
  feed honest figures into a computer, honest figures come out. Never doubte=
@@ -54,22 +58,22 @@ ss
 
 Gert Doering - Munich, Germany                             gert@...1296...
 
---ExVu5lCQrJ3urL3R
+--7iB8DGFjGH4a94hS
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJlTdn0AAoJEB2Cnv7KVigSYMkL/2jQaGVgiA2oyqKeLU/Xlv/n
-XskBwKC6siqhMeLM02DOD+G7/X3XFIir2eQ4wbu6+J+ApyfWyRv2ieR6TNA3O6iO
-gIwuMvYDyG67hHQKNleQM4SD7RT/Wyw6Bu44M1z8r29TDhZ75MKhIavxXISHJFIx
-gEEj95CJh1KUXGABRuKZPARMyY//iRkpw+D7PcHnAaoU9lRva3etAk5EScG3668F
-xLP1ji7x6cZteYLuwQ0nqNj5WI+bLoTfkjUvJuDk5wWEhI9gKwU3tzkaFIroZwDF
-1t48fRzCUefZkQdMZT7s6taVr9XF0VtFnhXPXwAqpRmY+IcsPzF63OXfiNrzKLpL
-x2FlhC0CaUqTwTaLnCNGKwHuv7nPeBZRrXf0IQEoaEc1TOSTzIiAEMCBf61hNeay
-nkO3/zdWGsCM2BQFaEYZX5F9ziqTXI2OCK1lzGIobxZ7Zsy0nrlSpXnQDjZH+VGN
-dXDteKb1LSguZZlw/y2Uf8hgfnbXXebIzUoWcUIh6w==
-=0gZ7
+iQGcBAEBAgAGBQJlTdpWAAoJEB2Cnv7KVigS4KcMAII/IqP+NJ1BE9ZNGh9VaT6S
+Pm+iyxOcsODslbe5qnBwQH19QUNTQTlANAJER0tHSDDpnKq3XtUDhxnWo8fIDGIF
+Pxp9duOf3zwHyKW2yOyYyoaza6K2tv9O5HbFxTm+CMUTVrsQkogRz4IDLul9tCao
+5Evg7/Ddh5+5FnxMuESDLpHAzp/5Euao7D5G2+IRwEvT8LnxQvEeI0HxU4ZQESUn
+XDYnpGAQRgtS8pVM981ojo2fEBgvf9kL2aLzEkNxbShLvqiWGgeTcs9Dli2552cA
+68d53OTiinYBkf602IezeRjsEcgw12Y7JA5cGXcq82EPHyKzannZUZ8h4YmXRfen
+1k2s70kT52M0C6rdE0fC7UtQRTb/ipGZFvBXn9bRoNz+s1ZOL/BZMJ9WRmddU3B5
+sOCRbAC0GzW3/gPT59jyyqhJcMancZONWWWRU5xxF4Q/DZ1e9AekFNIqgvgCu12O
+ZygGyURq48nKyB900NnUSxTSvDSojxDeuPzo4nuWRg==
+=SKcR
 -----END PGP SIGNATURE-----
 
---ExVu5lCQrJ3urL3R--
+--7iB8DGFjGH4a94hS--
 
