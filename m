@@ -1,16 +1,15 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Fri, 10 Nov 2023 17:29:03 +0000
-In-Reply-To: <gerrit.1699611717000.I24f43ad319bd1ca530fe17442d02a97412eb75c7@...2715...>
-References: <gerrit.1699611717000.I24f43ad319bd1ca530fe17442d02a97412eb75c7@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <b22a642013c4b4899a4267eafe8bf62c550833c8-EmailReplacePatchSet-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Fri, 10 Nov 2023 17:38:39 +0000
+References: <gerrit.1699637918000.I0c78ce452135fe2c80275da449215ba926471018@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <a1c2ca01febfd77959187552a44476064a15a659-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="on8knyEOu+c="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[release/2.6]: Make --dns
- options apply for tap-windows6 driver
+Content-Type: multipart/alternative; boundary="+c0cuNXNlcU="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: platform.c: Do not
+ depend Windows build on HAVE_CHDIR
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,160 +18,144 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, d12fk <heiko@...515...>
+To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---on8knyEOu+c=
+--+c0cuNXNlcU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: d12fk, plaisthos, stipa.
+Attention is currently required from: plaisthos.
 
-Hello d12fk, flichtenheld, plaisthos,
+Hello plaisthos,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/423?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/425?usp=3Demail
 
-to look at the new patch set (#2).
+to review the following change.
 
 
-Change subject: Make --dns options apply for tap-windows6 driver
+Change subject: platform.c: Do not depend Windows build on HAVE_CHDIR
 ......................................................................
 
-Make --dns options apply for tap-windows6 driver
+platform.c: Do not depend Windows build on HAVE_CHDIR
 
-When tap-windows6 driver is used, both --dhcp-option and
---dns options are applied with DHCP. When processing --dns options,
-we don't set "tuntap_options.dhcp_options" member, which is required
-for DHCP string to be sent to the driver. As a result, --dns options
-are not applied at all.
+This broke in the CMake build since previously we
+just always set HAVE_CHDIR to 1 in the MSVC build.
+But actually the code should just not check HAVE_CHDIR
+on Windows.
 
-Fix by adding missing assignment of tuntap_options.dhcp_options.
-
-Fixes https://github.com/OpenVPN/openvpn/issues/447
-
-Change-Id: I24f43ad319bd1ca530fe17442d02a97412eb75c7
-Signed-off-by: Lev Stipakov <lev@...515...>
+Change-Id: I0c78ce452135fe2c80275da449215ba926471018
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/options.c
-1 file changed, 3 insertions(+), 0 deletions(-)
+M src/openvpn/platform.c
+1 file changed, 2 insertions(+), 2 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/23/423/2
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 631ac73..f8d0b2e 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1372,6 +1372,8 @@
-         {
-             msg(M_WARN, "WARNING: couldn't copy all --dns search-domains t=
-o --dhcp-option");
-         }
-+
-+        tt->dhcp_options |=3D DHCP_OPTIONS_DHCP_REQUIRED;
-     }
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/25/425/1
 
-     if (dns->servers)
-@@ -1409,6 +1411,7 @@
-         {
-             msg(M_WARN, "WARNING: couldn't copy all --dns server addresses=
- to --dhcp-option");
-         }
-+        tt->dhcp_options |=3D DHCP_OPTIONS_DHCP_OPTIONAL;
-     }
+diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
+index 32c4fe6..62acabe 100644
+--- a/src/openvpn/platform.c
++++ b/src/openvpn/platform.c
+@@ -392,7 +392,6 @@
+ int
+ platform_chdir(const char *dir)
+ {
+-#ifdef HAVE_CHDIR
+ #ifdef _WIN32
+     int res;
+     struct gc_arena gc =3D gc_new();
+@@ -400,11 +399,12 @@
+     gc_free(&gc);
+     return res;
+ #else  /* ifdef _WIN32 */
++#ifdef HAVE_CHDIR
+     return chdir(dir);
+-#endif
+ #else  /* ifdef HAVE_CHDIR */
+     return -1;
+ #endif
++#endif
  }
- #else /* if defined(_WIN32) || defined(TARGET_ANDROID) */
+
+ /*
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/423?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/425?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: I24f43ad319bd1ca530fe17442d02a97412eb75c7
-Gerrit-Change-Number: 423
-Gerrit-PatchSet: 2
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: d12fk <heiko@...515...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Branch: master
+Gerrit-Change-Id: I0c78ce452135fe2c80275da449215ba926471018
+Gerrit-Change-Number: 425
+Gerrit-PatchSet: 1
+Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: newchange
 
---on8knyEOu+c=
+--+c0cuNXNlcU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: d12fk, plaisthos, stipa. </p>
-<p>stipa <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/423?usp=3Demail">View Change</a=
-></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-">Make --dns options apply for tap-windows6 driver<br><br>When tap-windows6=
- driver is used, both --dhcp-option and<br>--dns options are applied with D=
-HCP. When processing --dns options,<br>we don&#39;t set &quot;tuntap_option=
-s.dhcp_options&quot; member, which is required<br>for DHCP string to be sen=
-t to the driver. As a result, --dns options<br>are not applied at all.<br><=
-br>Fix by adding missing assignment of tuntap_options.dhcp_options.<br><br>=
-Fixes https://github.com/OpenVPN/openvpn/issues/447<br><br>Change-Id: I24f4=
-3ad319bd1ca530fe17442d02a97412eb75c7<br>Signed-off-by: Lev Stipakov &lt;lev=
-@...515...&gt;<br>---<br>M src/openvpn/options.c<br>1 file changed, 3 inser=
-tions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,=
-monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/=
-openvpn refs/changes/23/423/2</pre><pre style=3D"font-family: monospace,mon=
-ospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/options.c b/=
-src/openvpn/options.c</span><br><span>index 631ac73..f8d0b2e 100644</span><=
-br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/opti=
-ons.c</span><br><span>@@ -1372,6 +1372,8 @@</span><br><span>         {</spa=
-n><br><span>             msg(M_WARN, &quot;WARNING: couldn&#39;t copy all -=
--dns search-domains to --dhcp-option&quot;);</span><br><span>         }</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        tt-&gt;dhcp_options |=3D DHCP_OPT=
-IONS_DHCP_REQUIRED;</span><br><span>     }</span><br><span> </span><br><spa=
-n>     if (dns-&gt;servers)</span><br><span>@@ -1409,6 +1411,7 @@</span><br=
-><span>         {</span><br><span>             msg(M_WARN, &quot;WARNING: c=
-ouldn&#39;t copy all --dns server addresses to --dhcp-option&quot;);</span>=
-<br><span>         }</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+        tt-&gt;dhcp_options |=3D DHCP_OPTIONS_DHCP_OPTIONAL;</span><br><sp=
-an>     }</span><br><span> }</span><br><span> #else /* if defined(_WIN32) |=
-| defined(TARGET_ANDROID) */</span><br><span></span><br></pre><p>To view, v=
-isit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/423?usp=3Demail">chan=
-ge 423</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+<p> Attention is currently required from: plaisthos. </p>
+<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/425?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">platform.c: Do not depend Windows build on HAVE_CHDIR<br><br>=
+This broke in the CMake build since previously we<br>just always set HAVE_C=
+HDIR to 1 in the MSVC build.<br>But actually the code should just not check=
+ HAVE_CHDIR<br>on Windows.<br><br>Change-Id: I0c78ce452135fe2c80275da449215=
+ba926471018<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br=
+>---<br>M src/openvpn/platform.c<br>1 file changed, 2 insertions(+), 2 dele=
+tions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white=
+-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/cha=
+nges/25/425/1</pre><pre style=3D"font-family: monospace,monospace; white-sp=
+ace: pre-wrap;"><span>diff --git a/src/openvpn/platform.c b/src/openvpn/pla=
+tform.c</span><br><span>index 32c4fe6..62acabe 100644</span><br><span>--- a=
+/src/openvpn/platform.c</span><br><span>+++ b/src/openvpn/platform.c</span>=
+<br><span>@@ -392,7 +392,6 @@</span><br><span> int</span><br><span> platfor=
+m_chdir(const char *dir)</span><br><span> {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#ifdef HAVE_CHDIR</span><br><span> #ifdef _WIN32</spa=
+n><br><span>     int res;</span><br><span>     struct gc_arena gc =3D gc_ne=
+w();</span><br><span>@@ -400,11 +399,12 @@</span><br><span>     gc_free(&am=
+p;gc);</span><br><span>     return res;</span><br><span> #else  /* ifdef _W=
+IN32 */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_=
+CHDIR</span><br><span>     return chdir(dir);</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-#endif</span><br><span> #else  /* ifdef HAVE_CHDIR =
+*/</span><br><span>     return -1;</span><br><span> #endif</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span> }</span><br>=
+<span> </span><br><span> /*</span><br><span></span><br></pre><p>To view, vi=
+sit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/425?usp=3Demail">chang=
+e 425</a>. To unsubscribe, or for help writing mail filters, visit <a href=
 =3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
 mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
  itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/423?usp=3Demail"/><meta itemprop=3D"na=
+ttp://gerrit.openvpn.net/c/openvpn/+/425?usp=3Demail"/><meta itemprop=3D"na=
 me" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I24f43ad319bd1ca530fe17442d0=
-2a97412eb75c7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 423 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: d12fk &lt;heiko@...515...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I0c78ce452135fe2c80275da4492=
+15ba926471018 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 425 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---on8knyEOu+c=--
+--+c0cuNXNlcU=--
 
