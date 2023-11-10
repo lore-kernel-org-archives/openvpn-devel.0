@@ -1,17 +1,19 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Fri, 10 Nov 2023 18:19:09 +0000
-In-Reply-To: <gerrit.1699637918000.I0c78ce452135fe2c80275da449215ba926471018@...2715...>
-References: <gerrit.1699637918000.I0c78ce452135fe2c80275da449215ba926471018@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...,
- lstipakov@...277...
-Message-ID: <ea8562f1eb7c39bd04e00404038e631df30f940d-EmailReviewComments-HTML@...2715...>
+Date: Fri, 10 Nov 2023 20:47:32 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZU6I1MMD980Ervm-@...1296...>
+References: <13E5C41C-8358-4252-A751-8FDA9EE95B7D@...2722...>
+ <0acc8d93-6175-4d7e-a39a-269a9652ac3e@...1823...>
+ <f2f54207-f37c-4c0d-96a3-a600cd2bb811@...1823...>
+ <ZU3aVt0EgPyOQWEe@...1296...>
+ <ae5ddbf4-44fd-4d4b-a045-53274aa9cc5d@...1823...>
+ <fe0a4e43-4015-4834-a9bd-8764baf0134a@...1823...>
+ <ZU39JoRBq8R_NgD6@...1296...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="90OJ56lo5Nf1Mhcs"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="pSKxgSM4byc="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: platform.c: Do not
- depend Windows build on HAVE_CHDIR
+In-Reply-To: <ZU39JoRBq8R_NgD6@...1296...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.6.7 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,110 +22,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: stipa <lstipakov@...277...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Dmitry Melekhov <dm@...1823...>
+Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---pSKxgSM4byc=
-Content-Type: text/plain; charset="UTF-8"
+--90OJ56lo5Nf1Mhcs
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Attention is currently required from: flichtenheld, plaisthos.
+Hi,
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/425?usp=3Demail )
+On Fri, Nov 10, 2023 at 10:51:34AM +0100, Gert Doering wrote:
+> I'll see if I can reproduce this case here and we'll fix it ASAP.
 
-Change subject: platform.c: Do not depend Windows build on HAVE_CHDIR
-......................................................................
+We couldn't reproduce it yet, but we have a crash dump in GH issue #449,
+which hints at the commit cd4d819c99266 getting this double-extra-check
+wrong.
 
+So if you build from git, can you do a checkout of release/2.6, and
+then do "git revert cd4d819c99266", and build from that?  This would
+give you a 2.6.7 "with both CVE fixes, but without the extra safeguard
+check" - which isn't *really* needed, but its intention was "should=20
+another mistake of sort addressed in the CVE fixes happen again, it
+would get caught" - so double belt and suspenders...
 
-Patch Set 1:
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
-(1 comment)
+Gert Doering - Munich, Germany                             gert@...1296...
 
-Patchset:
+--90OJ56lo5Nf1Mhcs
+Content-Type: application/pgp-signature; name="signature.asc"
 
-PS1:
-can we make this somewhat more radical, getting completely rid of HAVE_CHDI=
-R across all files and platforms and autoconf/cmake config?  There is no PO=
-SIX (or unix) platform without chdir()...
+-----BEGIN PGP SIGNATURE-----
 
-"HISTORY
-     The chdir() system call appeared in Version 1 AT&T UNIX."
+iQGcBAEBAgAGBQJlTojTAAoJEB2Cnv7KVigSNiUL/ip+nXuwgdqOmWBW8EBbsVer
+1tRLfX1Isp0cE6HPWEWOjRqvG2w90qwr1dToal4U5RqCR097L4P1POlfPOufSMuC
+FNN7fIwmSPfkfPSDKDBAiRyvlkqrx6ZWT/Xmqm2svSs7IBDMYzGC7QFGkSK5PaBF
+VLU+4Ft4Vty8AtH2klr8wuvsPCrDzWK39q2yQPktGQROsWGno05TRdfPTxaiD8kP
+GHzdEW3oZ7huAWCfP1wrOYtewBRmZo936NxDKvC+ZwbH+vkmmCWCtns6vxm85PpJ
+sLyf5/L4tWUCz8MrQVU1Jt7/W7L6Z4d/AJI/lFtnxybelOdoP9hLQT5CkMtyjlZG
+WIr32Fjx+Zv9or0Ob2/Sdm5RAF5/3g/F33oqSb+O5BMZar8XUmi0dPMh3QoltQPF
+YnUqmCuGj/i0g7kcvCPGRDh8AMKQXZuGx//A6K6fzymKinxKqAZDmt9scWaypQgj
+dSyV4HwwWRqZHRVGOXz+dtKTvH1/ooK6vT0Plo1/wA==
+=MZox
+-----END PGP SIGNATURE-----
 
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/425?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I0c78ce452135fe2c80275da449215ba926471018
-Gerrit-Change-Number: 425
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: stipa <lstipakov@...277...>
-Gerrit-CC: cron2 <gert@...1296...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 10 Nov 2023 18:19:09 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
-
---pSKxgSM4byc=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/425?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/4=
-25?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wrap;=
- word-wrap: break-word;">can we make this somewhat more radical, getting co=
-mpletely rid of HAVE_CHDIR across all files and platforms and autoconf/cmak=
-e config?  There is no POSIX (or unix) platform without chdir()...</p><pre =
-style=3D"font-family: monospace,monospace; white-space: pre-wrap;">&quot;HI=
-STORY<br>     The chdir() system call appeared in Version 1 AT&amp;T UNIX.&=
-quot;</pre></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.o=
-penvpn.net/c/openvpn/+/425?usp=3Demail">change 425</a>. To unsubscribe, or =
-for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/s=
-ettings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Emai=
-lMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/=
-ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/425?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></=
-div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0c78ce452135fe2c80275da4492=
-15ba926471018 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 425 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: stipa &lt;lstipakov@...277...=
-&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 10 Nov 2023 18:19:09=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---pSKxgSM4byc=--
+--90OJ56lo5Nf1Mhcs--
 
