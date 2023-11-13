@@ -1,15 +1,15 @@
 From: "stipa (Code Review)" <gerrit@...515...>
-Date: Mon, 13 Nov 2023 16:01:32 +0000
-References: <gerrit.1699891289000.I24f43ad319bd1ca530fe17442d02a97412eb75c7@...2715...>
+Date: Mon, 13 Nov 2023 16:01:33 +0000
+References: <gerrit.1699891289000.Ie512544329a91fae15409cb18f29d8be617051a1@...2715...>
 Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <a6fd9d0d0fdbce8ed2100cead3f6a9b99fc5c23d-HTML@...2715...>
+Message-ID: <2d92d801fa95fd2f3296f0d5e1ff56b58cb65985-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="3yuJsjUmiWA="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Make --dns options
- apply for tap-windows6 driver
+Content-Type: multipart/alternative; boundary="kwxl0iMoxG0="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Warn if pushed
+ options require DHCP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---3yuJsjUmiWA=
+--kwxl0iMoxG0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,69 +32,85 @@ Hello plaisthos, flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/427?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/428?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Make --dns options apply for tap-windows6 driver
+Change subject: Warn if pushed options require DHCP
 ......................................................................
 
-Make --dns options apply for tap-windows6 driver
+Warn if pushed options require DHCP
 
-When tap-windows6 driver is used, both --dhcp-option and
---dns options are applied with DHCP. When processing --dns options,
-we don't set "tuntap_options.dhcp_options" member, which is required
-for DHCP string to be sent to the driver. As a result, --dns options
-are not applied at all.
+Some pushed options (such as DOMAIN-SEARCH) require
+DHCP server to work. Warn user that some options
+will not work if the current driver (such as dco-win)
+doesn't support DHCP.
 
-Fix by adding missing assignment of tuntap_options.dhcp_options.
-
-Fixes https://github.com/OpenVPN/openvpn/issues/447
-
-Change-Id: I24f43ad319bd1ca530fe17442d02a97412eb75c7
+Change-Id: Ie512544329a91fae15409cb18f29d8be617051a1
 Signed-off-by: Lev Stipakov <lev@...515...>
 ---
 M src/openvpn/options.c
-1 file changed, 3 insertions(+), 0 deletions(-)
+M src/openvpn/tun.c
+2 files changed, 9 insertions(+), 2 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/27/427/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/28/428/1
 
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index b88fea9..abd2e0c 100644
+index abd2e0c..b34e2f6 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -1364,6 +1364,8 @@
-         {
-             msg(M_WARN, "WARNING: couldn't copy all --dns search-domains t=
-o --dhcp-option");
-         }
-+
-+        tt->dhcp_options |=3D DHCP_OPTIONS_DHCP_REQUIRED;
-     }
+@@ -2477,10 +2477,10 @@
 
-     if (dns->servers)
-@@ -1401,6 +1403,7 @@
+     if (options->tuntap_options.dhcp_options & DHCP_OPTIONS_DHCP_REQUIRED)
+     {
+-        const char *prefix =3D "Some dhcp-options require DHCP server";
++        const char *prefix =3D "Some --dhcp-option or --dns options requir=
+e DHCP server";
+         if (options->windows_driver !=3D WINDOWS_DRIVER_TAP_WINDOWS6)
          {
-             msg(M_WARN, "WARNING: couldn't copy all --dns server addresses=
- to --dhcp-option");
+-            msg(M_USAGE, "%s, which is not supported by selected %s driver=
+",
++            msg(M_USAGE, "%s, which is not supported by the selected %s dr=
+iver",
+                 prefix, print_windows_driver(options->windows_driver));
          }
-+        tt->dhcp_options |=3D DHCP_OPTIONS_DHCP_OPTIONAL;
-     }
- }
- #else /* if defined(_WIN32) || defined(TARGET_ANDROID) */
+         else if (options->tuntap_options.ip_win32_type !=3D IPW32_SET_DHCP=
+_MASQ
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index f857ed1..1b79d42 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -6826,6 +6826,13 @@
+ open_tun(const char *dev, const char *dev_type, const char *dev_node, stru=
+ct tuntap *tt,
+          openvpn_net_ctx_t *ctx)
+ {
++    if ((tt->options.dhcp_options & DHCP_OPTIONS_DHCP_REQUIRED)
++        && tt->windows_driver !=3D WINDOWS_DRIVER_TAP_WINDOWS6)
++    {
++        msg(M_WARN, "Some --dhcp-option or --dns options require DHCP serv=
+er, which is not supported by the selected %s driver. They will be ignored.=
+",
++            print_windows_driver(tt->windows_driver));
++    }
++
+     /* dco-win already opened the device, which handle we treat as socket =
+*/
+     if (tuntap_is_dco_win(tt))
+     {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/427?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/428?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I24f43ad319bd1ca530fe17442d02a97412eb75c7
-Gerrit-Change-Number: 427
+Gerrit-Change-Id: Ie512544329a91fae15409cb18f29d8be617051a1
+Gerrit-Change-Number: 428
 Gerrit-PatchSet: 1
 Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -104,56 +120,73 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---3yuJsjUmiWA=
+--kwxl0iMoxG0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
 <p>stipa would like plaisthos and flichtenheld to <strong>review</strong> t=
 his change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/427?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/428?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Make --dns options apply for tap-windows6 driver<br><br>When =
-tap-windows6 driver is used, both --dhcp-option and<br>--dns options are ap=
-plied with DHCP. When processing --dns options,<br>we don&#39;t set &quot;t=
-untap_options.dhcp_options&quot; member, which is required<br>for DHCP stri=
-ng to be sent to the driver. As a result, --dns options<br>are not applied =
-at all.<br><br>Fix by adding missing assignment of tuntap_options.dhcp_opti=
-ons.<br><br>Fixes https://github.com/OpenVPN/openvpn/issues/447<br><br>Chan=
-ge-Id: I24f43ad319bd1ca530fe17442d02a97412eb75c7<br>Signed-off-by: Lev Stip=
-akov &lt;lev@...515...&gt;<br>---<br>M src/openvpn/options.c<br>1 file chan=
-ged, 3 insertions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvp=
-n.net:29418/openvpn refs/changes/27/427/1</pre><pre style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/=
-options.c b/src/openvpn/options.c</span><br><span>index b88fea9..abd2e0c 10=
-0644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/=
-openvpn/options.c</span><br><span>@@ -1364,6 +1364,8 @@</span><br><span>   =
-      {</span><br><span>             msg(M_WARN, &quot;WARNING: couldn&#39;=
-t copy all --dns search-domains to --dhcp-option&quot;);</span><br><span>  =
-       }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        tt-&gt;dhcp_options |=
-=3D DHCP_OPTIONS_DHCP_REQUIRED;</span><br><span>     }</span><br><span> </s=
-pan><br><span>     if (dns-&gt;servers)</span><br><span>@@ -1401,6 +1403,7 =
-@@</span><br><span>         {</span><br><span>             msg(M_WARN, &quo=
-t;WARNING: couldn&#39;t copy all --dns server addresses to --dhcp-option&qu=
-ot;);</span><br><span>         }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+        tt-&gt;dhcp_options |=3D DHCP_OPTIONS_DHCP_OPTIONAL;</=
-span><br><span>     }</span><br><span> }</span><br><span> #else /* if defin=
-ed(_WIN32) || defined(TARGET_ANDROID) */</span><br><span></span><br></pre><=
-p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/427?usp=
-=3Demail">change 427</a>. To unsubscribe, or for help writing mail filters,=
- visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/427?usp=3Demail"/><meta =
-itemprop=3D"name" content=3D"View Change"/></div></div>
+e: pre-wrap;">Warn if pushed options require DHCP<br><br>Some pushed option=
+s (such as DOMAIN-SEARCH) require<br>DHCP server to work. Warn user that so=
+me options<br>will not work if the current driver (such as dco-win)<br>does=
+n&#39;t support DHCP.<br><br>Change-Id: Ie512544329a91fae15409cb18f29d8be61=
+7051a1<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>---<br>M src=
+/openvpn/options.c<br>M src/openvpn/tun.c<br>2 files changed, 9 insertions(=
++), 2 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvp=
+n refs/changes/28/428/1</pre><pre style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;"><span>diff --git a/src/openvpn/options.c b/src/op=
+envpn/options.c</span><br><span>index abd2e0c..b34e2f6 100644</span><br><sp=
+an>--- a/src/openvpn/options.c</span><br><span>+++ b/src/openvpn/options.c<=
+/span><br><span>@@ -2477,10 +2477,10 @@</span><br><span> </span><br><span> =
+    if (options-&gt;tuntap_options.dhcp_options &amp; DHCP_OPTIONS_DHCP_REQ=
+UIRED)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-        const char *prefix =3D &quot;Some dhcp-options require DHCP=
+ server&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+   const char *prefix =3D &quot;Some --dhcp-option or --dns options require=
+ DHCP server&quot;;</span><br><span>         if (options-&gt;windows_driver=
+ !=3D WINDOWS_DRIVER_TAP_WINDOWS6)</span><br><span>         {</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-            msg(M_USAGE, &quot;%s, =
+which is not supported by selected %s driver&quot;,</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+            msg(M_USAGE, &quot;%s, which =
+is not supported by the selected %s driver&quot;,</span><br><span>         =
+        prefix, print_windows_driver(options-&gt;windows_driver));</span><b=
+r><span>         }</span><br><span>         else if (options-&gt;tuntap_opt=
+ions.ip_win32_type !=3D IPW32_SET_DHCP_MASQ</span><br><span>diff --git a/sr=
+c/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index f857ed1..1b79d42 =
+100644</span><br><span>--- a/src/openvpn/tun.c</span><br><span>+++ b/src/op=
+envpn/tun.c</span><br><span>@@ -6826,6 +6826,13 @@</span><br><span> open_tu=
+n(const char *dev, const char *dev_type, const char *dev_node, struct tunta=
+p *tt,</span><br><span>          openvpn_net_ctx_t *ctx)</span><br><span> {=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if ((tt-&gt;opt=
+ions.dhcp_options &amp; DHCP_OPTIONS_DHCP_REQUIRED)</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; tt-&gt;windows_driver =
+!=3D WINDOWS_DRIVER_TAP_WINDOWS6)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+        msg(M_WARN, &quot;Some --dhcp-option or --dns options require DHCP =
+server, which is not supported by the selected %s driver. They will be igno=
+red.&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+    print_windows_driver(tt-&gt;windows_driver));</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+</span><br><span>     /* dco-win already opened the device,=
+ which handle we treat as socket */</span><br><span>     if (tuntap_is_dco_=
+win(tt))</span><br><span>     {</span><br><span></span><br></pre><p>To view=
+, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/428?usp=3Demail">c=
+hange 428</a>. To unsubscribe, or for help writing mail filters, visit <a h=
+ref=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope =
+itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
+on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/428?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I24f43ad319bd1ca530fe17442d0=
-2a97412eb75c7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 427 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie512544329a91fae15409cb18f2=
+9d8be617051a1 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 428 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
 ; </div>
@@ -170,5 +203,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---3yuJsjUmiWA=--
+--kwxl0iMoxG0=--
 
