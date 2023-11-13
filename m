@@ -1,16 +1,16 @@
-From: "stipa (Code Review)" <gerrit@...515...>
-Date: Mon, 13 Nov 2023 12:12:57 +0000
-In-Reply-To: <gerrit.1699611717000.Ie512544329a91fae15409cb18f29d8be617051a1@...2715...>
-References: <gerrit.1699611717000.Ie512544329a91fae15409cb18f29d8be617051a1@...2715...>
-Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <8bf97b9686659f11a41ff259ffdad7076dc99543-EmailReplacePatchSet-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Mon, 13 Nov 2023 12:13:00 +0000
+In-Reply-To: <gerrit.1699630545000.I8e90530726b7f7ba3cee0438f2d81a1ac42e821b@...2715...>
+References: <gerrit.1699630545000.I8e90530726b7f7ba3cee0438f2d81a1ac42e821b@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, max@...2606...
+Message-ID: <6057153dd52cfbe305732b0c16cf55a0e403993a-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="hWE+GUlkAY0="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[release/2.6]: Warn if pushed
- options require DHCP
+Content-Type: multipart/alternative; boundary="z+wO//geGA4="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Enable key export
+ with mbed TLS 3.x.y
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,181 +19,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: MaxF <max@...2606...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---hWE+GUlkAY0=
+--z+wO//geGA4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos, stipa.
+Attention is currently required from: MaxF, plaisthos.
 
-Hello flichtenheld, plaisthos,
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/402?usp=3Demail )
 
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/424?usp=3Demail
-
-to look at the new patch set (#3).
-
-The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld
-
-
-Change subject: Warn if pushed options require DHCP
+Change subject: Enable key export with mbed TLS 3.x.y
 ......................................................................
 
-Warn if pushed options require DHCP
 
-Some pushed options (such as DOMAIN-SEARCH) require
-DHCP server to work. Warn user that some options
-will not work if the current driver (such as dco-win)
-doesn't support DHCP.
+Patch Set 3: Code-Review-1
 
-Change-Id: Ie512544329a91fae15409cb18f29d8be617051a1
-Signed-off-by: Lev Stipakov <lev@...515...>
----
-M src/openvpn/options.c
-M src/openvpn/tun.c
-2 files changed, 9 insertions(+), 2 deletions(-)
+(1 comment)
+
+File src/openvpn/ssl_mbedtls.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/402/comment/0824b00d_51b5d999 :
+PS3, Line 202: mbedtls_ssl_export_keys_cb(void *p_expkey,
+This needs a comment what is going on. The differences between the two vari=
+ants are way to small to be able to see them easily. So there should be doc=
+umentation on what they are and why they are necessary. At the very least i=
+t should explicitly reference the functions these are used as callback argu=
+ments to.
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/24/424/3
-
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index f8d0b2e..82b4f3e 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2486,10 +2486,10 @@
-
-     if (options->tuntap_options.dhcp_options & DHCP_OPTIONS_DHCP_REQUIRED)
-     {
--        const char *prefix =3D "Some dhcp-options require DHCP server";
-+        const char *prefix =3D "Some --dhcp-option or --dns options requir=
-e DHCP server";
-         if (options->windows_driver !=3D WINDOWS_DRIVER_TAP_WINDOWS6)
-         {
--            msg(M_USAGE, "%s, which is not supported by selected %s driver=
-",
-+            msg(M_USAGE, "%s, which is not supported by the selected %s dr=
-iver",
-                 prefix, print_windows_driver(options->windows_driver));
-         }
-         else if (options->tuntap_options.ip_win32_type !=3D IPW32_SET_DHCP=
-_MASQ
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index f857ed1..1b79d42 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -6826,6 +6826,13 @@
- open_tun(const char *dev, const char *dev_type, const char *dev_node, stru=
-ct tuntap *tt,
-          openvpn_net_ctx_t *ctx)
- {
-+    if ((tt->options.dhcp_options & DHCP_OPTIONS_DHCP_REQUIRED)
-+        && tt->windows_driver !=3D WINDOWS_DRIVER_TAP_WINDOWS6)
-+    {
-+        msg(M_WARN, "Some --dhcp-option or --dns options require DHCP serv=
-er, which is not supported by the selected %s driver. They will be ignored.=
-",
-+            print_windows_driver(tt->windows_driver));
-+    }
-+
-     /* dco-win already opened the device, which handle we treat as socket =
-*/
-     if (tuntap_is_dco_win(tt))
-     {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/424?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/402?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
-Gerrit-Branch: release/2.6
-Gerrit-Change-Id: Ie512544329a91fae15409cb18f29d8be617051a1
-Gerrit-Change-Number: 424
+Gerrit-Branch: master
+Gerrit-Change-Id: I8e90530726b7f7ba3cee0438f2d81a1ac42e821b
+Gerrit-Change-Number: 402
 Gerrit-PatchSet: 3
-Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Owner: MaxF <max@...2606...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: MaxF <max@...2606...>
+Gerrit-Comment-Date: Mon, 13 Nov 2023 12:13:00 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---hWE+GUlkAY0=
+--z+wO//geGA4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
-/p>
-<p>stipa <strong>uploaded patch set #3</strong> to this change.</p><p><a hr=
-ef=3D"http://gerrit.openvpn.net/c/openvpn/+/424?usp=3Demail">View Change</a=
-></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Warn if pushed options require DHCP<br><br>So=
-me pushed options (such as DOMAIN-SEARCH) require<br>DHCP server to work. W=
-arn user that some options<br>will not work if the current driver (such as =
-dco-win)<br>doesn&#39;t support DHCP.<br><br>Change-Id: Ie512544329a91fae15=
-409cb18f29d8be617051a1<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;=
-<br>---<br>M src/openvpn/options.c<br>M src/openvpn/tun.c<br>2 files change=
-d, 9 insertions(+), 2 deletions(-)<br><br></pre><pre style=3D"font-family: =
-monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.=
-net:29418/openvpn refs/changes/24/424/3</pre><pre style=3D"font-family: mon=
-ospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/op=
-tions.c b/src/openvpn/options.c</span><br><span>index f8d0b2e..82b4f3e 1006=
-44</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src/op=
-envpn/options.c</span><br><span>@@ -2486,10 +2486,10 @@</span><br><span> </=
-span><br><span>     if (options-&gt;tuntap_options.dhcp_options &amp; DHCP_=
-OPTIONS_DHCP_REQUIRED)</span><br><span>     {</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-        const char *prefix =3D &quot;Some dhcp-opti=
-ons require DHCP server&quot;;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+        const char *prefix =3D &quot;Some --dhcp-option or --dns=
- options require DHCP server&quot;;</span><br><span>         if (options-&g=
-t;windows_driver !=3D WINDOWS_DRIVER_TAP_WINDOWS6)</span><br><span>        =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_U=
-SAGE, &quot;%s, which is not supported by selected %s driver&quot;,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+            msg(M_USAGE, &q=
-uot;%s, which is not supported by the selected %s driver&quot;,</span><br><=
-span>                 prefix, print_windows_driver(options-&gt;windows_driv=
-er));</span><br><span>         }</span><br><span>         else if (options-=
-&gt;tuntap_options.ip_win32_type !=3D IPW32_SET_DHCP_MASQ</span><br><span>d=
-iff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index f85=
-7ed1..1b79d42 100644</span><br><span>--- a/src/openvpn/tun.c</span><br><spa=
-n>+++ b/src/openvpn/tun.c</span><br><span>@@ -6826,6 +6826,13 @@</span><br>=
-<span> open_tun(const char *dev, const char *dev_type, const char *dev_node=
-, struct tuntap *tt,</span><br><span>          openvpn_net_ctx_t *ctx)</spa=
-n><br><span> {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    i=
-f ((tt-&gt;options.dhcp_options &amp; DHCP_OPTIONS_DHCP_REQUIRED)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; tt-&gt;win=
-dows_driver !=3D WINDOWS_DRIVER_TAP_WINDOWS6)</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        msg(M_WARN, &quot;Some --dhcp-option or --dns options r=
-equire DHCP server, which is not supported by the selected %s driver. They =
-will be ignored.&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            print_windows_driver(tt-&gt;windows_driver));</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+</span><br><span>     /* dco-win already opened=
- the device, which handle we treat as socket */</span><br><span>     if (tu=
-ntap_is_dco_win(tt))</span><br><span>     {</span><br><span></span><br></pr=
-e><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/424?us=
-p=3Demail">change 424</a>. To unsubscribe, or for help writing mail filters=
-, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
-v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
-prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
-"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/424?usp=3Demail"/><meta=
- itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: MaxF, plaisthos. </p>
+<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/402?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl_mbedtls.c:<=
+/p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padd=
+ing: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/402/comment/0824b00d_51b5d999">Patch Set #3, Line =
+202:</a> <code style=3D"font-family:monospace,monospace">mbedtls_ssl_export=
+_keys_cb(void *p_expkey,</code></p><p style=3D"white-space: pre-wrap; word-=
+wrap: break-word;">This needs a comment what is going on. The differences b=
+etween the two variants are way to small to be able to see them easily. So =
+there should be documentation on what they are and why they are necessary. =
+At the very least it should explicitly reference the functions these are us=
+ed as callback arguments to.</p></li></ul></li></ul><p>To view, visit <a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/402?usp=3Demail">change 402</a>=
+. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:/=
+/gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"h=
+ttp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/402?usp=3Demail"/><meta itemprop=3D"name" conte=
+nt=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: release/2.6 </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie512544329a91fae15409cb18f2=
-9d8be617051a1 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 424 </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I8e90530726b7f7ba3cee0438f2d=
+81a1ac42e821b </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 402 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
+<div style=3D"display:none"> Gerrit-Owner: MaxF &lt;max@...2606...&gt; </di=
+v>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -202,12 +116,14 @@ prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
+</div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 13 Nov 2023 12:13:00=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---hWE+GUlkAY0=--
+--z+wO//geGA4=--
 
