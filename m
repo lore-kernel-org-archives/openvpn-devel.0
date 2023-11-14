@@ -1,16 +1,20 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 13 Nov 2023 20:02:21 +0000
-In-Reply-To: <gerrit.1699891289000.I24f43ad319bd1ca530fe17442d02a97412eb75c7@...2715...>
-References: <gerrit.1699891289000.I24f43ad319bd1ca530fe17442d02a97412eb75c7@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, lstipakov@...277...
-Message-ID: <d27bcd3851d4614e0d37ffa60ea038b029551626-EmailReviewComments-HTML@...2715...>
+Date: Tue, 14 Nov 2023 08:05:58 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZVMcVuF1V_w9lNfO@...1296...>
+References: <13E5C41C-8358-4252-A751-8FDA9EE95B7D@...2722...>
+ <0acc8d93-6175-4d7e-a39a-269a9652ac3e@...1823...>
+ <f2f54207-f37c-4c0d-96a3-a600cd2bb811@...1823...>
+ <ZU3aVt0EgPyOQWEe@...1296...>
+ <ae5ddbf4-44fd-4d4b-a045-53274aa9cc5d@...1823...>
+ <fe0a4e43-4015-4834-a9bd-8764baf0134a@...1823...>
+ <ZU39JoRBq8R_NgD6@...1296...> <ZU6I1MMD980Ervm-@...1296...>
+ <CACDCbPq3O71Pjvaj0aBE8Dd-JQA3idZOxP+eyb=9if_MiLREQw@...278...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="+mc+GK6qXKiUKqhG"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="d9+f1gfsgMw="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Make --dns options
- apply for tap-windows6 driver
+In-Reply-To: <CACDCbPq3O71Pjvaj0aBE8Dd-JQA3idZOxP+eyb=9if_MiLREQw@...278...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.6.7 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +23,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Greg Cox <gcox@...1057...>
+Cc: Gert Doering <gert@...1296...>, Dmitry Melekhov <dm@...1823...>, openvpn-devel@lists.sourceforge.net
 
---d9+f1gfsgMw=
-Content-Type: text/plain; charset="UTF-8"
+--+mc+GK6qXKiUKqhG
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Attention is currently required from: plaisthos, stipa.
+Hi,
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/427?usp=3Demail )
+On Sun, Nov 12, 2023 at 06:08:48PM +0000, Greg Cox wrote:
+> Spun this config up, then ran:
+>=20
+> iptables -t nat -A PREROUTING -i eth0 -p tcp -m multiport --dports 443,80
+> -j REDIRECT --to-ports 1194
+>=20
+> Within 5 minutes the random web scanners found and segfaulted me.
 
-Change subject: Make --dns options apply for tap-windows6 driver
-......................................................................
+... your port scanners are definitely better than mine - took more like 5
+hours here to crash, but it confirms the current assumptions, ks->state
+being S_UNDEF and ks->send_reliable being NULL.
 
+Now, Arne's patch (if (ks->state =3D=3D S_UNDEF) { continue; }) *should* ha=
+ve
+fully fixed this, so I'm a bit surprised that we get "it still crashes"
+reports...  will re-test with this setup and see what happens.
 
-Patch Set 1: Code-Review+2
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/427?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+--+mc+GK6qXKiUKqhG
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I24f43ad319bd1ca530fe17442d02a97412eb75c7
-Gerrit-Change-Number: 427
-Gerrit-PatchSet: 1
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Mon, 13 Nov 2023 20:02:21 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+-----BEGIN PGP SIGNATURE-----
 
---d9+f1gfsgMw=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+iQGcBAEBAgAGBQJlUxxWAAoJEB2Cnv7KVigSotML/i+uBeY8hqHB8iJhWgI+g84J
+afE1pTuullnmnEl8DwUiNusXn6Pm8HhB4WAfKcXnRJDxK5hbLAx5MCB3xlMC0ycC
+RclE1jwoRhrGXYuj8P7bkvs3vCL5CLuY6ZuVDGZAOV+52rifK2p0P0ZnRWDy4QPb
+bZHDsJhnUIZeGaPDXLvBqG1CgNq1w4NrImYDA31IkZWUVRvKrFAva96K4eJc3wQM
+dYPZTbHWSCVeG2r7jZ30Zk57wlYfq5JVH6zVhwrOzvg2heBNAF3TssxAi1QDjmYa
+q7Bylhyt3RUoK5Vbumh5QNeXP6RBusKt8rD9tIK6qF2TD27TBnhQJ69w3uZxCPQe
+9IWC2H7s72EQblcWRIPrw2WzNOEfzaaFG41Q4456Ie1D8a00AiUbLtxfvXpXPKII
+u38qzJqOHkOQCIKOFFxi/FTBr63793pou2phJkIbJgYLhL/KtjSxPow+gsGmMuJb
+nez2b32xZkjt3SM24GGHYDlQk6osslG8hkaa6BmiFw==
+=Ihso
+-----END PGP SIGNATURE-----
 
-<p> Attention is currently required from: plaisthos, stipa. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/427?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/427?usp=3Demail">=
-change 427</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/427?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I24f43ad319bd1ca530fe17442d0=
-2a97412eb75c7 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 427 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 13 Nov 2023 20:02:21=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---d9+f1gfsgMw=--
+--+mc+GK6qXKiUKqhG--
 
