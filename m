@@ -1,11 +1,10 @@
+Date: Tue, 14 Nov 2023 16:07:55 +0100 (CET)
+Message-Id: <202311141507.3AEF7tYa053759@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Tue, 14 Nov 2023 15:16:53 +0100
-Message-ID: <20231114141653.10486-1-gert@...1296...>
-In-Reply-To: <gerrit.1699964322000.I53eaee85d7b284af6bc63da5f6d8f310ddd96c47@...2715...>
-References: <gerrit.1699964322000.I53eaee85d7b284af6bc63da5f6d8f310ddd96c47@...2715...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] config.h: fix incorrect defines for
- _wopen()
+In-Reply-To: <20231114141653.10486-1-gert@...1296...>
+References: <20231114141653.10486-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: config.h: fix incorrect defines
+ for _wopen()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,53 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lev@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev@...515...>
+I've not actually tested it, but since we had to fix this once before,
+it's "obviously correct".  Also Lev understands Windows :-)
 
-This is a regression from commit
+Your patch has been applied to the master and release/2.6 branch.
 
-  01341840 ("add basic CMake based build")
+commit 2fcfb77a8111cce9308bb893f52ecdb77de91e7c (master)
+commit 0c174e4e7b6caa1111fbf4773acdfbbcf122489d (release/2.6)
+Author: Lev Stipakov
+Date:   Tue Nov 14 15:16:53 2023 +0100
 
-S_IRUSR and S_IWUSR should NOT be defined as 0 but
-as _S_IREAD and _S_IWRITE, as it was already fixed in commit
+     config.h: fix incorrect defines for _wopen()
 
-  077445d0 ("Fix some more wrong defines in config-msvc.h")
+     Signed-off-by: Lev Stipakov <lev@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20231114141653.10486-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27393.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Those are used as permission mode when opening a file. Passing
-zero makes file read-only, which break for example --status-file
-functionality.
 
-Github: fixes OpenVPN/openvpn#454
-Trac: #1430
+--
+kind regards,
 
-Change-Id: I53eaee85d7b284af6bc63da5f6d8f310ddd96c47
-Signed-off-by: Lev Stipakov <lev@...515...>
-Acked-by: Gert Doering <gert@...1296...>
----
+Gert Doering
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
-
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/429
-This mail reflects revision 1 of this Change.
-Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
-
-        
-diff --git a/config.h.cmake.in b/config.h.cmake.in
-index f2cdd39..1c0dd6f 100644
---- a/config.h.cmake.in
-+++ b/config.h.cmake.in
-@@ -469,8 +469,8 @@
- #define strncasecmp strnicmp
- #define strcasecmp _stricmp
- 
--#define S_IRUSR 0
--#define S_IWUSR 0
-+#define S_IRUSR _S_IREAD
-+#define S_IWUSR _S_IWRITE
- #define R_OK 4
- #define W_OK 2
- #define X_OK 1
 
