@@ -1,11 +1,11 @@
 From: Gert Doering <gert@...1296...>
-Date: Wed, 15 Nov 2023 11:33:31 +0100
-Message-ID: <20231115103331.18050-1-gert@...1296...>
-In-Reply-To: <gerrit.1699712500000.I226a73d47a2b1b29f7ec175ce23a806593abc2ac@...2715...>
-References: <gerrit.1699712500000.I226a73d47a2b1b29f7ec175ce23a806593abc2ac@...2715...>
+Date: Wed, 15 Nov 2023 13:06:23 +0100
+Message-ID: <20231115120623.6442-1-gert@...1296...>
+In-Reply-To: <gerrit.1699891289000.I24f43ad319bd1ca530fe17442d02a97412eb75c7@...2715...>
+References: <gerrit.1699891289000.I24f43ad319bd1ca530fe17442d02a97412eb75c7@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Do not check key_state buffers that are
- in S_UNDEF state
+Subject: [Openvpn-devel] [PATCH v1] Make --dns options apply for
+ tap-windows6 driver
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,53 +18,51 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Arne Schwabe <arne@...1227...>
+From: Lev Stipakov <lev@...515...>
 
-When a key_state is in S_UNDEF the send_reliable is not initialised. So
-checking it might access invalid memory or null pointers.
+When tap-windows6 driver is used, both --dhcp-option and
+--dns options are applied with DHCP. When processing --dns options,
+we don't set "tuntap_options.dhcp_options" member, which is required
+for DHCP string to be sent to the driver. As a result, --dns options
+are not applied at all.
 
-Github: fixes OpenVPN/openvpn#449
+Fix by adding missing assignment of tuntap_options.dhcp_options.
 
-Change-Id: I226a73d47a2b1b29f7ec175ce23a806593abc2ac
-[a@...2181...: add check for !send_reliable and message]
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
+Fixes https://github.com/OpenVPN/openvpn/issues/447
+
+Change-Id: I24f43ad319bd1ca530fe17442d02a97412eb75c7
+Signed-off-by: Lev Stipakov <lev@...515...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
 ---
 
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/426
-This mail reflects revision 2 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/427
+This mail reflects revision 1 of this Change.
 Acked-by according to Gerrit (reflected above):
-Gert Doering <gert@...1296...>
+Frank Lichtenheld <frank@...2641...>
 
         
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index cee4afe..b4cd8f5 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -3189,6 +3189,22 @@
-     for (int i = 0; i < KS_SIZE; i++)
-     {
-         struct key_state *ks = &session->key[i];
-+        if (ks->state == S_UNDEF)
-+        {
-+            continue;
-+        }
-+
-+        /* we don't expect send_reliable to be NULL when state is
-+         * not S_UNDEF, but people have reported crashes nonetheless,
-+         * therefore we better catch this event, report and exit.
-+         */
-+        if (!ks->send_reliable)
-+        {
-+            msg(M_FATAL, "ERROR: session->key[%d]->send_reliable is NULL "
-+                "while key state is %s. Exiting.",
-+                i, state_name(ks->state));
-+        }
-+
-         for (int j = 0; j < ks->send_reliable->size; j++)
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index b88fea9..abd2e0c 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1364,6 +1364,8 @@
          {
-             if (ks->send_reliable->array[i].buf.data == dataptr)
+             msg(M_WARN, "WARNING: couldn't copy all --dns search-domains to --dhcp-option");
+         }
++
++        tt->dhcp_options |= DHCP_OPTIONS_DHCP_REQUIRED;
+     }
+ 
+     if (dns->servers)
+@@ -1401,6 +1403,7 @@
+         {
+             msg(M_WARN, "WARNING: couldn't copy all --dns server addresses to --dhcp-option");
+         }
++        tt->dhcp_options |= DHCP_OPTIONS_DHCP_OPTIONAL;
+     }
+ }
+ #else /* if defined(_WIN32) || defined(TARGET_ANDROID) */
 
