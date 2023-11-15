@@ -1,14 +1,14 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Wed, 15 Nov 2023 10:23:05 +0000
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Wed, 15 Nov 2023 10:29:06 +0000
 In-Reply-To: <gerrit.1699712500000.I226a73d47a2b1b29f7ec175ce23a806593abc2ac@...2715...>
 References: <gerrit.1699712500000.I226a73d47a2b1b29f7ec175ce23a806593abc2ac@...2715...>
-Reply-To: a@...2181..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <58b3e1584bdb329e21ec3b15743dc47fe897e564-EmailReplacePatchSet-HTML@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
+Message-ID: <76f32d9124f8595676f251748edb8edfa2c28109-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="tv6OyPZXkLk="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="gX5R2Noz6y4="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Do not check
  key_state buffers that are in S_UNDEF state
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,64 +19,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---tv6OyPZXkLk=
+--gX5R2Noz6y4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld, plaisthos.
+Attention is currently required from: flichtenheld, ordex, plaisthos.
 
-ordex has uploaded a new patch set (#2) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/426?usp=3Demail )
-
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/426?usp=3Demail )
 
 Change subject: Do not check key_state buffers that are in S_UNDEF state
 ......................................................................
 
-Do not check key_state buffers that are in S_UNDEF state
 
-When a key_state is in S_UNDEF the send_reliable is not initialised. So
-checking it might access invalid memory or null pointers.
+Patch Set 2: Code-Review+2
 
-Change-Id: I226a73d47a2b1b29f7ec175ce23a806593abc2ac
-[a@...2181...: add check for !send_reliable and message]
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
-M src/openvpn/ssl.c
-1 file changed, 16 insertions(+), 0 deletions(-)
+(1 comment)
+
+File src/openvpn/ssl.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/426/comment/096ce4c5_5a724a5c :
+PS1, Line 3192:         if (ks->state =3D=3D S_UNDEF)
+the crashdump / backtraces I received today confirm that this is the root c=
+ause, ks->state =3D=3D S_UNDEF and thus, ks->send_reliable =3D=3D NULL.
+
+I'd feel a bit more comfortable to check "if (ks->send_reliable)" here, tho=
+ugh - so we're not ending in a crash here again should another state be int=
+roduced in 2.8 where ks->state is something like "S_CLEARED" and b=C3=A4m, =
+NULL pointer access again.
+
+(We can check both, and complain if ks->send_reliable is NULL if ks->state =
+is *not* S_UNDEF)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/26/426/2
-
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index cee4afe..b4cd8f5 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -3189,6 +3189,22 @@
-     for (int i =3D 0; i < KS_SIZE; i++)
-     {
-         struct key_state *ks =3D &session->key[i];
-+        if (ks->state =3D=3D S_UNDEF)
-+        {
-+            continue;
-+        }
-+
-+        /* we don't expect send_reliable to be NULL when state is
-+         * not S_UNDEF, but people have reported crashes nonetheless,
-+         * therefore we better catch this event, report and exit.
-+         */
-+        if (!ks->send_reliable)
-+        {
-+            msg(M_FATAL, "ERROR: session->key[%d]->send_reliable is NULL "
-+                "while key state is %s. Exiting.",
-+                i, state_name(ks->state));
-+        }
-+
-         for (int j =3D 0; j < ks->send_reliable->size; j++)
-         {
-             if (ks->send_reliable->array[i].buf.data =3D=3D dataptr)
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/426?usp=3Demail
@@ -89,65 +67,50 @@ Gerrit-Change-Id: I226a73d47a2b1b29f7ec175ce23a806593abc2ac
 Gerrit-Change-Number: 426
 Gerrit-PatchSet: 2
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: ordex <a@...2181...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: ordex <a@...2181...>
+Gerrit-Comment-Date: Wed, 15 Nov 2023 10:29:06 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
 
---tv6OyPZXkLk=
+--gX5R2Noz6y4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>ordex <strong>uploaded patch set #2</strong> to the change originally cr=
-eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-426?usp=3Demail">View Change</a></p><pre style=3D"font-family: monospace,mo=
-nospace; white-space: pre-wrap;">Do not check key_state buffers that are in=
- S_UNDEF state<br><br>When a key_state is in S_UNDEF the send_reliable is n=
-ot initialised. So<br>checking it might access invalid memory or null point=
-ers.<br><br>Change-Id: I226a73d47a2b1b29f7ec175ce23a806593abc2ac<br>[a@...1665...=
-181...: add check for !send_reliable and message]<br>Signed-off-by: Arne Sc=
-hwabe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/ssl.c<br>1 file chang=
-ed, 16 insertions(+), 0 deletions(-)<br><br></pre><pre style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvp=
-n.net:29418/openvpn refs/changes/26/426/2</pre><pre style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/=
-ssl.c b/src/openvpn/ssl.c</span><br><span>index cee4afe..b4cd8f5 100644</sp=
-an><br><span>--- a/src/openvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.=
-c</span><br><span>@@ -3189,6 +3189,22 @@</span><br><span>     for (int i =
-=3D 0; i &lt; KS_SIZE; i++)</span><br><span>     {</span><br><span>        =
- struct key_state *ks =3D &amp;session-&gt;key[i];</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        if (ks-&gt;state =3D=3D S_UNDEF)</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            continue;</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+        /* we don&#39;t expect send_reliable to be NULL when=
- state is</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         *=
- not S_UNDEF, but people have reported crashes nonetheless,</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+         * therefore we better catc=
-h this event, report and exit.</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+         */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        if (!ks-&gt;send_reliable)</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+            msg(M_FATAL, &quot;ERROR: session-&gt;key[%d]-&gt;send_=
-reliable is NULL &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+                &quot;while key state is %s. Exiting.&quot;,</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+                i, state_name(=
-ks-&gt;state));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an>         for (int j =3D 0; j &lt; ks-&gt;send_reliable-&gt;size; j++)</s=
-pan><br><span>         {</span><br><span>             if (ks-&gt;send_relia=
-ble-&gt;array[i].buf.data =3D=3D dataptr)</span><br><span></span><br></pre>=
-<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/426?usp=
-=3Demail">change 426</a>. To unsubscribe, or for help writing mail filters,=
- visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
- itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
-rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
-url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/426?usp=3Demail"/><meta =
-itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld, ordex, plaisthos. <=
+/p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/426?usp=3Demail">Vi=
+ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
+;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/ssl.c:</p><ul s=
+tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/426/comment/096ce4c5_5a724a5c">Patch Set #1, Line 3192:</a=
+> <code style=3D"font-family:monospace,monospace">        if (ks-&gt;state =
+=3D=3D S_UNDEF)</code></p><p style=3D"white-space: pre-wrap; word-wrap: bre=
+ak-word;">the crashdump / backtraces I received today confirm that this is =
+the root cause, ks-&gt;state =3D=3D S_UNDEF and thus, ks-&gt;send_reliable =
+=3D=3D NULL.</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">=
+I&#39;d feel a bit more comfortable to check &quot;if (ks-&gt;send_reliable=
+)&quot; here, though - so we&#39;re not ending in a crash here again should=
+ another state be introduced in 2.8 where ks-&gt;state is something like &q=
+uot;S_CLEARED&quot; and b=C3=A4m, NULL pointer access again.</p><p style=3D=
+"white-space: pre-wrap; word-wrap: break-word;">(We can check both, and com=
+plain if ks-&gt;send_reliable is NULL if ks-&gt;state is *not* S_UNDEF)</p>=
+</li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/=
+c/openvpn/+/426?usp=3Demail">change 426</a>. To unsubscribe, or for help wr=
+iting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">se=
+ttings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><=
+div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"=
+><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/426?u=
+sp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -157,6 +120,8 @@ a806593abc2ac </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
@@ -167,8 +132,14 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: ordex &lt;a@...2181...&gt; <=
+/div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 15 Nov 2023 10:29:06=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---tv6OyPZXkLk=--
+--gX5R2Noz6y4=--
 
