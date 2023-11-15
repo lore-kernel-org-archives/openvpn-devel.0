@@ -1,11 +1,10 @@
 From: Gert Doering <gert@...1296...>
-Date: Wed, 15 Nov 2023 13:06:23 +0100
-Message-ID: <20231115120623.6442-1-gert@...1296...>
-In-Reply-To: <gerrit.1699891289000.I24f43ad319bd1ca530fe17442d02a97412eb75c7@...2715...>
-References: <gerrit.1699891289000.I24f43ad319bd1ca530fe17442d02a97412eb75c7@...2715...>
+Date: Wed, 15 Nov 2023 13:06:56 +0100
+Message-ID: <20231115120656.6825-1-gert@...1296...>
+In-Reply-To: <gerrit.1699891289000.Ie512544329a91fae15409cb18f29d8be617051a1@...2715...>
+References: <gerrit.1699891289000.Ie512544329a91fae15409cb18f29d8be617051a1@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Make --dns options apply for
- tap-windows6 driver
+Subject: [Openvpn-devel] [PATCH v1] Warn if pushed options require DHCP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,17 +19,12 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Lev Stipakov <lev@...515...>
 
-When tap-windows6 driver is used, both --dhcp-option and
---dns options are applied with DHCP. When processing --dns options,
-we don't set "tuntap_options.dhcp_options" member, which is required
-for DHCP string to be sent to the driver. As a result, --dns options
-are not applied at all.
+Some pushed options (such as DOMAIN-SEARCH) require
+DHCP server to work. Warn user that some options
+will not work if the current driver (such as dco-win)
+doesn't support DHCP.
 
-Fix by adding missing assignment of tuntap_options.dhcp_options.
-
-Fixes https://github.com/OpenVPN/openvpn/issues/447
-
-Change-Id: I24f43ad319bd1ca530fe17442d02a97412eb75c7
+Change-Id: Ie512544329a91fae15409cb18f29d8be617051a1
 Signed-off-by: Lev Stipakov <lev@...515...>
 Acked-by: Frank Lichtenheld <frank@...2641...>
 ---
@@ -38,31 +32,45 @@ Acked-by: Frank Lichtenheld <frank@...2641...>
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/427
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/428
 This mail reflects revision 1 of this Change.
 Acked-by according to Gerrit (reflected above):
 Frank Lichtenheld <frank@...2641...>
 
         
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index b88fea9..abd2e0c 100644
+index abd2e0c..b34e2f6 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -1364,6 +1364,8 @@
-         {
-             msg(M_WARN, "WARNING: couldn't copy all --dns search-domains to --dhcp-option");
-         }
-+
-+        tt->dhcp_options |= DHCP_OPTIONS_DHCP_REQUIRED;
-     }
+@@ -2477,10 +2477,10 @@
  
-     if (dns->servers)
-@@ -1401,6 +1403,7 @@
+     if (options->tuntap_options.dhcp_options & DHCP_OPTIONS_DHCP_REQUIRED)
+     {
+-        const char *prefix = "Some dhcp-options require DHCP server";
++        const char *prefix = "Some --dhcp-option or --dns options require DHCP server";
+         if (options->windows_driver != WINDOWS_DRIVER_TAP_WINDOWS6)
          {
-             msg(M_WARN, "WARNING: couldn't copy all --dns server addresses to --dhcp-option");
+-            msg(M_USAGE, "%s, which is not supported by selected %s driver",
++            msg(M_USAGE, "%s, which is not supported by the selected %s driver",
+                 prefix, print_windows_driver(options->windows_driver));
          }
-+        tt->dhcp_options |= DHCP_OPTIONS_DHCP_OPTIONAL;
-     }
- }
- #else /* if defined(_WIN32) || defined(TARGET_ANDROID) */
+         else if (options->tuntap_options.ip_win32_type != IPW32_SET_DHCP_MASQ
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index f857ed1..1b79d42 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -6826,6 +6826,13 @@
+ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
+          openvpn_net_ctx_t *ctx)
+ {
++    if ((tt->options.dhcp_options & DHCP_OPTIONS_DHCP_REQUIRED)
++        && tt->windows_driver != WINDOWS_DRIVER_TAP_WINDOWS6)
++    {
++        msg(M_WARN, "Some --dhcp-option or --dns options require DHCP server, which is not supported by the selected %s driver. They will be ignored.",
++            print_windows_driver(tt->windows_driver));
++    }
++
+     /* dco-win already opened the device, which handle we treat as socket */
+     if (tuntap_is_dco_win(tt))
+     {
 
