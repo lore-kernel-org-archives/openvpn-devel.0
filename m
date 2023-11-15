@@ -1,16 +1,16 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Wed, 15 Nov 2023 14:31:08 +0000
-In-Reply-To: <gerrit.1700055887000.I6688362d8461c112bf425ddfe488d511a64cc37e@...2715...>
-References: <gerrit.1700055887000.I6688362d8461c112bf425ddfe488d511a64cc37e@...2715...>
+Date: Wed, 15 Nov 2023 14:31:16 +0000
+In-Reply-To: <gerrit.1700055887000.Ia122d5cdc42c2969eef6f32f438e30b52652721f@...2715...>
+References: <gerrit.1700055887000.Ia122d5cdc42c2969eef6f32f438e30b52652721f@...2715...>
 Reply-To: a@...2181..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <da2b5c9cc30ea217a68d412316d4ebc6faebce69-HTML@...2715...>
+Message-ID: <9a6b6ba81b591752deb76a7e468c31bfd6cbd263-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="JyOckBtLHfY="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: mroute: properly
- print protocol at the end of the string
+Content-Type: multipart/alternative; boundary="Y5kbRfLIZnI="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Bind to multiple
+ ipv4/ipv6 addresses
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,27 +21,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---JyOckBtLHfY=
+--Y5kbRfLIZnI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-ordex has restored this change. ( http://gerrit.openvpn.net/c/openvpn/+/439=
+ordex has restored this change. ( http://gerrit.openvpn.net/c/openvpn/+/438=
 ?usp=3Demail )
 
-Change subject: mroute: properly print protocol at the end of the string
+Change subject: Bind to multiple ipv4/ipv6 addresses
 ......................................................................
 
 
 Restored
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/439?usp=3Demail
+--=20
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/438?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I6688362d8461c112bf425ddfe488d511a64cc37e
-Gerrit-Change-Number: 439
+Gerrit-Change-Id: Ia122d5cdc42c2969eef6f32f438e30b52652721f
+Gerrit-Change-Number: 438
 Gerrit-PatchSet: 1
 Gerrit-Owner: ordex <a@...2181...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -49,25 +49,25 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-MessageType: restore
 
---JyOckBtLHfY=
+--Y5kbRfLIZnI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p>ordex <strong>restored</strong> this change.</p><p><a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/439?usp=3Demail">View Change</a></p><p>To view,=
- visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/439?usp=3Demail">ch=
-ange 439</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
+rit.openvpn.net/c/openvpn/+/438?usp=3Demail">View Change</a></p><p>To view,=
+ visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/438?usp=3Demail">ch=
+ange 438</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
 ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
 temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
 n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/439?usp=3Demail"/><meta itemprop=3D"=
+"http://gerrit.openvpn.net/c/openvpn/+/438?usp=3Demail"/><meta itemprop=3D"=
 name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I6688362d8461c112bf425ddfe48=
-8d511a64cc37e </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 439 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia122d5cdc42c2969eef6f32f438=
+e30b52652721f </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 438 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -79,5 +79,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: restore </div>
 
 
---JyOckBtLHfY=--
+--Y5kbRfLIZnI=--
 
