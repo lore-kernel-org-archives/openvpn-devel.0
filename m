@@ -1,14 +1,14 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Wed, 15 Nov 2023 09:47:11 +0000
+Date: Wed, 15 Nov 2023 09:49:39 +0000
 In-Reply-To: <gerrit.1699712500000.I226a73d47a2b1b29f7ec175ce23a806593abc2ac@...2715...>
 References: <gerrit.1699712500000.I226a73d47a2b1b29f7ec175ce23a806593abc2ac@...2715...>
 Reply-To: a@...2181..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <cecaf024ef54883b38d3ca749d81c296ff0bd614-EmailReviewComments-HTML@...2715...>
+Message-ID: <e798d3acf5672dc504910b213688bb762c967b6b-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ic2LiST7a6c="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="KshQrRA+Gn0="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Do not check
  key_state buffers that are in S_UNDEF state
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,22 +22,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ic2LiST7a6c=
+--KshQrRA+Gn0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-ordex has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/426?usp=3Demail )
+ordex has removed a vote from this change. ( http://gerrit.openvpn.net/c/op=
+envpn/+/426?usp=3Demail )
+
 
 Change subject: Do not check key_state buffers that are in S_UNDEF state
 ......................................................................
 
 
-Patch Set 1: Code-Review+2
-
-
+Removed Code-Review+2 by ordex <a@...2181...>
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/426?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
@@ -54,27 +53,23 @@ Gerrit-Reviewer: ordex <a@...2181...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 15 Nov 2023 09:47:11 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-MessageType: deleteVote
 
---ic2LiST7a6c=
+--KshQrRA+Gn0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/426?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/426?usp=3Demail">=
-change 426</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/426?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p>ordex <strong>removed a vote</strong> from this change.</p><p><a href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/426?usp=3Demail">View Change</a></p>=
+<div style=3D"white-space:pre-wrap">Removed Code-Review+2 by ordex &lt;a@...1186...=
+.2181...&gt;</div><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/=
+openvpn/+/426?usp=3Demail">change 426</a>. To unsubscribe, or for help writ=
+ing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">sett=
+ings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><di=
+v itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><=
+link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/426?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -94,12 +89,8 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 15 Nov 2023 09:47:11=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: deleteVote </div>
 
 
---ic2LiST7a6c=--
+--KshQrRA+Gn0=--
 
