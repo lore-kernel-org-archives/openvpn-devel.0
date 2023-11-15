@@ -1,16 +1,10 @@
-From: "ordex (Code Review)" <gerrit@...515...>
-Date: Wed, 15 Nov 2023 14:31:01 +0000
-In-Reply-To: <gerrit.1700055887000.I81ec69d12abc9a661875c93c7f1bd97e525df55f@...2715...>
-References: <gerrit.1700055887000.I81ec69d12abc9a661875c93c7f1bd97e525df55f@...2715...>
-Reply-To: a@...2181..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <487568570bc196e0020dbab6cd9e4c7998cea965-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="nB6XkyXtI5Y="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Using the same wait
- function for both TCP and UDP
+Date: Wed, 15 Nov 2023 15:31:04 +0100 (CET)
+Message-Id: <202311151431.3AFEV47D098993@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20231115103331.18050-1-gert@...1296...>
+References: <20231115103331.18050-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Do not check key_state buffers
+ that are in S_UNDEF state
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,65 +13,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---nB6XkyXtI5Y=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+I have tested the "lite" version of that patch (only the S_UNDEF patch)
+for 30+ hours in a scenario that managed to crash after a few hours without
+it, so am reasonably confident it fixes the 2.6.7 crashes observed - in
+case there *are* other cases, we added a M_FATAL so we stop with a debug
+note, and do not SIGSEGV.  This really is a "can't happen", but *if* it
+does, we want to know.
 
-ordex has restored this change. ( http://gerrit.openvpn.net/c/openvpn/+/440=
-?usp=3Demail )
+Your patch has been applied to the master and release/2.6 branch.
 
-Change subject: Using the same wait function for both TCP and UDP
-......................................................................
+commit a903ebe9361d451daee71c225e141f4e1b67107d (master)
+commit b90ec6dabfb151dd93ef00081bbc3f55e7d3450f (release/2.6)
+Author: Arne Schwabe
+Date:   Wed Nov 15 11:33:31 2023 +0100
+
+     Do not check key_state buffers that are in S_UNDEF state
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20231115103331.18050-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27401.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-Restored
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/440?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I81ec69d12abc9a661875c93c7f1bd97e525df55f
-Gerrit-Change-Number: 440
-Gerrit-PatchSet: 1
-Gerrit-Owner: ordex <a@...2181...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: restore
+Gert Doering
 
---nB6XkyXtI5Y=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>ordex <strong>restored</strong> this change.</p><p><a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/440?usp=3Demail">View Change</a></p><p>To view,=
- visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/440?usp=3Demail">ch=
-ange 440</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
-temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
-n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/440?usp=3Demail"/><meta itemprop=3D"=
-name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I81ec69d12abc9a661875c93c7f1=
-bd97e525df55f </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 440 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: restore </div>
-
-
---nB6XkyXtI5Y=--
 
