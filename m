@@ -1,16 +1,17 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 15 Nov 2023 14:45:35 +0000
-In-Reply-To: <gerrit.1699712500000.I226a73d47a2b1b29f7ec175ce23a806593abc2ac@...2715...>
-References: <gerrit.1699712500000.I226a73d47a2b1b29f7ec175ce23a806593abc2ac@...2715...>
+Date: Wed, 15 Nov 2023 14:45:38 +0000
+In-Reply-To: <gerrit.1699891289000.I24f43ad319bd1ca530fe17442d02a97412eb75c7@...2715...>
+References: <gerrit.1699891289000.I24f43ad319bd1ca530fe17442d02a97412eb75c7@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641..., a@...2181...
-Message-ID: <974bc82f12fd974ad883980a3d0602cf1a000280-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, frank@...2641...,
+ lstipakov@...277...
+Message-ID: <627afdb781df4b1009cb63332b0d297ddcbc3e81-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="OjyLqFcnAwQ="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Do not check
- key_state buffers that are in S_UNDEF state
+Content-Type: multipart/alternative; boundary="EbPVufpgJJk="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Make --dns options
+ apply for tap-windows6 driver
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,159 +20,145 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: stipa <lstipakov@...277...>
+Cc: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---OjyLqFcnAwQ=
+--EbPVufpgJJk=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/42=
-6?usp=3Demail )
+7?usp=3Demail )
 
-Change subject: Do not check key_state buffers that are in S_UNDEF state
+Change subject: Make --dns options apply for tap-windows6 driver
 ......................................................................
 
-Do not check key_state buffers that are in S_UNDEF state
+Make --dns options apply for tap-windows6 driver
 
-When a key_state is in S_UNDEF the send_reliable is not initialised. So
-checking it might access invalid memory or null pointers.
+When tap-windows6 driver is used, both --dhcp-option and
+--dns options are applied with DHCP. When processing --dns options,
+we don't set "tuntap_options.dhcp_options" member, which is required
+for DHCP string to be sent to the driver. As a result, --dns options
+are not applied at all.
 
-Github: fixes OpenVPN/openvpn#449
+Fix by adding missing assignment of tuntap_options.dhcp_options.
 
-Change-Id: I226a73d47a2b1b29f7ec175ce23a806593abc2ac
-[a@...2181...: add check for !send_reliable and message]
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20231115103331.18050-1-gert@...1296...>
+Github: fixes OpenVPN/openvpn#447
+
+Change-Id: I24f43ad319bd1ca530fe17442d02a97412eb75c7
+Signed-off-by: Lev Stipakov <lev@...515...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+Message-Id: <20231115120623.6442-1-gert@...1296...>
 URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27=
-401.html
+402.html
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M src/openvpn/ssl.c
-1 file changed, 16 insertions(+), 0 deletions(-)
+M src/openvpn/options.c
+1 file changed, 2 insertions(+), 0 deletions(-)
 
 
 
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index cee4afe..b4cd8f5 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -3189,6 +3189,22 @@
-     for (int i =3D 0; i < KS_SIZE; i++)
-     {
-         struct key_state *ks =3D &session->key[i];
-+        if (ks->state =3D=3D S_UNDEF)
-+        {
-+            continue;
-+        }
-+
-+        /* we don't expect send_reliable to be NULL when state is
-+         * not S_UNDEF, but people have reported crashes nonetheless,
-+         * therefore we better catch this event, report and exit.
-+         */
-+        if (!ks->send_reliable)
-+        {
-+            msg(M_FATAL, "ERROR: session->key[%d]->send_reliable is NULL "
-+                "while key state is %s. Exiting.",
-+                i, state_name(ks->state));
-+        }
-+
-         for (int j =3D 0; j < ks->send_reliable->size; j++)
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index b88fea9..bd731ff 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1364,6 +1364,7 @@
          {
-             if (ks->send_reliable->array[i].buf.data =3D=3D dataptr)
+             msg(M_WARN, "WARNING: couldn't copy all --dns search-domains t=
+o --dhcp-option");
+         }
++        tt->dhcp_options |=3D DHCP_OPTIONS_DHCP_REQUIRED;
+     }
+
+     if (dns->servers)
+@@ -1401,6 +1402,7 @@
+         {
+             msg(M_WARN, "WARNING: couldn't copy all --dns server addresses=
+ to --dhcp-option");
+         }
++        tt->dhcp_options |=3D DHCP_OPTIONS_DHCP_OPTIONAL;
+     }
+ }
+ #else /* if defined(_WIN32) || defined(TARGET_ANDROID) */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/426?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/427?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I226a73d47a2b1b29f7ec175ce23a806593abc2ac
-Gerrit-Change-Number: 426
-Gerrit-PatchSet: 3
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Change-Id: I24f43ad319bd1ca530fe17442d02a97412eb75c7
+Gerrit-Change-Number: 427
+Gerrit-PatchSet: 2
+Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: ordex <a@...2181...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-MessageType: merged
 
---OjyLqFcnAwQ=
+--EbPVufpgJJk=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/426?usp=3Demail">View Change</a></p><div style=
+rrit.openvpn.net/c/openvpn/+/427?usp=3Demail">View Change</a></p><div style=
 =3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Do not check key_state buffers that are in S_U=
-NDEF state<br><br>When a key_state is in S_UNDEF the send_reliable is not i=
-nitialised. So<br>checking it might access invalid memory or null pointers.=
-<br><br>Github: fixes OpenVPN/openvpn#449<br><br>Change-Id: I226a73d47a2b1b=
-29f7ec175ce23a806593abc2ac<br>[a@...2181...: add check for !send_reliable a=
-nd message]<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked=
--by: Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20231115103331=
-.18050-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-d=
-evel@lists.sourceforge.net/msg27401.html<br>Signed-off-by: Gert Doering &lt=
-;gert@...1296...&gt;<br>---<br>M src/openvpn/ssl.c<br>1 file changed, 16 in=
-sertions(+), 0 deletions(-)<br><br></pre>
+ace; white-space: pre-wrap;">Make --dns options apply for tap-windows6 driv=
+er<br><br>When tap-windows6 driver is used, both --dhcp-option and<br>--dns=
+ options are applied with DHCP. When processing --dns options,<br>we don&#3=
+9;t set &quot;tuntap_options.dhcp_options&quot; member, which is required<b=
+r>for DHCP string to be sent to the driver. As a result, --dns options<br>a=
+re not applied at all.<br><br>Fix by adding missing assignment of tuntap_op=
+tions.dhcp_options.<br><br>Github: fixes OpenVPN/openvpn#447<br><br>Change-=
+Id: I24f43ad319bd1ca530fe17442d02a97412eb75c7<br>Signed-off-by: Lev Stipako=
+v &lt;lev@...515...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2641...=
+&gt;<br>Message-Id: &lt;20231115120623.6442-1-gert@...1296...&gt;<br>URL: h=
+ttps://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27402.ht=
+ml<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/o=
+penvpn/options.c<br>1 file changed, 2 insertions(+), 0 deletions(-)<br><br>=
+</pre>
 <pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span>index=
- cee4afe..b4cd8f5 100644</span><br><span>--- a/src/openvpn/ssl.c</span><br>=
-<span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -3189,6 +3189,22 @@</span>=
-<br><span>     for (int i =3D 0; i &lt; KS_SIZE; i++)</span><br><span>     =
-{</span><br><span>         struct key_state *ks =3D &amp;session-&gt;key[i]=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (ks-&gt=
-;state =3D=3D S_UNDEF)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+       =
-     continue;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        /* we don&#39;t expect sen=
-d_reliable to be NULL when state is</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+         * not S_UNDEF, but people have reported crashes no=
-netheless,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
-* therefore we better catch this event, report and exit.</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+         */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        if (!ks-&gt;send_reliable)</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            msg(M_FATAL, &quot;ERROR: ses=
-sion-&gt;key[%d]-&gt;send_reliable is NULL &quot;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+                &quot;while key state is %s. =
-Exiting.&quot;,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-            i, state_name(ks-&gt;state));</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+</span><br><span>         for (int j =3D 0; j &lt; ks-&gt;send_=
-reliable-&gt;size; j++)</span><br><span>         {</span><br><span>        =
-     if (ks-&gt;send_reliable-&gt;array[i].buf.data =3D=3D dataptr)</span><=
-br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/426?usp=3Demail">change 426</a>. To unsubscribe, or for h=
-elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
-gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
-age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
-ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/426?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
-/div>
+an>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span><br><sp=
+an>index b88fea9..bd731ff 100644</span><br><span>--- a/src/openvpn/options.=
+c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -1364,6 +1=
+364,7 @@</span><br><span>         {</span><br><span>             msg(M_WARN=
+, &quot;WARNING: couldn&#39;t copy all --dns search-domains to --dhcp-optio=
+n&quot;);</span><br><span>         }</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+        tt-&gt;dhcp_options |=3D DHCP_OPTIONS_DHCP_REQUIRE=
+D;</span><br><span>     }</span><br><span> </span><br><span>     if (dns-&g=
+t;servers)</span><br><span>@@ -1401,6 +1402,7 @@</span><br><span>         {=
+</span><br><span>             msg(M_WARN, &quot;WARNING: couldn&#39;t copy =
+all --dns server addresses to --dhcp-option&quot;);</span><br><span>       =
+  }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        tt-&gt;d=
+hcp_options |=3D DHCP_OPTIONS_DHCP_OPTIONAL;</span><br><span>     }</span><=
+br><span> }</span><br><span> #else /* if defined(_WIN32) || defined(TARGET_=
+ANDROID) */</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/427?usp=3Demail">change 427</a>. To un=
+subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
+.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://s=
+chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
+://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
+vpn.net/c/openvpn/+/427?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
+ew Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I226a73d47a2b1b29f7ec175ce23=
-a806593abc2ac </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 426 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I24f43ad319bd1ca530fe17442d0=
+2a97412eb75c7 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 427 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: ordex &lt;a@...2181...&gt; </=
-div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---OjyLqFcnAwQ=--
+--EbPVufpgJJk=--
 
