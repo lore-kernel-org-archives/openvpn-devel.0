@@ -1,16 +1,16 @@
 From: "ordex (Code Review)" <gerrit@...515...>
-Date: Wed, 15 Nov 2023 14:31:46 +0000
-In-Reply-To: <gerrit.1700055887000.Ia0a889e800f0b36aed770ee36e31afeec5df6084@...2715...>
-References: <gerrit.1700055887000.Ia0a889e800f0b36aed770ee36e31afeec5df6084@...2715...>
+Date: Wed, 15 Nov 2023 14:31:55 +0000
+In-Reply-To: <gerrit.1700055887000.I5899081c69bf1aa654d20e607fcdbd589140d474@...2715...>
+References: <gerrit.1700055887000.I5899081c69bf1aa654d20e607fcdbd589140d474@...2715...>
 Reply-To: a@...2181..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <bf01b6f7e9197337b90dcae49dfd5f6151db00e1-HTML@...2715...>
+Message-ID: <09c18445d0293e8d8574b84661f330456844b254-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="fznbsXHkRFk="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: allow tcp/udp server
- to listen on multiple ports at the same time
+Content-Type: multipart/alternative; boundary="IFVchykPvTU="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: io_work: pass
+ event_arg object to event handler in case of socket event
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,28 +21,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---fznbsXHkRFk=
+--IFVchykPvTU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-ordex has restored this change. ( http://gerrit.openvpn.net/c/openvpn/+/434=
+ordex has restored this change. ( http://gerrit.openvpn.net/c/openvpn/+/433=
 ?usp=3Demail )
 
-Change subject: allow tcp/udp server to listen on multiple ports at the sam=
-e time
+Change subject: io_work: pass event_arg object to event handler in case of =
+socket event
 ......................................................................
 
 
 Restored
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/434?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/433?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ia0a889e800f0b36aed770ee36e31afeec5df6084
-Gerrit-Change-Number: 434
+Gerrit-Change-Id: I5899081c69bf1aa654d20e607fcdbd589140d474
+Gerrit-Change-Number: 433
 Gerrit-PatchSet: 1
 Gerrit-Owner: ordex <a@...2181...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -50,25 +50,25 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-MessageType: restore
 
---fznbsXHkRFk=
+--IFVchykPvTU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p>ordex <strong>restored</strong> this change.</p><p><a href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/434?usp=3Demail">View Change</a></p><p>To view,=
- visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/434?usp=3Demail">ch=
-ange 434</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
+rit.openvpn.net/c/openvpn/+/433?usp=3Demail">View Change</a></p><p>To view,=
+ visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/433?usp=3Demail">ch=
+ange 433</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
 ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
 temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
 n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/434?usp=3Demail"/><meta itemprop=3D"=
+"http://gerrit.openvpn.net/c/openvpn/+/433?usp=3Demail"/><meta itemprop=3D"=
 name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia0a889e800f0b36aed770ee36e3=
-1afeec5df6084 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 434 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I5899081c69bf1aa654d20e607fc=
+dbd589140d474 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 433 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: ordex &lt;a@...2181...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -80,5 +80,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: restore </div>
 
 
---fznbsXHkRFk=--
+--IFVchykPvTU=--
 
