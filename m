@@ -1,16 +1,15 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 20 Nov 2023 11:14:51 +0000
-In-Reply-To: <gerrit.1696674325000.Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5@...2715...>
-References: <gerrit.1696674325000.Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5@...2715...>
+Date: Mon, 20 Nov 2023 11:17:16 +0000
+References: <gerrit.1700479034000.I93afff2372c4150d6bddc8c07fd4ebc8bfb0cc3e@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <9e1d266e17e7fe603674621ed73abdfacff0df8b-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <a1bf80443338441974ace210af06709901293179-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="7dVmKWMrDXk="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Print SSL peer
- signature information in handshake debug details
+Content-Type: multipart/alternative; boundary="ODVlJGs3yt0="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Deprecate tls-exit
+ option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,340 +21,196 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---7dVmKWMrDXk=
+--ODVlJGs3yt0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: flichtenheld.
 
 Hello flichtenheld,
 
-I'd like you to reexamine a change. Please visit
+I'd like you to do a code review.
+Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/447?usp=3Demail
 
-to look at the new patch set (#8).
+to review the following change.
 
 
-Change subject: Print SSL peer signature information in handshake debug det=
-ails
+Change subject: Deprecate tls-exit option
 ......................................................................
 
-Print SSL peer signature information in handshake debug details
+Deprecate tls-exit option
 
-This is more SSL debug information that most people do not really need
-or care about. OpenSSL's own s_client also logs them:
+This option is questionable and I cannot see any reason to actually use it.
 
-Peer signing digest: SHA256
-Peer signature type: ECDSA
-
-The complete message looks like this:
-
-   Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer ce=
-rtificate: 2048 bits RSA, signature: RSA-SHA256, server temp key: 253 bits =
-X25519, peer signing digest/type: SHA256 RSASSA-PSS
-
-or when forcing a specific group via tls-groups X448 with a ECDSA server:
-
-   Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer ce=
-rtificate: 384 bits ECsecp384r1, signature: ecdsa-with-SHA256, server temp =
-key: 448 bits X448, peer signing digest/type: SHA384 ECDSA
-
-Change-Id: Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5
+Change-Id: I93afff2372c4150d6bddc8c07fd4ebc8bfb0cc3e
 ---
-M src/openvpn/ssl_openssl.c
-1 file changed, 80 insertions(+), 2 deletions(-)
+M Changes.rst
+M doc/man-sections/tls-options.rst
+M src/openvpn/options.c
+3 files changed, 7 insertions(+), 2 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/65/365/8
 
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 23e7623..10e3c22 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -2165,6 +2165,82 @@
-     EVP_PKEY_free(pkey);
- }
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/47/447/1
 
-+#if !defined(LIBRESSL_VERSION_NUMBER)  && OPENSSL_VERSION_NUMBER >=3D 0x10=
-10000fL
-+/**
-+ * Translate an OpenSSL NID into a more human readable name
-+ * @param nid
-+ * @return
-+ */
-+static const char *
-+get_sigtype(int nid)
-+{
-+    /* Fix a few OpenSSL names to be better understandable */
-+    switch (nid)
-+    {
-+        case EVP_PKEY_RSA:
-+            /* will otherwise say rsaEncryption */
-+            return "RSA";
-+
-+        case EVP_PKEY_DSA:
-+            /* dsaEncryption otherwise */
-+            return "DSA";
-+
-+        case EVP_PKEY_EC:
-+            /* will say id-ecPublicKey */
-+            return "ECDSA";
-+
-+        case -1:
-+            return "(error getting name)";
-+
-+        default:
-+            return OBJ_nid2sn(nid);
-+    }
-+}
-+#endif /* ifndef LIBRESSL_VERSION_NUMBER */
-+
-+/**
-+ * Get the type of the signature that is used by the peer during the
-+ * TLS handshake
-+ */
-+static void
-+print_peer_signature(SSL *ssl, char *buf, size_t buflen)
-+{
-+    int peer_sig_nid =3D NID_undef, peer_sig_type_nid =3D NID_undef;
-+    const char *peer_sig =3D "unknown";
-+    const char *peer_sig_type =3D "unknown type";
-+
-+    /* Even though these methods use the deprecated NIDs instead of using
-+     * string as new OpenSSL APIs do, there seem to be no API that replaces
-+     * it yet */
-+#if !defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER > 0x30504=
-00fL
-+    if (SSL_get_peer_signature_nid(ssl, &peer_sig_nid)
-+        && peer_sig_nid !=3D NID_undef)
-+    {
-+        peer_sig =3D OBJ_nid2sn(peer_sig_nid);
-+    }
-+#endif
-+
-+#if !defined(LIBRESSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >=3D 0x101=
-0000fL
-+    /* LibreSSL 3.7.x and 3.8.0 weirdly implement this function but fail on
-+     * linking with an unresolved symbol */
-+    if (SSL_get_peer_signature_type_nid(ssl, &peer_sig_type_nid)
-+        && peer_sig_type_nid !=3D NID_undef)
-+    {
-+        peer_sig_type =3D get_sigtype(peer_sig_type_nid);
-+    }
-+#endif
-+
-+    if (peer_sig_nid =3D=3D NID_undef && peer_sig_type_nid =3D=3D NID_unde=
-f)
-+    {
-+        return;
-+    }
-+
-+    openvpn_snprintf(buf, buflen, ", peer signing digest/type: %s %s",
-+                     peer_sig, peer_sig_type);
-+}
-+
-+
-+
- /* **************************************
-  *
-  * Information functions
-@@ -2179,8 +2255,9 @@
-     char s1[256];
-     char s2[256];
-     char s3[256];
-+    char s4[256];
+diff --git a/Changes.rst b/Changes.rst
+index 3676dce..922f78d 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -10,6 +10,10 @@
+     ``--allow-deprecated-insecure-static-crypto`` but will be removed in
+     OpenVPN 2.8.
 
--    s1[0] =3D s2[0] =3D s3[0] =3D 0;
-+    s1[0] =3D s2[0] =3D s3[0] =3D s4[0] =3D 0;
-     ciph =3D SSL_get_current_cipher(ks_ssl->ssl);
-     openvpn_snprintf(s1, sizeof(s1), "%s %s, cipher %s %s",
-                      prefix,
-@@ -2195,8 +2272,9 @@
-         X509_free(cert);
++```tls-exit``` has been deprecated since it is unclear what the use case
++    for this option is. If you have a valid use case, please reach out sin=
+ce
++    the will otherwise be removed in the future.
++
+ Overview of changes in 2.6
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
+
+diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-option=
+s.rst
+index 908a42a..da5f362 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -553,7 +553,7 @@
+   code.
+
+ --tls-exit
+-  Exit on TLS negotiation failure.
++  **DEPRECATED** Exit on TLS negotiation failure.
+
+ --tls-export-cert directory
+   Store the certificates the clients use upon connection to this
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 2594b66..5eb1a45 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -608,7 +608,7 @@
+     "--tran-window n : Transition window -- old key can live this many sec=
+onds\n"
+     "                  after new key renegotiation begins (default=3D%d).\=
+n"
+     "--single-session: Allow only one session (reset state on restart).\n"
+-    "--tls-exit      : Exit on TLS negotiation failure.\n"
++    "--tls-exit      : (DEPRECATED) Exit on TLS negotiation failure.\n"
+     "--tls-auth f [d]: Add an additional layer of authentication on top of=
+ the TLS\n"
+     "                  control channel to protect against attacks on the T=
+LS stack\n"
+     "                  and DoS attacks.\n"
+@@ -8960,6 +8960,7 @@
      }
-     print_server_tempkey(ks_ssl->ssl, s3, sizeof(s3));
-+    print_peer_signature(ks_ssl->ssl, s4, sizeof(s4));
-
--    msg(D_HANDSHAKE, "%s%s%s", s1, s2, s3);
-+    msg(D_HANDSHAKE, "%s%s%s%s", s1, s2, s3, s4);
- }
-
- void
+     else if (streq(p[0], "tls-exit") && !p[1])
+     {
++        msg(M_WARN, "DEPRECATED OPTION: The option --tls-exit is deprecate=
+d.");
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->tls_exit =3D true;
+     }
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/447?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5
-Gerrit-Change-Number: 365
-Gerrit-PatchSet: 8
+Gerrit-Change-Id: I93afff2372c4150d6bddc8c07fd4ebc8bfb0cc3e
+Gerrit-Change-Number: 447
+Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
 
---7dVmKWMrDXk=
+--ODVlJGs3yt0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>plaisthos <strong>uploaded patch set #8</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail">View Chang=
-e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;">Print SSL peer signature information in handshake debug details<br><b=
-r>This is more SSL debug information that most people do not really need<br=
->or care about. OpenSSL&#39;s own s_client also logs them:<br><br>Peer sign=
-ing digest: SHA256<br>Peer signature type: ECDSA<br><br>The complete messag=
-e looks like this:<br><br>   Control Channel: TLSv1.3, cipher TLSv1.3 TLS_A=
-ES_256_GCM_SHA384, peer certificate: 2048 bits RSA, signature: RSA-SHA256, =
-server temp key: 253 bits X25519, peer signing digest/type: SHA256 RSASSA-P=
-SS<br><br>or when forcing a specific group via tls-groups X448 with a ECDSA=
- server:<br><br>   Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM=
-_SHA384, peer certificate: 384 bits ECsecp384r1, signature: ecdsa-with-SHA2=
-56, server temp key: 448 bits X448, peer signing digest/type: SHA384 ECDSA<=
-br><br>Change-Id: Ib5fc0c4b8f164596681ac5ad73002068ec6de1e5<br>---<br>M src=
-/openvpn/ssl_openssl.c<br>1 file changed, 80 insertions(+), 2 deletions(-)<=
-br><br></pre><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/65/3=
-65/8</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
-wrap;"><span>diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_opens=
-sl.c</span><br><span>index 23e7623..10e3c22 100644</span><br><span>--- a/sr=
-c/openvpn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</sp=
-an><br><span>@@ -2165,6 +2165,82 @@</span><br><span>     EVP_PKEY_free(pkey=
-);</span><br><span> }</span><br><span> </span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+#if !defined(LIBRESSL_VERSION_NUMBER)  &amp;&amp; OPENS=
-SL_VERSION_NUMBER &gt;=3D 0x1010000fL</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+ * Translate an OpenSSL NID into a more human readable name</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * @param nid</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ * @return</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+static const char *</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+get_sigtype(int nid)</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*=
- Fix a few OpenSSL names to be better understandable */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+    switch (nid)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        case EVP_PKEY_RSA:</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+            /* will otherwise say rsaEncryption =
-*/</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            retur=
-n &quot;RSA&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        case EVP_PKE=
-Y_DSA:</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            /=
-* dsaEncryption otherwise */</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            return &quot;DSA&quot;;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        case EVP_PKEY_EC:</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+            /* will say id-ecPublicKey */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            return &quot;ECDSA&quot;;</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        case -1:</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+            return &quot;(error getting name=
-)&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        default:</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+            return OBJ_nid2sn(nid=
-);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#endif /* ifndef LIBRESSL_VERSION_NUMBER */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * Get the type of the signature that is used by the peer du=
-ring the</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * TLS hand=
-shake</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+print_peer_signature(SSL *ssl, char *b=
-uf, size_t buflen)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int peer_sig_ni=
-d =3D NID_undef, peer_sig_type_nid =3D NID_undef;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    const char *peer_sig =3D &quot;unknown&qu=
-ot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const char =
-*peer_sig_type =3D &quot;unknown type&quot;;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    /* Even though these methods use the deprecated NIDs instead of u=
-sing</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * string a=
-s new OpenSSL APIs do, there seem to be no API that replaces</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+     * it yet */</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#if !defined(LIBRESSL_VERSION_NUMBER)=
- || LIBRESSL_VERSION_NUMBER &gt; 0x3050400fL</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    if (SSL_get_peer_signature_nid(ssl, &amp;peer_=
-sig_nid)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        &am=
-p;&amp; peer_sig_nid !=3D NID_undef)</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+        peer_sig =3D OBJ_nid2sn(peer_sig_nid);</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if !defined(LIB=
-RESSL_VERSION_NUMBER) &amp;&amp; OPENSSL_VERSION_NUMBER &gt;=3D 0x1010000fL=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* LibreSSL 3.7=
-.x and 3.8.0 weirdly implement this function but fail on</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+     * linking with an unresolved symb=
-ol */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (SSL_ge=
-t_peer_signature_type_nid(ssl, &amp;peer_sig_type_nid)</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        &amp;&amp; peer_sig_type_nid !=
-=3D NID_undef)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        peer_sig_ty=
-pe =3D get_sigtype(peer_sig_type_nid);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+    if (peer_sig_nid =3D=3D=
- NID_undef &amp;&amp; peer_sig_type_nid =3D=3D NID_undef)</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        return;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    openvpn_s=
-nprintf(buf, buflen, &quot;, peer signing digest/type: %s %s&quot;,</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+                     peer_s=
-ig, peer_sig_type);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+</span><br><span> /* ***********************************=
-***</span><br><span>  *</span><br><span>  * Information functions</span><br=
-><span>@@ -2179,8 +2255,9 @@</span><br><span>     char s1[256];</span><br><=
-span>     char s2[256];</span><br><span>     char s3[256];</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    char s4[256];</span><br><span> <=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    s1[0] =3D s2[0] =
-=3D s3[0] =3D 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- s1[0] =3D s2[0] =3D s3[0] =3D s4[0] =3D 0;</span><br><span>     ciph =3D S=
-SL_get_current_cipher(ks_ssl-&gt;ssl);</span><br><span>     openvpn_snprint=
-f(s1, sizeof(s1), &quot;%s %s, cipher %s %s&quot;,</span><br><span>        =
-              prefix,</span><br><span>@@ -2195,8 +2272,9 @@</span><br><span=
->         X509_free(cert);</span><br><span>     }</span><br><span>     prin=
-t_server_tempkey(ks_ssl-&gt;ssl, s3, sizeof(s3));</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    print_peer_signature(ks_ssl-&gt;ssl, s4, =
-sizeof(s4));</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    msg(D_HANDSHAKE, &quot;%s%s%s&quot;, s1, s2, s3);</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+    msg(D_HANDSHAKE, &quot;%s%s%=
-s%s&quot;, s1, s2, s3, s4);</span><br><span> }</span><br><span> </span><br>=
-<span> void</span><br><span></span><br></pre><p>To view, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/365?usp=3Demail">change 365</a>. To un=
-subscribe, or for help writing mail filters, visit <a href=3D"http://gerrit=
-.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://s=
-chema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http=
-://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/365?usp=3Demail"/><meta itemprop=3D"name" content=3D"Vi=
-ew Change"/></div></div>
+<p> Attention is currently required from: flichtenheld. </p>
+<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/447?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">Deprecate tls-exit option<br><br>This option is questionable =
+and I cannot see any reason to actually use it.<br><br>Change-Id: I93afff23=
+72c4150d6bddc8c07fd4ebc8bfb0cc3e<br>---<br>M Changes.rst<br>M doc/man-secti=
+ons/tls-options.rst<br>M src/openvpn/options.c<br>3 files changed, 7 insert=
+ions(+), 2 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/o=
+penvpn refs/changes/47/447/1</pre><pre style=3D"font-family: monospace,mono=
+space; white-space: pre-wrap;"><span>diff --git a/Changes.rst b/Changes.rst=
+</span><br><span>index 3676dce..922f78d 100644</span><br><span>--- a/Change=
+s.rst</span><br><span>+++ b/Changes.rst</span><br><span>@@ -10,6 +10,10 @@<=
+/span><br><span>     ``--allow-deprecated-insecure-static-crypto`` but will=
+ be removed in</span><br><span>     OpenVPN 2.8.</span><br><span> </span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+```tls-exit``` has been depr=
+ecated since it is unclear what the use case</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    for this option is. If you have a valid use ca=
+se, please reach out since</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    the will otherwise be removed in the future.</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+</span><br><span> Overview of changes i=
+n 2.6</span><br><span> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D</span><br><span> </span><br><span>diff --git a/=
+doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst</span><=
+br><span>index 908a42a..da5f362 100644</span><br><span>--- a/doc/man-sectio=
+ns/tls-options.rst</span><br><span>+++ b/doc/man-sections/tls-options.rst</=
+span><br><span>@@ -553,7 +553,7 @@</span><br><span>   code.</span><br><span=
+> </span><br><span> --tls-exit</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-  Exit on TLS negotiation failure.</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+  **DEPRECATED** Exit on TLS negotiation failure.</=
+span><br><span> </span><br><span> --tls-export-cert directory</span><br><sp=
+an>   Store the certificates the clients use upon connection to this</span>=
+<br><span>diff --git a/src/openvpn/options.c b/src/openvpn/options.c</span>=
+<br><span>index 2594b66..5eb1a45 100644</span><br><span>--- a/src/openvpn/o=
+ptions.c</span><br><span>+++ b/src/openvpn/options.c</span><br><span>@@ -60=
+8,7 +608,7 @@</span><br><span>     &quot;--tran-window n : Transition windo=
+w -- old key can live this many seconds\n&quot;</span><br><span>     &quot;=
+                  after new key renegotiation begins (default=3D%d).\n&quot=
+;</span><br><span>     &quot;--single-session: Allow only one session (rese=
+t state on restart).\n&quot;</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    &quot;--tls-exit      : Exit on TLS negotiation failure.\n&quot;=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    &quot;--tls-exi=
+t      : (DEPRECATED) Exit on TLS negotiation failure.\n&quot;</span><br><s=
+pan>     &quot;--tls-auth f [d]: Add an additional layer of authentication =
+on top of the TLS\n&quot;</span><br><span>     &quot;                  cont=
+rol channel to protect against attacks on the TLS stack\n&quot;</span><br><=
+span>     &quot;                  and DoS attacks.\n&quot;</span><br><span>=
+@@ -8960,6 +8960,7 @@</span><br><span>     }</span><br><span>     else if (=
+streq(p[0], &quot;tls-exit&quot;) &amp;&amp; !p[1])</span><br><span>     {<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_WARN, =
+&quot;DEPRECATED OPTION: The option --tls-exit is deprecated.&quot;);</span=
+><br><span>         VERIFY_PERMISSION(OPT_P_GENERAL);</span><br><span>     =
+    options-&gt;tls_exit =3D true;</span><br><span>     }</span><br><span><=
+/span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/op=
+envpn/+/447?usp=3Demail">change 447</a>. To unsubscribe, or for help writin=
+g mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settin=
+gs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div =
+itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><li=
+nk itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/447?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib5fc0c4b8f164596681ac5ad730=
-02068ec6de1e5 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 365 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I93afff2372c4150d6bddc8c07fd=
+4ebc8bfb0cc3e </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 447 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---7dVmKWMrDXk=--
+--ODVlJGs3yt0=--
 
