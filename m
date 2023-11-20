@@ -1,15 +1,15 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 20 Nov 2023 11:36:23 +0000
-References: <gerrit.1700480182000.I91f739f5cb43386b2ce767cf3603a76e6b93e216@...2715...>
+Date: Mon, 20 Nov 2023 11:37:12 +0000
+References: <gerrit.1700480231000.I1141eb7740d8900ed4af0ff5ff52aa3659df99aa@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <27edbc35477fa10a89a73be7eadba0fc3b71d705-HTML@...2715...>
+Message-ID: <3b3a66951cd684f20302f92d1c3d7bf370fcedeb-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Gm3RW8+jzM0="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Introduce
- report_command_status helper function
+Content-Type: multipart/alternative; boundary="cpadFKP6fag="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Remove unused
+ function prototype crypto_adjust_frame_parameters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Gm3RW8+jzM0=
+--cpadFKP6fag=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,118 +32,53 @@ Hello flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/450?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/451?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Introduce report_command_status helper function
+Change subject: Remove unused function prototype crypto_adjust_frame_parame=
+ters
 ......................................................................
 
-Introduce report_command_status helper function
+Remove unused function prototype crypto_adjust_frame_parameters
 
-Instead of repeating near identical code several times
-in manage.c, use a small helper function instead.
-
-Change-Id: I91f739f5cb43386b2ce767cf3603a76e6b93e216
+Change-Id: I1141eb7740d8900ed4af0ff5ff52aa3659df99aa
 ---
-M src/openvpn/manage.c
-1 file changed, 21 insertions(+), 24 deletions(-)
+M src/openvpn/crypto.h
+1 file changed, 0 insertions(+), 6 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/50/450/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/51/451/1
 
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index feb62b2..3cf392a 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -284,6 +284,24 @@
- #endif
- }
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index c5fd253..9255d38 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -429,12 +429,6 @@
+                          struct gc_arena *gc);
 
-+
-+/**
-+ * Small function to report the success or failure of a command to
-+ * the management interface
-+ */
-+static void
-+report_command_status(const bool status, const char *command)
-+{
-+    if (status)
-+    {
-+        msg(M_CLIENT, "SUCCESS: %s command succeeded", command);
-+    }
-+    else
-+    {
-+        msg(M_CLIENT, "ERROR: %s command failed", command);
-+    }
-+}
-+
- static void
- man_delete_unix_socket(struct management *man)
- {
-@@ -974,14 +992,7 @@
-                                         NULL,
-                                         man->connection.in_extra);
-                 man->connection.in_extra =3D NULL;
--                if (status)
--                {
--                    msg(M_CLIENT, "SUCCESS: client-auth command succeeded"=
-);
--                }
--                else
--                {
--                    msg(M_CLIENT, "ERROR: client-auth command failed");
--                }
-+                report_command_status(status, "client_auth");
-             }
-             else
-             {
-@@ -1260,14 +1271,7 @@
-     if (man->persist.callback.proxy_cmd)
-     {
-         const bool status =3D (*man->persist.callback.proxy_cmd)(man->pers=
-ist.callback.arg, p);
--        if (status)
--        {
--            msg(M_CLIENT, "SUCCESS: proxy command succeeded");
--        }
--        else
--        {
--            msg(M_CLIENT, "ERROR: proxy command failed");
--        }
-+        report_command_status(status, "proxy");
-     }
-     else
-     {
-@@ -1281,14 +1285,7 @@
-     if (man->persist.callback.remote_cmd)
-     {
-         const bool status =3D (*man->persist.callback.remote_cmd)(man->per=
-sist.callback.arg, p);
--        if (status)
--        {
--            msg(M_CLIENT, "SUCCESS: remote command succeeded");
--        }
--        else
--        {
--            msg(M_CLIENT, "ERROR: remote command failed");
--        }
-+        report_command_status(status, "remote");
-     }
-     else
-     {
+
+-/** Calculate crypto overhead and adjust frame to account for that */
+-void crypto_adjust_frame_parameters(struct frame *frame,
+-                                    const struct key_type *kt,
+-                                    bool packet_id,
+-                                    bool packet_id_long_form);
+-
+ /** Calculate the maximum overhead that our encryption has
+  * on a packet. This does not include needed additional buffer size
+  *
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/450?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/451?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I91f739f5cb43386b2ce767cf3603a76e6b93e216
-Gerrit-Change-Number: 450
+Gerrit-Change-Id: I1141eb7740d8900ed4af0ff5ff52aa3659df99aa
+Gerrit-Change-Number: 451
 Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -151,103 +86,49 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---Gm3RW8+jzM0=
+--cpadFKP6fag=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
 <p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/450?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/451?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Introduce report_command_status helper function<br><br>Instea=
-d of repeating near identical code several times<br>in manage.c, use a smal=
-l helper function instead.<br><br>Change-Id: I91f739f5cb43386b2ce767cf3603a=
-76e6b93e216<br>---<br>M src/openvpn/manage.c<br>1 file changed, 21 insertio=
-ns(+), 24 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,mo=
-nospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/op=
-envpn refs/changes/50/450/1</pre><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/manage.c b/src=
-/openvpn/manage.c</span><br><span>index feb62b2..3cf392a 100644</span><br><=
-span>--- a/src/openvpn/manage.c</span><br><span>+++ b/src/openvpn/manage.c<=
-/span><br><span>@@ -284,6 +284,24 @@</span><br><span> #endif</span><br><spa=
-n> }</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ * Small function to report the =
-success or failure of a command to</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * the management interface</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+static void</span><br><span style=3D"color: hsl(120, 100%, 40%);">+r=
-eport_command_status(const bool status, const char *command)</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+    if (status)</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        msg(M_CLIENT, &quot;SUCCESS: %s command succeeded&quot;, comma=
-nd);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        msg(M_CLIENT, &quot;ERROR: %s command failed&q=
-uot;, command);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> static void</span>=
-<br><span> man_delete_unix_socket(struct management *man)</span><br><span> =
-{</span><br><span>@@ -974,14 +992,7 @@</span><br><span>                    =
-                     NULL,</span><br><span>                                =
-         man-&gt;connection.in_extra);</span><br><span>                 man=
--&gt;connection.in_extra =3D NULL;</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                if (status)</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-                {</span><br><span style=3D"color: hsl(0,=
- 100%, 40%);">-                    msg(M_CLIENT, &quot;SUCCESS: client-auth=
- command succeeded&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-                }</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
--                else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-                {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-                msg(M_CLIENT, &quot;ERROR: client-auth command failed&quot;=
-);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+                repor=
-t_command_status(status, &quot;client_auth&quot;);</span><br><span>        =
-     }</span><br><span>             else</span><br><span>             {</sp=
-an><br><span>@@ -1260,14 +1271,7 @@</span><br><span>     if (man-&gt;persis=
-t.callback.proxy_cmd)</span><br><span>     {</span><br><span>         const=
- bool status =3D (*man-&gt;persist.callback.proxy_cmd)(man-&gt;persist.call=
-back.arg, p);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-if (status)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_CLIE=
-NT, &quot;SUCCESS: proxy command succeeded&quot;);</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(=
-0, 100%, 40%);">-        else</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-        msg(M_CLIENT, &quot;ERROR: proxy command failed&quot;);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        report_command_status(status, &qu=
-ot;proxy&quot;);</span><br><span>     }</span><br><span>     else</span><br=
-><span>     {</span><br><span>@@ -1281,14 +1285,7 @@</span><br><span>     i=
-f (man-&gt;persist.callback.remote_cmd)</span><br><span>     {</span><br><s=
-pan>         const bool status =3D (*man-&gt;persist.callback.remote_cmd)(m=
-an-&gt;persist.callback.arg, p);</span><br><span style=3D"color: hsl(0, 100=
-%, 40%);">-        if (status)</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
-         msg(M_CLIENT, &quot;SUCCESS: remote command succeeded&quot;);</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        else</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-            msg(M_CLIENT, &quot;ERROR: remote command faile=
-d&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        report_command=
-_status(status, &quot;remote&quot;);</span><br><span>     }</span><br><span=
->     else</span><br><span>     {</span><br><span></span><br></pre><p>To vi=
-ew, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/450?usp=3Demail"=
->change 450</a>. To unsubscribe, or for help writing mail filters, visit <a=
- href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscop=
-e itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"ac=
-tion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/450?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+e: pre-wrap;">Remove unused function prototype crypto_adjust_frame_paramete=
+rs<br><br>Change-Id: I1141eb7740d8900ed4af0ff5ff52aa3659df99aa<br>---<br>M =
+src/openvpn/crypto.h<br>1 file changed, 0 insertions(+), 6 deletions(-)<br>=
+<br></pre><pre style=3D"font-family: monospace,monospace; white-space: pre-=
+wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/51/451/=
+1</pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wra=
+p;"><span>diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h</span><b=
+r><span>index c5fd253..9255d38 100644</span><br><span>--- a/src/openvpn/cry=
+pto.h</span><br><span>+++ b/src/openvpn/crypto.h</span><br><span>@@ -429,12=
+ +429,6 @@</span><br><span>                          struct gc_arena *gc);<=
+/span><br><span> </span><br><span> </span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-/** Calculate crypto overhead and adjust frame to account for=
+ that */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-void crypto_a=
+djust_frame_parameters(struct frame *frame,</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-                                    const struct key_=
+type *kt,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+                        bool packet_id,</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-                                    bool packet_id_long_f=
+orm);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span=
+> /** Calculate the maximum overhead that our encryption has</span><br><spa=
+n>  * on a packet. This does not include needed additional buffer size</spa=
+n><br><span>  *</span><br><span></span><br></pre><p>To view, visit <a href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/451?usp=3Demail">change 451</a>. =
+To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
+errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
+p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
+"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
+.openvpn.net/c/openvpn/+/451?usp=3Demail"/><meta itemprop=3D"name" content=
+=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I91f739f5cb43386b2ce767cf360=
-3a76e6b93e216 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 450 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I1141eb7740d8900ed4af0ff5ff5=
+2aa3659df99aa </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 451 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -260,5 +141,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---Gm3RW8+jzM0=--
+--cpadFKP6fag=--
 
