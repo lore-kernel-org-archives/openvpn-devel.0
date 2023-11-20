@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 20 Nov 2023 13:26:26 +0000
-In-Reply-To: <gerrit.1700485351000.Ib6d713f2eb08a4c39d97de3e1a4a832cedc09585@...2715...>
-References: <gerrit.1700485351000.Ib6d713f2eb08a4c39d97de3e1a4a832cedc09585@...2715...>
+Date: Mon, 20 Nov 2023 14:35:32 +0000
+In-Reply-To: <gerrit.1700479678000.I0ad48915004ddee587e97c8ed190ba8ee989e48d@...2715...>
+References: <gerrit.1700479678000.I0ad48915004ddee587e97c8ed190ba8ee989e48d@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <2902b7e9b5a3853ad276b0e1cdd276fb783085ca-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <87e9da1f2fcd88ad6d181200d62fa56077dac31e-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ag15snAre/0="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Rename state_change
- to continue_tls_process
+Content-Type: multipart/alternative; boundary="FaDDjs11rs8="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Allow the TLS
+ session to send out TLS alerts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ag15snAre/0=
+--FaDDjs11rs8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,241 +32,311 @@ Hello flichtenheld,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/452?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail
 
-to look at the new patch set (#2).
-
-The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld
+to look at the new patch set (#4).
 
 
-Change subject: Rename state_change to continue_tls_process
+Change subject: Allow the TLS session to send out TLS alerts
 ......................................................................
 
-Rename state_change to continue_tls_process
+Allow the TLS session to send out TLS alerts
 
-The name state_change is more confusing than helpful as it not really
-indicates if there was a state change but rather if processing should
-be continued. There even some states that are definitively state changes
-(setting to_link buffer) that require continue_tls_process to be set
-to false.
+Previous OpenVPN versions shut down the TLS control channel immediately
+when encountering an error. This also meant that we would not send out
+TLS alerts to notify a client about potential problems like mismatching
+TLS versions or having no common cipher.
 
-Change-Id: Ib6d713f2eb08a4c39d97de3e1a4a832cedc09585
+This commit adds a new key_state S_ERROR_PRE which still allows to
+send out the remaining TLS packets of the control session which are
+typically the alert message and then going to S_ERROR. We do not
+wait for retries. So this is more a one-shot notify but that is
+acceptable in this situation.
+
+Sending out alerts is a slight compromise in security as alerts give
+out a bit of information that otherwise is not given
+out. But since all other consumers TLS implementations are already doing th=
+is
+and TLS implementations (nowadays) are very careful not to leak (sensitive)
+information by alerts and since the user experience is much better with
+alerts, this compromise is worth it.
+
+Change-Id: I0ad48915004ddee587e97c8ed190ba8ee989e48d
 ---
+M Changes.rst
 M src/openvpn/ssl.c
-1 file changed, 27 insertions(+), 22 deletions(-)
+M src/openvpn/ssl_backend.h
+M src/openvpn/ssl_common.h
+M src/openvpn/ssl_mbedtls.c
+M src/openvpn/ssl_openssl.c
+6 files changed, 89 insertions(+), 19 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/52/452/2
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/49/449/4
 
+diff --git a/Changes.rst b/Changes.rst
+index 3676dce..dbef0d9 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -1,5 +1,16 @@
+ Overview of changes in 2.7
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
++New features
++------------
++TLS alerts
++    OpenVPN 2.7 will send out TLS alerts to peers informing them if the TLS
++    session shuts down or when the TLS implementation informs the peer abo=
+ut
++    an error in the TLS session (e.g. mismatching TLS versions). This impr=
+oves
++    the user experience as the client shows an error instead of running in=
+to
++    a timeout when the server just stops responding completely.
++
++Deprecated features
++-------------------
+ ``secret`` support has been removed by default.
+     static key mode (non-TLS) is no longer considered "good and secure eno=
+ugh"
+     for today's requirements.  Use TLS mode instead.  If deploying a PKI CA
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index b4cd8f5..f8e0c51 100644
+index f8e0c51..fd3de87 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -2694,7 +2694,7 @@
-  */
- static bool
- read_incoming_tls_ciphertext(struct buffer *buf, struct key_state *ks,
--                             bool *state_change)
-+                             bool *continue_tls_process)
- {
-     int status =3D 0;
-     if (buf->len)
-@@ -2714,7 +2714,7 @@
-     if (status =3D=3D 1)
-     {
-         reliable_mark_deleted(ks->rec_reliable, buf);
--        *state_change =3D true;
-+        *continue_tls_process =3D true;
-         dmsg(D_TLS_DEBUG, "Incoming Ciphertext -> TLS");
-     }
-     return true;
-@@ -2730,7 +2730,7 @@
+@@ -853,6 +853,9 @@
+         case S_ERROR:
+             return "S_ERROR";
 
- static bool
- read_incoming_tls_plaintext(struct key_state *ks, struct buffer *buf,
--                            interval_t *wakeup, bool *state_change)
-+                            interval_t *wakeup, bool *continue_tls_process)
- {
-     ASSERT(buf_init(buf, 0));
++        case S_ERROR_PRE:
++            return "S_ERROR_PRE";
++
+         case S_GENERATED_KEYS:
+             return "S_GENERATED_KEYS";
 
-@@ -2744,7 +2744,7 @@
-     }
-     if (status =3D=3D 1)
-     {
--        *state_change =3D true;
-+        *continue_tls_process =3D true;
-         dmsg(D_TLS_DEBUG, "TLS -> Incoming Plaintext");
-
-         /* More data may be available, wake up again asap to check. */
-@@ -2754,7 +2754,7 @@
+@@ -2840,6 +2843,25 @@
  }
 
  static bool
--write_outgoing_tls_ciphertext(struct tls_session *session, bool *state_cha=
-nge)
-+write_outgoing_tls_ciphertext(struct tls_session *session, bool *continue_=
-tls_process)
- {
-     struct key_state *ks =3D &session->key[KS_PRIMARY];
-
-@@ -2830,7 +2830,7 @@
-
-             reliable_mark_active_outgoing(ks->send_reliable, buf, opcode);
-             INCR_GENERATED;
--            *state_change =3D true;
-+            *continue_tls_process =3D true;
-         }
-         dmsg(D_TLS_DEBUG, "Outgoing Ciphertext -> Reliable");
-     }
-@@ -2839,7 +2839,6 @@
-     return true;
- }
-
--
- static bool
++check_outgoing_ciphertext(struct key_state *ks, struct tls_session *sessio=
+n,
++                          bool *continue_tls_process)
++{
++    /* Outgoing Ciphertext to reliable buffer */
++    if (ks->state >=3D S_PRE_START)
++    {
++        struct buffer *buf =3D reliable_get_buf_output_sequenced(ks->send_=
+reliable);
++        if (buf)
++        {
++            if (!write_outgoing_tls_ciphertext(session, continue_tls_proce=
+ss))
++            {
++                return false;
++            }
++        }
++    }
++    return true;
++}
++
++static bool
  tls_process_state(struct tls_multi *multi,
                    struct tls_session *session,
-@@ -2848,13 +2847,19 @@
-                   struct link_socket_info *to_link_socket_info,
-                   interval_t *wakeup)
- {
--    bool state_change =3D false;
-+    /* This variable indicates if we should call this method
-+     * again to process more incoming/outgoing TLS state/data
-+     * We want to repeat this until we either determined that there
-+     * is nothing more to process or that further processing
-+     * should only be done after the outer loop (sending packets etc.)
-+     * has run once more */
-+    bool continue_tls_process =3D false;
-     struct key_state *ks =3D &session->key[KS_PRIMARY];      /* primary ke=
-y */
-
-     /* Initial handshake */
-     if (ks->state =3D=3D S_INITIAL)
-     {
--        state_change =3D session_move_pre_start(session, ks, false);
-+        continue_tls_process =3D session_move_pre_start(session, ks, false=
-);
+                   struct buffer *to_link,
+@@ -2863,7 +2885,7 @@
      }
-=20
+
      /* Are we timed out on receive? */
-@@ -2872,7 +2877,7 @@
-     if (ks->state =3D=3D S_PRE_START && reliable_empty(ks->send_reliable))
+-    if (now >=3D ks->must_negotiate && ks->state < S_ACTIVE)
++    if (now >=3D ks->must_negotiate && ks->state >=3D S_UNDEF && ks->state=
+ < S_ACTIVE)
      {
-         ks->state =3D S_START;
--        state_change =3D true;
-+        continue_tls_process =3D true;
-
-         /* New connection, remove any old X509 env variables */
-         tls_x509_clear_env(session->opt->es);
-@@ -2885,7 +2890,7 @@
-         && reliable_empty(ks->send_reliable))
-     {
-         session_move_active(multi, session, to_link_socket_info, ks);
--        state_change =3D true;
-+        continue_tls_process =3D true;
+         msg(D_TLS_ERRORS,
+             "TLS Error: TLS key negotiation failed to occur within %d seco=
+nds (check your network connectivity)",
+@@ -2917,6 +2939,16 @@
+         return false;
      }
 
-     /* Reliable buffer to outgoing TCP/UDP (send up to CONTROL_SEND_ACK_MA=
-X ACKs
-@@ -2927,7 +2932,7 @@
-         }
-         else
-         {
--            if (!read_incoming_tls_ciphertext(&entry->buf, ks, &state_chan=
-ge))
-+            if (!read_incoming_tls_ciphertext(&entry->buf, ks, &continue_t=
-ls_process))
-             {
-                 goto error;
-             }
-@@ -2938,7 +2943,7 @@
-     struct buffer *buf =3D &ks->plaintext_read_buf;
-     if (!buf->len)
-     {
--        if (!read_incoming_tls_plaintext(ks, buf, wakeup, &state_change))
-+        if (!read_incoming_tls_plaintext(ks, buf, wakeup, &continue_tls_pr=
-ocess))
-         {
-             goto error;
-         }
-@@ -2954,7 +2959,7 @@
-             goto error;
-         }
-
--        state_change =3D true;
-+        continue_tls_process =3D true;
-         dmsg(D_TLS_DEBUG_MED, "STATE S_SENT_KEY");
-         ks->state =3D S_SENT_KEY;
-     }
-@@ -2970,7 +2975,7 @@
-             goto error;
-         }
-
--        state_change =3D true;
-+        continue_tls_process =3D true;
-         dmsg(D_TLS_DEBUG_MED, "STATE S_GOT_KEY");
-         ks->state =3D S_GOT_KEY;
-     }
-@@ -2988,7 +2993,7 @@
-         }
-         if (status =3D=3D 1)
-         {
--            state_change =3D true;
-+            continue_tls_process =3D true;
++    if (ks->state =3D=3D S_ERROR_PRE)
++    {
++        /* When we end up here, we had one last chance to send an outstand=
+ing
++         * packet that contained an alert. We do not ensure that this pack=
+et
++         * has been successfully delivered  (ie wait for the ACK etc)
++         * but rather stop processing now */
++        ks->state =3D S_ERROR;
++        return false;
++    }
++
+     /* Write incoming ciphertext to TLS object */
+     struct reliable_entry *entry =3D reliable_get_entry_sequenced(ks->rec_=
+reliable);
+     if (entry)
+@@ -2997,29 +3029,31 @@
              dmsg(D_TLS_DEBUG, "Outgoing Plaintext -> TLS");
          }
      }
-@@ -3006,7 +3011,7 @@
-         }
+-
+-    /* Outgoing Ciphertext to reliable buffer */
+-    if (ks->state >=3D S_START)
++    if (!check_outgoing_ciphertext(ks, session, &continue_tls_process))
+     {
+-        buf =3D reliable_get_buf_output_sequenced(ks->send_reliable);
+-        if (buf)
+-        {
+-            if (!write_outgoing_tls_ciphertext(session, &state_change))
+-            {
+-                goto error;
+-            }
+-        }
++        goto error;
      }
 
--    return state_change;
-+    return continue_tls_process;
+     return continue_tls_process;
  error:
      tls_clear_error();
-     ks->state =3D S_ERROR;
-@@ -3065,19 +3070,19 @@
-         msg(D_TLS_DEBUG_LOW, "TLS: tls_process: killed expiring key");
+-    ks->state =3D S_ERROR;
++
++    /* Shut down the TLS session but do a last read from the TLS
++     * object to be able to read potential TLS alerts */
++    key_state_ssl_shutdown(&ks->ks_ssl);
++    check_outgoing_ciphertext(ks, session, &continue_tls_process);
++
++    /* Put ourselves in the pre error state that will only send out the
++     * control channel packets but nothing else */
++    ks->state =3D S_ERROR_PRE;
++
+     msg(D_TLS_ERRORS, "TLS Error: TLS handshake failed");
+     INCR_ERROR;
+-    return false;
+-
++    return true;
+ }
++
++
++
+ /*
+  * This is the primary routine for processing TLS stuff inside the
+  * the main event loop.  When this routine exits
+@@ -3127,7 +3161,7 @@
      }
 
--    bool state_change =3D true;
--    while (state_change)
-+    bool continue_tls_process =3D true;
-+    while (continue_tls_process)
+     /* When should we wake up again? */
+-    if (ks->state >=3D S_INITIAL)
++    if (ks->state >=3D S_INITIAL || ks->state =3D=3D S_ERROR_PRE)
      {
-         update_time();
+         compute_earliest_wakeup(wakeup,
+                                 reliable_send_timeout(ks->send_reliable));
+@@ -3280,7 +3314,7 @@
+              session_id_print(&ks->session_id_remote, &gc),
+              print_link_socket_actual(&ks->remote_addr, &gc));
 
-         dmsg(D_TLS_DEBUG, "TLS: tls_process: chg=3D%d ks=3D%s lame=3D%s to=
-_link->len=3D%d wakeup=3D%d",
--             state_change,
-+             continue_tls_process,
-              state_name(ks->state),
-              state_name(ks_lame->state),
-              to_link->len,
-              *wakeup);
--        state_change =3D tls_process_state(multi, session, to_link, to_lin=
-k_addr,
--                                         to_link_socket_info, wakeup);
-+        continue_tls_process =3D tls_process_state(multi, session, to_link=
-, to_link_addr,
-+                                                 to_link_socket_info, wake=
-up);
-
-         if (ks->state =3D=3D S_ERROR)
+-        if (ks->state >=3D S_INITIAL && link_socket_actual_defined(&ks->re=
+mote_addr))
++        if ((ks->state >=3D S_INITIAL || ks->state =3D=3D S_ERROR_PRE) && =
+ link_socket_actual_defined(&ks->remote_addr))
          {
+             struct link_socket_actual *tla =3D NULL;
+
+@@ -3358,7 +3392,8 @@
+             {
+                 msg(D_TLS_ERRORS, "TLS Error: generate_key_expansion faile=
+d");
+                 ks->authenticated =3D KS_AUTH_FALSE;
+-                ks->state =3D S_ERROR;
++                key_state_ssl_shutdown(&ks->ks_ssl);
++                ks->state =3D S_ERROR_PRE;
+             }
+
+             /* Update auth token on the client if needed on renegotiation
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index 3854d59..1ca9745 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -372,6 +372,13 @@
+                         const struct tls_root_ctx *ssl_ctx, bool is_server=
+, struct tls_session *session);
+
+ /**
++ * Sets a TLS session to be shutdown state, so the TLS library will genera=
+te
++ * a shutdown alert.
++ */
++void
++key_state_ssl_shutdown(struct key_state_ssl *ks_ssl);
++
++/**
+  * Free the SSL channel part of the given key state.
+  *
+  * @param ks_ssl        The SSL channel's state info to free
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index d3edc5f..d38d8ec 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -74,7 +74,10 @@
+  *
+  * @{
+  */
+-#define S_ERROR          -1     /**< Error state.  */
++#define S_ERROR         (-2)     /**< Error state.  */
++#define S_ERROR_PRE     (-1)     /**< Error state but try to send out aler=
+ts
++                                  *  before killing the keystore and moving
++                                  *  it to S_ERROR */
+ #define S_UNDEF           0     /**< Undefined state, used after a \c
+                                  *   key_state is cleaned up. */
+ #define S_INITIAL         1     /**< Initial \c key_state state after
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 9c9167d..c8aca4f 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -1275,6 +1275,14 @@
+                         ssl_bio_read, NULL);
+ }
+
++
++void
++key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)
++{
++    mbedtls_ssl_send_alert_message(ks_ssl->ctx, MBEDTLS_SSL_ALERT_LEVEL_FA=
+TAL,
++                                   MBEDTLS_SSL_ALERT_MSG_CLOSE_NOTIFY);
++}
++
+ void
+ key_state_ssl_free(struct key_state_ssl *ks_ssl)
+ {
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 82872bf..622b9b5 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1961,6 +1961,12 @@
+ }
+
+ void
++key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)
++{
++    SSL_set_shutdown(ks_ssl->ssl, SSL_SENT_SHUTDOWN | SSL_RECEIVED_SHUTDOW=
+N);
++}
++
++void
+ key_state_ssl_free(struct key_state_ssl *ks_ssl)
+ {
+     if (ks_ssl->ssl)
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/452?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ib6d713f2eb08a4c39d97de3e1a4a832cedc09585
-Gerrit-Change-Number: 452
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: I0ad48915004ddee587e97c8ed190ba8ee989e48d
+Gerrit-Change-Number: 449
+Gerrit-PatchSet: 4
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
@@ -274,185 +344,258 @@ Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newpatchset
 
---ag15snAre/0=
+--FaDDjs11rs8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>plaisthos <strong>uploaded patch set #2</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/452?usp=3Demail">View Chang=
-e</a></p><p>The following approvals got outdated and were removed:
-Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Rename state_change to continue_tls_process<b=
-r><br>The name state_change is more confusing than helpful as it not really=
-<br>indicates if there was a state change but rather if processing should<b=
-r>be continued. There even some states that are definitively state changes<=
-br>(setting to_link buffer) that require continue_tls_process to be set<br>=
-to false.<br><br>Change-Id: Ib6d713f2eb08a4c39d97de3e1a4a832cedc09585<br>--=
--<br>M src/openvpn/ssl.c<br>1 file changed, 27 insertions(+), 22 deletions(=
--)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-space=
-: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/5=
-2/452/2</pre><pre style=3D"font-family: monospace,monospace; white-space: p=
-re-wrap;"><span>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><b=
-r><span>index b4cd8f5..f8e0c51 100644</span><br><span>--- a/src/openvpn/ssl=
-.c</span><br><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -2694,7 +2694=
-,7 @@</span><br><span>  */</span><br><span> static bool</span><br><span> re=
-ad_incoming_tls_ciphertext(struct buffer *buf, struct key_state *ks,</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-                            =
- bool *state_change)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+                             bool *continue_tls_process)</span><br><span> =
-{</span><br><span>     int status =3D 0;</span><br><span>     if (buf-&gt;l=
-en)</span><br><span>@@ -2714,7 +2714,7 @@</span><br><span>     if (status =
-=3D=3D 1)</span><br><span>     {</span><br><span>         reliable_mark_del=
-eted(ks-&gt;rec_reliable, buf);</span><br><span style=3D"color: hsl(0, 100%=
-, 40%);">-        *state_change =3D true;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+        *continue_tls_process =3D true;</span><br><sp=
-an>         dmsg(D_TLS_DEBUG, &quot;Incoming Ciphertext -&gt; TLS&quot;);</=
-span><br><span>     }</span><br><span>     return true;</span><br><span>@@ =
--2730,7 +2730,7 @@</span><br><span> </span><br><span> static bool</span><br=
-><span> read_incoming_tls_plaintext(struct key_state *ks, struct buffer *bu=
-f,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                   =
-         interval_t *wakeup, bool *state_change)</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+                            interval_t *wakeup=
-, bool *continue_tls_process)</span><br><span> {</span><br><span>     ASSER=
-T(buf_init(buf, 0));</span><br><span> </span><br><span>@@ -2744,7 +2744,7 @=
-@</span><br><span>     }</span><br><span>     if (status =3D=3D 1)</span><b=
-r><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- *state_change =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+        *continue_tls_process =3D true;</span><br><span>         dmsg(=
-D_TLS_DEBUG, &quot;TLS -&gt; Incoming Plaintext&quot;);</span><br><span> </=
-span><br><span>         /* More data may be available, wake up again asap t=
-o check. */</span><br><span>@@ -2754,7 +2754,7 @@</span><br><span> }</span>=
-<br><span> </span><br><span> static bool</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">-write_outgoing_tls_ciphertext(struct tls_session *sessio=
-n, bool *state_change)</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+write_outgoing_tls_ciphertext(struct tls_session *session, bool *continu=
-e_tls_process)</span><br><span> {</span><br><span>     struct key_state *ks=
- =3D &amp;session-&gt;key[KS_PRIMARY];</span><br><span> </span><br><span>@@=
- -2830,7 +2830,7 @@</span><br><span> </span><br><span>             reliable=
-_mark_active_outgoing(ks-&gt;send_reliable, buf, opcode);</span><br><span> =
-            INCR_GENERATED;</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-            *state_change =3D true;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+            *continue_tls_process =3D true;</span><br=
-><span>         }</span><br><span>         dmsg(D_TLS_DEBUG, &quot;Outgoing=
- Ciphertext -&gt; Reliable&quot;);</span><br><span>     }</span><br><span>@=
-@ -2839,7 +2839,6 @@</span><br><span>     return true;</span><br><span> }</=
-span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-</spa=
-n><br><span> static bool</span><br><span> tls_process_state(struct tls_mult=
-i *multi,</span><br><span>                   struct tls_session *session,</=
-span><br><span>@@ -2848,13 +2847,19 @@</span><br><span>                   s=
-truct link_socket_info *to_link_socket_info,</span><br><span>              =
-     interval_t *wakeup)</span><br><span> {</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-    bool state_change =3D false;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    /* This variable indicates if we sho=
-uld call this method</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+     * again to process more incoming/outgoing TLS state/data</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+     * We want to repeat this un=
-til we either determined that there</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+     * is nothing more to process or that further processin=
-g</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     * should only=
- be done after the outer loop (sending packets etc.)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+     * has run once more */</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    bool continue_tls_process =3D=
- false;</span><br><span>     struct key_state *ks =3D &amp;session-&gt;key[=
-KS_PRIMARY];      /* primary key */</span><br><span> </span><br><span>     =
-/* Initial handshake */</span><br><span>     if (ks-&gt;state =3D=3D S_INIT=
-IAL)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        state_change =3D session_move_pre_start(session, ks, false);<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        continue_tls=
-_process =3D session_move_pre_start(session, ks, false);</span><br><span>  =
-   }</span><br><span> </span><br><span>     /* Are we timed out on receive?=
- */</span><br><span>@@ -2872,7 +2877,7 @@</span><br><span>     if (ks-&gt;s=
-tate =3D=3D S_PRE_START &amp;&amp; reliable_empty(ks-&gt;send_reliable))</s=
-pan><br><span>     {</span><br><span>         ks-&gt;state =3D S_START;</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        state_change =3D =
-true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        contin=
-ue_tls_process =3D true;</span><br><span> </span><br><span>         /* New =
-connection, remove any old X509 env variables */</span><br><span>         t=
-ls_x509_clear_env(session-&gt;opt-&gt;es);</span><br><span>@@ -2885,7 +2890=
-,7 @@</span><br><span>         &amp;&amp; reliable_empty(ks-&gt;send_reliab=
-le))</span><br><span>     {</span><br><span>         session_move_active(mu=
-lti, session, to_link_socket_info, ks);</span><br><span style=3D"color: hsl=
-(0, 100%, 40%);">-        state_change =3D true;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        continue_tls_process =3D true;</span><=
-br><span>     }</span><br><span> </span><br><span>     /* Reliable buffer t=
-o outgoing TCP/UDP (send up to CONTROL_SEND_ACK_MAX ACKs</span><br><span>@@=
- -2927,7 +2932,7 @@</span><br><span>         }</span><br><span>         els=
-e</span><br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-            if (!read_incoming_tls_ciphertext(&amp;entry-&gt;buf, ks=
-, &amp;state_change))</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            if (!read_incoming_tls_ciphertext(&amp;entry-&gt;buf, ks, &am=
-p;continue_tls_process))</span><br><span>             {</span><br><span>   =
-              goto error;</span><br><span>             }</span><br><span>@@=
- -2938,7 +2943,7 @@</span><br><span>     struct buffer *buf =3D &amp;ks-&gt=
-;plaintext_read_buf;</span><br><span>     if (!buf-&gt;len)</span><br><span=
->     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (!r=
-ead_incoming_tls_plaintext(ks, buf, wakeup, &amp;state_change))</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+        if (!read_incoming_tls_=
-plaintext(ks, buf, wakeup, &amp;continue_tls_process))</span><br><span>    =
-     {</span><br><span>             goto error;</span><br><span>         }<=
-/span><br><span>@@ -2954,7 +2959,7 @@</span><br><span>             goto err=
-or;</span><br><span>         }</span><br><span> </span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-        state_change =3D true;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        continue_tls_process =3D true=
-;</span><br><span>         dmsg(D_TLS_DEBUG_MED, &quot;STATE S_SENT_KEY&quo=
-t;);</span><br><span>         ks-&gt;state =3D S_SENT_KEY;</span><br><span>=
-     }</span><br><span>@@ -2970,7 +2975,7 @@</span><br><span>             g=
-oto error;</span><br><span>         }</span><br><span> </span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        state_change =3D true;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+        continue_tls_process =
-=3D true;</span><br><span>         dmsg(D_TLS_DEBUG_MED, &quot;STATE S_GOT_=
-KEY&quot;);</span><br><span>         ks-&gt;state =3D S_GOT_KEY;</span><br>=
-<span>     }</span><br><span>@@ -2988,7 +2993,7 @@</span><br><span>        =
- }</span><br><span>         if (status =3D=3D 1)</span><br><span>         {=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            state_cha=
-nge =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      continue_tls_process =3D true;</span><br><span>             dmsg(D_TL=
-S_DEBUG, &quot;Outgoing Plaintext -&gt; TLS&quot;);</span><br><span>       =
-  }</span><br><span>     }</span><br><span>@@ -3006,7 +3011,7 @@</span><br>=
-<span>         }</span><br><span>     }</span><br><span> </span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-    return state_change;</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+    return continue_tls_process;</=
-span><br><span> error:</span><br><span>     tls_clear_error();</span><br><s=
-pan>     ks-&gt;state =3D S_ERROR;</span><br><span>@@ -3065,19 +3070,19 @@<=
-/span><br><span>         msg(D_TLS_DEBUG_LOW, &quot;TLS: tls_process: kille=
-d expiring key&quot;);</span><br><span>     }</span><br><span> </span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-    bool state_change =3D true;</=
-span><br><span style=3D"color: hsl(0, 100%, 40%);">-    while (state_change=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    bool continue_=
-tls_process =3D true;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    while (continue_tls_process)</span><br><span>     {</span><br><span> =
-        update_time();</span><br><span> </span><br><span>         dmsg(D_TL=
-S_DEBUG, &quot;TLS: tls_process: chg=3D%d ks=3D%s lame=3D%s to_link-&gt;len=
-=3D%d wakeup=3D%d&quot;,</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-             state_change,</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+             continue_tls_process,</span><br><span>              =
-state_name(ks-&gt;state),</span><br><span>              state_name(ks_lame-=
-&gt;state),</span><br><span>              to_link-&gt;len,</span><br><span>=
-              *wakeup);</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        state_change =3D tls_process_state(multi, session, to_link, to_li=
-nk_addr,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-                            to_link_socket_info, wakeup);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        continue_tls_process =3D tls_=
-process_state(multi, session, to_link, to_link_addr,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                                         =
-        to_link_socket_info, wakeup);</span><br><span> </span><br><span>   =
-      if (ks-&gt;state =3D=3D S_ERROR)</span><br><span>         {</span><br=
-><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/452?usp=3Demail">change 452</a>. To unsubscribe, or for hel=
-p writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings=
-">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessag=
-e"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAct=
-ion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/4=
-52?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></d=
-iv>
+<p>plaisthos <strong>uploaded patch set #4</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail">View Chang=
+e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;">Allow the TLS session to send out TLS alerts<br><br>Previous OpenVPN =
+versions shut down the TLS control channel immediately<br>when encountering=
+ an error. This also meant that we would not send out<br>TLS alerts to noti=
+fy a client about potential problems like mismatching<br>TLS versions or ha=
+ving no common cipher.<br><br>This commit adds a new key_state S_ERROR_PRE =
+which still allows to<br>send out the remaining TLS packets of the control =
+session which are<br>typically the alert message and then going to S_ERROR.=
+ We do not<br>wait for retries. So this is more a one-shot notify but that =
+is<br>acceptable in this situation.<br><br>Sending out alerts is a slight c=
+ompromise in security as alerts give<br>out a bit of information that other=
+wise is not given<br>out. But since all other consumers TLS implementations=
+ are already doing this<br>and TLS implementations (nowadays) are very care=
+ful not to leak (sensitive)<br>information by alerts and since the user exp=
+erience is much better with<br>alerts, this compromise is worth it.<br><br>=
+Change-Id: I0ad48915004ddee587e97c8ed190ba8ee989e48d<br>---<br>M Changes.rs=
+t<br>M src/openvpn/ssl.c<br>M src/openvpn/ssl_backend.h<br>M src/openvpn/ss=
+l_common.h<br>M src/openvpn/ssl_mbedtls.c<br>M src/openvpn/ssl_openssl.c<br=
+>6 files changed, 89 insertions(+), 19 deletions(-)<br><br></pre><pre style=
+=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
+//gerrit.openvpn.net:29418/openvpn refs/changes/49/449/4</pre><pre style=3D=
+"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git=
+ a/Changes.rst b/Changes.rst</span><br><span>index 3676dce..dbef0d9 100644<=
+/span><br><span>--- a/Changes.rst</span><br><span>+++ b/Changes.rst</span><=
+br><span>@@ -1,5 +1,16 @@</span><br><span> Overview of changes in 2.7</span=
+><br><span> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D</span><br><span style=3D"color: hsl(120, 100%, 40%);">+New =
+features</span><br><span style=3D"color: hsl(120, 100%, 40%);">+-----------=
+-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+TLS alerts</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    OpenVPN 2.7 will send o=
+ut TLS alerts to peers informing them if the TLS</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    session shuts down or when the TLS impleme=
+ntation informs the peer about</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    an error in the TLS session (e.g. mismatching TLS versions).=
+ This improves</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    t=
+he user experience as the client shows an error instead of running into</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    a timeout when the =
+server just stops responding completely.</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+Deprecated features</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+-------------------</span><br><span> ``secret`` support has been removed =
+by default.</span><br><span>     static key mode (non-TLS) is no longer con=
+sidered &quot;good and secure enough&quot;</span><br><span>     for today&#=
+39;s requirements.  Use TLS mode instead.  If deploying a PKI CA</span><br>=
+<span>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span>in=
+dex f8e0c51..fd3de87 100644</span><br><span>--- a/src/openvpn/ssl.c</span><=
+br><span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -853,6 +853,9 @@</span>=
+<br><span>         case S_ERROR:</span><br><span>             return &quot;=
+S_ERROR&quot;;</span><br><span> </span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+        case S_ERROR_PRE:</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+            return &quot;S_ERROR_PRE&quot;;</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>         case S=
+_GENERATED_KEYS:</span><br><span>             return &quot;S_GENERATED_KEYS=
+&quot;;</span><br><span> </span><br><span>@@ -2840,6 +2843,25 @@</span><br>=
+<span> }</span><br><span> </span><br><span> static bool</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+check_outgoing_ciphertext(struct key_st=
+ate *ks, struct tls_session *session,</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+                          bool *continue_tls_process)</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    /* Outgoing Ciphertext to reliable bu=
+ffer */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ks-&=
+gt;state &gt;=3D S_PRE_START)</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+    struct buffer *buf =3D reliable_get_buf_output_sequenced(ks-&gt;send_re=
+liable);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if =
+(buf)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (!write_o=
+utgoing_tls_ciphertext(session, continue_tls_process))</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+                return false;</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+            }</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    return true;</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+static bool</span><br><span> t=
+ls_process_state(struct tls_multi *multi,</span><br><span>                 =
+  struct tls_session *session,</span><br><span>                   struct bu=
+ffer *to_link,</span><br><span>@@ -2863,7 +2885,7 @@</span><br><span>     }=
+</span><br><span> </span><br><span>     /* Are we timed out on receive? */<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (now &gt;=3D ks=
+-&gt;must_negotiate &amp;&amp; ks-&gt;state &lt; S_ACTIVE)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    if (now &gt;=3D ks-&gt;must_nego=
+tiate &amp;&amp; ks-&gt;state &gt;=3D S_UNDEF &amp;&amp; ks-&gt;state &lt; =
+S_ACTIVE)</span><br><span>     {</span><br><span>         msg(D_TLS_ERRORS,=
+</span><br><span>             &quot;TLS Error: TLS key negotiation failed t=
+o occur within %d seconds (check your network connectivity)&quot;,</span><b=
+r><span>@@ -2917,6 +2939,16 @@</span><br><span>         return false;</span=
+><br><span>     }</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    if (ks-&gt;state =3D=3D S_ERROR_PRE)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+        /* When we end up here, we had one last chan=
+ce to send an outstanding</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+         * packet that contained an alert. We do not ensure that this=
+ packet</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         * h=
+as been successfully delivered  (ie wait for the ACK etc)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+         * but rather stop processing=
+ now */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        ks-&=
+gt;state =3D S_ERROR;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        return false;</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
+><span>     /* Write incoming ciphertext to TLS object */</span><br><span> =
+    struct reliable_entry *entry =3D reliable_get_entry_sequenced(ks-&gt;re=
+c_reliable);</span><br><span>     if (entry)</span><br><span>@@ -2997,29 +3=
+029,31 @@</span><br><span>             dmsg(D_TLS_DEBUG, &quot;Outgoing Pla=
+intext -&gt; TLS&quot;);</span><br><span>         }</span><br><span>     }<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    /* Outgoing Ciphertext to reliable buff=
+er */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (ks-&gt;s=
+tate &gt;=3D S_START)</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    if (!check_outgoing_ciphertext(ks, session, &amp;continue_tls_process=
+))</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-        buf =3D reliable_get_buf_output_sequenced(ks-&gt;send_reliable)=
+;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (buf)</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-            if (!write_outgoing_tls_c=
+iphertext(session, &amp;state_change))</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-                goto error;</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+     goto error;</span><br><span>     }</span><br><span> </span><br><span> =
+    return continue_tls_process;</span><br><span> error:</span><br><span>  =
+   tls_clear_error();</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    ks-&gt;state =3D S_ERROR;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Sh=
+ut down the TLS session but do a last read from the TLS</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+     * object to be able to read potent=
+ial TLS alerts */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  key_state_ssl_shutdown(&amp;ks-&gt;ks_ssl);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    check_outgoing_ciphertext(ks, session, &amp;c=
+ontinue_tls_process);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* Put oursel=
+ves in the pre error state that will only send out the</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+     * control channel packets but nothi=
+ng else */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    ks-&g=
+t;state =3D S_ERROR_PRE;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+</span><br><span>     msg(D_TLS_ERRORS, &quot;TLS Error: TLS handshake=
+ failed&quot;);</span><br><span>     INCR_ERROR;</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    return false;</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    return true;</span><br><span> }</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
+/*</span><br><span>  * This is the primary routine for processing TLS stuff=
+ inside the</span><br><span>  * the main event loop.  When this routine exi=
+ts</span><br><span>@@ -3127,7 +3161,7 @@</span><br><span>     }</span><br><=
+span> </span><br><span>     /* When should we wake up again? */</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    if (ks-&gt;state &gt;=3D S_IN=
+ITIAL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (ks-&g=
+t;state &gt;=3D S_INITIAL || ks-&gt;state =3D=3D S_ERROR_PRE)</span><br><sp=
+an>     {</span><br><span>         compute_earliest_wakeup(wakeup,</span><b=
+r><span>                                 reliable_send_timeout(ks-&gt;send_=
+reliable));</span><br><span>@@ -3280,7 +3314,7 @@</span><br><span>         =
+     session_id_print(&amp;ks-&gt;session_id_remote, &amp;gc),</span><br><s=
+pan>              print_link_socket_actual(&amp;ks-&gt;remote_addr, &amp;gc=
+));</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        if (ks-&gt;state &gt;=3D S_INITIAL &amp;&amp; link_socket_actual_de=
+fined(&amp;ks-&gt;remote_addr))</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        if ((ks-&gt;state &gt;=3D S_INITIAL || ks-&gt;state =3D=
+=3D S_ERROR_PRE) &amp;&amp;  link_socket_actual_defined(&amp;ks-&gt;remote_=
+addr))</span><br><span>         {</span><br><span>             struct link_=
+socket_actual *tla =3D NULL;</span><br><span> </span><br><span>@@ -3358,7 +=
+3392,8 @@</span><br><span>             {</span><br><span>                 m=
+sg(D_TLS_ERRORS, &quot;TLS Error: generate_key_expansion failed&quot;);</sp=
+an><br><span>                 ks-&gt;authenticated =3D KS_AUTH_FALSE;</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-                ks-&gt;stat=
+e =3D S_ERROR;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
+           key_state_ssl_shutdown(&amp;ks-&gt;ks_ssl);</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+                ks-&gt;state =3D S_ERROR=
+_PRE;</span><br><span>             }</span><br><span> </span><br><span>    =
+         /* Update auth token on the client if needed on renegotiation</spa=
+n><br><span>diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backen=
+d.h</span><br><span>index 3854d59..1ca9745 100644</span><br><span>--- a/src=
+/openvpn/ssl_backend.h</span><br><span>+++ b/src/openvpn/ssl_backend.h</spa=
+n><br><span>@@ -372,6 +372,13 @@</span><br><span>                         c=
+onst struct tls_root_ctx *ssl_ctx, bool is_server, struct tls_session *sess=
+ion);</span><br><span> </span><br><span> /**</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+ * Sets a TLS session to be shutdown state, so the=
+ TLS library will generate</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ * a shutdown alert.</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+void</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+key_state_ssl_shutdown(=
+struct key_state_ssl *ks_ssl);</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</spa=
+n><br><span>  * Free the SSL channel part of the given key state.</span><br=
+><span>  *</span><br><span>  * @param ks_ssl        The SSL channel&#39;s s=
+tate info to free</span><br><span>diff --git a/src/openvpn/ssl_common.h b/s=
+rc/openvpn/ssl_common.h</span><br><span>index d3edc5f..d38d8ec 100644</span=
+><br><span>--- a/src/openvpn/ssl_common.h</span><br><span>+++ b/src/openvpn=
+/ssl_common.h</span><br><span>@@ -74,7 +74,10 @@</span><br><span>  *</span>=
+<br><span>  * @{</span><br><span>  */</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#define S_ERROR          -1     /**&lt; Error state.  */</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+#define S_ERROR       =
+  (-2)     /**&lt; Error state.  */</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+#define S_ERROR_PRE     (-1)     /**&lt; Error state but tr=
+y to send out alerts</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++                                  *  before killing the keystore and movin=
+g</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                  =
+                *  it to S_ERROR */</span><br><span> #define S_UNDEF       =
+    0     /**&lt; Undefined state, used after a \c</span><br><span>        =
+                          *   key_state is cleaned up. */</span><br><span> =
+#define S_INITIAL         1     /**&lt; Initial \c key_state state after</s=
+pan><br><span>diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbed=
+tls.c</span><br><span>index 9c9167d..c8aca4f 100644</span><br><span>--- a/s=
+rc/openvpn/ssl_mbedtls.c</span><br><span>+++ b/src/openvpn/ssl_mbedtls.c</s=
+pan><br><span>@@ -1275,6 +1275,14 @@</span><br><span>                      =
+   ssl_bio_read, NULL);</span><br><span> }</span><br><span> </span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    mbedtls_ssl_send_alert_message(ks_ssl-&gt;ctx, MB=
+EDTLS_SSL_ALERT_LEVEL_FATAL,</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+                                   MBEDTLS_SSL_ALERT_MSG_CLOSE_NOT=
+IFY);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void</span><br=
+><span> key_state_ssl_free(struct key_state_ssl *ks_ssl)</span><br><span> {=
+</span><br><span>diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_o=
+penssl.c</span><br><span>index 82872bf..622b9b5 100644</span><br><span>--- =
+a/src/openvpn/ssl_openssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c=
+</span><br><span>@@ -1961,6 +1961,12 @@</span><br><span> }</span><br><span>=
+ </span><br><span> void</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+key_state_ssl_shutdown(struct key_state_ssl *ks_ssl)</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    SSL_set_shutdown(ks_ssl-&gt;ssl, SSL_SENT_SHUTDOWN |=
+ SSL_RECEIVED_SHUTDOWN);</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span> key_state_=
+ssl_free(struct key_state_ssl *ks_ssl)</span><br><span> {</span><br><span> =
+    if (ks_ssl-&gt;ssl)</span><br><span></span><br></pre><p>To view, visit =
+<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail">change 44=
+9</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
+ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
+=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
+type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/449?usp=3Demail"/><meta itemprop=3D"name" c=
+ontent=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib6d713f2eb08a4c39d97de3e1a4=
-a832cedc09585 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 452 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I0ad48915004ddee587e97c8ed19=
+0ba8ee989e48d </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 449 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -466,5 +609,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---ag15snAre/0=--
+--FaDDjs11rs8=--
 
