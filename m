@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 20 Nov 2023 10:53:04 +0000
-In-Reply-To: <gerrit.1699031887000.I0dcb2dac4136f194da7050a8ea8495e9faba9dd9@...2715...>
-References: <gerrit.1699031887000.I0dcb2dac4136f194da7050a8ea8495e9faba9dd9@...2715...>
+Date: Mon, 20 Nov 2023 10:53:39 +0000
+In-Reply-To: <gerrit.1699361069000.Ie264ec1ec61fd71e8cc87987be3e2adc2735c201@...2715...>
+References: <gerrit.1699361069000.Ie264ec1ec61fd71e8cc87987be3e2adc2735c201@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <8efd0d1b96059e205df7481d7e983d178ead628c-EmailReviewComments-HTML@...2715...>
+Message-ID: <49ccd0b1ad1562b7f698ef822a1362e8b8fe9962-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="pEcqpyLr3xg="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Remove support for
- NTLM v1 proxy authentication
+Content-Type: multipart/alternative; boundary="IHOHy82x9bw="; charset=UTF-8
+Subject: [Openvpn-devel] [XL] Change in openvpn[master]: sample-keys: renew
+ for the next 10 years
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,64 +22,64 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---pEcqpyLr3xg=
+--IHOHy82x9bw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld.
 
 plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/379?usp=3Demail )
+/openvpn/+/422?usp=3Demail )
 
-Change subject: Remove support for NTLM v1 proxy authentication
+Change subject: sample-keys: renew for the next 10 years
 ......................................................................
 
 
-Patch Set 2: Code-Review+2
+Patch Set 1: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/379?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/422?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I0dcb2dac4136f194da7050a8ea8495e9faba9dd9
-Gerrit-Change-Number: 379
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: Ie264ec1ec61fd71e8cc87987be3e2adc2735c201
+Gerrit-Change-Number: 422
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 20 Nov 2023 10:53:04 +0000
+Gerrit-Comment-Date: Mon, 20 Nov 2023 10:53:39 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---pEcqpyLr3xg=
+--IHOHy82x9bw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/379?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/422?usp=3Demail">Vi=
 ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/379?usp=3Demail">=
-change 379</a>. To unsubscribe, or for help writing mail filters, visit <a =
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/422?usp=3Demail">=
+change 422</a>. To unsubscribe, or for help writing mail filters, visit <a =
 href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
  itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
 ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/379?usp=3Demail"/><meta itemprop=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/422?usp=3Demail"/><meta itemprop=
 =3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0dcb2dac4136f194da7050a8ea8=
-495e9faba9dd9 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 379 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie264ec1ec61fd71e8cc87987be3=
+e2adc2735c201 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 422 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -88,12 +88,12 @@ ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 20 Nov 2023 10:53:04=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 20 Nov 2023 10:53:39=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---pEcqpyLr3xg=--
+--IHOHy82x9bw=--
 
