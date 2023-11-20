@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
 Date: Mon, 20 Nov 2023 11:44:17 +0000
-In-Reply-To: <gerrit.1700475817000.I2cc8f9b82079acca250db5871ffd9fad2997d1a8@...2715...>
-References: <gerrit.1700475817000.I2cc8f9b82079acca250db5871ffd9fad2997d1a8@...2715...>
+In-Reply-To: <gerrit.1700475817000.Ifd0376b36d4050dc22bc93b8fcf7ed29faef0021@...2715...>
+References: <gerrit.1700475817000.Ifd0376b36d4050dc22bc93b8fcf7ed29faef0021@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <007060512ff4aeb2f960cfd2bcee1c81eea241e5-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <5f92fe32ec5f21833530ad3979ea60d0df48d20b-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XaQg6u0zGZ4="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Add check for nice
- in cmake config
+Content-Type: multipart/alternative; boundary="daHe86YVlxA="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Remove
+ unused/uneeded defines from configure and cmake config
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---XaQg6u0zGZ4=
+--daHe86YVlxA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,63 +32,150 @@ Hello flichtenheld,
 
 I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/444?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/443?usp=3Demail
 
 to look at the new patch set (#2).
 
-The change is no longer submittable: checks~ChecksSubmitRule is unsatisfied=
- now.
 
-
-Change subject: Add check for nice in cmake config
+Change subject: Remove unused/uneeded defines from configure and cmake conf=
+ig
 ......................................................................
 
-Add check for nice in cmake config
+Remove unused/uneeded defines from configure and cmake config
 
-Change-Id: I2cc8f9b82079acca250db5871ffd9fad2997d1a8
+Anonymous unions/structs are technically a custom GNU C99 feature but
+was already widely supported by other compilers. With C11 this feature
+has become a standard feature so all compilers nowadays support it.
+
+Change-Id: Ifd0376b36d4050dc22bc93b8fcf7ed29faef0021
 ---
-M CMakeLists.txt
 M config.h.cmake.in
-2 files changed, 2 insertions(+), 1 deletion(-)
+M configure.ac
+M src/openvpn/mroute.h
+3 files changed, 2 insertions(+), 45 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/44/444/2
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/43/443/2
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index fe9b596..f82ee96 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -146,6 +146,7 @@
- check_symbol_exists(fork unistd.h HAVE_FORK)
- check_symbol_exists(execve unistd.h HAVE_EXECVE)
- check_symbol_exists(ftruncate unistd.h HAVE_FTRUNCATE)
-+check_symbol_exists(nice unistd.h HAVE_NICE)
- check_symbol_exists(setgid unistd.h HAVE_SETGID)
- check_symbol_exists(setuid unistd.h HAVE_SETUID)
- check_symbol_exists(setsid unistd.h HAVE_SETSID)
 diff --git a/config.h.cmake.in b/config.h.cmake.in
-index 25273ac..c1f5848 100644
+index 19b79bc..25273ac 100644
 --- a/config.h.cmake.in
 +++ b/config.h.cmake.in
-@@ -209,7 +209,7 @@
- #cmakedefine HAVE_NET_TUN_IF_TUN_H
+@@ -62,9 +62,6 @@
+ /* Enable --x509-username-field feature */
+ #cmakedefine ENABLE_X509ALTUSERNAME
 
- /* Define to 1 if you have the `nice' function. */
--#undef HAVE_NICE
-+#cmakedefine HAVE_NICE
+-/* Compiler supports anonymous unions */
+-#define HAVE_ANONYMOUS_UNION_SUPPORT
+-
+ /* Define to 1 if you have the <arpa/inet.h> header file. */
+ #cmakedefine HAVE_ARPA_INET_H 1
 
- /* Define to 1 if you have the `openlog' function. */
- #cmakedefine HAVE_OPENLOG
+@@ -139,9 +136,6 @@
+ /* Define to 1 if you have the `getpwnam' function. */
+ #cmakedefine HAVE_GETPWNAM
+
+-/* Define to 1 if you have the `getrlimit' function. */
+-#undef HAVE_GETRLIMIT
+-
+ /* Define to 1 if you have the `getsockname' function. */
+ #cmakedefine HAVE_GETSOCKNAME
+
+@@ -235,8 +229,6 @@
+ /* Define to 1 if you have the <pwd.h> header file. */
+ #cmakedefine HAVE_PWD_H
+
+-/* Define to 1 if you have the `readv' function. */
+-#undef HAVE_READV
+
+ /* Define to 1 if you have the `recvmsg' function. */
+ #cmakedefine HAVE_RECVMSG
+@@ -383,9 +375,6 @@
+ /* Define to 1 if you have the <vfork.h> header file. */
+ #undef HAVE_VFORK_H
+
+-/* Define to 1 if you have the `vsnprintf' function. */
+-#undef HAVE_VSNPRINTF
+-
+ /* we always assume a recent mbed TLS version */
+ #define HAVE_MBEDTLS_PSA_CRYPTO_H 1
+ #define HAVE_MBEDTLS_SSL_TLS_PRF 1
+diff --git a/configure.ac b/configure.ac
+index 84eaad6..055b2a7 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -561,28 +561,6 @@
+ 	,
+ 	[[${SOCKET_INCLUDES}]]
+ )
+-AC_MSG_CHECKING([anonymous union support])
+-AC_COMPILE_IFELSE(
+-	[AC_LANG_PROGRAM(
+-		[[
+-			struct mystruct {
+-			  union {
+-			    int m1;
+-			    char m2;
+-			  };
+-			};
+-		]],
+-		[[
+-			struct mystruct s;
+-			s.m1 =3D 1; s.m2 =3D 2;
+-		]]
+-	)],
+-	[
+-		AC_MSG_RESULT([yes])
+-		AC_DEFINE([HAVE_ANONYMOUS_UNION_SUPPORT], [], [Compiler supports anonymo=
+us unions])
+-	],
+-	[AC_MSG_RESULT([no])]
+-)
+
+ saved_LDFLAGS=3D"$LDFLAGS"
+ LDFLAGS=3D"$LDFLAGS -Wl,--wrap=3Dexit"
+@@ -655,7 +633,7 @@
+ AC_CHECK_FUNCS([ \
+ 	daemon chroot getpwnam setuid nice system dup dup2 \
+ 	syslog openlog mlockall getrlimit getgrnam setgid \
+-	setgroups flock readv writev time gettimeofday \
++	setgroups flock time gettimeofday \
+ 	setsid chdir \
+ 	chsize ftruncate execve getpeereid basename dirname access \
+ 	epoll_create strsep \
+diff --git a/src/openvpn/mroute.h b/src/openvpn/mroute.h
+index a06e872..7cfa18e 100644
+--- a/src/openvpn/mroute.h
++++ b/src/openvpn/mroute.h
+@@ -96,17 +96,7 @@
+             uint8_t prefix[12];
+             in_addr_t addr;     /* _network order_ IPv4 address */
+         } v4mappedv6;
+-    }
+-#ifndef HAVE_ANONYMOUS_UNION_SUPPORT
+-/* Wrappers to support compilers that do not grok anonymous unions */
+-        mroute_union
+-#define raw_addr mroute_union.raw_addr
+-#define ether mroute_union.ether
+-#define v4 mroute_union.v4
+-#define v6 mroute_union.v6
+-#define v4mappedv6 mroute_union.v4mappedv6
+-#endif
+-    ;
++    };
+ };
+
+ /* Double-check that struct packing works as expected */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/444?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/443?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I2cc8f9b82079acca250db5871ffd9fad2997d1a8
-Gerrit-Change-Number: 444
+Gerrit-Change-Id: Ifd0376b36d4050dc22bc93b8fcf7ed29faef0021
+Gerrit-Change-Number: 443
 Gerrit-PatchSet: 2
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -96,53 +183,122 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-MessageType: newpatchset
 
---XaQg6u0zGZ4=
+--daHe86YVlxA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
 <p>plaisthos <strong>uploaded patch set #2</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/444?usp=3Demail">View Chang=
-e</a></p><p>The change is no longer submittable: checks~ChecksSubmitRule is=
- unsatisfied now.</p><pre style=3D"font-family: monospace,monospace; white-=
-space: pre-wrap;">Add check for nice in cmake config<br><br>Change-Id: I2cc=
-8f9b82079acca250db5871ffd9fad2997d1a8<br>---<br>M CMakeLists.txt<br>M confi=
-g.h.cmake.in<br>2 files changed, 2 insertions(+), 1 deletion(-)<br><br></pr=
-e><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">g=
-it pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/44/444/2</pre><=
-pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><spa=
-n>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index fe9b59=
-6..f82ee96 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++ =
-b/CMakeLists.txt</span><br><span>@@ -146,6 +146,7 @@</span><br><span> check=
-_symbol_exists(fork unistd.h HAVE_FORK)</span><br><span> check_symbol_exist=
-s(execve unistd.h HAVE_EXECVE)</span><br><span> check_symbol_exists(ftrunca=
-te unistd.h HAVE_FTRUNCATE)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+check_symbol_exists(nice unistd.h HAVE_NICE)</span><br><span> check=
-_symbol_exists(setgid unistd.h HAVE_SETGID)</span><br><span> check_symbol_e=
-xists(setuid unistd.h HAVE_SETUID)</span><br><span> check_symbol_exists(set=
-sid unistd.h HAVE_SETSID)</span><br><span>diff --git a/config.h.cmake.in b/=
-config.h.cmake.in</span><br><span>index 25273ac..c1f5848 100644</span><br><=
-span>--- a/config.h.cmake.in</span><br><span>+++ b/config.h.cmake.in</span>=
-<br><span>@@ -209,7 +209,7 @@</span><br><span> #cmakedefine HAVE_NET_TUN_IF=
-_TUN_H</span><br><span> </span><br><span> /* Define to 1 if you have the `n=
-ice&#39; function. */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-#undef HAVE_NICE</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cm=
-akedefine HAVE_NICE</span><br><span> </span><br><span> /* Define to 1 if yo=
-u have the `openlog&#39; function. */</span><br><span> #cmakedefine HAVE_OP=
-ENLOG</span><br><span></span><br></pre><p>To view, visit <a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/444?usp=3Demail">change 444</a>. To unsubscr=
-ibe, or for help writing mail filters, visit <a href=3D"http://gerrit.openv=
-pn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.=
-org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sch=
-ema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/444?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Cha=
-nge"/></div></div>
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/443?usp=3Demail">View Chang=
+e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;">Remove unused/uneeded defines from configure and cmake config<br><br>=
+Anonymous unions/structs are technically a custom GNU C99 feature but<br>wa=
+s already widely supported by other compilers. With C11 this feature<br>has=
+ become a standard feature so all compilers nowadays support it.<br><br>Cha=
+nge-Id: Ifd0376b36d4050dc22bc93b8fcf7ed29faef0021<br>---<br>M config.h.cmak=
+e.in<br>M configure.ac<br>M src/openvpn/mroute.h<br>3 files changed, 2 inse=
+rtions(+), 45 deletions(-)<br><br></pre><pre style=3D"font-family: monospac=
+e,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:2941=
+8/openvpn refs/changes/43/443/2</pre><pre style=3D"font-family: monospace,m=
+onospace; white-space: pre-wrap;"><span>diff --git a/config.h.cmake.in b/co=
+nfig.h.cmake.in</span><br><span>index 19b79bc..25273ac 100644</span><br><sp=
+an>--- a/config.h.cmake.in</span><br><span>+++ b/config.h.cmake.in</span><b=
+r><span>@@ -62,9 +62,6 @@</span><br><span> /* Enable --x509-username-field =
+feature */</span><br><span> #cmakedefine ENABLE_X509ALTUSERNAME</span><br><=
+span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* Compiler sup=
+ports anonymous unions */</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-#define HAVE_ANONYMOUS_UNION_SUPPORT</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-</span><br><span> /* Define to 1 if you have the &lt;arp=
+a/inet.h&gt; header file. */</span><br><span> #cmakedefine HAVE_ARPA_INET_H=
+ 1</span><br><span> </span><br><span>@@ -139,9 +136,6 @@</span><br><span> /=
+* Define to 1 if you have the `getpwnam&#39; function. */</span><br><span> =
+#cmakedefine HAVE_GETPWNAM</span><br><span> </span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-/* Define to 1 if you have the `getrlimit&#39; funct=
+ion. */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#undef HAVE_GE=
+TRLIMIT</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><sp=
+an> /* Define to 1 if you have the `getsockname&#39; function. */</span><br=
+><span> #cmakedefine HAVE_GETSOCKNAME</span><br><span> </span><br><span>@@ =
+-235,8 +229,6 @@</span><br><span> /* Define to 1 if you have the &lt;pwd.h&=
+gt; header file. */</span><br><span> #cmakedefine HAVE_PWD_H</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* Define to 1 if =
+you have the `readv&#39; function. */</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-#undef HAVE_READV</span><br><span> </span><br><span> /* Def=
+ine to 1 if you have the `recvmsg&#39; function. */</span><br><span> #cmake=
+define HAVE_RECVMSG</span><br><span>@@ -383,9 +375,6 @@</span><br><span> /*=
+ Define to 1 if you have the &lt;vfork.h&gt; header file. */</span><br><spa=
+n> #undef HAVE_VFORK_H</span><br><span> </span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-/* Define to 1 if you have the `vsnprintf&#39; function.=
+ */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#undef HAVE_VSNPRI=
+NTF</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> =
+/* we always assume a recent mbed TLS version */</span><br><span> #define H=
+AVE_MBEDTLS_PSA_CRYPTO_H 1</span><br><span> #define HAVE_MBEDTLS_SSL_TLS_PR=
+F 1</span><br><span>diff --git a/configure.ac b/configure.ac</span><br><spa=
+n>index 84eaad6..055b2a7 100644</span><br><span>--- a/configure.ac</span><b=
+r><span>+++ b/configure.ac</span><br><span>@@ -561,28 +561,6 @@</span><br><=
+span> 	,</span><br><span> 	[[${SOCKET_INCLUDES}]]</span><br><span> )</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-AC_MSG_CHECKING([anonymous u=
+nion support])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-AC_COMP=
+ILE_IFELSE(</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	[AC_LANG_=
+PROGRAM(</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		[[</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-			struct mystruct {</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-			  union {</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-			    int m1;</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-			    char m2;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-			  };</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-			};</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		]],</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-		[[</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-			struct mystruct s;</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-			s.m1 =3D 1; s.m2 =3D 2;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-		]]</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-	)],</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-	[</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		AC_MSG_RESUL=
+T([yes])</span><br><span style=3D"color: hsl(0, 100%, 40%);">-		AC_DEFINE([=
+HAVE_ANONYMOUS_UNION_SUPPORT], [], [Compiler supports anonymous unions])</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-	],</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-	[AC_MSG_RESULT([no])]</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-)</span><br><span> </span><br><span> save=
+d_LDFLAGS=3D&quot;$LDFLAGS&quot;</span><br><span> LDFLAGS=3D&quot;$LDFLAGS =
+-Wl,--wrap=3Dexit&quot;</span><br><span>@@ -655,7 +633,7 @@</span><br><span=
+> AC_CHECK_FUNCS([ \</span><br><span> 	daemon chroot getpwnam setuid nice s=
+ystem dup dup2 \</span><br><span> 	syslog openlog mlockall getrlimit getgrn=
+am setgid \</span><br><span style=3D"color: hsl(0, 100%, 40%);">-	setgroups=
+ flock readv writev time gettimeofday \</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+	setgroups flock time gettimeofday \</span><br><span> 	=
+setsid chdir \</span><br><span> 	chsize ftruncate execve getpeereid basenam=
+e dirname access \</span><br><span> 	epoll_create strsep \</span><br><span>=
+diff --git a/src/openvpn/mroute.h b/src/openvpn/mroute.h</span><br><span>in=
+dex a06e872..7cfa18e 100644</span><br><span>--- a/src/openvpn/mroute.h</spa=
+n><br><span>+++ b/src/openvpn/mroute.h</span><br><span>@@ -96,17 +96,7 @@</=
+span><br><span>             uint8_t prefix[12];</span><br><span>           =
+  in_addr_t addr;     /* _network order_ IPv4 address */</span><br><span>  =
+       } v4mappedv6;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#ifndef HAVE_ANON=
+YMOUS_UNION_SUPPORT</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*=
+ Wrappers to support compilers that do not grok anonymous unions */</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-        mroute_union</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-#define raw_addr mroute_union.=
+raw_addr</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#define ether=
+ mroute_union.ether</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#d=
+efine v4 mroute_union.v4</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-#define v6 mroute_union.v6</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-#define v4mappedv6 mroute_union.v4mappedv6</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    ;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    };</span><br><span> };</span><br><span> </span><br><span> /* Double-che=
+ck that struct packing works as expected */</span><br><span></span><br></pr=
+e><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/443?us=
+p=3Demail">change 443</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
+v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
+prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
+"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/443?usp=3Demail"/><meta=
+ itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I2cc8f9b82079acca250db5871ff=
-d9fad2997d1a8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 444 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifd0376b36d4050dc22bc93b8fcf=
+7ed29faef0021 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 443 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -155,5 +311,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---XaQg6u0zGZ4=--
+--daHe86YVlxA=--
 
