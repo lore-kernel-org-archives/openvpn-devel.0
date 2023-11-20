@@ -1,14 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 20 Nov 2023 11:49:42 +0000
+Date: Mon, 20 Nov 2023 11:50:33 +0000
 In-Reply-To: <gerrit.1700477479000.I9c85ccab6d51064ebff2c391740ba8c2d044ed1a@...2715...>
 References: <gerrit.1700477479000.I9c85ccab6d51064ebff2c391740ba8c2d044ed1a@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <796c133d4665854fdae313066a652d8373db5bc2-EmailReviewComments-HTML@...2715...>
+Message-ID: <f098c9fc92d0b48a2b596157ba27a3bad7082cd9-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="n820NxPglpM="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="C1TzO6r0Ny0="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: Remove compat
  versionhelpers.h and remove cmake/configure check for it
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---n820NxPglpM=
+--C1TzO6r0Ny0=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -41,17 +41,12 @@ Patch Set 1:
 
 Commit Message:
 
-http://gerrit.openvpn.net/c/openvpn/+/445/comment/b2ce1fb4_43a25ec3 :
+http://gerrit.openvpn.net/c/openvpn/+/445/comment/ad40222e_e26eea37 :
 PS1, Line 10: old msvc-config.h that always had it present. Also interactiv=
 e.c includes
-> interactive. [=E2=80=A6]
-Yeah. interactive.c is just
-
-#include <mstcpip.h>
-
-#include <versionhelpers.h>
-
-#include "openvpn-msg.h"
+> Yeah. interactive.c is just [=E2=80=A6]
+argh. SOrry. I messed that up thinking that I have not modified that that w=
+as not part of the patch. sorry. Will rewrite the commit message.
 
 
 
@@ -69,13 +64,14 @@ Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 20 Nov 2023 11:49:42 +0000
+Gerrit-Comment-Date: Mon, 20 Nov 2023 11:50:33 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
 Comment-In-Reply-To: flichtenheld <frank@...2641...>
 Gerrit-MessageType: comment
 
---n820NxPglpM=
+--C1TzO6r0Ny0=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -85,23 +81,21 @@ hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
 li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"list=
 -style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p=
  style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/445/comment/b2ce1fb4_43a25ec3">Patch Set #1, Line 10:</a> <code style=
+pn/+/445/comment/ad40222e_e26eea37">Patch Set #1, Line 10:</a> <code style=
 =3D"font-family:monospace,monospace">old msvc-config.h that always had it p=
 resent. Also interactive.c includes</code></p><p><blockquote style=3D"borde=
-r-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">interactive. [=E2=
-=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break=
--word;">Yeah. interactive.c is just</p><p style=3D"white-space: pre-wrap; w=
-ord-wrap: break-word;">#include &lt;mstcpip.h&gt;</p><p style=3D"white-spac=
-e: pre-wrap; word-wrap: break-word;">#include &lt;versionhelpers.h&gt;</p><=
-p style=3D"white-space: pre-wrap; word-wrap: break-word;">#include &quot;op=
-envpn-msg.h&quot;</p></li></ul></li></ul><p>To view, visit <a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/445?usp=3Demail">change 445</a>. To unsubs=
-cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
-nvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schem=
-a.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://s=
-chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/445?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
-hange"/></div></div>
+r-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Yeah. interactive=
+.c is just [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; w=
+ord-wrap: break-word;">argh. SOrry. I messed that up thinking that I have n=
+ot modified that that was not part of the patch. sorry. Will rewrite the co=
+mmit message.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/445?usp=3Demail">change 445</a>. To unsubscrib=
+e, or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn=
+.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.or=
+g/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schem=
+a.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/=
+c/openvpn/+/445?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chang=
+e"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -117,14 +111,16 @@ ba8c2d044ed1a </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 20 Nov 2023 11:49:42=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 20 Nov 2023 11:50:33=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
 <div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
 .2641...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---n820NxPglpM=--
+--C1TzO6r0Ny0=--
 
