@@ -1,16 +1,16 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 21 Nov 2023 19:18:29 +0000
-In-Reply-To: <gerrit.1700480182000.I91f739f5cb43386b2ce767cf3603a76e6b93e216@...2715...>
-References: <gerrit.1700480182000.I91f739f5cb43386b2ce767cf3603a76e6b93e216@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <b9f7dea35ec08b3d0973796175441762f713bf93-HTML@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Tue, 21 Nov 2023 19:35:58 +0000
+In-Reply-To: <gerrit.1700590714000.Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3@...2715...>
+References: <gerrit.1700590714000.Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <620cbb70fa7781fa1d140a523377557e4cd54656-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="m95Of64hh/8="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Introduce
- report_command_status helper function
+Content-Type: multipart/alternative; boundary="HL4xUDtb5bM="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Extend the error
+ message when TLS 1.0 PRF fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,233 +19,147 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---m95Of64hh/8=
+--HL4xUDtb5bM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/45=
-0?usp=3Demail )
+Attention is currently required from: flichtenheld.
 
-Change subject: Introduce report_command_status helper function
+Hello flichtenheld,=20
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/456?usp=3Demail
+
+to look at the new patch set (#2).
+
+
+Change subject: Extend the error message when TLS 1.0 PRF fails
 ......................................................................
 
-Introduce report_command_status helper function
+Extend the error message when TLS 1.0 PRF fails
 
-Instead of repeating near identical code several times
-in manage.c, use a small helper function instead.
+This error will probably become more and more common in the future when
+more and more system will drop TLS 1.0 PRF support. We are already seeing
+people stumbling upon this (see GitHub issue #460)
 
-Change-Id: I91f739f5cb43386b2ce767cf3603a76e6b93e216
-Acked-by: Frank Lichtenheld <frank@...2641...>
+The current error messages
+
+  TLS Error: PRF calcuation failed
+  TLS Error: generate_key_expansion failed
+
+are not very helpful for people that do not have deep understanding of TLS =
+or
+the OpenVPN protocol. Improve a on this message to give a normal user a cha=
+nce
+to understand that the peer needs to be OpenVPN 2.6.x or newer.
+
+Change-Id: Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3
 Signed-off-by: Arne Schwabe <arne@...1227...>
-Message-Id: <20231121104254.15701-1-frank@...2641...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27=
-525.html
-Signed-off-by: Gert Doering <gert@...1296...>
 ---
-M src/openvpn/manage.c
-1 file changed, 21 insertions(+), 24 deletions(-)
+M src/openvpn/ssl.c
+1 file changed, 6 insertions(+), 1 deletion(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/56/456/2
 
-
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index feb62b2..27b6f90 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -284,6 +284,24 @@
- #endif
- }
-
-+
-+/**
-+ * Small function to report the success or failure of a command to
-+ * the management interface
-+ */
-+static void
-+report_command_status(const bool status, const char *command)
-+{
-+    if (status)
-+    {
-+        msg(M_CLIENT, "SUCCESS: %s command succeeded", command);
-+    }
-+    else
-+    {
-+        msg(M_CLIENT, "ERROR: %s command failed", command);
-+    }
-+}
-+
- static void
- man_delete_unix_socket(struct management *man)
- {
-@@ -974,14 +992,7 @@
-                                         NULL,
-                                         man->connection.in_extra);
-                 man->connection.in_extra =3D NULL;
--                if (status)
--                {
--                    msg(M_CLIENT, "SUCCESS: client-auth command succeeded"=
-);
--                }
--                else
--                {
--                    msg(M_CLIENT, "ERROR: client-auth command failed");
--                }
-+                report_command_status(status, "client-auth");
-             }
-             else
-             {
-@@ -1260,14 +1271,7 @@
-     if (man->persist.callback.proxy_cmd)
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 400230c..9817b2e 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1641,7 +1641,12 @@
      {
-         const bool status =3D (*man->persist.callback.proxy_cmd)(man->pers=
-ist.callback.arg, p);
--        if (status)
--        {
--            msg(M_CLIENT, "SUCCESS: proxy command succeeded");
--        }
--        else
--        {
--            msg(M_CLIENT, "ERROR: proxy command failed");
--        }
-+        report_command_status(status, "proxy");
+         if (!generate_key_expansion_openvpn_prf(session, &key2))
+         {
+-            msg(D_TLS_ERRORS, "TLS Error: PRF calcuation failed");
++            msg(D_TLS_ERRORS, "TLS Error: PRF calculation failed. Your sys=
+tem "
++                "might not support the old TLS 1.0 PRF calculation anymore=
+ or "
++                "the policy does not allow TLS1 PRF calculation anymore "
++                "(e.g. running in FIPS mode). The peer did not announce su=
+pport "
++                "for the modern TLS Export feature that replaces the TLS 1=
+.0"
++                "RPF (requires OpenVPN 2.6.x or higher)");
+             goto exit;
+         }
      }
-     else
-     {
-@@ -1281,14 +1285,7 @@
-     if (man->persist.callback.remote_cmd)
-     {
-         const bool status =3D (*man->persist.callback.remote_cmd)(man->per=
-sist.callback.arg, p);
--        if (status)
--        {
--            msg(M_CLIENT, "SUCCESS: remote command succeeded");
--        }
--        else
--        {
--            msg(M_CLIENT, "ERROR: remote command failed");
--        }
-+        report_command_status(status, "remote");
-     }
-     else
-     {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/450?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/456?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I91f739f5cb43386b2ce767cf3603a76e6b93e216
-Gerrit-Change-Number: 450
+Gerrit-Change-Id: Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3
+Gerrit-Change-Number: 456
 Gerrit-PatchSet: 2
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newpatchset
 
---m95Of64hh/8=
+--HL4xUDtb5bM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/450?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Introduce report_command_status helper functio=
-n<br><br>Instead of repeating near identical code several times<br>in manag=
-e.c, use a small helper function instead.<br><br>Change-Id: I91f739f5cb4338=
-6b2ce767cf3603a76e6b93e216<br>Acked-by: Frank Lichtenheld &lt;frank@...2746...=
-...&gt;<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Message-I=
-d: &lt;20231121104254.15701-1-frank@...2641...&gt;<br>URL: https://www.mail=
--archive.com/openvpn-devel@lists.sourceforge.net/msg27525.html<br>Signed-of=
-f-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/manage.c=
-<br>1 file changed, 21 insertions(+), 24 deletions(-)<br><br></pre>
+<p> Attention is currently required from: flichtenheld. </p>
+<p>plaisthos <strong>uploaded patch set #2</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/456?usp=3Demail">View Chang=
+e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
+rap;">Extend the error message when TLS 1.0 PRF fails<br><br>This error wil=
+l probably become more and more common in the future when<br>more and more =
+system will drop TLS 1.0 PRF support. We are already seeing<br>people stumb=
+ling upon this (see GitHub issue #460)<br><br>The current error messages<br=
+><br>  TLS Error: PRF calcuation failed<br>  TLS Error: generate_key_expans=
+ion failed<br><br>are not very helpful for people that do not have deep und=
+erstanding of TLS or<br>the OpenVPN protocol. Improve a on this message to =
+give a normal user a chance<br>to understand that the peer needs to be Open=
+VPN 2.6.x or newer.<br><br>Change-Id: Ib3b64b52beed69dc7740f191b0e9a9dc9af5=
+b7f3<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M src=
+/openvpn/ssl.c<br>1 file changed, 6 insertions(+), 1 deletion(-)<br><br></p=
+re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/56/456/2</pre>=
 <pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c</span><br><span=
->index feb62b2..27b6f90 100644</span><br><span>--- a/src/openvpn/manage.c</=
-span><br><span>+++ b/src/openvpn/manage.c</span><br><span>@@ -284,6 +284,24=
- @@</span><br><span> #endif</span><br><span> }</span><br><span> </span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+ * Small function to report the success or failure of a command t=
-o</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * the management =
-interface</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+report_command_status(const bool s=
-tatus, const char *command)</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    if (st=
-atus)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+        msg(M_CLIENT, &quot;=
-SUCCESS: %s command succeeded&quot;, command);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    else</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        msg(=
-M_CLIENT, &quot;ERROR: %s command failed&quot;, command);</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+    }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span> static void</span><br><span> man_delete_unix_socket=
-(struct management *man)</span><br><span> {</span><br><span>@@ -974,14 +992=
-,7 @@</span><br><span>                                         NULL,</span>=
-<br><span>                                         man-&gt;connection.in_ex=
-tra);</span><br><span>                 man-&gt;connection.in_extra =3D NULL=
-;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                if (=
-status)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-              =
-  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-                  =
-  msg(M_CLIENT, &quot;SUCCESS: client-auth command succeeded&quot;);</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-                }</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-                else</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-                {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-                    msg(M_CLIENT, &qu=
-ot;ERROR: client-auth command failed&quot;);</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-                }</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+                report_command_status(status, &quot;cl=
-ient-auth&quot;);</span><br><span>             }</span><br><span>          =
-   else</span><br><span>             {</span><br><span>@@ -1260,14 +1271,7 =
-@@</span><br><span>     if (man-&gt;persist.callback.proxy_cmd)</span><br><=
-span>     {</span><br><span>         const bool status =3D (*man-&gt;persis=
-t.callback.proxy_cmd)(man-&gt;persist.callback.arg, p);</span><br><span sty=
-le=3D"color: hsl(0, 100%, 40%);">-        if (status)</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            msg(M_CLIENT, &quot;SUCCESS: proxy command =
-succeeded&quot;);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        else</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-            msg(M_CLIENT, &quot;ERROR=
-: proxy command failed&quot;);</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       report_command_status(status, &quot;proxy&quot;);</span><br><span>  =
-   }</span><br><span>     else</span><br><span>     {</span><br><span>@@ -1=
-281,14 +1285,7 @@</span><br><span>     if (man-&gt;persist.callback.remote_=
-cmd)</span><br><span>     {</span><br><span>         const bool status =3D =
-(*man-&gt;persist.callback.remote_cmd)(man-&gt;persist.callback.arg, p);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (status)</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-            msg(M_CLIENT, &quot;SUCCES=
-S: remote command succeeded&quot;);</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-        }</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        else</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
- {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            msg(M_C=
-LIENT, &quot;ERROR: remote command failed&quot;);</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        report_command_status(status, &quot;remote&quot;)=
-;</span><br><span>     }</span><br><span>     else</span><br><span>     {</=
-span><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/450?usp=3Demail">change 450</a>. To unsubscribe, or=
- for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/=
-settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Ema=
-ilMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org=
-/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/450?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/><=
-/div></div>
+an>diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span>index=
+ 400230c..9817b2e 100644</span><br><span>--- a/src/openvpn/ssl.c</span><br>=
+<span>+++ b/src/openvpn/ssl.c</span><br><span>@@ -1641,7 +1641,12 @@</span>=
+<br><span>     {</span><br><span>         if (!generate_key_expansion_openv=
+pn_prf(session, &amp;key2))</span><br><span>         {</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-            msg(D_TLS_ERRORS, &quot;TLS Er=
+ror: PRF calcuation failed&quot;);</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+            msg(D_TLS_ERRORS, &quot;TLS Error: PRF calculati=
+on failed. Your system &quot;</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+                &quot;might not support the old TLS 1.0 PRF calcu=
+lation anymore or &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+                &quot;the policy does not allow TLS1 PRF calculation a=
+nymore &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+          &quot;(e.g. running in FIPS mode). The peer did not announce supp=
+ort &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+         =
+       &quot;for the modern TLS Export feature that replaces the TLS 1.0&qu=
+ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
+&quot;RPF (requires OpenVPN 2.6.x or higher)&quot;);</span><br><span>      =
+       goto exit;</span><br><span>         }</span><br><span>     }</span><=
+br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/456?usp=3Demail">change 456</a>. To unsubscribe, or for h=
+elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
+gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
+age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
+ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/456?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
+/div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I91f739f5cb43386b2ce767cf360=
-3a76e6b93e216 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 450 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib3b64b52beed69dc7740f191b0e=
+9a9dc9af5b7f3 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 456 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -253,8 +167,10 @@ nvpn/+/450?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/><=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---m95Of64hh/8=--
+--HL4xUDtb5bM=--
 
