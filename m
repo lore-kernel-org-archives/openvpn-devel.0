@@ -1,16 +1,13 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 22 Nov 2023 16:42:53 +0000
-In-Reply-To: <gerrit.1700582804000.Ia797c8801fa9a9bc10b6674efde5fdbd7132e4a8@...2715...>
-References: <gerrit.1700582804000.Ia797c8801fa9a9bc10b6674efde5fdbd7132e4a8@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <e20bb6798a743c2d85aa40fd1fa1ed0950b37ca8-EmailReviewComments-HTML@...2715...>
+Date: Wed, 22 Nov 2023 22:51:06 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZV53yiEO_4y2TvGy@...1296...>
+References: <20231122143110.58520-1-dazo+openvpn@...2108...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="NrRHyydSIsg5t1Og"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="IQ8smIceJes="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix unaligned access
- in macOS, FreeBSD, Solaris hwaddr
+In-Reply-To: <20231122143110.58520-1-dazo+openvpn@...2108...>
+Subject: Re: [Openvpn-devel] [PATCH release/2.6] Remove --tls-export-cert
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,84 +16,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: cron2 <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <dazo+openvpn@...2108...>
+Cc: openvpn-devel@lists.sourceforge.net, David Sommerseth <davids@...515...>
 
---IQ8smIceJes=
-Content-Type: text/plain; charset="UTF-8"
+--NrRHyydSIsg5t1Og
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Attention is currently required from: plaisthos.
+Hi,
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/454?usp=3Demail )
+On Wed, Nov 22, 2023 at 03:31:10PM +0100, David Sommerseth wrote:
+> From: David Sommerseth <davids@...515...>
+>=20
+> As OpenVPN 2.6+ is doing some adoptions to the license text, all
+> prior contributors need to accept this new text.  Unfortunately, Mathieu
+> Giannecchini who implemented the --tls-export-cert feature did not
+> respond at all.  Without an explicit acceptance we need to remove this
+> feature to avoid potential legal complications.
+>=20
+> If this is still a wanted feature, it will need to be re-implemented
+> from scratch.
 
-Change subject: Fix unaligned access in macOS, FreeBSD, Solaris hwaddr
-......................................................................
+Is this significantly different from the "master" patch that it needs
+an extra 2.6 patch?
 
+(So now I have 4 patches to deal with, not "1 that goes to master +
+release/2.6"...)
 
-Patch Set 2: Code-Review+2
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/454?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+--NrRHyydSIsg5t1Og
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ia797c8801fa9a9bc10b6674efde5fdbd7132e4a8
-Gerrit-Change-Number: 454
-Gerrit-PatchSet: 2
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Wed, 22 Nov 2023 16:42:53 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+-----BEGIN PGP SIGNATURE-----
 
---IQ8smIceJes=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+iQGcBAEBAgAGBQJlXnfKAAoJEB2Cnv7KVigS/gUMAJ0PiI6JETsDe6IaTeb4FiAq
+CV8mf2VcrZ5Tq4bvvqsduuDPKwO8Au9pHeRyulR5lI4skKCGGegiPjEb0/30daFu
++QdL932Vts7Cmq1FJpnwSnZ7hxcedo7XSr7QKmrQzh+50dGTpHP0lxlqgVKWUqek
+4/JqsYZVO/Oiq9Xv/v1kglVj1p48NFSD58uTjfHiYtuKIHAdlzYG6QsampdDvOBN
+WFN9YcmRShPH8laQmfvIXOUuWKXhzZ0an8OAftOpe8vNeBVy5tshmnoSiYbbnS9q
+ZEYgwRJjZjJXqKGl7+8peiPIb+OLXpQJdvf+ccEB6cjX920HhWqQqkd2JO1WqHFK
+9L5hTxymi6Taxuit7Nf+U6fT2O4qrDshDBTQGVJyDYiYWjpNJ+75FST7+qBmwmA7
+i7gHmaUmhmqknkcFHp/FyPR0oqdxxQGnpG85hJGXXx4ynyZU+usQp6OwmHgWeuqy
+nlV1ZUw3P2EyTSYaT4BjgrZy8xKMf87Iaj+JdNCAPA==
+=kL3Q
+-----END PGP SIGNATURE-----
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/454?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/454?usp=3Demail">=
-change 454</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/454?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia797c8801fa9a9bc10b6674efde=
-5fdbd7132e4a8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 454 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 22 Nov 2023 16:42:53=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---IQ8smIceJes=--
+--NrRHyydSIsg5t1Og--
 
