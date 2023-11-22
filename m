@@ -1,8 +1,8 @@
 From: David Sommerseth <dazo+openvpn@...2108...>
-Date: Wed, 22 Nov 2023 15:31:01 +0100
-Message-Id: <20231122143101.58483-1-dazo+openvpn@...2108...>
+Date: Wed, 22 Nov 2023 15:31:10 +0100
+Message-Id: <20231122143110.58520-1-dazo+openvpn@...2108...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH master] Remove --tls-export-cert
+Subject: [Openvpn-devel] [PATCH release/2.6] Remove --tls-export-cert
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -40,17 +40,15 @@ Signed-off-by: David Sommerseth <davids@...515...>
  8 files changed, 2 insertions(+), 87 deletions(-)
 
 diff --git a/README.mbedtls b/README.mbedtls
-index ed9d3691..124eaa2b 100644
+index d3466fa9..24a9c224 100644
 --- a/README.mbedtls
 +++ b/README.mbedtls
-@@ -38,7 +38,6 @@ in the mbed TLS version of OpenVPN:
+@@ -40,5 +40,4 @@ in the mbed TLS version of OpenVPN:
  Plugin/Script features:
  
   * X.509 subject line has a different format than the OpenSSL subject line
 - * X.509 certificate export does not work
   * X.509 certificate tracking
- 
- *************************************************************************
 diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
 index 8c0be0cd..38dcfa2b 100644
 --- a/doc/man-sections/script-options.rst
@@ -67,10 +65,10 @@ index 8c0be0cd..38dcfa2b 100644
      Set to "init" or "restart" prior to up/down script execution. For more
      information, see documentation for ``--up``.
 diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
-index 908a42a1..56da886f 100644
+index d51aff77..45009f7c 100644
 --- a/doc/man-sections/tls-options.rst
 +++ b/doc/man-sections/tls-options.rst
-@@ -555,13 +555,6 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
+@@ -539,13 +539,6 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
  --tls-exit
    Exit on TLS negotiation failure.
  
@@ -85,10 +83,10 @@ index 908a42a1..56da886f 100644
    Enable TLS and assume server role during TLS handshake. Note that
    OpenVPN is designed as a peer-to-peer application. The designation of
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 8c707a46..659c79e3 100644
+index 079c4f5e..f4ab1635 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -3323,7 +3323,6 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+@@ -3333,7 +3333,6 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
      }
  
      to.verify_command = options->tls_verify;
@@ -97,10 +95,10 @@ index 8c707a46..659c79e3 100644
      to.verify_x509_name = options->verify_x509_name;
      to.crl_file = options->crl_file;
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 2594b665..1521872d 100644
+index 7ca77a8e..dc18b332 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -638,9 +638,6 @@ static const char usage_message[] =
+@@ -647,9 +647,6 @@ static const char usage_message[] =
      "                  tests of certification.  cmd should return 0 to allow\n"
      "                  TLS handshake to proceed, or 1 to fail.  (cmd is\n"
      "                  executed as 'cmd certificate_depth subject')\n"
@@ -110,7 +108,7 @@ index 2594b665..1521872d 100644
      "--verify-x509-name name: Accept connections only from a host with X509 subject\n"
      "                  DN name. The remote host must also pass all other tests\n"
      "                  of verification.\n"
-@@ -1989,7 +1986,6 @@ show_settings(const struct options *o)
+@@ -1998,7 +1995,6 @@ show_settings(const struct options *o)
      SHOW_STR(cipher_list_tls13);
      SHOW_STR(tls_cert_profile);
      SHOW_STR(tls_verify);
@@ -118,7 +116,7 @@ index 2594b665..1521872d 100644
      SHOW_INT(verify_x509_type);
      SHOW_STR(verify_x509_name);
      SHOW_STR_INLINE(crl_file);
-@@ -3052,7 +3048,6 @@ options_postprocess_verify_ce(const struct options *options,
+@@ -3061,7 +3057,6 @@ options_postprocess_verify_ce(const struct options *options,
          MUST_BE_UNDEF(cipher_list_tls13);
          MUST_BE_UNDEF(tls_cert_profile);
          MUST_BE_UNDEF(tls_verify);
@@ -126,7 +124,7 @@ index 2594b665..1521872d 100644
          MUST_BE_UNDEF(verify_x509_name);
          MUST_BE_UNDEF(tls_timeout);
          MUST_BE_UNDEF(renegotiate_bytes);
-@@ -4108,8 +4103,6 @@ options_postprocess_filechecks(struct options *options)
+@@ -4117,8 +4112,6 @@ options_postprocess_filechecks(struct options *options)
                                R_OK|W_OK, "--status");
  
      /* ** Config related ** */
@@ -135,7 +133,7 @@ index 2594b665..1521872d 100644
      errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE, options->client_config_dir,
                                       R_OK|X_OK, "--client-config-dir");
      errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE, options->tmp_dir,
-@@ -9005,13 +8998,6 @@ add_option(struct options *options,
+@@ -9001,13 +8994,6 @@ add_option(struct options *options,
                          string_substitute(p[1], ',', ' ', &options->gc),
                          "tls-verify", true);
      }
@@ -150,7 +148,7 @@ index 2594b665..1521872d 100644
      {
          VERIFY_PERMISSION(OPT_P_GENERAL);
 diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 5a37316b..c4514e17 100644
+index f5890b90..8e53f6f7 100644
 --- a/src/openvpn/options.h
 +++ b/src/openvpn/options.h
 @@ -594,7 +594,6 @@ struct options
@@ -162,10 +160,10 @@ index 5a37316b..c4514e17 100644
      bool crl_file_inline;
  
 diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index d3edc5fa..925660b2 100644
+index 27b02947..8d8668a9 100644
 --- a/src/openvpn/ssl_common.h
 +++ b/src/openvpn/ssl_common.h
-@@ -334,7 +334,6 @@ struct tls_options
+@@ -335,7 +335,6 @@ struct tls_options
  
      /* cert verification parms */
      const char *verify_command;
