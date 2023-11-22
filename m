@@ -1,15 +1,8 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 22 Nov 2023 13:09:34 +0000
-References: <gerrit.1700658573000.I66e3dd7b7166459526824fe5ae81a449b375b8db@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <d7f8728b18f2d0f617b7b703e4b419545aba36e0-HTML@...2715...>
+From: David Sommerseth <dazo+openvpn@...2108...>
+Date: Wed, 22 Nov 2023 15:31:01 +0100
+Message-Id: <20231122143101.58483-1-dazo+openvpn@...2108...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="wBPUxxrFrc8="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Minimal
- Solaris/OpenIndiana support to Cmake and clean up -Werror
+Subject: [Openvpn-devel] [PATCH master] Remove --tls-export-cert
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,334 +11,265 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <davids@...515...>
 
---wBPUxxrFrc8=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: David Sommerseth <davids@...515...>
 
-Attention is currently required from: flichtenheld.
+As OpenVPN 2.6+ is doing some adoptions to the license text, all
+prior contributors need to accept this new text.  Unfortunately, Mathieu
+Giannecchini who implemented the --tls-export-cert feature did not
+respond at all.  Without an explicit acceptance we need to remove this
+feature to avoid potential legal complications.
 
-Hello flichtenheld,
+If this is still a wanted feature, it will need to be re-implemented
+from scratch.
 
-I'd like you to do a code review.
-Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/458?usp=3Demail
-
-to review the following change.
-
-
-Change subject: Minimal Solaris/OpenIndiana support to Cmake and clean up -=
-Werror
-......................................................................
-
-Minimal Solaris/OpenIndiana support to Cmake and clean up -Werror
-
-Change-Id: I66e3dd7b7166459526824fe5ae81a449b375b8db
-Signed-off-by: Arne Schwabe <arne@...1227...>
+Signed-off-by: David Sommerseth <davids@...515...>
 ---
-M CMakeLists.txt
-M config.h.cmake.in
-M src/openvpn/route.c
-M src/openvpn/tun.c
-4 files changed, 18 insertions(+), 12 deletions(-)
+ README.mbedtls                      |  1 -
+ doc/man-sections/script-options.rst |  4 --
+ doc/man-sections/tls-options.rst    |  7 ----
+ src/openvpn/init.c                  |  1 -
+ src/openvpn/options.c               | 14 -------
+ src/openvpn/options.h               |  1 -
+ src/openvpn/ssl_common.h            |  1 -
+ src/openvpn/ssl_verify.c            | 60 +----------------------------
+ 8 files changed, 2 insertions(+), 87 deletions(-)
 
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/58/458/1
-
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d21c9bd..c3a55ab 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -121,11 +121,17 @@
-     set(TARGET_FREEBSD YES)
-     set(ENABLE_DCO YES)
-     link_libraries(-lnv)
-+elseif (${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
-+    set(TARGET_SOLARIS YES)
-+    set(HAVE_SYS_SOCKIO_H 1)
-+    link_libraries(-lnsl -lsocket -lresolv)
- elseif (WIN32)
-     set(ENABLE_DCO YES)
- elseif (APPLE)
-     set(TARGET_DARWIN YES)
-     set(HAVE_NET_IF_UTUN_H YES)
-+else()
-+    message(FATAL_ERROR "Unknown system name: \"${CMAKE_SYSTEM_NAME}\"")
- endif ()
-
- if (UNIX)
-diff --git a/config.h.cmake.in b/config.h.cmake.in
-index 19b79bc..5b93fc5 100644
---- a/config.h.cmake.in
-+++ b/config.h.cmake.in
-@@ -336,7 +336,7 @@
- #cmakedefine HAVE_SYS_SOCKET_H
-
- /* Define to 1 if you have the <sys/sockio.h> header file. */
--#undef HAVE_SYS_SOCKIO_H
-+#cmakedefine HAVE_SYS_SOCKIO_H
-
- /* Define to 1 if you have the <sys/stat.h> header file. */
- #define HAVE_SYS_STAT_H 1
-@@ -443,6 +443,9 @@
- /* Are we running on Linux? */
- #cmakedefine TARGET_LINUX
-
-+/* Are we running on Solaris/OpenIndiana? */
-+#cmakedefine TARGET_SOLARIS
-+
- /* Are we running WIN32? */
- #cmakedefine TARGET_WIN32
-
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index ff64938..6cc112c 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -2342,12 +2342,11 @@
-         return;
+diff --git a/README.mbedtls b/README.mbedtls
+index ed9d3691..124eaa2b 100644
+--- a/README.mbedtls
++++ b/README.mbedtls
+@@ -38,7 +38,6 @@ in the mbed TLS version of OpenVPN:
+ Plugin/Script features:
+ 
+  * X.509 subject line has a different format than the OpenSSL subject line
+- * X.509 certificate export does not work
+  * X.509 certificate tracking
+ 
+ *************************************************************************
+diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
+index 8c0be0cd..38dcfa2b 100644
+--- a/doc/man-sections/script-options.rst
++++ b/doc/man-sections/script-options.rst
+@@ -813,10 +813,6 @@ instances.
+     translations will be recorded rather than their names as denoted on the
+     command line or configuration file.
+ 
+-:code:`peer_cert`
+-    Temporary file name containing the client certificate upon connection.
+-    Useful in conjunction with ``--tls-verify``.
+-
+ :code:`script_context`
+     Set to "init" or "restart" prior to up/down script execution. For more
+     information, see documentation for ``--up``.
+diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
+index 908a42a1..56da886f 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -555,13 +555,6 @@ certificates and keys: https://github.com/OpenVPN/easy-rsa
+ --tls-exit
+   Exit on TLS negotiation failure.
+ 
+---tls-export-cert directory
+-  Store the certificates the clients use upon connection to this
+-  directory. This will be done before ``--tls-verify`` is called. The
+-  certificates will use a temporary name and will be deleted when the
+-  tls-verify script returns. The file name used for the certificate is
+-  available via the ``peer_cert`` environment variable.
+-
+ --tls-server
+   Enable TLS and assume server role during TLS handshake. Note that
+   OpenVPN is designed as a peer-to-peer application. The designation of
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 8c707a46..659c79e3 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -3323,7 +3323,6 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
      }
-
--#ifndef _WIN32
-+#if !defined(_WIN32)
- #if !defined(TARGET_LINUX)
-     const char *gateway;
--#else
--    int metric;
- #endif
-+#if !defined(TARGET_SOLARIS)
-     bool gateway_needed =3D false;
-     const char *device =3D tt->actual_name;
-     if (r6->iface !=3D NULL)              /* vpn server special route */
-@@ -2365,6 +2364,7 @@
-         gateway_needed =3D true;
+ 
+     to.verify_command = options->tls_verify;
+-    to.verify_export_cert = options->tls_export_cert;
+     to.verify_x509_type = (options->verify_x509_type & 0xff);
+     to.verify_x509_name = options->verify_x509_name;
+     to.crl_file = options->crl_file;
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 2594b665..1521872d 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -638,9 +638,6 @@ static const char usage_message[] =
+     "                  tests of certification.  cmd should return 0 to allow\n"
+     "                  TLS handshake to proceed, or 1 to fail.  (cmd is\n"
+     "                  executed as 'cmd certificate_depth subject')\n"
+-    "--tls-export-cert [directory] : Get peer cert in PEM format and store it \n"
+-    "                  in an openvpn temporary file in [directory]. Peer cert is \n"
+-    "                  stored before tls-verify script execution and deleted after.\n"
+     "--verify-x509-name name: Accept connections only from a host with X509 subject\n"
+     "                  DN name. The remote host must also pass all other tests\n"
+     "                  of verification.\n"
+@@ -1989,7 +1986,6 @@ show_settings(const struct options *o)
+     SHOW_STR(cipher_list_tls13);
+     SHOW_STR(tls_cert_profile);
+     SHOW_STR(tls_verify);
+-    SHOW_STR(tls_export_cert);
+     SHOW_INT(verify_x509_type);
+     SHOW_STR(verify_x509_name);
+     SHOW_STR_INLINE(crl_file);
+@@ -3052,7 +3048,6 @@ options_postprocess_verify_ce(const struct options *options,
+         MUST_BE_UNDEF(cipher_list_tls13);
+         MUST_BE_UNDEF(tls_cert_profile);
+         MUST_BE_UNDEF(tls_verify);
+-        MUST_BE_UNDEF(tls_export_cert);
+         MUST_BE_UNDEF(verify_x509_name);
+         MUST_BE_UNDEF(tls_timeout);
+         MUST_BE_UNDEF(renegotiate_bytes);
+@@ -4108,8 +4103,6 @@ options_postprocess_filechecks(struct options *options)
+                               R_OK|W_OK, "--status");
+ 
+     /* ** Config related ** */
+-    errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE, options->tls_export_cert,
+-                                     R_OK|W_OK|X_OK, "--tls-export-cert");
+     errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE, options->client_config_dir,
+                                      R_OK|X_OK, "--client-config-dir");
+     errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE, options->tmp_dir,
+@@ -9005,13 +8998,6 @@ add_option(struct options *options,
+                         string_substitute(p[1], ',', ' ', &options->gc),
+                         "tls-verify", true);
      }
- #endif
-+#endif
-
-     struct gc_arena gc =3D gc_new();
-     struct argv argv =3D argv_new();
-@@ -2395,7 +2395,7 @@
-     msg( M_INFO, "delete_route_ipv6(%s/%d)", network, r6->netbits );
-
- #if defined(TARGET_LINUX)
--    metric =3D -1;
-+    int metric =3D -1;
-     if ((r6->flags & RT_METRIC_DEFINED) && (r6->metric > 0))
+-#ifndef ENABLE_CRYPTO_MBEDTLS
+-    else if (streq(p[0], "tls-export-cert") && p[1] && !p[2])
+-    {
+-        VERIFY_PERMISSION(OPT_P_GENERAL);
+-        options->tls_export_cert = p[1];
+-    }
+-#endif
+     else if (streq(p[0], "compat-names"))
      {
-         metric =3D r6->metric;
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 82ab6c0..f1b8699 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1900,7 +1900,7 @@
- #endif
-
-
--#if !(defined(_WIN32) || defined(TARGET_LINUX))
-+#if !(defined(_WIN32) || defined(TARGET_LINUX) || defined(TARGET_SOLARIS))
- static void
- open_tun_generic(const char *dev, const char *dev_type, const char *dev_no=
-de,
-                  struct tuntap *tt)
-@@ -2061,7 +2061,7 @@
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 5a37316b..c4514e17 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -594,7 +594,6 @@ struct options
+     const char *tls_verify;
+     int verify_x509_type;
+     const char *verify_x509_name;
+-    const char *tls_export_cert;
+     const char *crl_file;
+     bool crl_file_inline;
+ 
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index d3edc5fa..925660b2 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -334,7 +334,6 @@ struct tls_options
+ 
+     /* cert verification parms */
+     const char *verify_command;
+-    const char *verify_export_cert;
+     int verify_x509_type;
+     const char *verify_x509_name;
+     const char *crl_file;
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 90416b69..bd7e5125 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -490,81 +490,25 @@ verify_cert_call_plugin(const struct plugin_list *plugins, struct env_set *es,
+     return SUCCESS;
  }
- #endif /* TARGET_LINUX || TARGET_FREEBSD*/
-
--#if !defined(_WIN32)
-+#if !(defined(_WIN32) || defined(TARGET_SOLARIS))
- static void
- close_tun_generic(struct tuntap *tt)
+ 
+-static const char *
+-verify_cert_export_cert(openvpn_x509_cert_t *peercert, const char *tmp_dir, struct gc_arena *gc)
+-{
+-    FILE *peercert_file;
+-    const char *peercert_filename = "";
+-
+-    /* create tmp file to store peer cert */
+-    if (!tmp_dir
+-        || !(peercert_filename = platform_create_temp_file(tmp_dir, "pcf", gc)))
+-    {
+-        msg(M_NONFATAL, "Failed to create peer cert file");
+-        return NULL;
+-    }
+-
+-    /* write peer-cert in tmp-file */
+-    peercert_file = fopen(peercert_filename, "w+");
+-    if (!peercert_file)
+-    {
+-        msg(M_NONFATAL|M_ERRNO, "Failed to open temporary file: %s",
+-            peercert_filename);
+-        return NULL;
+-    }
+-
+-    if (SUCCESS != x509_write_pem(peercert_file, peercert))
+-    {
+-        msg(M_NONFATAL, "Error writing PEM file containing certificate");
+-        (void) platform_unlink(peercert_filename);
+-        peercert_filename = NULL;
+-    }
+-
+-    fclose(peercert_file);
+-    return peercert_filename;
+-}
+-
+-
+ /*
+  * run --tls-verify script
+  */
+ static result_t
+ verify_cert_call_command(const char *verify_command, struct env_set *es,
+-                         int cert_depth, openvpn_x509_cert_t *cert, char *subject, const char *verify_export_cert)
++                         int cert_depth, openvpn_x509_cert_t *cert, char *subject)
  {
-@@ -2398,13 +2398,12 @@
- open_tun(const char *dev, const char *dev_type, const char *dev_node, stru=
-ct tuntap *tt,
-          openvpn_net_ctx_t *ctx)
- {
--    int if_fd, ip_muxid, arp_muxid, arp_fd, ppa =3D -1;
-+    int if_fd =3D -1, ip_muxid =3D -1, arp_muxid =3D -1, arp_fd =3D -1, pp=
-a =3D -1;
-     struct lifreq ifr;
-     const char *ptr;
--    const char *ip_node, *arp_node;
-+    const char *ip_node =3D NULL, *arp_node =3D NULL;
-     const char *dev_tuntap_type;
-     int link_type;
--    bool is_tun;
-     struct strioctl strioc_if, strioc_ppa;
-=20
-     /* improved generic TUN/TAP driver from
-@@ -2428,7 +2427,6 @@
-         }
-         dev_tuntap_type =3D "tun";
-         link_type =3D I_PLINK;
--        is_tun =3D true;
-     }
-     else if (tt->type =3D=3D DEV_TYPE_TAP)
+-    const char *tmp_file = NULL;
+     int ret;
+     struct gc_arena gc = gc_new();
+     struct argv argv = argv_new();
+ 
+     setenv_str(es, "script_type", "tls-verify");
+ 
+-    if (verify_export_cert)
+-    {
+-        tmp_file = verify_cert_export_cert(cert, verify_export_cert, &gc);
+-        if (!tmp_file)
+-        {
+-            ret = false;
+-            goto cleanup;
+-        }
+-        setenv_str(es, "peer_cert", tmp_file);
+-    }
+-
+     argv_parse_cmd(&argv, verify_command);
+     argv_printf_cat(&argv, "%d %s", cert_depth, subject);
+ 
+     argv_msg_prefix(D_TLS_DEBUG, &argv, "TLS: executing verify command");
+     ret = openvpn_run_script(&argv, es, 0, "--tls-verify script");
+ 
+-    if (verify_export_cert)
+-    {
+-        if (tmp_file)
+-        {
+-            platform_unlink(tmp_file);
+-        }
+-    }
+-
+-cleanup:
+     gc_free(&gc);
+     argv_free(&argv);
+ 
+@@ -783,7 +727,7 @@ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_dep
+ 
+     /* run --tls-verify script */
+     if (opt->verify_command && SUCCESS != verify_cert_call_command(opt->verify_command,
+-                                                                   opt->es, cert_depth, cert, subject, opt->verify_export_cert))
++                                                                   opt->es, cert_depth, cert, subject))
      {
-@@ -2440,7 +2438,6 @@
-         arp_node =3D dev_node;
-         dev_tuntap_type =3D "tap";
-         link_type =3D I_PLINK; /* was: I_LINK */
--        is_tun =3D false;
+         goto cleanup;
      }
-     else
-     {
+-- 
+2.39.3
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/458?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I66e3dd7b7166459526824fe5ae81a449b375b8db
-Gerrit-Change-Number: 458
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
-
---wBPUxxrFrc8=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld. </p>
-<p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/458?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Minimal Solaris/OpenIndiana support to Cmake and clean up -We=
-rror<br><br>Change-Id: I66e3dd7b7166459526824fe5ae81a449b375b8db<br>Signed-=
-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>---<br>M CMakeLists.txt<br>=
-M config.h.cmake.in<br>M src/openvpn/route.c<br>M src/openvpn/tun.c<br>4 fi=
-les changed, 18 insertions(+), 12 deletions(-)<br><br></pre><pre style=3D"f=
-ont-family: monospace,monospace; white-space: pre-wrap;">git pull ssh://ger=
-rit.openvpn.net:29418/openvpn refs/changes/58/458/1</pre><pre style=3D"font=
--family: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/CM=
-akeLists.txt b/CMakeLists.txt</span><br><span>index d21c9bd..c3a55ab 100644=
-</span><br><span>--- a/CMakeLists.txt</span><br><span>+++ b/CMakeLists.txt<=
-/span><br><span>@@ -121,11 +121,17 @@</span><br><span>     set(TARGET_FREEB=
-SD YES)</span><br><span>     set(ENABLE_DCO YES)</span><br><span>     link_=
-libraries(-lnv)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+else=
-if (${CMAKE_SYSTEM_NAME} STREQUAL &quot;SunOS&quot;)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+    set(TARGET_SOLARIS YES)</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    set(HAVE_SYS_SOCKIO_H 1)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    link_libraries(-lnsl=
- -lsocket -lresolv)</span><br><span> elseif (WIN32)</span><br><span>     se=
-t(ENABLE_DCO YES)</span><br><span> elseif (APPLE)</span><br><span>     set(=
-TARGET_DARWIN YES)</span><br><span>     set(HAVE_NET_IF_UTUN_H YES)</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+else()</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    message(FATAL_ERROR &quot;Unknown sy=
-stem name: \&quot;${CMAKE_SYSTEM_NAME}\&quot;&quot;)</span><br><span> endif=
- ()</span><br><span> </span><br><span> if (UNIX)</span><br><span>diff --git=
- a/config.h.cmake.in b/config.h.cmake.in</span><br><span>index 19b79bc..5b9=
-3fc5 100644</span><br><span>--- a/config.h.cmake.in</span><br><span>+++ b/c=
-onfig.h.cmake.in</span><br><span>@@ -336,7 +336,7 @@</span><br><span> #cmak=
-edefine HAVE_SYS_SOCKET_H</span><br><span> </span><br><span> /* Define to 1=
- if you have the &lt;sys/sockio.h&gt; header file. */</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#undef HAVE_SYS_SOCKIO_H</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#cmakedefine HAVE_SYS_SOCKIO_H</span><=
-br><span> </span><br><span> /* Define to 1 if you have the &lt;sys/stat.h&g=
-t; header file. */</span><br><span> #define HAVE_SYS_STAT_H 1</span><br><sp=
-an>@@ -443,6 +443,9 @@</span><br><span> /* Are we running on Linux? */</spa=
-n><br><span> #cmakedefine TARGET_LINUX</span><br><span> </span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+/* Are we running on Solaris/OpenIndia=
-na? */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine =
-TARGET_SOLARIS</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</spa=
-n><br><span> /* Are we running WIN32? */</span><br><span> #cmakedefine TARG=
-ET_WIN32</span><br><span> </span><br><span>diff --git a/src/openvpn/route.c=
- b/src/openvpn/route.c</span><br><span>index ff64938..6cc112c 100644</span>=
-<br><span>--- a/src/openvpn/route.c</span><br><span>+++ b/src/openvpn/route=
-.c</span><br><span>@@ -2342,12 +2342,11 @@</span><br><span>         return;=
-</span><br><span>     }</span><br><span> </span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-#ifndef _WIN32</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#if !defined(_WIN32)</span><br><span> #if !defined(TARGET_LI=
-NUX)</span><br><span>     const char *gateway;</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-#else</span><br><span style=3D"color: hsl(0, 100%,=
- 40%);">-    int metric;</span><br><span> #endif</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#if !defined(TARGET_SOLARIS)</span><br><span> =
-    bool gateway_needed =3D false;</span><br><span>     const char *device =
-=3D tt-&gt;actual_name;</span><br><span>     if (r6-&gt;iface !=3D NULL)   =
-           /* vpn server special route */</span><br><span>@@ -2365,6 +2364,=
-7 @@</span><br><span>         gateway_needed =3D true;</span><br><span>    =
- }</span><br><span> #endif</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+#endif</span><br><span> </span><br><span>     struct gc_arena gc =3D=
- gc_new();</span><br><span>     struct argv argv =3D argv_new();</span><br>=
-<span>@@ -2395,7 +2395,7 @@</span><br><span>     msg( M_INFO, &quot;delete_=
-route_ipv6(%s/%d)&quot;, network, r6-&gt;netbits );</span><br><span> </span=
-><br><span> #if defined(TARGET_LINUX)</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-    metric =3D -1;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+    int metric =3D -1;</span><br><span>     if ((r6-&gt;flag=
-s &amp; RT_METRIC_DEFINED) &amp;&amp; (r6-&gt;metric &gt; 0))</span><br><sp=
-an>     {</span><br><span>         metric =3D r6-&gt;metric;</span><br><spa=
-n>diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index =
-82ab6c0..f1b8699 100644</span><br><span>--- a/src/openvpn/tun.c</span><br><=
-span>+++ b/src/openvpn/tun.c</span><br><span>@@ -1900,7 +1900,7 @@</span><b=
-r><span> #endif</span><br><span> </span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-#if !(defined(_WIN32) || defined(TARGET_LIN=
-UX))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#if !(defined(_=
-WIN32) || defined(TARGET_LINUX) || defined(TARGET_SOLARIS))</span><br><span=
-> static void</span><br><span> open_tun_generic(const char *dev, const char=
- *dev_type, const char *dev_node,</span><br><span>                  struct =
-tuntap *tt)</span><br><span>@@ -2061,7 +2061,7 @@</span><br><span> }</span>=
-<br><span> #endif /* TARGET_LINUX || TARGET_FREEBSD*/</span><br><span> </sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-#if !defined(_WIN32)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+#if !(defined(_WIN32) ||=
- defined(TARGET_SOLARIS))</span><br><span> static void</span><br><span> clo=
-se_tun_generic(struct tuntap *tt)</span><br><span> {</span><br><span>@@ -23=
-98,13 +2398,12 @@</span><br><span> open_tun(const char *dev, const char *de=
-v_type, const char *dev_node, struct tuntap *tt,</span><br><span>          =
-openvpn_net_ctx_t *ctx)</span><br><span> {</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    int if_fd, ip_muxid, arp_muxid, arp_fd, ppa =3D -1=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int if_fd =3D =
--1, ip_muxid =3D -1, arp_muxid =3D -1, arp_fd =3D -1, ppa =3D -1;</span><br=
-><span>     struct lifreq ifr;</span><br><span>     const char *ptr;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-    const char *ip_node, *ar=
-p_node;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const ch=
-ar *ip_node =3D NULL, *arp_node =3D NULL;</span><br><span>     const char *=
-dev_tuntap_type;</span><br><span>     int link_type;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    bool is_tun;</span><br><span>     struc=
-t strioctl strioc_if, strioc_ppa;</span><br><span> </span><br><span>     /*=
- improved generic TUN/TAP driver from</span><br><span>@@ -2428,7 +2427,6 @@=
-</span><br><span>         }</span><br><span>         dev_tuntap_type =3D &q=
-uot;tun&quot;;</span><br><span>         link_type =3D I_PLINK;</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        is_tun =3D true;</span><br=
-><span>     }</span><br><span>     else if (tt-&gt;type =3D=3D DEV_TYPE_TAP=
-)</span><br><span>     {</span><br><span>@@ -2440,7 +2438,6 @@</span><br><s=
-pan>         arp_node =3D dev_node;</span><br><span>         dev_tuntap_typ=
-e =3D &quot;tap&quot;;</span><br><span>         link_type =3D I_PLINK; /* w=
-as: I_LINK */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        =
-is_tun =3D false;</span><br><span>     }</span><br><span>     else</span><b=
-r><span>     {</span><br><span></span><br></pre><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/458?usp=3Demail">change 458</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/458?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I66e3dd7b7166459526824fe5ae8=
-1a449b375b8db </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 458 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
-
-
---wBPUxxrFrc8=--
 
