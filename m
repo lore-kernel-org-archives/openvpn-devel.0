@@ -1,8 +1,8 @@
 From: David Sommerseth <dazo+openvpn@...2108...>
-Date: Wed, 22 Nov 2023 20:00:57 +0100
-Message-Id: <20231122190057.120384-1-dazo+openvpn@...2108...>
-In-Reply-To: <20231122143101.58483-1-dazo+openvpn@...2108...>
-References: <20231122143101.58483-1-dazo+openvpn@...2108...>
+Date: Wed, 22 Nov 2023 20:01:25 +0100
+Message-Id: <20231122190125.120500-1-dazo+openvpn@...2108...>
+In-Reply-To: <20231122143110.58520-1-dazo+openvpn@...2108...>
+References: <20231122143110.58520-1-dazo+openvpn@...2108...>
 MIME-Version: 1.0
 Subject: [Openvpn-devel] [PATCH] Remove superfluous x509_write_pem()
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -54,10 +54,10 @@ index 3b798811..d402b1f2 100644
   * Return true iff a CRL is configured, but is not loaded.  This can be caused
   * by e.g. a CRL parsing error, a missing CRL file or CRL file permission
 diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
-index ce213246..56121394 100644
+index a1ddf8d0..4596843c 100644
 --- a/src/openvpn/ssl_verify_mbedtls.c
 +++ b/src/openvpn/ssl_verify_mbedtls.c
-@@ -536,13 +536,6 @@ x509_verify_cert_eku(mbedtls_x509_crt *cert, const char *const expected_oid)
+@@ -547,13 +547,6 @@ x509_verify_cert_eku(mbedtls_x509_crt *cert, const char *const expected_oid)
      return fFound;
  }
  
