@@ -1,10 +1,16 @@
-From: David Sommerseth <dazo+openvpn@...2108...>
-Date: Wed, 22 Nov 2023 20:01:25 +0100
-Message-Id: <20231122190125.120500-1-dazo+openvpn@...2108...>
-In-Reply-To: <20231122143110.58520-1-dazo+openvpn@...2108...>
-References: <20231122143110.58520-1-dazo+openvpn@...2108...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 22 Nov 2023 16:42:53 +0000
+In-Reply-To: <gerrit.1700582804000.Ia797c8801fa9a9bc10b6674efde5fdbd7132e4a8@...2715...>
+References: <gerrit.1700582804000.Ia797c8801fa9a9bc10b6674efde5fdbd7132e4a8@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, gert@...1296...
+Message-ID: <e20bb6798a743c2d85aa40fd1fa1ed0950b37ca8-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Remove superfluous x509_write_pem()
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="IQ8smIceJes="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix unaligned access
+ in macOS, FreeBSD, Solaris hwaddr
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,87 +19,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <davids@...515...>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: cron2 <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: David Sommerseth <davids@...515...>
+--IQ8smIceJes=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-After removing --tls-export-cert, this function was left in the code
-base with no other users.  This was an oversight in the previous
-change.  Removing it to avoid leaving dead code behind.
+Attention is currently required from: plaisthos.
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- src/openvpn/ssl_verify_backend.h | 11 -----------
- src/openvpn/ssl_verify_mbedtls.c |  7 -------
- src/openvpn/ssl_verify_openssl.c | 11 -----------
- 3 files changed, 29 deletions(-)
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/454?usp=3Demail )
 
-diff --git a/src/openvpn/ssl_verify_backend.h b/src/openvpn/ssl_verify_backend.h
-index 3b798811..d402b1f2 100644
---- a/src/openvpn/ssl_verify_backend.h
-+++ b/src/openvpn/ssl_verify_backend.h
-@@ -249,17 +249,6 @@ result_t x509_verify_cert_ku(openvpn_x509_cert_t *x509, const unsigned *const ex
-  */
- result_t x509_verify_cert_eku(openvpn_x509_cert_t *x509, const char *const expected_oid);
- 
--/*
-- * Store the given certificate in pem format in a temporary file in tmp_dir
-- *
-- * @param cert          Certificate to store
-- * @param tmp_dir       Temporary directory to store the directory
-- * @param gc            gc_arena to store temporary objects in
-- *
-- *
-- */
--result_t x509_write_pem(FILE *peercert_file, openvpn_x509_cert_t *peercert);
--
- /**
-  * Return true iff a CRL is configured, but is not loaded.  This can be caused
-  * by e.g. a CRL parsing error, a missing CRL file or CRL file permission
-diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
-index a1ddf8d0..4596843c 100644
---- a/src/openvpn/ssl_verify_mbedtls.c
-+++ b/src/openvpn/ssl_verify_mbedtls.c
-@@ -547,13 +547,6 @@ x509_verify_cert_eku(mbedtls_x509_crt *cert, const char *const expected_oid)
-     return fFound;
- }
- 
--result_t
--x509_write_pem(FILE *peercert_file, mbedtls_x509_crt *peercert)
--{
--    msg(M_WARN, "mbed TLS does not support writing peer certificate in PEM format");
--    return FAILURE;
--}
--
- bool
- tls_verify_crl_missing(const struct tls_options *opt)
- {
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index 3194c232..5afffc1f 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -762,17 +762,6 @@ x509_verify_cert_eku(X509 *x509, const char *const expected_oid)
-     return fFound;
- }
- 
--result_t
--x509_write_pem(FILE *peercert_file, X509 *peercert)
--{
--    if (PEM_write_X509(peercert_file, peercert) < 0)
--    {
--        msg(M_NONFATAL, "Failed to write peer certificate in PEM format");
--        return FAILURE;
--    }
--    return SUCCESS;
--}
--
- bool
- tls_verify_crl_missing(const struct tls_options *opt)
- {
--- 
-2.39.3
+Change subject: Fix unaligned access in macOS, FreeBSD, Solaris hwaddr
+......................................................................
 
+
+Patch Set 2: Code-Review+2
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/454?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ia797c8801fa9a9bc10b6674efde5fdbd7132e4a8
+Gerrit-Change-Number: 454
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: cron2 <gert@...1296...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Wed, 22 Nov 2023 16:42:53 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--IQ8smIceJes=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/454?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/454?usp=3Demail">=
+change 454</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/454?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia797c8801fa9a9bc10b6674efde=
+5fdbd7132e4a8 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 454 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
+ </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 22 Nov 2023 16:42:53=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--IQ8smIceJes=--
 
