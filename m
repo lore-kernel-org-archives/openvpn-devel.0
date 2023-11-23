@@ -1,12 +1,16 @@
-Message-ID: <113dd511-7ee5-1bde-57cb-3aa9f8b00dcb@...2108...>
-Date: Thu, 23 Nov 2023 08:41:01 +0100
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Thu, 23 Nov 2023 10:08:52 +0000
+In-Reply-To: <gerrit.1700475817000.Ifd0376b36d4050dc22bc93b8fcf7ed29faef0021@...2715...>
+References: <gerrit.1700475817000.Ifd0376b36d4050dc22bc93b8fcf7ed29faef0021@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <2eab5d037cd4117b0f28f5ef49a505544de4b3e7-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Language: en-GB, nb-NO
-References: <20231122143110.58520-1-dazo+openvpn@...2108...>
- <ZV53yiEO_4y2TvGy@...1296...>
-From: David Sommerseth <dazo+openvpn@...2108...>
-In-Reply-To: <ZV53yiEO_4y2TvGy@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH release/2.6] Remove --tls-export-cert
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="baFkpj0ncU0="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Remove
+ unused/uneeded defines from configure and cmake config
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,54 +19,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On 22/11/2023 22:51, Gert Doering wrote:
-> Hi,
-> 
-> On Wed, Nov 22, 2023 at 03:31:10PM +0100, David Sommerseth wrote:
->> From: David Sommerseth <davids@...515...>
->>
->> As OpenVPN 2.6+ is doing some adoptions to the license text, all
->> prior contributors need to accept this new text.  Unfortunately, Mathieu
->> Giannecchini who implemented the --tls-export-cert feature did not
->> respond at all.  Without an explicit acceptance we need to remove this
->> feature to avoid potential legal complications.
->>
->> If this is still a wanted feature, it will need to be re-implemented
->> from scratch.
-> 
-> Is this significantly different from the "master" patch that it needs
-> an extra 2.6 patch?
-> 
-> (So now I have 4 patches to deal with, not "1 that goes to master +
-> release/2.6"...)
-The "second set" should just be offset changes between master and 
-release/2.6.  I did it that way so you wouldn't need to be worried about 
-any merge conflicts.  It is based on the latest heads of master and 
-release/2.6.
+--baFkpj0ncU0=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-If you want to just cherry-pick the master patches for 2.6, that's all 
-fine by me.  Also if you want to squash them into a single commit as well.
+Attention is currently required from: flichtenheld.
 
-These patches are purely intended to ease the merging process, as in "no 
-conflicts expected".  And to indicate that this is both master + 
-release/2.6 material.
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/443?usp=3Demail )
 
-The main reason I overlooked the x509_write_pem() function was that 
-Adriaan de Jong refactored out that functionality from the main feature 
-function into a dedicated function back in the days with the SSL/TLS 
-refactoring to support PolarSSL.
+Change subject: Remove unused/uneeded defines from configure and cmake conf=
+ig
+......................................................................
 
 
--- 
-kind regards,
+Patch Set 3:
 
-David Sommerseth
-OpenVPN Inc
+(1 comment)
+
+Patchset:
+
+PS2:
+> Resetting my vote until the topic of very old compilers is discussed.
+removed from this patch. I will just wait until we remove OpenSSL 1.0.2 sup=
+port.
 
 
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/443?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ifd0376b36d4050dc22bc93b8fcf7ed29faef0021
+Gerrit-Change-Number: 443
+Gerrit-PatchSet: 3
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Thu, 23 Nov 2023 10:08:52 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-MessageType: comment
+
+--baFkpj0ncU0=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/443?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/4=
+43?tab=3Dcomments">Patch Set #2:</a> </p><p><blockquote style=3D"border-lef=
+t: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Resetting my vote unti=
+l the topic of very old compilers is discussed.</blockquote></p><p style=3D=
+"white-space: pre-wrap; word-wrap: break-word;">removed from this patch. I =
+will just wait until we remove OpenSSL 1.0.2 support.</p></li></ul></li></u=
+l><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/443?us=
+p=3Demail">change 443</a>. To unsubscribe, or for help writing mail filters=
+, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><di=
+v itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope item=
+prop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D=
+"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/443?usp=3Demail"/><meta=
+ itemprop=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ifd0376b36d4050dc22bc93b8fcf=
+7ed29faef0021 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 443 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 23 Nov 2023 10:08:52=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--baFkpj0ncU0=--
 
