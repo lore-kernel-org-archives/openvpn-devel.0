@@ -1,11 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Tue, 28 Nov 2023 11:43:59 +0100
-Message-Id: <20231128104359.62967-1-frank@...2641...>
-In-Reply-To: <gerrit.1700694723000.Ia3d5b4946138df322ebcd9e9e77d04328dacbc5d@...2715...>
-References: <gerrit.1700694723000.Ia3d5b4946138df322ebcd9e9e77d04328dacbc5d@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 28 Nov 2023 11:03:55 +0000
+In-Reply-To: <gerrit.1700585996000.I39fb3f05b6245af9ae5dd666bfc53ed07e5cfb24@...2715...>
+References: <gerrit.1700585996000.I39fb3f05b6245af9ae5dd666bfc53ed07e5cfb24@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <09f81ed00ba215df4e6f4028bff71332e866da2b-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Fix check_session_buf_not_used using
- wrong index
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="TgefFqf59A4="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Cache mbed TLS
+ dependency and build latest 2.x mbed TLS as well
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,45 +19,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--TgefFqf59A4=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The inner loop used i instead of j when iterating through the buffers.
-Since i is always between 0 and 2 and ks->send_reliable->size is
-(when it is defined) always 6 (TLS_RELIABLE_N_SEND_BUFFERS) this does not
-cause an index of out bounds. So while the check is not doing anything
-really useful with i instead of  j, it at least is not crashing or
-anything similar.
+Attention is currently required from: plaisthos.
 
-Noticed-By: Jon Williams (braindead-bf) on Github issue #449
-Change-Id: Ia3d5b4946138df322ebcd9e9e77d04328dacbc5d
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/455?usp=3Demail )
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+Change subject: Cache mbed TLS dependency and build latest 2.x mbed TLS as =
+well
+......................................................................
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/459
-This mail reflects revision 1 of this Change.
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
 
-        
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 400230c..b5d24b5 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -3207,7 +3207,7 @@
- 
-         for (int j = 0; j < ks->send_reliable->size; j++)
-         {
--            if (ks->send_reliable->array[i].buf.data == dataptr)
-+            if (ks->send_reliable->array[j].buf.data == dataptr)
-             {
-                 msg(M_INFO, "Warning buffer of freed TLS session is still in"
-                     " use (session->key[%d].send_reliable->array[%d])",
+Patch Set 1: Code-Review+2
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/455?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I39fb3f05b6245af9ae5dd666bfc53ed07e5cfb24
+Gerrit-Change-Number: 455
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Tue, 28 Nov 2023 11:03:55 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--TgefFqf59A4=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/455?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/455?usp=3Demail">=
+change 455</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/455?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I39fb3f05b6245af9ae5dd666bfc=
+53ed07e5cfb24 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 455 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 28 Nov 2023 11:03:55=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--TgefFqf59A4=--
 
