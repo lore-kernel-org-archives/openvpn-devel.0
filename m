@@ -1,11 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Tue, 28 Nov 2023 12:14:47 +0100
-Message-Id: <20231128111447.64445-1-frank@...2641...>
-In-Reply-To: <gerrit.1700658573000.I66e3dd7b7166459526824fe5ae81a449b375b8db@...2715...>
-References: <gerrit.1700658573000.I66e3dd7b7166459526824fe5ae81a449b375b8db@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 28 Nov 2023 11:21:56 +0000
+In-Reply-To: <gerrit.1700743197000.I04f8c7c413e7cb62c726262feee6ca89c7e86c70@...2715...>
+References: <gerrit.1700743197000.I04f8c7c413e7cb62c726262feee6ca89c7e86c70@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <d7d08c7e98cd635313fb06ecd04f230904dd9642-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Minimal Solaris/OpenIndiana support to
- Cmake and clean up -Werror
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="rM/x/nVJPxI="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Check PRF
+ availability on initialisation and add --force-tls-key-mate...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,160 +19,114 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--rM/x/nVJPxI=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: I66e3dd7b7166459526824fe5ae81a449b375b8db
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
+Attention is currently required from: plaisthos.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/460?usp=3Demail )
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/458
-This mail reflects revision 1 of this Change.
+Change subject: Check PRF availability on initialisation and add --force-tl=
+s-key-material-export
+......................................................................
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
 
-        
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d21c9bd..c3a55ab 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -121,11 +121,17 @@
-     set(TARGET_FREEBSD YES)
-     set(ENABLE_DCO YES)
-     link_libraries(-lnv)
-+elseif (${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
-+    set(TARGET_SOLARIS YES)
-+    set(HAVE_SYS_SOCKIO_H 1)
-+    link_libraries(-lnsl -lsocket -lresolv)
- elseif (WIN32)
-     set(ENABLE_DCO YES)
- elseif (APPLE)
-     set(TARGET_DARWIN YES)
-     set(HAVE_NET_IF_UTUN_H YES)
-+else()
-+    message(FATAL_ERROR "Unknown system name: \"${CMAKE_SYSTEM_NAME}\"")
- endif ()
- 
- if (UNIX)
-diff --git a/config.h.cmake.in b/config.h.cmake.in
-index 19b79bc..5b93fc5 100644
---- a/config.h.cmake.in
-+++ b/config.h.cmake.in
-@@ -336,7 +336,7 @@
- #cmakedefine HAVE_SYS_SOCKET_H
- 
- /* Define to 1 if you have the <sys/sockio.h> header file. */
--#undef HAVE_SYS_SOCKIO_H
-+#cmakedefine HAVE_SYS_SOCKIO_H
- 
- /* Define to 1 if you have the <sys/stat.h> header file. */
- #define HAVE_SYS_STAT_H 1
-@@ -443,6 +443,9 @@
- /* Are we running on Linux? */
- #cmakedefine TARGET_LINUX
- 
-+/* Are we running on Solaris/OpenIndiana? */
-+#cmakedefine TARGET_SOLARIS
-+
- /* Are we running WIN32? */
- #cmakedefine TARGET_WIN32
- 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index ff64938..6cc112c 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -2342,12 +2342,11 @@
-         return;
-     }
- 
--#ifndef _WIN32
-+#if !defined(_WIN32)
- #if !defined(TARGET_LINUX)
-     const char *gateway;
--#else
--    int metric;
- #endif
-+#if !defined(TARGET_SOLARIS)
-     bool gateway_needed = false;
-     const char *device = tt->actual_name;
-     if (r6->iface != NULL)              /* vpn server special route */
-@@ -2365,6 +2364,7 @@
-         gateway_needed = true;
-     }
- #endif
-+#endif
- 
-     struct gc_arena gc = gc_new();
-     struct argv argv = argv_new();
-@@ -2395,7 +2395,7 @@
-     msg( M_INFO, "delete_route_ipv6(%s/%d)", network, r6->netbits );
- 
- #if defined(TARGET_LINUX)
--    metric = -1;
-+    int metric = -1;
-     if ((r6->flags & RT_METRIC_DEFINED) && (r6->metric > 0))
-     {
-         metric = r6->metric;
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 82ab6c0..f1b8699 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1900,7 +1900,7 @@
- #endif
- 
- 
--#if !(defined(_WIN32) || defined(TARGET_LINUX))
-+#if !(defined(_WIN32) || defined(TARGET_LINUX) || defined(TARGET_SOLARIS))
- static void
- open_tun_generic(const char *dev, const char *dev_type, const char *dev_node,
-                  struct tuntap *tt)
-@@ -2061,7 +2061,7 @@
- }
- #endif /* TARGET_LINUX || TARGET_FREEBSD*/
- 
--#if !defined(_WIN32)
-+#if !(defined(_WIN32) || defined(TARGET_SOLARIS))
- static void
- close_tun_generic(struct tuntap *tt)
- {
-@@ -2398,13 +2398,12 @@
- open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt,
-          openvpn_net_ctx_t *ctx)
- {
--    int if_fd, ip_muxid, arp_muxid, arp_fd, ppa = -1;
-+    int if_fd = -1, ip_muxid = -1, arp_muxid = -1, arp_fd = -1, ppa = -1;
-     struct lifreq ifr;
-     const char *ptr;
--    const char *ip_node, *arp_node;
-+    const char *ip_node = NULL, *arp_node = NULL;
-     const char *dev_tuntap_type;
-     int link_type;
--    bool is_tun;
-     struct strioctl strioc_if, strioc_ppa;
- 
-     /* improved generic TUN/TAP driver from
-@@ -2428,7 +2427,6 @@
-         }
-         dev_tuntap_type = "tun";
-         link_type = I_PLINK;
--        is_tun = true;
-     }
-     else if (tt->type == DEV_TYPE_TAP)
-     {
-@@ -2440,7 +2438,6 @@
-         arp_node = dev_node;
-         dev_tuntap_type = "tap";
-         link_type = I_PLINK; /* was: I_LINK */
--        is_tun = false;
-     }
-     else
-     {
+Patch Set 1: Code-Review-2
+
+(2 comments)
+
+File src/openvpn/crypto.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/460/comment/2a674c0e_9a4fdc16 :
+PS1, Line 1797:      * limits our compatibility to other 2.6.x+ OpernVPN pe=
+ers. Do a simple
+"OpenVPN"
+
+
+File src/openvpn/options.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/460/comment/d4124e62_ecf20def :
+PS1, Line 2583:         if (options->force_key_material_export)
+This is in "if (options->mode =3D=3D MODE_SERVER)" which is wrong.
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I04f8c7c413e7cb62c726262feee6ca89c7e86c70
+Gerrit-Change-Number: 460
+Gerrit-PatchSet: 1
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Tue, 28 Nov 2023 11:21:56 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: Yes
+Gerrit-MessageType: comment
+
+--rM/x/nVJPxI=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: plaisthos. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail">Vi=
+ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/crypto.c:</p><=
+ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding:=
+ 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.ope=
+nvpn.net/c/openvpn/+/460/comment/2a674c0e_9a4fdc16">Patch Set #1, Line 1797=
+:</a> <code style=3D"font-family:monospace,monospace">     * limits our com=
+patibility to other 2.6.x+ OpernVPN peers. Do a simple</code></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">&quot;OpenVPN&quot;</p><=
+/li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/opti=
+ons.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: =
+0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:/=
+/gerrit.openvpn.net/c/openvpn/+/460/comment/d4124e62_ecf20def">Patch Set #1=
+, Line 2583:</a> <code style=3D"font-family:monospace,monospace">        if=
+ (options-&gt;force_key_material_export)</code></p><p style=3D"white-space:=
+ pre-wrap; word-wrap: break-word;">This is in &quot;if (options-&gt;mode =
+=3D=3D MODE_SERVER)&quot; which is wrong.</p></li></ul></li></ul><p>To view=
+, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail">c=
+hange 460</a>. To unsubscribe, or for help writing mail filters, visit <a h=
+ref=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope =
+itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"acti=
+on" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I04f8c7c413e7cb62c726262feee=
+6ca89c7e86c70 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 460 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 28 Nov 2023 11:21:56=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--rM/x/nVJPxI=--
 
