@@ -1,15 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Tue, 28 Nov 2023 16:50:33 +0000
-References: <gerrit.1701190231000.I9b8e69f2b9838cea4cb9001f4e8960b8a39724ef@...2715...>
+Date: Tue, 28 Nov 2023 17:08:00 +0000
+In-Reply-To: <gerrit.1699291967000.Iede3e7c028cbb715e28bc88c7e583f84dadc02c8@...2715...>
+References: <gerrit.1699291967000.Iede3e7c028cbb715e28bc88c7e583f84dadc02c8@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <167adb29ac632674529953ac722cb59974b20063-HTML@...2715...>
+Message-ID: <82c55b30af9dee1e4aa8aaab11bcffca6e78ea52-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="OmSHMK0nlVA="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: GHA: clean up
- libressl builds with newer libressl
+Content-Type: multipart/alternative; boundary="Kekq5huS6AM="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Change default of
+ "topology" to "subnet"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,150 +22,238 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---OmSHMK0nlVA=
+--Kekq5huS6AM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: flichtenheld, plaisthos.
 
 Hello plaisthos,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/461?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/421?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#2).
+
+The following approvals got outdated and were removed:
+Code-Review-1 by plaisthos
 
 
-Change subject: GHA: clean up libressl builds with newer libressl
+Change subject: Change default of "topology" to "subnet"
 ......................................................................
 
-GHA: clean up libressl builds with newer libressl
+Change default of "topology" to "subnet"
 
-- Update to latest stable release
-- Work-around patches not required anymore
-- Official URL of repo has changed
-
-Change-Id: I9b8e69f2b9838cea4cb9001f4e8960b8a39724ef
+Change-Id: Iede3e7c028cbb715e28bc88c7e583f84dadc02c8
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M .github/workflows/build.yaml
-1 file changed, 2 insertions(+), 13 deletions(-)
+M Changes.rst
+M doc/man-sections/vpn-network-options.rst
+M src/openvpn/options.c
+3 files changed, 19 insertions(+), 11 deletions(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/21/421/2
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/61/461/1
+diff --git a/Changes.rst b/Changes.rst
+index 3676dce..3132c84 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -10,6 +10,15 @@
+     ``--allow-deprecated-insecure-static-crypto`` but will be removed in
+     OpenVPN 2.8.
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index cd72f3d..4393f5c 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -323,22 +323,11 @@
-         uses: actions/checkout@...2689...
-         with:
-           path: libressl
--          repository: libressl-portable/portable
--          ref: v3.7.0
--      # LibreSSL has master in the OPENBSD_BRANCH by default even in the t=
-agged releases
--      # Manually use the OpenBSD branch that is more appropiate and remove=
- git pull that
--      # breaks when checking out a tag instead of branch
--      - name: "libressl: fix build"
--        run: |
--           echo libressl-v3.7.0 > OPENBSD_BRANCH
--           sed -i -e 's/ git pull --rebase//' update.sh
--        working-directory: libressl
-+          repository: libressl/portable
-+          ref: v3.8.2
-       - name: "libressl: autogen.sh"
-         run: ./autogen.sh
-         working-directory: libressl
--      - name: "libressl: autoconf"
--        run: autoreconf -fvi
--        working-directory: libressl
-       - name: "libressl: configure"
-         run: ./configure
-         working-directory: libressl
++Default for ``--topology`` changed to ``subnet``
++    Previous releases used ``net30`` as default. This only affects
++    configs with ``--dev tun`` and only IPv4. Note that this
++    changes the semantics of ``--ifconfig``, so if you have manual
++    settings for that in your config but not set ``--topology``
++    your config might fail to parse with the new version. Just adding
++    ``--topology net30`` to the config should fix the problem.
++    By default ``--topology`` is pushed from server to client.
++
+ Overview of changes in 2.6
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
+
+diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/vp=
+n-network-options.rst
+index 3fa3ccf..251529f 100644
+--- a/doc/man-sections/vpn-network-options.rst
++++ b/doc/man-sections/vpn-network-options.rst
+@@ -495,11 +495,17 @@
+
+   ``mode`` can be one of:
+
++  :code:`subnet`
++    Use a subnet rather than a point-to-point topology by
++    configuring the tun interface with a local IP address and subnet mask,
++    similar to the topology used in ``--dev tap`` and ethernet bridging
++    mode. This mode allocates a single IP address per connecting client and
++    works on Windows as well. This is the default.
++
+   :code:`net30`
+     Use a point-to-point topology, by allocating one /30 subnet
+     per client. This is designed to allow point-to-point semantics when so=
+me
+-    or all of the connecting clients might be Windows systems. This is the
+-    default.
++    or all of the connecting clients might be Windows systems.
+
+   :code:`p2p`
+     Use a point-to-point topology where the remote endpoint of
+@@ -508,15 +514,8 @@
+     connecting client. Only use when none of the connecting clients are
+     Windows systems.
+
+-  :code:`subnet`
+-    Use a subnet rather than a point-to-point topology by
+-    configuring the tun interface with a local IP address and subnet mask,
+-    similar to the topology used in ``--dev tap`` and ethernet bridging
+-    mode. This mode allocates a single IP address per connecting client and
+-    works on Windows as well.
+-
+   *Note:* Using ``--topology subnet`` changes the interpretation of the
+-  arguments of ``--ifconfig`` to mean "address netmask", no longer "local
++  arguments of ``--ifconfig`` to mean "address netmask", and not "local
+   remote".
+
+ --tun-mtu args
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index d238269..764ca7b 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -800,7 +800,7 @@
+         o->gc_owned =3D true;
+     }
+     o->mode =3D MODE_POINT_TO_POINT;
+-    o->topology =3D TOP_NET30;
++    o->topology =3D TOP_SUBNET;
+     o->ce.proto =3D PROTO_UDP;
+     o->ce.af =3D AF_UNSPEC;
+     o->ce.bind_ipv6_only =3D false;
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/461?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/421?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I9b8e69f2b9838cea4cb9001f4e8960b8a39724ef
-Gerrit-Change-Number: 461
-Gerrit-PatchSet: 1
+Gerrit-Change-Id: Iede3e7c028cbb715e28bc88c7e583f84dadc02c8
+Gerrit-Change-Number: 421
+Gerrit-PatchSet: 2
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newchange
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newpatchset
 
---OmSHMK0nlVA=
+--Kekq5huS6AM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/461?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">GHA: clean up libressl builds with newer libressl<br><br>- Up=
-date to latest stable release<br>- Work-around patches not required anymore=
-<br>- Official URL of repo has changed<br><br>Change-Id: I9b8e69f2b9838cea4=
-cb9001f4e8960b8a39724ef<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2375...=
-41...&gt;<br>---<br>M .github/workflows/build.yaml<br>1 file changed, 2 ins=
-ertions(+), 13 deletions(-)<br><br></pre><pre style=3D"font-family: monospa=
-ce,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:294=
-18/openvpn refs/changes/61/461/1</pre><pre style=3D"font-family: monospace,=
-monospace; white-space: pre-wrap;"><span>diff --git a/.github/workflows/bui=
-ld.yaml b/.github/workflows/build.yaml</span><br><span>index cd72f3d..4393f=
-5c 100644</span><br><span>--- a/.github/workflows/build.yaml</span><br><spa=
-n>+++ b/.github/workflows/build.yaml</span><br><span>@@ -323,22 +323,11 @@<=
-/span><br><span>         uses: actions/checkout@...2689...</span><br><span>=
-         with:</span><br><span>           path: libressl</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-          repository: libressl-portable/=
-portable</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          ref=
-: v3.7.0</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      # Libre=
-SSL has master in the OPENBSD_BRANCH by default even in the tagged releases=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      # Manually use =
-the OpenBSD branch that is more appropiate and remove git pull that</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-      # breaks when checking =
-out a tag instead of branch</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-      - name: &quot;libressl: fix build&quot;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        run: |</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-           echo libressl-v3.7.0 &gt; OPENBSD_BRANC=
-H</span><br><span style=3D"color: hsl(0, 100%, 40%);">-           sed -i -e=
- &#39;s/ git pull --rebase//&#39; update.sh</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-        working-directory: libressl</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+          repository: libressl/portab=
-le</span><br><span style=3D"color: hsl(120, 100%, 40%);">+          ref: v3=
-.8.2</span><br><span>       - name: &quot;libressl: autogen.sh&quot;</span>=
-<br><span>         run: ./autogen.sh</span><br><span>         working-direc=
-tory: libressl</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      -=
- name: &quot;libressl: autoconf&quot;</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-        run: autoreconf -fvi</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        working-directory: libressl</span><br><span>=
-       - name: &quot;libressl: configure&quot;</span><br><span>         run=
-: ./configure</span><br><span>         working-directory: libressl</span><b=
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>flichtenheld <strong>uploaded patch set #2</strong> to this change.</p><=
+p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/421?usp=3Demail">View Ch=
+ange</a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by plaisthos</p><pre style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">Change default of &quot;topology&quot; to &quot;=
+subnet&quot;<br><br>Change-Id: Iede3e7c028cbb715e28bc88c7e583f84dadc02c8<br=
+>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M Chan=
+ges.rst<br>M doc/man-sections/vpn-network-options.rst<br>M src/openvpn/opti=
+ons.c<br>3 files changed, 19 insertions(+), 11 deletions(-)<br><br></pre><p=
+re style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git p=
+ull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/21/421/2</pre><pre =
+style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>di=
+ff --git a/Changes.rst b/Changes.rst</span><br><span>index 3676dce..3132c84=
+ 100644</span><br><span>--- a/Changes.rst</span><br><span>+++ b/Changes.rst=
+</span><br><span>@@ -10,6 +10,15 @@</span><br><span>     ``--allow-deprecat=
+ed-insecure-static-crypto`` but will be removed in</span><br><span>     Ope=
+nVPN 2.8.</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+Default for ``--topology`` changed to ``subnet``</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    Previous releases used ``net30`` a=
+s default. This only affects</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    configs with ``--dev tun`` and only IPv4. Note that this</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    changes the semantics=
+ of ``--ifconfig``, so if you have manual</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    settings for that in your config but not set ``--=
+topology``</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    your =
+config might fail to parse with the new version. Just adding</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    ``--topology net30`` to the co=
+nfig should fix the problem.</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    By default ``--topology`` is pushed from server to client.</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> Overv=
+iew of changes in 2.6</span><br><span> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span><br><span> </span><br><spa=
+n>diff --git a/doc/man-sections/vpn-network-options.rst b/doc/man-sections/=
+vpn-network-options.rst</span><br><span>index 3fa3ccf..251529f 100644</span=
+><br><span>--- a/doc/man-sections/vpn-network-options.rst</span><br><span>+=
+++ b/doc/man-sections/vpn-network-options.rst</span><br><span>@@ -495,11 +4=
+95,17 @@</span><br><span> </span><br><span>   ``mode`` can be one of:</span=
+><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+  :code=
+:`subnet`</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    Use a =
+subnet rather than a point-to-point topology by</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    configuring the tun interface with a local =
+IP address and subnet mask,</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    similar to the topology used in ``--dev tap`` and ethernet brid=
+ging</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    mode. This =
+mode allocates a single IP address per connecting client and</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    works on Windows as well. This=
+ is the default.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
+pan><br><span>   :code:`net30`</span><br><span>     Use a point-to-point to=
+pology, by allocating one /30 subnet</span><br><span>     per client. This =
+is designed to allow point-to-point semantics when some</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    or all of the connecting clients migh=
+t be Windows systems. This is the</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    default.</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    or all of the connecting clients might be Windows systems.</span><=
+br><span> </span><br><span>   :code:`p2p`</span><br><span>     Use a point-=
+to-point topology where the remote endpoint of</span><br><span>@@ -508,15 +=
+514,8 @@</span><br><span>     connecting client. Only use when none of the =
+connecting clients are</span><br><span>     Windows systems.</span><br><spa=
+n> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-  :code:`subnet`</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    Use a subnet rather=
+ than a point-to-point topology by</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    configuring the tun interface with a local IP address and =
+subnet mask,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    simil=
+ar to the topology used in ``--dev tap`` and ethernet bridging</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    mode. This mode allocates a si=
+ngle IP address per connecting client and</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    works on Windows as well.</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-</span><br><span>   *Note:* Using ``--topology =
+subnet`` changes the interpretation of the</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-  arguments of ``--ifconfig`` to mean &quot;address ne=
+tmask&quot;, no longer &quot;local</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+  arguments of ``--ifconfig`` to mean &quot;address netmask&=
+quot;, and not &quot;local</span><br><span>   remote&quot;.</span><br><span=
+> </span><br><span> --tun-mtu args</span><br><span>diff --git a/src/openvpn=
+/options.c b/src/openvpn/options.c</span><br><span>index d238269..764ca7b 1=
+00644</span><br><span>--- a/src/openvpn/options.c</span><br><span>+++ b/src=
+/openvpn/options.c</span><br><span>@@ -800,7 +800,7 @@</span><br><span>    =
+     o-&gt;gc_owned =3D true;</span><br><span>     }</span><br><span>     o=
+-&gt;mode =3D MODE_POINT_TO_POINT;</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    o-&gt;topology =3D TOP_NET30;</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    o-&gt;topology =3D TOP_SUBNET;</span><br><sp=
+an>     o-&gt;ce.proto =3D PROTO_UDP;</span><br><span>     o-&gt;ce.af =3D =
+AF_UNSPEC;</span><br><span>     o-&gt;ce.bind_ipv6_only =3D false;</span><b=
 r><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn=
-.net/c/openvpn/+/461?usp=3Demail">change 461</a>. To unsubscribe, or for he=
+.net/c/openvpn/+/421?usp=3Demail">change 421</a>. To unsubscribe, or for he=
 lp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/setting=
 s">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessa=
 ge"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAc=
 tion"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-461?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
+421?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></=
 div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I9b8e69f2b9838cea4cb9001f4e8=
-960b8a39724ef </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 461 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Iede3e7c028cbb715e28bc88c7e5=
+83f84dadc02c8 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 421 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -173,8 +262,10 @@ div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---OmSHMK0nlVA=--
+--Kekq5huS6AM=--
 
