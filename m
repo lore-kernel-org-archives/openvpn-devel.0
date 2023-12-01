@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Fri, 1 Dec 2023 12:12:01 +0000
-In-Reply-To: <gerrit.1700590714000.Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3@...2715...>
-References: <gerrit.1700590714000.Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3@...2715...>
+Date: Fri, 1 Dec 2023 12:13:28 +0000
+In-Reply-To: <gerrit.1700743197000.I04f8c7c413e7cb62c726262feee6ca89c7e86c70@...2715...>
+References: <gerrit.1700743197000.I04f8c7c413e7cb62c726262feee6ca89c7e86c70@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <17aad33097614ec1afe2850be11fc1bb7dce4db3-EmailReviewComments-HTML@...2715...>
+Message-ID: <928130cf7e4120e66f0b3c722104b66963c0ce5c-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="EDneR7CD0gg="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Extend the error
- message when TLS 1.0 PRF fails
+Content-Type: multipart/alternative; boundary="NeuXjCRDWyM="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Check PRF
+ availability on initialisation and add --force-tls-key-mate...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,86 +21,106 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---EDneR7CD0gg=
+--NeuXjCRDWyM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld.
 
 plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/456?usp=3Demail )
+/openvpn/+/460?usp=3Demail )
 
-Change subject: Extend the error message when TLS 1.0 PRF fails
+Change subject: Check PRF availability on initialisation and add --force-tl=
+s-key-material-export
 ......................................................................
 
 
-Patch Set 6:
+Patch Set 3:
 
-(1 comment)
+(2 comments)
 
-Patchset:
+File src/openvpn/crypto.c:
 
-PS6:
-> Isn't this made redundant by https://gerrit.openvpn. [=E2=80=A6]
-In theory yes. With the other change you get a warning on startup and with =
-this the actual error when you connect to a peer is been improved to point =
-out that this is a peer that is missing the TLS export functionality. I can=
- also squash the two into one.
+http://gerrit.openvpn.net/c/openvpn/+/460/comment/25274dc5_732e6f85 :
+PS1, Line 1797:      * limits our compatibility to other 2.6.x+ OpernVPN pe=
+ers. Do a simple
+> Not done
+Now really done
+
+
+File src/openvpn/crypto.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/460/comment/5cda2246_a787261c :
+PS3, Line 1797:      * limits our compatibility to other 2.6.x+ OperVPN pee=
+rs. Do a simple
+> Also, shouldn't that be "pre-2.6.0 peers" instead of "2.6. [=E2=80=A6]
+limits in the sense that we are limited to only 2.6.0+ peers. I will adjust=
+ the text to make a it a bit more clear.
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/456?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3
-Gerrit-Change-Number: 456
-Gerrit-PatchSet: 6
+Gerrit-Change-Id: I04f8c7c413e7cb62c726262feee6ca89c7e86c70
+Gerrit-Change-Number: 460
+Gerrit-PatchSet: 3
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Fri, 01 Dec 2023 12:12:01 +0000
+Gerrit-Comment-Date: Fri, 01 Dec 2023 12:13:28 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
 Comment-In-Reply-To: flichtenheld <frank@...2641...>
 Gerrit-MessageType: comment
 
---EDneR7CD0gg=
+--NeuXjCRDWyM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/456?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
-: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/4=
-56?tab=3Dcomments">Patch Set #6:</a> </p><p><blockquote style=3D"border-lef=
-t: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Isn&#39;t this made re=
-dundant by https://gerrit.openvpn. [=E2=80=A6]</blockquote></p><p style=3D"=
-white-space: pre-wrap; word-wrap: break-word;">In theory yes. With the othe=
-r change you get a warning on startup and with this the actual error when y=
-ou connect to a peer is been improved to point out that this is a peer that=
- is missing the TLS export functionality. I can also squash the two into on=
-e.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvp=
-n.net/c/openvpn/+/456?usp=3Demail">change 456</a>. To unsubscribe, or for h=
-elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
-gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
-age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
-ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
-/456?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
-/div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail">View C=
+hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
+<li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/crypto.c:</p><ul s=
+tyle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0=
+ 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/460/comment/25274dc5_732e6f85">Patch Set #1, Line 1797:</a=
+> <code style=3D"font-family:monospace,monospace">     * limits our compati=
+bility to other 2.6.x+ OpernVPN peers. Do a simple</code></p><p><blockquote=
+ style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">No=
+t done</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-=
+word;">Now really done</p></li></ul></li><li style=3D"margin: 0; padding: 0=
+;"><p>File src/openvpn/crypto.c:</p><ul style=3D"list-style: none; padding:=
+ 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-botto=
+m: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/460/comment/5cda2=
+246_a787261c">Patch Set #3, Line 1797:</a> <code style=3D"font-family:monos=
+pace,monospace">     * limits our compatibility to other 2.6.x+ OperVPN pee=
+rs. Do a simple</code></p><p><blockquote style=3D"border-left: 1px solid #a=
+aa; margin: 10px 0; padding: 0 10px;">Also, shouldn&#39;t that be &quot;pre=
+-2.6.0 peers&quot; instead of &quot;2.6. [=E2=80=A6]</blockquote></p><p sty=
+le=3D"white-space: pre-wrap; word-wrap: break-word;">limits in the sense th=
+at we are limited to only 2.6.0+ peers. I will adjust the text to make a it=
+ a bit more clear.</p></li></ul></li></ul><p>To view, visit <a href=3D"http=
+://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail">change 460</a>. To unsub=
+scribe, or for help writing mail filters, visit <a href=3D"http://gerrit.op=
+envpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://sche=
+ma.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://=
+schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn=
+.net/c/openvpn/+/460?usp=3Demail"/><meta itemprop=3D"name" content=3D"View =
+Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib3b64b52beed69dc7740f191b0e=
-9a9dc9af5b7f3 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 456 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I04f8c7c413e7cb62c726262feee=
+6ca89c7e86c70 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 460 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -109,14 +129,16 @@ ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 01 Dec 2023 12:12:01=
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 01 Dec 2023 12:13:28=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
 <div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
 .2641...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---EDneR7CD0gg=--
+--NeuXjCRDWyM=--
 
