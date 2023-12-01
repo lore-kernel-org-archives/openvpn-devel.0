@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 1 Dec 2023 10:36:08 +0000
-In-Reply-To: <gerrit.1700475817000.Ifd0376b36d4050dc22bc93b8fcf7ed29faef0021@...2715...>
-References: <gerrit.1700475817000.Ifd0376b36d4050dc22bc93b8fcf7ed29faef0021@...2715...>
+Date: Fri, 1 Dec 2023 10:37:49 +0000
+In-Reply-To: <gerrit.1701361470000.Ie7fd59cc84e2eb024086c28c2ec2a5606a2b2e7c@...2715...>
+References: <gerrit.1701361470000.Ie7fd59cc84e2eb024086c28c2ec2a5606a2b2e7c@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <f1ea729fad1b60dc987cb7b7b01503a0463c32e1-EmailReviewComments-HTML@...2715...>
+Message-ID: <19be15729e67bea36e3341d865d254ae8cdfef0f-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="/vodAfByVH0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Aozm+/gr8zM="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Remove
- unused/unneeded/add missing defines from configure/cmake
+ TEST_GET_DEFAULT_GATEWAY as it duplicates --show-gateway
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,65 +22,65 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---/vodAfByVH0=
+--Aozm+/gr8zM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: plaisthos.
 
 flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/443?usp=3Demail )
+t/c/openvpn/+/463?usp=3Demail )
 
-Change subject: Remove unused/unneeded/add missing defines from configure/c=
-make
+Change subject: Remove TEST_GET_DEFAULT_GATEWAY as it duplicates --show-gat=
+eway
 ......................................................................
 
 
-Patch Set 5: Code-Review+2
+Patch Set 1: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/443?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/463?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ifd0376b36d4050dc22bc93b8fcf7ed29faef0021
-Gerrit-Change-Number: 443
-Gerrit-PatchSet: 5
+Gerrit-Change-Id: Ie7fd59cc84e2eb024086c28c2ec2a5606a2b2e7c
+Gerrit-Change-Number: 463
+Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Fri, 01 Dec 2023 10:36:08 +0000
+Gerrit-Comment-Date: Fri, 01 Dec 2023 10:37:49 +0000
 Gerrit-HasComments: No
 Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---/vodAfByVH0=
+--Aozm+/gr8zM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
 rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/443?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/463?usp=3Demail">Vi=
 ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/443?usp=3Demail">=
-change 443</a>. To unsubscribe, or for help writing mail filters, visit <a =
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/463?usp=3Demail">=
+change 463</a>. To unsubscribe, or for help writing mail filters, visit <a =
 href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
  itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
 ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/443?usp=3Demail"/><meta itemprop=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/463?usp=3Demail"/><meta itemprop=
 =3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ifd0376b36d4050dc22bc93b8fcf=
-7ed29faef0021 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 443 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie7fd59cc84e2eb024086c28c2ec=
+2a5606a2b2e7c </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 463 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -89,12 +89,12 @@ ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 01 Dec 2023 10:36:08=
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 01 Dec 2023 10:37:49=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: No </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---/vodAfByVH0=--
+--Aozm+/gr8zM=--
 
