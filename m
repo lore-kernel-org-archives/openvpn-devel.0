@@ -1,11 +1,16 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Fri,  1 Dec 2023 12:22:43 +0100
-Message-Id: <20231201112243.15541-1-frank@...2641...>
-In-Reply-To: <gerrit.1701361470000.Ib2aa85b9c34d0a0b8b1dfb9f477f56c9a6b705d0@...2715...>
-References: <gerrit.1701361470000.Ib2aa85b9c34d0a0b8b1dfb9f477f56c9a6b705d0@...2715...>
+From: "plaisthos (Code Review)" <gerrit@...515...>
+Date: Fri, 1 Dec 2023 12:12:01 +0000
+In-Reply-To: <gerrit.1700590714000.Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3@...2715...>
+References: <gerrit.1700590714000.Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3@...2715...>
+Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
+ frank@...2641...
+Message-ID: <17aad33097614ec1afe2850be11fc1bb7dce4db3-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] Replace character_class_debug with
- proper unit test
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="EDneR7CD0gg="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Extend the error
+ message when TLS 1.0 PRF fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,141 +19,104 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--EDneR7CD0gg=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Change-Id: Ib2aa85b9c34d0a0b8b1dfb9f477f56c9a6b705d0
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
+Attention is currently required from: flichtenheld.
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/456?usp=3Demail )
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/464
-This mail reflects revision 1 of this Change.
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+Change subject: Extend the error message when TLS 1.0 PRF fails
+......................................................................
 
-Note: this requires "Remove dead remains of extract_x509_field_test"
-(https://gerrit.openvpn.net/c/openvpn/+/462) to be applied first.
-        
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index 24f1ef2..0b94a52 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -1150,26 +1150,6 @@
-     }
- }
- 
--#ifdef CHARACTER_CLASS_DEBUG
--
--#define CC_INCLUDE    (CC_PRINT)
--#define CC_EXCLUDE    (0)
--#define CC_REPLACE    ('.')
--
--void
--character_class_debug(void)
--{
--    char buf[256];
--
--    while (fgets(buf, sizeof(buf), stdin) != NULL)
--    {
--        string_mod(buf, CC_INCLUDE, CC_EXCLUDE, CC_REPLACE);
--        printf("%s", buf);
--    }
--}
--
--#endif
--
- #ifdef VERIFY_ALIGNMENT
- void
- valign4(const struct buffer *buf, const char *file, const int line)
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index 4cc7950..0456b27 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -896,8 +896,6 @@
-  */
- const char *np(const char *str);
- 
--/*#define CHARACTER_CLASS_DEBUG*/
--
- /* character classes */
- 
- #define CC_ANY                (1<<0)
-@@ -961,11 +959,6 @@
- }
- 
- 
--#ifdef CHARACTER_CLASS_DEBUG
--void character_class_debug(void);
--
--#endif
--
- /*
-  * Verify that a pointer is correctly aligned
-  */
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index fdab26b..9972ed7 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -875,11 +875,6 @@
-     return false;
- #endif
- 
--#ifdef CHARACTER_CLASS_DEBUG
--    character_class_debug();
--    return false;
--#endif
--
- #ifdef TIME_TEST
-     time_test();
-     return false;
-diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
-index 8232f92..f994812 100644
---- a/tests/unit_tests/openvpn/test_buffer.c
-+++ b/tests/unit_tests/openvpn/test_buffer.c
-@@ -319,6 +319,30 @@
-     gc_free(&gc);
- }
- 
-+static void
-+test_character_class(void **state)
-+{
-+    char buf[256];
-+    strcpy(buf, "There is \x01 a nice 1234 year old tr\x7f ee!");
-+    string_mod(buf, CC_PRINT, 0, '@');
-+    assert_string_equal(buf, "There is @ a nice 1234 year old tr@ ee!");
-+
-+    strcpy(buf, "There is \x01 a nice 1234 year old tr\x7f ee!");
-+    string_mod(buf, CC_PRINT, CC_DIGIT, '@');
-+    assert_string_equal(buf, "There is @ a nice @@@@ year old tr@ ee!");
-+
-+    strcpy(buf, "There is \x01 a nice 1234 year old tr\x7f ee!");
-+    string_mod(buf, CC_ALPHA, CC_DIGIT, '.');
-+    assert_string_equal(buf, "There.is...a.nice......year.old.tr..ee.");
-+
-+    strcpy(buf, "There is \x01 a 'nice' \"1234\"\n year old \ntr\x7f ee!");
-+    string_mod(buf, CC_ALPHA|CC_DIGIT|CC_NEWLINE|CC_SINGLE_QUOTE, CC_DOUBLE_QUOTE|CC_BLANK, '.');
-+    assert_string_equal(buf, "There.is...a.'nice'..1234.\n.year.old.\ntr..ee.");
-+
-+    strcpy(buf, "There is a \\'nice\\' \"1234\" [*] year old \ntree!");
-+    string_mod(buf, CC_PRINT, CC_BACKSLASH|CC_ASTERISK, '.');
-+    assert_string_equal(buf, "There is a .'nice.' \"1234\" [.] year old .tree!");
-+}
- 
- int
- main(void)
-@@ -351,6 +375,7 @@
-         cmocka_unit_test(test_buffer_free_gc_one),
-         cmocka_unit_test(test_buffer_free_gc_two),
-         cmocka_unit_test(test_buffer_gc_realloc),
-+        cmocka_unit_test(test_character_class),
-     };
- 
-     return cmocka_run_group_tests_name("buffer", tests, NULL, NULL);
+
+Patch Set 6:
+
+(1 comment)
+
+Patchset:
+
+PS6:
+> Isn't this made redundant by https://gerrit.openvpn. [=E2=80=A6]
+In theory yes. With the other change you get a warning on startup and with =
+this the actual error when you connect to a peer is been improved to point =
+out that this is a peer that is missing the TLS export functionality. I can=
+ also squash the two into one.
+
+
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/456?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3
+Gerrit-Change-Number: 456
+Gerrit-PatchSet: 6
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Fri, 01 Dec 2023 12:12:01 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-MessageType: comment
+
+--EDneR7CD0gg=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/456?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/4=
+56?tab=3Dcomments">Patch Set #6:</a> </p><p><blockquote style=3D"border-lef=
+t: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Isn&#39;t this made re=
+dundant by https://gerrit.openvpn. [=E2=80=A6]</blockquote></p><p style=3D"=
+white-space: pre-wrap; word-wrap: break-word;">In theory yes. With the othe=
+r change you get a warning on startup and with this the actual error when y=
+ou connect to a peer is been improved to point out that this is a peer that=
+ is missing the TLS export functionality. I can also squash the two into on=
+e.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvp=
+n.net/c/openvpn/+/456?usp=3Demail">change 456</a>. To unsubscribe, or for h=
+elp writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/settin=
+gs">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMess=
+age"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewA=
+ction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+=
+/456?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div><=
+/div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib3b64b52beed69dc7740f191b0e=
+9a9dc9af5b7f3 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 456 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 01 Dec 2023 12:12:01=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+
+
+--EDneR7CD0gg=--
 
