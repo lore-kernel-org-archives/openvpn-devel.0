@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 2 Dec 2023 15:13:30 +0000
+Date: Sat, 2 Dec 2023 15:13:28 +0000
 In-Reply-To: <gerrit.1700475817000.Ifd0376b36d4050dc22bc93b8fcf7ed29faef0021@...2715...>
 References: <gerrit.1700475817000.Ifd0376b36d4050dc22bc93b8fcf7ed29faef0021@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <932039c736dda98c217705f3998095c97585513c-HTML@...2715...>
+Message-ID: <932039c736dda98c217705f3998095c97585513c-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="xT+MijASuQY="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="fA+LU4QYWuI="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Remove
  unused/unneeded/add missing defines from configure/cmake
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,15 +19,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---xT+MijASuQY=
+--fA+LU4QYWuI=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/44=
-3?usp=3Demail )
+cron2 has uploaded a new patch set (#6) to the change originally created by=
+ plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/443?usp=3Demail )
+
+The following approvals got outdated and were removed:
+Code-Review+2 by flichtenheld
+
 
 Change subject: Remove unused/unneeded/add missing defines from configure/c=
 make
@@ -49,7 +53,7 @@ M configure.ac
 3 files changed, 3 insertions(+), 7 deletions(-)
 
 
-
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/43/443/6
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index d21c9bd..4aa9793 100644
@@ -122,24 +126,27 @@ Gerrit-PatchSet: 6
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-MessageType: newpatchset
 
---xT+MijASuQY=
+--fA+LU4QYWuI=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/443?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">Remove unused/unneeded/add missing defines fro=
-m configure/cmake<br><br>Change-Id: Ifd0376b36d4050dc22bc93b8fcf7ed29faef00=
-21<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Fran=
-k Lichtenheld &lt;frank@...2641...&gt;<br>Message-Id: &lt;20231201123211.17=
-619-1-frank@...2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-dev=
-el@lists.sourceforge.net/msg27634.html<br>Signed-off-by: Gert Doering &lt;g=
-ert@...1296...&gt;<br>---<br>M CMakeLists.txt<br>M config.h.cmake.in<br>M c=
-onfigure.ac<br>3 files changed, 3 insertions(+), 7 deletions(-)<br><br></pr=
-e>
+<p>cron2 <strong>uploaded patch set #6</strong> to the change originally cr=
+eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
+443?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
+ and were removed:
+Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">Remove unused/unneeded/add missing defines fr=
+om configure/cmake<br><br>Change-Id: Ifd0376b36d4050dc22bc93b8fcf7ed29faef0=
+021<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Fra=
+nk Lichtenheld &lt;frank@...2641...&gt;<br>Message-Id: &lt;20231201123211.1=
+7619-1-frank@...2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-de=
+vel@lists.sourceforge.net/msg27634.html<br>Signed-off-by: Gert Doering &lt;=
+gert@...1296...&gt;<br>---<br>M CMakeLists.txt<br>M config.h.cmake.in<br>M =
+configure.ac<br>3 files changed, 3 insertions(+), 7 deletions(-)<br><br></p=
+re><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">=
+git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/43/443/6</pre>=
 <pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
 an>diff --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index d21c9=
 bd..4aa9793 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++=
@@ -204,8 +211,8 @@ ent=3D"View Change"/></div></div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---xT+MijASuQY=--
+--fA+LU4QYWuI=--
 
