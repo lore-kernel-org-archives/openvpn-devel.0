@@ -1,10 +1,16 @@
-Date: Sat, 2 Dec 2023 17:02:35 +0100 (CET)
-Message-Id: <202312021602.3B2G2Zwd085549@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20231128103740.61160-1-frank@...2641...>
-References: <20231128103740.61160-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: configure.ac: Remove unused
- AC_TYPE_SIGNAL macro
+From: "cron2 (Code Review)" <gerrit@...515...>
+Date: Sat, 2 Dec 2023 16:02:46 +0000
+In-Reply-To: <gerrit.1700571255000.I7da7c2d7d34c7e5efd52d448646b4398a1005e77@...2715...>
+References: <gerrit.1700571255000.I7da7c2d7d34c7e5efd52d448646b4398a1005e77@...2715...>
+Reply-To: gert@...1296..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <4e3851a4c33f93a5ace85629494d0580bed22306-EmailReplacePatchSet-HTML@...2715...>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="EXrCzO4fLAY="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: configure.ac:
+ Remove unused AC_TYPE_SIGNAL macro
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +19,131 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-"makes sense" :-) - removing cruft from autoconf, and so on.
+--EXrCzO4fLAY=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Your patch has been applied to the master branch and release/2.6
-(long-term compat).
+cron2 has uploaded a new patch set (#2) to the change originally created by=
+ flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/453?usp=3Demail )
 
-commit be05b590e8d5edebd8e35d97af34b0ba7e5350e6 (master)
-commit 64703e72df371dabecc8ab83a19621fd9f27c56b (release/2.6)
-Author: Frank Lichtenheld
-Date:   Tue Nov 28 11:37:40 2023 +0100
+The following approvals got outdated and were removed:
+Code-Review+2 by plaisthos
 
-     configure.ac: Remove unused AC_TYPE_SIGNAL macro
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
-     Message-Id: <20231128103740.61160-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27572.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Change subject: configure.ac: Remove unused AC_TYPE_SIGNAL macro
+......................................................................
 
+configure.ac: Remove unused AC_TYPE_SIGNAL macro
+
+Recent autoconf warns:
+configure.ac:448: warning: The macro `AC_TYPE_SIGNAL' is obsolete.
+
+And it turns out that we do not actually use RETSIGTYPE.
+Additionally, there is no reason to do so since as the
+autoconf documentation says:
+"These days, it is portable to assume C89, and that signal
+handlers return void, without needing to use this macro or
+RETSIGTYPE."
+
+Change-Id: I7da7c2d7d34c7e5efd52d448646b4398a1005e77
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+Message-Id: <20231128103740.61160-1-frank@...2641...>
+URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27=
+572.html
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+M configure.ac
+1 file changed, 0 insertions(+), 1 deletion(-)
+
+
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/53/453/2
+
+diff --git a/configure.ac b/configure.ac
+index 141acc6..0f667dc 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -445,7 +445,6 @@
+ AC_TYPE_PID_T
+ AC_TYPE_SIZE_T
+ AC_TYPE_UID_T
+-AC_TYPE_SIGNAL
+ AX_TYPE_SOCKLEN_T
+ AC_CHECK_SIZEOF([unsigned int])
+ AC_CHECK_SIZEOF([unsigned long])
 
 --
-kind regards,
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/453?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
 
-Gert Doering
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I7da7c2d7d34c7e5efd52d448646b4398a1005e77
+Gerrit-Change-Number: 453
+Gerrit-PatchSet: 2
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-MessageType: newpatchset
 
+--EXrCzO4fLAY=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
+eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
+/+/453?usp=3Demail">View Change</a></p><p>The following approvals got outda=
+ted and were removed:
+Code-Review+2 by plaisthos</p><pre style=3D"font-family: monospace,monospac=
+e; white-space: pre-wrap;">configure.ac: Remove unused AC_TYPE_SIGNAL macro=
+<br><br>Recent autoconf warns:<br>configure.ac:448: warning: The macro `AC_=
+TYPE_SIGNAL&#39; is obsolete.<br><br>And it turns out that we do not actual=
+ly use RETSIGTYPE.<br>Additionally, there is no reason to do so since as th=
+e<br>autoconf documentation says:<br>&quot;These days, it is portable to as=
+sume C89, and that signal<br>handlers return void, without needing to use t=
+his macro or<br>RETSIGTYPE.&quot;<br><br>Change-Id: I7da7c2d7d34c7e5efd52d4=
+48646b4398a1005e77<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...=
+&gt;<br>Acked-by: Arne Schwabe &lt;arne-openvpn@...1227...&gt;<br>Message-I=
+d: &lt;20231128103740.61160-1-frank@...2641...&gt;<br>URL: https://www.mail=
+-archive.com/openvpn-devel@lists.sourceforge.net/msg27572.html<br>Signed-of=
+f-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M configure.ac<br>1 fi=
+le changed, 0 insertions(+), 1 deletion(-)<br><br></pre><pre style=3D"font-=
+family: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.=
+openvpn.net:29418/openvpn refs/changes/53/453/2</pre><pre style=3D"font-fam=
+ily: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/config=
+ure.ac b/configure.ac</span><br><span>index 141acc6..0f667dc 100644</span><=
+br><span>--- a/configure.ac</span><br><span>+++ b/configure.ac</span><br><s=
+pan>@@ -445,7 +445,6 @@</span><br><span> AC_TYPE_PID_T</span><br><span> AC_=
+TYPE_SIZE_T</span><br><span> AC_TYPE_UID_T</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-AC_TYPE_SIGNAL</span><br><span> AX_TYPE_SOCKLEN_T</spa=
+n><br><span> AC_CHECK_SIZEOF([unsigned int])</span><br><span> AC_CHECK_SIZE=
+OF([unsigned long])</span><br><span></span><br></pre><p>To view, visit <a h=
+ref=3D"http://gerrit.openvpn.net/c/openvpn/+/453?usp=3Demail">change 453</a=
+>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
+//gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"=
+http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/453?usp=3Demail"/><meta itemprop=3D"name" conte=
+nt=3D"View Change"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I7da7c2d7d34c7e5efd52d448646=
+b4398a1005e77 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 453 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+
+
+--EXrCzO4fLAY=--
 
