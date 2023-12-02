@@ -1,10 +1,10 @@
-Date: Sat, 2 Dec 2023 16:58:58 +0100 (CET)
-Message-Id: <202312021558.3B2FwwMD085269@...2054...>
+Date: Sat, 2 Dec 2023 17:02:35 +0100 (CET)
+Message-Id: <202312021602.3B2G2Zwd085549@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20231121170603.886801-1-arne@...1227...>
-References: <20231121170603.886801-1-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add missing check for
- nl_socket_alloc failure
+In-Reply-To: <20231128103740.61160-1-frank@...2641...>
+References: <20231128103740.61160-1-frank@...2641...>
+Subject: [Openvpn-devel] [PATCH applied] Re: configure.ac: Remove unused
+ AC_TYPE_SIGNAL macro
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +15,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Frank Lichtenheld <frank@...2641...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Took us long enough for such a simple fix... :-)
+"makes sense" :-) - removing cruft from autoconf, and so on.
 
-I have no easy way to trigger this, so only compile tested.
+Your patch has been applied to the master branch and release/2.6
+(long-term compat).
 
-Your patch has been applied to the master and release/2.6 branch.
+commit be05b590e8d5edebd8e35d97af34b0ba7e5350e6 (master)
+commit 64703e72df371dabecc8ab83a19621fd9f27c56b (release/2.6)
+Author: Frank Lichtenheld
+Date:   Tue Nov 28 11:37:40 2023 +0100
 
-commit d1c31e428120bb0fc9488c62c1691c92a37d94c3 (master)
-commit aa19a6a90f7ef24df12eed205663f3cfbb7d8174 (release/2.6)
-Author: Arne Schwabe
-Date:   Tue Nov 21 18:06:03 2023 +0100
+     configure.ac: Remove unused AC_TYPE_SIGNAL macro
 
-     Add missing check for nl_socket_alloc failure
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Antonio Quartulli <antonio@...515...>
-     Message-Id: <20231121170603.886801-1-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27541.html
+     Signed-off-by: Frank Lichtenheld <frank@...2641...>
+     Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+     Message-Id: <20231128103740.61160-1-frank@...2641...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27572.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
