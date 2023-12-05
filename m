@@ -1,10 +1,10 @@
-Date: Mon, 4 Dec 2023 20:08:02 +0100 (CET)
-Message-Id: <202312041908.3B4J824h086272@...2054...>
+Date: Tue, 5 Dec 2023 15:03:36 +0100 (CET)
+Message-Id: <202312051403.3B5E3aNs021898@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20231204153444.56906-1-frank@...2641...>
-References: <20231204153444.56906-1-frank@...2641...>
-Subject: [Openvpn-devel] [PATCH applied] Re: documentation: remove reference
- to removed option --show-proxy-settings
+In-Reply-To: <20231204153345.1146-1-marc.becker@...2704...>
+References: <20231204153345.1146-1-marc.becker@...2704...>
+Subject: [Openvpn-devel] [PATCH applied] Re: vcpkg-ports/pkcs11-helper: bump
+ to version 1.30
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Frank Lichtenheld <frank@...2641...>
+To: Marc Becker <marc.becker@...2704...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-An easy one before going to bed... :-) - "git grep" confirms that
-this is nowhere but in the manual.
+Your patch has been applied to the master and release/2.6 branch 
+(less local patches and up-to-date build requirements).
 
-Acked-by: Gert Doering <gert@...1296...>
+Test built 2.6 with GHA
 
-Your patch has been applied to the master and release/2.6 branch.
+I was wondering why there is no "Makefile.in" change to un-bundle these
+two patches to "make dist" - but that's because we just bundle everything
+in contrib/ without explicitly listing files.  "make dist" still works.
 
-commit e569b16d5c456e1f89c9de2d19938b38c3914020 (master)
-commit 8b9a3378330ee5f00227b3747d3e9eac9afc3fbb (release/2.6)
-Author: Frank Lichtenheld
-Date:   Mon Dec 4 16:34:44 2023 +0100
+commit a78b0e45dff3a0f0332de47c55aadd76c5919370 (master)
+commit 77b2e940fd3980f9dbfa62f84fb135ea2f1effaf (release/2.6)
+Author: Marc Becker
+Date:   Mon Dec 4 16:33:45 2023 +0100
 
-     documentation: remove reference to removed option --show-proxy-settings
+     vcpkg-ports/pkcs11-helper: bump to version 1.30
 
-     Signed-off-by: Frank Lichtenheld <frank@...2641...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20231204153444.56906-1-frank@...2641...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27677.html
+     Signed-off-by: Marc Becker <marc.becker@...2704...>
+     Acked-by: Frank Lichtenheld <frank@...2641...>
+     Message-Id: <20231204153345.1146-1-marc.becker@...2704...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27678.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
