@@ -1,9 +1,10 @@
-Date: Wed, 6 Dec 2023 13:05:07 +0100 (CET)
-Message-Id: <202312061205.3B6C57cI072482@...2054...>
+Date: Wed, 6 Dec 2023 13:15:08 +0100 (CET)
+Message-Id: <202312061215.3B6CF8oU085373@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20231122143101.58483-1-dazo+openvpn@...2108...>
-References: <20231122143101.58483-1-dazo+openvpn@...2108...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove --tls-export-cert
+In-Reply-To: <20231122190057.120384-1-dazo+openvpn@...2108...>
+References: <20231122190057.120384-1-dazo+openvpn@...2108...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove superfluous
+ x509_write_pem()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,29 +20,27 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Acked-by: Gert Doering <gert@...1296...>
 
-I have not explicitly verified that all code that was from the original
-author is gone now - in this, I do trust David.  I *did* test that the
-rest still works (client, server, GHA tests).  The actual code change
-looks fairly straightforward.
+Does what it says on the lid.  Test compiled on FreeBSD, but that
+brought no surprises as "git grep" confirms this function is no longer
+called.
 
-I have not used the "2.6" patch for the backport, just our normal
-workflow for "master and 2.6" patches, "git cherry-pick -x" from master
-(so the commit ID reference is there).  Went smoothly without having
-to do any manual amendments.
+I could have squashed this with the previous patch, but since it hit
+the list as two patches, I decided to keep the direct references intact
+instead.
 
 Your patch has been applied to the master and release/2.6 branch.
 
-commit 12c5ef1fe6a6010362f3098d11b554566687c1f7 (master)
-commit 031fe882649e7edd3e5a9c94d2f8fbf61572e251 (release/2.6)
+commit f015643fe23d7847ad45b7763f31bfc6baed2159 (master)
+commit 5552391a362e16f02e41b056ea18b89b2e49a757 (release/2.6)
 Author: David Sommerseth
-Date:   Wed Nov 22 15:31:01 2023 +0100
+Date:   Wed Nov 22 20:00:57 2023 +0100
 
-     Remove --tls-export-cert
+     Remove superfluous x509_write_pem()
 
      Signed-off-by: David Sommerseth <davids@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20231122143101.58483-1-dazo+openvpn@...2108...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27557.html
+     Message-Id: <20231122190057.120384-1-dazo+openvpn@...2108...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27561.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
