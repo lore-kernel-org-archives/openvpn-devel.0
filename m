@@ -1,11 +1,11 @@
 Content-Type: multipart/alternative;
- boundary="------------nYUhv1RN7A7M4HXV1wAYqDNQ"
-Message-ID: <6f43f937-49d9-4d06-af78-bf9b5909d809@...2751...>
-Date: Wed, 6 Dec 2023 13:58:54 +0100
+ boundary="------------KB3JUeE11Qcz5PXg4GxQKtp8"
+Message-ID: <273ca251-9544-4a78-b648-4d8f2c4c85ad@...2751...>
+Date: Wed, 6 Dec 2023 13:59:39 +0100
 MIME-Version: 1.0
 From: Johan Draaisma <johan@...2751...>
 Content-Language: en-US
-Subject: [Openvpn-devel]  IRC community meeting summary
+Subject: [Openvpn-devel] Correction: IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,11 +17,13 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is a multi-part message in MIME format.
---------------nYUhv1RN7A7M4HXV1wAYqDNQ
+--------------KB3JUeE11Qcz5PXg4GxQKtp8
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Meeting summary for 22 November 2023:
+I had the date wrong in the previous mail. Sorry.
+
+Meeting summary for 6 December 2023:
 
   * *New: spam on forums.*
     /It just keeps coming. We need a solution./
@@ -58,7 +60,7 @@ network every Wednesday at 13:00 Central European Time.
 Kind regards,
 Johan Draaisma
 
---------------nYUhv1RN7A7M4HXV1wAYqDNQ
+--------------KB3JUeE11Qcz5PXg4GxQKtp8
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
@@ -68,7 +70,9 @@ Content-Transfer-Encoding: 7bit
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   </head>
   <body>
-    <p> Meeting summary for 22 November 2023:</p>
+    <p>I had the date wrong in the previous mail. Sorry.<br>
+    </p>
+    <p> Meeting summary for 6 December 2023:</p>
     <ul
 style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
       <li><strong>New: spam on forums.</strong><br>
@@ -118,5 +122,5 @@ style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sa
   </body>
 </html>
 
---------------nYUhv1RN7A7M4HXV1wAYqDNQ--
+--------------KB3JUeE11Qcz5PXg4GxQKtp8--
 
