@@ -1,16 +1,14 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 6 Dec 2023 15:27:28 +0000
-In-Reply-To: <gerrit.1701876289000.I193aef06912f01426dd4ac298aadfab97dd75a35@...2715...>
-References: <gerrit.1701876289000.I193aef06912f01426dd4ac298aadfab97dd75a35@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <8beb45eb0f1760cb0896f5d66da7b2be28ec39ca-EmailReviewComments-HTML@...2715...>
+Date: Wed, 6 Dec 2023 17:57:55 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <ZXCoEy0koFe5SSF1@...1296...>
+References: <tencent_C49D67EAA5678D180C293706A9469EFE8307@...1414...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="sZMaPxRgdpTeNBq5"
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="efA07nxdoEM="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: test_user_pass: new
- UT for get_user_pass
+In-Reply-To: <tencent_C49D67EAA5678D180C293706A9469EFE8307@...1414...>
+Subject: Re: [Openvpn-devel] [PATCH] fix(ssl): init peer_id when init
+ tls_multi
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,94 +17,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: yatta <ytzhang01@...2752...>
+Cc: openvpn-devel@lists.sourceforge.net, pushan <62173185+pushan01@...2668...>
 
---efA07nxdoEM=
-Content-Type: text/plain; charset="UTF-8"
+--sZMaPxRgdpTeNBq5
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Attention is currently required from: flichtenheld.
+Hi,
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/468?usp=3Demail )
+On Fri, Oct 20, 2023 at 01:12:13AM +0800, yatta wrote:
+> From: yatta <ytzhang01@...2752...>
+> From: pushan <62173185+pushan01@...2243...>
 
-Change subject: test_user_pass: new UT for get_user_pass
-......................................................................
+So, we have a patch that fixes a problem and an ACK for it, but for
+a proper commit I actually need something like a real name and a
+working mail address...
 
+Could you provide a Signed-off-by: line, like what we have on other
+commits, for example:
 
-Patch Set 1: Code-Review+2
+    Signed-off-by: David Sommerseth <davids@...515...>
 
-(1 comment)
+(this does get relevant in case we end up having to do a license
+change again, and wanting to contact contributors...)
 
-Patchset:
+thanks,
 
-PS1:
-More unit tests is always better
+gert
+--=20
+"If was one thing all people took for granted, was conviction that if you=20
+ feed honest figures into a computer, honest figures come out. Never doubte=
+d=20
+ it myself till I met a computer with a sense of humor."
+                             Robert A. Heinlein, The Moon is a Harsh Mistre=
+ss
 
+Gert Doering - Munich, Germany                             gert@...1296...
 
+--sZMaPxRgdpTeNBq5
+Content-Type: application/pgp-signature; name="signature.asc"
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/468?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+-----BEGIN PGP SIGNATURE-----
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I193aef06912f01426dd4ac298aadfab97dd75a35
-Gerrit-Change-Number: 468
-Gerrit-PatchSet: 1
-Gerrit-Owner: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 06 Dec 2023 15:27:28 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+iQGcBAEBAgAGBQJlcKgTAAoJEB2Cnv7KVigSHiIMAKieNqPHJgi300S4C7TOTlOm
+wZetKAdZx3rqXTZKdoIZvkfqZ/I+BjqDm4oS8LaUOUKaQw0chCSQlFrn5wypoN/h
+beHsKC7TkQzzxRJFNZy1VkJe57d650rlsEn0Li4Nt5rWPOCpxJxjZTSdsRghZHTk
+YLB1hw8ZxvITlGRiXJAXLi245PeIRvnDbaeWJ+0yImLEnjjj3ffzXPsvN4HjG5hY
+PGd0JanI9SECNiTImFPENdDjfb9PEw30v5GIC+fdTH/vQ9ZK9fwD/BCGr2liL+U2
+NE0+VVV1n1jYaFUnZEJpgYPEEXqPk9OTkpacfr+liitnucrndhhC1gKmy7nPfls6
+V+gV2UJln1hbP2xpQM0VRKac8CMhCvvDQ0oztv8lRi8AqBFAUhiHKBCIa31T+74l
+qvkeFi5vkmL+/cVkxzs9sSq5bFwBFbj+wQ4n1MGK7PdcPr0CNFLe7XOk2J/Ry67Q
+XhZAXAZUpR4BQLLQN+ld/Vab1k/rJs59Qj0SomsaYw==
+=jKT4
+-----END PGP SIGNATURE-----
 
---efA07nxdoEM=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/468?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/468?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">More unit tests is always better</p></li></ul>=
-</li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
-+/468?usp=3Demail">change 468</a>. To unsubscribe, or for help writing mail=
- filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>=
-.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
-ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
-mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/468?usp=3Demail=
-"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I193aef06912f01426dd4ac298aa=
-dfab97dd75a35 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 468 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 06 Dec 2023 15:27:28=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---efA07nxdoEM=--
+--sZMaPxRgdpTeNBq5--
 
