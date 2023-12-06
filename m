@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Wed, 6 Dec 2023 12:57:27 +0000
-In-Reply-To: <gerrit.1701865618000.Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2@...2715...>
-References: <gerrit.1701865618000.Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <e7a3733f0f1f96928ab0afaccc62a220138c6536-EmailReviewComments-HTML@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------nYUhv1RN7A7M4HXV1wAYqDNQ"
+Message-ID: <6f43f937-49d9-4d06-af78-bf9b5909d809@...2751...>
+Date: Wed, 6 Dec 2023 13:58:54 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="uqJwDO7NezA="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement the
- --export-peer-cert feature
+From: Johan Draaisma <johan@...2751...>
+Content-Language: en-US
+Subject: [Openvpn-devel]  IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,106 +14,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---uqJwDO7NezA=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------nYUhv1RN7A7M4HXV1wAYqDNQ
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Attention is currently required from: flichtenheld, plaisthos.
+Meeting summary for 22 November 2023:
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/466?usp=3Demail )
+  * *New: spam on forums.*
+    /It just keeps coming. We need a solution./
+    /asked pippin_ if he could maybe get attention from ecrist to try
+    and solve this./
 
-Change subject: Implement the --export-peer-cert feature
-......................................................................
+  * *Updated: Website release process woes*
+    /Website team continues to report that they are on the verge of
+    launching the new stuff./
+    /But there is a release freeze planned for last weeks of December so
+    we may not actually get it this year./
 
+  * *Updated: TLS 1.0 PRF problem*
+    /A patch for this has been created and it needs reviews.'/
 
-Patch Set 1:
+  * *Updated: License amendment for OpenVPN2 to solve openssl/mbedtls
+    licensing issues*
+    /For new contributions the new license already applies./
+    /The --tls-export-cert code was removed, and plaisthos will
+    reimplement it./
+    /Then it is up to dazo to review things so we can work on finalizing
+    this./
+    /One of the last tasks is reviewing if remaining items are trivial
+    patches, and maybe get legal advice on those if necessary./
 
-(1 comment)
+  * *New: OpenVPN 2.6.9 release*
+    /After --export-peer-cert/--tls-export-cert issue is clarified and
+    code merged, we feel we're ready for a new release./
+    /Tentatively next week./
 
-File doc/man-sections/script-options.rst:
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 13:00 Central European Time.
 
-http://gerrit.openvpn.net/c/openvpn/+/466/comment/3f968f88_17232d6f :
-PS1, Line 426: --export-peer-cert-path dir
-so this is a new option, which is incompatible and will break people's conf=
-ig (if they use the old option).  So we should go for the same option name =
-"--tls-export-cert" - or alternatively provide a Changes.rst explaining the=
- reasons.
+Kind regards,
+Johan Draaisma
 
+--------------nYUhv1RN7A7M4HXV1wAYqDNQ
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 22 November 2023:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New: spam on forums.</strong><br>
+        <em>It just keeps coming. We need a solution.</em><br>
+        <em>asked pippin_ if he could maybe get attention from ecrist to
+          try and solve this.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: Website release process woes</strong><br>
+        <em>Website team continues to report that they are on the verge
+          of launching the new stuff.</em><br>
+        <em>But there is a release freeze planned for last weeks of
+          December so we may not actually get it this year.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: TLS 1.0 PRF problem</strong><br>
+        <em>A patch for this has been created and it needs reviews.'</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: License amendment for OpenVPN2 to solve
+          openssl/mbedtls licensing issues</strong><br>
+        <em>For new contributions the new license already applies.</em><br>
+        <em>The --tls-export-cert code was removed, and plaisthos will
+          reimplement it.</em><br>
+        <em>Then it is up to dazo to review things so we can work on
+          finalizing this.</em><br>
+        <em>One of the last tasks is reviewing if remaining items are
+          trivial patches, and maybe get legal advice on those if
+          necessary.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New: OpenVPN 2.6.9 release</strong><br>
+        <em>After --export-peer-cert/--tls-export-cert issue is
+          clarified and code merged, we feel we're ready for a new
+          release.</em><br>
+        <em>Tentatively next week.</em></li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 13:00 Central European Time.</p>
+    <p>Kind regards,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2
-Gerrit-Change-Number: 466
-Gerrit-PatchSet: 1
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: cron2 <gert@...1296...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 06 Dec 2023 12:57:27 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Gerrit-MessageType: comment
-
---uqJwDO7NezA=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/script-options=
-.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0=
-; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://=
-gerrit.openvpn.net/c/openvpn/+/466/comment/3f968f88_17232d6f">Patch Set #1,=
- Line 426:</a> <code style=3D"font-family:monospace,monospace">--export-pee=
-r-cert-path dir</code></p><p style=3D"white-space: pre-wrap; word-wrap: bre=
-ak-word;">so this is a new option, which is incompatible and will break peo=
-ple&#39;s config (if they use the old option).  So we should go for the sam=
-e option name &quot;--tls-export-cert&quot; - or alternatively provide a Ch=
-anges.rst explaining the reasons.</p></li></ul></li></ul><p>To view, visit =
-<a href=3D"http://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail">change 46=
-6</a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"h=
-ttp://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia9b3f1813d2d0d492d17c87348b=
-4cebd0bf19ce2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 466 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 06 Dec 2023 12:57:27=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---uqJwDO7NezA=--
+--------------nYUhv1RN7A7M4HXV1wAYqDNQ--
 
