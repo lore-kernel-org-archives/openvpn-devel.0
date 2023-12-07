@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Thu, 7 Dec 2023 18:23:03 +0000
+Date: Thu, 7 Dec 2023 18:23:09 +0000
 In-Reply-To: <gerrit.1698504866000.I7fd9e730e87210d2b7d090c8f9c7c6734bd7374e@...2715...>
 References: <gerrit.1698504866000.I7fd9e730e87210d2b7d090c8f9c7c6734bd7374e@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641..., max@...2606...
-Message-ID: <ae003e4b96e91f7454fb176ed05b7d9a17ce4109-EmailReviewComments-HTML@...2715...>
+Message-ID: <07ad5170bef33c61b12702f85003cca73b509e08-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="kDitvAFMPR0="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Allow specifying
- custom mbed TLS directories with CMake
+Content-Type: multipart/alternative; boundary="3Ns0mI5/sqg="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix building mbed
+ TLS with CMake and allow specifying custom directories
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,49 +19,143 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, MaxF <max@...2606...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, MaxF <max@...2606...>
 
---kDitvAFMPR0=
+--3Ns0mI5/sqg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: MaxF, flichtenheld.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/377?usp=3Demail )
+Hello flichtenheld,
 
-Change subject: Allow specifying custom mbed TLS directories with CMake
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/377?usp=3Demail
+
+to look at the new patch set (#6).
+
+The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld
+
+
+Change subject: Fix building mbed TLS with CMake and allow specifying custo=
+m directories
 ......................................................................
 
+Fix building mbed TLS with CMake and allow specifying custom directories
 
-Patch Set 5:
+When installing mbed TLS 2.x and 3.x in parallel, it is useful to point
+cmake to the version that should be used.
 
-(3 comments)
+This fixes also building mbed TLS versions with cmake.
 
-Commit Message:
-
-http://gerrit.openvpn.net/c/openvpn/+/377/comment/6f04d272_ba7cbaef :
-PS5, Line 11:
-> Add a comment here that this also fixes existing issues with mbedTLS supp=
-ort in CMake build.
-Done
-
-
-File CMakeLists.txt:
-
-http://gerrit.openvpn.net/c/openvpn/+/377/comment/0e0af093_732576f5 :
-PS5, Line 261:
-> spurious whitespace
-Done
+Change-Id: I7fd9e730e87210d2b7d090c8f9c7c6734bd7374e
+Signed-off-by: Arne Schwabe <arne@...1227...>
+---
+M CMakeLists.txt
+M config.h.cmake.in
+M src/openvpn/mbedtls_compat.h
+3 files changed, 35 insertions(+), 9 deletions(-)
 
 
-File config.h.cmake.in:
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/77/377/6
 
-http://gerrit.openvpn.net/c/openvpn/+/377/comment/ba7c404c_16e8f83c :
-PS5, Line 389: /* we always assume a recent mbed TLS version */
-> obsolete comment
-Done
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 577bc5d..d40b213 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -32,6 +32,8 @@
+ endif ()
 
+ option(MBED "BUILD with mbed" OFF)
++set(MBED_INCLUDE_PATH "" CACHE STRING "Path to mbed TLS include directory")
++set(MBED_LIBRARY_PATH "" CACHE STRING "Path to mbed library directory")
+ option(WOLFSSL "BUILD with wolfSSL" OFF)
+ option(ENABLE_LZ4 "BUILD with lz4" ON)
+ option(ENABLE_LZO "BUILD with lzo" ON)
+@@ -239,9 +241,33 @@
+     pkg_search_module(pkcs11-helper libpkcs11-helper-1 REQUIRED IMPORTED_T=
+ARGET)
+ endif ()
+
++function(check_mbed_configuration)
++    if (NOT (MBED_INCLUDE_PATH STREQUAL "") )
++        set(CMAKE_REQUIRED_INCLUDES ${MBED_INCLUDE_PATH})
++    endif ()
++    if (NOT (MBED_LIBRARY_PATH STREQUAL ""))
++        set(CMAKE_REQUIRED_LINK_OPTIONS "-L${MBED_LIBRARY_PATH}")
++    endif ()
++    set(CMAKE_REQUIRED_LIBRARIES "mbedtls;mbedx509;mbedcrypto")
++    check_symbol_exists(mbedtls_ctr_drbg_update_ret mbedtls/ctr_drbg.h HAV=
+E_MBEDTLS_CTR_DRBG_UPDATE_RET)
++    check_symbol_exists(mbedtls_ssl_conf_export_keys_ext_cb mbedtls/ssl.h =
+HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB)
++    check_include_files(psa/crypto.h HAVE_MBEDTLS_PSA_CRYPTO_H)
++endfunction()
++
++if (${MBED})
++    check_mbed_configuration()
++endif()
++
+ function(add_library_deps target)
+     if (${MBED})
+-        target_link_libraries(${target} -lmbedtls -lmbedx509 -lmbedcrypto)
++        if (NOT (MBED_INCLUDE_PATH STREQUAL "") )
++            target_include_directories(${target} PRIVATE ${MBED_INCLUDE_PA=
+TH})
++        endif ()
++        if(NOT (MBED_LIBRARY_PATH STREQUAL ""))
++            target_link_directories(${target} PRIVATE ${MBED_LIBRARY_PATH})
++        endif ()
++
++        target_link_libraries(${target} PRIVATE -lmbedtls -lmbedx509 -lmbe=
+dcrypto)
+     elseif (${WOLFSSL})
+         pkg_search_module(wolfssl wolfssl REQUIRED)
+         target_link_libraries(${target} PUBLIC ${wolfssl_LINK_LIBRARIES})
+diff --git a/config.h.cmake.in b/config.h.cmake.in
+index baf9556..6c846f2 100644
+--- a/config.h.cmake.in
++++ b/config.h.cmake.in
+@@ -378,11 +378,11 @@
+ /* Define to 1 if you have the <vfork.h> header file. */
+ #undef HAVE_VFORK_H
+
+-/* we always assume a recent mbed TLS version */
+-#define HAVE_MBEDTLS_PSA_CRYPTO_H 1
++/* Availability of different mbed TLS features and APIs */
++#cmakedefine01 HAVE_MBEDTLS_PSA_CRYPTO_H
+ #define HAVE_MBEDTLS_SSL_TLS_PRF 1
+-#define HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB 1
+-#define HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET 1
++#cmakedefine01 HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB
++#cmakedefine01 HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET
+
+ /* Path to ifconfig tool */
+ #define IFCONFIG_PATH "@IFCONFIG_PATH@"
+diff --git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbedtls_compat.h
+index 610215b..d742b54 100644
+--- a/src/openvpn/mbedtls_compat.h
++++ b/src/openvpn/mbedtls_compat.h
+@@ -77,13 +77,13 @@
+                                const unsigned char *additional,
+                                size_t add_len)
+ {
+-#if HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET
++#if MBEDTLS_VERSION_NUMBER > 0x03000000
++    return mbedtls_ctr_drbg_update(ctx, additional, add_len);
++#elif HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET
+     return mbedtls_ctr_drbg_update_ret(ctx, additional, add_len);
+-#elif MBEDTLS_VERSION_NUMBER < 0x03020100
++#else
+     mbedtls_ctr_drbg_update(ctx, additional, add_len);
+     return 0;
+-#else
+-    return mbedtls_ctr_drbg_update(ctx, additional, add_len);
+ #endif /* HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET */
+ }
 
 
 --
@@ -73,7 +167,7 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I7fd9e730e87210d2b7d090c8f9c7c6734bd7374e
 Gerrit-Change-Number: 377
-Gerrit-PatchSet: 5
+Gerrit-PatchSet: 6
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -81,57 +175,131 @@ Gerrit-CC: MaxF <max@...2606...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: MaxF <max@...2606...>
-Gerrit-Comment-Date: Thu, 07 Dec 2023 18:23:03 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 
---kDitvAFMPR0=
+--3Ns0mI5/sqg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: MaxF, flichtenheld. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/377?usp=3Demail">View C=
-hange</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D"lis=
-t-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><=
-p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/open=
-vpn/+/377/comment/6f04d272_ba7cbaef">Patch Set #5, Line 11:</a> <code style=
-=3D"font-family:monospace,monospace"></code></p><p><blockquote style=3D"bor=
-der-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Add a comment h=
-ere that this also fixes existing issues with mbedTLS support in CMake buil=
-d.</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word=
-;">Done</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File CMak=
-eLists.txt:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"mar=
-gin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/377/comment/0e0af093_732576f5">Patch S=
-et #5, Line 261:</a> <code style=3D"font-family:monospace,monospace">      =
-  </code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 1=
-0px 0; padding: 0 10px;">spurious whitespace</blockquote></p><p style=3D"wh=
-ite-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><li sty=
-le=3D"margin: 0; padding: 0;"><p>File config.h.cmake.in:</p><ul style=3D"li=
-st-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;">=
-<p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/ope=
-nvpn/+/377/comment/ba7c404c_16e8f83c">Patch Set #5, Line 389:</a> <code sty=
-le=3D"font-family:monospace,monospace">/* we always assume a recent mbed TL=
-S version */</code></p><p><blockquote style=3D"border-left: 1px solid #aaa;=
- margin: 10px 0; padding: 0 10px;">obsolete comment</blockquote></p><p styl=
-e=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li>=
-</ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/377=
-?usp=3Demail">change 377</a>. To unsubscribe, or for help writing mail filt=
-ers, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p>=
-<div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope i=
-temprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/377?usp=3Demail"/><m=
-eta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p>plaisthos <strong>uploaded patch set #6</strong> to this change.</p><p><=
+a href=3D"http://gerrit.openvpn.net/c/openvpn/+/377?usp=3Demail">View Chang=
+e</a></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">Fix building mbed TLS with CMake and allow sp=
+ecifying custom directories<br><br>When installing mbed TLS 2.x and 3.x in =
+parallel, it is useful to point<br>cmake to the version that should be used=
+.<br><br>This fixes also building mbed TLS versions with cmake.<br><br>Chan=
+ge-Id: I7fd9e730e87210d2b7d090c8f9c7c6734bd7374e<br>Signed-off-by: Arne Sch=
+wabe &lt;arne@...1227...&gt;<br>---<br>M CMakeLists.txt<br>M config.h.cmake=
+.in<br>M src/openvpn/mbedtls_compat.h<br>3 files changed, 35 insertions(+),=
+ 9 deletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace=
+; white-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn r=
+efs/changes/77/377/6</pre><pre style=3D"font-family: monospace,monospace; w=
+hite-space: pre-wrap;"><span>diff --git a/CMakeLists.txt b/CMakeLists.txt</=
+span><br><span>index 577bc5d..d40b213 100644</span><br><span>--- a/CMakeLis=
+ts.txt</span><br><span>+++ b/CMakeLists.txt</span><br><span>@@ -32,6 +32,8 =
+@@</span><br><span> endif ()</span><br><span> </span><br><span> option(MBED=
+ &quot;BUILD with mbed&quot; OFF)</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+set(MBED_INCLUDE_PATH &quot;&quot; CACHE STRING &quot;Path to=
+ mbed TLS include directory&quot;)</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+set(MBED_LIBRARY_PATH &quot;&quot; CACHE STRING &quot;Path t=
+o mbed library directory&quot;)</span><br><span> option(WOLFSSL &quot;BUILD=
+ with wolfSSL&quot; OFF)</span><br><span> option(ENABLE_LZ4 &quot;BUILD wit=
+h lz4&quot; ON)</span><br><span> option(ENABLE_LZO &quot;BUILD with lzo&quo=
+t; ON)</span><br><span>@@ -239,9 +241,33 @@</span><br><span>     pkg_search=
+_module(pkcs11-helper libpkcs11-helper-1 REQUIRED IMPORTED_TARGET)</span><b=
+r><span> endif ()</span><br><span> </span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+function(check_mbed_configuration)</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    if (NOT (MBED_INCLUDE_PATH STREQUAL &quo=
+t;&quot;) )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
+set(CMAKE_REQUIRED_INCLUDES ${MBED_INCLUDE_PATH})</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    endif ()</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    if (NOT (MBED_LIBRARY_PATH STREQUAL &quot;&quot;=
+))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        set(CMAKE=
+_REQUIRED_LINK_OPTIONS &quot;-L${MBED_LIBRARY_PATH}&quot;)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    endif ()</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    set(CMAKE_REQUIRED_LIBRARIES &quot;mb=
+edtls;mbedx509;mbedcrypto&quot;)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    check_symbol_exists(mbedtls_ctr_drbg_update_ret mbedtls/ct=
+r_drbg.h HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET)</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    check_symbol_exists(mbedtls_ssl_conf_export_keys=
+_ext_cb mbedtls/ssl.h HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB)</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    check_include_files(psa/cry=
+pto.h HAVE_MBEDTLS_PSA_CRYPTO_H)</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+endfunction()</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+if (${MBED})=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    check_mbed_conf=
+iguration()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+endif()<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> fu=
+nction(add_library_deps target)</span><br><span>     if (${MBED})</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-        target_link_libraries($=
+{target} -lmbedtls -lmbedx509 -lmbedcrypto)</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        if (NOT (MBED_INCLUDE_PATH STREQUAL &quot;&=
+quot;) )</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
+ target_include_directories(${target} PRIVATE ${MBED_INCLUDE_PATH})</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+        endif ()</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+        if(NOT (MBED_LIBRARY_P=
+ATH STREQUAL &quot;&quot;))</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+            target_link_directories(${target} PRIVATE ${MBED_LIBRAR=
+Y_PATH})</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        end=
+if ()</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+        target_link_libraries(${t=
+arget} PRIVATE -lmbedtls -lmbedx509 -lmbedcrypto)</span><br><span>     else=
+if (${WOLFSSL})</span><br><span>         pkg_search_module(wolfssl wolfssl =
+REQUIRED)</span><br><span>         target_link_libraries(${target} PUBLIC $=
+{wolfssl_LINK_LIBRARIES})</span><br><span>diff --git a/config.h.cmake.in b/=
+config.h.cmake.in</span><br><span>index baf9556..6c846f2 100644</span><br><=
+span>--- a/config.h.cmake.in</span><br><span>+++ b/config.h.cmake.in</span>=
+<br><span>@@ -378,11 +378,11 @@</span><br><span> /* Define to 1 if you have=
+ the &lt;vfork.h&gt; header file. */</span><br><span> #undef HAVE_VFORK_H</=
+span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-/* we=
+ always assume a recent mbed TLS version */</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#define HAVE_MBEDTLS_PSA_CRYPTO_H 1</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+/* Availability of different mbed TLS=
+ features and APIs */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+#cmakedefine01 HAVE_MBEDTLS_PSA_CRYPTO_H</span><br><span> #define HAVE_MB=
+EDTLS_SSL_TLS_PRF 1</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#d=
+efine HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB 1</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-#define HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET 1</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+#cmakedefine01 HAVE_MBEDTLS_SS=
+L_SET_EXPORT_KEYS_CB</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#cmakedefine01 HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET</span><br><span> </span><b=
+r><span> /* Path to ifconfig tool */</span><br><span> #define IFCONFIG_PATH=
+ &quot;@IFCONFIG_PATH@&quot;</span><br><span>diff --git a/src/openvpn/mbedt=
+ls_compat.h b/src/openvpn/mbedtls_compat.h</span><br><span>index 610215b..d=
+742b54 100644</span><br><span>--- a/src/openvpn/mbedtls_compat.h</span><br>=
+<span>+++ b/src/openvpn/mbedtls_compat.h</span><br><span>@@ -77,13 +77,13 @=
+@</span><br><span>                                const unsigned char *addi=
+tional,</span><br><span>                                size_t add_len)</sp=
+an><br><span> {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#if HA=
+VE_MBEDTLS_CTR_DRBG_UPDATE_RET</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+#if MBEDTLS_VERSION_NUMBER &gt; 0x03000000</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    return mbedtls_ctr_drbg_update(ctx, a=
+dditional, add_len);</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++#elif HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET</span><br><span>     return mbedtls=
+_ctr_drbg_update_ret(ctx, additional, add_len);</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-#elif MBEDTLS_VERSION_NUMBER &lt; 0x03020100</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+#else</span><br><span>  =
+   mbedtls_ctr_drbg_update(ctx, additional, add_len);</span><br><span>     =
+return 0;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-#else</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    return mbedtls_ctr_drbg_=
+update(ctx, additional, add_len);</span><br><span> #endif /* HAVE_MBEDTLS_C=
+TR_DRBG_UPDATE_RET */</span><br><span> }</span><br><span> </span><br><span>=
+</span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/o=
+penvpn/+/377?usp=3Demail">change 377</a>. To unsubscribe, or for help writi=
+ng mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">setti=
+ngs</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div=
+ itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><l=
+ink itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/377?usp=
+=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I7fd9e730e87210d2b7d090c8f9c=
 7c6734bd7374e </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 377 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -145,14 +313,8 @@ ts.sourceforge.net&gt; </div>
 41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: MaxF &lt;max@...2606...&gt; =
 </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Thu, 07 Dec 2023 18:23:03=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---kDitvAFMPR0=--
+--3Ns0mI5/sqg=--
 
