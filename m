@@ -1,15 +1,15 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Thu, 7 Dec 2023 17:49:43 +0000
-References: <gerrit.1701971374000.Ie248d35d063bb6878f3dd42840c77ba0d6fa3381@...2715...>
+Date: Thu, 7 Dec 2023 17:49:42 +0000
+References: <gerrit.1701971374000.I605394d4f3872a168d05bbbe52d90f6d48935865@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <0ee5a85355dd8396798ecf3be8b220540657c733-HTML@...2715...>
+Message-ID: <d21a5c1e55e4a212f8d31f9a135e25bdf6ffcddb-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="XiSworp+aHQ="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add test_ssl unit
- test and test export of PEM to file
+Content-Type: multipart/alternative; boundary="SVcGJDC1M+8="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Move
+ tls_get_cipher_name_pair and get_num_elements to ssl_utils.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---XiSworp+aHQ=
+--SVcGJDC1M+8=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,450 +32,632 @@ Hello flichtenheld,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/471?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/470?usp=3Demail
 
 to review the following change.
 
 
-Change subject: Add test_ssl unit test and test export of PEM to file
+Change subject: Move tls_get_cipher_name_pair and get_num_elements to ssl_u=
+tils.c
 ......................................................................
 
-Add test_ssl unit test and test export of PEM to file
+Move tls_get_cipher_name_pair and get_num_elements to ssl_utils.c
 
-This introduces a number of mock function to be able to compile
-ssl_verify_*.c and ssl_mbedtls.c/ssl_openssl.c into a unit and adds
-quite a number of files to that unit. But it allows similar unit tests
-(in term of dependencies) to be added in the future.
+This allow these functions to be defined without having to include ssl.c/mi=
+sc.c
+which pulls in a lot of more dependencies.
 
-Change-Id: Ie248d35d063bb6878f3dd42840c77ba0d6fa3381
+Change-Id: I605394d4f3872a168d05bbbe52d90f6d48935865
 Signed-off-by: Arne Schwabe <arne@...1227...>
 ---
-M .github/workflows/build.yaml
-M CMakeLists.txt
-M tests/unit_tests/openvpn/Makefile.am
-A tests/unit_tests/openvpn/mock_management.c
-A tests/unit_tests/openvpn/mock_ssl_dependencies.c
-A tests/unit_tests/openvpn/test_ssl.c
-6 files changed, 315 insertions(+), 2 deletions(-)
+M src/openvpn/misc.c
+M src/openvpn/misc.h
+M src/openvpn/ssl.c
+M src/openvpn/ssl_backend.h
+M src/openvpn/ssl_mbedtls.c
+M src/openvpn/ssl_openssl.c
+M src/openvpn/ssl_util.c
+M src/openvpn/ssl_util.h
+8 files changed, 211 insertions(+), 208 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/71/471/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/70/470/1
 
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 4393f5c..39ecef9 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -85,7 +85,7 @@
-       fail-fast: false
-       matrix:
-         arch: [x86, x64]
--        test: [argv, auth_token, buffer, cryptoapi, crypto, misc, ncp, pac=
-ket_id, pkt, provider, tls_crypt]
-+        test: [argv, auth_token, buffer, cryptoapi, crypto, ssl, misc, ncp=
-, packet_id, pkt, provider, tls_crypt]
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index ce6e4fd..bce63ed 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -773,26 +773,6 @@
+     }
+ }
 
-     runs-on: windows-latest
-     name: "mingw unittest ${{ matrix.test }} - ${{ matrix.arch }} - OSSL"
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8c24cca..24fd9cc 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -557,6 +557,7 @@
-         "test_auth_token"
-         "test_buffer"
-         "test_crypto"
-+        "test_ssl"
-         "test_misc"
-         "test_ncp"
-         "test_packet_id"
-@@ -671,6 +672,34 @@
-         src/openvpn/mss.c
-         )
+-int
+-get_num_elements(const char *string, char delimiter)
+-{
+-    int string_len =3D strlen(string);
+-
+-    ASSERT(0 !=3D string_len);
+-
+-    int element_count =3D 1;
+-    /* Get number of ciphers */
+-    for (int i =3D 0; i < string_len; i++)
+-    {
+-        if (string[i] =3D=3D delimiter)
+-        {
+-            element_count++;
+-        }
+-    }
+-
+-    return element_count;
+-}
+-
+ struct buffer
+ prepend_dir(const char *dir, const char *path, struct gc_arena *gc)
+ {
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index b000b72..70a24dd 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -193,20 +193,6 @@
+ void output_peer_info_env(struct env_set *es, const char *peer_info);
 
-+    target_sources(test_ssl PRIVATE
-+            src/openvpn/crypto_mbedtls.c
-+            src/openvpn/crypto_openssl.c
-+            src/openvpn/ssl_openssl.c
-+            src/openvpn/ssl_mbedtls.c
-+            src/openvpn/ssl_verify_openssl.c
-+            src/openvpn/ssl_verify_mbedtls.c
-+            src/openvpn/crypto.c
-+            src/openvpn/argv.c
-+            src/openvpn/base64.c
-+            src/openvpn/env_set.c
-+            src/openvpn/run_command.c
-+            src/openvpn/otime.c
-+            src/openvpn/packet_id.c
-+            src/openvpn/mtu.c
-+            src/openvpn/mss.c
-+            src/openvpn/env_set.c
-+            src/openvpn/options_util.c
-+            tests/unit_tests/openvpn/mock_management.c
-+            tests/unit_tests/openvpn/mock_ssl_dependencies.c
-+            src/openvpn/xkey_provider.c
-+            src/openvpn/xkey_helper.c
-+            src/openvpn/ssl_util.c
-+            src/openvpn/cryptoapi.c
-+            src/openvpn/win32.c
-+            src/openvpn/block_dns.c
-+    )
+ /**
+- * Returns the occurrences of 'delimiter' in a string +1
+- * This is typically used to find out the number elements in a
+- * cipher string or similar that is separated by : like
+- *
+- *   X25519:secp256r1:X448:secp512r1:secp384r1:brainpoolP384r1
+- *
+- * @param string        the string to work on
+- * @param delimiter     the delimiter to count, typically ':'
+- * @return              occrrences of delimiter + 1
+- */
+-int
+-get_num_elements(const char *string, char delimiter);
+-
+-/**
+  * Prepend a directory to a path.
+  */
+ struct buffer
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 3e3696c..6eddb68 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -95,152 +95,6 @@
+ #endif /* ifdef MEASURE_TLS_HANDSHAKE_STATS */
+
+ /**
+- * SSL/TLS Cipher suite name translation table
+- */
+-static const tls_cipher_name_pair tls_cipher_name_translation_table[] =3D {
+-    {"ADH-SEED-SHA", "TLS-DH-anon-WITH-SEED-CBC-SHA"},
+-    {"AES128-GCM-SHA256", "TLS-RSA-WITH-AES-128-GCM-SHA256"},
+-    {"AES128-SHA256", "TLS-RSA-WITH-AES-128-CBC-SHA256"},
+-    {"AES128-SHA", "TLS-RSA-WITH-AES-128-CBC-SHA"},
+-    {"AES256-GCM-SHA384", "TLS-RSA-WITH-AES-256-GCM-SHA384"},
+-    {"AES256-SHA256", "TLS-RSA-WITH-AES-256-CBC-SHA256"},
+-    {"AES256-SHA", "TLS-RSA-WITH-AES-256-CBC-SHA"},
+-    {"CAMELLIA128-SHA256", "TLS-RSA-WITH-CAMELLIA-128-CBC-SHA256"},
+-    {"CAMELLIA128-SHA", "TLS-RSA-WITH-CAMELLIA-128-CBC-SHA"},
+-    {"CAMELLIA256-SHA256", "TLS-RSA-WITH-CAMELLIA-256-CBC-SHA256"},
+-    {"CAMELLIA256-SHA", "TLS-RSA-WITH-CAMELLIA-256-CBC-SHA"},
+-    {"DES-CBC3-SHA", "TLS-RSA-WITH-3DES-EDE-CBC-SHA"},
+-    {"DES-CBC-SHA", "TLS-RSA-WITH-DES-CBC-SHA"},
+-    {"DH-DSS-SEED-SHA", "TLS-DH-DSS-WITH-SEED-CBC-SHA"},
+-    {"DHE-DSS-AES128-GCM-SHA256", "TLS-DHE-DSS-WITH-AES-128-GCM-SHA256"},
+-    {"DHE-DSS-AES128-SHA256", "TLS-DHE-DSS-WITH-AES-128-CBC-SHA256"},
+-    {"DHE-DSS-AES128-SHA", "TLS-DHE-DSS-WITH-AES-128-CBC-SHA"},
+-    {"DHE-DSS-AES256-GCM-SHA384", "TLS-DHE-DSS-WITH-AES-256-GCM-SHA384"},
+-    {"DHE-DSS-AES256-SHA256", "TLS-DHE-DSS-WITH-AES-256-CBC-SHA256"},
+-    {"DHE-DSS-AES256-SHA", "TLS-DHE-DSS-WITH-AES-256-CBC-SHA"},
+-    {"DHE-DSS-CAMELLIA128-SHA256", "TLS-DHE-DSS-WITH-CAMELLIA-128-CBC-SHA2=
+56"},
+-    {"DHE-DSS-CAMELLIA128-SHA", "TLS-DHE-DSS-WITH-CAMELLIA-128-CBC-SHA"},
+-    {"DHE-DSS-CAMELLIA256-SHA256", "TLS-DHE-DSS-WITH-CAMELLIA-256-CBC-SHA2=
+56"},
+-    {"DHE-DSS-CAMELLIA256-SHA", "TLS-DHE-DSS-WITH-CAMELLIA-256-CBC-SHA"},
+-    {"DHE-DSS-SEED-SHA", "TLS-DHE-DSS-WITH-SEED-CBC-SHA"},
+-    {"DHE-RSA-AES128-GCM-SHA256", "TLS-DHE-RSA-WITH-AES-128-GCM-SHA256"},
+-    {"DHE-RSA-AES128-SHA256", "TLS-DHE-RSA-WITH-AES-128-CBC-SHA256"},
+-    {"DHE-RSA-AES128-SHA", "TLS-DHE-RSA-WITH-AES-128-CBC-SHA"},
+-    {"DHE-RSA-AES256-GCM-SHA384", "TLS-DHE-RSA-WITH-AES-256-GCM-SHA384"},
+-    {"DHE-RSA-AES256-SHA256", "TLS-DHE-RSA-WITH-AES-256-CBC-SHA256"},
+-    {"DHE-RSA-AES256-SHA", "TLS-DHE-RSA-WITH-AES-256-CBC-SHA"},
+-    {"DHE-RSA-CAMELLIA128-SHA256", "TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA2=
+56"},
+-    {"DHE-RSA-CAMELLIA128-SHA", "TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA"},
+-    {"DHE-RSA-CAMELLIA256-SHA256", "TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA2=
+56"},
+-    {"DHE-RSA-CAMELLIA256-SHA", "TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA"},
+-    {"DHE-RSA-CHACHA20-POLY1305", "TLS-DHE-RSA-WITH-CHACHA20-POLY1305-SHA2=
+56"},
+-    {"DHE-RSA-SEED-SHA", "TLS-DHE-RSA-WITH-SEED-CBC-SHA"},
+-    {"DH-RSA-SEED-SHA", "TLS-DH-RSA-WITH-SEED-CBC-SHA"},
+-    {"ECDH-ECDSA-AES128-GCM-SHA256", "TLS-ECDH-ECDSA-WITH-AES-128-GCM-SHA2=
+56"},
+-    {"ECDH-ECDSA-AES128-SHA256", "TLS-ECDH-ECDSA-WITH-AES-128-CBC-SHA256"},
+-    {"ECDH-ECDSA-AES128-SHA", "TLS-ECDH-ECDSA-WITH-AES-128-CBC-SHA"},
+-    {"ECDH-ECDSA-AES256-GCM-SHA384", "TLS-ECDH-ECDSA-WITH-AES-256-GCM-SHA3=
+84"},
+-    {"ECDH-ECDSA-AES256-SHA256", "TLS-ECDH-ECDSA-WITH-AES-256-CBC-SHA256"},
+-    {"ECDH-ECDSA-AES256-SHA384", "TLS-ECDH-ECDSA-WITH-AES-256-CBC-SHA384"},
+-    {"ECDH-ECDSA-AES256-SHA", "TLS-ECDH-ECDSA-WITH-AES-256-CBC-SHA"},
+-    {"ECDH-ECDSA-CAMELLIA128-SHA256", "TLS-ECDH-ECDSA-WITH-CAMELLIA-128-CB=
+C-SHA256"},
+-    {"ECDH-ECDSA-CAMELLIA128-SHA", "TLS-ECDH-ECDSA-WITH-CAMELLIA-128-CBC-S=
+HA"},
+-    {"ECDH-ECDSA-CAMELLIA256-SHA256", "TLS-ECDH-ECDSA-WITH-CAMELLIA-256-CB=
+C-SHA256"},
+-    {"ECDH-ECDSA-CAMELLIA256-SHA", "TLS-ECDH-ECDSA-WITH-CAMELLIA-256-CBC-S=
+HA"},
+-    {"ECDH-ECDSA-DES-CBC3-SHA", "TLS-ECDH-ECDSA-WITH-3DES-EDE-CBC-SHA"},
+-    {"ECDH-ECDSA-DES-CBC-SHA", "TLS-ECDH-ECDSA-WITH-DES-CBC-SHA"},
+-    {"ECDH-ECDSA-RC4-SHA", "TLS-ECDH-ECDSA-WITH-RC4-128-SHA"},
+-    {"ECDHE-ECDSA-AES128-GCM-SHA256", "TLS-ECDHE-ECDSA-WITH-AES-128-GCM-SH=
+A256"},
+-    {"ECDHE-ECDSA-AES128-SHA256", "TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA256=
+"},
+-    {"ECDHE-ECDSA-AES128-SHA384", "TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA384=
+"},
+-    {"ECDHE-ECDSA-AES128-SHA", "TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA"},
+-    {"ECDHE-ECDSA-AES256-GCM-SHA384", "TLS-ECDHE-ECDSA-WITH-AES-256-GCM-SH=
+A384"},
+-    {"ECDHE-ECDSA-AES256-SHA256", "TLS-ECDHE-ECDSA-WITH-AES-256-CBC-SHA256=
+"},
+-    {"ECDHE-ECDSA-AES256-SHA384", "TLS-ECDHE-ECDSA-WITH-AES-256-CBC-SHA384=
+"},
+-    {"ECDHE-ECDSA-AES256-SHA", "TLS-ECDHE-ECDSA-WITH-AES-256-CBC-SHA"},
+-    {"ECDHE-ECDSA-CAMELLIA128-SHA256", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-128-=
+CBC-SHA256"},
+-    {"ECDHE-ECDSA-CAMELLIA128-SHA", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-128-CBC=
+-SHA"},
+-    {"ECDHE-ECDSA-CAMELLIA256-SHA256", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-256-=
+CBC-SHA256"},
+-    {"ECDHE-ECDSA-CAMELLIA256-SHA", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-256-CBC=
+-SHA"},
+-    {"ECDHE-ECDSA-CHACHA20-POLY1305", "TLS-ECDHE-ECDSA-WITH-CHACHA20-POLY1=
+305-SHA256"},
+-    {"ECDHE-ECDSA-DES-CBC3-SHA", "TLS-ECDHE-ECDSA-WITH-3DES-EDE-CBC-SHA"},
+-    {"ECDHE-ECDSA-DES-CBC-SHA", "TLS-ECDHE-ECDSA-WITH-DES-CBC-SHA"},
+-    {"ECDHE-ECDSA-RC4-SHA", "TLS-ECDHE-ECDSA-WITH-RC4-128-SHA"},
+-    {"ECDHE-RSA-AES128-GCM-SHA256", "TLS-ECDHE-RSA-WITH-AES-128-GCM-SHA256=
+"},
+-    {"ECDHE-RSA-AES128-SHA256", "TLS-ECDHE-RSA-WITH-AES-128-CBC-SHA256"},
+-    {"ECDHE-RSA-AES128-SHA384", "TLS-ECDHE-RSA-WITH-AES-128-CBC-SHA384"},
+-    {"ECDHE-RSA-AES128-SHA", "TLS-ECDHE-RSA-WITH-AES-128-CBC-SHA"},
+-    {"ECDHE-RSA-AES256-GCM-SHA384", "TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384=
+"},
+-    {"ECDHE-RSA-AES256-SHA256", "TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA256"},
+-    {"ECDHE-RSA-AES256-SHA384", "TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA384"},
+-    {"ECDHE-RSA-AES256-SHA", "TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA"},
+-    {"ECDHE-RSA-CAMELLIA128-SHA256", "TLS-ECDHE-RSA-WITH-CAMELLIA-128-CBC-=
+SHA256"},
+-    {"ECDHE-RSA-CAMELLIA128-SHA", "TLS-ECDHE-RSA-WITH-CAMELLIA-128-CBC-SHA=
+"},
+-    {"ECDHE-RSA-CAMELLIA256-SHA256", "TLS-ECDHE-RSA-WITH-CAMELLIA-256-CBC-=
+SHA256"},
+-    {"ECDHE-RSA-CAMELLIA256-SHA", "TLS-ECDHE-RSA-WITH-CAMELLIA-256-CBC-SHA=
+"},
+-    {"ECDHE-RSA-CHACHA20-POLY1305", "TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-=
+SHA256"},
+-    {"ECDHE-RSA-DES-CBC3-SHA", "TLS-ECDHE-RSA-WITH-3DES-EDE-CBC-SHA"},
+-    {"ECDHE-RSA-DES-CBC-SHA", "TLS-ECDHE-RSA-WITH-DES-CBC-SHA"},
+-    {"ECDHE-RSA-RC4-SHA", "TLS-ECDHE-RSA-WITH-RC4-128-SHA"},
+-    {"ECDH-RSA-AES128-GCM-SHA256", "TLS-ECDH-RSA-WITH-AES-128-GCM-SHA256"},
+-    {"ECDH-RSA-AES128-SHA256", "TLS-ECDH-RSA-WITH-AES-128-CBC-SHA256"},
+-    {"ECDH-RSA-AES128-SHA384", "TLS-ECDH-RSA-WITH-AES-128-CBC-SHA384"},
+-    {"ECDH-RSA-AES128-SHA", "TLS-ECDH-RSA-WITH-AES-128-CBC-SHA"},
+-    {"ECDH-RSA-AES256-GCM-SHA384", "TLS-ECDH-RSA-WITH-AES-256-GCM-SHA384"},
+-    {"ECDH-RSA-AES256-SHA256", "TLS-ECDH-RSA-WITH-AES-256-CBC-SHA256"},
+-    {"ECDH-RSA-AES256-SHA384", "TLS-ECDH-RSA-WITH-AES-256-CBC-SHA384"},
+-    {"ECDH-RSA-AES256-SHA", "TLS-ECDH-RSA-WITH-AES-256-CBC-SHA"},
+-    {"ECDH-RSA-CAMELLIA128-SHA256", "TLS-ECDH-RSA-WITH-CAMELLIA-128-CBC-SH=
+A256"},
+-    {"ECDH-RSA-CAMELLIA128-SHA", "TLS-ECDH-RSA-WITH-CAMELLIA-128-CBC-SHA"},
+-    {"ECDH-RSA-CAMELLIA256-SHA256", "TLS-ECDH-RSA-WITH-CAMELLIA-256-CBC-SH=
+A256"},
+-    {"ECDH-RSA-CAMELLIA256-SHA", "TLS-ECDH-RSA-WITH-CAMELLIA-256-CBC-SHA"},
+-    {"ECDH-RSA-DES-CBC3-SHA", "TLS-ECDH-RSA-WITH-3DES-EDE-CBC-SHA"},
+-    {"ECDH-RSA-DES-CBC-SHA", "TLS-ECDH-RSA-WITH-DES-CBC-SHA"},
+-    {"ECDH-RSA-RC4-SHA", "TLS-ECDH-RSA-WITH-RC4-128-SHA"},
+-    {"EDH-DSS-DES-CBC3-SHA", "TLS-DHE-DSS-WITH-3DES-EDE-CBC-SHA"},
+-    {"EDH-DSS-DES-CBC-SHA", "TLS-DHE-DSS-WITH-DES-CBC-SHA"},
+-    {"EDH-RSA-DES-CBC3-SHA", "TLS-DHE-RSA-WITH-3DES-EDE-CBC-SHA"},
+-    {"EDH-RSA-DES-CBC-SHA", "TLS-DHE-RSA-WITH-DES-CBC-SHA"},
+-    {"EXP-DES-CBC-SHA", "TLS-RSA-EXPORT-WITH-DES40-CBC-SHA"},
+-    {"EXP-EDH-DSS-DES-CBC-SHA", "TLS-DH-DSS-EXPORT-WITH-DES40-CBC-SHA"},
+-    {"EXP-EDH-RSA-DES-CBC-SHA", "TLS-DH-RSA-EXPORT-WITH-DES40-CBC-SHA"},
+-    {"EXP-RC2-CBC-MD5", "TLS-RSA-EXPORT-WITH-RC2-CBC-40-MD5"},
+-    {"EXP-RC4-MD5", "TLS-RSA-EXPORT-WITH-RC4-40-MD5"},
+-    {"NULL-MD5", "TLS-RSA-WITH-NULL-MD5"},
+-    {"NULL-SHA256", "TLS-RSA-WITH-NULL-SHA256"},
+-    {"NULL-SHA", "TLS-RSA-WITH-NULL-SHA"},
+-    {"PSK-3DES-EDE-CBC-SHA", "TLS-PSK-WITH-3DES-EDE-CBC-SHA"},
+-    {"PSK-AES128-CBC-SHA", "TLS-PSK-WITH-AES-128-CBC-SHA"},
+-    {"PSK-AES256-CBC-SHA", "TLS-PSK-WITH-AES-256-CBC-SHA"},
+-    {"PSK-RC4-SHA", "TLS-PSK-WITH-RC4-128-SHA"},
+-    {"RC4-MD5", "TLS-RSA-WITH-RC4-128-MD5"},
+-    {"RC4-SHA", "TLS-RSA-WITH-RC4-128-SHA"},
+-    {"SEED-SHA", "TLS-RSA-WITH-SEED-CBC-SHA"},
+-    {"SRP-DSS-3DES-EDE-CBC-SHA", "TLS-SRP-SHA-DSS-WITH-3DES-EDE-CBC-SHA"},
+-    {"SRP-DSS-AES-128-CBC-SHA", "TLS-SRP-SHA-DSS-WITH-AES-128-CBC-SHA"},
+-    {"SRP-DSS-AES-256-CBC-SHA", "TLS-SRP-SHA-DSS-WITH-AES-256-CBC-SHA"},
+-    {"SRP-RSA-3DES-EDE-CBC-SHA", "TLS-SRP-SHA-RSA-WITH-3DES-EDE-CBC-SHA"},
+-    {"SRP-RSA-AES-128-CBC-SHA", "TLS-SRP-SHA-RSA-WITH-AES-128-CBC-SHA"},
+-    {"SRP-RSA-AES-256-CBC-SHA", "TLS-SRP-SHA-RSA-WITH-AES-256-CBC-SHA"},
+-#ifdef ENABLE_CRYPTO_OPENSSL
+-    /* OpenSSL-specific group names */
+-    {"DEFAULT", "DEFAULT"},
+-    {"ALL", "ALL"},
+-    {"HIGH", "HIGH"}, {"!HIGH", "!HIGH"},
+-    {"MEDIUM", "MEDIUM"}, {"!MEDIUM", "!MEDIUM"},
+-    {"LOW", "LOW"}, {"!LOW", "!LOW"},
+-    {"ECDH", "ECDH"}, {"!ECDH", "!ECDH"},
+-    {"ECDSA", "ECDSA"}, {"!ECDSA", "!ECDSA"},
+-    {"EDH", "EDH"}, {"!EDH", "!EDH"},
+-    {"EXP", "EXP"}, {"!EXP", "!EXP"},
+-    {"RSA", "RSA"}, {"!RSA", "!RSA"},
+-    {"kRSA", "kRSA"}, {"!kRSA", "!kRSA"},
+-    {"SRP", "SRP"}, {"!SRP", "!SRP"},
+-#endif
+-    {NULL, NULL}
+-};
+-
+-/**
+  * Update the implicit IV for a key_ctx_bi based on TLS session ids and ci=
+pher
+  * used.
+  *
+@@ -254,24 +108,6 @@
+ static void
+ key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_l=
+en);
+
+-const tls_cipher_name_pair *
+-tls_get_cipher_name_pair(const char *cipher_name, size_t len)
+-{
+-    const tls_cipher_name_pair *pair =3D tls_cipher_name_translation_table;
+-
+-    while (pair->openssl_name !=3D NULL)
+-    {
+-        if ((strlen(pair->openssl_name) =3D=3D len && 0 =3D=3D memcmp(ciph=
+er_name, pair->openssl_name, len))
+-            || (strlen(pair->iana_name) =3D=3D len && 0 =3D=3D memcmp(ciph=
+er_name, pair->iana_name, len)))
+-        {
+-            return pair;
+-        }
+-        pair++;
+-    }
+-
+-    /* No entry found, return NULL */
+-    return NULL;
+-}
+
+ /**
+  * Limit the reneg_bytes value when using a small-block (<128 bytes) ciphe=
+r.
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index 3854d59..b9466ce 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -53,15 +53,6 @@
+  */
+ struct tls_session;
+
+-/**
+- * Get a tls_cipher_name_pair containing OpenSSL and IANA names for suppli=
+ed TLS cipher name
+- *
+- * @param cipher_name   Can be either OpenSSL or IANA cipher name
+- * @return              tls_cipher_name_pair* if found, NULL otherwise
+- */
+-typedef struct { const char *openssl_name; const char *iana_name; } tls_ci=
+pher_name_pair;
+-const tls_cipher_name_pair *tls_get_cipher_name_pair(const char *cipher_na=
+me, size_t len);
+-
+ /*
+  *
+  * Functions implemented in ssl.c for use by the backend SSL library
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 9c9167d..cc88484 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -44,6 +44,7 @@
+ #include "mbedtls_compat.h"
+ #include "pkcs11_backend.h"
+ #include "ssl_common.h"
++#include "ssl_util.h"
+
+ #include "ssl_verify_mbedtls.h"
+ #include <mbedtls/debug.h>
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 82872bf..c30e6a9 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -50,6 +50,7 @@
+ #endif
+
+ #include "ssl_verify_openssl.h"
++#include "ssl_util.h"
+
+ #include <openssl/bn.h>
+ #include <openssl/crypto.h>
+diff --git a/src/openvpn/ssl_util.c b/src/openvpn/ssl_util.c
+index bca6eed..447e739 100644
+--- a/src/openvpn/ssl_util.c
++++ b/src/openvpn/ssl_util.c
+@@ -114,3 +114,188 @@
+
+     return BSTR(&buf);
+ }
 +
-     target_sources(test_misc PRIVATE
-         tests/unit_tests/openvpn/mock_get_random.c
-         src/openvpn/options_util.c
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvp=
-n/Makefile.am
-index ef45b11..5d3eb70 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -7,7 +7,8 @@
- endif
-
- test_binaries +=3D crypto_testdriver packet_id_testdriver auth_token_testd=
-river ncp_testdriver misc_testdriver \
--	pkt_testdriver
-+	pkt_testdriver ssl_testdriver
-+
- if HAVE_LD_WRAP_SUPPORT
- if !WIN32
- test_binaries +=3D tls_crypt_testdriver
-@@ -67,6 +68,29 @@
- 	$(top_srcdir)/src/openvpn/win32-util.c \
- 	$(top_srcdir)/src/openvpn/mss.c
-
-+ssl_testdriver_CFLAGS  =3D @TEST_CFLAGS@ \
-+	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/op=
-envpn
-+ssl_testdriver_LDFLAGS =3D @TEST_LDFLAGS@
-+ssl_testdriver_SOURCES =3D test_crypto.c mock_msg.c mock_msg.h \
-+    mock_management.c mock_ssl_dependencies.c \
-+	$(top_srcdir)/src/openvpn/buffer.c \
-+	$(top_srcdir)/src/openvpn/crypto.c \
-+	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \
-+	$(top_srcdir)/src/openvpn/crypto_openssl.c \
-+	$(top_srcdir)/src/openvpn/otime.c \
-+	$(top_srcdir)/src/openvpn/packet_id.c \
-+	$(top_srcdir)/src/openvpn/platform.c \
-+	$(top_srcdir)/src/openvpn/mtu.c \
-+	$(top_srcdir)/src/openvpn/win32-util.c \
-+	$(top_srcdir)/src/openvpn/mss.c \
-+    $(top_srcdir)/src/openvpn/xkey_provider.c \
-+    $(top_srcdir)/src/openvpn/xkey_helper.c \
-+    $(top_srcdir)/src/openvpn/ssl_util.c \
-+    $(top_srcdir)/src/openvpn/base64.c \
-+    $(top_srcdir)/src/openvpn/cryptoapi.c \
-+    $(top_srcdir)/src/openvpn/win32.c
-+
-+
- packet_id_testdriver_CFLAGS  =3D @TEST_CFLAGS@ \
- 	-I$(top_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/op=
-envpn
- packet_id_testdriver_LDFLAGS =3D @TEST_LDFLAGS@
-diff --git a/tests/unit_tests/openvpn/mock_management.c b/tests/unit_tests/=
-openvpn/mock_management.c
-new file mode 100644
-index 0000000..5fed45d
---- /dev/null
-+++ b/tests/unit_tests/openvpn/mock_management.c
-@@ -0,0 +1,54 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2017-2021 Fox Crypto B.V. <openvpn@...2507...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++/**
++ * SSL/TLS Cipher suite name translation table
 + */
-+
-+/* Minimal set of mocked management function/globals to get unit tests to
-+ * compile */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
++static const tls_cipher_name_pair tls_cipher_name_translation_table[] =3D {
++    {"ADH-SEED-SHA", "TLS-DH-anon-WITH-SEED-CBC-SHA"},
++    {"AES128-GCM-SHA256", "TLS-RSA-WITH-AES-128-GCM-SHA256"},
++    {"AES128-SHA256", "TLS-RSA-WITH-AES-128-CBC-SHA256"},
++    {"AES128-SHA", "TLS-RSA-WITH-AES-128-CBC-SHA"},
++    {"AES256-GCM-SHA384", "TLS-RSA-WITH-AES-256-GCM-SHA384"},
++    {"AES256-SHA256", "TLS-RSA-WITH-AES-256-CBC-SHA256"},
++    {"AES256-SHA", "TLS-RSA-WITH-AES-256-CBC-SHA"},
++    {"CAMELLIA128-SHA256", "TLS-RSA-WITH-CAMELLIA-128-CBC-SHA256"},
++    {"CAMELLIA128-SHA", "TLS-RSA-WITH-CAMELLIA-128-CBC-SHA"},
++    {"CAMELLIA256-SHA256", "TLS-RSA-WITH-CAMELLIA-256-CBC-SHA256"},
++    {"CAMELLIA256-SHA", "TLS-RSA-WITH-CAMELLIA-256-CBC-SHA"},
++    {"DES-CBC3-SHA", "TLS-RSA-WITH-3DES-EDE-CBC-SHA"},
++    {"DES-CBC-SHA", "TLS-RSA-WITH-DES-CBC-SHA"},
++    {"DH-DSS-SEED-SHA", "TLS-DH-DSS-WITH-SEED-CBC-SHA"},
++    {"DHE-DSS-AES128-GCM-SHA256", "TLS-DHE-DSS-WITH-AES-128-GCM-SHA256"},
++    {"DHE-DSS-AES128-SHA256", "TLS-DHE-DSS-WITH-AES-128-CBC-SHA256"},
++    {"DHE-DSS-AES128-SHA", "TLS-DHE-DSS-WITH-AES-128-CBC-SHA"},
++    {"DHE-DSS-AES256-GCM-SHA384", "TLS-DHE-DSS-WITH-AES-256-GCM-SHA384"},
++    {"DHE-DSS-AES256-SHA256", "TLS-DHE-DSS-WITH-AES-256-CBC-SHA256"},
++    {"DHE-DSS-AES256-SHA", "TLS-DHE-DSS-WITH-AES-256-CBC-SHA"},
++    {"DHE-DSS-CAMELLIA128-SHA256", "TLS-DHE-DSS-WITH-CAMELLIA-128-CBC-SHA2=
+56"},
++    {"DHE-DSS-CAMELLIA128-SHA", "TLS-DHE-DSS-WITH-CAMELLIA-128-CBC-SHA"},
++    {"DHE-DSS-CAMELLIA256-SHA256", "TLS-DHE-DSS-WITH-CAMELLIA-256-CBC-SHA2=
+56"},
++    {"DHE-DSS-CAMELLIA256-SHA", "TLS-DHE-DSS-WITH-CAMELLIA-256-CBC-SHA"},
++    {"DHE-DSS-SEED-SHA", "TLS-DHE-DSS-WITH-SEED-CBC-SHA"},
++    {"DHE-RSA-AES128-GCM-SHA256", "TLS-DHE-RSA-WITH-AES-128-GCM-SHA256"},
++    {"DHE-RSA-AES128-SHA256", "TLS-DHE-RSA-WITH-AES-128-CBC-SHA256"},
++    {"DHE-RSA-AES128-SHA", "TLS-DHE-RSA-WITH-AES-128-CBC-SHA"},
++    {"DHE-RSA-AES256-GCM-SHA384", "TLS-DHE-RSA-WITH-AES-256-GCM-SHA384"},
++    {"DHE-RSA-AES256-SHA256", "TLS-DHE-RSA-WITH-AES-256-CBC-SHA256"},
++    {"DHE-RSA-AES256-SHA", "TLS-DHE-RSA-WITH-AES-256-CBC-SHA"},
++    {"DHE-RSA-CAMELLIA128-SHA256", "TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA2=
+56"},
++    {"DHE-RSA-CAMELLIA128-SHA", "TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA"},
++    {"DHE-RSA-CAMELLIA256-SHA256", "TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA2=
+56"},
++    {"DHE-RSA-CAMELLIA256-SHA", "TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA"},
++    {"DHE-RSA-CHACHA20-POLY1305", "TLS-DHE-RSA-WITH-CHACHA20-POLY1305-SHA2=
+56"},
++    {"DHE-RSA-SEED-SHA", "TLS-DHE-RSA-WITH-SEED-CBC-SHA"},
++    {"DH-RSA-SEED-SHA", "TLS-DH-RSA-WITH-SEED-CBC-SHA"},
++    {"ECDH-ECDSA-AES128-GCM-SHA256", "TLS-ECDH-ECDSA-WITH-AES-128-GCM-SHA2=
+56"},
++    {"ECDH-ECDSA-AES128-SHA256", "TLS-ECDH-ECDSA-WITH-AES-128-CBC-SHA256"},
++    {"ECDH-ECDSA-AES128-SHA", "TLS-ECDH-ECDSA-WITH-AES-128-CBC-SHA"},
++    {"ECDH-ECDSA-AES256-GCM-SHA384", "TLS-ECDH-ECDSA-WITH-AES-256-GCM-SHA3=
+84"},
++    {"ECDH-ECDSA-AES256-SHA256", "TLS-ECDH-ECDSA-WITH-AES-256-CBC-SHA256"},
++    {"ECDH-ECDSA-AES256-SHA384", "TLS-ECDH-ECDSA-WITH-AES-256-CBC-SHA384"},
++    {"ECDH-ECDSA-AES256-SHA", "TLS-ECDH-ECDSA-WITH-AES-256-CBC-SHA"},
++    {"ECDH-ECDSA-CAMELLIA128-SHA256", "TLS-ECDH-ECDSA-WITH-CAMELLIA-128-CB=
+C-SHA256"},
++    {"ECDH-ECDSA-CAMELLIA128-SHA", "TLS-ECDH-ECDSA-WITH-CAMELLIA-128-CBC-S=
+HA"},
++    {"ECDH-ECDSA-CAMELLIA256-SHA256", "TLS-ECDH-ECDSA-WITH-CAMELLIA-256-CB=
+C-SHA256"},
++    {"ECDH-ECDSA-CAMELLIA256-SHA", "TLS-ECDH-ECDSA-WITH-CAMELLIA-256-CBC-S=
+HA"},
++    {"ECDH-ECDSA-DES-CBC3-SHA", "TLS-ECDH-ECDSA-WITH-3DES-EDE-CBC-SHA"},
++    {"ECDH-ECDSA-DES-CBC-SHA", "TLS-ECDH-ECDSA-WITH-DES-CBC-SHA"},
++    {"ECDH-ECDSA-RC4-SHA", "TLS-ECDH-ECDSA-WITH-RC4-128-SHA"},
++    {"ECDHE-ECDSA-AES128-GCM-SHA256", "TLS-ECDHE-ECDSA-WITH-AES-128-GCM-SH=
+A256"},
++    {"ECDHE-ECDSA-AES128-SHA256", "TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA256=
+"},
++    {"ECDHE-ECDSA-AES128-SHA384", "TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA384=
+"},
++    {"ECDHE-ECDSA-AES128-SHA", "TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA"},
++    {"ECDHE-ECDSA-AES256-GCM-SHA384", "TLS-ECDHE-ECDSA-WITH-AES-256-GCM-SH=
+A384"},
++    {"ECDHE-ECDSA-AES256-SHA256", "TLS-ECDHE-ECDSA-WITH-AES-256-CBC-SHA256=
+"},
++    {"ECDHE-ECDSA-AES256-SHA384", "TLS-ECDHE-ECDSA-WITH-AES-256-CBC-SHA384=
+"},
++    {"ECDHE-ECDSA-AES256-SHA", "TLS-ECDHE-ECDSA-WITH-AES-256-CBC-SHA"},
++    {"ECDHE-ECDSA-CAMELLIA128-SHA256", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-128-=
+CBC-SHA256"},
++    {"ECDHE-ECDSA-CAMELLIA128-SHA", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-128-CBC=
+-SHA"},
++    {"ECDHE-ECDSA-CAMELLIA256-SHA256", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-256-=
+CBC-SHA256"},
++    {"ECDHE-ECDSA-CAMELLIA256-SHA", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-256-CBC=
+-SHA"},
++    {"ECDHE-ECDSA-CHACHA20-POLY1305", "TLS-ECDHE-ECDSA-WITH-CHACHA20-POLY1=
+305-SHA256"},
++    {"ECDHE-ECDSA-DES-CBC3-SHA", "TLS-ECDHE-ECDSA-WITH-3DES-EDE-CBC-SHA"},
++    {"ECDHE-ECDSA-DES-CBC-SHA", "TLS-ECDHE-ECDSA-WITH-DES-CBC-SHA"},
++    {"ECDHE-ECDSA-RC4-SHA", "TLS-ECDHE-ECDSA-WITH-RC4-128-SHA"},
++    {"ECDHE-RSA-AES128-GCM-SHA256", "TLS-ECDHE-RSA-WITH-AES-128-GCM-SHA256=
+"},
++    {"ECDHE-RSA-AES128-SHA256", "TLS-ECDHE-RSA-WITH-AES-128-CBC-SHA256"},
++    {"ECDHE-RSA-AES128-SHA384", "TLS-ECDHE-RSA-WITH-AES-128-CBC-SHA384"},
++    {"ECDHE-RSA-AES128-SHA", "TLS-ECDHE-RSA-WITH-AES-128-CBC-SHA"},
++    {"ECDHE-RSA-AES256-GCM-SHA384", "TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384=
+"},
++    {"ECDHE-RSA-AES256-SHA256", "TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA256"},
++    {"ECDHE-RSA-AES256-SHA384", "TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA384"},
++    {"ECDHE-RSA-AES256-SHA", "TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA"},
++    {"ECDHE-RSA-CAMELLIA128-SHA256", "TLS-ECDHE-RSA-WITH-CAMELLIA-128-CBC-=
+SHA256"},
++    {"ECDHE-RSA-CAMELLIA128-SHA", "TLS-ECDHE-RSA-WITH-CAMELLIA-128-CBC-SHA=
+"},
++    {"ECDHE-RSA-CAMELLIA256-SHA256", "TLS-ECDHE-RSA-WITH-CAMELLIA-256-CBC-=
+SHA256"},
++    {"ECDHE-RSA-CAMELLIA256-SHA", "TLS-ECDHE-RSA-WITH-CAMELLIA-256-CBC-SHA=
+"},
++    {"ECDHE-RSA-CHACHA20-POLY1305", "TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-=
+SHA256"},
++    {"ECDHE-RSA-DES-CBC3-SHA", "TLS-ECDHE-RSA-WITH-3DES-EDE-CBC-SHA"},
++    {"ECDHE-RSA-DES-CBC-SHA", "TLS-ECDHE-RSA-WITH-DES-CBC-SHA"},
++    {"ECDHE-RSA-RC4-SHA", "TLS-ECDHE-RSA-WITH-RC4-128-SHA"},
++    {"ECDH-RSA-AES128-GCM-SHA256", "TLS-ECDH-RSA-WITH-AES-128-GCM-SHA256"},
++    {"ECDH-RSA-AES128-SHA256", "TLS-ECDH-RSA-WITH-AES-128-CBC-SHA256"},
++    {"ECDH-RSA-AES128-SHA384", "TLS-ECDH-RSA-WITH-AES-128-CBC-SHA384"},
++    {"ECDH-RSA-AES128-SHA", "TLS-ECDH-RSA-WITH-AES-128-CBC-SHA"},
++    {"ECDH-RSA-AES256-GCM-SHA384", "TLS-ECDH-RSA-WITH-AES-256-GCM-SHA384"},
++    {"ECDH-RSA-AES256-SHA256", "TLS-ECDH-RSA-WITH-AES-256-CBC-SHA256"},
++    {"ECDH-RSA-AES256-SHA384", "TLS-ECDH-RSA-WITH-AES-256-CBC-SHA384"},
++    {"ECDH-RSA-AES256-SHA", "TLS-ECDH-RSA-WITH-AES-256-CBC-SHA"},
++    {"ECDH-RSA-CAMELLIA128-SHA256", "TLS-ECDH-RSA-WITH-CAMELLIA-128-CBC-SH=
+A256"},
++    {"ECDH-RSA-CAMELLIA128-SHA", "TLS-ECDH-RSA-WITH-CAMELLIA-128-CBC-SHA"},
++    {"ECDH-RSA-CAMELLIA256-SHA256", "TLS-ECDH-RSA-WITH-CAMELLIA-256-CBC-SH=
+A256"},
++    {"ECDH-RSA-CAMELLIA256-SHA", "TLS-ECDH-RSA-WITH-CAMELLIA-256-CBC-SHA"},
++    {"ECDH-RSA-DES-CBC3-SHA", "TLS-ECDH-RSA-WITH-3DES-EDE-CBC-SHA"},
++    {"ECDH-RSA-DES-CBC-SHA", "TLS-ECDH-RSA-WITH-DES-CBC-SHA"},
++    {"ECDH-RSA-RC4-SHA", "TLS-ECDH-RSA-WITH-RC4-128-SHA"},
++    {"EDH-DSS-DES-CBC3-SHA", "TLS-DHE-DSS-WITH-3DES-EDE-CBC-SHA"},
++    {"EDH-DSS-DES-CBC-SHA", "TLS-DHE-DSS-WITH-DES-CBC-SHA"},
++    {"EDH-RSA-DES-CBC3-SHA", "TLS-DHE-RSA-WITH-3DES-EDE-CBC-SHA"},
++    {"EDH-RSA-DES-CBC-SHA", "TLS-DHE-RSA-WITH-DES-CBC-SHA"},
++    {"EXP-DES-CBC-SHA", "TLS-RSA-EXPORT-WITH-DES40-CBC-SHA"},
++    {"EXP-EDH-DSS-DES-CBC-SHA", "TLS-DH-DSS-EXPORT-WITH-DES40-CBC-SHA"},
++    {"EXP-EDH-RSA-DES-CBC-SHA", "TLS-DH-RSA-EXPORT-WITH-DES40-CBC-SHA"},
++    {"EXP-RC2-CBC-MD5", "TLS-RSA-EXPORT-WITH-RC2-CBC-40-MD5"},
++    {"EXP-RC4-MD5", "TLS-RSA-EXPORT-WITH-RC4-40-MD5"},
++    {"NULL-MD5", "TLS-RSA-WITH-NULL-MD5"},
++    {"NULL-SHA256", "TLS-RSA-WITH-NULL-SHA256"},
++    {"NULL-SHA", "TLS-RSA-WITH-NULL-SHA"},
++    {"PSK-3DES-EDE-CBC-SHA", "TLS-PSK-WITH-3DES-EDE-CBC-SHA"},
++    {"PSK-AES128-CBC-SHA", "TLS-PSK-WITH-AES-128-CBC-SHA"},
++    {"PSK-AES256-CBC-SHA", "TLS-PSK-WITH-AES-256-CBC-SHA"},
++    {"PSK-RC4-SHA", "TLS-PSK-WITH-RC4-128-SHA"},
++    {"RC4-MD5", "TLS-RSA-WITH-RC4-128-MD5"},
++    {"RC4-SHA", "TLS-RSA-WITH-RC4-128-SHA"},
++    {"SEED-SHA", "TLS-RSA-WITH-SEED-CBC-SHA"},
++    {"SRP-DSS-3DES-EDE-CBC-SHA", "TLS-SRP-SHA-DSS-WITH-3DES-EDE-CBC-SHA"},
++    {"SRP-DSS-AES-128-CBC-SHA", "TLS-SRP-SHA-DSS-WITH-AES-128-CBC-SHA"},
++    {"SRP-DSS-AES-256-CBC-SHA", "TLS-SRP-SHA-DSS-WITH-AES-256-CBC-SHA"},
++    {"SRP-RSA-3DES-EDE-CBC-SHA", "TLS-SRP-SHA-RSA-WITH-3DES-EDE-CBC-SHA"},
++    {"SRP-RSA-AES-128-CBC-SHA", "TLS-SRP-SHA-RSA-WITH-AES-128-CBC-SHA"},
++    {"SRP-RSA-AES-256-CBC-SHA", "TLS-SRP-SHA-RSA-WITH-AES-256-CBC-SHA"},
++#ifdef ENABLE_CRYPTO_OPENSSL
++    /* OpenSSL-specific group names */
++    {"DEFAULT", "DEFAULT"},
++    {"ALL", "ALL"},
++    {"HIGH", "HIGH"}, {"!HIGH", "!HIGH"},
++    {"MEDIUM", "MEDIUM"}, {"!MEDIUM", "!MEDIUM"},
++    {"LOW", "LOW"}, {"!LOW", "!LOW"},
++    {"ECDH", "ECDH"}, {"!ECDH", "!ECDH"},
++    {"ECDSA", "ECDSA"}, {"!ECDSA", "!ECDSA"},
++    {"EDH", "EDH"}, {"!EDH", "!EDH"},
++    {"EXP", "EXP"}, {"!EXP", "!EXP"},
++    {"RSA", "RSA"}, {"!RSA", "!RSA"},
++    {"kRSA", "kRSA"}, {"!kRSA", "!kRSA"},
++    {"SRP", "SRP"}, {"!SRP", "!SRP"},
 +#endif
++    {NULL, NULL}
++};
 +
-+#include "syshead.h"
-+
-+#include "manage.h"
-+
-+#ifdef ENABLE_MANAGEMENT
-+
-+struct management *management; /* GLOBAL */
-+
-+void
-+management_auth_failure(struct management *man, const char *type, const ch=
-ar *reason)
++const tls_cipher_name_pair *
++tls_get_cipher_name_pair(const char *cipher_name, size_t len)
 +{
-+    ASSERT(false);
-+}
++    const tls_cipher_name_pair *pair =3D tls_cipher_name_translation_table;
 +
-+char *
-+management_query_pk_sig(struct management *man, const char *b64_data,
-+                        const char *algorithm)
-+{
-+    (void) man;
-+    (void) b64_data;
-+    (void) algorithm;
++    while (pair->openssl_name !=3D NULL)
++    {
++        if ((strlen(pair->openssl_name) =3D=3D len && 0 =3D=3D memcmp(ciph=
+er_name, pair->openssl_name, len))
++            || (strlen(pair->iana_name) =3D=3D len && 0 =3D=3D memcmp(ciph=
+er_name, pair->iana_name, len)))
++        {
++            return pair;
++        }
++        pair++;
++    }
++
++    /* No entry found, return NULL */
 +    return NULL;
 +}
-+#endif
-diff --git a/tests/unit_tests/openvpn/mock_ssl_dependencies.c b/tests/unit_=
-tests/openvpn/mock_ssl_dependencies.c
-new file mode 100644
-index 0000000..292e9fb
---- /dev/null
-+++ b/tests/unit_tests/openvpn/mock_ssl_dependencies.c
-@@ -0,0 +1,67 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
++
++int
++get_num_elements(const char *string, char delimiter)
++{
++    int string_len =3D strlen(string);
++
++    ASSERT(0 !=3D string_len);
++
++    int element_count =3D 1;
++    /* Get number of ciphers */
++    for (int i =3D 0; i < string_len; i++)
++    {
++        if (string[i] =3D=3D delimiter)
++        {
++            element_count++;
++        }
++    }
++
++    return element_count;
++}
+diff --git a/src/openvpn/ssl_util.h b/src/openvpn/ssl_util.h
+index 4c46f88..b3eaf9f 100644
+--- a/src/openvpn/ssl_util.h
++++ b/src/openvpn/ssl_util.h
+@@ -66,4 +66,27 @@
+  */
+ const char *options_string_compat_lzo(const char *options, struct gc_arena=
+ *gc);
+
+-#endif
++/**
++ * Get a tls_cipher_name_pair containing OpenSSL and IANA names for suppli=
+ed TLS cipher name
 + *
-+ *  Copyright (C) 2017-2021 Fox Crypto B.V. <openvpn@...2507...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ * @param cipher_name   Can be either OpenSSL or IANA cipher name
++ * @return              tls_cipher_name_pair* if found, NULL otherwise
 + */
++typedef struct { const char *openssl_name; const char *iana_name; } tls_ci=
+pher_name_pair;
++const tls_cipher_name_pair *tls_get_cipher_name_pair(const char *cipher_na=
+me, size_t len);
 +
-+/* Minimal set of mocked management function/globals to get unit tests to
-+ * compile */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#endif
-+
-+#include "syshead.h"
-+
-+#include <setjmp.h>
-+#include <cmocka.h>
-+
-+
-+#include "ssl.h"
-+#include "ssl_verify.h"
-+
-+int
-+parse_line(const char *line, char **p, const int n, const char *file,
-+           const int line_num, int msglevel, struct gc_arena *gc)
-+{
-+    /* Dummy function to get the linker happy, should never be called */
-+    assert_true(false);
-+    return 0;
-+}
-+
-+
-+int
-+pem_password_callback(char *buf, int size, int rwflag, void *u)
-+{
-+    return 0;
-+}
-+
-+void
-+cert_hash_remember(struct tls_session *session, const int cert_depth,
-+                   const struct buffer *cert_hash)
-+{
-+    assert_false(true);
-+}
-+
-+result_t
-+verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int ce=
-rt_depth)
-+{
-+    return FAILURE;
-+}
-diff --git a/tests/unit_tests/openvpn/test_ssl.c b/tests/unit_tests/openvpn=
-/test_ssl.c
-new file mode 100644
-index 0000000..62c9cde
---- /dev/null
-+++ b/tests/unit_tests/openvpn/test_ssl.c
-@@ -0,0 +1,139 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
++/**
++ * Returns the occurrences of 'delimiter' in a string +1
++ * This is typically used to find out the number elements in a
++ * cipher string or similar that is separated by : like
 + *
-+ *  Copyright (C) 2016-2021 Fox Crypto B.V. <openvpn@...2507...>
++ *   X25519:secp256r1:X448:secp512r1:secp384r1:brainpoolP384r1
 + *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License along
-+ *  with this program; if not, write to the Free Software Foundation, Inc.,
-+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ * @param string        the string to work on
++ * @param delimiter     the delimiter to count, typically ':'
++ * @return              occrrences of delimiter + 1
 + */
-+
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#endif
-+
-+#include "syshead.h"
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <stdarg.h>
-+#include <string.h>
-+#include <setjmp.h>
-+#include <cmocka.h>
-+
-+#include "crypto.h"
-+#include "options.h"
-+#include "ssl_backend.h"
-+#include "options_util.h"
-+
-+#include "mock_msg.h"
-+#include "mss.h"
-+#include "ssl_verify_backend.h"
-+#include "win32.h"
-+
-+/* Mock function to be allowed to include win32.c which is required for
-+ * getting the temp directory */
-+#ifdef _WIN32
-+struct signal_info siginfo_static; /* GLOBAL */
-+
-+const char *
-+strerror_win32(DWORD errnum, struct gc_arena *gc)
-+{
-+    ASSERT(false);
-+}
-+
-+void
-+throw_signal(const int signum)
-+{
-+    ASSERT(false);
-+}
-+#endif
-+
-+
-+const char *unittest_cert =3D "-----BEGIN CERTIFICATE-----\n"
-+                            "MIIBuTCCAUCgAwIBAgIUTLtjSBzx53qZRvZ6Ur7D9kgoO=
-HkwCgYIKoZIzj0EAwIw\n"
-+                            "EzERMA8GA1UEAwwIdW5pdHRlc3QwIBcNMjMxMTIxMDk1N=
-DQ3WhgPMjA3ODA4MjQw\n"
-+                            "OTU0NDdaMBMxETAPBgNVBAMMCHVuaXR0ZXN0MHYwEAYHK=
-oZIzj0CAQYFK4EEACID\n"
-+                            "YgAEHYB2hn2xx3f4lClXDtdi36P19pMZA+kI1Dkv/Vn10=
-vBZ/j9oa+P99T8duz/e\n"
-+                            "QlPeHpesNJO4fX8iEDj6+vMeWejOT7jAQ4MmG5EZjpcBK=
-xCfwFooEvzu8bVujUcu\n"
-+                            "wTQEo1MwUTAdBgNVHQ4EFgQUPcgBEVXjF5vYfDsInoE3d=
-F6UfQswHwYDVR0jBBgw\n"
-+                            "FoAUPcgBEVXjF5vYfDsInoE3dF6UfQswDwYDVR0TAQH/B=
-AUwAwEB/zAKBggqhkjO\n"
-+                            "PQQDAgNnADBkAjBLPAGrQAyinigqiu0RomoV8TVaknVLF=
-Sq6H6A8jgvzfsFCUK1O\n"
-+                            "dvNZhFPM6idKB+oCME2JLOBANCSV8o7aJzq7SYHKwPyb1=
-J4JFlwKe/0Jpv7oh9b1\n"
-+                            "IJbuaM9Z/VSKbrIXGg=3D=3D\n"
-+                            "-----END CERTIFICATE-----\n";
-+
-+static const char *
-+get_tmp_dir()
-+{
-+    const char *ret;
-+#ifdef _WIN32
-+    ret =3D win_get_tempdir();
-+#else
-+    ret =3D "/tmp";
-+#endif
-+    assert_non_null(ret);
-+    return ret;
-+}
-+
-+static void
-+crypto_pem_encode_certificate(void **state)
-+{
-+    struct gc_arena gc =3D gc_new();
-+
-+    struct tls_root_ctx ctx =3D { 0 };
-+    tls_ctx_client_new(&ctx);
-+    tls_ctx_load_cert_file(&ctx, unittest_cert, true);
-+
-+    openvpn_x509_cert_t *cert =3D NULL;
-+
-+    /* we do not have methods to fetch certificates from ssl contexts, use
-+     * internal TLS library methods for the unit test */
-+#ifdef ENABLE_CRYPTO_OPENSSL
-+    cert =3D SSL_CTX_get0_certificate(ctx.ctx);
-+#elif defined(ENABLE_CRYPTO_MBEDTLS)
-+    cert =3D ctx.crt_chain;
-+#endif
-+
-+    const char *tmpfile =3D platform_create_temp_file(get_tmp_dir(), "ut_p=
-em", &gc);
-+    backend_x509_write_pem(cert, tmpfile);
-+
-+    struct buffer exported_pem =3D buffer_read_from_file(tmpfile, &gc);
-+    assert_string_equal(BSTR(&exported_pem), unittest_cert);
-+
-+    unlink(tmpfile);
-+    gc_free(&gc);
-+}
-+
 +int
-+main(void)
-+{
-+    const struct CMUnitTest tests[] =3D {
-+        cmocka_unit_test(crypto_pem_encode_certificate)
-+    };
++get_num_elements(const char *string, char delimiter);
 +
-+#if defined(ENABLE_CRYPTO_OPENSSL)
-+    OpenSSL_add_all_algorithms();
-+#endif
-+
-+    int ret =3D cmocka_run_group_tests_name("crypto tests", tests, NULL, N=
-ULL);
-+
-+#if defined(ENABLE_CRYPTO_OPENSSL)
-+    EVP_cleanup();
-+#endif
-+
-+    return ret;
-+}
++#endif /* ifndef SSL_UTIL_H_ */
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/471?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/470?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ie248d35d063bb6878f3dd42840c77ba0d6fa3381
-Gerrit-Change-Number: 471
+Gerrit-Change-Id: I605394d4f3872a168d05bbbe52d90f6d48935865
+Gerrit-Change-Number: 470
 Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
@@ -483,455 +665,770 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-MessageType: newchange
 
---XiSworp+aHQ=
+--SVcGJDC1M+8=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
 <p>plaisthos would like flichtenheld to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/471?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/470?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">Add test_ssl unit test and test export of PEM to file<br><br>=
-This introduces a number of mock function to be able to compile<br>ssl_veri=
-fy_*.c and ssl_mbedtls.c/ssl_openssl.c into a unit and adds<br>quite a numb=
-er of files to that unit. But it allows similar unit tests<br>(in term of d=
-ependencies) to be added in the future.<br><br>Change-Id: Ie248d35d063bb687=
-8f3dd42840c77ba0d6fa3381<br>Signed-off-by: Arne Schwabe &lt;arne@...1227...=
-&gt;<br>---<br>M .github/workflows/build.yaml<br>M CMakeLists.txt<br>M test=
-s/unit_tests/openvpn/Makefile.am<br>A tests/unit_tests/openvpn/mock_managem=
-ent.c<br>A tests/unit_tests/openvpn/mock_ssl_dependencies.c<br>A tests/unit=
-_tests/openvpn/test_ssl.c<br>6 files changed, 315 insertions(+), 2 deletion=
-s(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; white-spa=
-ce: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes=
-/71/471/1</pre><pre style=3D"font-family: monospace,monospace; white-space:=
- pre-wrap;"><span>diff --git a/.github/workflows/build.yaml b/.github/workf=
-lows/build.yaml</span><br><span>index 4393f5c..39ecef9 100644</span><br><sp=
-an>--- a/.github/workflows/build.yaml</span><br><span>+++ b/.github/workflo=
-ws/build.yaml</span><br><span>@@ -85,7 +85,7 @@</span><br><span>       fail=
--fast: false</span><br><span>       matrix:</span><br><span>         arch: =
-[x86, x64]</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        tes=
-t: [argv, auth_token, buffer, cryptoapi, crypto, misc, ncp, packet_id, pkt,=
- provider, tls_crypt]</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+        test: [argv, auth_token, buffer, cryptoapi, crypto, ssl, misc, nc=
-p, packet_id, pkt, provider, tls_crypt]</span><br><span> </span><br><span> =
-    runs-on: windows-latest</span><br><span>     name: &quot;mingw unittest=
- ${{ matrix.test }} - ${{ matrix.arch }} - OSSL&quot;</span><br><span>diff =
---git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index 8c24cca..24fd=
-9cc 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++ b/CMake=
-Lists.txt</span><br><span>@@ -557,6 +557,7 @@</span><br><span>         &quo=
-t;test_auth_token&quot;</span><br><span>         &quot;test_buffer&quot;</s=
-pan><br><span>         &quot;test_crypto&quot;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+        &quot;test_ssl&quot;</span><br><span>   =
-      &quot;test_misc&quot;</span><br><span>         &quot;test_ncp&quot;</=
-span><br><span>         &quot;test_packet_id&quot;</span><br><span>@@ -671,=
-6 +672,34 @@</span><br><span>         src/openvpn/mss.c</span><br><span>   =
-      )</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    target_sources(test_ssl PRIVATE</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+            src/openvpn/crypto_mbedtls.c</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/crypto_o=
-penssl.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+           =
- src/openvpn/ssl_openssl.c</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+            src/openvpn/ssl_mbedtls.c</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            src/openvpn/ssl_verify_openssl.c</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/s=
-sl_verify_mbedtls.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            src/openvpn/crypto.c</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            src/openvpn/argv.c</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+            src/openvpn/base64.c</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/env_set.c</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/=
-run_command.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-      src/openvpn/otime.c</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+            src/openvpn/packet_id.c</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+            src/openvpn/mtu.c</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/mss.c</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/env_set=
-.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            src/o=
-penvpn/options_util.c</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            tests/unit_tests/openvpn/mock_management.c</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+            tests/unit_tests/openvpn/m=
-ock_ssl_dependencies.c</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+            src/openvpn/xkey_provider.c</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+            src/openvpn/xkey_helper.c</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            src/openvpn/ssl_util.c=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            src/ope=
-nvpn/cryptoapi.c</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-         src/openvpn/win32.c</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+            src/openvpn/block_dns.c</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    )</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span>     target_sources(test_misc PRIVATE</span><br=
-><span>         tests/unit_tests/openvpn/mock_get_random.c</span><br><span>=
-         src/openvpn/options_util.c</span><br><span>diff --git a/tests/unit=
-_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am</span><br=
-><span>index ef45b11..5d3eb70 100644</span><br><span>--- a/tests/unit_tests=
-/openvpn/Makefile.am</span><br><span>+++ b/tests/unit_tests/openvpn/Makefil=
-e.am</span><br><span>@@ -7,7 +7,8 @@</span><br><span> endif</span><br><span=
-> </span><br><span> test_binaries +=3D crypto_testdriver packet_id_testdriv=
-er auth_token_testdriver ncp_testdriver misc_testdriver \</span><br><span s=
-tyle=3D"color: hsl(0, 100%, 40%);">-	pkt_testdriver</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+	pkt_testdriver ssl_testdriver</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> if HAVE_LD_W=
-RAP_SUPPORT</span><br><span> if !WIN32</span><br><span> test_binaries +=3D =
-tls_crypt_testdriver</span><br><span>@@ -67,6 +68,29 @@</span><br><span> 	$=
-(top_srcdir)/src/openvpn/win32-util.c \</span><br><span> 	$(top_srcdir)/src=
-/openvpn/mss.c</span><br><span> </span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ssl_testdriver_CFLAGS  =3D @TEST_CFLAGS@ \</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+	-I$(top_srcdir)/include -I$(top_srcdir=
-)/src/compat -I$(top_srcdir)/src/openvpn</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+ssl_testdriver_LDFLAGS =3D @TEST_LDFLAGS@</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+ssl_testdriver_SOURCES =3D test_=
-crypto.c mock_msg.c mock_msg.h \</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    mock_management.c mock_ssl_dependencies.c \</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/buffer.=
-c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/s=
-rc/openvpn/crypto.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+	$(top_srcdir)/src/openvpn/crypto_mbedtls.c \</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/crypto_openssl.c \</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/op=
-envpn/otime.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(t=
-op_srcdir)/src/openvpn/packet_id.c \</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+	$(top_srcdir)/src/openvpn/platform.c \</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/openvpn/mtu.c \</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+	$(top_srcdir)/src/open=
-vpn/win32-util.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+	=
-$(top_srcdir)/src/openvpn/mss.c \</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+    $(top_srcdir)/src/openvpn/xkey_provider.c \</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+    $(top_srcdir)/src/openvpn/xke=
-y_helper.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    $(t=
-op_srcdir)/src/openvpn/ssl_util.c \</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    $(top_srcdir)/src/openvpn/base64.c \</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+    $(top_srcdir)/src/openvpn/cryptoap=
-i.c \</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    $(top_srcd=
-ir)/src/openvpn/win32.c</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><spa=
-n> packet_id_testdriver_CFLAGS  =3D @TEST_CFLAGS@ \</span><br><span> 	-I$(t=
-op_srcdir)/include -I$(top_srcdir)/src/compat -I$(top_srcdir)/src/openvpn</=
-span><br><span> packet_id_testdriver_LDFLAGS =3D @TEST_LDFLAGS@</span><br><=
-span>diff --git a/tests/unit_tests/openvpn/mock_management.c b/tests/unit_t=
-ests/openvpn/mock_management.c</span><br><span>new file mode 100644</span><=
-br><span>index 0000000..5fed45d</span><br><span>--- /dev/null</span><br><sp=
-an>+++ b/tests/unit_tests/openvpn/mock_management.c</span><br><span>@@ -0,0=
- +1,54 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An applicati=
-on to securely tunnel IP networks</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ *             over a single UDP port, with support for SSL/T=
-LS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *         =
-    session authentication and key exchange,</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ *             packet encryption, packet authentic=
-ation, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *       =
-      packet compression.</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyrig=
-ht (C) 2017-2021 Fox Crypto B.V. &lt;openvpn@...2507...&gt;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ *  This program is free software; you can redistrib=
-ute it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ *  it under the terms of the GNU General Public License version 2</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Fre=
-e Software Foundation.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This progr=
-am is distributed in the hope that it will be useful,</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without eve=
-n the implied warranty of</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public =
-License for more details.</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You sho=
-uld have received a copy of the GNU General Public License along</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if not,=
- write to the Free Software Foundation, Inc.,</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA 0=
-2110-1301 USA.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+/* Minimal set of mocked management func=
-tion/globals to get unit tests to</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ * compile */</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE=
-_CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &=
-quot;config.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead.h&quot;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+#include &quot;manage.h&quot;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#ifdef ENABLE_MANAGEMENT</span><br><span style=3D=
+e: pre-wrap;">Move tls_get_cipher_name_pair and get_num_elements to ssl_uti=
+ls.c<br><br>This allow these functions to be defined without having to incl=
+ude ssl.c/misc.c<br>which pulls in a lot of more dependencies.<br><br>Chang=
+e-Id: I605394d4f3872a168d05bbbe52d90f6d48935865<br>Signed-off-by: Arne Schw=
+abe &lt;arne@...1227...&gt;<br>---<br>M src/openvpn/misc.c<br>M src/openvpn=
+/misc.h<br>M src/openvpn/ssl.c<br>M src/openvpn/ssl_backend.h<br>M src/open=
+vpn/ssl_mbedtls.c<br>M src/openvpn/ssl_openssl.c<br>M src/openvpn/ssl_util.=
+c<br>M src/openvpn/ssl_util.h<br>8 files changed, 211 insertions(+), 208 de=
+letions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; whi=
+te-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/c=
+hanges/70/470/1</pre><pre style=3D"font-family: monospace,monospace; white-=
+space: pre-wrap;"><span>diff --git a/src/openvpn/misc.c b/src/openvpn/misc.=
+c</span><br><span>index ce6e4fd..bce63ed 100644</span><br><span>--- a/src/o=
+penvpn/misc.c</span><br><span>+++ b/src/openvpn/misc.c</span><br><span>@@ -=
+773,26 +773,6 @@</span><br><span>     }</span><br><span> }</span><br><span>=
+ </span><br><span style=3D"color: hsl(0, 100%, 40%);">-int</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-get_num_elements(const char *string, c=
+har delimiter)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-{</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    int string_len =3D strl=
+en(string);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    ASSERT(0 !=3D string_len);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    int element_count =3D 1;</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    /* Get number of ciphers */</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    for (int i =3D 0; i &l=
+t; string_len; i++)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        if (string=
+[i] =3D=3D delimiter)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+        {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+element_count++;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
+   }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    return element_count;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-</span><br><span> struct buffer</span><br><span> prepend_dir(const cha=
+r *dir, const char *path, struct gc_arena *gc)</span><br><span> {</span><br=
+><span>diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h</span><br><span=
+>index b000b72..70a24dd 100644</span><br><span>--- a/src/openvpn/misc.h</sp=
+an><br><span>+++ b/src/openvpn/misc.h</span><br><span>@@ -193,20 +193,6 @@<=
+/span><br><span> void output_peer_info_env(struct env_set *es, const char *=
+peer_info);</span><br><span> </span><br><span> /**</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">- * Returns the occurrences of &#39;delimiter&#=
+39; in a string +1</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
+This is typically used to find out the number elements in a</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">- * cipher string or similar that is s=
+eparated by : like</span><br><span style=3D"color: hsl(0, 100%, 40%);">- *<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">- *   X25519:secp256r1:=
+X448:secp512r1:secp384r1:brainpoolP384r1</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+ * @param string        the string to work on</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">- * @param delimiter     the delimiter to count, typ=
+ically &#39;:&#39;</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * =
+@return              occrrences of delimiter + 1</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-int</span><br><span style=3D"color: hsl(0, 100%, 40%);">-get_num_e=
+lements(const char *string, char delimiter);</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-/**</span><br><span>  * Prepend a directory to a path.</span><br><span>  =
+*/</span><br><span> struct buffer</span><br><span>diff --git a/src/openvpn/=
+ssl.c b/src/openvpn/ssl.c</span><br><span>index 3e3696c..6eddb68 100644</sp=
+an><br><span>--- a/src/openvpn/ssl.c</span><br><span>+++ b/src/openvpn/ssl.=
+c</span><br><span>@@ -95,152 +95,6 @@</span><br><span> #endif /* ifdef MEAS=
+URE_TLS_HANDSHAKE_STATS */</span><br><span> </span><br><span> /**</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">- * SSL/TLS Cipher suite name tr=
+anslation table</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-static const tls_cipher_=
+name_pair tls_cipher_name_translation_table[] =3D {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {&quot;ADH-SEED-SHA&quot;, &quot;TLS-DH=
+-anon-WITH-SEED-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    {&quot;AES128-GCM-SHA256&quot;, &quot;TLS-RSA-WITH-AES-128-GC=
+M-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {=
+&quot;AES128-SHA256&quot;, &quot;TLS-RSA-WITH-AES-128-CBC-SHA256&quot;},</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;AES128-SHA&qu=
+ot;, &quot;TLS-RSA-WITH-AES-128-CBC-SHA&quot;},</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    {&quot;AES256-GCM-SHA384&quot;, &quot;TLS-RSA=
+-WITH-AES-256-GCM-SHA384&quot;},</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    {&quot;AES256-SHA256&quot;, &quot;TLS-RSA-WITH-AES-256-CBC-S=
+HA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&qu=
+ot;AES256-SHA&quot;, &quot;TLS-RSA-WITH-AES-256-CBC-SHA&quot;},</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;CAMELLIA128-SHA256&quo=
+t;, &quot;TLS-RSA-WITH-CAMELLIA-128-CBC-SHA256&quot;},</span><br><span styl=
+e=3D"color: hsl(0, 100%, 40%);">-    {&quot;CAMELLIA128-SHA&quot;, &quot;TL=
+S-RSA-WITH-CAMELLIA-128-CBC-SHA&quot;},</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    {&quot;CAMELLIA256-SHA256&quot;, &quot;TLS-RSA-WITH-C=
+AMELLIA-256-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-    {&quot;CAMELLIA256-SHA&quot;, &quot;TLS-RSA-WITH-CAMELLIA-256-=
+CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&=
+quot;DES-CBC3-SHA&quot;, &quot;TLS-RSA-WITH-3DES-EDE-CBC-SHA&quot;},</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;DES-CBC-SHA&quot;=
+, &quot;TLS-RSA-WITH-DES-CBC-SHA&quot;},</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-    {&quot;DH-DSS-SEED-SHA&quot;, &quot;TLS-DH-DSS-WITH-=
+SEED-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   {&quot;DHE-DSS-AES128-GCM-SHA256&quot;, &quot;TLS-DHE-DSS-WITH-AES-128-G=
+CM-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+{&quot;DHE-DSS-AES128-SHA256&quot;, &quot;TLS-DHE-DSS-WITH-AES-128-CBC-SHA2=
+56&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;=
+DHE-DSS-AES128-SHA&quot;, &quot;TLS-DHE-DSS-WITH-AES-128-CBC-SHA&quot;},</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;DHE-DSS-AES25=
+6-GCM-SHA384&quot;, &quot;TLS-DHE-DSS-WITH-AES-256-GCM-SHA384&quot;},</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;DHE-DSS-AES256-S=
+HA256&quot;, &quot;TLS-DHE-DSS-WITH-AES-256-CBC-SHA256&quot;},</span><br><s=
+pan style=3D"color: hsl(0, 100%, 40%);">-    {&quot;DHE-DSS-AES256-SHA&quot=
+;, &quot;TLS-DHE-DSS-WITH-AES-256-CBC-SHA&quot;},</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    {&quot;DHE-DSS-CAMELLIA128-SHA256&quot;, &q=
+uot;TLS-DHE-DSS-WITH-CAMELLIA-128-CBC-SHA256&quot;},</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {&quot;DHE-DSS-CAMELLIA128-SHA&quot;, &=
+quot;TLS-DHE-DSS-WITH-CAMELLIA-128-CBC-SHA&quot;},</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    {&quot;DHE-DSS-CAMELLIA256-SHA256&quot;, &=
+quot;TLS-DHE-DSS-WITH-CAMELLIA-256-CBC-SHA256&quot;},</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {&quot;DHE-DSS-CAMELLIA256-SHA&quot;, &=
+quot;TLS-DHE-DSS-WITH-CAMELLIA-256-CBC-SHA&quot;},</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    {&quot;DHE-DSS-SEED-SHA&quot;, &quot;TLS-D=
+HE-DSS-WITH-SEED-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    {&quot;DHE-RSA-AES128-GCM-SHA256&quot;, &quot;TLS-DHE-RSA-WI=
+TH-AES-128-GCM-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    {&quot;DHE-RSA-AES128-SHA256&quot;, &quot;TLS-DHE-RSA-WITH-AES-=
+128-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    {&quot;DHE-RSA-AES128-SHA&quot;, &quot;TLS-DHE-RSA-WITH-AES-128-CBC-SH=
+A&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;D=
+HE-RSA-AES256-GCM-SHA384&quot;, &quot;TLS-DHE-RSA-WITH-AES-256-GCM-SHA384&q=
+uot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;DHE-=
+RSA-AES256-SHA256&quot;, &quot;TLS-DHE-RSA-WITH-AES-256-CBC-SHA256&quot;},<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;DHE-RSA-AES=
+256-SHA&quot;, &quot;TLS-DHE-RSA-WITH-AES-256-CBC-SHA&quot;},</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    {&quot;DHE-RSA-CAMELLIA128-SHA2=
+56&quot;, &quot;TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA256&quot;},</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;DHE-RSA-CAMELLIA128-S=
+HA&quot;, &quot;TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA&quot;},</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    {&quot;DHE-RSA-CAMELLIA256-SHA2=
+56&quot;, &quot;TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA256&quot;},</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;DHE-RSA-CAMELLIA256-S=
+HA&quot;, &quot;TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA&quot;},</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    {&quot;DHE-RSA-CHACHA20-POLY130=
+5&quot;, &quot;TLS-DHE-RSA-WITH-CHACHA20-POLY1305-SHA256&quot;},</span><br>=
+<span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;DHE-RSA-SEED-SHA&quot=
+;, &quot;TLS-DHE-RSA-WITH-SEED-CBC-SHA&quot;},</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    {&quot;DH-RSA-SEED-SHA&quot;, &quot;TLS-DH-RSA=
+-WITH-SEED-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    {&quot;ECDH-ECDSA-AES128-GCM-SHA256&quot;, &quot;TLS-ECDH-ECDSA-WI=
+TH-AES-128-GCM-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, =
+40%);">-    {&quot;ECDH-ECDSA-AES128-SHA256&quot;, &quot;TLS-ECDH-ECDSA-WIT=
+H-AES-128-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    {&quot;ECDH-ECDSA-AES128-SHA&quot;, &quot;TLS-ECDH-ECDSA-WITH-AE=
+S-128-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
+    {&quot;ECDH-ECDSA-AES256-GCM-SHA384&quot;, &quot;TLS-ECDH-ECDSA-WITH-AE=
+S-256-GCM-SHA384&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    {&quot;ECDH-ECDSA-AES256-SHA256&quot;, &quot;TLS-ECDH-ECDSA-WITH-AES=
+-256-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    {&quot;ECDH-ECDSA-AES256-SHA384&quot;, &quot;TLS-ECDH-ECDSA-WITH-AES-=
+256-CBC-SHA384&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    {&quot;ECDH-ECDSA-AES256-SHA&quot;, &quot;TLS-ECDH-ECDSA-WITH-AES-256-=
+CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&=
+quot;ECDH-ECDSA-CAMELLIA128-SHA256&quot;, &quot;TLS-ECDH-ECDSA-WITH-CAMELLI=
+A-128-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    {&quot;ECDH-ECDSA-CAMELLIA128-SHA&quot;, &quot;TLS-ECDH-ECDSA-WITH-C=
+AMELLIA-128-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    {&quot;ECDH-ECDSA-CAMELLIA256-SHA256&quot;, &quot;TLS-ECDH-ECDSA-=
+WITH-CAMELLIA-256-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    {&quot;ECDH-ECDSA-CAMELLIA256-SHA&quot;, &quot;TLS-ECDH-=
+ECDSA-WITH-CAMELLIA-256-CBC-SHA&quot;},</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    {&quot;ECDH-ECDSA-DES-CBC3-SHA&quot;, &quot;TLS-ECDH-=
+ECDSA-WITH-3DES-EDE-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    {&quot;ECDH-ECDSA-DES-CBC-SHA&quot;, &quot;TLS-ECDH-ECDSA=
+-WITH-DES-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    {&quot;ECDH-ECDSA-RC4-SHA&quot;, &quot;TLS-ECDH-ECDSA-WITH-RC4-128-=
+SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot=
+;ECDHE-ECDSA-AES128-GCM-SHA256&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-128-GC=
+M-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {=
+&quot;ECDHE-ECDSA-AES128-SHA256&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-128-C=
+BC-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+{&quot;ECDHE-ECDSA-AES128-SHA384&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-128-=
+CBC-SHA384&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ {&quot;ECDHE-ECDSA-AES128-SHA&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-128-CB=
+C-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&qu=
+ot;ECDHE-ECDSA-AES256-GCM-SHA384&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-256-=
+GCM-SHA384&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-   =
+ {&quot;ECDHE-ECDSA-AES256-SHA256&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-256=
+-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  {&quot;ECDHE-ECDSA-AES256-SHA384&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-25=
+6-CBC-SHA384&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   {&quot;ECDHE-ECDSA-AES256-SHA&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-256-=
+CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&=
+quot;ECDHE-ECDSA-CAMELLIA128-SHA256&quot;, &quot;TLS-ECDHE-ECDSA-WITH-CAMEL=
+LIA-128-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-    {&quot;ECDHE-ECDSA-CAMELLIA128-SHA&quot;, &quot;TLS-ECDHE-ECDSA-WI=
+TH-CAMELLIA-128-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    {&quot;ECDHE-ECDSA-CAMELLIA256-SHA256&quot;, &quot;TLS-ECDHE-=
+ECDSA-WITH-CAMELLIA-256-CBC-SHA256&quot;},</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    {&quot;ECDHE-ECDSA-CAMELLIA256-SHA&quot;, &quot;TL=
+S-ECDHE-ECDSA-WITH-CAMELLIA-256-CBC-SHA&quot;},</span><br><span style=3D"co=
+lor: hsl(0, 100%, 40%);">-    {&quot;ECDHE-ECDSA-CHACHA20-POLY1305&quot;, &=
+quot;TLS-ECDHE-ECDSA-WITH-CHACHA20-POLY1305-SHA256&quot;},</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    {&quot;ECDHE-ECDSA-DES-CBC3-SHA&qu=
+ot;, &quot;TLS-ECDHE-ECDSA-WITH-3DES-EDE-CBC-SHA&quot;},</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    {&quot;ECDHE-ECDSA-DES-CBC-SHA&quot;=
+, &quot;TLS-ECDHE-ECDSA-WITH-DES-CBC-SHA&quot;},</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    {&quot;ECDHE-ECDSA-RC4-SHA&quot;, &quot;TLS-=
+ECDHE-ECDSA-WITH-RC4-128-SHA&quot;},</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    {&quot;ECDHE-RSA-AES128-GCM-SHA256&quot;, &quot;TLS-ECDH=
+E-RSA-WITH-AES-128-GCM-SHA256&quot;},</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    {&quot;ECDHE-RSA-AES128-SHA256&quot;, &quot;TLS-ECDHE-R=
+SA-WITH-AES-128-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-    {&quot;ECDHE-RSA-AES128-SHA384&quot;, &quot;TLS-ECDHE-RSA-=
+WITH-AES-128-CBC-SHA384&quot;},</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    {&quot;ECDHE-RSA-AES128-SHA&quot;, &quot;TLS-ECDHE-RSA-WITH-A=
+ES-128-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    {&quot;ECDHE-RSA-AES256-GCM-SHA384&quot;, &quot;TLS-ECDHE-RSA-WITH-AES=
+-256-GCM-SHA384&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    {&quot;ECDHE-RSA-AES256-SHA256&quot;, &quot;TLS-ECDHE-RSA-WITH-AES-25=
+6-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   {&quot;ECDHE-RSA-AES256-SHA384&quot;, &quot;TLS-ECDHE-RSA-WITH-AES-256-C=
+BC-SHA384&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
+{&quot;ECDHE-RSA-AES256-SHA&quot;, &quot;TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA=
+&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;EC=
+DHE-RSA-CAMELLIA128-SHA256&quot;, &quot;TLS-ECDHE-RSA-WITH-CAMELLIA-128-CBC=
+-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&=
+quot;ECDHE-RSA-CAMELLIA128-SHA&quot;, &quot;TLS-ECDHE-RSA-WITH-CAMELLIA-128=
+-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {=
+&quot;ECDHE-RSA-CAMELLIA256-SHA256&quot;, &quot;TLS-ECDHE-RSA-WITH-CAMELLIA=
+-256-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>-    {&quot;ECDHE-RSA-CAMELLIA256-SHA&quot;, &quot;TLS-ECDHE-RSA-WITH-CAME=
+LLIA-256-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    {&quot;ECDHE-RSA-CHACHA20-POLY1305&quot;, &quot;TLS-ECDHE-RSA-WITH-C=
+HACHA20-POLY1305-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    {&quot;ECDHE-RSA-DES-CBC3-SHA&quot;, &quot;TLS-ECDHE-RSA-WITH=
+-3DES-EDE-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-    {&quot;ECDHE-RSA-DES-CBC-SHA&quot;, &quot;TLS-ECDHE-RSA-WITH-DES-CB=
+C-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&qu=
+ot;ECDHE-RSA-RC4-SHA&quot;, &quot;TLS-ECDHE-RSA-WITH-RC4-128-SHA&quot;},</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;ECDH-RSA-AES1=
+28-GCM-SHA256&quot;, &quot;TLS-ECDH-RSA-WITH-AES-128-GCM-SHA256&quot;},</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;ECDH-RSA-AES12=
+8-SHA256&quot;, &quot;TLS-ECDH-RSA-WITH-AES-128-CBC-SHA256&quot;},</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;ECDH-RSA-AES128-SHA=
+384&quot;, &quot;TLS-ECDH-RSA-WITH-AES-128-CBC-SHA384&quot;},</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    {&quot;ECDH-RSA-AES128-SHA&quot=
+;, &quot;TLS-ECDH-RSA-WITH-AES-128-CBC-SHA&quot;},</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    {&quot;ECDH-RSA-AES256-GCM-SHA384&quot;, &=
+quot;TLS-ECDH-RSA-WITH-AES-256-GCM-SHA384&quot;},</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-    {&quot;ECDH-RSA-AES256-SHA256&quot;, &quot;=
+TLS-ECDH-RSA-WITH-AES-256-CBC-SHA256&quot;},</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    {&quot;ECDH-RSA-AES256-SHA384&quot;, &quot;TLS-E=
+CDH-RSA-WITH-AES-256-CBC-SHA384&quot;},</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    {&quot;ECDH-RSA-AES256-SHA&quot;, &quot;TLS-ECDH-RSA-=
+WITH-AES-256-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    {&quot;ECDH-RSA-CAMELLIA128-SHA256&quot;, &quot;TLS-ECDH-RSA-WIT=
+H-CAMELLIA-128-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(0, 10=
+0%, 40%);">-    {&quot;ECDH-RSA-CAMELLIA128-SHA&quot;, &quot;TLS-ECDH-RSA-W=
+ITH-CAMELLIA-128-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    {&quot;ECDH-RSA-CAMELLIA256-SHA256&quot;, &quot;TLS-ECDH-RSA=
+-WITH-CAMELLIA-256-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-    {&quot;ECDH-RSA-CAMELLIA256-SHA&quot;, &quot;TLS-ECDH-R=
+SA-WITH-CAMELLIA-256-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0,=
+ 100%, 40%);">-    {&quot;ECDH-RSA-DES-CBC3-SHA&quot;, &quot;TLS-ECDH-RSA-W=
+ITH-3DES-EDE-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 4=
+0%);">-    {&quot;ECDH-RSA-DES-CBC-SHA&quot;, &quot;TLS-ECDH-RSA-WITH-DES-C=
+BC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&q=
+uot;ECDH-RSA-RC4-SHA&quot;, &quot;TLS-ECDH-RSA-WITH-RC4-128-SHA&quot;},</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;EDH-DSS-DES-CB=
+C3-SHA&quot;, &quot;TLS-DHE-DSS-WITH-3DES-EDE-CBC-SHA&quot;},</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    {&quot;EDH-DSS-DES-CBC-SHA&quot=
+;, &quot;TLS-DHE-DSS-WITH-DES-CBC-SHA&quot;},</span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-    {&quot;EDH-RSA-DES-CBC3-SHA&quot;, &quot;TLS-DH=
+E-RSA-WITH-3DES-EDE-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    {&quot;EDH-RSA-DES-CBC-SHA&quot;, &quot;TLS-DHE-RSA-WITH-=
+DES-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  {&quot;EXP-DES-CBC-SHA&quot;, &quot;TLS-RSA-EXPORT-WITH-DES40-CBC-SHA&quo=
+t;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;EXP-ED=
+H-DSS-DES-CBC-SHA&quot;, &quot;TLS-DH-DSS-EXPORT-WITH-DES40-CBC-SHA&quot;},=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;EXP-EDH-RS=
+A-DES-CBC-SHA&quot;, &quot;TLS-DH-RSA-EXPORT-WITH-DES40-CBC-SHA&quot;},</sp=
+an><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;EXP-RC2-CBC-MD=
+5&quot;, &quot;TLS-RSA-EXPORT-WITH-RC2-CBC-40-MD5&quot;},</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    {&quot;EXP-RC4-MD5&quot;, &quot;TLS=
+-RSA-EXPORT-WITH-RC4-40-MD5&quot;},</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    {&quot;NULL-MD5&quot;, &quot;TLS-RSA-WITH-NULL-MD5&quot;}=
+,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;NULL-SHA2=
+56&quot;, &quot;TLS-RSA-WITH-NULL-SHA256&quot;},</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    {&quot;NULL-SHA&quot;, &quot;TLS-RSA-WITH-NU=
+LL-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&q=
+uot;PSK-3DES-EDE-CBC-SHA&quot;, &quot;TLS-PSK-WITH-3DES-EDE-CBC-SHA&quot;},=
+</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;PSK-AES128=
+-CBC-SHA&quot;, &quot;TLS-PSK-WITH-AES-128-CBC-SHA&quot;},</span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    {&quot;PSK-AES256-CBC-SHA&quot;, &=
+quot;TLS-PSK-WITH-AES-256-CBC-SHA&quot;},</span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-    {&quot;PSK-RC4-SHA&quot;, &quot;TLS-PSK-WITH-RC4-12=
+8-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&qu=
+ot;RC4-MD5&quot;, &quot;TLS-RSA-WITH-RC4-128-MD5&quot;},</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    {&quot;RC4-SHA&quot;, &quot;TLS-RSA-=
+WITH-RC4-128-SHA&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    {&quot;SEED-SHA&quot;, &quot;TLS-RSA-WITH-SEED-CBC-SHA&quot;},</span=
+><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;SRP-DSS-3DES-EDE=
+-CBC-SHA&quot;, &quot;TLS-SRP-SHA-DSS-WITH-3DES-EDE-CBC-SHA&quot;},</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;SRP-DSS-AES-128-CB=
+C-SHA&quot;, &quot;TLS-SRP-SHA-DSS-WITH-AES-128-CBC-SHA&quot;},</span><br><=
+span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;SRP-DSS-AES-256-CBC-SH=
+A&quot;, &quot;TLS-SRP-SHA-DSS-WITH-AES-256-CBC-SHA&quot;},</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    {&quot;SRP-RSA-3DES-EDE-CBC-SHA&q=
+uot;, &quot;TLS-SRP-SHA-RSA-WITH-3DES-EDE-CBC-SHA&quot;},</span><br><span s=
+tyle=3D"color: hsl(0, 100%, 40%);">-    {&quot;SRP-RSA-AES-128-CBC-SHA&quot=
+;, &quot;TLS-SRP-SHA-RSA-WITH-AES-128-CBC-SHA&quot;},</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {&quot;SRP-RSA-AES-256-CBC-SHA&quot;, &=
+quot;TLS-SRP-SHA-RSA-WITH-AES-256-CBC-SHA&quot;},</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-#ifdef ENABLE_CRYPTO_OPENSSL</span><br><span st=
+yle=3D"color: hsl(0, 100%, 40%);">-    /* OpenSSL-specific group names */</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;DEFAULT&quot=
+;, &quot;DEFAULT&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);=
+">-    {&quot;ALL&quot;, &quot;ALL&quot;},</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    {&quot;HIGH&quot;, &quot;HIGH&quot;}, {&quot;!HIGH=
+&quot;, &quot;!HIGH&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-    {&quot;MEDIUM&quot;, &quot;MEDIUM&quot;}, {&quot;!MEDIUM&quot;, &=
+quot;!MEDIUM&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
+   {&quot;LOW&quot;, &quot;LOW&quot;}, {&quot;!LOW&quot;, &quot;!LOW&quot;}=
+,</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;ECDH&quot=
+;, &quot;ECDH&quot;}, {&quot;!ECDH&quot;, &quot;!ECDH&quot;},</span><br><sp=
+an style=3D"color: hsl(0, 100%, 40%);">-    {&quot;ECDSA&quot;, &quot;ECDSA=
+&quot;}, {&quot;!ECDSA&quot;, &quot;!ECDSA&quot;},</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    {&quot;EDH&quot;, &quot;EDH&quot;}, {&quot=
+;!EDH&quot;, &quot;!EDH&quot;},</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    {&quot;EXP&quot;, &quot;EXP&quot;}, {&quot;!EXP&quot;, &quot;=
+!EXP&quot;},</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quo=
+t;RSA&quot;, &quot;RSA&quot;}, {&quot;!RSA&quot;, &quot;!RSA&quot;},</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-    {&quot;kRSA&quot;, &quot=
+;kRSA&quot;}, {&quot;!kRSA&quot;, &quot;!kRSA&quot;},</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-    {&quot;SRP&quot;, &quot;SRP&quot;}, {&q=
+uot;!SRP&quot;, &quot;!SRP&quot;},</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-#endif</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+  {NULL, NULL}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-};</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"=
+color: hsl(0, 100%, 40%);">-/**</span><br><span>  * Update the implicit IV =
+for a key_ctx_bi based on TLS session ids and cipher</span><br><span>  * us=
+ed.</span><br><span>  *</span><br><span>@@ -254,24 +108,6 @@</span><br><spa=
+n> static void</span><br><span> key_ctx_update_implicit_iv(struct key_ctx *=
+ctx, uint8_t *key, size_t key_len);</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-const tls_cipher_name_pair *</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-tls_get_cipher_name_pair(const char =
+*cipher_name, size_t len)</span><br><span style=3D"color: hsl(0, 100%, 40%)=
+;">-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    const tls_ci=
+pher_name_pair *pair =3D tls_cipher_name_translation_table;</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(=
+0, 100%, 40%);">-    while (pair-&gt;openssl_name !=3D NULL)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        if ((strlen(pair-&gt;openssl_name) =3D=3D le=
+n &amp;&amp; 0 =3D=3D memcmp(cipher_name, pair-&gt;openssl_name, len))</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-            || (strlen(pai=
+r-&gt;iana_name) =3D=3D len &amp;&amp; 0 =3D=3D memcmp(cipher_name, pair-&g=
+t;iana_name, len)))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+      {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            re=
+turn pair;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-        pair++;</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-    /* No entry found, return NULL */</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    return NULL;</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-}</span><br><span> </span><br><span> /**</span><br><s=
+pan>  * Limit the reneg_bytes value when using a small-block (&lt;128 bytes=
+) cipher.</span><br><span>diff --git a/src/openvpn/ssl_backend.h b/src/open=
+vpn/ssl_backend.h</span><br><span>index 3854d59..b9466ce 100644</span><br><=
+span>--- a/src/openvpn/ssl_backend.h</span><br><span>+++ b/src/openvpn/ssl_=
+backend.h</span><br><span>@@ -53,15 +53,6 @@</span><br><span>  */</span><br=
+><span> struct tls_session;</span><br><span> </span><br><span style=3D"colo=
+r: hsl(0, 100%, 40%);">-/**</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">- * Get a tls_cipher_name_pair containing OpenSSL and IANA names for s=
+upplied TLS cipher name</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
+>- *</span><br><span style=3D"color: hsl(0, 100%, 40%);">- * @param cipher_=
+name   Can be either OpenSSL or IANA cipher name</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">- * @return              tls_cipher_name_pair* if=
+ found, NULL otherwise</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+- */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-typedef struct { =
+const char *openssl_name; const char *iana_name; } tls_cipher_name_pair;</s=
+pan><br><span style=3D"color: hsl(0, 100%, 40%);">-const tls_cipher_name_pa=
+ir *tls_get_cipher_name_pair(const char *cipher_name, size_t len);</span><b=
+r><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span> /*</span><br=
+><span>  *</span><br><span>  * Functions implemented in ssl.c for use by th=
+e backend SSL library</span><br><span>diff --git a/src/openvpn/ssl_mbedtls.=
+c b/src/openvpn/ssl_mbedtls.c</span><br><span>index 9c9167d..cc88484 100644=
+</span><br><span>--- a/src/openvpn/ssl_mbedtls.c</span><br><span>+++ b/src/=
+openvpn/ssl_mbedtls.c</span><br><span>@@ -44,6 +44,7 @@</span><br><span> #i=
+nclude &quot;mbedtls_compat.h&quot;</span><br><span> #include &quot;pkcs11_=
+backend.h&quot;</span><br><span> #include &quot;ssl_common.h&quot;</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;ssl_util.h&qu=
+ot;</span><br><span> </span><br><span> #include &quot;ssl_verify_mbedtls.h&=
+quot;</span><br><span> #include &lt;mbedtls/debug.h&gt;</span><br><span>dif=
+f --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c</span><br><=
+span>index 82872bf..c30e6a9 100644</span><br><span>--- a/src/openvpn/ssl_op=
+enssl.c</span><br><span>+++ b/src/openvpn/ssl_openssl.c</span><br><span>@@ =
+-50,6 +50,7 @@</span><br><span> #endif</span><br><span> </span><br><span> #=
+include &quot;ssl_verify_openssl.h&quot;</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+#include &quot;ssl_util.h&quot;</span><br><span> </spa=
+n><br><span> #include &lt;openssl/bn.h&gt;</span><br><span> #include &lt;op=
+enssl/crypto.h&gt;</span><br><span>diff --git a/src/openvpn/ssl_util.c b/sr=
+c/openvpn/ssl_util.c</span><br><span>index bca6eed..447e739 100644</span><b=
+r><span>--- a/src/openvpn/ssl_util.c</span><br><span>+++ b/src/openvpn/ssl_=
+util.c</span><br><span>@@ -114,3 +114,188 @@</span><br><span> </span><br><s=
+pan>     return BSTR(&amp;buf);</span><br><span> }</span><br><span style=3D=
 "color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+struct management *management; /* GLOBAL */</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+void</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+management_auth_failure(struct management *man, const char *type, const c=
-har *reason)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(false);</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+char *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+m=
-anagement_query_pk_sig(struct management *man, const char *b64_data,</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+                        co=
-nst char *algorithm)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    (void) man;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    (void) b64_data;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    (void) algorithm=
-;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return NULL;</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span>diff --git a/tes=
-ts/unit_tests/openvpn/mock_ssl_dependencies.c b/tests/unit_tests/openvpn/mo=
-ck_ssl_dependencies.c</span><br><span>new file mode 100644</span><br><span>=
-index 0000000..292e9fb</span><br><span>--- /dev/null</span><br><span>+++ b/=
-tests/unit_tests/openvpn/mock_ssl_dependencies.c</span><br><span>@@ -0,0 +1=
-,67 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An application =
-to securely tunnel IP networks</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+ *             over a single UDP port, with support for SSL/TLS-=
-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *            =
- session authentication and key exchange,</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+ *             packet encryption, packet authenticati=
-on, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *          =
-   packet compression.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyright =
-(C) 2017-2021 Fox Crypto B.V. &lt;openvpn@...2507...&gt;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+ *  This program is free software; you can redistribute=
- it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *=
-  it under the terms of the GNU General Public License version 2</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the Free S=
-oftware Foundation.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This program =
-is distributed in the hope that it will be useful,</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without even t=
-he implied warranty of</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Public Lic=
-ense for more details.</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You should=
- have received a copy of the GNU General Public License along</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if not, wr=
-ite to the Free Software Foundation, Inc.,</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA 0211=
-0-1301 USA.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</spa=
+0%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * S=
+SL/TLS Cipher suite name translation table</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+static const tls_cipher_name_pair tls_cipher_name_translation_table[=
+] =3D {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;A=
+DH-SEED-SHA&quot;, &quot;TLS-DH-anon-WITH-SEED-CBC-SHA&quot;},</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    {&quot;AES128-GCM-SHA256&quo=
+t;, &quot;TLS-RSA-WITH-AES-128-GCM-SHA256&quot;},</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {&quot;AES128-SHA256&quot;, &quot;TLS-RSA=
+-WITH-AES-128-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    {&quot;AES128-SHA&quot;, &quot;TLS-RSA-WITH-AES-128-CBC-SH=
+A&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot=
+;AES256-GCM-SHA384&quot;, &quot;TLS-RSA-WITH-AES-256-GCM-SHA384&quot;},</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;AES256-SHA25=
+6&quot;, &quot;TLS-RSA-WITH-AES-256-CBC-SHA256&quot;},</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {&quot;AES256-SHA&quot;, &quot;TLS-R=
+SA-WITH-AES-256-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    {&quot;CAMELLIA128-SHA256&quot;, &quot;TLS-RSA-WITH-CAMELLI=
+A-128-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    {&quot;CAMELLIA128-SHA&quot;, &quot;TLS-RSA-WITH-CAMELLIA-128-CBC-=
+SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&qu=
+ot;CAMELLIA256-SHA256&quot;, &quot;TLS-RSA-WITH-CAMELLIA-256-CBC-SHA256&quo=
+t;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;CAME=
+LLIA256-SHA&quot;, &quot;TLS-RSA-WITH-CAMELLIA-256-CBC-SHA&quot;},</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;DES-CBC3-SHA&quot=
+;, &quot;TLS-RSA-WITH-3DES-EDE-CBC-SHA&quot;},</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    {&quot;DES-CBC-SHA&quot;, &quot;TLS-RSA-WITH=
+-DES-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {&quot;DH-DSS-SEED-SHA&quot;, &quot;TLS-DH-DSS-WITH-SEED-CBC-SHA&quot;=
+},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;DHE-DS=
+S-AES128-GCM-SHA256&quot;, &quot;TLS-DHE-DSS-WITH-AES-128-GCM-SHA256&quot;}=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;DHE-DSS=
+-AES128-SHA256&quot;, &quot;TLS-DHE-DSS-WITH-AES-128-CBC-SHA256&quot;},</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;DHE-DSS-AES1=
+28-SHA&quot;, &quot;TLS-DHE-DSS-WITH-AES-128-CBC-SHA&quot;},</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {&quot;DHE-DSS-AES256-GCM-SHA3=
+84&quot;, &quot;TLS-DHE-DSS-WITH-AES-256-GCM-SHA384&quot;},</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    {&quot;DHE-DSS-AES256-SHA256&qu=
+ot;, &quot;TLS-DHE-DSS-WITH-AES-256-CBC-SHA256&quot;},</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {&quot;DHE-DSS-AES256-SHA&quot;, &qu=
+ot;TLS-DHE-DSS-WITH-AES-256-CBC-SHA&quot;},</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+    {&quot;DHE-DSS-CAMELLIA128-SHA256&quot;, &quot;=
+TLS-DHE-DSS-WITH-CAMELLIA-128-CBC-SHA256&quot;},</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    {&quot;DHE-DSS-CAMELLIA128-SHA&quot;, &quo=
+t;TLS-DHE-DSS-WITH-CAMELLIA-128-CBC-SHA&quot;},</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    {&quot;DHE-DSS-CAMELLIA256-SHA256&quot;, &q=
+uot;TLS-DHE-DSS-WITH-CAMELLIA-256-CBC-SHA256&quot;},</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {&quot;DHE-DSS-CAMELLIA256-SHA&quot;,=
+ &quot;TLS-DHE-DSS-WITH-CAMELLIA-256-CBC-SHA&quot;},</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {&quot;DHE-DSS-SEED-SHA&quot;, &quot;=
+TLS-DHE-DSS-WITH-SEED-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    {&quot;DHE-RSA-AES128-GCM-SHA256&quot;, &quot;TLS-DHE=
+-RSA-WITH-AES-128-GCM-SHA256&quot;},</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    {&quot;DHE-RSA-AES128-SHA256&quot;, &quot;TLS-DHE-RSA-=
+WITH-AES-128-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    {&quot;DHE-RSA-AES128-SHA&quot;, &quot;TLS-DHE-RSA-WITH-AES=
+-128-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    {&quot;DHE-RSA-AES256-GCM-SHA384&quot;, &quot;TLS-DHE-RSA-WITH-AES-256=
+-GCM-SHA384&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {&quot;DHE-RSA-AES256-SHA256&quot;, &quot;TLS-DHE-RSA-WITH-AES-256-CBC-=
+SHA256&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+&quot;DHE-RSA-AES256-SHA&quot;, &quot;TLS-DHE-RSA-WITH-AES-256-CBC-SHA&quot=
+;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;DHE-R=
+SA-CAMELLIA128-SHA256&quot;, &quot;TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA256=
+&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;=
+DHE-RSA-CAMELLIA128-SHA&quot;, &quot;TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA&=
+quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;D=
+HE-RSA-CAMELLIA256-SHA256&quot;, &quot;TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SH=
+A256&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&q=
+uot;DHE-RSA-CAMELLIA256-SHA&quot;, &quot;TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-=
+SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&qu=
+ot;DHE-RSA-CHACHA20-POLY1305&quot;, &quot;TLS-DHE-RSA-WITH-CHACHA20-POLY130=
+5-SHA256&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ {&quot;DHE-RSA-SEED-SHA&quot;, &quot;TLS-DHE-RSA-WITH-SEED-CBC-SHA&quot;},=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;DH-RSA-S=
+EED-SHA&quot;, &quot;TLS-DH-RSA-WITH-SEED-CBC-SHA&quot;},</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDH-ECDSA-AES128-GCM-SHA2=
+56&quot;, &quot;TLS-ECDH-ECDSA-WITH-AES-128-GCM-SHA256&quot;},</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDH-ECDSA-AES128-SHA=
+256&quot;, &quot;TLS-ECDH-ECDSA-WITH-AES-128-CBC-SHA256&quot;},</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDH-ECDSA-AES128-SH=
+A&quot;, &quot;TLS-ECDH-ECDSA-WITH-AES-128-CBC-SHA&quot;},</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDH-ECDSA-AES256-GCM-SHA=
+384&quot;, &quot;TLS-ECDH-ECDSA-WITH-AES-256-GCM-SHA384&quot;},</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDH-ECDSA-AES256-SH=
+A256&quot;, &quot;TLS-ECDH-ECDSA-WITH-AES-256-CBC-SHA256&quot;},</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDH-ECDSA-AES256-S=
+HA384&quot;, &quot;TLS-ECDH-ECDSA-WITH-AES-256-CBC-SHA384&quot;},</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDH-ECDSA-AES256-=
+SHA&quot;, &quot;TLS-ECDH-ECDSA-WITH-AES-256-CBC-SHA&quot;},</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDH-ECDSA-CAMELLIA128-=
+SHA256&quot;, &quot;TLS-ECDH-ECDSA-WITH-CAMELLIA-128-CBC-SHA256&quot;},</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDH-ECDSA-C=
+AMELLIA128-SHA&quot;, &quot;TLS-ECDH-ECDSA-WITH-CAMELLIA-128-CBC-SHA&quot;}=
+,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDH-EC=
+DSA-CAMELLIA256-SHA256&quot;, &quot;TLS-ECDH-ECDSA-WITH-CAMELLIA-256-CBC-SH=
+A256&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&q=
+uot;ECDH-ECDSA-CAMELLIA256-SHA&quot;, &quot;TLS-ECDH-ECDSA-WITH-CAMELLIA-25=
+6-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  {&quot;ECDH-ECDSA-DES-CBC3-SHA&quot;, &quot;TLS-ECDH-ECDSA-WITH-3DES-EDE-=
+CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+{&quot;ECDH-ECDSA-DES-CBC-SHA&quot;, &quot;TLS-ECDH-ECDSA-WITH-DES-CBC-SHA&=
+quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;E=
+CDH-ECDSA-RC4-SHA&quot;, &quot;TLS-ECDH-ECDSA-WITH-RC4-128-SHA&quot;},</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-ECDSA-A=
+ES128-GCM-SHA256&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-128-GCM-SHA256&quot;=
+},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-=
+ECDSA-AES128-SHA256&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA256&qu=
+ot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECD=
+HE-ECDSA-AES128-SHA384&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA384=
+&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;=
+ECDHE-ECDSA-AES128-SHA&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA&qu=
+ot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECD=
+HE-ECDSA-AES256-GCM-SHA384&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-256-GCM-SH=
+A384&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&q=
+uot;ECDHE-ECDSA-AES256-SHA256&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-256-CBC=
+-SHA256&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+{&quot;ECDHE-ECDSA-AES256-SHA384&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-256-=
+CBC-SHA384&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   {&quot;ECDHE-ECDSA-AES256-SHA&quot;, &quot;TLS-ECDHE-ECDSA-WITH-AES-256-=
+CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+{&quot;ECDHE-ECDSA-CAMELLIA128-SHA256&quot;, &quot;TLS-ECDHE-ECDSA-WITH-CAM=
+ELLIA-128-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    {&quot;ECDHE-ECDSA-CAMELLIA128-SHA&quot;, &quot;TLS-ECDHE-ECDS=
+A-WITH-CAMELLIA-128-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    {&quot;ECDHE-ECDSA-CAMELLIA256-SHA256&quot;, &quot;TLS-=
+ECDHE-ECDSA-WITH-CAMELLIA-256-CBC-SHA256&quot;},</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    {&quot;ECDHE-ECDSA-CAMELLIA256-SHA&quot;, =
+&quot;TLS-ECDHE-ECDSA-WITH-CAMELLIA-256-CBC-SHA&quot;},</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-ECDSA-CHACHA20-POLY130=
+5&quot;, &quot;TLS-ECDHE-ECDSA-WITH-CHACHA20-POLY1305-SHA256&quot;},</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-ECDSA-DES=
+-CBC3-SHA&quot;, &quot;TLS-ECDHE-ECDSA-WITH-3DES-EDE-CBC-SHA&quot;},</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-ECDSA-DES=
+-CBC-SHA&quot;, &quot;TLS-ECDHE-ECDSA-WITH-DES-CBC-SHA&quot;},</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-ECDSA-RC4-SHA&q=
+uot;, &quot;TLS-ECDHE-ECDSA-WITH-RC4-128-SHA&quot;},</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-RSA-AES128-GCM-SHA256&qu=
+ot;, &quot;TLS-ECDHE-RSA-WITH-AES-128-GCM-SHA256&quot;},</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-RSA-AES128-SHA256&quo=
+t;, &quot;TLS-ECDHE-RSA-WITH-AES-128-CBC-SHA256&quot;},</span><br><span sty=
+le=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-RSA-AES128-SHA384&quot=
+;, &quot;TLS-ECDHE-RSA-WITH-AES-128-CBC-SHA384&quot;},</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-RSA-AES128-SHA&quot;, &=
+quot;TLS-ECDHE-RSA-WITH-AES-128-CBC-SHA&quot;},</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    {&quot;ECDHE-RSA-AES256-GCM-SHA384&quot;, &=
+quot;TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384&quot;},</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-RSA-AES256-SHA256&quot;, &q=
+uot;TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA256&quot;},</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-RSA-AES256-SHA384&quot;, &qu=
+ot;TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA384&quot;},</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    {&quot;ECDHE-RSA-AES256-SHA&quot;, &quot;T=
+LS-ECDHE-RSA-WITH-AES-256-CBC-SHA&quot;},</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {&quot;ECDHE-RSA-CAMELLIA128-SHA256&quot;, &quot;=
+TLS-ECDHE-RSA-WITH-CAMELLIA-128-CBC-SHA256&quot;},</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-RSA-CAMELLIA128-SHA&quot;, =
+&quot;TLS-ECDHE-RSA-WITH-CAMELLIA-128-CBC-SHA&quot;},</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-RSA-CAMELLIA256-SHA256&q=
+uot;, &quot;TLS-ECDHE-RSA-WITH-CAMELLIA-256-CBC-SHA256&quot;},</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-RSA-CAMELLIA256=
+-SHA&quot;, &quot;TLS-ECDHE-RSA-WITH-CAMELLIA-256-CBC-SHA&quot;},</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-RSA-CHACHA20=
+-POLY1305&quot;, &quot;TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256&quot;},<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-RSA=
+-DES-CBC3-SHA&quot;, &quot;TLS-ECDHE-RSA-WITH-3DES-EDE-CBC-SHA&quot;},</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-RSA-DES=
+-CBC-SHA&quot;, &quot;TLS-ECDHE-RSA-WITH-DES-CBC-SHA&quot;},</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDHE-RSA-RC4-SHA&quot;=
+, &quot;TLS-ECDHE-RSA-WITH-RC4-128-SHA&quot;},</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+    {&quot;ECDH-RSA-AES128-GCM-SHA256&quot;, &qu=
+ot;TLS-ECDH-RSA-WITH-AES-128-GCM-SHA256&quot;},</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    {&quot;ECDH-RSA-AES128-SHA256&quot;, &quot;=
+TLS-ECDH-RSA-WITH-AES-128-CBC-SHA256&quot;},</span><br><span style=3D"color=
+: hsl(120, 100%, 40%);">+    {&quot;ECDH-RSA-AES128-SHA384&quot;, &quot;TLS=
+-ECDH-RSA-WITH-AES-128-CBC-SHA384&quot;},</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    {&quot;ECDH-RSA-AES128-SHA&quot;, &quot;TLS-ECDH-=
+RSA-WITH-AES-128-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    {&quot;ECDH-RSA-AES256-GCM-SHA384&quot;, &quot;TLS-ECDH-RS=
+A-WITH-AES-256-GCM-SHA384&quot;},</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    {&quot;ECDH-RSA-AES256-SHA256&quot;, &quot;TLS-ECDH-RSA-W=
+ITH-AES-256-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    {&quot;ECDH-RSA-AES256-SHA384&quot;, &quot;TLS-ECDH-RSA-WITH=
+-AES-256-CBC-SHA384&quot;},</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    {&quot;ECDH-RSA-AES256-SHA&quot;, &quot;TLS-ECDH-RSA-WITH-AES-2=
+56-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   {&quot;ECDH-RSA-CAMELLIA128-SHA256&quot;, &quot;TLS-ECDH-RSA-WITH-CAMELL=
+IA-128-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {&quot;ECDH-RSA-CAMELLIA128-SHA&quot;, &quot;TLS-ECDH-RSA-WITH-CA=
+MELLIA-128-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    {&quot;ECDH-RSA-CAMELLIA256-SHA256&quot;, &quot;TLS-ECDH-RSA-WIT=
+H-CAMELLIA-256-CBC-SHA256&quot;},</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    {&quot;ECDH-RSA-CAMELLIA256-SHA&quot;, &quot;TLS-ECDH-RSA=
+-WITH-CAMELLIA-256-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    {&quot;ECDH-RSA-DES-CBC3-SHA&quot;, &quot;TLS-ECDH-RSA-W=
+ITH-3DES-EDE-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    {&quot;ECDH-RSA-DES-CBC-SHA&quot;, &quot;TLS-ECDH-RSA-WITH-DES=
+-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ {&quot;ECDH-RSA-RC4-SHA&quot;, &quot;TLS-ECDH-RSA-WITH-RC4-128-SHA&quot;},=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;EDH-DSS-=
+DES-CBC3-SHA&quot;, &quot;TLS-DHE-DSS-WITH-3DES-EDE-CBC-SHA&quot;},</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;EDH-DSS-DES-CBC-=
+SHA&quot;, &quot;TLS-DHE-DSS-WITH-DES-CBC-SHA&quot;},</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    {&quot;EDH-RSA-DES-CBC3-SHA&quot;, &q=
+uot;TLS-DHE-RSA-WITH-3DES-EDE-CBC-SHA&quot;},</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    {&quot;EDH-RSA-DES-CBC-SHA&quot;, &quot;TLS-D=
+HE-RSA-WITH-DES-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    {&quot;EXP-DES-CBC-SHA&quot;, &quot;TLS-RSA-EXPORT-WITH-DES=
+40-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
+   {&quot;EXP-EDH-DSS-DES-CBC-SHA&quot;, &quot;TLS-DH-DSS-EXPORT-WITH-DES40=
+-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ {&quot;EXP-EDH-RSA-DES-CBC-SHA&quot;, &quot;TLS-DH-RSA-EXPORT-WITH-DES40-C=
+BC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {=
+&quot;EXP-RC2-CBC-MD5&quot;, &quot;TLS-RSA-EXPORT-WITH-RC2-CBC-40-MD5&quot;=
+},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;EXP-RC=
+4-MD5&quot;, &quot;TLS-RSA-EXPORT-WITH-RC4-40-MD5&quot;},</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {&quot;NULL-MD5&quot;, &quot;TLS-=
+RSA-WITH-NULL-MD5&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    {&quot;NULL-SHA256&quot;, &quot;TLS-RSA-WITH-NULL-SHA256&quot;},<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;NULL-SHA&=
+quot;, &quot;TLS-RSA-WITH-NULL-SHA&quot;},</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+    {&quot;PSK-3DES-EDE-CBC-SHA&quot;, &quot;TLS-PSK=
+-WITH-3DES-EDE-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    {&quot;PSK-AES128-CBC-SHA&quot;, &quot;TLS-PSK-WITH-AES-128-=
+CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+{&quot;PSK-AES256-CBC-SHA&quot;, &quot;TLS-PSK-WITH-AES-256-CBC-SHA&quot;},=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;PSK-RC4-=
+SHA&quot;, &quot;TLS-PSK-WITH-RC4-128-SHA&quot;},</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    {&quot;RC4-MD5&quot;, &quot;TLS-RSA-WITH-=
+RC4-128-MD5&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+    {&quot;RC4-SHA&quot;, &quot;TLS-RSA-WITH-RC4-128-SHA&quot;},</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;SEED-SHA&quot;, &qu=
+ot;TLS-RSA-WITH-SEED-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    {&quot;SRP-DSS-3DES-EDE-CBC-SHA&quot;, &quot;TLS-SRP-S=
+HA-DSS-WITH-3DES-EDE-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    {&quot;SRP-DSS-AES-128-CBC-SHA&quot;, &quot;TLS-SRP-SH=
+A-DSS-WITH-AES-128-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120,=
+ 100%, 40%);">+    {&quot;SRP-DSS-AES-256-CBC-SHA&quot;, &quot;TLS-SRP-SHA-=
+DSS-WITH-AES-256-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    {&quot;SRP-RSA-3DES-EDE-CBC-SHA&quot;, &quot;TLS-SRP-SHA-R=
+SA-WITH-3DES-EDE-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    {&quot;SRP-RSA-AES-128-CBC-SHA&quot;, &quot;TLS-SRP-SHA-RS=
+A-WITH-AES-128-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    {&quot;SRP-RSA-AES-256-CBC-SHA&quot;, &quot;TLS-SRP-SHA-RSA-=
+WITH-AES-256-CBC-SHA&quot;},</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+#ifdef ENABLE_CRYPTO_OPENSSL</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+    /* OpenSSL-specific group names */</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {&quot;DEFAULT&quot;, &quot;DEFAUL=
+T&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot=
+;ALL&quot;, &quot;ALL&quot;},</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    {&quot;HIGH&quot;, &quot;HIGH&quot;}, {&quot;!HIGH&quot;, &qu=
+ot;!HIGH&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ {&quot;MEDIUM&quot;, &quot;MEDIUM&quot;}, {&quot;!MEDIUM&quot;, &quot;!MED=
+IUM&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&qu=
+ot;LOW&quot;, &quot;LOW&quot;}, {&quot;!LOW&quot;, &quot;!LOW&quot;},</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDH&quot;, &q=
+uot;ECDH&quot;}, {&quot;!ECDH&quot;, &quot;!ECDH&quot;},</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+    {&quot;ECDSA&quot;, &quot;ECDSA&qu=
+ot;}, {&quot;!ECDSA&quot;, &quot;!ECDSA&quot;},</span><br><span style=3D"co=
+lor: hsl(120, 100%, 40%);">+    {&quot;EDH&quot;, &quot;EDH&quot;}, {&quot;=
+!EDH&quot;, &quot;!EDH&quot;},</span><br><span style=3D"color: hsl(120, 100=
+%, 40%);">+    {&quot;EXP&quot;, &quot;EXP&quot;}, {&quot;!EXP&quot;, &quot=
+;!EXP&quot;},</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&=
+quot;RSA&quot;, &quot;RSA&quot;}, {&quot;!RSA&quot;, &quot;!RSA&quot;},</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+    {&quot;kRSA&quot;, =
+&quot;kRSA&quot;}, {&quot;!kRSA&quot;, &quot;!kRSA&quot;},</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    {&quot;SRP&quot;, &quot;SRP&quot=
+;}, {&quot;!SRP&quot;, &quot;!SRP&quot;},</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+    {NULL, NULL}</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+};</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+const tls_cipher_name_pair *</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+tls_get_cipher_name_p=
+air(const char *cipher_name, size_t len)</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    const tls_cipher_name_pair *pair =3D tls_cipher_name_translation_tab=
+le;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
+ style=3D"color: hsl(120, 100%, 40%);">+    while (pair-&gt;openssl_name !=
+=3D NULL)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    {</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+        if ((strlen(pair=
+-&gt;openssl_name) =3D=3D len &amp;&amp; 0 =3D=3D memcmp(cipher_name, pair-=
+&gt;openssl_name, len))</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+            || (strlen(pair-&gt;iana_name) =3D=3D len &amp;&amp; 0 =3D=
+=3D memcmp(cipher_name, pair-&gt;iana_name, len)))</span><br><span style=3D=
+"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+            return pair;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+        pair++;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    /* No entry found=
+, return NULL */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
+ return NULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</spa=
 n><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+/* Minimal set of mocked management funct=
-ion/globals to get unit tests to</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+ * compile */</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_=
-CONFIG_H</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &q=
-uot;config.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#=
-endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#include &quot;syshead.h&quot;</s=
+=3D"color: hsl(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+get_num_elements(const char *string, char delimiter)</spa=
+n><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    int string_len =3D strlen(string);</s=
 pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#include &lt;setjmp.h&gt;</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+#include &lt;cmocka.h&gt;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#include &quot;ssl.h&quot;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#include &quot;ssl_verify.h&quot;</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%);">+parse_=
-line(const char *line, char **p, const int n, const char *file,</span><br><=
-span style=3D"color: hsl(120, 100%, 40%);">+           const int line_num, =
-int msglevel, struct gc_arena *gc)</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- /* Dummy function to get the linker happy, should never be called */</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(false);</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+    return 0;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+pem_password_callback(ch=
-ar *buf, int size, int rwflag, void *u)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    return 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+void</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+cert_hash_remember(struct tls_session *session, const in=
-t cert_depth,</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-             const struct buffer *cert_hash)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 4=
-0%);">+    assert_false(true);</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+result_t</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+verify_cert(struct tls_session *sessi=
-on, openvpn_x509_cert_t *cert, int cert_depth)</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+    return FAILURE;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+}</span><br><span>diff --git a/tests/unit_tests/openvpn/test_ssl.c=
- b/tests/unit_tests/openvpn/test_ssl.c</span><br><span>new file mode 100644=
-</span><br><span>index 0000000..62c9cde</span><br><span>--- /dev/null</span=
-><br><span>+++ b/tests/unit_tests/openvpn/test_ssl.c</span><br><span>@@ -0,=
-0 +1,139 @@</span><br><span style=3D"color: hsl(120, 100%, 40%);">+/*</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  OpenVPN -- An applica=
-tion to securely tunnel IP networks</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ *             over a single UDP port, with support for SSL=
-/TLS-based</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *       =
-      session authentication and key exchange,</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+ *             packet encryption, packet authent=
-ication, and</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *     =
-        packet compression.</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  Copyr=
-ight (C) 2016-2021 Fox Crypto B.V. &lt;openvpn@...2507...&gt;</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ *  This program is free software; you can redistr=
-ibute it and/or modify</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+ *  it under the terms of the GNU General Public License version 2</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  as published by the F=
-ree Software Foundation.</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  This pro=
-gram is distributed in the hope that it will be useful,</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+ *  but WITHOUT ANY WARRANTY; without e=
-ven the implied warranty of</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  GNU General Publi=
-c License for more details.</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *  You s=
-hould have received a copy of the GNU General Public License along</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ *  with this program; if no=
-t, write to the Free Software Foundation, Inc.,</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+ *  51 Franklin Street, Fifth Floor, Boston, MA=
- 02110-1301 USA.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ */=
+=3D"color: hsl(120, 100%, 40%);">+    ASSERT(0 !=3D string_len);</span><br>=
+<span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    int element_count =3D 1;</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    /* Get number of ciphers */</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    for (int i =3D 0; i &lt;=
+ string_len; i++)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (stri=
+ng[i] =3D=3D delimiter)</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+      element_count++;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    return element_count;</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+}</span><br><span>diff --git a/src=
+/openvpn/ssl_util.h b/src/openvpn/ssl_util.h</span><br><span>index 4c46f88.=
+.b3eaf9f 100644</span><br><span>--- a/src/openvpn/ssl_util.h</span><br><spa=
+n>+++ b/src/openvpn/ssl_util.h</span><br><span>@@ -66,4 +66,27 @@</span><br=
+><span>  */</span><br><span> const char *options_string_compat_lzo(const ch=
+ar *options, struct gc_arena *gc);</span><br><span> </span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-#endif</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+ * Get a tls_cipher_name_pair containing OpenSSL and IANA names for supp=
+lied TLS cipher name</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param cipher=
+_name   Can be either OpenSSL or IANA cipher name</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * @return              tls_cipher_name_pair*=
+ if found, NULL otherwise</span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+typedef st=
+ruct { const char *openssl_name; const char *iana_name; } tls_cipher_name_p=
+air;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+const tls_ciphe=
+r_name_pair *tls_get_cipher_name_pair(const char *cipher_name, size_t len);=
 </span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#ifdef HAVE_CONFIG_H</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+#include &quot;config.h&quot;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+#include &quot;syshead.h&quot;</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#include &lt;stdio.h&gt;</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+#include &lt;stdlib.h&gt;</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+#include &lt;stdarg.h&gt;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#include &lt;string.h&gt;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+#include &lt;setjmp.h&gt;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+#include &lt;cmocka.h&gt;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+#include &quot;crypto.h&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#include &quot;options.h&quot;</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;ssl_backend.h&q=
-uot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;=
-options_util.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#include &quot;moc=
-k_msg.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#inclu=
-de &quot;mss.h&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+#include &quot;ssl_verify_backend.h&quot;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+#include &quot;win32.h&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+/* Mock function to be allowed to include win32.c which is r=
-equired for</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * getti=
-ng the temp directory */</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+#ifdef _WIN32</span><br><span style=3D"color: hsl(120, 100%, 40%);">+s=
-truct signal_info siginfo_static; /* GLOBAL */</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+const char *</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+strerror_win32(DWORD errnum, struct gc_arena *gc)</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    ASSERT(false);</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+void</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+throw_signal(const int signum)</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    ASSERT(false);</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+#endif</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</sp=
-an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+const char *unittest_cert =3D &quot;-----=
-BEGIN CERTIFICATE-----\n&quot;</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+                            &quot;MIIBuTCCAUCgAwIBAgIUTLtjSBzx53=
-qZRvZ6Ur7D9kgoOHkwCgYIKoZIzj0EAwIw\n&quot;</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+                            &quot;EzERMA8GA1UEAwwIdW=
-5pdHRlc3QwIBcNMjMxMTIxMDk1NDQ3WhgPMjA3ODA4MjQw\n&quot;</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+                            &quot;OTU0ND=
-daMBMxETAPBgNVBAMMCHVuaXR0ZXN0MHYwEAYHKoZIzj0CAQYFK4EEACID\n&quot;</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+                            =
-&quot;YgAEHYB2hn2xx3f4lClXDtdi36P19pMZA+kI1Dkv/Vn10vBZ/j9oa+P99T8duz/e\n&qu=
-ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-            &quot;QlPeHpesNJO4fX8iEDj6+vMeWejOT7jAQ4MmG5EZjpcBKxCfwFooEvzu8=
-bVujUcu\n&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
-                        &quot;wTQEo1MwUTAdBgNVHQ4EFgQUPcgBEVXjF5vYfDsInoE3d=
-F6UfQswHwYDVR0jBBgw\n&quot;</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                            &quot;FoAUPcgBEVXjF5vYfDsInoE3dF6UfQswD=
-wYDVR0TAQH/BAUwAwEB/zAKBggqhkjO\n&quot;</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+                            &quot;PQQDAgNnADBkAjBLPAGrQ=
-Ayinigqiu0RomoV8TVaknVLFSq6H6A8jgvzfsFCUK1O\n&quot;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+                            &quot;dvNZhFP=
-M6idKB+oCME2JLOBANCSV8o7aJzq7SYHKwPyb1J4JFlwKe/0Jpv7oh9b1\n&quot;</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+                            &=
-quot;IJbuaM9Z/VSKbrIXGg=3D=3D\n&quot;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+                            &quot;-----END CERTIFICATE---=
---\n&quot;;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+static const char *</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+get_tmp_dir()</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+    const char *ret;</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+#ifdef _WIN32</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    ret =3D win_get_tempdir();</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+#else</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    ret =3D &quot;/tmp&quot;;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+    assert_non_null(ret);</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+    return ret;</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+crypto_pem_encode_certificate(=
-void **state)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct gc_arena gc =
-=3D gc_new();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+    struct tls_root_ctx c=
-tx =3D { 0 };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    tl=
-s_ctx_client_new(&amp;ctx);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+    tls_ctx_load_cert_file(&amp;ctx, unittest_cert, true);</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+    openvpn_x509_cert_t *cert =3D NULL;</span><=
-br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+    /* we do not have methods to fetch certifi=
-cates from ssl contexts, use</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+     * internal TLS library methods for the unit test */</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+#ifdef ENABLE_CRYPTO_OPENSSL<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    cert =3D SSL_CTX=
-_get0_certificate(ctx.ctx);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+#elif defined(ENABLE_CRYPTO_MBEDTLS)</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+    cert =3D ctx.crt_chain;</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    const char *tmpfile =3D platform_create_temp_file(get_tmp_dir(), &quo=
-t;ut_pem&quot;, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    backend_x509_write_pem(cert, tmpfile);</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+    struct buffer exported_pem =3D buffer_read_from_file(tmpfile,=
- &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    asser=
-t_string_equal(BSTR(&amp;exported_pem), unittest_cert);</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+    unlink(tmpfile);</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+    gc_free(&amp;gc);</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+int</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+main(void)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+    const struct CMUnitTest tests[] =3D {</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        cmocka_unit_test(crypto_pem_e=
-ncode_certificate)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-   };</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+#if defined(ENABLE_CRYPTO_OPENSSL=
-)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    OpenSSL_add_al=
-l_algorithms();</span><br><span style=3D"color: hsl(120, 100%, 40%);">+#end=
-if</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+    int ret =3D cmocka_run_group_tes=
-ts_name(&quot;crypto tests&quot;, tests, NULL, NULL);</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+#if defined(ENABLE_CRYPTO_OPENSSL)</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+    EVP_cleanup();</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+#endif</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
- return ret;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+}</span=
-><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/471?usp=3Demail">change 471</a>. To unsubscribe, or for=
- help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
-ings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
-ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
-wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/471?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
-></div>
+yle=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ * Returns the occurrences of &#39;delimiter&#39; in a=
+ string +1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * This i=
+s typically used to find out the number elements in a</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+ * cipher string or similar that is separ=
+ated by : like</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ *   X25519:secp256r1:=
+X448:secp512r1:secp384r1:brainpoolP384r1</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+ * @param string        the string to work on</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+ * @param delimiter     the delimiter to coun=
+t, typically &#39;:&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+ * @return              occrrences of delimiter + 1</span><br><span st=
+yle=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"color: hs=
+l(120, 100%, 40%);">+int</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+get_num_elements(const char *string, char delimiter);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+#endif /* ifndef SSL_UTIL_H_ */</span><br><span></span>=
+<br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/=
++/470?usp=3Demail">change 470</a>. To unsubscribe, or for help writing mail=
+ filters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>=
+.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemsc=
+ope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link ite=
+mprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/470?usp=3Demail=
+"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie248d35d063bb6878f3dd42840c=
-77ba0d6fa3381 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 471 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I605394d4f3872a168d05bbbe52d=
+90f6d48935865 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 470 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
@@ -944,5 +1441,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---XiSworp+aHQ=--
+--SVcGJDC1M+8=--
 
