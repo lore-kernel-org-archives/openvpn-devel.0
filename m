@@ -1,16 +1,10 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 8 Dec 2023 11:07:46 +0000
-In-Reply-To: <gerrit.1700743197000.I04f8c7c413e7cb62c726262feee6ca89c7e86c70@...2715...>
-References: <gerrit.1700743197000.I04f8c7c413e7cb62c726262feee6ca89c7e86c70@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <1003369bde90589bfc740c189bf913672e95e89d-EmailReviewComments-HTML@...2715...>
+Content-Type: multipart/mixed; boundary="------------3ih0q4BL4CokNzu4P78Unupk"
+Message-ID: <ab19d7c6-302f-3056-d83e-0433f889e490@...277...>
+Date: Fri, 8 Dec 2023 14:05:58 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="/XfFhFQKV5s="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Check PRF
- availability on initialisation and add --force-tls-key-mate...
+Content-Language: en-US
+From: Reynir <reynirr@...277...>
+Subject: [Openvpn-devel] Fail on odd number of hex digits in key files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,82 +13,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---/XfFhFQKV5s=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------3ih0q4BL4CokNzu4P78Unupk
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-Attention is currently required from: plaisthos.
+Dear openvpn-devel,
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/460?usp=3Demail )
+Please find attached a patch that addresses the following bug:
+When a key file has an odd number of hex digits the last digit is 
+silently ignored. This can easily be tested by adding an extra hex digit 
+at the line before the footer; openvpn does not notice and will use the 
+key as if the file was not modified.
 
-Change subject: Check PRF availability on initialisation and add --force-tl=
-s-key-material-export
-......................................................................
+Best,
+Reynir Björnsson
+--------------3ih0q4BL4CokNzu4P78Unupk
+Content-Type: text/x-patch; charset=UTF-8;
+ name="0001-read_key_file-Fail-on-odd-number-of-hex-digits.patch"
+Content-Disposition: attachment;
+ filename*0="0001-read_key_file-Fail-on-odd-number-of-hex-digits.patch"
+Content-Transfer-Encoding: base64
 
+RnJvbSBmZmYzZTI2YTkwYTRlMzczYmFhMDNlZDIwN2Y2N2Q1NjFlZDlhY2U1IE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiA9P1VURi04P3E/UmV5bmlyPTIwQmo9QzM9QjZybnNz
+b24/PSA8cmV5bmlyQHJleW5pci5kaz4KRGF0ZTogRnJpLCA4IERlYyAyMDIzIDEzOjU4OjMz
+ICswMTAwClN1YmplY3Q6IFtQQVRDSF0gcmVhZF9rZXlfZmlsZTogRmFpbCBvbiBvZGQgbnVt
+YmVyIG9mIGhleCBkaWdpdHMKCldoZW4gcmVhZGluZyBhIGtleSBmaWxlIHdlIG11c3QgZW5z
+dXJlIHdlIGhhdmUgcHJvY2Vzc2VkIGFsbCB0aGUgZGF0YS4KSWYgdGhlcmUgaXMgYW4gb2Rk
+IG51bWJlciBvZiBoZXggZGlnaXRzIHdlIHNob3VsZCBub3Qgc2lsZW50bHkgaWdub3JlCnRo
+ZSBsYXN0IGRpZ2l0IGJ1dCBpbnN0ZWFkIGZhaWwuCi0tLQogc3JjL29wZW52cG4vY3J5cHRv
+LmMgfCAxMSArKysrKysrKysrKwogMSBmaWxlIGNoYW5nZWQsIDExIGluc2VydGlvbnMoKykK
+CmRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9jcnlwdG8uYyBiL3NyYy9vcGVudnBuL2NyeXB0
+by5jCmluZGV4IGU0NDUyZDdhLi5lZTVhZmUxYiAxMDA2NDQKLS0tIGEvc3JjL29wZW52cG4v
+Y3J5cHRvLmMKKysrIGIvc3JjL29wZW52cG4vY3J5cHRvLmMKQEAgLTExMzksNiArMTEzOSw5
+IEBAIHN0YXRpYyBjb25zdCBjaGFyIHByaW50YWJsZV9jaGFyX2ZtdFtdID0KIHN0YXRpYyBj
+b25zdCBjaGFyIHVucHJpbnRhYmxlX2NoYXJfZm10W10gPQogICAgICJOb24tSGV4LCB1bnBy
+aW50YWJsZSBjaGFyYWN0ZXIgKDB4JTAyeCkgZm91bmQgYXQgbGluZSAlZCBpbiBrZXkgZmls
+ZSAnJXMnICglZC8lZC8lZCBieXRlcyBmb3VuZC9taW4vbWF4KSI7CiAKK3N0YXRpYyBjb25z
+dCBjaGFyIG9kZF9oZXhfZGlnaXRzX2ZtdFtdID0KKyAgICAiT2RkIG51bWJlciBvZiBoZXgg
+ZGlnaXRzIGZvdW5kIGluIGtleSBmaWxlICclcyciOworCiAvKiByZWFkIGtleSBmcm9tIGZp
+bGUgKi8KIAogdm9pZApAQCAtMTI5Miw2ICsxMjk1LDE0IEBAIHJlYWRfa2V5X2ZpbGUoc3Ry
+dWN0IGtleTIgKmtleTIsIGNvbnN0IGNoYXIgKmZpbGUsIGNvbnN0IHVuc2lnbmVkIGludCBm
+bGFncykKICAgICAgICAgLS1zaXplOwogICAgIH0KIAorICAgIC8qIGZhaWwgb24gb2RkIG51
+bWJlciBvZiBoZXggZGlnaXRzICovCisgICAgaWYgKGhiX2luZGV4ID4gMCkKKyAgICB7Cisg
+ICAgICAgIG1zZyhNX0ZBVEFMLAorICAgICAgICAgICAgb2RkX2hleF9kaWdpdHNfZm10LAor
+ICAgICAgICAgICAgcHJpbnRfa2V5X2ZpbGVuYW1lKGZpbGUsIGZsYWdzICYgUktGX0lOTElO
+RSkpOworICAgIH0KKwogICAgIC8qCiAgICAgICogTm9ybWFsbHkgd2Ugd2lsbCByZWFkIGVp
+dGhlciAxIG9yIDIga2V5cyBmcm9tIGZpbGUuCiAgICAgICovCi0tIAoyLjMwLjIKCg==
 
-Patch Set 5: Code-Review+2
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I04f8c7c413e7cb62c726262feee6ca89c7e86c70
-Gerrit-Change-Number: 460
-Gerrit-PatchSet: 5
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Fri, 08 Dec 2023 11:07:46 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---/XfFhFQKV5s=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 5:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail">=
-change 460</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/460?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I04f8c7c413e7cb62c726262feee=
-6ca89c7e86c70 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 460 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Fri, 08 Dec 2023 11:07:46=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---/XfFhFQKV5s=--
+--------------3ih0q4BL4CokNzu4P78Unupk--
 
