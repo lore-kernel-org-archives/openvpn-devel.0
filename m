@@ -1,15 +1,15 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Fri, 8 Dec 2023 16:29:54 +0000
-References: <gerrit.1702052980000.I0abeec9f862aea1f6a8fdf350fa0008cf2e5d613@...2715...>
+Date: Fri, 8 Dec 2023 16:29:52 +0000
+References: <gerrit.1702052980000.Icabc8acf75638c86c8c395e9ffecba7a7226cd97@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net
-Message-ID: <76c50ee7fb8a7f7f54543ce7b5abe5be887f126b-HTML@...2715...>
+Message-ID: <c36ddcd3c6495a143a3f8aee876a1414868c474a-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="HiF9i+MFgYM="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: misc: make
- get_auth_challenge static
+Content-Type: multipart/alternative; boundary="ydX/LS4EbGQ="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: test_user_pass:
+ Check fatal errors for empty username/password
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---HiF9i+MFgYM=
+--ydX/LS4EbGQ=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -32,307 +32,210 @@ Hello plaisthos,
 I'd like you to do a code review.
 Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/476?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/474?usp=3Demail
 
 to review the following change.
 
 
-Change subject: misc: make get_auth_challenge static
+Change subject: test_user_pass: Check fatal errors for empty username/passw=
+ord
 ......................................................................
 
-misc: make get_auth_challenge static
+test_user_pass: Check fatal errors for empty username/password
 
-Not used outside of misc.c.
+Required a fix to mock_msg to make tests of M_FATAL
+possible at all.
+This also tests some cases which arguably should throw
+a fatal error but do not.
 
-Rename to parse_auth_challenge since it really just parses
-the string that you put in into the struct.
-
-Add doxygen documentation.
-
-Change-Id: I0abeec9f862aea1f6a8fdf350fa0008cf2e5d613
+Change-Id: Icabc8acf75638c86c8c395e9ffecba7a7226cd97
 Signed-off-by: Frank Lichtenheld <frank@...2641...>
 ---
-M src/openvpn/misc.c
-M src/openvpn/misc.h
-M src/openvpn/ssl.h
-3 files changed, 103 insertions(+), 85 deletions(-)
+A tests/unit_tests/openvpn/input/appears_empty.txt
+A tests/unit_tests/openvpn/input/empty.txt
+M tests/unit_tests/openvpn/mock_msg.c
+M tests/unit_tests/openvpn/test_user_pass.c
+4 files changed, 68 insertions(+), 2 deletions(-)
 
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/476/1
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/74/474/1
 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index ce6e4fd..9352843 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -124,6 +124,88 @@
-     }
-     return true;
- }
+diff --git a/tests/unit_tests/openvpn/input/appears_empty.txt b/tests/unit_=
+tests/openvpn/input/appears_empty.txt
+new file mode 100644
+index 0000000..ffb749a
+--- /dev/null
++++ b/tests/unit_tests/openvpn/input/appears_empty.txt
+@@ -0,0 +1,3 @@
 +
-+/**
-+ * Parses an authentication challenge string and returns an auth_challenge=
-_info structure.
-+ * The authentication challenge string should follow the dynamic challenge=
-/response protocol.
-+ *
-+ * See doc/management-notes.txt for more info on the the dynamic challenge=
-/response protocol
-+ * implemented here.
-+ *
-+ * @param auth_challenge The authentication challenge string to parse.
-+ * @param gc             The gc_arena structure for memory allocation.
-+ *
-+ * @return               A pointer to the parsed auth_challenge_info struc=
-ture, or NULL if parsing fails.
-+ */
-+static struct auth_challenge_info *
-+parse_auth_challenge(const char *auth_challenge, struct gc_arena *gc)
-+{
-+    if (auth_challenge)
-+    {
-+        struct auth_challenge_info *ac;
-+        const int len =3D strlen(auth_challenge);
-+        char *work =3D (char *) gc_malloc(len+1, false, gc);
-+        char *cp;
 +
-+        struct buffer b;
-+        buf_set_read(&b, (const uint8_t *)auth_challenge, len);
-+
-+        ALLOC_OBJ_CLEAR_GC(ac, struct auth_challenge_info, gc);
-+
-+        /* parse prefix */
-+        if (!buf_parse(&b, ':', work, len))
-+        {
-+            return NULL;
-+        }
-+        if (strcmp(work, "CRV1"))
-+        {
-+            return NULL;
-+        }
-+
-+        /* parse flags */
-+        if (!buf_parse(&b, ':', work, len))
-+        {
-+            return NULL;
-+        }
-+        for (cp =3D work; *cp !=3D '\0'; ++cp)
-+        {
-+            const char c =3D *cp;
-+            if (c =3D=3D 'E')
-+            {
-+                ac->flags |=3D CR_ECHO;
-+            }
-+            else if (c =3D=3D 'R')
-+            {
-+                ac->flags |=3D CR_RESPONSE;
-+            }
-+        }
-+
-+        /* parse state ID */
-+        if (!buf_parse(&b, ':', work, len))
-+        {
-+            return NULL;
-+        }
-+        ac->state_id =3D string_alloc(work, gc);
-+
-+        /* parse user name */
-+        if (!buf_parse(&b, ':', work, len))
-+        {
-+            return NULL;
-+        }
-+        ac->user =3D (char *) gc_malloc(strlen(work)+1, true, gc);
-+        openvpn_base64_decode(work, (void *)ac->user, -1);
-+
-+        /* parse challenge text */
-+        ac->challenge_text =3D string_alloc(BSTR(&b), gc);
-+
-+        return ac;
-+    }
-+    else
-+    {
-+        return NULL;
-+    }
-+}
-+
- #endif /* ifdef ENABLE_MANAGEMENT */
++(contains \t\n\t\n)
+diff --git a/tests/unit_tests/openvpn/input/empty.txt b/tests/unit_tests/op=
+envpn/input/empty.txt
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/tests/unit_tests/openvpn/input/empty.txt
+diff --git a/tests/unit_tests/openvpn/mock_msg.c b/tests/unit_tests/openvpn=
+/mock_msg.c
+index d74efaa..2fcad9d 100644
+--- a/tests/unit_tests/openvpn/mock_msg.c
++++ b/tests/unit_tests/openvpn/mock_msg.c
+@@ -38,7 +38,6 @@
+ #include "error.h"
 
- /*
-@@ -287,7 +369,7 @@
- #ifdef ENABLE_MANAGEMENT
-             if (auth_challenge && (flags & GET_USER_PASS_DYNAMIC_CHALLENGE=
-) && response_from_stdin)
-             {
--                struct auth_challenge_info *ac =3D get_auth_challenge(auth=
-_challenge, &gc);
-+                struct auth_challenge_info *ac =3D parse_auth_challenge(au=
-th_challenge, &gc);
-                 if (ac)
-                 {
-                     char *response =3D (char *) gc_malloc(USER_PASS_LEN, f=
-alse, &gc);
-@@ -392,83 +474,6 @@
-     return true;
- }
+ unsigned int x_debug_level =3D 0; /* Default to (almost) no debugging outp=
+ut */
+-bool fatal_error_triggered =3D false;
 
--#ifdef ENABLE_MANAGEMENT
--
--/*
-- * See management/management-notes.txt for more info on the
-- * the dynamic challenge/response protocol implemented here.
-- */
--struct auth_challenge_info *
--get_auth_challenge(const char *auth_challenge, struct gc_arena *gc)
--{
--    if (auth_challenge)
--    {
--        struct auth_challenge_info *ac;
--        const int len =3D strlen(auth_challenge);
--        char *work =3D (char *) gc_malloc(len+1, false, gc);
--        char *cp;
--
--        struct buffer b;
--        buf_set_read(&b, (const uint8_t *)auth_challenge, len);
--
--        ALLOC_OBJ_CLEAR_GC(ac, struct auth_challenge_info, gc);
--
--        /* parse prefix */
--        if (!buf_parse(&b, ':', work, len))
--        {
--            return NULL;
--        }
--        if (strcmp(work, "CRV1"))
--        {
--            return NULL;
--        }
--
--        /* parse flags */
--        if (!buf_parse(&b, ':', work, len))
--        {
--            return NULL;
--        }
--        for (cp =3D work; *cp !=3D '\0'; ++cp)
--        {
--            const char c =3D *cp;
--            if (c =3D=3D 'E')
--            {
--                ac->flags |=3D CR_ECHO;
--            }
--            else if (c =3D=3D 'R')
--            {
--                ac->flags |=3D CR_RESPONSE;
--            }
--        }
--
--        /* parse state ID */
--        if (!buf_parse(&b, ':', work, len))
--        {
--            return NULL;
--        }
--        ac->state_id =3D string_alloc(work, gc);
--
--        /* parse user name */
--        if (!buf_parse(&b, ':', work, len))
--        {
--            return NULL;
--        }
--        ac->user =3D (char *) gc_malloc(strlen(work)+1, true, gc);
--        openvpn_base64_decode(work, (void *)ac->user, -1);
--
--        /* parse challenge text */
--        ac->challenge_text =3D string_alloc(BSTR(&b), gc);
--
--        return ac;
--    }
--    else
--    {
--        return NULL;
--    }
--}
--
--#endif /* ifdef ENABLE_MANAGEMENT */
--
  void
- purge_user_pass(struct user_pass *up, const bool force)
+ mock_set_debug_level(int level)
+@@ -58,11 +57,14 @@
  {
-diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-index b000b72..98de90a 100644
---- a/src/openvpn/misc.h
-+++ b/src/openvpn/misc.h
-@@ -86,8 +86,6 @@
-     const char *challenge_text;
- };
+     if (flags & M_FATAL)
+     {
+-        fatal_error_triggered =3D true;
+         printf("FATAL ERROR:");
+     }
+     vprintf(format, arglist);
+     printf("\n");
++    if (flags & M_FATAL)
++    {
++        mock_assert(false, "FATAL ERROR", __FILE__, __LINE__);
++    }
+ }
 
--struct auth_challenge_info *get_auth_challenge(const char *auth_challenge,=
- struct gc_arena *gc);
--
- /*
-  * Challenge response info on client as pushed by server.
-  */
-@@ -120,12 +118,31 @@
+ void
+diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit_tests/o=
+penvpn/test_user_pass.c
+index e468d3f..600ec80 100644
+--- a/tests/unit_tests/openvpn/test_user_pass.c
++++ b/tests/unit_tests/openvpn/test_user_pass.c
+@@ -172,6 +172,24 @@
 
- #define GET_USER_PASS_INLINE_CREDS (1<<10)  /* indicates that auth_file is=
- actually inline creds */
+     reset_user_pass(&up);
 
-+/**
-+ * Retrieves the user credentials from various sources depending on the fl=
-ags.
-+ *
-+ * @param up The user_pass structure to store the retrieved credentials.
-+ * @param auth_file The path to the authentication file. Might be NULL.
-+ * @param prefix The prefix to prepend to user prompts.
-+ * @param flags Additional flags to control the behavior of the function.
-+ * @param auth_challenge The authentication challenge string.
-+ * @return true if the user credentials were successfully retrieved, false=
- otherwise.
-+ */
- bool get_user_pass_cr(struct user_pass *up,
-                       const char *auth_file,
-                       const char *prefix,
-                       const unsigned int flags,
-                       const char *auth_challenge);
-
-+/**
-+ * Retrieves the user credentials from various sources depending on the fl=
-ags.
-+ *
-+ * @param up The user_pass structure to store the retrieved credentials.
-+ * @param auth_file The path to the authentication file. Might be NULL.
-+ * @param prefix The prefix to prepend to user prompts.
-+ * @param flags Additional flags to control the behavior of the function.
-+ * @return true if the user credentials were successfully retrieved, false=
- otherwise.
-+ */
- static inline bool
- get_user_pass(struct user_pass *up,
-               const char *auth_file,
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 6ba6ff8..71b99db 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -410,11 +410,7 @@
- bool ssl_clean_auth_token(void);
-
- #ifdef ENABLE_MANAGEMENT
--/*
-- * ssl_get_auth_challenge will parse the server-pushed auth-failed
-- * reason string and return a dynamically allocated
-- * auth_challenge_info struct.
-- */
++    /*FIXME: query_user_exec() called even though nothing queued */
++    will_return(query_user_exec_builtin, true);
++    /*FIXME: silently removes control characters but does not error out */
++    assert_true(get_user_pass_cr(&up, "\t\n\t", "UT", flags, NULL));
++    assert_true(up.defined);
++    assert_string_equal(up.username, "");
++    assert_string_equal(up.password, "");
 +
- void ssl_purge_auth_challenge(void);
++    reset_user_pass(&up);
++
++    /* Test Assertion */
++    /*FIXME: query_user_exec() called even though nothing queued */
++    /*FIXME? username error thrown very late in stdin handling */
++    will_return(query_user_exec_builtin, true);
++    expect_assert_failure(get_user_pass_cr(&up, "\nipassword\n", "UT", fla=
+gs, NULL));
++
++    reset_user_pass(&up);
++
+     expect_string(query_user_exec_builtin, query_user[i].prompt, "Enter UT=
+ Password:");
+     will_return(query_user_exec_builtin, "cpassword");
+     will_return(query_user_exec_builtin, true);
+@@ -223,6 +241,15 @@
 
- void ssl_put_auth_challenge(const char *cr_str);
+     reset_user_pass(&up);
+
++    expect_string(query_user_exec_builtin, query_user[i].prompt, "Enter UT=
+ Username:");
++    expect_string(query_user_exec_builtin, query_user[i].prompt, "Enter UT=
+ Password:");
++    will_return(query_user_exec_builtin, "");
++    will_return(query_user_exec_builtin, "cpassword");
++    will_return(query_user_exec_builtin, true);
++    expect_assert_failure(get_user_pass_cr(&up, "stdin", "UT", flags, NULL=
+));
++
++    reset_user_pass(&up);
++
+     flags |=3D GET_USER_PASS_PASSWORD_ONLY;
+     expect_string(query_user_exec_builtin, query_user[i].prompt, "Enter UT=
+ Password:");
+     will_return(query_user_exec_builtin, "cpassword");
+@@ -231,6 +258,18 @@
+     assert_true(up.defined);
+     assert_string_equal(up.username, "user");
+     assert_string_equal(up.password, "cpassword");
++
++    reset_user_pass(&up);
++
++    flags |=3D GET_USER_PASS_PASSWORD_ONLY;
++    expect_string(query_user_exec_builtin, query_user[i].prompt, "Enter UT=
+ Password:");
++    will_return(query_user_exec_builtin, "");
++    will_return(query_user_exec_builtin, true);
++    /*FIXME? does not error out on empty password */
++    assert_true(get_user_pass_cr(&up, "stdin", "UT", flags, NULL));
++    assert_true(up.defined);
++    assert_string_equal(up.username, "user");
++    assert_string_equal(up.password, "");
+ }
+
+ static void
+@@ -254,6 +293,17 @@
+
+     reset_user_pass(&up);
+
++    snprintf(authfile, PATH_MAX, "%s/%s", srcdir, "input/appears_empty.txt=
+");
++    /*FIXME: query_user_exec() called even though nothing queued */
++    will_return(query_user_exec_builtin, true);
++    /*FIXME? does not error out */
++    assert_true(get_user_pass_cr(&up, authfile, "UT", flags, NULL));
++    assert_true(up.defined);
++    assert_string_equal(up.username, "");
++    assert_string_equal(up.password, "");
++
++    reset_user_pass(&up);
++
+     snprintf(authfile, PATH_MAX, "%s/%s", srcdir, "input/user_only.txt");
+     expect_string(query_user_exec_builtin, query_user[i].prompt, "Enter UT=
+ Password:");
+     will_return(query_user_exec_builtin, "cpassword");
+@@ -266,6 +316,11 @@
+
+     reset_user_pass(&up);
+
++    snprintf(authfile, PATH_MAX, "%s/%s", srcdir, "input/empty.txt");
++    expect_assert_failure(get_user_pass_cr(&up, authfile, "UT", flags, NUL=
+L));
++
++    reset_user_pass(&up);
++
+     flags |=3D GET_USER_PASS_PASSWORD_ONLY;
+     snprintf(authfile, PATH_MAX, "%s/%s", srcdir, "input/user_only.txt");
+     /*FIXME: query_user_exec() called even though nothing queued */
+@@ -274,6 +329,12 @@
+     assert_true(up.defined);
+     assert_string_equal(up.username, "user");
+     assert_string_equal(up.password, "fuser");
++
++    reset_user_pass(&up);
++
++    flags |=3D GET_USER_PASS_PASSWORD_ONLY;
++    snprintf(authfile, PATH_MAX, "%s/%s", srcdir, "input/empty.txt");
++    expect_assert_failure(get_user_pass_cr(&up, authfile, "UT", flags, NUL=
+L));
+ }
+
+ const struct CMUnitTest user_pass_tests[] =3D {
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/476?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/474?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I0abeec9f862aea1f6a8fdf350fa0008cf2e5d613
-Gerrit-Change-Number: 476
+Gerrit-Change-Id: Icabc8acf75638c86c8c395e9ffecba7a7226cd97
+Gerrit-Change-Number: 474
 Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
@@ -340,284 +243,184 @@ Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-MessageType: newchange
 
---HiF9i+MFgYM=
+--ydX/LS4EbGQ=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: plaisthos. </p>
 <p>flichtenheld would like plaisthos to <strong>review</strong> this change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/476?usp=3Demail">Vi=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/474?usp=3Demail">Vi=
 ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">misc: make get_auth_challenge static<br><br>Not used outside =
-of misc.c.<br><br>Rename to parse_auth_challenge since it really just parse=
-s<br>the string that you put in into the struct.<br><br>Add doxygen documen=
-tation.<br><br>Change-Id: I0abeec9f862aea1f6a8fdf350fa0008cf2e5d613<br>Sign=
-ed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>M src/openv=
-pn/misc.c<br>M src/openvpn/misc.h<br>M src/openvpn/ssl.h<br>3 files changed=
-, 103 insertions(+), 85 deletions(-)<br><br></pre><pre style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.openvp=
-n.net:29418/openvpn refs/changes/76/476/1</pre><pre style=3D"font-family: m=
-onospace,monospace; white-space: pre-wrap;"><span>diff --git a/src/openvpn/=
-misc.c b/src/openvpn/misc.c</span><br><span>index ce6e4fd..9352843 100644</=
-span><br><span>--- a/src/openvpn/misc.c</span><br><span>+++ b/src/openvpn/m=
-isc.c</span><br><span>@@ -124,6 +124,88 @@</span><br><span>     }</span><br=
-><span>     return true;</span><br><span> }</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Parses a=
-n authentication challenge string and returns an auth_challenge_info struct=
-ure.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * The authenti=
-cation challenge string should follow the dynamic challenge/response protoc=
-ol.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+ * See doc/management-notes.txt f=
-or more info on the the dynamic challenge/response protocol</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+ * implemented here.</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ * @param auth_challenge The authentication challen=
-ge string to parse.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
- * @param gc             The gc_arena structure for memory allocation.</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ * @return               A pointer to the=
- parsed auth_challenge_info structure, or NULL if parsing fails.</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+static struct auth_challenge_info *</span><br>=
-<span style=3D"color: hsl(120, 100%, 40%);">+parse_auth_challenge(const cha=
-r *auth_challenge, struct gc_arena *gc)</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+{</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+    if (auth_challenge)</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+    {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-struct auth_challenge_info *ac;</span><br><span style=3D"color: hsl(120, 10=
-0%, 40%);">+        const int len =3D strlen(auth_challenge);</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+        char *work =3D (char *) g=
-c_malloc(len+1, false, gc);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+        char *cp;</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        struc=
-t buffer b;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-buf_set_read(&amp;b, (const uint8_t *)auth_challenge, len);</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        ALLOC_OBJ_CLEAR_GC(ac, struct auth_challenge_i=
-nfo, gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+        /* parse prefix */</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+        if (!buf_parse=
-(&amp;b, &#39;:&#39;, work, len))</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+            return NULL;</span><br><span style=3D"color: hsl(120, 100%,=
- 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       if (strcmp(work, &quot;CRV1&quot;))</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hsl(120, 1=
-00%, 40%);">+            return NULL;</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* =
-parse flags */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   if (!buf_parse(&amp;b, &#39;:&#39;, work, len))</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+            return NULL;</span><br><span style=3D"colo=
-r: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+        for (cp =3D work; *cp !=3D &#39;\0&#39;; ++cp)</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+        {</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+            const char c =3D *cp;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            if (c =
-=3D=3D &#39;E&#39;)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
-            {</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
-          ac-&gt;flags |=3D CR_ECHO;</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+            }</span><br><span style=3D"color: hsl(120, 100=
-%, 40%);">+            else if (c =3D=3D &#39;R&#39;)</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+            {</span><br><span style=3D"co=
-lor: hsl(120, 100%, 40%);">+                ac-&gt;flags |=3D CR_RESPONSE;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            }</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span><br><span =
-style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        /* parse state ID */</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+        if (!buf_parse(&amp;b, &#39;:&#39;, wo=
-rk, len))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        {<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+            return N=
-ULL;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        }</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+        ac-&gt;state_id =
-=3D string_alloc(work, gc);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* =
-parse user name */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       if (!buf_parse(&amp;b, &#39;:&#39;, work, len))</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+        {</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+            return NULL;</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+        }</span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+        ac-&gt;user =3D (char *) gc_malloc(strlen(work)=
-+1, true, gc);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   openvpn_base64_decode(work, (void *)ac-&gt;user, -1);</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(1=
-20, 100%, 40%);">+        /* parse challenge text */</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+        ac-&gt;challenge_text =3D string_=
-alloc(BSTR(&amp;b), gc);</span><br><span style=3D"color: hsl(120, 100%, 40%=
-);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        return=
- ac;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    }</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+    else</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color: hs=
-l(120, 100%, 40%);">+        return NULL;</span><br><span style=3D"color: h=
-sl(120, 100%, 40%);">+    }</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br=
-><span> #endif /* ifdef ENABLE_MANAGEMENT */</span><br><span> </span><br><s=
-pan> /*</span><br><span>@@ -287,7 +369,7 @@</span><br><span> #ifdef ENABLE_=
-MANAGEMENT</span><br><span>             if (auth_challenge &amp;&amp; (flag=
-s &amp; GET_USER_PASS_DYNAMIC_CHALLENGE) &amp;&amp; response_from_stdin)</s=
-pan><br><span>             {</span><br><span style=3D"color: hsl(0, 100%, 4=
-0%);">-                struct auth_challenge_info *ac =3D get_auth_challeng=
-e(auth_challenge, &amp;gc);</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+                struct auth_challenge_info *ac =3D parse_auth_chall=
-enge(auth_challenge, &amp;gc);</span><br><span>                 if (ac)</sp=
-an><br><span>                 {</span><br><span>                     char *=
-response =3D (char *) gc_malloc(USER_PASS_LEN, false, &amp;gc);</span><br><=
-span>@@ -392,83 +474,6 @@</span><br><span>     return true;</span><br><span=
-> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-#ifdef ENABLE_MANAGEMENT</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">- * See management/management-notes.tx=
-t for more info on the</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
-- * the dynamic challenge/response protocol implemented here.</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">- */</span><br><span style=3D"color:=
- hsl(0, 100%, 40%);">-struct auth_challenge_info *</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-get_auth_challenge(const char *auth_challenge,=
- struct gc_arena *gc)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-{</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if (auth_challen=
-ge)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-        struct auth_challenge_info=
- *ac;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        const in=
-t len =3D strlen(auth_challenge);</span><br><span style=3D"color: hsl(0, 10=
-0%, 40%);">-        char *work =3D (char *) gc_malloc(len+1, false, gc);</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        char *cp;</span>=
-<br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-        struct buffer b;</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        buf_set_read(&amp;b, (const uint8_t *)=
-auth_challenge, len);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ALLOC_OBJ_CLE=
-AR_GC(ac, struct auth_challenge_info, gc);</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-        /* parse prefix */</span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-        if (!buf_parse(&amp;b, &#39;:&#39;, work, len))</span><br><spa=
-n style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"c=
-olor: hsl(0, 100%, 40%);">-            return NULL;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        if (strcmp(work, &quot;CRV1&quot;))</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            return NULL;</span><br><span st=
-yle=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);"=
->-        /* parse flags */</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        if (!buf_parse(&amp;b, &#39;:&#39;, work, len))</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-            return NULL;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        for (cp =3D work; *cp !=3D &#39;\0&#39;; ++cp)<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><s=
-pan style=3D"color: hsl(0, 100%, 40%);">-            const char c =3D *cp;<=
-/span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (c =3D=
-=3D &#39;E&#39;)</span><br><span style=3D"color: hsl(0, 100%, 40%);">-     =
-       {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-             =
-   ac-&gt;flags |=3D CR_ECHO;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-            }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-            else if (c =3D=3D &#39;R&#39;)</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-            {</span><br><span style=3D"color: hsl(0, 1=
-00%, 40%);">-                ac-&gt;flags |=3D CR_RESPONSE;</span><br><span=
- style=3D"color: hsl(0, 100%, 40%);">-            }</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);">- =
-       /* parse state ID */</span><br><span style=3D"color: hsl(0, 100%, 40=
-%);">-        if (!buf_parse(&amp;b, &#39;:&#39;, work, len))</span><br><sp=
-an style=3D"color: hsl(0, 100%, 40%);">-        {</span><br><span style=3D"=
-color: hsl(0, 100%, 40%);">-            return NULL;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        }</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-        ac-&gt;state_id =3D string_alloc(work, gc);</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D=
-"color: hsl(0, 100%, 40%);">-        /* parse user name */</span><br><span =
-style=3D"color: hsl(0, 100%, 40%);">-        if (!buf_parse(&amp;b, &#39;:&=
-#39;, work, len))</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    =
-    {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            retu=
-rn NULL;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        }</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-        ac-&gt;user =3D (=
-char *) gc_malloc(strlen(work)+1, true, gc);</span><br><span style=3D"color=
-: hsl(0, 100%, 40%);">-        openvpn_base64_decode(work, (void *)ac-&gt;u=
-ser, -1);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-        /* parse challenge text *=
-/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        ac-&gt;chall=
-enge_text =3D string_alloc(BSTR(&amp;b), gc);</span><br><span style=3D"colo=
-r: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100%, 40%);=
-">-        return ac;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-=
-    }</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    else</span><=
-br><span style=3D"color: hsl(0, 100%, 40%);">-    {</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-        return NULL;</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-    }</span><br><span style=3D"color: hsl(0=
-, 100%, 40%);">-}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</sp=
-an><br><span style=3D"color: hsl(0, 100%, 40%);">-#endif /* ifdef ENABLE_MA=
-NAGEMENT */</span><br><span style=3D"color: hsl(0, 100%, 40%);">-</span><br=
-><span> void</span><br><span> purge_user_pass(struct user_pass *up, const b=
-ool force)</span><br><span> {</span><br><span>diff --git a/src/openvpn/misc=
-.h b/src/openvpn/misc.h</span><br><span>index b000b72..98de90a 100644</span=
-><br><span>--- a/src/openvpn/misc.h</span><br><span>+++ b/src/openvpn/misc.=
-h</span><br><span>@@ -86,8 +86,6 @@</span><br><span>     const char *challe=
-nge_text;</span><br><span> };</span><br><span> </span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-struct auth_challenge_info *get_auth_challenge(co=
-nst char *auth_challenge, struct gc_arena *gc);</span><br><span style=3D"co=
-lor: hsl(0, 100%, 40%);">-</span><br><span> /*</span><br><span>  * Challeng=
-e response info on client as pushed by server.</span><br><span>  */</span><=
-br><span>@@ -120,12 +118,31 @@</span><br><span> </span><br><span> #define G=
-ET_USER_PASS_INLINE_CREDS (1&lt;&lt;10)  /* indicates that auth_file is act=
-ually inline creds */</span><br><span> </span><br><span style=3D"color: hsl=
-(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+ * Retrieves the user credentials from various sources depending on the=
- flags.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</span><br=
-><span style=3D"color: hsl(120, 100%, 40%);">+ * @param up The user_pass st=
-ructure to store the retrieved credentials.</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+ * @param auth_file The path to the authentication =
-file. Might be NULL.</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
-+ * @param prefix The prefix to prepend to user prompts.</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+ * @param flags Additional flags to co=
-ntrol the behavior of the function.</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+ * @param auth_challenge The authentication challenge strin=
-g.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return true i=
-f the user credentials were successfully retrieved, false otherwise.</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span> bool =
-get_user_pass_cr(struct user_pass *up,</span><br><span>                    =
-   const char *auth_file,</span><br><span>                       const char=
- *prefix,</span><br><span>                       const unsigned int flags,<=
-/span><br><span>                       const char *auth_challenge);</span><=
-br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+/**</span=
-><br><span style=3D"color: hsl(120, 100%, 40%);">+ * Retrieves the user cre=
-dentials from various sources depending on the flags.</span><br><span style=
-=3D"color: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+ * @param up The user_pass structure to store the retrieve=
-d credentials.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @p=
-aram auth_file The path to the authentication file. Might be NULL.</span><b=
-r><span style=3D"color: hsl(120, 100%, 40%);">+ * @param prefix The prefix =
-to prepend to user prompts.</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ * @param flags Additional flags to control the behavior of the fun=
-ction.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @return tr=
-ue if the user credentials were successfully retrieved, false otherwise.</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ */</span><br><span> s=
-tatic inline bool</span><br><span> get_user_pass(struct user_pass *up,</spa=
-n><br><span>               const char *auth_file,</span><br><span>diff --gi=
-t a/src/openvpn/ssl.h b/src/openvpn/ssl.h</span><br><span>index 6ba6ff8..71=
-b99db 100644</span><br><span>--- a/src/openvpn/ssl.h</span><br><span>+++ b/=
-src/openvpn/ssl.h</span><br><span>@@ -410,11 +410,7 @@</span><br><span> boo=
-l ssl_clean_auth_token(void);</span><br><span> </span><br><span> #ifdef ENA=
-BLE_MANAGEMENT</span><br><span style=3D"color: hsl(0, 100%, 40%);">-/*</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">- * ssl_get_auth_challenge =
-will parse the server-pushed auth-failed</span><br><span style=3D"color: hs=
-l(0, 100%, 40%);">- * reason string and return a dynamically allocated</spa=
-n><br><span style=3D"color: hsl(0, 100%, 40%);">- * auth_challenge_info str=
-uct.</span><br><span style=3D"color: hsl(0, 100%, 40%);">- */</span><br><sp=
-an style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> void ssl_purge_=
-auth_challenge(void);</span><br><span> </span><br><span> void ssl_put_auth_=
-challenge(const char *cr_str);</span><br><span></span><br></pre><p>To view,=
- visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/476?usp=3Demail">ch=
-ange 476</a>. To unsubscribe, or for help writing mail filters, visit <a hr=
-ef=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope i=
-temtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"actio=
-n" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D=
-"http://gerrit.openvpn.net/c/openvpn/+/476?usp=3Demail"/><meta itemprop=3D"=
-name" content=3D"View Change"/></div></div>
+e: pre-wrap;">test_user_pass: Check fatal errors for empty username/passwor=
+d<br><br>Required a fix to mock_msg to make tests of M_FATAL<br>possible at=
+ all.<br>This also tests some cases which arguably should throw<br>a fatal =
+error but do not.<br><br>Change-Id: Icabc8acf75638c86c8c395e9ffecba7a7226cd=
+97<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>---<br>A=
+ tests/unit_tests/openvpn/input/appears_empty.txt<br>A tests/unit_tests/ope=
+nvpn/input/empty.txt<br>M tests/unit_tests/openvpn/mock_msg.c<br>M tests/un=
+it_tests/openvpn/test_user_pass.c<br>4 files changed, 68 insertions(+), 2 d=
+eletions(-)<br><br></pre><pre style=3D"font-family: monospace,monospace; wh=
+ite-space: pre-wrap;">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/=
+changes/74/474/1</pre><pre style=3D"font-family: monospace,monospace; white=
+-space: pre-wrap;"><span>diff --git a/tests/unit_tests/openvpn/input/appear=
+s_empty.txt b/tests/unit_tests/openvpn/input/appears_empty.txt</span><br><s=
+pan>new file mode 100644</span><br><span>index 0000000..ffb749a</span><br><=
+span>--- /dev/null</span><br><span>+++ b/tests/unit_tests/openvpn/input/app=
+ears_empty.txt</span><br><span>@@ -0,0 +1,3 @@</span><br><span style=3D"col=
+or: hsl(120, 100%, 40%);">+	</span><br><span style=3D"color: hsl(120, 100%,=
+ 40%);">+	</span><br><span style=3D"color: hsl(120, 100%, 40%);">+(contains=
+ \t\n\t\n)</span><br><span>diff --git a/tests/unit_tests/openvpn/input/empt=
+y.txt b/tests/unit_tests/openvpn/input/empty.txt</span><br><span>new file m=
+ode 100644</span><br><span>index 0000000..e69de29</span><br><span>--- /dev/=
+null</span><br><span>+++ b/tests/unit_tests/openvpn/input/empty.txt</span><=
+br><span>diff --git a/tests/unit_tests/openvpn/mock_msg.c b/tests/unit_test=
+s/openvpn/mock_msg.c</span><br><span>index d74efaa..2fcad9d 100644</span><b=
+r><span>--- a/tests/unit_tests/openvpn/mock_msg.c</span><br><span>+++ b/tes=
+ts/unit_tests/openvpn/mock_msg.c</span><br><span>@@ -38,7 +38,6 @@</span><b=
+r><span> #include &quot;error.h&quot;</span><br><span> </span><br><span> un=
+signed int x_debug_level =3D 0; /* Default to (almost) no debugging output =
+*/</span><br><span style=3D"color: hsl(0, 100%, 40%);">-bool fatal_error_tr=
+iggered =3D false;</span><br><span> </span><br><span> void</span><br><span>=
+ mock_set_debug_level(int level)</span><br><span>@@ -58,11 +57,14 @@</span>=
+<br><span> {</span><br><span>     if (flags &amp; M_FATAL)</span><br><span>=
+     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-        fatal_e=
+rror_triggered =3D true;</span><br><span>         printf(&quot;FATAL ERROR:=
+&quot;);</span><br><span>     }</span><br><span>     vprintf(format, arglis=
+t);</span><br><span>     printf(&quot;\n&quot;);</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    if (flags &amp; M_FATAL)</span><br><span s=
+tyle=3D"color: hsl(120, 100%, 40%);">+    {</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        mock_assert(false, &quot;FATAL ERROR&quot;,=
+ __FILE__, __LINE__);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    }</span><br><span> }</span><br><span> </span><br><span> void</span><b=
+r><span>diff --git a/tests/unit_tests/openvpn/test_user_pass.c b/tests/unit=
+_tests/openvpn/test_user_pass.c</span><br><span>index e468d3f..600ec80 1006=
+44</span><br><span>--- a/tests/unit_tests/openvpn/test_user_pass.c</span><b=
+r><span>+++ b/tests/unit_tests/openvpn/test_user_pass.c</span><br><span>@@ =
+-172,6 +172,24 @@</span><br><span> </span><br><span>     reset_user_pass(&a=
+mp;up);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40=
+%);">+    /*FIXME: query_user_exec() called even though nothing queued */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    will_return(query=
+_user_exec_builtin, true);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    /*FIXME: silently removes control characters but does not error =
+out */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_tr=
+ue(get_user_pass_cr(&amp;up, &quot;\t\n\t&quot;, &quot;UT&quot;, flags, NUL=
+L));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true=
+(up.defined);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    as=
+sert_string_equal(up.username, &quot;&quot;);</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+    assert_string_equal(up.password, &quot;&quot;=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    reset_user_pass(&amp;up);</span>=
+<br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+    /* Test Assertion */</span><br><span styl=
+e=3D"color: hsl(120, 100%, 40%);">+    /*FIXME: query_user_exec() called ev=
+en though nothing queued */</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    /*FIXME? username error thrown very late in stdin handling */</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+    will_return(query=
+_user_exec_builtin, true);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    expect_assert_failure(get_user_pass_cr(&amp;up, &quot;\nipasswor=
+d\n&quot;, &quot;UT&quot;, flags, NULL));</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);=
+">+    reset_user_pass(&amp;up);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+</span><br><span>     expect_string(query_user_exec_builtin, q=
+uery_user[i].prompt, &quot;Enter UT Password:&quot;);</span><br><span>     =
+will_return(query_user_exec_builtin, &quot;cpassword&quot;);</span><br><spa=
+n>     will_return(query_user_exec_builtin, true);</span><br><span>@@ -223,=
+6 +241,15 @@</span><br><span> </span><br><span>     reset_user_pass(&amp;up=
+);</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++    expect_string(query_user_exec_builtin, query_user[i].prompt, &quot;Ent=
+er UT Username:&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%)=
+;">+    expect_string(query_user_exec_builtin, query_user[i].prompt, &quot;=
+Enter UT Password:&quot;);</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+    will_return(query_user_exec_builtin, &quot;&quot;);</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    will_return(query_user_exec_=
+builtin, &quot;cpassword&quot;);</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+    will_return(query_user_exec_builtin, true);</span><br><spa=
+n style=3D"color: hsl(120, 100%, 40%);">+    expect_assert_failure(get_user=
+_pass_cr(&amp;up, &quot;stdin&quot;, &quot;UT&quot;, flags, NULL));</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    reset_user_pass(&amp;up);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     flags |=3D GET=
+_USER_PASS_PASSWORD_ONLY;</span><br><span>     expect_string(query_user_exe=
+c_builtin, query_user[i].prompt, &quot;Enter UT Password:&quot;);</span><br=
+><span>     will_return(query_user_exec_builtin, &quot;cpassword&quot;);</s=
+pan><br><span>@@ -231,6 +258,18 @@</span><br><span>     assert_true(up.defi=
+ned);</span><br><span>     assert_string_equal(up.username, &quot;user&quot=
+;);</span><br><span>     assert_string_equal(up.password, &quot;cpassword&q=
+uot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    reset_user_pass(&amp;up);</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+    flags |=3D GET_USER_PASS_PASSWORD_ONL=
+Y;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expect_string=
+(query_user_exec_builtin, query_user[i].prompt, &quot;Enter UT Password:&qu=
+ot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    will_retur=
+n(query_user_exec_builtin, &quot;&quot;);</span><br><span style=3D"color: h=
+sl(120, 100%, 40%);">+    will_return(query_user_exec_builtin, true);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    /*FIXME? does not err=
+or out on empty password */</span><br><span style=3D"color: hsl(120, 100%, =
+40%);">+    assert_true(get_user_pass_cr(&amp;up, &quot;stdin&quot;, &quot;=
+UT&quot;, flags, NULL));</span><br><span style=3D"color: hsl(120, 100%, 40%=
+);">+    assert_true(up.defined);</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+    assert_string_equal(up.username, &quot;user&quot;);</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_string_equal(u=
+p.password, &quot;&quot;);</span><br><span> }</span><br><span> </span><br><=
+span> static void</span><br><span>@@ -254,6 +293,17 @@</span><br><span> </s=
+pan><br><span>     reset_user_pass(&amp;up);</span><br><span> </span><br><s=
+pan style=3D"color: hsl(120, 100%, 40%);">+    snprintf(authfile, PATH_MAX,=
+ &quot;%s/%s&quot;, srcdir, &quot;input/appears_empty.txt&quot;);</span><br=
+><span style=3D"color: hsl(120, 100%, 40%);">+    /*FIXME: query_user_exec(=
+) called even though nothing queued */</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+    will_return(query_user_exec_builtin, true);</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    /*FIXME? does not error =
+out */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_tr=
+ue(get_user_pass_cr(&amp;up, authfile, &quot;UT&quot;, flags, NULL));</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_true(up.define=
+d);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    assert_strin=
+g_equal(up.username, &quot;&quot;);</span><br><span style=3D"color: hsl(120=
+, 100%, 40%);">+    assert_string_equal(up.password, &quot;&quot;);</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=3D"c=
+olor: hsl(120, 100%, 40%);">+    reset_user_pass(&amp;up);</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+</span><br><span>     snprintf(authf=
+ile, PATH_MAX, &quot;%s/%s&quot;, srcdir, &quot;input/user_only.txt&quot;);=
+</span><br><span>     expect_string(query_user_exec_builtin, query_user[i].=
+prompt, &quot;Enter UT Password:&quot;);</span><br><span>     will_return(q=
+uery_user_exec_builtin, &quot;cpassword&quot;);</span><br><span>@@ -266,6 +=
+316,11 @@</span><br><span> </span><br><span>     reset_user_pass(&amp;up);<=
+/span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  snprintf(authfile, PATH_MAX, &quot;%s/%s&quot;, srcdir, &quot;input/empty=
+.txt&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    exp=
+ect_assert_failure(get_user_pass_cr(&amp;up, authfile, &quot;UT&quot;, flag=
+s, NULL));</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    reset_user_pass(&amp;up)=
+;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span> =
+    flags |=3D GET_USER_PASS_PASSWORD_ONLY;</span><br><span>     snprintf(a=
+uthfile, PATH_MAX, &quot;%s/%s&quot;, srcdir, &quot;input/user_only.txt&quo=
+t;);</span><br><span>     /*FIXME: query_user_exec() called even though not=
+hing queued */</span><br><span>@@ -274,6 +329,12 @@</span><br><span>     as=
+sert_true(up.defined);</span><br><span>     assert_string_equal(up.username=
+, &quot;user&quot;);</span><br><span>     assert_string_equal(up.password, =
+&quot;fuser&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+=
+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    reset_user_pass=
+(&amp;up);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+    flags |=3D GET_USER_PASS=
+_PASSWORD_ONLY;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    =
+snprintf(authfile, PATH_MAX, &quot;%s/%s&quot;, srcdir, &quot;input/empty.t=
+xt&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    expec=
+t_assert_failure(get_user_pass_cr(&amp;up, authfile, &quot;UT&quot;, flags,=
+ NULL));</span><br><span> }</span><br><span> </span><br><span> const struct=
+ CMUnitTest user_pass_tests[] =3D {</span><br><span></span><br></pre><p>To =
+view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/474?usp=3Demai=
+l">change 474</a>. To unsubscribe, or for help writing mail filters, visit =
+<a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemsc=
+ope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"=
+action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/474?usp=3Demail"/><meta itempro=
+p=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I0abeec9f862aea1f6a8fdf350fa=
-0008cf2e5d613 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 476 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Icabc8acf75638c86c8c395e9ffe=
+cba7a7226cd97 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 474 </div>
 <div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
@@ -630,5 +433,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: newchange </div>
 
 
---HiF9i+MFgYM=--
+--ydX/LS4EbGQ=--
 
