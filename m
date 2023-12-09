@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 9 Dec 2023 10:05:27 +0000
+Date: Sat, 9 Dec 2023 10:05:32 +0000
 In-Reply-To: <gerrit.1701971374000.I605394d4f3872a168d05bbbe52d90f6d48935865@...2715...>
 References: <gerrit.1701971374000.I605394d4f3872a168d05bbbe52d90f6d48935865@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <37cf7a12ff34b9e19c441e184ed66518d6c51652-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <37cf7a12ff34b9e19c441e184ed66518d6c51652-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="xIJvtFlPia0="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="L9w3Q3vnYGU="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: Move
  tls_get_cipher_name_pair and get_num_elements to ssl_utils.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---xIJvtFlPia0=
+--L9w3Q3vnYGU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#2) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/470?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/47=
+0?usp=3Demail )
 
 Change subject: Move tls_get_cipher_name_pair and get_num_elements to ssl_u=
 tils.c
@@ -62,7 +58,7 @@ M src/openvpn/ssl_util.h
 8 files changed, 211 insertions(+), 208 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/70/470/2
+
 
 diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
 index ce6e4fd..bce63ed 100644
@@ -662,42 +658,38 @@ Gerrit-PatchSet: 2
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---xIJvtFlPia0=
+--L9w3Q3vnYGU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #2</strong> to the change originally cr=
-eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-470?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
- and were removed:
-Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Move tls_get_cipher_name_pair and get_num_ele=
-ments to ssl_utils.c<br><br>This allow these functions to be defined withou=
-t having to include ssl.c/misc.c<br>which pulls in a lot of more dependenci=
-es.<br><br>Change-Id: I605394d4f3872a168d05bbbe52d90f6d48935865<br>Signed-o=
-ff-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Frank Lichtenheld =
-&lt;frank@...2641...&gt;<br>Message-Id: &lt;20231208173346.94820-1-frank@...1186...=
-.2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1011...=
-eforge.net/msg27726.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...=
-&gt;<br>---<br>M src/openvpn/misc.c<br>M src/openvpn/misc.h<br>M src/openvp=
-n/ssl.c<br>M src/openvpn/ssl_backend.h<br>M src/openvpn/ssl_mbedtls.c<br>M =
-src/openvpn/ssl_openssl.c<br>M src/openvpn/ssl_util.c<br>M src/openvpn/ssl_=
-util.h<br>8 files changed, 211 insertions(+), 208 deletions(-)<br><br></pre=
-><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">gi=
-t pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/70/470/2</pre><p=
-re style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span=
->diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c</span><br><span>index=
- ce6e4fd..bce63ed 100644</span><br><span>--- a/src/openvpn/misc.c</span><br=
-><span>+++ b/src/openvpn/misc.c</span><br><span>@@ -773,26 +773,6 @@</span>=
-<br><span>     }</span><br><span> }</span><br><span> </span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(0, =
-100%, 40%);">-get_num_elements(const char *string, char delimiter)</span><b=
-r><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-    int string_len =3D strlen(string);</span><br><=
-span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: =
-hsl(0, 100%, 40%);">-    ASSERT(0 !=3D string_len);</span><br><span style=
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/470?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">Move tls_get_cipher_name_pair and get_num_elem=
+ents to ssl_utils.c<br><br>This allow these functions to be defined without=
+ having to include ssl.c/misc.c<br>which pulls in a lot of more dependencie=
+s.<br><br>Change-Id: I605394d4f3872a168d05bbbe52d90f6d48935865<br>Signed-of=
+f-by: Arne Schwabe &lt;arne@...1227...&gt;<br>Acked-by: Frank Lichtenheld &=
+lt;frank@...2641...&gt;<br>Message-Id: &lt;20231208173346.94820-1-frank@...493...=
+2641...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1659...=
+forge.net/msg27726.html<br>Signed-off-by: Gert Doering &lt;gert@...1296...&=
+gt;<br>---<br>M src/openvpn/misc.c<br>M src/openvpn/misc.h<br>M src/openvpn=
+/ssl.c<br>M src/openvpn/ssl_backend.h<br>M src/openvpn/ssl_mbedtls.c<br>M s=
+rc/openvpn/ssl_openssl.c<br>M src/openvpn/ssl_util.c<br>M src/openvpn/ssl_u=
+til.h<br>8 files changed, 211 insertions(+), 208 deletions(-)<br><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c</span><br><span>ind=
+ex ce6e4fd..bce63ed 100644</span><br><span>--- a/src/openvpn/misc.c</span><=
+br><span>+++ b/src/openvpn/misc.c</span><br><span>@@ -773,26 +773,6 @@</spa=
+n><br><span>     }</span><br><span> }</span><br><span> </span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-int</span><br><span style=3D"color: hsl(0=
+, 100%, 40%);">-get_num_elements(const char *string, char delimiter)</span>=
+<br><span style=3D"color: hsl(0, 100%, 40%);">-{</span><br><span style=3D"c=
+olor: hsl(0, 100%, 40%);">-    int string_len =3D strlen(string);</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-    ASSERT(0 !=3D string_len);</span><br><span style=
 =3D"color: hsl(0, 100%, 40%);">-</span><br><span style=3D"color: hsl(0, 100=
 %, 40%);">-    int element_count =3D 1;</span><br><span style=3D"color: hsl=
 (0, 100%, 40%);">-    /* Get number of ciphers */</span><br><span style=3D"=
@@ -1440,8 +1432,8 @@ ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---xIJvtFlPia0=--
+--L9w3Q3vnYGU=--
 
