@@ -1,14 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 11 Dec 2023 13:23:45 +0000
+Date: Mon, 11 Dec 2023 13:52:14 +0000
 In-Reply-To: <gerrit.1700585996000.I39fb3f05b6245af9ae5dd666bfc53ed07e5cfb24@...2715...>
 References: <gerrit.1700585996000.I39fb3f05b6245af9ae5dd666bfc53ed07e5cfb24@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <c436523801f50082645b6eb4579beebcdba8d678-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <4a280c870c8c4d37f14397df0d06773f391efcf7-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Uz1eQkeoaPM="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="myt0TAbc8IY="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: Cache mbed TLS
  dependency and build latest 2.x mbed TLS as well
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,115 +19,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Uz1eQkeoaPM=
+--myt0TAbc8IY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos.
+Attention is currently required from: flichtenheld.
 
-Hello flichtenheld,
-
-I'd like you to reexamine a change. Please visit
-
-    http://gerrit.openvpn.net/c/openvpn/+/455?usp=3Demail
-
-to look at the new patch set (#4).
-
+plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
+/openvpn/+/455?usp=3Demail )
 
 Change subject: Cache mbed TLS dependency and build latest 2.x mbed TLS as =
 well
 ......................................................................
 
-Cache mbed TLS dependency and build latest 2.x mbed TLS as well
 
-Change-Id: I39fb3f05b6245af9ae5dd666bfc53ed07e5cfb24
-Signed-off-by: Arne Schwabe <arne@...1227...>
----
-M .github/workflows/build.yaml
-1 file changed, 24 insertions(+), 8 deletions(-)
+Patch Set 4:
+
+(1 comment)
+
+File .github/workflows/build.yaml:
+
+http://gerrit.openvpn.net/c/openvpn/+/455/comment/ffeba586_8fb3a0cb :
+PS3, Line 396:           if: steps.cache.outputs.cache-hit !=3D 'true'
+> if at wrong level: [=E2=80=A6]
+Done
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/55/455/4
-
-diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
-index 4393f5c..6088589 100644
---- a/.github/workflows/build.yaml
-+++ b/.github/workflows/build.yaml
-@@ -355,8 +355,8 @@
-       fail-fast: false
-       matrix:
-         os: [ubuntu-22.04]
--        ssllib: [mbedtls3]
-         build: [ normal, asan ]
-+        mbedtlsver: [ v3.5.1, v2.28.6 ]
-         include:
-           - build: asan
-             cflags: "-fsanitize=3Daddress -fno-sanitize-recover=3Dall  -fn=
-o-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame=
--pointer -g -O1"
-@@ -367,29 +367,45 @@
-             ldflags: ""
-             cc: gcc
-
--    name: "${{matrix.cc}} ${{matrix.build}} - ${{matrix.os}} - ${{matrix.s=
-sllib}}"
-+    name: "${{matrix.cc}} ${{matrix.build}} - ${{matrix.os}} - mbed TLS ${=
-{matrix.mbedtlsver}}"
-     runs-on: ${{matrix.os}}
-     env:
-       CFLAGS: ${{ matrix.cflags }}
-       LDFLAGS: ${{ matrix.ldflags }}
-       CC: ${{matrix.cc}}
-       UBSAN_OPTIONS: print_stacktrace=3D1
-+      MBEDTLS_CFLAGS: -I/opt/mbedtls/include
-+      MBEDTLS_LIBS: -L/opt/mbedtls/lib -lmbedtls -lmbedx509 -lmbedcrypto
-
-     steps:
-       - name: Install dependencies
-         run: sudo apt update && sudo apt install -y liblzo2-dev libpam0g-d=
-ev liblz4-dev linux-libc-dev man2html clang libcmocka-dev python3-docutils =
-python3-jinja2 python3-jsonschema libtool automake autoconf pkg-config libc=
-ap-ng-dev libnl-genl-3-dev
--      - name: "mbedtls: checkout"
-+
-+      - name: Cache mbed TLS
-+        id: cache
-+        uses: actions/cache@...2689...
-+        with:
-+          path: '/opt/mbedtls'
-+          key: ${{ matrix.build }}-mbedtls-${{matrix.mbedtlsver}}-${{matri=
-x.cmakebuild}}
-+      - name: "Mbed TLS: checkout"
-+        if: steps.cache.outputs.cache-hit !=3D 'true'
-         uses: actions/checkout@...2689...
-         with:
-           path: mbedtls
-           repository: Mbed-TLS/mbedtls
--          ref: v3.5.0
--      - name: "mbedtls: make no_test"
--        run: make -j3 no_test SHARED=3D1
-+          ref: ${{ matrix.mbedtlsver }}
-+      - name: "Mbed TLS: make"
-+        if: steps.cache.outputs.cache-hit !=3D 'true'
-+        run: make -j3 SHARED=3D1
-         working-directory: mbedtls
--      - name: "mbedtls: make install"
--        run: sudo make install DESTDIR=3D/usr
-+      - name: "Mbed TLS: make install"
-+        if: steps.cache.outputs.cache-hit !=3D 'true'
-+        run: sudo make install DESTDIR=3D/opt/mbedtls
-         working-directory: mbedtls
-+      - name: add /opt/mbedtls/lib to ld.so.conf.d
-+        run: echo /opt/mbedtls/lib | sudo tee /etc/ld.so.conf.d/mbedtls.co=
-nf
-+      - name: "ldconfig"
-+        run: sudo ldconfig
-       - name: Checkout OpenVPN
-         uses: actions/checkout@...2689...
-       - name: autoconf
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/455?usp=3Demail
@@ -142,100 +61,36 @@ Gerrit-PatchSet: 4
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-MessageType: newpatchset
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-Comment-Date: Mon, 11 Dec 2023 13:52:14 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-MessageType: comment
 
---Uz1eQkeoaPM=
+--myt0TAbc8IY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos. </p>
-<p>plaisthos <strong>uploaded patch set #4</strong> to this change.</p><p><=
-a href=3D"http://gerrit.openvpn.net/c/openvpn/+/455?usp=3Demail">View Chang=
-e</a></p><pre style=3D"font-family: monospace,monospace; white-space: pre-w=
-rap;">Cache mbed TLS dependency and build latest 2.x mbed TLS as well<br><b=
-r>Change-Id: I39fb3f05b6245af9ae5dd666bfc53ed07e5cfb24<br>Signed-off-by: Ar=
-ne Schwabe &lt;arne@...1227...&gt;<br>---<br>M .github/workflows/build.yaml=
-<br>1 file changed, 24 insertions(+), 8 deletions(-)<br><br></pre><pre styl=
-e=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh=
-://gerrit.openvpn.net:29418/openvpn refs/changes/55/455/4</pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --=
-git a/.github/workflows/build.yaml b/.github/workflows/build.yaml</span><br=
-><span>index 4393f5c..6088589 100644</span><br><span>--- a/.github/workflow=
-s/build.yaml</span><br><span>+++ b/.github/workflows/build.yaml</span><br><=
-span>@@ -355,8 +355,8 @@</span><br><span>       fail-fast: false</span><br>=
-<span>       matrix:</span><br><span>         os: [ubuntu-22.04]</span><br>=
-<span style=3D"color: hsl(0, 100%, 40%);">-        ssllib: [mbedtls3]</span=
-><br><span>         build: [ normal, asan ]</span><br><span style=3D"color:=
- hsl(120, 100%, 40%);">+        mbedtlsver: [ v3.5.1, v2.28.6 ]</span><br><=
-span>         include:</span><br><span>           - build: asan</span><br><=
-span>             cflags: &quot;-fsanitize=3Daddress -fno-sanitize-recover=
-=3Dall  -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno=
--omit-frame-pointer -g -O1&quot;</span><br><span>@@ -367,29 +367,45 @@</spa=
-n><br><span>             ldflags: &quot;&quot;</span><br><span>            =
- cc: gcc</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
-);">-    name: &quot;${{matrix.cc}} ${{matrix.build}} - ${{matrix.os}} - ${=
-{matrix.ssllib}}&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+    name: &quot;${{matrix.cc}} ${{matrix.build}} - ${{matrix.os}} - mbed=
- TLS ${{matrix.mbedtlsver}}&quot;</span><br><span>     runs-on: ${{matrix.o=
-s}}</span><br><span>     env:</span><br><span>       CFLAGS: ${{ matrix.cfl=
-ags }}</span><br><span>       LDFLAGS: ${{ matrix.ldflags }}</span><br><spa=
-n>       CC: ${{matrix.cc}}</span><br><span>       UBSAN_OPTIONS: print_sta=
-cktrace=3D1</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      MB=
-EDTLS_CFLAGS: -I/opt/mbedtls/include</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+      MBEDTLS_LIBS: -L/opt/mbedtls/lib -lmbedtls -lmbedx50=
-9 -lmbedcrypto</span><br><span> </span><br><span>     steps:</span><br><spa=
-n>       - name: Install dependencies</span><br><span>         run: sudo ap=
-t update &amp;&amp; sudo apt install -y liblzo2-dev libpam0g-dev liblz4-dev=
- linux-libc-dev man2html clang libcmocka-dev python3-docutils python3-jinja=
-2 python3-jsonschema libtool automake autoconf pkg-config libcap-ng-dev lib=
-nl-genl-3-dev</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - =
-name: &quot;mbedtls: checkout&quot;</span><br><span style=3D"color: hsl(120=
-, 100%, 40%);">+</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-   - name: Cache mbed TLS</span><br><span style=3D"color: hsl(120, 100%, 40=
-%);">+        id: cache</span><br><span style=3D"color: hsl(120, 100%, 40%)=
-;">+        uses: actions/cache@...2689...</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+        with:</span><br><span style=3D"color: hsl(12=
-0, 100%, 40%);">+          path: &#39;/opt/mbedtls&#39;</span><br><span sty=
-le=3D"color: hsl(120, 100%, 40%);">+          key: ${{ matrix.build }}-mbed=
-tls-${{matrix.mbedtlsver}}-${{matrix.cmakebuild}}</span><br><span style=3D"=
-color: hsl(120, 100%, 40%);">+      - name: &quot;Mbed TLS: checkout&quot;<=
-/span><br><span style=3D"color: hsl(120, 100%, 40%);">+        if: steps.ca=
-che.outputs.cache-hit !=3D &#39;true&#39;</span><br><span>         uses: ac=
-tions/checkout@...2689...</span><br><span>         with:</span><br><span>  =
-         path: mbedtls</span><br><span>           repository: Mbed-TLS/mbed=
-tls</span><br><span style=3D"color: hsl(0, 100%, 40%);">-          ref: v3.=
-5.0</span><br><span style=3D"color: hsl(0, 100%, 40%);">-      - name: &quo=
-t;mbedtls: make no_test&quot;</span><br><span style=3D"color: hsl(0, 100%, =
-40%);">-        run: make -j3 no_test SHARED=3D1</span><br><span style=3D"c=
-olor: hsl(120, 100%, 40%);">+          ref: ${{ matrix.mbedtlsver }}</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+      - name: &quot;Mbed T=
-LS: make&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+     =
-   if: steps.cache.outputs.cache-hit !=3D &#39;true&#39;</span><br><span st=
-yle=3D"color: hsl(120, 100%, 40%);">+        run: make -j3 SHARED=3D1</span=
-><br><span>         working-directory: mbedtls</span><br><span style=3D"col=
-or: hsl(0, 100%, 40%);">-      - name: &quot;mbedtls: make install&quot;</s=
-pan><br><span style=3D"color: hsl(0, 100%, 40%);">-        run: sudo make i=
-nstall DESTDIR=3D/usr</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+      - name: &quot;Mbed TLS: make install&quot;</span><br><span style=3D=
-"color: hsl(120, 100%, 40%);">+        if: steps.cache.outputs.cache-hit !=
-=3D &#39;true&#39;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ =
-       run: sudo make install DESTDIR=3D/opt/mbedtls</span><br><span>      =
-   working-directory: mbedtls</span><br><span style=3D"color: hsl(120, 100%=
-, 40%);">+      - name: add /opt/mbedtls/lib to ld.so.conf.d</span><br><spa=
-n style=3D"color: hsl(120, 100%, 40%);">+        run: echo /opt/mbedtls/lib=
- | sudo tee /etc/ld.so.conf.d/mbedtls.conf</span><br><span style=3D"color: =
-hsl(120, 100%, 40%);">+      - name: &quot;ldconfig&quot;</span><br><span s=
-tyle=3D"color: hsl(120, 100%, 40%);">+        run: sudo ldconfig</span><br>=
-<span>       - name: Checkout OpenVPN</span><br><span>         uses: action=
-s/checkout@...2689...</span><br><span>       - name: autoconf</span><br><sp=
-an></span><br></pre><p>To view, visit <a href=3D"http://gerrit.openvpn.net/=
-c/openvpn/+/455?usp=3Demail">change 455</a>. To unsubscribe, or for help wr=
-iting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">se=
-ttings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><=
-div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"=
-><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/455?u=
-sp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p> Attention is currently required from: flichtenheld. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/455?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File .github/workflows/build.yaml:</=
+p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddi=
+ng: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.=
+openvpn.net/c/openvpn/+/455/comment/ffeba586_8fb3a0cb">Patch Set #3, Line 3=
+96:</a> <code style=3D"font-family:monospace,monospace">          if: steps=
+.cache.outputs.cache-hit !=3D &#39;true&#39;</code></p><p><blockquote style=
+=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">if at wr=
+ong level: [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; w=
+ord-wrap: break-word;">Done</p></li></ul></li></ul><p>To view, visit <a hre=
+f=3D"http://gerrit.openvpn.net/c/openvpn/+/455?usp=3Demail">change 455</a>.=
+ To unsubscribe, or for help writing mail filters, visit <a href=3D"http://=
+gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"ht=
+tp://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
+=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
+rit.openvpn.net/c/openvpn/+/455?usp=3Demail"/><meta itemprop=3D"name" conte=
+nt=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -249,10 +104,16 @@ sp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 11 Dec 2023 13:52:14=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
+.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---Uz1eQkeoaPM=--
+--myt0TAbc8IY=--
 
