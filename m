@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 11 Dec 2023 14:53:05 +0000
-In-Reply-To: <gerrit.1701876289000.I193aef06912f01426dd4ac298aadfab97dd75a35@...2715...>
-References: <gerrit.1701876289000.I193aef06912f01426dd4ac298aadfab97dd75a35@...2715...>
+Date: Mon, 11 Dec 2023 14:56:05 +0000
+In-Reply-To: <gerrit.1702052980000.I911fb5c5fa4b41f1fc1a30c6bf8b314245f64a6e@...2715...>
+References: <gerrit.1702052980000.I911fb5c5fa4b41f1fc1a30c6bf8b314245f64a6e@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <36c9d311f8cc5bd9d498e20760cf38496eda9bdf-EmailReviewComments-HTML@...2715...>
+Message-ID: <5f767a7d8d27be87bc02904dc910bfd2c972e459-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Gmhnhf0EyKY="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: test_user_pass: new
- UT for get_user_pass
+Content-Type: multipart/alternative; boundary="guU6OI4jBiA="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: buffer: add
+ documentation for string_mod and extend related UT
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,86 +22,65 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Gmhnhf0EyKY=
+--guU6OI4jBiA=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld.
 
 plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/468?usp=3Demail )
+/openvpn/+/472?usp=3Demail )
 
-Change subject: test_user_pass: new UT for get_user_pass
+Change subject: buffer: add documentation for string_mod and extend related=
+ UT
 ......................................................................
 
 
-Patch Set 3:
-
-(1 comment)
-
-File CMakeLists.txt:
-
-http://gerrit.openvpn.net/c/openvpn/+/468/comment/444e8ac1_9c9bf24b :
-PS3, Line 625:                 ENVIRONMENT "srcdir=3D${CMAKE_CURRENT_SOURCE=
-_DIR}/tests/unit_tests/openvpn")
-> Why not use a define instead like  [=E2=80=A6]
-Also my IDE (Clion) does not pick this up, so I have manually configure to =
-add that environment variable to run tests now.
-
+Patch Set 1: Code-Review+2
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/468?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/472?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I193aef06912f01426dd4ac298aadfab97dd75a35
-Gerrit-Change-Number: 468
-Gerrit-PatchSet: 3
+Gerrit-Change-Id: I911fb5c5fa4b41f1fc1a30c6bf8b314245f64a6e
+Gerrit-Change-Number: 472
+Gerrit-PatchSet: 1
 Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 11 Dec 2023 14:53:05 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Mon, 11 Dec 2023 14:56:05 +0000
+Gerrit-HasComments: No
+Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---Gmhnhf0EyKY=
+--guU6OI4jBiA=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/468?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File CMakeLists.txt:</p><ul style=3D=
-"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px=
-;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/468/comment/444e8ac1_9c9bf24b">Patch Set #3, Line 625:</a> <code =
-style=3D"font-family:monospace,monospace">                ENVIRONMENT &quot=
-;srcdir=3D${CMAKE_CURRENT_SOURCE_DIR}/tests/unit_tests/openvpn&quot;)</code=
-></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; p=
-adding: 0 10px;">Why not use a define instead like  [=E2=80=A6]</blockquote=
-></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Also my IDE=
- (Clion) does not pick this up, so I have manually configure to add that en=
-vironment variable to run tests now.</p></li></ul></li></ul><p>To view, vis=
-it <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/468?usp=3Demail">change=
- 468</a>. To unsubscribe, or for help writing mail filters, visit <a href=
-=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
-mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
- itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/468?usp=3Demail"/><meta itemprop=3D"na=
-me" content=3D"View Change"/></div></div>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/472?usp=3Demail">Vi=
+ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
+w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/472?usp=3Demail">=
+change 472</a>. To unsubscribe, or for help writing mail filters, visit <a =
+href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
+ itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
+ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
+=3D"http://gerrit.openvpn.net/c/openvpn/+/472?usp=3Demail"/><meta itemprop=
+=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I193aef06912f01426dd4ac298aa=
-dfab97dd75a35 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 468 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I911fb5c5fa4b41f1fc1a30c6bf8=
+b314245f64a6e </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 472 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
 .&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
@@ -110,14 +89,12 @@ dfab97dd75a35 </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 11 Dec 2023 14:53:05=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 11 Dec 2023 14:56:05=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
-n@...1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-HasComments: No </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---Gmhnhf0EyKY=--
+--guU6OI4jBiA=--
 
