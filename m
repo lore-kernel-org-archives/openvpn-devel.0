@@ -1,14 +1,14 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Mon, 11 Dec 2023 14:42:48 +0000
+Date: Mon, 11 Dec 2023 14:53:05 +0000
 In-Reply-To: <gerrit.1701876289000.I193aef06912f01426dd4ac298aadfab97dd75a35@...2715...>
 References: <gerrit.1701876289000.I193aef06912f01426dd4ac298aadfab97dd75a35@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <2593a1d9f7a8f102f555cdba9af7386ed134bd30-EmailReviewComments-HTML@...2715...>
+Message-ID: <36c9d311f8cc5bd9d498e20760cf38496eda9bdf-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="VfWPSTOVnWE="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Gmhnhf0EyKY="; charset=UTF-8
 Subject: [Openvpn-devel] [L] Change in openvpn[master]: test_user_pass: new
  UT for get_user_pass
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---VfWPSTOVnWE=
+--Gmhnhf0EyKY=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -37,25 +37,16 @@ Change subject: test_user_pass: new UT for get_user_pass
 
 Patch Set 3:
 
-(2 comments)
+(1 comment)
 
 File CMakeLists.txt:
 
-http://gerrit.openvpn.net/c/openvpn/+/468/comment/ced071e8_e7d892e4 :
+http://gerrit.openvpn.net/c/openvpn/+/468/comment/444e8ac1_9c9bf24b :
 PS3, Line 625:                 ENVIRONMENT "srcdir=3D${CMAKE_CURRENT_SOURCE=
 _DIR}/tests/unit_tests/openvpn")
-Why not use a define instead like
-
-add_compile_definition(${target} -DSRCDIR=3D"${CMAKE_CURRENT_SOURCE_DIR}"? =
-That seems less fragile then an environment variable.
-
-
-File tests/unit_tests/openvpn/test_user_pass.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/468/comment/c4d4854d_87b23353 :
-PS3, Line 86: }
-I think we should be consistent here. Either do the (void) var; in all mock=
-ed functions or none. I would prefer not to use them if not necessary.
+> Why not use a define instead like  [=E2=80=A6]
+Also my IDE (Clion) does not pick this up, so I have manually configure to =
+add that environment variable to run tests now.
 
 
 
@@ -73,44 +64,37 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Mon, 11 Dec 2023 14:42:48 +0000
+Gerrit-Comment-Date: Mon, 11 Dec 2023 14:53:05 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
+Comment-In-Reply-To: plaisthos <arne-openvpn@...1227...>
 Gerrit-MessageType: comment
 
---VfWPSTOVnWE=
+--Gmhnhf0EyKY=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
 <p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/468?usp=3Demail">View C=
-hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File CMakeLists.txt:</p><ul style=
-=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
-6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/468/comment/ced071e8_e7d892e4">Patch Set #3, Line 625:</a> <co=
-de style=3D"font-family:monospace,monospace">                ENVIRONMENT &q=
-uot;srcdir=3D${CMAKE_CURRENT_SOURCE_DIR}/tests/unit_tests/openvpn&quot;)</c=
-ode></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Why not =
-use a define instead like </p><p style=3D"white-space: pre-wrap; word-wrap:=
- break-word;">add_compile_definition(${target} -DSRCDIR=3D&quot;${CMAKE_CUR=
-RENT_SOURCE_DIR}&quot;? That seems less fragile then an environment variabl=
-e.</p></li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File tests/uni=
-t_tests/openvpn/test_user_pass.c:</p><ul style=3D"list-style: none; padding=
-: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bott=
-om: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/468/comment/c4d4=
-854d_87b23353">Patch Set #3, Line 86:</a> <code style=3D"font-family:monosp=
-ace,monospace">}</code></p><p style=3D"white-space: pre-wrap; word-wrap: br=
-eak-word;">I think we should be consistent here. Either do the (void) var; =
-in all mocked functions or none. I would prefer not to use them if not nece=
-ssary.</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.op=
-envpn.net/c/openvpn/+/468?usp=3Demail">change 468</a>. To unsubscribe, or f=
-or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
-ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
-Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
-iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
-pn/+/468?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
-iv></div>
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File CMakeLists.txt:</p><ul style=3D=
+"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px=
+;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/=
+openvpn/+/468/comment/444e8ac1_9c9bf24b">Patch Set #3, Line 625:</a> <code =
+style=3D"font-family:monospace,monospace">                ENVIRONMENT &quot=
+;srcdir=3D${CMAKE_CURRENT_SOURCE_DIR}/tests/unit_tests/openvpn&quot;)</code=
+></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; p=
+adding: 0 10px;">Why not use a define instead like  [=E2=80=A6]</blockquote=
+></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Also my IDE=
+ (Clion) does not pick this up, so I have manually configure to add that en=
+vironment variable to run tests now.</p></li></ul></li></ul><p>To view, vis=
+it <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/468?usp=3Demail">change=
+ 468</a>. To unsubscribe, or for help writing mail filters, visit <a href=
+=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope ite=
+mtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action"=
+ itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/468?usp=3Demail"/><meta itemprop=3D"na=
+me" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -126,12 +110,14 @@ dfab97dd75a35 </div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 11 Dec 2023 14:42:48=
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 11 Dec 2023 14:53:05=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: plaisthos &lt;arne-openvp=
+n@...1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---VfWPSTOVnWE=--
+--Gmhnhf0EyKY=--
 
