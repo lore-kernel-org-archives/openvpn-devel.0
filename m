@@ -1,11 +1,11 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Mon, 11 Dec 2023 18:02:14 +0100
-Message-Id: <20231211170214.85417-1-frank@...2641...>
-In-Reply-To: <gerrit.1702052980000.I911fb5c5fa4b41f1fc1a30c6bf8b314245f64a6e@...2715...>
-References: <gerrit.1702052980000.I911fb5c5fa4b41f1fc1a30c6bf8b314245f64a6e@...2715...>
+Date: Mon, 11 Dec 2023 18:04:21 +0100
+Message-Id: <20231211170421.85600-1-frank@...2641...>
+In-Reply-To: <gerrit.1700743197000.I04f8c7c413e7cb62c726262feee6ca89c7e86c70@...2715...>
+References: <gerrit.1700743197000.I04f8c7c413e7cb62c726262feee6ca89c7e86c70@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v1] buffer: add documentation for string_mod
- and extend related UT
+Subject: [Openvpn-devel] [PATCH v5] Check PRF availability on initialisation
+ and add --force-tls-key-material-export
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,182 +17,195 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Arne Schwabe <arne-openvpn@...1227...>
 
-Since I was confused what exactly string_mod does, I
-added documentation and additional UTs to make it
-clearer.
+From: Arne Schwabe <arne@...1227...>
 
-Change-Id: I911fb5c5fa4b41f1fc1a30c6bf8b314245f64a6e
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Arne Schwabe <arne-openvpn@...1227...>
+We now warn a user if the TLS 1.0 PRF is not supported by the cryptographic
+library of the system. Also add the option --force-tls-key-material-export
+that automatically rejects clients that do not support TLS Keying Material
+Export and automatically enable it when TLS 1.0 PRF support is not available.
+
+Change-Id: I04f8c7c413e7cb62c726262feee6ca89c7e86c70
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
 ---
 
 This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master and release/2.6.
+developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/472
-This mail reflects revision 1 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/460
+This mail reflects revision 5 of this Change.
 Acked-by according to Gerrit (reflected above):
-Arne Schwabe <arne-openvpn@...1227...>
+Frank Lichtenheld <frank@...2641...>
 
         
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index 0456b27..61fc3a5 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -898,51 +898,78 @@
- 
- /* character classes */
- 
--#define CC_ANY                (1<<0)
--#define CC_NULL               (1<<1)
-+#define CC_ANY                (1<<0) /**< any character */
-+#define CC_NULL               (1<<1) /**< null character \0 */
- 
--#define CC_ALNUM              (1<<2)
--#define CC_ALPHA              (1<<3)
--#define CC_ASCII              (1<<4)
--#define CC_CNTRL              (1<<5)
--#define CC_DIGIT              (1<<6)
--#define CC_PRINT              (1<<7)
--#define CC_PUNCT              (1<<8)
--#define CC_SPACE              (1<<9)
--#define CC_XDIGIT             (1<<10)
-+#define CC_ALNUM              (1<<2) /**< alphanumeric isalnum() */
-+#define CC_ALPHA              (1<<3) /**< alphabetic isalpha() */
-+#define CC_ASCII              (1<<4) /**< ASCII character */
-+#define CC_CNTRL              (1<<5) /**< control character iscntrl() */
-+#define CC_DIGIT              (1<<6) /**< digit isdigit() */
-+#define CC_PRINT              (1<<7) /**< printable (>= 32, != 127) */
-+#define CC_PUNCT              (1<<8) /**< punctuation ispunct() */
-+#define CC_SPACE              (1<<9) /**< whitespace isspace() */
-+#define CC_XDIGIT             (1<<10) /**< hex digit isxdigit() */
- 
--#define CC_BLANK              (1<<11)
--#define CC_NEWLINE            (1<<12)
--#define CC_CR                 (1<<13)
-+#define CC_BLANK              (1<<11) /**< space or tab */
-+#define CC_NEWLINE            (1<<12) /**< newline */
-+#define CC_CR                 (1<<13) /**< carriage return */
- 
--#define CC_BACKSLASH          (1<<14)
--#define CC_UNDERBAR           (1<<15)
--#define CC_DASH               (1<<16)
--#define CC_DOT                (1<<17)
--#define CC_COMMA              (1<<18)
--#define CC_COLON              (1<<19)
--#define CC_SLASH              (1<<20)
--#define CC_SINGLE_QUOTE       (1<<21)
--#define CC_DOUBLE_QUOTE       (1<<22)
--#define CC_REVERSE_QUOTE      (1<<23)
--#define CC_AT                 (1<<24)
--#define CC_EQUAL              (1<<25)
--#define CC_LESS_THAN          (1<<26)
--#define CC_GREATER_THAN       (1<<27)
--#define CC_PIPE               (1<<28)
--#define CC_QUESTION_MARK      (1<<29)
--#define CC_ASTERISK           (1<<30)
-+#define CC_BACKSLASH          (1<<14) /**< backslash */
-+#define CC_UNDERBAR           (1<<15) /**< underscore */
-+#define CC_DASH               (1<<16) /**< dash */
-+#define CC_DOT                (1<<17) /**< dot */
-+#define CC_COMMA              (1<<18) /**< comma */
-+#define CC_COLON              (1<<19) /**< colon */
-+#define CC_SLASH              (1<<20) /**< slash */
-+#define CC_SINGLE_QUOTE       (1<<21) /**< single quote */
-+#define CC_DOUBLE_QUOTE       (1<<22) /**< double quote */
-+#define CC_REVERSE_QUOTE      (1<<23) /**< reverse quote */
-+#define CC_AT                 (1<<24) /**< at sign */
-+#define CC_EQUAL              (1<<25) /**< equal sign */
-+#define CC_LESS_THAN          (1<<26) /**< less than sign */
-+#define CC_GREATER_THAN       (1<<27) /**< greater than sign */
-+#define CC_PIPE               (1<<28) /**< pipe */
-+#define CC_QUESTION_MARK      (1<<29) /**< question mark */
-+#define CC_ASTERISK           (1<<30) /**< asterisk */
- 
- /* macro classes */
--#define CC_NAME               (CC_ALNUM|CC_UNDERBAR)
--#define CC_CRLF               (CC_CR|CC_NEWLINE)
-+#define CC_NAME               (CC_ALNUM|CC_UNDERBAR) /**< alphanumeric plus underscore */
-+#define CC_CRLF               (CC_CR|CC_NEWLINE) /**< carriage return or newline */
- 
- bool char_class(const unsigned char c, const unsigned int flags);
- 
- bool string_class(const char *str, const unsigned int inclusive, const unsigned int exclusive);
- 
-+/**
-+ * Modifies a string in place by replacing certain classes of characters of it with a specified
-+ * character.
-+ *
-+ * Guaranteed to not increase the length of the string.
-+ * If replace is 0, characters are skipped instead of replaced.
-+ *
-+ * @param str The string to be modified.
-+ * @param inclusive The character classes not to be replaced.
-+ * @param exclusive Character classes to be replaced even if they are also in inclusive.
-+ * @param replace The character to replace the specified character classes with.
-+ * @return True if the string was not modified, false otherwise.
-+ */
- bool string_mod(char *str, const unsigned int inclusive, const unsigned int exclusive, const char replace);
- 
-+/**
-+ * Returns a copy of a string with certain classes of characters of it replaced with a specified
-+ * character.
-+ *
-+ * If replace is 0, characters are skipped instead of replaced.
-+ *
-+ * @param str       The input string to be modified.
-+ * @param inclusive Character classes not to be replaced.
-+ * @param exclusive Character classes to be replaced even if they are also in inclusive.
-+ * @param replace   The character to replace the specified character classes with.
-+ * @param gc        The garbage collector arena to allocate memory from.
-+ *
-+ * @return The modified string with characters replaced within the specified range.
-+ */
- const char *string_mod_const(const char *str,
-                              const unsigned int inclusive,
-                              const unsigned int exclusive,
-diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
-index f994812..ee84c1f 100644
---- a/tests/unit_tests/openvpn/test_buffer.c
-+++ b/tests/unit_tests/openvpn/test_buffer.c
-@@ -324,23 +324,32 @@
- {
-     char buf[256];
-     strcpy(buf, "There is \x01 a nice 1234 year old tr\x7f ee!");
--    string_mod(buf, CC_PRINT, 0, '@');
-+    assert_false(string_mod(buf, CC_PRINT, 0, '@'));
-     assert_string_equal(buf, "There is @ a nice 1234 year old tr@ ee!");
- 
-     strcpy(buf, "There is \x01 a nice 1234 year old tr\x7f ee!");
--    string_mod(buf, CC_PRINT, CC_DIGIT, '@');
-+    assert_true(string_mod(buf, CC_ANY, 0, '@'));
-+    assert_string_equal(buf, "There is \x01 a nice 1234 year old tr\x7f ee!");
+diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
+index 948c0c8..8b061d2 100644
+--- a/doc/man-sections/protocol-options.rst
++++ b/doc/man-sections/protocol-options.rst
+@@ -242,3 +242,11 @@
+   a key renegotiation begins (default :code:`3600` seconds). This feature
+   allows for a graceful transition from old to new key, and removes the key
+   renegotiation sequence from the critical path of tunnel data forwarding.
 +
-+    /* 0 as replace removes characters */
-+    strcpy(buf, "There is \x01 a nice 1234 year old tr\x7f ee!");
-+    assert_false(string_mod(buf, CC_PRINT, 0, '\0'));
-+    assert_string_equal(buf, "There is  a nice 1234 year old tr ee!");
++--force-tls-key-material-export
++  This option is only available in --mode server and forces to use
++  Keying Material Exporters (RFC 5705) for clients. This can be used to
++  simulate an environment where the cryptographic library does not support
++  the older method to generate data channel keys anymore. This option is
++  intended to be a test option and might be removed in a future OpenVPN
++  version without notice.
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index e4452d7..8c17f2a 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1789,3 +1789,22 @@
+     gc_free(&gc);
+     return ret;
+ }
 +
-+    strcpy(buf, "There is \x01 a nice 1234 year old tr\x7f ee!");
-+    assert_false(string_mod(buf, CC_PRINT, CC_DIGIT, '@'));
-     assert_string_equal(buf, "There is @ a nice @@@@ year old tr@ ee!");
- 
-     strcpy(buf, "There is \x01 a nice 1234 year old tr\x7f ee!");
--    string_mod(buf, CC_ALPHA, CC_DIGIT, '.');
-+    assert_false(string_mod(buf, CC_ALPHA, CC_DIGIT, '.'));
-     assert_string_equal(buf, "There.is...a.nice......year.old.tr..ee.");
- 
-     strcpy(buf, "There is \x01 a 'nice' \"1234\"\n year old \ntr\x7f ee!");
--    string_mod(buf, CC_ALPHA|CC_DIGIT|CC_NEWLINE|CC_SINGLE_QUOTE, CC_DOUBLE_QUOTE|CC_BLANK, '.');
-+    assert_false(string_mod(buf, CC_ALPHA|CC_DIGIT|CC_NEWLINE|CC_SINGLE_QUOTE, CC_DOUBLE_QUOTE|CC_BLANK, '.'));
-     assert_string_equal(buf, "There.is...a.'nice'..1234.\n.year.old.\ntr..ee.");
- 
-     strcpy(buf, "There is a \\'nice\\' \"1234\" [*] year old \ntree!");
--    string_mod(buf, CC_PRINT, CC_BACKSLASH|CC_ASTERISK, '.');
-+    assert_false(string_mod(buf, CC_PRINT, CC_BACKSLASH|CC_ASTERISK, '.'));
-     assert_string_equal(buf, "There is a .'nice.' \"1234\" [.] year old .tree!");
++bool
++check_tls_prf_working(void)
++{
++    /* Modern TLS libraries might no longer support the TLS 1.0 PRF with
++     * MD5+SHA1. This allows us to establish connections only
++     * with other 2.6.0+ OpenVPN peers.
++     * Do a simple dummy test here to see if it works. */
++    const char *seed = "tls1-prf-test";
++    const char *secret = "tls1-prf-test-secret";
++    uint8_t out[8];
++    uint8_t expected_out[] = { 0xe0, 0x5f, 0x1f, 1, 0, 0, 0, 0};
++
++    int ret = ssl_tls1_PRF((uint8_t *)seed, (int) strlen(seed),
++                           (uint8_t *)secret, (int) strlen(secret),
++                           out, sizeof(out));
++
++    return (ret && memcmp(out, expected_out, sizeof(out)) != 0);
++}
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 9255d38..4201524 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -593,4 +593,12 @@
+     return kt;
  }
  
++/**
++ * Checks if the current TLS library supports the TLS 1.0 PRF with MD5+SHA1
++ * that OpenVPN uses when TLS Keying Material Export is not available.
++ *
++ * @return  true if supported, false otherwise.
++ */
++bool check_tls_prf_working(void);
++
+ #endif /* CRYPTO_H */
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 8b490ed..82122f5 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1830,6 +1830,16 @@
+     {
+         o->imported_protocol_flags |= CO_USE_TLS_KEY_MATERIAL_EXPORT;
+     }
++    else if (o->force_key_material_export)
++    {
++        msg(M_INFO, "PUSH: client does not support TLS key material export"
++            "but --force-tls-key-material-export is enabled.");
++        auth_set_client_reason(tls_multi, "Client incompatible with this"
++                               "server. Keying Material Exporters (RFC 5705)"
++                               "support missing. Upgrade to a client that "
++                               "supports this feature (OpenVPN 2.6.0+).");
++        return false;
++    }
+     if (proto & IV_PROTO_DYN_TLS_CRYPT)
+     {
+         o->imported_protocol_flags |= CO_USE_DYNAMIC_TLS_CRYPT;
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 1521872..fc0a5d5 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1561,6 +1561,7 @@
+     SHOW_STR(auth_user_pass_verify_script);
+     SHOW_BOOL(auth_user_pass_verify_script_via_file);
+     SHOW_BOOL(auth_token_generate);
++    SHOW_BOOL(force_key_material_export);
+     SHOW_INT(auth_token_lifetime);
+     SHOW_STR_INLINE(auth_token_secret_file);
+ #if PORT_SHARE
+@@ -2802,6 +2803,11 @@
+         {
+             msg(M_USAGE, "--vlan-tagging requires --mode server");
+         }
++
++        if (options->force_key_material_export)
++        {
++            msg(M_USAGE, "--force-tls-key-material-export requires --mode server");
++        }
+     }
+ 
+     /*
+@@ -3634,6 +3640,30 @@
+ }
+ 
+ static void
++options_process_mutate_prf(struct options *o)
++{
++    if (!check_tls_prf_working())
++    {
++
++        msg(D_TLS_ERRORS, "Warning: TLS 1.0 PRF with MD5+SHA1 PRF not supported "
++            "by TLS library. Your system does not support this calculation "
++            "anymore or your security policy (e.g. FIPS 140-2) forbids it. "
++            "Connections will only work with peers running OpenVPN 2.6.0 or "
++            "higher)");
++#ifndef HAVE_EXPORT_KEYING_MATERIAL
++        msg(M_FATAL, "Keying Material Exporters (RFC 5705) not available either. "
++            "No way to generate data channel keys left.");
++#endif
++        if (o->mode == MODE_SERVER)
++        {
++            msg(M_WARN, "Automatically enabling option "
++                "--force-tls-key-material-export");
++        }
++
++    }
++}
++
++static void
+ options_postprocess_mutate(struct options *o, struct env_set *es)
+ {
+     int i;
+@@ -3647,6 +3677,7 @@
+ 
+     options_postprocess_setdefault_ncpciphers(o);
+     options_set_backwards_compatible_options(o);
++    options_process_mutate_prf(o);
+ 
+     options_postprocess_cipher(o);
+     o->ncp_ciphers = mutate_ncp_cipher_list(o->ncp_ciphers, &o->gc);
+@@ -8643,6 +8674,11 @@
+             }
+         }
+     }
++    else if (streq(p[0], "force-tls-key-material-export"))
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        options->force_key_material_export = true;
++    }
+     else if (streq(p[0], "prng") && p[1] && !p[3])
+     {
+         msg(M_WARN, "NOTICE: --prng option ignored (SSL library PRNG is used)");
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index c4514e1..cbfff18 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -687,6 +687,8 @@
+     const char *keying_material_exporter_label;
+     int keying_material_exporter_length;
+ #endif
++    /* force using TLS key material export for data channel key generation */
++    bool force_key_material_export;
+ 
+     bool vlan_tagging;
+     enum vlan_acceptable_frames vlan_accept;
 
