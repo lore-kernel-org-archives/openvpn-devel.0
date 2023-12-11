@@ -1,11 +1,11 @@
 From: Frank Lichtenheld <frank@...2641...>
-Date: Mon, 11 Dec 2023 18:04:21 +0100
-Message-Id: <20231211170421.85600-1-frank@...2641...>
-In-Reply-To: <gerrit.1700743197000.I04f8c7c413e7cb62c726262feee6ca89c7e86c70@...2715...>
-References: <gerrit.1700743197000.I04f8c7c413e7cb62c726262feee6ca89c7e86c70@...2715...>
+Date: Mon, 11 Dec 2023 18:05:49 +0100
+Message-Id: <20231211170549.85749-1-frank@...2641...>
+In-Reply-To: <gerrit.1698504866000.I7fd9e730e87210d2b7d090c8f9c7c6734bd7374e@...2715...>
+References: <gerrit.1698504866000.I7fd9e730e87210d2b7d090c8f9c7c6734bd7374e@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v5] Check PRF availability on initialisation
- and add --force-tls-key-material-export
+Subject: [Openvpn-devel] [PATCH v6] Fix building mbed TLS with CMake and
+ allow specifying custom directories
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,12 +20,12 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Arne Schwabe <arne@...1227...>
 
-We now warn a user if the TLS 1.0 PRF is not supported by the cryptographic
-library of the system. Also add the option --force-tls-key-material-export
-that automatically rejects clients that do not support TLS Keying Material
-Export and automatically enable it when TLS 1.0 PRF support is not available.
+When installing mbed TLS 2.x and 3.x in parallel, it is useful to point
+cmake to the version that should be used.
 
-Change-Id: I04f8c7c413e7cb62c726262feee6ca89c7e86c70
+This fixes also building mbed TLS versions with cmake.
+
+Change-Id: I7fd9e730e87210d2b7d090c8f9c7c6734bd7374e
 Signed-off-by: Arne Schwabe <arne@...1227...>
 Acked-by: Frank Lichtenheld <frank@...2641...>
 ---
@@ -33,179 +33,100 @@ Acked-by: Frank Lichtenheld <frank@...2641...>
 This change was reviewed on Gerrit and approved by at least one
 developer. I request to merge it to master.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/460
-This mail reflects revision 5 of this Change.
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/377
+This mail reflects revision 6 of this Change.
 Acked-by according to Gerrit (reflected above):
 Frank Lichtenheld <frank@...2641...>
 
         
-diff --git a/doc/man-sections/protocol-options.rst b/doc/man-sections/protocol-options.rst
-index 948c0c8..8b061d2 100644
---- a/doc/man-sections/protocol-options.rst
-+++ b/doc/man-sections/protocol-options.rst
-@@ -242,3 +242,11 @@
-   a key renegotiation begins (default :code:`3600` seconds). This feature
-   allows for a graceful transition from old to new key, and removes the key
-   renegotiation sequence from the critical path of tunnel data forwarding.
-+
-+--force-tls-key-material-export
-+  This option is only available in --mode server and forces to use
-+  Keying Material Exporters (RFC 5705) for clients. This can be used to
-+  simulate an environment where the cryptographic library does not support
-+  the older method to generate data channel keys anymore. This option is
-+  intended to be a test option and might be removed in a future OpenVPN
-+  version without notice.
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index e4452d7..8c17f2a 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -1789,3 +1789,22 @@
-     gc_free(&gc);
-     return ret;
- }
-+
-+bool
-+check_tls_prf_working(void)
-+{
-+    /* Modern TLS libraries might no longer support the TLS 1.0 PRF with
-+     * MD5+SHA1. This allows us to establish connections only
-+     * with other 2.6.0+ OpenVPN peers.
-+     * Do a simple dummy test here to see if it works. */
-+    const char *seed = "tls1-prf-test";
-+    const char *secret = "tls1-prf-test-secret";
-+    uint8_t out[8];
-+    uint8_t expected_out[] = { 0xe0, 0x5f, 0x1f, 1, 0, 0, 0, 0};
-+
-+    int ret = ssl_tls1_PRF((uint8_t *)seed, (int) strlen(seed),
-+                           (uint8_t *)secret, (int) strlen(secret),
-+                           out, sizeof(out));
-+
-+    return (ret && memcmp(out, expected_out, sizeof(out)) != 0);
-+}
-diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index 9255d38..4201524 100644
---- a/src/openvpn/crypto.h
-+++ b/src/openvpn/crypto.h
-@@ -593,4 +593,12 @@
-     return kt;
- }
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 577bc5d..d40b213 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -32,6 +32,8 @@
+ endif ()
  
-+/**
-+ * Checks if the current TLS library supports the TLS 1.0 PRF with MD5+SHA1
-+ * that OpenVPN uses when TLS Keying Material Export is not available.
-+ *
-+ * @return  true if supported, false otherwise.
-+ */
-+bool check_tls_prf_working(void);
-+
- #endif /* CRYPTO_H */
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 8b490ed..82122f5 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1830,6 +1830,16 @@
-     {
-         o->imported_protocol_flags |= CO_USE_TLS_KEY_MATERIAL_EXPORT;
-     }
-+    else if (o->force_key_material_export)
-+    {
-+        msg(M_INFO, "PUSH: client does not support TLS key material export"
-+            "but --force-tls-key-material-export is enabled.");
-+        auth_set_client_reason(tls_multi, "Client incompatible with this"
-+                               "server. Keying Material Exporters (RFC 5705)"
-+                               "support missing. Upgrade to a client that "
-+                               "supports this feature (OpenVPN 2.6.0+).");
-+        return false;
-+    }
-     if (proto & IV_PROTO_DYN_TLS_CRYPT)
-     {
-         o->imported_protocol_flags |= CO_USE_DYNAMIC_TLS_CRYPT;
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 1521872..fc0a5d5 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1561,6 +1561,7 @@
-     SHOW_STR(auth_user_pass_verify_script);
-     SHOW_BOOL(auth_user_pass_verify_script_via_file);
-     SHOW_BOOL(auth_token_generate);
-+    SHOW_BOOL(force_key_material_export);
-     SHOW_INT(auth_token_lifetime);
-     SHOW_STR_INLINE(auth_token_secret_file);
- #if PORT_SHARE
-@@ -2802,6 +2803,11 @@
-         {
-             msg(M_USAGE, "--vlan-tagging requires --mode server");
-         }
-+
-+        if (options->force_key_material_export)
-+        {
-+            msg(M_USAGE, "--force-tls-key-material-export requires --mode server");
-+        }
-     }
+ option(MBED "BUILD with mbed" OFF)
++set(MBED_INCLUDE_PATH "" CACHE STRING "Path to mbed TLS include directory")
++set(MBED_LIBRARY_PATH "" CACHE STRING "Path to mbed library directory")
+ option(WOLFSSL "BUILD with wolfSSL" OFF)
+ option(ENABLE_LZ4 "BUILD with lz4" ON)
+ option(ENABLE_LZO "BUILD with lzo" ON)
+@@ -239,9 +241,33 @@
+     pkg_search_module(pkcs11-helper libpkcs11-helper-1 REQUIRED IMPORTED_TARGET)
+ endif ()
  
-     /*
-@@ -3634,6 +3640,30 @@
- }
++function(check_mbed_configuration)
++    if (NOT (MBED_INCLUDE_PATH STREQUAL "") )
++        set(CMAKE_REQUIRED_INCLUDES ${MBED_INCLUDE_PATH})
++    endif ()
++    if (NOT (MBED_LIBRARY_PATH STREQUAL ""))
++        set(CMAKE_REQUIRED_LINK_OPTIONS "-L${MBED_LIBRARY_PATH}")
++    endif ()
++    set(CMAKE_REQUIRED_LIBRARIES "mbedtls;mbedx509;mbedcrypto")
++    check_symbol_exists(mbedtls_ctr_drbg_update_ret mbedtls/ctr_drbg.h HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET)
++    check_symbol_exists(mbedtls_ssl_conf_export_keys_ext_cb mbedtls/ssl.h HAVE_MBEDTLS_SSL_CONF_EXPORT_KEYS_EXT_CB)
++    check_include_files(psa/crypto.h HAVE_MBEDTLS_PSA_CRYPTO_H)
++endfunction()
++
++if (${MBED})
++    check_mbed_configuration()
++endif()
++
+ function(add_library_deps target)
+     if (${MBED})
+-        target_link_libraries(${target} -lmbedtls -lmbedx509 -lmbedcrypto)
++        if (NOT (MBED_INCLUDE_PATH STREQUAL "") )
++            target_include_directories(${target} PRIVATE ${MBED_INCLUDE_PATH})
++        endif ()
++        if(NOT (MBED_LIBRARY_PATH STREQUAL ""))
++            target_link_directories(${target} PRIVATE ${MBED_LIBRARY_PATH})
++        endif ()
++
++        target_link_libraries(${target} PRIVATE -lmbedtls -lmbedx509 -lmbedcrypto)
+     elseif (${WOLFSSL})
+         pkg_search_module(wolfssl wolfssl REQUIRED)
+         target_link_libraries(${target} PUBLIC ${wolfssl_LINK_LIBRARIES})
+diff --git a/config.h.cmake.in b/config.h.cmake.in
+index baf9556..6c846f2 100644
+--- a/config.h.cmake.in
++++ b/config.h.cmake.in
+@@ -378,11 +378,11 @@
+ /* Define to 1 if you have the <vfork.h> header file. */
+ #undef HAVE_VFORK_H
  
- static void
-+options_process_mutate_prf(struct options *o)
-+{
-+    if (!check_tls_prf_working())
-+    {
-+
-+        msg(D_TLS_ERRORS, "Warning: TLS 1.0 PRF with MD5+SHA1 PRF not supported "
-+            "by TLS library. Your system does not support this calculation "
-+            "anymore or your security policy (e.g. FIPS 140-2) forbids it. "
-+            "Connections will only work with peers running OpenVPN 2.6.0 or "
-+            "higher)");
-+#ifndef HAVE_EXPORT_KEYING_MATERIAL
-+        msg(M_FATAL, "Keying Material Exporters (RFC 5705) not available either. "
-+            "No way to generate data channel keys left.");
-+#endif
-+        if (o->mode == MODE_SERVER)
-+        {
-+            msg(M_WARN, "Automatically enabling option "
-+                "--force-tls-key-material-export");
-+        }
-+
-+    }
-+}
-+
-+static void
- options_postprocess_mutate(struct options *o, struct env_set *es)
+-/* we always assume a recent mbed TLS version */
+-#define HAVE_MBEDTLS_PSA_CRYPTO_H 1
++/* Availability of different mbed TLS features and APIs */
++#cmakedefine01 HAVE_MBEDTLS_PSA_CRYPTO_H
+ #define HAVE_MBEDTLS_SSL_TLS_PRF 1
+-#define HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB 1
+-#define HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET 1
++#cmakedefine01 HAVE_MBEDTLS_SSL_SET_EXPORT_KEYS_CB
++#cmakedefine01 HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET
+ 
+ /* Path to ifconfig tool */
+ #define IFCONFIG_PATH "@IFCONFIG_PATH@"
+diff --git a/src/openvpn/mbedtls_compat.h b/src/openvpn/mbedtls_compat.h
+index 610215b..d742b54 100644
+--- a/src/openvpn/mbedtls_compat.h
++++ b/src/openvpn/mbedtls_compat.h
+@@ -77,13 +77,13 @@
+                                const unsigned char *additional,
+                                size_t add_len)
  {
-     int i;
-@@ -3647,6 +3677,7 @@
+-#if HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET
++#if MBEDTLS_VERSION_NUMBER > 0x03000000
++    return mbedtls_ctr_drbg_update(ctx, additional, add_len);
++#elif HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET
+     return mbedtls_ctr_drbg_update_ret(ctx, additional, add_len);
+-#elif MBEDTLS_VERSION_NUMBER < 0x03020100
++#else
+     mbedtls_ctr_drbg_update(ctx, additional, add_len);
+     return 0;
+-#else
+-    return mbedtls_ctr_drbg_update(ctx, additional, add_len);
+ #endif /* HAVE_MBEDTLS_CTR_DRBG_UPDATE_RET */
+ }
  
-     options_postprocess_setdefault_ncpciphers(o);
-     options_set_backwards_compatible_options(o);
-+    options_process_mutate_prf(o);
- 
-     options_postprocess_cipher(o);
-     o->ncp_ciphers = mutate_ncp_cipher_list(o->ncp_ciphers, &o->gc);
-@@ -8643,6 +8674,11 @@
-             }
-         }
-     }
-+    else if (streq(p[0], "force-tls-key-material-export"))
-+    {
-+        VERIFY_PERMISSION(OPT_P_GENERAL);
-+        options->force_key_material_export = true;
-+    }
-     else if (streq(p[0], "prng") && p[1] && !p[3])
-     {
-         msg(M_WARN, "NOTICE: --prng option ignored (SSL library PRNG is used)");
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index c4514e1..cbfff18 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -687,6 +687,8 @@
-     const char *keying_material_exporter_label;
-     int keying_material_exporter_length;
- #endif
-+    /* force using TLS key material export for data channel key generation */
-+    bool force_key_material_export;
- 
-     bool vlan_tagging;
-     enum vlan_acceptable_frames vlan_accept;
 
