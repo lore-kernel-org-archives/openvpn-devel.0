@@ -1,16 +1,16 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 12 Dec 2023 12:13:28 +0000
-In-Reply-To: <gerrit.1700585996000.I39fb3f05b6245af9ae5dd666bfc53ed07e5cfb24@...2715...>
-References: <gerrit.1700585996000.I39fb3f05b6245af9ae5dd666bfc53ed07e5cfb24@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641...
-Message-ID: <c0cbb9c7144f7f36d9e30fe4d274c652cf241b1a-EmailReviewComments-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Tue, 12 Dec 2023 13:10:50 +0000
+In-Reply-To: <gerrit.1701971374000.Ie248d35d063bb6878f3dd42840c77ba0d6fa3381@...2715...>
+References: <gerrit.1701971374000.Ie248d35d063bb6878f3dd42840c77ba0d6fa3381@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <96e00bea720d40877e722ad6fd04b9ae9b3eb778-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="ZGC74PwM0S4="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Cache mbed TLS
- dependency and build latest 2.x mbed TLS as well
+Content-Type: multipart/alternative; boundary="qqRy+LG1itM="; charset=UTF-8
+Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add test_ssl unit
+ test and test export of PEM to file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,109 +19,130 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ZGC74PwM0S4=
+--qqRy+LG1itM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: flichtenheld.
+Attention is currently required from: plaisthos.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/455?usp=3Demail )
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/471?usp=3Demail )
 
-Change subject: Cache mbed TLS dependency and build latest 2.x mbed TLS as =
-well
+Change subject: Add test_ssl unit test and test export of PEM to file
 ......................................................................
 
 
-Patch Set 4:
+Patch Set 2: Code-Review-1
 
-(1 comment)
+(3 comments)
 
-File .github/workflows/build.yaml:
+File tests/unit_tests/openvpn/Makefile.am:
 
-http://gerrit.openvpn.net/c/openvpn/+/455/comment/5076711d_e7be7ada :
-PS4, Line 389:           key: ${{ matrix.build }}-mbedtls-${{matrix.mbedtls=
-ver}}-${{matrix.cmakebuild}}
-> matrix.cmakebuild seems undefined? Did you maybe mean matrix. [=E2=80=A6]
-That is a leftover of my own patch. I built mbed TLS with cmake instead of =
-configure/make and then would pick either debug or asan for mbed TLS as wel=
-l. But it seems not to be possible to pick that with configure/make. Will j=
-ust remove it.
+http://gerrit.openvpn.net/c/openvpn/+/471/comment/0c7d5a64_4d9a9d5c :
+PS2, Line 86:     $(top_srcdir)/src/openvpn/xkey_provider.c \
+indent
+
+
+File tests/unit_tests/openvpn/mock_management.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/471/comment/1c9c81df_b412d262 :
+PS2, Line 49:     (void) man;
+inconsistent (void), used it in one function, but not the other
+
+
+File tests/unit_tests/openvpn/test_ssl.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/471/comment/f87f0957_64554c69 :
+PS2, Line 47: /* Mock function to be allowed to include win32.c which is re=
+quired for
+You originally created win32-util.c for the purpose of UT (see commit 5a571=
+fb0f68ce6961cddfa495af2cedf3ee0e216). Maybe just move the win_get_tempdir t=
+o that?
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/455?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/471?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I39fb3f05b6245af9ae5dd666bfc53ed07e5cfb24
-Gerrit-Change-Number: 455
-Gerrit-PatchSet: 4
+Gerrit-Change-Id: Ie248d35d063bb6878f3dd42840c77ba0d6fa3381
+Gerrit-Change-Number: 471
+Gerrit-PatchSet: 2
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 12 Dec 2023 12:13:28 +0000
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Tue, 12 Dec 2023 13:10:50 +0000
 Gerrit-HasComments: Yes
-Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
+Gerrit-Has-Labels: Yes
 Gerrit-MessageType: comment
 
---ZGC74PwM0S4=
+--qqRy+LG1itM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: flichtenheld. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/455?usp=3Demail">View C=
-hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
-li style=3D"margin: 0; padding: 0;"><p>File .github/workflows/build.yaml:</=
+<p> Attention is currently required from: plaisthos. </p>
+<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/471?usp=3Demail">Vi=
+ew Change</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>File tests/unit_tests/openvpn/M=
+akefile.am:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"mar=
+gin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"h=
+ttp://gerrit.openvpn.net/c/openvpn/+/471/comment/0c7d5a64_4d9a9d5c">Patch S=
+et #2, Line 86:</a> <code style=3D"font-family:monospace,monospace">    $(t=
+op_srcdir)/src/openvpn/xkey_provider.c \</code></p><p style=3D"white-space:=
+ pre-wrap; word-wrap: break-word;">indent</p></li></ul></li><li style=3D"ma=
+rgin: 0; padding: 0;"><p>File tests/unit_tests/openvpn/mock_management.c:</=
 p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; paddi=
 ng: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.=
-openvpn.net/c/openvpn/+/455/comment/5076711d_e7be7ada">Patch Set #4, Line 3=
-89:</a> <code style=3D"font-family:monospace,monospace">          key: ${{ =
-matrix.build }}-mbedtls-${{matrix.mbedtlsver}}-${{matrix.cmakebuild}}</code=
-></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; p=
-adding: 0 10px;">matrix.cmakebuild seems undefined? Did you maybe mean matr=
-ix. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; word-wra=
-p: break-word;">That is a leftover of my own patch. I built mbed TLS with c=
-make instead of configure/make and then would pick either debug or asan for=
- mbed TLS as well. But it seems not to be possible to pick that with config=
-ure/make. Will just remove it.</p></li></ul></li></ul><p>To view, visit <a =
-href=3D"http://gerrit.openvpn.net/c/openvpn/+/455?usp=3Demail">change 455</=
-a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"http=
-://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D=
-"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtyp=
-e=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/455?usp=3Demail"/><meta itemprop=3D"name" cont=
-ent=3D"View Change"/></div></div>
+openvpn.net/c/openvpn/+/471/comment/1c9c81df_b412d262">Patch Set #2, Line 4=
+9:</a> <code style=3D"font-family:monospace,monospace">    (void) man;</cod=
+e></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">inconsiste=
+nt (void), used it in one function, but not the other</p></li></ul></li><li=
+ style=3D"margin: 0; padding: 0;"><p>File tests/unit_tests/openvpn/test_ssl=
+.c:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; =
+padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/471/comment/f87f0957_64554c69">Patch Set #2, L=
+ine 47:</a> <code style=3D"font-family:monospace,monospace">/* Mock functio=
+n to be allowed to include win32.c which is required for</code></p><p style=
+=3D"white-space: pre-wrap; word-wrap: break-word;">You originally created w=
+in32-util.c for the purpose of UT (see commit 5a571fb0f68ce6961cddfa495af2c=
+edf3ee0e216). Maybe just move the win_get_tempdir to that?</p></li></ul></l=
+i></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/4=
+71?usp=3Demail">change 471</a>. To unsubscribe, or for help writing mail fi=
+lters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</=
+p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope=
+ itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempr=
+op=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/471?usp=3Demail"/>=
+<meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I39fb3f05b6245af9ae5dd666bfc=
-53ed07e5cfb24 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 455 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ie248d35d063bb6878f3dd42840c=
+77ba0d6fa3381 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 471 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 12 Dec 2023 12:13:28=
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 12 Dec 2023 13:10:50=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---ZGC74PwM0S4=--
+--qqRy+LG1itM=--
 
