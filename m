@@ -1,16 +1,16 @@
 From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Wed, 13 Dec 2023 14:11:20 +0000
-In-Reply-To: <gerrit.1701971374000.Ie248d35d063bb6878f3dd42840c77ba0d6fa3381@...2715...>
-References: <gerrit.1701971374000.Ie248d35d063bb6878f3dd42840c77ba0d6fa3381@...2715...>
+Date: Wed, 13 Dec 2023 14:25:28 +0000
+In-Reply-To: <gerrit.1702476419000.I525ccf7872880367b248ebebb0ddc83551498042@...2715...>
+References: <gerrit.1702476419000.I525ccf7872880367b248ebebb0ddc83551498042@...2715...>
 Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
  frank@...2641...
-Message-ID: <b14b548297c1c3be2a23ef5f4a1adb146951c5bd-EmailReviewComments-HTML@...2715...>
+Message-ID: <6164b7093a439630cc0db4b56ff197a9b07babe0-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="dYhp+LMjQBY="; charset=UTF-8
-Subject: [Openvpn-devel] [L] Change in openvpn[master]: Add test_ssl unit
- test and test export of PEM to file
+Content-Type: multipart/alternative; boundary="w4cHQeW/JP4="; charset=UTF-8
+Subject: [Openvpn-devel] [M] Change in openvpn[master]: Move get_tmp_dir to
+ win32-util.c and error out on failure
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,120 +21,78 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---dYhp+LMjQBY=
+--w4cHQeW/JP4=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld.
 
 plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/471?usp=3Demail )
+/openvpn/+/481?usp=3Demail )
 
-Change subject: Add test_ssl unit test and test export of PEM to file
+Change subject: Move get_tmp_dir to win32-util.c and error out on failure
 ......................................................................
 
 
-Patch Set 2:
+Patch Set 1:
 
-(3 comments)
+(1 comment)
 
-File tests/unit_tests/openvpn/Makefile.am:
+Patchset:
 
-http://gerrit.openvpn.net/c/openvpn/+/471/comment/2bd17b5f_bc89de26 :
-PS2, Line 86:     $(top_srcdir)/src/openvpn/xkey_provider.c \
-> indent
-Done
-
-
-File tests/unit_tests/openvpn/mock_management.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/471/comment/2c367b9e_17b39eb9 :
-PS2, Line 49:     (void) man;
-> inconsistent (void), used it in one function, but not the other
-Done
-
-
-File tests/unit_tests/openvpn/test_ssl.c:
-
-http://gerrit.openvpn.net/c/openvpn/+/471/comment/1f8780a6_702527f1 :
-PS2, Line 47: /* Mock function to be allowed to include win32.c which is re=
-quired for
-> You originally created win32-util. [=E2=80=A6]
-I didn't like the idea of pulling the dependency of msg() to that file. Cur=
-rently that util file is standalone. I modified the approach to avoid that =
-dependency.
+PS1:
+Note that we will actually not be broken when tmp_dir is NULL but you end u=
+p with tmporary files being created in whatever the current directory is.
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/471?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/481?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ie248d35d063bb6878f3dd42840c77ba0d6fa3381
-Gerrit-Change-Number: 471
-Gerrit-PatchSet: 2
+Gerrit-Change-Id: I525ccf7872880367b248ebebb0ddc83551498042
+Gerrit-Change-Number: 481
+Gerrit-PatchSet: 1
 Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Wed, 13 Dec 2023 14:11:20 +0000
+Gerrit-Comment-Date: Wed, 13 Dec 2023 14:25:28 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
 Gerrit-MessageType: comment
 
---dYhp+LMjQBY=
+--w4cHQeW/JP4=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/471?usp=3Demail">View C=
-hange</a></p><p>3 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File tests/unit_tests/openvpn/Makef=
-ile.am:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin:=
- 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:=
-//gerrit.openvpn.net/c/openvpn/+/471/comment/2bd17b5f_bc89de26">Patch Set #=
-2, Line 86:</a> <code style=3D"font-family:monospace,monospace">    $(top_s=
-rcdir)/src/openvpn/xkey_provider.c \</code></p><p><blockquote style=3D"bord=
-er-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">indent</blockquo=
-te></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p><=
-/li></ul></li><li style=3D"margin: 0; padding: 0;"><p>File tests/unit_tests=
-/openvpn/mock_management.c:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4p=
-x;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/471/comment/2c367b9e_1=
-7b39eb9">Patch Set #2, Line 49:</a> <code style=3D"font-family:monospace,mo=
-nospace">    (void) man;</code></p><p><blockquote style=3D"border-left: 1px=
- solid #aaa; margin: 10px 0; padding: 0 10px;">inconsistent (void), used it=
- in one function, but not the other</blockquote></p><p style=3D"white-space=
-: pre-wrap; word-wrap: break-word;">Done</p></li></ul></li><li style=3D"mar=
-gin: 0; padding: 0;"><p>File tests/unit_tests/openvpn/test_ssl.c:</p><ul st=
-yle=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 =
-0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.=
-net/c/openvpn/+/471/comment/1f8780a6_702527f1">Patch Set #2, Line 47:</a> <=
-code style=3D"font-family:monospace,monospace">/* Mock function to be allow=
-ed to include win32.c which is required for</code></p><p><blockquote style=
-=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">You orig=
-inally created win32-util. [=E2=80=A6]</blockquote></p><p style=3D"white-sp=
-ace: pre-wrap; word-wrap: break-word;">I didn&#39;t like the idea of pullin=
-g the dependency of msg() to that file. Currently that util file is standal=
-one. I modified the approach to avoid that dependency.</p></li></ul></li></=
-ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/471?u=
-sp=3Demail">change 471</a>. To unsubscribe, or for help writing mail filter=
-s, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><d=
-iv itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope ite=
-mprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
-=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/471?usp=3Demail"/><m=
-eta itemprop=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/481?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/4=
+81?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">Note that we will actually not be broken when tmp_=
+dir is NULL but you end up with tmporary files being created in whatever th=
+e current directory is.</p></li></ul></li></ul><p>To view, visit <a href=3D=
+"http://gerrit.openvpn.net/c/openvpn/+/481?usp=3Demail">change 481</a>. To =
+unsubscribe, or for help writing mail filters, visit <a href=3D"http://gerr=
+it.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http:/=
+/schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"ht=
+tp://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/481?usp=3Demail"/><meta itemprop=3D"name" content=3D"=
+View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie248d35d063bb6878f3dd42840c=
-77ba0d6fa3381 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 471 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I525ccf7872880367b248ebebb0d=
+dc83551498042 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 481 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
 <div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
 27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -143,14 +101,12 @@ eta itemprop=3D"name" content=3D"View Change"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 13 Dec 2023 14:11:20=
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 13 Dec 2023 14:25:28=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---dYhp+LMjQBY=--
+--w4cHQeW/JP4=--
 
