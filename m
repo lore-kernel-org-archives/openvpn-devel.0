@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 13 Dec 2023 10:52:24 +0000
+From: Frank Lichtenheld <frank@...2641...>
+Date: Wed, 13 Dec 2023 11:53:08 +0100
+Message-Id: <20231213105308.121460-1-frank@...2641...>
 In-Reply-To: <gerrit.1700590714000.Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3@...2715...>
 References: <gerrit.1700590714000.Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <e74c297af109333e9c72950a29451d7aa63f16ae-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="lWSzO+iCSQI="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Extend the error
- message when TLS 1.0 PRF fails
+Subject: [Openvpn-devel] [PATCH v8] Extend the error message when TLS 1.0
+ PRF fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,118 +14,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---lWSzO+iCSQI=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: plaisthos.
+This error will probably become more and more common in the future when
+more and more systems will drop TLS 1.0 PRF support. We are already
+seeing people stumbling upon this (see GitHub issue #460)
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/456?usp=3Demail )
+The current error messages
 
-Change subject: Extend the error message when TLS 1.0 PRF fails
-......................................................................
+  TLS Error: PRF calcuation failed
+  TLS Error: generate_key_expansion failed
 
+are not very helpful for people that do not have deep understanding
+of TLS or the OpenVPN protocol. Improve this message to give a normal
+user a chance to understand that the peer needs to be OpenVPN 2.6.x or
+newer.
 
-Patch Set 8: Code-Review+2
+Change-Id: Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
 
-(2 comments)
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Commit Message:
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/456
+This mail reflects revision 8 of this Change.
 
-http://gerrit.openvpn.net/c/openvpn/+/456/comment/885ae8f3_12d97924 :
-PS5, Line 10: more and more system will drop TLS 1.0 PRF support. We are al=
-ready seeing
-> "systems"
-Done
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-
-http://gerrit.openvpn.net/c/openvpn/+/456/comment/4bd01855_a7144a45 :
-PS5, Line 19: the OpenVPN protocol. Improve a on this message to give a nor=
-mal user a chance
-> Remove "a on"
-Done
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/456?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3
-Gerrit-Change-Number: 456
-Gerrit-PatchSet: 8
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Wed, 13 Dec 2023 10:52:24 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
-Gerrit-MessageType: comment
-
---lWSzO+iCSQI=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 8:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/456?usp=3Demail">Vi=
-ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Commit Message:</p><ul style=3D=
-"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px=
-;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/456/comment/885ae8f3_12d97924">Patch Set #5, Line 10:</a> <code s=
-tyle=3D"font-family:monospace,monospace">more and more system will drop TLS=
- 1.0 PRF support. We are already seeing</code></p><p><blockquote style=3D"b=
-order-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">&quot;systems=
-&quot;</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-=
-word;">Done</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
-=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/4=
-56/comment/4bd01855_a7144a45">Patch Set #5, Line 19:</a> <code style=3D"fon=
-t-family:monospace,monospace">the OpenVPN protocol. Improve a on this messa=
-ge to give a normal user a chance</code></p><p><blockquote style=3D"border-=
-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">Remove &quot;a on&q=
-uot;</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-wo=
-rd;">Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/456?usp=3Demail">change 456</a>. To unsubscribe, o=
-r for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net=
-/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Em=
-ailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.or=
-g/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/op=
-envpn/+/456?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/>=
-</div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib3b64b52beed69dc7740f191b0e=
-9a9dc9af5b7f3 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 456 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 8 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 13 Dec 2023 10:52:24=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---lWSzO+iCSQI=--
+        
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 6eddb68..7597412 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1477,7 +1477,12 @@
+     {
+         if (!generate_key_expansion_openvpn_prf(session, &key2))
+         {
+-            msg(D_TLS_ERRORS, "TLS Error: PRF calcuation failed");
++            msg(D_TLS_ERRORS, "TLS Error: PRF calculation failed. Your system "
++                "might not support the old TLS 1.0 PRF calculation anymore or "
++                "the policy does not allow it (e.g. running in FIPS mode). "
++                "The peer did not announce support for the modern TLS Export "
++                "feature that replaces the TLS 1.0 PRF (requires OpenVPN "
++                "2.6.x or higher)");
+             goto exit;
+         }
+     }
 
