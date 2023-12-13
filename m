@@ -1,16 +1,16 @@
-From: "plaisthos (Code Review)" <gerrit@...515...>
-Date: Tue, 12 Dec 2023 18:24:05 +0000
-In-Reply-To: <gerrit.1701865618000.Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2@...2715...>
-References: <gerrit.1701865618000.Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2@...2715...>
-Reply-To: arne-openvpn@...1227..., openvpn-devel@lists.sourceforge.net,
- frank@...2641..., gert@...1296...
-Message-ID: <87e0dbb847c3af5b3ea7a9a861b788c68e2ac61b-EmailReviewComments-HTML@...2715...>
+From: "flichtenheld (Code Review)" <gerrit@...515...>
+Date: Wed, 13 Dec 2023 10:49:18 +0000
+In-Reply-To: <gerrit.1702310034000.I11e0091482d9acee89ca018374cb8d96d22f8514@...2715...>
+References: <gerrit.1702310034000.I11e0091482d9acee89ca018374cb8d96d22f8514@...2715...>
+Reply-To: frank@...2641..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <4a9873105cbd02457fc0b4684df2face7a66e139-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="2KaM+oVh0xc="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement the
- --tls-export-cert feature
+Content-Type: multipart/alternative; boundary="sEDNxrUcScg="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: forked-test-driver:
+ Show test output always
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,114 +19,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Cc: flichtenheld <frank@...2641...>, cron2 <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---2KaM+oVh0xc=
+--sEDNxrUcScg=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: cron2, flichtenheld.
+Attention is currently required from: plaisthos.
 
-plaisthos has posted comments on this change. ( http://gerrit.openvpn.net/c=
-/openvpn/+/466?usp=3Demail )
+flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
+t/c/openvpn/+/479?usp=3Demail )
 
-Change subject: Implement the --tls-export-cert feature
+Change subject: forked-test-driver: Show test output always
 ......................................................................
 
 
-Patch Set 4:
+Patch Set 3:
 
-(2 comments)
+(1 comment)
 
-File doc/man-sections/script-options.rst:
+This change is ready for review.
 
-http://gerrit.openvpn.net/c/openvpn/+/466/comment/f51f4a78_549de142 :
-PS4, Line 427:   Adds an environment variables ``peer_cert_{x}`` (and an al=
-ias
-> "variable" or remove "an"
-Done
+File forked-test-driver:
 
-
-http://gerrit.openvpn.net/c/openvpn/+/466/comment/eed49c31_f5661e3b :
-PS4, Line 780: :code:`peer_cert` identical to `peer_cert_0` for compatibili=
-ty with older
-> Missing line break before "identical". [=E2=80=A6]
+http://gerrit.openvpn.net/c/openvpn/+/479/comment/bf08f7d3_1455cd09 :
+PS1, Line 112: "$@" 2>&1 | tee -a "$log_file"
+> breaks exit status without set -o pipefail. Which is probably not portabl=
+e... [=E2=80=A6]
 Done
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/479?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2
-Gerrit-Change-Number: 466
-Gerrit-PatchSet: 4
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: cron2 <gert@...1296...>
+Gerrit-Change-Id: I11e0091482d9acee89ca018374cb8d96d22f8514
+Gerrit-Change-Number: 479
+Gerrit-PatchSet: 3
+Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Tue, 12 Dec 2023 18:24:05 +0000
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Wed, 13 Dec 2023 10:49:18 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: No
 Comment-In-Reply-To: flichtenheld <frank@...2641...>
 Gerrit-MessageType: comment
 
---2KaM+oVh0xc=
+--sEDNxrUcScg=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: cron2, flichtenheld. </p>
-<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail">View C=
-hange</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: 0;">=
-<li style=3D"margin: 0; padding: 0;"><p>File doc/man-sections/script-option=
-s.rst:</p><ul style=3D"list-style: none; padding: 0;"><li style=3D"margin: =
-0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/466/comment/f51f4a78_549de142">Patch Set #4=
-, Line 427:</a> <code style=3D"font-family:monospace,monospace">  Adds an e=
-nvironment variables ``peer_cert_{x}`` (and an alias</code></p><p><blockquo=
-te style=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">=
-&quot;variable&quot; or remove &quot;an&quot;</blockquote></p><p style=3D"w=
-hite-space: pre-wrap; word-wrap: break-word;">Done</p></li><li style=3D"mar=
-gin: 0; padding: 0 0 0 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"h=
-ttp://gerrit.openvpn.net/c/openvpn/+/466/comment/eed49c31_f5661e3b">Patch S=
-et #4, Line 780:</a> <code style=3D"font-family:monospace,monospace">:code:=
-`peer_cert` identical to `peer_cert_0` for compatibility with older</code><=
-/p><p><blockquote style=3D"border-left: 1px solid #aaa; margin: 10px 0; pad=
-ding: 0 10px;">Missing line break before &quot;identical&quot;. [=E2=80=A6]=
-</blockquote></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;"=
->Done</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.ope=
-nvpn.net/c/openvpn/+/466?usp=3Demail">change 466</a>. To unsubscribe, or fo=
-r help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/set=
-tings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailM=
-essage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vi=
-ewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/466?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></di=
-v></div>
+<p> Attention is currently required from: plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/479?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File forked-test-driver:</p><ul styl=
+e=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 =
+16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
+t/c/openvpn/+/479/comment/bf08f7d3_1455cd09">Patch Set #1, Line 112:</a> <c=
+ode style=3D"font-family:monospace,monospace">&quot;$@&quot; 2&gt;&amp;1 | =
+tee -a &quot;$log_file&quot;</code></p><p><blockquote style=3D"border-left:=
+ 1px solid #aaa; margin: 10px 0; padding: 0 10px;">breaks exit status witho=
+ut set -o pipefail. Which is probably not portable... [=E2=80=A6]</blockquo=
+te></p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">Done</p><=
+/li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c=
+/openvpn/+/479?usp=3Demail">change 479</a>. To unsubscribe, or for help wri=
+ting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">set=
+tings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage"><d=
+iv itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction">=
+<link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/479?us=
+p=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia9b3f1813d2d0d492d17c87348b=
-4cebd0bf19ce2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 466 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 4 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I11e0091482d9acee89ca018374c=
+b8d96d22f8514 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 479 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
+<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Tue, 12 Dec 2023 18:24:05=
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 13 Dec 2023 10:49:18=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: No </div>
@@ -135,5 +117,5 @@ ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---2KaM+oVh0xc=--
+--sEDNxrUcScg=--
 
