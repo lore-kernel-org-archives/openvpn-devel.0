@@ -1,16 +1,9 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 13 Dec 2023 14:29:01 +0000
-In-Reply-To: <gerrit.1701865618000.Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2@...2715...>
-References: <gerrit.1701865618000.Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, gert@...1296...
-Message-ID: <af54ff9c8574fd1cfa0ce0380eaf91af5350884d-EmailReviewComments-HTML@...2715...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Wed, 13 Dec 2023 15:33:24 +0100
+Message-Id: <20231213143324.226443-1-frank@...2641...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="x0kAblNs6DM="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Implement the
- --tls-export-cert feature
+Subject: [Openvpn-devel] [PATCH] documentation: improve documentation of
+ --x509-track
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,100 +12,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: cron2 <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---x0kAblNs6DM=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In the current state it was completely unclear to me how you
+would use this. Extended the description based on reading the
+code and experimentation.
 
-Attention is currently required from: cron2, plaisthos.
+Change-Id: Ibf728f9d624e64ecda094d66fa562bd3916829d2
+Signed-off-by: Frank Lichtenheld <frank@...2641...>
+---
+ doc/man-sections/script-options.rst |  3 +++
+ doc/man-sections/tls-options.rst    | 23 +++++++++++++++++++++--
+ 2 files changed, 24 insertions(+), 2 deletions(-)
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/466?usp=3Demail )
+diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
+index ba700a04..0e60ab5a 100644
+--- a/doc/man-sections/script-options.rst
++++ b/doc/man-sections/script-options.rst
+@@ -934,6 +934,9 @@ instances.
+     verification level is 0 for the client certificate and 1 for the CA
+     certificate.
+ 
++    You can use the ``--x509-track`` option to export more or less information
++    from the certificates.
++
+     ::
+ 
+        X509_0_emailAddress=me@...430...
+diff --git a/doc/man-sections/tls-options.rst b/doc/man-sections/tls-options.rst
+index 266167f2..4c45b10f 100644
+--- a/doc/man-sections/tls-options.rst
++++ b/doc/man-sections/tls-options.rst
+@@ -695,10 +695,29 @@ If the option is inlined, ``algo`` is always :code:`SHA256`.
+ --x509-track attribute
+   Save peer X509 **attribute** value in environment for use by plugins and
+   management interface. Prepend a :code:`+` to ``attribute`` to save values
+-  from full cert chain. Values will be encoded as
+-  :code:`X509_<depth>_<attribute>=<value>`. Multiple ``--x509-track``
++  from full cert chain. Otherwise the attribute will only be exported for
++  the leaf cert (i.e. depth :code:`0` of the cert chain). Values will be
++  encoded as :code:`X509_<depth>_<attribute>=<value>`. Multiple ``--x509-track``
+   options can be defined to track multiple attributes.
+ 
++  ``attribute`` can be any part of the X509 Subject field or any X509v3
++  extension (RFC 3280). X509v3 extensions might not be supported when
++  not using the default TLS backend library (OpenSSL). You can also
++  request the ``SHA1`` and ``SHA256`` fingerprints of the cert,
++  but that is always exported as :code:`tls_digest_{n}` and
++  :code:`tls_digest_sha256_{n}` anyway.
++
++  Note that by default **all** parts of the X509 Subject field are exported in
++  the environment for the whole cert chain. If you use ``--x509-track`` at least
++  once **only** the attributes specified by these options are exported.
++
++  Examples::
++
++    x509-track CN               # exports only X509_0_CN
++    x509-track +CN              # exports X509_{n}_CN for chain
++    x509-track basicConstraints # exports value of "X509v3 Basic Constraints"
++    x509-track SHA256           # exports SHA256 fingerprint
++
+ --x509-username-field args
+   Fields in the X.509 certificate subject to be used as the username
+   (default :code:`CN`). If multiple fields are specified their values
+-- 
+2.34.1
 
-Change subject: Implement the --tls-export-cert feature
-......................................................................
-
-
-Patch Set 6: Code-Review+2
-
-(1 comment)
-
-Patchset:
-
-PS5:
-Did some basic testing with both OpenSSL and mbedTLS. Looks good to me.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2
-Gerrit-Change-Number: 466
-Gerrit-PatchSet: 6
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: cron2 <gert@...1296...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: cron2 <gert@...1296...>
-Gerrit-Comment-Date: Wed, 13 Dec 2023 14:29:01 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---x0kAblNs6DM=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: cron2, plaisthos. </p>
-<p>Patch set 6:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/466?tab=3Dcomments">Patch Set #5:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">Did some basic testing with both OpenSSL and m=
-bedTLS. Looks good to me.</p></li></ul></li></ul><p>To view, visit <a href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/466?usp=3Demail">change 466</a>. =
-To unsubscribe, or for help writing mail filters, visit <a href=3D"http://g=
-errit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"htt=
-p://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D=
-"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit=
-.openvpn.net/c/openvpn/+/466?usp=3Demail"/><meta itemprop=3D"name" content=
-=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia9b3f1813d2d0d492d17c87348b=
-4cebd0bf19ce2 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 466 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 6 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: cron2 &lt;gert@...1296...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: cron2 &lt;gert@...1296...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 13 Dec 2023 14:29:01=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---x0kAblNs6DM=--
 
