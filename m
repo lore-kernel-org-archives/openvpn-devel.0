@@ -1,10 +1,15 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Thu, 14 Dec 2023 12:17:52 +0100
-Message-Id: <20231214111752.237606-1-frank@...2641...>
-In-Reply-To: <gerrit.1701865618000.Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2@...2715...>
-References: <gerrit.1701865618000.Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2@...2715...>
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Thu, 14 Dec 2023 13:38:06 +0000
+References: <gerrit.1702561084000.I21a36d24f8e213c780f55acbe3e4df555c93542a@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <5017388de23112cb9484ab9f385484112c261dcf-HTML@...2715...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v6] Implement the --tls-export-cert feature
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Type: multipart/alternative; boundary="XLTM/XBR/mY="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: tun.c: don't attempt
+ to delete DNS and WINS servers if they're not set
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,352 +18,330 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-From: Arne Schwabe <arne@...1227...>
+--XLTM/XBR/mY=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This is a re-implementation of the --tls-export-cert feature. This
-was necessary to due to missing approval to re-license the old
-(now removed) code. The re-implementation is based on the following
-description of the feature provided by David:
+Attention is currently required from: flichtenheld, plaisthos.
 
-  Add an option to export certificate in PEM format of the remote
-  peer to a given directory.
+Hello plaisthos, flichtenheld,
 
-  For example: --tls-export-cert /var/tmp
+I'd like you to do a code review.
+Please visit
 
-  This option should use a randomised filename, which is provided via a
-  "peer_cert" environment variable for the --tls-verify script or the
-  OPENVPN_PLUGIN_TLS_VERIFY plug-in hook.
+    http://gerrit.openvpn.net/c/openvpn/+/482?usp=3Demail
 
-Once the script or plugin call has completed, OpenVPN should delete
-this file.
+to review the following change.
 
-Change-Id: Ia9b3f1813d2d0d492d17c87348b4cebd0bf19ce2
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
+
+Change subject: tun.c: don't attempt to delete DNS and WINS servers if they=
+'re not set
+......................................................................
+
+tun.c: don't attempt to delete DNS and WINS servers if they're not set
+
+Commits
+
+    1c4a47f7 ("wintun: set adapter properties via interactive service")
+    18826de5 ("Set WINS servers via interactice service")
+
+added functionality of add/remove DNS/WINS via interactive
+service, which is used mostly by dco-win and wintun (tap-windows6
+normally uses DHCP). There is a check in code - if DNS/WINS addresses
+are not pushed, nothing is added.
+
+However, due to bug we always attempted to remove DNS/WINS,
+even if nothing was added. This change fixes this by improving
+check "has DNS/WINS been pushed?".
+
+While on it, convert do_XXX_service() functions to "void" from "bool",
+since we never check their return values.
+
+Change-Id: I21a36d24f8e213c780f55acbe3e4df555c93542a
+Signed-off-by: Lev Stipakov <lev@...515...>
 ---
+M src/openvpn/tun.c
+1 file changed, 13 insertions(+), 23 deletions(-)
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master and release/2.6.
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/466
-This mail reflects revision 6 of this Change.
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
 
-        
-diff --git a/doc/man-sections/script-options.rst b/doc/man-sections/script-options.rst
-index 38dcfa2..ba700a0 100644
---- a/doc/man-sections/script-options.rst
-+++ b/doc/man-sections/script-options.rst
-@@ -423,6 +423,15 @@
-   See the `Environmental Variables`_ section below for additional
-   parameters passed as environmental variables.
- 
-+--tls-export-cert-path dir
-+  Adds an environment variable ``peer_cert_{x}`` (and an alias
-+  ``peer_cert`` for ``peer_cert_0`` for compatibility)  when calling the
-+  ``--tls-verify`` script or executing the OPENVPN_PLUGIN_TLS_VERIFY plugin
-+  hook to verify the certificate.
-+
-+  The environment variable contains the path to a PEM encoded certificate
-+  of the current peer certificate in the directory ``dir``.
-+
- --up cmd
-   Run command ``cmd`` after successful TUN/TAP device open (pre ``--user``
-   UID change).
-@@ -763,6 +772,15 @@
-     modifier is specified, and deleted from the environment after the script
-     returns.
- 
-+:code:`peer_cert_{n}`
-+    If the option ``--tls-export-cert`` is enabled, this option contains
-+    the path to the current peer certificate to be verified in PEM format
-+    where ``n`` is the verification level.
-+
-+:code:`peer_cert`
-+    Identical to `peer_cert_0` for compatibility with older
-+    versions.
-+
- :code:`proto`
-     The ``--proto`` parameter. Set on program initiation and reset on
-     SIGHUP.
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 9e2b3845..917ae33 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -3336,6 +3336,7 @@
-     to.auth_user_pass_verify_script_via_file = options->auth_user_pass_verify_script_via_file;
-     to.client_crresponse_script = options->client_crresponse_script;
-     to.tmp_dir = options->tmp_dir;
-+    to.export_peer_cert_dir = options->tls_export_peer_cert_path;
-     if (options->ccd_exclusive)
-     {
-         to.client_config_dir_exclusive = options->client_config_dir;
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 1521872..503e832 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1986,6 +1986,7 @@
-     SHOW_STR(cipher_list_tls13);
-     SHOW_STR(tls_cert_profile);
-     SHOW_STR(tls_verify);
-+    SHOW_STR(tls_export_peer_cert_path);
-     SHOW_INT(verify_x509_type);
-     SHOW_STR(verify_x509_name);
-     SHOW_STR_INLINE(crl_file);
-@@ -3048,6 +3049,7 @@
-         MUST_BE_UNDEF(cipher_list_tls13);
-         MUST_BE_UNDEF(tls_cert_profile);
-         MUST_BE_UNDEF(tls_verify);
-+        MUST_BE_UNDEF(tls_export_peer_cert_path);
-         MUST_BE_UNDEF(verify_x509_name);
-         MUST_BE_UNDEF(tls_timeout);
-         MUST_BE_UNDEF(renegotiate_bytes);
-@@ -4053,6 +4055,13 @@
-                                                 R_OK, "--crl-verify");
-     }
- 
-+    if (options->tls_export_peer_cert_path)
-+    {
-+        errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE,
-+                                         options->tls_export_peer_cert_path,
-+                                         W_OK, "--tls-export-cert");
-+    }
-+
-     ASSERT(options->connection_list);
-     for (int i = 0; i < options->connection_list->len; ++i)
-     {
-@@ -8998,6 +9007,11 @@
-                         string_substitute(p[1], ',', ' ', &options->gc),
-                         "tls-verify", true);
-     }
-+    else if (streq(p[0], "tls-export-cert") && p[1] && !p[2])
-+    {
-+        VERIFY_PERMISSION(OPT_P_SCRIPT);
-+        options->tls_export_peer_cert_path = p[1];
-+    }
-     else if (streq(p[0], "compat-names"))
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index c4514e1..3b9a7f6 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -592,6 +592,7 @@
-     const char *tls_cert_profile;
-     const char *ecdh_curve;
-     const char *tls_verify;
-+    const char *tls_export_peer_cert_path;
-     int verify_x509_type;
-     const char *verify_x509_name;
-     const char *crl_file;
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 925660b..f085e0d 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -374,6 +374,7 @@
-     const char *client_crresponse_script;
-     bool auth_user_pass_verify_script_via_file;
-     const char *tmp_dir;
-+    const char *export_peer_cert_dir;
-     const char *auth_user_pass_file;
-     bool auth_user_pass_file_inline;
- 
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index bd7e512..5cf518e 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -457,6 +457,30 @@
-     gc_free(&gc);
- }
- 
-+static bool
-+verify_cert_cert_export_env(struct env_set *es, openvpn_x509_cert_t *peer_cert,
-+                            int cert_depth, const char *pem_export_fn)
-+{
-+    char envname[64];
-+    struct gc_arena gc = gc_new();
-+    /* export the path to the certificate in pem file format */
-+    openvpn_snprintf(envname, sizeof(envname), "peer_cert_%d", cert_depth);
-+    setenv_str(es, envname, pem_export_fn);
-+
-+    /* compatibility with older scripts/plugins that expect peer_cert without
-+     * suffix */
-+    if (cert_depth == 0)
-+    {
-+        setenv_str(es, "peer_cert", pem_export_fn);
-+    }
-+
-+    bool ret = (backend_x509_write_pem(peer_cert, pem_export_fn) == SUCCESS);
-+
-+    gc_free(&gc);
-+    return ret;
-+}
-+
-+
- /*
-  * call --tls-verify plug-in(s)
-  */
-@@ -572,18 +596,19 @@
- result_t
- verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_depth)
- {
-+    /* need to define these variables here so goto cleanup will always have
-+     * them defined */
-     result_t ret = FAILURE;
--    char *subject = NULL;
--    const struct tls_options *opt;
-     struct gc_arena gc = gc_new();
-+    const char *pem_export_fn = NULL;
- 
--    opt = session->opt;
-+    const struct tls_options *opt = session->opt;
-     ASSERT(opt);
- 
-     session->verified = false;
- 
-     /* get the X509 name */
--    subject = x509_get_subject(cert, &gc);
-+    char *subject = x509_get_subject(cert, &gc);
-     if (!subject)
-     {
-         msg(D_TLS_ERRORS, "VERIFY ERROR: depth=%d, could not extract X509 "
-@@ -706,6 +731,19 @@
- 
-     session->verify_maxlevel = max_int(session->verify_maxlevel, cert_depth);
- 
-+    if (opt->export_peer_cert_dir)
-+    {
-+        pem_export_fn = platform_create_temp_file(opt->export_peer_cert_dir,
-+                                                  "pef", &gc);
-+
-+        if (!pem_export_fn
-+            || !verify_cert_cert_export_env(opt->es, cert, cert_depth, pem_export_fn))
-+        {
-+            msg(D_TLS_ERRORS, "TLS Error: Failed to export certificate for "
-+                "--tls-export-cert in %s", opt->export_peer_cert_dir);
-+            goto cleanup;
-+        }
-+    }
-     /* export certificate values to the environment */
-     verify_cert_set_env(opt->es, cert, cert_depth, subject, common_name,
-                         opt->x509_track);
-@@ -763,6 +801,11 @@
-         tls_clear_error(); /* always? */
-         session->verified = false; /* double sure? */
-     }
-+    if (pem_export_fn)
-+    {
-+        platform_unlink(pem_export_fn);
-+    }
-+
-     gc_free(&gc);
- 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/82/482/1
+
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index f1b8699..9104d46 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -147,17 +147,16 @@
      return ret;
-diff --git a/src/openvpn/ssl_verify_backend.h b/src/openvpn/ssl_verify_backend.h
-index d402b1f..5301a51 100644
---- a/src/openvpn/ssl_verify_backend.h
-+++ b/src/openvpn/ssl_verify_backend.h
-@@ -161,6 +161,17 @@
-                                   struct gc_arena *gc);
- 
- /*
-+ * Write the certificate to the file in PEM format.
-+ *
-+ *
-+ * @param cert          Certificate to serialise.
-+ *
-+ * @return              \c FAILURE, \c or SUCCESS
-+ */
-+result_t backend_x509_write_pem(openvpn_x509_cert_t *cert,
-+                                const char *filename);
-+
-+/*
-  * Save X509 fields to environment, using the naming convention:
-  *
-  * X509_{cert_depth}_{name}={value}
-diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
-index 5612139..24a89c3 100644
---- a/src/openvpn/ssl_verify_mbedtls.c
-+++ b/src/openvpn/ssl_verify_mbedtls.c
-@@ -218,6 +218,41 @@
-     return buf;
  }
- 
-+result_t
-+backend_x509_write_pem(openvpn_x509_cert_t *cert, const char *filename)
-+{
-+    /* mbed TLS does not make it easy to write a certificate in PEM format.
-+     * The only way is to directly access the DER encoded raw certificate
-+     * and PEM encode it ourselves */
-+
-+    struct gc_arena gc = gc_new();
-+    /* just do a very loose upper bound for the base64 based PEM encoding
-+     * using 3 times the space for the base64 and 100 bytes for the
-+     * headers and footer */
-+    struct buffer pem = alloc_buf_gc(cert->raw.len * 3 + 100, &gc);
-+
-+    struct buffer der = {};
-+    buf_set_read(&der, cert->raw.p, cert->raw.len);
-+
-+    if (!crypto_pem_encode("CERTIFICATE", &pem,  &der, &gc))
-+    {
-+        goto err;
-+    }
-+
-+    if (!buffer_write_file(filename, &pem))
-+    {
-+        goto err;
-+    }
-+
-+    gc_free(&gc);
-+    return SUCCESS;
-+err:
-+    msg(D_TLS_DEBUG_LOW, "Error writing X509 certificate to file %s",
-+        filename);
-+    gc_free(&gc);
-+    return FAILURE;
-+}
-+
- static struct buffer
- x509_get_fingerprint(const mbedtls_md_info_t *md_info, mbedtls_x509_crt *cert,
-                      struct gc_arena *gc)
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index 5afffc1..00fdec3 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -320,6 +320,29 @@
-     return format_hex_ex(asn1_i->data, asn1_i->length, 0, 1, ":", gc);
- }
- 
-+result_t
-+backend_x509_write_pem(openvpn_x509_cert_t *cert, const char *filename)
-+{
-+    BIO *out = BIO_new_file(filename, "w");
-+    if (!out)
-+    {
-+        goto err;
-+    }
-+
-+    if (!PEM_write_bio_X509(out, cert))
-+    {
-+        goto err;
-+    }
-+    BIO_free(out);
-+
-+    return SUCCESS;
-+err:
-+    BIO_free(out);
-+    crypto_msg(D_TLS_DEBUG_LOW, "Error writing X509 certificate to file %s",
-+               filename);
-+    return FAILURE;
-+}
-+
- struct buffer
- x509_get_sha1_fingerprint(X509 *cert, struct gc_arena *gc)
+
+-static bool
++static void
+ do_dns_domain_service(bool add, const struct tuntap *tt)
  {
+-    bool ret =3D false;
+     ack_message_t ack;
+     struct gc_arena gc =3D gc_new();
+     HANDLE pipe =3D tt->options.msg_channel;
+
+     if (!tt->options.domain) /* no  domain to add or delete */
+     {
+-        return true;
++        goto out;
+     }
+
+     /* Use dns_cfg_msg with addr_len =3D 0 for setting only the DOMAIN */
+@@ -195,17 +194,14 @@
+     }
+
+     msg(M_INFO, "DNS domain %s using service", (add ? "set" : "deleted"));
+-    ret =3D true;
+
+ out:
+     gc_free(&gc);
+-    return ret;
+ }
+
+-static bool
++static void
+ do_dns_service(bool add, const short family, const struct tuntap *tt)
+ {
+-    bool ret =3D false;
+     ack_message_t ack;
+     struct gc_arena gc =3D gc_new();
+     HANDLE pipe =3D tt->options.msg_channel;
+@@ -213,9 +209,11 @@
+     int addr_len =3D add ? len : 0;
+     const char *ip_proto_name =3D family =3D=3D AF_INET6 ? "IPv6" : "IPv4";
+
+-    if (addr_len =3D=3D 0 && add) /* no addresses to add */
++    if (((family =3D=3D AF_INET6) && (tt->options.dns6_len =3D=3D 0))
++        || ((family =3D=3D AF_INET) && (tt->options.dns_len =3D=3D 0)))
+     {
+-        return true;
++        /* nothing to do */
++        goto out;
+     }
+
+     /* Use dns_cfg_msg with domain =3D "" for setting only the DNS servers=
+ */
+@@ -272,26 +270,23 @@
+     }
+
+     msg(M_INFO, "%s dns servers %s using service", ip_proto_name, (add ? "=
+set" : "deleted"));
+-    ret =3D true;
+
+ out:
+     gc_free(&gc);
+-    return ret;
+ }
+
+-static bool
++static void
+ do_wins_service(bool add, const struct tuntap *tt)
+ {
+-    bool ret =3D false;
+     ack_message_t ack;
+     struct gc_arena gc =3D gc_new();
+     HANDLE pipe =3D tt->options.msg_channel;
+-    int len =3D tt->options.wins_len;
+-    int addr_len =3D add ? len : 0;
++    int addr_len =3D add ? tt->options.wins_len : 0;
+
+-    if (addr_len =3D=3D 0 && add) /* no addresses to add */
++    if (tt->options.wins_len =3D=3D 0)
+     {
+-        return true;
++        /* nothing to do */
++        goto out;
+     }
+
+     wins_cfg_message_t wins =3D {
+@@ -338,11 +333,9 @@
+     }
+
+     msg(M_INFO, "WINS servers %s using service", (add ? "set" : "deleted")=
+);
+-    ret =3D true;
+
+ out:
+     gc_free(&gc);
+-    return ret;
+ }
+
+ static bool
+@@ -7019,10 +7012,7 @@
+             {
+                 do_dns_domain_service(false, tt);
+             }
+-            if (tt->options.dns6_len > 0)
+-            {
+-                do_dns_service(false, AF_INET6, tt);
+-            }
++            do_dns_service(false, AF_INET6, tt);
+             delete_route_connected_v6_net(tt);
+             do_address_service(false, AF_INET6, tt);
+         }
+
+--
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/482?usp=3Demail
+To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
+pn.net/settings
+
+Gerrit-Project: openvpn
+Gerrit-Branch: master
+Gerrit-Change-Id: I21a36d24f8e213c780f55acbe3e4df555c93542a
+Gerrit-Change-Number: 482
+Gerrit-PatchSet: 1
+Gerrit-Owner: stipa <lstipakov@...277...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
+Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
+Gerrit-MessageType: newchange
+
+--XLTM/XBR/mY=
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p> Attention is currently required from: flichtenheld, plaisthos. </p>
+<p>stipa would like plaisthos and flichtenheld to <strong>review</strong> t=
+his change.
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/482?usp=3Demail">Vi=
+ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
+e: pre-wrap;">tun.c: don&#39;t attempt to delete DNS and WINS servers if th=
+ey&#39;re not set<br><br>Commits<br><br>    1c4a47f7 (&quot;wintun: set ada=
+pter properties via interactive service&quot;)<br>    18826de5 (&quot;Set W=
+INS servers via interactice service&quot;)<br><br>added functionality of ad=
+d/remove DNS/WINS via interactive<br>service, which is used mostly by dco-w=
+in and wintun (tap-windows6<br>normally uses DHCP). There is a check in cod=
+e - if DNS/WINS addresses<br>are not pushed, nothing is added.<br><br>Howev=
+er, due to bug we always attempted to remove DNS/WINS,<br>even if nothing w=
+as added. This change fixes this by improving<br>check &quot;has DNS/WINS b=
+een pushed?&quot;.<br><br>While on it, convert do_XXX_service() functions t=
+o &quot;void&quot; from &quot;bool&quot;,<br>since we never check their ret=
+urn values.<br><br>Change-Id: I21a36d24f8e213c780f55acbe3e4df555c93542a<br>=
+Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>---<br>M src/openvpn/t=
+un.c<br>1 file changed, 13 insertions(+), 23 deletions(-)<br><br></pre><pre=
+ style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pul=
+l ssh://gerrit.openvpn.net:29418/openvpn refs/changes/82/482/1</pre><pre st=
+yle=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff=
+ --git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index f1b869=
+9..9104d46 100644</span><br><span>--- a/src/openvpn/tun.c</span><br><span>+=
+++ b/src/openvpn/tun.c</span><br><span>@@ -147,17 +147,16 @@</span><br><spa=
+n>     return ret;</span><br><span> }</span><br><span> </span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-static bool</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+static void</span><br><span> do_dns_domain_servic=
+e(bool add, const struct tuntap *tt)</span><br><span> {</span><br><span sty=
+le=3D"color: hsl(0, 100%, 40%);">-    bool ret =3D false;</span><br><span> =
+    ack_message_t ack;</span><br><span>     struct gc_arena gc =3D gc_new()=
+;</span><br><span>     HANDLE pipe =3D tt-&gt;options.msg_channel;</span><b=
+r><span> </span><br><span>     if (!tt-&gt;options.domain) /* no  domain to=
+ add or delete */</span><br><span>     {</span><br><span style=3D"color: hs=
+l(0, 100%, 40%);">-        return true;</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        goto out;</span><br><span>     }</span><br><spa=
+n> </span><br><span>     /* Use dns_cfg_msg with addr_len =3D 0 for setting=
+ only the DOMAIN */</span><br><span>@@ -195,17 +194,14 @@</span><br><span> =
+    }</span><br><span> </span><br><span>     msg(M_INFO, &quot;DNS domain %=
+s using service&quot;, (add ? &quot;set&quot; : &quot;deleted&quot;));</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    ret =3D true;</span><b=
+r><span> </span><br><span> out:</span><br><span>     gc_free(&amp;gc);</spa=
+n><br><span style=3D"color: hsl(0, 100%, 40%);">-    return ret;</span><br>=
+<span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%=
+);">-static bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">+sta=
+tic void</span><br><span> do_dns_service(bool add, const short family, cons=
+t struct tuntap *tt)</span><br><span> {</span><br><span style=3D"color: hsl=
+(0, 100%, 40%);">-    bool ret =3D false;</span><br><span>     ack_message_=
+t ack;</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><spa=
+n>     HANDLE pipe =3D tt-&gt;options.msg_channel;</span><br><span>@@ -213,=
+9 +209,11 @@</span><br><span>     int addr_len =3D add ? len : 0;</span><br=
+><span>     const char *ip_proto_name =3D family =3D=3D AF_INET6 ? &quot;IP=
+v6&quot; : &quot;IPv4&quot;;</span><br><span> </span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    if (addr_len =3D=3D 0 &amp;&amp; add) /* no ad=
+dresses to add */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+  =
+  if (((family =3D=3D AF_INET6) &amp;&amp; (tt-&gt;options.dns6_len =3D=3D =
+0))</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        || ((fam=
+ily =3D=3D AF_INET) &amp;&amp; (tt-&gt;options.dns_len =3D=3D 0)))</span><b=
+r><span>     {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-       =
+ return true;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+      =
+  /* nothing to do */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+        goto out;</span><br><span>     }</span><br><span> </span><br><spa=
+n>     /* Use dns_cfg_msg with domain =3D &quot;&quot; for setting only the=
+ DNS servers */</span><br><span>@@ -272,26 +270,23 @@</span><br><span>     =
+}</span><br><span> </span><br><span>     msg(M_INFO, &quot;%s dns servers %=
+s using service&quot;, ip_proto_name, (add ? &quot;set&quot; : &quot;delete=
+d&quot;));</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ret =3D=
+ true;</span><br><span> </span><br><span> out:</span><br><span>     gc_free=
+(&amp;gc);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return =
+ret;</span><br><span> }</span><br><span> </span><br><span style=3D"color: h=
+sl(0, 100%, 40%);">-static bool</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+static void</span><br><span> do_wins_service(bool add, const st=
+ruct tuntap *tt)</span><br><span> {</span><br><span style=3D"color: hsl(0, =
+100%, 40%);">-    bool ret =3D false;</span><br><span>     ack_message_t ac=
+k;</span><br><span>     struct gc_arena gc =3D gc_new();</span><br><span>  =
+   HANDLE pipe =3D tt-&gt;options.msg_channel;</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-    int len =3D tt-&gt;options.wins_len;</span><br=
+><span style=3D"color: hsl(0, 100%, 40%);">-    int addr_len =3D add ? len =
+: 0;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    int addr_le=
+n =3D add ? tt-&gt;options.wins_len : 0;</span><br><span> </span><br><span =
+style=3D"color: hsl(0, 100%, 40%);">-    if (addr_len =3D=3D 0 &amp;&amp; a=
+dd) /* no addresses to add */</span><br><span style=3D"color: hsl(120, 100%=
+, 40%);">+    if (tt-&gt;options.wins_len =3D=3D 0)</span><br><span>     {<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-        return true;</=
+span><br><span style=3D"color: hsl(120, 100%, 40%);">+        /* nothing to=
+ do */</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        goto =
+out;</span><br><span>     }</span><br><span> </span><br><span>     wins_cfg=
+_message_t wins =3D {</span><br><span>@@ -338,11 +333,9 @@</span><br><span>=
+     }</span><br><span> </span><br><span>     msg(M_INFO, &quot;WINS server=
+s %s using service&quot;, (add ? &quot;set&quot; : &quot;deleted&quot;));</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ret =3D true;</span=
+><br><span> </span><br><span> out:</span><br><span>     gc_free(&amp;gc);</=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return ret;</span><=
+br><span> }</span><br><span> </span><br><span> static bool</span><br><span>=
+@@ -7019,10 +7012,7 @@</span><br><span>             {</span><br><span>     =
+            do_dns_domain_service(false, tt);</span><br><span>             =
+}</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            if (tt-&=
+gt;options.dns6_len &gt; 0)</span><br><span style=3D"color: hsl(0, 100%, 40=
+%);">-            {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
+              do_dns_service(false, AF_INET6, tt);</span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-            }</span><br><span style=3D"color: =
+hsl(120, 100%, 40%);">+            do_dns_service(false, AF_INET6, tt);</sp=
+an><br><span>             delete_route_connected_v6_net(tt);</span><br><spa=
+n>             do_address_service(false, AF_INET6, tt);</span><br><span>   =
+      }</span><br><span></span><br></pre><p>To view, visit <a href=3D"http:=
+//gerrit.openvpn.net/c/openvpn/+/482?usp=3Demail">change 482</a>. To unsubs=
+cribe, or for help writing mail filters, visit <a href=3D"http://gerrit.ope=
+nvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schem=
+a.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://s=
+chema.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.=
+net/c/openvpn/+/482?usp=3Demail"/><meta itemprop=3D"name" content=3D"View C=
+hange"/></div></div>
+
+<div style=3D"display:none"> Gerrit-Project: openvpn </div>
+<div style=3D"display:none"> Gerrit-Branch: master </div>
+<div style=3D"display:none"> Gerrit-Change-Id: I21a36d24f8e213c780f55acbe3e=
+4df555c93542a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 482 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
+.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
+ts.sourceforge.net&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+
+
+--XLTM/XBR/mY=--
 
