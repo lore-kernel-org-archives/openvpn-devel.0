@@ -1,15 +1,16 @@
 From: "d12fk (Code Review)" <gerrit@...515...>
-Date: Sat, 16 Dec 2023 10:17:20 +0000
-References: <gerrit.1702721837000.I5d835f37d9b75a2eba39504e673597cf7b6f8989@...2715...>
+Date: Sat, 16 Dec 2023 10:20:48 +0000
+In-Reply-To: <gerrit.1702721837000.Ib14c1161b4b0c9df797b9932ad14739e202cea64@...2715...>
+References: <gerrit.1702721837000.Ib14c1161b4b0c9df797b9932ad14739e202cea64@...2715...>
 Reply-To: heiko@...515..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <d3be0bd04b5c6f9f96b139cb50f07b0f38176cab-HTML@...2715...>
+Message-ID: <b481a373c5da289864e328d8c1ecdd65da0f8b6d-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="xStZuQQW2oc="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: cmake: build native
- binaries with debug info
+Content-Type: multipart/alternative; boundary="kM3hUGyCsrM="; charset=UTF-8
+Subject: [Openvpn-devel] [XS] Change in openvpn[master]: cmake: create and
+ link compile_commands.json file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,122 +22,146 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---xStZuQQW2oc=
+--kM3hUGyCsrM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Attention is currently required from: flichtenheld, plaisthos.
 
-Hello plaisthos, flichtenheld,
+Hello flichtenheld, plaisthos,
 
-I'd like you to do a code review.
-Please visit
+I'd like you to reexamine a change. Please visit
 
-    http://gerrit.openvpn.net/c/openvpn/+/484?usp=3Demail
+    http://gerrit.openvpn.net/c/openvpn/+/483?usp=3Demail
 
-to review the following change.
+to look at the new patch set (#2).
 
 
-Change subject: cmake: build native binaries with debug info
+Change subject: cmake: create and link compile_commands.json file
 ......................................................................
 
-cmake: build native binaries with debug info
+cmake: create and link compile_commands.json file
 
-Since the cmake unix builds are not the officially supported way to
-build openvpn, it makes sense to always do debug builds for during
-development.
+CMake has support to create a json file which contains exact information
+how each file in the project is compiled. This file can be consumed by
+clangd, which in turn provides precise symbol information to IDEs for
+better code navigation and contextual information.
 
-Change-Id: I5d835f37d9b75a2eba39504e673597cf7b6f8989
+I use it with vscode to be able to quickly switch between native Linux and
+mingw builds and have the symbols info change dynamically with it. So
+handy that I think it is useful for others as well.
+
+Change-Id: Ib14c1161b4b0c9df797b9932ad14739e202cea64
 Signed-off-by: Heiko Hund <heiko@...2662...>
 ---
-M CMakePresets.json
-1 file changed, 3 insertions(+), 2 deletions(-)
+M CMakeLists.txt
+1 file changed, 6 insertions(+), 1 deletion(-)
 
 
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/83/483/2
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/84/484/1
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d40b213..bc46c27 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.12)
++cmake_minimum_required(VERSION 3.14)
+ set(CMAKE_CONFIGURATION_TYPES "Release;Debug;ASAN")
+ project(openvpn)
 
-diff --git a/CMakePresets.json b/CMakePresets.json
-index 135b19d..46aeeef 100644
---- a/CMakePresets.json
-+++ b/CMakePresets.json
-@@ -199,8 +199,9 @@
-             "configuration": "Debug"
-         },
-         {
--            "name": "unix-native",
--            "configurePreset": "unix-native"
-+            "name": "unix-native-debug",
-+            "configurePreset": "unix-native",
-+            "configuration": "Debug"
-         }
-     ],
-     "testPresets": [
+@@ -42,6 +42,11 @@
+
+ set(PLUGIN_DIR /usr/local/lib/openvpn/plugins CACHE FILEPATH "Location of =
+the plugin directory")
+
++# Create machine readable compile commands
++set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
++file(CREATE_LINK ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json
++                 ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json SYMBOLI=
+C)
++
+ # AddressSanitize - use CXX=3Dclang++ CC=3Dclang cmake -DCMAKE_BUILD_TYPE=
+=3Dasan to build with ASAN
+ set(CMAKE_C_FLAGS_ASAN
+     "-fsanitize=3Daddress,undefined -fno-sanitize-recover=3Dall -fno-optim=
+ize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointe=
+r -g -O1"
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/484?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/483?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: I5d835f37d9b75a2eba39504e673597cf7b6f8989
-Gerrit-Change-Number: 484
-Gerrit-PatchSet: 1
+Gerrit-Change-Id: Ib14c1161b4b0c9df797b9932ad14739e202cea64
+Gerrit-Change-Number: 483
+Gerrit-PatchSet: 2
 Gerrit-Owner: d12fk <heiko@...515...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-MessageType: newchange
+Gerrit-MessageType: newpatchset
 
---xStZuQQW2oc=
+--kM3hUGyCsrM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>d12fk would like plaisthos and flichtenheld to <strong>review</strong> t=
-his change.
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/484?usp=3Demail">Vi=
-ew Change</a></p><pre style=3D"font-family: monospace,monospace; white-spac=
-e: pre-wrap;">cmake: build native binaries with debug info<br><br>Since the=
- cmake unix builds are not the officially supported way to<br>build openvpn=
-, it makes sense to always do debug builds for during<br>development.<br><b=
-r>Change-Id: I5d835f37d9b75a2eba39504e673597cf7b6f8989<br>Signed-off-by: He=
-iko Hund &lt;heiko@...2662...&gt;<br>---<br>M CMakePresets.json<br>1 file c=
-hanged, 3 insertions(+), 2 deletions(-)<br><br></pre><pre style=3D"font-fam=
-ily: monospace,monospace; white-space: pre-wrap;">git pull ssh://gerrit.ope=
-nvpn.net:29418/openvpn refs/changes/84/484/1</pre><pre style=3D"font-family=
-: monospace,monospace; white-space: pre-wrap;"><span>diff --git a/CMakePres=
-ets.json b/CMakePresets.json</span><br><span>index 135b19d..46aeeef 100644<=
-/span><br><span>--- a/CMakePresets.json</span><br><span>+++ b/CMakePresets.=
-json</span><br><span>@@ -199,8 +199,9 @@</span><br><span>             &quot=
-;configuration&quot;: &quot;Debug&quot;</span><br><span>         },</span><=
-br><span>         {</span><br><span style=3D"color: hsl(0, 100%, 40%);">-  =
-          &quot;name&quot;: &quot;unix-native&quot;,</span><br><span style=
-=3D"color: hsl(0, 100%, 40%);">-            &quot;configurePreset&quot;: &q=
-uot;unix-native&quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            &quot;name&quot;: &quot;unix-native-debug&quot;,</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+            &quot;configurePrese=
-t&quot;: &quot;unix-native&quot;,</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+            &quot;configuration&quot;: &quot;Debug&quot;</spa=
-n><br><span>         }</span><br><span>     ],</span><br><span>     &quot;t=
-estPresets&quot;: [</span><br><span></span><br></pre><p>To view, visit <a h=
-ref=3D"http://gerrit.openvpn.net/c/openvpn/+/484?usp=3Demail">change 484</a=
->. To unsubscribe, or for help writing mail filters, visit <a href=3D"http:=
-//gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=3D"=
-http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" itemtype=
-=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http://ger=
-rit.openvpn.net/c/openvpn/+/484?usp=3Demail"/><meta itemprop=3D"name" conte=
-nt=3D"View Change"/></div></div>
+<p>d12fk <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/483?usp=3Demail">View Change</a=
+></p><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
+">cmake: create and link compile_commands.json file<br><br>CMake has suppor=
+t to create a json file which contains exact information<br>how each file i=
+n the project is compiled. This file can be consumed by<br>clangd, which in=
+ turn provides precise symbol information to IDEs for<br>better code naviga=
+tion and contextual information.<br><br>I use it with vscode to be able to =
+quickly switch between native Linux and<br>mingw builds and have the symbol=
+s info change dynamically with it. So<br>handy that I think it is useful fo=
+r others as well.<br><br>Change-Id: Ib14c1161b4b0c9df797b9932ad14739e202cea=
+64<br>Signed-off-by: Heiko Hund &lt;heiko@...2662...&gt;<br>---<br>M CMakeL=
+ists.txt<br>1 file changed, 6 insertions(+), 1 deletion(-)<br><br></pre><pr=
+e style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pu=
+ll ssh://gerrit.openvpn.net:29418/openvpn refs/changes/83/483/2</pre><pre s=
+tyle=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>dif=
+f --git a/CMakeLists.txt b/CMakeLists.txt</span><br><span>index d40b213..bc=
+46c27 100644</span><br><span>--- a/CMakeLists.txt</span><br><span>+++ b/CMa=
+keLists.txt</span><br><span>@@ -1,4 +1,4 @@</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-cmake_minimum_required(VERSION 3.12)</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+cmake_minimum_required(VERSION 3.14)=
+</span><br><span> set(CMAKE_CONFIGURATION_TYPES &quot;Release;Debug;ASAN&qu=
+ot;)</span><br><span> project(openvpn)</span><br><span> </span><br><span>@@=
+ -42,6 +42,11 @@</span><br><span> </span><br><span> set(PLUGIN_DIR /usr/loc=
+al/lib/openvpn/plugins CACHE FILEPATH &quot;Location of the plugin director=
+y&quot;)</span><br><span> </span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+# Create machine readable compile commands</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)</span><b=
+r><span style=3D"color: hsl(120, 100%, 40%);">+file(CREATE_LINK ${CMAKE_CUR=
+RENT_BINARY_DIR}/compile_commands.json</span><br><span style=3D"color: hsl(=
+120, 100%, 40%);">+                 ${CMAKE_CURRENT_SOURCE_DIR}/compile_com=
+mands.json SYMBOLIC)</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++</span><br><span> # AddressSanitize - use CXX=3Dclang++ CC=3Dclang cmake -=
+DCMAKE_BUILD_TYPE=3Dasan to build with ASAN</span><br><span> set(CMAKE_C_FL=
+AGS_ASAN</span><br><span>     &quot;-fsanitize=3Daddress,undefined -fno-san=
+itize-recover=3Dall -fno-optimize-sibling-calls -fsanitize-address-use-afte=
+r-scope -fno-omit-frame-pointer -g -O1&quot;</span><br><span></span><br></p=
+re><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/483?u=
+sp=3Demail">change 483</a>. To unsubscribe, or for help writing mail filter=
+s, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><d=
+iv itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope ite=
+mprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=
+=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/483?usp=3Demail"/><m=
+eta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I5d835f37d9b75a2eba39504e673=
-597cf7b6f8989 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 484 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ib14c1161b4b0c9df797b9932ad1=
+4739e202cea64 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 483 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
 div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -149,8 +174,8 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newchange </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---xStZuQQW2oc=--
+--kM3hUGyCsrM=--
 
