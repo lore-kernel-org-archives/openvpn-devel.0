@@ -1,14 +1,14 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 18 Dec 2023 14:37:10 +0000
+From: "stipa (Code Review)" <gerrit@...515...>
+Date: Mon, 18 Dec 2023 15:17:31 +0000
 In-Reply-To: <gerrit.1702561084000.I21a36d24f8e213c780f55acbe3e4df555c93542a@...2715...>
 References: <gerrit.1702561084000.I21a36d24f8e213c780f55acbe3e4df555c93542a@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, lstipakov@...277...
-Message-ID: <a1f0453474ca9f32bb254acfd8be8a93b2a55da0-EmailReviewComments-HTML@...2715...>
+Reply-To: lstipakov@...277..., arne-openvpn@...1227..., heiko@...515...,
+ openvpn-devel@lists.sourceforge.net, frank@...2641...
+Message-ID: <94892bbc3b365fe3275072d615b0282dc0d3e160-EmailReplacePatchSet-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="rZCtsW2SQKw="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="m3e8LO4MEKM="; charset=UTF-8
 Subject: [Openvpn-devel] [S] Change in openvpn[master]: tun.c: don't attempt
  to delete DNS and WINS servers if they're not set
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,41 +19,176 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
+Cc: d12fk <heiko@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---rZCtsW2SQKw=
+--m3e8LO4MEKM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: plaisthos, stipa.
+Attention is currently required from: flichtenheld, plaisthos, stipa.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/482?usp=3Demail )
+Hello flichtenheld, plaisthos,
+
+I'd like you to reexamine a change. Please visit
+
+    http://gerrit.openvpn.net/c/openvpn/+/482?usp=3Demail
+
+to look at the new patch set (#2).
+
+The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld
+
 
 Change subject: tun.c: don't attempt to delete DNS and WINS servers if they=
 're not set
 ......................................................................
 
+tun.c: don't attempt to delete DNS and WINS servers if they're not set
 
-Patch Set 1: Code-Review-1
+Commits
 
-(2 comments)
+    1c4a47f7 ("wintun: set adapter properties via interactive service")
+    18826de5 ("Set WINS servers via interactice service")
 
-Patchset:
+added functionality of add/remove DNS/WINS via interactive
+service, which is used mostly by dco-win and wintun (tap-windows6
+normally uses DHCP). There is a check in code - if DNS/WINS addresses
+are not pushed, nothing is added.
 
-PS1:
-Generally looks correct.
+However, due to bug we always attempted to remove DNS/WINS,
+even if nothing was added. Removing WINS, for example, could take
+up to 3 seconds.
+
+This change fixes this by improving check "has DNS/WINS been pushed?".
+
+While on it, convert do_XXX_service() functions to "void" from "bool",
+since we never check their return values.
+
+Change-Id: I21a36d24f8e213c780f55acbe3e4df555c93542a
+Signed-off-by: Lev Stipakov <lev@...515...>
+---
+M src/openvpn/tun.c
+1 file changed, 12 insertions(+), 23 deletions(-)
 
 
-File src/openvpn/tun.c:
+  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/82/482/2
 
-http://gerrit.openvpn.net/c/openvpn/+/482/comment/ce967642_7be70959 :
-PS1, Line 212:     if (((family =3D=3D AF_INET6) && (tt->options.dns6_len =
-=3D=3D 0))
-can be shortened to "len =3D=3D 0"
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index f1b8699..8e96149 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -147,17 +147,16 @@
+     return ret;
+ }
 
+-static bool
++static void
+ do_dns_domain_service(bool add, const struct tuntap *tt)
+ {
+-    bool ret =3D false;
+     ack_message_t ack;
+     struct gc_arena gc =3D gc_new();
+     HANDLE pipe =3D tt->options.msg_channel;
 
+     if (!tt->options.domain) /* no  domain to add or delete */
+     {
+-        return true;
++        goto out;
+     }
+
+     /* Use dns_cfg_msg with addr_len =3D 0 for setting only the DOMAIN */
+@@ -195,17 +194,14 @@
+     }
+
+     msg(M_INFO, "DNS domain %s using service", (add ? "set" : "deleted"));
+-    ret =3D true;
+
+ out:
+     gc_free(&gc);
+-    return ret;
+ }
+
+-static bool
++static void
+ do_dns_service(bool add, const short family, const struct tuntap *tt)
+ {
+-    bool ret =3D false;
+     ack_message_t ack;
+     struct gc_arena gc =3D gc_new();
+     HANDLE pipe =3D tt->options.msg_channel;
+@@ -213,9 +209,10 @@
+     int addr_len =3D add ? len : 0;
+     const char *ip_proto_name =3D family =3D=3D AF_INET6 ? "IPv6" : "IPv4";
+
+-    if (addr_len =3D=3D 0 && add) /* no addresses to add */
++    if (len =3D=3D 0)
+     {
+-        return true;
++        /* nothing to do */
++        goto out;
+     }
+
+     /* Use dns_cfg_msg with domain =3D "" for setting only the DNS servers=
+ */
+@@ -272,26 +269,23 @@
+     }
+
+     msg(M_INFO, "%s dns servers %s using service", ip_proto_name, (add ? "=
+set" : "deleted"));
+-    ret =3D true;
+
+ out:
+     gc_free(&gc);
+-    return ret;
+ }
+
+-static bool
++static void
+ do_wins_service(bool add, const struct tuntap *tt)
+ {
+-    bool ret =3D false;
+     ack_message_t ack;
+     struct gc_arena gc =3D gc_new();
+     HANDLE pipe =3D tt->options.msg_channel;
+-    int len =3D tt->options.wins_len;
+-    int addr_len =3D add ? len : 0;
++    int addr_len =3D add ? tt->options.wins_len : 0;
+
+-    if (addr_len =3D=3D 0 && add) /* no addresses to add */
++    if (tt->options.wins_len =3D=3D 0)
+     {
+-        return true;
++        /* nothing to do */
++        goto out;
+     }
+
+     wins_cfg_message_t wins =3D {
+@@ -338,11 +332,9 @@
+     }
+
+     msg(M_INFO, "WINS servers %s using service", (add ? "set" : "deleted")=
+);
+-    ret =3D true;
+
+ out:
+     gc_free(&gc);
+-    return ret;
+ }
+
+ static bool
+@@ -7019,10 +7011,7 @@
+             {
+                 do_dns_domain_service(false, tt);
+             }
+-            if (tt->options.dns6_len > 0)
+-            {
+-                do_dns_service(false, AF_INET6, tt);
+-            }
++            do_dns_service(false, AF_INET6, tt);
+             delete_route_connected_v6_net(tt);
+             do_address_service(false, AF_INET6, tt);
+         }
 
 --
 To view, visit http://gerrit.openvpn.net/c/openvpn/+/482?usp=3Demail
@@ -64,55 +199,139 @@ Gerrit-Project: openvpn
 Gerrit-Branch: master
 Gerrit-Change-Id: I21a36d24f8e213c780f55acbe3e4df555c93542a
 Gerrit-Change-Number: 482
-Gerrit-PatchSet: 1
+Gerrit-PatchSet: 2
 Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: d12fk <heiko@...515...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Attention: flichtenheld <frank@...2641...>
 Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Mon, 18 Dec 2023 14:37:10 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+Gerrit-MessageType: newpatchset
 
---rZCtsW2SQKw=
+--m3e8LO4MEKM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: plaisthos, stipa. </p>
-<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/482?usp=3Demail">Vi=
-ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
-style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
-n/+/482?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-=
-wrap; word-wrap: break-word;">Generally looks correct.</p></li></ul></li><l=
-i style=3D"margin: 0; padding: 0;"><p>File src/openvpn/tun.c:</p><ul style=
-=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
-6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/482/comment/ce967642_7be70959">Patch Set #1, Line 212:</a> <co=
-de style=3D"font-family:monospace,monospace">    if (((family =3D=3D AF_INE=
-T6) &amp;&amp; (tt-&gt;options.dns6_len =3D=3D 0))</code></p><p style=3D"wh=
-ite-space: pre-wrap; word-wrap: break-word;">can be shortened to &quot;len =
-=3D=3D 0&quot;</p></li></ul></li></ul><p>To view, visit <a href=3D"http://g=
-errit.openvpn.net/c/openvpn/+/482?usp=3Demail">change 482</a>. To unsubscri=
-be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
-n.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
-rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
-ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/482?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
-ge"/></div></div>
+<p> Attention is currently required from: flichtenheld, plaisthos, stipa. <=
+/p>
+<p>stipa <strong>uploaded patch set #2</strong> to this change.</p><p><a hr=
+ef=3D"http://gerrit.openvpn.net/c/openvpn/+/482?usp=3Demail">View Change</a=
+></p><p>The following approvals got outdated and were removed:
+Code-Review-1 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
+pace; white-space: pre-wrap;">tun.c: don&#39;t attempt to delete DNS and WI=
+NS servers if they&#39;re not set<br><br>Commits<br><br>    1c4a47f7 (&quot=
+;wintun: set adapter properties via interactive service&quot;)<br>    18826=
+de5 (&quot;Set WINS servers via interactice service&quot;)<br><br>added fun=
+ctionality of add/remove DNS/WINS via interactive<br>service, which is used=
+ mostly by dco-win and wintun (tap-windows6<br>normally uses DHCP). There i=
+s a check in code - if DNS/WINS addresses<br>are not pushed, nothing is add=
+ed.<br><br>However, due to bug we always attempted to remove DNS/WINS,<br>e=
+ven if nothing was added. Removing WINS, for example, could take<br>up to 3=
+ seconds.<br><br>This change fixes this by improving check &quot;has DNS/WI=
+NS been pushed?&quot;.<br><br>While on it, convert do_XXX_service() functio=
+ns to &quot;void&quot; from &quot;bool&quot;,<br>since we never check their=
+ return values.<br><br>Change-Id: I21a36d24f8e213c780f55acbe3e4df555c93542a=
+<br>Signed-off-by: Lev Stipakov &lt;lev@...515...&gt;<br>---<br>M src/openv=
+pn/tun.c<br>1 file changed, 12 insertions(+), 23 deletions(-)<br><br></pre>=
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;">git=
+ pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/82/482/2</pre><pr=
+e style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><span>=
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c</span><br><span>index f1=
+b8699..8e96149 100644</span><br><span>--- a/src/openvpn/tun.c</span><br><sp=
+an>+++ b/src/openvpn/tun.c</span><br><span>@@ -147,17 +147,16 @@</span><br>=
+<span>     return ret;</span><br><span> }</span><br><span> </span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-static bool</span><br><span style=3D"=
+color: hsl(120, 100%, 40%);">+static void</span><br><span> do_dns_domain_se=
+rvice(bool add, const struct tuntap *tt)</span><br><span> {</span><br><span=
+ style=3D"color: hsl(0, 100%, 40%);">-    bool ret =3D false;</span><br><sp=
+an>     ack_message_t ack;</span><br><span>     struct gc_arena gc =3D gc_n=
+ew();</span><br><span>     HANDLE pipe =3D tt-&gt;options.msg_channel;</spa=
+n><br><span> </span><br><span>     if (!tt-&gt;options.domain) /* no  domai=
+n to add or delete */</span><br><span>     {</span><br><span style=3D"color=
+: hsl(0, 100%, 40%);">-        return true;</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+        goto out;</span><br><span>     }</span><br>=
+<span> </span><br><span>     /* Use dns_cfg_msg with addr_len =3D 0 for set=
+ting only the DOMAIN */</span><br><span>@@ -195,17 +194,14 @@</span><br><sp=
+an>     }</span><br><span> </span><br><span>     msg(M_INFO, &quot;DNS doma=
+in %s using service&quot;, (add ? &quot;set&quot; : &quot;deleted&quot;));<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    ret =3D true;</spa=
+n><br><span> </span><br><span> out:</span><br><span>     gc_free(&amp;gc);<=
+/span><br><span style=3D"color: hsl(0, 100%, 40%);">-    return ret;</span>=
+<br><span> }</span><br><span> </span><br><span style=3D"color: hsl(0, 100%,=
+ 40%);">-static bool</span><br><span style=3D"color: hsl(120, 100%, 40%);">=
++static void</span><br><span> do_dns_service(bool add, const short family, =
+const struct tuntap *tt)</span><br><span> {</span><br><span style=3D"color:=
+ hsl(0, 100%, 40%);">-    bool ret =3D false;</span><br><span>     ack_mess=
+age_t ack;</span><br><span>     struct gc_arena gc =3D gc_new();</span><br>=
+<span>     HANDLE pipe =3D tt-&gt;options.msg_channel;</span><br><span>@@ -=
+213,9 +209,10 @@</span><br><span>     int addr_len =3D add ? len : 0;</span=
+><br><span>     const char *ip_proto_name =3D family =3D=3D AF_INET6 ? &quo=
+t;IPv6&quot; : &quot;IPv4&quot;;</span><br><span> </span><br><span style=3D=
+"color: hsl(0, 100%, 40%);">-    if (addr_len =3D=3D 0 &amp;&amp; add) /* n=
+o addresses to add */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+    if (len =3D=3D 0)</span><br><span>     {</span><br><span style=3D"col=
+or: hsl(0, 100%, 40%);">-        return true;</span><br><span style=3D"colo=
+r: hsl(120, 100%, 40%);">+        /* nothing to do */</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+        goto out;</span><br><span>     }<=
+/span><br><span> </span><br><span>     /* Use dns_cfg_msg with domain =3D &=
+quot;&quot; for setting only the DNS servers */</span><br><span>@@ -272,26 =
++269,23 @@</span><br><span>     }</span><br><span> </span><br><span>     ms=
+g(M_INFO, &quot;%s dns servers %s using service&quot;, ip_proto_name, (add =
+? &quot;set&quot; : &quot;deleted&quot;));</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    ret =3D true;</span><br><span> </span><br><span> o=
+ut:</span><br><span>     gc_free(&amp;gc);</span><br><span style=3D"color: =
+hsl(0, 100%, 40%);">-    return ret;</span><br><span> }</span><br><span> </=
+span><br><span style=3D"color: hsl(0, 100%, 40%);">-static bool</span><br><=
+span style=3D"color: hsl(120, 100%, 40%);">+static void</span><br><span> do=
+_wins_service(bool add, const struct tuntap *tt)</span><br><span> {</span><=
+br><span style=3D"color: hsl(0, 100%, 40%);">-    bool ret =3D false;</span=
+><br><span>     ack_message_t ack;</span><br><span>     struct gc_arena gc =
+=3D gc_new();</span><br><span>     HANDLE pipe =3D tt-&gt;options.msg_chann=
+el;</span><br><span style=3D"color: hsl(0, 100%, 40%);">-    int len =3D tt=
+-&gt;options.wins_len;</span><br><span style=3D"color: hsl(0, 100%, 40%);">=
+-    int addr_len =3D add ? len : 0;</span><br><span style=3D"color: hsl(12=
+0, 100%, 40%);">+    int addr_len =3D add ? tt-&gt;options.wins_len : 0;</s=
+pan><br><span> </span><br><span style=3D"color: hsl(0, 100%, 40%);">-    if=
+ (addr_len =3D=3D 0 &amp;&amp; add) /* no addresses to add */</span><br><sp=
+an style=3D"color: hsl(120, 100%, 40%);">+    if (tt-&gt;options.wins_len =
+=3D=3D 0)</span><br><span>     {</span><br><span style=3D"color: hsl(0, 100=
+%, 40%);">-        return true;</span><br><span style=3D"color: hsl(120, 10=
+0%, 40%);">+        /* nothing to do */</span><br><span style=3D"color: hsl=
+(120, 100%, 40%);">+        goto out;</span><br><span>     }</span><br><spa=
+n> </span><br><span>     wins_cfg_message_t wins =3D {</span><br><span>@@ -=
+338,11 +332,9 @@</span><br><span>     }</span><br><span> </span><br><span> =
+    msg(M_INFO, &quot;WINS servers %s using service&quot;, (add ? &quot;set=
+&quot; : &quot;deleted&quot;));</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    ret =3D true;</span><br><span> </span><br><span> out:</span><=
+br><span>     gc_free(&amp;gc);</span><br><span style=3D"color: hsl(0, 100%=
+, 40%);">-    return ret;</span><br><span> }</span><br><span> </span><br><s=
+pan> static bool</span><br><span>@@ -7019,10 +7011,7 @@</span><br><span>   =
+          {</span><br><span>                 do_dns_domain_service(false, t=
+t);</span><br><span>             }</span><br><span style=3D"color: hsl(0, 1=
+00%, 40%);">-            if (tt-&gt;options.dns6_len &gt; 0)</span><br><spa=
+n style=3D"color: hsl(0, 100%, 40%);">-            {</span><br><span style=
+=3D"color: hsl(0, 100%, 40%);">-                do_dns_service(false, AF_IN=
+ET6, tt);</span><br><span style=3D"color: hsl(0, 100%, 40%);">-            =
+}</span><br><span style=3D"color: hsl(120, 100%, 40%);">+            do_dns=
+_service(false, AF_INET6, tt);</span><br><span>             delete_route_co=
+nnected_v6_net(tt);</span><br><span>             do_address_service(false, =
+AF_INET6, tt);</span><br><span>         }</span><br><span></span><br></pre>=
+<p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/482?usp=
+=3Demail">change 482</a>. To unsubscribe, or for help writing mail filters,=
+ visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div=
+ itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemp=
+rop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"=
+url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/482?usp=3Demail"/><meta =
+itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
 <div style=3D"display:none"> Gerrit-Change-Id: I21a36d24f8e213c780f55acbe3e=
 4df555c93542a </div>
 <div style=3D"display:none"> Gerrit-Change-Number: 482 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
 <div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
 ; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
@@ -124,14 +343,12 @@ ge"/></div></div>
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
+41...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
 .&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 18 Dec 2023 14:37:10=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
+<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
 
 
---rZCtsW2SQKw=--
+--m3e8LO4MEKM=--
 
