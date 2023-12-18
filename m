@@ -1,16 +1,16 @@
 From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Mon, 18 Dec 2023 14:17:52 +0000
-In-Reply-To: <gerrit.1702721837000.Ib14c1161b4b0c9df797b9932ad14739e202cea64@...2715...>
-References: <gerrit.1702721837000.Ib14c1161b4b0c9df797b9932ad14739e202cea64@...2715...>
+Date: Mon, 18 Dec 2023 14:37:10 +0000
+In-Reply-To: <gerrit.1702561084000.I21a36d24f8e213c780f55acbe3e4df555c93542a@...2715...>
+References: <gerrit.1702561084000.I21a36d24f8e213c780f55acbe3e4df555c93542a@...2715...>
 Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <1bbb2c0c820e8ad9a035d4d2d011ae74696cdcac-EmailReviewComments-HTML@...2715...>
+ openvpn-devel@lists.sourceforge.net, lstipakov@...277...
+Message-ID: <a1f0453474ca9f32bb254acfd8be8a93b2a55da0-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="m0tFgE5GqF8="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: cmake: create and
- link compile_commands.json file
+Content-Type: multipart/alternative; boundary="rZCtsW2SQKw="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: tun.c: don't attempt
+ to delete DNS and WINS servers if they're not set
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,109 +19,119 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: d12fk <heiko@...515...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: stipa <lstipakov@...277...>
+Cc: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---m0tFgE5GqF8=
+--rZCtsW2SQKw=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Attention is currently required from: d12fk, plaisthos.
+Attention is currently required from: plaisthos, stipa.
 
 flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/483?usp=3Demail )
+t/c/openvpn/+/482?usp=3Demail )
 
-Change subject: cmake: create and link compile_commands.json file
+Change subject: tun.c: don't attempt to delete DNS and WINS servers if they=
+'re not set
 ......................................................................
 
 
-Patch Set 3: Code-Review+2
+Patch Set 1: Code-Review-1
 
-(1 comment)
+(2 comments)
 
-File CMakeLists.txt:
+Patchset:
 
-http://gerrit.openvpn.net/c/openvpn/+/483/comment/7ad1e93a_33c407bc :
-PS2, Line 1: cmake_minimum_required(VERSION 3.14)
-> Please document in the commit message why you increased this. [=E2=80=A6]
-Done
+PS1:
+Generally looks correct.
+
+
+File src/openvpn/tun.c:
+
+http://gerrit.openvpn.net/c/openvpn/+/482/comment/ce967642_7be70959 :
+PS1, Line 212:     if (((family =3D=3D AF_INET6) && (tt->options.dns6_len =
+=3D=3D 0))
+can be shortened to "len =3D=3D 0"
 
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/483?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/482?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ib14c1161b4b0c9df797b9932ad14739e202cea64
-Gerrit-Change-Number: 483
-Gerrit-PatchSet: 3
-Gerrit-Owner: d12fk <heiko@...515...>
+Gerrit-Change-Id: I21a36d24f8e213c780f55acbe3e4df555c93542a
+Gerrit-Change-Number: 482
+Gerrit-PatchSet: 1
+Gerrit-Owner: stipa <lstipakov@...277...>
 Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-CC: d12fk <heiko@...515...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Comment-Date: Mon, 18 Dec 2023 14:17:52 +0000
+Gerrit-Attention: stipa <lstipakov@...277...>
+Gerrit-Comment-Date: Mon, 18 Dec 2023 14:37:10 +0000
 Gerrit-HasComments: Yes
 Gerrit-Has-Labels: Yes
-Comment-In-Reply-To: flichtenheld <frank@...2641...>
 Gerrit-MessageType: comment
 
---m0tFgE5GqF8=
+--rZCtsW2SQKw=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p> Attention is currently required from: d12fk, plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/483?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>File CMakeLists.txt:</p><ul styl=
-e=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 =
-16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.ne=
-t/c/openvpn/+/483/comment/7ad1e93a_33c407bc">Patch Set #2, Line 1:</a> <cod=
-e style=3D"font-family:monospace,monospace">cmake_minimum_required(VERSION =
-3.14)</code></p><p><blockquote style=3D"border-left: 1px solid #aaa; margin=
-: 10px 0; padding: 0 10px;">Please document in the commit message why you i=
-ncreased this. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wra=
-p; word-wrap: break-word;">Done</p></li></ul></li></ul><p>To view, visit <a=
- href=3D"http://gerrit.openvpn.net/c/openvpn/+/483?usp=3Demail">change 483<=
-/a>. To unsubscribe, or for help writing mail filters, visit <a href=3D"htt=
-p://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope itemtype=
-=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action" item=
-type=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"http:/=
-/gerrit.openvpn.net/c/openvpn/+/483?usp=3Demail"/><meta itemprop=3D"name" c=
-ontent=3D"View Change"/></div></div>
+<p> Attention is currently required from: plaisthos, stipa. </p>
+<p>Patch set 1:<span style=3D"border-radius: 3px; display: inline-block; ma=
+rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
+</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/482?usp=3Demail">Vi=
+ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
+0;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-=
+style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p =
+style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvp=
+n/+/482?tab=3Dcomments">Patch Set #1:</a> </p><p style=3D"white-space: pre-=
+wrap; word-wrap: break-word;">Generally looks correct.</p></li></ul></li><l=
+i style=3D"margin: 0; padding: 0;"><p>File src/openvpn/tun.c:</p><ul style=
+=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 1=
+6px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/482/comment/ce967642_7be70959">Patch Set #1, Line 212:</a> <co=
+de style=3D"font-family:monospace,monospace">    if (((family =3D=3D AF_INE=
+T6) &amp;&amp; (tt-&gt;options.dns6_len =3D=3D 0))</code></p><p style=3D"wh=
+ite-space: pre-wrap; word-wrap: break-word;">can be shortened to &quot;len =
+=3D=3D 0&quot;</p></li></ul></li></ul><p>To view, visit <a href=3D"http://g=
+errit.openvpn.net/c/openvpn/+/482?usp=3Demail">change 482</a>. To unsubscri=
+be, or for help writing mail filters, visit <a href=3D"http://gerrit.openvp=
+n.net/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.o=
+rg/EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://sche=
+ma.org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net=
+/c/openvpn/+/482?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Chan=
+ge"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib14c1161b4b0c9df797b9932ad1=
-4739e202cea64 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 483 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: d12fk &lt;heiko@...515...&gt; </=
-div>
+<div style=3D"display:none"> Gerrit-Change-Id: I21a36d24f8e213c780f55acbe3e=
+4df555c93542a </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 482 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 1 </div>
+<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
+; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
 1...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
 .1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-CC: d12fk &lt;heiko@...515...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
 ..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 18 Dec 2023 14:17:52=
+<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
+.&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Mon, 18 Dec 2023 14:37:10=
  +0000 </div>
 <div style=3D"display:none"> Gerrit-HasComments: Yes </div>
 <div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Comment-In-Reply-To: flichtenheld &lt;frank@...1186...=
-.2641...&gt; </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---m0tFgE5GqF8=--
+--rZCtsW2SQKw=--
 
