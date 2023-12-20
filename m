@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 20 Dec 2023 13:36:10 +0000
+From: Frank Lichtenheld <frank@...2641...>
+Date: Wed, 20 Dec 2023 14:36:37 +0100
+Message-Id: <20231220133637.60996-1-frank@...2641...>
 In-Reply-To: <gerrit.1702561084000.I21a36d24f8e213c780f55acbe3e4df555c93542a@...2715...>
 References: <gerrit.1702561084000.I21a36d24f8e213c780f55acbe3e4df555c93542a@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227..., heiko@...515...,
- openvpn-devel@lists.sourceforge.net, lstipakov@...277...
-Message-ID: <07f1215884defa04629d5d6b4af6bf0a821954b6-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="VUQsyTOSdYQ="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: tun.c: don't attempt
- to delete DNS and WINS servers if they're not set
+Subject: [Openvpn-devel] [PATCH v2] tun.c: don't attempt to delete DNS and
+ WINS servers if they're not set
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,93 +14,157 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: stipa <lstipakov@...277...>
-Cc: d12fk <heiko@...515...>, plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev@...515...>
 
---VUQsyTOSdYQ=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Lev Stipakov <lev@...515...>
 
-Attention is currently required from: d12fk, plaisthos, stipa.
+Commits
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/482?usp=3Demail )
+    1c4a47f7 ("wintun: set adapter properties via interactive service")
+    18826de5 ("Set WINS servers via interactice service")
 
-Change subject: tun.c: don't attempt to delete DNS and WINS servers if they=
-'re not set
-......................................................................
+added functionality of add/remove DNS/WINS via interactive
+service, which is used mostly by dco-win and wintun (tap-windows6
+normally uses DHCP). There is a check in code - if DNS/WINS addresses
+are not pushed, nothing is added.
 
+However, due to bug we always attempted to remove DNS/WINS,
+even if nothing was added. Removing WINS, for example, could take
+up to 3 seconds.
 
-Patch Set 2: Code-Review+2
+This change fixes this by improving check "has DNS/WINS been pushed?".
 
+While on it, convert do_XXX_service() functions to "void" from "bool",
+since we never check their return values.
 
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/482?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+Change-Id: I21a36d24f8e213c780f55acbe3e4df555c93542a
+Signed-off-by: Lev Stipakov <lev@...515...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: I21a36d24f8e213c780f55acbe3e4df555c93542a
-Gerrit-Change-Number: 482
-Gerrit-PatchSet: 2
-Gerrit-Owner: stipa <lstipakov@...277...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
-Gerrit-CC: d12fk <heiko@...515...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: d12fk <heiko@...515...>
-Gerrit-Attention: stipa <lstipakov@...277...>
-Gerrit-Comment-Date: Wed, 20 Dec 2023 13:36:10 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
---VUQsyTOSdYQ=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/482
+This mail reflects revision 2 of this Change.
 
-<p> Attention is currently required from: d12fk, plaisthos, stipa. </p>
-<p>Patch set 2:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/482?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/482?usp=3Demail">=
-change 482</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/482?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: I21a36d24f8e213c780f55acbe3e=
-4df555c93542a </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 482 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
-<div style=3D"display:none"> Gerrit-Owner: stipa &lt;lstipakov@...277...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: d12fk &lt;heiko@...515...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: d12fk &lt;heiko@...515...&gt=
-; </div>
-<div style=3D"display:none"> Gerrit-Attention: stipa &lt;lstipakov@...1663...=
-.&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 20 Dec 2023 13:36:10=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---VUQsyTOSdYQ=--
+        
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index f1b8699..8e96149 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -147,17 +147,16 @@
+     return ret;
+ }
+ 
+-static bool
++static void
+ do_dns_domain_service(bool add, const struct tuntap *tt)
+ {
+-    bool ret = false;
+     ack_message_t ack;
+     struct gc_arena gc = gc_new();
+     HANDLE pipe = tt->options.msg_channel;
+ 
+     if (!tt->options.domain) /* no  domain to add or delete */
+     {
+-        return true;
++        goto out;
+     }
+ 
+     /* Use dns_cfg_msg with addr_len = 0 for setting only the DOMAIN */
+@@ -195,17 +194,14 @@
+     }
+ 
+     msg(M_INFO, "DNS domain %s using service", (add ? "set" : "deleted"));
+-    ret = true;
+ 
+ out:
+     gc_free(&gc);
+-    return ret;
+ }
+ 
+-static bool
++static void
+ do_dns_service(bool add, const short family, const struct tuntap *tt)
+ {
+-    bool ret = false;
+     ack_message_t ack;
+     struct gc_arena gc = gc_new();
+     HANDLE pipe = tt->options.msg_channel;
+@@ -213,9 +209,10 @@
+     int addr_len = add ? len : 0;
+     const char *ip_proto_name = family == AF_INET6 ? "IPv6" : "IPv4";
+ 
+-    if (addr_len == 0 && add) /* no addresses to add */
++    if (len == 0)
+     {
+-        return true;
++        /* nothing to do */
++        goto out;
+     }
+ 
+     /* Use dns_cfg_msg with domain = "" for setting only the DNS servers */
+@@ -272,26 +269,23 @@
+     }
+ 
+     msg(M_INFO, "%s dns servers %s using service", ip_proto_name, (add ? "set" : "deleted"));
+-    ret = true;
+ 
+ out:
+     gc_free(&gc);
+-    return ret;
+ }
+ 
+-static bool
++static void
+ do_wins_service(bool add, const struct tuntap *tt)
+ {
+-    bool ret = false;
+     ack_message_t ack;
+     struct gc_arena gc = gc_new();
+     HANDLE pipe = tt->options.msg_channel;
+-    int len = tt->options.wins_len;
+-    int addr_len = add ? len : 0;
++    int addr_len = add ? tt->options.wins_len : 0;
+ 
+-    if (addr_len == 0 && add) /* no addresses to add */
++    if (tt->options.wins_len == 0)
+     {
+-        return true;
++        /* nothing to do */
++        goto out;
+     }
+ 
+     wins_cfg_message_t wins = {
+@@ -338,11 +332,9 @@
+     }
+ 
+     msg(M_INFO, "WINS servers %s using service", (add ? "set" : "deleted"));
+-    ret = true;
+ 
+ out:
+     gc_free(&gc);
+-    return ret;
+ }
+ 
+ static bool
+@@ -7019,10 +7011,7 @@
+             {
+                 do_dns_domain_service(false, tt);
+             }
+-            if (tt->options.dns6_len > 0)
+-            {
+-                do_dns_service(false, AF_INET6, tt);
+-            }
++            do_dns_service(false, AF_INET6, tt);
+             delete_route_connected_v6_net(tt);
+             do_address_service(false, AF_INET6, tt);
+         }
 
