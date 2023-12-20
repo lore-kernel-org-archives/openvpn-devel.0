@@ -1,11 +1,11 @@
-From: Frank Lichtenheld <frank@...2641...>
-Date: Wed, 20 Dec 2023 13:36:59 +0100
-Message-Id: <20231220123659.55542-1-frank@...2641...>
-In-Reply-To: <gerrit.1702721837000.Ib14c1161b4b0c9df797b9932ad14739e202cea64@...2715...>
-References: <gerrit.1702721837000.Ib14c1161b4b0c9df797b9932ad14739e202cea64@...2715...>
+Content-Type: multipart/alternative;
+ boundary="------------SoJpNOGxlEGlN0c7MC2Oai0Q"
+Message-ID: <8256233e-53db-4efe-b1b7-08b048144b4a@...2751...>
+Date: Wed, 20 Dec 2023 14:16:43 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v4] cmake: create and link
- compile_commands.json file
+From: Johan Draaisma <johan@...2751...>
+Content-Language: en-US
+Subject: [Openvpn-devel] IRC community meeting summary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,70 +14,188 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Heiko Hund <heiko@...2662...>
+This is a multi-part message in MIME format.
+--------------SoJpNOGxlEGlN0c7MC2Oai0Q
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 
-CMake has support to create a json file which contains exact information
-how each file in the project is compiled. This file can be consumed by
-clangd, which in turn provides precise symbol information to IDEs for
-better code navigation and contextual information.
+Meeting summary for 20 December 2023:
 
-I use it with vscode to be able to quickly switch between native Linux and
-mingw builds and have the symbols info change dynamically with it. So
-handy that I think it is useful for others as well.
+  * *New: no meeting on 27th december or 3 january.*
+    /Normal meetings to resume on January 10 2024./
 
-Bump required CMake version for CREATE_LINK.
+  * *Updated: OpenVPN 2.6.9 release*
+    /Given that we're so close to end of year, we'll push this to next
+    year./
+    /The --tls-export-cert PR needs a little love first./
+    /Tentative new release date is January 10./
 
-Change-Id: Ib14c1161b4b0c9df797b9932ad14739e202cea64
-Signed-off-by: Heiko Hund <heiko@...2662...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
----
+  * *Updated: forums topics*
+    /There has been a lot of spam. An antispam module had expired. We
+    fixed that. But there's still the occasional bit of spam./
+    /We agreed in last meeting to commit to a path to get a new VM and
+    switch to vBulletin and disconnect from community LDAP logins./
+    /The new VM is delivered, the license should be delivered this week
+    too, so then ecrist can get to work./
+    /RegardingCloudFlare?
+    <https://community.openvpn.net/openvpn/wiki/CloudFlare>, currently
+    not enabled on forums, but we will enable it at some point on the
+    new VM./
 
-This change was reviewed on Gerrit and approved by at least one
-developer. I request to merge it to master.
+  * *New: status of trac/wiki*
+    /ordex wanted to discuss state of trac/wiki. Do we move to something
+    else? Do we update existing?/
+    /mattock has been volunteered to look into alternatives./
+    /It must be open source. Self-hosted or hosted open-source both fine./
+    /There is no hard requirement for LDAP capability./
+    /Should have access controls so only approved members can edit./
 
-Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/483
-This mail reflects revision 4 of this Change.
+  * *New: status of community LDAP sign-in solution*
+    /We use it currently for forums, wiki, gerrit, patchwork. We are
+    seriously considering getting rid of it./
+    /The reality is that 99.99% of forums users do not interact with the
+    other tools./
+    /And that the small group of contributors to wiki and gerrit does
+    not justify the need for an LDAP sign-in solution./
+    /So we're inclined to disconnect from LDAP. For the forums we
+    already intend to do that now./
+    /No final decision reached at this time. Considering our options./
 
-Acked-by according to Gerrit (reflected above):
-Frank Lichtenheld <frank@...2641...>
+  * *New: packet header order*
+    /plaisthos wanted to get consensus/decision on whether we do that as
+    part of the rekeying improvements./
+    /Generally in favor of adding a new negotiable packet format, so
+    long as plaisthos and syzzer are in agreement./
 
-        
-diff --git a/.gitignore b/.gitignore
-index a1da366..4153a3e 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -40,6 +40,7 @@
- m4/ltversion.m4
- m4/lt~obsolete.m4
- 
-+compile_commands.json
- doc/openvpn-examples.5
- doc/openvpn-examples.5.html
- doc/openvpn.8
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d40b213..bc46c27 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -1,4 +1,4 @@
--cmake_minimum_required(VERSION 3.12)
-+cmake_minimum_required(VERSION 3.14)
- set(CMAKE_CONFIGURATION_TYPES "Release;Debug;ASAN")
- project(openvpn)
- 
-@@ -42,6 +42,11 @@
- 
- set(PLUGIN_DIR /usr/local/lib/openvpn/plugins CACHE FILEPATH "Location of the plugin directory")
- 
-+# Create machine readable compile commands
-+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
-+file(CREATE_LINK ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json
-+                 ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json SYMBOLIC)
-+
- # AddressSanitize - use CXX=clang++ CC=clang cmake -DCMAKE_BUILD_TYPE=asan to build with ASAN
- set(CMAKE_C_FLAGS_ASAN
-     "-fsanitize=address,undefined -fno-sanitize-recover=all -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
+  * *New: plan to improve server side testing*
+    /mattock
+    posted​https://community.openvpn.net/openvpn/wiki/ServerSideTestingImprovementPlan#no1
+    <https://community.openvpn.net/openvpn/wiki/ServerSideTestingImprovementPlan#no1>/
+    /It's a plan to improve server side testing. mattock would like to
+    get eyes on this and feedback./
+
+  * *Updated: TLS 1.0 PRF problem*
+    /Patches for this have been created and are in review, have not made
+    it in yet./
+
+As always you're welcome to join at #openvpn-meeting on Libera IRC 
+network every Wednesday at 13:00 Central European Time (except this 27 
+december and 3 january).
+
+Best of luck to all of you in the new year,
+Johan Draaisma
+
+--------------SoJpNOGxlEGlN0c7MC2Oai0Q
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p> Meeting summary for 20 December 2023:</p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New: no meeting on 27th december or 3 january.</strong><br>
+        <em>Normal meetings to resume on January 10 2024.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: OpenVPN 2.6.9 release</strong><br>
+        <em>Given that we're so close to end of year, we'll push this to
+          next year.</em><br>
+        <em>The --tls-export-cert PR needs a little love first.</em><br>
+        <em>Tentative new release date is January 10.</em></li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: forums topics</strong><br>
+        <em>There has been a lot of spam. An antispam module had
+          expired. We fixed that. But there's still the occasional bit
+          of spam.</em><br>
+        <em>We agreed in last meeting to commit to a path to get a new
+          VM and switch to vBulletin and disconnect from community LDAP
+          logins.</em><br>
+        <em>The new VM is delivered, the license should be delivered
+          this week too, so then ecrist can get to work.</em><br>
+        <em>Regarding<span> </span><a class="missing wiki"
+            href="https://community.openvpn.net/openvpn/wiki/CloudFlare"
+            rel="nofollow"
+style="text-decoration: none; color: rgb(153, 153, 136); border-bottom: 1px dotted rgb(187, 187, 187);">CloudFlare?</a>,
+          currently not enabled on forums, but we will enable it at some
+          point on the new VM.</em><br>
+      </li>
+    </ul>
+    <p
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;"></p>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New: status of trac/wiki</strong><br>
+        <em>ordex wanted to discuss state of trac/wiki. Do we move to
+          something else? Do we update existing?</em><br>
+        <em>mattock has been volunteered to look into alternatives.</em><br>
+        <em>It must be open source. Self-hosted or hosted open-source
+          both fine.</em><br>
+        <em>There is no hard requirement for LDAP capability.</em><br>
+        <em>Should have access controls so only approved members can
+          edit.</em><br>
+      </li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New: status of community LDAP sign-in solution</strong><br>
+        <em>We use it currently for forums, wiki, gerrit, patchwork. We
+          are seriously considering getting rid of it.</em><br>
+        <em>The reality is that 99.99% of forums users do not interact
+          with the other tools.</em><br>
+        <em>And that the small group of contributors to wiki and gerrit
+          does not justify the need for an LDAP sign-in solution.</em><br>
+        <em>So we're inclined to disconnect from LDAP. For the forums we
+          already intend to do that now.</em><br>
+        <em>No final decision reached at this time. Considering our
+          options.</em><br>
+      </li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New: packet header order</strong><br>
+        <em>plaisthos wanted to get consensus/decision on whether we do
+          that as part of the rekeying improvements.</em><br>
+        <em>Generally in favor of adding a new negotiable packet format,
+          so long as plaisthos and syzzer are in agreement.</em><br>
+      </li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>New: plan to improve server side testing</strong><br>
+        <em>mattock posted<span> </span><a class="ext-link"
+href="https://community.openvpn.net/openvpn/wiki/ServerSideTestingImprovementPlan#no1"
+style="text-decoration: none; color: rgb(187, 0, 0); border-bottom: 1px dotted rgb(187, 187, 187);"><span
+              class="icon"
+style="background: url(&quot;../extlink.gif&quot;) left center no-repeat; padding-left: 15px;">​</span>https://community.openvpn.net/openvpn/wiki/ServerSideTestingImprovementPlan#no1</a></em><br>
+        <em>It's a plan to improve server side testing. mattock would
+          like to get eyes on this and feedback.</em><br>
+      </li>
+    </ul>
+    <ul
+style="color: rgb(0, 0, 0); font-family: Verdana, Arial, &quot;Bitstream Vera Sans&quot;, Helvetica, sans-serif; font-size: 13px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">
+      <li><strong>Updated: TLS 1.0 PRF problem</strong><br>
+        <em>Patches for this have been created and are in review, have
+          not made it in yet.</em></li>
+    </ul>
+    <p>As always you're welcome to join at #openvpn-meeting on Libera
+      IRC network every Wednesday at 13:00 Central European Time (except
+      this 27 december and 3 january).<br>
+    </p>
+    <p>Best of luck to all of you in the new year,<br>
+      Johan Draaisma<br>
+    </p>
+  </body>
+</html>
+
+--------------SoJpNOGxlEGlN0c7MC2Oai0Q--
 
