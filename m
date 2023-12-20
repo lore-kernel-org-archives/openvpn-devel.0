@@ -1,16 +1,11 @@
-From: "flichtenheld (Code Review)" <gerrit@...515...>
-Date: Wed, 20 Dec 2023 12:25:20 +0000
-In-Reply-To: <gerrit.1701971374000.Ie5aa643ab6190262f7c8b9e614bedb398e85859b@...2715...>
-References: <gerrit.1701971374000.Ie5aa643ab6190262f7c8b9e614bedb398e85859b@...2715...>
-Reply-To: frank@...2641..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net
-Message-ID: <13f8273b20f29cca3bebac77f127435b4c5cc7c6-EmailReviewComments-HTML@...2715...>
+From: Frank Lichtenheld <frank@...2641...>
+Date: Wed, 20 Dec 2023 13:36:59 +0100
+Message-Id: <20231220123659.55542-1-frank@...2641...>
+In-Reply-To: <gerrit.1702721837000.Ib14c1161b4b0c9df797b9932ad14739e202cea64@...2715...>
+References: <gerrit.1702721837000.Ib14c1161b4b0c9df797b9932ad14739e202cea64@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="Uz0wu8g+mXs="; charset=UTF-8
-Subject: [Openvpn-devel] [S] Change in openvpn[master]: Use mingw compile
- definition also to unit tests
+Subject: [Openvpn-devel] [PATCH v4] cmake: create and link
+ compile_commands.json file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,112 +14,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---Uz0wu8g+mXs=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Heiko Hund <heiko@...2662...>
 
-Attention is currently required from: plaisthos.
+CMake has support to create a json file which contains exact information
+how each file in the project is compiled. This file can be consumed by
+clangd, which in turn provides precise symbol information to IDEs for
+better code navigation and contextual information.
 
-flichtenheld has posted comments on this change. ( http://gerrit.openvpn.ne=
-t/c/openvpn/+/469?usp=3Demail )
+I use it with vscode to be able to quickly switch between native Linux and
+mingw builds and have the symbols info change dynamically with it. So
+handy that I think it is useful for others as well.
 
-Change subject: Use mingw compile definition also to unit tests
-......................................................................
+Bump required CMake version for CREATE_LINK.
 
+Change-Id: Ib14c1161b4b0c9df797b9932ad14739e202cea64
+Signed-off-by: Heiko Hund <heiko@...2662...>
+Acked-by: Frank Lichtenheld <frank@...2641...>
+---
 
-Patch Set 3: Code-Review-1
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-(2 comments)
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/483
+This mail reflects revision 4 of this Change.
 
-File CMakeLists.txt:
+Acked-by according to Gerrit (reflected above):
+Frank Lichtenheld <frank@...2641...>
 
-http://gerrit.openvpn.net/c/openvpn/+/469/comment/b9f47f2d_bf7caf2c :
-PS3, Line 293:         target_compile_options(${target} PRIVATE -municode -=
-UUNICODE)
-combining -municode with -UUNICODE and main(void) just means the -municode =
-has no effect at all. So I would drop that.
-
-
-http://gerrit.openvpn.net/c/openvpn/+/469/comment/38857a3b_fc89aeff :
-PS3, Line 666:             target_compile_definitions(${test_name} PRIVATE =
--Dmain=3Dwmain)
-Yeah, just don't use -municode in the first place.
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/469?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ie5aa643ab6190262f7c8b9e614bedb398e85859b
-Gerrit-Change-Number: 469
-Gerrit-PatchSet: 3
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Comment-Date: Wed, 20 Dec 2023 12:25:20 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---Uz0wu8g+mXs=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #ffd4d4;">Code-Review -1</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/469?usp=3Demail">Vi=
-ew Change</a></p><p>2 comments:</p><ul style=3D"list-style: none; padding: =
-0;"><li style=3D"margin: 0; padding: 0;"><p>File CMakeLists.txt:</p><ul sty=
-le=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0=
- 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.n=
-et/c/openvpn/+/469/comment/b9f47f2d_bf7caf2c">Patch Set #3, Line 293:</a> <=
-code style=3D"font-family:monospace,monospace">        target_compile_optio=
-ns(${target} PRIVATE -municode -UUNICODE)</code></p><p style=3D"white-space=
-: pre-wrap; word-wrap: break-word;">combining -municode with -UUNICODE and =
-main(void) just means the -municode has no effect at all. So I would drop t=
-hat.</p></li><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=3D"marg=
-in-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/469/comme=
-nt/38857a3b_fc89aeff">Patch Set #3, Line 666:</a> <code style=3D"font-famil=
-y:monospace,monospace">            target_compile_definitions(${test_name} =
-PRIVATE -Dmain=3Dwmain)</code></p><p style=3D"white-space: pre-wrap; word-w=
-rap: break-word;">Yeah, just don&#39;t use -municode in the first place.</p=
-></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net=
-/c/openvpn/+/469?usp=3Demail">change 469</a>. To unsubscribe, or for help w=
-riting mail filters, visit <a href=3D"http://gerrit.openvpn.net/settings">s=
-ettings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMessage">=
-<div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction=
-"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/469?=
-usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ie5aa643ab6190262f7c8b9e614b=
-edb398e85859b </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 469 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Wed, 20 Dec 2023 12:25:20=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---Uz0wu8g+mXs=--
+        
+diff --git a/.gitignore b/.gitignore
+index a1da366..4153a3e 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -40,6 +40,7 @@
+ m4/ltversion.m4
+ m4/lt~obsolete.m4
+ 
++compile_commands.json
+ doc/openvpn-examples.5
+ doc/openvpn-examples.5.html
+ doc/openvpn.8
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d40b213..bc46c27 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.12)
++cmake_minimum_required(VERSION 3.14)
+ set(CMAKE_CONFIGURATION_TYPES "Release;Debug;ASAN")
+ project(openvpn)
+ 
+@@ -42,6 +42,11 @@
+ 
+ set(PLUGIN_DIR /usr/local/lib/openvpn/plugins CACHE FILEPATH "Location of the plugin directory")
+ 
++# Create machine readable compile commands
++set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
++file(CREATE_LINK ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json
++                 ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json SYMBOLIC)
++
+ # AddressSanitize - use CXX=clang++ CC=clang cmake -DCMAKE_BUILD_TYPE=asan to build with ASAN
+ set(CMAKE_C_FLAGS_ASAN
+     "-fsanitize=address,undefined -fno-sanitize-recover=all -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
 
