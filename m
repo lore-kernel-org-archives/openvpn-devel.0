@@ -1,16 +1,10 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Tue, 26 Dec 2023 19:41:15 +0000
-In-Reply-To: <gerrit.1700590714000.Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3@...2715...>
-References: <gerrit.1700590714000.Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2f3aa975592c2f167ff8906b20ea1f9faed9908a-EmailReplacePatchSet-HTML@...2715...>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="sv16YUTYSEw="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: Extend the error
- message when TLS 1.0 PRF fails
+Date: Tue, 26 Dec 2023 21:34:51 +0100 (CET)
+Message-Id: <202312262034.3BQKYpx1037214@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <tencent_C49D67EAA5678D180C293706A9469EFE8307@...1414...>
+References: <tencent_C49D67EAA5678D180C293706A9469EFE8307@...1414...>
+Subject: [Openvpn-devel] [PATCH applied] Re: fix(ssl): init peer_id when
+ init tls_multi
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,159 +13,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>, flichtenheld <frank@...2641...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: yatta <ytzhang01@...2752...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---sv16YUTYSEw=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Unfortunately I haven't received a response to my query for a full
+name to put into the logs, so "yatta" will have to do.
 
-cron2 has uploaded a new patch set (#9) to the change originally created by=
- plaisthos. ( http://gerrit.openvpn.net/c/openvpn/+/456?usp=3Demail )
+Thanks to Arne for the detailed insights on what is happening here, and
+why this is the correct fix (refactoring for "master" welcome :-) ).
 
-The following approvals got outdated and were removed:
-Code-Review+2 by flichtenheld
+I have not tested this "for real" (on a p2mp server, actually filling
+max users) - need to do this.  But it passes all the basic tests, not
+surprisingly.
 
+Your patch has been applied to the master and release/2.6 branch (bugfix).
 
-Change subject: Extend the error message when TLS 1.0 PRF fails
-......................................................................
+commit 3e30504d86f0fe5556acc0cb8e6975c5b2277661 (master)
+commit 6dffbf6a2a0fdacb3509410f665a69dfa3b28cbc (release/2.6)
+Author: yatta
+Date:   Fri Oct 20 01:12:13 2023 +0800
 
-Extend the error message when TLS 1.0 PRF fails
+     fix(ssl): init peer_id when init tls_multi
 
-This error will probably become more and more common in the future when
-more and more systems will drop TLS 1.0 PRF support. We are already
-seeing people stumbling upon this (see GitHub issue #460)
+     Signed-off-by: yatta <ytzhang01@...2752...
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <tencent_C49D67EAA5678D180C293706A9469EFE8307@...1414...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27260.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-The current error messages
-
-  TLS Error: PRF calcuation failed
-  TLS Error: generate_key_expansion failed
-
-are not very helpful for people that do not have deep understanding
-of TLS or the OpenVPN protocol. Improve this message to give a normal
-user a chance to understand that the peer needs to be OpenVPN 2.6.x or
-newer.
-
-Change-Id: Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3
-Signed-off-by: Arne Schwabe <arne@...1227...>
-Acked-by: Frank Lichtenheld <frank@...2641...>
-Message-Id: <20231213105308.121460-1-frank@...2641...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27=
-796.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M src/openvpn/ssl.c
-1 file changed, 6 insertions(+), 1 deletion(-)
-
-
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/56/456/9
-
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 6eddb68..7597412 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1477,7 +1477,12 @@
-     {
-         if (!generate_key_expansion_openvpn_prf(session, &key2))
-         {
--            msg(D_TLS_ERRORS, "TLS Error: PRF calcuation failed");
-+            msg(D_TLS_ERRORS, "TLS Error: PRF calculation failed. Your sys=
-tem "
-+                "might not support the old TLS 1.0 PRF calculation anymore=
- or "
-+                "the policy does not allow it (e.g. running in FIPS mode).=
- "
-+                "The peer did not announce support for the modern TLS Expo=
-rt "
-+                "feature that replaces the TLS 1.0 PRF (requires OpenVPN "
-+                "2.6.x or higher)");
-             goto exit;
-         }
-     }
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/456?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
+kind regards,
 
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ib3b64b52beed69dc7740f191b0e9a9dc9af5b7f3
-Gerrit-Change-Number: 456
-Gerrit-PatchSet: 9
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gert Doering
 
---sv16YUTYSEw=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p>cron2 <strong>uploaded patch set #9</strong> to the change originally cr=
-eated by plaisthos.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/=
-456?usp=3Demail">View Change</a></p><p>The following approvals got outdated=
- and were removed:
-Code-Review+2 by flichtenheld</p><pre style=3D"font-family: monospace,monos=
-pace; white-space: pre-wrap;">Extend the error message when TLS 1.0 PRF fai=
-ls<br><br>This error will probably become more and more common in the futur=
-e when<br>more and more systems will drop TLS 1.0 PRF support. We are alrea=
-dy<br>seeing people stumbling upon this (see GitHub issue #460)<br><br>The =
-current error messages<br><br>  TLS Error: PRF calcuation failed<br>  TLS E=
-rror: generate_key_expansion failed<br><br>are not very helpful for people =
-that do not have deep understanding<br>of TLS or the OpenVPN protocol. Impr=
-ove this message to give a normal<br>user a chance to understand that the p=
-eer needs to be OpenVPN 2.6.x or<br>newer.<br><br>Change-Id: Ib3b64b52beed6=
-9dc7740f191b0e9a9dc9af5b7f3<br>Signed-off-by: Arne Schwabe &lt;arne@...1830...=
-...&gt;<br>Acked-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Message-=
-Id: &lt;20231213105308.121460-1-frank@...2641...&gt;<br>URL: https://www.ma=
-il-archive.com/openvpn-devel@lists.sourceforge.net/msg27796.html<br>Signed-=
-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M src/openvpn/ssl.c<=
-br>1 file changed, 6 insertions(+), 1 deletion(-)<br><br></pre><pre style=
-=3D"font-family: monospace,monospace; white-space: pre-wrap;">git pull ssh:=
-//gerrit.openvpn.net:29418/openvpn refs/changes/56/456/9</pre><pre style=3D=
-"font-family: monospace,monospace; white-space: pre-wrap;"><span>diff --git=
- a/src/openvpn/ssl.c b/src/openvpn/ssl.c</span><br><span>index 6eddb68..759=
-7412 100644</span><br><span>--- a/src/openvpn/ssl.c</span><br><span>+++ b/s=
-rc/openvpn/ssl.c</span><br><span>@@ -1477,7 +1477,12 @@</span><br><span>   =
-  {</span><br><span>         if (!generate_key_expansion_openvpn_prf(sessio=
-n, &amp;key2))</span><br><span>         {</span><br><span style=3D"color: h=
-sl(0, 100%, 40%);">-            msg(D_TLS_ERRORS, &quot;TLS Error: PRF calc=
-uation failed&quot;);</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
->+            msg(D_TLS_ERRORS, &quot;TLS Error: PRF calculation failed. Yo=
-ur system &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+   =
-             &quot;might not support the old TLS 1.0 PRF calculation anymor=
-e or &quot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+        =
-        &quot;the policy does not allow it (e.g. running in FIPS mode). &qu=
-ot;</span><br><span style=3D"color: hsl(120, 100%, 40%);">+                =
-&quot;The peer did not announce support for the modern TLS Export &quot;</s=
-pan><br><span style=3D"color: hsl(120, 100%, 40%);">+                &quot;=
-feature that replaces the TLS 1.0 PRF (requires OpenVPN &quot;</span><br><s=
-pan style=3D"color: hsl(120, 100%, 40%);">+                &quot;2.6.x or h=
-igher)&quot;);</span><br><span>             goto exit;</span><br><span>    =
-     }</span><br><span>     }</span><br><span></span><br></pre><p>To view, =
-visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/456?usp=3Demail">cha=
-nge 456</a>. To unsubscribe, or for help writing mail filters, visit <a hre=
-f=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope it=
-emtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"action=
-" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=3D"=
-http://gerrit.openvpn.net/c/openvpn/+/456?usp=3Demail"/><meta itemprop=3D"n=
-ame" content=3D"View Change"/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib3b64b52beed69dc7740f191b0e=
-9a9dc9af5b7f3 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 456 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 9 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
-
-
---sv16YUTYSEw=--
 
