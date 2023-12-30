@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 30 Dec 2023 14:20:17 +0000
+Date: Sat, 30 Dec 2023 14:20:52 +0000
 In-Reply-To: <gerrit.1702387180000.Ib226079d1543209e08e5fdcf7344cd20850bea9d@...2715...>
 References: <gerrit.1702387180000.Ib226079d1543209e08e5fdcf7344cd20850bea9d@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <f98aa5b0e9938144231f93ec7c209b1ad3d911a3-EmailReviewComments-HTML@...2715...>
+Message-ID: <9b213468a6c7fc45553ea91be671d0479ffaac86-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="aqOL7Ao4oeM="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="dh3B3jPrl2g="; charset=UTF-8
 Subject: [Openvpn-devel] [XS] Change in openvpn[master]: configure: enable
  silent rules by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: flichtenheld <frank@...2641...>
 Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---aqOL7Ao4oeM=
+--dh3B3jPrl2g=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -35,7 +35,16 @@ Change subject: configure: enable silent rules by default
 ......................................................................
 
 
-Patch Set 4: Code-Review+2
+Patch Set 4:
+
+(1 comment)
+
+Patchset:
+
+PS4:
+I remember having tested this (and the result is better than what we have t=
+oday), but somehow overlooked to actually give a +2 here
+
 
 
 --
@@ -54,27 +63,32 @@ Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
 Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sat, 30 Dec 2023 14:20:17 +0000
-Gerrit-HasComments: No
-Gerrit-Has-Labels: Yes
+Gerrit-Comment-Date: Sat, 30 Dec 2023 14:20:52 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
 Gerrit-MessageType: comment
 
---aqOL7Ao4oeM=
+--dh3B3jPrl2g=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 4:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/480?usp=3Demail">Vi=
-ew Change</a></p><ul style=3D"list-style: none; padding: 0;"></ul><p>To vie=
-w, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/480?usp=3Demail">=
-change 480</a>. To unsubscribe, or for help writing mail filters, visit <a =
-href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p><div itemscope=
- itemtype=3D"http://schema.org/EmailMessage"><div itemscope itemprop=3D"act=
-ion" itemtype=3D"http://schema.org/ViewAction"><link itemprop=3D"url" href=
-=3D"http://gerrit.openvpn.net/c/openvpn/+/480?usp=3Demail"/><meta itemprop=
-=3D"name" content=3D"View Change"/></div></div>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/480?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-style=
+: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p style=
+=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/4=
+80?tab=3Dcomments">Patch Set #4:</a> </p><p style=3D"white-space: pre-wrap;=
+ word-wrap: break-word;">I remember having tested this (and the result is b=
+etter than what we have today), but somehow overlooked to actually give a +=
+2 here</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerrit.op=
+envpn.net/c/openvpn/+/480?usp=3Demail">change 480</a>. To unsubscribe, or f=
+or help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/se=
+ttings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/Email=
+Message"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/V=
+iewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openv=
+pn/+/480?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></d=
+iv></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
@@ -94,12 +108,12 @@ ts.sourceforge.net&gt; </div>
 ..1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
 41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 30 Dec 2023 14:20:17=
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 30 Dec 2023 14:20:52=
  +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: No </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
 <div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---aqOL7Ao4oeM=--
+--dh3B3jPrl2g=--
 
