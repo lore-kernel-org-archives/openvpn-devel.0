@@ -1,16 +1,16 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 30 Dec 2023 15:26:11 +0000
-In-Reply-To: <gerrit.1702387180000.Ib226079d1543209e08e5fdcf7344cd20850bea9d@...2715...>
-References: <gerrit.1702387180000.Ib226079d1543209e08e5fdcf7344cd20850bea9d@...2715...>
+Date: Sat, 30 Dec 2023 15:46:55 +0000
+In-Reply-To: <gerrit.1700582804000.Ia797c8801fa9a9bc10b6674efde5fdbd7132e4a8@...2715...>
+References: <gerrit.1700582804000.Ia797c8801fa9a9bc10b6674efde5fdbd7132e4a8@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <c2d14768b6162adade5af713e11806363f41121c-HTML@...2715...>
+Message-ID: <f7da42a61041371d78cd3895b3188f41d7851051-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="mhbnhlLW5Go="; charset=UTF-8
-Subject: [Openvpn-devel] [XS] Change in openvpn[master]: configure: enable
- silent rules by default
+Content-Type: multipart/alternative; boundary="WjAWJK6RySU="; charset=UTF-8
+Subject: [Openvpn-devel] [S] Change in openvpn[master]: Fix unaligned access
+ in macOS, FreeBSD, Solaris hwaddr
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,123 +19,114 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>
-Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: plaisthos <arne-openvpn@...1227...>
+Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---mhbnhlLW5Go=
+--WjAWJK6RySU=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/48=
-0?usp=3Demail )
+Attention is currently required from: plaisthos.
 
-Change subject: configure: enable silent rules by default
+cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
+nvpn/+/454?usp=3Demail )
+
+Change subject: Fix unaligned access in macOS, FreeBSD, Solaris hwaddr
 ......................................................................
 
-configure: enable silent rules by default
 
-The default build log is big and basically
-unreadable.
+Patch Set 2:
 
-Go the way of other build systems and do not
-print compile commands by default. Verbose
-output can always be enabled with make V=3D1.
+(1 comment)
 
-Change-Id: Ib226079d1543209e08e5fdcf7344cd20850bea9d
-Signed-off-by: Frank Lichtenheld <frank@...2641...>
-Acked-by: Gert Doering <gert@...1296...>
-Message-Id: <20231230142348.29108-1-gert@...1296...>
-URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27=
-865.html
-Signed-off-by: Gert Doering <gert@...1296...>
----
-M configure.ac
-1 file changed, 1 insertion(+), 0 deletions(-)
+File src/openvpn/route.c:
 
+http://gerrit.openvpn.net/c/openvpn/+/454/comment/ffdd8937_e4a1e87d :
+PS2, Line 3703:                      * Since we only copied 32 bytes from c=
+p to ifr but sdl
+> If ifr_addr. [=E2=80=A6]
+Ah, no, it's not that easy.  The code above does some arithmetics with len=
+=3D...+max(), but then doesn't actually memcpy(..., len) bytes but sizeof(i=
+fr).
 
+Need to think through this again.  But however, the comments need work to b=
+e understandable for mere mortals :-)
 
-
-diff --git a/configure.ac b/configure.ac
-index 22ed448..f420612 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -56,6 +56,7 @@
- # This foreign option prevents autoreconf from overriding our COPYING and
- # INSTALL targets:
- AM_INIT_AUTOMAKE(foreign subdir_objects 1.9) dnl NB: Do not [quote] this p=
-arameter.
-+AM_SILENT_RULES([yes])
- AC_CANONICAL_HOST
- AC_USE_SYSTEM_EXTENSIONS
 
 
 --
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/480?usp=3Demail
+To view, visit http://gerrit.openvpn.net/c/openvpn/+/454?usp=3Demail
 To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
 pn.net/settings
 
 Gerrit-Project: openvpn
 Gerrit-Branch: master
-Gerrit-Change-Id: Ib226079d1543209e08e5fdcf7344cd20850bea9d
-Gerrit-Change-Number: 480
-Gerrit-PatchSet: 5
-Gerrit-Owner: flichtenheld <frank@...2641...>
+Gerrit-Change-Id: Ia797c8801fa9a9bc10b6674efde5fdbd7132e4a8
+Gerrit-Change-Number: 454
+Gerrit-PatchSet: 2
+Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
+Gerrit-Reviewer: flichtenheld <frank@...2641...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: merged
+Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
+Gerrit-Comment-Date: Sat, 30 Dec 2023 15:46:55 +0000
+Gerrit-HasComments: Yes
+Gerrit-Has-Labels: No
+Comment-In-Reply-To: cron2 <gert@...1296...>
+Gerrit-MessageType: comment
 
---mhbnhlLW5Go=
+--WjAWJK6RySU=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
-rrit.openvpn.net/c/openvpn/+/480?usp=3Demail">View Change</a></p><div style=
-=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
-ace; white-space: pre-wrap;">configure: enable silent rules by default<br><=
-br>The default build log is big and basically<br>unreadable.<br><br>Go the =
-way of other build systems and do not<br>print compile commands by default.=
- Verbose<br>output can always be enabled with make V=3D1.<br><br>Change-Id:=
- Ib226079d1543209e08e5fdcf7344cd20850bea9d<br>Signed-off-by: Frank Lichtenh=
-eld &lt;frank@...2641...&gt;<br>Acked-by: Gert Doering &lt;gert@...1296...&=
-gt;<br>Message-Id: &lt;20231230142348.29108-1-gert@...1296...&gt;<br>URL: h=
-ttps://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27865.ht=
-ml<br>Signed-off-by: Gert Doering &lt;gert@...1296...&gt;<br>---<br>M confi=
-gure.ac<br>1 file changed, 1 insertion(+), 0 deletions(-)<br><br></pre>
-<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
-an>diff --git a/configure.ac b/configure.ac</span><br><span>index 22ed448..=
-f420612 100644</span><br><span>--- a/configure.ac</span><br><span>+++ b/con=
-figure.ac</span><br><span>@@ -56,6 +56,7 @@</span><br><span> # This foreign=
- option prevents autoreconf from overriding our COPYING and</span><br><span=
-> # INSTALL targets:</span><br><span> AM_INIT_AUTOMAKE(foreign subdir_objec=
-ts 1.9) dnl NB: Do not [quote] this parameter.</span><br><span style=3D"col=
-or: hsl(120, 100%, 40%);">+AM_SILENT_RULES([yes])</span><br><span> AC_CANON=
-ICAL_HOST</span><br><span> AC_USE_SYSTEM_EXTENSIONS</span><br><span> </span=
-><br><span></span><br></pre><p>To view, visit <a href=3D"http://gerrit.open=
-vpn.net/c/openvpn/+/480?usp=3Demail">change 480</a>. To unsubscribe, or for=
- help writing mail filters, visit <a href=3D"http://gerrit.openvpn.net/sett=
-ings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/EmailMe=
-ssage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.org/Vie=
-wAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/480?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"/></div=
-></div>
+<p> Attention is currently required from: plaisthos. </p>
+<p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/454?usp=3Demail">View C=
+hange</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0;"><=
+li style=3D"margin: 0; padding: 0;"><p>File src/openvpn/route.c:</p><ul sty=
+le=3D"list-style: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0=
+ 16px;"><p style=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.n=
+et/c/openvpn/+/454/comment/ffdd8937_e4a1e87d">Patch Set #2, Line 3703:</a> =
+<code style=3D"font-family:monospace,monospace">                     * Sinc=
+e we only copied 32 bytes from cp to ifr but sdl</code></p><p><blockquote s=
+tyle=3D"border-left: 1px solid #aaa; margin: 10px 0; padding: 0 10px;">If i=
+fr_addr. [=E2=80=A6]</blockquote></p><p style=3D"white-space: pre-wrap; wor=
+d-wrap: break-word;">Ah, no, it&#39;s not that easy.  The code above does s=
+ome arithmetics with len=3D...+max(), but then doesn&#39;t actually memcpy(=
+..., len) bytes but sizeof(ifr).</p><p style=3D"white-space: pre-wrap; word=
+-wrap: break-word;">Need to think through this again.  But however, the com=
+ments need work to be understandable for mere mortals :-)</p></li></ul></li=
+></ul><p>To view, visit <a href=3D"http://gerrit.openvpn.net/c/openvpn/+/45=
+4?usp=3Demail">change 454</a>. To unsubscribe, or for help writing mail fil=
+ters, visit <a href=3D"http://gerrit.openvpn.net/settings">settings</a>.</p=
+><div itemscope itemtype=3D"http://schema.org/EmailMessage"><div itemscope =
+itemprop=3D"action" itemtype=3D"http://schema.org/ViewAction"><link itempro=
+p=3D"url" href=3D"http://gerrit.openvpn.net/c/openvpn/+/454?usp=3Demail"/><=
+meta itemprop=3D"name" content=3D"View Change"/></div></div>
 
 <div style=3D"display:none"> Gerrit-Project: openvpn </div>
 <div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ib226079d1543209e08e5fdcf734=
-4cd20850bea9d </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 480 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 5 </div>
-<div style=3D"display:none"> Gerrit-Owner: flichtenheld &lt;frank@...2723...=
-.&gt; </div>
+<div style=3D"display:none"> Gerrit-Change-Id: Ia797c8801fa9a9bc10b6674efde=
+5fdbd7132e4a8 </div>
+<div style=3D"display:none"> Gerrit-Change-Number: 454 </div>
+<div style=3D"display:none"> Gerrit-PatchSet: 2 </div>
+<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
+27...&gt; </div>
 <div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
  </div>
-<div style=3D"display:none"> Gerrit-Reviewer: plaisthos &lt;arne-openvpn@...1186...=
-.1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
+1...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: merged </div>
+<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
+..1227...&gt; </div>
+<div style=3D"display:none"> Gerrit-Comment-Date: Sat, 30 Dec 2023 15:46:55=
+ +0000 </div>
+<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
+<div style=3D"display:none"> Gerrit-Has-Labels: No </div>
+<div style=3D"display:none"> Comment-In-Reply-To: cron2 &lt;gert@...1296...=
+&gt; </div>
+<div style=3D"display:none"> Gerrit-MessageType: comment </div>
 
 
---mhbnhlLW5Go=--
+--WjAWJK6RySU=--
 
