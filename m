@@ -1,14 +1,14 @@
 From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sat, 30 Dec 2023 15:47:45 +0000
+Date: Sat, 30 Dec 2023 15:47:46 +0000
 In-Reply-To: <gerrit.1702052980000.I0abeec9f862aea1f6a8fdf350fa0008cf2e5d613@...2715...>
 References: <gerrit.1702052980000.I0abeec9f862aea1f6a8fdf350fa0008cf2e5d613@...2715...>
 Reply-To: gert@...1296..., arne-openvpn@...1227...,
  openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <2e67e905f41433fecf0294a8c513ed3a3d509330-EmailReplacePatchSet-HTML@...2715...>
+Message-ID: <2e67e905f41433fecf0294a8c513ed3a3d509330-HTML@...2715...>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="iYu8NlHRGR8="; charset=UTF-8
+Content-Type: multipart/alternative; boundary="Zju9HXOtovM="; charset=UTF-8
 Subject: [Openvpn-devel] [M] Change in openvpn[master]: misc: make
  get_auth_challenge static
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,19 +19,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: flichtenheld <frank@...2641...>, plaisthos <arne-openvpn@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: flichtenheld <frank@...2641...>
+Cc: plaisthos <arne-openvpn@...1227...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---iYu8NlHRGR8=
+--Zju9HXOtovM=
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-cron2 has uploaded a new patch set (#6) to the change originally created by=
- flichtenheld. ( http://gerrit.openvpn.net/c/openvpn/+/476?usp=3Demail )
-
-The following approvals got outdated and were removed:
-Code-Review+2 by cron2
-
+cron2 has submitted this change. ( http://gerrit.openvpn.net/c/openvpn/+/47=
+6?usp=3Demail )
 
 Change subject: misc: make get_auth_challenge static
 ......................................................................
@@ -62,7 +58,7 @@ M src/openvpn/ssl.h
 3 files changed, 79 insertions(+), 85 deletions(-)
 
 
-  git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/476/6
+
 
 diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
 index bce63ed..08f274d 100644
@@ -274,7 +270,7 @@ index 6ba6ff8..71b99db 100644
 +++ b/src/openvpn/ssl.h
 @@ -410,11 +410,7 @@
  bool ssl_clean_auth_token(void);
-=20
+
  #ifdef ENABLE_MANAGEMENT
 -/*
 - * ssl_get_auth_challenge will parse the server-pushed auth-failed
@@ -300,60 +296,57 @@ Gerrit-Owner: flichtenheld <frank@...2641...>
 Gerrit-Reviewer: cron2 <gert@...1296...>
 Gerrit-Reviewer: plaisthos <arne-openvpn@...1227...>
 Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-MessageType: newpatchset
+Gerrit-MessageType: merged
 
---iYu8NlHRGR8=
+--Zju9HXOtovM=
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p>cron2 <strong>uploaded patch set #6</strong> to the change originally cr=
-eated by flichtenheld.</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/476?usp=3Demail">View Change</a></p><p>The following approvals got outda=
-ted and were removed:
-Code-Review+2 by cron2</p><pre style=3D"font-family: monospace,monospace; w=
-hite-space: pre-wrap;">misc: make get_auth_challenge static<br><br>Not used=
- outside of misc.c.<br><br>Rename to parse_auth_challenge since it really j=
-ust parses<br>the string that you put in into the struct.<br><br>Add doxyge=
-n documentation.<br><br>v2:<br> - change if(auth_challenge) to ASSERT(auth_=
-challenge)<br><br>Change-Id: I0abeec9f862aea1f6a8fdf350fa0008cf2e5d613<br>S=
-igned-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by: Gert =
-Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20231230143248.1625-1-ge=
-rt@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@...1199...=
-sourceforge.net/msg27864.html<br>Signed-off-by: Gert Doering &lt;gert@...1711...=
-96...&gt;<br>---<br>M src/openvpn/misc.c<br>M src/openvpn/misc.h<br>M src/o=
-penvpn/ssl.h<br>3 files changed, 79 insertions(+), 85 deletions(-)<br><br><=
-/pre><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;=
-">git pull ssh://gerrit.openvpn.net:29418/openvpn refs/changes/76/476/6</pr=
-e><pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><=
-span>diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c</span><br><span>i=
-ndex bce63ed..08f274d 100644</span><br><span>--- a/src/openvpn/misc.c</span=
-><br><span>+++ b/src/openvpn/misc.c</span><br><span>@@ -124,6 +124,83 @@</s=
-pan><br><span>     }</span><br><span>     return true;</span><br><span> }</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span styl=
-e=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ * Parses an authentication challenge string and returns=
- an auth_challenge_info structure.</span><br><span style=3D"color: hsl(120,=
- 100%, 40%);">+ * The authentication challenge string should follow the dyn=
-amic challenge/response protocol.</span><br><span style=3D"color: hsl(120, =
-100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * =
-See doc/management-notes.txt for more info on the the dynamic challenge/res=
-ponse protocol</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * im=
-plemented here.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</=
-span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param auth_challe=
-nge The authentication challenge string to parse. Can&#39;t be NULL.</span>=
-<br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param gc             T=
-he gc_arena structure for memory allocation.</span><br><span style=3D"color=
-: hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, =
-40%);">+ * @return               A pointer to the parsed auth_challenge_inf=
-o structure, or NULL if parsing fails.</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);=
-">+static struct auth_challenge_info *</span><br><span style=3D"color: hsl(=
-120, 100%, 40%);">+parse_auth_challenge(const char *auth_challenge, struct =
-gc_arena *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</spa=
-n><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(auth_challeng=
-e);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span=
- style=3D"color: hsl(120, 100%, 40%);">+    struct auth_challenge_info *ac;=
-</span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const int len =
+<p>cron2 <strong>submitted</strong> this change.</p><p><a href=3D"http://ge=
+rrit.openvpn.net/c/openvpn/+/476?usp=3Demail">View Change</a></p><div style=
+=3D"white-space:pre-wrap"></div><pre style=3D"font-family: monospace,monosp=
+ace; white-space: pre-wrap;">misc: make get_auth_challenge static<br><br>No=
+t used outside of misc.c.<br><br>Rename to parse_auth_challenge since it re=
+ally just parses<br>the string that you put in into the struct.<br><br>Add =
+doxygen documentation.<br><br>v2:<br> - change if(auth_challenge) to ASSERT=
+(auth_challenge)<br><br>Change-Id: I0abeec9f862aea1f6a8fdf350fa0008cf2e5d61=
+3<br>Signed-off-by: Frank Lichtenheld &lt;frank@...2641...&gt;<br>Acked-by:=
+ Gert Doering &lt;gert@...1296...&gt;<br>Message-Id: &lt;20231230143248.162=
+5-1-gert@...1296...&gt;<br>URL: https://www.mail-archive.com/openvpn-devel@=
+lists.sourceforge.net/msg27864.html<br>Signed-off-by: Gert Doering &lt;gert=
+@...1296...&gt;<br>---<br>M src/openvpn/misc.c<br>M src/openvpn/misc.h<br>M=
+ src/openvpn/ssl.h<br>3 files changed, 79 insertions(+), 85 deletions(-)<br=
+><br></pre>
+<pre style=3D"font-family: monospace,monospace; white-space: pre-wrap;"><sp=
+an>diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c</span><br><span>ind=
+ex bce63ed..08f274d 100644</span><br><span>--- a/src/openvpn/misc.c</span><=
+br><span>+++ b/src/openvpn/misc.c</span><br><span>@@ -124,6 +124,83 @@</spa=
+n><br><span>     }</span><br><span>     return true;</span><br><span> }</sp=
+an><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span style=
+=3D"color: hsl(120, 100%, 40%);">+/**</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ * Parses an authentication challenge string and returns =
+an auth_challenge_info structure.</span><br><span style=3D"color: hsl(120, =
+100%, 40%);">+ * The authentication challenge string should follow the dyna=
+mic challenge/response protocol.</span><br><span style=3D"color: hsl(120, 1=
+00%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * S=
+ee doc/management-notes.txt for more info on the the dynamic challenge/resp=
+onse protocol</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ * imp=
+lemented here.</span><br><span style=3D"color: hsl(120, 100%, 40%);">+ *</s=
+pan><br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param auth_challen=
+ge The authentication challenge string to parse. Can&#39;t be NULL.</span><=
+br><span style=3D"color: hsl(120, 100%, 40%);">+ * @param gc             Th=
+e gc_arena structure for memory allocation.</span><br><span style=3D"color:=
+ hsl(120, 100%, 40%);">+ *</span><br><span style=3D"color: hsl(120, 100%, 4=
+0%);">+ * @return               A pointer to the parsed auth_challenge_info=
+ structure, or NULL if parsing fails.</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+ */</span><br><span style=3D"color: hsl(120, 100%, 40%);"=
+>+static struct auth_challenge_info *</span><br><span style=3D"color: hsl(1=
+20, 100%, 40%);">+parse_auth_challenge(const char *auth_challenge, struct g=
+c_arena *gc)</span><br><span style=3D"color: hsl(120, 100%, 40%);">+{</span=
+><br><span style=3D"color: hsl(120, 100%, 40%);">+    ASSERT(auth_challenge=
+);</span><br><span style=3D"color: hsl(120, 100%, 40%);">+</span><br><span =
+style=3D"color: hsl(120, 100%, 40%);">+    struct auth_challenge_info *ac;<=
+/span><br><span style=3D"color: hsl(120, 100%, 40%);">+    const int len =
 =3D strlen(auth_challenge);</span><br><span style=3D"color: hsl(120, 100%, =
 40%);">+    char *work =3D (char *) gc_malloc(len+1, false, gc);</span><br>=
 <span style=3D"color: hsl(120, 100%, 40%);">+    char *cp;</span><br><span =
@@ -552,8 +545,8 @@ nt=3D"View Change"/></div></div>
 .1227...&gt; </div>
 <div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
 ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-MessageType: newpatchset </div>
+<div style=3D"display:none"> Gerrit-MessageType: merged </div>
 
 
---iYu8NlHRGR8=--
+--Zju9HXOtovM=--
 
