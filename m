@@ -1,16 +1,11 @@
-From: "cron2 (Code Review)" <gerrit@...515...>
-Date: Sun, 31 Dec 2023 17:33:53 +0000
+From: Gert Doering <gert@...1296...>
+Date: Sun, 31 Dec 2023 18:34:31 +0100
+Message-ID: <20231231173431.31356-1-gert@...1296...>
 In-Reply-To: <gerrit.1700582804000.Ia797c8801fa9a9bc10b6674efde5fdbd7132e4a8@...2715...>
 References: <gerrit.1700582804000.Ia797c8801fa9a9bc10b6674efde5fdbd7132e4a8@...2715...>
-Reply-To: gert@...1296..., arne-openvpn@...1227...,
- openvpn-devel@lists.sourceforge.net, frank@...2641...
-Message-ID: <4e40ce30adb48a22d876b562f27b73960b904455-EmailReviewComments-HTML@...2715...>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-Content-Type: multipart/alternative; boundary="B1+1dAIa30A="; charset=UTF-8
-Subject: [Openvpn-devel] [M] Change in openvpn[master]: Fix unaligned access
- in macOS, FreeBSD, Solaris hwaddr
+Subject: [Openvpn-devel] [PATCH v3] Fix unaligned access in macOS, FreeBSD,
+ Solaris hwaddr
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,114 +14,141 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: plaisthos <arne-openvpn@...1227...>
-Cc: flichtenheld <frank@...2641...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---B1+1dAIa30A=
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Arne Schwabe <arne@...1227...>
 
-Attention is currently required from: flichtenheld, plaisthos.
+The undefined behaviour USAN clang checker found this.
 
-cron2 has posted comments on this change. ( http://gerrit.openvpn.net/c/ope=
-nvpn/+/454?usp=3Demail )
+This fix is a bit messy but so are the original structures.
 
-Change subject: Fix unaligned access in macOS, FreeBSD, Solaris hwaddr
-......................................................................
+Since the API on Solaris/Illuminos does not return the AF_LINK
+sockaddr type we are interested in, there is little value in
+fixing the code on that platform to iterate through a list
+that does not contain the element we are looking for.
 
+Add includes stddef.h for offsetof and integer.h for max_int.
 
-Patch Set 3: Code-Review+2
+Change-Id: Ia797c8801fa9a9bc10b6674efde5fdbd7132e4a8
+Signed-off-by: Arne Schwabe <arne@...1227...>
+Acked-by: Gert Doering <gert@...1296...>
+---
 
-(1 comment)
+This change was reviewed on Gerrit and approved by at least one
+developer. I request to merge it to master.
 
-Patchset:
+Gerrit URL: https://gerrit.openvpn.net/c/openvpn/+/454
+This mail reflects revision 3 of this Change.
+Acked-by according to Gerrit (reflected above):
+Gert Doering <gert@...1296...>
 
-PS3:
-I still find this all horribly ugly, but this is not your fault... this API=
- is bad enough (... on MacOS, it seems) but combined with C "undefined beha=
-viour" rules there is no hope for sanity...
-
-That said, I have tested this on FreeBSD (works), NetBSD (works), OpenBSD (=
-no AF_LINK provided, so, didn't work before, doesn't break anything now), M=
-acOS (works) and OpenSolaris (no AF_LINK provided, but it compiles and test=
-s fine).
-
-
-
---
-To view, visit http://gerrit.openvpn.net/c/openvpn/+/454?usp=3Demail
-To unsubscribe, or for help writing mail filters, visit http://gerrit.openv=
-pn.net/settings
-
-Gerrit-Project: openvpn
-Gerrit-Branch: master
-Gerrit-Change-Id: Ia797c8801fa9a9bc10b6674efde5fdbd7132e4a8
-Gerrit-Change-Number: 454
-Gerrit-PatchSet: 3
-Gerrit-Owner: plaisthos <arne-openvpn@...1227...>
-Gerrit-Reviewer: cron2 <gert@...1296...>
-Gerrit-Reviewer: flichtenheld <frank@...2641...>
-Gerrit-CC: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Gerrit-Attention: plaisthos <arne-openvpn@...1227...>
-Gerrit-Attention: flichtenheld <frank@...2641...>
-Gerrit-Comment-Date: Sun, 31 Dec 2023 17:33:53 +0000
-Gerrit-HasComments: Yes
-Gerrit-Has-Labels: Yes
-Gerrit-MessageType: comment
-
---B1+1dAIa30A=
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<p> Attention is currently required from: flichtenheld, plaisthos. </p>
-<p>Patch set 3:<span style=3D"border-radius: 3px; display: inline-block; ma=
-rgin: 0 2px; padding: 4px;background-color: #d4ffd4;">Code-Review +2</span>=
-</p><p><a href=3D"http://gerrit.openvpn.net/c/openvpn/+/454?usp=3Demail">Vi=
-ew Change</a></p><p>1 comment:</p><ul style=3D"list-style: none; padding: 0=
-;"><li style=3D"margin: 0; padding: 0;"><p>Patchset:</p><ul style=3D"list-s=
-tyle: none; padding: 0;"><li style=3D"margin: 0; padding: 0 0 0 16px;"><p s=
-tyle=3D"margin-bottom: 4px;"><a href=3D"http://gerrit.openvpn.net/c/openvpn=
-/+/454?tab=3Dcomments">Patch Set #3:</a> </p><p style=3D"white-space: pre-w=
-rap; word-wrap: break-word;">I still find this all horribly ugly, but this =
-is not your fault... this API is bad enough (... on MacOS, it seems) but co=
-mbined with C &quot;undefined behaviour&quot; rules there is no hope for sa=
-nity...</p><p style=3D"white-space: pre-wrap; word-wrap: break-word;">That =
-said, I have tested this on FreeBSD (works), NetBSD (works), OpenBSD (no AF=
-_LINK provided, so, didn&#39;t work before, doesn&#39;t break anything now)=
-, MacOS (works) and OpenSolaris (no AF_LINK provided, but it compiles and t=
-ests fine).</p></li></ul></li></ul><p>To view, visit <a href=3D"http://gerr=
-it.openvpn.net/c/openvpn/+/454?usp=3Demail">change 454</a>. To unsubscribe,=
- or for help writing mail filters, visit <a href=3D"http://gerrit.openvpn.n=
-et/settings">settings</a>.</p><div itemscope itemtype=3D"http://schema.org/=
-EmailMessage"><div itemscope itemprop=3D"action" itemtype=3D"http://schema.=
-org/ViewAction"><link itemprop=3D"url" href=3D"http://gerrit.openvpn.net/c/=
-openvpn/+/454?usp=3Demail"/><meta itemprop=3D"name" content=3D"View Change"=
-/></div></div>
-
-<div style=3D"display:none"> Gerrit-Project: openvpn </div>
-<div style=3D"display:none"> Gerrit-Branch: master </div>
-<div style=3D"display:none"> Gerrit-Change-Id: Ia797c8801fa9a9bc10b6674efde=
-5fdbd7132e4a8 </div>
-<div style=3D"display:none"> Gerrit-Change-Number: 454 </div>
-<div style=3D"display:none"> Gerrit-PatchSet: 3 </div>
-<div style=3D"display:none"> Gerrit-Owner: plaisthos &lt;arne-openvpn@...1711...=
-27...&gt; </div>
-<div style=3D"display:none"> Gerrit-Reviewer: cron2 &lt;gert@...1296...&gt;=
- </div>
-<div style=3D"display:none"> Gerrit-Reviewer: flichtenheld &lt;frank@...2716...=
-1...&gt; </div>
-<div style=3D"display:none"> Gerrit-CC: openvpn-devel &lt;openvpn-devel@...1484...=
-ts.sourceforge.net&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: plaisthos &lt;arne-openvpn@...220...=
-..1227...&gt; </div>
-<div style=3D"display:none"> Gerrit-Attention: flichtenheld &lt;frank@...2375...=
-41...&gt; </div>
-<div style=3D"display:none"> Gerrit-Comment-Date: Sun, 31 Dec 2023 17:33:53=
- +0000 </div>
-<div style=3D"display:none"> Gerrit-HasComments: Yes </div>
-<div style=3D"display:none"> Gerrit-Has-Labels: Yes </div>
-<div style=3D"display:none"> Gerrit-MessageType: comment </div>
-
-
---B1+1dAIa30A=--
+        
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 6cc112c..0e6667f 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -24,6 +24,7 @@
+ /*
+  * Support routines for adding/deleting network routes.
+  */
++#include <stddef.h>
+ 
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+@@ -40,6 +41,7 @@
+ #include "win32.h"
+ #include "options.h"
+ #include "networking.h"
++#include "integer.h"
+ 
+ #include "memdbg.h"
+ 
+@@ -3639,11 +3641,15 @@
+         rgi->flags |= RGI_NETMASK_DEFINED;
+     }
+ 
++#if !defined(TARGET_SOLARIS)
++    /* Illumos/Solaris does not provide AF_LINK entries when calling the
++     * SIOCGIFCONF API, so there is little sense to trying to figure out a
++     * MAC address from an API that does not provide that information */
++
+     /* try to read MAC addr associated with interface that owns default gateway */
+     if (rgi->flags & RGI_IFACE_DEFINED)
+     {
+         struct ifconf ifc;
+-        struct ifreq *ifr;
+         const int bufsize = 4096;
+         char *buffer;
+ 
+@@ -3668,22 +3674,50 @@
+ 
+         for (cp = buffer; cp <= buffer + ifc.ifc_len - sizeof(struct ifreq); )
+         {
+-            ifr = (struct ifreq *)cp;
+-#if defined(TARGET_SOLARIS)
+-            const size_t len = sizeof(ifr->ifr_name) + sizeof(ifr->ifr_addr);
+-#else
+-            const size_t len = sizeof(ifr->ifr_name) + max(sizeof(ifr->ifr_addr), ifr->ifr_addr.sa_len);
+-#endif
++            struct ifreq ifr = { 0 };
++            /* this is not always using an 8 byte alignment that struct ifr
++             * requires. Need to memcpy() to a strict ifr to force 8-byte
++             * alignment required for member access */
++            memcpy(&ifr, cp, sizeof(struct ifreq));
++            const size_t len = sizeof(ifr.ifr_name) + max(sizeof(ifr.ifr_addr), ifr.ifr_addr.sa_len);
+ 
+-            if (!ifr->ifr_addr.sa_family)
++            if (!ifr.ifr_addr.sa_family)
+             {
+                 break;
+             }
+-            if (!strncmp(ifr->ifr_name, rgi->iface, IFNAMSIZ))
++            if (!strncmp(ifr.ifr_name, rgi->iface, IFNAMSIZ))
+             {
+-                if (ifr->ifr_addr.sa_family == AF_LINK)
++                if (ifr.ifr_addr.sa_family == AF_LINK)
+                 {
+-                    struct sockaddr_dl *sdl = (struct sockaddr_dl *)&ifr->ifr_addr;
++                    /* This is a confusing member access on multiple levels.
++                     *
++                     * struct sockaddr_dl is 20 bytes (on macOS and NetBSD,
++                     * larger on other BSDs) in size and has
++                     * 12 bytes space for the Ethernet interface name
++                     * (max 16 bytes) and  hw address (6 bytes)
++                     *
++                     * So if the interface name is more than 6 byte, the
++                     * location of hwaddr extends beyond the struct.
++                     *
++                     * This struct is embedded into ifreq that has
++                     * 16 bytes for a sockaddr and also expects this
++                     * struct to potentially extend beyond the bounds of
++                     * the struct.
++                     *
++                     * We only copied 32 bytes (size of ifr at least on macOS
++                     * might differ on other platforms again) from cp to ifr.
++                     *
++                     * But as hwaddr might extend but sdl might extend beyond
++                     * ifr's. So we need recalculate how large the actual size
++                     * of the embedded dl_sock actually is and then also need
++                     * to copy it since it also most likely does not have the
++                     * proper alignment required to access the struct.
++                     */
++                    const size_t sock_dl_len = max_int((int) (sizeof(struct sockaddr_dl)),
++                                                       (int) (ifr.ifr_addr.sa_len));
++
++                    struct sockaddr_dl *sdl = gc_malloc(sock_dl_len, true, &gc);
++                    memcpy(sdl, cp + offsetof(struct ifreq, ifr_addr), sock_dl_len);
+                     memcpy(rgi->hwaddr, LLADDR(sdl), 6);
+                     rgi->flags |= RGI_HWADDR_DEFINED;
+                 }
+@@ -3691,6 +3725,7 @@
+             cp += len;
+         }
+     }
++#endif /* if !defined(TARGET_SOLARIS) */
+ 
+ done:
+     if (sockfd >= 0)
 
