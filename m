@@ -1,9 +1,10 @@
+Date: Sun, 31 Dec 2023 19:12:30 +0100 (CET)
+Message-Id: <202312311812.3BVICUiB003184@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Sun, 31 Dec 2023 18:41:51 +0100
-Message-Id: <20231231174151.26780-1-gert@...1296...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] OpenSolaris: teach get_default_gateway() to
- get HWADDR
+In-Reply-To: <20231231173431.31356-1-gert@...1296...>
+References: <20231231173431.31356-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix unaligned access in macOS,
+ FreeBSD, Solaris hwaddr
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,69 +15,46 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-In the context of gerrit/454 it was uncovered that the existing
-code never worked on OpenSolaris anyway because no AF_LINK
-addresses are returned.  Debugging this, it was found that
-SIOCGIFHWADDR exists instead, and "man if_tcp" claims "should
-behave in a manner compatible with Linux".
+There's still room for improvement in the comments, but the current version
+might be as good as it gets this year... and I want to be able to push to
+GHA again without UBSAN errors :-)
 
-So, copied and adjusted the linux code, and it works...
+Tested this on NetBSD, OpenBSD, FreeBSD, MacOS and OpenSolaris, and found
+lots of interesting things - but nothing that was made worse by *this*
+patch, and the UBSAN build stopped complaining on MacOS... also, I've
+stared long and hard at the code, and as long as we can trust the kernel,
+every variant of short/long length should be covered.
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/route.c | 29 +++++++++++++++++++++++++++--
- 1 file changed, 27 insertions(+), 2 deletions(-)
+Did I say that this is a shitty API that MacOS copied from FreeBSD, 
+FreeBSD actually fixed it (by increasing the structure size a lot, so 
+if the buffer is aligned, nothing will overrun and alignment will also
+be fine), and MacOS just stuck with what they have...
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 0e6667f7..684b6357 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -3643,8 +3643,8 @@ get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
- 
- #if !defined(TARGET_SOLARIS)
-     /* Illumos/Solaris does not provide AF_LINK entries when calling the
--     * SIOCGIFCONF API, so there is little sense to trying to figure out a
--     * MAC address from an API that does not provide that information */
-+     * SIOCGIFCONF API, but does have SIOCGIFHWADDR - so ifdef needed
-+     */
- 
-     /* try to read MAC addr associated with interface that owns default gateway */
-     if (rgi->flags & RGI_IFACE_DEFINED)
-@@ -3725,6 +3725,31 @@ get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
-             cp += len;
-         }
-     }
-+#else /* if !defined(TARGET_SOLARIS) */
-+    /* try to read MAC addr associated with interface that owns default gateway */
-+    if (rgi->flags & RGI_IFACE_DEFINED)
-+    {
-+        sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-+        if (sockfd < 0)
-+        {
-+            msg(M_WARN, "GDG: socket #3 failed");
-+            goto done;
-+        }
-+
-+        struct ifreq ifreq = { 0 };
-+
-+        /* now get the hardware address. */
-+        strncpynt(ifreq.ifr_name, rgi->iface, sizeof(ifreq.ifr_name));
-+        if (ioctl(sockfd, SIOCGIFHWADDR, &ifreq) < 0)
-+        {
-+            msg(M_WARN, "GDG: SIOCGIFHWADDR(%s) failed", ifreq.ifr_name);
-+        }
-+        else
-+        {
-+            memcpy(rgi->hwaddr, &ifreq.ifr_addr.sa_data, 6);
-+            rgi->flags |= RGI_HWADDR_DEFINED;
-+        }
-+    }
- #endif /* if !defined(TARGET_SOLARIS) */
- 
- done:
--- 
-2.23.0
+A followup patch that implements HWADDR for OpenSolaris happened by
+accident while testing this :-) - will be on the list soon.
+
+Your patch has been applied to the master and release/2.6 branch (bugfix).
+
+commit f13331005d5a75f2788685485d46be1fe2f133a1 (master)
+commit 5380fe02b9ef4f0f2b1f0eb52100b7922965dfdb (release/2.6)
+Author: Arne Schwabe
+Date:   Sun Dec 31 18:34:31 2023 +0100
+
+     Fix unaligned access in macOS, FreeBSD, Solaris hwaddr
+
+     Signed-off-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20231231173431.31356-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg27885.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
