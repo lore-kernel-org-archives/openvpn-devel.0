@@ -1,8 +1,11 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon,  1 Jan 2024 10:40:54 +0100
-Message-ID: <20240101094054.38869-1-gert@...1296...>
+Message-ID: <89f5dd40-02a7-4cb3-99d3-4385ce646fb5@...1227...>
+Date: Mon, 1 Jan 2024 14:36:27 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] OpenBSD: repair --show-gateway
+Content-Language: en-GB
+References: <20240101092714.18992-1-gert@...1296...>
+From: Arne Schwabe <arne@...1227...>
+In-Reply-To: <20240101092714.18992-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] get_default_gateway() HWADDR overhaul
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,68 +14,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-OpenBSD route sockets do not want to be passed RTA_IFP on RTM_GET
-- if we do this, we get back EINVAL.
+Am 01.01.24 um 10:27 schrieb Gert Doering:
+> commit f13331005d5a7 (gerrit/454) most painfully works around the limitations
+> of the SIOCGIFCONF API, with struct member access on an unaligned buffer,
+> possibly overrunning sockaddr structures, etc. - and the result still did
+> not work on OpenSolaris and OpenBSD (no AF_LINK in the returned elements).
+> 
+> Reading through OpenBSD "ifconfig" source, I found getifaddrs(3), which
+> is exactly what we want here - it works on FreeBSD, NetBSD, OpenBSD and
+> MacOS, and all returned pointers are properly aligned, so the code gets
+> shorter, easier to read, and UBSAN is still happy.
+> 
+> OpenSolaris does have getifaddrs(3), but (surprise) it does not work, as
+> in "it does not return AF_LINK addresses".  It does have SIOCGIFHWADDR,
+> instead, and "man if_tcp" claims "should behave in a manner compatible
+> with Linux" - so TARGET_SOLARIS gets a copy of the Linux code now (works).
+> 
 
-On other platforms, if we do not request RTA_IFP, we will not get
-back interface information for queried routes - on OpenBSD, RTA_IFP
-comes back always...
+> -            if (!strncmp(ifr.ifr_name, rgi->iface, IFNAMSIZ))
 
-So we need to #ifdef this, RTA_IFP on all platforms except OpenBSD.
+Mini nitpick from clang-tidy:
 
-(Found this fix in OpenBSD's ports tree, in their patches for OpenVPN
-2.6.8 - but they just remove RTA_IFP, no #ifdef, so we can't just apply
-their patch)
+Clang-Tidy: No header providing "strncmp" is directly included.
 
-While at it, add M_ERRNO to the "write to routing socket" error message.
+Adding string.h would could be done if we want a v2 of the patch
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/route.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+Tested also on macOS.
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index f75199c6..b05729f1 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -3518,7 +3518,11 @@ get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
-     /* setup data to send to routing socket */
-     pid = getpid();
-     seq = 0;
-+#ifdef TARGET_OPENBSD
-+    rtm_addrs = RTA_DST | RTA_NETMASK;		/* Kernel refuses RTA_IFP */
-+#else
-     rtm_addrs = RTA_DST | RTA_NETMASK | RTA_IFP;
-+#endif
- 
-     bzero(&m_rtmsg, sizeof(m_rtmsg));
-     bzero(&so_dst, sizeof(so_dst));
-@@ -3556,7 +3560,7 @@ get_default_gateway(struct route_gateway_info *rgi, openvpn_net_ctx_t *ctx)
-     }
-     if (write(sockfd, (char *)&m_rtmsg, l) < 0)
-     {
--        msg(M_WARN, "GDG: problem writing to routing socket");
-+        msg(M_WARN|M_ERRNO, "GDG: problem writing to routing socket");
-         goto done;
-     }
-     do
-@@ -3733,7 +3737,11 @@ get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
-     /* setup data to send to routing socket */
-     pid = getpid();
-     seq = 0;
-+#ifdef TARGET_OPENBSD
-+    rtm_addrs = RTA_DST | RTA_NETMASK;		/* Kernel refuses RTA_IFP */
-+#else
-     rtm_addrs = RTA_DST | RTA_NETMASK | RTA_IFP;
-+#endif
- 
-     bzero(&m_rtmsg, sizeof(m_rtmsg));
-     bzero(&so_dst, sizeof(so_dst));
--- 
-2.28.0
+Acked-By: Arne Schwabe <arne@...1227...>
 
 
